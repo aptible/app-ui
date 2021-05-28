@@ -20,7 +20,7 @@ FROM nginx:1.13.11 as nginx
 ENV BUILD=/app
 ENV PORT=80
 
-COPY --from=builder /app/public "$BUILD"
+COPY --from=builder /app/dist "$BUILD"
 
 RUN apt-get update && apt-get install -y curl
 WORKDIR /app
