@@ -15,7 +15,8 @@
     "lint.eslint": "eslint --ext .ts,.tsx .",
     "lint.prettier": "prettier -c packages/**/*.{ts,tsx}",
     "lint.types": "tsc --noEmit",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "yarn lint"
   },
   "devDependencies": {
     "@types/react": "^17.0.8",
