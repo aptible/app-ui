@@ -7,7 +7,7 @@ interface ImportMetaEnv {
   MODE: string;
   DEV: boolean;
   PROD: boolean;
-  REACT_APP_APTIBLE_AUTH_ROOT_URL: string;
-  REACT_APP_BILLING_ROOT_URL: string;
-  REACT_APP_API_ROOT_URL: string;
+  VITE_API_URL: string;
+  VITE_AUTH_URL: string;
+  VITE_BILLING_URL: string;
 }

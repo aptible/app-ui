@@ -1,11 +1,11 @@
 FROM node:14 AS builder
 
-ARG REACT_APP_APTIBLE_AUTH_ROOT_URL=https://auth.aptible.com
-ARG REACT_APP_BILLING_ROOT_URL=https://goldenboy.aptible.com
-ARG REACT_APP_API_ROOT_URL=https://api.aptible.com
-ARG NODE_ENV production
+ARG VITE_AUTH_URL=https://auth.aptible.com
+ARG VITE_BILLING_URL=https://goldenboy.aptible.com
+ARG VITE_API_URL=https://api.aptible.com
+ARG NODE_ENV=production
 
-RUN env | grep REACT_APP
+RUN env | grep VITE
 
 ADD package.json /app/
 ADD yarn.lock /app/

@@ -1,15 +1,13 @@
 import { createAssign, createReducerMap } from 'robodux';
 import { AppState, Env } from '@app/types';
 
-const isProduction = import.meta.env.PROD;
-const isDev = import.meta.env.DEV;
 export const createEnv = (e: Partial<Env> = {}): Env => {
   return {
-    isProduction,
-    isDev,
-    authUrl: import.meta.env.REACT_APP_APTIBLE_AUTH_ROOT_URL,
-    billingUrl: import.meta.env.REACT_APP_BILLING_ROOT_URL,
-    apiUrl: import.meta.env.REACT_APP_API_ROOT_URL,
+    isProduction: import.meta.env.PROD || false,
+    isDev: import.meta.env.DEV || true,
+    authUrl: import.meta.env.VITE_AUTH_URL || '',
+    billingUrl: import.meta.env.VITE_BILLING_URL || '',
+    apiUrl: import.meta.env.VITE_API_URL || '',
     ...e,
   };
 };
