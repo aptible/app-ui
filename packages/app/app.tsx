@@ -1,3 +1,4 @@
 import React from 'react';
+import { Box } from '@aptible/arrow-ds';
 
-export const App = () => <div>Hello world!</div>;
+export const App = () => <Box>Hello world!</Box>;
