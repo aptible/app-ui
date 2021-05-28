@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
@@ -15,8 +16,8 @@
     "noEmit": true,
     "jsx": "react",
     "paths": {
-      "@app/*": ["./packages/*"]
+      "@app/*": ["./src/*"]
     }
   },
-  "include": ["./packages"]
+  "include": ["./src"]
 }
