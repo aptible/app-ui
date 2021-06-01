@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Box } from '@app/system';
+
 export const HomePage = () => {
-  return <div>Hello world!</div>;
+  return <Box>Hello world!</Box>;
 };

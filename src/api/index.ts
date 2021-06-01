@@ -1,12 +1,12 @@
 import { call, select } from 'redux-saga/effects';
-import { createQuery, fetchBody, urlParser, FetchCtx, Next } from 'saga-query';
+import { createQuery, queryCtx, urlParser, FetchCtx, Next } from 'saga-query';
 
 import { selectEnv } from '@app/env';
 
 type EndpointUrl = 'auth' | 'api' | 'billing';
 
 interface FetchApiOpts extends RequestInit {
-  url?: RequestInfo;
+  url?: string;
   endpoint?: EndpointUrl;
 }
 
@@ -64,6 +64,6 @@ function* fetchApi(ctx: ApiCtx, next: Next): Generator<any, any, any> {
 }
 
 export const api = createQuery<ApiCtx>();
-api.use(fetchBody);
+api.use(queryCtx);
 api.use(urlParser);
 api.use(fetchApi);
