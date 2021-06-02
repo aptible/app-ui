@@ -6,27 +6,23 @@ import {
   Input,
   InputFeedback,
   Stack,
+  JUSTIFY,
+  STATUS_VARIANT,
 } from '@aptible/arrow-ds';
 
 import {
   selectInvitationRequest,
   fetchInvitation,
   selectPendingInvitation,
-} from '@comply/invitations';
-import {
-  RESET_REQUEST_PASSWORD_PATH,
-  acceptInvitationWithCodeUrl,
-} from '@comply/routes';
-
+} from '@app/invitations';
+import { RESET_REQUEST_PASSWORD_PATH } from '@app/routes';
 import { login } from '@app/auth';
-import { JUSTIFY, STATUS_VARIANT } from '@app/system';
 import { selectIsOtpError } from '@app/token';
 import { selectAuthLoader } from '@app/loaders';
 import { validEmail } from '@app/string-utils';
 
-import AsyncButton from '../async-button';
-
-import AuthenticationWrapper from '../auth/authentication-wrapper';
+import { AsyncButton } from '../auth/async-button';
+import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { HelpLink } from '../help-link';
 
 const LoginPage = () => {
@@ -44,7 +40,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (!invitation && invitationRequest.invitationId) {
-      dispatch(fetchInvitation(invitationRequest.invitationId));
+      dispatch(fetchInvitation({ id: invitationRequest.invitationId }));
     }
   }, [invitationRequest.invitationId]);
 
@@ -52,19 +48,17 @@ const LoginPage = () => {
 
   const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const onSuccess = () => {
+    /* const onSuccess = () => {
       if (invitationRequest.invitationId) {
         // history.push(acceptInvitationWithCodeUrl(invitationRequest));
       }
-    };
+    }; */
     dispatch(
       login({
-        type: 'PASSWORD',
         username: currentEmail,
         password,
         otpToken,
         makeCurrent: true,
-        onSuccess,
       }),
     );
   };

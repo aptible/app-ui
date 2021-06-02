@@ -2,7 +2,7 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { Link, LinkProps } from '@app/system';
+import { Link, LinkProps } from '@aptible/arrow-ds';
 
 export const HelpLink = ({
   children,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Box, Text, Link } from '@aptible/arrow-ds';
 
-import { Box, Text, Link } from '@app/system';
 import { selectCurrentUser } from '@app/users';
 import { logout } from '@app/auth';
 

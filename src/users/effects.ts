@@ -1,5 +1,5 @@
-import { call, select, put, takeEvery } from 'redux-saga/effects';
-import { createAction, Action, MapEntity } from 'robodux';
+import { select, put } from 'redux-saga/effects';
+import { MapEntity } from 'robodux';
 
 import { api, ApiCtx } from '@app/api';
 import { Token, User } from '@app/types';
@@ -11,7 +11,7 @@ import { setCurrentUser, setUsers } from './slice';
 
 export const fetchCurrentUser = api.get(
   'fetch-current-user',
-  function* (ctx: ApiCtx<UserResponse>, next) {
+  function* onFetchCurrentUser(ctx: ApiCtx<UserResponse>, next) {
     const token: Token = yield select(selectToken);
     if (!token) return;
 
@@ -31,7 +31,7 @@ export const fetchCurrentUser = api.get(
 
 export const fetchUsers = api.get<{ orgId: string }>(
   '/organizations/:orgId/users',
-  function* (ctx: ApiCtx<UsersResponse>, next) {
+  function* onFetchUsers(ctx: ApiCtx<UsersResponse>, next) {
     yield next();
 
     if (!ctx.response.ok) return;

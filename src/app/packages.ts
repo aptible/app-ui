@@ -8,8 +8,9 @@ import * as env from '@app/env';
 import * as loaders from '@app/loaders';
 import * as users from '@app/users';
 import * as token from '@app/token';
+import * as invitations from '@app/invitations';
 
-const corePackages: any[] = [env, loaders];
+const corePackages: any[] = [env, loaders, users, token, invitations];
 
 const packages = createApp<AppState>(corePackages);
 export const rootReducer = packages.reducer;

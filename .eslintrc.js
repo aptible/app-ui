@@ -96,5 +96,6 @@ module.exports = {
     // No jsx extension: https://github.com/facebook/create-react-app/issues/87#issuecomment-234627904
     'react/jsx-filename-extension': 'off',
     'react/require-default-props': 'off',
+    'react/jsx-props-no-spreading': 'off',
   },
 };

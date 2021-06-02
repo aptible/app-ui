@@ -1,7 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-
-import { AppState } from '@app/types';
 import {
   Flex,
   Box,
@@ -10,8 +8,13 @@ import {
   Banner,
   Frame,
   AptibleLogo,
-} from '@app/system';
-import { selectLoaderById } from '@app/loaders';
+} from '@aptible/arrow-ds';
+
+import { selectAuthLoader } from '@app/loaders';
+import {
+  selectIsAuthenticationError,
+  selectIsUserAuthenticated,
+} from '@app/token';
 
 import { PageTitle } from '../page-title';
 import { HelpLink } from '../help-link';
@@ -29,20 +32,16 @@ interface Props {
   children: React.ReactNode;
 }
 
-const AuthenticationWrapper = ({
+export const AuthenticationWrapper = ({
   children,
   title,
   progressElement,
   helpText,
   link,
 }: Props) => {
-  const credentialError = false;
-  const loader = useSelector((state: AppState) =>
-    selectLoaderById(state, { id: 'auth' }),
-  );
-  const isAuthenticated = false;
-
-  const { message } = loader;
+  const credentialError = useSelector(selectIsAuthenticationError);
+  const loader = useSelector(selectAuthLoader);
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
 
   return (
     <>
@@ -86,5 +85,3 @@ const AuthenticationWrapper = ({
     </>
   );
 };
-
-export default AuthenticationWrapper;

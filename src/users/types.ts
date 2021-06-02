@@ -1,4 +1,4 @@
-import { HalEmbedded, LinkResponse, User } from '@app/types';
+import { HalEmbedded, LinkResponse } from '@app/types';
 
 export interface UserResponse {
   created_at: string;

@@ -1,4 +1,5 @@
 import { MapEntity, LoadingItemState } from 'robodux';
+import { InvitationRequest, Invitation } from './invitations';
 
 export interface Env {
   isProduction: boolean;
@@ -6,6 +7,7 @@ export interface Env {
   authUrl: string;
   billingUrl: string;
   apiUrl: string;
+  origin: 'deploy';
 }
 
 export interface User {
@@ -25,10 +27,20 @@ export interface Token {
   actorUrl: string;
 }
 
+export interface AuthLoaderMessage {
+  message: string;
+  error: string;
+}
+
+export type AuthLoader = LoadingItemState<AuthLoaderMessage>;
+
 export interface AppState {
   env: Env;
+  authLoader: AuthLoader;
   loaders: { [key: string]: LoadingItemState };
   users: MapEntity<User>;
   currentUser: User;
   token: Token;
+  invitationRequest: InvitationRequest;
+  invitations: MapEntity<Invitation>;
 }

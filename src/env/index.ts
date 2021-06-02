@@ -8,6 +8,7 @@ export const createEnv = (e: Partial<Env> = {}): Env => {
     authUrl: import.meta.env.VITE_AUTH_URL || '',
     billingUrl: import.meta.env.VITE_BILLING_URL || '',
     apiUrl: import.meta.env.VITE_API_URL || '',
+    origin: 'deploy',
     ...e,
   };
 };
@@ -21,3 +22,4 @@ const env = createAssign<Env>({
 export const { set: setEnv, reset: resetEnv } = env.actions;
 export const reducers = createReducerMap(env);
 export const selectEnv = (state: AppState) => state[ENV_NAME];
+export const selectOrigin = (state: AppState) => selectEnv(state).origin;

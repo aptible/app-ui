@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { Text } from '@app/system';
+import { Text } from '@aptible/arrow-ds';
 
 export const HomeLink = () => (
   <Text className="brand-dark-form__help-links text-center pt-4">
