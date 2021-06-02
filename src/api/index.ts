@@ -10,7 +10,7 @@ interface FetchApiOpts extends RequestInit {
   endpoint?: EndpointUrl;
 }
 
-export interface ApiCtx extends FetchCtx {
+export interface ApiCtx<D = any, E = any, P = any> extends FetchCtx<D, E, P> {
   request: FetchApiOpts;
 }
 
