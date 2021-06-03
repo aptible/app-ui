@@ -1,9 +1,10 @@
-import { put, select } from 'redux-saga/effects';
+import { put, select, takeEvery } from 'redux-saga/effects';
 import { batchActions } from 'redux-batched-actions';
 import { ActionWithPayload, createAction } from 'robodux';
+import { createQuery } from 'saga-query';
 
+import { authApi, AuthApiCtx } from '@app/api';
 import { Token } from '@app/types';
-import { api, ApiCtx } from '@app/api';
 import { resetToken, setToken, selectToken } from '@app/token';
 import {
   resetCurrentUser,
@@ -13,7 +14,11 @@ import {
   CreateUserCtx,
   createUser,
 } from '@app/users';
-import { setAuthLoaderSuccess } from '@app/loaders';
+import {
+  setAuthLoaderStart,
+  setAuthLoaderError,
+  setAuthLoaderSuccess,
+} from '@app/loaders';
 
 import { parseJwt } from './jwt-parser';
 
@@ -61,17 +66,13 @@ export function deserializeToken(t: TokenSuccessResponse): Token {
   };
 }
 
-export const fetchCurrentToken = api.get(
-  '/current_token',
-  api.request({ endpoint: 'auth' }),
-);
+export const fetchCurrentToken = authApi.get('/current_token');
 
-export const logout = api.delete(
+export const logout = authApi.delete(
   `/tokens/:tokenId`,
   function* onLogout(ctx, next) {
     const token: Token = yield select(selectToken);
     ctx.request = {
-      endpoint: 'auth',
       url: `/tokens/${token.tokenId}`,
     };
 
@@ -90,12 +91,11 @@ interface CreateTokenPayload {
   makeCurrent: boolean;
 }
 
-type TokenCtx = ApiCtx<TokenSuccessResponse, CreateTokenPayload>;
-export const createToken = api.post<CreateTokenPayload>(
+type TokenCtx = AuthApiCtx<TokenSuccessResponse, CreateTokenPayload>;
+export const createToken = authApi.post<CreateTokenPayload>(
   '/tokens',
   function* onCreateToken(ctx: TokenCtx, next) {
     ctx.request = {
-      endpoint: 'auth',
       body: JSON.stringify({
         username: ctx.payload.options.username,
         password: ctx.payload.options.password,
@@ -110,6 +110,7 @@ export const createToken = api.post<CreateTokenPayload>(
 
     yield next();
 
+    console.log(ctx.response);
     if (!ctx.response.ok) return;
 
     const resp = ctx.response.data;
@@ -135,8 +136,18 @@ export const createToken = api.post<CreateTokenPayload>(
 export const loginSuccess = createAction('LOGIN_SUCCESS');
 export const login = createAction<CreateTokenPayload>('LOGIN');
 export function* onLogin(action: ActionWithPayload<CreateTokenPayload>) {
+  yield put(setAuthLoaderStart());
   const ctx: TokenCtx = yield createToken.run(action.payload);
   console.log(ctx);
+
+  if (!ctx.response.ok) {
+    yield put(
+      setAuthLoaderError({
+        message: ctx.response.data,
+      }),
+    );
+    return;
+  }
 
   yield put(batchActions([setAuthLoaderSuccess(), loginSuccess()]));
 }
@@ -145,10 +156,18 @@ export const signupSuccess = createAction('SIGNUP_SUCCESS');
 export const signup = createAction<CreateUserForm>('SIGNUP');
 export function* onSignup(action: ActionWithPayload<CreateUserForm>) {
   const { email, password } = action.payload;
+  yield put(setAuthLoaderStart());
 
   const userCtx: CreateUserCtx = yield createUser.run(action.payload);
   console.log(userCtx);
-  if (!userCtx.response.ok) return;
+  if (!userCtx.response.ok) {
+    yield put(
+      setAuthLoaderError({
+        message: userCtx.response.data,
+      }),
+    );
+    return;
+  }
 
   const tokenCtx: TokenCtx = yield createToken.run({
     username: email,
@@ -157,7 +176,27 @@ export function* onSignup(action: ActionWithPayload<CreateUserForm>) {
     makeCurrent: true,
   });
   console.log(tokenCtx);
-  if (!tokenCtx.response.ok) return;
+  if (!tokenCtx.response.ok) {
+    yield put(
+      setAuthLoaderError({
+        message: tokenCtx.response.data,
+      }),
+    );
+    return;
+  }
 
   yield put(batchActions([setAuthLoaderSuccess(), signupSuccess()]));
 }
+
+function* watchLogin() {
+  yield takeEvery(`${login}`, onLogin);
+}
+
+function* watchSignup() {
+  yield takeEvery(`${signup}`, onSignup);
+}
+
+export const sagas = {
+  watchLogin,
+  watchSignup,
+};

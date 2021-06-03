@@ -41,6 +41,7 @@ export const selectIsAuthenticationError = (state: AppState) => {
   return (
     error === 'unprocessable_entity' ||
     error === 'invalid_credentials' ||
-    error === 'invalid_email'
+    error === 'invalid_email' ||
+    error === 'unsupported_grant_type'
   );
 };

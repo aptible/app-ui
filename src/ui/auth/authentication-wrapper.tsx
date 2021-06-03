@@ -57,7 +57,7 @@ export const AuthenticationWrapper = ({
 
             {credentialError && (
               <Banner variant={STATUS_VARIANT.DANGER} withIcon className="mb-6">
-                {loader.message}
+                {loader.message.message}
               </Banner>
             )}
 

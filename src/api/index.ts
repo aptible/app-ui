@@ -1,19 +1,27 @@
-import { call, select } from 'redux-saga/effects';
-import { createQuery, queryCtx, urlParser, FetchCtx, Next } from 'saga-query';
+import { put, call, select } from 'redux-saga/effects';
+import {
+  createQuery,
+  queryCtx,
+  urlParser,
+  FetchCtx,
+  Next,
+  loadingTracker,
+} from 'saga-query';
 
 import { selectEnv } from '@app/env';
-import { ApiGen } from '@app/types';
+import { ApiGen, AuthLoaderMessage } from '@app/types';
+import { loaders } from '@app/loaders';
 
 type EndpointUrl = 'auth' | 'api' | 'billing';
 
 interface FetchApiOpts extends RequestInit {
   url?: string;
-  endpoint?: EndpointUrl;
 }
 
-export interface ApiCtx<D = any, P = any> extends FetchCtx<D, any, P> {
-  request: FetchApiOpts;
-}
+export interface ApiCtx<D = any, P = any, E = any> extends FetchCtx<D, E, P> {}
+
+export interface AuthApiCtx<D = any, P = any>
+  extends FetchCtx<D, AuthLoaderMessage, P> {}
 
 function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen {
   const env = yield select(selectEnv);
@@ -28,43 +36,53 @@ function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen {
   return env.apiUrl;
 }
 
-function* fetchApi(ctx: ApiCtx, next: Next): ApiGen {
-  const { url, endpoint = 'api', ...options } = ctx.request;
-  console.log(ctx.request);
-  const baseUrl = yield call(getApiBaseUrl, endpoint);
+function* fetchApi(request: FetchApiOpts): ApiGen {
+  const { url = '', ...options } = request;
 
-  const apiUrl = `${baseUrl}${url}`;
-  const resp = yield call(fetch, apiUrl, {
+  const resp = yield call(fetch, url, {
     ...options,
     // https://github.com/github/fetch#sending-cookies
     credentials: 'same-origin',
   });
 
   if (resp.status === 204) {
-    ctx.response = {
+    return {
       status: resp.status,
       ok: resp.ok,
       data: {},
     };
-    yield next();
-    return;
   }
 
   const data = yield call([resp, 'json']);
 
   if (!resp.ok) {
-    ctx.response = { status: resp.status, ok: true, data };
+    return { status: resp.status, ok: false, data };
   } else {
-    ctx.response = {
+    return {
       status: resp.status,
-      ok: false,
+      ok: true,
       data: { status: 'failure', message: 'something went wrong' },
     };
   }
-  yield next();
 }
+
+function createFetchApi(endpoint: EndpointUrl) {
+  return function* onFetchApi(ctx: FetchCtx, next: Next): ApiGen {
+    const baseUrl = yield call(getApiBaseUrl, endpoint);
+    ctx.request.url = `${baseUrl}${ctx.request.url}`;
+    ctx.response = yield call(fetchApi, ctx.request);
+    yield next();
+  };
+}
+
+export const authApi = createQuery<AuthApiCtx>();
+authApi.use(queryCtx);
+authApi.use(urlParser);
+authApi.use(loadingTracker(loaders));
+authApi.use(createFetchApi('auth'));
 
 export const api = createQuery<ApiCtx>();
 api.use(queryCtx);
 api.use(urlParser);
-api.use(fetchApi);
+api.use(loadingTracker(loaders));
+api.use(createFetchApi('api'));

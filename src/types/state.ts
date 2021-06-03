@@ -30,6 +30,8 @@ export interface Token {
 export interface AuthLoaderMessage {
   message: string;
   error: string;
+  code: number;
+  exception_context: { [key: string]: any };
 }
 
 export type AuthLoader = LoadingItemState<AuthLoaderMessage>;

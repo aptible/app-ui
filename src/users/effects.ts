@@ -1,7 +1,7 @@
 import { select, put } from 'redux-saga/effects';
 import { MapEntity } from 'robodux';
 
-import { api, ApiCtx } from '@app/api';
+import { authApi, AuthApiCtx } from '@app/api';
 import { Token, User, ApiGen } from '@app/types';
 import { selectToken } from '@app/token';
 import { selectOrigin } from '@app/env';
@@ -10,15 +10,14 @@ import { UserResponse, UsersResponse, CreateUserForm } from './types';
 import { deserializeUser } from './serializers';
 import { setCurrentUser, setUsers } from './slice';
 
-export const fetchCurrentUser = api.get(
+export const fetchCurrentUser = authApi.get(
   'fetch-current-user',
-  function* onFetchCurrentUser(ctx: ApiCtx<UserResponse>, next) {
+  function* onFetchCurrentUser(ctx: AuthApiCtx<UserResponse>, next) {
     const token: Token = yield select(selectToken);
     if (!token) return;
 
     ctx.request = {
       url: token.userUrl,
-      endpoint: 'auth',
     };
 
     yield next();
@@ -30,9 +29,9 @@ export const fetchCurrentUser = api.get(
   },
 );
 
-export const fetchUsers = api.get<{ orgId: string }>(
+export const fetchUsers = authApi.get<{ orgId: string }>(
   '/organizations/:orgId/users',
-  function* onFetchUsers(ctx: ApiCtx<UsersResponse>, next) {
+  function* onFetchUsers(ctx: AuthApiCtx<UsersResponse>, next) {
     yield next();
 
     if (!ctx.response.ok) return;
@@ -48,13 +47,12 @@ export const fetchUsers = api.get<{ orgId: string }>(
   },
 );
 
-export type CreateUserCtx = ApiCtx<UserResponse, CreateUserForm>;
-export const createUser = api.post<CreateUserForm>(
+export type CreateUserCtx = AuthApiCtx<UserResponse, CreateUserForm>;
+export const createUser = authApi.post<CreateUserForm>(
   '/users',
   function* onCreateUser(ctx: CreateUserCtx, next): ApiGen {
     const origin = yield select(selectOrigin);
     ctx.request = {
-      endpoint: 'auth',
       body: JSON.stringify({ ...ctx.payload.options, origin }),
     };
 

@@ -2,12 +2,8 @@ import { createLoader, createLoaderTable, createReducerMap } from 'robodux';
 
 import { AppState, AuthLoader, AuthLoaderMessage } from '@app/types';
 
-export enum Loaders {
-  Auth = 'auth',
-}
-
 export const LOADERS_NAME = 'loaders';
-const loaders = createLoaderTable({ name: LOADERS_NAME });
+export const loaders = createLoaderTable({ name: LOADERS_NAME });
 export const { selectById: selectLoaderById } = loaders.getSelectors(
   (s: AppState) => s[LOADERS_NAME],
 );
@@ -21,6 +17,8 @@ export const defaultAuthLoader = (): AuthLoader => ({
   message: {
     error: '',
     message: '',
+    code: 0,
+    exception_context: {},
   },
   lastRun: 0,
   lastSuccess: 0,
@@ -45,5 +43,5 @@ export const selectAuthLoader = (state: AppState) =>
 export const selectAuthLoaderMessage = (state: AppState) => {
   const curLoader = selectAuthLoader(state);
   const { message } = curLoader;
-  return message || { error: '', message: '' };
+  return message || { error: '', message: '', code: 0, exception_context: {} };
 };
