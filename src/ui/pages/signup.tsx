@@ -10,12 +10,6 @@ import {
   STATUS_VARIANT,
   Stack,
   JUSTIFY,
-  Box,
-  Text,
-  VendorLogo,
-  Flex,
-  Absolute,
-  Relative,
 } from '@aptible/arrow-ds';
 
 import { validatePasswordComplexity, signup } from '@app/auth';
@@ -24,7 +18,7 @@ import {
   selectPendingInvitation,
   fetchInvitation,
 } from '@app/invitations';
-import { LOGIN_PATH, acceptInvitationWithCodeUrl } from '@app/routes';
+import { LOGIN_PATH } from '@app/routes';
 import { selectAuthLoader } from '@app/loaders';
 import { validEmail } from '@app/string-utils';
 
@@ -189,9 +183,6 @@ const SignupPageForm = () => {
 };
 
 export const SignupPage = () => {
-  const location = useLocation();
-  const getQueryStringValue = createQueryStringValue(location.search);
-  const inviterName = getQueryStringValue('inviter_name');
   const invitation = useSelector(selectPendingInvitation);
 
   let title: string;

@@ -1,7 +1,6 @@
 import { put, select, takeEvery } from 'redux-saga/effects';
 import { batchActions } from 'redux-batched-actions';
 import { ActionWithPayload, createAction } from 'robodux';
-import { createQuery } from 'saga-query';
 
 import { authApi, AuthApiCtx } from '@app/api';
 import { Token } from '@app/types';

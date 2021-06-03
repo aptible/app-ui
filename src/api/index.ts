@@ -1,4 +1,4 @@
-import { put, call, select } from 'redux-saga/effects';
+import { call, select } from 'redux-saga/effects';
 import {
   createQuery,
   queryCtx,
@@ -57,13 +57,13 @@ function* fetchApi(request: FetchApiOpts): ApiGen {
 
   if (!resp.ok) {
     return { status: resp.status, ok: false, data };
-  } else {
-    return {
-      status: resp.status,
-      ok: true,
-      data: { status: 'failure', message: 'something went wrong' },
-    };
   }
+
+  return {
+    status: resp.status,
+    ok: true,
+    data: { status: 'failure', message: 'something went wrong' },
+  };
 }
 
 function createFetchApi(endpoint: EndpointUrl) {

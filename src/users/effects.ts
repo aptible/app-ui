@@ -56,6 +56,8 @@ export const createUser = authApi.post<CreateUserForm>(
       body: JSON.stringify({ ...ctx.payload.options, origin }),
     };
 
+    yield next();
+
     if (!ctx.response.ok) return;
 
     yield put(setCurrentUser(deserializeUser(ctx.response.data)));

@@ -2,7 +2,7 @@ import { isBefore } from 'date-fns';
 import { createTable, MapEntity } from 'robodux';
 import { select, put } from 'redux-saga/effects';
 
-import { api, ApiCtx } from '@app/api';
+import { authApi, AuthApiCtx } from '@app/api';
 import {
   Token,
   InvitationsResponse,
@@ -73,9 +73,9 @@ export const selectInvitations = (state: AppState) => state.invitations;
 export const selectInvitation = (state: AppState, { id }: { id: string }) =>
   selectInvitations(state)[id] || defaultInvitationInstance;
 
-export const fetchInvitations = api.get<{ orgId: string }>(
+export const fetchInvitations = authApi.get<{ orgId: string }>(
   '/organizations/:orgId/invitations',
-  function* onFetchInvitations(ctx: ApiCtx<InvitationsResponse>, next) {
+  function* onFetchInvitations(ctx: AuthApiCtx<InvitationsResponse>, next) {
     const token: Token = yield select(selectToken);
     if (!token) return;
     yield next();
@@ -93,10 +93,9 @@ export const fetchInvitations = api.get<{ orgId: string }>(
   },
 );
 
-export const fetchInvitation = api.get<{ id: string }>(
+export const fetchInvitation = authApi.get<{ id: string }>(
   `/invitations/:id`,
-  function* onFetchInvitation(ctx: ApiCtx<InvitationResponse>, next) {
-    ctx.request = { endpoint: 'auth' };
+  function* onFetchInvitation(ctx: AuthApiCtx<InvitationResponse>, next) {
     yield next();
     if (!ctx.response.ok) return;
     const { data } = ctx.response;
@@ -104,7 +103,7 @@ export const fetchInvitation = api.get<{ id: string }>(
   },
 );
 
-export const resetInvitation = api.post<string>(
+export const resetInvitation = authApi.post<string>(
   '/resets',
   function* onResetInvitation(ctx, next): ApiGen {
     const origin = yield select(selectOrigin);
