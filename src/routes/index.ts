@@ -1,9 +1,14 @@
 import { InvitationRequest } from '@app/types';
 
-export const HOME_URL = '/';
-export const homeUrl = () => HOME_URL;
-export const NOT_FOUND_URL = '/404';
-export const notFoundUrl = () => NOT_FOUND_URL;
+export const HOME_PATH = '/';
+export const homeUrl = () => HOME_PATH;
+export const NOT_FOUND_PATH = '/404';
+export const notFoundUrl = () => NOT_FOUND_PATH;
+
+export const LOGIN_PATH = '/login';
+export const loginUrl = () => LOGIN_PATH;
+export const SIGNUP_PATH = '/signup';
+export const signupUrl = () => SIGNUP_PATH;
 
 export const RESET_REQUEST_PASSWORD_PATH = '/reset-password';
 export const RESET_PASSWORD_PATH =

@@ -2,6 +2,7 @@ import { call, select } from 'redux-saga/effects';
 import { createQuery, queryCtx, urlParser, FetchCtx, Next } from 'saga-query';
 
 import { selectEnv } from '@app/env';
+import { ApiGen } from '@app/types';
 
 type EndpointUrl = 'auth' | 'api' | 'billing';
 
@@ -10,11 +11,11 @@ interface FetchApiOpts extends RequestInit {
   endpoint?: EndpointUrl;
 }
 
-export interface ApiCtx<D = any, E = any, P = any> extends FetchCtx<D, E, P> {
+export interface ApiCtx<D = any, P = any> extends FetchCtx<D, any, P> {
   request: FetchApiOpts;
 }
 
-function* getApiBaseUrl(endpoint: EndpointUrl): Generator<any, any, any> {
+function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen {
   const env = yield select(selectEnv);
   if (endpoint === 'auth') {
     return env.authUrl;
@@ -27,7 +28,7 @@ function* getApiBaseUrl(endpoint: EndpointUrl): Generator<any, any, any> {
   return env.apiUrl;
 }
 
-function* fetchApi(ctx: ApiCtx, next: Next): Generator<any, any, any> {
+function* fetchApi(ctx: ApiCtx, next: Next): ApiGen {
   const { url, endpoint = 'api', ...options } = ctx.request;
   console.log(ctx.request);
   const baseUrl = yield call(getApiBaseUrl, endpoint);

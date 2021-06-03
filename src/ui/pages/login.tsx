@@ -25,7 +25,7 @@ import { AsyncButton } from '../auth/async-button';
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { HelpLink } from '../help-link';
 
-const LoginPage = () => {
+export const LoginPage = () => {
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState<string>('');
@@ -77,7 +77,7 @@ const LoginPage = () => {
       title={
         invitation
           ? `Log in to join ${invitation.organizationName}`
-          : 'Log in to Aptible Comply'
+          : 'Log in to Aptible Deploy'
       }
       helpText={`Don't have an account?`}
       link={{
@@ -164,5 +164,3 @@ const LoginPage = () => {
     </AuthenticationWrapper>
   );
 };
-
-export default LoginPage;

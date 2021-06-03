@@ -9,6 +9,7 @@ import {
   InvitationResponse,
   Invitation,
   AppState,
+  ApiGen,
 } from '@app/types';
 import { selectToken } from '@app/token';
 import { selectOrigin } from '@app/env';
@@ -105,7 +106,7 @@ export const fetchInvitation = api.get<{ id: string }>(
 
 export const resetInvitation = api.post<string>(
   '/resets',
-  function* onResetInvitation(ctx, next): Generator<any, any, any> {
+  function* onResetInvitation(ctx, next): ApiGen {
     const origin = yield select(selectOrigin);
     ctx.request = {
       body: JSON.stringify({

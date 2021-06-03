@@ -2,10 +2,11 @@ import { select, put } from 'redux-saga/effects';
 import { MapEntity } from 'robodux';
 
 import { api, ApiCtx } from '@app/api';
-import { Token, User } from '@app/types';
+import { Token, User, ApiGen } from '@app/types';
 import { selectToken } from '@app/token';
+import { selectOrigin } from '@app/env';
 
-import { UserResponse, UsersResponse } from './types';
+import { UserResponse, UsersResponse, CreateUserForm } from './types';
 import { deserializeUser } from './serializers';
 import { setCurrentUser, setUsers } from './slice';
 
@@ -44,5 +45,21 @@ export const fetchUsers = api.get<{ orgId: string }>(
     }, {});
 
     yield put(setUsers(usersMap));
+  },
+);
+
+export type CreateUserCtx = ApiCtx<UserResponse, CreateUserForm>;
+export const createUser = api.post<CreateUserForm>(
+  '/users',
+  function* onCreateUser(ctx: CreateUserCtx, next): ApiGen {
+    const origin = yield select(selectOrigin);
+    ctx.request = {
+      endpoint: 'auth',
+      body: JSON.stringify({ ...ctx.payload.options, origin }),
+    };
+
+    if (!ctx.response.ok) return;
+
+    yield put(setCurrentUser(deserializeUser(ctx.response.data)));
   },
 );

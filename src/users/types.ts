@@ -28,6 +28,5 @@ export interface CreateUserForm {
   name: string;
   email: string;
   password: string;
-  context: string;
   challenge_token: string;
 }

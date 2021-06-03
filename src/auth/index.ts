@@ -1,13 +1,23 @@
 import { put, select } from 'redux-saga/effects';
 import { batchActions } from 'redux-batched-actions';
+import { ActionWithPayload, createAction } from 'robodux';
 
 import { Token } from '@app/types';
 import { api, ApiCtx } from '@app/api';
 import { resetToken, setToken, selectToken } from '@app/token';
-import { resetCurrentUser, setCurrentUser, defaultUser } from '@app/users';
+import {
+  resetCurrentUser,
+  setCurrentUser,
+  defaultUser,
+  CreateUserForm,
+  CreateUserCtx,
+  createUser,
+} from '@app/users';
 import { setAuthLoaderSuccess } from '@app/loaders';
 
 import { parseJwt } from './jwt-parser';
+
+export * from './validators';
 
 interface TokenSuccessResponse {
   access_token: string;
@@ -73,19 +83,17 @@ export const logout = api.delete(
   },
 );
 
-interface LoginPayload {
+interface CreateTokenPayload {
   username: string;
   password: string;
   otpToken: string;
   makeCurrent: boolean;
 }
 
-export const login = api.post<LoginPayload>(
+type TokenCtx = ApiCtx<TokenSuccessResponse, CreateTokenPayload>;
+export const createToken = api.post<CreateTokenPayload>(
   '/tokens',
-  function* onLogin(
-    ctx: ApiCtx<TokenSuccessResponse, any, LoginPayload>,
-    next,
-  ) {
+  function* onCreateToken(ctx: TokenCtx, next) {
     ctx.request = {
       endpoint: 'auth',
       body: JSON.stringify({
@@ -101,6 +109,7 @@ export const login = api.post<LoginPayload>(
     };
 
     yield next();
+
     if (!ctx.response.ok) return;
 
     const resp = ctx.response.data;
@@ -118,8 +127,37 @@ export const login = api.post<LoginPayload>(
             verified: userInfo.email_verified,
           }),
         ),
-        setAuthLoaderSuccess(),
       ]),
     );
   },
 );
+
+export const loginSuccess = createAction('LOGIN_SUCCESS');
+export const login = createAction<CreateTokenPayload>('LOGIN');
+export function* onLogin(action: ActionWithPayload<CreateTokenPayload>) {
+  const ctx: TokenCtx = yield createToken.run(action.payload);
+  console.log(ctx);
+
+  yield put(batchActions([setAuthLoaderSuccess(), loginSuccess()]));
+}
+
+export const signupSuccess = createAction('SIGNUP_SUCCESS');
+export const signup = createAction<CreateUserForm>('SIGNUP');
+export function* onSignup(action: ActionWithPayload<CreateUserForm>) {
+  const { email, password } = action.payload;
+
+  const userCtx: CreateUserCtx = yield createUser.run(action.payload);
+  console.log(userCtx);
+  if (!userCtx.response.ok) return;
+
+  const tokenCtx: TokenCtx = yield createToken.run({
+    username: email,
+    password,
+    otpToken: '',
+    makeCurrent: true,
+  });
+  console.log(tokenCtx);
+  if (!tokenCtx.response.ok) return;
+
+  yield put(batchActions([setAuthLoaderSuccess(), signupSuccess()]));
+}

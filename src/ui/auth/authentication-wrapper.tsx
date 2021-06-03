@@ -1,6 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import {
+  ThemeContext,
+  THEME,
   Flex,
   Box,
   Text,
@@ -75,7 +77,11 @@ export const AuthenticationWrapper = ({
                 )}
                 {progressElement}
               </Box>
-              <Box className="brand-dark-form__body">{children}</Box>
+              <Box className="brand-dark-form__body">
+                <ThemeContext.Provider value={THEME.BRAND}>
+                  {children}
+                </ThemeContext.Provider>
+              </Box>
             </Box>
             <HomeLink />
           </Box>
