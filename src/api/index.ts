@@ -11,6 +11,7 @@ import {
 import { selectEnv } from '@app/env';
 import { ApiGen, AuthLoaderMessage } from '@app/types';
 import { loaders } from '@app/loaders';
+import { halEntityParser } from '@app/hal';
 
 type EndpointUrl = 'auth' | 'api' | 'billing';
 
@@ -39,10 +40,21 @@ function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen {
 function* fetchApi(request: FetchApiOpts): ApiGen {
   const { url = '', ...options } = request;
 
+  if (!options.headers) {
+    options.headers = {} as HeadersInit;
+  }
+
+  if (!options.credentials) {
+    // https://github.com/github/fetch#sending-cookies
+    options.credentials = 'include';
+  }
+
+  if (!(options.headers as any)['Content-Type']) {
+    (options.headers as any)['Content-Type'] = 'application/hal+json';
+  }
+
   const resp = yield call(fetch, url, {
     ...options,
-    // https://github.com/github/fetch#sending-cookies
-    credentials: 'same-origin',
   });
 
   if (resp.status === 204) {
@@ -62,7 +74,7 @@ function* fetchApi(request: FetchApiOpts): ApiGen {
   return {
     status: resp.status,
     ok: true,
-    data: { status: 'failure', message: 'something went wrong' },
+    data,
   };
 }
 
@@ -75,14 +87,19 @@ function createFetchApi(endpoint: EndpointUrl) {
   };
 }
 
+const hal = halEntityParser();
+const tracker = loadingTracker(loaders);
+
 export const authApi = createQuery<AuthApiCtx>();
 authApi.use(queryCtx);
 authApi.use(urlParser);
-authApi.use(loadingTracker(loaders));
+authApi.use(tracker);
+authApi.use(hal);
 authApi.use(createFetchApi('auth'));
 
 export const api = createQuery<ApiCtx>();
 api.use(queryCtx);
 api.use(urlParser);
-api.use(loadingTracker(loaders));
+api.use(tracker);
+api.use(hal);
 api.use(createFetchApi('api'));

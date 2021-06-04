@@ -1,5 +1,6 @@
 import { MapEntity, LoadingItemState } from 'robodux';
 import { InvitationRequest, Invitation } from './invitations';
+import { EntityMap } from './hal';
 
 export interface Env {
   isProduction: boolean;
@@ -41,8 +42,9 @@ export interface AppState {
   authLoader: AuthLoader;
   loaders: { [key: string]: LoadingItemState };
   users: MapEntity<User>;
-  currentUser: User;
   token: Token;
   invitationRequest: InvitationRequest;
   invitations: MapEntity<Invitation>;
+  entities: EntityMap;
+  redirectPath: string;
 }

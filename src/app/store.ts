@@ -9,8 +9,12 @@ import {
 import createSagaMiddleware, { Saga, stdChannel } from 'redux-saga';
 import { enableBatching, BATCH } from 'redux-batched-actions';
 import { Action } from 'robodux';
+import { PersistPartial } from 'redux-persist/es/persistReducer';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
 import { AppState } from '@app/types';
+import { resetReducer } from '@app/reset-store';
 
 interface Props {
   initState?: Partial<AppState>;
@@ -20,7 +24,14 @@ interface Props {
 
 interface AppStore<State> {
   store: Store<State>;
+  persistor: any;
 }
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: [],
+};
 
 export function setupStore({
   initState,
@@ -42,13 +53,21 @@ export function setupStore({
   const sagaMiddleware = createSagaMiddleware({ channel } as any);
   middleware.push(sagaMiddleware);
 
+  // we need this baseReducer so we can wipe the localStorage cache as well as
+  // reset the store when a user logs out
+  const baseReducer = resetReducer(rootReducer, persistConfig);
+  const persistedReducer = enableBatching(
+    persistReducer(persistConfig, baseReducer),
+  );
+
   const store = createStore(
-    enableBatching(rootReducer),
-    initState as AppState,
+    persistedReducer,
+    initState as AppState & PersistPartial,
     applyMiddleware(...middleware),
   );
+  const persistor = persistStore(store);
 
   sagaMiddleware.run(rootSaga);
 
-  return { store };
+  return { store, persistor };
 }

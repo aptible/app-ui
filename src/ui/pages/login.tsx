@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
 import {
   FormGroup,
   Label,
@@ -15,7 +16,11 @@ import {
   fetchInvitation,
   selectPendingInvitation,
 } from '@app/invitations';
-import { RESET_REQUEST_PASSWORD_PATH } from '@app/routes';
+import {
+  RESET_REQUEST_PASSWORD_PATH,
+  acceptInvitationWithCodeUrl,
+  homeUrl,
+} from '@app/routes';
 import { login } from '@app/auth';
 import { selectIsOtpError } from '@app/token';
 import { selectAuthLoader } from '@app/loaders';
@@ -24,16 +29,17 @@ import { validEmail } from '@app/string-utils';
 import { AsyncButton } from '../auth/async-button';
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { HelpLink } from '../help-link';
+import { useLoaderSuccess } from '../use-loader-success';
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState<string>('');
   const [otpToken, setOtpToken] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [requireOtp, setRequireOtp] = useState<boolean>(false);
   const loader = useSelector(selectAuthLoader);
-  const isLoading = loader.loading;
 
   const invitationRequest = useSelector(selectInvitationRequest);
   const invitation = useSelector(selectPendingInvitation);
@@ -44,15 +50,18 @@ export const LoginPage = () => {
     }
   }, [invitationRequest.invitationId]);
 
+  useLoaderSuccess(loader, () => {
+    if (invitationRequest.invitationId) {
+      navigate(acceptInvitationWithCodeUrl(invitationRequest));
+    } else {
+      navigate(homeUrl());
+    }
+  });
+
   const currentEmail = invitation ? invitation.email : email;
 
-  const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    /* const onSuccess = () => {
-      if (invitationRequest.invitationId) {
-        // history.push(acceptInvitationWithCodeUrl(invitationRequest));
-      }
-    }; */
     dispatch(
       login({
         username: currentEmail,
@@ -85,7 +94,7 @@ export const LoginPage = () => {
         to: '/signup',
       }}
     >
-      <form onSubmit={onSubmitForm}>
+      <form onSubmit={onSubmit}>
         <FormGroup
           variant={
             emailErrorMessage ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT
@@ -147,8 +156,8 @@ export const LoginPage = () => {
 
         <Stack reverse className="mt-9 mb-6" justify={JUSTIFY.BETWEEN}>
           <AsyncButton
-            inProgress={isLoading}
-            disabled={isLoading}
+            inProgress={loader.loading}
+            disabled={loader.loading}
             label="Log in"
             type="submit"
             data-testid="btn-login"
