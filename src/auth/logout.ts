@@ -1,4 +1,4 @@
-import { put, select } from 'redux-saga/effects';
+import { select } from 'redux-saga/effects';
 
 import { authApi } from '@app/api';
 import { Token } from '@app/types';
@@ -16,6 +16,6 @@ export const logout = authApi.delete(
 
     if (!ctx.response.ok) return;
 
-    yield put(resetToken());
+    ctx.actions.push(resetToken());
   },
 );

@@ -53,6 +53,21 @@ export function setupStore({
   const sagaMiddleware = createSagaMiddleware({ channel } as any);
   middleware.push(sagaMiddleware);
 
+  if (import.meta.env.DEV) {
+    const logger = (store: any) => (next: any) => (action: any) => {
+      if (action.type === BATCH) {
+        console.log('== BATCH ==');
+        action.payload.forEach(console.log);
+        console.log('== END BATCH ==');
+      } else {
+        console.log('ACTION', action);
+      }
+      next(action);
+      console.log('NEXT STATE', store.getState());
+    };
+    middleware.push(logger);
+  }
+
   // we need this baseReducer so we can wipe the localStorage cache as well as
   // reset the store when a user logs out
   const baseReducer = resetReducer(rootReducer, persistConfig);

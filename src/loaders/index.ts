@@ -1,12 +1,20 @@
-import { createLoader, createLoaderTable, createReducerMap } from 'robodux';
+import {
+  createLoader,
+  createLoaderTable,
+  createReducerMap,
+  defaultLoadingItem,
+} from 'robodux';
 
 import { AppState, AuthLoader, AuthLoaderMessage } from '@app/types';
 
 export const LOADERS_NAME = 'loaders';
 export const loaders = createLoaderTable({ name: LOADERS_NAME });
-export const { selectById: selectLoaderById } = loaders.getSelectors(
-  (s: AppState) => s[LOADERS_NAME],
+export const { selectTable: selectLoaders } = loaders.getSelectors(
+  (s: AppState) => s[LOADERS_NAME] || {},
 );
+export const selectLoaderById = (state: AppState, { id }: { id: string }) => {
+  return selectLoaders(state)[id] || defaultLoadingItem();
+};
 
 const AUTH_LOADER_NAME = 'authLoader';
 
