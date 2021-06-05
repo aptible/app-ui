@@ -48,7 +48,7 @@ function* fetchApi(request: FetchApiOpts): ApiGen {
     (options.headers as any)['Content-Type'] = 'application/hal+json';
   }
 
-  const resp = yield call(fetch, url, {
+  const resp: Response = yield call(fetch, url, {
     ...options,
   });
 
@@ -60,7 +60,12 @@ function* fetchApi(request: FetchApiOpts): ApiGen {
     };
   }
 
-  const data = yield call([resp, 'json']);
+  let data = {};
+  try {
+    data = yield call([resp, 'json']);
+  } catch (err) {
+    return { status: resp.status, ok: false, data: { message: err.message } };
+  }
 
   if (!resp.ok) {
     return { status: resp.status, ok: false, data };
