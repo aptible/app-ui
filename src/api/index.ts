@@ -19,7 +19,7 @@ export interface ApiCtx<D = any, P = any, E = any> extends FetchCtx<D, E, P> {}
 export interface AuthApiCtx<D = any, P = any>
   extends FetchCtx<D, AuthLoaderMessage, P> {}
 
-function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen {
+function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
   const env = yield select(selectEnv);
   if (endpoint === 'auth') {
     return env.authUrl;
@@ -32,7 +32,7 @@ function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen {
   return env.apiUrl;
 }
 
-function* fetchApi(request: FetchApiOpts): ApiGen {
+function* fetchApi(request: FetchApiOpts): ApiGen<FetchCtx['response']> {
   const { url = '', ...options } = request;
 
   if (!options.headers) {
