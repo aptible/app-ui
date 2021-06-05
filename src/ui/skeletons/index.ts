@@ -1,1 +1,1 @@
-export * from './public-only';
+export * from './auth-required';

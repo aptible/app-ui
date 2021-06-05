@@ -10,7 +10,10 @@ import { users } from './slice';
 const selectors = users.getSelectors((state: AppState) => state[USERS_NAME]);
 export const { selectTable: selectUsers } = selectors;
 
+const initUser = defaultUser();
+
 export const selectCurrentUser = createSelector(selectToken, (token) => {
+  if (!token.accessToken) return initUser;
   const userInfo: JWTTokenResponse = parseJwt(token.accessToken);
   return defaultUser({
     id: userInfo.sub ? userInfo.sub.split('/').pop() : '',

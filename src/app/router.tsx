@@ -8,6 +8,7 @@ import {
   NotFoundPage,
   LoginPage,
   SignupPage,
+  AuthRequired,
 } from '@app/ui';
 import {
   HOME_PATH,
@@ -20,15 +21,15 @@ export const Router = () => (
   <div>
     <Helmet titleTemplate="%s - Aptible Deploy" defaultTitle="Aptible Deploy" />
     <Routes>
-      <Route path={HOME_PATH}>
+      <Route path={HOME_PATH} element={<AuthRequired />}>
         <HomePage />
       </Route>
 
-      <Route path={LOGIN_PATH} element={<PublicOnly />}>
+      <Route path={LOGIN_PATH}>
         <LoginPage />
       </Route>
 
-      <Route path={SIGNUP_PATH} element={<PublicOnly />}>
+      <Route path={SIGNUP_PATH}>
         <SignupPage />
       </Route>
 

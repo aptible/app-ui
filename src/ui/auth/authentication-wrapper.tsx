@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { Link as RLink } from 'react-router-dom';
 import {
   ThemeContext,
   THEME,
@@ -10,8 +11,10 @@ import {
   Banner,
   Frame,
   AptibleLogo,
+  Link,
 } from '@aptible/arrow-ds';
 
+import { homeUrl } from '@app/routes';
 import { selectAuthLoader } from '@app/loaders';
 import {
   selectIsAuthenticationError,
@@ -55,11 +58,23 @@ export const AuthenticationWrapper = ({
               <AptibleLogo height={34} />
             </Flex>
 
-            {credentialError && (
+            {isAuthenticated ? (
+              <Banner
+                variant={STATUS_VARIANT.WARNING}
+                withIcon
+                className="mb-6"
+              >
+                You are already logged in.{' '}
+                <Link as={RLink} to={homeUrl()}>
+                  Click here to go to the dashboard.
+                </Link>
+              </Banner>
+            ) : null}
+            {credentialError ? (
               <Banner variant={STATUS_VARIANT.DANGER} withIcon className="mb-6">
                 {loader.message.message}
               </Banner>
-            )}
+            ) : null}
 
             <Box className="brand-dark-panel">
               <Box className="brand-dark-form__header">

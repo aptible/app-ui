@@ -1,9 +1,10 @@
 import { call, put } from 'redux-saga/effects';
 import { createAssign, createReducerMap } from 'robodux';
+import { batchActions } from 'redux-batched-actions';
 
 import { selectAuthLoader } from '@app/loaders';
 import { Token, AppState } from '@app/types';
-import { authApi, AuthApiCtx } from '@app/api';
+import { authApi, AuthApiCtx, dispatchActions } from '@app/api';
 
 export * from './jwt-parser';
 
@@ -100,9 +101,11 @@ export interface CreateTokenPayload {
 }
 export type TokenCtx = AuthApiCtx<TokenSuccessResponse, CreateTokenPayload>;
 
-function* saveToken(data: TokenSuccessResponse) {
-  const curToken = deserializeToken(data);
-  yield put(setToken(curToken));
+function* saveToken(ctx: AuthApiCtx<TokenSuccessResponse>) {
+  if (!ctx.response.ok) return;
+  const curToken = deserializeToken(ctx.response.data);
+  ctx.actions.push(setToken(curToken));
+  yield put(batchActions(ctx.actions));
 }
 
 export const fetchCurrentToken = authApi.get(
@@ -113,7 +116,7 @@ export const fetchCurrentToken = authApi.get(
       yield put(resetToken());
       return;
     }
-    yield call(saveToken, ctx.response.data);
+    yield call(saveToken, ctx);
   },
 );
 
@@ -134,7 +137,6 @@ export const createToken = authApi.post<CreateTokenPayload>(
     };
 
     yield next();
-    if (!ctx.response.ok) return;
-    yield call(saveToken, ctx.response.data);
+    yield call(saveToken, ctx);
   },
 );
