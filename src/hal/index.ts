@@ -1,5 +1,4 @@
-import { put, select } from 'redux-saga/effects';
-import { batchActions } from 'redux-batched-actions';
+import { select } from 'redux-saga/effects';
 import { MapEntity, createAssign, Action, createReducerMap } from 'robodux';
 import { Next, FetchCtx } from 'saga-query';
 
@@ -23,55 +22,53 @@ export function defaultEntity<E = any>(e: EmbeddedMap<E>): EmbeddedMap<E> {
   return e;
 }
 
-export function halEntityParser() {
-  return function* entityParser(ctx: FetchCtx, next: Next) {
-    yield next();
+export function* halEntityParser(ctx: FetchCtx, next: Next) {
+  yield next();
 
-    if (!ctx.response.ok) return;
+  if (!ctx.response.ok) return;
 
-    const entityMap: EntityMap = yield select(selectEntities);
-    const { data } = ctx.response;
+  const entityMap: EntityMap = yield select(selectEntities);
+  const { data } = ctx.response;
 
-    const actions: Action<any>[] = [];
-    const store: { [key: string]: IdEntity[] } = {};
+  const actions: Action<any>[] = [];
+  const store: { [key: string]: IdEntity[] } = {};
 
-    const parser = (entity?: NestedEntity) => {
-      if (!entity) return;
-      const identified = entityMap[entity._type];
-      if (identified) {
-        if (!store[identified.id]) store[identified.id] = [];
-        store[identified.id].push(identified.deserialize(entity));
-      }
-
-      if (!entity._embedded) return;
-      Object.values(entity._embedded).forEach((value) => {
-        if (Array.isArray(value)) {
-          value.forEach(parser);
-        } else {
-          parser(value);
-        }
-      });
-    };
-
-    parser(data);
-
-    Object.keys(store).forEach((key) => {
-      const entity = entityMap[key];
-      if (!entity) return;
-
-      const storeData = store[key];
-      if (storeData.length === 0) return;
-
-      const dataObj = storeData.reduce<MapEntity<any>>((acc, em) => {
-        acc[em.id] = em;
-        return acc;
-      }, {});
-
-      actions.push(entity.save(dataObj));
-    });
-
-    if (actions.length > 0) {
-      yield put(batchActions(actions));
+  const parser = (entity?: NestedEntity) => {
+    if (!entity) return;
+    const identified = entityMap[entity._type];
+    if (identified) {
+      if (!store[identified.id]) store[identified.id] = [];
+      store[identified.id].push(identified.deserialize(entity));
     }
+
+    if (!entity._embedded) return;
+    Object.values(entity._embedded).forEach((value) => {
+      if (Array.isArray(value)) {
+        value.forEach(parser);
+      } else {
+        parser(value);
+      }
+    });
   };
+
+  parser(data);
+
+  Object.keys(store).forEach((key) => {
+    const entity = entityMap[key];
+    if (!entity) return;
+
+    const storeData = store[key];
+    if (storeData.length === 0) return;
+
+    const dataObj = storeData.reduce<MapEntity<any>>((acc, em) => {
+      acc[em.id] = em;
+      return acc;
+    }, {});
+
+    actions.push(entity.save(dataObj));
+  });
+
+  if (actions.length > 0) {
+    ctx.actions.push(...actions);
+  }
 }

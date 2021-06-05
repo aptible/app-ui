@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 import {
-  PublicOnly,
   HomePage,
   NotFoundPage,
   LoginPage,

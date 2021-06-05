@@ -1,10 +1,9 @@
 import { call, put } from 'redux-saga/effects';
 import { createAssign, createReducerMap } from 'robodux';
-import { batchActions } from 'redux-batched-actions';
 
 import { selectAuthLoader } from '@app/loaders';
 import { Token, AppState } from '@app/types';
-import { authApi, AuthApiCtx, dispatchActions } from '@app/api';
+import { authApi, AuthApiCtx } from '@app/api';
 
 export * from './jwt-parser';
 
@@ -101,11 +100,10 @@ export interface CreateTokenPayload {
 }
 export type TokenCtx = AuthApiCtx<TokenSuccessResponse, CreateTokenPayload>;
 
-function* saveToken(ctx: AuthApiCtx<TokenSuccessResponse>) {
+function saveToken(ctx: AuthApiCtx<TokenSuccessResponse>) {
   if (!ctx.response.ok) return;
   const curToken = deserializeToken(ctx.response.data);
   ctx.actions.push(setToken(curToken));
-  yield put(batchActions(ctx.actions));
 }
 
 export const fetchCurrentToken = authApi.get(
@@ -125,10 +123,10 @@ export const createToken = authApi.post<CreateTokenPayload>(
   function* onCreateToken(ctx: TokenCtx, next) {
     ctx.request = {
       body: JSON.stringify({
-        username: ctx.payload.options.username,
-        password: ctx.payload.options.password,
-        otp_token: ctx.payload.options.otpToken,
-        make_current: ctx.payload.options.makeCurrent,
+        username: ctx.payload.username,
+        password: ctx.payload.password,
+        otp_token: ctx.payload.otpToken,
+        make_current: ctx.payload.makeCurrent,
         expires_in: 43200, // 12 hours
         grant_type: 'password',
         scope: 'manage',

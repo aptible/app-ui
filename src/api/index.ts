@@ -14,14 +14,10 @@ interface FetchApiOpts extends RequestInit {
   url?: string;
 }
 
-export interface ApiCtx<D = any, P = any, E = any> extends FetchCtx<D, E, P> {
-  actions: Action[];
-}
+export interface ApiCtx<D = any, P = any, E = any> extends FetchCtx<D, E, P> {}
 
 export interface AuthApiCtx<D = any, P = any>
-  extends FetchCtx<D, AuthLoaderMessage, P> {
-  actions: Action[];
-}
+  extends FetchCtx<D, AuthLoaderMessage, P> {}
 
 function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen {
   const env = yield select(selectEnv);
@@ -86,44 +82,49 @@ function createFetchApi(endpoint: EndpointUrl) {
   };
 }
 
-const hal = halEntityParser();
-
 function* trackLoading(
   ctx: {
+    name: string;
     payload: FetchCtx['payload'];
     actions: Action[];
     response: FetchCtx['response'];
   },
   next: Next,
 ) {
-  const id = ctx.payload.name;
+  const id = ctx.name;
   yield put(loaders.actions.loading({ id }));
+
   yield next();
+
   if (!ctx.response.ok) {
-    yield put(
+    ctx.actions.push(
       loaders.actions.error({ id, message: ctx.response.data.message }),
     );
     return;
   }
 
-  if (!ctx.actions) ctx.actions = [];
   ctx.actions.push(loaders.actions.success({ id }));
 }
 
 export function* dispatchActions(ctx: { actions: Action[] }, next: Next) {
+  yield next();
   yield put(batchActions(ctx.actions));
 }
 
 export const authApi = createQuery<AuthApiCtx>();
+authApi.use(dispatchActions);
+authApi.use(authApi.routes());
 authApi.use(queryCtx);
 authApi.use(urlParser);
+authApi.use(halEntityParser);
 authApi.use(trackLoading);
-authApi.use(hal);
 authApi.use(createFetchApi('auth'));
 
 export const api = createQuery<ApiCtx>();
+api.use(dispatchActions);
+api.use(api.routes());
 api.use(queryCtx);
 api.use(urlParser);
+api.use(halEntityParser);
 api.use(trackLoading);
-api.use(hal);
 api.use(createFetchApi('api'));

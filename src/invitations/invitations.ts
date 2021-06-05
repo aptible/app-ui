@@ -1,6 +1,6 @@
 import { isBefore } from 'date-fns';
 import { createTable, MapEntity } from 'robodux';
-import { select, put } from 'redux-saga/effects';
+import { select } from 'redux-saga/effects';
 
 import { authApi, AuthApiCtx } from '@app/api';
 import {
@@ -89,7 +89,7 @@ export const fetchInvitations = authApi.get<{ orgId: string }>(
       return acc;
     }, {});
 
-    yield put(addInvitations(invitationsMap));
+    ctx.actions.push(addInvitations(invitationsMap));
   },
 );
 
@@ -99,7 +99,10 @@ export const fetchInvitation = authApi.get<{ id: string }>(
     yield next();
     if (!ctx.response.ok) return;
     const { data } = ctx.response;
-    yield put(addInvitations({ [data.id]: deserializeInvitation(data) }));
+
+    ctx.actions.push(
+      addInvitations({ [data.id]: deserializeInvitation(data) }),
+    );
   },
 );
 
@@ -111,7 +114,7 @@ export const resetInvitation = authApi.post<string>(
       body: JSON.stringify({
         type: 'invitation',
         origin,
-        invitation_id: ctx.payload.options,
+        invitation_id: ctx.payload,
       }),
     };
     yield next();

@@ -16,7 +16,7 @@ export const createUser = authApi.post<CreateUserForm>(
   function* onCreateUser(ctx: CreateUserCtx, next): ApiGen {
     const origin = yield select(selectOrigin);
     ctx.request = {
-      body: JSON.stringify({ ...ctx.payload.options, origin }),
+      body: JSON.stringify({ ...ctx.payload, origin }),
     };
 
     yield next();
