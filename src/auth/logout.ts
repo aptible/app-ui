@@ -10,6 +10,7 @@ export const logout = authApi.delete(
     const token: Token = yield select(selectToken);
     ctx.request = {
       url: `/tokens/${token.tokenId}`,
+      method: 'DELETE',
     };
 
     yield next();

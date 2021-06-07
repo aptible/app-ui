@@ -10,4 +10,5 @@ interface ImportMetaEnv {
   VITE_API_URL: string;
   VITE_AUTH_URL: string;
   VITE_BILLING_URL: string;
+  VITE_DEBUG: string;
 }

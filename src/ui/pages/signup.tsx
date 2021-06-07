@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import qs from 'query-string';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   FormGroup,
@@ -18,13 +18,18 @@ import {
   selectPendingInvitation,
   fetchInvitation,
 } from '@app/invitations';
-import { LOGIN_PATH } from '@app/routes';
+import {
+  LOGIN_PATH,
+  acceptInvitationWithCodeUrl,
+  verifyEmailRequestUrl,
+} from '@app/routes';
 import { selectAuthLoader } from '@app/loaders';
 import { validEmail } from '@app/string-utils';
 
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { AsyncButton } from '../auth/async-button';
 import { Progress } from '../auth/progress';
+import { useLoaderSuccess } from '../use-loader-success';
 
 const createQueryStringValue =
   (queryString: string) =>
@@ -43,13 +48,15 @@ const createQueryStringValue =
 const SignupPageForm = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
   const getQueryStringValue = createQueryStringValue(location.search);
 
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>(getQueryStringValue('email'));
   const [password, setPassword] = useState<string>('');
 
-  const { isLoading } = useSelector(selectAuthLoader);
+  const loader = useSelector(selectAuthLoader);
+  const { isLoading } = loader;
 
   const invitationRequest = useSelector(selectInvitationRequest);
   const invitation = useSelector(selectPendingInvitation);
@@ -86,13 +93,6 @@ const SignupPageForm = () => {
     if (disableSave) {
       return;
     }
-    /* const onSuccess = () => {
-      // TODO: Here is where we can decide where to go after registering
-      // an account.  For example an open room user invitation flow
-      if (invitationRequest.invitationId) {
-        history.push(acceptInvitationWithCodeUrl(invitationRequest));
-      }
-    }; */
 
     dispatch(
       signup({
@@ -104,11 +104,19 @@ const SignupPageForm = () => {
     );
   };
 
+  useLoaderSuccess(loader, () => {
+    if (invitationRequest.invitationId) {
+      navigate(acceptInvitationWithCodeUrl(invitationRequest));
+    } else {
+      navigate(verifyEmailRequestUrl());
+    }
+  });
+
   return (
     <form onSubmit={onSubmitForm}>
       <FormGroup>
         <Label htmlFor="input-name" className="brand-dark-form__label">
-          Name
+          Your Name
         </Label>
         <Input
           name="name"
@@ -122,13 +130,34 @@ const SignupPageForm = () => {
           id="input-name"
         />
       </FormGroup>
+      <FormGroup className="mb-12">
+        <Label htmlFor="input-name" className="brand-dark-form__label">
+          Organization name
+        </Label>
+        <Input
+          name="name"
+          type="text"
+          value={name}
+          onChange={(e) => setName((e.target as HTMLInputElement).value)}
+          autoComplete="name"
+          disabled={isLoading}
+          autoFocus
+          data-testid="input-name"
+          id="input-name"
+        />
+        <InputFeedback>
+          If you don&apos;t have a user account, but need to join an existing
+          organization, have one of the owners of the organization send you an
+          invitation to join.
+        </InputFeedback>
+      </FormGroup>
       <FormGroup
         variant={
           emailErrorMessage ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT
         }
       >
         <Label htmlFor="input-email" className="brand-dark-form__label">
-          Email
+          Your email
         </Label>
         <Input
           name="email"
@@ -172,7 +201,7 @@ const SignupPageForm = () => {
         <AsyncButton
           inProgress={isLoading}
           disabled={disableSave}
-          label="Create Account"
+          label="Create Account and Organization"
           type="submit"
           data-testid="signup-submit"
         />
@@ -188,7 +217,7 @@ export const SignupPage = () => {
   if (invitation) {
     title = `Sign up to join ${invitation.organizationName}`;
   } else {
-    title = 'Sign up for Aptible Deploy';
+    title = 'Sign up for Aptible';
   }
 
   return (

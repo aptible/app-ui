@@ -10,7 +10,7 @@ import {
   NestedEntity,
 } from '@app/types';
 
-const ENTITIES_NAME = 'entities';
+export const ENTITIES_NAME = 'entities';
 const entities = createAssign<EntityMap>({
   name: ENTITIES_NAME,
   initialState: {},

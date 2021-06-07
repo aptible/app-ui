@@ -8,12 +8,14 @@ import {
   LoginPage,
   SignupPage,
   AuthRequired,
+  VerifyEmailPage,
 } from '@app/ui';
 import {
   HOME_PATH,
   NOT_FOUND_PATH,
   LOGIN_PATH,
   SIGNUP_PATH,
+  VERIFY_EMAIL_PATH,
 } from '@app/routes';
 
 export const Router = () => (
@@ -30,6 +32,10 @@ export const Router = () => (
 
       <Route path={SIGNUP_PATH}>
         <SignupPage />
+      </Route>
+
+      <Route path={VERIFY_EMAIL_PATH}>
+        <VerifyEmailPage />
       </Route>
 
       <Route path={NOT_FOUND_PATH}>

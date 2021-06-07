@@ -7,10 +7,15 @@ import { AppState } from '@app/types';
 import { resetToken } from '@app/token';
 import { REDIRECT_NAME } from '@app/redirect-path';
 import { LOADERS_NAME } from '@app/loaders';
+import { ENTITIES_NAME } from '@app/hal';
 
 export const resetStore = createAction('RESET_STORE');
 
-const WHITELIST: (keyof AppState)[] = [REDIRECT_NAME, LOADERS_NAME];
+const WHITELIST: (keyof AppState)[] = [
+  REDIRECT_NAME,
+  LOADERS_NAME,
+  ENTITIES_NAME,
+];
 const keepState = (
   state: AppState | undefined,
 ): Partial<AppState> | undefined => {

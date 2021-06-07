@@ -9,9 +9,11 @@ import { AppState, AuthLoader, AuthLoaderMessage } from '@app/types';
 
 export const LOADERS_NAME = 'loaders';
 export const loaders = createLoaderTable({ name: LOADERS_NAME });
-export const { selectById: selectLoaderById } = loaders.getSelectors(
+const { selectById: selectLoaderById } = loaders.getSelectors(
   (s: AppState) => s[LOADERS_NAME] || {},
 );
+export const selectLoader = (id: string) => (state: AppState) =>
+  selectLoaderById(state, { id });
 
 const AUTH_LOADER_NAME = 'authLoader';
 

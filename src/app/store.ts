@@ -53,7 +53,7 @@ export function setupStore({
   const sagaMiddleware = createSagaMiddleware({ channel } as any);
   middleware.push(sagaMiddleware);
 
-  if (import.meta.env.DEV) {
+  if (import.meta.env.VITE_DEBUG === 'true') {
     const logger = (store: any) => (next: any) => (action: any) => {
       if (action.type === BATCH) {
         console.log('== BATCH ==');
