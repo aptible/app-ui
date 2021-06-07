@@ -90,8 +90,8 @@ function createFetchApi(endpoint: EndpointUrl) {
 function* trackLoading(
   ctx: {
     name: string;
-    payload: FetchCtx['payload'];
     actions: Action[];
+    payload: FetchCtx['payload'];
     response: FetchCtx['response'];
   },
   next: Next,
