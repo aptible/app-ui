@@ -156,8 +156,8 @@ export const LoginPage = () => {
 
         <Stack reverse className="mt-9 mb-6" justify={JUSTIFY.BETWEEN}>
           <AsyncButton
-            inProgress={loader.loading}
-            disabled={loader.loading}
+            inProgress={loader.isLoading}
+            disabled={loader.isLoading}
             label="Log in"
             type="submit"
             data-testid="btn-login"

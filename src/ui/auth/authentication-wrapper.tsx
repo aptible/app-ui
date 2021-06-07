@@ -72,7 +72,7 @@ export const AuthenticationWrapper = ({
             ) : null}
             {credentialError ? (
               <Banner variant={STATUS_VARIANT.DANGER} withIcon className="mb-6">
-                {loader.message.message}
+                {loader.message}
               </Banner>
             ) : null}
 

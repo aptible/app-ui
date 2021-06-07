@@ -80,10 +80,10 @@ export const selectIsUserAuthenticated = (state: AppState) =>
   !!selectAccessToken(state);
 
 export const selectIsOtpError = (state: AppState) =>
-  selectAuthLoader(state).message.error === 'otp_token_required';
+  selectAuthLoader(state).meta.error === 'otp_token_required';
 
 export const selectIsAuthenticationError = (state: AppState) => {
-  const { error } = selectAuthLoader(state).message;
+  const { error } = selectAuthLoader(state).meta;
   return (
     error === 'unprocessable_entity' ||
     error === 'invalid_credentials' ||

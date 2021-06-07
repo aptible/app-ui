@@ -16,11 +16,11 @@ export const AuthRequired = () => {
   );
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
 
-  if (loader.lastRun > 0 && !loader.loading && !isAuthenticated) {
+  if (loader.lastRun > 0 && !loader.isLoading && !isAuthenticated) {
     return <Navigate to={loginUrl()} />;
   }
 
-  if (loader.loading) {
+  if (loader.isLoading) {
     return (
       <Flex className="w-full h-full items-center justify-center">
         <Loading />

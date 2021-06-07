@@ -16,9 +16,11 @@ export function* onLogin(action: ActionWithPayload<CreateTokenPayload>) {
   const ctx: TokenCtx = yield createToken.run(action.payload);
 
   if (!ctx.response.ok) {
+    const { message, error, code, exception_context } = ctx.response.data;
     yield put(
       setAuthLoaderError({
-        message: ctx.response.data,
+        message,
+        meta: { error, code, exception_context },
       }),
     );
     return;

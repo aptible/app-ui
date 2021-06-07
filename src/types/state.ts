@@ -28,8 +28,14 @@ export interface Token {
   actorUrl: string;
 }
 
-export interface AuthLoaderMessage {
+export interface AuthApiError {
   message: string;
+  error: string;
+  code: number;
+  exception_context: { [key: string]: any };
+}
+
+export interface AuthLoaderMessage {
   error: string;
   code: number;
   exception_context: { [key: string]: any };

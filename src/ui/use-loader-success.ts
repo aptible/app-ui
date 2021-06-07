@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 
 export function useLoaderSuccess(
-  cur: { loading: boolean; success: boolean },
+  cur: { isLoading: boolean; isSuccess: boolean },
   success: () => any,
 ) {
   const [prev, setPrev] = useState(cur);
   useEffect(() => {
-    const curSuccess = !cur.loading && cur.success;
-    if (prev.loading && curSuccess) success();
+    const curSuccess = !cur.isLoading && cur.isSuccess;
+    if (prev.isLoading && curSuccess) success();
     setPrev(cur);
   }, [cur]);
 }

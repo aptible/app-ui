@@ -4,7 +4,7 @@ import { createQuery, queryCtx, urlParser, FetchCtx, Next } from 'saga-query';
 import { batchActions } from 'redux-batched-actions';
 
 import { selectEnv } from '@app/env';
-import { ApiGen, AuthLoaderMessage } from '@app/types';
+import { ApiGen, AuthApiError } from '@app/types';
 import { loaders } from '@app/loaders';
 import { halEntityParser } from '@app/hal';
 
@@ -17,7 +17,7 @@ interface FetchApiOpts extends RequestInit {
 export interface ApiCtx<D = any, P = any, E = any> extends FetchCtx<D, E, P> {}
 
 export interface AuthApiCtx<D = any, P = any>
-  extends FetchCtx<D, AuthLoaderMessage, P> {}
+  extends FetchCtx<D, AuthApiError, P> {}
 
 function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
   const env = yield select(selectEnv);

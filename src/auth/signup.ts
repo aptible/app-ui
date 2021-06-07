@@ -19,9 +19,15 @@ export function* onSignup(action: ActionWithPayload<CreateUserForm>) {
   const userCtx: CreateUserCtx = yield createUser.run(action.payload);
   console.log(userCtx);
   if (!userCtx.response.ok) {
+    const { message, error, code, exception_context } = userCtx.response.data;
     yield put(
       setAuthLoaderError({
-        message: userCtx.response.data,
+        message,
+        meta: {
+          error,
+          code,
+          exception_context,
+        },
       }),
     );
     return;
@@ -35,9 +41,15 @@ export function* onSignup(action: ActionWithPayload<CreateUserForm>) {
   });
   console.log(tokenCtx);
   if (!tokenCtx.response.ok) {
+    const { message, error, code, exception_context } = tokenCtx.response.data;
     yield put(
       setAuthLoaderError({
-        message: tokenCtx.response.data,
+        message,
+        meta: {
+          error,
+          code,
+          exception_context,
+        },
       }),
     );
     return;

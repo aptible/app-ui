@@ -49,8 +49,7 @@ const SignupPageForm = () => {
   const [email, setEmail] = useState<string>(getQueryStringValue('email'));
   const [password, setPassword] = useState<string>('');
 
-  const loader = useSelector(selectAuthLoader);
-  const isLoading = loader.loading;
+  const { isLoading } = useSelector(selectAuthLoader);
 
   const invitationRequest = useSelector(selectInvitationRequest);
   const invitation = useSelector(selectPendingInvitation);
