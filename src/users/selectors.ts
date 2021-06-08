@@ -10,7 +10,7 @@ import { users } from './slice';
 const selectors = users.getSelectors((state: AppState) => state[USERS_NAME]);
 export const { selectTable: selectUsers } = selectors;
 
-const initUser = defaultUser();
+const initUser = defaultUser({ verified: false });
 
 export const selectCurrentUser = createSelector(selectToken, (token) => {
   if (!token.accessToken) return initUser;

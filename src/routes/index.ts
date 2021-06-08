@@ -21,6 +21,9 @@ export const verifyEmailUrl = (
   verificationCode: string,
 ) => `/verify/${verificationId}/${verificationCode}`;
 
+export const CREATE_ORG_PATH = '/organizations/create';
+export const createOrgUrl = () => CREATE_ORG_PATH;
+
 export const ACCEPT_INVITATION_WITH_CODE_PATH =
   '/accept-invitation/:invitationId/:verificationCode';
 export const acceptInvitationWithCodeUrl = (props: InvitationRequest) =>

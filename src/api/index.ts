@@ -7,6 +7,7 @@ import { selectEnv } from '@app/env';
 import { ApiGen, AuthApiError } from '@app/types';
 import { loaders } from '@app/loaders';
 import { halEntityParser } from '@app/hal';
+import { selectAccessToken } from '@app/token';
 
 type EndpointUrl = 'auth' | 'api' | 'billing';
 
@@ -46,6 +47,13 @@ function* fetchApi(request: FetchApiOpts): ApiGen<FetchCtx['response']> {
 
   if (!(options.headers as any)['Content-Type']) {
     (options.headers as any)['Content-Type'] = 'application/hal+json';
+  }
+
+  if (!(options.headers as any).Authorization) {
+    const token = yield select(selectAccessToken);
+    if (token) {
+      (options.headers as any).Authorization = `Bearer ${token}`;
+    }
   }
 
   const resp: Response = yield call(fetch, url, {

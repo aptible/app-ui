@@ -1,20 +1,23 @@
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { Flex, Loading } from '@aptible/arrow-ds';
 
 import { verifyEmail } from '@app/auth';
 import { selectCurrentUser } from '@app/users';
 import { selectLoader } from '@app/loaders';
+import { createOrgUrl } from '@app/routes';
 
 import { Progress } from '../../auth/progress';
 import { AuthenticationWrapper } from '../../auth/authentication-wrapper';
 import { ResendVerificationEmail } from './resend-verification-email-form';
+import { useLoaderSuccess } from '../../use-loader-success';
 
 export const VerifyEmailPage = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
   const params = useParams();
+  const navigate = useNavigate();
 
   const verifyEmailLoader = useSelector(selectLoader(`${verifyEmail}`));
 
@@ -28,6 +31,10 @@ export const VerifyEmailPage = () => {
       );
     }
   }, [params.verificationId, params.verificationCode, user.id]);
+
+  useLoaderSuccess(verifyEmailLoader, () => {
+    navigate(createOrgUrl());
+  });
 
   if (verifyEmailLoader.isLoading) {
     return (

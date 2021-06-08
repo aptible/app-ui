@@ -5,7 +5,8 @@ import { Box, Flex, Loading } from '@aptible/arrow-ds';
 
 import { selectLoader } from '@app/loaders';
 import { loginUrl } from '@app/routes';
-import { selectIsUserAuthenticated, fetchCurrentToken } from '@app/token';
+import { selectIsUserAuthenticated } from '@app/token';
+import { fetchCurrentToken } from '@app/token-api';
 
 import { LogoutButton } from '../auth/logout-button';
 

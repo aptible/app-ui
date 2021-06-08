@@ -30,6 +30,7 @@ import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { AsyncButton } from '../auth/async-button';
 import { Progress } from '../auth/progress';
 import { useLoaderSuccess } from '../use-loader-success';
+import { LoggedInBanner } from '../auth/logged-in-banner';
 
 const createQueryStringValue =
   (queryString: string) =>
@@ -114,6 +115,7 @@ const SignupPageForm = () => {
 
   return (
     <form onSubmit={onSubmitForm}>
+      <LoggedInBanner />
       <FormGroup>
         <Label htmlFor="input-name" className="brand-dark-form__label">
           Your Name
@@ -129,27 +131,6 @@ const SignupPageForm = () => {
           data-testid="input-name"
           id="input-name"
         />
-      </FormGroup>
-      <FormGroup className="mb-12">
-        <Label htmlFor="input-name" className="brand-dark-form__label">
-          Organization name
-        </Label>
-        <Input
-          name="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName((e.target as HTMLInputElement).value)}
-          autoComplete="name"
-          disabled={isLoading}
-          autoFocus
-          data-testid="input-name"
-          id="input-name"
-        />
-        <InputFeedback>
-          If you don&apos;t have a user account, but need to join an existing
-          organization, have one of the owners of the organization send you an
-          invitation to join.
-        </InputFeedback>
       </FormGroup>
       <FormGroup
         variant={
@@ -201,7 +182,7 @@ const SignupPageForm = () => {
         <AsyncButton
           inProgress={isLoading}
           disabled={disableSave}
-          label="Create Account and Organization"
+          label="Create Account"
           type="submit"
           data-testid="signup-submit"
         />
@@ -234,3 +215,24 @@ export const SignupPage = () => {
     </AuthenticationWrapper>
   );
 };
+
+/*
+ *<FormGroup className="mb-12">
+        <Label htmlFor="input-name" className="brand-dark-form__label">
+          Organization name
+        </Label>
+        <Input
+          name="organization"
+          type="text"
+          value={org}
+          onChange={(e) => setOrg((e.target as HTMLInputElement).value)}
+          disabled={isLoading}
+          data-testid="input-org"
+          id="input-org"
+        />
+        <InputFeedback>
+          If you don&apos;t have a user account, but need to join an existing
+          organization, have one of the owners of the organization send you an
+          invitation to join.
+        </InputFeedback>
+        </FormGroup> */

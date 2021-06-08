@@ -8,11 +8,13 @@ import * as env from '@app/env';
 import * as loaders from '@app/loaders';
 import * as users from '@app/users';
 import * as token from '@app/token';
+import * as tokenApi from '@app/token-api';
 import * as invitations from '@app/invitations';
 import * as auth from '@app/auth';
 import * as hal from '@app/hal';
 import * as resetStore from '@app/reset-store';
 import * as redirectPath from '@app/redirect-path';
+import * as orgs from '@app/organizations';
 
 const corePackages: any[] = [
   env,
@@ -24,6 +26,8 @@ const corePackages: any[] = [
   hal,
   resetStore,
   redirectPath,
+  orgs,
+  tokenApi,
 ];
 
 const packages = createApp<AppState>(corePackages);

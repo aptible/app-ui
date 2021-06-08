@@ -9,5 +9,5 @@ export function useLoaderSuccess(
     const curSuccess = !cur.isLoading && cur.isSuccess;
     if (prev.isLoading && curSuccess) success();
     setPrev(cur);
-  }, [cur]);
+  }, [cur.isLoading, cur.isSuccess]);
 }

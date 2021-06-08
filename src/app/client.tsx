@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 
-import { fetchCurrentToken } from '@app/token';
+import { fetchCurrentToken } from '@app/token-api';
 
 import { setupStore } from './store';
 import { App } from './app';

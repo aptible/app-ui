@@ -43,6 +43,11 @@ export interface AuthLoaderMessage {
 
 export type AuthLoader = LoadingItemState<AuthLoaderMessage>;
 
+export interface Organization {
+  id: string;
+  name: string;
+}
+
 export interface AppState {
   env: Env;
   authLoader: AuthLoader;
@@ -53,4 +58,6 @@ export interface AppState {
   invitations: MapEntity<Invitation>;
   entities: EntityMap;
   redirectPath: string;
+  organizationSelected: string;
+  organizations: MapEntity<Organization>;
 }

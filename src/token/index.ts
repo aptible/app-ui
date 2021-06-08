@@ -1,9 +1,7 @@
-import { call, put } from 'redux-saga/effects';
 import { createAssign, createReducerMap } from 'robodux';
 
 import { selectAuthLoader } from '@app/loaders';
 import { Token, AppState } from '@app/types';
-import { authApi, AuthApiCtx } from '@app/api';
 
 export * from './jwt-parser';
 
@@ -88,53 +86,7 @@ export const selectIsAuthenticationError = (state: AppState) => {
     error === 'unprocessable_entity' ||
     error === 'invalid_credentials' ||
     error === 'invalid_email' ||
-    error === 'unsupported_grant_type'
+    error === 'unsupported_grant_type' ||
+    error === 'access_denied'
   );
 };
-
-export interface CreateTokenPayload {
-  username: string;
-  password: string;
-  otpToken: string;
-  makeCurrent: boolean;
-}
-export type TokenCtx = AuthApiCtx<TokenSuccessResponse, CreateTokenPayload>;
-
-function saveToken(ctx: AuthApiCtx<TokenSuccessResponse>) {
-  if (!ctx.response.ok) return;
-  const curToken = deserializeToken(ctx.response.data);
-  ctx.actions.push(setToken(curToken));
-}
-
-export const fetchCurrentToken = authApi.get(
-  '/current_token',
-  function* onFetchToken(ctx: AuthApiCtx<TokenSuccessResponse>, next) {
-    yield next();
-    if (!ctx.response.ok) {
-      yield put(resetToken());
-      return;
-    }
-    yield call(saveToken, ctx);
-  },
-);
-
-export const createToken = authApi.post<CreateTokenPayload>(
-  '/tokens',
-  function* onCreateToken(ctx: TokenCtx, next) {
-    ctx.request = {
-      body: JSON.stringify({
-        username: ctx.payload.username,
-        password: ctx.payload.password,
-        otp_token: ctx.payload.otpToken,
-        make_current: ctx.payload.makeCurrent,
-        expires_in: 43200, // 12 hours
-        grant_type: 'password',
-        scope: 'manage',
-        _source: 'deploy',
-      }),
-    };
-
-    yield next();
-    yield call(saveToken, ctx);
-  },
-);

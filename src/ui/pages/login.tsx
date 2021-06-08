@@ -30,6 +30,7 @@ import { AsyncButton } from '../auth/async-button';
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { HelpLink } from '../help-link';
 import { useLoaderSuccess } from '../use-loader-success';
+import { LoggedInBanner } from '../auth/logged-in-banner';
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
@@ -95,6 +96,7 @@ export const LoginPage = () => {
       }}
     >
       <form onSubmit={onSubmit}>
+        <LoggedInBanner />
         <FormGroup
           variant={
             emailErrorMessage ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT

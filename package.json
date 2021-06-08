@@ -60,7 +60,7 @@
     "redux-saga-creator": "^2.0.1",
     "reselect": "^4.0.0",
     "robodux": "^11.0.1",
-    "saga-query": "^0.0.8",
+    "saga-query": "^0.0.10",
     "typescript": "^4.3.2",
     "vite": "^2.3.4",
     "vite-tsconfig-paths": "^3.3.13"
