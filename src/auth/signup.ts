@@ -9,7 +9,8 @@ import {
   setAuthLoaderSuccess,
 } from '@app/loaders';
 import { CreateUserForm, CreateUserCtx, createUser } from '@app/users';
-import { TokenCtx, createToken } from '@app/token-api';
+
+import { TokenCtx, createToken } from './token';
 
 function* setAuthError(ctx: AuthApiCtx) {
   if (ctx.response.ok) return;

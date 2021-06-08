@@ -3,7 +3,8 @@ import { call, select } from 'redux-saga/effects';
 import { ApiGen } from '@app/types';
 import { authApi, AuthApiCtx } from '@app/api';
 import { selectToken } from '@app/token';
-import { exchangeToken } from '@app/token-api';
+
+import { exchangeToken } from './token';
 
 interface AcceptInvitation {
   invitationId: string;

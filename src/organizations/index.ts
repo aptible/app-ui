@@ -12,7 +12,7 @@ import {
 } from '@app/types';
 import { defaultEntity } from '@app/hal';
 import { selectToken } from '@app/token';
-import { exchangeToken } from '@app/token-api';
+import { exchangeToken } from '@app/auth';
 
 interface OrganizationResponse {
   address: string;

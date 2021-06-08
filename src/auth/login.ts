@@ -7,7 +7,8 @@ import {
   setAuthLoaderError,
   setAuthLoaderSuccess,
 } from '@app/loaders';
-import { CreateTokenPayload, createToken, TokenCtx } from '@app/token-api';
+
+import { CreateTokenPayload, createToken, TokenCtx } from './token';
 
 export const loginSuccess = createAction('LOGIN_SUCCESS');
 export const login = createAction<CreateTokenPayload>('LOGIN');

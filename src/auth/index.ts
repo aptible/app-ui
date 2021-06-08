@@ -8,6 +8,7 @@ export * from './logout';
 export * from './signup';
 export * from './validators';
 export * from './verify-email';
+export * from './token';
 
 function* watchLogin() {
   yield takeEvery(`${login}`, onLogin);
