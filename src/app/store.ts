@@ -15,6 +15,7 @@ import storage from 'redux-persist/lib/storage'; // defaults to localStorage for
 
 import { AppState } from '@app/types';
 import { resetReducer } from '@app/reset-store';
+import { TOKEN_NAME, ELEVATED_TOKEN_NAME } from '@app/token';
 
 interface Props {
   initState?: Partial<AppState>;
@@ -30,7 +31,7 @@ interface AppStore<State> {
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [],
+  whitelist: [TOKEN_NAME, ELEVATED_TOKEN_NAME],
 };
 
 export function setupStore({

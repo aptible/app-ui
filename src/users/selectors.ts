@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 
 import { AppState } from '@app/types';
-import { selectToken, JWTTokenResponse, parseJwt } from '@app/token';
+import { selectToken, JWTToken, parseJwt } from '@app/token';
 
 import { USERS_NAME } from './constants';
 import { defaultUser } from './serializers';
@@ -14,7 +14,7 @@ const initUser = defaultUser({ verified: false });
 
 export const selectCurrentUser = createSelector(selectToken, (token) => {
   if (!token.accessToken) return initUser;
-  const userInfo: JWTTokenResponse = parseJwt(token.accessToken);
+  const userInfo: JWTToken = parseJwt(token.accessToken);
   return defaultUser({
     id: userInfo.sub ? userInfo.sub.split('/').pop() : '',
     name: userInfo.name,

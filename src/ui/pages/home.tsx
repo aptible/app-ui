@@ -1,7 +1,11 @@
 import React from 'react';
-
-import { Box } from '@aptible/arrow-ds';
+import { Link as RLink } from 'react-router-dom';
+import { Box, Heading } from '@aptible/arrow-ds';
 
 export const HomePage = () => {
-  return <Box>Hello world!</Box>;
+  return (
+    <Box className="p-4">
+      <Heading.H1>Dashboard!</Heading.H1>
+    </Box>
+  );
 };

@@ -5,6 +5,7 @@ import {
   TokenSuccessResponse,
   deserializeToken,
   setToken,
+  setElevatedToken,
   resetToken,
 } from '@app/token';
 
@@ -52,6 +53,31 @@ export const createToken = authApi.post<CreateTokenPayload>(
 
     yield next();
     yield call(saveToken, ctx);
+  },
+);
+
+export type ElevateToken = Omit<CreateTokenPayload, 'makeCurrent'>;
+export type ElevateTokenCtx = AuthApiCtx<TokenSuccessResponse, ElevateToken>;
+export const elevateToken = authApi.post<ElevateToken>(
+  '/tokens',
+  function* onElevateToken(ctx: ElevateTokenCtx, next) {
+    ctx.request = {
+      body: JSON.stringify({
+        username: ctx.payload.username,
+        password: ctx.payload.password,
+        otp_token: ctx.payload.otpToken,
+        make_current: false,
+        expires_in: 30 * 60, // 30 mins
+        grant_type: 'password',
+        scope: 'elevated',
+        _source: 'deploy',
+      }),
+    };
+
+    yield next();
+    if (!ctx.response.ok) return;
+    const curToken = deserializeToken(ctx.response.data);
+    ctx.actions.push(setElevatedToken(curToken));
   },
 );
 

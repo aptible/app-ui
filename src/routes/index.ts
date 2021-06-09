@@ -9,6 +9,14 @@ export const LOGIN_PATH = '/login';
 export const loginUrl = () => LOGIN_PATH;
 export const SIGNUP_PATH = '/signup';
 export const signupUrl = () => SIGNUP_PATH;
+export const ELEVATE_PATH = '/elevate';
+export const elevateUrl = (redirect = '') =>
+  `${ELEVATE_PATH}?redirect=${redirect}`;
+
+export const SECURITY_SETTINGS_PATH = '/settings/security';
+export const securitySettingsUrl = () => SECURITY_SETTINGS_PATH;
+export const SSH_SETTINGS_PATH = '/settings/ssh';
+export const sshSettingsUrl = () => SSH_SETTINGS_PATH;
 
 export const RESET_REQUEST_PASSWORD_PATH = '/reset-password';
 export const RESET_PASSWORD_PATH =

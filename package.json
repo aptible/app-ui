@@ -66,6 +66,6 @@
     "vite-tsconfig-paths": "^3.3.13"
   },
   "lint-staged": {
-    "*.{ts,tsx}": ["eslint --cache --fix", "prettier --write"]
+    "*.{ts,tsx}": ["prettier --write"]
   }
 }

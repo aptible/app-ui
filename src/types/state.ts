@@ -54,6 +54,7 @@ export interface AppState {
   loaders: { [key: string]: LoadingItemState };
   users: MapEntity<User>;
   token: Token;
+  elevatedToken: Token;
   invitationRequest: InvitationRequest;
   invitations: MapEntity<Invitation>;
   entities: EntityMap;

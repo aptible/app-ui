@@ -8,8 +8,12 @@ import {
   LoginPage,
   SignupPage,
   AuthRequired,
+  ElevateRequired,
   VerifyEmailPage,
   CreateOrgPage,
+  ElevatePage,
+  SecuritySettingsPage,
+  SSHSettingsPage,
 } from '@app/ui';
 import {
   HOME_PATH,
@@ -19,6 +23,9 @@ import {
   VERIFY_EMAIL_REQUEST_PATH,
   VERIFY_EMAIL_PATH,
   CREATE_ORG_PATH,
+  ELEVATE_PATH,
+  SECURITY_SETTINGS_PATH,
+  SSH_SETTINGS_PATH,
 } from '@app/routes';
 
 export const Router = () => (
@@ -32,6 +39,7 @@ export const Router = () => (
       <Route path={SIGNUP_PATH}>
         <SignupPage />
       </Route>
+
       <Route path={HOME_PATH} element={<AuthRequired />}>
         <HomePage />
       </Route>
@@ -46,6 +54,18 @@ export const Router = () => (
 
       <Route path={CREATE_ORG_PATH} element={<AuthRequired />}>
         <CreateOrgPage />
+      </Route>
+
+      <Route path={ELEVATE_PATH} element={<AuthRequired />}>
+        <ElevatePage />
+      </Route>
+
+      <Route path={SECURITY_SETTINGS_PATH} element={<ElevateRequired />}>
+        <SecuritySettingsPage />
+      </Route>
+
+      <Route path={SSH_SETTINGS_PATH} element={<ElevateRequired />}>
+        <SSHSettingsPage />
       </Route>
 
       <Route path={NOT_FOUND_PATH}>
