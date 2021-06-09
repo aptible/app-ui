@@ -71,7 +71,13 @@ export const NavTabs = ({ children, onMouseLeave }: TabsProps) => {
 
 export const NavTab = forwardRef<TabProps, any>(
   (
-    { children, as: Component = RouterLink, isActive, isCurrent, ...rest },
+    {
+      children,
+      as: Component = RouterLink,
+      isActive,
+      isCurrent,
+      ...rest
+    }: TabProps,
     ref,
   ) => {
     return (

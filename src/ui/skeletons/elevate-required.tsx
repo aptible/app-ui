@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router';
 import { Outlet, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Box, Flex, Loading } from '@aptible/arrow-ds';
+import { Flex, Loading } from '@aptible/arrow-ds';
 
 import { selectLoader } from '@app/loaders';
 import { loginUrl, elevateUrl } from '@app/routes';

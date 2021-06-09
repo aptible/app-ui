@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import {
   Card,
-  Flex,
   Box,
   FormGroup,
   Heading,
@@ -77,7 +76,7 @@ const MultiFactor = () => {
       </Text>
 
       <ul className="mb-2">
-        <li>Download your backup codes if you haven't done so yet.</li>
+        <li>Download your backup codes if you haven&apos;t done so yet.</li>
         <li>You might need to update aptible-cli for 2FA support.</li>
         <li>Note that 2FA does not apply to git push operations.</li>
       </ul>

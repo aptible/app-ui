@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Frame, PRODUCT_ID, Appbar } from '@aptible/arrow-ds';
+import { Frame, Appbar } from '@aptible/arrow-ds';
 
 import { defaultOrganization } from '@app/organizations';
 import { homeUrl, securitySettingsUrl, sshSettingsUrl } from '@app/routes';
@@ -16,7 +16,7 @@ export const Nav = ({ children }: { children: React.ReactNode }) => {
           logoProps={{ href: homeUrl() }}
           nav={
             <NavTabs onMouseLeave={() => {}}>
-              <NavTab to={homeUrl()} isCurrent={true}>
+              <NavTab to={homeUrl()} isCurrent>
                 Dashboard
               </NavTab>
               <NavTab to={securitySettingsUrl()}>Security Settings</NavTab>

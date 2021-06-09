@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link as RLink } from 'react-router-dom';
 import { Box, Heading } from '@aptible/arrow-ds';
 
 export const HomePage = () => {

@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
-import {
-  FormGroup,
-  Label,
-  Input,
-  InputFeedback,
-  Stack,
-  JUSTIFY,
-  STATUS_VARIANT,
-} from '@aptible/arrow-ds';
+import { FormGroup, Label, Input, Stack, JUSTIFY } from '@aptible/arrow-ds';
 
 import { homeUrl } from '@app/routes';
 import { elevate } from '@app/auth';
@@ -35,7 +27,7 @@ export const ElevatePage = () => {
   useLoaderSuccess(loader, () => {
     const params = new URLSearchParams(location.search);
     const redirect = params.get('redirect');
-    navigate(redirect ? redirect : homeUrl());
+    navigate(redirect || homeUrl());
   });
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -65,7 +57,7 @@ export const ElevatePage = () => {
           <Input
             name="email"
             type="email"
-            disabled={true}
+            disabled
             value={user.email}
             autoComplete="username"
             autoFocus

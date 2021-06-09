@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Box, Flex, Loading } from '@aptible/arrow-ds';
+import { Flex, Loading } from '@aptible/arrow-ds';
 
 import { selectLoader } from '@app/loaders';
 import { loginUrl } from '@app/routes';

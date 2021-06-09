@@ -94,11 +94,11 @@ export const reducers = createReducerMap(token, elevatedToken);
 
 const unixNow = () => Math.floor(Date.now() / 1000);
 const initJWTToken = defaultJWTToken();
-const findJWTToken = (token: Token) => {
-  if (!token.accessToken) return initJWTToken;
-  return parseJwt(token.accessToken);
+const findJWTToken = (curToken: Token) => {
+  if (!curToken.accessToken) return initJWTToken;
+  return parseJwt(curToken.accessToken);
 };
-const hasExpired = (token: JWTToken) => unixNow() > token.exp;
+const hasExpired = (curToken: JWTToken) => unixNow() > curToken.exp;
 
 export const selectToken = (state: AppState) => state[TOKEN_NAME];
 export const selectAccessToken = (state: AppState) =>
