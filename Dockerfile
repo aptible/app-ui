@@ -1,8 +1,8 @@
 FROM node:14 AS builder
 
-ARG VITE_AUTH_URL=https://auth.aptible.com
-ARG VITE_BILLING_URL=https://goldenboy.aptible.com
-ARG VITE_API_URL=https://api.aptible.com
+ARG VITE_AUTH_URL=https://auth-test.aptible-sandbox.com
+ARG VITE_BILLING_URL=https://goldenboy-test.aptible-sandbox.com
+ARG VITE_API_URL=https://api-test.aptible-sandbox.com
 ARG NODE_ENV=production
 
 RUN env | grep VITE
