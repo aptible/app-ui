@@ -7,18 +7,21 @@ import { selectEnv } from '@app/env';
 import { ApiGen, AuthApiError } from '@app/types';
 import { loaders } from '@app/loaders';
 import { halEntityParser } from '@app/hal';
-import { selectAccessToken } from '@app/token';
+import { selectElevatedAccessToken, selectAccessToken } from '@app/token';
 
 type EndpointUrl = 'auth' | 'api' | 'billing';
 
 interface FetchApiOpts extends RequestInit {
   url?: string;
+  elevated?: boolean;
 }
 
 export interface ApiCtx<D = any, P = any, E = any> extends FetchCtx<D, E, P> {}
 
 export interface AuthApiCtx<D = any, P = any>
-  extends FetchCtx<D, AuthApiError, P> {}
+  extends FetchCtx<D, AuthApiError, P> {
+  request: FetchApiOpts;
+}
 
 function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
   const env = yield select(selectEnv);
@@ -34,7 +37,7 @@ function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
 }
 
 function* fetchApi(request: FetchApiOpts): ApiGen<FetchCtx['response']> {
-  const { url = '', ...options } = request;
+  const { url = '', elevated = false, ...options } = request;
 
   if (!options.headers) {
     options.headers = {} as HeadersInit;
@@ -50,7 +53,13 @@ function* fetchApi(request: FetchApiOpts): ApiGen<FetchCtx['response']> {
   }
 
   if (!(options.headers as any).Authorization) {
-    const token = yield select(selectAccessToken);
+    let token = '';
+    if (elevated) {
+      token = yield select(selectElevatedAccessToken);
+    } else {
+      token = yield select(selectAccessToken);
+    }
+
     if (token) {
       (options.headers as any).Authorization = `Bearer ${token}`;
     }
@@ -121,6 +130,7 @@ function* trackLoading(
 
 export function* dispatchActions(ctx: { actions: Action[] }, next: Next) {
   yield next();
+  if (ctx.actions.length === 0) return;
   yield put(batchActions(ctx.actions));
 }
 

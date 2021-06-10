@@ -14,6 +14,7 @@ import {
   ElevatePage,
   SecuritySettingsPage,
   SSHSettingsPage,
+  OtpSetupPage,
 } from '@app/ui';
 import {
   HOME_PATH,
@@ -26,6 +27,7 @@ import {
   ELEVATE_PATH,
   SECURITY_SETTINGS_PATH,
   SSH_SETTINGS_PATH,
+  OTP_SETUP_PATH,
 } from '@app/routes';
 
 export const Router = () => (
@@ -66,6 +68,10 @@ export const Router = () => (
 
       <Route path={SSH_SETTINGS_PATH} element={<ElevateRequired />}>
         <SSHSettingsPage />
+      </Route>
+
+      <Route path={OTP_SETUP_PATH} element={<ElevateRequired />}>
+        <OtpSetupPage />
       </Route>
 
       <Route path={NOT_FOUND_PATH}>

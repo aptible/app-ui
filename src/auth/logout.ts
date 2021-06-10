@@ -15,8 +15,6 @@ export const logout = authApi.delete(
 
     yield next();
 
-    if (!ctx.response.ok) return;
-
     ctx.actions.push(resetToken());
   },
 );

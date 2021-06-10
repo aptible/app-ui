@@ -124,7 +124,7 @@ const SignupPageForm = () => {
           name="name"
           type="text"
           value={name}
-          onChange={(e) => setName((e.target as HTMLInputElement).value)}
+          onChange={(e) => setName(e.currentTarget.value)}
           autoComplete="name"
           disabled={isLoading}
           autoFocus
@@ -145,7 +145,7 @@ const SignupPageForm = () => {
           type="email"
           value={invitation ? invitation.email : email}
           disabled={!!invitation || isLoading}
-          onChange={(e) => setEmail((e.target as HTMLInputElement).value)}
+          onChange={(e) => setEmail(e.currentTarget.value)}
           autoComplete="username"
           data-testid="input-email"
           id="input-email"
@@ -168,7 +168,7 @@ const SignupPageForm = () => {
           type="password"
           value={password}
           disabled={isLoading}
-          onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
+          onChange={(e) => setPassword(e.currentTarget.value)}
           autoComplete="current-password"
           data-testid="input-password"
           id="input-password"
@@ -215,24 +215,3 @@ export const SignupPage = () => {
     </AuthenticationWrapper>
   );
 };
-
-/*
- *<FormGroup className="mb-12">
-        <Label htmlFor="input-name" className="brand-dark-form__label">
-          Organization name
-        </Label>
-        <Input
-          name="organization"
-          type="text"
-          value={org}
-          onChange={(e) => setOrg((e.target as HTMLInputElement).value)}
-          disabled={isLoading}
-          data-testid="input-org"
-          id="input-org"
-        />
-        <InputFeedback>
-          If you don&apos;t have a user account, but need to join an existing
-          organization, have one of the owners of the organization send you an
-          invitation to join.
-        </InputFeedback>
-        </FormGroup> */

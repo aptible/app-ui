@@ -113,3 +113,12 @@ export const exchangeToken = authApi.post<ExchangeToken>(
     yield call(saveToken, ctx);
   },
 );
+
+export const revokeAllTokens = authApi.post(
+  '/tokens/revoke_all_accessible',
+  function* onRevokeAll(ctx, next) {
+    yield next();
+    if (!ctx.response.ok) return;
+    ctx.actions.push(resetToken());
+  },
+);

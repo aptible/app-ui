@@ -48,6 +48,22 @@ export interface Organization {
   name: string;
 }
 
+export interface U2fDevice {
+  id: string;
+  name: string;
+  version: string;
+  keyHandle: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Otp {
+  id: string;
+  uri: string;
+  recoveryCodesUrl: string;
+  currentUrl: string;
+}
+
 export interface AppState {
   env: Env;
   authLoader: AuthLoader;
@@ -61,4 +77,6 @@ export interface AppState {
   redirectPath: string;
   organizationSelected: string;
   organizations: MapEntity<Organization>;
+  u2fDevices: MapEntity<U2fDevice>;
+  otp: Otp;
 }

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 
 import {
   Card,
@@ -12,9 +14,16 @@ import {
   STATUS_VARIANT,
   BUTTON_VARIANT,
   InputFeedback,
+  Banner,
 } from '@aptible/arrow-ds';
 
 import { validEmail } from '@app/string-utils';
+import { selectLoader } from '@app/loaders';
+import { updateUser, selectCurrentUser, updateEmail } from '@app/users';
+import { revokeAllTokens } from '@app/auth';
+import { otpSetupUrl } from '@app/routes';
+
+import { BannerMessages } from '../banner-messages';
 
 interface SectionProps {
   children: React.ReactNode;
@@ -35,40 +44,71 @@ const Section = ({ children, title }: SectionProps) => {
 };
 
 const ChangePassword = () => {
+  const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser);
+  const loader = useSelector(selectLoader(`${updateUser}`));
+
   const [pass, setPass] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
+  const [error, setError] = useState('');
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!user.id) {
+      return;
+    }
+
+    if (pass !== confirmPass) {
+      setError('passwords do not match');
+      return;
+    }
+
+    dispatch(
+      updateUser({ type: 'update-password', userId: user.id, password: pass }),
+    );
+  };
+
+  const groupVariant = error ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT;
+
   return (
-    <form>
-      <FormGroup>
-        <Label htmlFor="input-password" className="brand-dark-form__label">
-          New Password
-        </Label>
+    <form onSubmit={onSubmit}>
+      <FormGroup variant={groupVariant}>
+        <Label htmlFor="input-password">New Password</Label>
         <Input
           name="password"
           type="password"
           value={pass}
-          onChange={(e) => setPass((e.target as HTMLInputElement).value)}
+          onChange={(e) => setPass(e.currentTarget.value)}
           data-testid="input-password"
         />
       </FormGroup>
-      <FormGroup>
-        <Label htmlFor="input-password" className="brand-dark-form__label">
-          Confirm New Password
-        </Label>
+      <FormGroup variant={groupVariant}>
+        <Label htmlFor="input-password">Confirm New Password</Label>
         <Input
           name="config-password"
           type="password"
           value={confirmPass}
-          onChange={(e) => setConfirmPass((e.target as HTMLInputElement).value)}
+          onChange={(e) => setConfirmPass(e.currentTarget.value)}
           data-testid="input-confirm-password"
         />
+        <InputFeedback variant={STATUS_VARIANT.DANGER}>{error}</InputFeedback>
       </FormGroup>
-      <Button>Change Password</Button>
+      <Button
+        type="submit"
+        disabled={loader.isLoading}
+        isLoading={loader.isLoading}
+        className="mb-4 mt-2"
+      >
+        Change Password
+      </Button>
+      <BannerMessages {...loader} />
     </form>
   );
 };
 
 const MultiFactor = () => {
+  const navigate = useNavigate();
+
   return (
     <Box>
       <Text className="my-2">
@@ -82,6 +122,7 @@ const MultiFactor = () => {
       </ul>
 
       <Button.Group className="mb-2" isFullWidth>
+        <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
         <Button>Disable 2FA</Button>
         <Button>Download Backup Codes</Button>
       </Button.Group>
@@ -90,9 +131,17 @@ const MultiFactor = () => {
 };
 
 const ChangeEmail = () => {
+  const dispatch = useDispatch();
+  const user = useSelector(selectCurrentUser);
   const [email, setEmail] = useState<string>('');
-  const emailErrorMessage =
-    email === '' || validEmail(email) ? null : 'Not a valid email';
+  const loader = useSelector(selectLoader(`${updateEmail}`));
+  const error = email === '' || validEmail(email) ? '' : 'Not a valid email';
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!user.id) return;
+    if (error) return;
+    dispatch(updateEmail({ userId: user.id, email }));
+  };
 
   return (
     <Box>
@@ -101,31 +150,28 @@ const ChangeEmail = () => {
         Show pending verifications.
       </Text>
 
-      <form>
+      <form onSubmit={onSubmit}>
         <FormGroup
-          variant={
-            emailErrorMessage ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT
-          }
+          variant={error ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT}
         >
-          <Label htmlFor="input-email" className="brand-dark-form__label">
-            Email
-          </Label>
+          <Label htmlFor="input-email">Email</Label>
 
           <Input
             name="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail((e.target as HTMLInputElement).value)}
+            onChange={(e) => setEmail(e.currentTarget.value)}
             autoComplete="username"
             autoFocus
             data-testid="input-email"
             id="input-email"
           />
-          <InputFeedback data-testid="input-email-error">
-            {emailErrorMessage}
-          </InputFeedback>
+          <InputFeedback data-testid="input-email-error">{error}</InputFeedback>
         </FormGroup>
-        <Button>Send Verification Email</Button>
+        <Button type="submit" disabled={!!error} isLoading={loader.isLoading}>
+          Send Verification Email
+        </Button>
+        <BannerMessages {...loader} />
       </form>
     </Box>
   );
@@ -144,14 +190,44 @@ const SecurityKeys = () => {
 };
 
 const LogOut = () => {
+  const dispatch = useDispatch();
+  const loader = useSelector(selectLoader(`${revokeAllTokens}`));
+  const [confirm, setConfirm] = useState(false);
+  const makeItSo = () => dispatch(revokeAllTokens());
+
+  const confirmDialog = (
+    <Box className="mt-2">
+      <Text>Are you sure you want to log out of all sessions?</Text>
+      <Button.Group>
+        <Button
+          variant={BUTTON_VARIANT.SECONDARY}
+          onClick={() => setConfirm(false)}
+        >
+          Cancel
+        </Button>
+        <Button variant={BUTTON_VARIANT.DANGER} onClick={makeItSo}>
+          Make it so
+        </Button>
+      </Button.Group>
+    </Box>
+  );
+
   return (
     <Box>
       <Text>
         You can log out other sessions at any time. This cannot be undone.
       </Text>
-      <Button variant={BUTTON_VARIANT.DANGER}>
+      <Button
+        className="mb-4"
+        variant={BUTTON_VARIANT.DANGER}
+        onClick={() => setConfirm(true)}
+      >
         Log out all other sessions
       </Button>
+      {loader.isError ? (
+        <Banner variant={STATUS_VARIANT.DANGER}>{loader.message}</Banner>
+      ) : null}
+      {confirm ? confirmDialog : null}
     </Box>
   );
 };

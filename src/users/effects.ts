@@ -1,4 +1,5 @@
 import { select } from 'redux-saga/effects';
+import { Next } from 'saga-query';
 
 import { authApi, AuthApiCtx } from '@app/api';
 import { ApiGen } from '@app/types';
@@ -21,4 +22,59 @@ export const createUser = authApi.post<CreateUserForm>(
 
     yield next();
   },
+);
+
+interface PatchUserBase {
+  userId: string;
+}
+
+interface UpdatePassword extends PatchUserBase {
+  type: 'update-password';
+  password: string;
+}
+
+interface AddOtp extends PatchUserBase {
+  type: 'otp';
+  otp_enabled: true;
+  otp_configuration: string;
+  otp_token: string;
+}
+
+interface RemoveOtp extends PatchUserBase {
+  type: 'otp';
+  otp_enabled: false;
+}
+
+// This is a discriminated union.
+// When we provide a `type` to this payload we can make guarentees about the
+// we require in order to perform the update.
+type PatchUser = UpdatePassword | AddOtp | RemoveOtp;
+
+type ElevatedPostCtx = AuthApiCtx<
+  any,
+  { userId: string; [key: string]: string | number | boolean }
+>;
+
+function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
+  const { userId, type: _, ...payload } = ctx.payload;
+  ctx.request = {
+    elevated: true,
+    body: JSON.stringify(payload),
+  };
+  yield next();
+}
+
+export const updateUser = authApi.patch<PatchUser>(
+  '/users/:userId',
+  elevatedUpdate,
+);
+
+interface UpdateEmail {
+  userId: string;
+  email: string;
+}
+
+export const updateEmail = authApi.post<UpdateEmail>(
+  '/:userId/email_verification_challenges',
+  elevatedUpdate,
 );

@@ -7,3 +7,4 @@ export * from './create-org';
 export * from './elevate';
 export * from './security-settings';
 export * from './ssh-settings';
+export * from './otp-setup';

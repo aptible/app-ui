@@ -56,7 +56,7 @@ const CreateOrgForm = () => {
           name="name"
           type="text"
           value={name}
-          onChange={(e) => setName((e.target as HTMLInputElement).value)}
+          onChange={(e) => setName(e.currentTarget.value)}
           autoComplete="name"
           disabled={isLoading}
           autoFocus

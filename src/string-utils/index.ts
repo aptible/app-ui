@@ -2,7 +2,7 @@ const VALID_EMAIL_REGEX =
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 export function validEmail(email: string): boolean {
-  return !!email.toLowerCase().match(VALID_EMAIL_REGEX);
+  return !!email && !!email.toLowerCase().match(VALID_EMAIL_REGEX);
 }
 
 export const capitalize = (s: string) => {

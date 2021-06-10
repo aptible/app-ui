@@ -111,7 +111,7 @@ export const LoginPage = () => {
             type="email"
             disabled={!!invitation}
             value={invitation ? invitation.email : email}
-            onChange={(e) => setEmail((e.target as HTMLInputElement).value)}
+            onChange={(e) => setEmail(e.currentTarget.value)}
             autoComplete="username"
             autoFocus
             data-testid="input-email"
@@ -130,7 +130,7 @@ export const LoginPage = () => {
             name="password"
             type="password"
             value={password}
-            onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
+            onChange={(e) => setPassword(e.currentTarget.value)}
             autoComplete="current-password"
             data-testid="input-password"
             id="input-password"
@@ -145,9 +145,7 @@ export const LoginPage = () => {
             <Input
               type="number"
               value={otpToken}
-              onChange={(e) =>
-                setOtpToken((e.target as HTMLInputElement).value)
-              }
+              onChange={(e) => setOtpToken(e.currentTarget.value)}
               autoComplete="off"
               autoFocus
               data-testid="input-2fa"

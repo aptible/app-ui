@@ -17,6 +17,8 @@ export const SECURITY_SETTINGS_PATH = '/settings/security';
 export const securitySettingsUrl = () => SECURITY_SETTINGS_PATH;
 export const SSH_SETTINGS_PATH = '/settings/ssh';
 export const sshSettingsUrl = () => SSH_SETTINGS_PATH;
+export const OTP_SETUP_PATH = '/settings/otp-setup';
+export const otpSetupUrl = () => OTP_SETUP_PATH;
 
 export const RESET_REQUEST_PASSWORD_PATH = '/reset-password';
 export const RESET_PASSWORD_PATH =

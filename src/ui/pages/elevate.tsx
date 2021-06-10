@@ -74,7 +74,7 @@ export const ElevatePage = () => {
             name="password"
             type="password"
             value={password}
-            onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
+            onChange={(e) => setPassword(e.currentTarget.value)}
             autoComplete="current-password"
             data-testid="input-password"
             id="input-password"
@@ -89,9 +89,7 @@ export const ElevatePage = () => {
             <Input
               type="number"
               value={otpToken}
-              onChange={(e) =>
-                setOtpToken((e.target as HTMLInputElement).value)
-              }
+              onChange={(e) => setOtpToken(e.currentTarget.value)}
               autoComplete="off"
               autoFocus
               data-testid="input-2fa"

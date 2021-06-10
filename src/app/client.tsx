@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 
-import { fetchCurrentToken } from '@app/auth';
+import { bootup } from '@app/bootup';
 
 import { setupStore } from './store';
 import { App } from './app';
@@ -16,7 +16,7 @@ export function init() {
     initState: { entities: rootEntities },
   });
   (window as any).reduxStore = store;
-  store.dispatch(fetchCurrentToken());
+  store.dispatch(bootup());
 
   render(
     <BrowserRouter>

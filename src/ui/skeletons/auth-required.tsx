@@ -15,7 +15,7 @@ export const AuthRequired = () => {
   const loader = useSelector(selectLoader(`${fetchCurrentToken}`));
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
 
-  if (loader.lastRun > 0 && !loader.isLoading && !isAuthenticated) {
+  if (!loader.isLoading && !isAuthenticated) {
     return <Navigate to={loginUrl()} />;
   }
 

@@ -14,6 +14,8 @@ import * as hal from '@app/hal';
 import * as resetStore from '@app/reset-store';
 import * as redirectPath from '@app/redirect-path';
 import * as orgs from '@app/organizations';
+import * as bootup from '@app/bootup';
+import * as mfa from '@app/mfa';
 
 const corePackages: any[] = [
   env,
@@ -26,6 +28,8 @@ const corePackages: any[] = [
   resetStore,
   redirectPath,
   orgs,
+  bootup,
+  mfa,
 ];
 
 const packages = createApp<AppState>(corePackages);

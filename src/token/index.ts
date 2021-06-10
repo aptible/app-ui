@@ -141,3 +141,5 @@ export const selectIsElevatedTokenValid = createSelector(
   selectJWTElevatedToken,
   (jwtToken) => jwtToken.scope === 'elevated' && !hasExpired(jwtToken),
 );
+export const selectElevatedAccessToken = (state: AppState) =>
+  selectElevatedToken(state).accessToken;
