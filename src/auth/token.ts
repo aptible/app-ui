@@ -59,9 +59,11 @@ export const createToken = authApi.post<CreateTokenPayload>(
 export type ElevateToken = Omit<CreateTokenPayload, 'makeCurrent'>;
 export type ElevateTokenCtx = AuthApiCtx<TokenSuccessResponse, ElevateToken>;
 export const elevateToken = authApi.post<ElevateToken>(
-  '/tokens',
+  'create-elevated-token',
   function* onElevateToken(ctx: ElevateTokenCtx, next) {
     ctx.request = {
+      url: '/tokens',
+      method: 'POST',
       body: JSON.stringify({
         username: ctx.payload.username,
         password: ctx.payload.password,

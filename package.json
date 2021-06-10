@@ -18,7 +18,7 @@
     "test": "yarn lint"
   },
   "dependencies": {
-    "@aptible/arrow-ds": "^1.44.0",
+    "@aptible/arrow-ds": "^1.45.0",
     "@types/codemirror": "^5.60.0",
     "@types/react": "^17.0.8",
     "@types/react-datepicker": "^3.1.8",
@@ -66,6 +66,8 @@
     "vite-tsconfig-paths": "^3.3.13"
   },
   "lint-staged": {
-    "*.{ts,tsx}": ["prettier --write"]
+    "*.{ts,tsx}": [
+      "prettier --write"
+    ]
   }
 }
