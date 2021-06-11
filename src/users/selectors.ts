@@ -20,5 +20,7 @@ export const selectCurrentUserId = createSelector(selectToken, (token) => {
 export const selectCurrentUser = createSelector(
   selectUsers,
   selectCurrentUserId,
-  (users, userId) => users[userId] || defaultUser(),
+  (users, userId) => {
+    return users[userId] || defaultUser();
+  },
 );

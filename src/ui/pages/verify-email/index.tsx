@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Flex, Loading } from '@aptible/arrow-ds';
 
 import { verifyEmail } from '@app/auth';
-import { selectCurrentUser } from '@app/users';
+import { selectJWTToken } from '@app/token';
 import { selectLoader } from '@app/loaders';
 import { createOrgUrl } from '@app/routes';
 
@@ -15,7 +15,7 @@ import { useLoaderSuccess } from '../../use-loader-success';
 
 export const VerifyEmailPage = () => {
   const dispatch = useDispatch();
-  const user = useSelector(selectCurrentUser);
+  const user = useSelector(selectJWTToken);
   const params = useParams();
   const navigate = useNavigate();
 

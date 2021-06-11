@@ -3,11 +3,11 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 
 import { verifyEmailRequestUrl } from '@app/routes';
-import { selectCurrentUser } from '@app/users';
+import { selectJWTToken } from '@app/token';
 
 export const useVerifiedRequired = () => {
   const navigate = useNavigate();
-  const user = useSelector(selectCurrentUser);
+  const user = useSelector(selectJWTToken);
 
   useEffect(() => {
     if (!user.verified) {

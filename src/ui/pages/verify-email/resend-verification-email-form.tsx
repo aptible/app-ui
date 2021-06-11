@@ -3,7 +3,7 @@ import { showToast, STATUS_VARIANT, Stack, JUSTIFY } from '@aptible/arrow-ds';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { resendVerification } from '@app/auth';
-import { selectCurrentUser } from '@app/users';
+import { selectJWTToken } from '@app/token';
 import { selectLoader } from '@app/loaders';
 import { selectOrigin } from '@app/env';
 
@@ -11,7 +11,7 @@ import { AsyncButton } from '../../auth/async-button';
 
 export const ResendVerificationEmail = () => {
   const dispatch = useDispatch();
-  const user = useSelector(selectCurrentUser);
+  const user = useSelector(selectJWTToken);
   const origin = useSelector(selectOrigin);
 
   const resendVerificationLoader = useSelector(

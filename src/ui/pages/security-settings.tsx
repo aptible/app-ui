@@ -51,7 +51,7 @@ const Section = ({ children, title }: SectionProps) => {
 
 const ChangePassword = () => {
   const dispatch = useDispatch();
-  const user = useSelector(selectCurrentUser);
+  const user = useSelector(selectCurrentUserId);
   const loader = useSelector(selectLoader(`${updateUser}`));
 
   const [pass, setPass] = useState('');
@@ -60,7 +60,7 @@ const ChangePassword = () => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user.id) {
+    if (!userId) {
       return;
     }
 
@@ -69,9 +69,7 @@ const ChangePassword = () => {
       return;
     }
 
-    dispatch(
-      updateUser({ type: 'update-password', userId: user.id, password: pass }),
-    );
+    dispatch(updateUser({ type: 'update-password', userId, password: pass }));
   };
 
   const groupVariant = error ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT;

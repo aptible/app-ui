@@ -2,12 +2,12 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Text, Link } from '@aptible/arrow-ds';
 
-import { selectCurrentUser } from '@app/users';
+import { selectJWTToken } from '@app/token';
 import { logout } from '@app/auth';
 
 export const LogoutButton = () => {
   const dispatch = useDispatch();
-  const user = useSelector(selectCurrentUser);
+  const user = useSelector(selectJWTToken);
   const onLogout = () => dispatch(logout());
   return (
     <Box className="bg-gray-900 text-center w-full pt-5">

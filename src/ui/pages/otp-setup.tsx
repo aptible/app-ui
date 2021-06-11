@@ -16,14 +16,14 @@ import {
 
 import { selectLoader } from '@app/loaders';
 import { setupOtp, selectOtp } from '@app/mfa';
-import { updateUser, selectCurrentUser } from '@app/users';
+import { updateUser, selectCurrentUserId } from '@app/users';
 
 import { ExternalLink } from '../external-link';
 import { BannerMessages } from '../banner-messages';
 
 export const OtpSetupPage = () => {
   const dispatch = useDispatch();
-  const user = useSelector(selectCurrentUser);
+  const userId = useSelector(selectCurrentUserId);
   const otpLoader = useSelector(selectLoader(`${setupOtp}`));
   const userLoader = useSelector(selectLoader(`${updateUser}`));
   const otp = useSelector(selectOtp);
@@ -38,13 +38,13 @@ export const OtpSetupPage = () => {
   }, [otp.uri]);
 
   useEffect(() => {
-    if (!user.id) return;
-    dispatch(setupOtp({ userId: user.id }));
-  }, [user.id]);
+    if (!userId) return;
+    dispatch(setupOtp({ userId }));
+  }, [userId]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user.id) return;
+    if (!userId) return;
     if (!otp.id) return;
     if (!mfa) {
       setError('must enter token');
@@ -54,7 +54,7 @@ export const OtpSetupPage = () => {
     dispatch(
       updateUser({
         type: 'otp',
-        userId: user.id,
+        userId,
         otp_enabled: true,
         current_otp_configuration: otp.currentUrl,
         current_otp_configuration_id: otp.id,

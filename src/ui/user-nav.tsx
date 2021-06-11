@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import { Appbar } from '@aptible/arrow-ds';
 
-import { selectCurrentUser } from '@app/users';
+import { selectJWTToken } from '@app/token';
 import { logout } from '@app/auth';
 import { defaultOrganization } from '@app/organizations';
 import { securitySettingsUrl, sshSettingsUrl } from '@app/routes';
@@ -18,7 +18,7 @@ interface DropdownLink {
 }
 
 export const UserDropdown = () => {
-  const user = useSelector(selectCurrentUser);
+  const user = useSelector(selectJWTToken);
   const selectedOrg = defaultOrganization({ id: '1337', name: 'Aptible' });
   const dispatch = useDispatch();
   const isOwner = true;

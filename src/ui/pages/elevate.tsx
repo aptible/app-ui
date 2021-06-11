@@ -7,7 +7,7 @@ import { homeUrl } from '@app/routes';
 import { elevate } from '@app/auth';
 import { selectIsOtpError } from '@app/token';
 import { selectAuthLoader } from '@app/loaders';
-import { selectCurrentUser } from '@app/users';
+import { selectJWTToken } from '@app/token';
 
 import { AsyncButton } from '../auth/async-button';
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
@@ -16,7 +16,7 @@ import { useLoaderSuccess } from '../use-loader-success';
 export const ElevatePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector(selectCurrentUser);
+  const user = useSelector(selectJWTToken);
   const location = useLocation();
 
   const [otpToken, setOtpToken] = useState<string>('');
