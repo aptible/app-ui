@@ -153,7 +153,9 @@ function* quickSave(ctx: AuthApiCtx, next: Next) {
   const { quickSave = false } = ctx.request;
   if (!quickSave) return;
   ctx.actions.push(
-    data.actions.add({ [ctx.request.url || ctx.name]: ctx.response.data }),
+    data.actions.add({
+      [JSON.stringify(ctx.action)]: ctx.response.data,
+    }),
   );
 }
 

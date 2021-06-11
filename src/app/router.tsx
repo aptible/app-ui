@@ -15,6 +15,7 @@ import {
   SecuritySettingsPage,
   SSHSettingsPage,
   OtpSetupPage,
+  OtpRecoveryCodesPage,
 } from '@app/ui';
 import {
   HOME_PATH,
@@ -28,6 +29,7 @@ import {
   SECURITY_SETTINGS_PATH,
   SSH_SETTINGS_PATH,
   OTP_SETUP_PATH,
+  OTP_RECOVERY_CODES_PATH,
 } from '@app/routes';
 
 export const Router = () => (
@@ -72,6 +74,10 @@ export const Router = () => (
 
       <Route path={OTP_SETUP_PATH} element={<ElevateRequired />}>
         <OtpSetupPage />
+      </Route>
+
+      <Route path={OTP_RECOVERY_CODES_PATH} element={<ElevateRequired />}>
+        <OtpRecoveryCodesPage />
       </Route>
 
       <Route path={NOT_FOUND_PATH}>

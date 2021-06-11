@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { Link as RLink } from 'react-router-dom';
 
 import {
   Card,
@@ -15,6 +16,8 @@ import {
   BUTTON_VARIANT,
   InputFeedback,
   Banner,
+  Link,
+  Loading,
 } from '@aptible/arrow-ds';
 
 import { validEmail } from '@app/string-utils';
@@ -28,10 +31,11 @@ import {
 } from '@app/users';
 import { fetchOtpCodes } from '@app/mfa';
 import { revokeAllTokens } from '@app/auth';
-import { otpSetupUrl } from '@app/routes';
+import { otpSetupUrl, otpRecoveryCodesUrl } from '@app/routes';
 
 import { BannerMessages } from '../banner-messages';
 import { useData } from '../use-data';
+import { useCurrentUser } from '../use-current-user';
 
 interface SectionProps {
   children: React.ReactNode;
@@ -115,15 +119,22 @@ const ChangePassword = () => {
 const MultiFactor = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector(selectCurrentUser);
+  const { isLoading, user } = useCurrentUser();
   const disable = () => {
     dispatch(updateUser({ type: 'otp', userId: user.id, otp_enabled: false }));
   };
-  const codes = () => {};
-  const { data, isLoading } = useData(
-    fetchOtpCodes({ otpId: user.currentOtpId }),
-    user.currentOtpId,
+
+  const btns = user.otpEnabled ? (
+    <Button.Group className="mb-2" isFullWidth>
+      <Button onClick={disable}>Disable 2FA</Button>
+      <Link as={RLink} to={otpRecoveryCodesUrl()}>
+        Download backup codes
+      </Link>
+    </Button.Group>
+  ) : (
+    <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
   );
+  const content = isLoading ? <Loading /> : btns;
 
   return (
     <Box>
@@ -137,16 +148,7 @@ const MultiFactor = () => {
         <li>Note that 2FA does not apply to git push operations.</li>
       </ul>
 
-      {user.otpEnabled ? (
-        <Button.Group className="mb-2" isFullWidth>
-          <Button onClick={disable}>Disable 2FA</Button>
-          <Button onClick={codes} isDisabled={isLoading} isLoading={isLoading}>
-            Download Backup Codes
-          </Button>
-        </Button.Group>
-      ) : (
-        <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
-      )}
+      {content}
     </Box>
   );
 };
@@ -254,15 +256,6 @@ const LogOut = () => {
 };
 
 export const SecuritySettingsPage = () => {
-  const dispatch = useDispatch();
-  const userId = useSelector(selectCurrentUserId);
-  console.log('USER', userId);
-
-  useEffect(() => {
-    if (!userId) return;
-    dispatch(fetchUser({ userId }));
-  }, [userId]);
-
   return (
     <Box className="p-4">
       <Heading.H1>Security Settings</Heading.H1>

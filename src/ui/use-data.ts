@@ -15,14 +15,15 @@ export function useData<D = any>(
   depend: string,
 ): Data<D> {
   const { name } = action.payload;
+  const id = JSON.stringify(action);
   const dispatch = useDispatch();
   const loader = useSelector(selectLoader(name));
-  const data = useSelector((s: AppState) => selectDataById(s, { id: name }));
+  const data = useSelector((s: AppState) => selectDataById(s, { id }));
 
   useEffect(() => {
     if (!name || !depend) return;
     dispatch(action);
-  }, [name, depend]);
+  }, [id, name, depend]);
 
   return { ...loader, data };
 }
