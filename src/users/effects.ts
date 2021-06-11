@@ -7,6 +7,14 @@ import { selectOrigin } from '@app/env';
 
 import { UserResponse, CreateUserForm } from './types';
 
+interface UserBase {
+  userId: string;
+}
+
+export const fetchUser = authApi.get<UserBase>(
+  '/users/:userId',
+  authApi.request({ elevated: true }),
+);
 export const fetchUsers = authApi.get<{ orgId: string }>(
   '/organizations/:orgId/users',
 );
@@ -24,23 +32,20 @@ export const createUser = authApi.post<CreateUserForm>(
   },
 );
 
-interface PatchUserBase {
-  userId: string;
-}
-
-interface UpdatePassword extends PatchUserBase {
+interface UpdatePassword extends UserBase {
   type: 'update-password';
   password: string;
 }
 
-interface AddOtp extends PatchUserBase {
+interface AddOtp extends UserBase {
   type: 'otp';
   otp_enabled: true;
-  otp_configuration: string;
+  current_otp_configuration: string;
+  current_otp_configuration_id: string;
   otp_token: string;
 }
 
-interface RemoveOtp extends PatchUserBase {
+interface RemoveOtp extends UserBase {
   type: 'otp';
   otp_enabled: false;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 
@@ -19,7 +19,13 @@ import {
 
 import { validEmail } from '@app/string-utils';
 import { selectLoader } from '@app/loaders';
-import { updateUser, selectCurrentUser, updateEmail } from '@app/users';
+import {
+  fetchUser,
+  updateUser,
+  selectCurrentUser,
+  selectCurrentUserId,
+  updateEmail,
+} from '@app/users';
 import { revokeAllTokens } from '@app/auth';
 import { otpSetupUrl } from '@app/routes';
 
@@ -108,6 +114,7 @@ const ChangePassword = () => {
 
 const MultiFactor = () => {
   const navigate = useNavigate();
+  const user = useSelector(selectCurrentUser);
 
   return (
     <Box>
@@ -121,11 +128,14 @@ const MultiFactor = () => {
         <li>Note that 2FA does not apply to git push operations.</li>
       </ul>
 
-      <Button.Group className="mb-2" isFullWidth>
+      {user.otpEnabled ? (
+        <Button.Group className="mb-2" isFullWidth>
+          <Button>Disable 2FA</Button>
+          <Button>Download Backup Codes</Button>
+        </Button.Group>
+      ) : (
         <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
-        <Button>Disable 2FA</Button>
-        <Button>Download Backup Codes</Button>
-      </Button.Group>
+      )}
     </Box>
   );
 };
@@ -233,6 +243,14 @@ const LogOut = () => {
 };
 
 export const SecuritySettingsPage = () => {
+  const dispatch = useDispatch();
+  const userId = useSelector(selectCurrentUserId);
+
+  useEffect(() => {
+    if (!userId) return;
+    dispatch(fetchUser({ userId }));
+  }, [userId]);
+
   return (
     <Box className="p-4">
       <Heading.H1>Security Settings</Heading.H1>

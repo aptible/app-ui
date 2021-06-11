@@ -8,17 +8,17 @@ import { defaultUser } from './serializers';
 import { users } from './slice';
 
 const selectors = users.getSelectors((state: AppState) => state[USERS_NAME]);
-export const { selectTable: selectUsers } = selectors;
+export const { selectTable: selectUsers, selectById: selectUserById } =
+  selectors;
 
 const initUser = defaultUser({ verified: false });
 
-export const selectCurrentUser = createSelector(selectToken, (token) => {
-  if (!token.accessToken) return initUser;
-  const userInfo: JWTToken = parseJwt(token.accessToken);
-  return defaultUser({
-    id: userInfo.sub ? userInfo.sub.split('/').pop() : '',
-    name: userInfo.name,
-    email: userInfo.email,
-    verified: userInfo.email_verified,
-  });
+export const selectCurrentUserId = createSelector(selectToken, (token) => {
+  return token.userUrl.split('/').pop() || '';
 });
+
+export const selectCurrentUser = createSelector(
+  selectUsers,
+  selectCurrentUserId,
+  (users, userId) => users[userId] || defaultUser(),
+);

@@ -56,7 +56,8 @@ export const OtpSetupPage = () => {
         type: 'otp',
         userId: user.id,
         otp_enabled: true,
-        otp_configuration: otp.currentUrl,
+        current_otp_configuration: otp.currentUrl,
+        current_otp_configuration_id: otp.id,
         otp_token: mfa,
       }),
     );

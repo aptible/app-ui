@@ -8,6 +8,7 @@ export const bootup = createAction('BOOTUP');
 function* onBootup() {
   // wait for redux-persist to rehydrate redux store
   yield take(REHYDRATE);
+  console.log('wtf');
   yield call(fetchCurrentToken.run, fetchCurrentToken());
 }
 
