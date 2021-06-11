@@ -83,3 +83,8 @@ export const updateEmail = authApi.post<UpdateEmail>(
   '/:userId/email_verification_challenges',
   elevatedUpdate,
 );
+
+export const fetchRecoveryCodes = authApi.get<UserBase>(
+  '/users/:userId/otp_recovery_codes',
+  authApi.request({ quickSave: true }),
+);

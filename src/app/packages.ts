@@ -2,7 +2,6 @@ import { createApp } from 'robodux';
 import sagaCreator from 'redux-saga-creator';
 
 import { AppState } from '@app/types';
-import { api, authApi } from '@app/api';
 
 import * as env from '@app/env';
 import * as loaders from '@app/loaders';
@@ -16,6 +15,7 @@ import * as redirectPath from '@app/redirect-path';
 import * as orgs from '@app/organizations';
 import * as bootup from '@app/bootup';
 import * as mfa from '@app/mfa';
+import * as api from '@app/api';
 
 const corePackages: any[] = [
   env,
@@ -30,6 +30,7 @@ const corePackages: any[] = [
   orgs,
   bootup,
   mfa,
+  api,
 ];
 
 const packages = createApp<AppState>(corePackages);
@@ -46,8 +47,8 @@ const sagas = corePackages.reduce(
     return { ...acc, ...pkg.sagas };
   },
   {
-    api: api.saga(),
-    authApi: authApi.saga(),
+    api: api.api.saga(),
+    authApi: api.authApi.saga(),
   },
 );
 

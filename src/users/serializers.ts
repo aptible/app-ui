@@ -1,7 +1,8 @@
 import { User } from '@app/types';
+import { extractIdFromLink } from '@app/hal';
 import { UserResponse } from './types';
 
-export const defaultUser = (u?: Partial<User>) => {
+export const defaultUser = (u: Partial<User> = {}): User => {
   return {
     id: '',
     name: 'Aptible',
@@ -10,6 +11,7 @@ export const defaultUser = (u?: Partial<User>) => {
     superuser: false,
     username: '',
     verified: false,
+    currentOtpId: '',
     ...u,
   };
 };
@@ -23,5 +25,6 @@ export function deserializeUser(u: UserResponse): User {
     superuser: u.superuser,
     username: u.username,
     verified: u.verified,
+    currentOtpId: extractIdFromLink(u._links.current_otp_configuration?.href),
   };
 }

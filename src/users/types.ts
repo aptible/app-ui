@@ -14,7 +14,7 @@ export interface UserResponse {
   verified: boolean;
   _links: {
     email_verification_challenges: LinkResponse;
-    otp_configuration: LinkResponse;
+    current_otp_configuration: LinkResponse;
     roles: LinkResponse;
     self: LinkResponse;
     ssh_keys: LinkResponse;

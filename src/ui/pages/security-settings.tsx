@@ -26,10 +26,12 @@ import {
   selectCurrentUserId,
   updateEmail,
 } from '@app/users';
+import { fetchOtpCodes } from '@app/mfa';
 import { revokeAllTokens } from '@app/auth';
 import { otpSetupUrl } from '@app/routes';
 
 import { BannerMessages } from '../banner-messages';
+import { useData } from '../use-data';
 
 interface SectionProps {
   children: React.ReactNode;
@@ -51,7 +53,7 @@ const Section = ({ children, title }: SectionProps) => {
 
 const ChangePassword = () => {
   const dispatch = useDispatch();
-  const user = useSelector(selectCurrentUserId);
+  const userId = useSelector(selectCurrentUserId);
   const loader = useSelector(selectLoader(`${updateUser}`));
 
   const [pass, setPass] = useState('');
@@ -117,6 +119,11 @@ const MultiFactor = () => {
   const disable = () => {
     dispatch(updateUser({ type: 'otp', userId: user.id, otp_enabled: false }));
   };
+  const codes = () => {};
+  const { data, isLoading } = useData(
+    fetchOtpCodes({ otpId: user.currentOtpId }),
+    user.currentOtpId,
+  );
 
   return (
     <Box>
@@ -133,7 +140,9 @@ const MultiFactor = () => {
       {user.otpEnabled ? (
         <Button.Group className="mb-2" isFullWidth>
           <Button onClick={disable}>Disable 2FA</Button>
-          <Button>Download Backup Codes</Button>
+          <Button onClick={codes} isDisabled={isLoading} isLoading={isLoading}>
+            Download Backup Codes
+          </Button>
         </Button.Group>
       ) : (
         <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
@@ -144,15 +153,15 @@ const MultiFactor = () => {
 
 const ChangeEmail = () => {
   const dispatch = useDispatch();
-  const user = useSelector(selectCurrentUser);
+  const userId = useSelector(selectCurrentUserId);
   const [email, setEmail] = useState<string>('');
   const loader = useSelector(selectLoader(`${updateEmail}`));
   const error = email === '' || validEmail(email) ? '' : 'Not a valid email';
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user.id) return;
+    if (!userId) return;
     if (error) return;
-    dispatch(updateEmail({ userId: user.id, email }));
+    dispatch(updateEmail({ userId, email }));
   };
 
   return (
@@ -247,6 +256,7 @@ const LogOut = () => {
 export const SecuritySettingsPage = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
+  console.log('USER', userId);
 
   useEffect(() => {
     if (!userId) return;

@@ -19,6 +19,7 @@ export interface User {
   superuser: boolean;
   username: string;
   verified: boolean;
+  currentOtpId: string;
 }
 
 export interface Token {
@@ -79,4 +80,5 @@ export interface AppState {
   organizations: MapEntity<Organization>;
   u2fDevices: MapEntity<U2fDevice>;
   otp: Otp;
+  data: MapEntity<any>;
 }

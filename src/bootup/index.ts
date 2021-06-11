@@ -8,7 +8,6 @@ export const bootup = createAction('BOOTUP');
 function* onBootup() {
   // wait for redux-persist to rehydrate redux store
   yield take(REHYDRATE);
-  console.log('wtf');
   yield call(fetchCurrentToken.run, fetchCurrentToken());
 }
 
@@ -16,4 +15,4 @@ function* watchBootup() {
   yield takeEvery(`${bootup}`, onBootup);
 }
 
-export const saga = { watchBootup };
+export const sagas = { watchBootup };

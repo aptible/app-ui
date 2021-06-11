@@ -1,10 +1,10 @@
 import { call, put, select } from 'redux-saga/effects';
-import { Action } from 'robodux';
+import { Action, createTable, createReducerMap } from 'robodux';
 import { createQuery, queryCtx, urlParser, FetchCtx, Next } from 'saga-query';
 import { batchActions } from 'redux-batched-actions';
 
 import { selectEnv } from '@app/env';
-import { ApiGen, AuthApiError } from '@app/types';
+import { AppState, ApiGen, AuthApiError } from '@app/types';
 import { loaders } from '@app/loaders';
 import { halEntityParser } from '@app/hal';
 import { selectElevatedAccessToken, selectAccessToken } from '@app/token';
@@ -14,6 +14,7 @@ type EndpointUrl = 'auth' | 'api' | 'billing';
 interface FetchApiOpts extends RequestInit {
   url?: string;
   elevated?: boolean;
+  quickSave?: boolean;
 }
 
 export interface ApiCtx<D = any, P = any, E = any> extends FetchCtx<D, E, P> {}
@@ -97,8 +98,14 @@ function* fetchApi(request: FetchApiOpts): ApiGen<FetchCtx['response']> {
 
 function createFetchApi(endpoint: EndpointUrl) {
   return function* onFetchApi(ctx: FetchCtx, next: Next): ApiGen {
-    const baseUrl = yield call(getApiBaseUrl, endpoint);
-    ctx.request.url = `${baseUrl}${ctx.request.url}`;
+    const { url = '' } = ctx.request;
+    if (!url) return;
+    const fullUrl = url.startsWith('http');
+    if (!fullUrl) {
+      const baseUrl = yield call(getApiBaseUrl, endpoint);
+      ctx.request.url = `${baseUrl}${url}`;
+    }
+
     ctx.response = yield call(fetchApi, ctx.request);
     yield next();
   };
@@ -134,9 +141,26 @@ export function* dispatchActions(ctx: { actions: Action[] }, next: Next) {
   yield put(batchActions(ctx.actions));
 }
 
+const DATA_NAME = 'data';
+const data = createTable<any>({ name: DATA_NAME });
+export const { selectById: selectDataById } = data.getSelectors(
+  (s: AppState) => s[DATA_NAME],
+);
+export const reducers = createReducerMap(data);
+function* quickSave(ctx: AuthApiCtx, next: Next) {
+  yield next();
+  if (!ctx.response.ok) return;
+  const { quickSave = false } = ctx.request;
+  if (!quickSave) return;
+  ctx.actions.push(
+    data.actions.add({ [ctx.request.url || ctx.name]: ctx.response.data }),
+  );
+}
+
 export const authApi = createQuery<AuthApiCtx>();
 authApi.use(dispatchActions);
 authApi.use(authApi.routes());
+authApi.use(quickSave);
 authApi.use(queryCtx);
 authApi.use(urlParser);
 authApi.use(halEntityParser);

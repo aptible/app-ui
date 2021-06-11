@@ -87,6 +87,11 @@ const deserializeOtp = (data: OtpResponse): Otp => {
   };
 };
 
+export const fetchOtpCodes = authApi.get<{ otpId: string }>(
+  '/otp_configurations/:otpId/otp_recovery_codes',
+  authApi.request({ quickSave: true, elevated: true }),
+);
+
 export const setupOtp = authApi.post<{ userId: string }>(
   '/users/:userId/otp_configurations',
   function* onOtp(ctx: AuthApiCtx<OtpResponse, SetupOtp>, next): ApiGen {

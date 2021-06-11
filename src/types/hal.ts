@@ -1,8 +1,8 @@
 import { MapEntity } from 'robodux';
 
-export interface LinkResponse {
+export type LinkResponse = {
   href: string;
-}
+} | null;
 
 export interface HalEmbedded<E> {
   _embedded: E;

@@ -10,6 +10,16 @@ import {
   NestedEntity,
 } from '@app/types';
 
+const uuidRe = new RegExp(
+  /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/,
+);
+
+export function extractIdFromLink(url: string) {
+  const exec = uuidRe.exec(url);
+  if (!exec) return '';
+  return exec[0] || '';
+}
+
 export const ENTITIES_NAME = 'entities';
 const entities = createAssign<EntityMap>({
   name: ENTITIES_NAME,
