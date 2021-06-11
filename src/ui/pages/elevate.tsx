@@ -5,9 +5,8 @@ import { FormGroup, Label, Input, Stack, JUSTIFY } from '@aptible/arrow-ds';
 
 import { homeUrl } from '@app/routes';
 import { elevate } from '@app/auth';
-import { selectIsOtpError } from '@app/token';
 import { selectAuthLoader } from '@app/loaders';
-import { selectJWTToken } from '@app/token';
+import { selectJWTToken, selectIsOtpError } from '@app/token';
 
 import { AsyncButton } from '../auth/async-button';
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';

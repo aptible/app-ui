@@ -150,8 +150,7 @@ export const reducers = createReducerMap(data);
 function* quickSave(ctx: AuthApiCtx, next: Next) {
   yield next();
   if (!ctx.response.ok) return;
-  const { quickSave = false } = ctx.request;
-  if (!quickSave) return;
+  if (!ctx.request.quickSave) return;
   ctx.actions.push(
     data.actions.add({
       [JSON.stringify(ctx.action)]: ctx.response.data,

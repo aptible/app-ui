@@ -8,7 +8,7 @@ import { selectLoader } from '@app/loaders';
 
 type CurrentUser = LoadingState & { user: User };
 
-export function useCurrentUser() {
+export function useCurrentUser(): CurrentUser {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
   const user = useSelector(selectCurrentUser);

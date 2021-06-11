@@ -25,6 +25,8 @@ export function deserializeUser(u: UserResponse): User {
     superuser: u.superuser,
     username: u.username,
     verified: u.verified,
-    currentOtpId: extractIdFromLink(u._links.current_otp_configuration?.href),
+    currentOtpId: extractIdFromLink(
+      u._links.current_otp_configuration?.href || '',
+    ),
   };
 }

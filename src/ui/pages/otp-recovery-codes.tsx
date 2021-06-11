@@ -1,9 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { Box, Flex, Text, Loading } from '@aptible/arrow-ds';
+import { Box, Text, Loading } from '@aptible/arrow-ds';
 
 import { HalEmbedded } from '@app/types';
-import { selectCurrentUser } from '@app/users';
 import { fetchOtpCodes } from '@app/mfa';
 
 import { useData } from '../use-data';
@@ -22,7 +20,6 @@ export const OtpRecoveryCodesPage = () => {
     fetchOtpCodes({ otpId: user.currentOtpId }),
     user.currentOtpId,
   );
-  console.log(data);
 
   if (isLoading) return <Loading />;
   if (!data) return <Box>Woops</Box>;
@@ -31,10 +28,10 @@ export const OtpRecoveryCodesPage = () => {
   return (
     <Box className="py-4 px-16">
       <Text>Recovery codes</Text>
-      {codes.map((data) => {
+      {codes.map((d) => {
         return (
-          <Text key={data.id} className="my-2">
-            {data.value}
+          <Text key={d.id} className="my-2">
+            {d.value}
           </Text>
         );
       })}

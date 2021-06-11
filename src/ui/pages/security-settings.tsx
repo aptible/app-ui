@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Link as RLink } from 'react-router-dom';
@@ -22,19 +22,11 @@ import {
 
 import { validEmail } from '@app/string-utils';
 import { selectLoader } from '@app/loaders';
-import {
-  fetchUser,
-  updateUser,
-  selectCurrentUser,
-  selectCurrentUserId,
-  updateEmail,
-} from '@app/users';
-import { fetchOtpCodes } from '@app/mfa';
+import { updateUser, selectCurrentUserId, updateEmail } from '@app/users';
 import { revokeAllTokens } from '@app/auth';
 import { otpSetupUrl, otpRecoveryCodesUrl } from '@app/routes';
 
 import { BannerMessages } from '../banner-messages';
-import { useData } from '../use-data';
 import { useCurrentUser } from '../use-current-user';
 
 interface SectionProps {

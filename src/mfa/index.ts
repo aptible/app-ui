@@ -82,8 +82,8 @@ const deserializeOtp = (data: OtpResponse): Otp => {
   return {
     id: data.id,
     uri: data.otp_uri,
-    currentUrl: data._links.self.href,
-    recoveryCodesUrl: data._links.otp_recovery_codes.href,
+    currentUrl: data._links.self?.href || '',
+    recoveryCodesUrl: data._links.otp_recovery_codes?.href || '',
   };
 };
 
