@@ -113,8 +113,12 @@ const ChangePassword = () => {
 };
 
 const MultiFactor = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(selectCurrentUser);
+  const disable = () => {
+    dispatch(updateUser({ type: 'otp', userId: user.id, otp_enabled: false }));
+  };
 
   return (
     <Box>
@@ -130,7 +134,7 @@ const MultiFactor = () => {
 
       {user.otpEnabled ? (
         <Button.Group className="mb-2" isFullWidth>
-          <Button>Disable 2FA</Button>
+          <Button onClick={disable}>Disable 2FA</Button>
           <Button>Download Backup Codes</Button>
         </Button.Group>
       ) : (
