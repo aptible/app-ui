@@ -3192,10 +3192,10 @@ safe-buffer@~5.1.1:
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
   integrity sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
 
-saga-query@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/saga-query/-/saga-query-0.0.10.tgz#6f85da6c05c51359cbce28b462ee094ebdbc71f9"
-  integrity sha512-sHcOXc+3fN8vYoFIY5mZSwZJ2yFhthKQ1R7aCGeQE60FuvzPMC5L+rnxOhaiUEtxmuermvrR55N2FstXT/KzuA==
+saga-query@^0.0.13:
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/saga-query/-/saga-query-0.0.13.tgz#3953f3ee4afe64ed5dfec4218fc07fe81fc4dc1e"
+  integrity sha512-NNA4/Lat7lwf8GjvhqpxBPsiWA/crysZArMaejfeI/fCAW/AbfaJ2pS0EFYX1O/WB3/iKqVosIRCJPCqp5NVgg==
   dependencies:
     redux-saga-creator "^2.0.1"
 
