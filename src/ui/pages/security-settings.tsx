@@ -24,7 +24,11 @@ import { validEmail } from '@app/string-utils';
 import { selectLoader } from '@app/loaders';
 import { updateUser, selectCurrentUserId, updateEmail } from '@app/users';
 import { revokeAllTokens } from '@app/auth';
-import { otpSetupUrl, otpRecoveryCodesUrl } from '@app/routes';
+import {
+  otpSetupUrl,
+  otpRecoveryCodesUrl,
+  addSecurityKeyUrl,
+} from '@app/routes';
 
 import { BannerMessages } from '../banner-messages';
 import { useCurrentUser } from '../use-current-user';
@@ -193,13 +197,28 @@ const ChangeEmail = () => {
 };
 
 const SecurityKeys = () => {
+  const { isLoading, user } = useCurrentUser();
+  if (isLoading) {
+    return <Loading />;
+  }
   return (
     <Box>
-      <Text>
-        The following Security Keys are associated with your account and can be
-        used to log in:
-      </Text>
-      <Button>Add a new Security Key</Button>
+      {user.otpEnabled ? (
+        <Box>
+          <Text>
+            The following Security Keys are associated with your account and can
+            be used to log in:
+          </Text>
+          <Link as={RLink} to={addSecurityKeyUrl()}>
+            Add a new Security Key
+          </Link>
+        </Box>
+      ) : (
+        <Text>
+          In order to add a hardware security key, you must set up 2FA
+          authentication first.
+        </Text>
+      )}
     </Box>
   );
 };

@@ -9,3 +9,4 @@ export * from './security-settings';
 export * from './ssh-settings';
 export * from './otp-setup';
 export * from './otp-recovery-codes';
+export * from './add-security-key';

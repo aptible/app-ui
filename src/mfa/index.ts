@@ -105,3 +105,8 @@ export const setupOtp = authApi.post<{ userId: string }>(
     ctx.actions.push(setOtp(newOtp));
   },
 );
+
+export const fetchU2fChallenges = authApi.post<{ userId: string }>(
+  '/users/:userId/u2f_challenges',
+  authApi.request({ quickSave: true, elevated: true }),
+);
