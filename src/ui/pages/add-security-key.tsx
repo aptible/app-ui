@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ensureSupport, register, sign } from 'u2f-api';
+import { ensureSupport } from 'u2f-api';
 
 import {
   Box,
@@ -25,7 +25,8 @@ interface U2fChallenge {
   challenge: string;
 }
 
-const u2f = (window as any).u2f;
+const { u2f } = window as any;
+console.log(u2f);
 
 export const AddSecurityKeyPage = () => {
   const [name, setName] = useState('');

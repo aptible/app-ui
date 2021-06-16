@@ -1,6 +1,6 @@
 import { call, put, select } from 'redux-saga/effects';
 import { Action, createTable, createReducerMap } from 'robodux';
-import { createQuery, queryCtx, urlParser, FetchCtx, Next } from 'saga-query';
+import { createApi, queryCtx, urlParser, FetchCtx, Next } from 'saga-query';
 import { batchActions } from 'redux-batched-actions';
 
 import { selectEnv } from '@app/env';
@@ -158,7 +158,7 @@ function* quickSave(ctx: AuthApiCtx, next: Next) {
   );
 }
 
-export const authApi = createQuery<AuthApiCtx>();
+export const authApi = createApi<AuthApiCtx>();
 authApi.use(dispatchActions);
 authApi.use(authApi.routes());
 authApi.use(quickSave);
@@ -168,7 +168,7 @@ authApi.use(halEntityParser);
 authApi.use(trackLoading);
 authApi.use(createFetchApi('auth'));
 
-export const api = createQuery<ApiCtx>();
+export const api = createApi<ApiCtx>();
 api.use(dispatchActions);
 api.use(api.routes());
 api.use(queryCtx);
