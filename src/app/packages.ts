@@ -1,8 +1,3 @@
-import { createApp } from 'robodux';
-import sagaCreator from 'redux-saga-creator';
-
-import { AppState } from '@app/types';
-
 import * as env from '@app/env';
 import * as loaders from '@app/loaders';
 import * as users from '@app/users';
@@ -33,15 +28,17 @@ const corePackages: any[] = [
   api,
 ];
 
-const packages = createApp<AppState>(corePackages);
-export const rootReducer = packages.reducer;
-
 export const rootEntities = corePackages.reduce((acc, pkg) => {
   if (!pkg.entities) return acc;
   return { ...acc, ...pkg.entities };
 }, {});
 
-const sagas = corePackages.reduce(
+export const reducers = corePackages.reduce((acc, pkg) => {
+  if (!pkg.reducers) return acc;
+  return { ...acc, ...pkg.reducers };
+}, {});
+
+export const sagas = corePackages.reduce(
   (acc, pkg) => {
     if (!pkg.sagas) return acc;
     return { ...acc, ...pkg.sagas };
@@ -51,10 +48,3 @@ const sagas = corePackages.reduce(
     authApi: api.authApi.saga(),
   },
 );
-
-export const rootSaga = sagaCreator(sagas, (err: Error) => {
-  /* if (env.isProduction) {
-    Sentry.captureException(err);
-  } */
-  console.error(err);
-});

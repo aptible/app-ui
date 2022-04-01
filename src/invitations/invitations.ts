@@ -1,6 +1,6 @@
 import { isBefore } from 'date-fns';
 import { createTable, MapEntity } from 'robodux';
-import { select } from 'redux-saga/effects';
+import { select } from 'saga-query';
 
 import { authApi, AuthApiCtx } from '@app/api';
 import {
@@ -79,9 +79,9 @@ export const fetchInvitations = authApi.get<{ orgId: string }>(
     const token: Token = yield select(selectToken);
     if (!token) return;
     yield next();
-    if (!ctx.response.ok) return;
+    if (!ctx.json.ok) return;
 
-    const { data } = ctx.response;
+    const { data } = ctx.json;
     const invitationsMap = data._embedded.invitations.reduce<
       MapEntity<Invitation>
     >((acc, invitation) => {
@@ -97,8 +97,8 @@ export const fetchInvitation = authApi.get<{ id: string }>(
   `/invitations/:id`,
   function* onFetchInvitation(ctx: AuthApiCtx<InvitationResponse>, next) {
     yield next();
-    if (!ctx.response.ok) return;
-    const { data } = ctx.response;
+    if (!ctx.json.ok) return;
+    const { data } = ctx.json;
 
     ctx.actions.push(
       addInvitations({ [data.id]: deserializeInvitation(data) }),
@@ -110,13 +110,13 @@ export const resetInvitation = authApi.post<string>(
   '/resets',
   function* onResetInvitation(ctx, next): ApiGen {
     const origin = yield select(selectOrigin);
-    ctx.request = {
+    ctx.request = ctx.req({
       body: JSON.stringify({
         type: 'invitation',
         origin,
         invitation_id: ctx.payload,
       }),
-    };
+    });
     yield next();
   },
 );

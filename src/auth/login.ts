@@ -1,4 +1,4 @@
-import { put, call } from 'redux-saga/effects';
+import { put, call } from 'saga-query';
 import { ActionWithPayload, createAction } from 'robodux';
 import { batchActions } from 'redux-batched-actions';
 
@@ -20,8 +20,8 @@ export function* onLogin(action: ActionWithPayload<CreateTokenPayload>) {
   );
   console.log(ctx);
 
-  if (!ctx.response.ok) {
-    const { message, error, code, exception_context } = ctx.response.data;
+  if (!ctx.json.ok) {
+    const { message, error, code, exception_context } = ctx.json.data;
     yield put(
       setAuthLoaderError({
         message,

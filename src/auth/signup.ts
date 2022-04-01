@@ -1,4 +1,4 @@
-import { put, call } from 'redux-saga/effects';
+import { put, call } from 'saga-query';
 import { ActionWithPayload, createAction } from 'robodux';
 import { batchActions } from 'redux-batched-actions';
 
@@ -13,8 +13,8 @@ import { CreateUserForm, CreateUserCtx, createUser } from '@app/users';
 import { TokenCtx, createToken } from './token';
 
 function* setAuthError(ctx: AuthApiCtx) {
-  if (ctx.response.ok) return;
-  const { message, ...meta } = ctx.response.data;
+  if (ctx.json.ok) return;
+  const { message, ...meta } = ctx.json.data;
   yield put(setAuthLoaderError({ message, meta }));
 }
 
@@ -29,7 +29,7 @@ export function* onSignup(action: ActionWithPayload<CreateUserForm>) {
     createUser(action.payload),
   );
   console.log(userCtx);
-  if (!userCtx.response.ok) {
+  if (!userCtx.json.ok) {
     yield call(setAuthError, userCtx);
     return;
   }
@@ -44,7 +44,7 @@ export function* onSignup(action: ActionWithPayload<CreateUserForm>) {
     }),
   );
   console.log(tokenCtx);
-  if (!tokenCtx.response.ok) {
+  if (!tokenCtx.json.ok) {
     yield call(setAuthError, tokenCtx);
     return;
   }

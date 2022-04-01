@@ -1,4 +1,4 @@
-import { takeEvery } from 'redux-saga/effects';
+import { takeEvery } from 'saga-query';
 
 import { login, onLogin } from './login';
 import { signup, onSignup } from './signup';

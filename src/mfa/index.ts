@@ -1,4 +1,4 @@
-import { select } from 'redux-saga/effects';
+import { select } from 'saga-query';
 import { createAssign, createTable, createReducerMap } from 'robodux';
 
 import { LinkResponse, ApiGen, AppState, U2fDevice, Otp } from '@app/types';
@@ -89,24 +89,33 @@ const deserializeOtp = (data: OtpResponse): Otp => {
 
 export const fetchOtpCodes = authApi.get<{ otpId: string }>(
   '/otp_configurations/:otpId/otp_recovery_codes',
-  authApi.request({ quickSave: true, elevated: true }),
+  function* (ctx, next) {
+    ctx.cache = true;
+    ctx.elevated = true;
+    yield next();
+  },
 );
 
 export const setupOtp = authApi.post<{ userId: string }>(
   '/users/:userId/otp_configurations',
   function* onOtp(ctx: AuthApiCtx<OtpResponse, SetupOtp>, next): ApiGen {
     const curOtp = yield select(selectOtp);
-
     if (curOtp.id) return;
-    yield next();
-    if (!ctx.response.ok) return;
 
-    const newOtp = deserializeOtp(ctx.response.data);
+    yield next();
+
+    if (!ctx.json.ok) return;
+
+    const newOtp = deserializeOtp(ctx.json.data);
     ctx.actions.push(setOtp(newOtp));
   },
 );
 
 export const fetchU2fChallenges = authApi.post<{ userId: string }>(
   '/users/:userId/u2f_challenges',
-  authApi.request({ quickSave: true, elevated: true }),
+  function* (ctx, next) {
+    ctx.cache = true;
+    ctx.elevated = true;
+    yield next();
+  },
 );

@@ -1,4 +1,4 @@
-import { call, select } from 'redux-saga/effects';
+import { call, select } from 'saga-query';
 
 import { ApiGen } from '@app/types';
 import { authApi, AuthApiCtx } from '@app/api';
@@ -18,21 +18,23 @@ export const acceptInvitation = authApi.post(
     next,
   ): ApiGen {
     if (ctx.payload.verificationCode) {
-      ctx.request = {
+      ctx.request = ctx.req({
         url: '/verifications',
         body: JSON.stringify({
           type: 'invitation',
           invitation_id: ctx.payload.invitationId,
           verification_code: ctx.payload.verificationCode,
         }),
-      };
+      });
     } else {
-      ctx.request = {
+      ctx.request = ctx.req({
         url: `/invitations/${ctx.payload.invitationId}/accept`,
-      };
+      });
     }
+
     yield next();
-    if (!ctx.response.ok) return;
+
+    if (!ctx.json.ok) return;
 
     // After accepting an invitation, we need to refresh our token to get elevated permissions
     // Once the elevated permissions are granted, we need to reload all assets using bootup.

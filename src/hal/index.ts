@@ -1,6 +1,5 @@
-import { select } from 'redux-saga/effects';
 import { MapEntity, createAssign, Action, createReducerMap } from 'robodux';
-import { Next, FetchCtx } from 'saga-query';
+import { Next, ApiCtx, select } from 'saga-query';
 
 import {
   AppState,
@@ -32,13 +31,13 @@ export function defaultEntity<E = any>(e: EmbeddedMap<E>): EmbeddedMap<E> {
   return e;
 }
 
-export function* halEntityParser(ctx: FetchCtx, next: Next) {
+export function* halEntityParser(ctx: ApiCtx, next: Next) {
   yield next();
 
-  if (!ctx.response.ok) return;
+  if (!ctx.json.ok) return;
 
   const entityMap: EntityMap = yield select(selectEntities);
-  const { data } = ctx.response;
+  const { data } = ctx.json;
 
   const actions: Action<any>[] = [];
   const store: { [key: string]: IdEntity[] } = {};

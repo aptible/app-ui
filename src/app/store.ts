@@ -1,26 +1,17 @@
-import {
-  createStore,
-  applyMiddleware,
-  Middleware,
-  Store,
-  Reducer,
-  AnyAction,
-} from 'redux';
-import createSagaMiddleware, { Saga, stdChannel } from 'redux-saga';
-import { enableBatching, BATCH } from 'redux-batched-actions';
-import { Action } from 'robodux';
+import { createStore, applyMiddleware, Middleware, Store } from 'redux';
+import { BATCH } from 'redux-batched-actions';
 import { PersistPartial } from 'redux-persist/es/persistReducer';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
+import { prepareStore } from 'saga-query';
 
 import { AppState } from '@app/types';
 import { resetReducer } from '@app/reset-store';
 import { TOKEN_NAME, ELEVATED_TOKEN_NAME } from '@app/token';
+import { sagas, reducers } from './packages';
 
 interface Props {
   initState?: Partial<AppState>;
-  rootReducer: Reducer<AppState, AnyAction>;
-  rootSaga: Saga<any>;
 }
 
 interface AppStore<State> {
@@ -34,25 +25,8 @@ const persistConfig = {
   whitelist: [TOKEN_NAME, ELEVATED_TOKEN_NAME],
 };
 
-export function setupStore({
-  initState,
-  rootReducer,
-  rootSaga,
-}: Props): AppStore<AppState> {
+export function setupStore({ initState }: Props): AppStore<AppState> {
   const middleware: Middleware[] = [];
-
-  const channel = stdChannel();
-  const rawPut = channel.put;
-  channel.put = (action: Action<any>) => {
-    if (action.type === BATCH) {
-      action.payload.forEach(rawPut);
-      return;
-    }
-    rawPut(action);
-  };
-
-  const sagaMiddleware = createSagaMiddleware({ channel } as any);
-  middleware.push(sagaMiddleware);
 
   if (import.meta.env.VITE_DEBUG === 'true') {
     const logger = (store: any) => (next: any) => (action: any) => {
@@ -69,12 +43,17 @@ export function setupStore({
     middleware.push(logger);
   }
 
+  const prepared = prepareStore({
+    reducers,
+    sagas,
+  });
+
+  middleware.push(...prepared.middleware);
+
   // we need this baseReducer so we can wipe the localStorage cache as well as
   // reset the store when a user logs out
-  const baseReducer = resetReducer(rootReducer, persistConfig);
-  const persistedReducer = enableBatching(
-    persistReducer(persistConfig, baseReducer),
-  );
+  const baseReducer = resetReducer(prepared.reducer, persistConfig);
+  const persistedReducer = persistReducer(persistConfig, baseReducer);
 
   const store = createStore(
     persistedReducer,
@@ -83,7 +62,7 @@ export function setupStore({
   );
   const persistor = persistStore(store);
 
-  sagaMiddleware.run(rootSaga);
+  prepared.run();
 
   return { store, persistor };
 }

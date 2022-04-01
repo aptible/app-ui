@@ -1,6 +1,6 @@
 import { REHYDRATE } from 'redux-persist';
 import { createAction } from 'robodux';
-import { call, takeEvery, take } from 'redux-saga/effects';
+import { call, takeEvery, take } from 'saga-query';
 
 import { fetchCurrentToken } from '@app/auth';
 

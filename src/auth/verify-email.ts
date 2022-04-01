@@ -9,13 +9,13 @@ export const verifyEmail = authApi.post<VerifyEmail>(
   '/verifications',
   function* onVerifyEmail(ctx: AuthApiCtx<any, VerifyEmail>, next) {
     const { challengeId, verificationCode } = ctx.payload;
-    ctx.request = {
+    ctx.request = ctx.req({
       body: JSON.stringify({
         type: 'email_verification_challenge',
         challenge_id: challengeId,
         verification_code: verificationCode,
       }),
-    };
+    });
     yield next();
   },
 );
@@ -32,9 +32,9 @@ export const resendVerification = authApi.post<ResendVerification>(
     next,
   ) {
     const { origin } = ctx.payload;
-    ctx.request = {
+    ctx.request = ctx.req({
       body: JSON.stringify({ origin }),
-    };
+    });
     yield next();
   },
 );

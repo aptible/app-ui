@@ -1,4 +1,4 @@
-import { call, put } from 'redux-saga/effects';
+import { call, put } from 'saga-query';
 
 import { authApi, AuthApiCtx } from '@app/api';
 import {
@@ -18,8 +18,8 @@ export interface CreateTokenPayload {
 export type TokenCtx = AuthApiCtx<TokenSuccessResponse, CreateTokenPayload>;
 
 function saveToken(ctx: AuthApiCtx<TokenSuccessResponse>) {
-  if (!ctx.response.ok) return;
-  const curToken = deserializeToken(ctx.response.data);
+  if (!ctx.json.ok) return;
+  const curToken = deserializeToken(ctx.json.data);
   ctx.actions.push(setToken(curToken));
 }
 
@@ -27,7 +27,7 @@ export const fetchCurrentToken = authApi.get(
   '/current_token',
   function* onFetchToken(ctx: AuthApiCtx<TokenSuccessResponse>, next) {
     yield next();
-    if (!ctx.response.ok) {
+    if (!ctx.json.ok) {
       yield put(resetToken());
       return;
     }
@@ -38,7 +38,7 @@ export const fetchCurrentToken = authApi.get(
 export const createToken = authApi.post<CreateTokenPayload>(
   '/tokens',
   function* onCreateToken(ctx: TokenCtx, next) {
-    ctx.request = {
+    ctx.request = ctx.req({
       body: JSON.stringify({
         username: ctx.payload.username,
         password: ctx.payload.password,
@@ -49,7 +49,7 @@ export const createToken = authApi.post<CreateTokenPayload>(
         scope: 'manage',
         _source: 'deploy',
       }),
-    };
+    });
 
     yield next();
     yield call(saveToken, ctx);
@@ -61,7 +61,7 @@ export type ElevateTokenCtx = AuthApiCtx<TokenSuccessResponse, ElevateToken>;
 export const elevateToken = authApi.post<ElevateToken>(
   'create-elevated-token',
   function* onElevateToken(ctx: ElevateTokenCtx, next) {
-    ctx.request = {
+    ctx.request = ctx.req({
       url: '/tokens',
       method: 'POST',
       body: JSON.stringify({
@@ -74,11 +74,12 @@ export const elevateToken = authApi.post<ElevateToken>(
         scope: 'elevated',
         _source: 'deploy',
       }),
-    };
+    });
 
     yield next();
-    if (!ctx.response.ok) return;
-    const curToken = deserializeToken(ctx.response.data);
+
+    if (!ctx.json.ok) return;
+    const curToken = deserializeToken(ctx.json.data);
     ctx.actions.push(setElevatedToken(curToken));
   },
 );
@@ -94,7 +95,7 @@ export const exchangeToken = authApi.post<ExchangeToken>(
     ctx: AuthApiCtx<TokenSuccessResponse, ExchangeToken>,
     next,
   ) {
-    ctx.request = {
+    ctx.request = ctx.req({
       url: '/tokens',
       method: 'POST',
       body: JSON.stringify({
@@ -107,7 +108,7 @@ export const exchangeToken = authApi.post<ExchangeToken>(
         scope: 'manage',
         _source: 'deploy',
       }),
-    };
+    });
 
     yield next();
     yield call(saveToken, ctx);
@@ -118,7 +119,7 @@ export const revokeAllTokens = authApi.post(
   '/tokens/revoke_all_accessible',
   function* onRevokeAll(ctx, next) {
     yield next();
-    if (!ctx.response.ok) return;
+    if (!ctx.json.ok) return;
     ctx.actions.push(resetToken());
   },
 );

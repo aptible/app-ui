@@ -1,4 +1,4 @@
-import { call, select } from 'redux-saga/effects';
+import { call, select } from 'saga-query';
 import { createReducerMap, createTable, createAssign } from 'robodux';
 import { createSelector } from 'reselect';
 
@@ -104,9 +104,9 @@ export const fetchOrganizations = authApi.get(
   '/organizations',
   function* onFetchOrgs(ctx: FetchOrgCtx, next) {
     yield next();
-    if (!ctx.response.ok) return;
+    if (!ctx.json.ok) return;
 
-    const orgs = ctx.response.data._embedded.organizations;
+    const orgs = ctx.json.data._embedded.organizations;
     if (orgs.length > 0) {
       ctx.actions.push(setOrganizationSelected(orgs[0].id));
     }
@@ -128,10 +128,10 @@ export const createOrganization = authApi.post<CreateOrg>(
     };
     yield next();
     const token = yield select(selectToken);
-    if (!ctx.response.ok) return;
+    if (!ctx.json.ok) return;
 
     yield call(exchangeToken.run, exchangeToken(token));
-    ctx.actions.push(setOrganizationSelected(ctx.response.data.id));
+    ctx.actions.push(setOrganizationSelected(ctx.json.data.id));
   },
 );
 

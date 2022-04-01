@@ -1,7 +1,7 @@
 import { Action, Reducer } from 'redux';
 import { createAction } from 'robodux';
 import { PersistConfig } from 'redux-persist';
-import { take, put } from 'redux-saga/effects';
+import { take, put } from 'saga-query';
 
 import { AppState } from '@app/types';
 import { resetToken } from '@app/token';

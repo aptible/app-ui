@@ -1,4 +1,4 @@
-import { call, put } from 'redux-saga/effects';
+import { call, put } from 'saga-query';
 import { createAction, ActionWithPayload } from 'robodux';
 
 import {
@@ -17,8 +17,8 @@ export function* onElevate(action: ActionWithPayload<ElevateToken>) {
     elevateToken(action.payload),
   );
 
-  if (!ctx.response.ok) {
-    const { message, error, code, exception_context } = ctx.response.data;
+  if (!ctx.json.ok) {
+    const { message, error, code, exception_context } = ctx.json.data;
     yield put(
       setAuthLoaderError({
         message,

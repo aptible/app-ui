@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 
 import { selectAuthLoader } from '@app/loaders';
 import { Token, AppState } from '@app/types';
+
 import { parseJwt } from './jwt-parser';
 
 export * from './jwt-parser';

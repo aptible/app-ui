@@ -1,7 +1,6 @@
-import { select } from 'redux-saga/effects';
-import { Next } from 'saga-query';
+import { Next, select } from 'saga-query';
 
-import { authApi, AuthApiCtx } from '@app/api';
+import { authApi, AuthApiCtx, elevetatedMdw } from '@app/api';
 import { ApiGen } from '@app/types';
 import { selectOrigin } from '@app/env';
 
@@ -11,10 +10,7 @@ interface UserBase {
   userId: string;
 }
 
-export const fetchUser = authApi.get<UserBase>(
-  '/users/:userId',
-  authApi.request({ elevated: true }),
-);
+export const fetchUser = authApi.get<UserBase>('/users/:userId', elevetatedMdw);
 export const fetchUsers = authApi.get<{ orgId: string }>(
   '/organizations/:orgId/users',
 );
@@ -24,9 +20,9 @@ export const createUser = authApi.post<CreateUserForm>(
   '/users',
   function* onCreateUser(ctx: CreateUserCtx, next): ApiGen {
     const origin = yield select(selectOrigin);
-    ctx.request = {
+    ctx.request = ctx.req({
       body: JSON.stringify({ ...ctx.payload, origin }),
-    };
+    });
 
     yield next();
   },
@@ -62,10 +58,10 @@ type ElevatedPostCtx = AuthApiCtx<
 
 function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
   const { userId, type: _, ...payload } = ctx.payload;
-  ctx.request = {
-    elevated: true,
+  ctx.elevated = true;
+  ctx.request = ctx.req({
     body: JSON.stringify(payload),
-  };
+  });
   yield next();
 }
 
@@ -86,5 +82,5 @@ export const updateEmail = authApi.post<UpdateEmail>(
 
 export const fetchRecoveryCodes = authApi.get<UserBase>(
   '/users/:userId/otp_recovery_codes',
-  authApi.request({ quickSave: true }),
+  authApi.cache(),
 );
