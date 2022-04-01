@@ -9,14 +9,13 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "lint": "yarn lint.types && yarn lint.eslint && yarn lint.prettier",
     "format": "prettier --write src/*/**.{ts,tsx}",
     "lint.eslint": "eslint --ext .ts,.tsx .",
     "lint.prettier": "prettier -c src/**/*.{ts,tsx}",
     "lint.types": "tsc --noEmit",
+    "lint": "yarn lint.types && yarn lint.eslint && yarn lint.prettier",
     "prepare": "husky install",
-    "test": "yarn lint",
-    "css": "postcss ./index.css -o ./public/index.css"
+    "test": "yarn lint"
   },
   "dependencies": {
     "@types/react": "^17.0.43",
