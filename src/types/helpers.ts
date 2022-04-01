@@ -1,3 +1,3 @@
-import { SagaIterator } from 'redux-saga';
+import { SagaIterator } from 'saga-query';
 
 export type ApiGen<RT = void> = SagaIterator<RT>;

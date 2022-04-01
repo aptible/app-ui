@@ -42,6 +42,11 @@ function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
 
 function* tokenMdw(ctx: ApiCtx, next: Next): ApiGen {
   const token = yield select(selectAccessToken);
+  if (!token) {
+    yield next();
+    return;
+  }
+
   ctx.request = ctx.req({
     headers: {
       Authorization: `Bearer ${token}`,
@@ -57,6 +62,11 @@ function* elevatedTokenMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   }
 
   const token = yield select(selectElevatedAccessToken);
+  if (!token) {
+    yield next();
+    return;
+  }
+
   ctx.request = ctx.req({
     headers: {
       Authorization: `Bearer ${token}`,
@@ -65,17 +75,17 @@ function* elevatedTokenMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   yield next();
 }
 
-function* getUrl(ctx: AppCtx): ApiGen<string> {
+function* getUrl(ctx: AppCtx, endpoint: EndpointUrl): ApiGen<string> {
   const { url } = ctx.req();
   const fullUrl = url.startsWith('http');
   if (fullUrl) return url;
 
-  const baseUrl = yield call(getApiBaseUrl, 'api');
-  return baseUrl;
+  const baseUrl = yield call(getApiBaseUrl, endpoint);
+  return `${baseUrl}${url}`;
 }
 
 function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
-  const url = yield call(getUrl, ctx);
+  const url = yield call(getUrl, ctx, 'api');
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
@@ -89,7 +99,7 @@ function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
 }
 
 function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
-  const url = yield call(getUrl, ctx);
+  const url = yield call(getUrl, ctx, 'auth');
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies

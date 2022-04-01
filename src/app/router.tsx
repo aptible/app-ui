@@ -1,6 +1,6 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { ToastContainer } from 'react-toastify';
 
 import {
   HomePage,
@@ -37,62 +37,57 @@ import {
 export const Router = () => (
   <div>
     <Helmet titleTemplate="%s - Aptible Deploy" defaultTitle="Aptible Deploy" />
+    <ToastContainer />
     <Routes>
-      <Route path={LOGIN_PATH}>
-        <LoginPage />
-      </Route>
+      <Route path={LOGIN_PATH} element={<LoginPage />} />
 
-      <Route path={SIGNUP_PATH}>
-        <SignupPage />
-      </Route>
+      <Route path={SIGNUP_PATH} element={<SignupPage />} />
 
       <Route path={HOME_PATH} element={<AuthRequired />}>
-        <HomePage />
+        <Route index element={<HomePage />} />
       </Route>
 
       <Route path={VERIFY_EMAIL_REQUEST_PATH} element={<AuthRequired />}>
-        <VerifyEmailPage />
+        <Route index element={<VerifyEmailPage />} />
       </Route>
 
       <Route path={VERIFY_EMAIL_PATH} element={<AuthRequired />}>
-        <VerifyEmailPage />
+        <Route index element={<VerifyEmailPage />} />
       </Route>
 
       <Route path={CREATE_ORG_PATH} element={<AuthRequired />}>
-        <CreateOrgPage />
+        <Route index element={<CreateOrgPage />} />
       </Route>
 
       <Route path={ELEVATE_PATH} element={<AuthRequired />}>
-        <ElevatePage />
+        <Route index element={<ElevatePage />} />
       </Route>
 
       <Route path={SECURITY_SETTINGS_PATH} element={<ElevateRequired />}>
-        <SecuritySettingsPage />
+        <Route index element={<SecuritySettingsPage />} />
       </Route>
 
       <Route path={SSH_SETTINGS_PATH} element={<ElevateRequired />}>
-        <SSHSettingsPage />
+        <Route index element={<SSHSettingsPage />} />
       </Route>
 
       <Route path={OTP_SETUP_PATH} element={<ElevateRequired />}>
-        <OtpSetupPage />
+        <Route index element={<OtpSetupPage />} />
       </Route>
 
       <Route path={OTP_RECOVERY_CODES_PATH} element={<ElevateRequired />}>
-        <OtpRecoveryCodesPage />
+        <Route index element={<OtpRecoveryCodesPage />} />
       </Route>
 
       <Route path={ADD_SECURITY_KEY_PATH} element={<ElevateRequired />}>
-        <AddSecurityKeyPage />
+        <Route index element={<AddSecurityKeyPage />} />
       </Route>
 
       <Route path={NOT_FOUND_PATH}>
-        <NotFoundPage />
+        <Route index element={<NotFoundPage />} />
       </Route>
 
-      <Route path="*">
-        <NotFoundPage />
-      </Route>
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   </div>
 );

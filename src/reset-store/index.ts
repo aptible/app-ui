@@ -6,16 +6,12 @@ import { take, put } from 'saga-query';
 import { AppState } from '@app/types';
 import { resetToken } from '@app/token';
 import { REDIRECT_NAME } from '@app/redirect-path';
-import { LOADERS_NAME } from '@app/loaders';
 import { ENTITIES_NAME } from '@app/hal';
 
 export const resetStore = createAction('RESET_STORE');
 
-const WHITELIST: (keyof AppState)[] = [
-  REDIRECT_NAME,
-  LOADERS_NAME,
-  ENTITIES_NAME,
-];
+const ALLOW_LIST: (keyof AppState)[] = [REDIRECT_NAME, ENTITIES_NAME];
+
 const keepState = (
   state: AppState | undefined,
 ): Partial<AppState> | undefined => {
@@ -23,7 +19,7 @@ const keepState = (
     return state;
   }
 
-  return WHITELIST.reduce<Partial<AppState>>((acc, slice) => {
+  return ALLOW_LIST.reduce<Partial<AppState>>((acc, slice) => {
     (acc as any)[slice] = state[slice];
     return acc;
   }, {});

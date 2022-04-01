@@ -1,12 +1,10 @@
-import React from 'react';
-
-import { Box, Heading, Button } from '@aptible/arrow-ds';
+import { Button } from '../button';
 
 export const SSHSettingsPage = () => {
   return (
-    <Box className="p-4">
-      <Heading.H1>SSH Settings</Heading.H1>
+    <div className="p-4">
+      <h1>SSH Settings</h1>
       <Button>Add another SSH key</Button>
-    </Box>
+    </div>
   );
 };

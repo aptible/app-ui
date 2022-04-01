@@ -1,35 +1,21 @@
-import React from 'react';
-
-import { Frame, Appbar } from '@aptible/arrow-ds';
-
-import { defaultOrganization } from '@app/organizations';
-import { homeUrl, securitySettingsUrl, sshSettingsUrl } from '@app/routes';
-import { NavTabs, NavTab } from './nav-tab';
-import { UserDropdown } from './user-nav';
+import {
+  createOrgUrl,
+  homeUrl,
+  securitySettingsUrl,
+  sshSettingsUrl,
+} from '@app/routes';
+import { Link } from 'react-router-dom';
 
 export const Nav = ({ children }: { children: React.ReactNode }) => {
-  const selectedOrg = defaultOrganization({ id: '1337', name: 'Aptible' });
   return (
-    <Frame>
-      <Frame.Area name="appbar">
-        <Appbar
-          logoProps={{ href: homeUrl() }}
-          nav={
-            <NavTabs onMouseLeave={() => {}}>
-              <NavTab to={homeUrl()} isCurrent>
-                Dashboard
-              </NavTab>
-              <NavTab to={securitySettingsUrl()}>Security Settings</NavTab>
-              <NavTab to={sshSettingsUrl()}>SSH Settings</NavTab>
-            </NavTabs>
-          }
-          user={<UserDropdown />}
-          organization={
-            <Appbar.Organization name={selectedOrg.name} onClick={() => {}} />
-          }
-        />
-      </Frame.Area>
-      <Frame.Area name="main">{children}</Frame.Area>
-    </Frame>
+    <div>
+      <div className="flex justify-between w-full">
+        <Link to={homeUrl()}>Dashboard</Link>
+        <Link to={createOrgUrl()}>Create Organization</Link>
+        <Link to={securitySettingsUrl()}>Security Settings</Link>
+        <Link to={sshSettingsUrl()}>SSH Settings</Link>
+      </div>
+      {children}
+    </div>
   );
 };

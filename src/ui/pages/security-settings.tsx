@@ -1,27 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { Link as RLink } from 'react-router-dom';
-
-import {
-  Card,
-  Box,
-  FormGroup,
-  Heading,
-  Input,
-  Label,
-  Button,
-  Text,
-  STATUS_VARIANT,
-  BUTTON_VARIANT,
-  InputFeedback,
-  Banner,
-  Link,
-  Loading,
-} from '@aptible/arrow-ds';
+import { Link } from 'react-router-dom';
+import { useLoader } from 'saga-query/react';
 
 import { validEmail } from '@app/string-utils';
-import { selectLoader } from '@app/loaders';
 import { updateUser, selectCurrentUserId, updateEmail } from '@app/users';
 import { revokeAllTokens } from '@app/auth';
 import {
@@ -32,6 +15,11 @@ import {
 
 import { BannerMessages } from '../banner-messages';
 import { useCurrentUser } from '../use-current-user';
+import { FormGroup } from '../form-group';
+import { InputFeedback } from '../input';
+import { Button } from '../button';
+import { Loading } from '../loading';
+import { Banner } from '../banner';
 
 interface SectionProps {
   children: React.ReactNode;
@@ -40,21 +28,17 @@ interface SectionProps {
 
 const Section = ({ children, title }: SectionProps) => {
   return (
-    <Card
-      bodySlot={
-        <>
-          <Heading.H2>{title}</Heading.H2>
-          <Box className="my-4">{children}</Box>
-        </>
-      }
-    />
+    <div>
+      <h2>{title}</h2>
+      <div className="my-4">{children}</div>
+    </div>
   );
 };
 
 const ChangePassword = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
-  const loader = useSelector(selectLoader(`${updateUser}`));
+  const loader = useLoader(updateUser);
 
   const [pass, setPass] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
@@ -74,13 +58,13 @@ const ChangePassword = () => {
     dispatch(updateUser({ type: 'update-password', userId, password: pass }));
   };
 
-  const groupVariant = error ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT;
+  const groupVariant = error ? 'error' : 'default';
 
   return (
     <form onSubmit={onSubmit}>
       <FormGroup variant={groupVariant}>
-        <Label htmlFor="input-password">New Password</Label>
-        <Input
+        <label htmlFor="input-password">New Password</label>
+        <input
           name="password"
           type="password"
           value={pass}
@@ -89,15 +73,15 @@ const ChangePassword = () => {
         />
       </FormGroup>
       <FormGroup variant={groupVariant}>
-        <Label htmlFor="input-password">Confirm New Password</Label>
-        <Input
+        <label htmlFor="input-password">Confirm New Password</label>
+        <input
           name="config-password"
           type="password"
           value={confirmPass}
           onChange={(e) => setConfirmPass(e.currentTarget.value)}
           data-testid="input-confirm-password"
         />
-        <InputFeedback variant={STATUS_VARIANT.DANGER}>{error}</InputFeedback>
+        <InputFeedback variant="error">{error}</InputFeedback>
       </FormGroup>
       <Button
         type="submit"
@@ -121,22 +105,20 @@ const MultiFactor = () => {
   };
 
   const btns = user.otpEnabled ? (
-    <Button.Group className="mb-2" isFullWidth>
+    <div className="mb-2 w-100">
       <Button onClick={disable}>Disable 2FA</Button>
-      <Link as={RLink} to={otpRecoveryCodesUrl()}>
-        Download backup codes
-      </Link>
-    </Button.Group>
+      <Link to={otpRecoveryCodesUrl()}>Download backup codes</Link>
+    </div>
   ) : (
     <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
   );
   const content = isLoading ? <Loading /> : btns;
 
   return (
-    <Box>
-      <Text className="my-2">
+    <div>
+      <div className="my-2">
         2-factor authentication is enabled for your account.
-      </Text>
+      </div>
 
       <ul className="mb-2">
         <li>Download your backup codes if you haven&apos;t done so yet.</li>
@@ -145,7 +127,7 @@ const MultiFactor = () => {
       </ul>
 
       {content}
-    </Box>
+    </div>
   );
 };
 
@@ -153,7 +135,7 @@ const ChangeEmail = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
   const [email, setEmail] = useState<string>('');
-  const loader = useSelector(selectLoader(`${updateEmail}`));
+  const loader = useLoader(updateEmail);
   const error = email === '' || validEmail(email) ? '' : 'Not a valid email';
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -163,19 +145,17 @@ const ChangeEmail = () => {
   };
 
   return (
-    <Box>
-      <Text>
+    <div>
+      <div>
         You will need to verify your new email address before it can be used.
         Show pending verifications.
-      </Text>
+      </div>
 
       <form onSubmit={onSubmit}>
-        <FormGroup
-          variant={error ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT}
-        >
-          <Label htmlFor="input-email">Email</Label>
+        <FormGroup variant={error ? 'error' : 'default'}>
+          <label htmlFor="input-email">Email</label>
 
-          <Input
+          <input
             name="email"
             type="email"
             value={email}
@@ -192,7 +172,7 @@ const ChangeEmail = () => {
         </Button>
         <BannerMessages {...loader} />
       </form>
-    </Box>
+    </div>
   );
 };
 
@@ -202,76 +182,65 @@ const SecurityKeys = () => {
     return <Loading />;
   }
   return (
-    <Box>
+    <div>
       {user.otpEnabled ? (
-        <Box>
-          <Text>
+        <div>
+          <div>
             The following Security Keys are associated with your account and can
             be used to log in:
-          </Text>
-          <Link as={RLink} to={addSecurityKeyUrl()}>
-            Add a new Security Key
-          </Link>
-        </Box>
+          </div>
+          <Link to={addSecurityKeyUrl()}>Add a new Security Key</Link>
+        </div>
       ) : (
-        <Text>
+        <div>
           In order to add a hardware security key, you must set up 2FA
           authentication first.
-        </Text>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 
 const LogOut = () => {
   const dispatch = useDispatch();
-  const loader = useSelector(selectLoader(`${revokeAllTokens}`));
+  const loader = useLoader(revokeAllTokens);
   const [confirm, setConfirm] = useState(false);
   const makeItSo = () => dispatch(revokeAllTokens());
 
   const confirmDialog = (
-    <Box className="mt-2">
-      <Text>Are you sure you want to log out of all sessions?</Text>
-      <Button.Group>
-        <Button
-          variant={BUTTON_VARIANT.SECONDARY}
-          onClick={() => setConfirm(false)}
-        >
-          Cancel
-        </Button>
-        <Button variant={BUTTON_VARIANT.DANGER} onClick={makeItSo}>
+    <div className="mt-2">
+      <div>Are you sure you want to log out of all sessions?</div>
+      <div>
+        <Button onClick={() => setConfirm(false)}>Cancel</Button>
+        <Button variant="error" onClick={makeItSo}>
           Make it so
         </Button>
-      </Button.Group>
-    </Box>
+      </div>
+    </div>
   );
 
   return (
-    <Box>
-      <Text>
+    <div>
+      <div>
         You can log out other sessions at any time. This cannot be undone.
-      </Text>
-      <Button
-        className="mb-4"
-        variant={BUTTON_VARIANT.DANGER}
-        onClick={() => setConfirm(true)}
-      >
+      </div>
+      <Button className="mb-4" variant="error" onClick={() => setConfirm(true)}>
         Log out all other sessions
       </Button>
       {loader.isError ? (
-        <Banner variant={STATUS_VARIANT.DANGER}>{loader.message}</Banner>
+        <Banner variant="error">{loader.message}</Banner>
       ) : null}
       {confirm ? confirmDialog : null}
-    </Box>
+    </div>
   );
 };
 
 export const SecuritySettingsPage = () => {
   return (
-    <Box className="p-4">
-      <Heading.H1>Security Settings</Heading.H1>
+    <div className="p-4">
+      <h1>Security Settings</h1>
 
-      <Card.Group cardSize={400} className="m-8">
+      <div className="m-8" style={{ width: 400 }}>
         <Section title="Change your password">
           <ChangePassword />
         </Section>
@@ -291,7 +260,7 @@ export const SecuritySettingsPage = () => {
         <Section title="Log out other sessions">
           <LogOut />
         </Section>
-      </Card.Group>
-    </Box>
+      </div>
+    </div>
   );
 };

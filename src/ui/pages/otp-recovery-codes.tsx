@@ -1,11 +1,9 @@
-import React from 'react';
-import { Box, Text, Loading } from '@aptible/arrow-ds';
-
 import { HalEmbedded } from '@app/types';
 import { fetchOtpCodes } from '@app/mfa';
+import { useCache } from 'saga-query/react';
 
-import { useData } from '../use-data';
 import { useCurrentUser } from '../use-current-user';
+import { Loading } from '../loading';
 
 interface OtpCode {
   id: string;
@@ -16,25 +14,24 @@ type OtpResponse = HalEmbedded<{ otp_recovery_codes: OtpCode[] }>;
 
 export const OtpRecoveryCodesPage = () => {
   const { user } = useCurrentUser();
-  const { data, isLoading } = useData<OtpResponse>(
+  const { data, isLoading } = useCache<OtpResponse>(
     fetchOtpCodes({ otpId: user.currentOtpId }),
-    user.currentOtpId,
   );
 
   if (isLoading) return <Loading />;
-  if (!data) return <Box>Woops</Box>;
+  if (!data) return <div>Woops</div>;
   const codes = data._embedded.otp_recovery_codes;
 
   return (
-    <Box className="py-4 px-16">
-      <Text>Recovery codes</Text>
+    <div className="py-4 px-16">
+      <div>Recovery codes</div>
       {codes.map((d) => {
         return (
-          <Text key={d.id} className="my-2">
+          <div key={d.id} className="my-2">
             {d.value}
-          </Text>
+          </div>
         );
       })}
-    </Box>
+    </div>
   );
 };

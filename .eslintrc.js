@@ -8,6 +8,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:jsx-a11y/recommended',
     'airbnb-typescript',
     'plugin:prettier/recommended',
   ],
@@ -74,7 +75,7 @@ module.exports = {
       'error',
       {
         components: ['Link'],
-        specialLink: ['to', 'as'],
+        specialLink: ['to'],
       },
     ],
 
@@ -87,7 +88,7 @@ module.exports = {
 
     'packages/module-boundary': [
       2,
-      { namespace: '@app', packagesDir: './packages' },
+      { namespace: '@app', packagesDir: './src' },
     ],
 
     // REACT

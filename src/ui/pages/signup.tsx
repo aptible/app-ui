@@ -1,16 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import qs from 'query-string';
 import { useLocation, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  FormGroup,
-  Label,
-  Input,
-  InputFeedback,
-  STATUS_VARIANT,
-  Stack,
-  JUSTIFY,
-} from '@aptible/arrow-ds';
 
 import { validatePasswordComplexity, signup } from '@app/auth';
 import {
@@ -27,10 +18,12 @@ import { selectAuthLoader } from '@app/loaders';
 import { validEmail } from '@app/string-utils';
 
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
-import { AsyncButton } from '../auth/async-button';
 import { Progress } from '../auth/progress';
 import { useLoaderSuccess } from '../use-loader-success';
 import { LoggedInBanner } from '../auth/logged-in-banner';
+import { FormGroup } from '../form-group';
+import { InputFeedback } from '../input';
+import { Button } from '../button';
 
 const createQueryStringValue =
   (queryString: string) =>
@@ -117,10 +110,10 @@ const SignupPageForm = () => {
     <form onSubmit={onSubmitForm}>
       <LoggedInBanner />
       <FormGroup>
-        <Label htmlFor="input-name" className="brand-dark-form__label">
+        <label htmlFor="input-name" className="brand-dark-form__label">
           Your Name
-        </Label>
-        <Input
+        </label>
+        <input
           name="name"
           type="text"
           value={name}
@@ -132,15 +125,11 @@ const SignupPageForm = () => {
           id="input-name"
         />
       </FormGroup>
-      <FormGroup
-        variant={
-          emailErrorMessage ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT
-        }
-      >
-        <Label htmlFor="input-email" className="brand-dark-form__label">
+      <FormGroup variant={emailErrorMessage ? 'error' : 'default'}>
+        <label htmlFor="input-email" className="brand-dark-form__label">
           Your email
-        </Label>
-        <Input
+        </label>
+        <input
           name="email"
           type="email"
           value={invitation ? invitation.email : email}
@@ -155,15 +144,11 @@ const SignupPageForm = () => {
         </InputFeedback>
       </FormGroup>
 
-      <FormGroup
-        variant={
-          passwordErrorMessage ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT
-        }
-      >
-        <Label htmlFor="input-password" className="brand-dark-form__label">
+      <FormGroup variant={passwordErrorMessage ? 'error' : 'default'}>
+        <label htmlFor="input-password" className="brand-dark-form__label">
           Password
-        </Label>
-        <Input
+        </label>
+        <input
           name="password"
           type="password"
           value={password}
@@ -178,15 +163,15 @@ const SignupPageForm = () => {
         </InputFeedback>
       </FormGroup>
 
-      <Stack reverse className="mt-9 mb-6" justify={JUSTIFY.BETWEEN}>
-        <AsyncButton
-          inProgress={isLoading}
+      <div className="flex flex-col justify-between mt-9 mb-6">
+        <Button
           disabled={disableSave}
-          label="Create Account"
           type="submit"
           data-testid="signup-submit"
-        />
-      </Stack>
+        >
+          Create Account
+        </Button>
+      </div>
     </form>
   );
 };

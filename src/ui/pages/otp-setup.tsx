@@ -1,31 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import QRCode from 'qrcode.react';
-import {
-  Flex,
-  Box,
-  Text,
-  FormGroup,
-  STATUS_VARIANT,
-  Label,
-  Input,
-  InputFeedback,
-  Button,
-  Loading,
-} from '@aptible/arrow-ds';
+import { useLoader } from 'saga-query/react';
 
-import { selectLoader } from '@app/loaders';
 import { setupOtp, selectOtp } from '@app/mfa';
 import { updateUser, selectCurrentUserId } from '@app/users';
 
 import { ExternalLink } from '../external-link';
 import { BannerMessages } from '../banner-messages';
+import { Loading } from '../loading';
+import { FormGroup } from '../form-group';
+import { InputFeedback } from '../input';
+import { Button } from '../button';
 
 export const OtpSetupPage = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
-  const otpLoader = useSelector(selectLoader(`${setupOtp}`));
-  const userLoader = useSelector(selectLoader(`${updateUser}`));
+  const otpLoader = useLoader(setupOtp);
+  const userLoader = useLoader(updateUser);
   const otp = useSelector(selectOtp);
   const [error, setError] = useState('');
   const [mfa, setMFA] = useState('');
@@ -64,39 +56,37 @@ export const OtpSetupPage = () => {
   };
 
   return (
-    <Flex className="p-16 justify-center">
-      <Box className="max-w-md">
-        <Text className="mb-2">
+    <div className="flex p-16 justify-center">
+      <div className="max-w-md">
+        <div className="mb-2">
           2-factor authentication will be enabled for your account after
           confirmation.
-        </Text>
-        <Text>
+        </div>
+        <div>
           To proceed, scan the QR code below with your 2FA app (we recommend
           using{' '}
           <ExternalLink href="https://support.google.com/accounts/answer/1066447?hl=en">
             Google Authenticator
           </ExternalLink>
           ), input the code generated, and click on Enable 2FA.
-        </Text>
+        </div>
 
         {otpLoader.isLoading ? (
           <Loading />
         ) : (
-          <Box>
-            <Box className="my-4">
-              <Flex className="my-4 justify-center align-center">
+          <div>
+            <div className="my-4">
+              <div className="flex my-4 justify-center align-center">
                 <QRCode value={otp.uri} />
-              </Flex>
-              <Box>Your 2FA URL: {otp.uri}</Box>
-              <Box>Your 2FA Secret: {secret}</Box>
-            </Box>
+              </div>
+              <div>Your 2FA URL: {otp.uri}</div>
+              <div>Your 2FA Secret: {secret}</div>
+            </div>
             <form onSubmit={onSubmit}>
-              <FormGroup
-                variant={error ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT}
-              >
-                <Label htmlFor="input-mfa">2FA Token</Label>
+              <FormGroup variant={error ? 'error' : 'default'}>
+                <label htmlFor="input-mfa">2FA Token</label>
 
-                <Input
+                <input
                   name="mfa"
                   type="mfa"
                   value={mfa}
@@ -115,14 +105,14 @@ export const OtpSetupPage = () => {
               >
                 Enable 2FA
               </Button>
-              <Box className="mt-4">
+              <div className="mt-4">
                 <BannerMessages {...userLoader} />
                 {otpLoader.isError ? <BannerMessages {...otpLoader} /> : null}
-              </Box>
+              </div>
             </form>
-          </Box>
+          </div>
         )}
-      </Box>
-    </Flex>
+      </div>
+    </div>
   );
 };

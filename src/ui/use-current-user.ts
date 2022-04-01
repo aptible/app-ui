@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { LoadingState } from 'robodux';
+import { useLoader } from 'saga-query/react';
 
 import { User } from '@app/types';
 import { selectCurrentUser, selectCurrentUserId, fetchUser } from '@app/users';
-import { selectLoader } from '@app/loaders';
 
 type CurrentUser = LoadingState & { user: User };
 
@@ -12,7 +12,7 @@ export function useCurrentUser(): CurrentUser {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
   const user = useSelector(selectCurrentUser);
-  const loader = useSelector(selectLoader(`${fetchUser}`));
+  const loader = useLoader(fetchUser);
 
   useEffect(() => {
     if (!userId || user.id) return;

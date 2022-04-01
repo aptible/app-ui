@@ -1,30 +1,23 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  FormGroup,
-  Label,
-  Input,
-  InputFeedback,
-  STATUS_VARIANT,
-  Stack,
-  JUSTIFY,
-  Banner,
-} from '@aptible/arrow-ds';
+import { useDispatch } from 'react-redux';
+import { useLoader } from 'saga-query/react';
 
 import { homeUrl } from '@app/routes';
-import { selectLoader } from '@app/loaders';
 import { createOrganization } from '@app/organizations';
 
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
-import { AsyncButton } from '../auth/async-button';
 import { Progress } from '../auth/progress';
 import { useLoaderSuccess } from '../use-loader-success';
+import { Banner } from '../banner';
+import { FormGroup } from '../form-group';
+import { InputFeedback } from '../input';
+import { Button } from '../button';
 
 const CreateOrgForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const loader = useSelector(selectLoader(`${createOrganization}`));
+  const loader = useLoader(createOrganization);
   const { isLoading, isError, message } = loader;
 
   const [name, setName] = useState<string>('');
@@ -44,15 +37,15 @@ const CreateOrgForm = () => {
   return (
     <form onSubmit={onSubmitForm}>
       {isError ? (
-        <Banner variant={STATUS_VARIANT.DANGER} withIcon className="mb-6">
+        <Banner variant="error" className="mb-6">
           {message}
         </Banner>
       ) : null}
       <FormGroup>
-        <Label htmlFor="input-name" className="brand-dark-form__label">
+        <label htmlFor="input-name" className="brand-dark-form__label">
           Your Name
-        </Label>
-        <Input
+        </label>
+        <input
           name="name"
           type="text"
           value={name}
@@ -69,15 +62,16 @@ const CreateOrgForm = () => {
         </InputFeedback>
       </FormGroup>
 
-      <Stack reverse className="mt-9 mb-6" justify={JUSTIFY.BETWEEN}>
-        <AsyncButton
-          inProgress={isLoading}
+      <div className="flex flex-col justify-between mt-9 mb-6">
+        <Button
+          isLoading={isLoading}
           disabled={disableSave}
-          label="Create Organization"
           type="submit"
           data-testid="signup-submit"
-        />
-      </Stack>
+        >
+          Create Organization
+        </Button>
+      </div>
     </form>
   );
 };

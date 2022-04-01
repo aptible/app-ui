@@ -1,22 +1,20 @@
-import React, { useEffect } from 'react';
-import { showToast, STATUS_VARIANT, Stack, JUSTIFY } from '@aptible/arrow-ds';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 import { resendVerification } from '@app/auth';
 import { selectJWTToken } from '@app/token';
-import { selectLoader } from '@app/loaders';
 import { selectOrigin } from '@app/env';
 
-import { AsyncButton } from '../../auth/async-button';
+import { Button } from '../../button';
+import { useLoader } from 'saga-query/react';
 
 export const ResendVerificationEmail = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectJWTToken);
   const origin = useSelector(selectOrigin);
+  const resendVerificationLoader = useLoader(resendVerification);
 
-  const resendVerificationLoader = useSelector(
-    selectLoader(`${resendVerification}`),
-  );
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     dispatch(resendVerification({ userId: user.id, origin }));
@@ -24,31 +22,24 @@ export const ResendVerificationEmail = () => {
 
   useEffect(() => {
     if (resendVerificationLoader.status === 'success') {
-      showToast({
-        title: 'Successfully resent email verification',
-        content: 'Please check your inbox for verification instructions.',
-        variant: STATUS_VARIANT.SUCCESS,
-      });
+      toast.success('Successfully resent email verification');
     } else if (resendVerificationLoader.status === 'error') {
-      showToast({
-        title: 'Error sending email verification',
-        content: 'Could not send verification instructions.',
-        variant: STATUS_VARIANT.DANGER,
-      });
+      toast.error('Error sending email verification');
     }
   }, [resendVerificationLoader.status]);
 
   return (
     <form onSubmit={onSubmit}>
-      <Stack reverse className="mt-9 mb-6" justify={JUSTIFY.BETWEEN}>
-        <AsyncButton
-          inProgress={resendVerificationLoader.isLoading}
+      <div className="flex flex-col justify-between mt-9 mb-6">
+        <Button
+          isLoading={resendVerificationLoader.isLoading}
           disabled={resendVerificationLoader.isLoading}
-          label="Resend Verification Email"
           type="submit"
           data-testid="send-verification-email-submit"
-        />
-      </Stack>
+        >
+          Resend Verification Email
+        </Button>
+      </div>
     </form>
   );
 };

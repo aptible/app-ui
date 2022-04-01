@@ -1,18 +1,18 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
-
-import { Link, LinkProps } from '@aptible/arrow-ds';
 
 export const HelpLink = ({
   children,
-  className,
-  as = RouterLink,
-  ...rest
-}: LinkProps) => {
+  className = '',
+  to,
+}: {
+  children: React.ReactNode;
+  to: string;
+  className?: string;
+}) => {
   return (
     <Link
-      as={as}
+      to={to}
       className={classNames(
         'text-brandGreen-400',
         'no-underline',
@@ -24,7 +24,6 @@ export const HelpLink = ({
         className,
       )}
       style={{ letterSpacing: '0.02em' }}
-      {...rest}
     >
       {children}
     </Link>

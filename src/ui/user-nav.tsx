@@ -1,15 +1,9 @@
-import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link as RouterLink } from 'react-router-dom';
-import { Appbar } from '@aptible/arrow-ds';
 
 import { selectJWTToken } from '@app/token';
 import { logout } from '@app/auth';
 import { defaultOrganization } from '@app/organizations';
 import { securitySettingsUrl, sshSettingsUrl } from '@app/routes';
-// import { selectOrganizationSelected } from '@comply/organizations';
-
-import { UserAvatar } from './user-avatar';
 
 interface DropdownLink {
   label: string;
@@ -57,45 +51,10 @@ export const UserDropdown = () => {
   }
 
   return (
-    <Appbar.UserDropdown
-      name={user.name}
-      avatar={
-        <UserAvatar
-          size="large"
-          name={user.name}
-          email={user.email}
-          className="mr-2 flex-shrink-0"
-          enableTooltip={false}
-          square
-        />
-      }
-    >
-      <Appbar.UserDropdownMenu>
-        {items.map(({ to, label, isExternal }) => {
-          if (isExternal) {
-            return (
-              <Appbar.UserDropdownMenuItem
-                key={label}
-                href={to}
-                target="_blank"
-              >
-                {label}
-              </Appbar.UserDropdownMenuItem>
-            );
-          }
-          return (
-            <Appbar.UserDropdownMenuItem as={RouterLink} key={label} to={to}>
-              {label}
-            </Appbar.UserDropdownMenuItem>
-          );
-        })}
-        <Appbar.UserDropdownMenuItem
-          onClick={() => dispatch(logout())}
-          as="button"
-        >
-          Logout
-        </Appbar.UserDropdownMenuItem>
-      </Appbar.UserDropdownMenu>
-    </Appbar.UserDropdown>
+    <div>
+      name: {user.name}
+      email: {user.email}
+      <button onClick={() => dispatch(logout())}>logout</button>
+    </div>
   );
 };

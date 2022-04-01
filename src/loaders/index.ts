@@ -1,19 +1,6 @@
-import {
-  createLoader,
-  createLoaderTable,
-  createReducerMap,
-  defaultLoader,
-} from 'robodux';
+import { createLoader, createReducerMap, defaultLoader } from 'robodux';
 
 import { AppState, AuthLoader, AuthLoaderMessage } from '@app/types';
-
-export const LOADERS_NAME = 'loaders';
-export const loaders = createLoaderTable({ name: LOADERS_NAME });
-const { selectById: selectLoaderById } = loaders.getSelectors(
-  (s: AppState) => s[LOADERS_NAME] || {},
-);
-export const selectLoader = (id: string) => (state: AppState) =>
-  selectLoaderById(state, { id });
 
 const AUTH_LOADER_NAME = 'authLoader';
 
@@ -39,7 +26,7 @@ export const {
   reset: resetAuthLoader,
 } = authLoader.actions;
 
-export const reducers = createReducerMap(loaders, authLoader);
+export const reducers = createReducerMap(authLoader);
 
 export const selectAuthLoader = (state: AppState) =>
   defaultLoader(state[AUTH_LOADER_NAME]) || defaultLoader(defaultAuthLoader());

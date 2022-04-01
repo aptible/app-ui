@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
-import { FormGroup, Label, Input, Stack, JUSTIFY } from '@aptible/arrow-ds';
 
 import { homeUrl } from '@app/routes';
 import { elevate } from '@app/auth';
 import { selectAuthLoader } from '@app/loaders';
 import { selectJWTToken, selectIsOtpError } from '@app/token';
 
-import { AsyncButton } from '../auth/async-button';
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { useLoaderSuccess } from '../use-loader-success';
+import { FormGroup } from '../form-group';
+import { Button } from '../button';
 
 export const ElevatePage = () => {
   const dispatch = useDispatch();
@@ -49,11 +49,11 @@ export const ElevatePage = () => {
     <AuthenticationWrapper title="Re-enter your credentials">
       <form onSubmit={onSubmit}>
         <FormGroup>
-          <Label htmlFor="input-email" className="brand-dark-form__label">
+          <label htmlFor="input-email" className="brand-dark-form__label">
             Email
-          </Label>
+          </label>
 
-          <Input
+          <input
             name="email"
             type="email"
             disabled
@@ -66,10 +66,10 @@ export const ElevatePage = () => {
         </FormGroup>
 
         <FormGroup>
-          <Label htmlFor="input-password" className="brand-dark-form__label">
+          <label htmlFor="input-password" className="brand-dark-form__label">
             Password
-          </Label>
-          <Input
+          </label>
+          <input
             name="password"
             type="password"
             value={password}
@@ -82,10 +82,10 @@ export const ElevatePage = () => {
 
         {requireOtp && (
           <FormGroup>
-            <Label htmlFor="input-2fa" className="brand-dark-form__label">
+            <label htmlFor="input-2fa" className="brand-dark-form__label">
               2FA Token
-            </Label>
-            <Input
+            </label>
+            <input
               type="number"
               value={otpToken}
               onChange={(e) => setOtpToken(e.currentTarget.value)}
@@ -97,15 +97,16 @@ export const ElevatePage = () => {
           </FormGroup>
         )}
 
-        <Stack reverse className="mt-9 mb-6" justify={JUSTIFY.BETWEEN}>
-          <AsyncButton
-            inProgress={loader.isLoading}
+        <div className="flex flex-col justify-between mt-9 mb-6">
+          <Button
+            isLoading={loader.isLoading}
             disabled={loader.isLoading}
-            label="Log in"
             type="submit"
             data-testid="btn-login"
-          />
-        </Stack>
+          >
+            Log in
+          </Button>
+        </div>
       </form>
     </AuthenticationWrapper>
   );

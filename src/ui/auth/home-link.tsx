@@ -1,10 +1,7 @@
-import React from 'react';
 import classNames from 'classnames';
 
-import { Text } from '@aptible/arrow-ds';
-
 export const HomeLink = () => (
-  <Text className="brand-dark-form__help-links text-center pt-4">
+  <div className="brand-dark-form__help-links text-center pt-4">
     &copy; {new Date().getFullYear()}{' '}
     <a
       className={classNames(
@@ -18,5 +15,5 @@ export const HomeLink = () => (
     >
       Aptible Inc.
     </a>
-  </Text>
+  </div>
 );

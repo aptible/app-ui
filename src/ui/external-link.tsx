@@ -1,7 +1,3 @@
-import React from 'react';
-
-import { Link } from '@aptible/arrow-ds';
-
 export const ExternalLink = ({
   href,
   children,
@@ -10,8 +6,8 @@ export const ExternalLink = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Link target="_blank" href={href}>
+    <a target="_blank" href={href}>
       {children}
-    </Link>
+    </a>
   );
 };

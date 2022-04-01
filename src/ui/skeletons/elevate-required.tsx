@@ -1,10 +1,8 @@
-import React from 'react';
 import { useLocation } from 'react-router';
 import { Outlet, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Flex, Loading } from '@aptible/arrow-ds';
+import { useLoader } from 'saga-query/react';
 
-import { selectLoader } from '@app/loaders';
 import { loginUrl, elevateUrl } from '@app/routes';
 import {
   selectIsUserAuthenticated,
@@ -14,9 +12,10 @@ import { fetchCurrentToken } from '@app/auth';
 
 import { LogoutButton } from '../auth/logout-button';
 import { Nav } from '../nav';
+import { Loading } from '../loading';
 
 export const ElevateRequired = () => {
-  const loader = useSelector(selectLoader(`${fetchCurrentToken}`));
+  const loader = useLoader(fetchCurrentToken);
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
   const isElevatedTokenValid = useSelector(selectIsElevatedTokenValid);
   const location = useLocation();
@@ -27,9 +26,9 @@ export const ElevateRequired = () => {
 
   if (loader.isLoading) {
     return (
-      <Flex className="w-full h-full items-center justify-center">
+      <div className="flex w-full h-full items-center justify-center">
         <Loading />
-      </Flex>
+      </div>
     );
   }
 

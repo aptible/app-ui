@@ -1,25 +1,24 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { Flex, Loading } from '@aptible/arrow-ds';
+import { useLoader } from 'saga-query/react';
 
 import { verifyEmail } from '@app/auth';
 import { selectJWTToken } from '@app/token';
-import { selectLoader } from '@app/loaders';
 import { createOrgUrl } from '@app/routes';
 
 import { Progress } from '../../auth/progress';
 import { AuthenticationWrapper } from '../../auth/authentication-wrapper';
 import { ResendVerificationEmail } from './resend-verification-email-form';
 import { useLoaderSuccess } from '../../use-loader-success';
+import { Loading } from '../../loading';
 
 export const VerifyEmailPage = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectJWTToken);
   const params = useParams();
   const navigate = useNavigate();
-
-  const verifyEmailLoader = useSelector(selectLoader(`${verifyEmail}`));
+  const verifyEmailLoader = useLoader(verifyEmail);
 
   useEffect(() => {
     if (params.verificationCode && params.verificationId && user.id) {
@@ -38,9 +37,9 @@ export const VerifyEmailPage = () => {
 
   if (verifyEmailLoader.isLoading) {
     return (
-      <Flex className="h-screen w-screen bg-gray-900 text-gray-400 items-center justify-center">
+      <div className="flex h-screen w-screen bg-gray-900 text-gray-400 items-center justify-center">
         <Loading className="text-brandGreen-400" />
-      </Flex>
+      </div>
     );
   }
 

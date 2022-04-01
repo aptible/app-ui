@@ -1,4 +1,4 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
@@ -8,10 +8,10 @@ import { Router } from './router';
 
 export const App = ({ store }: { store: Store<AppState> }) => {
   return (
-    <React.StrictMode>
+    <StrictMode>
       <Provider store={store}>
         <Router />
       </Provider>
-    </React.StrictMode>
+    </StrictMode>
   );
 };

@@ -123,9 +123,9 @@ export const createOrganization = authApi.post<CreateOrg>(
   '/organizations',
   function* onCreateOrg(ctx: OrgCtx, next): ApiGen {
     const { name } = ctx.payload;
-    ctx.request = {
+    ctx.request = ctx.req({
       body: JSON.stringify({ name }),
-    };
+    });
     yield next();
     const token = yield select(selectToken);
     if (!ctx.json.ok) return;

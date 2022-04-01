@@ -1,16 +1,4 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
-import {
-  ThemeContext,
-  THEME,
-  Flex,
-  Box,
-  Text,
-  STATUS_VARIANT,
-  Banner,
-  Frame,
-  AptibleLogo,
-} from '@aptible/arrow-ds';
 
 import { selectAuthLoader } from '@app/loaders';
 import {
@@ -22,6 +10,7 @@ import { PageTitle } from '../page-title';
 import { HelpLink } from '../help-link';
 import { LogoutButton } from './logout-button';
 import { HomeLink } from './home-link';
+import { Banner } from '../banner';
 
 interface Props {
   title: string;
@@ -48,46 +37,40 @@ export const AuthenticationWrapper = ({
   return (
     <>
       <PageTitle title={title} />
-      <Frame.Area name="main">
-        <Box className="body-container bg-gray-900 w-full min-h-screen pb-8">
-          <Box className="login-box w-full mx-auto">
-            <Flex className="login-box__header items-center">
-              <AptibleLogo height={34} />
-            </Flex>
+      <div>
+        <div className="body-container bg-gray-900 w-full min-h-screen pb-8">
+          <div className="login-box w-full mx-auto">
+            <div className="flex login-box__header items-center">logo</div>
 
             {credentialError ? (
-              <Banner variant={STATUS_VARIANT.DANGER} withIcon className="mb-6">
+              <Banner variant="error" className="mb-6">
                 {loader.message}
               </Banner>
             ) : null}
 
-            <Box className="brand-dark-panel">
-              <Box className="brand-dark-form__header">
+            <div className="brand-dark-panel">
+              <div className="brand-dark-form__header">
                 <h3 className="brand-dark-form__title">{title}</h3>
 
                 {helpText && (
-                  <Text className="brand-dark-form__help-links">
+                  <div className="brand-dark-form__help-links">
                     {helpText}
                     {link && (
                       <HelpLink className="ml-2" to={link.to}>
                         {link.text} →
                       </HelpLink>
                     )}
-                  </Text>
+                  </div>
                 )}
                 {progressElement}
-              </Box>
-              <Box className="brand-dark-form__body">
-                <ThemeContext.Provider value={THEME.BRAND}>
-                  {children}
-                </ThemeContext.Provider>
-              </Box>
-            </Box>
+              </div>
+              <div className="brand-dark-form__body">{children}</div>
+            </div>
             <HomeLink />
-          </Box>
+          </div>
           {isAuthenticated ? <LogoutButton /> : null}
-        </Box>
-      </Frame.Area>
+        </div>
+      </div>
     </>
   );
 };

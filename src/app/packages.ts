@@ -10,7 +10,7 @@ import * as redirectPath from '@app/redirect-path';
 import * as orgs from '@app/organizations';
 import * as bootup from '@app/bootup';
 import * as mfa from '@app/mfa';
-import * as api from '@app/api';
+import { api, authApi } from '@app/api';
 
 const corePackages: any[] = [
   env,
@@ -44,7 +44,7 @@ export const sagas = corePackages.reduce(
     return { ...acc, ...pkg.sagas };
   },
   {
-    api: api.api.saga(),
-    authApi: api.authApi.saga(),
+    api: api.saga(),
+    authApi: authApi.saga(),
   },
 );

@@ -1,15 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import {
-  FormGroup,
-  Label,
-  Input,
-  InputFeedback,
-  Stack,
-  JUSTIFY,
-  STATUS_VARIANT,
-} from '@aptible/arrow-ds';
 
 import {
   selectInvitationRequest,
@@ -26,11 +17,13 @@ import { selectIsOtpError } from '@app/token';
 import { selectAuthLoader } from '@app/loaders';
 import { validEmail } from '@app/string-utils';
 
-import { AsyncButton } from '../auth/async-button';
+import { FormGroup } from '../form-group';
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { HelpLink } from '../help-link';
 import { useLoaderSuccess } from '../use-loader-success';
 import { LoggedInBanner } from '../auth/logged-in-banner';
+import { InputFeedback } from '../input';
+import { Button } from '../button';
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
@@ -97,16 +90,12 @@ export const LoginPage = () => {
     >
       <form onSubmit={onSubmit}>
         <LoggedInBanner />
-        <FormGroup
-          variant={
-            emailErrorMessage ? STATUS_VARIANT.DANGER : STATUS_VARIANT.DEFAULT
-          }
-        >
-          <Label htmlFor="input-email" className="brand-dark-form__label">
+        <FormGroup variant={emailErrorMessage ? 'error' : 'default'}>
+          <label htmlFor="input-email" className="brand-dark-form__label">
             Email
-          </Label>
+          </label>
 
-          <Input
+          <input
             name="email"
             type="email"
             disabled={!!invitation}
@@ -123,10 +112,10 @@ export const LoginPage = () => {
         </FormGroup>
 
         <FormGroup>
-          <Label htmlFor="input-password" className="brand-dark-form__label">
+          <label htmlFor="input-password" className="brand-dark-form__label">
             Password
-          </Label>
-          <Input
+          </label>
+          <input
             name="password"
             type="password"
             value={password}
@@ -139,10 +128,10 @@ export const LoginPage = () => {
 
         {requireOtp && (
           <FormGroup>
-            <Label htmlFor="input-2fa" className="brand-dark-form__label">
+            <label htmlFor="input-2fa" className="brand-dark-form__label">
               2FA Token
-            </Label>
-            <Input
+            </label>
+            <input
               type="number"
               value={otpToken}
               onChange={(e) => setOtpToken(e.currentTarget.value)}
@@ -154,21 +143,22 @@ export const LoginPage = () => {
           </FormGroup>
         )}
 
-        <Stack reverse className="mt-9 mb-6" justify={JUSTIFY.BETWEEN}>
-          <AsyncButton
-            inProgress={loader.isLoading}
+        <div className="mt-9 mb-6 flex flex-col justify-between">
+          <Button
+            isLoading={loader.isLoading}
             disabled={loader.isLoading}
-            label="Log in"
             type="submit"
             data-testid="btn-login"
-          />
+          >
+            Log in
+          </Button>
           <HelpLink
             to={RESET_REQUEST_PASSWORD_PATH}
             data-test-id="reset-password-link"
           >
             Forgot your password?
           </HelpLink>
-        </Stack>
+        </div>
       </form>
     </AuthenticationWrapper>
   );

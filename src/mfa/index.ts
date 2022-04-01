@@ -1,4 +1,4 @@
-import { select } from 'saga-query';
+import { Next, select } from 'saga-query';
 import { createAssign, createTable, createReducerMap } from 'robodux';
 
 import { LinkResponse, ApiGen, AppState, U2fDevice, Otp } from '@app/types';
@@ -87,13 +87,15 @@ const deserializeOtp = (data: OtpResponse): Otp => {
   };
 };
 
+function* elevateAndCache(ctx: AuthApiCtx, next: Next) {
+  ctx.cache = true;
+  ctx.elevated = true;
+  yield next();
+}
+
 export const fetchOtpCodes = authApi.get<{ otpId: string }>(
   '/otp_configurations/:otpId/otp_recovery_codes',
-  function* (ctx, next) {
-    ctx.cache = true;
-    ctx.elevated = true;
-    yield next();
-  },
+  elevateAndCache,
 );
 
 export const setupOtp = authApi.post<{ userId: string }>(
@@ -113,9 +115,5 @@ export const setupOtp = authApi.post<{ userId: string }>(
 
 export const fetchU2fChallenges = authApi.post<{ userId: string }>(
   '/users/:userId/u2f_challenges',
-  function* (ctx, next) {
-    ctx.cache = true;
-    ctx.elevated = true;
-    yield next();
-  },
+  elevateAndCache,
 );
