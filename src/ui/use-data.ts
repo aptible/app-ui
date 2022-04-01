@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { LoadingState } from 'robodux';
+import { selectDataById } from 'saga-query';
 
 import { AppState } from '@app/types';
 import { selectLoader } from '@app/loaders';
-import { selectDataById } from '@app/api';
 
 type Data<D = any> = LoadingState & { data: D };
 

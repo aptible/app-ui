@@ -7,12 +7,10 @@ import { bootup } from '@app/bootup';
 
 import { setupStore } from './store';
 import { App } from './app';
-import { rootSaga, rootReducer, rootEntities } from './packages';
+import { rootEntities } from './packages';
 
 export function init() {
   const { store, persistor } = setupStore({
-    rootSaga,
-    rootReducer,
     initState: { entities: rootEntities },
   });
   (window as any).reduxStore = store;
