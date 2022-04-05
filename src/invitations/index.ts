@@ -1,4 +1,4 @@
-import { createReducerMap } from 'robodux';
+import { createReducerMap } from '@app/slice-helpers';
 
 import { invitations } from './invitations';
 import { invitationRequest } from './invitation-request';

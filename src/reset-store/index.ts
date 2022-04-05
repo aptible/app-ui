@@ -1,8 +1,8 @@
 import { Action, Reducer } from 'redux';
-import { createAction } from 'robodux';
 import { PersistConfig } from 'redux-persist';
 import { take, put } from 'saga-query';
 
+import { createAction } from '@app/slice-helpers';
 import { AppState } from '@app/types';
 import { resetToken } from '@app/token';
 import { REDIRECT_NAME } from '@app/redirect-path';

@@ -1,4 +1,4 @@
-import { createAssign, createReducerMap } from 'robodux';
+import { createAssign, createReducerMap } from '@app/slice-helpers';
 import { AppState, Env } from '@app/types';
 
 export const createEnv = (e: Partial<Env> = {}): Env => {

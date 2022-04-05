@@ -1,4 +1,4 @@
-import { MapEntity } from 'robodux';
+import { MapEntity } from './helpers';
 
 export type LinkResponse = {
   href: string;

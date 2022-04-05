@@ -4,8 +4,8 @@ import { useNavigate, useLocation } from 'react-router';
 
 import { homeUrl } from '@app/routes';
 import { elevate } from '@app/auth';
-import { selectAuthLoader } from '@app/loaders';
-import { selectJWTToken, selectIsOtpError } from '@app/token';
+import { selectAuthLoader, selectIsOtpError } from '@app/auth';
+import { selectJWTToken } from '@app/token';
 
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { useLoaderSuccess } from '../use-loader-success';

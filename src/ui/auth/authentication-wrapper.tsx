@@ -1,10 +1,7 @@
 import { useSelector } from 'react-redux';
 
-import { selectAuthLoader } from '@app/loaders';
-import {
-  selectIsAuthenticationError,
-  selectIsUserAuthenticated,
-} from '@app/token';
+import { selectIsUserAuthenticated } from '@app/token';
+import { selectIsAuthenticationError, selectAuthLoader } from '@app/auth';
 
 import { PageTitle } from '../page-title';
 import { HelpLink } from '../help-link';

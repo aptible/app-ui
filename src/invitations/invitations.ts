@@ -1,15 +1,16 @@
 import { isBefore } from 'date-fns';
-import { createTable, MapEntity } from 'robodux';
 import { select } from 'saga-query';
 
+import { createTable } from '@app/slice-helpers';
 import { authApi, AuthApiCtx } from '@app/api';
-import {
+import type {
   Token,
   InvitationsResponse,
   InvitationResponse,
   Invitation,
   AppState,
   ApiGen,
+  MapEntity,
 } from '@app/types';
 import { selectToken } from '@app/token';
 import { selectOrigin } from '@app/env';

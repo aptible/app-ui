@@ -1,32 +1,37 @@
-import { call, put } from 'saga-query';
-import { createAction, ActionWithPayload } from 'robodux';
-
 import {
-  setAuthLoaderStart,
-  setAuthLoaderError,
-  setAuthLoaderSuccess,
-} from '@app/loaders';
+  call,
+  put,
+  setLoaderStart,
+  setLoaderError,
+  setLoaderSuccess,
+} from 'saga-query';
 
 import { elevateToken, ElevateToken, ElevateTokenCtx } from './token';
+import { AUTH_LOADER_ID } from './loader';
+import { ThunkCtx, thunks } from '@app/api';
 
-export const elevate = createAction<ElevateToken>('ELEVATE');
-export function* onElevate(action: ActionWithPayload<ElevateToken>) {
-  yield put(setAuthLoaderStart());
-  const ctx: ElevateTokenCtx = yield call(
-    elevateToken.run,
-    elevateToken(action.payload),
-  );
-
-  if (!ctx.json.ok) {
-    const { message, error, code, exception_context } = ctx.json.data;
-    yield put(
-      setAuthLoaderError({
-        message,
-        meta: { error, code, exception_context },
-      }),
+export const elevate = thunks.create<ElevateToken>(
+  'elevate',
+  function* onElevate(ctx: ThunkCtx<ElevateToken>, next) {
+    yield put(setLoaderStart({ id: AUTH_LOADER_ID }));
+    const tokenCtx: ElevateTokenCtx = yield call(
+      elevateToken.run,
+      elevateToken(ctx.payload),
     );
-    return;
-  }
 
-  yield put(setAuthLoaderSuccess());
-}
+    if (!tokenCtx.json.ok) {
+      const { message, error, code, exception_context } = tokenCtx.json.data;
+      yield put(
+        setLoaderError({
+          id: AUTH_LOADER_ID,
+          message,
+          meta: { error, code, exception_context },
+        }),
+      );
+      return;
+    }
+
+    yield put(setLoaderSuccess({ id: AUTH_LOADER_ID }));
+    yield next();
+  },
+);

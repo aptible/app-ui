@@ -1,7 +1,6 @@
-import { createAssign, createReducerMap } from 'robodux';
 import { createSelector } from 'reselect';
 
-import { selectAuthLoader } from '@app/loaders';
+import { createAssign, createReducerMap } from '@app/slice-helpers';
 import { Token, AppState } from '@app/types';
 
 import { parseJwt } from './jwt-parser';
@@ -116,21 +115,6 @@ export const selectIsImpersonated = (state: AppState) =>
   selectActorUrl(state) !== selectUserUrl(state);
 export const selectIsUserAuthenticated = (state: AppState) =>
   !!selectAccessToken(state);
-
-export const selectIsOtpError = (state: AppState) =>
-  selectAuthLoader(state).meta.error === 'otp_token_required';
-
-export const selectIsAuthenticationError = (state: AppState) => {
-  const { error } = selectAuthLoader(state).meta;
-  return (
-    error === 'unprocessable_entity' ||
-    error === 'invalid_credentials' ||
-    error === 'invalid_email' ||
-    error === 'unsupported_grant_type' ||
-    error === 'access_denied' ||
-    error === 'invalid_scope'
-  );
-};
 
 export const selectElevatedToken = (state: AppState) =>
   state[ELEVATED_TOKEN_NAME];

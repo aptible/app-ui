@@ -1,15 +1,18 @@
 import {
   createApi,
-  ApiCtx,
-  Next,
   fetcher,
   requestMonitor,
   call,
   select,
+  createPipe,
+  errorHandler,
+  dispatchActions,
 } from 'saga-query';
+import type { ApiCtx, Next, PipeCtx } from 'saga-query';
+import type { Action } from 'redux';
 
 import { selectEnv } from '@app/env';
-import { ApiGen, AuthApiError } from '@app/types';
+import type { ApiGen, AuthApiError } from '@app/types';
 import { halEntityParser } from '@app/hal';
 import { selectAccessToken, selectElevatedAccessToken } from '@app/token';
 
@@ -128,3 +131,12 @@ authApi.use(requestAuth);
 authApi.use(tokenMdw);
 authApi.use(elevatedTokenMdw);
 authApi.use(fetcher());
+
+export interface ThunkCtx<P = any> extends PipeCtx<P> {
+  actions: Action[];
+}
+
+export const thunks = createPipe<ThunkCtx>();
+thunks.use(errorHandler);
+thunks.use(dispatchActions);
+thunks.use(thunks.routes());

@@ -1,35 +1,38 @@
-import { put, call } from 'saga-query';
-import { ActionWithPayload, createAction } from 'robodux';
-import { batchActions } from 'redux-batched-actions';
-
 import {
-  setAuthLoaderStart,
-  setAuthLoaderError,
-  setAuthLoaderSuccess,
-} from '@app/loaders';
+  put,
+  call,
+  setLoaderStart,
+  setLoaderSuccess,
+  setLoaderError,
+} from 'saga-query';
 
 import { CreateTokenPayload, createToken, TokenCtx } from './token';
+import { AUTH_LOADER_ID } from './loader';
+import { ThunkCtx, thunks } from '@app/api';
 
-export const loginSuccess = createAction('LOGIN_SUCCESS');
-export const login = createAction<CreateTokenPayload>('LOGIN');
-export function* onLogin(action: ActionWithPayload<CreateTokenPayload>) {
-  yield put(setAuthLoaderStart());
-  const ctx: TokenCtx = yield call(
-    createToken.run,
-    createToken(action.payload),
-  );
-  console.log(ctx);
-
-  if (!ctx.json.ok) {
-    const { message, error, code, exception_context } = ctx.json.data;
-    yield put(
-      setAuthLoaderError({
-        message,
-        meta: { error, code, exception_context },
-      }),
+export const login = thunks.create<CreateTokenPayload>(
+  'login',
+  function* onLogin(ctx: ThunkCtx<CreateTokenPayload>, next) {
+    yield put(setLoaderStart({ id: AUTH_LOADER_ID }));
+    const tokenCtx: TokenCtx = yield call(
+      createToken.run,
+      createToken(ctx.payload),
     );
-    return;
-  }
+    console.log(tokenCtx);
 
-  yield put(batchActions([setAuthLoaderSuccess(), loginSuccess()]));
-}
+    if (!tokenCtx.json.ok) {
+      const { message, error, code, exception_context } = tokenCtx.json.data;
+      yield put(
+        setLoaderError({
+          id: AUTH_LOADER_ID,
+          message,
+          meta: { error, code, exception_context },
+        }),
+      );
+      return;
+    }
+
+    yield put(setLoaderSuccess({ id: AUTH_LOADER_ID }));
+    yield next();
+  },
+);

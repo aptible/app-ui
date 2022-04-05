@@ -12,9 +12,7 @@ import {
   acceptInvitationWithCodeUrl,
   homeUrl,
 } from '@app/routes';
-import { login } from '@app/auth';
-import { selectIsOtpError } from '@app/token';
-import { selectAuthLoader } from '@app/loaders';
+import { login, selectAuthLoader, selectIsOtpError } from '@app/auth';
 import { validEmail } from '@app/string-utils';
 
 import { FormGroup } from '../form-group';

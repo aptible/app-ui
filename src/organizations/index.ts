@@ -1,7 +1,11 @@
 import { call, select } from 'saga-query';
-import { createReducerMap, createTable, createAssign } from 'robodux';
 import { createSelector } from 'reselect';
 
+import {
+  createReducerMap,
+  createTable,
+  createAssign,
+} from '@app/slice-helpers';
 import { authApi, AuthApiCtx } from '@app/api';
 import {
   AppState,

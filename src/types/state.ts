@@ -1,6 +1,7 @@
-import { MapEntity, LoadingItemState } from 'robodux';
-import { InvitationRequest, Invitation } from './invitations';
-import { EntityMap } from './hal';
+import type { QueryState } from 'saga-query';
+import type { InvitationRequest, Invitation } from './invitations';
+import type { EntityMap } from './hal';
+import type { MapEntity } from './helpers';
 
 export interface Env {
   isProduction: boolean;
@@ -36,14 +37,6 @@ export interface AuthApiError {
   exception_context: { [key: string]: any };
 }
 
-export interface AuthLoaderMessage {
-  error: string;
-  code: number;
-  exception_context: { [key: string]: any };
-}
-
-export type AuthLoader = LoadingItemState<AuthLoaderMessage>;
-
 export interface Organization {
   id: string;
   name: string;
@@ -65,10 +58,8 @@ export interface Otp {
   currentUrl: string;
 }
 
-export interface AppState {
+export interface AppState extends QueryState {
   env: Env;
-  authLoader: AuthLoader;
-  loaders: { [key: string]: LoadingItemState };
   users: MapEntity<User>;
   token: Token;
   elevatedToken: Token;

@@ -1,5 +1,4 @@
-import { createReducerMap, createTable } from 'robodux';
-
+import { createReducerMap, createTable } from '@app/slice-helpers';
 import { User } from '@app/types';
 
 import { USERS_NAME } from './constants';

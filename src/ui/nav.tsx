@@ -1,9 +1,4 @@
-import {
-  createOrgUrl,
-  homeUrl,
-  securitySettingsUrl,
-  sshSettingsUrl,
-} from '@app/routes';
+import { homeUrl, securitySettingsUrl, sshSettingsUrl } from '@app/routes';
 import { Link } from 'react-router-dom';
 
 export const Nav = ({ children }: { children: React.ReactNode }) => {
@@ -11,7 +6,6 @@ export const Nav = ({ children }: { children: React.ReactNode }) => {
     <div>
       <div className="flex justify-between w-full">
         <Link to={homeUrl()}>Dashboard</Link>
-        <Link to={createOrgUrl()}>Create Organization</Link>
         <Link to={securitySettingsUrl()}>Security Settings</Link>
         <Link to={sshSettingsUrl()}>SSH Settings</Link>
       </div>

@@ -14,7 +14,7 @@ import {
   acceptInvitationWithCodeUrl,
   verifyEmailRequestUrl,
 } from '@app/routes';
-import { selectAuthLoader } from '@app/loaders';
+import { selectAuthLoader } from '@app/auth';
 import { validEmail } from '@app/string-utils';
 
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';

@@ -1,10 +1,10 @@
-import { assignSlice, createReducerMap } from 'robodux';
+import { createAssign, createReducerMap } from '@app/slice-helpers';
 import { HOME_PATH } from '@app/routes';
 import { AppState } from '@app/types';
 
 export const REDIRECT_NAME = 'redirectPath';
 
-const redirectPath = assignSlice<string>({
+const redirectPath = createAssign({
   name: REDIRECT_NAME,
   initialState: HOME_PATH,
 });

@@ -1,5 +1,4 @@
 import * as env from '@app/env';
-import * as loaders from '@app/loaders';
 import * as users from '@app/users';
 import * as token from '@app/token';
 import * as invitations from '@app/invitations';
@@ -10,11 +9,10 @@ import * as redirectPath from '@app/redirect-path';
 import * as orgs from '@app/organizations';
 import * as bootup from '@app/bootup';
 import * as mfa from '@app/mfa';
-import { api, authApi } from '@app/api';
+import { api, authApi, thunks } from '@app/api';
 
 const corePackages: any[] = [
   env,
-  loaders,
   auth,
   users,
   token,
@@ -38,13 +36,13 @@ export const reducers = corePackages.reduce((acc, pkg) => {
   return { ...acc, ...pkg.reducers };
 }, {});
 
-export const sagas = corePackages.reduce(
-  (acc, pkg) => {
-    if (!pkg.sagas) return acc;
-    return { ...acc, ...pkg.sagas };
-  },
-  {
-    api: api.saga(),
-    authApi: authApi.saga(),
-  },
-);
+const initialSagas = {
+  api: api.saga(),
+  authApi: authApi.saga(),
+  thunks: thunks.saga(),
+};
+
+export const sagas = corePackages.reduce((acc, pkg) => {
+  if (!pkg.sagas) return acc;
+  return { ...acc, ...pkg.sagas };
+}, initialSagas);

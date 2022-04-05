@@ -1,6 +1,10 @@
 import { Next, select } from 'saga-query';
-import { createAssign, createTable, createReducerMap } from 'robodux';
 
+import {
+  createAssign,
+  createTable,
+  createReducerMap,
+} from '@app/slice-helpers';
 import { LinkResponse, ApiGen, AppState, U2fDevice, Otp } from '@app/types';
 import { defaultEntity } from '@app/hal';
 import { authApi, AuthApiCtx } from '@app/api';

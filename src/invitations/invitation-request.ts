@@ -1,6 +1,6 @@
-import { createAssign } from 'robodux';
 import { createSelector } from 'reselect';
 
+import { createAssign } from '@app/slice-helpers';
 import { AppState, InvitationRequest } from '@app/types';
 
 import { selectInvitations } from './invitations';
