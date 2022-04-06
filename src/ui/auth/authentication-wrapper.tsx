@@ -34,7 +34,11 @@ export const AuthenticationWrapper = ({
       <div style={{ width: 480 }}>
         <div className="w-full mx-auto">
           <div className="flex items-center mb-8">
-            <img src="/aptible-logo-white-on-dark.svg" style={{ width: 105 }} />
+            <img
+              src="/aptible-logo-white-on-dark.svg"
+              alt="aptible logo"
+              style={{ width: 105 }}
+            />
           </div>
 
           <div>
