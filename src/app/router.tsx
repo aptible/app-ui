@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
 import { ToastContainer } from 'react-toastify';
 
 import {
@@ -36,7 +35,6 @@ import {
 
 export const Router = () => (
   <div>
-    <Helmet titleTemplate="%s - Aptible Deploy" defaultTitle="Aptible Deploy" />
     <ToastContainer />
     <Routes>
       <Route path={LOGIN_PATH} element={<LoginPage />} />

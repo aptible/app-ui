@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { selectIsUserAuthenticated } from '@app/token';
 import { selectIsAuthenticationError, selectAuthLoader } from '@app/auth';
 
-import { PageTitle } from '../page-title';
 import { HelpLink } from '../help-link';
 import { LogoutButton } from './logout-button';
 import { HomeLink } from './home-link';
@@ -33,7 +32,6 @@ export const AuthenticationWrapper = ({
 
   return (
     <>
-      <PageTitle title={title} />
       <div>
         <div className="body-container bg-gray-900 w-full min-h-screen pb-8">
           <div className="login-box w-full mx-auto">
