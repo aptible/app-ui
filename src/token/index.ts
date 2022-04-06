@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import { createAssign, createReducerMap } from '@app/slice-helpers';
 import { Token, AppState } from '@app/types';

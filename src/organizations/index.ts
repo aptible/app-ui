@@ -1,5 +1,5 @@
 import { call, select } from 'saga-query';
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import {
   createReducerMap,

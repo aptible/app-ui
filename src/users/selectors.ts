@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import { AppState } from '@app/types';
 import { selectToken } from '@app/token';

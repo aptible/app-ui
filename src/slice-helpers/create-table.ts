@@ -1,5 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { createSelector } from 'reselect';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 import { MapEntity, ActionWithPayload, excludesFalse } from '@app/types';
 

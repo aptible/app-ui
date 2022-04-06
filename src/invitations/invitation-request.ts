@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import { createAssign } from '@app/slice-helpers';
 import { AppState, InvitationRequest } from '@app/types';
