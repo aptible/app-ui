@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import reactRefresh from '@vitejs/plugin-react-refresh';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -10,5 +10,9 @@ export default defineConfig({
   },
   esbuild: {
     jsxInject: `import React from 'react'`
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
   }
 });
