@@ -1,7 +1,7 @@
-import { User } from '@app/types';
+import type { User } from '@app/types';
 import { extractIdFromLink } from '@app/hal';
 
-import { UserResponse } from './types';
+import type { UserResponse } from './types';
 
 export const defaultUser = (u: Partial<User> = {}): User => {
   return {

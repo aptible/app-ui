@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { AppState } from '@app/types';
+import type { AppState } from '@app/types';
 import { selectToken } from '@app/token';
 
 import { USERS_NAME } from './constants';

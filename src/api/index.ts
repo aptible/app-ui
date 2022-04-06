@@ -9,10 +9,9 @@ import {
   dispatchActions,
 } from 'saga-query';
 import type { ApiCtx, Next, PipeCtx } from 'saga-query';
-import type { Action } from 'redux';
 
 import { selectEnv } from '@app/env';
-import type { ApiGen, AuthApiError } from '@app/types';
+import type { ApiGen, AuthApiError, Action } from '@app/types';
 import { halEntityParser } from '@app/hal';
 import { selectAccessToken, selectElevatedAccessToken } from '@app/token';
 

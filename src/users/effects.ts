@@ -1,10 +1,10 @@
 import { Next, select } from 'saga-query';
 
 import { authApi, AuthApiCtx, elevetatedMdw } from '@app/api';
-import { ApiGen } from '@app/types';
+import type { ApiGen } from '@app/types';
 import { selectOrigin } from '@app/env';
 
-import { UserResponse, CreateUserForm } from './types';
+import type { UserResponse, CreateUserForm } from './types';
 
 interface UserBase {
   userId: string;

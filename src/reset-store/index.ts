@@ -1,9 +1,9 @@
-import { Action, Reducer } from 'redux';
-import { PersistConfig } from 'redux-persist';
+import type { Reducer } from '@reduxjs/toolkit';
+import type { PersistConfig } from 'redux-persist';
 import { take, put } from 'saga-query';
 
+import type { Action, AppState } from '@app/types';
 import { createAction } from '@app/slice-helpers';
-import { AppState } from '@app/types';
 import { resetToken } from '@app/token';
 import { REDIRECT_NAME } from '@app/redirect-path';
 import { ENTITIES_NAME } from '@app/hal';

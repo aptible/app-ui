@@ -1,8 +1,8 @@
 import { Next, ApiCtx, select } from 'saga-query';
-import type { Action } from 'redux';
 
 import { createAssign, createReducerMap } from '@app/slice-helpers';
 import {
+  Action,
   AppState,
   EmbeddedMap,
   EntityMap,

@@ -1,6 +1,6 @@
-import type { Reducer } from 'redux';
-
+import type { Reducer } from '@reduxjs/toolkit';
 export { createAction } from '@reduxjs/toolkit';
+
 export * from './create-table';
 export * from './create-assign';
 

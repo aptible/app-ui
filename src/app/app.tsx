@@ -1,8 +1,8 @@
 import { StrictMode } from 'react';
 import { Provider } from 'react-redux';
-import { Store } from 'redux';
+import type { Store } from '@reduxjs/toolkit';
 
-import { AppState } from '@app/types';
+import type { AppState } from '@app/types';
 
 import { Router } from './router';
 

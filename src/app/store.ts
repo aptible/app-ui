@@ -1,11 +1,12 @@
-import { createStore, applyMiddleware, Middleware, Store } from 'redux';
+import { createStore, applyMiddleware } from '@reduxjs/toolkit';
+import type { Middleware, Store } from '@reduxjs/toolkit';
 import { BATCH } from 'redux-batched-actions';
 import { PersistPartial } from 'redux-persist/es/persistReducer';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 import { prepareStore } from 'saga-query';
 
-import { AppState } from '@app/types';
+import type { AppState } from '@app/types';
 import { resetReducer } from '@app/reset-store';
 import { TOKEN_NAME, ELEVATED_TOKEN_NAME } from '@app/token';
 import { sagas, reducers } from './packages';
