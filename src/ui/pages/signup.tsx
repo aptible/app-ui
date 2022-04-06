@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import qs from 'query-string';
 import { useLocation, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLoaderSuccess } from 'saga-query/react';
 
 import { validatePasswordComplexity, signup } from '@app/auth';
 import {
@@ -19,7 +20,6 @@ import { validEmail } from '@app/string-utils';
 
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { Progress } from '../auth/progress';
-import { useLoaderSuccess } from '../use-loader-success';
 import { LoggedInBanner } from '../auth/logged-in-banner';
 import { FormGroup } from '../form-group';
 import { InputFeedback } from '../input';
@@ -109,68 +109,83 @@ const SignupPageForm = () => {
   return (
     <form onSubmit={onSubmitForm}>
       <LoggedInBanner />
-      <FormGroup>
-        <label htmlFor="input-name" className="brand-dark-form__label">
-          Your Name
-        </label>
-        <input
-          name="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.currentTarget.value)}
-          autoComplete="name"
-          disabled={isLoading}
-          autoFocus
-          data-testid="input-name"
-          id="input-name"
-        />
-      </FormGroup>
-      <FormGroup variant={emailErrorMessage ? 'error' : 'default'}>
-        <label htmlFor="input-email" className="brand-dark-form__label">
-          Your email
-        </label>
-        <input
-          name="email"
-          type="email"
-          value={invitation ? invitation.email : email}
-          disabled={!!invitation || isLoading}
-          onChange={(e) => setEmail(e.currentTarget.value)}
-          autoComplete="username"
-          data-testid="input-email"
-          id="input-email"
-        />
-        <InputFeedback data-testid="email-error">
-          {emailErrorMessage}
-        </InputFeedback>
-      </FormGroup>
+      <div className="bg-white/5 shadow-md rounded-lg">
+        <FormGroup className="px-6 h-14 flex items-center border-b border-white/5">
+          <label htmlFor="input-name" className="w-20 text-sm">
+            Name
+          </label>
+          <input
+            name="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.currentTarget.value)}
+            autoComplete="name"
+            disabled={isLoading}
+            autoFocus
+            data-testid="input-name"
+            id="input-name"
+            className="flex-1 outline-0 py-1 bg-transparent"
+          />
+        </FormGroup>
 
-      <FormGroup variant={passwordErrorMessage ? 'error' : 'default'}>
-        <label htmlFor="input-password" className="brand-dark-form__label">
-          Password
-        </label>
-        <input
-          name="password"
-          type="password"
-          value={password}
-          disabled={isLoading}
-          onChange={(e) => setPassword(e.currentTarget.value)}
-          autoComplete="current-password"
-          data-testid="input-password"
-          id="input-password"
-        />
-        <InputFeedback data-testid="password-error">
-          {passwordErrorMessage}
-        </InputFeedback>
-      </FormGroup>
+        <FormGroup
+          variant={emailErrorMessage ? 'error' : 'default'}
+          className="px-6 h-14 flex items-center"
+        >
+          <label htmlFor="input-email" className="w-20 text-sm">
+            Email
+          </label>
+          <input
+            name="email"
+            type="email"
+            value={invitation ? invitation.email : email}
+            disabled={!!invitation || isLoading}
+            onChange={(e) => setEmail(e.currentTarget.value)}
+            autoComplete="username"
+            data-testid="input-email"
+            id="input-email"
+            className="flex-1 outline-0 py-1 bg-transparent"
+          />
+        </FormGroup>
+
+        <FormGroup
+          variant={passwordErrorMessage ? 'error' : 'default'}
+          className="px-6 h-14 flex items-center border-t border-white/5"
+        >
+          <label htmlFor="input-password" className="w-20 text-sm">
+            Password
+          </label>
+          <input
+            name="password"
+            type="password"
+            value={password}
+            disabled={isLoading}
+            onChange={(e) => setPassword(e.currentTarget.value)}
+            autoComplete="current-password"
+            data-testid="input-password"
+            id="input-password"
+            className="flex-1 outline-0 py-1 bg-transparent"
+          />
+        </FormGroup>
+      </div>
 
       <div className="flex flex-col justify-between mt-9 mb-6">
         <Button
           disabled={disableSave}
           type="submit"
           data-testid="signup-submit"
+          variant="success"
+          className="h-12 rounded-lg"
         >
           Create Account
         </Button>
+      </div>
+
+      <div className="mt-2 h-8">
+        <InputFeedback variant="error">
+          <div>{emailErrorMessage}</div>
+          <div>{passwordErrorMessage}</div>
+        </InputFeedback>
       </div>
     </form>
   );

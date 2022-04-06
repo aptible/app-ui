@@ -11,6 +11,10 @@ export const Banner = ({
   className?: string;
   variant?: StatusVariant;
 }) => {
-  const bg = variant === 'default' ? '' : `bg-${variantToColor(variant)}-100`;
-  return <div className={classNames(className, bg)}>{children}</div>;
+  const bg = variant === 'default' ? '' : variantToColor(variant);
+  return (
+    <div className={classNames(bg, 'rounded-md p-4 text-xs shadow', className)}>
+      {children}
+    </div>
+  );
 };

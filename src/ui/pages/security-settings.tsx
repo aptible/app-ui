@@ -28,7 +28,7 @@ interface SectionProps {
 
 const Section = ({ children, title }: SectionProps) => {
   return (
-    <div>
+    <div className="bg-grey border rounded p-4 my-4">
       <h2>{title}</h2>
       <div className="my-4">{children}</div>
     </div>
@@ -70,6 +70,7 @@ const ChangePassword = () => {
           value={pass}
           onChange={(e) => setPass(e.currentTarget.value)}
           data-testid="input-password"
+          className="border-black border"
         />
       </FormGroup>
       <FormGroup variant={groupVariant}>
@@ -80,6 +81,7 @@ const ChangePassword = () => {
           value={confirmPass}
           onChange={(e) => setConfirmPass(e.currentTarget.value)}
           data-testid="input-confirm-password"
+          className="border-black border"
         />
         <InputFeedback variant="error">{error}</InputFeedback>
       </FormGroup>
@@ -87,7 +89,7 @@ const ChangePassword = () => {
         type="submit"
         disabled={loader.isLoading}
         isLoading={loader.isLoading}
-        className="mb-4 mt-2"
+        variant="success"
       >
         Change Password
       </Button>
@@ -106,11 +108,15 @@ const MultiFactor = () => {
 
   const btns = user.otpEnabled ? (
     <div className="mb-2 w-100">
-      <Button onClick={disable}>Disable 2FA</Button>
+      <Button onClick={disable} variant="success">
+        Disable 2FA
+      </Button>
       <Link to={otpRecoveryCodesUrl()}>Download backup codes</Link>
     </div>
   ) : (
-    <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
+    <Button onClick={() => navigate(otpSetupUrl())} variant="success">
+      Configure 2FA
+    </Button>
   );
   const content = isLoading ? <Loading /> : btns;
 
@@ -167,7 +173,12 @@ const ChangeEmail = () => {
           />
           <InputFeedback data-testid="input-email-error">{error}</InputFeedback>
         </FormGroup>
-        <Button type="submit" disabled={!!error} isLoading={loader.isLoading}>
+        <Button
+          type="submit"
+          variant="success"
+          disabled={!!error}
+          isLoading={loader.isLoading}
+        >
           Send Verification Email
         </Button>
         <BannerMessages {...loader} />
@@ -240,7 +251,7 @@ export const SecuritySettingsPage = () => {
     <div className="p-4">
       <h1>Security Settings</h1>
 
-      <div className="m-8" style={{ width: 400 }}>
+      <div className="m-8">
         <Section title="Change your password">
           <ChangePassword />
         </Section>

@@ -1,4 +1,8 @@
-import { StatusVariant, variantToColor } from '@app/status-variant';
+import {
+  StatusVariant,
+  variantToColor,
+  variantToHoverColor,
+} from '@app/status-variant';
 
 interface Props
   extends React.DetailedHTMLProps<
@@ -13,11 +17,16 @@ export const Button = ({
   children,
   isLoading = false,
   variant = 'default',
+  className = '',
   ...args
 }: Props) => {
-  const bg = variant === 'default' ? '' : `bg-${variantToColor(variant)}-100`;
+  const bg = variantToColor(variant);
+  const bgHover = variantToHoverColor(variant);
   return (
-    <button className={bg} {...args}>
+    <button
+      className={`${bg} ${bgHover} text-white px-2 shadow-md rounded py-2 text-center transition disabled:opacity-60 disabled:cursor-not-allowed ${className}`}
+      {...args}
+    >
       {isLoading ? 'Loading ...' : children}
     </button>
   );

@@ -14,12 +14,12 @@ export const HelpLink = ({
     <Link
       to={to}
       className={classNames(
-        'text-brandGreen-400',
+        'text-green-200',
         'no-underline',
         'focus:underline',
-        'focus:text-gold-400',
+        'focus:text-green-100',
         'hover:underline',
-        'hover:text-gold-400',
+        'hover:text-green-100',
         'leading-normal',
         className,
       )}

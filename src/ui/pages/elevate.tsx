@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
+import { useLoaderSuccess } from 'saga-query/react';
 
 import { homeUrl } from '@app/routes';
 import { elevate } from '@app/auth';
@@ -8,7 +9,6 @@ import { selectAuthLoader, selectIsOtpError } from '@app/auth';
 import { selectJWTToken } from '@app/token';
 
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
-import { useLoaderSuccess } from '../use-loader-success';
 import { FormGroup } from '../form-group';
 import { Button } from '../button';
 
@@ -48,61 +48,67 @@ export const ElevatePage = () => {
   return (
     <AuthenticationWrapper title="Re-enter your credentials">
       <form onSubmit={onSubmit}>
-        <FormGroup>
-          <label htmlFor="input-email" className="brand-dark-form__label">
-            Email
-          </label>
-
-          <input
-            name="email"
-            type="email"
-            disabled
-            value={user.email}
-            autoComplete="username"
-            autoFocus
-            data-testid="input-email"
-            id="input-email"
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <label htmlFor="input-password" className="brand-dark-form__label">
-            Password
-          </label>
-          <input
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.currentTarget.value)}
-            autoComplete="current-password"
-            data-testid="input-password"
-            id="input-password"
-          />
-        </FormGroup>
-
-        {requireOtp && (
-          <FormGroup>
-            <label htmlFor="input-2fa" className="brand-dark-form__label">
-              2FA Token
+        <div className="bg-white/5 shadow-md rounded-lg">
+          <FormGroup className="px-6 h-14 flex items-center border-b border-white/5">
+            <label htmlFor="input-email" className="w-20 text-sm">
+              Email
             </label>
+
             <input
-              type="number"
-              value={otpToken}
-              onChange={(e) => setOtpToken(e.currentTarget.value)}
-              autoComplete="off"
+              name="email"
+              type="email"
+              disabled
+              value={user.email}
+              autoComplete="username"
               autoFocus
-              data-testid="input-2fa"
-              id="input-2fa"
+              data-testid="input-email"
+              id="input-email"
+              className="flex-1 outline-0 py-1 bg-transparent disabled:cursor-not-allowed text-white/20"
             />
           </FormGroup>
-        )}
+
+          <FormGroup className="px-6 h-14 flex items-center">
+            <label htmlFor="input-password" className="w-20 text-sm">
+              Password
+            </label>
+            <input
+              name="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
+              autoComplete="current-password"
+              data-testid="input-password"
+              id="input-password"
+              className="flex-1 outline-0 py-1 bg-transparent"
+            />
+          </FormGroup>
+
+          {requireOtp && (
+            <FormGroup className="px-6 h-14 flex items-center border-t border-white/5">
+              <label htmlFor="input-2fa" className="w-20 text-sm">
+                2FA Token
+              </label>
+              <input
+                type="number"
+                value={otpToken}
+                onChange={(e) => setOtpToken(e.currentTarget.value)}
+                autoComplete="off"
+                autoFocus
+                data-testid="input-2fa"
+                id="input-2fa"
+                className="flex-1 outline-0 py-1 bg-transparent"
+              />
+            </FormGroup>
+          )}
+        </div>
 
         <div className="flex flex-col justify-between mt-9 mb-6">
           <Button
             isLoading={loader.isLoading}
             disabled={loader.isLoading}
             type="submit"
-            data-testid="btn-login"
+            variant="success"
+            className="h-12 rounded-lg"
           >
             Log in
           </Button>

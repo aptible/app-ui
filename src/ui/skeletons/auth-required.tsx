@@ -6,7 +6,6 @@ import { loginUrl } from '@app/routes';
 import { selectIsUserAuthenticated } from '@app/token';
 import { fetchCurrentToken } from '@app/auth';
 
-import { LogoutButton } from '../auth/logout-button';
 import { Nav } from '../nav';
 import { Loading } from '../loading';
 
@@ -29,7 +28,6 @@ export const AuthRequired = () => {
   return (
     <Nav>
       <Outlet />
-      <LogoutButton />
     </Nav>
   );
 };

@@ -5,7 +5,6 @@ import { selectIsAuthenticationError, selectAuthLoader } from '@app/auth';
 
 import { HelpLink } from '../help-link';
 import { LogoutButton } from './logout-button';
-import { HomeLink } from './home-link';
 import { Banner } from '../banner';
 
 interface Props {
@@ -31,11 +30,29 @@ export const AuthenticationWrapper = ({
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
 
   return (
-    <>
-      <div>
-        <div className="body-container bg-gray-900 w-full min-h-screen pb-8">
-          <div className="login-box w-full mx-auto">
-            <div className="flex login-box__header items-center">logo</div>
+    <div className="flex justify-center items-center bg-midnight text-white w-full h-full">
+      <div style={{ width: 480 }}>
+        <div className="w-full mx-auto">
+          <div className="flex items-center mb-8">
+            <img src="/aptible-logo-white-on-dark.svg" style={{ width: 105 }} />
+          </div>
+
+          <div>
+            <div className="mb-8">
+              <div className="text-2xl mb-2">{title}</div>
+
+              {helpText && (
+                <div className="flex items-center">
+                  <div className="text-xs opacity-50">{helpText}</div>
+                  {link && (
+                    <HelpLink className="ml-2 text-xs" to={link.to}>
+                      {link.text} →
+                    </HelpLink>
+                  )}
+                </div>
+              )}
+              {progressElement}
+            </div>
 
             {credentialError ? (
               <Banner variant="error" className="mb-6">
@@ -43,29 +60,11 @@ export const AuthenticationWrapper = ({
               </Banner>
             ) : null}
 
-            <div className="brand-dark-panel">
-              <div className="brand-dark-form__header">
-                <h3 className="brand-dark-form__title">{title}</h3>
-
-                {helpText && (
-                  <div className="brand-dark-form__help-links">
-                    {helpText}
-                    {link && (
-                      <HelpLink className="ml-2" to={link.to}>
-                        {link.text} →
-                      </HelpLink>
-                    )}
-                  </div>
-                )}
-                {progressElement}
-              </div>
-              <div className="brand-dark-form__body">{children}</div>
-            </div>
-            <HomeLink />
+            <div>{children}</div>
           </div>
-          {isAuthenticated ? <LogoutButton /> : null}
         </div>
+        {isAuthenticated ? <LogoutButton /> : null}
       </div>
-    </>
+    </div>
   );
 };

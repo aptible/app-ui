@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLoader } from 'saga-query/react';
+import { useLoader, useLoaderSuccess } from 'saga-query/react';
 
 import { verifyEmail } from '@app/auth';
 import { selectJWTToken } from '@app/token';
@@ -10,7 +10,6 @@ import { createOrgUrl } from '@app/routes';
 import { Progress } from '../../auth/progress';
 import { AuthenticationWrapper } from '../../auth/authentication-wrapper';
 import { ResendVerificationEmail } from './resend-verification-email-form';
-import { useLoaderSuccess } from '../../use-loader-success';
 import { Loading } from '../../loading';
 
 export const VerifyEmailPage = () => {

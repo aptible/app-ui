@@ -1,4 +1,4 @@
-import { StatusVariant, variantToColor } from '@app/status-variant';
+import { StatusVariant, variantToTextColor } from '@app/status-variant';
 
 export const InputFeedback = ({
   children,
@@ -7,6 +7,6 @@ export const InputFeedback = ({
   children: React.ReactNode;
   variant?: StatusVariant;
 }) => {
-  const bg = variant === 'default' ? '' : `bg-${variantToColor(variant)}-100`;
-  return <div className={bg}>{children}</div>;
+  const color = variant === 'default' ? '' : variantToTextColor(variant);
+  return <div className={`${color} text-xs`}>{children}</div>;
 };

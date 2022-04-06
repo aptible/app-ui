@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { useLoaderSuccess } from 'saga-query/react';
 
 import {
   selectInvitationRequest,
@@ -11,6 +12,7 @@ import {
   RESET_REQUEST_PASSWORD_PATH,
   acceptInvitationWithCodeUrl,
   homeUrl,
+  signupUrl,
 } from '@app/routes';
 import { login, selectAuthLoader, selectIsOtpError } from '@app/auth';
 import { validEmail } from '@app/string-utils';
@@ -18,7 +20,6 @@ import { validEmail } from '@app/string-utils';
 import { FormGroup } from '../form-group';
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { HelpLink } from '../help-link';
-import { useLoaderSuccess } from '../use-loader-success';
 import { LoggedInBanner } from '../auth/logged-in-banner';
 import { InputFeedback } from '../input';
 import { Button } from '../button';
@@ -76,84 +77,87 @@ export const LoginPage = () => {
   return (
     <AuthenticationWrapper
       title={
-        invitation
-          ? `Log in to join ${invitation.organizationName}`
-          : 'Log in to Aptible Deploy'
+        invitation ? `Log in to join ${invitation.organizationName}` : 'Log in'
       }
-      helpText={`Don't have an account?`}
+      helpText="Don't have an account?"
       link={{
         text: 'Sign up',
-        to: '/signup',
+        to: signupUrl(),
       }}
     >
       <form onSubmit={onSubmit}>
         <LoggedInBanner />
-        <FormGroup variant={emailErrorMessage ? 'error' : 'default'}>
-          <label htmlFor="input-email" className="brand-dark-form__label">
-            Email
-          </label>
-
-          <input
-            name="email"
-            type="email"
-            disabled={!!invitation}
-            value={invitation ? invitation.email : email}
-            onChange={(e) => setEmail(e.currentTarget.value)}
-            autoComplete="username"
-            autoFocus
-            data-testid="input-email"
-            id="input-email"
-          />
-          <InputFeedback data-testid="input-email-error">
-            {emailErrorMessage}
-          </InputFeedback>
-        </FormGroup>
-
-        <FormGroup>
-          <label htmlFor="input-password" className="brand-dark-form__label">
-            Password
-          </label>
-          <input
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.currentTarget.value)}
-            autoComplete="current-password"
-            data-testid="input-password"
-            id="input-password"
-          />
-        </FormGroup>
-
-        {requireOtp && (
-          <FormGroup>
-            <label htmlFor="input-2fa" className="brand-dark-form__label">
-              2FA Token
+        <div className="bg-white/5 shadow-md rounded-lg">
+          <FormGroup
+            variant={emailErrorMessage ? 'error' : 'default'}
+            className="px-6 h-14 flex items-center border-b border-white/5"
+          >
+            <label htmlFor="input-email" className="w-20 text-sm">
+              Email
             </label>
+
             <input
-              type="number"
-              value={otpToken}
-              onChange={(e) => setOtpToken(e.currentTarget.value)}
-              autoComplete="off"
+              name="email"
+              type="email"
+              disabled={!!invitation}
+              value={invitation ? invitation.email : email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
+              autoComplete="username"
               autoFocus
-              data-testid="input-2fa"
-              id="input-2fa"
+              id="input-email"
+              className="flex-1 outline-0 py-1 bg-transparent"
             />
           </FormGroup>
-        )}
+
+          <FormGroup className="px-6 h-14 flex items-center">
+            <label htmlFor="input-password" className="w-20 text-sm">
+              Password
+            </label>
+            <input
+              name="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
+              autoComplete="current-password"
+              id="input-password"
+              className="flex-1 outline-0 py-1 bg-transparent"
+            />
+          </FormGroup>
+
+          {requireOtp ? (
+            <FormGroup className="px-6 h-14 flex items-center border-t border-white/5">
+              <label htmlFor="input-2fa" className="w-20 text-sm">
+                2FA Token
+              </label>
+              <input
+                type="number"
+                value={otpToken}
+                onChange={(e) => setOtpToken(e.currentTarget.value)}
+                autoComplete="off"
+                autoFocus
+                id="input-2fa"
+                className="flex-1 outline-0 py-1 bg-transparent"
+              />
+            </FormGroup>
+          ) : null}
+        </div>
+
+        <div className="mt-2 h-2">
+          <InputFeedback variant="error">{emailErrorMessage}</InputFeedback>
+        </div>
 
         <div className="mt-9 mb-6 flex flex-col justify-between">
           <Button
             isLoading={loader.isLoading}
             disabled={loader.isLoading}
             type="submit"
-            data-testid="btn-login"
+            variant="success"
+            className="mb-8 h-12 rounded-lg"
           >
             Log in
           </Button>
-          <HelpLink
-            to={RESET_REQUEST_PASSWORD_PATH}
-            data-test-id="reset-password-link"
-          >
+
+          <HelpLink to={RESET_REQUEST_PASSWORD_PATH} className="text-sm">
             Forgot your password?
           </HelpLink>
         </div>

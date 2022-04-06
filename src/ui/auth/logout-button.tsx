@@ -9,13 +9,11 @@ export const LogoutButton = () => {
   const user = useSelector(selectJWTToken);
   const onLogout = () => dispatch(logout());
   return (
-    <div className="bg-gray-900 text-center w-full pt-5">
-      <div className="login-box w-full mx-auto">
-        <div className="brand-dark-form__help-links mb-5">
+    <div className="text-center w-full pt-5">
+      <div className="w-full mx-auto">
+        <div className="mb-5">
           Currently logged in as {user.email}.{' '}
-          <Button onClick={onLogout} className="brand-dark-form__link">
-            Logout
-          </Button>
+          <Button onClick={onLogout}>Logout</Button>
         </div>
       </div>
     </div>

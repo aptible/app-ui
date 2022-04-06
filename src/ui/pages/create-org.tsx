@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
-import { useLoader } from 'saga-query/react';
+import { useLoader, useLoaderSuccess } from 'saga-query/react';
 
 import { homeUrl } from '@app/routes';
 import { createOrganization } from '@app/organizations';
 
 import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { Progress } from '../auth/progress';
-import { useLoaderSuccess } from '../use-loader-success';
 import { Banner } from '../banner';
 import { FormGroup } from '../form-group';
 import { InputFeedback } from '../input';

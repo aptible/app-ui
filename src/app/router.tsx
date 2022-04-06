@@ -34,8 +34,7 @@ import {
 } from '@app/routes';
 
 export const Router = () => (
-  <div>
-    <ToastContainer />
+  <div className="h-full w-full">
     <Routes>
       <Route path={LOGIN_PATH} element={<LoginPage />} />
 
@@ -87,5 +86,6 @@ export const Router = () => (
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
+    <ToastContainer />
   </div>
 );
