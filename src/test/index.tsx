@@ -3,10 +3,10 @@ import { Route, Routes } from 'react-router';
 import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
 import { applyMiddleware, createStore } from 'redux';
 import { prepareStore } from 'saga-query';
+import { createMemoryHistory } from 'history';
 
 import type { AppState } from '@app/types';
 import { reducers, sagas } from '@app/app';
-import { createMemoryHistory } from 'history';
 
 export const setupIntegrationTest = (
   initState: Partial<AppState> = {},
@@ -33,5 +33,5 @@ export const setupIntegrationTest = (
       </Provider>
     );
   };
-  return { store, TestProvider };
+  return { store, TestProvider, history };
 };
