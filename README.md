@@ -11,7 +11,7 @@ access controls, and ops.
 yarn
 ```
 
-# environment variables
+## environment variables
 
 ```bash
 export VITE_AUTH_URL="http://localhost:4000"
@@ -19,7 +19,7 @@ export VITE_API_URL="http://localhost:4001"
 export VITE_BILLING_URL="http:localhost:4005"
 ```
 
-# dev server
+## dev server
 
 ```bash
 yarn dev
