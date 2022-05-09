@@ -6,12 +6,13 @@ import { useLoader } from 'saga-query/react';
 import { setupOtp, selectOtp } from '@app/mfa';
 import { updateUser, selectCurrentUserId } from '@app/users';
 
-import { ExternalLink } from '../external-link';
-import { BannerMessages } from '../banner-messages';
-import { Loading } from '../loading';
-import { FormGroup } from '../form-group';
-import { InputFeedback } from '../input';
-import { Button } from '../button';
+import {
+  FormGroup,
+  Button,
+  Loading,
+  BannerMessages,
+  ExternalLink,
+} from '../shared';
 
 export const OtpSetupPage = () => {
   const dispatch = useDispatch();
@@ -83,9 +84,11 @@ export const OtpSetupPage = () => {
               <div>Your 2FA Secret: {secret}</div>
             </div>
             <form onSubmit={onSubmit}>
-              <FormGroup variant={error ? 'error' : 'default'}>
-                <label htmlFor="input-mfa">2FA Token</label>
-
+              <FormGroup
+                label="2FA Token"
+                htmlFor="input-mfa"
+                feedbackVariant={error ? 'danger' : 'info'}
+              >
                 <input
                   name="mfa"
                   type="mfa"
@@ -94,9 +97,7 @@ export const OtpSetupPage = () => {
                   autoFocus
                   data-testid="input-mfa"
                 />
-                <InputFeedback data-testid="input-mfa-error">
-                  {error}
-                </InputFeedback>
+                <div>{error}</div>
               </FormGroup>
               <Button
                 type="submit"

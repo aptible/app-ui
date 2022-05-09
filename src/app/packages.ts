@@ -9,6 +9,8 @@ import * as redirectPath from '@app/redirect-path';
 import * as orgs from '@app/organizations';
 import * as bootup from '@app/bootup';
 import * as mfa from '@app/mfa';
+import * as theme from '@app/theme';
+import * as deploy from '@app/deploy';
 import { api, authApi, thunks } from '@app/api';
 
 const corePackages: any[] = [
@@ -24,6 +26,8 @@ const corePackages: any[] = [
   bootup,
   mfa,
   api,
+  theme,
+  deploy,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {

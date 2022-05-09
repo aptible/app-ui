@@ -8,9 +8,8 @@ import { selectJWTToken } from '@app/token';
 import { createOrgUrl } from '@app/routes';
 
 import { Progress } from '../../auth/progress';
-import { AuthenticationWrapper } from '../../auth/authentication-wrapper';
 import { ResendVerificationEmail } from './resend-verification-email-form';
-import { Loading } from '../../loading';
+import { Loading } from '../../shared';
 
 export const VerifyEmailPage = () => {
   const dispatch = useDispatch();
@@ -44,10 +43,8 @@ export const VerifyEmailPage = () => {
 
   if (verifyEmailLoader.isError) {
     return (
-      <AuthenticationWrapper
-        title="Verifying your email failed"
-        progressElement={<Progress steps={3} currentStep={2} />}
-      >
+      <div>
+        <Progress steps={3} currentStep={2} />
         <p className="text-h3 text-gray-500 leading-normal">
           Failed to verify your email, the token may have expired. Resend the
           verification email and try again.
@@ -55,21 +52,19 @@ export const VerifyEmailPage = () => {
         <p>{verifyEmailLoader.message}</p>
 
         <ResendVerificationEmail />
-      </AuthenticationWrapper>
+      </div>
     );
   }
 
   return (
-    <AuthenticationWrapper
-      title="Verify your email"
-      progressElement={<Progress steps={3} currentStep={2} />}
-    >
+    <div>
+      <Progress steps={3} currentStep={2} />
       <p className="text-h3 text-gray-500 leading-normal">
         Before you can continue setting up your Aptible account, you&apos;ll
         need to verify your email address. Find our verification email sent to{' '}
         {user.email} and click on the included link to proceed.
       </p>
       <ResendVerificationEmail />
-    </AuthenticationWrapper>
+    </div>
   );
 };

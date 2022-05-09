@@ -2,7 +2,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { selectJWTToken } from '@app/token';
 import { logout } from '@app/auth';
-import { Button } from '../button';
+
+import { Button } from '../shared';
 
 export const LogoutButton = () => {
   const dispatch = useDispatch();

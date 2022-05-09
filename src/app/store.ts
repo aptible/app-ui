@@ -9,6 +9,8 @@ import { prepareStore } from 'saga-query';
 import type { AppState } from '@app/types';
 import { resetReducer } from '@app/reset-store';
 import { TOKEN_NAME, ELEVATED_TOKEN_NAME } from '@app/token';
+import { THEME_NAME } from '@app/theme';
+
 import { sagas, reducers } from './packages';
 
 interface Props {
@@ -23,7 +25,7 @@ interface AppStore<State> {
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [TOKEN_NAME, ELEVATED_TOKEN_NAME],
+  whitelist: [TOKEN_NAME, ELEVATED_TOKEN_NAME, THEME_NAME],
 };
 
 export function setupStore({ initState }: Props): AppStore<AppState> {

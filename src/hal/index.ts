@@ -1,7 +1,7 @@
-import { Next, ApiCtx, select } from 'saga-query';
+import { Next, select } from 'saga-query';
 
 import { createAssign, createReducerMap } from '@app/slice-helpers';
-import {
+import type {
   Action,
   AppState,
   EmbeddedMap,
@@ -10,15 +10,19 @@ import {
   NestedEntity,
   MapEntity,
 } from '@app/types';
+import type { DeployApiCtx } from '@app/api';
 
-const uuidRe = new RegExp(
+/* const uuidRe = new RegExp(
   /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/,
-);
+); */
 
-export function extractIdFromLink(url: string) {
-  const exec = uuidRe.exec(url);
+export function extractIdFromLink(relation: { href: string } | null) {
+  if (!relation || !relation.href) return '';
+  /* const exec = uuidRe.exec(url);
   if (!exec) return '';
-  return exec[0] || '';
+  return exec[0] || ''; */
+  const segments = relation.href.split('/');
+  return segments[segments.length - 1];
 }
 
 export const ENTITIES_NAME = 'entities';
@@ -33,7 +37,7 @@ export function defaultEntity<E = any>(e: EmbeddedMap<E>): EmbeddedMap<E> {
   return e;
 }
 
-export function* halEntityParser(ctx: ApiCtx, next: Next) {
+export function* halEntityParser(ctx: DeployApiCtx, next: Next) {
   yield next();
 
   if (!ctx.json.ok) return;

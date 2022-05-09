@@ -3,7 +3,7 @@ import { fetchOtpCodes } from '@app/mfa';
 import { useCache } from 'saga-query/react';
 
 import { useCurrentUser } from '../use-current-user';
-import { Loading } from '../loading';
+import { Loading } from '../shared';
 
 interface OtpCode {
   id: string;

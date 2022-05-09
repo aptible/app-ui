@@ -8,8 +8,11 @@ import { defaultUser } from './serializers';
 import { users } from './slice';
 
 const selectors = users.getSelectors((state: AppState) => state[USERS_NAME]);
-export const { selectTable: selectUsers, selectById: selectUserById } =
-  selectors;
+export const {
+  selectTable: selectUsers,
+  selectById: selectUserById,
+  selectTableAsList: selectUsersAsList,
+} = selectors;
 
 export const selectCurrentUserId = createSelector(selectToken, (token) => {
   return token.userUrl.split('/').pop() || '';

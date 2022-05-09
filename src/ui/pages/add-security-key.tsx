@@ -5,11 +5,7 @@ import { useCache } from 'saga-query/react';
 import { selectCurrentUserId } from '@app/users';
 import { fetchU2fChallenges } from '@app/mfa';
 
-import { ExternalLink } from '../external-link';
-import { FormGroup } from '../form-group';
-import { InputFeedback } from '../input';
-import { Banner } from '../banner';
-import { Button } from '../button';
+import { Banner, Button, ExternalLink, FormGroup } from '../shared';
 
 interface U2fChallenge {
   id: string;
@@ -70,9 +66,11 @@ export const AddSecurityKeyPage = () => {
         .
       </div>
       <form onSubmit={onSubmit}>
-        <FormGroup variant={error ? 'error' : 'default'}>
-          <label htmlFor="input-name">Name</label>
-
+        <FormGroup
+          label="Name"
+          htmlFor="input-name"
+          feedbackVariant={error ? 'danger' : 'info'}
+        >
           <input
             name="name"
             type="text"
@@ -81,9 +79,7 @@ export const AddSecurityKeyPage = () => {
             autoComplete="username"
             autoFocus
           />
-          <InputFeedback>
-            Pick a name that helps you remember this key
-          </InputFeedback>
+          <div>Pick a name that helps you remember this key</div>
         </FormGroup>
         {error ? <Banner variant="error">{error}</Banner> : null}
         <div>

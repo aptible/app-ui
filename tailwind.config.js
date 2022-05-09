@@ -1,33 +1,34 @@
+const colors = require("tailwindcss/colors");
+const flex = require("tailwindcss/defaultTheme").flex;
+
 module.exports = {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  purge: ["./src/**/*.{js,jsx,ts,tsx}", "./index.html"],
+  darkMode: "class",
   theme: {
-    colors: {
-      transparent: 'transparent',
-      black: '#000000',
-      white: '#FFFFFF',
-      midnight: '#0A1B2B',
-      purple: '#4b5563',
-      grey: {
-        100: '#FAFAFA',
-        200: '#E5E5E5',
-      },
-      red: {
-        100: '#D48D81',
-        200: '#D67666',
-      },
-      green: {
-        100: '#33C69F',
-        200: '#088765',
-      }
-    },
     extend: {
-      spacing: {
-        '128': '32rem',
-      }
+      transitionProperty: {
+        "bg-border": "background-color, border-color",
+      },
+      flex: {
+        ...flex,
+        "cell-sm": "0 0 220px",
+        "cell-md": "0 0 300px",
+        "cell-lg": "0 0 480px",
+      },
+      colors: {
+        ...colors,
+        gray: colors.neutral
+      },
+    }
+  },
+  variants: {
+    extend: {
+      padding: ["first", "last"],
     },
   },
-  plugins: [],
-}
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/line-clamp')
+  ],
+};

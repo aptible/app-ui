@@ -6,12 +6,8 @@ import { useLoader, useLoaderSuccess } from 'saga-query/react';
 import { homeUrl } from '@app/routes';
 import { createOrganization } from '@app/organizations';
 
-import { AuthenticationWrapper } from '../auth/authentication-wrapper';
 import { Progress } from '../auth/progress';
-import { Banner } from '../banner';
-import { FormGroup } from '../form-group';
-import { InputFeedback } from '../input';
-import { Button } from '../button';
+import { Button, Banner, FormGroup } from '../shared';
 
 const CreateOrgForm = () => {
   const dispatch = useDispatch();
@@ -40,10 +36,7 @@ const CreateOrgForm = () => {
           {message}
         </Banner>
       ) : null}
-      <FormGroup>
-        <label htmlFor="input-name" className="brand-dark-form__label">
-          Your Name
-        </label>
+      <FormGroup label="Your Name" htmlFor="input-name">
         <input
           name="name"
           type="text"
@@ -55,10 +48,10 @@ const CreateOrgForm = () => {
           data-testid="input-name"
           id="input-name"
         />
-        <InputFeedback>
+        <div>
           If you need to join an existing organization, have one of the owners
           of the organization send you an invitation to join.
-        </InputFeedback>
+        </div>
       </FormGroup>
 
       <div className="flex flex-col justify-between mt-9 mb-6">
@@ -76,13 +69,10 @@ const CreateOrgForm = () => {
 };
 
 export const CreateOrgPage = () => {
-  const title = 'Create an organization';
   return (
-    <AuthenticationWrapper
-      title={title}
-      progressElement={<Progress steps={3} currentStep={3} />}
-    >
+    <div>
+      <Progress steps={3} currentStep={3} />
       <CreateOrgForm />
-    </AuthenticationWrapper>
+    </div>
   );
 };

@@ -1,0 +1,107 @@
+import { api } from '@app/api';
+import { defaultEntity, extractIdFromLink } from '@app/hal';
+import {
+  createReducerMap,
+  createTable,
+  mustSelectEntity,
+} from '@app/slice-helpers';
+import type { AppState, DeployEndpoint } from '@app/types';
+import { createSelector } from '@reduxjs/toolkit';
+import { selectAppById } from '../app';
+import { selectDeploy } from '../slice';
+
+export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
+  return {
+    acme: payload.acme,
+    acmeConfiguration: payload.acme_configuration,
+    acmeDnsChallengeHost: payload.acme_dns_challenge_host,
+    acmeStatus: payload.acme_status,
+    containerExposedPorts: payload.container_exposed_ports,
+    containerPort: payload.container_port,
+    containerPorts: payload.container_ports,
+    createdAt: payload.created_at,
+    default: payload.default,
+    dockerName: payload.docker_name,
+    externalHost: payload.external_host,
+    externalHttpPort: payload.external_http_port,
+    externalHttpsPort: payload.external_https_port,
+    id: payload.id,
+    internal: payload.internal,
+    ipWhitelist: payload.ip_whitelist,
+    platform: payload.platform,
+    type: payload.type,
+    updatedAt: payload.updated_at,
+    userDomain: payload.user_domain,
+    virtualDomain: payload.virtual_domain,
+    status: payload.status,
+    serviceId: extractIdFromLink(payload._links.service),
+  };
+};
+
+export const defaultDeployEndpoint = (
+  e: Partial<DeployEndpoint> = {},
+): DeployEndpoint => {
+  const now = new Date().toISOString();
+  return {
+    id: '',
+    status: 'pending',
+    acme: false,
+    acmeConfiguration: {},
+    acmeDnsChallengeHost: '',
+    acmeStatus: '',
+    containerExposedPorts: [],
+    containerPort: '',
+    containerPorts: [],
+    default: false,
+    dockerName: '',
+    externalHost: '',
+    externalHttpPort: '',
+    externalHttpsPort: '',
+    internal: false,
+    ipWhitelist: [],
+    platform: 'elb',
+    type: '',
+    createdAt: now,
+    updatedAt: now,
+    userDomain: '',
+    virtualDomain: '',
+    serviceId: '',
+    ...e,
+  };
+};
+
+export const DEPLOY_ENDPOINT_NAME = 'endpoints';
+const slice = createTable<DeployEndpoint>({
+  name: DEPLOY_ENDPOINT_NAME,
+});
+const { add: addDeployEndpoints } = slice.actions;
+const selectors = slice.getSelectors(
+  (s: AppState) => selectDeploy(s)[DEPLOY_ENDPOINT_NAME],
+);
+const initApp = defaultDeployEndpoint();
+const must = mustSelectEntity(initApp);
+export const selectEndpointById = must(selectors.selectById);
+export const { selectTableAsList: selectEndpointsAsList } = selectors;
+export const hasDeployEndpoint = (a: DeployEndpoint) => a.id != '';
+export const endpointReducers = createReducerMap(slice);
+export const selectEndpointsByAppId = createSelector(
+  selectEndpointsAsList,
+  selectAppById,
+  (endpoints, app) => {
+    const serviceIds = app.services.map((s) => s.id);
+    return endpoints.filter((end) => serviceIds.includes(end.serviceId));
+  },
+);
+
+export const fetchEndpointsByAppId = api.get<{ id: string }>(
+  '/endpoints/apps/:id',
+);
+export const fetchEnpoint = api.get<{ id: string }>('/endpoints/:id');
+
+export const endpointEntities = {
+  endpoint: defaultEntity({
+    id: 'endpoint',
+    deserialize: deserializeDeployEndpoint,
+    save: addDeployEndpoints,
+  }),
+};
