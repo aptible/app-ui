@@ -1,4 +1,3 @@
-export * from './home';
 export * from './not-found';
 export * from './login';
 export * from './signup';
@@ -10,3 +9,7 @@ export * from './ssh-settings';
 export * from './otp-setup';
 export * from './otp-recovery-codes';
 export * from './add-security-key';
+export * from './apps';
+export * from './databases';
+export * from './logout';
+export * from './settings';

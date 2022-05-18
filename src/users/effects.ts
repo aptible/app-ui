@@ -1,4 +1,4 @@
-import { Next, select } from 'saga-query';
+import { Next, select, timer } from 'saga-query';
 
 import { authApi, AuthApiCtx, elevetatedMdw } from '@app/api';
 import type { ApiGen } from '@app/types';
@@ -10,7 +10,11 @@ interface UserBase {
   userId: string;
 }
 
-export const fetchUser = authApi.get<UserBase>('/users/:userId', elevetatedMdw);
+export const fetchUser = authApi.get<UserBase>(
+  '/users/:userId',
+  { saga: timer() },
+  elevetatedMdw,
+);
 export const fetchUsers = authApi.get<{ orgId: string }>(
   '/organizations/:orgId/users',
 );

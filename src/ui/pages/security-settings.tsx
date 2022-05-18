@@ -13,13 +13,8 @@ import {
   addSecurityKeyUrl,
 } from '@app/routes';
 
-import { BannerMessages } from '../banner-messages';
 import { useCurrentUser } from '../use-current-user';
-import { FormGroup } from '../form-group';
-import { InputFeedback } from '../input';
-import { Button } from '../button';
-import { Loading } from '../loading';
-import { Banner } from '../banner';
+import { Button, Loading, Banner, FormGroup, BannerMessages } from '../shared';
 
 interface SectionProps {
   children: React.ReactNode;
@@ -58,12 +53,15 @@ const ChangePassword = () => {
     dispatch(updateUser({ type: 'update-password', userId, password: pass }));
   };
 
-  const groupVariant = error ? 'error' : 'default';
+  const groupVariant = error ? 'danger' : 'info';
 
   return (
     <form onSubmit={onSubmit}>
-      <FormGroup variant={groupVariant}>
-        <label htmlFor="input-password">New Password</label>
+      <FormGroup
+        label="New Password"
+        htmlFor="input-password"
+        feedbackVariant={groupVariant}
+      >
         <input
           name="password"
           type="password"
@@ -73,8 +71,11 @@ const ChangePassword = () => {
           className="border-black border"
         />
       </FormGroup>
-      <FormGroup variant={groupVariant}>
-        <label htmlFor="input-password">Confirm New Password</label>
+      <FormGroup
+        label="Confirm New Password"
+        htmlFor="input-password"
+        feedbackVariant={groupVariant}
+      >
         <input
           name="config-password"
           type="password"
@@ -83,13 +84,12 @@ const ChangePassword = () => {
           data-testid="input-confirm-password"
           className="border-black border"
         />
-        <InputFeedback variant="error">{error}</InputFeedback>
+        <div>{error}</div>
       </FormGroup>
       <Button
         type="submit"
         disabled={loader.isLoading}
         isLoading={loader.isLoading}
-        variant="success"
       >
         Change Password
       </Button>
@@ -108,15 +108,11 @@ const MultiFactor = () => {
 
   const btns = user.otpEnabled ? (
     <div className="mb-2 w-100">
-      <Button onClick={disable} variant="success">
-        Disable 2FA
-      </Button>
+      <Button onClick={disable}>Disable 2FA</Button>
       <Link to={otpRecoveryCodesUrl()}>Download backup codes</Link>
     </div>
   ) : (
-    <Button onClick={() => navigate(otpSetupUrl())} variant="success">
-      Configure 2FA
-    </Button>
+    <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
   );
   const content = isLoading ? <Loading /> : btns;
 
@@ -158,9 +154,11 @@ const ChangeEmail = () => {
       </div>
 
       <form onSubmit={onSubmit}>
-        <FormGroup variant={error ? 'error' : 'default'}>
-          <label htmlFor="input-email">Email</label>
-
+        <FormGroup
+          label="Email"
+          htmlFor="input-email"
+          feedbackVariant={error ? 'danger' : 'info'}
+        >
           <input
             name="email"
             type="email"
@@ -171,14 +169,9 @@ const ChangeEmail = () => {
             data-testid="input-email"
             id="input-email"
           />
-          <InputFeedback data-testid="input-email-error">{error}</InputFeedback>
+          <div>{error}</div>
         </FormGroup>
-        <Button
-          type="submit"
-          variant="success"
-          disabled={!!error}
-          isLoading={loader.isLoading}
-        >
+        <Button type="submit" disabled={!!error} isLoading={loader.isLoading}>
           Send Verification Email
         </Button>
         <BannerMessages {...loader} />
@@ -223,9 +216,7 @@ const LogOut = () => {
       <div>Are you sure you want to log out of all sessions?</div>
       <div>
         <Button onClick={() => setConfirm(false)}>Cancel</Button>
-        <Button variant="error" onClick={makeItSo}>
-          Make it so
-        </Button>
+        <Button onClick={makeItSo}>Make it so</Button>
       </div>
     </div>
   );
@@ -235,7 +226,7 @@ const LogOut = () => {
       <div>
         You can log out other sessions at any time. This cannot be undone.
       </div>
-      <Button className="mb-4" variant="error" onClick={() => setConfirm(true)}>
+      <Button className="mb-4" onClick={() => setConfirm(true)}>
         Log out all other sessions
       </Button>
       {loader.isError ? (

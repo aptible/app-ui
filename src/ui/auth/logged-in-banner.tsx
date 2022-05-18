@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { homeUrl } from '@app/routes';
 import { selectIsUserAuthenticated } from '@app/token';
-import { Banner } from '../banner';
+import { Banner } from '../shared';
 
 export const LoggedInBanner = () => {
   const isAuthenticated = useSelector(selectIsUserAuthenticated);

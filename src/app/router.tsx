@@ -1,8 +1,7 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import {
-  HomePage,
   NotFoundPage,
   LoginPage,
   SignupPage,
@@ -16,6 +15,13 @@ import {
   OtpSetupPage,
   OtpRecoveryCodesPage,
   AddSecurityKeyPage,
+  AppsPage,
+  AppPage,
+  AppOverviewPage,
+  DatabasesPage,
+  LogoutPage,
+  TeamPage,
+  SettingsPage,
 } from '@app/ui';
 import {
   HOME_PATH,
@@ -31,18 +37,50 @@ import {
   OTP_SETUP_PATH,
   OTP_RECOVERY_CODES_PATH,
   ADD_SECURITY_KEY_PATH,
+  APPS_PATH,
+  APP_DETAIL_PATH,
+  APP_OVERVIEW_PATH,
+  DATABASES_PATH,
+  LOGOUT_PATH,
+  TEAM_PATH,
+  appsUrl,
+  SETTINGS_PATH,
 } from '@app/routes';
 
 export const Router = () => (
   <div className="h-full w-full">
     <Routes>
+      <Route path={HOME_PATH} element={<AuthRequired />}>
+        <Route index element={<Navigate to={appsUrl()} replace />} />
+      </Route>
+
+      <Route path={APPS_PATH} element={<AuthRequired />}>
+        <Route index element={<AppsPage />} />
+      </Route>
+
+      <Route path={APP_DETAIL_PATH} element={<AuthRequired />}>
+        <Route element={<AppPage />}>
+          <Route path={APP_OVERVIEW_PATH} element={<AppOverviewPage />} />
+        </Route>
+      </Route>
+
+      <Route path={DATABASES_PATH} element={<AuthRequired />}>
+        <Route index element={<DatabasesPage />} />
+      </Route>
+
+      <Route path={SETTINGS_PATH} element={<AuthRequired />}>
+        <Route element={<SettingsPage />}>
+          <Route path={TEAM_PATH} element={<TeamPage />} />
+        </Route>
+      </Route>
+
+      <Route path={LOGOUT_PATH} element={<AuthRequired />}>
+        <Route index element={<LogoutPage />} />
+      </Route>
+
       <Route path={LOGIN_PATH} element={<LoginPage />} />
 
       <Route path={SIGNUP_PATH} element={<SignupPage />} />
-
-      <Route path={HOME_PATH} element={<AuthRequired />}>
-        <Route index element={<HomePage />} />
-      </Route>
 
       <Route path={VERIFY_EMAIL_REQUEST_PATH} element={<AuthRequired />}>
         <Route index element={<VerifyEmailPage />} />

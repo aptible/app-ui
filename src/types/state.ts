@@ -2,6 +2,15 @@ import type { QueryState } from 'saga-query';
 import type { InvitationRequest, Invitation } from './invitations';
 import type { EntityMap } from './hal';
 import type { MapEntity } from './helpers';
+import type {
+  DeployApp,
+  DeployDatabase,
+  DeployDisk,
+  DeployEndpoint,
+  DeployEnvironment,
+  DeployService,
+  DeployStack,
+} from './deploy';
 
 export interface Env {
   isProduction: boolean;
@@ -58,6 +67,18 @@ export interface Otp {
   currentUrl: string;
 }
 
+export type Theme = 'light' | 'dark';
+
+export interface DeployState {
+  apps: MapEntity<DeployApp>;
+  endpoints: MapEntity<DeployEndpoint>;
+  environments: MapEntity<DeployEnvironment>;
+  stacks: MapEntity<DeployStack>;
+  disks: MapEntity<DeployDisk>;
+  databases: MapEntity<DeployDatabase>;
+  services: MapEntity<DeployService>;
+}
+
 export interface AppState extends QueryState {
   env: Env;
   users: MapEntity<User>;
@@ -72,4 +93,6 @@ export interface AppState extends QueryState {
   u2fDevices: MapEntity<U2fDevice>;
   otp: Otp;
   data: MapEntity<any>;
+  theme: Theme;
+  deploy: DeployState;
 }

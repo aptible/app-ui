@@ -1,2 +1,2 @@
 export * from './pages';
-export * from './skeletons';
+export * from './layouts';

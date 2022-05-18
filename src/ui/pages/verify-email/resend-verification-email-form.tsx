@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { useLoader } from 'saga-query/react';
 
 import { resendVerification } from '@app/auth';
 import { selectJWTToken } from '@app/token';
 import { selectOrigin } from '@app/env';
 
-import { Button } from '../../button';
-import { useLoader } from 'saga-query/react';
+import { Button } from '../../shared';
 
 export const ResendVerificationEmail = () => {
   const dispatch = useDispatch();

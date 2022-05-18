@@ -19,6 +19,7 @@ type EndpointUrl = 'auth' | 'api' | 'billing';
 
 export interface AppCtx<S = any, P = any>
   extends ApiCtx<P, S, { message: string }> {}
+export interface DeployApiCtx<S = any, P = any> extends AppCtx<S, P> {}
 export interface AuthApiCtx<S = any, P = any>
   extends ApiCtx<P, S, AuthApiError> {
   elevated: boolean;
@@ -114,12 +115,36 @@ function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
   yield next();
 }
 
-export const api = createApi<ApiCtx>();
+export const api = createApi<DeployApiCtx>();
 api.use(requestMonitor());
 api.use(api.routes());
 api.use(halEntityParser);
 api.use(requestApi);
 api.use(tokenMdw);
+// if we use a variable inside our api endpoint but that value is falsey then
+// we should *not* call the fetch request
+api.use(function* payloadMonitor(ctx, next) {
+  const payload = ctx.payload;
+  if (!payload) {
+    yield next();
+    return;
+  }
+
+  const keys = Object.keys(payload);
+  for (let i = 0; i < keys.length; i += 1) {
+    const key = keys[i];
+    if (!ctx.name.includes(`:${key}`)) {
+      continue;
+    }
+
+    const val = payload[key];
+    if (!val) {
+      return;
+    }
+  }
+
+  yield next();
+});
 api.use(fetcher());
 
 export const authApi = createApi<AuthApiCtx>();

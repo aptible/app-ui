@@ -7,6 +7,8 @@ export const notFoundUrl = () => NOT_FOUND_PATH;
 
 export const LOGIN_PATH = '/login';
 export const loginUrl = () => LOGIN_PATH;
+export const LOGOUT_PATH = '/logout';
+export const logoutUrl = () => LOGOUT_PATH;
 export const SIGNUP_PATH = '/signup';
 export const signupUrl = () => SIGNUP_PATH;
 export const ELEVATE_PATH = '/elevate';
@@ -46,3 +48,16 @@ export const ACCEPT_INVITATION_WITHOUT_CODE_PATH =
   '/accept-invitation/:invitationId';
 export const acceptInvitationWithoutCodeUrl = (invitationId: string) =>
   `/accept-invitation/${invitationId}`;
+
+export const APPS_PATH = '/apps';
+export const appsUrl = () => APPS_PATH;
+export const APP_DETAIL_PATH = '/apps/:id';
+export const appDetailUrl = (id: string) => `/apps/${id}`;
+export const APP_OVERVIEW_PATH = `${APP_DETAIL_PATH}/overview`;
+export const appOverviewUrl = (id: string) => `/apps/${id}/overview`;
+export const DATABASES_PATH = '/databases';
+export const databasesUrl = () => DATABASES_PATH;
+export const SETTINGS_PATH = '/settings';
+export const settingsUrl = () => SETTINGS_PATH;
+export const TEAM_PATH = `${SETTINGS_PATH}/team`;
+export const teamUrl = () => TEAM_PATH;

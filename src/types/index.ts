@@ -3,3 +3,4 @@ export * from './hal';
 export * from './invitations';
 export * from './helpers';
 export * from './loader';
+export * from './deploy';

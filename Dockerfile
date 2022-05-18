@@ -1,4 +1,4 @@
-FROM node:14 AS builder
+FROM node:16 AS builder
 
 ARG VITE_AUTH_URL=https://auth-test.aptible-sandbox.com
 ARG VITE_BILLING_URL=https://goldenboy-test.aptible-sandbox.com
