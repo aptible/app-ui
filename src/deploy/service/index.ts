@@ -9,7 +9,7 @@ export const DEFAULT_INSTANCE_CLASS = 'm4';
 
 export const deserializeDeployService = (payload: any): DeployService => {
   return {
-    id: payload.id,
+    id: `${payload.id}`,
     handle: payload.handle,
     dockerRepo: payload.docker_repo,
     dockerRef: payload.docker_ref,

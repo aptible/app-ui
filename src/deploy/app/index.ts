@@ -1,4 +1,4 @@
-import { api } from '@app/api';
+import { api, cacheTimer } from '@app/api';
 import { defaultEntity, extractIdFromLink } from '@app/hal';
 import {
   createReducerMap,
@@ -71,7 +71,7 @@ export const { selectTableAsList: selectAppsAsList } = selectors;
 export const hasDeployApp = (a: DeployApp) => a.id != '';
 export const appReducers = createReducerMap(slice);
 
-export const fetchApps = api.get('/apps');
+export const fetchApps = api.get('/apps', { saga: cacheTimer() });
 export const fetchApp = api.get<{ id: string }>('/apps/:id');
 
 export const appEntities = {

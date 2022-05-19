@@ -6,7 +6,7 @@ import {
   createTable,
   createAssign,
 } from '@app/slice-helpers';
-import { authApi, AuthApiCtx } from '@app/api';
+import { authApi, AuthApiCtx, cacheTimer } from '@app/api';
 import {
   AppState,
   Organization,
@@ -106,6 +106,7 @@ type FetchOrgCtx = AuthApiCtx<
 >;
 export const fetchOrganizations = authApi.get(
   '/organizations',
+  { saga: cacheTimer() },
   function* onFetchOrgs(ctx: FetchOrgCtx, next) {
     yield next();
     if (!ctx.json.ok) return;

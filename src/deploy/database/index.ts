@@ -1,15 +1,15 @@
 import { defaultEntity, extractIdFromLink } from '@app/hal';
 import type { AppState, DeployDatabase } from '@app/types';
-
-import { deserializeOperation } from '../operation';
-import { deserializeDisk } from '../disk';
+import { api, cacheTimer } from '@app/api';
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from '@app/slice-helpers';
+
+import { deserializeOperation } from '../operation';
+import { deserializeDisk } from '../disk';
 import { selectDeploy } from '../slice';
-import { api } from '@app/api';
 
 export const deserializeDeployDatabase = (payload: any): DeployDatabase => {
   const embedded = payload._embedded;
@@ -71,7 +71,7 @@ export const { selectTableAsList: selectDatabasesAsList } = selectors;
 export const hasDeployDatabase = (a: DeployDatabase) => a.id != '';
 export const databaseReducers = createReducerMap(slice);
 
-export const fetchDatabases = api.get('/databases');
+export const fetchDatabases = api.get('/databases', { saga: cacheTimer() });
 export const fetchDatabase = api.get<{ id: string }>('/databases/:id');
 
 export const databaseEntities = {

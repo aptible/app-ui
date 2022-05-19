@@ -43,7 +43,7 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
       next(action);
       console.log('NEXT STATE', store.getState());
     };
-    middleware.push(logger);
+    // middleware.push(logger);
   }
 
   const prepared = prepareStore({

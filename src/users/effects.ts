@@ -1,6 +1,6 @@
-import { Next, select, timer } from 'saga-query';
+import { Next, select } from 'saga-query';
 
-import { authApi, AuthApiCtx, elevetatedMdw } from '@app/api';
+import { authApi, AuthApiCtx, elevetatedMdw, cacheTimer } from '@app/api';
 import type { ApiGen } from '@app/types';
 import { selectOrigin } from '@app/env';
 
@@ -12,11 +12,12 @@ interface UserBase {
 
 export const fetchUser = authApi.get<UserBase>(
   '/users/:userId',
-  { saga: timer() },
+  { saga: cacheTimer() },
   elevetatedMdw,
 );
 export const fetchUsers = authApi.get<{ orgId: string }>(
   '/organizations/:orgId/users',
+  { saga: cacheTimer() },
 );
 
 export type CreateUserCtx = AuthApiCtx<UserResponse, CreateUserForm>;

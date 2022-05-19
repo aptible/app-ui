@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { bootup } from '@app/bootup';
+import { Loading } from '@app/ui';
 
 import { setupStore } from './store';
 import { App } from './app';
@@ -17,7 +18,7 @@ export function init() {
 
   render(
     <BrowserRouter>
-      <PersistGate loading={null} persistor={persistor}>
+      <PersistGate loading={<Loading />} persistor={persistor}>
         <App store={store} />
       </PersistGate>
     </BrowserRouter>,

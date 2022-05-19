@@ -21,5 +21,5 @@ export function LoadResources<T>({
   if (isInitialLoading) return loader;
   if (isError && errorMessage) return error(errorMessage);
   if (isEmpty) return empty;
-  return <div>{children}</div>;
+  return <>{children}</>;
 }

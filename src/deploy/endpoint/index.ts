@@ -12,6 +12,7 @@ import { selectDeploy } from '../slice';
 
 export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
   return {
+    id: `${payload.id}`,
     acme: payload.acme,
     acmeConfiguration: payload.acme_configuration,
     acmeDnsChallengeHost: payload.acme_dns_challenge_host,
@@ -25,7 +26,6 @@ export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
     externalHost: payload.external_host,
     externalHttpPort: payload.external_http_port,
     externalHttpsPort: payload.external_https_port,
-    id: payload.id,
     internal: payload.internal,
     ipWhitelist: payload.ip_whitelist,
     platform: payload.platform,
@@ -94,13 +94,13 @@ export const selectEndpointsByAppId = createSelector(
 );
 
 export const fetchEndpointsByAppId = api.get<{ id: string }>(
-  '/endpoints/apps/:id',
+  '/apps/:id/vhosts',
 );
-export const fetchEnpoint = api.get<{ id: string }>('/endpoints/:id');
+export const fetchEnpoint = api.get<{ id: string }>('/vhosts/:id');
 
 export const endpointEntities = {
-  endpoint: defaultEntity({
-    id: 'endpoint',
+  vhost: defaultEntity({
+    id: 'vhost',
     deserialize: deserializeDeployEndpoint,
     save: addDeployEndpoints,
   }),

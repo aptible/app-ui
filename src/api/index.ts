@@ -7,6 +7,7 @@ import {
   createPipe,
   errorHandler,
   dispatchActions,
+  timer,
 } from 'saga-query';
 import type { ApiCtx, Next, PipeCtx } from 'saga-query';
 
@@ -146,6 +147,8 @@ api.use(function* payloadMonitor(ctx, next) {
   yield next();
 });
 api.use(fetcher());
+
+export const cacheTimer = () => timer();
 
 export const authApi = createApi<AuthApiCtx>();
 authApi.use(requestMonitor());

@@ -1,4 +1,4 @@
-import { api } from '@app/api';
+import { api, cacheTimer } from '@app/api';
 import { defaultEntity, extractIdFromLink } from '@app/hal';
 import {
   createReducerMap,
@@ -70,7 +70,7 @@ export const { selectTableAsList: selectEnvironmentsAsList } = selectors;
 export const hasDeployEnvironment = (a: DeployEnvironment) => a.id != '';
 export const environmentReducers = createReducerMap(slice);
 
-export const fetchEnvironments = api.get('/accounts');
+export const fetchEnvironments = api.get('/accounts', { saga: cacheTimer() });
 export const fetchEnvironment = api.get<{ id: string }>('/accounts/:id');
 
 export const environmentEntities = {
