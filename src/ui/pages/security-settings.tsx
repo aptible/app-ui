@@ -14,7 +14,14 @@ import {
 } from '@app/routes';
 
 import { useCurrentUser } from '../use-current-user';
-import { Button, Loading, Banner, FormGroup, BannerMessages } from '../shared';
+import {
+  Button,
+  Loading,
+  Banner,
+  FormGroup,
+  BannerMessages,
+  Input,
+} from '../shared';
 
 interface SectionProps {
   children: React.ReactNode;
@@ -62,7 +69,7 @@ const ChangePassword = () => {
         htmlFor="input-password"
         feedbackVariant={groupVariant}
       >
-        <input
+        <Input
           name="password"
           type="password"
           value={pass}
@@ -76,7 +83,7 @@ const ChangePassword = () => {
         htmlFor="input-password"
         feedbackVariant={groupVariant}
       >
-        <input
+        <Input
           name="config-password"
           type="password"
           value={confirmPass}
@@ -159,7 +166,7 @@ const ChangeEmail = () => {
           htmlFor="input-email"
           feedbackVariant={error ? 'danger' : 'info'}
         >
-          <input
+          <Input
             name="email"
             type="email"
             value={email}
