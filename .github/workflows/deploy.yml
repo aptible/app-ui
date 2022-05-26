@@ -41,3 +41,5 @@ jobs:
           app: 'reploy-ui'
           environment: 'aptible-production'
           docker_img: 'quay.io/aptible/reploy-ui:main'
+          username: ${{ secrets.APTIBLE_ROBOT_USERNAME }}
+          password: ${{ secrets.APTIBLE_ROBOT_PASSWORD }}
