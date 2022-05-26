@@ -72,7 +72,9 @@ export const hasDeployApp = (a: DeployApp) => a.id != '';
 export const appReducers = createReducerMap(slice);
 
 export const fetchApps = api.get('/apps', { saga: cacheTimer() });
-export const fetchApp = api.get<{ id: string }>('/apps/:id');
+export const fetchApp = api.get<{ id: string }>('/apps/:id', {
+  saga: cacheTimer(),
+});
 
 export const appEntities = {
   app: defaultEntity({

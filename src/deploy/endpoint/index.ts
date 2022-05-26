@@ -1,4 +1,4 @@
-import { api } from '@app/api';
+import { api, cacheTimer } from '@app/api';
 import { defaultEntity, extractIdFromLink } from '@app/hal';
 import {
   createReducerMap,
@@ -95,8 +95,11 @@ export const selectEndpointsByAppId = createSelector(
 
 export const fetchEndpointsByAppId = api.get<{ id: string }>(
   '/apps/:id/vhosts',
+  { saga: cacheTimer() },
 );
-export const fetchEnpoint = api.get<{ id: string }>('/vhosts/:id');
+export const fetchEnpoint = api.get<{ id: string }>('/vhosts/:id', {
+  saga: cacheTimer(),
+});
 
 export const endpointEntities = {
   vhost: defaultEntity({

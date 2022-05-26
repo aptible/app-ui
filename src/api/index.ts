@@ -116,6 +116,12 @@ function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
   yield next();
 }
 
+const MS = 1000;
+const SECONDS = 1 * MS;
+const MINUTES = 60 * SECONDS;
+
+export const cacheTimer = () => timer(5 * MINUTES);
+
 export const api = createApi<DeployApiCtx>();
 api.use(requestMonitor());
 api.use(api.routes());
@@ -147,8 +153,6 @@ api.use(function* payloadMonitor(ctx, next) {
   yield next();
 });
 api.use(fetcher());
-
-export const cacheTimer = () => timer();
 
 export const authApi = createApi<AuthApiCtx>();
 authApi.use(requestMonitor());
