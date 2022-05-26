@@ -27,12 +27,12 @@ import {
   AppDetailLayout,
   DatabaseDetailLayout,
   DatabaseOverviewPage,
+  DatabaseActivityPage,
+  DatabaseSecurityPage,
+  DatabaseBackupsPage,
+  DatabaseSettingsPage,
 } from '@app/ui';
 import * as routes from '@app/routes';
-import { DatabaseActivityPage } from '@app/ui/pages/databases/database-activity-page';
-import { DatabaseSecurityPage } from '@app/ui/pages/databases/database-security-page';
-import { DatabaseBackupsPage } from '@app/ui/pages/databases/database-backups-page';
-import { DatabaseSettingsPage } from '@app/ui/pages/databases/database-settings-page';
 
 const DatabaseRedirect = () => {
   const { id = '' } = useParams();
