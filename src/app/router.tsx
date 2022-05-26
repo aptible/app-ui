@@ -22,6 +22,9 @@ import {
   LogoutPage,
   TeamPage,
   SettingsPage,
+  AppSettingsPage,
+  AppSecurityPage,
+  AppActivityPage,
 } from '@app/ui';
 import {
   HOME_PATH,
@@ -45,6 +48,9 @@ import {
   TEAM_PATH,
   appsUrl,
   SETTINGS_PATH,
+  APP_ACTIVITY_PATH,
+  APP_SECURITY_PATH,
+  APP_SETTINGS_PATH,
 } from '@app/routes';
 
 export const Router = () => (
@@ -61,6 +67,9 @@ export const Router = () => (
       <Route path={APP_DETAIL_PATH} element={<AuthRequired />}>
         <Route element={<AppPage />}>
           <Route path={APP_OVERVIEW_PATH} element={<AppOverviewPage />} />
+          <Route path={APP_ACTIVITY_PATH} element={<AppActivityPage />} />
+          <Route path={APP_SECURITY_PATH} element={<AppSecurityPage />} />
+          <Route path={APP_SETTINGS_PATH} element={<AppSettingsPage />} />
         </Route>
       </Route>
 

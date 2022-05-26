@@ -55,6 +55,13 @@ export const APP_DETAIL_PATH = '/apps/:id';
 export const appDetailUrl = (id: string) => `/apps/${id}`;
 export const APP_OVERVIEW_PATH = `${APP_DETAIL_PATH}/overview`;
 export const appOverviewUrl = (id: string) => `/apps/${id}/overview`;
+export const APP_ACTIVITY_PATH = `${APP_DETAIL_PATH}/activity`;
+export const appActivityUrl = (id: string) => `${appDetailUrl(id)}/activity`;
+export const APP_SECURITY_PATH = `${APP_DETAIL_PATH}/security`;
+export const appSecurityUrl = (id: string) => `${appDetailUrl(id)}/security`;
+export const APP_SETTINGS_PATH = `${APP_DETAIL_PATH}/settings`;
+export const appSettingsUrl = (id: string) => `${appDetailUrl(id)}/settings`;
+
 export const DATABASES_PATH = '/databases';
 export const databasesUrl = () => DATABASES_PATH;
 export const SETTINGS_PATH = '/settings';

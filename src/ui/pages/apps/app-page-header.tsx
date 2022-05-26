@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import type { AppState } from '@app/types';
 import { selectAppById } from '@app/deploy';
 
-import { Button, DetailPageHeaderView, TabItem } from '../../shared';
+import { DetailPageHeaderView, TabItem } from '../../shared';
 import { AppContextMenu } from './app-context-menu';
 
 const crumbs = [{ name: 'Apps', to: '/apps' }];
@@ -17,13 +17,10 @@ export function AppPageHeader() {
     { name: 'Overview', href: `/apps/${id}/overview` },
     { name: 'Activity', href: `/apps/${id}/activity` },
     { name: 'Security', href: `/apps/${id}/security` },
-    { name: 'Settings', href: `/apps/${id}/security` },
+    { name: 'Settings', href: `/apps/${id}/settings` },
   ] as TabItem[];
 
-  const actions = [
-    <AppContextMenu />,
-    <Button variant="primary">Action</Button>,
-  ];
+  const actions = [<AppContextMenu />];
 
   return (
     <DetailPageHeaderView
