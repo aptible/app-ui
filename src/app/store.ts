@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware } from '@reduxjs/toolkit';
 import type { Middleware, Store } from '@reduxjs/toolkit';
-import { BATCH } from 'redux-batched-actions';
+// import { BATCH } from 'redux-batched-actions';
 import { PersistPartial } from 'redux-persist/es/persistReducer';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
@@ -32,7 +32,7 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
   const middleware: Middleware[] = [];
 
   if (import.meta.env.VITE_DEBUG === 'true') {
-    const logger = (store: any) => (next: any) => (action: any) => {
+    /* const logger = (store: any) => (next: any) => (action: any) => {
       if (action.type === BATCH) {
         console.log('== BATCH ==');
         action.payload.forEach(console.log);
@@ -43,7 +43,7 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
       next(action);
       console.log('NEXT STATE', store.getState());
     };
-    // middleware.push(logger);
+    middleware.push(logger); */
   }
 
   const prepared = prepareStore({
