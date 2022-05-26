@@ -11,22 +11,23 @@ export interface Provisionable {
   status: ProvisionableStatus;
 }
 
-export interface DeployImage {
+export interface Timestamps {
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DeployImage extends Timestamps {
   id: string;
   dockerRef: string;
   dockerRepo: string;
   gitRef: string;
   gitRepo: string;
-  updatedAt: string;
-  createdAt: string;
 }
 
-export interface DeployApp extends Provisionable {
+export interface DeployApp extends Provisionable, Timestamps {
   id: string;
   handle: string;
   gitRepo: string;
-  createdAt: string;
-  updatedAt: string;
   deploymentMethod: string;
   services: DeployService[];
   lastDeployOperation: DeployOperation | null;
@@ -38,7 +39,7 @@ export interface DeployApp extends Provisionable {
 
 export type InstanceClass = 't3' | 'm4' | 'r4' | 'r5' | 'c4' | 'c5';
 
-export interface DeployService {
+export interface DeployService extends Timestamps {
   id: string;
   handle: string;
   dockerRepo: string;
@@ -48,11 +49,9 @@ export interface DeployService {
   containerCount: number;
   containerMemoryLimitMb: number;
   instanceClass: InstanceClass;
-  createdAt: string;
-  updatedAt: string;
 }
 
-export interface DeployEndpoint extends Provisionable {
+export interface DeployEndpoint extends Provisionable, Timestamps {
   id: string;
   acme: boolean;
   acmeConfiguration: any;
@@ -70,14 +69,12 @@ export interface DeployEndpoint extends Provisionable {
   ipWhitelist: string[];
   platform: 'alb' | 'elb';
   type: string;
-  createdAt: string;
-  updatedAt: string;
   userDomain: string;
   virtualDomain: string;
   serviceId: string;
 }
 
-export interface DeployEnvironment {
+export interface DeployEnvironment extends Timestamps {
   id: string;
   type: 'production' | 'development';
   handle: string;
@@ -91,19 +88,15 @@ export interface DeployEnvironment {
   totalDatabaseCount: number;
   sweetnessStack: string;
   totalBackupSize: number;
-  createdAt: string;
-  updatedAt: string;
   stackId: string;
 }
 
-export interface DeployStack {
+export interface DeployStack extends Timestamps {
   id: string;
   name: string;
   region: string;
   default: boolean;
   public: boolean;
-  createdAt: string;
-  updatedAt: string;
   outboundIpAddresses: string[];
   memoryLimits: boolean;
   cpuLimits: boolean;
@@ -119,14 +112,12 @@ export interface DeployStack {
 
 type OperationStatus = 'queued' | 'running' | 'failed' | 'succeeded';
 
-export interface DeployOperation {
+export interface DeployOperation extends Timestamps {
   id: string;
   resourceId: number;
   resourceType: string;
   type: string;
   status: OperationStatus;
-  createdAt: string;
-  updatedAt: string;
   gitRef: string;
   dockerRef: string;
   containerCount: string;
@@ -145,13 +136,11 @@ export interface DeployOperation {
   env: any;
 }
 
-export interface DeployDisk {
+export interface DeployDisk extends Timestamps {
   attached: boolean;
   availabilityZone: string;
   baselineIops: number;
   provisionedIops: number;
-  createdAt: string;
-  updatedAt: string;
   currentKmsArn: string;
   device: string;
   ebsVolumeId: string;
@@ -165,10 +154,8 @@ export interface DeployDisk {
   keyBytes: number;
 }
 
-export interface DeployDatabase extends Provisionable {
+export interface DeployDatabase extends Provisionable, Timestamps {
   connectionUrl: string;
-  createdAt: string;
-  updatedAt: string;
   currentKmsArn: string;
   dockerRepo: string;
   handle: string;
@@ -188,4 +175,20 @@ export interface ContainerProfile {
   minimumContainerSize: number;
   maximumContainerSize: number;
   maximumContainerCount: number;
+}
+
+export interface DeployLogDrain extends Provisionable, Timestamps {
+  id: string;
+  handle: string;
+  drainType: string;
+  drainHost: string;
+  drainPort: string;
+  drainUsername: string;
+  drainPassword: string;
+  url: string;
+  loggingToken: string;
+  drainApps: boolean;
+  drainDatabases: boolean;
+  drainEphemeralSessions: boolean;
+  drainProxies: boolean;
 }

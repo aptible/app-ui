@@ -8,6 +8,7 @@ import type {
   DeployDisk,
   DeployEndpoint,
   DeployEnvironment,
+  DeployLogDrain,
   DeployService,
   DeployStack,
 } from './deploy';
@@ -77,6 +78,7 @@ export interface DeployState {
   disks: MapEntity<DeployDisk>;
   databases: MapEntity<DeployDatabase>;
   services: MapEntity<DeployService>;
+  logDrains: MapEntity<DeployLogDrain>;
 }
 
 export interface AppState extends QueryState {

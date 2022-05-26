@@ -18,7 +18,9 @@ const EndpointListingRow = ({ endpoint }: { endpoint: DeployEndpoint }) => {
   return (
     <tr>
       <Td className="flex-1">
-        <div className={tokens.type.darker}>displayHost</div>
+        <a href={`//${endpoint.userDomain}`} className={tokens.type.darker}>
+          {endpoint.userDomain}
+        </a>
       </Td>
 
       <Td className="flex-1">
@@ -36,7 +38,7 @@ const EndpointListingRow = ({ endpoint }: { endpoint: DeployEndpoint }) => {
       </Td>
 
       <Td className="flex-1">
-        <div className={tokens.type['normal lighter']}>$37</div>
+        <div className={tokens.type['normal lighter']}>$5</div>
       </Td>
 
       <Td className="flex gap-2 justify-end w-40">
