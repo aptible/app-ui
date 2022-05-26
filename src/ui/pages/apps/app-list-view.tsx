@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import type { AppState, DeployApp } from '@app/types';
 import { selectEnvironmentById } from '@app/deploy';
 import { calcAppMetrics } from '@app/deploy';
-import { appOverviewUrl } from '@app/routes';
+import { appDetailUrl } from '@app/routes';
 
 import {
   TableHead,
@@ -39,7 +39,7 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
 
   return (
     <Td className="flex-1">
-      <Link to={appOverviewUrl(app.id)}>
+      <Link to={appDetailUrl(app.id)}>
         <div className={tokens.type['medium label']}>{app.handle}</div>
         <div className={tokens.type['normal lighter']}>
           {environment.handle}

@@ -1,9 +1,10 @@
 import cn from 'classnames';
 import { DotsHorizontalIcon } from '@heroicons/react/solid';
 
-import { Menu, MenuButton, MenuList, MenuItem, tokens } from '../../shared';
+import { Menu, MenuButton, MenuList, MenuItem } from './menu-button';
+import { tokens } from './tokens';
 
-export const AppContextMenu = () => {
+export const DatabaseContextMenu = () => {
   return (
     <Menu>
       <MenuButton>

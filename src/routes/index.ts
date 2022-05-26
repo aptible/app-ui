@@ -64,6 +64,24 @@ export const appSettingsUrl = (id: string) => `${appDetailUrl(id)}/settings`;
 
 export const DATABASES_PATH = '/databases';
 export const databasesUrl = () => DATABASES_PATH;
+export const DATABASE_DETAIL_PATH = '/databases/:id';
+export const databaseDetailUrl = (id: string) => `/databases/${id}`;
+export const DATABASE_OVERVIEW_PATH = `${DATABASE_DETAIL_PATH}/overview`;
+export const databaseOverviewUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/overview`;
+export const DATABASE_ACTIVITY_PATH = `${DATABASE_DETAIL_PATH}/activity`;
+export const databaseActivityUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/activity`;
+export const DATABASE_SECURITY_PATH = `${DATABASE_DETAIL_PATH}/security`;
+export const databaseSecurityUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/security`;
+export const DATABASE_BACKUPS_PATH = `${DATABASE_DETAIL_PATH}/backups`;
+export const databaseBackupsUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/backups`;
+export const DATABASE_SETTINGS_PATH = `${DATABASE_DETAIL_PATH}/settings`;
+export const databaseSettingsUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/settings`;
+
 export const SETTINGS_PATH = '/settings';
 export const settingsUrl = () => SETTINGS_PATH;
 export const TEAM_PATH = `${SETTINGS_PATH}/team`;

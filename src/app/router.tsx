@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import {
@@ -16,7 +16,6 @@ import {
   OtpRecoveryCodesPage,
   AddSecurityKeyPage,
   AppsPage,
-  AppPage,
   AppOverviewPage,
   DatabasesPage,
   LogoutPage,
@@ -25,109 +24,143 @@ import {
   AppSettingsPage,
   AppSecurityPage,
   AppActivityPage,
+  AppDetailLayout,
+  DatabaseDetailLayout,
+  DatabaseOverviewPage,
 } from '@app/ui';
-import {
-  HOME_PATH,
-  NOT_FOUND_PATH,
-  LOGIN_PATH,
-  SIGNUP_PATH,
-  VERIFY_EMAIL_REQUEST_PATH,
-  VERIFY_EMAIL_PATH,
-  CREATE_ORG_PATH,
-  ELEVATE_PATH,
-  SECURITY_SETTINGS_PATH,
-  SSH_SETTINGS_PATH,
-  OTP_SETUP_PATH,
-  OTP_RECOVERY_CODES_PATH,
-  ADD_SECURITY_KEY_PATH,
-  APPS_PATH,
-  APP_DETAIL_PATH,
-  APP_OVERVIEW_PATH,
-  DATABASES_PATH,
-  LOGOUT_PATH,
-  TEAM_PATH,
-  appsUrl,
-  SETTINGS_PATH,
-  APP_ACTIVITY_PATH,
-  APP_SECURITY_PATH,
-  APP_SETTINGS_PATH,
-} from '@app/routes';
+import * as routes from '@app/routes';
+import { DatabaseActivityPage } from '@app/ui/pages/databases/database-activity-page';
+import { DatabaseSecurityPage } from '@app/ui/pages/databases/database-security-page';
+import { DatabaseBackupsPage } from '@app/ui/pages/databases/database-backups-page';
+import { DatabaseSettingsPage } from '@app/ui/pages/databases/database-settings-page';
+
+const DatabaseRedirect = () => {
+  const { id = '' } = useParams();
+  return <Navigate replace to={routes.databaseOverviewUrl(id)} />;
+};
+
+const AppRedirect = () => {
+  const { id = '' } = useParams();
+  return <Navigate replace to={routes.appOverviewUrl(id)} />;
+};
 
 export const Router = () => (
   <div className="h-full w-full">
     <Routes>
-      <Route path={HOME_PATH} element={<AuthRequired />}>
-        <Route index element={<Navigate to={appsUrl()} replace />} />
+      <Route path={routes.HOME_PATH} element={<AuthRequired />}>
+        <Route index element={<Navigate to={routes.appsUrl()} replace />} />
       </Route>
 
-      <Route path={APPS_PATH} element={<AuthRequired />}>
+      <Route path={routes.APPS_PATH} element={<AuthRequired />}>
         <Route index element={<AppsPage />} />
       </Route>
 
-      <Route path={APP_DETAIL_PATH} element={<AuthRequired />}>
-        <Route element={<AppPage />}>
-          <Route path={APP_OVERVIEW_PATH} element={<AppOverviewPage />} />
-          <Route path={APP_ACTIVITY_PATH} element={<AppActivityPage />} />
-          <Route path={APP_SECURITY_PATH} element={<AppSecurityPage />} />
-          <Route path={APP_SETTINGS_PATH} element={<AppSettingsPage />} />
+      <Route path={routes.APP_DETAIL_PATH} element={<AuthRequired />}>
+        <Route element={<AppDetailLayout />}>
+          <Route index element={<AppRedirect />} />
+          <Route
+            path={routes.APP_OVERVIEW_PATH}
+            element={<AppOverviewPage />}
+          />
+          <Route
+            path={routes.APP_ACTIVITY_PATH}
+            element={<AppActivityPage />}
+          />
+          <Route
+            path={routes.APP_SECURITY_PATH}
+            element={<AppSecurityPage />}
+          />
+          <Route
+            path={routes.APP_SETTINGS_PATH}
+            element={<AppSettingsPage />}
+          />
         </Route>
       </Route>
 
-      <Route path={DATABASES_PATH} element={<AuthRequired />}>
+      <Route path={routes.DATABASES_PATH} element={<AuthRequired />}>
         <Route index element={<DatabasesPage />} />
       </Route>
 
-      <Route path={SETTINGS_PATH} element={<AuthRequired />}>
-        <Route element={<SettingsPage />}>
-          <Route path={TEAM_PATH} element={<TeamPage />} />
+      <Route path={routes.DATABASE_DETAIL_PATH} element={<AuthRequired />}>
+        <Route element={<DatabaseDetailLayout />}>
+          <Route index element={<DatabaseRedirect />} />
+          <Route
+            path={routes.DATABASE_OVERVIEW_PATH}
+            element={<DatabaseOverviewPage />}
+          />
+          <Route
+            path={routes.DATABASE_ACTIVITY_PATH}
+            element={<DatabaseActivityPage />}
+          />
+          <Route
+            path={routes.DATABASE_SECURITY_PATH}
+            element={<DatabaseSecurityPage />}
+          />
+          <Route
+            path={routes.DATABASE_BACKUPS_PATH}
+            element={<DatabaseBackupsPage />}
+          />
+          <Route
+            path={routes.DATABASE_SETTINGS_PATH}
+            element={<DatabaseSettingsPage />}
+          />
         </Route>
       </Route>
 
-      <Route path={LOGOUT_PATH} element={<AuthRequired />}>
+      <Route path={routes.SETTINGS_PATH} element={<AuthRequired />}>
+        <Route element={<SettingsPage />}>
+          <Route path={routes.TEAM_PATH} element={<TeamPage />} />
+        </Route>
+      </Route>
+
+      <Route path={routes.LOGOUT_PATH} element={<AuthRequired />}>
         <Route index element={<LogoutPage />} />
       </Route>
 
-      <Route path={LOGIN_PATH} element={<LoginPage />} />
+      <Route path={routes.LOGIN_PATH} element={<LoginPage />} />
 
-      <Route path={SIGNUP_PATH} element={<SignupPage />} />
+      <Route path={routes.SIGNUP_PATH} element={<SignupPage />} />
 
-      <Route path={VERIFY_EMAIL_REQUEST_PATH} element={<AuthRequired />}>
+      <Route path={routes.VERIFY_EMAIL_REQUEST_PATH} element={<AuthRequired />}>
         <Route index element={<VerifyEmailPage />} />
       </Route>
 
-      <Route path={VERIFY_EMAIL_PATH} element={<AuthRequired />}>
+      <Route path={routes.VERIFY_EMAIL_PATH} element={<AuthRequired />}>
         <Route index element={<VerifyEmailPage />} />
       </Route>
 
-      <Route path={CREATE_ORG_PATH} element={<AuthRequired />}>
+      <Route path={routes.CREATE_ORG_PATH} element={<AuthRequired />}>
         <Route index element={<CreateOrgPage />} />
       </Route>
 
-      <Route path={ELEVATE_PATH} element={<AuthRequired />}>
+      <Route path={routes.ELEVATE_PATH} element={<AuthRequired />}>
         <Route index element={<ElevatePage />} />
       </Route>
 
-      <Route path={SECURITY_SETTINGS_PATH} element={<ElevateRequired />}>
+      <Route path={routes.SECURITY_SETTINGS_PATH} element={<ElevateRequired />}>
         <Route index element={<SecuritySettingsPage />} />
       </Route>
 
-      <Route path={SSH_SETTINGS_PATH} element={<ElevateRequired />}>
+      <Route path={routes.SSH_SETTINGS_PATH} element={<ElevateRequired />}>
         <Route index element={<SSHSettingsPage />} />
       </Route>
 
-      <Route path={OTP_SETUP_PATH} element={<ElevateRequired />}>
+      <Route path={routes.OTP_SETUP_PATH} element={<ElevateRequired />}>
         <Route index element={<OtpSetupPage />} />
       </Route>
 
-      <Route path={OTP_RECOVERY_CODES_PATH} element={<ElevateRequired />}>
+      <Route
+        path={routes.OTP_RECOVERY_CODES_PATH}
+        element={<ElevateRequired />}
+      >
         <Route index element={<OtpRecoveryCodesPage />} />
       </Route>
 
-      <Route path={ADD_SECURITY_KEY_PATH} element={<ElevateRequired />}>
+      <Route path={routes.ADD_SECURITY_KEY_PATH} element={<ElevateRequired />}>
         <Route index element={<AddSecurityKeyPage />} />
       </Route>
 
-      <Route path={NOT_FOUND_PATH}>
+      <Route path={routes.NOT_FOUND_PATH}>
         <Route index element={<NotFoundPage />} />
       </Route>
 
