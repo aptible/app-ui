@@ -1,7 +1,12 @@
 import { api } from '@app/api';
 import { defaultEntity } from '@app/hal';
-import { createReducerMap, createTable } from '@app/slice-helpers';
+import {
+  createReducerMap,
+  createTable,
+  mustSelectEntity,
+} from '@app/slice-helpers';
 import type { AppState, DeployService } from '@app/types';
+
 import { CONTAINER_PROFILES, GB } from '../app/utils';
 import { selectDeploy } from '../slice';
 
@@ -20,6 +25,26 @@ export const deserializeDeployService = (payload: any): DeployService => {
     instanceClass: payload.instance_class || DEFAULT_INSTANCE_CLASS,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
+  };
+};
+
+export const defaultDeployService = (
+  s: Partial<DeployService> = {},
+): DeployService => {
+  const now = new Date().toISOString();
+  return {
+    id: '',
+    handle: '',
+    dockerRef: '',
+    dockerRepo: '',
+    processType: '',
+    command: '',
+    containerCount: 0,
+    containerMemoryLimitMb: 0,
+    instanceClass: DEFAULT_INSTANCE_CLASS,
+    createdAt: now,
+    updatedAt: now,
+    ...s,
   };
 };
 
@@ -59,7 +84,10 @@ const { add: addDeployServices } = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_SERVICE_NAME],
 );
-export const selectServiceById = selectors.selectById;
+const initService = defaultDeployService();
+const must = mustSelectEntity(initService);
+export const selectServiceById = must(selectors.selectById);
+export const selectServicesByIds = selectors.selectByIds;
 export const { selectTableAsList: selectServicesAsList } = selectors;
 export const hasDeployService = (a: DeployService) => a.id != '';
 export const serviceReducers = createReducerMap(slice);

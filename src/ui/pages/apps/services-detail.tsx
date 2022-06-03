@@ -1,9 +1,13 @@
-import { DeployApp, DeployService } from '@app/types';
-import { calcServiceMetrics } from '@app/deploy';
+import { AppState, DeployApp } from '@app/types';
+import { calcServiceMetrics, selectServiceById } from '@app/deploy';
 
 import { TableHead, Td, ResourceListView, Button, tokens } from '../../shared';
+import { useSelector } from 'react-redux';
 
-const ServiceListRow = ({ service }: { service: DeployService }) => {
+const ServiceListRow = ({ serviceId }: { serviceId: string }) => {
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: serviceId }),
+  );
   const metrics = calcServiceMetrics(service);
 
   return (
@@ -69,8 +73,8 @@ export function ServicesOverview({ app }: { app: DeployApp }) {
       }
       tableBody={
         <>
-          {app.services.map((service) => (
-            <ServiceListRow service={service} key={service.id} />
+          {app.serviceIds.map((serviceId) => (
+            <ServiceListRow serviceId={serviceId} key={serviceId} />
           ))}
         </>
       }

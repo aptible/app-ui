@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import type { AppState, DeployApp } from '@app/types';
-import { selectEnvironmentById } from '@app/deploy';
-import { calcAppMetrics } from '@app/deploy';
+import { selectEnvironmentById, selectServicesByIds } from '@app/deploy';
+import { calcMetrics } from '@app/deploy';
 import { appDetailUrl } from '@app/routes';
 
 import {
@@ -87,12 +87,15 @@ const AppStatusChecksCell = () => {
 }; */
 
 const AppServicesCell = ({ app }: AppCellProps) => {
-  const metrics = calcAppMetrics(app);
+  const services = useSelector((s: AppState) =>
+    selectServicesByIds(s, { ids: app.serviceIds }),
+  );
+  const metrics = calcMetrics(services);
   return (
     <Td>
       <div
         className={tokens.type.darker}
-      >{`${app.services.length} Services`}</div>
+      >{`${app.serviceIds.length} Services`}</div>
       <div className={tokens.type['normal lighter']}>
         {metrics.totalMemoryLimit / 1024} GB &middot; {metrics.totalCPU} CPU
       </div>

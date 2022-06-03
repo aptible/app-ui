@@ -1,4 +1,4 @@
-import { DeployApp } from '@app/types';
+import { DeployService } from '@app/types';
 
 export const GB = 1024;
 const ABSOLUTE_MAX_CONTAINER_SIZE_IN_GB = 653;
@@ -75,10 +75,10 @@ export const CONTAINER_PROFILES = {
   },
 };
 
-export const calcAppMetrics = (app: DeployApp) => {
+export const calcMetrics = (services: DeployService[]) => {
   const totalMemoryLimit = () => {
     let total = 0;
-    app.services.forEach((s) => {
+    services.forEach((s) => {
       total += s.containerMemoryLimitMb;
     });
     return total;
@@ -86,7 +86,7 @@ export const calcAppMetrics = (app: DeployApp) => {
 
   const totalCPU = () => {
     let total = 0;
-    app.services.forEach((s) => {
+    services.forEach((s) => {
       total += (s.containerMemoryLimitMb / 1024) * 0.25;
     });
     return total;
