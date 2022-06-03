@@ -6,6 +6,7 @@ import { environmentReducers, environmentEntities } from './environment';
 import { endpointReducers, endpointEntities } from './endpoint';
 import { databaseEntities, databaseReducers } from './database';
 import { logDrainEntities, logDrainReducers } from './log-drain';
+import { serviceEntities, serviceReducers } from './service';
 
 const allReducers: any[] = [
   appReducers,
@@ -14,6 +15,7 @@ const allReducers: any[] = [
   endpointReducers,
   databaseReducers,
   logDrainReducers,
+  serviceReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -33,4 +35,5 @@ export const entities = {
   ...endpointEntities,
   ...databaseEntities,
   ...logDrainEntities,
+  ...serviceEntities,
 };

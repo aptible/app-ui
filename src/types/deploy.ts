@@ -29,12 +29,12 @@ export interface DeployApp extends Provisionable, Timestamps {
   handle: string;
   gitRepo: string;
   deploymentMethod: string;
-  services: DeployService[];
   lastDeployOperation: DeployOperation | null;
   lastOperation: DeployOperation | null;
   environmentId: string;
   currentImage: DeployImage | null;
   currentConfigurationId: string;
+  serviceIds: string[];
 }
 
 export type InstanceClass = 't3' | 'm4' | 'r4' | 'r5' | 'c4' | 'c5';

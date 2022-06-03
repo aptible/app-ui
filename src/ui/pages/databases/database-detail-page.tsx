@@ -9,11 +9,11 @@ import {
 } from '@app/deploy';
 import { AppState, DeployDatabase } from '@app/types';
 
-import { DetailPageSections } from '../../shared';
+import { DetailPageSections, EndpointsView } from '../../shared';
 
 const DatabasePageContent = ({ database }: { database: DeployDatabase }) => (
   <DetailPageSections>
-    <div>Database detail page ({database.handle})</div>
+    <EndpointsView serviceId={database.serviceId} />
   </DetailPageSections>
 );
 

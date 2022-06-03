@@ -8,12 +8,12 @@ import { AppState, DeployApp } from '@app/types';
 import { DetailPageSections } from '../../shared';
 
 import { ServicesOverview } from './services-detail';
-import { EndpointsOverview } from './endpoints-detail';
+import { AppEndpointsOverview } from './endpoints-detail';
 
 const AppPageContent = ({ app }: { app: DeployApp }) => (
   <DetailPageSections>
     <ServicesOverview app={app} />
-    <EndpointsOverview app={app} />
+    <AppEndpointsOverview app={app} />
   </DetailPageSections>
 );
 

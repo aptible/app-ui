@@ -7,7 +7,6 @@ import {
 } from '@app/slice-helpers';
 import type { AppState, DeployEndpoint } from '@app/types';
 import { createSelector } from '@reduxjs/toolkit';
-import { selectAppById } from '../app';
 import { selectDeploy } from '../slice';
 
 export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
@@ -84,11 +83,10 @@ export const selectEndpointById = must(selectors.selectById);
 export const { selectTableAsList: selectEndpointsAsList } = selectors;
 export const hasDeployEndpoint = (a: DeployEndpoint) => a.id != '';
 export const endpointReducers = createReducerMap(slice);
-export const selectEndpointsByAppId = createSelector(
+export const selectEndpointsByServiceIds = createSelector(
   selectEndpointsAsList,
-  selectAppById,
-  (endpoints, app) => {
-    const serviceIds = app.services.map((s) => s.id);
+  (_: AppState, p: { ids: string[] }) => p.ids,
+  (endpoints, serviceIds) => {
     return endpoints.filter((end) => serviceIds.includes(end.serviceId));
   },
 );
@@ -97,7 +95,13 @@ export const fetchEndpointsByAppId = api.get<{ id: string }>(
   '/apps/:id/vhosts',
   { saga: cacheTimer() },
 );
-export const fetchEnpoint = api.get<{ id: string }>('/vhosts/:id', {
+export const fetchEndpointsByServiceId = api.get<{ id: string }>(
+  '/services/:id/vhosts',
+  {
+    saga: cacheTimer(),
+  },
+);
+export const fetchEndpoint = api.get<{ id: string }>('/vhosts/:id', {
   saga: cacheTimer(),
 });
 

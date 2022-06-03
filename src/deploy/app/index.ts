@@ -5,24 +5,22 @@ import {
   createTable,
   mustSelectEntity,
 } from '@app/slice-helpers';
-import type { DeployApp, AppState, DeployService } from '@app/types';
+import type { DeployApp, AppState } from '@app/types';
 
 import { deserializeImage } from '../image';
 import { deserializeOperation } from '../operation';
-import { deserializeDeployService } from '../service';
 import { selectDeploy } from '../slice';
 
 export * from './utils';
 
 export const deserializeDeployApp = (payload: any): DeployApp => {
-  const services: DeployService[] = payload._embedded.services.map(
-    deserializeDeployService,
-  );
+  const serviceIds: string[] = payload._embedded.services.map((s: any) => s.id);
   const links = payload._links;
   const embedded = payload._embedded;
 
   return {
     id: `${payload.id}`,
+    serviceIds,
     handle: payload.handle,
     gitRepo: payload.git_repo,
     createdAt: payload.created_at,
@@ -34,7 +32,6 @@ export const deserializeDeployApp = (payload: any): DeployApp => {
     currentImage: deserializeImage(embedded.current_image),
     lastDeployOperation: deserializeOperation(embedded.last_deploy_operation),
     lastOperation: deserializeOperation(embedded.last_operation),
-    services,
   };
 };
 
@@ -42,6 +39,7 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
   const now = new Date().toISOString();
   return {
     id: '',
+    serviceIds: [],
     handle: '',
     gitRepo: '',
     createdAt: now,
@@ -53,7 +51,6 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
     currentImage: null,
     lastDeployOperation: null,
     lastOperation: null,
-    services: [],
     ...a,
   };
 };
