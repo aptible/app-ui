@@ -16,7 +16,7 @@ if [[ "$BRANCH" = "master" ]]; then
   TAG="latest"
 fi
 
-NAME="reploy-ui"
+NAME="cloud-ui"
 IMG="quay.io/aptible/${NAME}:${TAG}"
 
 {

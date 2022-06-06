@@ -1,4 +1,4 @@
-# reploy-ui
+# cloud-ui
 
 Aptible's *new* customer dashboard. It allows users to manage organizations,
 access controls, and ops.
@@ -35,4 +35,4 @@ yarn test
 
 ## continuous deployment
 
-Once merging to `main` we deploy to https://reploy-test.aptible-sandbox.com
+Once merging to `main` we deploy to https://cloud-ui-main.aptible-staging.com

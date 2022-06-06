@@ -22,7 +22,7 @@ jobs:
         id: docker-meta
         uses: docker/metadata-action@v3
         with:
-          images: quay.io/aptible/reploy-ui
+          images: quay.io/aptible/cloud-ui
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v2
@@ -38,9 +38,9 @@ jobs:
       - uses: aptible/aptible-deploy-action@v1
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
-          app: 'reploy-ui'
-          environment: 'aptible-production'
-          docker_img: 'quay.io/aptible/reploy-ui:main'
+          app: 'cloud-ui-main'
+          environment: 'aptible-staging'
+          docker_img: 'quay.io/aptible/cloud-ui:main'
           username: ${{ secrets.APTIBLE_ROBOT_USERNAME }}
           password: ${{ secrets.APTIBLE_ROBOT_PASSWORD }}
           private_registry_username:  ${{ secrets.DOCKER_USERNAME }}
