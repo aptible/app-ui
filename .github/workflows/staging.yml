@@ -1,8 +1,9 @@
-name: deploy
+name: staging
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -35,11 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: aptible/aptible-deploy-action@v1
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
-          app: 'cloud-ui'
-          environment: 'aptible-production'
-          docker_img: 'quay.io/aptible/cloud-ui:${{ github.ref }}'
+          app: 'cloud-ui-main'
+          environment: 'aptible-staging'
+          docker_img: 'quay.io/aptible/cloud-ui:main'
           username: ${{ secrets.APTIBLE_ROBOT_USERNAME }}
           password: ${{ secrets.APTIBLE_ROBOT_PASSWORD }}
           private_registry_username:  ${{ secrets.DOCKER_USERNAME }}
