@@ -39,7 +39,7 @@ jobs:
         with:
           app: 'cloud-ui'
           environment: 'aptible-production'
-          docker_img: 'quay.io/aptible/cloud-ui:${{ github.ref }}'
+          docker_img: 'quay.io/aptible/cloud-ui:${{ github.ref_name }}'
           username: ${{ secrets.APTIBLE_ROBOT_USERNAME }}
           password: ${{ secrets.APTIBLE_ROBOT_PASSWORD }}
           private_registry_username:  ${{ secrets.DOCKER_USERNAME }}
