@@ -30,9 +30,9 @@ jobs:
           push: true
           tags: ${{ steps.docker-meta.outputs.tags }}
           build-args:
-            - VITE_AUTH_URL: "https://auth-master.aptible-staging.com"
-            - VITE_BILLING_URL: "https://goldenbody-master.aptible-staging.com"
-            - VITE_API_URL: "https://api-master.aptible-staging.com"
+            VITE_AUTH_URL: "https://auth-master.aptible-staging.com"
+            VITE_BILLING_URL: "https://goldenbody-master.aptible-staging.com"
+            VITE_API_URL: "https://api-master.aptible-staging.com"
   deploy:
     runs-on: ubuntu-latest
     needs: build
