@@ -73,6 +73,16 @@ export const databaseReducers = createReducerMap(slice);
 
 export const fetchDatabases = api.get('/databases', { saga: cacheTimer() });
 export const fetchDatabase = api.get<{ id: string }>('/databases/:id');
+export const fetchDatabaseOperations = api.get<{ id: string }>(
+  '/databases/:id/operations',
+  { saga: cacheTimer() },
+  api.cache(),
+);
+export const fetchDatabaseBackups = api.get<{ id: string }>(
+  '/databases/:id/backups',
+  { saga: cacheTimer() },
+  api.cache(),
+);
 
 export const databaseEntities = {
   database: defaultEntity({

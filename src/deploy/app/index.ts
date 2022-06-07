@@ -72,6 +72,11 @@ export const fetchApps = api.get('/apps', { saga: cacheTimer() });
 export const fetchApp = api.get<{ id: string }>('/apps/:id', {
   saga: cacheTimer(),
 });
+export const fetchAppOperations = api.get<{ id: string }>(
+  '/apps/:id/operations',
+  { saga: cacheTimer() },
+  api.cache(),
+);
 
 export const appEntities = {
   app: defaultEntity({

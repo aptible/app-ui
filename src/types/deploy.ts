@@ -136,6 +136,14 @@ export interface DeployOperation extends Timestamps {
   env: any;
 }
 
+export interface DeployOperationResponse {
+  id: number;
+  type: string;
+  status: 'queued' | 'running' | 'failed' | 'succeeded';
+  user_name: string;
+  updated_at: string;
+}
+
 export interface DeployDisk extends Timestamps {
   attached: boolean;
   availabilityZone: string;

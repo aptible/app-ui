@@ -3,18 +3,13 @@ import { useQuery } from 'saga-query/react';
 import { useSelector } from 'react-redux';
 
 import { fetchApp, hasDeployApp, selectAppById } from '@app/deploy';
-import { AppState, DeployApp } from '@app/types';
+import { AppState } from '@app/types';
 
-import { DetailPageSections } from '../shared';
-
-import { ServicesOverview, AppEndpointsOverview } from '../shared';
-
-const AppPageContent = ({ app }: { app: DeployApp }) => (
-  <DetailPageSections>
-    <ServicesOverview app={app} />
-    <AppEndpointsOverview app={app} />
-  </DetailPageSections>
-);
+import {
+  DetailPageSections,
+  ServicesOverview,
+  AppEndpointsOverview,
+} from '../shared';
 
 export function AppDetailPage() {
   const { id = '' } = useParams();
@@ -22,7 +17,12 @@ export function AppDetailPage() {
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
 
   if (hasDeployApp(app)) {
-    return <AppPageContent app={app} />;
+    return (
+      <DetailPageSections>
+        <ServicesOverview app={app} />
+        <AppEndpointsOverview app={app} />
+      </DetailPageSections>
+    );
   }
 
   if (isInitialLoading) return <span>Loading...</span>;
