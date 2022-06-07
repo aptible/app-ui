@@ -19,9 +19,14 @@ import {
 import { login, selectAuthLoader, selectIsOtpError } from '@app/auth';
 import { validEmail } from '@app/string-utils';
 
-import { LoggedInBanner } from '../auth/logged-in-banner';
-
-import { Input, FormGroup, Button, AptibleLogo, Alert } from '../shared';
+import {
+  Input,
+  FormGroup,
+  Button,
+  AptibleLogo,
+  Alert,
+  LoggedInBanner,
+} from '../shared';
 
 export const LoginPage = () => {
   const dispatch = useDispatch();

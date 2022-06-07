@@ -6,8 +6,7 @@ import { useLoader, useLoaderSuccess } from 'saga-query/react';
 import { homeUrl } from '@app/routes';
 import { createOrganization } from '@app/organizations';
 
-import { Progress } from '../auth/progress';
-import { Button, Banner, FormGroup } from '../shared';
+import { Button, Banner, FormGroup, Progress } from '../shared';
 
 const CreateOrgForm = () => {
   const dispatch = useDispatch();

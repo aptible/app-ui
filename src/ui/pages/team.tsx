@@ -1,4 +1,4 @@
-import { TeamList } from './team-list';
+import { TeamList } from '../shared';
 
 export function TeamPage() {
   return <TeamList />;

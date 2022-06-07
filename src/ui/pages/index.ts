@@ -1,7 +1,6 @@
 export * from './not-found';
 export * from './login';
 export * from './signup';
-export * from './verify-email';
 export * from './create-org';
 export * from './elevate';
 export * from './security-settings';
@@ -24,3 +23,6 @@ export * from './db-detail-backups';
 export * from './db-detail-activity';
 export * from './db-detail-security';
 export * from './db-detail-settings';
+export * from './team';
+export * from './settings';
+export * from './verify-email';

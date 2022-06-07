@@ -7,7 +7,7 @@ import { AppState, DeployApp } from '@app/types';
 
 import { DetailPageSections } from '../shared';
 
-import { ServicesOverview, AppEndpointsOverview } from './app';
+import { ServicesOverview, AppEndpointsOverview } from '../shared';
 
 const AppPageContent = ({ app }: { app: DeployApp }) => (
   <DetailPageSections>

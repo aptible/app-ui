@@ -7,7 +7,7 @@ import { selectTheme, setTheme } from '@app/theme';
 import { Theme } from '@app/types';
 import { logoutUrl, securitySettingsUrl, sshSettingsUrl } from '@app/routes';
 
-import { useCurrentUser } from '../use-current-user';
+import { useCurrentUser } from '../hooks';
 
 import { tokens } from './tokens';
 import { Menu, MenuButton, MenuList, MenuItem } from './menu-button';

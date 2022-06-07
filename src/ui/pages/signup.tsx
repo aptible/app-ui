@@ -19,8 +19,14 @@ import {
 import { selectAuthLoader } from '@app/auth';
 import { validEmail } from '@app/string-utils';
 
-import { LoggedInBanner } from '../auth/logged-in-banner';
-import { Input, FormGroup, Button, AptibleLogo, Alert } from '../shared';
+import {
+  Input,
+  FormGroup,
+  Button,
+  AptibleLogo,
+  Alert,
+  LoggedInBanner,
+} from '../shared';
 
 const createQueryStringValue =
   (queryString: string) =>

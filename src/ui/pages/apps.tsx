@@ -1,6 +1,6 @@
 import { ListingPageLayout } from '../layouts';
 
-import { AppList } from './app';
+import { AppList } from '../shared';
 
 export const AppsPage = () => {
   return (

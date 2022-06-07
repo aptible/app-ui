@@ -2,7 +2,7 @@ import { HalEmbedded } from '@app/types';
 import { fetchOtpCodes } from '@app/mfa';
 import { useCache } from 'saga-query/react';
 
-import { useCurrentUser } from '../use-current-user';
+import { useCurrentUser } from '../hooks';
 import { Loading } from '../shared';
 
 interface OtpCode {

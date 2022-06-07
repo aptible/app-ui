@@ -7,9 +7,7 @@ import { verifyEmail } from '@app/auth';
 import { selectJWTToken } from '@app/token';
 import { createOrgUrl } from '@app/routes';
 
-import { Progress } from '../../auth/progress';
-import { ResendVerificationEmail } from './resend-verification-email-form';
-import { Loading } from '../../shared';
+import { Loading, Progress, ResendVerificationEmail } from '../shared';
 
 export const VerifyEmailPage = () => {
   const dispatch = useDispatch();

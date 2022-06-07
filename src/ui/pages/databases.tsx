@@ -1,6 +1,6 @@
 import { ListingPageLayout } from '../layouts';
 
-import { DatabaseList } from './db';
+import { DatabaseList } from '../shared';
 
 export const DatabasesPage = () => {
   return (

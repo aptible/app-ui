@@ -13,7 +13,7 @@ import {
   addSecurityKeyUrl,
 } from '@app/routes';
 
-import { useCurrentUser } from '../use-current-user';
+import { useCurrentUser } from '../hooks';
 import {
   Button,
   Loading,
