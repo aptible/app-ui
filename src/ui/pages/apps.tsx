@@ -1,6 +1,6 @@
-import { ListingPageLayout } from '../../layouts';
+import { ListingPageLayout } from '../layouts';
 
-import { AppList } from './app-list';
+import { AppList } from './app';
 
 export const AppsPage = () => {
   return (

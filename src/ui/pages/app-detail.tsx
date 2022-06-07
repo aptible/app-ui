@@ -5,10 +5,9 @@ import { useSelector } from 'react-redux';
 import { fetchApp, hasDeployApp, selectAppById } from '@app/deploy';
 import { AppState, DeployApp } from '@app/types';
 
-import { DetailPageSections } from '../../shared';
+import { DetailPageSections } from '../shared';
 
-import { ServicesOverview } from './services-detail';
-import { AppEndpointsOverview } from './endpoints-detail';
+import { ServicesOverview, AppEndpointsOverview } from './app';
 
 const AppPageContent = ({ app }: { app: DeployApp }) => (
   <DetailPageSections>
@@ -17,7 +16,7 @@ const AppPageContent = ({ app }: { app: DeployApp }) => (
   </DetailPageSections>
 );
 
-export function AppOverviewPage() {
+export function AppDetailPage() {
   const { id = '' } = useParams();
   const { isInitialLoading, message } = useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));

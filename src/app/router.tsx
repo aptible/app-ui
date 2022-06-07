@@ -16,7 +16,7 @@ import {
   OtpRecoveryCodesPage,
   AddSecurityKeyPage,
   AppsPage,
-  AppOverviewPage,
+  AppDetailPage,
   DatabasesPage,
   LogoutPage,
   TeamPage,
@@ -26,7 +26,7 @@ import {
   AppActivityPage,
   AppDetailLayout,
   DatabaseDetailLayout,
-  DatabaseOverviewPage,
+  DatabaseDetailPage,
   DatabaseActivityPage,
   DatabaseSecurityPage,
   DatabaseBackupsPage,
@@ -58,10 +58,7 @@ export const Router = () => (
       <Route path={routes.APP_DETAIL_PATH} element={<AuthRequired />}>
         <Route element={<AppDetailLayout />}>
           <Route index element={<AppRedirect />} />
-          <Route
-            path={routes.APP_OVERVIEW_PATH}
-            element={<AppOverviewPage />}
-          />
+          <Route path={routes.APP_OVERVIEW_PATH} element={<AppDetailPage />} />
           <Route
             path={routes.APP_ACTIVITY_PATH}
             element={<AppActivityPage />}
@@ -86,7 +83,7 @@ export const Router = () => (
           <Route index element={<DatabaseRedirect />} />
           <Route
             path={routes.DATABASE_OVERVIEW_PATH}
-            element={<DatabaseOverviewPage />}
+            element={<DatabaseDetailPage />}
           />
           <Route
             path={routes.DATABASE_ACTIVITY_PATH}

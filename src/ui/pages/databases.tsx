@@ -1,6 +1,6 @@
-import { ListingPageLayout } from '../../layouts';
+import { ListingPageLayout } from '../layouts';
 
-import { DatabaseList } from './database-list';
+import { DatabaseList } from './db';
 
 export const DatabasesPage = () => {
   return (
