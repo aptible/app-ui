@@ -1,36 +1,27 @@
 import { useSelector } from 'react-redux';
 import { useQuery } from 'saga-query/react';
 
-import { fetchEnvironments, selectEnvironmentsAsList } from '@app/deploy';
+import { fetchEnvironments, selectStacksAsOptions } from '@app/deploy';
 
-import { Select } from './select';
+import { Loading } from './loading';
+import { EmptyResources, ErrorResources } from './load-resources';
+import { SelectMenu } from './select-menu';
 
 export const EnvironmentSelect = () => {
   const { isInitialLoading, isError, message } = useQuery(fetchEnvironments());
-  const envs = useSelector(selectEnvironmentsAsList);
+  const options = useSelector(selectStacksAsOptions);
 
   if (isInitialLoading) {
-    return <span>Loading...</span>;
+    return <Loading />;
   }
 
   if (isError) {
-    return <span>Error: {message}</span>;
+    return <ErrorResources message={message} />;
   }
 
-  const options = envs.map((e) => {
-    return { label: e.handle, value: e.id.toString() };
-  });
+  if (options.length === 0) {
+    return <EmptyResources />;
+  }
 
-  const all = { label: 'All Environments', value: 'all' };
-  options.unshift(all);
-
-  return (
-    <Select
-      defaultValue={all}
-      value={all}
-      options={options}
-      label="Filter by Environment..."
-      onSelect={console.log}
-    />
-  );
+  return <SelectMenu name="Environment" options={options} />;
 };

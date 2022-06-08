@@ -1,3 +1,4 @@
+import { createSelector } from '@reduxjs/toolkit';
 import { api, cacheTimer } from '@app/api';
 import { defaultEntity, extractIdFromLink } from '@app/hal';
 import {
@@ -12,7 +13,7 @@ import { selectDeploy } from '../slice';
 export const deserializeDeployEnvironment = (
   payload: any,
 ): DeployEnvironment => ({
-  id: payload.id,
+  id: `${payload.id}`,
   handle: payload.handle,
   createdAt: payload.created_at,
   updatedAt: payload.updated_at,
@@ -67,6 +68,17 @@ const initApp = defaultDeployEnvironment();
 const must = mustSelectEntity(initApp);
 export const selectEnvironmentById = must(selectors.selectById);
 export const { selectTableAsList: selectEnvironmentsAsList } = selectors;
+export const selectEnvironmentsAsOptions = createSelector(
+  selectEnvironmentsAsList,
+  (envs) => {
+    return envs.map((e) => {
+      return {
+        label: e.handle,
+        value: e.id,
+      };
+    });
+  },
+);
 export const hasDeployEnvironment = (a: DeployEnvironment) => a.id != '';
 export const environmentReducers = createReducerMap(slice);
 

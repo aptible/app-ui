@@ -1,9 +1,9 @@
-import type { UseApiResult } from 'saga-query/react';
+import type { LoadingState } from 'saga-query';
 
 import { Loading } from './loading';
 
-interface LoadResourcesProps<T> {
-  query: UseApiResult<T>;
+interface LoadResourcesProps {
+  query: LoadingState;
   children: React.ReactNode;
   isEmpty: boolean;
   empty?: JSX.Element;
@@ -19,14 +19,14 @@ export const ErrorResources = ({ message = '' }: { message: string }) => (
   <span>Error: {message}</span>
 );
 
-export function LoadResources<T>({
+export function LoadResources({
   query,
   isEmpty,
   children,
   empty = <EmptyResources />,
   loader = <Loading />,
   error = (message) => <ErrorResources message={message} />,
-}: LoadResourcesProps<T>): JSX.Element {
+}: LoadResourcesProps): JSX.Element {
   const { isInitialLoading, isError, message: errorMessage } = query;
   if (isInitialLoading) return loader;
   if (isError && errorMessage) return error(errorMessage);

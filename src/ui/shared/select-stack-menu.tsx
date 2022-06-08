@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/outline';
 import { ListboxOption } from '@reach/listbox';
 import type { DeployStack } from '@app/types';
@@ -11,14 +10,11 @@ import {
 } from './listbox';
 
 export const SelectStackMenu = ({ stacks }: { stacks: DeployStack[] }) => {
-  const [selection, setSelection] = useState<string>('');
-  const selectedStack = stacks.find(
-    (stack) => stack.id.toString() === selection,
-  );
+  const setSelection = () => {};
   return (
-    <ListboxInput onChange={setSelection} defaultValue="popeyes">
-      <ListboxButton arrow={<ChevronDownIcon className="h-3 w-3" />}>
-        {selectedStack ? selectedStack.name : 'Filter by Stack'}
+    <ListboxInput onChange={setSelection}>
+      <ListboxButton size="xl" arrow={<ChevronDownIcon className="h-3 w-3" />}>
+        Filter by Stack
       </ListboxButton>
       <ListboxPopover>
         <ListboxList>

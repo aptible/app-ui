@@ -1,5 +1,6 @@
 import { ChevronDownIcon } from '@heroicons/react/outline';
 import { ListboxOption } from '@reach/listbox';
+
 import {
   ListboxInput,
   ListboxButton,
@@ -7,24 +8,29 @@ import {
   ListboxList,
 } from './listbox';
 
-import type { DeployEnvironment } from '@app/types';
+export interface SelectOption {
+  label: string;
+  value: string;
+}
 
-export const SelectEnvironmentMenu = ({
-  environments,
+export const SelectMenu = ({
+  name,
+  options,
 }: {
-  environments: DeployEnvironment[];
+  name: string;
+  options: SelectOption[];
 }) => {
   const setSelection = () => {};
   return (
     <ListboxInput onChange={setSelection}>
       <ListboxButton size="xl" arrow={<ChevronDownIcon className="h-3 w-3" />}>
-        Filter by Environment
+        Filter by {name}
       </ListboxButton>
       <ListboxPopover>
         <ListboxList>
-          {environments.map((environment) => (
-            <ListboxOption key={environment.id} value={environment.id}>
-              {environment.handle}
+          {options.map((opt) => (
+            <ListboxOption key={opt.value} value={opt.value}>
+              {opt.label}
             </ListboxOption>
           ))}
         </ListboxList>

@@ -1,3 +1,4 @@
+import { createSelector } from '@reduxjs/toolkit';
 import { api, cacheTimer } from '@app/api';
 import { defaultEntity, extractIdFromLink } from '@app/hal';
 import {
@@ -10,7 +11,7 @@ import { selectDeploy } from '../slice';
 
 export const deserializeDeployStack = (payload: any): DeployStack => {
   return {
-    id: payload.id,
+    id: `${payload.id}`,
     name: payload.name,
     region: payload.region,
     default: payload.default,
@@ -70,6 +71,17 @@ const initApp = defaultDeployStack();
 const must = mustSelectEntity(initApp);
 export const selectStackById = must(selectors.selectById);
 export const { selectTableAsList: selectStacksAsList } = selectors;
+export const selectStacksAsOptions = createSelector(
+  selectStacksAsList,
+  (stacks) => {
+    return stacks.map((s) => {
+      return {
+        label: s.name,
+        value: s.id,
+      };
+    });
+  },
+);
 export const hasDeployStack = (s: DeployStack) => s.organizationId != '';
 export const stackReducers = createReducerMap(slice);
 
