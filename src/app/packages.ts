@@ -1,3 +1,4 @@
+import { api, authApi, thunks } from '@app/api';
 import * as env from '@app/env';
 import * as users from '@app/users';
 import * as token from '@app/token';
@@ -11,7 +12,7 @@ import * as bootup from '@app/bootup';
 import * as mfa from '@app/mfa';
 import * as theme from '@app/theme';
 import * as deploy from '@app/deploy';
-import { api, authApi, thunks } from '@app/api';
+import * as modal from '@app/modal';
 
 const corePackages: any[] = [
   env,
@@ -28,6 +29,7 @@ const corePackages: any[] = [
   api,
   theme,
   deploy,
+  modal,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {

@@ -12,6 +12,7 @@ import type {
   DeployService,
   DeployStack,
 } from './deploy';
+import type { ModalState } from './modal';
 
 export interface Env {
   isProduction: boolean;
@@ -97,4 +98,5 @@ export interface AppState extends QueryState {
   data: MapEntity<any>;
   theme: Theme;
   deploy: DeployState;
+  modal: ModalState;
 }

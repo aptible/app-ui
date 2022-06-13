@@ -31,6 +31,7 @@ import {
   DatabaseSecurityPage,
   DatabaseBackupsPage,
   DatabaseSettingsPage,
+  ModalPortal,
 } from '@app/ui';
 import * as routes from '@app/routes';
 
@@ -46,6 +47,7 @@ const AppRedirect = () => {
 
 export const Router = () => (
   <div className="h-full w-full">
+    <ModalPortal />
     <Routes>
       <Route path={routes.HOME_PATH} element={<AuthRequired />}>
         <Route index element={<Navigate to={routes.appsUrl()} replace />} />

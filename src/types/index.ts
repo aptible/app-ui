@@ -4,3 +4,4 @@ export * from './invitations';
 export * from './helpers';
 export * from './loader';
 export * from './deploy';
+export * from './modal';
