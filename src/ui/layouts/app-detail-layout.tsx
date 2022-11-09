@@ -11,7 +11,7 @@ import {
   appsUrl,
 } from "@app/routes";
 
-import { DetailPageHeaderView, TabItem, AppContextMenu } from "../shared";
+import { DetailPageHeaderView, TabItem } from "../shared";
 
 import { DetailPageLayout } from "./detail-page";
 
@@ -28,13 +28,10 @@ function AppPageHeader() {
     { name: "Settings", href: appSettingsUrl(id) },
   ] as TabItem[];
 
-  const actions = [<AppContextMenu />];
-
   return (
     <DetailPageHeaderView
       breadcrumbs={crumbs}
       title={app ? app.handle : "Loading..."}
-      actions={actions}
       tabs={tabs}
     />
   );

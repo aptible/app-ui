@@ -4,7 +4,7 @@ import { useCache } from "saga-query/react";
 
 import type { HalEmbedded } from "@app/types";
 
-import { EmptyResources, LoadResources } from "../shared";
+import { EmptyResources, Loading, LoadResources } from "../shared";
 import { fetchDatabaseBackups } from "@app/deploy";
 
 interface BackupResponse {
@@ -31,6 +31,10 @@ export const DatabaseBackupsPage = () => {
   useEffect(() => {
     query.trigger();
   }, []);
+
+  if (query.isInitialLoading) {
+    return <Loading />;
+  }
 
   if (!query.data) {
     return <EmptyResources />;

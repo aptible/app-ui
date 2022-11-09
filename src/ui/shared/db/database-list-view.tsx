@@ -4,22 +4,12 @@ import { useSelector } from "react-redux";
 import type { DeployDatabase, AppState } from "@app/types";
 import { selectEnvironmentById, selectStackById } from "@app/deploy";
 
-import {
-  TableHead,
-  Td,
-  tokens,
-  ResourceListView,
-  EnvironmentSelect,
-  StackSelect,
-  Input,
-} from "../../shared";
+import { TableHead, Td, tokens, ResourceListView, Input } from "../../shared";
 
 const FilterBarView = () => {
   return (
     <div className="flex flex-1 pt-6 gap-3">
       <Input placeholder="Search Databases..." type="text" />
-      <EnvironmentSelect />
-      <StackSelect />
     </div>
   );
 };
@@ -36,16 +26,7 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
     </Td>
   );
 };
-const DatabaseStatusChecksCell = () => {
-  return (
-    <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      <div className={tokens.type.darker}>100%</div>
-      <div className={tokens.type["normal lighter"]}>
-        124 config checks &middot; 5m ago
-      </div>
-    </Td>
-  );
-};
+
 const DatabaseStackCell = ({ database }: DatabaseCellProps) => {
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: database.environmentId }),
@@ -68,28 +49,6 @@ const DatabaseStackCell = ({ database }: DatabaseCellProps) => {
 
   return <Td className="2xl:flex-cell-md sm:flex-cell-sm">{content}</Td>;
 };
-
-/* const AppServicesCell = ({ database }: DatabaseCellProps) => {
-  const { data: service, isLoading: serviceLoading } = useQuery(
-    fetchService({ id: database.serviceId }),
-    (s: AppState) => selectServiceById(s, { id: database.serviceId }),
-  );
-
-  const content =
-    !service || serviceLoading ? (
-      <span>Loading...</span>
-    ) : (
-      <>
-        <div className={tokens.type['darker']}>Scale</div>
-        <div className={tokens.type['normal lighter']}>
-          {service.containerMemoryLimitMb / 1024} GB &middot;
-          {database.disk && <>{database.disk.size} GB Disk</>}
-        </div>
-      </>
-    );
-
-  return <Td>{content}</Td>;
-}; */
 
 const LastOperationCell = ({ database }: DatabaseCellProps) => {
   return (
@@ -116,7 +75,6 @@ const DatabaseListRow = ({ database }: { database: DeployDatabase }) => {
   return (
     <tr>
       <DatabasePrimaryCell database={database} />
-      <DatabaseStatusChecksCell />
       <DatabaseStackCell database={database} />
       <LastOperationCell database={database} />
     </tr>
@@ -143,9 +101,7 @@ export const DatabaseListView = ({
         description="Databases provide data persistency on Aptible."
         filterBar={<FilterBarView />}
         tableHeader={
-          <TableHead
-            headers={["Handle", "Status", "Environment", "Last Operation"]}
-          />
+          <TableHead headers={["Handle", "Environment", "Last Operation"]} />
         }
         tableBody={body}
       />

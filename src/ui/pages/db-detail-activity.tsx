@@ -5,7 +5,7 @@ import { useCache } from "saga-query/react";
 import { fetchDatabaseOperations } from "@app/deploy";
 import type { DeployOperationResponse, HalEmbedded } from "@app/types";
 
-import { EmptyResources, LoadResources } from "../shared";
+import { EmptyResources, Loading, LoadResources } from "../shared";
 
 interface HalOperations {
   operations: DeployOperationResponse[];
@@ -20,6 +20,10 @@ export const DatabaseActivityPage = () => {
   useEffect(() => {
     query.trigger();
   }, []);
+
+  if (query.isInitialLoading) {
+    return <Loading />;
+  }
 
   if (!query.data) {
     return <EmptyResources />;

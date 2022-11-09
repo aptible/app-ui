@@ -6,23 +6,12 @@ import { selectEnvironmentById, selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
 import { appDetailUrl } from "@app/routes";
 
-import {
-  TableHead,
-  Td,
-  Button,
-  tokens,
-  ResourceListView,
-  EnvironmentSelect,
-  StackSelect,
-  Input,
-} from "../../shared";
+import { TableHead, Td, tokens, ResourceListView, Input } from "../../shared";
 
 const FilterBarView = () => {
   return (
     <div className="flex flex-1 pt-4 gap-3">
       <Input placeholder="Search Apps..." type="text" />
-      <EnvironmentSelect />
-      <StackSelect />
     </div>
   );
 };
@@ -45,43 +34,6 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
     </Td>
   );
 };
-
-const AppStatusChecksCell = () => {
-  return (
-    <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      <div className={tokens.type.darker}>100%</div>
-      <div className={tokens.type["normal lighter"]}>
-        124 config checks &middot; 5m ago
-      </div>
-    </Td>
-  );
-};
-
-/* const AppStackCell = ({ app }: AppCellProps) => {
-  const envQuery = useApi(
-    fetchEnvironment({ id: app.environmentId }),
-    (s: AppState) => selectEnvironmentById(s, { id: app.environmentId }),
-  );
-  const stackId = envQuery.data?.stackId || '';
-  const stackQuery = useApi(fetchStack({ id: stackId }), (s: AppState) =>
-    selectStackById(s, { id: stackId }),
-  );
-
-  const content =
-    envQuery.isLoading || stackQuery.isLoading || !stackQuery.data ? (
-      <span>Loading...</span>
-    ) : (
-      <div>
-        <div className={tokens.type.darker}>{envQuery.data?.handle}</div>
-        <div className={tokens.type['normal lighter']}>
-          {stackQuery.data.id ? 'Dedicated Stack ' : 'Shared Stack '}
-          {stackQuery.data.region}
-        </div>
-      </div>
-    );
-
-  return <Td className="2xl:flex-cell-md sm:flex-cell-sm">{content}</Td>;
-}; */
 
 const AppServicesCell = ({ app }: AppCellProps) => {
   const services = useSelector((s: AppState) =>
@@ -122,7 +74,6 @@ const AppListRow = ({ app }: { app: DeployApp }) => {
   return (
     <tr>
       <AppPrimaryCell app={app} />
-      <AppStatusChecksCell />
       <AppServicesCell app={app} />
       <AppLastDeploymentCell app={app} />
     </tr>
@@ -136,15 +87,8 @@ export const AppListView = ({ apps }: { apps: DeployApp[] }) => {
         title="Apps"
         description="Apps are how you deploy your code on Aptible. Eventually, your Apps are deployed as one or more Containers."
         filterBar={<FilterBarView />}
-        actions={[
-          <Button type="button" variant="primary" onClick={() => {}}>
-            Create App
-          </Button>,
-        ]}
         tableHeader={
-          <TableHead
-            headers={["Handle", "Status", "Services", "Last deployment"]}
-          />
+          <TableHead headers={["Handle", "Services", "Last deployment"]} />
         }
         tableBody={
           <>

@@ -32,7 +32,7 @@ export const ApplicationSidebar = () => {
                 className="mr-3 text-gray-400 flex-shrink-0 h-5 w-5"
                 aria-hidden="true"
               >
-                icon
+                icn
               </div>
               {item.name}
             </NavLink>

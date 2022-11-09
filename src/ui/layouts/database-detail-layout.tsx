@@ -5,7 +5,7 @@ import type { AppState } from "@app/types";
 import { selectDatabaseById } from "@app/deploy";
 import { databasesUrl } from "@app/routes";
 
-import { DetailPageHeaderView, TabItem, DatabaseContextMenu } from "../shared";
+import { DetailPageHeaderView, TabItem } from "../shared";
 
 import { DetailPageLayout } from "./detail-page";
 
@@ -23,13 +23,10 @@ function DatabasePageHeader() {
     { name: "Settings", href: `/databases/${id}/settings` },
   ] as TabItem[];
 
-  const actions = [<DatabaseContextMenu />];
-
   return (
     <DetailPageHeaderView
       breadcrumbs={crumbs}
       title={database ? database.handle : "Loading..."}
-      actions={actions}
       tabs={tabs}
     />
   );
