@@ -1,6 +1,6 @@
-import { render } from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
+import { createRoot } from "react-dom/client";
 
 import { bootup } from "@app/bootup";
 import { Loading } from "@app/ui";
@@ -16,12 +16,14 @@ export function init() {
   (window as any).reduxStore = store;
   store.dispatch(bootup());
 
-  render(
+  const container = document.getElementById("app");
+  const root = createRoot(container!);
+
+  root.render(
     <BrowserRouter>
       <PersistGate loading={<Loading />} persistor={persistor}>
         <App store={store} />
       </PersistGate>
     </BrowserRouter>,
-    document.getElementById("app"),
   );
 }
