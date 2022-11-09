@@ -1,11 +1,11 @@
 export type ProvisionableStatus =
-  | 'pending'
-  | 'provisioning'
-  | 'provisioned'
-  | 'deprovisioning'
-  | 'deprovisioned'
-  | 'provision_failed'
-  | 'deprovision_failed';
+  | "pending"
+  | "provisioning"
+  | "provisioned"
+  | "deprovisioning"
+  | "deprovisioned"
+  | "provision_failed"
+  | "deprovision_failed";
 
 export interface Provisionable {
   status: ProvisionableStatus;
@@ -37,7 +37,7 @@ export interface DeployApp extends Provisionable, Timestamps {
   serviceIds: string[];
 }
 
-export type InstanceClass = 't3' | 'm4' | 'r4' | 'r5' | 'c4' | 'c5';
+export type InstanceClass = "t3" | "m4" | "r4" | "r5" | "c4" | "c5";
 
 export interface DeployService extends Timestamps {
   id: string;
@@ -67,7 +67,7 @@ export interface DeployEndpoint extends Provisionable, Timestamps {
   externalHttpsPort: string;
   internal: boolean;
   ipWhitelist: string[];
-  platform: 'alb' | 'elb';
+  platform: "alb" | "elb";
   type: string;
   userDomain: string;
   virtualDomain: string;
@@ -76,7 +76,7 @@ export interface DeployEndpoint extends Provisionable, Timestamps {
 
 export interface DeployEnvironment extends Timestamps {
   id: string;
-  type: 'production' | 'development';
+  type: "production" | "development";
   handle: string;
   activated: boolean;
   containerCount: number;
@@ -110,7 +110,7 @@ export interface DeployStack extends Timestamps {
   organizationId: string;
 }
 
-type OperationStatus = 'queued' | 'running' | 'failed' | 'succeeded';
+type OperationStatus = "queued" | "running" | "failed" | "succeeded";
 
 export interface DeployOperation extends Timestamps {
   id: string;
@@ -139,7 +139,7 @@ export interface DeployOperation extends Timestamps {
 export interface DeployOperationResponse {
   id: number;
   type: string;
-  status: 'queued' | 'running' | 'failed' | 'succeeded';
+  status: "queued" | "running" | "failed" | "succeeded";
   user_name: string;
   updated_at: string;
 }

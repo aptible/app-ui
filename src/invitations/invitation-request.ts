@@ -1,16 +1,18 @@
-import { createSelector } from '@reduxjs/toolkit';
+import { createSelector } from "@reduxjs/toolkit";
 
-import { createAssign } from '@app/slice-helpers';
-import { AppState, InvitationRequest } from '@app/types';
+import { createAssign } from "@app/slice-helpers";
+import { AppState, InvitationRequest } from "@app/types";
 
-import { selectInvitations } from './invitations';
+import { selectInvitations } from "./invitations";
 
-export const INVITATION_REQUEST_SLICE = 'invitationRequest';
+export const INVITATION_REQUEST_SLICE = "invitationRequest";
 
-export const defaultInvitationRequest = (r: Partial<InvitationRequest> = {}) => {
+export const defaultInvitationRequest = (
+  r: Partial<InvitationRequest> = {},
+) => {
   return {
-    verificationCode: '',
-    invitationId: '',
+    verificationCode: "",
+    invitationId: "",
     ...r,
   };
 };
@@ -18,18 +20,19 @@ export const defaultInvitationRequest = (r: Partial<InvitationRequest> = {}) => 
 export const invitationRequest = createAssign<InvitationRequest>({
   name: INVITATION_REQUEST_SLICE,
   initialState: {
-    verificationCode: '',
-    invitationId: '',
+    verificationCode: "",
+    invitationId: "",
   },
 });
 
 export const { set: setInvitationRequest, reset: resetInvitationRequest } =
   invitationRequest.actions;
 
-export const selectInvitationRequest = (state: AppState) => state[INVITATION_REQUEST_SLICE];
+export const selectInvitationRequest = (state: AppState) =>
+  state[INVITATION_REQUEST_SLICE];
 
 export const selectIsInvitationPending = (state: AppState) => {
-  return selectInvitationRequest(state).invitationId !== '';
+  return selectInvitationRequest(state).invitationId !== "";
 };
 
 export const selectPendingInvitation = createSelector(

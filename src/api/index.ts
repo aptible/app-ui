@@ -8,19 +8,21 @@ import {
   errorHandler,
   dispatchActions,
   timer,
-} from 'saga-query';
-import type { ApiCtx, Next, PipeCtx } from 'saga-query';
+} from "saga-query";
+import type { ApiCtx, Next, PipeCtx } from "saga-query";
 
-import { selectEnv } from '@app/env';
-import type { ApiGen, AuthApiError, Action } from '@app/types';
-import { halEntityParser } from '@app/hal';
-import { selectAccessToken, selectElevatedAccessToken } from '@app/token';
+import { selectEnv } from "@app/env";
+import type { ApiGen, AuthApiError, Action } from "@app/types";
+import { halEntityParser } from "@app/hal";
+import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
 
-type EndpointUrl = 'auth' | 'api' | 'billing';
+type EndpointUrl = "auth" | "api" | "billing";
 
-export interface AppCtx<S = any, P = any> extends ApiCtx<P, S, { message: string }> {}
+export interface AppCtx<S = any, P = any>
+  extends ApiCtx<P, S, { message: string }> {}
 export interface DeployApiCtx<S = any, P = any> extends AppCtx<S, P> {}
-export interface AuthApiCtx<S = any, P = any> extends ApiCtx<P, S, AuthApiError> {
+export interface AuthApiCtx<S = any, P = any>
+  extends ApiCtx<P, S, AuthApiError> {
   elevated: boolean;
 }
 
@@ -31,11 +33,11 @@ export function* elevetatedMdw(ctx: AuthApiCtx, next: Next): ApiGen {
 
 function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
   const env = yield select(selectEnv);
-  if (endpoint === 'auth') {
+  if (endpoint === "auth") {
     return env.authUrl;
   }
 
-  if (endpoint === 'billing') {
+  if (endpoint === "billing") {
     return env.billingUrl;
   }
 
@@ -79,7 +81,7 @@ function* elevatedTokenMdw(ctx: AuthApiCtx, next: Next): ApiGen {
 
 function* getUrl(ctx: AppCtx, endpoint: EndpointUrl): ApiGen<string> {
   const { url } = ctx.req();
-  const fullUrl = url.startsWith('http');
+  const fullUrl = url.startsWith("http");
   if (fullUrl) {
     return url;
   }
@@ -89,13 +91,13 @@ function* getUrl(ctx: AppCtx, endpoint: EndpointUrl): ApiGen<string> {
 }
 
 function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
-  const url = yield call(getUrl, ctx, 'api');
+  const url = yield call(getUrl, ctx, "api");
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
-    credentials: 'include',
+    credentials: "include",
     headers: {
-      'Content-Type': 'application/hal+json',
+      "Content-Type": "application/hal+json",
     },
   });
 
@@ -103,13 +105,13 @@ function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
 }
 
 function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
-  const url = yield call(getUrl, ctx, 'auth');
+  const url = yield call(getUrl, ctx, "auth");
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
-    credentials: 'include',
+    credentials: "include",
     headers: {
-      'Content-Type': 'application/hal+json',
+      "Content-Type": "application/hal+json",
     },
   });
 

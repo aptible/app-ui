@@ -1,5 +1,5 @@
 export enum ModalType {
-  NONE = '',
+  NONE = "",
 }
 
 export interface ModalState {

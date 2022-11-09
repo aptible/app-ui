@@ -1,5 +1,5 @@
-import { ActionWithPayload } from '@app/types';
-import { createSlice } from '@reduxjs/toolkit';
+import { ActionWithPayload } from "@app/types";
+import { createSlice } from "@reduxjs/toolkit";
 
 export function createAssign<S = any>({
   name,

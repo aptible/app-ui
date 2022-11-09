@@ -17,11 +17,11 @@ export const titleize = (s: string) => {
 
 export const humanize = (str: any) => {
   if (!str) {
-    return '';
+    return "";
   }
   return str
-    .replace(/^[\s_]+|[\s_]+$/g, '')
-    .replace(/[_\s]+/g, ' ')
+    .replace(/^[\s_]+|[\s_]+$/g, "")
+    .replace(/[_\s]+/g, " ")
     .replace(/^[a-z]/, (m: any) => {
       return m.toUpperCase();
     });
@@ -31,19 +31,19 @@ export const sanitizeInput = (input: string): string => input.trim();
 
 export const titleCase = (input: string) => {
   return input
-    .replace(/([^A-Z])([A-Z])/g, '$1 $2')
-    .replace(/[_-]+/g, ' ')
+    .replace(/([^A-Z])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
     .toLowerCase()
     .replace(/(^\w|\b\w)/g, (m) => {
       return m.toUpperCase();
     })
-    .replace(/\s+/g, ' ')
-    .replace(/^\s+|\s+$/, '');
+    .replace(/\s+/g, " ")
+    .replace(/^\s+|\s+$/, "");
 };
 
-export const stringSort = (a = '', b = '') => {
+export const stringSort = (a = "", b = "") => {
   return a.localeCompare(b, undefined, {
-    sensitivity: 'base',
+    sensitivity: "base",
     numeric: true,
   });
 };

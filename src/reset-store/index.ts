@@ -1,18 +1,20 @@
-import type { Reducer } from '@reduxjs/toolkit';
-import type { PersistConfig } from 'redux-persist';
-import { take, put } from 'saga-query';
+import type { Reducer } from "@reduxjs/toolkit";
+import type { PersistConfig } from "redux-persist";
+import { take, put } from "saga-query";
 
-import type { Action, AppState } from '@app/types';
-import { createAction } from '@app/slice-helpers';
-import { resetToken } from '@app/token';
-import { REDIRECT_NAME } from '@app/redirect-path';
-import { ENTITIES_NAME } from '@app/hal';
+import type { Action, AppState } from "@app/types";
+import { createAction } from "@app/slice-helpers";
+import { resetToken } from "@app/token";
+import { REDIRECT_NAME } from "@app/redirect-path";
+import { ENTITIES_NAME } from "@app/hal";
 
-export const resetStore = createAction('RESET_STORE');
+export const resetStore = createAction("RESET_STORE");
 
 const ALLOW_LIST: (keyof AppState)[] = [REDIRECT_NAME, ENTITIES_NAME];
 
-const keepState = (state: AppState | undefined): Partial<AppState> | undefined => {
+const keepState = (
+  state: AppState | undefined,
+): Partial<AppState> | undefined => {
   if (!state) {
     return state;
   }

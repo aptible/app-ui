@@ -5,38 +5,38 @@ import { useLoader } from "saga-query/react";
 
 import { loginUrl, elevateUrl } from "@app/routes";
 import {
-	selectIsUserAuthenticated,
-	selectIsElevatedTokenValid,
+  selectIsUserAuthenticated,
+  selectIsElevatedTokenValid,
 } from "@app/token";
 import { fetchCurrentToken } from "@app/auth";
 
 import { Loading } from "../shared";
 
 export const ElevateRequired = () => {
-	const loader = useLoader(fetchCurrentToken);
-	const isAuthenticated = useSelector(selectIsUserAuthenticated);
-	const isElevatedTokenValid = useSelector(selectIsElevatedTokenValid);
-	const location = useLocation();
+  const loader = useLoader(fetchCurrentToken);
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  const isElevatedTokenValid = useSelector(selectIsElevatedTokenValid);
+  const location = useLocation();
 
-	if (loader.lastRun > 0 && !loader.isLoading && !isAuthenticated) {
-		return <Navigate to={loginUrl()} />;
-	}
+  if (loader.lastRun > 0 && !loader.isLoading && !isAuthenticated) {
+    return <Navigate to={loginUrl()} />;
+  }
 
-	if (loader.isLoading) {
-		return (
-			<div className="flex w-full h-full items-center justify-center">
-				<Loading />
-			</div>
-		);
-	}
+  if (loader.isLoading) {
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
-	if (!isElevatedTokenValid) {
-		return <Navigate to={elevateUrl(location.pathname)} />;
-	}
+  if (!isElevatedTokenValid) {
+    return <Navigate to={elevateUrl(location.pathname)} />;
+  }
 
-	return (
-		<div>
-			<Outlet />
-		</div>
-	);
+  return (
+    <div>
+      <Outlet />
+    </div>
+  );
 };

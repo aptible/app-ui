@@ -1,3 +1,3 @@
 export const AppSecurityPage = () => {
-	return <div>App security page</div>;
+  return <div>App security page</div>;
 };

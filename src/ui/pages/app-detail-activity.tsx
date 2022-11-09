@@ -8,32 +8,32 @@ import type { DeployOperationResponse, HalEmbedded } from "@app/types";
 import { EmptyResources, LoadResources } from "../shared";
 
 interface HalOperations {
-	operations: DeployOperationResponse[];
+  operations: DeployOperationResponse[];
 }
 
 export const AppActivityPage = () => {
-	const { id = "" } = useParams();
-	const query = useCache<HalEmbedded<HalOperations>>(
-		fetchAppOperations({ id }),
-	);
+  const { id = "" } = useParams();
+  const query = useCache<HalEmbedded<HalOperations>>(
+    fetchAppOperations({ id }),
+  );
 
-	useEffect(() => {
-		query.trigger();
-	}, []);
+  useEffect(() => {
+    query.trigger();
+  }, []);
 
-	if (!query.data) {
-		return <EmptyResources />;
-	}
+  if (!query.data) {
+    return <EmptyResources />;
+  }
 
-	const { operations } = query.data._embedded;
+  const { operations } = query.data._embedded;
 
-	return (
-		<LoadResources query={query} isEmpty={operations.length === 0}>
-			{operations.map((op) => (
-				<div key={op.id}>
-					{op.type} {op.status} {op.user_name} {op.updated_at}
-				</div>
-			))}
-		</LoadResources>
-	);
+  return (
+    <LoadResources query={query} isEmpty={operations.length === 0}>
+      {operations.map((op) => (
+        <div key={op.id}>
+          {op.type} {op.status} {op.user_name} {op.updated_at}
+        </div>
+      ))}
+    </LoadResources>
+  );
 };

@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config';
-import reactRefresh from '@vitejs/plugin-react-refresh';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from "vitest/config";
+import reactRefresh from "@vitejs/plugin-react-refresh";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,6 +13,6 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: "jsdom",
   },
 });

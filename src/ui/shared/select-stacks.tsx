@@ -8,20 +8,20 @@ import { EmptyResources, ErrorResources } from "./load-resources";
 import { SelectMenu } from "./select-menu";
 
 export const StackSelect = () => {
-	const { isInitialLoading, isError, message } = useQuery(fetchStacks());
-	const options = useSelector(selectStacksAsOptions);
+  const { isInitialLoading, isError, message } = useQuery(fetchStacks());
+  const options = useSelector(selectStacksAsOptions);
 
-	if (isInitialLoading) {
-		return <Loading />;
-	}
+  if (isInitialLoading) {
+    return <Loading />;
+  }
 
-	if (isError) {
-		return <ErrorResources message={message} />;
-	}
+  if (isError) {
+    return <ErrorResources message={message} />;
+  }
 
-	if (options.length === 0) {
-		return <EmptyResources />;
-	}
+  if (options.length === 0) {
+    return <EmptyResources />;
+  }
 
-	return <SelectMenu name="Stack" options={options} />;
+  return <SelectMenu options={options} />;
 };

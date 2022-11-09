@@ -1,6 +1,6 @@
-import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 
-import { MapEntity, ActionWithPayload, excludesFalse } from '@app/types';
+import { MapEntity, ActionWithPayload, excludesFalse } from "@app/types";
 
 interface AnyState {
   [name: string]: any;
@@ -31,9 +31,11 @@ export interface TableSelectors<Entity extends AnyState = AnyState, S = any> {
 export function mustSelectEntity<Entity extends AnyState = AnyState>(
   defaultEntity: Entity | (() => Entity),
 ) {
-  const isFn = typeof defaultEntity === 'function';
+  const isFn = typeof defaultEntity === "function";
 
-  return function selectEntity<S = any>(selectById: (s: S, p: PropId) => Entity | undefined) {
+  return function selectEntity<S = any>(
+    selectById: (s: S, p: PropId) => Entity | undefined,
+  ) {
     return (state: S, { id }: PropId): Entity => {
       if (isFn) {
         const entity = defaultEntity as () => Entity;
@@ -57,8 +59,15 @@ function tableSelectors<Entity extends AnyState = AnyState, S = any>(
     const data = selectTable(state);
     return findById(data, { id });
   };
-  const selectTableAsList: any = createSelector(selectTable, (data): Entity[] => tableAsList(data));
-  const selectByIds: any = createSelector(selectTable, (_: S, p: PropIds) => p, findByIds);
+  const selectTableAsList: any = createSelector(
+    selectTable,
+    (data): Entity[] => tableAsList(data),
+  );
+  const selectByIds: any = createSelector(
+    selectTable,
+    (_: S, p: PropIds) => p,
+    findByIds,
+  );
 
   return {
     findById,
@@ -101,7 +110,7 @@ export function createTable<Entity extends AnyState = AnyState>({
         }>,
       ) => {
         Object.keys(action.payload).forEach((id) => {
-          if (typeof action.payload[id] !== 'object') {
+          if (typeof action.payload[id] !== "object") {
             return;
           }
 
@@ -126,7 +135,7 @@ export function createTable<Entity extends AnyState = AnyState>({
         }>,
       ) => {
         Object.keys(action.payload).forEach((id) => {
-          if (typeof action.payload[id] !== 'object') {
+          if (typeof action.payload[id] !== "object") {
             return;
           }
 
@@ -161,6 +170,7 @@ export function createTable<Entity extends AnyState = AnyState>({
 
   return {
     ...slice,
-    getSelectors: <S>(stateFn: (s: S) => MapEntity<Entity>) => tableSelectors(stateFn),
+    getSelectors: <S>(stateFn: (s: S) => MapEntity<Entity>) =>
+      tableSelectors(stateFn),
   };
 }

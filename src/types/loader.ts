@@ -1,4 +1,4 @@
-import type { LoadingItemState } from 'saga-query';
+import type { LoadingItemState } from "saga-query";
 
 export interface AuthLoaderMessage {
   error: string;

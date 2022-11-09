@@ -1,4 +1,4 @@
-import { HalEmbedded } from './hal';
+import { HalEmbedded } from "./hal";
 
 export interface Invitation {
   id: string;

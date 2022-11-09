@@ -1,27 +1,30 @@
-import { Next, select } from 'saga-query';
+import { Next, select } from "saga-query";
 
-import { authApi, AuthApiCtx, elevetatedMdw, cacheTimer } from '@app/api';
-import type { ApiGen } from '@app/types';
-import { selectOrigin } from '@app/env';
+import { authApi, AuthApiCtx, elevetatedMdw, cacheTimer } from "@app/api";
+import type { ApiGen } from "@app/types";
+import { selectOrigin } from "@app/env";
 
-import type { UserResponse, CreateUserForm } from './types';
+import type { UserResponse, CreateUserForm } from "./types";
 
 interface UserBase {
   userId: string;
 }
 
 export const fetchUser = authApi.get<UserBase>(
-  '/users/:userId',
+  "/users/:userId",
   { saga: cacheTimer() },
   elevetatedMdw,
 );
-export const fetchUsers = authApi.get<{ orgId: string }>('/organizations/:orgId/users', {
-  saga: cacheTimer(),
-});
+export const fetchUsers = authApi.get<{ orgId: string }>(
+  "/organizations/:orgId/users",
+  {
+    saga: cacheTimer(),
+  },
+);
 
 export type CreateUserCtx = AuthApiCtx<UserResponse, CreateUserForm>;
 export const createUser = authApi.post<CreateUserForm>(
-  '/users',
+  "/users",
   function* onCreateUser(ctx: CreateUserCtx, next): ApiGen {
     const origin = yield select(selectOrigin);
     ctx.request = ctx.req({
@@ -33,12 +36,12 @@ export const createUser = authApi.post<CreateUserForm>(
 );
 
 interface UpdatePassword extends UserBase {
-  type: 'update-password';
+  type: "update-password";
   password: string;
 }
 
 interface AddOtp extends UserBase {
-  type: 'otp';
+  type: "otp";
   otp_enabled: true;
   current_otp_configuration: string;
   current_otp_configuration_id: string;
@@ -46,7 +49,7 @@ interface AddOtp extends UserBase {
 }
 
 interface RemoveOtp extends UserBase {
-  type: 'otp';
+  type: "otp";
   otp_enabled: false;
 }
 
@@ -69,7 +72,10 @@ function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
   yield next();
 }
 
-export const updateUser = authApi.patch<PatchUser>('/users/:userId', elevatedUpdate);
+export const updateUser = authApi.patch<PatchUser>(
+  "/users/:userId",
+  elevatedUpdate,
+);
 
 interface UpdateEmail {
   userId: string;
@@ -77,11 +83,11 @@ interface UpdateEmail {
 }
 
 export const updateEmail = authApi.post<UpdateEmail>(
-  '/:userId/email_verification_challenges',
+  "/:userId/email_verification_challenges",
   elevatedUpdate,
 );
 
 export const fetchRecoveryCodes = authApi.get<UserBase>(
-  '/users/:userId/otp_recovery_codes',
+  "/users/:userId/otp_recovery_codes",
   authApi.cache(),
 );

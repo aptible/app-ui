@@ -1,12 +1,12 @@
-import { combineReducers } from '@reduxjs/toolkit';
+import { combineReducers } from "@reduxjs/toolkit";
 
-import { appReducers, appEntities } from './app';
-import { stackReducers, stackEntities } from './stack';
-import { environmentReducers, environmentEntities } from './environment';
-import { endpointReducers, endpointEntities } from './endpoint';
-import { databaseEntities, databaseReducers } from './database';
-import { logDrainEntities, logDrainReducers } from './log-drain';
-import { serviceEntities, serviceReducers } from './service';
+import { appReducers, appEntities } from "./app";
+import { stackReducers, stackEntities } from "./stack";
+import { environmentReducers, environmentEntities } from "./environment";
+import { endpointReducers, endpointEntities } from "./endpoint";
+import { databaseEntities, databaseReducers } from "./database";
+import { logDrainEntities, logDrainReducers } from "./log-drain";
+import { serviceEntities, serviceReducers } from "./service";
 
 const allReducers: any[] = [
   appReducers,

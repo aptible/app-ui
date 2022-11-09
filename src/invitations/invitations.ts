@@ -1,8 +1,8 @@
-import { isBefore } from 'date-fns';
-import { select } from 'saga-query';
+import { isBefore } from "date-fns";
+import { select } from "saga-query";
 
-import { createTable } from '@app/slice-helpers';
-import { authApi, AuthApiCtx } from '@app/api';
+import { createTable } from "@app/slice-helpers";
+import { authApi, AuthApiCtx } from "@app/api";
 import type {
   Token,
   InvitationsResponse,
@@ -11,34 +11,36 @@ import type {
   AppState,
   ApiGen,
   MapEntity,
-} from '@app/types';
-import { selectToken } from '@app/token';
-import { selectOrigin } from '@app/env';
+} from "@app/types";
+import { selectToken } from "@app/token";
+import { selectOrigin } from "@app/env";
 
 export const defaultInvitation = (i?: Partial<Invitation>): Invitation => {
   return {
-    id: '',
-    email: '',
-    createdAt: '',
-    updatedAt: '',
-    organizationName: '',
-    inviterName: '',
-    roleName: '',
+    id: "",
+    email: "",
+    createdAt: "",
+    updatedAt: "",
+    organizationName: "",
+    inviterName: "",
+    roleName: "",
     expired: false,
     ...i,
   };
 };
 
-export const defaultInvitationResponse = (i?: Partial<InvitationResponse>): InvitationResponse => {
+export const defaultInvitationResponse = (
+  i?: Partial<InvitationResponse>,
+): InvitationResponse => {
   return {
-    id: '',
-    email: '',
-    created_at: '',
-    updated_at: '',
-    organization_name: '',
-    inviter_name: '',
-    role_name: '',
-    verification_code_expires_at: '',
+    id: "",
+    email: "",
+    created_at: "",
+    updated_at: "",
+    organization_name: "",
+    inviter_name: "",
+    role_name: "",
+    verification_code_expires_at: "",
     ...i,
   };
 };
@@ -57,7 +59,7 @@ export function deserializeInvitation(i: InvitationResponse): Invitation {
 }
 
 export const invitations = createTable<Invitation>({
-  name: 'invitations',
+  name: "invitations",
 });
 
 export const {
@@ -73,7 +75,7 @@ export const selectInvitation = (state: AppState, { id }: { id: string }) =>
   selectInvitations(state)[id] || defaultInvitationInstance;
 
 export const fetchInvitations = authApi.get<{ orgId: string }>(
-  '/organizations/:orgId/invitations',
+  "/organizations/:orgId/invitations",
   function* onFetchInvitations(ctx: AuthApiCtx<InvitationsResponse>, next) {
     const token: Token = yield select(selectToken);
     if (!token) {
@@ -85,20 +87,19 @@ export const fetchInvitations = authApi.get<{ orgId: string }>(
     }
 
     const { data } = ctx.json;
-    const invitationsMap = data._embedded.invitations.reduce<MapEntity<Invitation>>(
-      (acc, invitation) => {
-        acc[invitation.id] = deserializeInvitation(invitation);
-        return acc;
-      },
-      {},
-    );
+    const invitationsMap = data._embedded.invitations.reduce<
+      MapEntity<Invitation>
+    >((acc, invitation) => {
+      acc[invitation.id] = deserializeInvitation(invitation);
+      return acc;
+    }, {});
 
     ctx.actions.push(addInvitations(invitationsMap));
   },
 );
 
 export const fetchInvitation = authApi.get<{ id: string }>(
-  '/invitations/:id',
+  "/invitations/:id",
   function* onFetchInvitation(ctx: AuthApiCtx<InvitationResponse>, next) {
     yield next();
     if (!ctx.json.ok) {
@@ -106,17 +107,19 @@ export const fetchInvitation = authApi.get<{ id: string }>(
     }
     const { data } = ctx.json;
 
-    ctx.actions.push(addInvitations({ [data.id]: deserializeInvitation(data) }));
+    ctx.actions.push(
+      addInvitations({ [data.id]: deserializeInvitation(data) }),
+    );
   },
 );
 
 export const resetInvitation = authApi.post<string>(
-  '/resets',
+  "/resets",
   function* onResetInvitation(ctx, next): ApiGen {
     const origin = yield select(selectOrigin);
     ctx.request = ctx.req({
       body: JSON.stringify({
-        type: 'invitation',
+        type: "invitation",
         origin,
         invitation_id: ctx.payload,
       }),

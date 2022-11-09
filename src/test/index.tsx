@@ -1,13 +1,16 @@
-import { Provider } from 'react-redux';
-import { Route, Routes } from 'react-router';
-import { MemoryRouter } from 'react-router-dom';
-import { applyMiddleware, createStore } from 'redux';
-import { prepareStore } from 'saga-query';
+import { Provider } from "react-redux";
+import { Route, Routes } from "react-router";
+import { MemoryRouter } from "react-router-dom";
+import { applyMiddleware, createStore } from "redux";
+import { prepareStore } from "saga-query";
 
-import type { AppState } from '@app/types';
-import { reducers, sagas } from '@app/app';
+import type { AppState } from "@app/types";
+import { reducers, sagas } from "@app/app";
 
-export const setupIntegrationTest = (initState: Partial<AppState> = {}, path = '') => {
+export const setupIntegrationTest = (
+  initState: Partial<AppState> = {},
+  path = "",
+) => {
   const prepared = prepareStore({ reducers, sagas });
 
   const store = createStore(

@@ -1,18 +1,18 @@
-import type { User } from '@app/types';
-import { extractIdFromLink } from '@app/hal';
+import type { User } from "@app/types";
+import { extractIdFromLink } from "@app/hal";
 
-import type { UserResponse } from './types';
+import type { UserResponse } from "./types";
 
 export const defaultUser = (u: Partial<User> = {}): User => {
   return {
-    id: '',
-    name: 'Aptible',
-    email: '',
+    id: "",
+    name: "Aptible",
+    email: "",
     otpEnabled: false,
     superuser: false,
-    username: '',
+    username: "",
     verified: false,
-    currentOtpId: '',
+    currentOtpId: "",
     ...u,
   };
 };

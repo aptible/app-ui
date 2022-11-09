@@ -1,10 +1,16 @@
-import { put, call, setLoaderStart, setLoaderSuccess, setLoaderError } from 'saga-query';
+import {
+  put,
+  call,
+  setLoaderStart,
+  setLoaderSuccess,
+  setLoaderError,
+} from "saga-query";
 
-import { AuthApiCtx, ThunkCtx, thunks } from '@app/api';
-import { CreateUserForm, CreateUserCtx, createUser } from '@app/users';
+import { AuthApiCtx, ThunkCtx, thunks } from "@app/api";
+import { CreateUserForm, CreateUserCtx, createUser } from "@app/users";
 
-import { TokenCtx, createToken } from './token';
-import { AUTH_LOADER_ID } from './loader';
+import { TokenCtx, createToken } from "./token";
+import { AUTH_LOADER_ID } from "./loader";
 
 function* setAuthError(ctx: AuthApiCtx) {
   if (ctx.json.ok) {
@@ -15,12 +21,15 @@ function* setAuthError(ctx: AuthApiCtx) {
 }
 
 export const signup = thunks.create<CreateUserForm>(
-  'signup',
+  "signup",
   function* onSignup(ctx: ThunkCtx<CreateUserForm>, next) {
     const { email, password } = ctx.payload;
     yield put(setLoaderStart({ id: AUTH_LOADER_ID }));
 
-    const userCtx: CreateUserCtx = yield call(createUser.run, createUser(ctx.payload));
+    const userCtx: CreateUserCtx = yield call(
+      createUser.run,
+      createUser(ctx.payload),
+    );
     console.log(userCtx);
     if (!userCtx.json.ok) {
       yield call(setAuthError, userCtx);
@@ -32,7 +41,7 @@ export const signup = thunks.create<CreateUserForm>(
       createToken({
         username: email,
         password,
-        otpToken: '',
+        otpToken: "",
         makeCurrent: true,
       }),
     );

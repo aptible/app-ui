@@ -1,7 +1,7 @@
-import type { QueryState } from 'saga-query';
-import type { InvitationRequest, Invitation } from './invitations';
-import type { EntityMap } from './hal';
-import type { MapEntity } from './helpers';
+import type { QueryState } from "saga-query";
+import type { InvitationRequest, Invitation } from "./invitations";
+import type { EntityMap } from "./hal";
+import type { MapEntity } from "./helpers";
 import type {
   DeployApp,
   DeployDatabase,
@@ -11,8 +11,8 @@ import type {
   DeployLogDrain,
   DeployService,
   DeployStack,
-} from './deploy';
-import type { ModalState } from './modal';
+} from "./deploy";
+import type { ModalState } from "./modal";
 
 export interface Env {
   isProduction: boolean;
@@ -20,7 +20,7 @@ export interface Env {
   authUrl: string;
   billingUrl: string;
   apiUrl: string;
-  origin: 'deploy';
+  origin: "deploy";
 }
 
 export interface User {
@@ -69,7 +69,7 @@ export interface Otp {
   currentUrl: string;
 }
 
-export type Theme = 'light' | 'dark';
+export type Theme = "light" | "dark";
 
 export interface DeployState {
   apps: MapEntity<DeployApp>;

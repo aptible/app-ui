@@ -6,12 +6,12 @@ import { verifyEmailRequestUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
 export const useVerifiedRequired = () => {
-	const navigate = useNavigate();
-	const user = useSelector(selectJWTToken);
+  const navigate = useNavigate();
+  const user = useSelector(selectJWTToken);
 
-	useEffect(() => {
-		if (!user.verified) {
-			navigate(verifyEmailRequestUrl());
-		}
-	}, [user.verified]);
+  useEffect(() => {
+    if (!user.verified) {
+      navigate(verifyEmailRequestUrl());
+    }
+  }, [user.verified]);
 };

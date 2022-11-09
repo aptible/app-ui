@@ -9,20 +9,20 @@ import { fetchCurrentToken } from "@app/auth";
 import { Loading } from "../shared";
 
 export const AuthRequired = () => {
-	const loader = useLoader(fetchCurrentToken);
-	const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  const loader = useLoader(fetchCurrentToken);
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
 
-	if (!loader.isLoading && !isAuthenticated) {
-		return <Navigate to={loginUrl()} />;
-	}
+  if (!(loader.isLoading || isAuthenticated)) {
+    return <Navigate to={loginUrl()} />;
+  }
 
-	if (loader.isLoading) {
-		return (
-			<div className="flex w-full h-full items-center justify-center">
-				<Loading />
-			</div>
-		);
-	}
+  if (loader.isLoading) {
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
-	return <Outlet />;
+  return <Outlet />;
 };

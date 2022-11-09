@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from "react-router-dom";
 
 import {
   NotFoundPage,
@@ -31,16 +31,16 @@ import {
   DatabaseBackupsPage,
   DatabaseSettingsPage,
   ModalPortal,
-} from '@app/ui';
-import * as routes from '@app/routes';
+} from "@app/ui";
+import * as routes from "@app/routes";
 
 const DatabaseRedirect = () => {
-  const { id = '' } = useParams();
+  const { id = "" } = useParams();
   return <Navigate replace={true} to={routes.databaseOverviewUrl(id)} />;
 };
 
 const AppRedirect = () => {
-  const { id = '' } = useParams();
+  const { id = "" } = useParams();
   return <Navigate replace={true} to={routes.appOverviewUrl(id)} />;
 };
 
@@ -49,7 +49,10 @@ export const Router = () => (
     <ModalPortal />
     <Routes>
       <Route path={routes.HOME_PATH} element={<AuthRequired />}>
-        <Route index={true} element={<Navigate to={routes.appsUrl()} replace={true} />} />
+        <Route
+          index={true}
+          element={<Navigate to={routes.appsUrl()} replace={true} />}
+        />
       </Route>
 
       <Route path={routes.APPS_PATH} element={<AuthRequired />}>
@@ -60,9 +63,18 @@ export const Router = () => (
         <Route element={<AppDetailLayout />}>
           <Route index={true} element={<AppRedirect />} />
           <Route path={routes.APP_OVERVIEW_PATH} element={<AppDetailPage />} />
-          <Route path={routes.APP_ACTIVITY_PATH} element={<AppActivityPage />} />
-          <Route path={routes.APP_SECURITY_PATH} element={<AppSecurityPage />} />
-          <Route path={routes.APP_SETTINGS_PATH} element={<AppSettingsPage />} />
+          <Route
+            path={routes.APP_ACTIVITY_PATH}
+            element={<AppActivityPage />}
+          />
+          <Route
+            path={routes.APP_SECURITY_PATH}
+            element={<AppSecurityPage />}
+          />
+          <Route
+            path={routes.APP_SETTINGS_PATH}
+            element={<AppSettingsPage />}
+          />
         </Route>
       </Route>
 
@@ -73,11 +85,26 @@ export const Router = () => (
       <Route path={routes.DATABASE_DETAIL_PATH} element={<AuthRequired />}>
         <Route element={<DatabaseDetailLayout />}>
           <Route index={true} element={<DatabaseRedirect />} />
-          <Route path={routes.DATABASE_OVERVIEW_PATH} element={<DatabaseDetailPage />} />
-          <Route path={routes.DATABASE_ACTIVITY_PATH} element={<DatabaseActivityPage />} />
-          <Route path={routes.DATABASE_SECURITY_PATH} element={<DatabaseSecurityPage />} />
-          <Route path={routes.DATABASE_BACKUPS_PATH} element={<DatabaseBackupsPage />} />
-          <Route path={routes.DATABASE_SETTINGS_PATH} element={<DatabaseSettingsPage />} />
+          <Route
+            path={routes.DATABASE_OVERVIEW_PATH}
+            element={<DatabaseDetailPage />}
+          />
+          <Route
+            path={routes.DATABASE_ACTIVITY_PATH}
+            element={<DatabaseActivityPage />}
+          />
+          <Route
+            path={routes.DATABASE_SECURITY_PATH}
+            element={<DatabaseSecurityPage />}
+          />
+          <Route
+            path={routes.DATABASE_BACKUPS_PATH}
+            element={<DatabaseBackupsPage />}
+          />
+          <Route
+            path={routes.DATABASE_SETTINGS_PATH}
+            element={<DatabaseSettingsPage />}
+          />
         </Route>
       </Route>
 
@@ -123,7 +150,10 @@ export const Router = () => (
         <Route index={true} element={<OtpSetupPage />} />
       </Route>
 
-      <Route path={routes.OTP_RECOVERY_CODES_PATH} element={<ElevateRequired />}>
+      <Route
+        path={routes.OTP_RECOVERY_CODES_PATH}
+        element={<ElevateRequired />}
+      >
         <Route index={true} element={<OtpRecoveryCodesPage />} />
       </Route>
 

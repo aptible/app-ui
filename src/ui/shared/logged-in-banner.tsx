@@ -6,11 +6,11 @@ import { selectIsUserAuthenticated } from "@app/token";
 import { Banner } from "../shared";
 
 export const LoggedInBanner = () => {
-	const isAuthenticated = useSelector(selectIsUserAuthenticated);
-	return isAuthenticated ? (
-		<Banner variant="warning" className="mb-6">
-			You are already logged in.{" "}
-			<Link to={homeUrl()}>Click here to go to the dashboard.</Link>
-		</Banner>
-	) : null;
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  return isAuthenticated ? (
+    <Banner variant="warning" className="mb-6">
+      You are already logged in.{" "}
+      <Link to={homeUrl()}>Click here to go to the dashboard.</Link>
+    </Banner>
+  ) : null;
 };

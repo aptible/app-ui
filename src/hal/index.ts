@@ -1,6 +1,6 @@
-import { Next, select } from 'saga-query';
+import { Next, select } from "saga-query";
 
-import { createAssign, createReducerMap } from '@app/slice-helpers';
+import { createAssign, createReducerMap } from "@app/slice-helpers";
 import type {
   Action,
   AppState,
@@ -9,8 +9,8 @@ import type {
   IdEntity,
   NestedEntity,
   MapEntity,
-} from '@app/types';
-import type { DeployApiCtx } from '@app/api';
+} from "@app/types";
+import type { DeployApiCtx } from "@app/api";
 
 /* const uuidRe = new RegExp(
   /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/,
@@ -18,16 +18,16 @@ import type { DeployApiCtx } from '@app/api';
 
 export function extractIdFromLink(relation: { href: string } | null) {
   if (!relation?.href) {
-    return '';
+    return "";
   }
   /* const exec = uuidRe.exec(url);
   if (!exec) return '';
   return exec[0] || ''; */
-  const segments = relation.href.split('/');
+  const segments = relation.href.split("/");
   return segments[segments.length - 1];
 }
 
-export const ENTITIES_NAME = 'entities';
+export const ENTITIES_NAME = "entities";
 const entities = createAssign<EntityMap>({
   name: ENTITIES_NAME,
   initialState: {},

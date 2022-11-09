@@ -1,10 +1,10 @@
-import { call, select } from 'saga-query';
+import { call, select } from "saga-query";
 
-import { ApiGen } from '@app/types';
-import { authApi, AuthApiCtx } from '@app/api';
-import { selectToken } from '@app/token';
+import { ApiGen } from "@app/types";
+import { authApi, AuthApiCtx } from "@app/api";
+import { selectToken } from "@app/token";
 
-import { exchangeToken } from './token';
+import { exchangeToken } from "./token";
 
 interface AcceptInvitation {
   invitationId: string;
@@ -12,13 +12,16 @@ interface AcceptInvitation {
 }
 
 export const acceptInvitation = authApi.post(
-  'accept-invitation',
-  function* onAcceptInvitation(ctx: AuthApiCtx<any, AcceptInvitation>, next): ApiGen {
+  "accept-invitation",
+  function* onAcceptInvitation(
+    ctx: AuthApiCtx<any, AcceptInvitation>,
+    next,
+  ): ApiGen {
     if (ctx.payload.verificationCode) {
       ctx.request = ctx.req({
-        url: '/verifications',
+        url: "/verifications",
         body: JSON.stringify({
-          type: 'invitation',
+          type: "invitation",
           invitation_id: ctx.payload.invitationId,
           verification_code: ctx.payload.verificationCode,
         }),

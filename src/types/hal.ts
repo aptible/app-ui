@@ -1,4 +1,4 @@
-import type { MapEntity } from './helpers';
+import type { MapEntity } from "./helpers";
 
 export type LinkResponse = {
   href: string;

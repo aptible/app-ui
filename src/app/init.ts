@@ -1,5 +1,5 @@
-import '../../index.css';
+import "../../index.css";
 
-import { init } from './client';
+import { init } from "./client";
 
 init();

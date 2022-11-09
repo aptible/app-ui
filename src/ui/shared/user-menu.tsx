@@ -8,31 +8,31 @@ import { tokens } from "./tokens";
 import { Menu, MenuButton, MenuList, MenuItem } from "./menu-button";
 
 export const UserMenu = () => {
-	const { user, isLoading } = useCurrentUser();
-	const navigate = useNavigate();
+  const { user, isLoading } = useCurrentUser();
+  const navigate = useNavigate();
 
-	if (isLoading || !user) {
-		return <>Loading...</>;
-	}
+  if (isLoading || !user) {
+    return <>Loading...</>;
+  }
 
-	return (
-		<Menu>
-			<MenuButton>
-				<div className="flex-1">{user.name}</div>
-			</MenuButton>
-			<MenuList>
-				<div className="px-4 py-2">
-					<p className={tokens.type["small semibold darker"]}>{user.name}</p>
-					<p className={tokens.type["small lighter"]}>{user.email}</p>
-				</div>
-				<MenuItem onSelect={() => navigate(sshSettingsUrl())}>
-					SSH Keys
-				</MenuItem>
-				<MenuItem onSelect={() => navigate(securitySettingsUrl())}>
-					Security Settings
-				</MenuItem>
-				<MenuItem onSelect={() => navigate(logoutUrl())}>Logout</MenuItem>
-			</MenuList>
-		</Menu>
-	);
+  return (
+    <Menu>
+      <MenuButton>
+        <div className="flex-1">{user.name}</div>
+      </MenuButton>
+      <MenuList>
+        <div className="px-4 py-2">
+          <p className={tokens.type["small semibold darker"]}>{user.name}</p>
+          <p className={tokens.type["small lighter"]}>{user.email}</p>
+        </div>
+        <MenuItem onSelect={() => navigate(sshSettingsUrl())}>
+          SSH Keys
+        </MenuItem>
+        <MenuItem onSelect={() => navigate(securitySettingsUrl())}>
+          Security Settings
+        </MenuItem>
+        <MenuItem onSelect={() => navigate(logoutUrl())}>Logout</MenuItem>
+      </MenuList>
+    </Menu>
+  );
 };

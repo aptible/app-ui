@@ -1,8 +1,8 @@
-import { createReducerMap } from '@app/slice-helpers';
-import { ActionWithPayload, AppState, ModalType, ModalState } from '@app/types';
-import { createSlice } from '@reduxjs/toolkit';
+import { createReducerMap } from "@app/slice-helpers";
+import { ActionWithPayload, AppState, ModalType, ModalState } from "@app/types";
+import { createSlice } from "@reduxjs/toolkit";
 
-const MODALS_NAME = 'modal';
+const MODALS_NAME = "modal";
 
 const initialState = {
   type: ModalType.NONE,
@@ -13,7 +13,10 @@ const modals = createSlice({
   name: MODALS_NAME,
   initialState,
   reducers: {
-    openModal: (_, action: ActionWithPayload<Partial<ModalState> & { type: ModalType }>) => ({
+    openModal: (
+      _,
+      action: ActionWithPayload<Partial<ModalState> & { type: ModalType }>,
+    ) => ({
       props: {},
       ...action.payload,
     }),

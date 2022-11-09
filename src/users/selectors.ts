@@ -1,11 +1,11 @@
-import { createSelector } from '@reduxjs/toolkit';
+import { createSelector } from "@reduxjs/toolkit";
 
-import type { AppState } from '@app/types';
-import { selectToken } from '@app/token';
+import type { AppState } from "@app/types";
+import { selectToken } from "@app/token";
 
-import { USERS_NAME } from './constants';
-import { defaultUser } from './serializers';
-import { users } from './slice';
+import { USERS_NAME } from "./constants";
+import { defaultUser } from "./serializers";
+import { users } from "./slice";
 
 const selectors = users.getSelectors((state: AppState) => state[USERS_NAME]);
 export const {
@@ -15,7 +15,7 @@ export const {
 } = selectors;
 
 export const selectCurrentUserId = createSelector(selectToken, (token) => {
-  return token.userUrl.split('/').pop() || '';
+  return token.userUrl.split("/").pop() || "";
 });
 
 export const selectCurrentUser = createSelector(

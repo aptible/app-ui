@@ -6,6 +6,6 @@ import { fetchEndpointsByAppId } from "@app/deploy";
 import { EndpointsOverview } from "../../shared";
 
 export function AppEndpointsOverview({ app }: { app: DeployApp }) {
-	const query = useQuery(fetchEndpointsByAppId({ id: app.id }));
-	return <EndpointsOverview query={query} serviceIds={app.serviceIds} />;
+  const query = useQuery(fetchEndpointsByAppId({ id: app.id }));
+  return <EndpointsOverview query={query} serviceIds={app.serviceIds} />;
 }

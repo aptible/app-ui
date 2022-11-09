@@ -1,13 +1,13 @@
-import { render } from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
-import { PersistGate } from 'redux-persist/integration/react';
+import { render } from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import { PersistGate } from "redux-persist/integration/react";
 
-import { bootup } from '@app/bootup';
-import { Loading } from '@app/ui';
+import { bootup } from "@app/bootup";
+import { Loading } from "@app/ui";
 
-import { setupStore } from './store';
-import { App } from './app';
-import { rootEntities } from './packages';
+import { setupStore } from "./store";
+import { App } from "./app";
+import { rootEntities } from "./packages";
 
 export function init() {
   const { store, persistor } = setupStore({
@@ -22,6 +22,6 @@ export function init() {
         <App store={store} />
       </PersistGate>
     </BrowserRouter>,
-    document.getElementById('app'),
+    document.getElementById("app"),
   );
 }
