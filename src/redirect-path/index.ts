@@ -9,8 +9,7 @@ const redirectPath = createAssign({
   initialState: HOME_PATH,
 });
 
-export const { set: setRedirectPath, reset: resetRedirectPath } =
-  redirectPath.actions;
+export const { set: setRedirectPath, reset: resetRedirectPath } = redirectPath.actions;
 
 export const selectRedirectPath = (state: AppState) => {
   return state[REDIRECT_NAME];

@@ -13,10 +13,7 @@ interface AcceptInvitation {
 
 export const acceptInvitation = authApi.post(
   'accept-invitation',
-  function* onAcceptInvitation(
-    ctx: AuthApiCtx<any, AcceptInvitation>,
-    next,
-  ): ApiGen {
+  function* onAcceptInvitation(ctx: AuthApiCtx<any, AcceptInvitation>, next): ApiGen {
     if (ctx.payload.verificationCode) {
       ctx.request = ctx.req({
         url: '/verifications',
@@ -34,7 +31,9 @@ export const acceptInvitation = authApi.post(
 
     yield next();
 
-    if (!ctx.json.ok) return;
+    if (!ctx.json.ok) {
+      return;
+    }
 
     // After accepting an invitation, we need to refresh our token to get elevated permissions
     // Once the elevated permissions are granted, we need to reload all assets using bootup.

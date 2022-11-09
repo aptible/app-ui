@@ -1,144 +1,142 @@
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router';
-import { useLoaderSuccess } from 'saga-query/react';
-import { ExclamationIcon } from '@heroicons/react/solid';
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useLocation } from "react-router";
+import { useLoaderSuccess } from "saga-query/react";
 
-import { homeUrl } from '@app/routes';
-import { elevate } from '@app/auth';
-import { selectAuthLoader, selectIsOtpError } from '@app/auth';
-import { selectJWTToken } from '@app/token';
+import { homeUrl } from "@app/routes";
+import { elevate } from "@app/auth";
+import { selectAuthLoader, selectIsOtpError } from "@app/auth";
+import { selectJWTToken } from "@app/token";
 
-import { Input, FormGroup, Button, Alert, AptibleLogo } from '../shared';
+import { Input, FormGroup, Button, Alert, AptibleLogo } from "../shared";
 
 export const ElevatePage = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const user = useSelector(selectJWTToken);
-  const location = useLocation();
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const user = useSelector(selectJWTToken);
+	const location = useLocation();
 
-  const [otpToken, setOtpToken] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [requireOtp, setRequireOtp] = useState<boolean>(false);
-  const loader = useSelector(selectAuthLoader);
+	const [otpToken, setOtpToken] = useState<string>("");
+	const [password, setPassword] = useState<string>("");
+	const [requireOtp, setRequireOtp] = useState<boolean>(false);
+	const loader = useSelector(selectAuthLoader);
 
-  useLoaderSuccess(loader, () => {
-    const params = new URLSearchParams(location.search);
-    const redirect = params.get('redirect');
-    navigate(redirect || homeUrl());
-  });
+	useLoaderSuccess(loader, () => {
+		const params = new URLSearchParams(location.search);
+		const redirect = params.get("redirect");
+		navigate(redirect || homeUrl());
+	});
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    dispatch(
-      elevate({
-        username: user.email,
-        password,
-        otpToken,
-      }),
-    );
-  };
+	const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		dispatch(
+			elevate({
+				username: user.email,
+				password,
+				otpToken,
+			}),
+		);
+	};
 
-  const isOtpError = useSelector(selectIsOtpError);
-  useEffect(() => {
-    if (isOtpError) setRequireOtp(true);
-  }, [isOtpError]);
+	const isOtpError = useSelector(selectIsOtpError);
+	useEffect(() => {
+		if (isOtpError) setRequireOtp(true);
+	}, [isOtpError]);
 
-  return (
-    <div>
-      <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="flex items-center justify-center">
-            <AptibleLogo />
-          </div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-            Elevate token
-          </h2>
-        </div>
+	return (
+		<div>
+			<div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+				<div className="sm:mx-auto sm:w-full sm:max-w-md">
+					<div className="flex items-center justify-center">
+						<AptibleLogo />
+					</div>
+					<h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+						Elevate token
+					</h2>
+				</div>
 
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form className="space-y-6" onSubmit={onSubmit}>
-              {loader.isError ? (
-                <div className="mb-8">
-                  <Alert
-                    title="Something went wrong"
-                    variant="danger"
-                    icon={
-                      <ExclamationIcon
-                        className="h-5 w-5 text-red-400"
-                        aria-hidden="true"
-                      />
-                    }
-                  >
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>{loader.message}</li>
-                    </ul>
-                  </Alert>
-                </div>
-              ) : null}
+				<div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+					<div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+						<form className="space-y-6" onSubmit={onSubmit}>
+							{loader.isError ? (
+								<div className="mb-8">
+									<Alert
+										title="Something went wrong"
+										variant="danger"
+										icon={
+											<div className="h-5 w-5 text-red-400" aria-hidden="true">
+												icon
+											</div>
+										}
+									>
+										<ul className="list-disc pl-5 space-y-1">
+											<li>{loader.message}</li>
+										</ul>
+									</Alert>
+								</div>
+							) : null}
 
-              <FormGroup label="Email" htmlFor="input-email">
-                <Input
-                  name="email"
-                  type="email"
-                  disabled
-                  value={user.email}
-                  autoComplete="username"
-                  autoFocus
-                  data-testid="input-email"
-                  id="input-email"
-                />
-              </FormGroup>
+							<FormGroup label="Email" htmlFor="input-email">
+								<Input
+									name="email"
+									type="email"
+									disabled
+									value={user.email}
+									autoComplete="username"
+									autoFocus
+									data-testid="input-email"
+									id="input-email"
+								/>
+							</FormGroup>
 
-              <FormGroup label="Password" htmlFor="password">
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  className="w-full"
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </FormGroup>
+							<FormGroup label="Password" htmlFor="password">
+								<Input
+									id="password"
+									name="password"
+									type="password"
+									autoComplete="current-password"
+									required
+									value={password}
+									className="w-full"
+									onChange={(e) => setPassword(e.target.value)}
+								/>
+							</FormGroup>
 
-              {requireOtp ? (
-                <FormGroup label="2FA" htmlFor="input-2fa">
-                  <label htmlFor="input-2fa" className="w-20 text-sm">
-                    2FA Token
-                  </label>
-                  <input
-                    type="number"
-                    value={otpToken}
-                    onChange={(e) => setOtpToken(e.currentTarget.value)}
-                    autoComplete="off"
-                    autoFocus
-                    id="input-2fa"
-                    className="flex-1 outline-0 py-1 bg-transparent"
-                  />
-                </FormGroup>
-              ) : null}
+							{requireOtp ? (
+								<FormGroup label="2FA" htmlFor="input-2fa">
+									<label htmlFor="input-2fa" className="w-20 text-sm">
+										2FA Token
+									</label>
+									<input
+										type="number"
+										value={otpToken}
+										onChange={(e) => setOtpToken(e.currentTarget.value)}
+										autoComplete="off"
+										autoFocus
+										id="input-2fa"
+										className="flex-1 outline-0 py-1 bg-transparent"
+									/>
+								</FormGroup>
+							) : null}
 
-              <div>
-                <Button
-                  isLoading={loader.isLoading}
-                  disabled={loader.isLoading}
-                  type="submit"
-                  variant="primary"
-                  layout="block"
-                  size="lg"
-                >
-                  Elevate token
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+							<div>
+								<Button
+									isLoading={loader.isLoading}
+									disabled={loader.isLoading}
+									type="submit"
+									variant="primary"
+									layout="block"
+									size="lg"
+								>
+									Elevate token
+								</Button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 /*

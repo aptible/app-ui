@@ -12,8 +12,7 @@ export const logoutUrl = () => LOGOUT_PATH;
 export const SIGNUP_PATH = '/signup';
 export const signupUrl = () => SIGNUP_PATH;
 export const ELEVATE_PATH = '/elevate';
-export const elevateUrl = (redirect = '') =>
-  `${ELEVATE_PATH}?redirect=${redirect}`;
+export const elevateUrl = (redirect = '') => `${ELEVATE_PATH}?redirect=${redirect}`;
 
 export const SECURITY_SETTINGS_PATH = '/settings/security';
 export const securitySettingsUrl = () => SECURITY_SETTINGS_PATH;
@@ -27,15 +26,12 @@ export const ADD_SECURITY_KEY_PATH = '/settings/add-security-key';
 export const addSecurityKeyUrl = () => ADD_SECURITY_KEY_PATH;
 
 export const RESET_REQUEST_PASSWORD_PATH = '/reset-password';
-export const RESET_PASSWORD_PATH =
-  '/reset-password/:challengeId/:verificationCode';
+export const RESET_PASSWORD_PATH = '/reset-password/:challengeId/:verificationCode';
 export const VERIFY_EMAIL_REQUEST_PATH = '/verify';
 export const verifyEmailRequestUrl = () => VERIFY_EMAIL_REQUEST_PATH;
 export const VERIFY_EMAIL_PATH = '/verify/:verificationId/:verificationCode';
-export const verifyEmailUrl = (
-  verificationId: string,
-  verificationCode: string,
-) => `/verify/${verificationId}/${verificationCode}`;
+export const verifyEmailUrl = (verificationId: string, verificationCode: string) =>
+  `/verify/${verificationId}/${verificationCode}`;
 
 export const CREATE_ORG_PATH = '/organizations/create';
 export const createOrgUrl = () => CREATE_ORG_PATH;
@@ -44,8 +40,7 @@ export const ACCEPT_INVITATION_WITH_CODE_PATH =
   '/accept-invitation/:invitationId/:verificationCode';
 export const acceptInvitationWithCodeUrl = (props: InvitationRequest) =>
   `/accept-invitation/${props.invitationId}/${props.verificationCode}`;
-export const ACCEPT_INVITATION_WITHOUT_CODE_PATH =
-  '/accept-invitation/:invitationId';
+export const ACCEPT_INVITATION_WITHOUT_CODE_PATH = '/accept-invitation/:invitationId';
 export const acceptInvitationWithoutCodeUrl = (invitationId: string) =>
   `/accept-invitation/${invitationId}`;
 
@@ -67,20 +62,15 @@ export const databasesUrl = () => DATABASES_PATH;
 export const DATABASE_DETAIL_PATH = '/databases/:id';
 export const databaseDetailUrl = (id: string) => `/databases/${id}`;
 export const DATABASE_OVERVIEW_PATH = `${DATABASE_DETAIL_PATH}/overview`;
-export const databaseOverviewUrl = (id: string) =>
-  `${databaseDetailUrl(id)}/overview`;
+export const databaseOverviewUrl = (id: string) => `${databaseDetailUrl(id)}/overview`;
 export const DATABASE_ACTIVITY_PATH = `${DATABASE_DETAIL_PATH}/activity`;
-export const databaseActivityUrl = (id: string) =>
-  `${databaseDetailUrl(id)}/activity`;
+export const databaseActivityUrl = (id: string) => `${databaseDetailUrl(id)}/activity`;
 export const DATABASE_SECURITY_PATH = `${DATABASE_DETAIL_PATH}/security`;
-export const databaseSecurityUrl = (id: string) =>
-  `${databaseDetailUrl(id)}/security`;
+export const databaseSecurityUrl = (id: string) => `${databaseDetailUrl(id)}/security`;
 export const DATABASE_BACKUPS_PATH = `${DATABASE_DETAIL_PATH}/backups`;
-export const databaseBackupsUrl = (id: string) =>
-  `${databaseDetailUrl(id)}/backups`;
+export const databaseBackupsUrl = (id: string) => `${databaseDetailUrl(id)}/backups`;
 export const DATABASE_SETTINGS_PATH = `${DATABASE_DETAIL_PATH}/settings`;
-export const databaseSettingsUrl = (id: string) =>
-  `${databaseDetailUrl(id)}/settings`;
+export const databaseSettingsUrl = (id: string) => `${databaseDetailUrl(id)}/settings`;
 
 export const SETTINGS_PATH = '/settings';
 export const settingsUrl = () => SETTINGS_PATH;

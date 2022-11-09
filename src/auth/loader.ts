@@ -19,9 +19,7 @@ export const defaultAuthLoader = (l: Partial<AuthLoader> = {}): AuthLoader => ({
   ...l,
 });
 
-export const defaultLoader = (
-  l: Partial<AuthLoader> = {},
-): LoadingState<AuthLoaderMessage> => {
+export const defaultLoader = (l: Partial<AuthLoader> = {}): LoadingState<AuthLoaderMessage> => {
   const loading = defaultAuthLoader(l);
   return {
     ...loading,
@@ -30,8 +28,7 @@ export const defaultLoader = (
     isSuccess: loading.status === 'success',
     isLoading: loading.status === 'loading',
     isInitialLoading:
-      (loading.status === 'idle' || loading.status === 'loading') &&
-      loading.lastSuccess === 0,
+      (loading.status === 'idle' || loading.status === 'loading') && loading.lastSuccess === 0,
   };
 };
 

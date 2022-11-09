@@ -17,7 +17,9 @@ import type { DeployApiCtx } from '@app/api';
 ); */
 
 export function extractIdFromLink(relation: { href: string } | null) {
-  if (!relation || !relation.href) return '';
+  if (!relation?.href) {
+    return '';
+  }
   /* const exec = uuidRe.exec(url);
   if (!exec) return '';
   return exec[0] || ''; */
@@ -40,7 +42,9 @@ export function defaultEntity<E = any>(e: EmbeddedMap<E>): EmbeddedMap<E> {
 export function* halEntityParser(ctx: DeployApiCtx, next: Next) {
   yield next();
 
-  if (!ctx.json.ok) return;
+  if (!ctx.json.ok) {
+    return;
+  }
 
   const entityMap: EntityMap = yield select(selectEntities);
   const { data } = ctx.json;
@@ -49,14 +53,20 @@ export function* halEntityParser(ctx: DeployApiCtx, next: Next) {
   const store: { [key: string]: IdEntity[] } = {};
 
   const parser = (entity?: NestedEntity) => {
-    if (!entity) return;
+    if (!entity) {
+      return;
+    }
     const identified = entityMap[entity._type];
     if (identified) {
-      if (!store[identified.id]) store[identified.id] = [];
+      if (!store[identified.id]) {
+        store[identified.id] = [];
+      }
       store[identified.id].push(identified.deserialize(entity));
     }
 
-    if (!entity._embedded) return;
+    if (!entity._embedded) {
+      return;
+    }
     Object.values(entity._embedded).forEach((value) => {
       if (Array.isArray(value)) {
         value.forEach(parser);
@@ -70,10 +80,14 @@ export function* halEntityParser(ctx: DeployApiCtx, next: Next) {
 
   Object.keys(store).forEach((key) => {
     const entity = entityMap[key];
-    if (!entity) return;
+    if (!entity) {
+      return;
+    }
 
     const storeData = store[key];
-    if (storeData.length === 0) return;
+    if (storeData.length === 0) {
+      return;
+    }
 
     const dataObj = storeData.reduce<MapEntity<any>>((acc, em) => {
       acc[em.id] = em;

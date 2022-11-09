@@ -3,8 +3,8 @@ import { AppState, Env } from '@app/types';
 
 export const createEnv = (e: Partial<Env> = {}): Env => {
   return {
-    isProduction: import.meta.env.PROD || false,
-    isDev: import.meta.env.DEV || true,
+    isProduction: import.meta.env.PROD,
+    isDev: true,
     authUrl: import.meta.env.VITE_AUTH_URL || '',
     billingUrl: import.meta.env.VITE_BILLING_URL || '',
     apiUrl: import.meta.env.VITE_API_URL || '',

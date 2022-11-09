@@ -1,19 +1,9 @@
 import { call, select } from 'saga-query';
 import { createSelector } from '@reduxjs/toolkit';
 
-import {
-  createReducerMap,
-  createTable,
-  createAssign,
-} from '@app/slice-helpers';
+import { createReducerMap, createTable, createAssign } from '@app/slice-helpers';
 import { authApi, AuthApiCtx, cacheTimer } from '@app/api';
-import {
-  AppState,
-  Organization,
-  LinkResponse,
-  ApiGen,
-  HalEmbedded,
-} from '@app/types';
+import { AppState, Organization, LinkResponse, ApiGen, HalEmbedded } from '@app/types';
 import { defaultEntity } from '@app/hal';
 import { selectToken } from '@app/token';
 import { exchangeToken } from '@app/auth';
@@ -63,12 +53,9 @@ const { selectTable: selectOrganizations } = organizations.getSelectors(
   (s: AppState) => s[ORGANIZATIONS_NAME],
 );
 
-const selectOrganizationSelectedId = (s: AppState) =>
-  s[ORGANIZATION_SELECTED_NAME] || '';
+const selectOrganizationSelectedId = (s: AppState) => s[ORGANIZATION_SELECTED_NAME] || '';
 
-export const defaultOrganization = (
-  o: Partial<Organization> = {},
-): Organization => ({
+export const defaultOrganization = (o: Partial<Organization> = {}): Organization => ({
   id: '',
   name: '',
   ...o,
@@ -101,15 +88,15 @@ function deserializeOrganization(o: OrganizationResponse): Organization {
   };
 }
 
-type FetchOrgCtx = AuthApiCtx<
-  HalEmbedded<{ organizations: OrganizationResponse[] }>
->;
+type FetchOrgCtx = AuthApiCtx<HalEmbedded<{ organizations: OrganizationResponse[] }>>;
 export const fetchOrganizations = authApi.get(
   '/organizations',
   { saga: cacheTimer() },
   function* onFetchOrgs(ctx: FetchOrgCtx, next) {
     yield next();
-    if (!ctx.json.ok) return;
+    if (!ctx.json.ok) {
+      return;
+    }
 
     const orgs = ctx.json.data._embedded.organizations;
     if (orgs.length > 0) {
@@ -133,7 +120,9 @@ export const createOrganization = authApi.post<CreateOrg>(
     });
     yield next();
     const token = yield select(selectToken);
-    if (!ctx.json.ok) return;
+    if (!ctx.json.ok) {
+      return;
+    }
 
     yield call(exchangeToken.run, exchangeToken(token));
     ctx.actions.push(setOrganizationSelected(ctx.json.data.id));

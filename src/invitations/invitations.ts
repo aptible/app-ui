@@ -29,9 +29,7 @@ export const defaultInvitation = (i?: Partial<Invitation>): Invitation => {
   };
 };
 
-export const defaultInvitationResponse = (
-  i?: Partial<InvitationResponse>,
-): InvitationResponse => {
+export const defaultInvitationResponse = (i?: Partial<InvitationResponse>): InvitationResponse => {
   return {
     id: '',
     email: '',
@@ -78,32 +76,37 @@ export const fetchInvitations = authApi.get<{ orgId: string }>(
   '/organizations/:orgId/invitations',
   function* onFetchInvitations(ctx: AuthApiCtx<InvitationsResponse>, next) {
     const token: Token = yield select(selectToken);
-    if (!token) return;
+    if (!token) {
+      return;
+    }
     yield next();
-    if (!ctx.json.ok) return;
+    if (!ctx.json.ok) {
+      return;
+    }
 
     const { data } = ctx.json;
-    const invitationsMap = data._embedded.invitations.reduce<
-      MapEntity<Invitation>
-    >((acc, invitation) => {
-      acc[invitation.id] = deserializeInvitation(invitation);
-      return acc;
-    }, {});
+    const invitationsMap = data._embedded.invitations.reduce<MapEntity<Invitation>>(
+      (acc, invitation) => {
+        acc[invitation.id] = deserializeInvitation(invitation);
+        return acc;
+      },
+      {},
+    );
 
     ctx.actions.push(addInvitations(invitationsMap));
   },
 );
 
 export const fetchInvitation = authApi.get<{ id: string }>(
-  `/invitations/:id`,
+  '/invitations/:id',
   function* onFetchInvitation(ctx: AuthApiCtx<InvitationResponse>, next) {
     yield next();
-    if (!ctx.json.ok) return;
+    if (!ctx.json.ok) {
+      return;
+    }
     const { data } = ctx.json;
 
-    ctx.actions.push(
-      addInvitations({ [data.id]: deserializeInvitation(data) }),
-    );
+    ctx.actions.push(addInvitations({ [data.id]: deserializeInvitation(data) }));
   },
 );
 

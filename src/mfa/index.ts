@@ -1,10 +1,6 @@
 import { Next, select } from 'saga-query';
 
-import {
-  createAssign,
-  createTable,
-  createReducerMap,
-} from '@app/slice-helpers';
+import { createAssign, createTable, createReducerMap } from '@app/slice-helpers';
 import { LinkResponse, ApiGen, AppState, U2fDevice, Otp } from '@app/types';
 import { defaultEntity } from '@app/hal';
 import { authApi, AuthApiCtx } from '@app/api';
@@ -30,8 +26,9 @@ export const selectOtp = (s: AppState) => s[OTP_NAME] || initOtp;
 
 export const U2F_DEVICES_NAME = 'u2fDevices';
 const u2fDevices = createTable<U2fDevice>({ name: U2F_DEVICES_NAME });
-export const { selectTableAsList: selectU2fDevicesAsList } =
-  u2fDevices.getSelectors((s: AppState) => s[U2F_DEVICES_NAME]);
+export const { selectTableAsList: selectU2fDevicesAsList } = u2fDevices.getSelectors(
+  (s: AppState) => s[U2F_DEVICES_NAME],
+);
 const { add: addU2fDevice } = u2fDevices.actions;
 
 interface U2fDeviceResponse {
@@ -64,9 +61,7 @@ export const entities = {
   }),
 };
 
-export const fetchU2fDevices = authApi.get<{ userId: string }>(
-  '/users/:userId/u2f_devices',
-);
+export const fetchU2fDevices = authApi.get<{ userId: string }>('/users/:userId/u2f_devices');
 
 interface SetupOtp {
   userId: string;
@@ -106,11 +101,15 @@ export const setupOtp = authApi.post<{ userId: string }>(
   '/users/:userId/otp_configurations',
   function* onOtp(ctx: AuthApiCtx<OtpResponse, SetupOtp>, next): ApiGen {
     const curOtp = yield select(selectOtp);
-    if (curOtp.id) return;
+    if (curOtp.id) {
+      return;
+    }
 
     yield next();
 
-    if (!ctx.json.ok) return;
+    if (!ctx.json.ok) {
+      return;
+    }
 
     const newOtp = deserializeOtp(ctx.json.data);
     ctx.actions.push(setOtp(newOtp));

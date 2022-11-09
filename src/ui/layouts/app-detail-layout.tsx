@@ -1,49 +1,49 @@
-import { Outlet, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { Outlet, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-import type { AppState } from '@app/types';
-import { selectAppById } from '@app/deploy';
+import type { AppState } from "@app/types";
+import { selectAppById } from "@app/deploy";
 import {
-  appActivityUrl,
-  appOverviewUrl,
-  appSecurityUrl,
-  appSettingsUrl,
-  appsUrl,
-} from '@app/routes';
+	appActivityUrl,
+	appOverviewUrl,
+	appSecurityUrl,
+	appSettingsUrl,
+	appsUrl,
+} from "@app/routes";
 
-import { DetailPageHeaderView, TabItem, AppContextMenu } from '../shared';
+import { DetailPageHeaderView, TabItem, AppContextMenu } from "../shared";
 
-import { DetailPageLayout } from './detail-page';
+import { DetailPageLayout } from "./detail-page";
 
-const crumbs = [{ name: 'Apps', to: appsUrl() }];
+const crumbs = [{ name: "Apps", to: appsUrl() }];
 
 function AppPageHeader() {
-  const { id = '' } = useParams();
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
+	const { id = "" } = useParams();
+	const app = useSelector((s: AppState) => selectAppById(s, { id }));
 
-  const tabs = [
-    { name: 'Overview', href: appOverviewUrl(id) },
-    { name: 'Activity', href: appActivityUrl(id) },
-    { name: 'Security', href: appSecurityUrl(id) },
-    { name: 'Settings', href: appSettingsUrl(id) },
-  ] as TabItem[];
+	const tabs = [
+		{ name: "Overview", href: appOverviewUrl(id) },
+		{ name: "Activity", href: appActivityUrl(id) },
+		{ name: "Security", href: appSecurityUrl(id) },
+		{ name: "Settings", href: appSettingsUrl(id) },
+	] as TabItem[];
 
-  const actions = [<AppContextMenu />];
+	const actions = [<AppContextMenu />];
 
-  return (
-    <DetailPageHeaderView
-      breadcrumbs={crumbs}
-      title={!app ? 'Loading...' : app.handle}
-      actions={actions}
-      tabs={tabs}
-    />
-  );
+	return (
+		<DetailPageHeaderView
+			breadcrumbs={crumbs}
+			title={!app ? "Loading..." : app.handle}
+			actions={actions}
+			tabs={tabs}
+		/>
+	);
 }
 
 export const AppDetailLayout = () => {
-  return (
-    <DetailPageLayout header={<AppPageHeader />}>
-      <Outlet />
-    </DetailPageLayout>
-  );
+	return (
+		<DetailPageLayout header={<AppPageHeader />}>
+			<Outlet />
+		</DetailPageLayout>
+	);
 };

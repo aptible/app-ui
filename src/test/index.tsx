@@ -1,18 +1,13 @@
 import { Provider } from 'react-redux';
 import { Route, Routes } from 'react-router';
-import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { applyMiddleware, createStore } from 'redux';
 import { prepareStore } from 'saga-query';
-import { createMemoryHistory } from 'history';
 
 import type { AppState } from '@app/types';
 import { reducers, sagas } from '@app/app';
 
-export const setupIntegrationTest = (
-  initState: Partial<AppState> = {},
-  path = '',
-) => {
-  const history = createMemoryHistory();
+export const setupIntegrationTest = (initState: Partial<AppState> = {}, path = '') => {
   const prepared = prepareStore({ reducers, sagas });
 
   const store = createStore(
@@ -25,11 +20,11 @@ export const setupIntegrationTest = (
   const TestProvider = ({ children }: { children: React.ReactNode }) => {
     return (
       <Provider store={store}>
-        <HistoryRouter history={history}>
+        <MemoryRouter>
           <Routes>
             <Route path={path} element={children} />
           </Routes>
-        </HistoryRouter>
+        </MemoryRouter>
       </Provider>
     );
   };

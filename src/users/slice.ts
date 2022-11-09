@@ -7,10 +7,6 @@ export const users = createTable<User>({
   name: USERS_NAME,
 });
 
-export const {
-  add: addUsers,
-  set: setUsers,
-  reset: resetUsers,
-} = users.actions;
+export const { add: addUsers, set: setUsers, reset: resetUsers } = users.actions;
 
 export const reducers = createReducerMap(users);

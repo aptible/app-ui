@@ -18,7 +18,9 @@ export interface CreateTokenPayload {
 export type TokenCtx = AuthApiCtx<TokenSuccessResponse, CreateTokenPayload>;
 
 function saveToken(ctx: AuthApiCtx<TokenSuccessResponse>) {
-  if (!ctx.json.ok) return;
+  if (!ctx.json.ok) {
+    return;
+  }
   const curToken = deserializeToken(ctx.json.data);
   ctx.actions.push(setToken(curToken));
 }
@@ -78,7 +80,9 @@ export const elevateToken = authApi.post<ElevateToken>(
 
     yield next();
 
-    if (!ctx.json.ok) return;
+    if (!ctx.json.ok) {
+      return;
+    }
     const curToken = deserializeToken(ctx.json.data);
     ctx.actions.push(setElevatedToken(curToken));
   },
@@ -91,10 +95,7 @@ interface ExchangeToken {
 
 export const exchangeToken = authApi.post<ExchangeToken>(
   'exchange-token',
-  function* onExchangeToken(
-    ctx: AuthApiCtx<TokenSuccessResponse, ExchangeToken>,
-    next,
-  ) {
+  function* onExchangeToken(ctx: AuthApiCtx<TokenSuccessResponse, ExchangeToken>, next) {
     ctx.request = ctx.req({
       url: '/tokens',
       method: 'POST',
@@ -119,7 +120,9 @@ export const revokeAllTokens = authApi.post(
   '/tokens/revoke_all_accessible',
   function* onRevokeAll(ctx, next) {
     yield next();
-    if (!ctx.json.ok) return;
+    if (!ctx.json.ok) {
+      return;
+    }
     ctx.actions.push(resetToken());
   },
 );

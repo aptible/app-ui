@@ -2,7 +2,6 @@ import { createAssign, createReducerMap } from '@app/slice-helpers';
 import { AppState, Theme } from '@app/types';
 
 const getDefaultTheme = (): Theme => {
-  console.log(typeof window);
   if (typeof window === 'undefined') {
     return 'light';
   }
@@ -10,9 +9,7 @@ const getDefaultTheme = (): Theme => {
     return 'light';
   }
 
-  return window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 const defaultTheme = getDefaultTheme();
 

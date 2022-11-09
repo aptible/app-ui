@@ -33,9 +33,7 @@ export function mustSelectEntity<Entity extends AnyState = AnyState>(
 ) {
   const isFn = typeof defaultEntity === 'function';
 
-  return function selectEntity<S = any>(
-    selectById: (s: S, p: PropId) => Entity | undefined,
-  ) {
+  return function selectEntity<S = any>(selectById: (s: S, p: PropId) => Entity | undefined) {
     return (state: S, { id }: PropId): Entity => {
       if (isFn) {
         const entity = defaultEntity as () => Entity;
@@ -59,14 +57,8 @@ function tableSelectors<Entity extends AnyState = AnyState, S = any>(
     const data = selectTable(state);
     return findById(data, { id });
   };
-  const selectTableAsList: any = createSelector(selectTable, (data): Entity[] =>
-    tableAsList(data),
-  );
-  const selectByIds: any = createSelector(
-    selectTable,
-    (_: S, p: PropIds) => p,
-    findByIds,
-  );
+  const selectTableAsList: any = createSelector(selectTable, (data): Entity[] => tableAsList(data));
+  const selectByIds: any = createSelector(selectTable, (_: S, p: PropIds) => p, findByIds);
 
   return {
     findById,
@@ -98,7 +90,7 @@ export function createTable<Entity extends AnyState = AnyState>({
       set: (_, action: ActionWithPayload<MapEntity<Entity>>) => action.payload,
       remove: (state, action: ActionWithPayload<string[]>) => {
         action.payload.forEach((key) => {
-          delete state[key];
+          state[key] = undefined;
         });
       },
       reset: () => initialState,
@@ -151,7 +143,7 @@ export function createTable<Entity extends AnyState = AnyState>({
               const prop = (action.payload[id] as any)[key];
               if (Array.isArray(nextEntity[key])) {
                 nextEntity[key] = [...nextEntity[key], ...prop];
-              } else if (Object == prop.constructor) {
+              } else if (Object === prop.constructor) {
                 nextEntity[key] = {
                   ...nextEntity[key],
                   ...prop,
@@ -169,7 +161,6 @@ export function createTable<Entity extends AnyState = AnyState>({
 
   return {
     ...slice,
-    getSelectors: <S>(stateFn: (s: S) => MapEntity<Entity>) =>
-      tableSelectors(stateFn),
+    getSelectors: <S>(stateFn: (s: S) => MapEntity<Entity>) => tableSelectors(stateFn),
   };
 }

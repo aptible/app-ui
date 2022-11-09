@@ -13,10 +13,7 @@ const modals = createSlice({
   name: MODALS_NAME,
   initialState,
   reducers: {
-    openModal: (
-      _,
-      action: ActionWithPayload<Partial<ModalState> & { type: ModalType }>,
-    ) => ({
+    openModal: (_, action: ActionWithPayload<Partial<ModalState> & { type: ModalType }>) => ({
       props: {},
       ...action.payload,
     }),

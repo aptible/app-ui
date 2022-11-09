@@ -12,9 +12,7 @@ export const resetStore = createAction('RESET_STORE');
 
 const ALLOW_LIST: (keyof AppState)[] = [REDIRECT_NAME, ENTITIES_NAME];
 
-const keepState = (
-  state: AppState | undefined,
-): Partial<AppState> | undefined => {
+const keepState = (state: AppState | undefined): Partial<AppState> | undefined => {
   if (!state) {
     return state;
   }

@@ -4,12 +4,11 @@ export { createAction } from '@reduxjs/toolkit';
 export * from './create-table';
 export * from './create-assign';
 
-export function createReducerMap<
-  KV extends Array<{ name: P; reducer: Reducer }>,
-  P extends keyof any,
->(
+export function createReducerMap<KV extends { name: P; reducer: Reducer }[], P extends keyof any>(
   ...args: KV
-): { [K in KV[number]['name']]: Extract<KV[number], { name: K }>['reducer'] };
+): {
+  [K in KV[number]['name']]: Extract<KV[number], { name: K }>['reducer'];
+};
 export function createReducerMap(...args: any[]): any {
   return args.reduce((acc, slice) => {
     if (acc.hasOwnProperty(slice.name)) {

@@ -33,12 +33,16 @@ const corePackages: any[] = [
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {
-  if (!pkg.entities) return acc;
+  if (!pkg.entities) {
+    return acc;
+  }
   return { ...acc, ...pkg.entities };
 }, {});
 
 export const reducers = corePackages.reduce((acc, pkg) => {
-  if (!pkg.reducers) return acc;
+  if (!pkg.reducers) {
+    return acc;
+  }
   return { ...acc, ...pkg.reducers };
 }, {});
 
@@ -49,6 +53,8 @@ const initialSagas = {
 };
 
 export const sagas = corePackages.reduce((acc, pkg) => {
-  if (!pkg.sagas) return acc;
+  if (!pkg.sagas) {
+    return acc;
+  }
   return { ...acc, ...pkg.sagas };
 }, initialSagas);
