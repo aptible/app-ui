@@ -5,14 +5,15 @@ ARG VITE_BILLING_URL=https://goldenboy.aptible.com
 ARG VITE_API_URL=https://api.aptible.com
 ARG NODE_ENV=production
 
-RUN env | grep VITE
-
 ADD package.json /app/
 ADD yarn.lock /app/
 WORKDIR /app
 
 RUN yarn
 ADD . /app
+
+RUN env | grep VITE
+
 RUN yarn build
 
 FROM nginx:1.13.11 as nginx

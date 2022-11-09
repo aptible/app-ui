@@ -30,9 +30,9 @@ jobs:
           push: true
           tags: ${{ steps.docker-meta.outputs.tags }}
           build-args: |
-            VITE_AUTH_URL="https://auth-demo.aptible-sandbox.com"
-            VITE_BILLING_URL="https://goldenbody-demo.aptible-sandbox.com"
-            VITE_API_URL="https://api-demo.aptible-sandbox.com"
+            VITE_AUTH_URL=https://auth-demo.aptible-sandbox.com
+            VITE_BILLING_URL=https://goldenbody-demo.aptible-sandbox.com
+            VITE_API_URL=https://api-demo.aptible-sandbox.com
   deploy:
     runs-on: ubuntu-latest
     needs: build
