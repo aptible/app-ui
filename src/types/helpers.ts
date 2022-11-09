@@ -8,8 +8,7 @@ export interface Action<T extends string = string> {
   type: T;
 }
 
-export interface ActionWithPayload<P = any, T extends string = string>
-  extends Action<T> {
+export interface ActionWithPayload<P = any, T extends string = string> extends Action<T> {
   payload: P;
 }
 

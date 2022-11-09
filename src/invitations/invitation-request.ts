@@ -7,9 +7,7 @@ import { selectInvitations } from './invitations';
 
 export const INVITATION_REQUEST_SLICE = 'invitationRequest';
 
-export const defaultInvitationRequest = (
-  r: Partial<InvitationRequest> = {},
-) => {
+export const defaultInvitationRequest = (r: Partial<InvitationRequest> = {}) => {
   return {
     verificationCode: '',
     invitationId: '',
@@ -28,8 +26,7 @@ export const invitationRequest = createAssign<InvitationRequest>({
 export const { set: setInvitationRequest, reset: resetInvitationRequest } =
   invitationRequest.actions;
 
-export const selectInvitationRequest = (state: AppState) =>
-  state[INVITATION_REQUEST_SLICE];
+export const selectInvitationRequest = (state: AppState) => state[INVITATION_REQUEST_SLICE];
 
 export const selectIsInvitationPending = (state: AppState) => {
   return selectInvitationRequest(state).invitationId !== '';

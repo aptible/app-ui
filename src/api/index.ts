@@ -18,11 +18,9 @@ import { selectAccessToken, selectElevatedAccessToken } from '@app/token';
 
 type EndpointUrl = 'auth' | 'api' | 'billing';
 
-export interface AppCtx<S = any, P = any>
-  extends ApiCtx<P, S, { message: string }> {}
+export interface AppCtx<S = any, P = any> extends ApiCtx<P, S, { message: string }> {}
 export interface DeployApiCtx<S = any, P = any> extends AppCtx<S, P> {}
-export interface AuthApiCtx<S = any, P = any>
-  extends ApiCtx<P, S, AuthApiError> {
+export interface AuthApiCtx<S = any, P = any> extends ApiCtx<P, S, AuthApiError> {
   elevated: boolean;
 }
 
@@ -82,7 +80,9 @@ function* elevatedTokenMdw(ctx: AuthApiCtx, next: Next): ApiGen {
 function* getUrl(ctx: AppCtx, endpoint: EndpointUrl): ApiGen<string> {
   const { url } = ctx.req();
   const fullUrl = url.startsWith('http');
-  if (fullUrl) return url;
+  if (fullUrl) {
+    return url;
+  }
 
   const baseUrl = yield call(getApiBaseUrl, endpoint);
   return `${baseUrl}${url}`;

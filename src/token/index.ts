@@ -87,22 +87,22 @@ const elevatedToken = createAssign({
 });
 
 export const { set: setToken, reset: resetToken } = token.actions;
-export const { set: setElevatedToken, reset: resetElevatedToken } =
-  elevatedToken.actions;
+export const { set: setElevatedToken, reset: resetElevatedToken } = elevatedToken.actions;
 
 export const reducers = createReducerMap(token, elevatedToken);
 
 const unixNow = () => Math.floor(Date.now() / 1000);
 const initJWTToken = defaultJWTToken();
 const findJWTToken = (curToken: Token) => {
-  if (!curToken.accessToken) return initJWTToken;
+  if (!curToken.accessToken) {
+    return initJWTToken;
+  }
   return parseJwt(curToken.accessToken);
 };
 const hasExpired = (curToken: JWTToken) => unixNow() > curToken.exp;
 
 export const selectToken = (state: AppState) => state[TOKEN_NAME];
-export const selectAccessToken = (state: AppState) =>
-  selectToken(state).accessToken;
+export const selectAccessToken = (state: AppState) => selectToken(state).accessToken;
 export const selectActorUrl = (state: AppState) => selectToken(state).actorUrl;
 export const selectUserUrl = (state: AppState) => selectToken(state).userUrl;
 export const selectJWTToken = createSelector(selectToken, findJWTToken);
@@ -113,15 +113,10 @@ export const selectIsTokenValid = createSelector(
 
 export const selectIsImpersonated = (state: AppState) =>
   selectActorUrl(state) !== selectUserUrl(state);
-export const selectIsUserAuthenticated = (state: AppState) =>
-  !!selectAccessToken(state);
+export const selectIsUserAuthenticated = (state: AppState) => !!selectAccessToken(state);
 
-export const selectElevatedToken = (state: AppState) =>
-  state[ELEVATED_TOKEN_NAME];
-export const selectJWTElevatedToken = createSelector(
-  selectElevatedToken,
-  findJWTToken,
-);
+export const selectElevatedToken = (state: AppState) => state[ELEVATED_TOKEN_NAME];
+export const selectJWTElevatedToken = createSelector(selectElevatedToken, findJWTToken);
 export const selectIsElevatedTokenValid = createSelector(
   selectJWTElevatedToken,
   (jwtToken) => jwtToken.scope === 'elevated' && !hasExpired(jwtToken),

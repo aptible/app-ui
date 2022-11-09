@@ -9,10 +9,10 @@ export default defineConfig({
     port: 4200,
   },
   esbuild: {
-    jsxInject: `import React from 'react'`
+    jsxInject: `import React from 'react'`,
   },
   test: {
     globals: true,
     environment: 'jsdom',
-  }
+  },
 });

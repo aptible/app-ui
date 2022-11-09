@@ -1,1 +1,1 @@
-export * from './resend-verification-email-form';
+export * from "./resend-verification-email-form";

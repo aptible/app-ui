@@ -15,10 +15,9 @@ export const fetchUser = authApi.get<UserBase>(
   { saga: cacheTimer() },
   elevetatedMdw,
 );
-export const fetchUsers = authApi.get<{ orgId: string }>(
-  '/organizations/:orgId/users',
-  { saga: cacheTimer() },
-);
+export const fetchUsers = authApi.get<{ orgId: string }>('/organizations/:orgId/users', {
+  saga: cacheTimer(),
+});
 
 export type CreateUserCtx = AuthApiCtx<UserResponse, CreateUserForm>;
 export const createUser = authApi.post<CreateUserForm>(
@@ -70,10 +69,7 @@ function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
   yield next();
 }
 
-export const updateUser = authApi.patch<PatchUser>(
-  '/users/:userId',
-  elevatedUpdate,
-);
+export const updateUser = authApi.patch<PatchUser>('/users/:userId', elevatedUpdate);
 
 interface UpdateEmail {
   userId: string;
