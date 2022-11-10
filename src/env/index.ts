@@ -2,7 +2,6 @@ import { createAssign, createReducerMap } from "@app/slice-helpers";
 import { AppState, Env } from "@app/types";
 
 export const createEnv = (e: Partial<Env> = {}): Env => {
-  console.log(import.meta.env.VITE_AUTH_URL);
   return {
     isProduction: import.meta.env.PROD,
     isDev: import.meta.env.DEV,
