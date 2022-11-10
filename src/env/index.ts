@@ -9,7 +9,7 @@ export const createEnv = (e: Partial<Env> = {}): Env => {
     authUrl: import.meta.env.VITE_AUTH_URL || "",
     billingUrl: import.meta.env.VITE_BILLING_URL || "",
     apiUrl: import.meta.env.VITE_API_URL || "",
-    origin: "deploy",
+    origin: "nextgen",
     ...e,
   };
 };

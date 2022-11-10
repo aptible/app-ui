@@ -20,7 +20,7 @@ export interface Env {
   authUrl: string;
   billingUrl: string;
   apiUrl: string;
-  origin: "deploy";
+  origin: string;
 }
 
 export interface User {
