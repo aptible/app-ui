@@ -3,6 +3,11 @@
 Aptible's *new* customer dashboard. It allows users to manage organizations,
 access controls, and ops.
 
+## sites
+
+- `prod` https://nextgen.aptible.com
+- `staging` https://cloud-ui-main.aptible-staging.com
+
 ## install
 
 - node `v16.14.2`
@@ -18,6 +23,10 @@ export VITE_AUTH_URL="http://localhost:4000"
 export VITE_API_URL="http://localhost:4001"
 export VITE_BILLING_URL="http:localhost:4005"
 ```
+
+### .env
+
+Copy `.env.example` to `.env.local`
 
 ## dev server
 
@@ -35,4 +44,10 @@ yarn test
 
 ## continuous deployment
 
-Once merging to `main` we deploy to https://cloud-ui-main.aptible-staging.com
+### staging
+
+Once merged to `main` we deploy to `staging` 
+
+### prod
+
+Create a github release
