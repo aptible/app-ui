@@ -2637,10 +2637,10 @@ safe-buffer@~5.1.1:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-saga-query@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/saga-query/-/saga-query-4.1.0.tgz#95d9f7b98cb27f9751c34b2a09bf6b9f8fb53cf3"
-  integrity sha512-+efGNjxWzBFv6izougXXO86ArENA9KRzfiyrZrWEwXkIzJfLFRly1IWkOvB11kvh5X2kzBEK5UGewOjorSr1Zw==
+saga-query@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/saga-query/-/saga-query-4.2.0.tgz#c71491630fdfcfe401cc71432b51344e29f07ce0"
+  integrity sha512-r0j0AFFPrx6Q23EVIv5d/JRAORE2sC2hoT2LyA6Kg3YWIHZ2ZEw94QN6c5xz4c/71xHUwmpXTqiaSmFVsxEG/A==
   dependencies:
     redux "^4.1.2"
     redux-batched-actions "^0.5.0"
