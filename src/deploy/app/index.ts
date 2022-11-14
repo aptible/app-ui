@@ -6,7 +6,9 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import type { DeployApp, AppState } from "@app/types";
+import { createSelector } from "@reduxjs/toolkit";
 
+import { selectEnvironments, findEnvById } from "../environment";
 import { deserializeImage } from "../image";
 import { deserializeOperation } from "../operation";
 import { selectDeploy } from "../slice";
@@ -58,15 +60,67 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
 export const DEPLOY_APP_NAME = "apps";
 const slice = createTable<DeployApp>({ name: DEPLOY_APP_NAME });
 const { add: addDeployApps } = slice.actions;
+export const hasDeployApp = (a: DeployApp) => a.id !== "";
+export const appReducers = createReducerMap(slice);
+
+const initApp = defaultDeployApp();
+const must = mustSelectEntity(initApp);
+
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_APP_NAME],
 );
-const initApp = defaultDeployApp();
-const must = mustSelectEntity(initApp);
 export const selectAppById = must(selectors.selectById);
 export const { selectTableAsList: selectAppsAsList } = selectors;
-export const hasDeployApp = (a: DeployApp) => a.id !== "";
-export const appReducers = createReducerMap(slice);
+
+export interface DeployAppRow extends DeployApp {
+  envHandle: string;
+}
+
+export const selectAppsForTable = createSelector(
+  selectAppsAsList,
+  selectEnvironments,
+  (apps, envs) =>
+    apps.map((app): DeployAppRow => {
+      const env = findEnvById(envs, { id: app.environmentId });
+      return { ...app, envHandle: env.handle };
+    }),
+);
+
+const selectSearchProp = (_: AppState, props: { search: string }) =>
+  props.search.toLocaleLowerCase();
+
+export const selectAppsForTableSearch = createSelector(
+  selectAppsForTable,
+  selectSearchProp,
+  (apps, search): DeployAppRow[] => {
+    if (search === "") {
+      return apps;
+    }
+
+    return apps.filter((app) => {
+      const handle = app.handle.toLocaleLowerCase();
+      const envHandle = app.envHandle.toLocaleLowerCase();
+
+      let lastOpUser = "";
+      let lastOpType = "";
+      let lastOpStatus = "";
+      if (app.lastOperation) {
+        lastOpUser = app.lastOperation.userName.toLocaleLowerCase();
+        lastOpType = app.lastOperation.type.toLocaleLowerCase();
+        lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
+      }
+
+      const handleMatch = handle.includes(search);
+      const envMatch = envHandle.includes(search);
+      const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
+      const opMatch = lastOpType !== "" && lastOpType.includes(search);
+      const opStatusMatch =
+        lastOpStatus !== "" && lastOpStatus.includes(search);
+
+      return handleMatch || envMatch || opMatch || opStatusMatch || userMatch;
+    });
+  },
+);
 
 export const fetchApps = api.get("/apps", { saga: cacheTimer() });
 export const fetchApp = api.get<{ id: string }>("/apps/:id", {

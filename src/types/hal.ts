@@ -7,6 +7,11 @@ export type LinkResponse = {
 export interface HalEmbedded<E> {
   _embedded: E;
   _links: { [key: string]: LinkResponse };
+
+  _type?: string;
+  total_count?: number;
+  per_page?: number;
+  current_page?: number;
 }
 
 interface Action<P> {

@@ -64,9 +64,7 @@ export const calcServiceMetrics = (service: DeployService) => {
       costPerContainerHourInCents
     );
   };
-  const estimatedCostInDollars = `$${(estimatedCostInCents() / 100).toFixed(
-    2,
-  )}`;
+  const estimatedCostInDollars = estimatedCostInCents() / 100;
 
   return {
     containerProfile,

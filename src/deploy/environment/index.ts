@@ -67,7 +67,11 @@ const selectors = slice.getSelectors(
 const initApp = defaultDeployEnvironment();
 const must = mustSelectEntity(initApp);
 export const selectEnvironmentById = must(selectors.selectById);
-export const { selectTableAsList: selectEnvironmentsAsList } = selectors;
+export const {
+  selectTable: selectEnvironments,
+  selectTableAsList: selectEnvironmentsAsList,
+} = selectors;
+export const findEnvById = must(selectors.findById);
 export const selectEnvironmentsAsOptions = createSelector(
   selectEnvironmentsAsList,
   (envs) => {

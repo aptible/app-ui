@@ -9,6 +9,7 @@ import type {
   IdEntity,
   NestedEntity,
   MapEntity,
+  HalEmbedded,
 } from "@app/types";
 import type { DeployApiCtx } from "@app/api";
 
@@ -39,7 +40,10 @@ export function defaultEntity<E = any>(e: EmbeddedMap<E>): EmbeddedMap<E> {
   return e;
 }
 
-export function* halEntityParser(ctx: DeployApiCtx, next: Next) {
+export function* halEntityParser(
+  ctx: DeployApiCtx<HalEmbedded<{ [key: string]: any }>>,
+  next: Next,
+) {
   yield next();
 
   if (!ctx.json.ok) {
@@ -52,21 +56,27 @@ export function* halEntityParser(ctx: DeployApiCtx, next: Next) {
   const actions: Action<any>[] = [];
   const store: { [key: string]: IdEntity[] } = {};
 
-  const parser = (entity?: NestedEntity) => {
+  const parser = (
+    entity?: NestedEntity | HalEmbedded<{ [key: string]: any }>,
+  ) => {
     if (!entity) {
       return;
     }
-    const identified = entityMap[entity._type];
-    if (identified) {
-      if (!store[identified.id]) {
-        store[identified.id] = [];
+
+    if (entity._type) {
+      const identified = entityMap[entity._type];
+      if (identified) {
+        if (!store[identified.id]) {
+          store[identified.id] = [];
+        }
+        store[identified.id].push(identified.deserialize(entity));
       }
-      store[identified.id].push(identified.deserialize(entity));
     }
 
     if (!entity._embedded) {
       return;
     }
+
     Object.values(entity._embedded).forEach((value) => {
       if (Array.isArray(value)) {
         value.forEach(parser);
