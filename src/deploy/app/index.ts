@@ -1,4 +1,4 @@
-import { api, cacheTimer } from "@app/api";
+import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -80,10 +80,12 @@ export const selectAppsForTable = createSelector(
   selectAppsAsList,
   selectEnvironments,
   (apps, envs) =>
-    apps.map((app): DeployAppRow => {
-      const env = findEnvById(envs, { id: app.environmentId });
-      return { ...app, envHandle: env.handle };
-    }),
+    apps
+      .map((app): DeployAppRow => {
+        const env = findEnvById(envs, { id: app.environmentId });
+        return { ...app, envHandle: env.handle };
+      })
+      .sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
 const selectSearchProp = (_: AppState, props: { search: string }) =>
@@ -122,10 +124,20 @@ export const selectAppsForTableSearch = createSelector(
   },
 );
 
-export const fetchApps = api.get("/apps", { saga: cacheTimer() });
+export const fetchApps = api.get<PaginateProps>("/apps?page=:page", {
+  saga: cacheTimer(),
+});
+
+export const fetchAllApps = thunks.create(
+  "fetch-all-apps",
+  { saga: cacheTimer() },
+  combinePages(fetchApps),
+);
+
 export const fetchApp = api.get<{ id: string }>("/apps/:id", {
   saga: cacheTimer(),
 });
+
 export const fetchAppOperations = api.get<{ id: string }>(
   "/apps/:id/operations",
   { saga: cacheTimer() },

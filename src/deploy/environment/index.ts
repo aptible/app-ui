@@ -1,5 +1,5 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { api, cacheTimer } from "@app/api";
+import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -86,7 +86,16 @@ export const selectEnvironmentsAsOptions = createSelector(
 export const hasDeployEnvironment = (a: DeployEnvironment) => a.id !== "";
 export const environmentReducers = createReducerMap(slice);
 
-export const fetchEnvironments = api.get("/accounts", { saga: cacheTimer() });
+export const fetchEnvironments = api.get<PaginateProps>(
+  "/accounts?page=:page",
+  { saga: cacheTimer() },
+);
+export const fetchAllEnvironments = thunks.create(
+  "fetch-all-envs",
+  { saga: cacheTimer() },
+  combinePages(fetchEnvironments),
+);
+
 export const fetchEnvironment = api.get<{ id: string }>("/accounts/:id");
 
 export const environmentEntities = {

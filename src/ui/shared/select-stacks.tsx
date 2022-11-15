@@ -1,14 +1,14 @@
 import { useSelector } from "react-redux";
 import { useQuery } from "saga-query/react";
 
-import { fetchStacks, selectStacksAsOptions } from "@app/deploy";
+import { fetchAllStacks, selectStacksAsOptions } from "@app/deploy";
 
 import { Loading } from "./loading";
 import { EmptyResources, ErrorResources } from "./load-resources";
 import { SelectMenu } from "./select-menu";
 
 export const StackSelect = () => {
-  const { isInitialLoading, isError, message } = useQuery(fetchStacks());
+  const { isInitialLoading, isError, message } = useQuery(fetchAllStacks());
   const options = useSelector(selectStacksAsOptions);
 
   if (isInitialLoading) {

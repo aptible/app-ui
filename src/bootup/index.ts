@@ -11,10 +11,10 @@ import { ApiGen, Organization } from "@app/types";
 import { selectAccessToken } from "@app/token";
 import { fetchUsers } from "@app/users";
 import {
-  fetchEnvironments,
-  fetchStacks,
-  fetchApps,
-  fetchDatabases,
+  fetchAllEnvironments,
+  fetchAllStacks,
+  fetchAllDatabases,
+  fetchAllApps,
 } from "@app/deploy";
 
 export const bootup = thunks.create(
@@ -38,8 +38,8 @@ function* fetchData(): ApiGen {
   yield call(fetchOrganizations.run, fetchOrganizations());
   const org: Organization = yield select(selectOrganizationSelected);
   yield put(fetchUsers({ orgId: org.id }));
-  yield put(fetchStacks());
-  yield put(fetchEnvironments());
-  yield put(fetchApps());
-  yield put(fetchDatabases());
+  yield put(fetchAllStacks());
+  yield put(fetchAllEnvironments());
+  yield put(fetchAllApps());
+  yield put(fetchAllDatabases());
 }

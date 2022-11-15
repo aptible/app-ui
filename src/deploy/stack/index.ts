@@ -1,5 +1,5 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { api, cacheTimer } from "@app/api";
+import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -85,7 +85,15 @@ export const selectStacksAsOptions = createSelector(
 export const hasDeployStack = (s: DeployStack) => s.organizationId !== "";
 export const stackReducers = createReducerMap(slice);
 
-export const fetchStacks = api.get("/stacks", { saga: cacheTimer() });
+export const fetchStacks = api.get<PaginateProps>("/stacks?page=:page", {
+  saga: cacheTimer(),
+});
+export const fetchAllStacks = thunks.create(
+  "fetch-all-stacks",
+  { saga: cacheTimer() },
+  combinePages(fetchStacks),
+);
+
 export const fetchStack = api.get<{ id: string }>("/stacks/:id");
 
 export const stackEntities = {

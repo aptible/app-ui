@@ -5,8 +5,8 @@ import { useSelector } from "react-redux";
 import {
   calcServiceMetrics,
   DeployAppRow,
-  fetchApps,
-  fetchEnvironments,
+  fetchAllApps,
+  fetchAllEnvironments,
   selectAppsForTableSearch,
 } from "@app/deploy";
 import type { AppState } from "@app/types";
@@ -17,7 +17,7 @@ import { appDetailUrl } from "@app/routes";
 import { LoadResources } from "../../shared";
 import { TableHead, Td, tokens, ResourceListView, Input } from "../../shared";
 import { useState } from "react";
-import { prettyDateRelative, prettyDateTime } from "@app/date";
+import { prettyDateRelative } from "@app/date";
 
 interface AppCellProps {
   app: DeployAppRow;
@@ -101,8 +101,9 @@ const AppListRow = ({ app }: AppCellProps) => {
 };
 
 export function AppList() {
-  const query = useQuery(fetchApps());
-  useQuery(fetchEnvironments());
+  const query = useQuery(fetchAllApps());
+  useQuery(fetchAllEnvironments());
+
   const [search, setSearch] = useState("");
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);

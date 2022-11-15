@@ -8,11 +8,21 @@ import {
   errorHandler,
   dispatchActions,
   timer,
+  loadingMonitor,
+  CreateActionWithPayload,
+  put,
+  setLoaderStart,
+  setLoaderError,
+  all,
+  setLoaderSuccess,
+  SagaIterator,
+  MiddlewareCo,
+  Middleware,
 } from "saga-query";
 import type { ApiCtx, Next, PipeCtx } from "saga-query";
 
 import { selectEnv } from "@app/env";
-import type { ApiGen, AuthApiError, Action } from "@app/types";
+import type { ApiGen, AuthApiError, Action, HalEmbedded } from "@app/types";
 import { halEntityParser } from "@app/hal";
 import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
 
@@ -130,30 +140,6 @@ api.use(api.routes());
 api.use(halEntityParser);
 api.use(requestApi);
 api.use(tokenMdw);
-// if we use a variable inside our api endpoint but that value is falsey then
-// we should *not* call the fetch request
-api.use(function* payloadMonitor(ctx, next) {
-  const payload = ctx.payload;
-  if (!payload) {
-    yield next();
-    return;
-  }
-
-  const keys = Object.keys(payload);
-  for (let i = 0; i < keys.length; i += 1) {
-    const key = keys[i];
-    if (!ctx.name.includes(`:${key}`)) {
-      continue;
-    }
-
-    const val = payload[key];
-    if (!val) {
-      return;
-    }
-  }
-
-  yield next();
-});
 api.use(fetcher());
 
 export const authApi = createApi<AuthApiCtx>();
@@ -167,6 +153,46 @@ authApi.use(fetcher());
 
 export interface ThunkCtx<P = any> extends PipeCtx<P> {
   actions: Action[];
+}
+
+export interface PaginateProps {
+  page: number;
+}
+
+export function combinePages(
+  actionFn: CreateActionWithPayload<DeployApiCtx, PaginateProps>,
+) {
+  function* paginator(ctx: ThunkCtx, next: Next) {
+    yield put(setLoaderStart({ id: ctx.key }));
+    const firstPage: DeployApiCtx<HalEmbedded<any>> = yield call(
+      actionFn.run,
+      actionFn({ page: 1 }),
+    );
+
+    if (!firstPage.json.ok) {
+      const message = firstPage.json.data.message;
+      yield put(setLoaderError({ id: ctx.key, message }));
+      yield next();
+      return;
+    }
+
+    if (firstPage.json.data.current_page) {
+      const cur = firstPage.json.data.current_page;
+      const total = firstPage.json.data.total_count || 0;
+      const per = firstPage.json.data.per_page || 0;
+      const lastPage = Math.ceil(total / per);
+      const fetchAll = [];
+      for (let i = cur + 1; i <= lastPage; i += 1) {
+        fetchAll.push(call(actionFn.run, actionFn({ page: i })));
+      }
+      yield all(fetchAll);
+    }
+
+    yield put(setLoaderSuccess({ id: ctx.key }));
+    yield next();
+  }
+
+  return paginator;
 }
 
 export const thunks = createPipe<ThunkCtx>();
