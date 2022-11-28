@@ -158,10 +158,7 @@ export const LoginPage = () => {
 
               {requireOtp ? (
                 <FormGroup label="2FA" htmlFor="input-2fa">
-                  <label htmlFor="input-2fa" className="w-20 text-sm">
-                    2FA Token
-                  </label>
-                  <input
+                  <Input
                     type="number"
                     value={otpToken}
                     onChange={(e) => setOtpToken(e.currentTarget.value)}
