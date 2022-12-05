@@ -194,7 +194,7 @@ const SignupPageForm = () => {
               </FormGroup>
 
               <FormGroup
-                label="password"
+                label="Password"
                 htmlFor="password"
                 feedbackVariant={passwordErrorMessage ? "danger" : "info"}
                 feedbackMessage={passwordErrorMessage}
