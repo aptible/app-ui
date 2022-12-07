@@ -85,7 +85,7 @@ export function EndpointsOverview({
               description="Expose this application to the public internet by adding an endpoint"
               action={
                 <Button variant="primary">
-                  <PlusCircle color="#ffffff" />{" "}
+                  <PlusCircle color="white" />
                   <span className="pl-2">Add Endpoint</span>
                 </Button>
               }

@@ -1,14 +1,16 @@
-export const SmallArrowUp = ({
-  color = "#111920",
-  width = "24",
-  height = "24",
-  style = {},
-}: {
+interface IconProps {
   color?: string;
   width?: string;
   height?: string;
   style?: object;
-}) => {
+}
+
+export const SmallArrowUp = ({
+  color = "#111920",
+  width,
+  height,
+  style = {},
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -27,15 +29,10 @@ export const SmallArrowUp = ({
 
 export const SmallArrowRight = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -55,15 +52,10 @@ export const SmallArrowRight = ({
 // <!-- arrow-small-down -->
 export const ArrowSmallDown = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -83,15 +75,10 @@ export const ArrowSmallDown = ({
 // <!-- arrow-small-left -->
 export const ArrowSmallLeft = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -111,15 +98,10 @@ export const ArrowSmallLeft = ({
 // <!-- arrows-right-left -->
 export const ArrowsRightLeft = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -139,15 +121,10 @@ export const ArrowsRightLeft = ({
 // <!-- arrows-up-down -->
 export const ArrowsUpDown = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -167,15 +144,10 @@ export const ArrowsUpDown = ({
 // <!-- chevron-up -->
 export const ChevronUp = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -197,15 +169,10 @@ export const ChevronUp = ({
 // <!-- chevron-right -->
 export const ChevronRight = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -227,15 +194,10 @@ export const ChevronRight = ({
 // <!-- chevron-down -->
 export const ChevronDown = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -257,15 +219,10 @@ export const ChevronDown = ({
 // <!-- chevron-left -->
 export const ChevronLeft = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -287,15 +244,10 @@ export const ChevronLeft = ({
 // <!-- chevron-double-right -->
 export const ChevronDoubleRight = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -315,15 +267,10 @@ export const ChevronDoubleRight = ({
 // <!-- chevron-double-left -->
 export const ChevronDoubleLeft = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -343,15 +290,10 @@ export const ChevronDoubleLeft = ({
 // <!-- trash -->
 export const Trash = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -371,15 +313,10 @@ export const Trash = ({
 // <!-- pencil -->
 export const Pencil = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -399,15 +336,10 @@ export const Pencil = ({
 // <!-- document-search -->
 export const DocumentSearch = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -427,15 +359,10 @@ export const DocumentSearch = ({
 // <!-- external-link -->
 export const ExternalLink = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -455,15 +382,10 @@ export const ExternalLink = ({
 // <!-- clock -->
 export const Clock = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -483,15 +405,10 @@ export const Clock = ({
 // <!-- cloud -->
 export const Cloud = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -511,15 +428,10 @@ export const Cloud = ({
 // <!-- cloud-download -->
 export const CloudDownload = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -539,15 +451,10 @@ export const CloudDownload = ({
 // <!-- cloud-upload -->
 export const CloudUpload = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -567,15 +474,10 @@ export const CloudUpload = ({
 // <!-- globe-alt -->
 export const GlobeAlt = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -595,15 +497,10 @@ export const GlobeAlt = ({
 // <!-- share -->
 export const Share = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -623,15 +520,10 @@ export const Share = ({
 // <!-- code -->
 export const Code = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -651,15 +543,10 @@ export const Code = ({
 // <!-- cube -->
 export const Cube = ({
   color = "#111920",
-  width = "24",
-  height = "24",
-  style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+  width,
+  height,
+  style,
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -679,15 +566,10 @@ export const Cube = ({
 // <!-- chart-bar-square -->
 export const ChartBarSquare = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -706,15 +588,10 @@ export const ChartBarSquare = ({
 // <!-- bars-3 -->
 export const Bars3 = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -734,15 +611,10 @@ export const Bars3 = ({
 // <!-- cog-8-tooth -->
 export const Cogs8Tooth = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -763,15 +635,10 @@ export const Cogs8Tooth = ({
 // <!-- calendar -->
 export const Calendar = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -791,15 +658,10 @@ export const Calendar = ({
 // <!-- user -->
 export const User = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -819,15 +681,10 @@ export const User = ({
 // <!-- user-circle -->
 export const UserCircle = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -847,15 +704,10 @@ export const UserCircle = ({
 // <!-- ellipsis-horizontal -->
 export const EllipsisHorizontal = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -875,15 +727,10 @@ export const EllipsisHorizontal = ({
 // <!-- ellipsis-horizontal-circle -->
 export const EllipsisHorizontalCircle = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -903,15 +750,10 @@ export const EllipsisHorizontalCircle = ({
 // <!-- magnifying-glass -->
 export const MagnifyingGlass = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -931,15 +773,10 @@ export const MagnifyingGlass = ({
 // <!-- adjustments-vertical -->
 export const AdjustmentsVertical = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -959,15 +796,10 @@ export const AdjustmentsVertical = ({
 // <!-- check -->
 export const Check = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -989,15 +821,10 @@ export const Check = ({
 // <!-- check-circle -->
 export const CheckCircle = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1017,15 +844,10 @@ export const CheckCircle = ({
 // <!-- document -->
 export const Document = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1045,15 +867,10 @@ export const Document = ({
 // <!-- duplicate -->
 export const Duplicate = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1074,15 +891,10 @@ export const Duplicate = ({
 // <!-- plus -->
 export const Plus = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1102,15 +914,10 @@ export const Plus = ({
 // <!-- plus-circle -->
 export const PlusCircle = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1130,15 +937,10 @@ export const PlusCircle = ({
 // <!-- x-circle -->
 export const XCircle = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1158,15 +960,10 @@ export const XCircle = ({
 // <!-- x-mark -->
 export const XMark = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1186,15 +983,10 @@ export const XMark = ({
 // <!-- download -->
 export const Download = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1214,15 +1006,10 @@ export const Download = ({
 // <!-- shield-check -->
 export const ShieldCheck = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1242,15 +1029,10 @@ export const ShieldCheck = ({
 // <!-- exclamation -->
 export const Exclamation = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1270,15 +1052,10 @@ export const Exclamation = ({
 // <!-- lock-closed -->
 export const LockClosed = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1286,7 +1063,7 @@ export const LockClosed = ({
       width="24px"
       height="24px"
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill={color}
       className="w-6 h-6"
     >
       <path
@@ -1301,15 +1078,10 @@ export const LockClosed = ({
 // <!-- link -->
 export const Link = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1329,15 +1101,10 @@ export const Link = ({
 // <!-- circle-stack -->
 export const CircleStack = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1357,15 +1124,10 @@ export const CircleStack = ({
 // <!-- logout -->
 export const Logout = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1373,12 +1135,10 @@ export const Logout = ({
       width={width}
       height={height}
       viewBox="0 0 24 24"
+      fill={color}
     >
-      <g fill="none">
-        <path
-          d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
-          fill="currentColor"
-        />
+      <g>
+        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
       </g>
     </svg>
   );
@@ -1387,15 +1147,10 @@ export const Logout = ({
 // <!-- key -->
 export const Key = ({
   color = "#111920",
-  width = "24",
-  height = "24",
+  width,
+  height,
   style = {},
-}: {
-  color?: string;
-  width?: string;
-  height?: string;
-  style?: object;
-}) => {
+}: IconProps) => {
   return (
     <svg
       style={style}
@@ -1408,6 +1163,175 @@ export const Key = ({
       className="w-6 h-6"
     >
       <path d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+    </svg>
+  );
+};
+
+// Github
+export const Github = ({
+  color = "#111920",
+  width,
+  height,
+  style = {},
+}: IconProps) => {
+  return (
+    <svg
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke={color}
+      className="w-6 h-6"
+    >
+      <path d="M9 19C4 20.5 4 16.5 2 16M16 22V18.13C16.0375 17.6532 15.9731 17.1738 15.811 16.7238C15.6489 16.2738 15.3929 15.8634 15.06 15.52C18.2 15.17 21.5 13.98 21.5 8.52C21.4997 7.12383 20.9627 5.7812 20 4.77C20.4559 3.54851 20.4236 2.19835 19.91 1C19.91 1 18.73 0.650001 16 2.48C13.708 1.85882 11.292 1.85882 9 2.48C6.27 0.650001 5.09 1 5.09 1C4.57638 2.19835 4.54414 3.54851 5 4.77C4.03013 5.7887 3.49252 7.14346 3.5 8.55C3.5 13.97 6.8 15.16 9.94 15.55C9.611 15.89 9.35726 16.2954 9.19531 16.7399C9.03335 17.1844 8.96681 17.6581 9 18.13V22" />
+    </svg>
+  );
+};
+
+// gitlab
+export const Gitlab = ({
+  color = "#111920",
+  width,
+  height,
+  style = {},
+}: IconProps) => {
+  return (
+    <svg
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke={color}
+      className="w-6 h-6"
+    >
+      <path d="M22.65 14.39L12 22.13L1.35001 14.39C1.20723 14.285 1.10133 14.1375 1.04744 13.9687C0.993557 13.7999 0.994455 13.6183 1.05001 13.45L2.27001 9.67L4.71001 2.16C4.73367 2.09881 4.77135 2.04401 4.82001 2C4.89925 1.92762 5.00269 1.88749 5.11001 1.88749C5.21733 1.88749 5.32077 1.92762 5.40001 2C5.45139 2.04966 5.48925 2.11162 5.51001 2.18L7.95001 9.67H16.05L18.49 2.16C18.5137 2.09881 18.5513 2.04401 18.6 2C18.6792 1.92762 18.7827 1.88749 18.89 1.88749C18.9973 1.88749 19.1008 1.92762 19.18 2C19.2314 2.04966 19.2693 2.11162 19.29 2.18L21.73 9.69L23 13.45C23.0505 13.6235 23.0438 13.8086 22.9807 13.978C22.9177 14.1473 22.8017 14.2918 22.65 14.39V14.39Z" />
+    </svg>
+  );
+};
+
+// bitbucket
+export const Bitbucket = ({
+  color = "#111920",
+  width,
+  height,
+  style = {},
+}: IconProps) => {
+  return (
+    <svg
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke={color}
+      className="w-6 h-6"
+    >
+      <path d="M1.79259 2.00007C1.67825 1.99851 1.56496 2.02262 1.46071 2.07069C1.35646 2.11876 1.26378 2.18962 1.18921 2.27829C1.11463 2.36696 1.05997 2.47127 1.02908 2.58388C0.998189 2.69649 0.991815 2.81466 1.01041 2.93007L4.848 21.09C4.93356 21.6112 5.37353 21.995 5.88929 22H18.1109C18.2988 22.0019 18.4812 21.9351 18.6251 21.8115C18.769 21.688 18.8649 21.5158 18.8956 21.3262L22.9898 2.93882C23.0082 2.82345 23.0017 2.70536 22.9707 2.59285C22.9397 2.48033 22.885 2.37611 22.8105 2.2875C22.736 2.19888 22.6434 2.12802 22.5392 2.07988C22.4351 2.03173 22.3219 2.00748 22.2076 2.00882L1.79259 2.00007V2.00007Z" />
+      <path d="M14.6667 16H9.33333L8 8H16L14.6667 16Z" />
+    </svg>
+  );
+};
+
+// <!-- envelope -->
+export const Envelope = ({
+  color = "#111920",
+  width,
+  height,
+  style = {},
+}: IconProps) => {
+  return (
+    <svg
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke={color}
+      className="w-6 h-6"
+    >
+      <path d="M21.75 6.75V17.25C21.75 17.8467 21.5129 18.419 21.091 18.841C20.669 19.2629 20.0967 19.5 19.5 19.5H4.5C3.90326 19.5 3.33097 19.2629 2.90901 18.841C2.48705 18.419 2.25 17.8467 2.25 17.25V6.75M21.75 6.75C21.75 6.15326 21.5129 5.58097 21.091 5.15901C20.669 4.73705 20.0967 4.5 19.5 4.5H4.5C3.90326 4.5 3.33097 4.73705 2.90901 5.15901C2.48705 5.58097 2.25 6.15326 2.25 6.75M21.75 6.75V6.993C21.75 7.37715 21.6517 7.75491 21.4644 8.0903C21.2771 8.42569 21.0071 8.70754 20.68 8.909L13.18 13.524C12.8252 13.7425 12.4167 13.8582 12 13.8582C11.5833 13.8582 11.1748 13.7425 10.82 13.524L3.32 8.91C2.99292 8.70854 2.72287 8.42669 2.53557 8.0913C2.34827 7.75591 2.24996 7.37815 2.25 6.994V6.75" />
+    </svg>
+  );
+};
+
+//<!-- git branch -->
+export const GitBranch = ({
+  color = "#111920",
+  width,
+  height,
+  style = {},
+}: IconProps) => {
+  return (
+    <svg
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke={color}
+      className="w-6 h-6"
+    >
+      <path d="M6 3V15" />
+      <path d="M18 9C19.6569 9 21 7.65685 21 6C21 4.34315 19.6569 3 18 3C16.3431 3 15 4.34315 15 6C15 7.65685 16.3431 9 18 9Z" />
+      <path d="M6 21C7.65685 21 9 19.6569 9 18C9 16.3431 7.65685 15 6 15C4.34315 15 3 16.3431 3 18C3 19.6569 4.34315 21 6 21Z" />
+      <path d="M18 9C18 11.3869 17.0518 13.6761 15.364 15.364C13.6761 17.0518 11.3869 18 9 18" />
+    </svg>
+  );
+};
+
+// <!-- git commit -->
+export const GitCommit = ({
+  color = "#111920",
+  width,
+  height,
+  style = {},
+}: IconProps) => {
+  return (
+    <svg
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke={color}
+      className="w-6 h-6"
+    >
+      <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" />
+      <path d="M1.05 12H7" />
+      <path d="M17.01 12H22.96" />
+    </svg>
+  );
+};
+
+// <!-- info -->
+export const Info = ({
+  color = "#111920",
+  width,
+  height,
+  style = {},
+}: IconProps) => {
+  return (
+    <svg
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke={color}
+      className="w-6 h-6"
+    >
+      <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" />
+      <path d="M12 16V12" />
+      <path d="M12 8H12.01" />
     </svg>
   );
 };
