@@ -5,12 +5,12 @@ import { useState } from "react";
 import { UserMenu } from "./user-menu";
 import { AptibleLogo } from "./aptible-logo";
 
-import { CircleStack, Cogs8Tooth, Cube } from "@app/ui/shared/icons";
+import { CircleStack, Cogs8Tooth, Logout } from "@app/ui/shared/icons";
 
 export const ApplicationSidebar = () => {
   // Moved navigation inside function to allow dynamic changes of color if needed
   const navigation = [
-    { name: "Apps", to: "/apps", icon: <Cube /> },
+    { name: "Apps", to: "/apps", icon: <Logout /> },
     { name: "Data Stores", to: "/databases", icon: <CircleStack /> },
     { name: "Company Settings", to: "/settings/team", icon: <Cogs8Tooth /> },
   ];

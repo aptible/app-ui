@@ -122,18 +122,8 @@ export function AppList() {
         title="Apps"
         description={description}
         filterBar={
-          <div
-            className="flex flex-1 pt-4 gap-3"
-            style={{ position: "relative", margin: "5px" }}
-          >
-            <MagnifyingGlass
-              style={{
-                position: "absolute",
-                display: "inline-block",
-                top: "22",
-                left: "6",
-              }}
-            />
+          <div className="flex flex-1 pt-4 gap-3 relative m-1">
+            <MagnifyingGlass className="absolute inline-block top-6 left-1.5" />
             <Input
               placeholder="Search Apps ..."
               type="text"

@@ -119,18 +119,8 @@ export function DatabaseList() {
         title="Databases"
         description="Databases provide data persistency on Aptible."
         filterBar={
-          <div
-            className="flex flex-1 pt-6 gap-3"
-            style={{ position: "relative", margin: "5px" }}
-          >
-            <MagnifyingGlass
-              style={{
-                position: "absolute",
-                display: "inline-block",
-                top: "30",
-                left: "6",
-              }}
-            />
+          <div className="flex flex-1 pt-6 gap-3 relative m-1">
+            <MagnifyingGlass className="absolute inline-block top-8 left-1.5" />
             <Input
               placeholder="Search Databases ..."
               type="text"
