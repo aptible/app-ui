@@ -13,6 +13,7 @@ import type { AppState } from "@app/types";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
 import { appDetailUrl } from "@app/routes";
+import { MagnifyingGlass } from "@app/ui/shared/icons";
 
 import { LoadResources } from "../../shared";
 import { TableHead, Td, tokens, ResourceListView, Input } from "../../shared";
@@ -121,12 +122,14 @@ export function AppList() {
         title="Apps"
         description={description}
         filterBar={
-          <div className="flex flex-1 pt-4 gap-3">
+          <div className="flex flex-1 pt-4 gap-3 relative m-1">
+            <MagnifyingGlass className="absolute inline-block top-6 left-1.5" />
             <Input
               placeholder="Search Apps ..."
               type="text"
               value={search}
               onChange={onChange}
+              className="search-bar pl-8"
             />
           </div>
         }

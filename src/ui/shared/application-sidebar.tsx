@@ -1,16 +1,20 @@
 import cn from "classnames";
 import { NavLink } from "react-router-dom";
+import { useState } from "react";
 
 import { UserMenu } from "./user-menu";
 import { AptibleLogo } from "./aptible-logo";
 
-const navigation = [
-  { name: "Apps", to: "/apps" },
-  { name: "Data Stores", to: "/databases" },
-  { name: "Company Settings", to: "/settings/team" },
-];
+import { CircleStack, Cogs8Tooth, Cube } from "@app/ui/shared/icons";
 
 export const ApplicationSidebar = () => {
+  // Moved navigation inside function to allow dynamic changes of color if needed
+  const navigation = [
+    { name: "Apps", to: "/apps", icon: <Cube /> },
+    { name: "Data Stores", to: "/databases", icon: <CircleStack /> },
+    { name: "Company Settings", to: "/settings/team", icon: <Cogs8Tooth /> },
+  ];
+
   const active = "bg-gray-100 text-gray-900";
   const inactive = "text-gray-600 hover:bg-gray-50 hover:text-gray-900";
   const navButton =
@@ -32,7 +36,7 @@ export const ApplicationSidebar = () => {
                 className="mr-3 text-gray-400 flex-shrink-0 h-5 w-5"
                 aria-hidden="true"
               >
-                icn
+                {item.icon}
               </div>
               {item.name}
             </NavLink>

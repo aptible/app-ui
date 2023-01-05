@@ -5,6 +5,8 @@ import { DeployEndpoint, AppState } from "@app/types";
 import { selectEndpointsByServiceIds } from "@app/deploy";
 import { fetchEndpointsByServiceId } from "@app/deploy";
 
+import { PlusCircle } from "@app/ui/shared/icons";
+
 import { TableHead, Td } from "./table";
 import { tokens } from "./tokens";
 import { Button } from "./button";
@@ -81,7 +83,12 @@ export function EndpointsOverview({
             <EmptyResultView
               title="No endpoints yet"
               description="Expose this application to the public internet by adding an endpoint"
-              action={<Button variant="primary">Add Endpoint</Button>}
+              action={
+                <Button variant="primary">
+                  <PlusCircle color="white" />
+                  <span className="pl-2">Add Endpoint</span>
+                </Button>
+              }
               className="p-6"
             />
           </td>
