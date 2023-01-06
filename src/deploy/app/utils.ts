@@ -34,6 +34,14 @@ export const CONTAINER_PROFILES = {
     maximumContainerCount: 32,
   },
   m4: {
+    name: "General Purpose (M) - Legacy",
+    costPerContainerHourInCents: 8,
+    cpuShare: 0.25 / GB,
+    minimumContainerSize: GB / 2,
+    maximumContainerSize: 240 * GB,
+    maximumContainerCount: 32,
+  },
+  m5: {
     name: "General Purpose (M)",
     costPerContainerHourInCents: 8,
     cpuShare: 0.25 / GB,

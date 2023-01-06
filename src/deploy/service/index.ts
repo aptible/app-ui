@@ -51,6 +51,13 @@ export const defaultDeployService = (
 export const calcServiceMetrics = (service: DeployService) => {
   const containerProfile =
     CONTAINER_PROFILES[service.instanceClass || DEFAULT_INSTANCE_CLASS];
+
+  if (!containerProfile) {
+    throw new Error(
+      `could not find container profile for ${service.instanceClass}`,
+    );
+  }
+
   const containerSizeGB = service.containerMemoryLimitMb / GB;
   const cpuShare = service.containerMemoryLimitMb / containerProfile.cpuShare;
 
