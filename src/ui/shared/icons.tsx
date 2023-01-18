@@ -45,8 +45,8 @@ const IconFillBase = ({
     <svg
       style={style}
       xmlns="http://www.w3.org/2000/svg"
-      width="24px"
-      height="24px"
+      width={width}
+      height={height}
       fill={color}
       className={`${className} w-6 h-6`}
     >
@@ -55,7 +55,7 @@ const IconFillBase = ({
   );
 };
 
-export interface Props extends React.HTMLProps<HTMLDivElement> {
+export interface Props extends React.SVGProps<SVGSVGElement> {
   color?: string;
   width?: string;
   height?: string;
@@ -64,7 +64,7 @@ export interface Props extends React.HTMLProps<HTMLDivElement> {
 }
 
 // small arrow up
-export const SmallArrowUp: React.FC<Props> = (props: Props) => {
+export const SmallArrowUp = (props: Props) => {
   return (
     <IconStrokeBase
       path={<path d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />}
@@ -74,7 +74,7 @@ export const SmallArrowUp: React.FC<Props> = (props: Props) => {
 };
 
 // small arrow right
-export const SmallArrowRight: React.FC<Props> = (props: Props) => {
+export const SmallArrowRight = (props: Props) => {
   return (
     <IconStrokeBase
       path={<path d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />}
@@ -84,7 +84,7 @@ export const SmallArrowRight: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- arrow-small-down -->
-export const ArrowSmallDown: React.FC<Props> = (props: Props) => {
+export const ArrowSmallDown = (props: Props) => {
   return (
     <IconStrokeBase
       path={<path d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />}
@@ -94,7 +94,7 @@ export const ArrowSmallDown: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- arrow-small-left -->
-export const ArrowSmallLeft: React.FC<Props> = (props: Props) => {
+export const ArrowSmallLeft = (props: Props) => {
   return (
     <IconStrokeBase
       path={<path d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75" />}
@@ -104,7 +104,7 @@ export const ArrowSmallLeft: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- arrows-right-left -->
-export const ArrowsRightLeft: React.FC<Props> = (props: Props) => {
+export const ArrowsRightLeft = (props: Props) => {
   return (
     <IconStrokeBase
       path={
@@ -116,7 +116,7 @@ export const ArrowsRightLeft: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- arrows-up-down -->
-export const ArrowsUpDown: React.FC<Props> = (props: Props) => {
+export const ArrowsUpDown = (props: Props) => {
   return (
     <IconStrokeBase
       path={
@@ -128,55 +128,67 @@ export const ArrowsUpDown: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- chevron-up -->
-export const ChevronUp: React.FC<Props> = (props: Props) => {
+export const ChevronUp = (props: Props) => {
   return (
     //fill
-    <path
+    <IconStrokeBase
       fill-rule="evenodd"
-      d="M11.47 7.72a.75.75 0 011.06 0l7.5 7.5a.75.75 0 11-1.06 1.06L12 9.31l-6.97 6.97a.75.75 0 01-1.06-1.06l7.5-7.5z"
+      path={
+        <path d="M11.47 7.72a.75.75 0 011.06 0l7.5 7.5a.75.75 0 11-1.06 1.06L12 9.31l-6.97 6.97a.75.75 0 01-1.06-1.06l7.5-7.5z" />
+      }
       clip-rule="evenodd"
+      {...props}
     />
   );
 };
 
 // <!-- chevron-right -->
-export const ChevronRight: React.FC<Props> = (props: Props) => {
+export const ChevronRight = (props: Props) => {
   return (
     //fill
-    <path
+    <IconStrokeBase
       fill-rule="evenodd"
-      d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z"
+      path={
+        <path d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" />
+      }
       clip-rule="evenodd"
+      {...props}
     />
   );
 };
 
 // <!-- chevron-down -->
-export const ChevronDown: React.FC<Props> = (props: Props) => {
+export const ChevronDown = (props: Props) => {
   return (
     //fill
-    <path
+    <IconStrokeBase
       fill-rule="evenodd"
-      d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
       clip-rule="evenodd"
+      {...props}
+      path={
+        <path d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" />
+      }
     />
   );
 };
 
 // <!-- chevron-left -->
-export const ChevronLeft: React.FC<Props> = (props: Props) => {
+export const ChevronLeft = (props: Props) => {
   return (
     //fill
-    <path
+    <IconStrokeBase
       fill-rule="evenodd"
-      d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z"
       clip-rule="evenodd"
+      path={
+        <path d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" />
+      }
+      {...props}
     />
   );
 };
 
 // <!-- chevron-double-right -->
-export const ChevronDoubleRight: React.FC<Props> = (props: Props) => {
+export const ChevronDoubleRight = (props: Props) => {
   return (
     <IconStrokeBase
       path={<path d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />}
@@ -186,7 +198,7 @@ export const ChevronDoubleRight: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- chevron-double-left -->
-export const ChevronDoubleLeft: React.FC<Props> = (props: Props) => {
+export const ChevronDoubleLeft = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -196,7 +208,7 @@ export const ChevronDoubleLeft: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- trash -->
-export const Trash: React.FC<Props> = (props: Props) => {
+export const Trash = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -208,7 +220,7 @@ export const Trash: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- pencil -->
-export const Pencil: React.FC<Props> = (props: Props) => {
+export const Pencil = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -220,7 +232,7 @@ export const Pencil: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- document-search -->
-export const DocumentSearch: React.FC<Props> = (props: Props) => {
+export const DocumentSearch = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -232,7 +244,7 @@ export const DocumentSearch: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- external-link -->
-export const ExternalLink: React.FC<Props> = (props: Props) => {
+export const ExternalLink = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -244,7 +256,7 @@ export const ExternalLink: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- clock -->
-export const Clock: React.FC<Props> = (props: Props) => {
+export const Clock = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -254,7 +266,7 @@ export const Clock: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- cloud -->
-export const Cloud: React.FC<Props> = (props: Props) => {
+export const Cloud = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -266,7 +278,7 @@ export const Cloud: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- cloud-download -->
-export const CloudDownload: React.FC<Props> = (props: Props) => {
+export const CloudDownload = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -278,7 +290,7 @@ export const CloudDownload: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- cloud-upload -->
-export const CloudUpload: React.FC<Props> = (props: Props) => {
+export const CloudUpload = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -290,7 +302,7 @@ export const CloudUpload: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- globe-alt -->
-export const GlobeAlt: React.FC<Props> = (props: Props) => {
+export const GlobeAlt = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -302,7 +314,7 @@ export const GlobeAlt: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- share -->
-export const Share: React.FC<Props> = (props: Props) => {
+export const Share = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -314,7 +326,7 @@ export const Share: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- code -->
-export const Code: React.FC<Props> = (props: Props) => {
+export const Code = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -326,7 +338,7 @@ export const Code: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- cube -->
-export const Cube: React.FC<Props> = (props: Props) => {
+export const Cube = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -338,7 +350,7 @@ export const Cube: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- chart-bar-square -->
-export const ChartBarSquare: React.FC<Props> = (props: Props) => {
+export const ChartBarSquare = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -350,7 +362,7 @@ export const ChartBarSquare: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- bars-3 -->
-export const Bars3: React.FC<Props> = (props: Props) => {
+export const Bars3 = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -360,7 +372,7 @@ export const Bars3: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- cog-8-tooth -->
-export const Cogs8Tooth: React.FC<Props> = (props: Props) => {
+export const Cogs8Tooth = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -375,7 +387,7 @@ export const Cogs8Tooth: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- calendar -->
-export const Calendar: React.FC<Props> = (props: Props) => {
+export const Calendar = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -387,7 +399,7 @@ export const Calendar: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- user -->
-export const User: React.FC<Props> = (props: Props) => {
+export const User = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -399,7 +411,7 @@ export const User: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- user-circle -->
-export const UserCircle: React.FC<Props> = (props: Props) => {
+export const UserCircle = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -411,7 +423,7 @@ export const UserCircle: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- ellipsis-horizontal -->
-export const EllipsisHorizontal: React.FC<Props> = (props: Props) => {
+export const EllipsisHorizontal = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -423,7 +435,7 @@ export const EllipsisHorizontal: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- ellipsis-horizontal-circle -->
-export const EllipsisHorizontalCircle: React.FC<Props> = (props: Props) => {
+export const EllipsisHorizontalCircle = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -435,7 +447,7 @@ export const EllipsisHorizontalCircle: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- magnifying-glass -->
-export const MagnifyingGlass: React.FC<Props> = (props: Props) => {
+export const MagnifyingGlass = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -447,7 +459,7 @@ export const MagnifyingGlass: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- adjustments-vertical -->
-export const AdjustmentsVertical: React.FC<Props> = (props: Props) => {
+export const AdjustmentsVertical = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -459,7 +471,7 @@ export const AdjustmentsVertical: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- check -->
-export const Check: React.FC<Props> = (props: Props) => {
+export const Check = (props: Props) => {
   return (
     <IconFillBase
       {...props}
@@ -475,7 +487,7 @@ export const Check: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- check-circle -->
-export const CheckCircle: React.FC<Props> = (props: Props) => {
+export const CheckCircle = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -487,7 +499,7 @@ export const CheckCircle: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- document -->
-export const Document: React.FC<Props> = (props: Props) => {
+export const Document = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -499,7 +511,7 @@ export const Document: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- duplicate -->
-export const Duplicate: React.FC<Props> = (props: Props) => {
+export const Duplicate = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -511,14 +523,14 @@ export const Duplicate: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- plus -->
-export const Plus: React.FC<Props> = (props: Props) => {
+export const Plus = (props: Props) => {
   return (
     <IconStrokeBase {...props} path={<path d="M12 4.5v15m7.5-7.5h-15" />} />
   );
 };
 
 // <!-- plus-circle -->
-export const PlusCircle: React.FC<Props> = (props: Props) => {
+export const PlusCircle = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -528,7 +540,7 @@ export const PlusCircle: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- x-circle -->
-export const XCircle: React.FC<Props> = (props: Props) => {
+export const XCircle = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -540,12 +552,12 @@ export const XCircle: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- x-mark -->
-export const XMark: React.FC<Props> = (props: Props) => {
+export const XMark = (props: Props) => {
   return <IconStrokeBase {...props} path={<path d="M6 18L18 6M6 6l12 12" />} />;
 };
 
 // <!-- download -->
-export const Download: React.FC<Props> = (props: Props) => {
+export const Download = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -557,7 +569,7 @@ export const Download: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- shield-check -->
-export const ShieldCheck: React.FC<Props> = (props: Props) => {
+export const ShieldCheck = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -569,7 +581,7 @@ export const ShieldCheck: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- exclamation -->
-export const Exclamation: React.FC<Props> = (props: Props) => {
+export const Exclamation = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -581,7 +593,7 @@ export const Exclamation: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- lock-closed -->
-export const LockClosed: React.FC<Props> = (props: Props) => {
+export const LockClosed = (props: Props) => {
   return (
     <IconFillBase
       {...props}
@@ -597,7 +609,7 @@ export const LockClosed: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- link -->
-export const Link: React.FC<Props> = (props: Props) => {
+export const Link = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -609,7 +621,7 @@ export const Link: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- circle-stack -->
-export const CircleStack: React.FC<Props> = (props: Props) => {
+export const CircleStack = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -621,7 +633,7 @@ export const CircleStack: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- logout -->
-export const Logout: React.FC<Props> = (props: Props) => {
+export const Logout = (props: Props) => {
   return (
     <IconFillBase
       {...props}
@@ -635,7 +647,7 @@ export const Logout: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- key -->
-export const Key: React.FC<Props> = (props: Props) => {
+export const Key = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -647,7 +659,7 @@ export const Key: React.FC<Props> = (props: Props) => {
 };
 
 // Github
-export const Github: React.FC<Props> = (props: Props) => {
+export const Github = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -659,7 +671,7 @@ export const Github: React.FC<Props> = (props: Props) => {
 };
 
 // gitlab
-export const Gitlab: React.FC<Props> = (props: Props) => {
+export const Gitlab = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -671,7 +683,7 @@ export const Gitlab: React.FC<Props> = (props: Props) => {
 };
 
 // bitbucket
-export const Bitbucket: React.FC<Props> = (props: Props) => {
+export const Bitbucket = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -686,7 +698,7 @@ export const Bitbucket: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- envelope -->
-export const Envelope: React.FC<Props> = (props: Props) => {
+export const Envelope = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -698,7 +710,7 @@ export const Envelope: React.FC<Props> = (props: Props) => {
 };
 
 //<!-- git branch -->
-export const GitBranch: React.FC<Props> = (props: Props) => {
+export const GitBranch = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -715,7 +727,7 @@ export const GitBranch: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- git commit -->
-export const GitCommit: React.FC<Props> = (props: Props) => {
+export const GitCommit = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -731,7 +743,7 @@ export const GitCommit: React.FC<Props> = (props: Props) => {
 };
 
 // <!-- info -->
-export const Info: React.FC<Props> = (props: Props) => {
+export const Info = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
