@@ -12,8 +12,6 @@ interface IconProps {
 const IconStrokeBase = ({
   path,
   color = "#111920",
-  width,
-  height,
   style = {},
   className = "",
 }: IconProps) => {
@@ -21,10 +19,7 @@ const IconStrokeBase = ({
     <svg
       style={style}
       xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
       fill="none"
-      viewBox="0 0 24 24"
       stroke={color}
       className={`${className} w-6 h-6`}
     >
@@ -35,8 +30,6 @@ const IconStrokeBase = ({
 const IconFillBase = ({
   path,
   color = "#111920",
-  width,
-  height,
   style = {},
   className = "",
 }: IconProps) => {
@@ -45,8 +38,6 @@ const IconFillBase = ({
     <svg
       style={style}
       xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
       fill={color}
       className={`${className} w-6 h-6`}
     >
