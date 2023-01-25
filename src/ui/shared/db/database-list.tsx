@@ -78,9 +78,7 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
           </div>
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
-            <strong>
-              {database.lastOperation.status.toLocaleUpperCase()}
-            </strong>{" "}
+            <strong>{database.lastOperation.status.toLocaleUpperCase()}</strong>{" "}
             {prettyDateRelative(database.lastOperation.createdAt)}
           </div>
         </>
