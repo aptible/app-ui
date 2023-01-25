@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useParams } from "react-router-dom";
+import { createBrowserRouter, RouteObject } from "react-router-dom";
 
 import {
   NotFoundPage,
@@ -30,142 +30,174 @@ import {
   DatabaseSecurityPage,
   DatabaseBackupsPage,
   DatabaseSettingsPage,
-  ModalPortal,
 } from "@app/ui";
 import * as routes from "@app/routes";
 
-const DatabaseRedirect = () => {
-  const { id = "" } = useParams();
-  return <Navigate replace={true} to={routes.databaseOverviewUrl(id)} />;
-};
+const appRoutes: RouteObject[] = [
+  {
+    path: routes.HOME_PATH,
+    element: <AuthRequired />,
+    children: [
+      {
+        index: true,
+        element: <AppsPage />,
+      },
 
-const AppRedirect = () => {
-  const { id = "" } = useParams();
-  return <Navigate replace={true} to={routes.appOverviewUrl(id)} />;
-};
+      {
+        path: routes.APPS_PATH,
+        children: [
+          {
+            index: true,
+            element: <AppsPage />,
+          },
+          {
+            path: routes.APP_DETAIL_PATH,
+            element: <AppDetailLayout />,
+            children: [
+              {
+                index: true,
+                element: <AppDetailPage />,
+              },
+              {
+                path: routes.APP_ACTIVITY_PATH,
+                element: <AppActivityPage />,
+              },
+              {
+                path: routes.APP_SECURITY_PATH,
+                element: <AppSecurityPage />,
+              },
+              {
+                path: routes.APP_SETTINGS_PATH,
+                element: <AppSettingsPage />,
+              },
+            ],
+          },
+        ],
+      },
 
-export const Router = () => (
-  <div className="h-full w-full">
-    <ModalPortal />
-    <Routes>
-      <Route path={routes.HOME_PATH} element={<AuthRequired />}>
-        <Route
-          index={true}
-          element={<Navigate to={routes.appsUrl()} replace={true} />}
-        />
-      </Route>
+      {
+        path: routes.DATABASES_PATH,
+        children: [
+          {
+            index: true,
+            element: <DatabasesPage />,
+          },
 
-      <Route path={routes.APPS_PATH} element={<AuthRequired />}>
-        <Route index={true} element={<AppsPage />} />
-      </Route>
+          {
+            path: routes.DATABASE_DETAIL_PATH,
+            element: <DatabaseDetailLayout />,
+            children: [
+              {
+                index: true,
+                element: <DatabaseDetailPage />,
+              },
+              {
+                path: routes.DATABASE_ACTIVITY_PATH,
+                element: <DatabaseActivityPage />,
+              },
+              {
+                path: routes.DATABASE_SECURITY_PATH,
+                element: <DatabaseSecurityPage />,
+              },
+              {
+                path: routes.DATABASE_BACKUPS_PATH,
+                element: <DatabaseBackupsPage />,
+              },
+              {
+                path: routes.DATABASE_SETTINGS_PATH,
+                element: <DatabaseSettingsPage />,
+              },
+            ],
+          },
+        ],
+      },
 
-      <Route path={routes.APP_DETAIL_PATH} element={<AuthRequired />}>
-        <Route element={<AppDetailLayout />}>
-          <Route index={true} element={<AppRedirect />} />
-          <Route path={routes.APP_OVERVIEW_PATH} element={<AppDetailPage />} />
-          <Route
-            path={routes.APP_ACTIVITY_PATH}
-            element={<AppActivityPage />}
-          />
-          <Route
-            path={routes.APP_SECURITY_PATH}
-            element={<AppSecurityPage />}
-          />
-          <Route
-            path={routes.APP_SETTINGS_PATH}
-            element={<AppSettingsPage />}
-          />
-        </Route>
-      </Route>
+      {
+        path: routes.LOGOUT_PATH,
+        element: <LogoutPage />,
+      },
 
-      <Route path={routes.DATABASES_PATH} element={<AuthRequired />}>
-        <Route index={true} element={<DatabasesPage />} />
-      </Route>
+      {
+        path: routes.VERIFY_EMAIL_REQUEST_PATH,
+        element: <VerifyEmailPage />,
+      },
 
-      <Route path={routes.DATABASE_DETAIL_PATH} element={<AuthRequired />}>
-        <Route element={<DatabaseDetailLayout />}>
-          <Route index={true} element={<DatabaseRedirect />} />
-          <Route
-            path={routes.DATABASE_OVERVIEW_PATH}
-            element={<DatabaseDetailPage />}
-          />
-          <Route
-            path={routes.DATABASE_ACTIVITY_PATH}
-            element={<DatabaseActivityPage />}
-          />
-          <Route
-            path={routes.DATABASE_SECURITY_PATH}
-            element={<DatabaseSecurityPage />}
-          />
-          <Route
-            path={routes.DATABASE_BACKUPS_PATH}
-            element={<DatabaseBackupsPage />}
-          />
-          <Route
-            path={routes.DATABASE_SETTINGS_PATH}
-            element={<DatabaseSettingsPage />}
-          />
-        </Route>
-      </Route>
+      {
+        path: routes.VERIFY_EMAIL_PATH,
+        element: <VerifyEmailPage />,
+      },
 
-      <Route path={routes.SETTINGS_PATH} element={<AuthRequired />}>
-        <Route element={<SettingsPage />}>
-          <Route path={routes.TEAM_PATH} element={<TeamPage />} />
-        </Route>
-      </Route>
+      {
+        path: routes.CREATE_ORG_PATH,
+        element: <CreateOrgPage />,
+      },
 
-      <Route path={routes.LOGOUT_PATH} element={<AuthRequired />}>
-        <Route index={true} element={<LogoutPage />} />
-      </Route>
+      {
+        path: routes.ELEVATE_PATH,
+        element: <ElevatePage />,
+      },
 
-      <Route path={routes.LOGIN_PATH} element={<LoginPage />} />
+      {
+        path: routes.SETTINGS_PATH,
+        element: <SettingsPage />,
+      },
 
-      <Route path={routes.SIGNUP_PATH} element={<SignupPage />} />
+      {
+        path: routes.TEAM_PATH,
+        element: <TeamPage />,
+      },
+    ],
+  },
 
-      <Route path={routes.VERIFY_EMAIL_REQUEST_PATH} element={<AuthRequired />}>
-        <Route index={true} element={<VerifyEmailPage />} />
-      </Route>
+  {
+    element: <ElevateRequired />,
+    children: [
+      {
+        path: routes.SECURITY_SETTINGS_PATH,
+        element: <SecuritySettingsPage />,
+      },
 
-      <Route path={routes.VERIFY_EMAIL_PATH} element={<AuthRequired />}>
-        <Route index={true} element={<VerifyEmailPage />} />
-      </Route>
+      {
+        path: routes.SSH_SETTINGS_PATH,
+        element: <SSHSettingsPage />,
+      },
 
-      <Route path={routes.CREATE_ORG_PATH} element={<AuthRequired />}>
-        <Route index={true} element={<CreateOrgPage />} />
-      </Route>
+      {
+        path: routes.OTP_SETUP_PATH,
+        element: <OtpSetupPage />,
+      },
 
-      <Route path={routes.ELEVATE_PATH} element={<AuthRequired />}>
-        <Route index={true} element={<ElevatePage />} />
-      </Route>
+      {
+        path: routes.OTP_RECOVERY_CODES_PATH,
+        element: <OtpRecoveryCodesPage />,
+      },
 
-      <Route path={routes.SECURITY_SETTINGS_PATH} element={<ElevateRequired />}>
-        <Route index={true} element={<SecuritySettingsPage />} />
-      </Route>
+      {
+        path: routes.ADD_SECURITY_KEY_PATH,
+        element: <AddSecurityKeyPage />,
+      },
+    ],
+  },
 
-      <Route path={routes.SSH_SETTINGS_PATH} element={<ElevateRequired />}>
-        <Route index={true} element={<SSHSettingsPage />} />
-      </Route>
+  {
+    path: routes.LOGIN_PATH,
+    element: <LoginPage />,
+  },
 
-      <Route path={routes.OTP_SETUP_PATH} element={<ElevateRequired />}>
-        <Route index={true} element={<OtpSetupPage />} />
-      </Route>
+  {
+    path: routes.SIGNUP_PATH,
+    element: <SignupPage />,
+  },
 
-      <Route
-        path={routes.OTP_RECOVERY_CODES_PATH}
-        element={<ElevateRequired />}
-      >
-        <Route index={true} element={<OtpRecoveryCodesPage />} />
-      </Route>
+  {
+    path: routes.NOT_FOUND_PATH,
+    element: <NotFoundPage />,
+  },
 
-      <Route path={routes.ADD_SECURITY_KEY_PATH} element={<ElevateRequired />}>
-        <Route index={true} element={<AddSecurityKeyPage />} />
-      </Route>
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
+];
 
-      <Route path={routes.NOT_FOUND_PATH}>
-        <Route index={true} element={<NotFoundPage />} />
-      </Route>
-
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  </div>
-);
+export const router = createBrowserRouter(appRoutes);

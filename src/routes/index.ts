@@ -53,8 +53,6 @@ export const APPS_PATH = "/apps";
 export const appsUrl = () => APPS_PATH;
 export const APP_DETAIL_PATH = "/apps/:id";
 export const appDetailUrl = (id: string) => `/apps/${id}`;
-export const APP_OVERVIEW_PATH = `${APP_DETAIL_PATH}/overview`;
-export const appOverviewUrl = (id: string) => `/apps/${id}/overview`;
 export const APP_ACTIVITY_PATH = `${APP_DETAIL_PATH}/activity`;
 export const appActivityUrl = (id: string) => `${appDetailUrl(id)}/activity`;
 export const APP_SECURITY_PATH = `${APP_DETAIL_PATH}/security`;
@@ -66,9 +64,6 @@ export const DATABASES_PATH = "/databases";
 export const databasesUrl = () => DATABASES_PATH;
 export const DATABASE_DETAIL_PATH = "/databases/:id";
 export const databaseDetailUrl = (id: string) => `/databases/${id}`;
-export const DATABASE_OVERVIEW_PATH = `${DATABASE_DETAIL_PATH}/overview`;
-export const databaseOverviewUrl = (id: string) =>
-  `${databaseDetailUrl(id)}/overview`;
 export const DATABASE_ACTIVITY_PATH = `${DATABASE_DETAIL_PATH}/activity`;
 export const databaseActivityUrl = (id: string) =>
   `${databaseDetailUrl(id)}/activity`;

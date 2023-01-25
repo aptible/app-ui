@@ -5,7 +5,7 @@ import type { AppState } from "@app/types";
 import { selectAppById } from "@app/deploy";
 import {
   appActivityUrl,
-  appOverviewUrl,
+  appDetailUrl,
   appSecurityUrl,
   appSettingsUrl,
   appsUrl,
@@ -22,7 +22,7 @@ function AppPageHeader() {
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
 
   const tabs = [
-    { name: "Overview", href: appOverviewUrl(id) },
+    { name: "Overview", href: appDetailUrl(id) },
     { name: "Activity", href: appActivityUrl(id) },
     { name: "Security", href: appSecurityUrl(id) },
     { name: "Settings", href: appSettingsUrl(id) },

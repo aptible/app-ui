@@ -1,4 +1,3 @@
-import { BrowserRouter } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import { createRoot } from "react-dom/client";
 
@@ -20,10 +19,8 @@ export function init() {
   const root = createRoot(container!);
 
   root.render(
-    <BrowserRouter>
-      <PersistGate loading={<Loading />} persistor={persistor}>
-        <App store={store} />
-      </PersistGate>
-    </BrowserRouter>,
+    <PersistGate loading={<Loading />} persistor={persistor}>
+      <App store={store} />
+    </PersistGate>,
   );
 }
