@@ -12,8 +12,6 @@ interface IconProps {
 const IconStrokeBase = ({
   path,
   color = "#111920",
-  width,
-  height,
   style = {},
   className = "",
 }: IconProps) => {
@@ -21,10 +19,7 @@ const IconStrokeBase = ({
     <svg
       style={style}
       xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
       fill="none"
-      viewBox="0 0 24 24"
       stroke={color}
       className={`${className} w-6 h-6`}
     >
@@ -35,8 +30,6 @@ const IconStrokeBase = ({
 const IconFillBase = ({
   path,
   color = "#111920",
-  width,
-  height,
   style = {},
   className = "",
 }: IconProps) => {
@@ -45,8 +38,6 @@ const IconFillBase = ({
     <svg
       style={style}
       xmlns="http://www.w3.org/2000/svg"
-      width="24px"
-      height="24px"
       fill={color}
       className={`${className} w-6 h-6`}
     >
@@ -55,8 +46,16 @@ const IconFillBase = ({
   );
 };
 
+export interface Props extends React.SVGProps<SVGSVGElement> {
+  color?: string;
+  width?: string;
+  height?: string;
+  style?: object;
+  className?: string;
+}
+
 // small arrow up
-export const SmallArrowUp = (props: any) => {
+export const SmallArrowUp = (props: Props) => {
   return (
     <IconStrokeBase
       path={<path d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />}
@@ -66,7 +65,7 @@ export const SmallArrowUp = (props: any) => {
 };
 
 // small arrow right
-export const SmallArrowRight = (props: any) => {
+export const SmallArrowRight = (props: Props) => {
   return (
     <IconStrokeBase
       path={<path d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />}
@@ -76,7 +75,7 @@ export const SmallArrowRight = (props: any) => {
 };
 
 // <!-- arrow-small-down -->
-export const ArrowSmallDown = (props: any) => {
+export const ArrowSmallDown = (props: Props) => {
   return (
     <IconStrokeBase
       path={<path d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />}
@@ -86,7 +85,7 @@ export const ArrowSmallDown = (props: any) => {
 };
 
 // <!-- arrow-small-left -->
-export const ArrowSmallLeft = (props: any) => {
+export const ArrowSmallLeft = (props: Props) => {
   return (
     <IconStrokeBase
       path={<path d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75" />}
@@ -96,7 +95,7 @@ export const ArrowSmallLeft = (props: any) => {
 };
 
 // <!-- arrows-right-left -->
-export const ArrowsRightLeft = (props: any) => {
+export const ArrowsRightLeft = (props: Props) => {
   return (
     <IconStrokeBase
       path={
@@ -108,7 +107,7 @@ export const ArrowsRightLeft = (props: any) => {
 };
 
 // <!-- arrows-up-down -->
-export const ArrowsUpDown = (props: any) => {
+export const ArrowsUpDown = (props: Props) => {
   return (
     <IconStrokeBase
       path={
@@ -120,55 +119,67 @@ export const ArrowsUpDown = (props: any) => {
 };
 
 // <!-- chevron-up -->
-export const ChevronUp = (props: any) => {
+export const ChevronUp = (props: Props) => {
   return (
     //fill
-    <path
+    <IconStrokeBase
       fill-rule="evenodd"
-      d="M11.47 7.72a.75.75 0 011.06 0l7.5 7.5a.75.75 0 11-1.06 1.06L12 9.31l-6.97 6.97a.75.75 0 01-1.06-1.06l7.5-7.5z"
+      path={
+        <path d="M11.47 7.72a.75.75 0 011.06 0l7.5 7.5a.75.75 0 11-1.06 1.06L12 9.31l-6.97 6.97a.75.75 0 01-1.06-1.06l7.5-7.5z" />
+      }
       clip-rule="evenodd"
+      {...props}
     />
   );
 };
 
 // <!-- chevron-right -->
-export const ChevronRight = (props: any) => {
+export const ChevronRight = (props: Props) => {
   return (
     //fill
-    <path
+    <IconStrokeBase
       fill-rule="evenodd"
-      d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z"
+      path={
+        <path d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" />
+      }
       clip-rule="evenodd"
+      {...props}
     />
   );
 };
 
 // <!-- chevron-down -->
-export const ChevronDown = (props: any) => {
+export const ChevronDown = (props: Props) => {
   return (
     //fill
-    <path
+    <IconStrokeBase
       fill-rule="evenodd"
-      d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
       clip-rule="evenodd"
+      {...props}
+      path={
+        <path d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" />
+      }
     />
   );
 };
 
 // <!-- chevron-left -->
-export const ChevronLeft = (props: any) => {
+export const ChevronLeft = (props: Props) => {
   return (
     //fill
-    <path
+    <IconStrokeBase
       fill-rule="evenodd"
-      d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z"
       clip-rule="evenodd"
+      path={
+        <path d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" />
+      }
+      {...props}
     />
   );
 };
 
 // <!-- chevron-double-right -->
-export const ChevronDoubleRight = (props: any) => {
+export const ChevronDoubleRight = (props: Props) => {
   return (
     <IconStrokeBase
       path={<path d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />}
@@ -178,7 +189,7 @@ export const ChevronDoubleRight = (props: any) => {
 };
 
 // <!-- chevron-double-left -->
-export const ChevronDoubleLeft = (props: any) => {
+export const ChevronDoubleLeft = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -188,7 +199,7 @@ export const ChevronDoubleLeft = (props: any) => {
 };
 
 // <!-- trash -->
-export const Trash = (props: any) => {
+export const Trash = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -200,7 +211,7 @@ export const Trash = (props: any) => {
 };
 
 // <!-- pencil -->
-export const Pencil = (props: any) => {
+export const Pencil = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -212,7 +223,7 @@ export const Pencil = (props: any) => {
 };
 
 // <!-- document-search -->
-export const DocumentSearch = (props: any) => {
+export const DocumentSearch = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -224,7 +235,7 @@ export const DocumentSearch = (props: any) => {
 };
 
 // <!-- external-link -->
-export const ExternalLink = (props: any) => {
+export const ExternalLink = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -236,7 +247,7 @@ export const ExternalLink = (props: any) => {
 };
 
 // <!-- clock -->
-export const Clock = (props: any) => {
+export const Clock = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -246,7 +257,7 @@ export const Clock = (props: any) => {
 };
 
 // <!-- cloud -->
-export const Cloud = (props: any) => {
+export const Cloud = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -258,7 +269,7 @@ export const Cloud = (props: any) => {
 };
 
 // <!-- cloud-download -->
-export const CloudDownload = (props: any) => {
+export const CloudDownload = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -270,7 +281,7 @@ export const CloudDownload = (props: any) => {
 };
 
 // <!-- cloud-upload -->
-export const CloudUpload = (props: any) => {
+export const CloudUpload = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -282,7 +293,7 @@ export const CloudUpload = (props: any) => {
 };
 
 // <!-- globe-alt -->
-export const GlobeAlt = (props: any) => {
+export const GlobeAlt = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -294,7 +305,7 @@ export const GlobeAlt = (props: any) => {
 };
 
 // <!-- share -->
-export const Share = (props: any) => {
+export const Share = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -306,7 +317,7 @@ export const Share = (props: any) => {
 };
 
 // <!-- code -->
-export const Code = (props: any) => {
+export const Code = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -318,7 +329,7 @@ export const Code = (props: any) => {
 };
 
 // <!-- cube -->
-export const Cube = (props: any) => {
+export const Cube = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -330,7 +341,7 @@ export const Cube = (props: any) => {
 };
 
 // <!-- chart-bar-square -->
-export const ChartBarSquare = (props: any) => {
+export const ChartBarSquare = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -342,7 +353,7 @@ export const ChartBarSquare = (props: any) => {
 };
 
 // <!-- bars-3 -->
-export const Bars3 = (props: any) => {
+export const Bars3 = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -352,7 +363,7 @@ export const Bars3 = (props: any) => {
 };
 
 // <!-- cog-8-tooth -->
-export const Cogs8Tooth = (props: any) => {
+export const Cogs8Tooth = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -367,7 +378,7 @@ export const Cogs8Tooth = (props: any) => {
 };
 
 // <!-- calendar -->
-export const Calendar = (props: any) => {
+export const Calendar = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -379,7 +390,7 @@ export const Calendar = (props: any) => {
 };
 
 // <!-- user -->
-export const User = (props: any) => {
+export const User = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -391,7 +402,7 @@ export const User = (props: any) => {
 };
 
 // <!-- user-circle -->
-export const UserCircle = (props: any) => {
+export const UserCircle = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -403,7 +414,7 @@ export const UserCircle = (props: any) => {
 };
 
 // <!-- ellipsis-horizontal -->
-export const EllipsisHorizontal = (props: any) => {
+export const EllipsisHorizontal = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -415,7 +426,7 @@ export const EllipsisHorizontal = (props: any) => {
 };
 
 // <!-- ellipsis-horizontal-circle -->
-export const EllipsisHorizontalCircle = (props: any) => {
+export const EllipsisHorizontalCircle = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -427,7 +438,7 @@ export const EllipsisHorizontalCircle = (props: any) => {
 };
 
 // <!-- magnifying-glass -->
-export const MagnifyingGlass = (props: any) => {
+export const MagnifyingGlass = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -439,7 +450,7 @@ export const MagnifyingGlass = (props: any) => {
 };
 
 // <!-- adjustments-vertical -->
-export const AdjustmentsVertical = (props: any) => {
+export const AdjustmentsVertical = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -451,7 +462,7 @@ export const AdjustmentsVertical = (props: any) => {
 };
 
 // <!-- check -->
-export const Check = (props: any) => {
+export const Check = (props: Props) => {
   return (
     <IconFillBase
       {...props}
@@ -467,7 +478,7 @@ export const Check = (props: any) => {
 };
 
 // <!-- check-circle -->
-export const CheckCircle = (props: any) => {
+export const CheckCircle = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -479,7 +490,7 @@ export const CheckCircle = (props: any) => {
 };
 
 // <!-- document -->
-export const Document = (props: any) => {
+export const Document = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -491,7 +502,7 @@ export const Document = (props: any) => {
 };
 
 // <!-- duplicate -->
-export const Duplicate = (props: any) => {
+export const Duplicate = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -503,14 +514,14 @@ export const Duplicate = (props: any) => {
 };
 
 // <!-- plus -->
-export const Plus = (props: any) => {
+export const Plus = (props: Props) => {
   return (
     <IconStrokeBase {...props} path={<path d="M12 4.5v15m7.5-7.5h-15" />} />
   );
 };
 
 // <!-- plus-circle -->
-export const PlusCircle = (props: any) => {
+export const PlusCircle = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -520,7 +531,7 @@ export const PlusCircle = (props: any) => {
 };
 
 // <!-- x-circle -->
-export const XCircle = (props: any) => {
+export const XCircle = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -532,12 +543,12 @@ export const XCircle = (props: any) => {
 };
 
 // <!-- x-mark -->
-export const XMark = (props: any) => {
+export const XMark = (props: Props) => {
   return <IconStrokeBase {...props} path={<path d="M6 18L18 6M6 6l12 12" />} />;
 };
 
 // <!-- download -->
-export const Download = (props: any) => {
+export const Download = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -549,7 +560,7 @@ export const Download = (props: any) => {
 };
 
 // <!-- shield-check -->
-export const ShieldCheck = (props: any) => {
+export const ShieldCheck = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -561,7 +572,7 @@ export const ShieldCheck = (props: any) => {
 };
 
 // <!-- exclamation -->
-export const Exclamation = (props: any) => {
+export const Exclamation = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -573,7 +584,7 @@ export const Exclamation = (props: any) => {
 };
 
 // <!-- lock-closed -->
-export const LockClosed = (props: any) => {
+export const LockClosed = (props: Props) => {
   return (
     <IconFillBase
       {...props}
@@ -589,7 +600,7 @@ export const LockClosed = (props: any) => {
 };
 
 // <!-- link -->
-export const Link = (props: any) => {
+export const Link = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -601,7 +612,7 @@ export const Link = (props: any) => {
 };
 
 // <!-- circle-stack -->
-export const CircleStack = (props: any) => {
+export const CircleStack = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -613,7 +624,7 @@ export const CircleStack = (props: any) => {
 };
 
 // <!-- logout -->
-export const Logout = (props: any) => {
+export const Logout = (props: Props) => {
   return (
     <IconFillBase
       {...props}
@@ -627,7 +638,7 @@ export const Logout = (props: any) => {
 };
 
 // <!-- key -->
-export const Key = (props: any) => {
+export const Key = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -639,7 +650,7 @@ export const Key = (props: any) => {
 };
 
 // Github
-export const Github = (props: any) => {
+export const Github = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -651,7 +662,7 @@ export const Github = (props: any) => {
 };
 
 // gitlab
-export const Gitlab = (props: any) => {
+export const Gitlab = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -663,7 +674,7 @@ export const Gitlab = (props: any) => {
 };
 
 // bitbucket
-export const Bitbucket = (props: any) => {
+export const Bitbucket = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -678,7 +689,7 @@ export const Bitbucket = (props: any) => {
 };
 
 // <!-- envelope -->
-export const Envelope = (props: any) => {
+export const Envelope = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -690,7 +701,7 @@ export const Envelope = (props: any) => {
 };
 
 //<!-- git branch -->
-export const GitBranch = (props: any) => {
+export const GitBranch = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -707,7 +718,7 @@ export const GitBranch = (props: any) => {
 };
 
 // <!-- git commit -->
-export const GitCommit = (props: any) => {
+export const GitCommit = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
@@ -723,7 +734,7 @@ export const GitCommit = (props: any) => {
 };
 
 // <!-- info -->
-export const Info = (props: any) => {
+export const Info = (props: Props) => {
   return (
     <IconStrokeBase
       {...props}
