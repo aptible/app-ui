@@ -31,7 +31,7 @@ export const ElevateRequired = () => {
   }
 
   if (!isElevatedTokenValid) {
-    return <Navigate to={elevateUrl(location.pathname)} />;
+    return <Navigate to={elevateUrl(location.pathname)} replace />;
   }
 
   return (
