@@ -81,3 +81,8 @@ export const SETTINGS_PATH = "/settings";
 export const settingsUrl = () => SETTINGS_PATH;
 export const TEAM_PATH = `${SETTINGS_PATH}/team`;
 export const teamUrl = () => TEAM_PATH;
+
+export const CREATE_PROJECT = "/create";
+export const createProjectUrl = () => CREATE_PROJECT;
+export const CREATE_PROJECT_GIT = "/create/git";
+export const createProjectGitUrl = () => CREATE_PROJECT_GIT;

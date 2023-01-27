@@ -30,6 +30,8 @@ import {
   DatabaseSecurityPage,
   DatabaseBackupsPage,
   DatabaseSettingsPage,
+  CreateProjectPage,
+  CreateProjectGitPage,
 } from "@app/ui";
 import * as routes from "@app/routes";
 
@@ -145,6 +147,15 @@ const appRoutes: RouteObject[] = [
       {
         path: routes.TEAM_PATH,
         element: <TeamPage />,
+      },
+
+      {
+        path: routes.CREATE_PROJECT,
+        element: <CreateProjectPage />,
+      },
+      {
+        path: routes.CREATE_PROJECT_GIT,
+        element: <CreateProjectGitPage />,
       },
     ],
   },

@@ -31,12 +31,14 @@ export const buttonShapeStyle = (size: Size, shape: Shape): string => {
 export const ButtonCreate = ({
   className = "",
   children,
+  onClick,
 }: {
   className?: string;
   children: React.ReactNode;
+  onClick: () => any;
 }) => {
   return (
-    <Button variant="primary" className={`${className}`}>
+    <Button variant="primary" className={`${className}`} onClick={onClick}>
       <PlusCircle color="black" />
       <span className="pl-2">{children}</span>
     </Button>
