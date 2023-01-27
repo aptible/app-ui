@@ -1,27 +1,18 @@
-import cn from "classnames";
-import { NavLink } from "react-router-dom";
-import { useState } from "react";
-
 import { UserMenu } from "./user-menu";
 import { AptibleLogo } from "./aptible-logo";
 
 import { CircleStack, Cogs8Tooth, Cube } from "@app/ui/shared/icons";
+import { appsUrl, databasesUrl, teamUrl } from "@app/routes";
+import { ButtonCreate } from "./button";
+import { LinkNav } from "./link";
 
 export const ApplicationSidebar = () => {
   // Moved navigation inside function to allow dynamic changes of color if needed
   const navigation = [
-    { name: "Apps", to: "/apps", icon: <Cube /> },
-    { name: "Data Stores", to: "/databases", icon: <CircleStack /> },
-    { name: "Company Settings", to: "/settings/team", icon: <Cogs8Tooth /> },
+    { name: "Apps", to: appsUrl(), icon: <Cube /> },
+    { name: "Data Stores", to: databasesUrl(), icon: <CircleStack /> },
+    { name: "Company Settings", to: teamUrl(), icon: <Cogs8Tooth /> },
   ];
-
-  const active = "bg-gray-100 text-gray-900";
-  const inactive = "text-gray-600 hover:bg-gray-50 hover:text-gray-900";
-  const navButton =
-    "group flex items-center px-2 py-2 text-sm font-medium rounded-md";
-
-  const navLink = ({ isActive }: { isActive: boolean }) =>
-    cn(navButton, { [inactive]: !isActive, [active]: isActive });
 
   return (
     <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
@@ -31,20 +22,18 @@ export const ApplicationSidebar = () => {
         </div>
         <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
           {navigation.map((item) => (
-            <NavLink className={navLink} to={item.to} key={item.to}>
-              <div
-                className="mr-3 text-gray-400 flex-shrink-0 h-5 w-5"
-                aria-hidden="true"
-              >
-                {item.icon}
-              </div>
-              {item.name}
-            </NavLink>
+            <LinkNav {...item} />
           ))}
         </nav>
       </div>
-      <div className="p-3 flex">
+      <div className="px-3 w-full">
+        <ButtonCreate className="w-full mb-4">Create</ButtonCreate>
         <UserMenu />
+        <div className="my-6 flex justify-between text-xs text-gray-500">
+          <a href="https://aptible.com/docs">DOCS</a>
+          <a href="https://aptible.com/support">SUPPORT</a>
+          <a href="https://aptible.com/cli">INSTALL CLI</a>
+        </div>
       </div>
     </div>
   );

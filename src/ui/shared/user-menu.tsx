@@ -1,32 +1,24 @@
-import { logoutUrl, securitySettingsUrl, sshSettingsUrl } from "@app/routes";
+import { logoutUrl, settingsUrl, teamUrl } from "@app/routes";
 
 import { useCurrentUser } from "../hooks";
 
-import { tokens } from "./tokens";
-import { Link } from "react-router-dom";
+import { Loading } from "./loading";
+import { Cogs8Tooth, Info, Logout, UserCircle } from "./icons";
+import { LinkNav } from "./link";
 
 export const UserMenu = () => {
   const { user, isLoading } = useCurrentUser();
 
   if (isLoading || !user) {
-    return <>Loading...</>;
+    return <Loading />;
   }
 
   return (
-    <div>
-      <div className="px-4 py-2">
-        <p className={tokens.type["small semibold darker"]}>{user.name}</p>
-        <p className={tokens.type["small lighter"]}>{user.email}</p>
-      </div>
-      <div>
-        <Link to={sshSettingsUrl()}>SSH Keys</Link>
-      </div>
-      <div>
-        <Link to={securitySettingsUrl()}>Security Settings</Link>
-      </div>
-      <div>
-        <Link to={logoutUrl()}>Logout</Link>
-      </div>
+    <div className="w-full">
+      <LinkNav to={settingsUrl()} icon={<UserCircle />} name={user.email} />
+      <LinkNav to={teamUrl()} icon={<Cogs8Tooth />} name="Team Settings" />
+      <LinkNav to={settingsUrl()} icon={<Info />} name="Billing" />
+      <LinkNav to={logoutUrl()} icon={<Logout />} name="Logout" />
     </div>
   );
 };

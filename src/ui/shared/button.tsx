@@ -1,5 +1,6 @@
 import cn from "classnames";
 import { ButtonHTMLAttributes, FC } from "react";
+import { PlusCircle } from "./icons";
 import { tokens } from "./tokens";
 
 export type Size = "xs" | "sm" | "md" | "lg" | "xl";
@@ -27,6 +28,21 @@ export const buttonShapeStyle = (size: Size, shape: Shape): string => {
   }
 };
 
+export const ButtonCreate = ({
+  className = "",
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <Button variant="primary" className={`${className}`}>
+      <PlusCircle color="black" />
+      <span className="pl-2">{children}</span>
+    </Button>
+  );
+};
+
 export const Button: FC<ButtonProps> = ({
   children,
   layout = "auto",
@@ -34,17 +50,18 @@ export const Button: FC<ButtonProps> = ({
   size = "md",
   shape = "button",
   isLoading = false,
+  className = "",
   ...props
 }) => {
-  const className = cn(
-    "inline-flex items-center",
+  const classes = cn(
+    "flex items-center justify-center",
     buttonLayout[layout],
     tokens.buttons.sizes[size],
     tokens.buttons.styles[variant],
     buttonShapeStyle(size, shape),
   );
   return (
-    <button {...props} className={className}>
+    <button {...props} className={`${classes} ${className}`}>
       {isLoading ? "Loading ..." : children}
     </button>
   );
