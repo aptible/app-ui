@@ -51,7 +51,7 @@ export const tokens = {
     },
     styles: {
       primary:
-        "border border-transparent shadow-sm text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500",
+        "border border-transparent shadow-sm text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500",
       secondary:
         "border border-transparent text-emerald-700 bg-emerald-100 hover:bg-emerald-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500",
       white:

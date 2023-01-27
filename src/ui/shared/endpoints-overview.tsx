@@ -9,7 +9,7 @@ import { PlusCircle } from "@app/ui/shared/icons";
 
 import { TableHead, Td } from "./table";
 import { tokens } from "./tokens";
-import { Button } from "./button";
+import { Button, ButtonCreate } from "./button";
 import { LoadResources } from "./load-resources";
 import { EmptyResultView, ResourceListView } from "./resource-list-view";
 
@@ -84,10 +84,9 @@ export function EndpointsOverview({
               title="No endpoints yet"
               description="Expose this application to the public internet by adding an endpoint"
               action={
-                <Button variant="primary">
-                  <PlusCircle color="white" />
-                  <span className="pl-2">Add Endpoint</span>
-                </Button>
+                <ButtonCreate className="inline-flex">
+                  Add Endpoint
+                </ButtonCreate>
               }
               className="p-6"
             />
