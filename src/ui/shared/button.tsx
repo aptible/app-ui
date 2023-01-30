@@ -29,13 +29,13 @@ export const buttonShapeStyle = (size: Size, shape: Shape): string => {
 };
 
 export const ButtonCreate = ({
-  className = "",
   children,
-  onClick,
+  className = "",
+  onClick = () => {},
 }: {
-  className?: string;
   children: React.ReactNode;
-  onClick: () => any;
+  className?: string;
+  onClick?: () => any;
 }) => {
   return (
     <Button variant="primary" className={`${className}`} onClick={onClick}>
