@@ -1,14 +1,11 @@
 import type { User } from "@app/types";
 
-import {
-  TableHead,
-  Td,
-  Button,
-  tokens,
-  ResourceListView,
-  Input,
-} from "../../shared";
-import { IconMagnifyingGlass } from "@app/ui/shared/icons";
+import { ResourceListView } from "../resource-list-view";
+import { TableHead, Td } from "../table";
+import { Input } from "../input";
+import { Button } from "../button";
+import { tokens } from "../tokens";
+import { IconMagnifyingGlass } from "../icons";
 
 const UserListRow = ({ user }: { user: User }) => {
   return (

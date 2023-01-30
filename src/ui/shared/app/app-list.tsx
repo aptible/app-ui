@@ -1,7 +1,9 @@
 import { useQuery } from "saga-query/react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useState } from "react";
 
+import { prettyDateRelative } from "@app/date";
 import {
   calcServiceMetrics,
   DeployAppRow,
@@ -13,12 +15,13 @@ import type { AppState } from "@app/types";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
 import { appDetailUrl } from "@app/routes";
-import { IconMagnifyingGlass } from "@app/ui/shared/icons";
 
-import { LoadResources } from "../../shared";
-import { TableHead, Td, tokens, ResourceListView, Input } from "../../shared";
-import { useState } from "react";
-import { prettyDateRelative } from "@app/date";
+import { IconMagnifyingGlass } from "../icons";
+import { TableHead, Td } from "../table";
+import { LoadResources } from "../load-resources";
+import { tokens } from "../tokens";
+import { Input } from "../input";
+import { ResourceListView } from "../resource-list-view";
 
 interface AppCellProps {
   app: DeployAppRow;

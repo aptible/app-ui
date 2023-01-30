@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useQuery } from "saga-query/react";
+import { useState } from "react";
 
+import { prettyDateRelative } from "@app/date";
 import type { DeployDatabase, AppState } from "@app/types";
 import {
   fetchAllDatabases,
@@ -10,18 +13,12 @@ import {
   selectStackById,
 } from "@app/deploy";
 
-import {
-  TableHead,
-  Td,
-  tokens,
-  ResourceListView,
-  Input,
-  LoadResources,
-} from "../../shared";
-import { useQuery } from "saga-query/react";
-import { useState } from "react";
-import { prettyDateRelative } from "@app/date";
-import { IconMagnifyingGlass } from "@app/ui/shared/icons";
+import { TableHead, Td } from "../table";
+import { tokens } from "../tokens";
+import { ResourceListView } from "../resource-list-view";
+import { Input } from "../input";
+import { LoadResources } from "../load-resources";
+import { IconMagnifyingGlass } from "../icons";
 
 const FilterBarView = () => {
   return (
