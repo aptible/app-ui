@@ -1,7 +1,7 @@
 import { UserMenu } from "./user-menu";
 import { AptibleLogo } from "./aptible-logo";
 
-import { CircleStack, Cogs8Tooth, Cube } from "@app/ui/shared/icons";
+import { IconCircleStack, IconCogs8Tooth, IconCube } from "@app/ui/shared";
 import { appsUrl, createProjectUrl, databasesUrl, teamUrl } from "@app/routes";
 import { ButtonCreate } from "./button";
 import { LinkNav } from "./link";
@@ -11,9 +11,9 @@ export const ApplicationSidebar = () => {
   const navigate = useNavigate();
   // Moved navigation inside function to allow dynamic changes of color if needed
   const navigation = [
-    { name: "Apps", to: appsUrl(), icon: <Cube /> },
-    { name: "Data Stores", to: databasesUrl(), icon: <CircleStack /> },
-    { name: "Company Settings", to: teamUrl(), icon: <Cogs8Tooth /> },
+    { name: "Apps", to: appsUrl(), icon: <IconCube /> },
+    { name: "Data Stores", to: databasesUrl(), icon: <IconCircleStack /> },
+    { name: "Company Settings", to: teamUrl(), icon: <IconCogs8Tooth /> },
   ];
 
   return (

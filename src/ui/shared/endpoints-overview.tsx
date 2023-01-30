@@ -5,8 +5,6 @@ import { DeployEndpoint, AppState } from "@app/types";
 import { selectEndpointsByServiceIds } from "@app/deploy";
 import { fetchEndpointsByServiceId } from "@app/deploy";
 
-import { PlusCircle } from "@app/ui/shared/icons";
-
 import { TableHead, Td } from "./table";
 import { tokens } from "./tokens";
 import { Button, ButtonCreate } from "./button";

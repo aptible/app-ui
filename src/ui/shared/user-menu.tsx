@@ -3,7 +3,7 @@ import { logoutUrl, settingsUrl, teamUrl } from "@app/routes";
 import { useCurrentUser } from "../hooks";
 
 import { Loading } from "./loading";
-import { Cogs8Tooth, Info, Logout, UserCircle } from "./icons";
+import { IconCogs8Tooth, IconInfo, IconLogout, IconUserCircle } from "./icons";
 import { LinkNav } from "./link";
 
 export const UserMenu = () => {
@@ -15,10 +15,10 @@ export const UserMenu = () => {
 
   return (
     <div className="w-full">
-      <LinkNav to={settingsUrl()} icon={<UserCircle />} name={user.email} />
-      <LinkNav to={teamUrl()} icon={<Cogs8Tooth />} name="Team Settings" />
-      <LinkNav to={settingsUrl()} icon={<Info />} name="Billing" />
-      <LinkNav to={logoutUrl()} icon={<Logout />} name="Logout" />
+      <LinkNav to={settingsUrl()} icon={<IconUserCircle />} name={user.email} />
+      <LinkNav to={teamUrl()} icon={<IconCogs8Tooth />} name="Team Settings" />
+      <LinkNav to={settingsUrl()} icon={<IconInfo />} name="Billing" />
+      <LinkNav to={logoutUrl()} icon={<IconLogout />} name="Logout" />
     </div>
   );
 };

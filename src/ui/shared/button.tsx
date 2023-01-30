@@ -1,6 +1,6 @@
 import cn from "classnames";
 import { ButtonHTMLAttributes, FC } from "react";
-import { PlusCircle } from "./icons";
+import { IconPlusCircle } from "./icons";
 import { tokens } from "./tokens";
 
 export type Size = "xs" | "sm" | "md" | "lg" | "xl";
@@ -39,7 +39,7 @@ export const ButtonCreate = ({
 }) => {
   return (
     <Button variant="primary" className={`${className}`} onClick={onClick}>
-      <PlusCircle color="black" />
+      <IconPlusCircle color="black" />
       <span className="pl-2">{children}</span>
     </Button>
   );

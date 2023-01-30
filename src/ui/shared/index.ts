@@ -29,3 +29,4 @@ export * from "./db";
 export * from "./settings";
 export * from "./verify-email";
 export * from "./modal-portal";
+export * from "./icons";

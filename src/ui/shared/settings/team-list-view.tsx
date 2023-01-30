@@ -8,7 +8,7 @@ import {
   ResourceListView,
   Input,
 } from "../../shared";
-import { MagnifyingGlass } from "@app/ui/shared/icons";
+import { IconMagnifyingGlass } from "@app/ui/shared/icons";
 
 const UserListRow = ({ user }: { user: User }) => {
   return (
@@ -34,7 +34,7 @@ const UserListRow = ({ user }: { user: User }) => {
 const FilterBarView = () => {
   return (
     <div className="flex flex-1 pt-4 gap-3 relative m-1">
-      <MagnifyingGlass className="absolute inline-block top-6 left-1.5" />
+      <IconMagnifyingGlass className="absolute inline-block top-6 left-1.5" />
       <Input
         placeholder="Search Users..."
         type="text"

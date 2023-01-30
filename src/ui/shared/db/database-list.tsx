@@ -21,7 +21,7 @@ import {
 import { useQuery } from "saga-query/react";
 import { useState } from "react";
 import { prettyDateRelative } from "@app/date";
-import { MagnifyingGlass } from "@app/ui/shared/icons";
+import { IconMagnifyingGlass } from "@app/ui/shared/icons";
 
 const FilterBarView = () => {
   return (
@@ -118,7 +118,7 @@ export function DatabaseList() {
         description="Databases provide data persistency on Aptible."
         filterBar={
           <div className="flex flex-1 pt-6 gap-3 relative m-1">
-            <MagnifyingGlass className="absolute inline-block top-8 left-1.5" />
+            <IconMagnifyingGlass className="absolute inline-block top-8 left-1.5" />
             <Input
               placeholder="Search Databases ..."
               type="text"
