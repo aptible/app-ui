@@ -164,10 +164,7 @@ export const CreateProjectGitSettingsPage = () => {
             Prefix <code>NAME</code> with <code>http:</code> if the service
             requires an endpoint. (e.g. <code>http:web=rails server</code>)
           </p>
-          <textarea
-            className={tokens.type.textarea}
-            value={commands}
-          />
+          <textarea className={tokens.type.textarea} value={commands} />
         </div>
 
         <hr className="my-4" />
