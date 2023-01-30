@@ -1,9 +1,14 @@
 import { UserMenu } from "./user-menu";
 import { AptibleLogo } from "./aptible-logo";
 
-import { IconCircleStack, IconCogs8Tooth, IconCube } from "@app/ui/shared";
+import {
+  IconCircleStack,
+  IconCogs8Tooth,
+  IconCube,
+  IconPlusCircle,
+} from "@app/ui/shared";
 import { appsUrl, createProjectUrl, databasesUrl, teamUrl } from "@app/routes";
-import { ButtonCreate } from "./button";
+import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import { useNavigate } from "react-router";
 
@@ -24,17 +29,18 @@ export const ApplicationSidebar = () => {
         </div>
         <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
           {navigation.map((item) => (
-            <LinkNav {...item} />
+            <LinkNav key={item.name} {...item} />
           ))}
         </nav>
       </div>
       <div className="px-3 w-full">
-        <ButtonCreate
+        <ButtonIcon
           className="w-full mb-4"
           onClick={() => navigate(createProjectUrl())}
+          icon={<IconPlusCircle />}
         >
           Create
-        </ButtonCreate>
+        </ButtonIcon>
         <UserMenu />
         <div className="my-6 flex justify-between text-xs text-gray-500">
           <a href="https://aptible.com/docs">DOCS</a>

@@ -7,9 +7,10 @@ import { fetchEndpointsByServiceId } from "@app/deploy";
 
 import { TableHead, Td } from "./table";
 import { tokens } from "./tokens";
-import { Button, ButtonCreate } from "./button";
+import { Button, ButtonIcon } from "./button";
 import { LoadResources } from "./load-resources";
 import { EmptyResultView, ResourceListView } from "./resource-list-view";
+import { IconPlusCircle } from "./icons";
 
 const EndpointListingRow = ({ endpoint }: { endpoint: DeployEndpoint }) => {
   return (
@@ -82,9 +83,9 @@ export function EndpointsOverview({
               title="No endpoints yet"
               description="Expose this application to the public internet by adding an endpoint"
               action={
-                <ButtonCreate className="inline-flex">
+                <ButtonIcon icon={<IconPlusCircle />} className="inline-flex">
                   Add Endpoint
-                </ButtonCreate>
+                </ButtonIcon>
               }
               className="p-6"
             />

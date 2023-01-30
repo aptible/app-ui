@@ -1,3 +1,9 @@
-export const Loading = ({ className = "" }: { className?: string }) => {
-  return <div className={className}>loading ...</div>;
+export const Loading = ({
+  className = "",
+  text = "loading ...",
+}: {
+  className?: string;
+  text?: string;
+}) => {
+  return <div className={className}>{text}</div>;
 };
