@@ -5,9 +5,10 @@ import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 import { verifyEmail } from "@app/auth";
 import { selectJWTToken } from "@app/token";
-import { createOrgUrl } from "@app/routes";
+import { homeUrl } from "@app/routes";
 
 import { Loading, Progress, ResendVerificationEmail } from "../shared";
+import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 
 export const VerifyEmailPage = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ export const VerifyEmailPage = () => {
   const params = useParams();
   const navigate = useNavigate();
   const verifyEmailLoader = useLoader(verifyEmail);
+  const redirectPath = useSelector(selectRedirectPath);
 
   useEffect(() => {
     if (params.verificationCode && params.verificationId && user.id) {
@@ -28,7 +30,8 @@ export const VerifyEmailPage = () => {
   }, [params.verificationId, params.verificationCode, user.id]);
 
   useLoaderSuccess(verifyEmailLoader, () => {
-    navigate(createOrgUrl());
+    navigate(redirectPath || homeUrl());
+    dispatch(resetRedirectPath());
   });
 
   if (verifyEmailLoader.isLoading) {

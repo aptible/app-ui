@@ -1,6 +1,30 @@
+import {
+  call,
+  put,
+  setLoaderError,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "saga-query";
+
+import { createLog } from "@app/debug";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import type { AppState, DeployDatabase } from "@app/types";
-import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
+import type {
+  AppState,
+  DeployDatabase,
+  DeployOperationResponse,
+  LinkResponse,
+  OperationStatus,
+  ProvisionableStatus,
+} from "@app/types";
+import {
+  api,
+  cacheTimer,
+  combinePages,
+  DeployApiCtx,
+  PaginateProps,
+  ThunkCtx,
+  thunks,
+} from "@app/api";
 import {
   createReducerMap,
   createTable,
@@ -13,12 +37,37 @@ import { selectDeploy } from "../slice";
 import { createSelector } from "@reduxjs/toolkit";
 import { findEnvById, selectEnvironments } from "../environment";
 
-export const deserializeDeployDatabase = (payload: any): DeployDatabase => {
+const log = createLog("database");
+
+export interface DeployDatabaseResponse {
+  id: string;
+  handle: string;
+  provisioned: boolean;
+  type: string;
+  status: ProvisionableStatus;
+  docker_repo: string;
+  current_kms_arn: string;
+  connection_url: string;
+  created_at: string;
+  updated_at: string;
+  _links: {
+    account: LinkResponse;
+    service: LinkResponse;
+  };
+  _embedded: {
+    disk: any;
+    last_operation: any;
+  };
+}
+
+export const deserializeDeployDatabase = (
+  payload: DeployDatabaseResponse,
+): DeployDatabase => {
   const embedded = payload._embedded;
   const links = payload._links;
 
   return {
-    connectionUrl: payload.connectionUrl,
+    connectionUrl: payload.connection_url,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     currentKmsArn: payload.current_kms_arn,
@@ -30,8 +79,10 @@ export const deserializeDeployDatabase = (payload: any): DeployDatabase => {
     status: payload.status,
     environmentId: extractIdFromLink(links.account),
     serviceId: extractIdFromLink(links.service),
-    disk: deserializeDisk(embedded.disk),
-    lastOperation: deserializeOperation(embedded.last_operation),
+    disk: embedded.disk ? deserializeDisk(embedded.disk) : null,
+    lastOperation: embedded.last_operation
+      ? deserializeOperation(embedded.last_operation)
+      : null,
   };
 };
 
@@ -144,10 +195,119 @@ export const fetchAllDatabases = thunks.create(
   { saga: cacheTimer() },
   combinePages(fetchDatabases),
 );
-
 export const fetchDatabase = api.get<{ id: string }>("/databases/:id", {
   saga: cacheTimer(),
 });
+interface CreateDatabaseProps {
+  handle: string;
+  type: string;
+  envId: string;
+  databaseImageId: string;
+}
+export type CreateDatabaseCtx = DeployApiCtx<
+  DeployDatabaseResponse,
+  CreateDatabaseProps
+>;
+/**
+ * This will only create a database record, it will not trigger it to actually be provisioned.
+ * You probably want to just use `provisionDatabase` which will create and provision the database.
+ */
+export const createDatabase = api.post<CreateDatabaseProps>(
+  "/accounts/:envId/databases",
+  function* (ctx: CreateDatabaseCtx, next) {
+    const { handle, type, envId, databaseImageId } = ctx.payload;
+    const body = {
+      handle,
+      type,
+      account_id: envId,
+      database_image_id: databaseImageId,
+    };
+    ctx.request = ctx.req({ body: JSON.stringify(body) });
+
+    yield next();
+  },
+);
+
+export type ProvisionDatabaseCtx = ThunkCtx<
+  CreateDatabaseProps,
+  { dbCtx: CreateDatabaseCtx; opCtx: CreateDatabaseOpCtx }
+>;
+export const provisionDatabase = thunks.create<CreateDatabaseProps>(
+  "database-provision",
+  function* (ctx: ProvisionDatabaseCtx, next) {
+    yield put(setLoaderStart({ id: ctx.key }));
+
+    const dbCtx: CreateDatabaseCtx = yield call(
+      createDatabase.run,
+      createDatabase(ctx.payload),
+    );
+
+    if (!dbCtx.json.ok) {
+      yield put(
+        setLoaderError({ id: ctx.key, message: dbCtx.json.data.message }),
+      );
+      return;
+    }
+
+    yield next();
+
+    const opCtx: CreateDatabaseOpCtx = yield call(
+      createDatabaseOperation.run,
+      createDatabaseOperation({
+        dbId: dbCtx.json.data.id,
+        containerSize: 1024,
+        diskSize: 10,
+        status: "queued",
+        type: "provision",
+      }),
+    );
+
+    if (!opCtx.json.ok) {
+      yield put(
+        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
+      );
+      return;
+    }
+
+    ctx.json = {
+      dbCtx,
+      opCtx,
+    };
+    yield put(
+      setLoaderSuccess({
+        id: ctx.key,
+        meta: { dbId: dbCtx.json.data.id, opId: opCtx.json.data.id },
+      }),
+    );
+  },
+);
+
+interface CreateDatabaseOpProps {
+  dbId: string;
+  containerSize: number;
+  diskSize: number;
+  type: string;
+  status: OperationStatus;
+}
+type CreateDatabaseOpCtx = DeployApiCtx<
+  DeployOperationResponse,
+  CreateDatabaseOpProps
+>;
+export const createDatabaseOperation = api.post<CreateDatabaseOpProps>(
+  "/databases/:dbId/operations",
+  function* (ctx: CreateDatabaseOpCtx, next) {
+    const { containerSize, diskSize, type, status } = ctx.payload;
+    const body = {
+      container_size: containerSize,
+      disk_size: diskSize,
+      type,
+      status,
+    };
+    ctx.request = ctx.req({ body: JSON.stringify(body) });
+    yield next();
+  },
+);
+
 export const fetchDatabaseOperations = api.get<{ id: string }>(
   "/databases/:id/operations",
   { saga: cacheTimer() },

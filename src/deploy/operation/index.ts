@@ -1,6 +1,37 @@
-import type { DeployOperation } from "@app/types";
+import { api } from "@app/api";
+import type { DeployOperation, OperationStatus } from "@app/types";
+import { createAction } from "@reduxjs/toolkit";
+import { poll } from "saga-query";
 
-export const deserializeOperation = (payload: any): DeployOperation | null => {
+export interface DeployOperationResponse {
+  id: string;
+  resource_id: number;
+  resource_type: string;
+  type: string;
+  status: OperationStatus;
+  created_at: string;
+  updated_at: string;
+  git_ref: string;
+  docker_ref: string;
+  container_count: number;
+  encrypted_env_json_new: string;
+  destination_region: string;
+  automated: boolean;
+  cancelled: boolean;
+  aborted: boolean;
+  immediate: boolean;
+  provisioned_iops: number;
+  ebs_volume_type: string;
+  encrypted_stack_settings: string;
+  instance_profile: string;
+  user_email: string;
+  user_name: string;
+  env: string;
+}
+
+export const deserializeOperation = (
+  payload: DeployOperationResponse,
+): DeployOperation | null => {
   if (!payload) {
     return null;
   }
@@ -30,3 +61,11 @@ export const deserializeOperation = (payload: any): DeployOperation | null => {
     env: payload.env,
   };
 };
+
+export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
+
+export const pollEnvOperations = api.get<{ envId: string }>(
+  "/accounts/:envId/operations",
+  { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
+  api.cache(),
+);

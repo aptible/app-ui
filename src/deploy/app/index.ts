@@ -1,11 +1,23 @@
-import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
+import {
+  api,
+  cacheTimer,
+  combinePages,
+  DeployApiCtx,
+  PaginateProps,
+  thunks,
+} from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type { DeployApp, AppState } from "@app/types";
+import type {
+  DeployApp,
+  AppState,
+  LinkResponse,
+  ProvisionableStatus,
+} from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
 import { selectEnvironments, findEnvById } from "../environment";
@@ -15,7 +27,28 @@ import { selectDeploy } from "../slice";
 
 export * from "./utils";
 
-export const deserializeDeployApp = (payload: any): DeployApp => {
+export interface DeployAppResponse {
+  id: string;
+  handle: string;
+  git_repo: string;
+  created_at: string;
+  updated_at: string;
+  deployment_method: string;
+  status: ProvisionableStatus;
+  _links: {
+    account: LinkResponse;
+    current_configuration: LinkResponse;
+  };
+  _embedded: {
+    // TODO: fill in
+    services: { id: string }[];
+    current_image: any;
+    last_deploy_operation: any;
+    last_operation: any;
+  };
+}
+
+export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
   const serviceIds: string[] = payload._embedded.services.map((s: any) => s.id);
   const links = payload._links;
   const embedded = payload._embedded;
@@ -142,6 +175,44 @@ export const fetchAppOperations = api.get<{ id: string }>(
   "/apps/:id/operations",
   { saga: cacheTimer() },
   api.cache(),
+);
+
+interface CreateAppProps {
+  name: string;
+  envId: string;
+}
+
+export type CreateAppCtx = DeployApiCtx<DeployAppResponse, CreateAppProps>;
+
+export const createDeployApp = api.post<CreateAppProps>(
+  "/accounts/:envId/apps",
+  function* (ctx: CreateAppCtx, next) {
+    const { name, envId } = ctx.payload;
+    const body = {
+      handle: name,
+      account_id: envId,
+    };
+    ctx.request = ctx.req({
+      body: JSON.stringify(body),
+    });
+
+    yield next();
+  },
+);
+
+interface CreateAppOpProps {
+  appId: string;
+  env: { [key: string]: string | boolean | number };
+}
+export type CreateAppOpCtx = DeployApiCtx<any, CreateAppOpProps>;
+export const createAppOperation = api.post<CreateAppOpProps>(
+  "/apps/:appId/operations",
+  function* (ctx: CreateAppOpCtx, next) {
+    const { env } = ctx.payload;
+    const body = { env, type: "configure" };
+    ctx.request = ctx.req({ body: JSON.stringify(body) });
+    yield next();
+  },
 );
 
 export const appEntities = {

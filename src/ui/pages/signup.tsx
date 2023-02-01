@@ -15,6 +15,7 @@ import {
   acceptInvitationWithCodeUrl,
   verifyEmailRequestUrl,
   loginUrl,
+  homeUrl,
 } from "@app/routes";
 import { selectAuthLoader } from "@app/auth";
 import { validEmail } from "@app/string-utils";
@@ -24,9 +25,10 @@ import {
   FormGroup,
   Button,
   AptibleLogo,
-  Alert,
   LoggedInBanner,
+  BannerMessages,
 } from "../shared";
+import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 
 const createQueryStringValue =
   (queryString: string) => (key: string): string => {
@@ -46,11 +48,13 @@ const SignupPageForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const getQueryStringValue = createQueryStringValue(location.search);
+  const redirectPath = useSelector(selectRedirectPath);
 
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>(getQueryStringValue("email"));
-  const [password, setPassword] = useState<string>("");
-  const [company, setCompany] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState(getQueryStringValue("email"));
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passError, setPassError] = useState("");
 
   const loader = useSelector(selectAuthLoader);
   const { isLoading } = loader;
@@ -68,27 +72,31 @@ const SignupPageForm = () => {
 
   const currentEmail = invitation ? invitation.email : email;
 
-  const emailErrorMessage =
-    currentEmail === "" || validEmail(currentEmail)
-      ? null
-      : "Not a valid email";
-
-  const passwordErrors = validatePasswordComplexity(password);
-  const passwordErrorMessage =
-    password !== "" && passwordErrors.length > 0
-      ? `Password ${passwordErrors.join(", ")}`
-      : "";
-  const disableSave =
-    name === "" ||
-    currentEmail === "" ||
-    password === "" ||
-    !!emailErrorMessage ||
-    passwordErrors.length > 0;
+  const disableSave = name === "" || currentEmail === "" || password === "";
 
   const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (disableSave) {
       return;
+    }
+
+    if (!validEmail(email)) {
+      setEmailError("Not a valid email");
+      return;
+    } else {
+      setEmailError("");
+    }
+
+    const passwordErrors = validatePasswordComplexity(password);
+    const passwordErrorMessage =
+      password !== "" && passwordErrors.length > 0
+        ? `Password ${passwordErrors.join(", ")}`
+        : "";
+    if (passwordErrorMessage) {
+      setPassError(passwordErrorMessage);
+      return;
+    } else {
+      setPassError("");
     }
 
     dispatch(
@@ -105,6 +113,13 @@ const SignupPageForm = () => {
     if (invitationRequest.invitationId) {
       navigate(acceptInvitationWithCodeUrl(invitationRequest));
     } else {
+      // if the api returns with a user.verified = true, skip email request page
+      // this can happen in development when ENV['DISABLE_EMAIL_VERIFICATION']=1
+      if (loader.meta.verified) {
+        navigate(redirectPath || homeUrl());
+        dispatch(resetRedirectPath());
+        return;
+      }
       navigate(verifyEmailRequestUrl());
     }
   });
@@ -135,17 +150,6 @@ const SignupPageForm = () => {
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <form className="space-y-6" onSubmit={onSubmitForm}>
-              {emailErrorMessage || passwordErrorMessage ? (
-                <div className="mb-8">
-                  <Alert title="Something went wrong" variant="danger">
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>{emailErrorMessage}</li>
-                      <li>{passwordErrorMessage}</li>
-                    </ul>
-                  </Alert>
-                </div>
-              ) : null}
-
               <FormGroup label="Your name" htmlFor="name">
                 <Input
                   id="name"
@@ -161,24 +165,11 @@ const SignupPageForm = () => {
                 />
               </FormGroup>
 
-              <FormGroup label="Company" htmlFor="company">
-                <Input
-                  id="company"
-                  name="company"
-                  type="text"
-                  autoComplete="company"
-                  required={true}
-                  value={company}
-                  className="w-full"
-                  onChange={(e) => setCompany(e.target.value)}
-                />
-              </FormGroup>
-
               <FormGroup
-                label="Your work email"
+                label="Your email"
                 htmlFor="email"
-                feedbackVariant={emailErrorMessage ? "danger" : "info"}
-                feedbackMessage={emailErrorMessage}
+                feedbackVariant={emailError ? "danger" : "info"}
+                feedbackMessage={emailError}
               >
                 <Input
                   id="email"
@@ -196,8 +187,8 @@ const SignupPageForm = () => {
               <FormGroup
                 label="Password"
                 htmlFor="password"
-                feedbackVariant={passwordErrorMessage ? "danger" : "info"}
-                feedbackMessage={passwordErrorMessage}
+                feedbackVariant={passError ? "danger" : "info"}
+                feedbackMessage={passError}
               >
                 <Input
                   id="password"
@@ -212,6 +203,7 @@ const SignupPageForm = () => {
                 />
               </FormGroup>
 
+              {loader.isError ? <BannerMessages {...loader} /> : null}
               <div>
                 <Button
                   type="submit"
@@ -219,6 +211,7 @@ const SignupPageForm = () => {
                   layout="block"
                   size="lg"
                   disabled={disableSave}
+                  isLoading={loader.isLoading}
                 >
                   Create Account
                 </Button>

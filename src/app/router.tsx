@@ -32,11 +32,12 @@ import {
   DatabaseSettingsPage,
   CreateProjectPage,
   CreateProjectGitPage,
-  CreateProjectGitLayout,
+  CreateProjectLayout,
   CreateProjectAddKeyPage,
   CreateProjectGitPushPage,
   CreateProjectGitSettingsPage,
   CreateProjectGitStatusPage,
+  CreateProjectNamePage,
 } from "@app/ui";
 import * as routes from "@app/routes";
 
@@ -155,12 +156,12 @@ const appRoutes: RouteObject[] = [
       },
 
       {
-        path: routes.CREATE_PROJECT_PATH,
-        element: <CreateProjectPage />,
-      },
-      {
         path: routes.CREATE_PROJECT_ADD_KEY_PATH,
-        element: <CreateProjectGitLayout />,
+        element: (
+          <ElevateRequired>
+            <CreateProjectLayout />
+          </ElevateRequired>
+        ),
         children: [
           {
             index: true,
@@ -169,8 +170,18 @@ const appRoutes: RouteObject[] = [
         ],
       },
       {
+        path: routes.CREATE_PROJECT_ADD_NAME_PATH,
+        element: <CreateProjectLayout />,
+        children: [
+          {
+            index: true,
+            element: <CreateProjectNamePage />,
+          },
+        ],
+      },
+      {
         path: routes.CREATE_PROJECT_GIT_PATH,
-        element: <CreateProjectGitLayout />,
+        element: <CreateProjectLayout />,
         children: [
           {
             index: true,
@@ -191,6 +202,11 @@ const appRoutes: RouteObject[] = [
         ],
       },
     ],
+  },
+
+  {
+    path: routes.CREATE_PROJECT_PATH,
+    element: <CreateProjectPage />,
   },
 
   {

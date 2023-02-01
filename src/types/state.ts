@@ -5,6 +5,7 @@ import type { MapEntity } from "./helpers";
 import type {
   DeployApp,
   DeployDatabase,
+  DeployDatabaseImage,
   DeployDisk,
   DeployEndpoint,
   DeployEnvironment,
@@ -78,6 +79,7 @@ export interface DeployState {
   stacks: MapEntity<DeployStack>;
   disks: MapEntity<DeployDisk>;
   databases: MapEntity<DeployDatabase>;
+  databaseImages: MapEntity<DeployDatabaseImage>;
   services: MapEntity<DeployService>;
   logDrains: MapEntity<DeployLogDrain>;
 }

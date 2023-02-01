@@ -12,7 +12,11 @@ import { fetchCurrentToken } from "@app/auth";
 
 import { Loading } from "../shared";
 
-export const ElevateRequired = () => {
+export const ElevateRequired = ({
+  children,
+}: {
+  children?: React.ReactNode;
+}) => {
   const loader = useLoader(fetchCurrentToken);
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
   const isElevatedTokenValid = useSelector(selectIsElevatedTokenValid);
@@ -34,9 +38,5 @@ export const ElevateRequired = () => {
     return <Navigate to={elevateUrl(location.pathname)} replace />;
   }
 
-  return (
-    <div>
-      <Outlet />
-    </div>
-  );
+  return <div>{children ? children : <Outlet />}</div>;
 };

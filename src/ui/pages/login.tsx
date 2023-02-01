@@ -27,6 +27,7 @@ import {
   LoggedInBanner,
   IconExclamation,
 } from "../shared";
+import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
@@ -37,6 +38,7 @@ export const LoginPage = () => {
   const [password, setPassword] = useState<string>("");
   const [requireOtp, setRequireOtp] = useState<boolean>(false);
   const loader = useSelector(selectAuthLoader);
+  const redirectPath = useSelector(selectRedirectPath);
 
   const invitationRequest = useSelector(selectInvitationRequest);
   const invitation = useSelector(selectPendingInvitation);
@@ -51,7 +53,8 @@ export const LoginPage = () => {
     if (invitationRequest.invitationId) {
       navigate(acceptInvitationWithCodeUrl(invitationRequest));
     } else {
-      navigate(homeUrl());
+      navigate(redirectPath || homeUrl());
+      dispatch(resetRedirectPath());
     }
   });
 

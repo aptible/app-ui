@@ -10,6 +10,7 @@ import type { AppState } from "@app/types";
 import { resetReducer } from "@app/reset-store";
 import { TOKEN_NAME, ELEVATED_TOKEN_NAME } from "@app/token";
 import { THEME_NAME } from "@app/theme";
+import { REDIRECT_NAME } from "@app/redirect-path";
 
 import { sagas, reducers } from "./packages";
 
@@ -25,7 +26,7 @@ interface AppStore<State> {
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: [TOKEN_NAME, ELEVATED_TOKEN_NAME, THEME_NAME],
+  whitelist: [TOKEN_NAME, ELEVATED_TOKEN_NAME, THEME_NAME, REDIRECT_NAME],
 };
 
 export function setupStore({ initState }: Props): AppStore<AppState> {

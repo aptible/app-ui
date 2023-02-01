@@ -1,3 +1,5 @@
+import { LinkResponse } from "./hal";
+
 export type ProvisionableStatus =
   | "pending"
   | "provisioning"
@@ -110,7 +112,7 @@ export interface DeployStack extends Timestamps {
   organizationId: string;
 }
 
-type OperationStatus = "queued" | "running" | "failed" | "succeeded";
+export type OperationStatus = "queued" | "running" | "failed" | "succeeded";
 
 export interface DeployOperation extends Timestamps {
   id: string;
@@ -120,7 +122,7 @@ export interface DeployOperation extends Timestamps {
   status: OperationStatus;
   gitRef: string;
   dockerRef: string;
-  containerCount: string;
+  containerCount: number;
   encryptedEnvJsonNew: string;
   destinationRegion: string;
   cancelled: boolean;
@@ -139,9 +141,12 @@ export interface DeployOperation extends Timestamps {
 export interface DeployOperationResponse {
   id: number;
   type: string;
-  status: "queued" | "running" | "failed" | "succeeded";
+  status: OperationStatus;
   user_name: string;
   updated_at: string;
+  _links: {
+    resource: LinkResponse;
+  };
 }
 
 export interface DeployDisk extends Timestamps {
@@ -174,6 +179,17 @@ export interface DeployDatabase extends Provisionable, Timestamps {
   type: string;
   disk: DeployDisk | null;
   serviceId: string;
+}
+
+export interface DeployDatabaseImage extends Timestamps {
+  id: string;
+  default: boolean;
+  description: string;
+  discoverable: boolean;
+  dockerRepo: string;
+  type: string;
+  version: string;
+  visible: boolean;
 }
 
 export interface ContainerProfile {

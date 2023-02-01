@@ -82,6 +82,17 @@ export const selectStacksAsOptions = createSelector(
     });
   },
 );
+export const selectStackPublicDefault = createSelector(
+  selectStacksAsList,
+  (stacks) => {
+    if (stacks.length === 0) {
+      return initStack;
+    }
+
+    // find first public stack
+    return stacks.find((s) => s.public) || initStack;
+  },
+);
 export const hasDeployStack = (s: DeployStack) => s.organizationId !== "";
 export const stackReducers = createReducerMap(slice);
 

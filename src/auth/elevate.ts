@@ -10,6 +10,8 @@ import { elevateToken, ElevateToken, ElevateTokenCtx } from "./token";
 import { AUTH_LOADER_ID } from "./loader";
 import { ThunkCtx, thunks } from "@app/api";
 
+export type ElevateCtx = ThunkCtx<ElevateToken>;
+
 export const elevate = thunks.create<ElevateToken>(
   "elevate",
   function* onElevate(ctx: ThunkCtx<ElevateToken>, next) {

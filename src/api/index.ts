@@ -147,19 +147,25 @@ authApi.use(tokenMdw);
 authApi.use(elevatedTokenMdw);
 authApi.use(fetcher());
 
-export interface ThunkCtx<P = any> extends PipeCtx<P> {
+export interface ThunkCtx<P = any, D = any> extends PipeCtx<P> {
   actions: Action[];
+  json: D | null;
 }
 
 export interface PaginateProps {
   page: number;
 }
 
+/**
+ * Loops through all the pages of an endpoint
+ */
 export function combinePages(
   actionFn: CreateActionWithPayload<DeployApiCtx, PaginateProps>,
 ) {
   function* paginator(ctx: ThunkCtx, next: Next) {
+    let results: DeployApiCtx[] = [];
     yield put(setLoaderStart({ id: ctx.key }));
+
     const firstPage: DeployApiCtx<HalEmbedded<any>> = yield call(
       actionFn.run,
       actionFn({ page: 1 }),
@@ -172,6 +178,8 @@ export function combinePages(
       return;
     }
 
+    results = [firstPage];
+
     if (firstPage.json.data.current_page) {
       const cur = firstPage.json.data.current_page;
       const total = firstPage.json.data.total_count || 0;
@@ -181,9 +189,12 @@ export function combinePages(
       for (let i = cur + 1; i <= lastPage; i += 1) {
         fetchAll.push(call(actionFn.run, actionFn({ page: i })));
       }
-      yield all(fetchAll);
+      if (fetchAll.length > 0) {
+        results = yield all(fetchAll);
+      }
     }
 
+    ctx.json = { data: results };
     yield put(setLoaderSuccess({ id: ctx.key }));
     yield next();
   }
@@ -193,5 +204,9 @@ export function combinePages(
 
 export const thunks = createPipe<ThunkCtx>();
 thunks.use(errorHandler);
+thunks.use(function* (ctx, next) {
+  ctx.json = null;
+  yield next();
+});
 thunks.use(dispatchActions);
 thunks.use(thunks.routes());

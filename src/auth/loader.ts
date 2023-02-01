@@ -14,6 +14,8 @@ export const defaultAuthLoader = (l: Partial<AuthLoader> = {}): AuthLoader => ({
     error: "",
     code: 0,
     exception_context: {},
+    verified: false,
+    id: "",
     ...l.meta,
   },
   ...l,
