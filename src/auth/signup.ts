@@ -6,6 +6,7 @@ import {
   setLoaderError,
 } from "saga-query";
 
+import { createLog } from "@app/debug";
 import { AuthApiCtx, ThunkCtx, thunks } from "@app/api";
 import { CreateUserForm, CreateUserCtx, createUser } from "@app/users";
 
@@ -13,7 +14,8 @@ import { TokenCtx, createToken, elevateToken, ElevateTokenCtx } from "./token";
 import { AUTH_LOADER_ID } from "./loader";
 import { createOrganization, OrgCtx } from "@app/organizations";
 import { ApiGen } from "@app/types";
-import { elevate } from "./elevate";
+
+const log = createLog("signup");
 
 function* setAuthError(ctx: AuthApiCtx) {
   if (ctx.json.ok) {
@@ -33,7 +35,9 @@ export const signup = thunks.create<CreateUserForm>(
       createUser.run,
       createUser(ctx.payload),
     );
-    console.log(userCtx);
+
+    log(userCtx);
+
     if (!userCtx.json.ok) {
       yield call(setAuthError, userCtx);
       return;
@@ -48,7 +52,9 @@ export const signup = thunks.create<CreateUserForm>(
         makeCurrent: true,
       }),
     );
-    console.log(tokenCtx);
+
+    log(tokenCtx);
+
     if (!tokenCtx.json.ok) {
       yield call(setAuthError, tokenCtx);
       return;
@@ -58,7 +64,9 @@ export const signup = thunks.create<CreateUserForm>(
       createOrganization.run,
       createOrganization({ name: email }),
     );
-    console.log(orgCtx);
+
+    log(orgCtx);
+
     if (!orgCtx.json.ok) {
       yield call(setAuthError, orgCtx);
       return;
@@ -68,7 +76,8 @@ export const signup = thunks.create<CreateUserForm>(
       elevateToken.run,
       elevateToken({ username: email, password, otpToken: "" }),
     );
-    console.log(elevateCtx);
+
+    log(elevateCtx);
 
     yield put(
       setLoaderSuccess({
