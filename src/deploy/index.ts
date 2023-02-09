@@ -6,3 +6,4 @@ export * from "./endpoint";
 export * from "./database";
 export * from "./service";
 export * from "./log-drain";
+export * from "./database-images";

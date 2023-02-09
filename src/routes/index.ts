@@ -86,13 +86,17 @@ export const CREATE_PROJECT_PATH = "/create";
 export const createProjectUrl = () => CREATE_PROJECT_PATH;
 export const CREATE_PROJECT_ADD_KEY_PATH = "/create/ssh";
 export const createProjectAddKeyUrl = () => CREATE_PROJECT_ADD_KEY_PATH;
+export const CREATE_PROJECT_ADD_NAME_PATH = "/create/name";
+export const createProjectAddNameUrl = () => CREATE_PROJECT_ADD_NAME_PATH;
 
 export const CREATE_PROJECT_GIT_PATH = "/create/git";
 export const createProjectGitUrl = () => CREATE_PROJECT_GIT_PATH;
-export const CREATE_PROJECT_GIT_PUSH_PATH = "/create/git/push";
-export const createProjectGitPushUrl = () => CREATE_PROJECT_GIT_PUSH_PATH;
-export const CREATE_PROJECT_GIT_SETTINGS_PATH = "/create/git/settings";
-export const createProjectGitSettingsUrl = () =>
-  CREATE_PROJECT_GIT_SETTINGS_PATH;
-export const CREATE_PROJECT_GIT_STATUS_PATH = "/create/git/status";
-export const createProjectGitStatusUrl = () => CREATE_PROJECT_GIT_STATUS_PATH;
+export const CREATE_PROJECT_GIT_PUSH_PATH = "/create/git/:appId/push";
+export const createProjectGitPushUrl = (appId: string) =>
+  `/create/git/${appId}/push`;
+export const CREATE_PROJECT_GIT_SETTINGS_PATH = "/create/git/:appId/settings";
+export const createProjectGitSettingsUrl = (appId: string) =>
+  `/create/git/${appId}/settings`;
+export const CREATE_PROJECT_GIT_STATUS_PATH = "/create/git/:appId/status";
+export const createProjectGitStatusUrl = (appId: string) =>
+  `/create/git/${appId}/status`;

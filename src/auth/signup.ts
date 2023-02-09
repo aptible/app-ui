@@ -6,11 +6,16 @@ import {
   setLoaderError,
 } from "saga-query";
 
+import { createLog } from "@app/debug";
 import { AuthApiCtx, ThunkCtx, thunks } from "@app/api";
 import { CreateUserForm, CreateUserCtx, createUser } from "@app/users";
 
-import { TokenCtx, createToken } from "./token";
+import { TokenCtx, createToken, elevateToken, ElevateTokenCtx } from "./token";
 import { AUTH_LOADER_ID } from "./loader";
+import { createOrganization, OrgCtx } from "@app/organizations";
+import { ApiGen } from "@app/types";
+
+const log = createLog("signup");
 
 function* setAuthError(ctx: AuthApiCtx) {
   if (ctx.json.ok) {
@@ -22,7 +27,7 @@ function* setAuthError(ctx: AuthApiCtx) {
 
 export const signup = thunks.create<CreateUserForm>(
   "signup",
-  function* onSignup(ctx: ThunkCtx<CreateUserForm>, next) {
+  function* onSignup(ctx: ThunkCtx<CreateUserForm>, next): ApiGen {
     const { email, password } = ctx.payload;
     yield put(setLoaderStart({ id: AUTH_LOADER_ID }));
 
@@ -30,7 +35,9 @@ export const signup = thunks.create<CreateUserForm>(
       createUser.run,
       createUser(ctx.payload),
     );
-    console.log(userCtx);
+
+    log(userCtx);
+
     if (!userCtx.json.ok) {
       yield call(setAuthError, userCtx);
       return;
@@ -45,13 +52,42 @@ export const signup = thunks.create<CreateUserForm>(
         makeCurrent: true,
       }),
     );
-    console.log(tokenCtx);
+
+    log(tokenCtx);
+
     if (!tokenCtx.json.ok) {
       yield call(setAuthError, tokenCtx);
       return;
     }
 
-    yield put(setLoaderSuccess({ id: AUTH_LOADER_ID }));
+    const orgCtx: OrgCtx = yield call(
+      createOrganization.run,
+      createOrganization({ name: email }),
+    );
+
+    log(orgCtx);
+
+    if (!orgCtx.json.ok) {
+      yield call(setAuthError, orgCtx);
+      return;
+    }
+
+    const elevateCtx: ElevateTokenCtx = yield call(
+      elevateToken.run,
+      elevateToken({ username: email, password, otpToken: "" }),
+    );
+
+    log(elevateCtx);
+
+    yield put(
+      setLoaderSuccess({
+        id: AUTH_LOADER_ID,
+        meta: {
+          id: userCtx.json.data.id,
+          verified: userCtx.json.data.verified,
+        },
+      }),
+    );
     yield next();
   },
 );

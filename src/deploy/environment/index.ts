@@ -1,17 +1,45 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
+import {
+  api,
+  cacheTimer,
+  combinePages,
+  DeployApiCtx,
+  PaginateProps,
+  thunks,
+} from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type { AppState, DeployEnvironment } from "@app/types";
+import type { AppState, DeployEnvironment, LinkResponse } from "@app/types";
 
 import { selectDeploy } from "../slice";
 
+interface DeployEnvironmentResponse {
+  id: string;
+  handle: string;
+  created_at: string;
+  updated_at: string;
+  type: "production" | "development";
+  activated: boolean;
+  container_count: number;
+  domain_count: number;
+  total_disk_size: number;
+  total_app_count: number;
+  app_container_count: number;
+  database_container_count: number;
+  total_database_count: number;
+  sweetness_stack: string;
+  total_backup_size: number;
+  _links: {
+    environment: LinkResponse;
+  };
+}
+
 export const deserializeDeployEnvironment = (
-  payload: any,
+  payload: DeployEnvironmentResponse,
 ): DeployEnvironment => ({
   id: `${payload.id}`,
   handle: payload.handle,
@@ -64,8 +92,8 @@ const { add: addDeployEnvironments } = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_ENVIRONMENT_NAME],
 );
-const initApp = defaultDeployEnvironment();
-const must = mustSelectEntity(initApp);
+const initEnv = defaultDeployEnvironment();
+const must = mustSelectEntity(initEnv);
 export const selectEnvironmentById = must(selectors.selectById);
 export const {
   selectTable: selectEnvironments,
@@ -85,6 +113,13 @@ export const selectEnvironmentsAsOptions = createSelector(
 );
 export const hasDeployEnvironment = (a: DeployEnvironment) => a.id !== "";
 export const environmentReducers = createReducerMap(slice);
+export const selectEnvironmentByName = createSelector(
+  selectEnvironmentsAsList,
+  (_: AppState, p: { handle: string }) => p.handle,
+  (envs, handle) => {
+    return envs.find((e) => e.handle === handle) || initEnv;
+  },
+);
 
 export const fetchEnvironments = api.get<PaginateProps>(
   "/accounts?page=:page",
@@ -97,6 +132,35 @@ export const fetchAllEnvironments = thunks.create(
 );
 
 export const fetchEnvironment = api.get<{ id: string }>("/accounts/:id");
+
+interface CreateEnvProps {
+  name: string;
+  stackId: string;
+  orgId: string;
+}
+
+export type CreateEnvCtx = DeployApiCtx<
+  DeployEnvironmentResponse,
+  CreateEnvProps
+>;
+
+export const createDeployEnvironment = api.post<CreateEnvProps>(
+  "/accounts",
+  function* (ctx: CreateEnvCtx, next) {
+    const { name, stackId, orgId } = ctx.payload;
+    const body = {
+      handle: name,
+      stack_id: stackId,
+      organization_id: orgId,
+      type: "development",
+    };
+    ctx.request = ctx.req({
+      body: JSON.stringify(body),
+    });
+
+    yield next();
+  },
+);
 
 export const environmentEntities = {
   account: defaultEntity({

@@ -1,15 +1,59 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, Outlet, useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
+import { useApi, useCache, useLoaderSuccess, useQuery } from "saga-query/react";
+import { selectLoaderById } from "saga-query";
+
 import {
   createProjectAddKeyUrl,
+  createProjectAddNameUrl,
   createProjectGitPushUrl,
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
 } from "@app/routes";
-import { Outlet } from "react-router";
-import { Link } from "react-router-dom";
-import { ListingPageLayout } from "../layouts";
-import { tokens, Box, Input, Button, Loading } from "../shared";
+import { fetchSSHKeys } from "@app/ssh-keys";
+import { selectCurrentUser } from "@app/users";
+import {
+  AppState,
+  DeployDatabaseImage,
+  DeployOperationResponse,
+  HalEmbedded,
+} from "@app/types";
 
-export const CreateProjectGitLayout = () => {
+import { ListingPageLayout } from "../layouts";
+import {
+  tokens,
+  Box,
+  Input,
+  Loading,
+  ErrorResources,
+  Button,
+  FormGroup,
+  BannerMessages,
+  Banner,
+} from "../shared";
+import { AddSSHKeyForm } from "../shared/add-ssh-key";
+import { createProject, deployProject, TextVal } from "@app/projects";
+import {
+  fetchAllStacks,
+  fetchApp,
+  fetchEnvironment,
+  selectAppById,
+  selectEnvironmentById,
+  selectStackPublicDefault,
+} from "@app/deploy";
+import {
+  cancelEnvOperationsPoll,
+  pollEnvOperations,
+} from "@app/deploy/operation";
+import { selectOrganizationSelected } from "@app/organizations";
+import {
+  fetchAllDatabaseImages,
+  selectDatabaseImagesAsList,
+} from "@app/deploy/database-images";
+
+export const CreateProjectLayout = () => {
   return (
     <ListingPageLayout>
       <div className="flex justify-center container">
@@ -22,7 +66,24 @@ export const CreateProjectGitLayout = () => {
 };
 
 export const CreateProjectGitPage = () => {
-  return <CreateProjectAddKeyPage />;
+  const user = useSelector(selectCurrentUser);
+  const query = useCache<HalEmbedded<{ ssh_keys: any[] }>>(
+    fetchSSHKeys({ userId: user.id }),
+  );
+
+  useEffect(() => {
+    query.trigger();
+  }, [user.id]);
+
+  if (query.isInitialLoading) return <Loading />;
+  if (query.isError) return <ErrorResources message={query.message} />;
+  if (!query.data) return <div>Could not fetch SSH keys</div>;
+
+  if (query.data._embedded.ssh_keys.length === 0) {
+    return <Navigate to={createProjectAddKeyUrl()} replace />;
+  }
+
+  return <Navigate to={createProjectAddNameUrl()} replace />;
 };
 
 const FormNav = ({
@@ -34,17 +95,24 @@ const FormNav = ({
 }) => {
   return (
     <div>
-      <Link aria-disabled={!prev} to={prev} className="pr-2">
-        Prev
-      </Link>
-      <Link aria-disabled={!next} to={next}>
-        Next
-      </Link>
+      {prev ? (
+        <Link aria-disabled={!prev} to={prev} className="pr-2">
+          Prev
+        </Link>
+      ) : null}
+      {next ? (
+        <Link aria-disabled={!next} to={next}>
+          Next
+        </Link>
+      ) : null}
     </div>
   );
 };
 
 export const CreateProjectAddKeyPage = () => {
+  const navigate = useNavigate();
+  const onSuccess = () => navigate(createProjectAddNameUrl());
+
   return (
     <div>
       <div className="text-center">
@@ -54,27 +122,130 @@ export const CreateProjectAddKeyPage = () => {
         </p>
       </div>
 
-      <FormNav next={createProjectGitPushUrl()} />
+      <FormNav next={createProjectAddNameUrl()} />
+
       <Box>
-        <h2 className={tokens.type.h3}>Public SSH Key</h2>
-        <p className="text-gray-600 mb-2">
-          Copy the contents of the file <code>$HOME/.ssh/id_rsa.pub</code> then
-          paste here. Need Help? View Docs
-        </p>
-        <textarea className={tokens.type.textarea} />
-        <Button className="w-full mt-2" disabled>
-          Save Key
-        </Button>
+        <AddSSHKeyForm onSuccess={onSuccess} />
       </Box>
     </div>
   );
 };
 
 const PreCode = ({ children }: { children: React.ReactNode }) => {
-  return <pre className="p-4 bg-black rounded text-white">{children}</pre>;
+  return <pre className={tokens.type.pre}>{children}</pre>;
+};
+
+export const CreateProjectNamePage = () => {
+  const org = useSelector(selectOrganizationSelected);
+  const stack = useSelector(selectStackPublicDefault);
+  const [name, setName] = useState("");
+  const thunk = useApi(
+    createProject({ name, stackId: stack.id, orgId: org.id }),
+  );
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    thunk.trigger();
+  };
+  const navigate = useNavigate();
+  useQuery(fetchAllStacks());
+
+  useLoaderSuccess(thunk, () => {
+    navigate(createProjectGitPushUrl(thunk.meta.appId));
+  });
+
+  return (
+    <div>
+      <div className="text-center">
+        <h1 className={tokens.type.h1}>Deploy your code</h1>
+        <p className="my-4 text-gray-600">Provide a name for your project.</p>
+      </div>
+
+      <FormNav prev={createProjectAddKeyUrl()} />
+
+      <Box>
+        <div className="my-2">Stack: {stack.name}</div>
+        <form onSubmit={onSubmit}>
+          <FormGroup label="Project Name" htmlFor="name" feedbackVariant="info">
+            <Input
+              name="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.currentTarget.value)}
+              autoFocus
+            />
+          </FormGroup>
+
+          {thunk.isError ? (
+            <BannerMessages {...thunk} className="my-2" />
+          ) : null}
+
+          <Button
+            className="mt-4 w-full"
+            type="submit"
+            isLoading={thunk.isLoading}
+          >
+            Create project
+          </Button>
+        </form>
+      </Box>
+    </div>
+  );
+};
+
+const OpResult = ({ op }: { op: DeployOperationResponse }) => {
+  const postfix = `operation: ${op.id}`;
+  if (op.status === "failed") {
+    return (
+      <Banner variant="error">Scanning operation failed, {postfix}</Banner>
+    );
+  }
+  if (op.status === "succeeded") {
+    return <Banner variant="success">Scan success, {postfix}</Banner>;
+  }
+  if (op.status === "running") {
+    return (
+      <Banner variant="info">Git push detected (running), {postfix}</Banner>
+    );
+  }
+  return <Banner variant="info">Git push detected (queued), {postfix}</Banner>;
 };
 
 export const CreateProjectGitPushPage = () => {
+  const { appId = "" } = useParams();
+  const navigate = useNavigate();
+  useQuery(fetchApp({ id: appId }));
+  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const envId = app.environmentId;
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: envId }),
+  );
+  useQuery(fetchEnvironment({ id: env.id }));
+  const dispatch = useDispatch();
+  const cancel = () => dispatch(cancelEnvOperationsPoll());
+  const ops = useCache<HalEmbedded<{ operations: DeployOperationResponse[] }>>(
+    pollEnvOperations({ envId }),
+  );
+  let scanOp: DeployOperationResponse | undefined;
+
+  scanOp = ops.data
+    ? ops.data._embedded.operations.find((op) => op.type === "deploy")
+    : undefined;
+
+  useEffect(() => {
+    cancel();
+    dispatch(pollEnvOperations({ envId }));
+
+    return () => {
+      cancel();
+    };
+  }, [appId, envId]);
+
+  useEffect(() => {
+    if (scanOp && scanOp.status === "succeeded") {
+      navigate(createProjectGitSettingsUrl(appId));
+    }
+  }, [scanOp]);
+
   return (
     <div>
       <div className="text-center">
@@ -84,16 +255,14 @@ export const CreateProjectGitPushPage = () => {
 
       <FormNav
         prev={createProjectAddKeyUrl()}
-        next={createProjectGitSettingsUrl()}
+        next={createProjectGitSettingsUrl(appId)}
       />
       <Box>
-        <h2 className={tokens.type.h3}>Project Name</h2>
-        <Input className="w-full" />
-        <hr className="my-4" />
         <div>
           <h2 className={tokens.type.h3}>Add Aptible's Git Server</h2>
           <PreCode>
-            git remote add aptible git@beta.aptible.com:[ENV]/[APP].git
+            git remote add aptible git@beta.aptible.com:{env.handle}/
+            {app.handle}.git
           </PreCode>
         </div>
         <div className="mt-4">
@@ -101,18 +270,164 @@ export const CreateProjectGitPushPage = () => {
           <PreCode>git push aptible main</PreCode>
         </div>
         <hr className="my-4" />
-        <Loading text="Waiting for git push ..." />
+        {scanOp ? (
+          <OpResult op={scanOp} />
+        ) : (
+          <Loading text="Waiting for git push ..." />
+        )}
       </Box>
     </div>
   );
 };
 
+const trim = (t: string) => t.trim();
+const parseText = <
+  M extends { [key: string]: string } = { [key: string]: string },
+>(
+  text: string,
+): TextVal<M>[] =>
+  text
+    .split("\n")
+    .map(trim)
+    .map((t) => {
+      const vals = t.split("=").map(trim);
+      return {
+        key: vals[0],
+        value: vals[1],
+      };
+    });
+
+interface ValidatorError {
+  item: TextVal;
+  message: string;
+}
+
+const validateDbs = (
+  items: TextVal[],
+  dbImages: DeployDatabaseImage[],
+): ValidatorError[] => {
+  const errors: ValidatorError[] = [];
+
+  const validate = (item: TextVal) => {
+    const imgs = dbImages.filter((img) => img.type === item.key);
+    if (imgs.length === 0) {
+      errors.push({
+        item,
+        message: `[${item.key}] is not a valid database`,
+      });
+      return;
+    }
+
+    let found = false;
+    imgs.forEach((img) => {
+      if (img.version === item.value) {
+        found = true;
+      }
+    });
+
+    if (!found) {
+      errors.push({
+        item,
+        message: `[${item.value}] is not a valid version for [${item.key}]`,
+      });
+    }
+  };
+
+  items.forEach(validate);
+  return errors;
+};
+
+const validateEnvs = (items: TextVal[]): ValidatorError[] => {
+  const errors: ValidatorError[] = [];
+
+  const validate = (item: TextVal) => {
+    // https://stackoverflow.com/a/2821201
+    if (!/[a-zA-Z_]+[a-zA-Z0-9_]*/.test(item.key)) {
+      errors.push({
+        item,
+        message: `${item.key} does not match regex: /[a-zA-Z_]+[a-zA-Z0-9_]*/`,
+      });
+    }
+  };
+
+  items.forEach(validate);
+  return errors;
+};
+
 export const CreateProjectGitSettingsPage = () => {
-  const envs = ["STRIPE_SECRET_KEY=1234"].join("\n");
-  const commands = [
-    "http:web=bundle exec rails server",
-    "worker=bundle exec sidekiq",
-  ].join("\n");
+  const { appId = "" } = useParams();
+  useQuery(fetchApp({ id: appId }));
+  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const query = useQuery(fetchAllDatabaseImages());
+  const dbImages = useSelector(selectDatabaseImagesAsList);
+  const [dbs, setDbs] = useState("postgresql=14");
+  const [dbErrors, setDbErrors] = useState<ValidatorError[]>([]);
+  const [envs, setEnvs] = useState(["STRIPE_SECRET_KEY=1234"].join("\n"));
+  const [envErrors, setEnvErrors] = useState<ValidatorError[]>([]);
+  const [cmds, setCmds] = useState(
+    ["http:web=bundle exec rails server", "worker=bundle exec sidekiq"].join(
+      "\n",
+    ),
+  );
+  const loader = useSelector((s: AppState) =>
+    selectLoaderById(s, { id: `${deployProject}` }),
+  );
+  console.log(`${deployProject}`, loader);
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let cancel = false;
+
+    const dbList = parseText<{ id: string }>(dbs);
+    const dberr = validateDbs(dbList, dbImages);
+    if (dberr.length > 0) {
+      cancel = true;
+      setDbErrors(dberr);
+    } else {
+      setDbErrors([]);
+
+      for (let i = 0; i < dbList.length; i += 1) {
+        const db = dbList[i];
+        dbImages.forEach((img) => {
+          if (img.version === db.value) {
+            dbList[i].meta = { id: img.id };
+          }
+        });
+      }
+    }
+
+    const envList = parseText(envs);
+    const enverr = validateEnvs(envList);
+    if (enverr.length > 0) {
+      cancel = true;
+      setEnvErrors(enverr);
+    } else {
+      setEnvErrors([]);
+    }
+
+    if (cancel) {
+      return;
+    }
+
+    dispatch(
+      deployProject({
+        appId,
+        envId: app.environmentId,
+        dbs: dbList,
+        envs: envList,
+        cmds: [],
+      }),
+    );
+  };
+
+  useEffect(() => {
+    query.trigger();
+  }, []);
+
+  useLoaderSuccess(loader, () => {
+    navigate(createProjectGitStatusUrl(appId));
+  });
 
   return (
     <div>
@@ -124,56 +439,151 @@ export const CreateProjectGitSettingsPage = () => {
       </div>
 
       <FormNav
-        prev={createProjectGitPushUrl()}
-        next={createProjectGitStatusUrl()}
+        prev={createProjectGitPushUrl(appId)}
+        next={createProjectGitStatusUrl(appId)}
       />
+
       <Box>
-        <div>
-          <h2 className={tokens.type.h3}>Databases</h2>
-          <p>
-            Add new databases with generated keys or connect to existing
-            databases.
-          </p>
-          <Input className="w-full" />
-          <p>
-            Check all applicable environment variables for Aptible to generate
-            in the environment variables section.
-          </p>
-        </div>
+        <form onSubmit={onSubmit}>
+          <FormGroup
+            label="Databases"
+            htmlFor="databases"
+            feedbackVariant={dbErrors ? "danger" : "info"}
+            feedbackMessage={dbErrors.map((e) => e.message).join(". ")}
+          >
+            <p>
+              Add new databases with generated keys or connect to existing
+              databases.
+            </p>
 
-        <hr className="my-4" />
+            <p>
+              You can provide as many databases as you need (each line is a
+              separate database).
+            </p>
 
-        <div>
-          <h2 className={tokens.type.h3}>Environment variables</h2>
-          <p>
-            Environment Variables (each line is a separate variable in format:{" "}
-            <code>ENV_VAR=VALUE</code>).
-          </p>
-          <textarea className={tokens.type.textarea} value={envs} />
-        </div>
+            <p>Options include:</p>
 
-        <hr className="my-4" />
+            {query.isInitialLoading ? (
+              <Loading text="Loading databases" />
+            ) : (
+              <ul>
+                {dbImages.map((d) => {
+                  return (
+                    <li key={d.id}>
+                      {d.type}={d.version}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            <textarea
+              name="databases"
+              className={tokens.type.textarea}
+              value={dbs}
+              onChange={(e) => setDbs(e.currentTarget.value)}
+            />
+          </FormGroup>
 
-        <div>
-          <h2 className={tokens.type.h3}>Services and commands</h2>
-          <p>
-            Each line is separated by a service command in format:{" "}
-            <code>NAME=COMMAND</code>.
-          </p>
-          <p>
-            Prefix <code>NAME</code> with <code>http:</code> if the service
-            requires an endpoint. (e.g. <code>http:web=rails server</code>)
-          </p>
-          <textarea className={tokens.type.textarea} value={commands} />
-        </div>
+          <hr className="my-4" />
 
-        <hr className="my-4" />
+          <FormGroup
+            label="Environment Variables"
+            htmlFor="envs"
+            feedbackVariant={envErrors ? "danger" : "info"}
+            feedbackMessage={envErrors.map((e) => e.message).join(". ")}
+          >
+            <p>
+              Environment Variables (each line is a separate variable in format:{" "}
+              <code>ENV_VAR=VALUE</code>).
+            </p>
+            <textarea
+              name="envs"
+              className={tokens.type.textarea}
+              value={envs}
+              onChange={(e) => setEnvs(e.currentTarget.value)}
+            />
+          </FormGroup>
+
+          <hr className="my-4" />
+
+          <FormGroup
+            label="Service and Commands"
+            htmlFor="commands"
+            feedbackVariant="info"
+          >
+            <p>
+              Each line is separated by a service command in format:{" "}
+              <code>NAME=COMMAND</code>.
+            </p>
+            <p>
+              Prefix <code>NAME</code> with <code>http:</code> if the service
+              requires an endpoint. (e.g. <code>http:web=rails server</code>)
+            </p>
+            <textarea
+              name="commands"
+              className={tokens.type.textarea}
+              value={cmds}
+              onChange={(e) => setCmds(e.currentTarget.value)}
+            />
+          </FormGroup>
+
+          <Button
+            type="submit"
+            className="w-full mt-4"
+            isLoading={loader.isLoading}
+          >
+            Save & Deploy
+          </Button>
+        </form>
       </Box>
     </div>
   );
 };
 
+const Op = ({ op }: { op: DeployOperationResponse }) => {
+  const resource = op._links.resource?.href.split("/") || ["", "", ""];
+  return (
+    <div>
+      {resource[resource.length - 2]}:{op.type} - {op.status}
+    </div>
+  );
+};
+
+const Ops = ({ ops = [] }: { ops?: DeployOperationResponse[] }) => {
+  return (
+    <div>
+      {ops.map((op) => {
+        return <Op key={op.id} op={op} />;
+      })}
+    </div>
+  );
+};
+
 export const CreateProjectGitStatusPage = () => {
+  const { appId = "" } = useParams();
+  const dispatch = useDispatch();
+  useQuery(fetchApp({ id: appId }));
+  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const envId = app.environmentId;
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: envId }),
+  );
+  useQuery(fetchEnvironment({ id: env.id }));
+  const ops = useCache<HalEmbedded<{ operations: DeployOperationResponse[] }>>(
+    pollEnvOperations({ envId }),
+  );
+  useEffect(() => {}, []);
+
+  const cancel = () => dispatch(cancelEnvOperationsPoll());
+  useEffect(() => {
+    cancel();
+    dispatch(pollEnvOperations({ envId }));
+
+    return () => {
+      cancel();
+    };
+  }, [appId, envId]);
+
   return (
     <div>
       <div className="text-center">
@@ -181,9 +591,13 @@ export const CreateProjectGitStatusPage = () => {
         <p className="my-4 text-gray-600">Estimated wait time is 5 minutes.</p>
       </div>
 
-      <FormNav prev={createProjectGitSettingsUrl()} />
+      <FormNav prev={createProjectGitSettingsUrl(appId)} />
       <Box>
-        <Loading text="Provisioning resources ..." />
+        {ops.isInitialLoading ? (
+          <Loading text="Provisioning resources ..." />
+        ) : (
+          <Ops ops={ops.data?._embedded.operations} />
+        )}
       </Box>
     </div>
   );

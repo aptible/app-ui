@@ -55,6 +55,11 @@ export const ElevatePage = () => {
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
             Elevate token
           </h2>
+          <p>
+            We require a short-lived elevated token before allowing changes to
+            authentication credentials (i.e. changing password, adding pubkey,
+            disabling 2FA).
+          </p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -113,6 +118,7 @@ export const ElevatePage = () => {
                     autoComplete="off"
                     id="input-2fa"
                     className="flex-1 outline-0 py-1 bg-transparent"
+                    autoFocus
                   />
                 </FormGroup>
               ) : null}
@@ -122,7 +128,6 @@ export const ElevatePage = () => {
                   isLoading={loader.isLoading}
                   disabled={loader.isLoading}
                   type="submit"
-                  variant="primary"
                   layout="block"
                   size="lg"
                 >
@@ -136,71 +141,3 @@ export const ElevatePage = () => {
     </div>
   );
 };
-
-/*
-<div className="bg-white/5 shadow-md rounded-lg">
-  <FormGroup className="px-6 h-14 flex items-center border-b border-white/5">
-    <label htmlFor="input-email" className="w-20 text-sm">
-      Email
-    </label>
-
-    <input
-      name="email"
-      type="email"
-      disabled
-      value={user.email}
-      autoComplete="username"
-      autoFocus
-      data-testid="input-email"
-      id="input-email"
-      className="flex-1 outline-0 py-1 bg-transparent disabled:cursor-not-allowed text-white/20"
-    />
-  </FormGroup>
-
-  <FormGroup className="px-6 h-14 flex items-center">
-    <label htmlFor="input-password" className="w-20 text-sm">
-      Password
-    </label>
-    <input
-      name="password"
-      type="password"
-      value={password}
-      onChange={(e) => setPassword(e.currentTarget.value)}
-      autoComplete="current-password"
-      data-testid="input-password"
-      id="input-password"
-      className="flex-1 outline-0 py-1 bg-transparent"
-    />
-  </FormGroup>
-
-  {requireOtp && (
-    <FormGroup className="px-6 h-14 flex items-center border-t border-white/5">
-      <label htmlFor="input-2fa" className="w-20 text-sm">
-        2FA Token
-      </label>
-      <input
-        type="number"
-        value={otpToken}
-        onChange={(e) => setOtpToken(e.currentTarget.value)}
-        autoComplete="off"
-        autoFocus
-        data-testid="input-2fa"
-        id="input-2fa"
-        className="flex-1 outline-0 py-1 bg-transparent"
-      />
-    </FormGroup>
-  )}
-</div>
-
-<div className="flex flex-col justify-between mt-9 mb-6">
-  <Button
-    isLoading={loader.isLoading}
-    disabled={loader.isLoading}
-    type="submit"
-    variant="success"
-    className="h-12 rounded-lg"
-  >
-    Log in
-  </Button>
-</div>
-*/

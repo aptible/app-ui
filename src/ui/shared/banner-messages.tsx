@@ -1,12 +1,24 @@
-export const BannerMessages = (loader: {
+import cn from "classnames";
+
+import { variantToColor } from "@app/status-variant";
+
+export const BannerMessages = (props: {
   isSuccess: boolean;
   isError: boolean;
   message: string;
+  className?: string;
 }) => {
+  const cls = "p-4 border rounded text-xs";
   return (
-    <div>
-      {loader.isSuccess ? <div>Success! {loader.message}</div> : null}
-      {loader.isError ? <div>{loader.message}</div> : null}
+    <div className={props.className}>
+      {props.isSuccess ? (
+        <div className={cn(cls, variantToColor("success"))}>
+          Success! {props.message}
+        </div>
+      ) : null}
+      {props.isError ? (
+        <div className={cn(cls, variantToColor("error"))}>{props.message}</div>
+      ) : null}
     </div>
   );
 };
