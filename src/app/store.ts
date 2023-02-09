@@ -4,8 +4,9 @@ import type { Middleware, Store } from "@reduxjs/toolkit";
 import { PersistPartial } from "redux-persist/es/persistReducer";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
-import { prepareStore } from "saga-query";
+import { BATCH, prepareStore } from "saga-query";
 
+import { createLog } from "@app/debug";
 import type { AppState } from "@app/types";
 import { resetReducer } from "@app/reset-store";
 import { TOKEN_NAME, ELEVATED_TOKEN_NAME } from "@app/token";
@@ -29,22 +30,24 @@ const persistConfig = {
   whitelist: [TOKEN_NAME, ELEVATED_TOKEN_NAME, THEME_NAME, REDIRECT_NAME],
 };
 
+const log = createLog("redux");
+
 export function setupStore({ initState }: Props): AppStore<AppState> {
   const middleware: Middleware[] = [];
 
   if (import.meta.env.VITE_DEBUG === "true") {
-    /* const logger = (store: any) => (next: any) => (action: any) => {
+    const logger = (store: any) => (next: any) => (action: any) => {
       if (action.type === BATCH) {
-        console.log('== BATCH ==');
+        log("== BATCH ==");
         action.payload.forEach(console.log);
-        console.log('== END BATCH ==');
+        log("== END BATCH ==");
       } else {
-        console.log('ACTION', action);
+        log("ACTION", action);
       }
       next(action);
-      console.log('NEXT STATE', store.getState());
+      log("NEXT STATE", store.getState());
     };
-    middleware.push(logger); */
+    middleware.push(logger);
   }
 
   const prepared = prepareStore({
