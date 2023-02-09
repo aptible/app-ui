@@ -11,6 +11,7 @@ import {
 } from "./database-images";
 import { logDrainEntities, logDrainReducers } from "./log-drain";
 import { serviceEntities, serviceReducers } from "./service";
+import { opEntities, opReducers } from "./operation";
 
 const allReducers: any[] = [
   appReducers,
@@ -21,6 +22,7 @@ const allReducers: any[] = [
   logDrainReducers,
   serviceReducers,
   databaseImageReducers,
+  opReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -42,4 +44,5 @@ export const entities = {
   ...logDrainEntities,
   ...serviceEntities,
   ...databaseImageEntities,
+  ...opEntities,
 };

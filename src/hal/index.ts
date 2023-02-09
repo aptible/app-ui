@@ -17,7 +17,9 @@ import type { DeployApiCtx } from "@app/api";
   /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/,
 ); */
 
-export function extractIdFromLink(relation: { href: string } | null) {
+export function extractIdFromLink(
+  relation: { href: string } | null | undefined,
+) {
   if (!relation?.href) {
     return "";
   }
@@ -26,6 +28,17 @@ export function extractIdFromLink(relation: { href: string } | null) {
   return exec[0] || ''; */
   const segments = relation.href.split("/");
   return segments[segments.length - 1];
+}
+
+export function extractResourceNameFromLink(
+  resource: { href: string } | null | undefined,
+) {
+  if (!resource?.href) {
+    return "";
+  }
+
+  const res = resource.href.split("/");
+  return res[res.length - 2] || "";
 }
 
 export const ENTITIES_NAME = "entities";

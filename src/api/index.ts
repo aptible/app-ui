@@ -14,6 +14,7 @@ import {
   setLoaderError,
   all,
   setLoaderSuccess,
+  LoaderCtx,
 } from "saga-query";
 import type { ApiCtx, Next, PipeCtx } from "saga-query";
 
@@ -147,7 +148,7 @@ authApi.use(tokenMdw);
 authApi.use(elevatedTokenMdw);
 authApi.use(fetcher());
 
-export interface ThunkCtx<P = any, D = any> extends PipeCtx<P> {
+export interface ThunkCtx<P = any, D = any> extends PipeCtx<P>, LoaderCtx<P> {
   actions: Action[];
   json: D | null;
 }

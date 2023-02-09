@@ -116,7 +116,9 @@ export type OperationStatus = "queued" | "running" | "failed" | "succeeded";
 
 export interface DeployOperation extends Timestamps {
   id: string;
-  resourceId: number;
+  environmentId: string;
+  codeScanResultId: string;
+  resourceId: string;
   resourceType: string;
   type: string;
   status: OperationStatus;
@@ -146,6 +148,7 @@ export interface DeployOperationResponse {
   updated_at: string;
   _links: {
     resource: LinkResponse;
+    code_scan_result: LinkResponse;
   };
 }
 

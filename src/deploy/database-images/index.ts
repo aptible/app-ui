@@ -89,7 +89,7 @@ export const fetchDatabaseImages = api.get<PaginateProps>(
 );
 
 export const fetchAllDatabaseImages = thunks.create(
-  "fetch-all-databases",
+  "fetch-all-database-images",
   { saga: cacheTimer() },
   combinePages(fetchDatabaseImages),
 );

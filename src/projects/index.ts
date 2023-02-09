@@ -38,17 +38,21 @@ const log = createLog("project");
 export const createProject = thunks.create<CreateProjectProps>(
   "create-project",
   function* (ctx: ThunkCtx<CreateProjectProps>, next): ApiGen {
+    yield put(setLoaderStart({ id: ctx.key }));
+
     if (!ctx.payload.stackId) {
-      setLoaderError({ id: ctx.key, message: "stack cannot be empty" });
+      yield put(
+        setLoaderError({ id: ctx.key, message: "stack cannot be empty" }),
+      );
       return;
     }
 
     if (!ctx.payload.name) {
-      setLoaderError({ id: ctx.key, message: "name cannot be empty" });
+      yield put(
+        setLoaderError({ id: ctx.key, message: "name cannot be empty" }),
+      );
       return;
     }
-
-    yield put(setLoaderStart({ id: ctx.key }));
 
     const env: DeployEnvironment = yield select(selectEnvironmentByName, {
       handle: ctx.payload.name,
@@ -143,8 +147,25 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       return;
     }
 
-    const dbCtx: ProvisionDatabaseCtx[] = yield all(
-      dbs
+    yield all([
+      call(
+        createAppOperation.run,
+        createAppOperation({
+          type: "configure",
+          appId,
+          env: envs.reduce(
+            (acc, env) => ({ ...acc, [env.key]: env.value }),
+            {},
+          ),
+        }),
+      ),
+
+      call(
+        createAppOperation.run,
+        createAppOperation({ type: "deploy", appId, gitRef: "main" }),
+      ),
+
+      ...dbs
         .filter((db) => db.meta?.id)
         .map((db) => {
           const handle = `${app.handle}-${db.key}-${nanoid(5)}`;
@@ -158,19 +179,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
             }),
           );
         }),
-    );
-
-    log(dbCtx);
-
-    const configCtx: CreateAppOpCtx = yield call(
-      createAppOperation.run,
-      createAppOperation({
-        appId,
-        env: envs.reduce((acc, env) => ({ ...acc, [env.key]: env.value }), {}),
-      }),
-    );
-
-    log(configCtx);
+    ]);
 
     yield next();
     yield put(setLoaderSuccess({ id }));
