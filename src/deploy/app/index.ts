@@ -202,7 +202,7 @@ export const createDeployApp = api.post<CreateAppProps>(
 
 interface CreateAppOpProps {
   appId: string;
-  env: { [key: string]: string | boolean | number };
+  env: { [key: string]: string };
 }
 export type CreateAppOpCtx = DeployApiCtx<any, CreateAppOpProps>;
 export const createAppOperation = api.post<CreateAppOpProps>(
