@@ -77,12 +77,16 @@ const AppLastOpCell = ({ app }: AppCellProps) => {
       {app.lastOperation ? (
         <>
           <div className={tokens.type.darker}>
-            <strong>{app.lastOperation.type.toLocaleUpperCase()}</strong> by{" "}
-            {app.lastOperation.userName}
+            <span className="font-semibold">
+              {app.lastOperation.type.toLocaleUpperCase()}
+            </span>{" "}
+            by {app.lastOperation.userName}
           </div>
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
-            <strong>{app.lastOperation.status.toLocaleUpperCase()}</strong>{" "}
+            <span className="font-semibold">
+              {app.lastOperation.status.toLocaleUpperCase()}
+            </span>{" "}
             {prettyDateRelative(app.lastOperation.createdAt)}
           </div>
         </>

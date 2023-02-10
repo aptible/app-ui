@@ -20,13 +20,19 @@ const IconStrokeBase = ({
       style={style}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
+      width={24}
+      height={24}
       stroke={color}
-      className={`${className} w-6 h-6`}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
     >
       {path}
     </svg>
   );
 };
+
 const IconFillBase = ({
   path,
   color = "#111920",
@@ -37,8 +43,10 @@ const IconFillBase = ({
     <svg
       style={style}
       xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
       fill={color}
-      className={`${className} w-6 h-6`}
+      className={className}
     >
       {path}
     </svg>
@@ -572,16 +580,37 @@ export const IconCircleStack = (props: Props) => {
   );
 };
 
-export const IconLogout = (props: Props) => {
+export const IconLogout = ({ color = "#111920" }: Props) => {
   return (
-    <IconFillBase
-      {...props}
-      path={
-        <g>
-          <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
-        </g>
-      }
-    />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16 17L21 12L16 7"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M21 12H9"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 };
 
@@ -684,6 +713,17 @@ export const IconInfo = (props: Props) => {
           <path d="M12 16V12" />
           <path d="M12 8H12.01" />
         </>
+      }
+    />
+  );
+};
+
+export const IconCreditCard = (props: Props) => {
+  return (
+    <IconStrokeBase
+      {...props}
+      path={
+        <path d="M2.25 8.25H21.75M2.25 9H21.75M6.25 15.25H11.25M4.5 19.5H19.5C20.0967 19.5 20.669 19.2629 21.091 18.841C21.5129 18.419 21.75 17.8467 21.75 17.25V6.75C21.75 6.15326 21.5129 5.58097 21.091 5.15901C20.669 4.73705 20.0967 4.5 19.5 4.5H4.5C3.90326 4.5 3.33097 4.73705 2.90901 5.15901C2.48705 5.58097 2.25 6.15326 2.25 6.75V17.25C2.25 17.8467 2.48705 18.419 2.90901 18.841C3.33097 19.2629 3.90326 19.5 4.5 19.5Z" />
       }
     />
   );

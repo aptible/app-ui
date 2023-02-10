@@ -70,12 +70,16 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
       {database.lastOperation ? (
         <>
           <div className={tokens.type.darker}>
-            <strong>{database.lastOperation.type.toLocaleUpperCase()}</strong>{" "}
+            <span className="font-semibold">
+              {database.lastOperation.type.toLocaleUpperCase()}
+            </span>{" "}
             by {database.lastOperation.userName}
           </div>
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
-            <strong>{database.lastOperation.status.toLocaleUpperCase()}</strong>{" "}
+            <span className="font-semibold">
+              {database.lastOperation.status.toLocaleUpperCase()}
+            </span>{" "}
             {prettyDateRelative(database.lastOperation.createdAt)}
           </div>
         </>
