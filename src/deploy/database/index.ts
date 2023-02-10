@@ -15,15 +15,7 @@ import type {
   OperationStatus,
   ProvisionableStatus,
 } from "@app/types";
-import {
-  api,
-  cacheTimer,
-  combinePages,
-  DeployApiCtx,
-  PaginateProps,
-  ThunkCtx,
-  thunks,
-} from "@app/api";
+import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
 import {
   createReducerMap,
   createTable,
@@ -201,43 +193,32 @@ interface CreateDatabaseProps {
   envId: string;
   databaseImageId: string;
 }
-export type CreateDatabaseCtx = DeployApiCtx<
-  DeployDatabaseResponse,
-  CreateDatabaseProps
->;
 /**
  * This will only create a database record, it will not trigger it to actually be provisioned.
  * You probably want to just use `provisionDatabase` which will create and provision the database.
  */
-export const createDatabase = api.post<CreateDatabaseProps>(
-  "/accounts/:envId/databases",
-  function* (ctx: CreateDatabaseCtx, next) {
-    const { handle, type, envId, databaseImageId } = ctx.payload;
-    const body = {
-      handle,
-      type,
-      account_id: envId,
-      database_image_id: databaseImageId,
-    };
-    ctx.request = ctx.req({ body: JSON.stringify(body) });
-
-    yield next();
-  },
-);
-
-export type ProvisionDatabaseCtx = ThunkCtx<
+export const createDatabase = api.post<
   CreateDatabaseProps,
-  { dbCtx: CreateDatabaseCtx; opCtx: CreateDatabaseOpCtx }
->;
+  DeployDatabaseResponse
+>("/accounts/:envId/databases", function* (ctx, next) {
+  const { handle, type, envId, databaseImageId } = ctx.payload;
+  const body = {
+    handle,
+    type,
+    account_id: envId,
+    database_image_id: databaseImageId,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+
+  yield next();
+});
+
 export const provisionDatabase = thunks.create<CreateDatabaseProps>(
   "database-provision",
-  function* (ctx: ProvisionDatabaseCtx, next) {
+  function* (ctx, next) {
     yield put(setLoaderStart({ id: ctx.key }));
 
-    const dbCtx: CreateDatabaseCtx = yield call(
-      createDatabase.run,
-      createDatabase(ctx.payload),
-    );
+    const dbCtx = yield* call(createDatabase.run, createDatabase(ctx.payload));
 
     if (!dbCtx.json.ok) {
       yield put(
@@ -248,7 +229,7 @@ export const provisionDatabase = thunks.create<CreateDatabaseProps>(
 
     yield next();
 
-    const opCtx: CreateDatabaseOpCtx = yield call(
+    const opCtx = yield* call(
       createDatabaseOperation.run,
       createDatabaseOperation({
         dbId: dbCtx.json.data.id,
@@ -286,24 +267,21 @@ interface CreateDatabaseOpProps {
   type: string;
   status: OperationStatus;
 }
-type CreateDatabaseOpCtx = DeployApiCtx<
-  DeployOperationResponse,
-  CreateDatabaseOpProps
->;
-export const createDatabaseOperation = api.post<CreateDatabaseOpProps>(
-  "/databases/:dbId/operations",
-  function* (ctx: CreateDatabaseOpCtx, next) {
-    const { containerSize, diskSize, type, status } = ctx.payload;
-    const body = {
-      container_size: containerSize,
-      disk_size: diskSize,
-      type,
-      status,
-    };
-    ctx.request = ctx.req({ body: JSON.stringify(body) });
-    yield next();
-  },
-);
+
+export const createDatabaseOperation = api.post<
+  CreateDatabaseOpProps,
+  DeployOperationResponse
+>("/databases/:dbId/operations", function* (ctx, next) {
+  const { containerSize, diskSize, type, status } = ctx.payload;
+  const body = {
+    container_size: containerSize,
+    disk_size: diskSize,
+    type,
+    status,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield next();
+});
 
 export const fetchDatabaseOperations = api.get<{ id: string }>(
   "/databases/:id/operations",

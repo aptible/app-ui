@@ -8,11 +8,11 @@ import {
 
 import { createLog } from "@app/debug";
 import { AuthApiCtx, ThunkCtx, thunks } from "@app/api";
-import { CreateUserForm, CreateUserCtx, createUser } from "@app/users";
+import { CreateUserForm, createUser } from "@app/users";
 
 import { TokenCtx, createToken, elevateToken, ElevateTokenCtx } from "./token";
 import { AUTH_LOADER_ID } from "./loader";
-import { createOrganization, OrgCtx } from "@app/organizations";
+import { createOrganization } from "@app/organizations";
 import { ApiGen } from "@app/types";
 
 const log = createLog("signup");
@@ -27,23 +27,20 @@ function* setAuthError(ctx: AuthApiCtx) {
 
 export const signup = thunks.create<CreateUserForm>(
   "signup",
-  function* onSignup(ctx: ThunkCtx<CreateUserForm>, next): ApiGen {
+  function* onSignup(ctx, next): ApiGen {
     const { email, password } = ctx.payload;
-    yield put(setLoaderStart({ id: AUTH_LOADER_ID }));
+    yield* put(setLoaderStart({ id: AUTH_LOADER_ID }));
 
-    const userCtx: CreateUserCtx = yield call(
-      createUser.run,
-      createUser(ctx.payload),
-    );
+    const userCtx = yield* call(createUser.run, createUser(ctx.payload));
 
     log(userCtx);
 
     if (!userCtx.json.ok) {
-      yield call(setAuthError, userCtx);
+      yield* call(setAuthError, userCtx);
       return;
     }
 
-    const tokenCtx: TokenCtx = yield call(
+    const tokenCtx = yield* call(
       createToken.run,
       createToken({
         username: email,
@@ -56,11 +53,11 @@ export const signup = thunks.create<CreateUserForm>(
     log(tokenCtx);
 
     if (!tokenCtx.json.ok) {
-      yield call(setAuthError, tokenCtx);
+      yield* call(setAuthError, tokenCtx);
       return;
     }
 
-    const orgCtx: OrgCtx = yield call(
+    const orgCtx = yield* call(
       createOrganization.run,
       createOrganization({ name: email }),
     );
@@ -68,18 +65,18 @@ export const signup = thunks.create<CreateUserForm>(
     log(orgCtx);
 
     if (!orgCtx.json.ok) {
-      yield call(setAuthError, orgCtx);
+      yield* call(setAuthError, orgCtx);
       return;
     }
 
-    const elevateCtx: ElevateTokenCtx = yield call(
+    const elevateCtx = yield* call(
       elevateToken.run,
       elevateToken({ username: email, password, otpToken: "" }),
     );
 
     log(elevateCtx);
 
-    yield put(
+    yield* put(
       setLoaderSuccess({
         id: AUTH_LOADER_ID,
         meta: {

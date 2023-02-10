@@ -2,15 +2,15 @@ import { isBefore } from "date-fns";
 import { select } from "saga-query";
 
 import { createTable } from "@app/slice-helpers";
-import { authApi, AuthApiCtx } from "@app/api";
+import { authApi } from "@app/api";
 import type {
   Token,
-  InvitationsResponse,
   InvitationResponse,
   Invitation,
   AppState,
   ApiGen,
   MapEntity,
+  HalEmbedded,
 } from "@app/types";
 import { selectToken } from "@app/token";
 import { selectOrigin } from "@app/env";
@@ -74,33 +74,33 @@ export const selectInvitations = (state: AppState) => state.invitations;
 export const selectInvitation = (state: AppState, { id }: { id: string }) =>
   selectInvitations(state)[id] || defaultInvitationInstance;
 
-export const fetchInvitations = authApi.get<{ orgId: string }>(
-  "/organizations/:orgId/invitations",
-  function* onFetchInvitations(ctx: AuthApiCtx<InvitationsResponse>, next) {
-    const token: Token = yield select(selectToken);
-    if (!token) {
-      return;
-    }
-    yield next();
-    if (!ctx.json.ok) {
-      return;
-    }
+export const fetchInvitations = authApi.get<
+  { orgId: string },
+  HalEmbedded<{ invitations: InvitationResponse[] }>
+>("/organizations/:orgId/invitations", function* onFetchInvitations(ctx, next) {
+  const token: Token = yield select(selectToken);
+  if (!token) {
+    return;
+  }
+  yield next();
+  if (!ctx.json.ok) {
+    return;
+  }
 
-    const { data } = ctx.json;
-    const invitationsMap = data._embedded.invitations.reduce<
-      MapEntity<Invitation>
-    >((acc, invitation) => {
-      acc[invitation.id] = deserializeInvitation(invitation);
-      return acc;
-    }, {});
+  const { data } = ctx.json;
+  const invitationsMap = data._embedded.invitations.reduce<
+    MapEntity<Invitation>
+  >((acc, invitation) => {
+    acc[invitation.id] = deserializeInvitation(invitation);
+    return acc;
+  }, {});
 
-    ctx.actions.push(addInvitations(invitationsMap));
-  },
-);
+  ctx.actions.push(addInvitations(invitationsMap));
+});
 
-export const fetchInvitation = authApi.get<{ id: string }>(
+export const fetchInvitation = authApi.get<{ id: string }, InvitationResponse>(
   "/invitations/:id",
-  function* onFetchInvitation(ctx: AuthApiCtx<InvitationResponse>, next) {
+  function* onFetchInvitation(ctx, next) {
     yield next();
     if (!ctx.json.ok) {
       return;
@@ -116,7 +116,7 @@ export const fetchInvitation = authApi.get<{ id: string }>(
 export const resetInvitation = authApi.post<string>(
   "/resets",
   function* onResetInvitation(ctx, next): ApiGen {
-    const origin = yield select(selectOrigin);
+    const origin = yield* select(selectOrigin);
     ctx.request = ctx.req({
       body: JSON.stringify({
         type: "invitation",

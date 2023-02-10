@@ -47,7 +47,7 @@ export function defaultEntity<E = any>(e: EmbeddedMap<E>): EmbeddedMap<E> {
 }
 
 export function* halEntityParser(
-  ctx: DeployApiCtx<HalEmbedded<{ [key: string]: any }>>,
+  ctx: DeployApiCtx<any, HalEmbedded<{ [key: string]: any }>>,
   next: Next,
 ) {
   yield next();

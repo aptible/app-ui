@@ -102,10 +102,10 @@ export const fetchOtpCodes = authApi.get<{ otpId: string }>(
   elevateAndCache,
 );
 
-export const setupOtp = authApi.post<{ userId: string }>(
+export const setupOtp = authApi.post<SetupOtp, OtpResponse>(
   "/users/:userId/otp_configurations",
-  function* onOtp(ctx: AuthApiCtx<OtpResponse, SetupOtp>, next): ApiGen {
-    const curOtp = yield select(selectOtp);
+  function* onOtp(ctx, next): ApiGen {
+    const curOtp = yield* select(selectOtp);
     if (curOtp.id) {
       return;
     }

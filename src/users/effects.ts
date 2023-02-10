@@ -22,11 +22,10 @@ export const fetchUsers = authApi.get<{ orgId: string }>(
   },
 );
 
-export type CreateUserCtx = AuthApiCtx<UserResponse, CreateUserForm>;
-export const createUser = authApi.post<CreateUserForm>(
+export const createUser = authApi.post<CreateUserForm, UserResponse>(
   "/users",
-  function* onCreateUser(ctx: CreateUserCtx, next): ApiGen {
-    const origin = yield select(selectOrigin);
+  function* onCreateUser(ctx, next): ApiGen {
+    const origin = yield* select(selectOrigin);
     ctx.request = ctx.req({
       body: JSON.stringify({ ...ctx.payload, origin }),
     });

@@ -124,22 +124,20 @@ interface CreateOrg {
   name: string;
 }
 
-export type OrgCtx = AuthApiCtx<OrganizationResponse, CreateOrg>;
-
-export const createOrganization = authApi.post<CreateOrg>(
+export const createOrganization = authApi.post<CreateOrg, OrganizationResponse>(
   "/organizations",
-  function* onCreateOrg(ctx: OrgCtx, next): ApiGen {
+  function* onCreateOrg(ctx, next): ApiGen {
     const { name } = ctx.payload;
     ctx.request = ctx.req({
       body: JSON.stringify({ name }),
     });
     yield next();
-    const token = yield select(selectToken);
+    const token = yield* select(selectToken);
     if (!ctx.json.ok) {
       return;
     }
 
-    yield call(exchangeToken.run, exchangeToken(token));
+    yield* call(exchangeToken.run, exchangeToken(token));
     ctx.actions.push(setOrganizationSelected(ctx.json.data.id));
   },
 );

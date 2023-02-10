@@ -139,28 +139,23 @@ interface CreateEnvProps {
   orgId: string;
 }
 
-export type CreateEnvCtx = DeployApiCtx<
-  DeployEnvironmentResponse,
-  CreateEnvProps
->;
+export const createDeployEnvironment = api.post<
+  CreateEnvProps,
+  DeployEnvironmentResponse
+>("/accounts", function* (ctx, next) {
+  const { name, stackId, orgId } = ctx.payload;
+  const body = {
+    handle: name,
+    stack_id: stackId,
+    organization_id: orgId,
+    type: "development",
+  };
+  ctx.request = ctx.req({
+    body: JSON.stringify(body),
+  });
 
-export const createDeployEnvironment = api.post<CreateEnvProps>(
-  "/accounts",
-  function* (ctx: CreateEnvCtx, next) {
-    const { name, stackId, orgId } = ctx.payload;
-    const body = {
-      handle: name,
-      stack_id: stackId,
-      organization_id: orgId,
-      type: "development",
-    };
-    ctx.request = ctx.req({
-      body: JSON.stringify(body),
-    });
-
-    yield next();
-  },
-);
+  yield next();
+});
 
 export const environmentEntities = {
   account: defaultEntity({
