@@ -197,11 +197,9 @@ interface CreateAppProps {
   envId: string;
 }
 
-export type CreateAppCtx = DeployApiCtx<DeployAppResponse, CreateAppProps>;
-
-export const createDeployApp = api.post<CreateAppProps>(
+export const createDeployApp = api.post<CreateAppProps, DeployAppResponse>(
   "/accounts/:envId/apps",
-  function* (ctx: CreateAppCtx, next) {
+  function* (ctx, next) {
     const { name, envId } = ctx.payload;
     const body = {
       handle: name,

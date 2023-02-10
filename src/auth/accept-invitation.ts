@@ -1,7 +1,7 @@
 import { call, select } from "saga-query";
 
 import { ApiGen } from "@app/types";
-import { authApi, AuthApiCtx } from "@app/api";
+import { authApi } from "@app/api";
 import { selectToken } from "@app/token";
 
 import { exchangeToken } from "./token";
@@ -11,12 +11,9 @@ interface AcceptInvitation {
   verificationCode?: string;
 }
 
-export const acceptInvitation = authApi.post(
+export const acceptInvitation = authApi.post<any, AcceptInvitation>(
   "accept-invitation",
-  function* onAcceptInvitation(
-    ctx: AuthApiCtx<any, AcceptInvitation>,
-    next,
-  ): ApiGen {
+  function* onAcceptInvitation(ctx, next): ApiGen {
     if (ctx.payload.verificationCode) {
       ctx.request = ctx.req({
         url: "/verifications",
@@ -40,7 +37,7 @@ export const acceptInvitation = authApi.post(
 
     // After accepting an invitation, we need to refresh our token to get elevated permissions
     // Once the elevated permissions are granted, we need to reload all assets using bootup.
-    const token = yield select(selectToken);
-    yield call(exchangeToken.run, exchangeToken(token));
+    const token = yield* select(selectToken);
+    yield* call(exchangeToken.run, exchangeToken(token));
   },
 );

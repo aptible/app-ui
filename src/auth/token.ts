@@ -15,9 +15,9 @@ export interface CreateTokenPayload {
   otpToken: string;
   makeCurrent: boolean;
 }
-export type TokenCtx = AuthApiCtx<TokenSuccessResponse, CreateTokenPayload>;
+export type TokenCtx = AuthApiCtx<CreateTokenPayload, TokenSuccessResponse>;
 
-function saveToken(ctx: AuthApiCtx<TokenSuccessResponse>) {
+function saveToken(ctx: AuthApiCtx<any, TokenSuccessResponse>) {
   if (!ctx.json.ok) {
     return;
   }
@@ -25,9 +25,9 @@ function saveToken(ctx: AuthApiCtx<TokenSuccessResponse>) {
   ctx.actions.push(setToken(curToken));
 }
 
-export const fetchCurrentToken = authApi.get(
+export const fetchCurrentToken = authApi.get<never, TokenSuccessResponse>(
   "/current_token",
-  function* onFetchToken(ctx: AuthApiCtx<TokenSuccessResponse>, next) {
+  function* onFetchToken(ctx, next) {
     yield next();
     if (!ctx.json.ok) {
       yield put(resetToken());
@@ -37,32 +37,33 @@ export const fetchCurrentToken = authApi.get(
   },
 );
 
-export const createToken = authApi.post<CreateTokenPayload>(
-  "/tokens",
-  function* onCreateToken(ctx: TokenCtx, next) {
-    ctx.request = ctx.req({
-      body: JSON.stringify({
-        username: ctx.payload.username,
-        password: ctx.payload.password,
-        otp_token: ctx.payload.otpToken,
-        make_current: ctx.payload.makeCurrent,
-        expires_in: 43200, // 12 hours
-        grant_type: "password",
-        scope: "manage",
-        _source: "deploy",
-      }),
-    });
+export const createToken = authApi.post<
+  CreateTokenPayload,
+  TokenSuccessResponse
+>("/tokens", function* onCreateToken(ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify({
+      username: ctx.payload.username,
+      password: ctx.payload.password,
+      otp_token: ctx.payload.otpToken,
+      make_current: ctx.payload.makeCurrent,
+      expires_in: 43200, // 12 hours
+      grant_type: "password",
+      scope: "manage",
+      _source: "deploy",
+    }),
+  });
 
-    yield next();
-    yield call(saveToken, ctx);
-  },
-);
+  yield next();
+  yield* call(saveToken, ctx);
+});
 
 export type ElevateToken = Omit<CreateTokenPayload, "makeCurrent">;
 export type ElevateTokenCtx = AuthApiCtx<TokenSuccessResponse, ElevateToken>;
-export const elevateToken = authApi.post<ElevateToken>(
+
+export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
   "create-elevated-token",
-  function* onElevateToken(ctx: ElevateTokenCtx, next) {
+  function* onElevateToken(ctx, next) {
     ctx.request = ctx.req({
       url: "/tokens",
       method: "POST",
@@ -93,12 +94,9 @@ interface ExchangeToken {
   userUrl: string;
 }
 
-export const exchangeToken = authApi.post<ExchangeToken>(
+export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
   "exchange-token",
-  function* onExchangeToken(
-    ctx: AuthApiCtx<TokenSuccessResponse, ExchangeToken>,
-    next,
-  ) {
+  function* onExchangeToken(ctx, next) {
     ctx.request = ctx.req({
       url: "/tokens",
       method: "POST",
@@ -115,7 +113,7 @@ export const exchangeToken = authApi.post<ExchangeToken>(
     });
 
     yield next();
-    yield call(saveToken, ctx);
+    yield* call(saveToken, ctx);
   },
 );
 

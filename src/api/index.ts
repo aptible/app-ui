@@ -25,10 +25,11 @@ import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
 
 type EndpointUrl = "auth" | "api" | "billing";
 
-export interface AppCtx<S = any, P = any>
+export interface AppCtx<P = any, S = any>
   extends ApiCtx<P, S, { message: string }> {}
-export interface DeployApiCtx<S = any, P = any> extends AppCtx<S, P> {}
-export interface AuthApiCtx<S = any, P = any>
+export interface DeployApiCtx<P = any, S = any>
+  extends ApiCtx<P, S, { message: string }> {}
+export interface AuthApiCtx<P = any, S = any>
   extends ApiCtx<P, S, AuthApiError> {
   elevated: boolean;
 }
@@ -39,7 +40,7 @@ export function* elevetatedMdw(ctx: AuthApiCtx, next: Next): ApiGen {
 }
 
 function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
-  const env = yield select(selectEnv);
+  const env = yield* select(selectEnv);
   if (endpoint === "auth") {
     return env.authUrl;
   }
@@ -52,7 +53,7 @@ function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
 }
 
 function* tokenMdw(ctx: ApiCtx, next: Next): ApiGen {
-  const token = yield select(selectAccessToken);
+  const token = yield* select(selectAccessToken);
   if (!token) {
     yield next();
     return;
@@ -72,7 +73,7 @@ function* elevatedTokenMdw(ctx: AuthApiCtx, next: Next): ApiGen {
     return;
   }
 
-  const token = yield select(selectElevatedAccessToken);
+  const token = yield* select(selectElevatedAccessToken);
   if (!token) {
     yield next();
     return;
@@ -93,12 +94,12 @@ function* getUrl(ctx: AppCtx, endpoint: EndpointUrl): ApiGen<string> {
     return url;
   }
 
-  const baseUrl = yield call(getApiBaseUrl, endpoint);
+  const baseUrl = yield* call(getApiBaseUrl, endpoint);
   return `${baseUrl}${url}`;
 }
 
 function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
-  const url = yield call(getUrl, ctx, "api");
+  const url = yield* call(getUrl, ctx, "api" as const);
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
@@ -112,7 +113,7 @@ function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
 }
 
 function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
-  const url = yield call(getUrl, ctx, "auth");
+  const url = yield* call(getUrl, ctx, "auth" as const);
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies

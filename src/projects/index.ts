@@ -12,20 +12,16 @@ import {
 import { createLog } from "@app/debug";
 import { ThunkCtx, thunks } from "@app/api";
 import {
-  CreateAppCtx,
-  CreateAppOpCtx,
   createAppOperation,
   createDeployApp,
   createDeployEnvironment,
-  CreateEnvCtx,
   hasDeployApp,
   hasDeployEnvironment,
   provisionDatabase,
-  ProvisionDatabaseCtx,
   selectAppById,
   selectEnvironmentByName,
 } from "@app/deploy";
-import { ApiGen, DeployApp, DeployEnvironment } from "@app/types";
+import { ApiGen, DeployApp } from "@app/types";
 
 interface CreateProjectProps {
   name: string;
@@ -37,24 +33,24 @@ const log = createLog("project");
 
 export const createProject = thunks.create<CreateProjectProps>(
   "create-project",
-  function* (ctx: ThunkCtx<CreateProjectProps>, next): ApiGen {
-    yield put(setLoaderStart({ id: ctx.key }));
+  function* (ctx, next): ApiGen {
+    yield* put(setLoaderStart({ id: ctx.key }));
 
     if (!ctx.payload.stackId) {
-      yield put(
+      yield* put(
         setLoaderError({ id: ctx.key, message: "stack cannot be empty" }),
       );
       return;
     }
 
     if (!ctx.payload.name) {
-      yield put(
+      yield* put(
         setLoaderError({ id: ctx.key, message: "name cannot be empty" }),
       );
       return;
     }
 
-    const env: DeployEnvironment = yield select(selectEnvironmentByName, {
+    const env = yield* select(selectEnvironmentByName, {
       handle: ctx.payload.name,
     });
 
@@ -64,13 +60,13 @@ export const createProject = thunks.create<CreateProjectProps>(
       envId = env.id;
     } else {
       log("environment doesn't exist, creating");
-      const envCtx: CreateEnvCtx = yield call(
+      const envCtx = yield* call(
         createDeployEnvironment.run,
         createDeployEnvironment(ctx.payload),
       );
 
       if (!envCtx.json.ok) {
-        yield put(
+        yield* put(
           setLoaderError({ id: ctx.key, message: envCtx.json.data.message }),
         );
         return;
@@ -80,13 +76,13 @@ export const createProject = thunks.create<CreateProjectProps>(
       envId = envCtx.json.data.id;
     }
 
-    const appCtx: CreateAppCtx = yield call(
+    const appCtx = yield* call(
       createDeployApp.run,
       createDeployApp({ name: ctx.payload.name, envId }),
     );
 
     if (!appCtx.json.ok) {
-      yield put(
+      yield* put(
         setLoaderError({
           id: ctx.key,
           meta: { envId },
@@ -99,7 +95,7 @@ export const createProject = thunks.create<CreateProjectProps>(
     log(appCtx);
     const appId = appCtx.json.data.id;
 
-    yield put(
+    yield* put(
       setLoaderSuccess({
         id: ctx.key,
         meta: { envId, appId },
