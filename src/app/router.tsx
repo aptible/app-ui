@@ -38,6 +38,7 @@ import {
   CreateProjectGitSettingsPage,
   CreateProjectGitStatusPage,
   CreateProjectNamePage,
+  SettingsPageLayout,
 } from "@app/ui";
 import * as routes from "@app/routes";
 
@@ -147,12 +148,17 @@ const appRoutes: RouteObject[] = [
 
       {
         path: routes.SETTINGS_PATH,
-        element: <SettingsPage />,
-      },
-
-      {
-        path: routes.TEAM_PATH,
-        element: <TeamPage />,
+        element: <SettingsPageLayout />,
+        children: [
+          {
+            index: true,
+            element: <SettingsPage />,
+          },
+          {
+            path: routes.TEAM_PATH,
+            element: <TeamPage />,
+          },
+        ],
       },
 
       {

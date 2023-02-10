@@ -1,12 +1,9 @@
 import cn from "classnames";
+import { Outlet } from "react-router";
 
 import { tokens, ApplicationSidebar, SettingsSidebar } from "../shared";
 
-type Props = {
-  children: React.ReactNode;
-};
-
-export function SettingsPageLayout({ children }: Props) {
+export function SettingsPageLayout() {
   return (
     <>
       <div className="flex w-full h-full">
@@ -20,7 +17,7 @@ export function SettingsPageLayout({ children }: Props) {
 
         <div className="flex flex-col flex-1">
           <main className={cn(tokens.layout["main width"], "py-6")}>
-            {children}
+            <Outlet />
           </main>
         </div>
       </div>

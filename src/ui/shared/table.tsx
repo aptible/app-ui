@@ -13,7 +13,7 @@ export type CellProps = {
 export const Td = ({ children, className }: CellProps) => {
   const classes = cn(
     tokens.type["small lighter"],
-    tokens.spacing["table cell"],
+    "px-3 py-4",
     "whitespace-nowrap",
     className,
   );
@@ -22,7 +22,7 @@ export const Td = ({ children, className }: CellProps) => {
 
 export const Th = ({ children, className }: CellProps) => {
   const classes = cn(
-    tokens.spacing["table cell"],
+    "px-3 py-4",
     tokens.type["small semibold darker"],
     "text-left",
     className,

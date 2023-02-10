@@ -1,12 +1,11 @@
 import { createStore, applyMiddleware } from "@reduxjs/toolkit";
 import type { Middleware, Store } from "@reduxjs/toolkit";
-// import { BATCH } from 'redux-batched-actions';
 import { PersistPartial } from "redux-persist/es/persistReducer";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 import { BATCH, prepareStore } from "saga-query";
+import debug from "debug";
 
-import { createLog } from "@app/debug";
 import type { AppState } from "@app/types";
 import { resetReducer } from "@app/reset-store";
 import { TOKEN_NAME, ELEVATED_TOKEN_NAME } from "@app/token";
@@ -30,7 +29,7 @@ const persistConfig = {
   whitelist: [TOKEN_NAME, ELEVATED_TOKEN_NAME, THEME_NAME, REDIRECT_NAME],
 };
 
-const log = createLog("redux");
+const log = debug("redux");
 
 export function setupStore({ initState }: Props): AppStore<AppState> {
   const middleware: Middleware[] = [];

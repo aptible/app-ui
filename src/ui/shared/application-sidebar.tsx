@@ -1,24 +1,17 @@
 import { UserMenu } from "./user-menu";
 import { AptibleLogo } from "./aptible-logo";
 
-import {
-  IconCircleStack,
-  IconCogs8Tooth,
-  IconCube,
-  IconPlusCircle,
-} from "@app/ui/shared";
-import { appsUrl, createProjectUrl, databasesUrl, teamUrl } from "@app/routes";
+import { IconCircleStack, IconCube, IconPlusCircle } from "@app/ui/shared";
+import { appsUrl, createProjectUrl, databasesUrl } from "@app/routes";
 import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import { useNavigate } from "react-router";
 
 export const ApplicationSidebar = () => {
   const navigate = useNavigate();
-  // Moved navigation inside function to allow dynamic changes of color if needed
   const navigation = [
     { name: "Apps", to: appsUrl(), icon: <IconCube /> },
-    { name: "Data Stores", to: databasesUrl(), icon: <IconCircleStack /> },
-    { name: "Company Settings", to: teamUrl(), icon: <IconCogs8Tooth /> },
+    { name: "Databases", to: databasesUrl(), icon: <IconCircleStack /> },
   ];
 
   return (

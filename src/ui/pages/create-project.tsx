@@ -19,7 +19,7 @@ export const CreateProjectPage = () => {
                   <Box>
                     <ButtonLink
                       to={createProjectGitUrl()}
-                      className="font-bold"
+                      className="font-semibold"
                     >
                       Deploy your code
                       <IconSmallArrowRight className="ml-2" />

@@ -5,60 +5,49 @@ export const tokens = {
 
   colors: {
     background: "bg-white",
-    "subdued background": "bg-gray-50",
     border: "border-gray-100",
     "dark border": "border-gray-200",
   },
 
   type: {
-    h3: "text-lg font-semibold text-gray-900",
-    h2: "text-xl font-semibold text-gray-900",
     h1: "text-gray-900 text-2xl font-semibold",
+    h2: "text-xl font-semibold text-gray-900",
+    h3: "text-lg font-semibold text-gray-900",
+
     link: "font-medium text-sm text-gray-500 hover:text-gray-700",
+
     "active link": "font-medium text-sm text-gray-700",
     "subdued active link": "font-medium text-sm text-emerald-600",
+
     "small semibold darker": "text-sm font-semibold text-gray-900",
     "medium label": "font-medium text-gray-900",
     darker: "text-gray-900",
     "normal lighter": "text-gray-500",
     "small lighter": "text-sm text-gray-500",
-    normal: "text-gray-700",
-    "small normal": "text-sm text-gray-700",
     "danger semibold": "font-medium text-red-700",
-    "danger normal": "text-red-600",
     "warn semibold": "font-medium text-yellow-700",
-    "warn normal": "text-yellow-600",
     "success semibold": "font-medium text-emerald-700",
-    "success normal": "text-emerald-600",
     "info semibold": "font-medium text-gray-700",
-    "info normal": "text-gray-600",
     textarea:
       "appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm w-full h-20",
     pre: "p-4 bg-black rounded text-white overflow-x-scroll",
-  },
-
-  spacing: {
-    "table header": "px-3 py-4",
-    "first table header": "px-3 py-4",
-    "last table header": "px-3 py-4",
-    "table cell": "px-3 py-4",
   },
 
   buttons: {
     sizes: {
       xs: "px-2.5 py-1.5 text-xs font-medium ",
       sm: "px-3 py-2 text-sm leading-4 font-medium",
-      md: "px-4 py-2 text-sm font-medium",
+      md: "px-4 py-2 text-base font-medium",
       lg: "px-4 py-2 text-base font-medium",
       xl: "px-6 py-3 text-base font-medium",
     },
     styles: {
       primary:
-        "border border-transparent shadow-sm text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500",
+        "border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500",
       secondary:
-        "border border-transparent text-emerald-700 bg-emerald-100 hover:bg-emerald-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500",
+        "border border-transparent font-bold text-indigo bg-indigo hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600",
       white:
-        "border border-gray-300 shadow-sm text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500",
+        "border border-black-100 font-bold shadow-sm text-xs text-black bg-white hover:bg-black-100 hover:border-black-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black-200",
     },
   },
 };
