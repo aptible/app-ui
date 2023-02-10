@@ -484,7 +484,7 @@ export const CreateProjectGitSettingsPage = () => {
 
       <Box>
         {codeScan.isInitialLoading ? (
-          "Loading code scan results ...."
+          <Loading text="Loading code scan results ..." />
         ) : (
           <div>
             <div className="flex items-center justify-between">
