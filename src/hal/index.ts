@@ -13,19 +13,25 @@ import type {
 } from "@app/types";
 import type { DeployApiCtx } from "@app/api";
 
-/* const uuidRe = new RegExp(
-  /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/,
-); */
-
-export function extractIdFromLink(relation: { href: string } | null) {
+export function extractIdFromLink(
+  relation: { href: string } | null | undefined,
+) {
   if (!relation?.href) {
     return "";
   }
-  /* const exec = uuidRe.exec(url);
-  if (!exec) return '';
-  return exec[0] || ''; */
   const segments = relation.href.split("/");
-  return segments[segments.length - 1];
+  return segments[segments.length - 1] || "";
+}
+
+export function extractResourceNameFromLink(
+  resource: { href: string } | null | undefined,
+) {
+  if (!resource?.href) {
+    return "";
+  }
+
+  const res = resource.href.split("/");
+  return res[res.length - 2] || "";
 }
 
 export const ENTITIES_NAME = "entities";

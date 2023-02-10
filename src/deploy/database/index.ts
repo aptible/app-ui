@@ -6,7 +6,6 @@ import {
   setLoaderSuccess,
 } from "saga-query";
 
-import { createLog } from "@app/debug";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import type {
   AppState,
@@ -31,13 +30,11 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 
-import { deserializeOperation } from "../operation";
+import { deserializeDeployOperation } from "../operation";
 import { deserializeDisk } from "../disk";
 import { selectDeploy } from "../slice";
 import { createSelector } from "@reduxjs/toolkit";
 import { findEnvById, selectEnvironments } from "../environment";
-
-const log = createLog("database");
 
 export interface DeployDatabaseResponse {
   id: string;
@@ -81,7 +78,7 @@ export const deserializeDeployDatabase = (
     serviceId: extractIdFromLink(links.service),
     disk: embedded.disk ? deserializeDisk(embedded.disk) : null,
     lastOperation: embedded.last_operation
-      ? deserializeOperation(embedded.last_operation)
+      ? deserializeDeployOperation(embedded.last_operation)
       : null,
   };
 };

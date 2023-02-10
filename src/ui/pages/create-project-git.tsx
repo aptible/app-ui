@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useApi, useCache, useLoaderSuccess, useQuery } from "saga-query/react";
 import { selectLoaderById } from "saga-query";
 
+import { prettyDateTime } from "@app/date";
 import {
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
@@ -17,7 +18,7 @@ import { selectCurrentUser } from "@app/users";
 import {
   AppState,
   DeployDatabaseImage,
-  DeployOperationResponse,
+  DeployOperation,
   HalEmbedded,
 } from "@app/types";
 
@@ -36,9 +37,12 @@ import {
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { createProject, deployProject, TextVal } from "@app/projects";
 import {
+  cancelAppOpsPoll,
   fetchAllStacks,
   fetchApp,
+  fetchAppOperations,
   fetchEnvironment,
+  pollAppOperations,
   selectAppById,
   selectEnvironmentById,
   selectStackPublicDefault,
@@ -46,12 +50,20 @@ import {
 import {
   cancelEnvOperationsPoll,
   pollEnvOperations,
+  selectLatestDeployOp,
+  selectLatestScanOp,
+  selectLatestSucceessScanOp,
+  selectOperationsByEnvId,
 } from "@app/deploy/operation";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   fetchAllDatabaseImages,
   selectDatabaseImagesAsList,
 } from "@app/deploy/database-images";
+import {
+  DeployCodeScanResponse,
+  fetchCodeScanResult,
+} from "@app/deploy/code-scan-result";
 
 export const CreateProjectLayout = () => {
   return (
@@ -70,10 +82,6 @@ export const CreateProjectGitPage = () => {
   const query = useCache<HalEmbedded<{ ssh_keys: any[] }>>(
     fetchSSHKeys({ userId: user.id }),
   );
-
-  useEffect(() => {
-    query.trigger();
-  }, [user.id]);
 
   if (query.isInitialLoading) return <Loading />;
   if (query.isError) return <ErrorResources message={query.message} />;
@@ -192,53 +200,63 @@ export const CreateProjectNamePage = () => {
   );
 };
 
-const OpResult = ({ op }: { op: DeployOperationResponse }) => {
+const OpResult = ({ op }: { op: DeployOperation }) => {
   const postfix = `operation: ${op.id}`;
   if (op.status === "failed") {
     return (
-      <Banner variant="error">Scanning operation failed, {postfix}</Banner>
+      <Banner variant="error">
+        {op.type} operation failed, {postfix}
+      </Banner>
     );
   }
   if (op.status === "succeeded") {
-    return <Banner variant="success">Scan success, {postfix}</Banner>;
+    return (
+      <Banner variant="success">
+        {op.type} success, {postfix}
+      </Banner>
+    );
   }
   if (op.status === "running") {
     return (
-      <Banner variant="info">Git push detected (running), {postfix}</Banner>
+      <Banner variant="info">
+        {op.type} detected (running), {postfix}
+      </Banner>
     );
   }
-  return <Banner variant="info">Git push detected (queued), {postfix}</Banner>;
+  return (
+    <Banner variant="info">
+      {op.type} detected (queued), {postfix}
+    </Banner>
+  );
 };
 
 export const CreateProjectGitPushPage = () => {
-  const { appId = "" } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { appId = "" } = useParams();
+
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  useQuery(pollAppOperations({ id: appId }));
+  const scanOp = useSelector((s: AppState) => selectLatestScanOp(s, { appId }));
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId }),
+  );
+
   const envId = app.environmentId;
+  useQuery(fetchEnvironment({ id: envId }));
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
-  useQuery(fetchEnvironment({ id: env.id }));
-  const dispatch = useDispatch();
-  const cancel = () => dispatch(cancelEnvOperationsPoll());
-  const ops = useCache<HalEmbedded<{ operations: DeployOperationResponse[] }>>(
-    pollEnvOperations({ envId }),
-  );
-  let scanOp: DeployOperationResponse | undefined;
-
-  scanOp = ops.data
-    ? ops.data._embedded.operations.find((op) => op.type === "deploy")
-    : undefined;
 
   useEffect(() => {
+    const cancel = () => dispatch(cancelAppOpsPoll());
     cancel();
-    dispatch(pollEnvOperations({ envId }));
-
+    dispatch(pollAppOperations({ id: appId }));
     return () => {
       cancel();
     };
-  }, [appId, envId]);
+  }, [appId]);
 
   useEffect(() => {
     if (scanOp && scanOp.status === "succeeded") {
@@ -269,7 +287,16 @@ export const CreateProjectGitPushPage = () => {
           <h2 className={tokens.type.h3}>Push your code</h2>
           <PreCode>git push aptible main</PreCode>
         </div>
+
         <hr className="my-4" />
+
+        {deployOp ? (
+          <div>
+            We detected an app deployment, did you push to the{" "}
+            <code>aptible-scan</code> branch?
+          </div>
+        ) : null}
+
         {scanOp ? (
           <OpResult op={scanOp} />
         ) : (
@@ -354,14 +381,31 @@ const validateEnvs = (items: TextVal[]): ValidatorError[] => {
   return errors;
 };
 
+const useLatestCodeResults = (appId: string) => {
+  const appOps = useQuery(fetchAppOperations({ id: appId }));
+  const scanOp = useSelector((s: AppState) =>
+    selectLatestSucceessScanOp(s, { appId }),
+  );
+
+  const codeScan = useCache<DeployCodeScanResponse>(
+    fetchCodeScanResult({ id: scanOp.codeScanResultId }),
+  );
+
+  return { scanOp, codeScan, appOps };
+};
+
 export const CreateProjectGitSettingsPage = () => {
-  const { appId = "" } = useParams();
-  useQuery(fetchApp({ id: appId }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { appId = "" } = useParams();
+
+  useQuery(fetchApp({ id: appId }));
+  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const { scanOp, codeScan, appOps } = useLatestCodeResults(appId);
+
   const query = useQuery(fetchAllDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesAsList);
+
   const [dbs, setDbs] = useState("postgresql=14");
   const [dbErrors, setDbErrors] = useState<ValidatorError[]>([]);
   const [envs, setEnvs] = useState(["STRIPE_SECRET_KEY=1234"].join("\n"));
@@ -374,7 +418,6 @@ export const CreateProjectGitSettingsPage = () => {
   const loader = useSelector((s: AppState) =>
     selectLoaderById(s, { id: `${deployProject}` }),
   );
-  console.log(`${deployProject}`, loader);
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let cancel = false;
@@ -421,10 +464,6 @@ export const CreateProjectGitSettingsPage = () => {
     );
   };
 
-  useEffect(() => {
-    query.trigger();
-  }, []);
-
   useLoaderSuccess(loader, () => {
     navigate(createProjectGitStatusUrl(appId));
   });
@@ -442,6 +481,45 @@ export const CreateProjectGitSettingsPage = () => {
         prev={createProjectGitPushUrl(appId)}
         next={createProjectGitStatusUrl(appId)}
       />
+
+      <Box>
+        {codeScan.isInitialLoading ? (
+          <Loading text="Loading code scan results ..." />
+        ) : (
+          <div>
+            <div className="flex items-center justify-between">
+              <h3 className={tokens.type.h3}>Code scan results</h3>
+              <Button
+                variant="white"
+                isLoading={appOps.isLoading}
+                onClick={() => appOps.trigger()}
+              >
+                Refresh
+              </Button>
+            </div>
+
+            <dl className="mt-2">
+              <dd>Last scan</dd>
+              <dt>{prettyDateTime(scanOp.updatedAt)}</dt>
+
+              <dd>
+                <code>Dockerfile</code> detected?
+              </dd>
+              <dt>{codeScan.data?.dockerfile_present ? "Yes" : "No"}</dt>
+
+              <dd>
+                <code>Procfile</code> detected?
+              </dd>
+              <dt>{codeScan.data?.procfile_present ? "Yes" : "No"}</dt>
+
+              <dd>
+                <code>aptible.yml</code> detected?
+              </dd>
+              <dt>{codeScan.data?.aptible_yml_present ? "Yes" : "No"}</dt>
+            </dl>
+          </div>
+        )}
+      </Box>
 
       <Box>
         <form onSubmit={onSubmit}>
@@ -466,7 +544,7 @@ export const CreateProjectGitSettingsPage = () => {
             {query.isInitialLoading ? (
               <Loading text="Loading databases" />
             ) : (
-              <ul>
+              <ul className="inline-grid grid-cols-3">
                 {dbImages.map((d) => {
                   return (
                     <li key={d.id}>
@@ -540,21 +618,11 @@ export const CreateProjectGitSettingsPage = () => {
   );
 };
 
-const Op = ({ op }: { op: DeployOperationResponse }) => {
-  const resource = op._links.resource?.href.split("/") || ["", "", ""];
+const Op = ({ op }: { op: DeployOperation }) => {
+  const resource = op.resourceType;
   return (
-    <div>
-      {resource[resource.length - 2]}:{op.type} - {op.status}
-    </div>
-  );
-};
-
-const Ops = ({ ops = [] }: { ops?: DeployOperationResponse[] }) => {
-  return (
-    <div>
-      {ops.map((op) => {
-        return <Op key={op.id} op={op} />;
-      })}
+    <div className="border-b-2 py-4">
+      {resource}:{op.type} - {op.status}
     </div>
   );
 };
@@ -565,14 +633,11 @@ export const CreateProjectGitStatusPage = () => {
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
+  useQuery(fetchEnvironment({ id: envId }));
+  const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
+  const ops = useSelector((s: AppState) =>
+    selectOperationsByEnvId(s, { envId }),
   );
-  useQuery(fetchEnvironment({ id: env.id }));
-  const ops = useCache<HalEmbedded<{ operations: DeployOperationResponse[] }>>(
-    pollEnvOperations({ envId }),
-  );
-  useEffect(() => {}, []);
 
   const cancel = () => dispatch(cancelEnvOperationsPoll());
   useEffect(() => {
@@ -593,10 +658,19 @@ export const CreateProjectGitStatusPage = () => {
 
       <FormNav prev={createProjectGitSettingsUrl(appId)} />
       <Box>
-        {ops.isInitialLoading ? (
+        <div className="border-b-2 py-4">
+          <h2 className={tokens.type.h2}>{app.handle}</h2>
+          <p>Text for URL</p>
+        </div>
+
+        {isInitialLoading ? (
           <Loading text="Provisioning resources ..." />
         ) : (
-          <Ops ops={ops.data?._embedded.operations} />
+          <div>
+            {ops.map((op) => {
+              return <Op key={op.id} op={op} />;
+            })}
+          </div>
         )}
       </Box>
     </div>

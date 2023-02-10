@@ -39,7 +39,7 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
     const logger = (store: any) => (next: any) => (action: any) => {
       if (action.type === BATCH) {
         log("== BATCH ==");
-        action.payload.forEach(console.log);
+        action.payload.forEach(log);
         log("== END BATCH ==");
       } else {
         log("ACTION", action);

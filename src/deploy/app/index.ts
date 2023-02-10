@@ -18,11 +18,12 @@ import type {
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
+import { createAction, createSelector } from "@reduxjs/toolkit";
+import { poll } from "saga-query";
 
 import { selectEnvironments, findEnvById } from "../environment";
 import { deserializeImage } from "../image";
-import { deserializeOperation } from "../operation";
+import { deserializeDeployOperation } from "../operation";
 import { selectDeploy } from "../slice";
 
 export * from "./utils";
@@ -65,8 +66,12 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
     environmentId: extractIdFromLink(links.account),
     currentConfigurationId: extractIdFromLink(links.current_configuration),
     currentImage: deserializeImage(embedded.current_image),
-    lastDeployOperation: deserializeOperation(embedded.last_deploy_operation),
-    lastOperation: deserializeOperation(embedded.last_operation),
+    lastDeployOperation: embedded.last_deploy_operation
+      ? deserializeDeployOperation(embedded.last_deploy_operation)
+      : null,
+    lastOperation: embedded.last_operation
+      ? deserializeDeployOperation(embedded.last_operation)
+      : null,
   };
 };
 
@@ -167,13 +172,23 @@ export const fetchAllApps = thunks.create(
   combinePages(fetchApps),
 );
 
-export const fetchApp = api.get<{ id: string }>("/apps/:id", {
+interface AppIdProp {
+  id: string;
+}
+
+export const fetchApp = api.get<AppIdProp>("/apps/:id", {
   saga: cacheTimer(),
 });
 
-export const fetchAppOperations = api.get<{ id: string }>(
+export const fetchAppOperations = api.get<AppIdProp>(
   "/apps/:id/operations",
-  { saga: cacheTimer() },
+  api.cache(),
+);
+
+export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
+export const pollAppOperations = api.get<AppIdProp>(
+  ["/apps/:id/operations", "poll"],
+  { saga: poll(5 * 1000, `${cancelAppOpsPoll}`) },
   api.cache(),
 );
 
@@ -200,16 +215,47 @@ export const createDeployApp = api.post<CreateAppProps>(
   },
 );
 
-interface CreateAppOpProps {
+interface ScanAppOpProps {
+  type: "scan_code";
+  appId: string;
+  gitRef: string;
+}
+interface DeployAppOpProps {
+  type: "deploy";
+  appId: string;
+  gitRef: string;
+}
+interface ConfigAppOpProps {
+  type: "configure";
   appId: string;
   env: { [key: string]: string };
 }
+
+type CreateAppOpProps = ScanAppOpProps | DeployAppOpProps | ConfigAppOpProps;
 export type CreateAppOpCtx = DeployApiCtx<any, CreateAppOpProps>;
 export const createAppOperation = api.post<CreateAppOpProps>(
   "/apps/:appId/operations",
   function* (ctx: CreateAppOpCtx, next) {
-    const { env } = ctx.payload;
-    const body = { env, type: "configure" };
+    const getBody = () => {
+      const { type } = ctx.payload;
+      switch (type) {
+        case "deploy":
+        case "scan_code": {
+          const { gitRef } = ctx.payload;
+          return { type, git_ref: gitRef };
+        }
+
+        case "configure": {
+          const { env } = ctx.payload;
+          return { type, env };
+        }
+
+        default:
+          return {};
+      }
+    };
+
+    const body = getBody();
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield next();
   },

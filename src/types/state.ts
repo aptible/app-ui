@@ -12,6 +12,7 @@ import type {
   DeployLogDrain,
   DeployService,
   DeployStack,
+  DeployOperation,
 } from "./deploy";
 import type { ModalState } from "./modal";
 
@@ -82,6 +83,7 @@ export interface DeployState {
   databaseImages: MapEntity<DeployDatabaseImage>;
   services: MapEntity<DeployService>;
   logDrains: MapEntity<DeployLogDrain>;
+  operations: MapEntity<DeployOperation>;
 }
 
 export interface AppState extends QueryState {
