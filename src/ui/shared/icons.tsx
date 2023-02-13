@@ -2,8 +2,8 @@ import { ReactNode } from "react";
 
 interface IconProps {
   color?: string;
-  width?: string;
-  height?: string;
+  width?: number;
+  height?: number;
   style?: object;
   path?: ReactNode;
   className?: string;
@@ -14,14 +14,16 @@ const IconStrokeBase = ({
   color = "#111920",
   style = {},
   className = "",
+  width = 24,
+  height = 24,
 }: IconProps) => {
   return (
     <svg
       style={style}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
-      width={24}
-      height={24}
+      width={width}
+      height={height}
       stroke={color}
       strokeWidth="1.5"
       strokeLinecap="round"
@@ -38,13 +40,15 @@ const IconFillBase = ({
   color = "#111920",
   style = {},
   className = "",
+  width = 24,
+  height = 24,
 }: IconProps) => {
   return (
     <svg
       style={style}
       xmlns="http://www.w3.org/2000/svg"
-      width={24}
-      height={24}
+      width={width}
+      height={height}
       fill={color}
       className={className}
     >
@@ -55,8 +59,8 @@ const IconFillBase = ({
 
 export interface Props extends React.SVGProps<SVGSVGElement> {
   color?: string;
-  width?: string;
-  height?: string;
+  width?: number;
+  height?: number;
   style?: object;
   className?: string;
 }

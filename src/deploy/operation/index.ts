@@ -1,4 +1,4 @@
-import { api } from "@app/api";
+import { api, combinePages, PaginateProps, thunks } from "@app/api";
 import {
   defaultEntity,
   extractIdFromLink,
@@ -14,13 +14,14 @@ import type {
   DeployOperation,
   LinkResponse,
   OperationStatus,
+  OperationType,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 import { poll } from "saga-query";
 import { selectDeploy } from "../slice";
 
 export interface DeployOperationResponse {
-  id: string;
+  id: number;
   type: string;
   status: OperationStatus;
   created_at: string;
@@ -62,8 +63,8 @@ export const defaultDeployOperation = (
     environmentId: "",
     codeScanResultId: "",
     resourceId: "",
-    resourceType: "",
-    type: "",
+    resourceType: "unknown",
+    type: "unknown",
     status: "queued",
     createdAt: now,
     updatedAt: now,
@@ -87,16 +88,24 @@ export const defaultDeployOperation = (
   };
 };
 
+const transformOperationType = (
+  type: string | undefined | null,
+): OperationType => {
+  if (!type) return "unknown";
+  // TODO: make this more strict?
+  return type as OperationType;
+};
+
 export const deserializeDeployOperation = (
   payload: DeployOperationResponse,
 ): DeployOperation => {
   return {
-    id: payload.id,
+    id: `${payload.id}`,
     environmentId: extractIdFromLink(payload._links.account),
     codeScanResultId: extractIdFromLink(payload._links.code_scan_result),
     resourceId: extractIdFromLink(payload._links.resource),
     resourceType: extractResourceNameFromLink(payload._links.resource),
-    type: payload.type,
+    type: transformOperationType(payload.type),
     status: payload.status,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
@@ -139,6 +148,12 @@ export const selectOperationsAsList = createSelector(selectTableAsList, (ops) =>
   }),
 );
 
+export const selectOperationsByResourceId = createSelector(
+  selectOperationsAsList,
+  (_: AppState, props: { resourceId: string }) => props.resourceId,
+  (ops, resourceId) => ops.filter((op) => op.resourceId === resourceId),
+);
+
 export const selectOperationsByEnvId = createSelector(
   selectOperationsAsList,
   (_: AppState, p: { envId: string }) => p.envId,
@@ -149,12 +164,36 @@ export const selectOperationsByAppId = createSelector(
   selectOperationsAsList,
   (_: AppState, p: { appId: string }) => p.appId,
   (ops, appId) =>
-    ops.filter((op) => op.resourceType === "apps" && op.resourceId === appId),
+    ops.filter((op) => op.resourceType === "app" && op.resourceId === appId),
+);
+
+export const selectOperationsByDatabaseId = createSelector(
+  selectOperationsAsList,
+  (_: AppState, p: { dbId: string }) => p.dbId,
+  (ops, dbId) =>
+    ops.filter(
+      (op) => op.resourceType === "database" && op.resourceId === dbId,
+    ),
+);
+
+export const selectLatestProvisionOp = createSelector(
+  selectOperationsByResourceId,
+  (ops) => ops.find((op) => op.type === "provision") || initOp,
 );
 
 export const selectLatestScanOp = createSelector(
   selectOperationsByAppId,
   (ops) => ops.find((op) => op.type === "scan_code") || initOp,
+);
+
+export const selectLatestConfigureOp = createSelector(
+  selectOperationsByAppId,
+  (ops) => ops.find((op) => op.type === "configure") || initOp,
+);
+
+export const selectLatestDeployOp = createSelector(
+  selectOperationsByAppId,
+  (ops) => ops.find((op) => op.type === "deploy") || initOp,
 );
 
 export const selectLatestSucceessScanOp = createSelector(
@@ -164,16 +203,22 @@ export const selectLatestSucceessScanOp = createSelector(
     initOp,
 );
 
-export const selectLatestDeployOp = createSelector(
-  selectOperationsByAppId,
-  (ops) => ops.find((op) => op.type === "deploy") || initOp,
-);
-
 export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
 
-export const pollEnvOperations = api.get<{ envId: string }>(
-  "/accounts/:envId/operations",
+interface EnvIdProps {
+  envId: string;
+}
+
+interface EnvOpProps extends PaginateProps, EnvIdProps {}
+
+export const fetchEnvOperations = api.get<EnvOpProps>(
+  "/accounts/:envId/operations?page=:page",
+);
+
+export const pollEnvOperations = thunks.create<EnvIdProps>(
+  "poll-env-operations",
   { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
+  combinePages(fetchEnvOperations),
 );
 
 export const opEntities = {

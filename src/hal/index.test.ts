@@ -31,14 +31,14 @@ describe("extractIdFromLink", () => {
 describe("extractResourceNameFromLink", () => {
   it("should safely handle null values", () => {
     const actual = extractResourceNameFromLink(null);
-    expect(actual).toEqual("");
+    expect(actual).toEqual("unknown");
   });
 
   it("should safely handle when there is a malformed url", () => {
     const actual = extractResourceNameFromLink({
       href: "/wow",
     });
-    expect(actual).toEqual("");
+    expect(actual).toEqual("unknown");
   });
 
   it("should safely handle when there is a malformed url with no `/`", () => {
@@ -52,6 +52,6 @@ describe("extractResourceNameFromLink", () => {
     const actual = extractResourceNameFromLink({
       href: "https://api.aptible.com/apps/123",
     });
-    expect(actual).toEqual("apps");
+    expect(actual).toEqual("app");
   });
 });

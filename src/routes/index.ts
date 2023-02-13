@@ -91,12 +91,15 @@ export const createProjectAddNameUrl = () => CREATE_PROJECT_ADD_NAME_PATH;
 
 export const CREATE_PROJECT_GIT_PATH = "/create/git";
 export const createProjectGitUrl = () => CREATE_PROJECT_GIT_PATH;
-export const CREATE_PROJECT_GIT_PUSH_PATH = "/create/git/:appId/push";
+
+export const CREATE_PROJECT_GIT_APP_PATH = "/apps/:appId/git";
+export const createProjectGitAppUrl = (appId: string) => `/apps/${appId}/git`;
+export const CREATE_PROJECT_GIT_PUSH_PATH = "/apps/:appId/git/push";
 export const createProjectGitPushUrl = (appId: string) =>
-  `/create/git/${appId}/push`;
-export const CREATE_PROJECT_GIT_SETTINGS_PATH = "/create/git/:appId/settings";
+  `/apps/${appId}/git/push`;
+export const CREATE_PROJECT_GIT_SETTINGS_PATH = "/apps/:appId/git/settings";
 export const createProjectGitSettingsUrl = (appId: string) =>
-  `/create/git/${appId}/settings`;
-export const CREATE_PROJECT_GIT_STATUS_PATH = "/create/git/:appId/status";
+  `/apps/${appId}/git/settings`;
+export const CREATE_PROJECT_GIT_STATUS_PATH = "/apps/:appId/git/status";
 export const createProjectGitStatusUrl = (appId: string) =>
-  `/create/git/${appId}/status`;
+  `/apps/${appId}/git/status`;

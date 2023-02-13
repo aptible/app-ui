@@ -13,6 +13,7 @@ export const tokens = {
     h1: "text-gray-900 text-2xl font-semibold",
     h2: "text-xl font-semibold text-gray-900",
     h3: "text-lg font-semibold text-gray-900",
+    h4: "text-md font-semibold text-gray-900",
 
     link: "font-medium text-sm text-gray-500 hover:text-gray-700",
 
