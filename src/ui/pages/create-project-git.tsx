@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { useApi, useCache, useLoaderSuccess, useQuery } from "saga-query/react";
-import { selectLoaderById } from "saga-query";
+import { selectDataById, selectLoaderById } from "saga-query";
 import cn from "classnames";
 
 import { prettyDateRelative, prettyDateTime } from "@app/date";
@@ -41,8 +41,9 @@ import {
   IconCheck,
   IconXMark,
   IconInfo,
-  IconGitCommit,
   IconGitBranch,
+  IconChevronDown,
+  IconChevronUp,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { createProject, deployProject, TextVal } from "@app/projects";
@@ -51,7 +52,6 @@ import {
   fetchAllStacks,
   fetchApp,
   fetchAppOperations,
-  fetchDatabases,
   fetchDatabasesByEnvId,
   fetchEnvironment,
   pollAppOperations,
@@ -62,6 +62,7 @@ import {
 } from "@app/deploy";
 import {
   cancelEnvOperationsPoll,
+  fetchOperationLogs,
   hasDeployOperation,
   pollEnvOperations,
   selectLatestConfigureOp,
@@ -80,7 +81,6 @@ import {
   DeployCodeScanResponse,
   fetchCodeScanResult,
 } from "@app/deploy/code-scan-result";
-import { useInterval } from "../hooks/use-interval";
 
 export const CreateProjectLayout = () => {
   return (
@@ -701,18 +701,18 @@ const Op = ({
   resource: { handle: string };
   last?: boolean;
 }) => {
+  const [isOpen, setOpen] = useState(false);
   if (!hasDeployOperation(op)) {
     return null;
   }
 
-  const extra = last ? "" : "border-b-2";
+  const extra = last ? "" : "border-b border-black-100";
   const status = () => {
     const cns = "font-semibold flex justify-center items-center";
 
     if (op.status === "succeeded") {
       return (
         <div className={cn(cns, "text-forest")}>
-          <IconCheck color="#00633F" />
           {createReadableStatus(op.status)}
         </div>
       );
@@ -721,7 +721,6 @@ const Op = ({
     if (op.status === "failed") {
       return (
         <div className={cn(cns, "text-red")}>
-          <IconXMark color="#AD1A1A" />
           {createReadableStatus(op.status)}
         </div>
       );
@@ -735,11 +734,27 @@ const Op = ({
   };
 
   return (
-    <div className={`${extra} py-4 flex justify-between items-center`}>
-      <div className="font-semibold">
-        {createReadableResourceName(op, resource)}
+    <div className={extra}>
+      <div
+        className="py-4 flex justify-between items-center cursor-pointer"
+        onClick={() => setOpen(!isOpen)}
+        onKeyUp={() => setOpen(!isOpen)}
+      >
+        <div className="font-semibold flex items-center">
+          {isOpen ? (
+            <IconChevronUp variant="sm" />
+          ) : (
+            <IconChevronDown variant="sm" />
+          )}
+          <div>{createReadableResourceName(op, resource)}</div>
+        </div>
+        {status()}
       </div>
-      {status()}
+      {isOpen ? (
+        <div className="pb-4">
+          <LogViewer op={op} />
+        </div>
+      ) : null}
     </div>
   );
 };
@@ -872,7 +887,7 @@ const StatusPill = ({
   if (status === "running" || status === "queued") {
     return (
       <div className={cn(className, "text-brown border-brown bg-orange-100")}>
-        <IconCogs8Tooth color="#825804" className="mr-1" />
+        <IconCogs8Tooth color="#825804" className="mr-1" variant="sm" />
         <div>
           {status === "running" ? "Building" : "Queued"} {date}
         </div>
@@ -883,7 +898,7 @@ const StatusPill = ({
   if (status === "failed") {
     return (
       <div className={cn(className, "text-red border-red-300 bg-red-100")}>
-        <IconXMark color="#AD1A1A" />
+        <IconXMark color="#AD1A1A" variant="sm" />
         <div>Failed {date}</div>
       </div>
     );
@@ -892,8 +907,8 @@ const StatusPill = ({
   if (status === "succeeded") {
     return (
       <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
-        <IconCheck color="#00633F" />
-        Succeeded {date}
+        <IconCheck color="#00633F" variant="sm" />
+        Deployed {date}
       </div>
     );
   }
@@ -902,8 +917,82 @@ const StatusPill = ({
     <div
       className={cn(className, "text-indigo border-indigo-300 bg-indigo-100")}
     >
-      <IconInfo color="#4361FF" className="mr-1" />
+      <IconInfo color="#4361FF" className="mr-1" variant="sm" />
       Unknown {date}
+    </div>
+  );
+};
+
+const LogLine = ({ text }: { text: string }) => {
+  const parts = text.split("-- :");
+  if (parts.length === 1) {
+    return (
+      <div>
+        <span className="text-lime">{parts[0]}</span>
+      </div>
+    );
+  }
+
+  const leftPart = parts[0]
+    .replace("+0000", "")
+    .replace(/\d\d\d\d-\d\d-\d\d/, "")
+    .trim();
+  const rightPart = parts[1].trim();
+
+  const Type = () => {
+    if (leftPart.endsWith("ERROR")) {
+      return <span className="text-red-300">{rightPart}</span>;
+    }
+
+    if (leftPart.endsWith("WARNING")) {
+      return <span className="text-orange-300">{rightPart}</span>;
+    }
+
+    return <span className="text-lime">{rightPart}</span>;
+  };
+
+  return (
+    <div className="text-sm">
+      <span className="text-black-200">{leftPart}: </span>
+      <Type />
+    </div>
+  );
+};
+
+const LogViewer = ({ op }: { op: DeployOperation }) => {
+  const wrapper = "font-mono bg-black p-2 rounded-lg text-black-200";
+  const action = fetchOperationLogs({ id: op.id });
+  const loader = useApi(action);
+  const data: string = useSelector((s: AppState) =>
+    selectDataById(s, { id: action.payload.key }),
+  );
+  useEffect(() => {
+    if (op.status === "succeeded") {
+      loader.trigger();
+    }
+  }, [op.status]);
+
+  if (op.status === "queued" || op.status === "running") {
+    return (
+      <div className={wrapper}>
+        Operation {op.status}, logs will display after operation completes.
+      </div>
+    );
+  }
+
+  if (loader.isInitialLoading) {
+    return <div className={wrapper}>Fetching logs ...</div>;
+  }
+
+  if (!data) {
+    return <div className={wrapper}>No data found</div>;
+  }
+
+  return (
+    <div className={wrapper}>
+      {data.split("\n").map((line, i) => {
+        return <LogLine key={`log-${i}`} text={line} />;
+      })}
     </div>
   );
 };
@@ -950,38 +1039,40 @@ export const CreateProjectGitStatusPage = () => {
       </div>
 
       <FormNav prev={createProjectGitSettingsUrl(appId)} />
-      <Box>
-        <div className="border-b-2 pb-4 ">
-          <div className="flex items-center">
-            <div>
-              <img
-                alt="default project logo"
-                src="/logo-app.png"
-                style={{ width: 32, height: 32 }}
-                className="mr-3"
-              />
+      <div className="mt-8">
+        <div className="bg-white p-5 shadow rounded-lg border border-black-100">
+          <div className="border-b border-black-100 pb-4 ">
+            <div className="flex items-center">
+              <div>
+                <img
+                  alt="default project logo"
+                  src="/logo-app.png"
+                  style={{ width: 32, height: 32 }}
+                  className="mr-3"
+                />
+              </div>
+              <div>
+                <h4 className={tokens.type.h4}>{env.handle}</h4>
+                <p className="text-black-500 text-sm">
+                  https://aptible.com/839583485/dashboard
+                </p>
+              </div>
             </div>
-            <div>
-              <h4 className={tokens.type.h4}>{env.handle}</h4>
-              <p className="text-black-500 text-sm">
-                https://aptible.com/839583485/dashboard
-              </p>
+            <div className="flex items-center mt-1">
+              <StatusPill status={status} from={dateStr} />
+              <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
+                {deployOp.gitRef.slice(0, 12)}
+              </Pill>
             </div>
           </div>
-          <div className="flex items-center mt-1">
-            <StatusPill status={status} from={dateStr} />
-            <Pill icon={<IconGitBranch color="#595E63" />}>
-              {deployOp.gitRef.slice(0, 12)}
-            </Pill>
-          </div>
-        </div>
 
-        {isInitialLoading ? (
-          <Loading text="Loading resources ..." />
-        ) : (
-          <ProjectStatus app={app} dbs={dbs} />
-        )}
-      </Box>
+          {isInitialLoading ? (
+            <Loading text="Loading resources ..." />
+          ) : (
+            <ProjectStatus app={app} dbs={dbs} />
+          )}
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,14 +1,9 @@
-import { useSelector } from "react-redux";
-
-import { selectTheme } from "@app/theme";
-
-type Props = {
+interface Props {
   width?: number;
-};
+}
 
 export function AptibleLogo({ width = 100 }: Props) {
-  const theme = useSelector(selectTheme);
-  const fill = theme === "dark" ? "white" : "#0A1B2B";
+  const fill = "#0A1B2B";
   return (
     <svg
       width={width}

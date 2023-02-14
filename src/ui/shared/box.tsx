@@ -1,7 +1,7 @@
 export const Box = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="mt-8">
-      <div className="bg-white py-8 shadow sm:rounded-lg sm:px-10">
+      <div className="bg-white py-8 px-10 shadow border border-black-100">
         {children}
       </div>
     </div>
