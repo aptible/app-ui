@@ -24,7 +24,6 @@ import {
   DeployOperation,
   HalEmbedded,
   OperationStatus,
-  ProvisionableStatus,
 } from "@app/types";
 
 import {
@@ -52,6 +51,8 @@ import {
   fetchAllStacks,
   fetchApp,
   fetchAppOperations,
+  fetchDatabases,
+  fetchDatabasesByEnvId,
   fetchEnvironment,
   pollAppOperations,
   selectAppById,
@@ -66,6 +67,7 @@ import {
   selectLatestConfigureOp,
   selectLatestDeployOp,
   selectLatestProvisionOp,
+  selectLatestProvisionOps,
   selectLatestScanOp,
   selectLatestSucceessScanOp,
 } from "@app/deploy/operation";
@@ -792,22 +794,44 @@ const ProjectStatus = ({
   );
 };
 
-const resolveProvionables = (
-  stats: { status: ProvisionableStatus }[],
-): ProvisionableStatus => {
-  if (stats.some((s) => s.status === "pending")) {
-    return "pending";
+const resolveOperationStatuses = (
+  stats: { status: OperationStatus; updatedAt: string }[],
+): [OperationStatus, string] => {
+  // sort the statuses from least recent to most recent
+  // this allows us to return-early with the proper time in which the states
+  // were first determined
+  const statuses = stats.sort(
+    (a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
+  );
+
+  let success = 0;
+  for (let i = 0; i < statuses.length; i += 1) {
+    const st = statuses[i];
+    if (st.status === "queued") {
+      return ["queued", st.updatedAt];
+    }
+
+    if (st.status === "running") {
+      return ["running", st.updatedAt];
+    }
+
+    if (st.status === "failed") {
+      return ["failed", st.updatedAt];
+    }
+
+    if (st.status === "succeeded") {
+      success += 1;
+    }
   }
-  if (stats.some((s) => s.status === "provisioning")) {
-    return "provisioning";
+
+  if (success === statuses.length) {
+    return [
+      "succeeded",
+      statuses.at(-1)?.updatedAt || new Date().toISOString(),
+    ];
   }
-  if (stats.some((s) => s.status === "provision_failed")) {
-    return "provision_failed";
-  }
-  if (stats.every((s) => s.status === "provisioned")) {
-    return "provisioned";
-  }
-  return "unknown";
+
+  return ["unknown", new Date().toISOString()];
 };
 
 const Pill = ({
@@ -834,14 +858,10 @@ const StatusPill = ({
   status,
   from,
 }: {
-  status: ProvisionableStatus;
+  status: OperationStatus;
   from: string;
 }) => {
-  const [date, setDate] = useState(prettyDateRelative(from));
-  useEffect(() => {
-    setDate(prettyDateRelative(from));
-  }, [from]);
-  useInterval(() => setDate(prettyDateRelative(from)), 1 * 1000);
+  const date = prettyDateRelative(from);
 
   const className = cn(
     "rounded-full border-2",
@@ -849,16 +869,18 @@ const StatusPill = ({
     "px-2 flex justify-between items-center w-fit",
   );
 
-  if (status === "pending") {
+  if (status === "running" || status === "queued") {
     return (
       <div className={cn(className, "text-brown border-brown bg-orange-100")}>
         <IconCogs8Tooth color="#825804" className="mr-1" />
-        <div>Building {date}</div>
+        <div>
+          {status === "running" ? "Building" : "Queued"} {date}
+        </div>
       </div>
     );
   }
 
-  if (status === "provision_failed") {
+  if (status === "failed") {
     return (
       <div className={cn(className, "text-red border-red-300 bg-red-100")}>
         <IconXMark color="#AD1A1A" />
@@ -867,7 +889,7 @@ const StatusPill = ({
     );
   }
 
-  if (status === "provisioned") {
+  if (status === "succeeded") {
     return (
       <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
         <IconCheck color="#00633F" />
@@ -896,12 +918,18 @@ export const CreateProjectGitStatusPage = () => {
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
+  useQuery(fetchDatabasesByEnvId({ envId }));
   const dbs = useSelector((s: AppState) =>
     selectDatabasesByEnvId(s, { envId }),
   );
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
+  const provisionOps = useSelector((s: AppState) =>
+    selectLatestProvisionOps(s, { resourceIds: dbs.map((db) => db.id) }),
+  );
+  const ops = [deployOp, ...provisionOps];
+  const [status, dateStr] = resolveOperationStatuses(ops);
   const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
   const cancel = () => dispatch(cancelEnvOperationsPoll());
@@ -941,14 +969,10 @@ export const CreateProjectGitStatusPage = () => {
             </div>
           </div>
           <div className="flex items-center mt-1">
-            <StatusPill
-              status={resolveProvionables([app, ...dbs])}
-              from={new Date().toISOString()}
-            />
+            <StatusPill status={status} from={dateStr} />
             <Pill icon={<IconGitBranch color="#595E63" />}>
-              {deployOp.gitRef}
+              {deployOp.gitRef.slice(0, 12)}
             </Pill>
-            <Pill icon={<IconGitCommit color="#595E63" />}>unknown</Pill>
           </div>
         </div>
 

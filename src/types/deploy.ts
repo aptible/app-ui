@@ -113,7 +113,12 @@ export interface DeployStack extends Timestamps {
   organizationId: string;
 }
 
-export type OperationStatus = "queued" | "running" | "failed" | "succeeded";
+export type OperationStatus =
+  | "queued"
+  | "running"
+  | "failed"
+  | "succeeded"
+  | "unknown";
 
 export type ResourceType =
   | "app"
