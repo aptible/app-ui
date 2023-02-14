@@ -126,11 +126,11 @@ export const IconArrowsUpDown = (props: Props) => {
 export const IconChevronUp = (props: Props) => {
   return (
     <IconStrokeBase
-      fill-rule="evenodd"
+      fillRule="evenodd"
       path={
         <path d="M11.47 7.72a.75.75 0 011.06 0l7.5 7.5a.75.75 0 11-1.06 1.06L12 9.31l-6.97 6.97a.75.75 0 01-1.06-1.06l7.5-7.5z" />
       }
-      clip-rule="evenodd"
+      clipRule="evenodd"
       {...props}
     />
   );
@@ -139,11 +139,11 @@ export const IconChevronUp = (props: Props) => {
 export const IconChevronRight = (props: Props) => {
   return (
     <IconStrokeBase
-      fill-rule="evenodd"
+      fillRule="evenodd"
       path={
         <path d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z" />
       }
-      clip-rule="evenodd"
+      clipRule="evenodd"
       {...props}
     />
   );
@@ -153,8 +153,8 @@ export const IconChevronDown = (props: Props) => {
   return (
     //fill
     <IconStrokeBase
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       {...props}
       path={
         <path d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" />
@@ -167,8 +167,8 @@ export const IconChevronLeft = (props: Props) => {
   return (
     //fill
     <IconStrokeBase
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       path={
         <path d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" />
       }
@@ -442,9 +442,9 @@ export const IconCheck = (props: Props) => {
       {...props}
       path={
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         />
       }
     />
@@ -553,9 +553,9 @@ export const IconLockClosed = (props: Props) => {
       {...props}
       path={
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         />
       }
     />

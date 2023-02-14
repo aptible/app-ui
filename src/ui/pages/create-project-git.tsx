@@ -42,6 +42,8 @@ import {
   IconCheck,
   IconXMark,
   IconInfo,
+  IconGitCommit,
+  IconGitBranch,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { createProject, deployProject, TextVal } from "@app/projects";
@@ -705,14 +707,6 @@ const Op = ({
   const status = () => {
     const cns = "font-semibold flex justify-center items-center";
 
-    if (op.status === "running" || op.status === "queued") {
-      return (
-        <div className={cn(cns, "text-black-500")}>
-          {createReadableStatus(op.status)}
-        </div>
-      );
-    }
-
     if (op.status === "succeeded") {
       return (
         <div className={cn(cns, "text-forest")}>
@@ -722,9 +716,17 @@ const Op = ({
       );
     }
 
+    if (op.status === "failed") {
+      return (
+        <div className={cn(cns, "text-red")}>
+          <IconXMark color="#AD1A1A" />
+          {createReadableStatus(op.status)}
+        </div>
+      );
+    }
+
     return (
-      <div className={cn(cns, "text-red")}>
-        <IconXMark color="#AD1A1A" />
+      <div className={cn(cns, "text-black-500")}>
         {createReadableStatus(op.status)}
       </div>
     );
@@ -793,6 +795,9 @@ const ProjectStatus = ({
 const resolveProvionables = (
   stats: { status: ProvisionableStatus }[],
 ): ProvisionableStatus => {
+  if (stats.some((s) => s.status === "pending")) {
+    return "pending";
+  }
   if (stats.some((s) => s.status === "provisioning")) {
     return "provisioning";
   }
@@ -803,6 +808,26 @@ const resolveProvionables = (
     return "provisioned";
   }
   return "unknown";
+};
+
+const Pill = ({
+  children,
+  icon,
+}: {
+  children: React.ReactNode;
+  icon: JSX.Element;
+}) => {
+  const className = cn(
+    "rounded-full border-2",
+    "text-sm font-semibold text-black-500",
+    "ml-2 px-2 flex justify-between items-center w-fit",
+  );
+  return (
+    <div className={className}>
+      {icon}
+      <div className="ml-1">{children}</div>
+    </div>
+  );
 };
 
 const StatusPill = ({
@@ -821,20 +846,13 @@ const StatusPill = ({
   const className = cn(
     "rounded-full border-2",
     "text-sm font-semibold ",
-    "mt-1 px-2 flex justify-between items-center w-fit",
+    "px-2 flex justify-between items-center w-fit",
   );
-  // style={{ transform: "scale(0.7)" }}
 
   if (status === "pending") {
     return (
       <div className={cn(className, "text-brown border-brown bg-orange-100")}>
-        <IconCogs8Tooth
-          color="#825804"
-          className="mr-1"
-          style={{ transform: "scale(0.7)" }}
-          height={20}
-          width={20}
-        />
+        <IconCogs8Tooth color="#825804" className="mr-1" />
         <div>Building {date}</div>
       </div>
     );
@@ -843,12 +861,7 @@ const StatusPill = ({
   if (status === "provision_failed") {
     return (
       <div className={cn(className, "text-red border-red-300 bg-red-100")}>
-        <IconXMark
-          color="#AD1A1A"
-          style={{ transform: "scale(0.7)" }}
-          height={20}
-          width={20}
-        />
+        <IconXMark color="#AD1A1A" />
         <div>Failed {date}</div>
       </div>
     );
@@ -857,12 +870,7 @@ const StatusPill = ({
   if (status === "provisioned") {
     return (
       <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
-        <IconCheck
-          color="#00633F"
-          style={{ transform: "scale(0.7)" }}
-          height={20}
-          width={20}
-        />
+        <IconCheck color="#00633F" />
         Succeeded {date}
       </div>
     );
@@ -872,13 +880,7 @@ const StatusPill = ({
     <div
       className={cn(className, "text-indigo border-indigo-300 bg-indigo-100")}
     >
-      <IconInfo
-        color="#4361FF"
-        className="mr-1"
-        style={{ transform: "scale(0.7)" }}
-        height={20}
-        width={20}
-      />
+      <IconInfo color="#4361FF" className="mr-1" />
       Unknown {date}
     </div>
   );
@@ -896,6 +898,9 @@ export const CreateProjectGitStatusPage = () => {
   );
   const dbs = useSelector((s: AppState) =>
     selectDatabasesByEnvId(s, { envId }),
+  );
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
   );
   const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
@@ -935,11 +940,15 @@ export const CreateProjectGitStatusPage = () => {
               </p>
             </div>
           </div>
-          <div>
+          <div className="flex items-center mt-1">
             <StatusPill
               status={resolveProvionables([app, ...dbs])}
               from={new Date().toISOString()}
             />
+            <Pill icon={<IconGitBranch color="#595E63" />}>
+              {deployOp.gitRef}
+            </Pill>
+            <Pill icon={<IconGitCommit color="#595E63" />}>unknown</Pill>
           </div>
         </div>
 
