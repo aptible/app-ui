@@ -161,21 +161,21 @@ export interface PaginateProps {
 /**
  * Loops through all the pages of an endpoint
  */
-export function combinePages(
-  actionFn: CreateActionWithPayload<DeployApiCtx, PaginateProps>,
-) {
+export function combinePages<
+  P extends { [key: string]: any } = { [key: string]: any },
+>(actionFn: CreateActionWithPayload<DeployApiCtx, PaginateProps & P>) {
   function* paginator(ctx: ThunkCtx, next: Next) {
     let results: DeployApiCtx[] = [];
     yield put(setLoaderStart({ id: ctx.key }));
 
-    const firstPage: DeployApiCtx<HalEmbedded<any>> = yield call(
+    const firstPage: DeployApiCtx<HalEmbedded<any>> = yield* call(
       actionFn.run,
-      actionFn({ page: 1 }),
+      actionFn({ ...ctx.payload, page: 1 }),
     );
 
     if (!firstPage.json.ok) {
       const message = firstPage.json.data.message;
-      yield put(setLoaderError({ id: ctx.key, message }));
+      yield* put(setLoaderError({ id: ctx.key, message }));
       yield next();
       return;
     }
@@ -189,15 +189,17 @@ export function combinePages(
       const lastPage = Math.ceil(total / per);
       const fetchAll = [];
       for (let i = cur + 1; i <= lastPage; i += 1) {
-        fetchAll.push(call(actionFn.run, actionFn({ page: i })));
+        fetchAll.push(
+          call(actionFn.run, actionFn({ ...ctx.payload, page: i })),
+        );
       }
       if (fetchAll.length > 0) {
-        results = yield all(fetchAll);
+        results = yield* all(fetchAll);
       }
     }
 
     ctx.json = { data: results };
-    yield put(setLoaderSuccess({ id: ctx.key }));
+    yield* put(setLoaderSuccess({ id: ctx.key }));
     yield next();
   }
 

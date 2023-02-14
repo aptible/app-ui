@@ -193,6 +193,12 @@ const appRoutes: RouteObject[] = [
             index: true,
             element: <CreateProjectGitPage />,
           },
+        ],
+      },
+      {
+        path: routes.CREATE_PROJECT_GIT_APP_PATH,
+        element: <CreateProjectLayout />,
+        children: [
           {
             path: routes.CREATE_PROJECT_GIT_PUSH_PATH,
             element: <CreateProjectGitPushPage />,

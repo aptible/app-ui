@@ -7,7 +7,8 @@ export type ProvisionableStatus =
   | "deprovisioning"
   | "deprovisioned"
   | "provision_failed"
-  | "deprovision_failed";
+  | "deprovision_failed"
+  | "unknown";
 
 export interface Provisionable {
   status: ProvisionableStatus;
@@ -114,13 +115,66 @@ export interface DeployStack extends Timestamps {
 
 export type OperationStatus = "queued" | "running" | "failed" | "succeeded";
 
+export type ResourceType =
+  | "app"
+  | "service"
+  | "database"
+  | "database_credential"
+  | "vhost"
+  | "log_drain"
+  | "metric_drain"
+  | "backup"
+  | "image"
+  | "ephemeral_session"
+  | "unknown";
+
+// https://github.com/aptible/deploy-api/blob/3b197beaa5bcbbed991c1eac73d5c99a4fdf8f95/app/models/operation.rb#L54
+export type OperationType =
+  | "audit"
+  | "backup"
+  | "captain_comeback_restart"
+  | "configure"
+  | "clone"
+  | "copy"
+  | "deploy"
+  | "deprovision"
+  | "drain"
+  | "evacuate"
+  | "execute"
+  | "get"
+  | "index"
+  | "logs"
+  | "modify"
+  | "poll"
+  | "provision"
+  | "ps"
+  | "purge"
+  | "rebuild"
+  | "recover"
+  | "recover_recreate"
+  | "reload"
+  | "renew"
+  | "replicate"
+  | "replicate_logical"
+  | "restart"
+  | "restart_recreate"
+  | "run_recipe"
+  | "scale"
+  | "scan"
+  | "scan_code"
+  | "set"
+  | "show"
+  | "sync"
+  | "tunnel"
+  | "unknown";
+
 export interface DeployOperation extends Timestamps {
   id: string;
   environmentId: string;
   codeScanResultId: string;
   resourceId: string;
-  resourceType: string;
-  type: string;
+  resourceType: ResourceType;
+  type: OperationType;
   status: OperationStatus;
   gitRef: string;
   dockerRef: string;

@@ -10,6 +10,7 @@ import type {
   NestedEntity,
   MapEntity,
   HalEmbedded,
+  ResourceType,
 } from "@app/types";
 import type { DeployApiCtx } from "@app/api";
 
@@ -23,15 +24,30 @@ export function extractIdFromLink(
   return segments[segments.length - 1] || "";
 }
 
+/**
+ * deploy-api does not provide the resource type so we have to convert a route, e.g. `/apps/:id` to `app`.
+ * It appears to be as simple as a singularize method but that's not a certainty.
+ */
+function transformResourceName(name: string | undefined | null): ResourceType {
+  switch (name) {
+    case "apps":
+      return "app";
+    case "databases":
+      return "database";
+    default:
+      return "unknown";
+  }
+}
+
 export function extractResourceNameFromLink(
   resource: { href: string } | null | undefined,
-) {
+): ResourceType {
   if (!resource?.href) {
-    return "";
+    return "unknown";
   }
 
   const res = resource.href.split("/");
-  return res[res.length - 2] || "";
+  return transformResourceName(res[res.length - 2]);
 }
 
 export const ENTITIES_NAME = "entities";

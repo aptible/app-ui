@@ -4,8 +4,9 @@ import { Navigate, Outlet, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { useApi, useCache, useLoaderSuccess, useQuery } from "saga-query/react";
 import { selectLoaderById } from "saga-query";
+import cn from "classnames";
 
-import { prettyDateTime } from "@app/date";
+import { prettyDateRelative, prettyDateTime } from "@app/date";
 import {
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
@@ -17,12 +18,15 @@ import { fetchSSHKeys } from "@app/ssh-keys";
 import { selectCurrentUser } from "@app/users";
 import {
   AppState,
+  DeployApp,
+  DeployDatabase,
   DeployDatabaseImage,
   DeployOperation,
   HalEmbedded,
+  OperationStatus,
+  ProvisionableStatus,
 } from "@app/types";
 
-import { ListingPageLayout } from "../layouts";
 import {
   tokens,
   Box,
@@ -33,6 +37,11 @@ import {
   FormGroup,
   BannerMessages,
   Banner,
+  ApplicationSidebar,
+  IconCogs8Tooth,
+  IconCheck,
+  IconXMark,
+  IconInfo,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { createProject, deployProject, TextVal } from "@app/projects";
@@ -44,16 +53,19 @@ import {
   fetchEnvironment,
   pollAppOperations,
   selectAppById,
+  selectDatabasesByEnvId,
   selectEnvironmentById,
   selectStackPublicDefault,
 } from "@app/deploy";
 import {
   cancelEnvOperationsPoll,
+  hasDeployOperation,
   pollEnvOperations,
+  selectLatestConfigureOp,
   selectLatestDeployOp,
+  selectLatestProvisionOp,
   selectLatestScanOp,
   selectLatestSucceessScanOp,
-  selectOperationsByEnvId,
 } from "@app/deploy/operation";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
@@ -64,16 +76,36 @@ import {
   DeployCodeScanResponse,
   fetchCodeScanResult,
 } from "@app/deploy/code-scan-result";
+import { useInterval } from "../hooks/use-interval";
 
 export const CreateProjectLayout = () => {
   return (
-    <ListingPageLayout>
-      <div className="flex justify-center container">
-        <div style={{ width: 700 }}>
-          <Outlet />
-        </div>
+    <>
+      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+        <ApplicationSidebar />
       </div>
-    </ListingPageLayout>
+
+      <div
+        className="md:pl-64 flex flex-col flex-1 h-full bg-no-repeat bg-center bg-cover"
+        style={{
+          backgroundImage: "url(/background-pattern-v2.png)",
+        }}
+      >
+        <main className="flex-1">
+          <div className="py-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+              <div className="py-4">
+                <div className="flex justify-center container">
+                  <div style={{ width: 700 }}>
+                    <Outlet />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </>
   );
 };
 
@@ -618,11 +650,236 @@ export const CreateProjectGitSettingsPage = () => {
   );
 };
 
-const Op = ({ op }: { op: DeployOperation }) => {
-  const resource = op.resourceType;
+interface MiniResource {
+  handle: string;
+}
+
+const createReadableResourceName = (
+  op: DeployOperation,
+  resource: MiniResource,
+): string => {
+  if (op.resourceType === "app" && op.type === "deploy") {
+    return "App deployment";
+  }
+
+  if (op.resourceType === "database" && op.type === "provision") {
+    return `Database provision ${resource.handle}`;
+  }
+
+  if (op.resourceType === "app" && op.type === "configure") {
+    return "Initial configuration";
+  }
+
+  return `${op.resourceType}:${op.type}`;
+};
+
+const createReadableStatus = (status: OperationStatus): string => {
+  switch (status) {
+    case "queued":
+      return "Queued";
+    case "running":
+      return "Pending";
+    case "succeeded":
+      return "DONE";
+    case "failed":
+      return "FAILED";
+    default:
+      return status;
+  }
+};
+
+const Op = ({
+  op,
+  resource,
+  last = false,
+}: {
+  op: DeployOperation;
+  resource: { handle: string };
+  last?: boolean;
+}) => {
+  if (!hasDeployOperation(op)) {
+    return null;
+  }
+
+  const extra = last ? "" : "border-b-2";
+  const status = () => {
+    const cns = "font-semibold flex justify-center items-center";
+
+    if (op.status === "running" || op.status === "queued") {
+      return (
+        <div className={cn(cns, "text-black-500")}>
+          {createReadableStatus(op.status)}
+        </div>
+      );
+    }
+
+    if (op.status === "succeeded") {
+      return (
+        <div className={cn(cns, "text-forest")}>
+          <IconCheck color="#00633F" />
+          {createReadableStatus(op.status)}
+        </div>
+      );
+    }
+
+    return (
+      <div className={cn(cns, "text-red")}>
+        <IconXMark color="#AD1A1A" />
+        {createReadableStatus(op.status)}
+      </div>
+    );
+  };
+
   return (
-    <div className="border-b-2 py-4">
-      {resource}:{op.type} - {op.status}
+    <div className={`${extra} py-4 flex justify-between items-center`}>
+      <div className="font-semibold">
+        {createReadableResourceName(op, resource)}
+      </div>
+      {status()}
+    </div>
+  );
+};
+
+const DatabaseStatus = ({
+  db,
+  last = false,
+}: {
+  db: DeployDatabase;
+  last: boolean;
+}) => {
+  const provisionOp = useSelector((s: AppState) =>
+    selectLatestProvisionOp(s, { resourceId: db.id }),
+  );
+
+  return <Op op={provisionOp} resource={db} last={last} />;
+};
+
+const AppStatus = ({ app }: { app: DeployApp }) => {
+  const configOp = useSelector((s: AppState) =>
+    selectLatestConfigureOp(s, { appId: app.id }),
+  );
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
+  );
+
+  return (
+    <div>
+      <Op op={configOp} resource={app} />
+      <Op op={deployOp} resource={app} />
+    </div>
+  );
+};
+
+const ProjectStatus = ({
+  app,
+  dbs,
+}: {
+  app: DeployApp;
+  dbs: DeployDatabase[];
+}) => {
+  return (
+    <div>
+      <AppStatus app={app} />
+
+      {dbs.map((db, i) => {
+        return (
+          <DatabaseStatus key={db.id} db={db} last={i === dbs.length - 1} />
+        );
+      })}
+    </div>
+  );
+};
+
+const resolveProvionables = (
+  stats: { status: ProvisionableStatus }[],
+): ProvisionableStatus => {
+  if (stats.some((s) => s.status === "provisioning")) {
+    return "provisioning";
+  }
+  if (stats.some((s) => s.status === "provision_failed")) {
+    return "provision_failed";
+  }
+  if (stats.every((s) => s.status === "provisioned")) {
+    return "provisioned";
+  }
+  return "unknown";
+};
+
+const StatusPill = ({
+  status,
+  from,
+}: {
+  status: ProvisionableStatus;
+  from: string;
+}) => {
+  const [date, setDate] = useState(prettyDateRelative(from));
+  useEffect(() => {
+    setDate(prettyDateRelative(from));
+  }, [from]);
+  useInterval(() => setDate(prettyDateRelative(from)), 1 * 1000);
+
+  const className = cn(
+    "rounded-full border-2",
+    "text-sm font-semibold ",
+    "mt-1 px-2 flex justify-between items-center w-fit",
+  );
+  // style={{ transform: "scale(0.7)" }}
+
+  if (status === "pending") {
+    return (
+      <div className={cn(className, "text-brown border-brown bg-orange-100")}>
+        <IconCogs8Tooth
+          color="#825804"
+          className="mr-1"
+          style={{ transform: "scale(0.7)" }}
+          height={20}
+          width={20}
+        />
+        <div>Building {date}</div>
+      </div>
+    );
+  }
+
+  if (status === "provision_failed") {
+    return (
+      <div className={cn(className, "text-red border-red-300 bg-red-100")}>
+        <IconXMark
+          color="#AD1A1A"
+          style={{ transform: "scale(0.7)" }}
+          height={20}
+          width={20}
+        />
+        <div>Failed {date}</div>
+      </div>
+    );
+  }
+
+  if (status === "provisioned") {
+    return (
+      <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
+        <IconCheck
+          color="#00633F"
+          style={{ transform: "scale(0.7)" }}
+          height={20}
+          width={20}
+        />
+        Succeeded {date}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={cn(className, "text-indigo border-indigo-300 bg-indigo-100")}
+    >
+      <IconInfo
+        color="#4361FF"
+        className="mr-1"
+        style={{ transform: "scale(0.7)" }}
+        height={20}
+        width={20}
+      />
+      Unknown {date}
     </div>
   );
 };
@@ -634,10 +891,13 @@ export const CreateProjectGitStatusPage = () => {
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
   useQuery(fetchEnvironment({ id: envId }));
-  const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
-  const ops = useSelector((s: AppState) =>
-    selectOperationsByEnvId(s, { envId }),
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: envId }),
   );
+  const dbs = useSelector((s: AppState) =>
+    selectDatabasesByEnvId(s, { envId }),
+  );
+  const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
   const cancel = () => dispatch(cancelEnvOperationsPoll());
   useEffect(() => {
@@ -658,19 +918,35 @@ export const CreateProjectGitStatusPage = () => {
 
       <FormNav prev={createProjectGitSettingsUrl(appId)} />
       <Box>
-        <div className="border-b-2 py-4">
-          <h2 className={tokens.type.h2}>{app.handle}</h2>
-          <p>Text for URL</p>
+        <div className="border-b-2 pb-4 ">
+          <div className="flex items-center">
+            <div>
+              <img
+                alt="default project logo"
+                src="/logo-app.png"
+                style={{ width: 32, height: 32 }}
+                className="mr-3"
+              />
+            </div>
+            <div>
+              <h4 className={tokens.type.h4}>{env.handle}</h4>
+              <p className="text-black-500 text-sm">
+                https://aptible.com/839583485/dashboard
+              </p>
+            </div>
+          </div>
+          <div>
+            <StatusPill
+              status={resolveProvionables([app, ...dbs])}
+              from={new Date().toISOString()}
+            />
+          </div>
         </div>
 
         {isInitialLoading ? (
-          <Loading text="Provisioning resources ..." />
+          <Loading text="Loading resources ..." />
         ) : (
-          <div>
-            {ops.map((op) => {
-              return <Op key={op.id} op={op} />;
-            })}
-          </div>
+          <ProjectStatus app={app} dbs={dbs} />
         )}
       </Box>
     </div>

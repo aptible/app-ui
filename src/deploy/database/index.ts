@@ -29,7 +29,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import { findEnvById, selectEnvironments } from "../environment";
 
 export interface DeployDatabaseResponse {
-  id: string;
+  id: number;
   handle: string;
   provisioned: boolean;
   type: string;
@@ -62,7 +62,7 @@ export const deserializeDeployDatabase = (
     currentKmsArn: payload.current_kms_arn,
     dockerRepo: payload.docker_repo,
     handle: payload.handle,
-    id: payload.id,
+    id: `${payload.id}`,
     provisioned: payload.provisioned,
     type: payload.type,
     status: payload.status,
@@ -176,6 +176,14 @@ export const selectDatabasesForTableSearch = createSelector(
   },
 );
 
+export const selectDatabasesByEnvId = createSelector(
+  selectDatabasesAsList,
+  (_: AppState, props: { envId: string }) => props.envId,
+  (dbs, envId) => {
+    return dbs.filter((db) => db.environmentId === envId);
+  },
+);
+
 export const fetchDatabases = api.get<PaginateProps>("/databases?page=:page", {
   saga: cacheTimer(),
 });
@@ -187,6 +195,10 @@ export const fetchAllDatabases = thunks.create(
 export const fetchDatabase = api.get<{ id: string }>("/databases/:id", {
   saga: cacheTimer(),
 });
+export const fetchDatabasesByEnvId = api.get<{ envId: string }>(
+  "/accounts/:envId/databases",
+);
+
 interface CreateDatabaseProps {
   handle: string;
   type: string;
@@ -232,7 +244,7 @@ export const provisionDatabase = thunks.create<CreateDatabaseProps>(
     const opCtx = yield* call(
       createDatabaseOperation.run,
       createDatabaseOperation({
-        dbId: dbCtx.json.data.id,
+        dbId: `${dbCtx.json.data.id}`,
         containerSize: 1024,
         diskSize: 10,
         status: "queued",
