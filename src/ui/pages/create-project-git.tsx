@@ -24,7 +24,6 @@ import {
   DeployOperation,
   HalEmbedded,
   OperationStatus,
-  ProvisionableStatus,
 } from "@app/types";
 
 import {
@@ -42,6 +41,8 @@ import {
   IconCheck,
   IconXMark,
   IconInfo,
+  IconGitCommit,
+  IconGitBranch,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { createProject, deployProject, TextVal } from "@app/projects";
@@ -50,6 +51,8 @@ import {
   fetchAllStacks,
   fetchApp,
   fetchAppOperations,
+  fetchDatabases,
+  fetchDatabasesByEnvId,
   fetchEnvironment,
   pollAppOperations,
   selectAppById,
@@ -64,6 +67,7 @@ import {
   selectLatestConfigureOp,
   selectLatestDeployOp,
   selectLatestProvisionOp,
+  selectLatestProvisionOps,
   selectLatestScanOp,
   selectLatestSucceessScanOp,
 } from "@app/deploy/operation";
@@ -705,14 +709,6 @@ const Op = ({
   const status = () => {
     const cns = "font-semibold flex justify-center items-center";
 
-    if (op.status === "running" || op.status === "queued") {
-      return (
-        <div className={cn(cns, "text-black-500")}>
-          {createReadableStatus(op.status)}
-        </div>
-      );
-    }
-
     if (op.status === "succeeded") {
       return (
         <div className={cn(cns, "text-forest")}>
@@ -722,9 +718,17 @@ const Op = ({
       );
     }
 
+    if (op.status === "failed") {
+      return (
+        <div className={cn(cns, "text-red")}>
+          <IconXMark color="#AD1A1A" />
+          {createReadableStatus(op.status)}
+        </div>
+      );
+    }
+
     return (
-      <div className={cn(cns, "text-red")}>
-        <IconXMark color="#AD1A1A" />
+      <div className={cn(cns, "text-black-500")}>
         {createReadableStatus(op.status)}
       </div>
     );
@@ -790,79 +794,105 @@ const ProjectStatus = ({
   );
 };
 
-const resolveProvionables = (
-  stats: { status: ProvisionableStatus }[],
-): ProvisionableStatus => {
-  if (stats.some((s) => s.status === "provisioning")) {
-    return "provisioning";
+const resolveOperationStatuses = (
+  stats: { status: OperationStatus; updatedAt: string }[],
+): [OperationStatus, string] => {
+  // sort the statuses from least recent to most recent
+  // this allows us to return-early with the proper time in which the states
+  // were first determined
+  const statuses = stats.sort(
+    (a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
+  );
+
+  let success = 0;
+  for (let i = 0; i < statuses.length; i += 1) {
+    const st = statuses[i];
+    if (st.status === "queued") {
+      return ["queued", st.updatedAt];
+    }
+
+    if (st.status === "running") {
+      return ["running", st.updatedAt];
+    }
+
+    if (st.status === "failed") {
+      return ["failed", st.updatedAt];
+    }
+
+    if (st.status === "succeeded") {
+      success += 1;
+    }
   }
-  if (stats.some((s) => s.status === "provision_failed")) {
-    return "provision_failed";
+
+  if (success === statuses.length) {
+    return [
+      "succeeded",
+      statuses.at(-1)?.updatedAt || new Date().toISOString(),
+    ];
   }
-  if (stats.every((s) => s.status === "provisioned")) {
-    return "provisioned";
-  }
-  return "unknown";
+
+  return ["unknown", new Date().toISOString()];
+};
+
+const Pill = ({
+  children,
+  icon,
+}: {
+  children: React.ReactNode;
+  icon: JSX.Element;
+}) => {
+  const className = cn(
+    "rounded-full border-2",
+    "text-sm font-semibold text-black-500",
+    "ml-2 px-2 flex justify-between items-center w-fit",
+  );
+  return (
+    <div className={className}>
+      {icon}
+      <div className="ml-1">{children}</div>
+    </div>
+  );
 };
 
 const StatusPill = ({
   status,
   from,
 }: {
-  status: ProvisionableStatus;
+  status: OperationStatus;
   from: string;
 }) => {
-  const [date, setDate] = useState(prettyDateRelative(from));
-  useEffect(() => {
-    setDate(prettyDateRelative(from));
-  }, [from]);
-  useInterval(() => setDate(prettyDateRelative(from)), 1 * 1000);
+  const date = prettyDateRelative(from);
 
   const className = cn(
     "rounded-full border-2",
     "text-sm font-semibold ",
-    "mt-1 px-2 flex justify-between items-center w-fit",
+    "px-2 flex justify-between items-center w-fit",
   );
-  // style={{ transform: "scale(0.7)" }}
 
-  if (status === "pending") {
+  if (status === "running" || status === "queued") {
     return (
       <div className={cn(className, "text-brown border-brown bg-orange-100")}>
-        <IconCogs8Tooth
-          color="#825804"
-          className="mr-1"
-          style={{ transform: "scale(0.7)" }}
-          height={20}
-          width={20}
-        />
-        <div>Building {date}</div>
+        <IconCogs8Tooth color="#825804" className="mr-1" />
+        <div>
+          {status === "running" ? "Building" : "Queued"} {date}
+        </div>
       </div>
     );
   }
 
-  if (status === "provision_failed") {
+  if (status === "failed") {
     return (
       <div className={cn(className, "text-red border-red-300 bg-red-100")}>
-        <IconXMark
-          color="#AD1A1A"
-          style={{ transform: "scale(0.7)" }}
-          height={20}
-          width={20}
-        />
+        <IconXMark color="#AD1A1A" />
         <div>Failed {date}</div>
       </div>
     );
   }
 
-  if (status === "provisioned") {
+  if (status === "succeeded") {
     return (
       <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
-        <IconCheck
-          color="#00633F"
-          style={{ transform: "scale(0.7)" }}
-          height={20}
-          width={20}
-        />
+        <IconCheck color="#00633F" />
         Succeeded {date}
       </div>
     );
@@ -872,13 +902,7 @@ const StatusPill = ({
     <div
       className={cn(className, "text-indigo border-indigo-300 bg-indigo-100")}
     >
-      <IconInfo
-        color="#4361FF"
-        className="mr-1"
-        style={{ transform: "scale(0.7)" }}
-        height={20}
-        width={20}
-      />
+      <IconInfo color="#4361FF" className="mr-1" />
       Unknown {date}
     </div>
   );
@@ -894,9 +918,18 @@ export const CreateProjectGitStatusPage = () => {
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
+  useQuery(fetchDatabasesByEnvId({ envId }));
   const dbs = useSelector((s: AppState) =>
     selectDatabasesByEnvId(s, { envId }),
   );
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
+  );
+  const provisionOps = useSelector((s: AppState) =>
+    selectLatestProvisionOps(s, { resourceIds: dbs.map((db) => db.id) }),
+  );
+  const ops = [deployOp, ...provisionOps];
+  const [status, dateStr] = resolveOperationStatuses(ops);
   const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
   const cancel = () => dispatch(cancelEnvOperationsPoll());
@@ -935,11 +968,11 @@ export const CreateProjectGitStatusPage = () => {
               </p>
             </div>
           </div>
-          <div>
-            <StatusPill
-              status={resolveProvionables([app, ...dbs])}
-              from={new Date().toISOString()}
-            />
+          <div className="flex items-center mt-1">
+            <StatusPill status={status} from={dateStr} />
+            <Pill icon={<IconGitBranch color="#595E63" />}>
+              {deployOp.gitRef.slice(0, 12)}
+            </Pill>
           </div>
         </div>
 

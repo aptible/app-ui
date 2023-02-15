@@ -154,6 +154,12 @@ export const selectOperationsByResourceId = createSelector(
   (ops, resourceId) => ops.filter((op) => op.resourceId === resourceId),
 );
 
+export const selectOperationsByResourceIds = createSelector(
+  selectOperationsAsList,
+  (_: AppState, props: { resourceIds: string[] }) => props.resourceIds,
+  (ops, resourceIds) => ops.filter((op) => resourceIds.includes(op.resourceId)),
+);
+
 export const selectOperationsByEnvId = createSelector(
   selectOperationsAsList,
   (_: AppState, p: { envId: string }) => p.envId,
@@ -179,6 +185,11 @@ export const selectOperationsByDatabaseId = createSelector(
 export const selectLatestProvisionOp = createSelector(
   selectOperationsByResourceId,
   (ops) => ops.find((op) => op.type === "provision") || initOp,
+);
+
+export const selectLatestProvisionOps = createSelector(
+  selectOperationsByResourceIds,
+  (ops) => ops.filter((op) => op.type === "provision") || [],
 );
 
 export const selectLatestScanOp = createSelector(
