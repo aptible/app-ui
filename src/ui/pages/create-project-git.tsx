@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
@@ -8,6 +8,7 @@ import cn from "classnames";
 
 import { prettyDateRelative, prettyDateTime } from "@app/date";
 import {
+  appDetailUrl,
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
   createProjectGitPushUrl,
@@ -44,6 +45,8 @@ import {
   IconGitBranch,
   IconChevronDown,
   IconChevronUp,
+  ButtonLink,
+  IconChevronRight,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { createProject, deployProject, TextVal } from "@app/projects";
@@ -313,14 +316,14 @@ export const CreateProjectGitPushPage = () => {
       />
       <Box>
         <div>
-          <h2 className={tokens.type.h3}>Add Aptible's Git Server</h2>
+          <h3 className={tokens.type.h3}>Add Aptible's Git Server</h3>
           <PreCode>
             git remote add aptible git@beta.aptible.com:{env.handle}/
             {app.handle}.git
           </PreCode>
         </div>
         <div className="mt-4">
-          <h2 className={tokens.type.h3}>Push your code</h2>
+          <h3 className={tokens.type.h3}>Push your code</h3>
           <PreCode>git push aptible main</PreCode>
         </div>
 
@@ -997,6 +1000,16 @@ const LogViewer = ({ op }: { op: DeployOperation }) => {
   );
 };
 
+const StatusBox = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="mt-8">
+      <div className="bg-white p-5 shadow rounded-lg border border-black-100">
+        {children}
+      </div>
+    </div>
+  );
+};
+
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
@@ -1031,48 +1044,89 @@ export const CreateProjectGitStatusPage = () => {
     };
   }, [appId, envId]);
 
-  return (
-    <div>
+  const header = () => {
+    if (status === "succeeded") {
+      return (
+        <div className="text-center">
+          <h1 className={tokens.type.h1}>Deployed your Code</h1>
+          <p className="my-4 text-gray-600">
+            All done! Deployment completed successfully
+          </p>
+        </div>
+      );
+    }
+
+    if (status === "failed") {
+      return (
+        <div className="text-center">
+          <h1 className={tokens.type.h1}>Deployment Failed</h1>
+          <p className="my-4 text-gray-600">
+            Don't worry! Edit your project settings and click Redeploy when
+            ready.
+          </p>
+        </div>
+      );
+    }
+
+    return (
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Deploying your code</h1>
+        <h1 className={tokens.type.h1}>Deploying your Code</h1>
         <p className="my-4 text-gray-600">Estimated wait time is 5 minutes.</p>
       </div>
+    );
+  };
+
+  return (
+    <div>
+      {header()}
 
       <FormNav prev={createProjectGitSettingsUrl(appId)} />
-      <div className="mt-8">
-        <div className="bg-white p-5 shadow rounded-lg border border-black-100">
-          <div className="border-b border-black-100 pb-4 ">
-            <div className="flex items-center">
-              <div>
-                <img
-                  alt="default project logo"
-                  src="/logo-app.png"
-                  style={{ width: 32, height: 32 }}
-                  className="mr-3"
-                />
-              </div>
-              <div>
-                <h4 className={tokens.type.h4}>{env.handle}</h4>
-                <p className="text-black-500 text-sm">
-                  https://aptible.com/839583485/dashboard
-                </p>
-              </div>
+      <StatusBox>
+        <div className="border-b border-black-100 pb-4 ">
+          <div className="flex items-center">
+            <div>
+              <img
+                alt="default project logo"
+                src="/logo-app.png"
+                style={{ width: 32, height: 32 }}
+                className="mr-3"
+              />
             </div>
-            <div className="flex items-center mt-1">
-              <StatusPill status={status} from={dateStr} />
-              <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
-                {deployOp.gitRef.slice(0, 12)}
-              </Pill>
+            <div>
+              <h4 className={tokens.type.h4}>{env.handle}</h4>
+              <p className="text-black-500 text-sm">
+                https://aptible.com/839583485/dashboard
+              </p>
             </div>
           </div>
-
-          {isInitialLoading ? (
-            <Loading text="Loading resources ..." />
-          ) : (
-            <ProjectStatus app={app} dbs={dbs} />
-          )}
+          <div className="flex items-center mt-1">
+            <StatusPill status={status} from={dateStr} />
+            <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
+              {deployOp.gitRef.slice(0, 12)}
+            </Pill>
+          </div>
         </div>
-      </div>
+
+        {isInitialLoading ? (
+          <Loading text="Loading resources ..." />
+        ) : (
+          <ProjectStatus app={app} dbs={dbs} />
+        )}
+      </StatusBox>
+
+      {status === "succeeded" ? (
+        <StatusBox>
+          <h3 className={tokens.type.h3}>How to deploy changes</h3>
+          <p className="mt-4 mb-2">
+            Make changes to your local git repo, commit those changes, and then
+            push your changes to the Aptible git server:
+          </p>
+          <PreCode>git push aptible main</PreCode>
+          <ButtonLink to={appDetailUrl(appId)} className="mt-4">
+            View Project <IconChevronRight />
+          </ButtonLink>
+        </StatusBox>
+      ) : null}
     </div>
   );
 };
