@@ -38,15 +38,13 @@ import {
   BannerMessages,
   Banner,
   ApplicationSidebar,
-  IconCogs8Tooth,
   IconCheck,
-  IconXMark,
   IconInfo,
   IconGitBranch,
   IconChevronDown,
   IconChevronUp,
-  ButtonLink,
-  IconChevronRight,
+  IconSettings,
+  IconX,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { createProject, deployProject, TextVal } from "@app/projects";
@@ -890,7 +888,7 @@ const StatusPill = ({
   if (status === "running" || status === "queued") {
     return (
       <div className={cn(className, "text-brown border-brown bg-orange-100")}>
-        <IconCogs8Tooth color="#825804" className="mr-1" variant="sm" />
+        <IconSettings color="#825804" className="mr-1" variant="sm" />
         <div>
           {status === "running" ? "Building" : "Queued"} {date}
         </div>
@@ -901,7 +899,7 @@ const StatusPill = ({
   if (status === "failed") {
     return (
       <div className={cn(className, "text-red border-red-300 bg-red-100")}>
-        <IconXMark color="#AD1A1A" variant="sm" />
+        <IconX color="#AD1A1A" variant="sm" />
         <div>Failed {date}</div>
       </div>
     );
@@ -910,7 +908,7 @@ const StatusPill = ({
   if (status === "succeeded") {
     return (
       <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
-        <IconCheck color="#00633F" variant="sm" />
+        <IconCheck color="#00633F" className="mr-1" variant="sm" />
         Deployed {date}
       </div>
     );

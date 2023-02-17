@@ -1,7 +1,7 @@
-const colors = require("tailwindcss/colors");
 const defaultTheme = require("tailwindcss/defaultTheme");
 const flex = defaultTheme.flex;
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   purge: ["./src/**/*.{ts,tsx}", "./index.html"],
   darkMode: "class",
@@ -29,14 +29,10 @@ module.exports = {
         "cell-lg": "0 0 480px",
       },
       colors: {
-        ...colors,
-
-        // single colors
         gold: "#E09600",
         brown: "#825804",
         plum: "#98256A",
         forest: "#00633F",
-        gray: colors.neutral,
 
         "off-white": "#FDF8F0",
         white: "#FFFFFF",
