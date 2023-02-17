@@ -7,6 +7,16 @@ interface IconProps {
   style?: object;
   path?: ReactNode;
   className?: string;
+  variant?: "base" | "sm";
+}
+
+export interface Props extends React.SVGProps<SVGSVGElement> {
+  color?: string;
+  width?: number;
+  height?: number;
+  style?: object;
+  className?: string;
+  variant?: "base" | "sm";
 }
 
 const IconStrokeBase = ({
@@ -16,10 +26,15 @@ const IconStrokeBase = ({
   className = "",
   width = 24,
   height = 24,
+  variant = "base",
 }: IconProps) => {
+  const extraStyles: React.SVGProps<SVGSVGElement>["style"] = {};
+  if (variant === "sm") {
+    extraStyles.transform = "scale(0.7)";
+  }
   return (
     <svg
-      style={style}
+      style={{ ...style, ...extraStyles }}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       width={width}
@@ -42,10 +57,16 @@ const IconFillBase = ({
   className = "",
   width = 24,
   height = 24,
+  variant = "base",
 }: IconProps) => {
+  const extraStyles: React.SVGProps<SVGSVGElement>["style"] = {};
+  if (variant === "sm") {
+    extraStyles.transform = "scale(0.7)";
+  }
+
   return (
     <svg
-      style={style}
+      style={{ ...style, ...extraStyles }}
       xmlns="http://www.w3.org/2000/svg"
       width={width}
       height={height}
@@ -56,14 +77,6 @@ const IconFillBase = ({
     </svg>
   );
 };
-
-export interface Props extends React.SVGProps<SVGSVGElement> {
-  color?: string;
-  width?: number;
-  height?: number;
-  style?: object;
-  className?: string;
-}
 
 export const IconSmallArrowUp = (props: Props) => {
   return (

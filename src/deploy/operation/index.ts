@@ -1,4 +1,11 @@
-import { api, combinePages, PaginateProps, thunks } from "@app/api";
+import {
+  api,
+  combinePages,
+  PaginateProps,
+  thunks,
+  retryable,
+  Retryable,
+} from "@app/api";
 import {
   defaultEntity,
   extractIdFromLink,
@@ -17,7 +24,7 @@ import type {
   OperationType,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { poll } from "saga-query";
+import { call, poll } from "saga-query";
 import { selectDeploy } from "../slice";
 
 export interface DeployOperationResponse {
@@ -230,6 +237,38 @@ export const pollEnvOperations = thunks.create<EnvIdProps>(
   "poll-env-operations",
   { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
   combinePages(fetchEnvOperations),
+);
+
+export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
+  "/operations/:id/logs",
+  [
+    retryable(),
+    function* (ctx, next) {
+      ctx.cache = true;
+      ctx.bodyType = "text";
+
+      yield next();
+
+      if (!ctx.json.ok) {
+        return;
+      }
+
+      const url = ctx.json.data;
+      const response = yield* call(fetch, url);
+      const data = yield* call([response, "text"]);
+
+      if (!response.ok) {
+        ctx.json = {
+          ok: false,
+          data,
+        };
+        return;
+      }
+      // overwrite the URL provided by the API with the actual logs
+      // so we can just fetch the data in a single endpoint
+      ctx.json.data = data;
+    },
+  ],
 );
 
 export const opEntities = {

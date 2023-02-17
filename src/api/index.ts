@@ -8,15 +8,21 @@ import {
   errorHandler,
   dispatchActions,
   timer,
-  CreateActionWithPayload,
   put,
   setLoaderStart,
   setLoaderError,
   all,
   setLoaderSuccess,
-  LoaderCtx,
+  delay,
+  createKey,
 } from "saga-query";
-import type { ApiCtx, Next, PipeCtx } from "saga-query";
+import type {
+  ApiCtx,
+  Next,
+  PipeCtx,
+  LoaderCtx,
+  CreateActionWithPayload,
+} from "saga-query";
 
 import { selectEnv } from "@app/env";
 import type { ApiGen, AuthApiError, Action, HalEmbedded } from "@app/types";
@@ -159,7 +165,7 @@ export interface PaginateProps {
 }
 
 /**
- * Loops through all the pages of an endpoint
+ * Loops through all the pages of an endpoint automatically
  */
 export function combinePages<
   P extends { [key: string]: any } = { [key: string]: any },
@@ -204,6 +210,61 @@ export function combinePages<
   }
 
   return paginator;
+}
+
+export interface Retryable {
+  attempts?: number;
+}
+
+/**
+ * This middleware will retry calling the endpoint when there is a failure until
+ * `maxAttempts` is reached.
+ */
+export function retryable(
+  {
+    waitTime = 1000,
+    maxAttempts = 3,
+  }: {
+    waitTime: number;
+    maxAttempts: number;
+  } = { waitTime: 1000, maxAttempts: 3 },
+) {
+  return function* (ctx: ApiCtx<Retryable>, next: Next) {
+    const { attempts = 0, ...payload } = ctx.payload;
+    // we need to overwrite the key here because the endpoint is retryable
+    // and we don't want the retry property to change the key which is how we cache
+    // the data.
+    // https://github.com/redux-saga/saga-query/blob/04765799123412385404d07c949cac26eb67378b/src/middleware.ts#L266
+    ctx.key = createKey(ctx.name, payload);
+
+    yield next();
+
+    // if request is successful, no need to retry
+    if (ctx.json.ok) {
+      return;
+    }
+
+    if (attempts >= maxAttempts) {
+      return;
+    }
+
+    yield delay(waitTime);
+    const fn = ctx.actionFn;
+    // call the endpoint again
+    const response = yield* call(
+      fn.run,
+      fn({ ...ctx.payload, attempts: attempts + 1 }),
+    );
+    // check for success
+    if ((response as any).json.ok) {
+      // these actions are no longer necessary as the previous call does it for us
+      // we also don't want them to overwrite the successful attempt
+      ctx.actions = [];
+      // don't cache this request as the previous call does it for us
+      // we also don't want them to overwrite the successful attempt
+      ctx.cache = false;
+    }
+  };
 }
 
 export const thunks = createPipe<ThunkCtx>();
