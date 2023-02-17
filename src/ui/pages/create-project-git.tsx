@@ -37,6 +37,7 @@ import {
   FormGroup,
   BannerMessages,
   Banner,
+  ButtonLink,
   ApplicationSidebar,
   IconCheck,
   IconInfo,
@@ -45,6 +46,7 @@ import {
   IconChevronUp,
   IconSettings,
   IconX,
+  IconChevronRight,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { createProject, deployProject, TextVal } from "@app/projects";
@@ -280,12 +282,6 @@ export const CreateProjectGitPushPage = () => {
     selectLatestDeployOp(s, { appId }),
   );
 
-  const envId = app.environmentId;
-  useQuery(fetchEnvironment({ id: envId }));
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
-
   useEffect(() => {
     const cancel = () => dispatch(cancelAppOpsPoll());
     cancel();
@@ -315,26 +311,23 @@ export const CreateProjectGitPushPage = () => {
       <Box>
         <div>
           <h3 className={tokens.type.h3}>Add Aptible's Git Server</h3>
-          <PreCode>
-            git remote add aptible git@beta.aptible.com:{env.handle}/
-            {app.handle}.git
-          </PreCode>
+          <PreCode>git remote add aptible {app.gitRepo}</PreCode>
         </div>
         <div className="mt-4">
-          <h3 className={tokens.type.h3}>Push your code</h3>
-          <PreCode>git push aptible main</PreCode>
+          <h3 className={tokens.type.h3}>Push your code to our scan branch</h3>
+          <PreCode>git push aptible main:aptible-scan</PreCode>
         </div>
 
         <hr className="my-4" />
 
-        {deployOp ? (
+        {hasDeployOperation(deployOp) ? (
           <div>
             We detected an app deployment, did you push to the{" "}
             <code>aptible-scan</code> branch?
           </div>
         ) : null}
 
-        {scanOp ? (
+        {hasDeployOperation(scanOp) ? (
           <OpResult op={scanOp} />
         ) : (
           <Loading text="Waiting for git push ..." />
@@ -497,6 +490,7 @@ export const CreateProjectGitSettingsPage = () => {
         dbs: dbList,
         envs: envList,
         cmds: [],
+        gitRef: scanOp.gitRef,
       }),
     );
   };
@@ -968,7 +962,7 @@ const LogViewer = ({ op }: { op: DeployOperation }) => {
     selectDataById(s, { id: action.payload.key }),
   );
   useEffect(() => {
-    if (op.status === "succeeded") {
+    if (op.status === "succeeded" || op.status === "failed") {
       loader.trigger();
     }
   }, [op.status]);
