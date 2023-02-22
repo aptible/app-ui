@@ -223,7 +223,7 @@ export interface Retryable {
 export function retryable(
   {
     waitTime = 1000,
-    maxAttempts = 3,
+    maxAttempts = 5,
   }: {
     waitTime: number;
     maxAttempts: number;
@@ -250,20 +250,7 @@ export function retryable(
 
     yield delay(waitTime);
     const fn = ctx.actionFn;
-    // call the endpoint again
-    const response = yield* call(
-      fn.run,
-      fn({ ...ctx.payload, attempts: attempts + 1 }),
-    );
-    // check for success
-    if ((response as any).json.ok) {
-      // these actions are no longer necessary as the previous call does it for us
-      // we also don't want them to overwrite the successful attempt
-      ctx.actions = [];
-      // don't cache this request as the previous call does it for us
-      // we also don't want them to overwrite the successful attempt
-      ctx.cache = false;
-    }
+    yield put(fn({ ...ctx.payload, attempts: attempts + 1 }));
   };
 }
 

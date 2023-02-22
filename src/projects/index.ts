@@ -119,12 +119,13 @@ export interface CreateProjectSettingsProps {
   dbs: TextVal<{ id: string }>[];
   envs: TextVal[];
   cmds: TextVal[];
+  gitRef: string;
 }
 
 export const deployProject = thunks.create<CreateProjectSettingsProps>(
   "project-deploy",
   function* (ctx: ThunkCtx<CreateProjectSettingsProps>, next) {
-    const { appId, envId, dbs, envs } = ctx.payload;
+    const { appId, envId, dbs, envs, gitRef } = ctx.payload;
     const id = ctx.name;
     yield put(setLoaderStart({ id }));
 
@@ -158,7 +159,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
 
       call(
         createAppOperation.run,
-        createAppOperation({ type: "deploy", appId, gitRef: "main" }),
+        createAppOperation({ type: "deploy", appId, gitRef }),
       ),
 
       ...dbs

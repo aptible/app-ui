@@ -1,5 +1,5 @@
 import { createProjectGitUrl } from "@app/routes";
-import { ButtonLink, IconSmallArrowRight, tokens, Box } from "../shared";
+import { ButtonLink, IconArrowRight, tokens, Box } from "../shared";
 
 export const CreateProjectPage = () => {
   return (
@@ -27,7 +27,7 @@ export const CreateProjectPage = () => {
                       className="font-semibold"
                     >
                       Deploy your code
-                      <IconSmallArrowRight className="ml-2" />
+                      <IconArrowRight className="ml-2" />
                     </ButtonLink>
                   </Box>
                 </div>

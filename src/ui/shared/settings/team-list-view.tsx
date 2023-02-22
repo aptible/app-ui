@@ -5,7 +5,7 @@ import { TableHead, Td } from "../table";
 import { Input } from "../input";
 import { Button } from "../button";
 import { tokens } from "../tokens";
-import { IconMagnifyingGlass } from "../icons";
+import { IconSearch } from "../icons";
 
 const UserListRow = ({ user }: { user: User }) => {
   return (
@@ -31,7 +31,7 @@ const UserListRow = ({ user }: { user: User }) => {
 const FilterBarView = () => {
   return (
     <div className="flex flex-1 pt-4 gap-3 relative m-1">
-      <IconMagnifyingGlass className="absolute inline-block top-6 left-1.5" />
+      <IconSearch className="absolute inline-block top-6 left-1.5" />
       <Input
         placeholder="Search Users..."
         type="text"

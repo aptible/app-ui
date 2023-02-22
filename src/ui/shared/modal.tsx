@@ -10,7 +10,7 @@ type ModalProps = PropsWithChildren<{
 
 export function Modal({ children, isOpen }: ModalProps) {
   const classes = cn(
-    tokens.colors.background,
+    "bg-white",
     "align-middle max-w-lg w-full p-0",
     "relative inline-block rounded-lg text-left overflow-hidden shadow-xl transform transition-all",
   );
