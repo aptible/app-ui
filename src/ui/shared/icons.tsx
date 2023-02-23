@@ -41,6 +41,23 @@ export const IconArrowRight = (props: Props) => {
   );
 };
 
+export const IconArrowLeft = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <line x1="19" y1="12" x2="5" y2="12" />
+      <polyline points="12 19 5 12 12 5" />
+    </IconStrokeBase>
+  );
+};
+
+export const IconEdit2 = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+    </IconStrokeBase>
+  );
+};
+
 export const IconChevronUp = (props: Props) => {
   return (
     <IconStrokeBase {...props}>
