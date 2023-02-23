@@ -89,11 +89,11 @@ export const fetchServiceDefinitionsByAppId = api.get<{ appId: string }>(
 );
 
 export const deleteServiceDefinition = api.delete<{
-  serviceDefinitionId: string;
-}>("/service_definitions/:serviceDefinitionId");
+  id: string;
+}>("/service_definitions/:id");
 
-export const fetchServiceDefinition = api.get<{ serviceDefinitionId: string }>(
-  "/service_definitions/:serviceDefinitionId",
+export const fetchServiceDefinition = api.get<{ id: string }>(
+  "/service_definitions/:id",
 );
 
 interface CreateServiceDefinitionProps {
