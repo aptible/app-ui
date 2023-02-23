@@ -46,9 +46,7 @@ import {
   IconChevronUp,
   IconSettings,
   IconX,
-  IconChevronRight,
   IconArrowRight,
-  IconArrowLeft,
   IconEdit2,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
@@ -498,7 +496,7 @@ export const CreateProjectGitSettingsPage = () => {
   }, [existingEnvStr]);
 
   const [dbs, setDbs] = useState(existingDbStr);
-  const serviceDefinitionsQuery = useCache<HalEmbedded<HalServiceDefinition>>(
+  useCache<HalEmbedded<HalServiceDefinition>>(
     fetchServiceDefinitionsByAppId({ appId }),
   );
 
@@ -520,14 +518,13 @@ export const CreateProjectGitSettingsPage = () => {
   useEffect(() => {
     if (serviceDefinitions.length !== 0) {
       // hydrate inputs for consumption on load
-      const cmdsToSet = serviceDefinitions
-        ? serviceDefinitions
-            .map((serviceDefinition) => {
-              return `${serviceDefinition.processType}=${serviceDefinition.command}`;
-            })
-            .join("\n")
-        : "";
-
+      const cmdsToSet =
+        serviceDefinitions
+          .map(
+            (serviceDefinition) =>
+              `${serviceDefinition.processType}=${serviceDefinition.command}`,
+          )
+          .join("\n") ?? "";
       setCmds(cmdsToSet);
 
       // set cmd list from initial setting, which will get regrokked before submission
@@ -535,11 +532,11 @@ export const CreateProjectGitSettingsPage = () => {
         serviceDefinitions.map((serviceDefinition) => ({
           key: serviceDefinition.processType,
           value: serviceDefinition.command,
-          meta: { id: serviceDefinition.id.toString() },
+          meta: { id: serviceDefinition.id },
         })),
       );
     }
-  }, [serviceDefinitionsQuery.data?._embedded.service_definitions]);
+  }, [serviceDefinitions.length]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
