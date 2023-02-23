@@ -18,18 +18,12 @@ export const DetailPageHeaderView = ({
   tabs,
 }: HeaderProps) => {
   return (
-    <div
-      className={cn(
-        tokens.colors.background,
-        tokens.colors["dark border"],
-        "border-b",
-      )}
-    >
+    <div className={cn("bg-white", "border-black-200", "border-b")}>
       <div className={cn(tokens.layout["main width"], "pt-8")}>
         {breadcrumbs && <Breadcrumbs crumbs={breadcrumbs} />}
       </div>
 
-      <div className={cn(tokens.colors.border, "border-b")}>
+      <div className={cn("border-black-100", "border-b")}>
         <div
           className={cn(
             tokens.layout["main width"],

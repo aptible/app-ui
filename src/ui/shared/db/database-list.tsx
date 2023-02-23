@@ -18,15 +18,7 @@ import { tokens } from "../tokens";
 import { ResourceListView } from "../resource-list-view";
 import { Input } from "../input";
 import { LoadResources } from "../load-resources";
-import { IconMagnifyingGlass } from "../icons";
-
-const FilterBarView = () => {
-  return (
-    <div className="flex flex-1 pt-6 gap-3">
-      <Input placeholder="Search Databases..." type="text" />
-    </div>
-  );
-};
+import { IconSearch } from "../icons";
 
 type DatabaseCellProps = { database: DeployDatabase };
 
@@ -119,7 +111,7 @@ export function DatabaseList() {
         description="Databases provide data persistency on Aptible."
         filterBar={
           <div className="flex flex-1 pt-6 gap-3 relative m-1">
-            <IconMagnifyingGlass className="absolute inline-block top-8 left-1.5" />
+            <IconSearch className="absolute inline-block top-8 left-1.5" />
             <Input
               placeholder="Search Databases ..."
               type="text"

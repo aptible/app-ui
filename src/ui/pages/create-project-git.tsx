@@ -37,15 +37,15 @@ import {
   FormGroup,
   BannerMessages,
   Banner,
+  ButtonLink,
   ApplicationSidebar,
-  IconCogs8Tooth,
   IconCheck,
-  IconXMark,
   IconInfo,
   IconGitBranch,
   IconChevronDown,
   IconChevronUp,
-  ButtonLink,
+  IconSettings,
+  IconX,
   IconChevronRight,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
@@ -286,12 +286,6 @@ export const CreateProjectGitPushPage = () => {
     selectLatestDeployOp(s, { appId }),
   );
 
-  const envId = app.environmentId;
-  useQuery(fetchEnvironment({ id: envId }));
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
-
   useEffect(() => {
     const cancel = () => dispatch(cancelAppOpsPoll());
     cancel();
@@ -321,26 +315,23 @@ export const CreateProjectGitPushPage = () => {
       <Box>
         <div>
           <h3 className={tokens.type.h3}>Add Aptible's Git Server</h3>
-          <PreCode>
-            git remote add aptible git@beta.aptible.com:{env.handle}/
-            {app.handle}.git
-          </PreCode>
+          <PreCode>git remote add aptible {app.gitRepo}</PreCode>
         </div>
         <div className="mt-4">
-          <h3 className={tokens.type.h3}>Push your code</h3>
-          <PreCode>git push aptible main</PreCode>
+          <h3 className={tokens.type.h3}>Push your code to our scan branch</h3>
+          <PreCode>git push aptible main:aptible-scan</PreCode>
         </div>
 
         <hr className="my-4" />
 
-        {deployOp ? (
+        {hasDeployOperation(deployOp) ? (
           <div>
             We detected an app deployment, did you push to the{" "}
             <code>aptible-scan</code> branch?
           </div>
         ) : null}
 
-        {scanOp ? (
+        {hasDeployOperation(scanOp) ? (
           <OpResult op={scanOp} />
         ) : (
           <Loading text="Waiting for git push ..." />
@@ -541,6 +532,7 @@ export const CreateProjectGitSettingsPage = () => {
         envs: envList,
         cmds: cmdList,
         existingCmds,
+        gitRef: scanOp.gitRef,
       }),
     );
   };
@@ -932,7 +924,7 @@ const StatusPill = ({
   if (status === "running" || status === "queued") {
     return (
       <div className={cn(className, "text-brown border-brown bg-orange-100")}>
-        <IconCogs8Tooth color="#825804" className="mr-1" variant="sm" />
+        <IconSettings color="#825804" className="mr-1" variant="sm" />
         <div>
           {status === "running" ? "Building" : "Queued"} {date}
         </div>
@@ -943,7 +935,7 @@ const StatusPill = ({
   if (status === "failed") {
     return (
       <div className={cn(className, "text-red border-red-300 bg-red-100")}>
-        <IconXMark color="#AD1A1A" variant="sm" />
+        <IconX color="#AD1A1A" variant="sm" />
         <div>Failed {date}</div>
       </div>
     );
@@ -952,7 +944,7 @@ const StatusPill = ({
   if (status === "succeeded") {
     return (
       <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
-        <IconCheck color="#00633F" variant="sm" />
+        <IconCheck color="#00633F" className="mr-1" variant="sm" />
         Deployed {date}
       </div>
     );
@@ -1012,7 +1004,7 @@ const LogViewer = ({ op }: { op: DeployOperation }) => {
     selectDataById(s, { id: action.payload.key }),
   );
   useEffect(() => {
-    if (op.status === "succeeded") {
+    if (op.status === "succeeded" || op.status === "failed") {
       loader.trigger();
     }
   }, [op.status]);

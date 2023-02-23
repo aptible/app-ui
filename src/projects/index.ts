@@ -25,8 +25,6 @@ import { ApiGen, DeployApp } from "@app/types";
 import {
   createServiceDefinition,
   deleteServiceDefinition,
-  fetchAllAppServiceDefinitions,
-  fetchServiceDefinitionsByAppId,
 } from "@app/deploy/app-service-definitions";
 
 interface CreateProjectProps {
@@ -126,12 +124,13 @@ export interface CreateProjectSettingsProps {
   envs: TextVal[];
   cmds: TextVal[];
   existingCmds: TextVal[];
+  gitRef: string;
 }
 
 export const deployProject = thunks.create<CreateProjectSettingsProps>(
   "project-deploy",
   function* (ctx: ThunkCtx<CreateProjectSettingsProps>, next) {
-    const { appId, envId, dbs, envs, cmds, existingCmds } = ctx.payload;
+    const { appId, envId, dbs, envs, cmds, existingCmds, gitRef } = ctx.payload;
     const id = ctx.name;
     yield put(setLoaderStart({ id }));
 
@@ -196,7 +195,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
 
       call(
         createAppOperation.run,
-        createAppOperation({ type: "deploy", appId, gitRef: "main" }),
+        createAppOperation({ type: "deploy", appId, gitRef }),
       ),
 
       ...dbs

@@ -25,7 +25,7 @@ import {
   AptibleLogo,
   Alert,
   LoggedInBanner,
-  IconExclamation,
+  IconAlertCircle,
 } from "../shared";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 
@@ -116,7 +116,7 @@ export const LoginPage = () => {
                     variant="danger"
                     icon={
                       <div className="h-5 w-5 text-red-400" aria-hidden="true">
-                        <IconExclamation />
+                        <IconAlertCircle />
                       </div>
                     }
                   >

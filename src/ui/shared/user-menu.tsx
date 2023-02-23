@@ -4,9 +4,9 @@ import { useCurrentUser } from "../hooks";
 
 import { Loading } from "./loading";
 import {
-  IconCogs8Tooth,
   IconCreditCard,
   IconLogout,
+  IconSettings,
   IconUserCircle,
 } from "./icons";
 import { LinkNav } from "./link";
@@ -25,7 +25,7 @@ export const UserMenu = () => {
         icon={<IconUserCircle />}
         name="Profile Settings"
       />
-      <LinkNav to={teamUrl()} icon={<IconCogs8Tooth />} name="Team Settings" />
+      <LinkNav to={teamUrl()} icon={<IconSettings />} name="Team Settings" />
       <LinkNav to={settingsUrl()} icon={<IconCreditCard />} name="Billing" />
       <LinkNav to={logoutUrl()} icon={<IconLogout />} name="Logout" />
     </div>
