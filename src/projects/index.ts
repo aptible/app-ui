@@ -159,7 +159,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
         call(
           deleteServiceDefinition.run,
           deleteServiceDefinition({
-            serviceDefinitionId: cmdId,
+            id: cmdId,
           }),
         ),
       ),
