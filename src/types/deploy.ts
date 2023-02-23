@@ -278,3 +278,15 @@ export interface DeployLogDrain extends Provisionable, Timestamps {
   drainEphemeralSessions: boolean;
   drainProxies: boolean;
 }
+
+export interface DeployServiceDefinition extends Timestamps {
+  appId: string;
+  command: string;
+  processType: string;
+}
+
+export interface DeployPrereleaseCommand extends Timestamps {
+  appId: string;
+  command: string;
+  index: number;
+}
