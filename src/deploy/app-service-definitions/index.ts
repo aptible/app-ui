@@ -38,6 +38,7 @@ export const defaultDeployServiceDefinition = (
   return {
     createdAt: now,
     updatedAt: now,
+    id: "",
     appId: "",
     command: "",
     processType: "",
@@ -50,6 +51,7 @@ export const deserializeServiceDefinition = (
 ): DeployServiceDefinition => {
   const links = payload._links;
   return {
+    id: payload.id.toString(),
     appId: extractIdFromLink(links.app),
     command: payload.command,
     processType: payload.process_type,
@@ -68,15 +70,22 @@ export const serviceDefinitionReducers = createReducerMap(slice);
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_SERVICE_DEFINITION_NAME],
 );
-export const { selectTableAsList: selectAppsAsList } = selectors;
+export const { selectTableAsList: selectServiceDefinitionsAsList } = selectors;
 const initApp = defaultDeployServiceDefinition();
 const must = mustSelectEntity(initApp);
 export const selectServiceDefinitionById = must(selectors.selectById);
+export const selectServiceDefinitionsByAppId = createSelector(
+  selectors.selectTableAsList,
+  (_: AppState, props: { appId: string }) => props.appId,
+  (serviceDefinitions, appId) =>
+    serviceDefinitions
+      .filter((serviceDefinition) => serviceDefinition.appId === appId)
+      .sort((a, b) => a.processType.localeCompare(b.processType)),
+);
 
 export const fetchServiceDefinitionsByAppId = api.get<{ appId: string }>(
   "/apps/:appId/service_definitions",
   { saga: cacheTimer() },
-  api.cache(),
 );
 
 export const deleteServiceDefinition = api.delete<{
@@ -108,7 +117,7 @@ export const createServiceDefinition = api.post<
 });
 
 export const serviceDefinitionEntities = {
-  serviceDefinition: defaultEntity({
+  service_definition: defaultEntity({
     id: "service_definition",
     deserialize: deserializeServiceDefinition,
     save: addServiceDefinitions,

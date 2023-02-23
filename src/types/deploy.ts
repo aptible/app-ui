@@ -280,12 +280,14 @@ export interface DeployLogDrain extends Provisionable, Timestamps {
 }
 
 export interface DeployServiceDefinition extends Timestamps {
+  id: string;
   appId: string;
   command: string;
   processType: string;
 }
 
 export interface DeployPrereleaseCommand extends Timestamps {
+  id: string;
   appId: string;
   command: string;
   index: number;

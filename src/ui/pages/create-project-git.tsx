@@ -87,6 +87,7 @@ import {
 import {
   DeployServiceDefinitionResponse,
   fetchServiceDefinitionsByAppId,
+  selectServiceDefinitionsByAppId,
 } from "@app/deploy/app-service-definitions";
 
 export const CreateProjectLayout = () => {
@@ -444,8 +445,9 @@ export const CreateProjectGitSettingsPage = () => {
   const dbQuery = useQuery(fetchAllDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesAsList);
 
-  const serviceDefinitionsQuery = useCache<HalEmbedded<HalServiceDefinition>>(
-    fetchServiceDefinitionsByAppId({ appId }),
+  useQuery(fetchServiceDefinitionsByAppId({ appId }));
+  const serviceDefinitions = useSelector((s: AppState) =>
+    selectServiceDefinitionsByAppId(s, { appId }),
   );
 
   const [dbs, setDbs] = useState("postgresql=14");
@@ -465,15 +467,13 @@ export const CreateProjectGitSettingsPage = () => {
   );
 
   useEffect(() => {
-    const serviceDefinitions =
-      serviceDefinitionsQuery.data?._embedded.service_definitions;
-    if (!!serviceDefinitions && serviceDefinitions?.length !== 0) {
+    if (serviceDefinitions.length !== 0) {
       // hydrate inputs for consumption on load
       const cmdsToSet =
         serviceDefinitions
           .map(
             (serviceDefinition) =>
-              `${serviceDefinition.process_type}=${serviceDefinition.command}`,
+              `${serviceDefinition.processType}=${serviceDefinition.command}`,
           )
           .join("\n") ?? "";
       setCmds(cmdsToSet);
@@ -481,13 +481,13 @@ export const CreateProjectGitSettingsPage = () => {
       // set cmd list from initial setting, which will get regrokked before submission
       setExistingCmds(
         serviceDefinitions.map((serviceDefinition) => ({
-          key: serviceDefinition.process_type,
+          key: serviceDefinition.processType,
           value: serviceDefinition.command,
-          meta: { id: serviceDefinition.id.toString() },
+          meta: { id: serviceDefinition.id },
         })),
       );
     }
-  }, [serviceDefinitionsQuery.data?._embedded.service_definitions]);
+  }, [serviceDefinitions.length]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
