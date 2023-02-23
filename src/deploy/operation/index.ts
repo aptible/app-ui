@@ -1,11 +1,4 @@
-import {
-  api,
-  combinePages,
-  PaginateProps,
-  thunks,
-  retryable,
-  Retryable,
-} from "@app/api";
+import { api, combinePages, PaginateProps, thunks, Retryable } from "@app/api";
 import {
   defaultEntity,
   extractIdFromLink,
@@ -24,7 +17,7 @@ import type {
   OperationType,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, poll } from "saga-query";
+import { call, poll, fetchRetry } from "saga-query";
 import { selectDeploy } from "../slice";
 
 export interface DeployOperationResponse {
@@ -242,7 +235,6 @@ export const pollEnvOperations = thunks.create<EnvIdProps>(
 export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
   "/operations/:id/logs",
   [
-    retryable(),
     function* (ctx, next) {
       ctx.cache = true;
       ctx.bodyType = "text";
@@ -268,6 +260,7 @@ export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
       // so we can just fetch the data in a single endpoint
       ctx.json.data = data;
     },
+    fetchRetry(),
   ],
 );
 
