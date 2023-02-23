@@ -469,13 +469,13 @@ export const CreateProjectGitSettingsPage = () => {
   useEffect(() => {
     if (serviceDefinitions.length !== 0) {
       // hydrate inputs for consumption on load
-      const cmdsToSet =
-        serviceDefinitions
-          .map(
-            (serviceDefinition) =>
-              `${serviceDefinition.processType}=${serviceDefinition.command}`,
-          )
-          .join("\n") ?? "";
+      const cmdsToSet = serviceDefinitions
+        ? serviceDefinitions
+            .map((serviceDefinition) => {
+              return `${serviceDefinition.processType}=${serviceDefinition.command}`;
+            })
+            .join("\n")
+        : "";
       setCmds(cmdsToSet);
 
       // set cmd list from initial setting, which will get regrokked before submission
