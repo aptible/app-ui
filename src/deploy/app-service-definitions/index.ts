@@ -94,7 +94,6 @@ export const deleteServiceDefinition = api.delete<{
 
 export const fetchServiceDefinition = api.get<{ id: string }>(
   "/service_definitions/:id",
-  api.cache(),
 );
 
 interface CreateServiceDefinitionProps {
