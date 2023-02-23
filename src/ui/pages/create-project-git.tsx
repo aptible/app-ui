@@ -498,6 +498,10 @@ export const CreateProjectGitSettingsPage = () => {
   }, [existingEnvStr]);
 
   const [dbs, setDbs] = useState(existingDbStr);
+  const serviceDefinitionsQuery = useCache<HalEmbedded<HalServiceDefinition>>(
+    fetchServiceDefinitionsByAppId({ appId }),
+  );
+
   const [dbErrors, setDbErrors] = useState<ValidatorError[]>([]);
   const [envs, setEnvs] = useState(existingEnvStr);
   const [envErrors, setEnvErrors] = useState<ValidatorError[]>([]);
@@ -523,6 +527,7 @@ export const CreateProjectGitSettingsPage = () => {
             })
             .join("\n")
         : "";
+
       setCmds(cmdsToSet);
 
       // set cmd list from initial setting, which will get regrokked before submission
@@ -530,11 +535,11 @@ export const CreateProjectGitSettingsPage = () => {
         serviceDefinitions.map((serviceDefinition) => ({
           key: serviceDefinition.processType,
           value: serviceDefinition.command,
-          meta: { id: serviceDefinition.id },
+          meta: { id: serviceDefinition.id.toString() },
         })),
       );
     }
-  }, [serviceDefinitions.length]);
+  }, [serviceDefinitionsQuery.data?._embedded.service_definitions]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
