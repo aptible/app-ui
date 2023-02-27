@@ -47,6 +47,9 @@ import {
   IconSettings,
   IconX,
   IconChevronRight,
+  IconArrowRight,
+  IconArrowLeft,
+  IconEdit2,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { createProject, deployProject, TextVal } from "@app/projects";
@@ -84,6 +87,10 @@ import {
   DeployCodeScanResponse,
   fetchCodeScanResult,
 } from "@app/deploy/code-scan-result";
+import {
+  DeployConfigurationResponse,
+  fetchConfiguration,
+} from "@app/deploy/configuration";
 
 export const CreateProjectLayout = () => {
   return (
@@ -366,18 +373,25 @@ const validateDbs = (
   const errors: ValidatorError[] = [];
 
   const validate = (item: TextVal) => {
-    const imgs = dbImages.filter((img) => img.type === item.key);
+    if (!/^[0-9a-z._-]{1,64}$/.test(item.key)) {
+      errors.push({
+        item,
+        message: `[${item.key}] is not a valid handle: /\A[0-9a-z._-]{1,64}\z/`,
+      });
+    }
+    const [_type = "", version = ""] = item.value.split(":");
+    const imgs = dbImages.filter((img) => img.type === _type);
     if (imgs.length === 0) {
       errors.push({
         item,
-        message: `[${item.key}] is not a valid database`,
+        message: `[${_type}] is not a valid database`,
       });
       return;
     }
 
     let found = false;
     imgs.forEach((img) => {
-      if (img.version === item.value) {
+      if (img.version === version) {
         found = true;
       }
     });
@@ -385,7 +399,7 @@ const validateDbs = (
     if (!found) {
       errors.push({
         item,
-        message: `[${item.value}] is not a valid version for [${item.key}]`,
+        message: `[${version}] is not a valid version for [${_type}]`,
       });
     }
   };
@@ -432,13 +446,46 @@ export const CreateProjectGitSettingsPage = () => {
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const { scanOp, codeScan, appOps } = useLatestCodeResults(appId);
+  useQuery(fetchDatabasesByEnvId({ envId: app.environmentId }));
 
   const query = useQuery(fetchAllDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesAsList);
 
-  const [dbs, setDbs] = useState("postgresql=14");
+  const existingDbs = useSelector((s: AppState) =>
+    selectDatabasesByEnvId(s, { envId: app.environmentId }),
+  );
+  const existingDbStr = existingDbs
+    .map((db) => {
+      const version = dbImages.find(
+        (img) => img.id === db.databaseImageId,
+      )?.version;
+      return `${db.handle}=${db.type}:${version}`;
+    })
+    .join("\n");
+
+  useEffect(() => {
+    setDbs(existingDbStr);
+  }, [existingDbStr]);
+
+  const curConfig = useCache<DeployConfigurationResponse>(
+    fetchConfiguration({ id: app.currentConfigurationId }),
+  );
+  const existingEnvStr = Object.keys(curConfig.data?.env || {}).reduce(
+    (acc, key) => {
+      const value = curConfig.data?.env[key];
+      const prev = acc ? `${acc}\n` : "";
+      return `${prev}${key}=${value}`;
+    },
+    "",
+  );
+
+  useEffect(() => {
+    setEnvs(existingEnvStr);
+  }, [existingEnvStr]);
+
+  const [dbs, setDbs] = useState(existingDbStr);
   const [dbErrors, setDbErrors] = useState<ValidatorError[]>([]);
-  const [envs, setEnvs] = useState(["STRIPE_SECRET_KEY=1234"].join("\n"));
+  const [envs, setEnvs] = useState(existingEnvStr);
   const [envErrors, setEnvErrors] = useState<ValidatorError[]>([]);
   const [cmds, setCmds] = useState(
     ["http:web=bundle exec rails server", "worker=bundle exec sidekiq"].join(
@@ -487,7 +534,8 @@ export const CreateProjectGitSettingsPage = () => {
       deployProject({
         appId,
         envId: app.environmentId,
-        dbs: dbList,
+        // don't create new databases if they already exist
+        dbs: existingDbStr ? [] : dbList,
         envs: envList,
         cmds: [],
         gitRef: scanOp.gitRef,
@@ -555,41 +603,50 @@ export const CreateProjectGitSettingsPage = () => {
       <Box>
         <form onSubmit={onSubmit}>
           <FormGroup
-            label="Databases"
+            label="Required Databases"
             htmlFor="databases"
             feedbackVariant={dbErrors ? "danger" : "info"}
             feedbackMessage={dbErrors.map((e) => e.message).join(". ")}
+            description={
+              <div>
+                {existingEnvStr ? (
+                  <p>
+                    Databases have already been created so you cannot make
+                    changes to them in this screen anymore.
+                  </p>
+                ) : (
+                  <>
+                    <p>
+                      You can provide as many databases as you need (each line
+                      is a separate database, e.g. NAME=DB:VERSION).
+                    </p>
+
+                    <p>Options include:</p>
+
+                    {query.isInitialLoading ? (
+                      <Loading text="Loading databases" />
+                    ) : (
+                      <ul className="inline-grid grid-cols-3">
+                        {dbImages.map((d) => {
+                          return (
+                            <li key={d.id}>
+                              {d.type}:{d.version}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </>
+                )}
+              </div>
+            }
           >
-            <p>
-              Add new databases with generated keys or connect to existing
-              databases.
-            </p>
-
-            <p>
-              You can provide as many databases as you need (each line is a
-              separate database).
-            </p>
-
-            <p>Options include:</p>
-
-            {query.isInitialLoading ? (
-              <Loading text="Loading databases" />
-            ) : (
-              <ul className="inline-grid grid-cols-3">
-                {dbImages.map((d) => {
-                  return (
-                    <li key={d.id}>
-                      {d.type}={d.version}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
             <textarea
               name="databases"
               className={tokens.type.textarea}
               value={dbs}
               onChange={(e) => setDbs(e.currentTarget.value)}
+              disabled={!!existingDbStr}
             />
           </FormGroup>
 
@@ -600,11 +657,8 @@ export const CreateProjectGitSettingsPage = () => {
             htmlFor="envs"
             feedbackVariant={envErrors ? "danger" : "info"}
             feedbackMessage={envErrors.map((e) => e.message).join(". ")}
+            description="Environment Variables (each line is a separate variable in format: ENV_VAR=VALUE)."
           >
-            <p>
-              Environment Variables (each line is a separate variable in format:{" "}
-              <code>ENV_VAR=VALUE</code>).
-            </p>
             <textarea
               name="envs"
               className={tokens.type.textarea}
@@ -619,15 +673,19 @@ export const CreateProjectGitSettingsPage = () => {
             label="Service and Commands"
             htmlFor="commands"
             feedbackVariant="info"
+            description={
+              <div>
+                <p>
+                  Each line is separated by a service command in format:
+                  NAME=COMMAND.
+                </p>
+                <p>
+                  Prefix NAME with http: if the service requires an endpoint.
+                  (e.g. http:web=rails server)
+                </p>
+              </div>
+            }
           >
-            <p>
-              Each line is separated by a service command in format:{" "}
-              <code>NAME=COMMAND</code>.
-            </p>
-            <p>
-              Prefix <code>NAME</code> with <code>http:</code> if the service
-              requires an endpoint. (e.g. <code>http:web=rails server</code>)
-            </p>
             <textarea
               name="commands"
               className={tokens.type.textarea}
@@ -1106,19 +1164,25 @@ export const CreateProjectGitStatusPage = () => {
         )}
       </StatusBox>
 
-      {status === "succeeded" ? (
-        <StatusBox>
-          <h3 className={tokens.type.h3}>How to deploy changes</h3>
-          <p className="mt-4 mb-2">
-            Make changes to your local git repo, commit those changes, and then
-            push your changes to the Aptible git server:
-          </p>
-          <PreCode>git push aptible main</PreCode>
-          <ButtonLink to={appDetailUrl(appId)} className="mt-4">
-            View Project <IconChevronRight />
+      <StatusBox>
+        <h4 className={tokens.type.h4}>How to deploy changes</h4>
+        <p className="mb-2 text-black-500">
+          Commit changes to your local git repo and push to the Aptible git
+          server.
+        </p>
+        <PreCode>git push aptible main</PreCode>
+        <hr />
+
+        <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
+          View Project <IconArrowRight variant="sm" className="ml-2" />
+        </ButtonLink>
+
+        {status === "failed" ? (
+          <ButtonLink variant="white" to={createProjectGitSettingsUrl(appId)}>
+            <IconEdit2 variant="sm" className="mr-2" /> Edit Project
           </ButtonLink>
-        </StatusBox>
-      ) : null}
+        ) : null}
+      </StatusBox>
     </div>
   );
 };

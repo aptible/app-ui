@@ -176,9 +176,7 @@ interface AppIdProp {
   id: string;
 }
 
-export const fetchApp = api.get<AppIdProp>("/apps/:id", {
-  saga: cacheTimer(),
-});
+export const fetchApp = api.get<AppIdProp>("/apps/:id");
 
 export const fetchAppOperations = api.get<AppIdProp>(
   "/apps/:id/operations",

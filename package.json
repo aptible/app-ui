@@ -46,7 +46,6 @@
     "husky": "^8.0.3",
     "jsdom": "^21.1.0",
     "lint-staged": "^13.1.0",
-    "nanoid": "^4.0.0",
     "postcss": "^8.4.21",
     "qrcode.react": "^3.1.0",
     "query-string": "^8.1.0",

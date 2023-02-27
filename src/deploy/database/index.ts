@@ -42,6 +42,7 @@ export interface DeployDatabaseResponse {
   _links: {
     account: LinkResponse;
     service: LinkResponse;
+    database_image: LinkResponse;
   };
   _embedded: {
     disk: any;
@@ -66,6 +67,7 @@ export const deserializeDeployDatabase = (
     provisioned: payload.provisioned,
     type: payload.type,
     status: payload.status,
+    databaseImageId: extractIdFromLink(links.database_image),
     environmentId: extractIdFromLink(links.account),
     serviceId: extractIdFromLink(links.service),
     disk: embedded.disk ? deserializeDisk(embedded.disk) : null,
@@ -81,6 +83,7 @@ export const defaultDeployDatabase = (
   const now = new Date().toISOString();
   return {
     id: "",
+    databaseImageId: "",
     status: "pending",
     handle: "",
     connectionUrl: "",

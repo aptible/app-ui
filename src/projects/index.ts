@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import {
   all,
   call,
@@ -165,17 +164,22 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       ...dbs
         .filter((db) => db.meta?.id)
         .map((db) => {
-          const handle = `${app.handle}-${db.key}-${nanoid(5)}`;
+          const handle = db.key;
+          const value = db.value.split(":");
+          const type = value[0];
+          if (!type) return;
+
           return call(
             provisionDatabase.run,
             provisionDatabase({
               handle: handle.toLocaleLowerCase(),
-              type: db.key,
+              type,
               envId,
               databaseImageId: db.meta?.id || "",
             }),
           );
-        }),
+        })
+        .filter(Boolean),
     ]);
 
     yield next();
