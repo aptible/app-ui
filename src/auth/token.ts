@@ -8,15 +8,15 @@ import {
   setElevatedToken,
   resetToken,
 } from "@app/token";
+import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 
 export interface CreateTokenPayload {
   username: string;
   password: string;
   otpToken: string;
   makeCurrent: boolean;
+  u2f?: PublicKeyCredentialWithAssertionJSON;
 }
-export type TokenCtx = AuthApiCtx<CreateTokenPayload, TokenSuccessResponse>;
-
 function saveToken(ctx: AuthApiCtx<any, TokenSuccessResponse>) {
   if (!ctx.json.ok) {
     return;
@@ -47,6 +47,7 @@ export const createToken = authApi.post<
       password: ctx.payload.password,
       otp_token: ctx.payload.otpToken,
       make_current: ctx.payload.makeCurrent,
+      u2f: ctx.payload.u2f,
       expires_in: 43200, // 12 hours
       grant_type: "password",
       scope: "manage",

@@ -6,3 +6,4 @@ export * from "./verify-email";
 export * from "./token";
 export * from "./elevate";
 export * from "./loader";
+export * from "./webauthn";
