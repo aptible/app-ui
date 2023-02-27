@@ -379,12 +379,12 @@ const validateDbs = (
         message: `[${item.key}] is not a valid handle: /\A[0-9a-z._-]{1,64}\z/`,
       });
     }
-    const [type = "", version = ""] = item.value.split(":");
-    const imgs = dbImages.filter((img) => img.type === type);
+    const [_type = "", version = ""] = item.value.split(":");
+    const imgs = dbImages.filter((img) => img.type === _type);
     if (imgs.length === 0) {
       errors.push({
         item,
-        message: `[${type}] is not a valid database`,
+        message: `[${_type}] is not a valid database`,
       });
       return;
     }
@@ -399,7 +399,7 @@ const validateDbs = (
     if (!found) {
       errors.push({
         item,
-        message: `[${version}] is not a valid version for [${type}]`,
+        message: `[${version}] is not a valid version for [${_type}]`,
       });
     }
   };
