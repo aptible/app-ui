@@ -86,7 +86,6 @@ import {
   fetchCodeScanResult,
 } from "@app/deploy/code-scan-result";
 import {
-  DeployServiceDefinitionResponse,
   fetchServiceDefinitionsByAppId,
   selectServiceDefinitionsByAppId,
 } from "@app/deploy/app-service-definitions";
@@ -440,10 +439,6 @@ const useLatestCodeResults = (appId: string) => {
 
   return { scanOp, codeScan, appOps };
 };
-
-interface HalServiceDefinition {
-  service_definitions: DeployServiceDefinitionResponse[];
-}
 
 export const CreateProjectGitSettingsPage = () => {
   const dispatch = useDispatch();
