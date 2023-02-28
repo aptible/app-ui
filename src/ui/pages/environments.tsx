@@ -1,0 +1,37 @@
+import { ListingPageLayout } from "../layouts";
+
+import {
+  ButtonIcon,
+  EnvironmentActivity,
+  EnvironmentList,
+  IconPlusCircle,
+  TableHead,
+} from "../shared";
+
+export const EnvironmentsPage = () => {
+  // TODO: BELOW BUTTON SUCKS, FIND A WAY TO LINE IT UP
+  return (
+    <ListingPageLayout>
+      <div className="flex">
+        <div className="mt-6 w-4/5 pr-5">
+          <EnvironmentList />
+        </div>
+        <div className="mt-6 w-1/5">
+          <ButtonIcon
+            className="w-full mb-4"
+            icon={<IconPlusCircle />}
+            style={{
+              cursor: "not-allowed",
+              pointerEvents: "none",
+              opacity: 0.5,
+              marginBottom: "112.5px",
+            }}
+          >
+            Create Environment
+          </ButtonIcon>
+          <EnvironmentActivity />
+        </div>
+      </div>
+    </ListingPageLayout>
+  );
+};

@@ -182,6 +182,13 @@ export const selectOperationsByDatabaseId = createSelector(
     ),
 );
 
+export const selectLatestOpByEnvId = createSelector(
+  selectOperationsByEnvId,
+  (ops) =>
+    ops.find((op) => ["configure", "provision", "deploy"].includes(op.type)) ||
+    initOp,
+);
+
 export const selectLatestProvisionOp = createSelector(
   selectOperationsByResourceId,
   (ops) => ops.find((op) => op.type === "provision") || initOp,
@@ -205,6 +212,13 @@ export const selectLatestConfigureOp = createSelector(
 export const selectLatestDeployOp = createSelector(
   selectOperationsByAppId,
   (ops) => ops.find((op) => op.type === "deploy") || initOp,
+);
+
+export const selectLatestSuccessDeployOpByEnvId = createSelector(
+  selectOperationsByEnvId,
+  (ops) =>
+    ops.find((op) => op.type === "deploy" && op.status === "succeeded") ||
+    initOp,
 );
 
 export const selectLatestSucceessScanOp = createSelector(

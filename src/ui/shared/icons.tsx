@@ -197,3 +197,23 @@ export const IconCreditCard = (props: Props) => {
     </IconStrokeBase>
   );
 };
+
+export const IconGlobe = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </IconStrokeBase>
+  );
+};
+
+export const IconEllipsis = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <circle cx="12" cy="12" r="1" />
+      <circle cx="19" cy="12" r="1" />
+      <circle cx="5" cy="12" r="1" />
+    </IconStrokeBase>
+  );
+};

@@ -35,6 +35,7 @@ interface DeployEnvironmentResponse {
   total_backup_size: number;
   _links: {
     environment: LinkResponse;
+    stack: LinkResponse;
   };
 }
 
@@ -56,7 +57,7 @@ export const deserializeDeployEnvironment = (
   totalDatabaseCount: payload.total_database_count,
   sweetnessStack: payload.sweetness_stack,
   totalBackupSize: payload.total_backup_size,
-  stackId: extractIdFromLink(payload._links.environment),
+  stackId: extractIdFromLink(payload._links.stack),
 });
 
 export const defaultDeployEnvironment = (

@@ -77,6 +77,30 @@ export const DATABASE_SETTINGS_PATH = `${DATABASE_DETAIL_PATH}/settings`;
 export const databaseSettingsUrl = (id: string) =>
   `${databaseDetailUrl(id)}/settings`;
 
+export const ENVIRONMENTS_PATH = "/environments";
+export const environmentsUrl = () => ENVIRONMENTS_PATH;
+export const ENVIRONMENT_RESOURCES_PATH = "/environments/:id/resources";
+export const environmentResourcelUrl = (id: string) =>
+  `/environments/${id}/resources`;
+export const ENVIRONMENT_SECURITY_PATH = "/environments/:id/security";
+export const environmentSecurityUrl = (id: string) =>
+  `/environments/${id}/security`;
+export const ENVIRONMENT_INTEGRATIONS_PATH = "/environments/:id/integrations";
+export const environmentIntegrationsUrl = (id: string) =>
+  `/environments/${id}/integrations`;
+export const ENVIRONMENT_CERTIFICATES_PATH = "/environments/:id/certificates";
+export const environmentCertificatesUrl = (id: string) =>
+  `/environments/${id}/certificates`;
+export const ENVIRONMENT_ACTIVITY_PATH = "/environments/:id/activity";
+export const environmentActivityUrl = (id: string) =>
+  `/environments/${id}/activity`;
+export const ENVIRONMENT_BACKUPS_PATH = "/environments/:id/backups";
+export const environmentBackupsUrl = (id: string) =>
+  `/environments/${id}/backups`;
+export const ENVIRONMENT_SETTINGS_PATH = "/environments/:id/settings";
+export const environmentSettingsUrl = (id: string) =>
+  `/environments/${id}/settings`;
+
 export const SETTINGS_PATH = "/settings";
 export const settingsUrl = () => SETTINGS_PATH;
 export const TEAM_PATH = `${SETTINGS_PATH}/team`;
