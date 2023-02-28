@@ -28,6 +28,7 @@ function EnvironmentPageHeader() {
 
   return (
     <DetailPageHeaderView
+      breadcrumbs={crumbs}
       title={environment ? environment.handle : "Loading..."}
       tabs={tabs}
     />
