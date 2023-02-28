@@ -6,11 +6,16 @@ import { environmentsUrl } from "@app/routes";
 import { DetailPageHeaderView, TabItem } from "../shared";
 
 import { DetailPageLayout } from "./detail-page";
+import { AppState } from "@app/types";
+import { selectEnvironmentById } from "@app/deploy";
 
 const crumbs = [{ name: "Environments", to: environmentsUrl() }];
 
 function EnvironmentPageHeader() {
   const { id = "" } = useParams();
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id }),
+  );
 
   const tabs = [
     { name: "Resources", href: `/environments/${id}/resources` },
@@ -23,9 +28,7 @@ function EnvironmentPageHeader() {
 
   return (
     <DetailPageHeaderView
-      breadcrumbs={crumbs}
-      //   title={environment ? environment.handle : "Loading..."}
-      title={"Environment Detail"}
+      title={environment ? environment.handle : "Loading..."}
       tabs={tabs}
     />
   );
