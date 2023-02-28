@@ -52,7 +52,7 @@ export function FormGroup({
     <div className="flex flex-col gap-2">
       <div>
         <Label htmlFor={htmlFor}>{label}</Label>
-        {description ? <p className="text-black-500">{description}</p> : ""}
+        {description ? <div className="text-black-500">{description}</div> : ""}
       </div>
 
       <div className="flex flex-col gap-1">

@@ -8,6 +8,7 @@ import {
   setLoaderSuccess,
 } from "saga-query";
 
+import type { ApiGen, DeployApp } from "@app/types";
 import { createLog } from "@app/debug";
 import { ThunkCtx, thunks } from "@app/api";
 import {
@@ -19,12 +20,9 @@ import {
   provisionDatabase,
   selectAppById,
   selectEnvironmentByName,
+  createEndpoint,
 } from "@app/deploy";
-import { ApiGen, DeployApp } from "@app/types";
-import {
-  createServiceDefinition,
-  deleteServiceDefinition,
-} from "@app/deploy/app-service-definitions";
+import { createServiceDefinition } from "@app/deploy/app-service-definitions";
 
 interface CreateProjectProps {
   name: string;
@@ -109,11 +107,13 @@ export const createProject = thunks.create<CreateProjectProps>(
 );
 
 export interface TextVal<
-  M extends { [key: string]: string } = { [key: string]: string },
+  M extends { [key: string]: unknown } = {
+    [key: string]: unknown;
+  },
 > {
   key: string;
   value: string;
-  meta?: M;
+  meta: M;
 }
 
 export interface CreateProjectSettingsProps {
@@ -121,15 +121,14 @@ export interface CreateProjectSettingsProps {
   envId: string;
   dbs: TextVal<{ id: string }>[];
   envs: TextVal[];
-  cmds: TextVal[];
-  existingCmds: TextVal[];
+  cmds: TextVal<{ id: string; http: boolean }>[];
   gitRef: string;
 }
 
 export const deployProject = thunks.create<CreateProjectSettingsProps>(
   "project-deploy",
   function* (ctx: ThunkCtx<CreateProjectSettingsProps>, next) {
-    const { appId, envId, dbs, envs, cmds, existingCmds, gitRef } = ctx.payload;
+    const { appId, envId, dbs, envs, cmds, gitRef } = ctx.payload;
     const id = ctx.name;
     yield put(setLoaderStart({ id }));
 
@@ -148,38 +147,23 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       return;
     }
 
-    // get all the service definitions and delete them first
-    const cmdIdsToDelete: string[] = existingCmds
-      .map((cmd: TextVal) => (cmd.meta?.id ? cmd.meta.id : ""))
-      .filter((cmdId: string) => !!cmdId);
-
-    yield all(
-      cmdIdsToDelete.map((cmdId) =>
-        call(
-          deleteServiceDefinition.run,
-          deleteServiceDefinition({
-            id: cmdId,
-          }),
-        ),
-      ),
-    );
-
     // TODO - convert this to a series of updates where possible (currently information is agnostic)
     // create all the new ones
-    yield all(
-      cmds.map((cmd) =>
-        call(
+    yield* all(
+      cmds.map((cmd) => {
+        const processType = cmd.key;
+        return call(
           createServiceDefinition.run,
           createServiceDefinition({
             appId,
-            processType: cmd.key,
+            processType,
             command: cmd.value,
           }),
-        ),
-      ),
+        );
+      }),
     );
 
-    yield all([
+    yield* all([
       call(
         createAppOperation.run,
         createAppOperation({
@@ -191,12 +175,10 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
           ),
         }),
       ),
-
       call(
         createAppOperation.run,
         createAppOperation({ type: "deploy", appId, gitRef }),
       ),
-
       ...dbs
         .filter((db) => db.meta?.id)
         .map((db) => {

@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { useApi, useCache, useLoaderSuccess, useQuery } from "saga-query/react";
+import {
+  useApi,
+  useCache,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+} from "saga-query/react";
 import { selectDataById, selectLoaderById } from "saga-query";
 import cn from "classnames";
 
@@ -22,6 +28,7 @@ import {
   DeployApp,
   DeployDatabase,
   DeployDatabaseImage,
+  DeployEndpoint,
   DeployOperation,
   HalEmbedded,
   OperationStatus,
@@ -47,7 +54,6 @@ import {
   IconSettings,
   IconX,
   IconArrowRight,
-  IconEdit2,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { createProject, deployProject, TextVal } from "@app/projects";
@@ -57,11 +63,15 @@ import {
   fetchApp,
   fetchAppOperations,
   fetchDatabasesByEnvId,
+  fetchEndpointsByAppId,
   fetchEnvironment,
   pollAppOperations,
+  provisionEndpoint,
   selectAppById,
   selectDatabasesByEnvId,
+  selectEndpointsByAppId,
   selectEnvironmentById,
+  selectServicesByIds,
   selectStackPublicDefault,
 } from "@app/deploy";
 import {
@@ -86,6 +96,7 @@ import {
   fetchCodeScanResult,
 } from "@app/deploy/code-scan-result";
 import {
+  DeployServiceDefinitionResponse,
   fetchServiceDefinitionsByAppId,
   selectServiceDefinitionsByAppId,
 } from "@app/deploy/app-service-definitions";
@@ -348,9 +359,10 @@ export const CreateProjectGitPushPage = () => {
 
 const trim = (t: string) => t.trim();
 const parseText = <
-  M extends { [key: string]: string } = { [key: string]: string },
+  M extends { [key: string]: unknown } = { [key: string]: unknown },
 >(
   text: string,
+  meta: () => M,
 ): TextVal<M>[] =>
   text
     .split("\n")
@@ -360,6 +372,7 @@ const parseText = <
       return {
         key: vals[0],
         value: vals[1],
+        meta: meta(),
       };
     });
 
@@ -427,6 +440,10 @@ const validateEnvs = (items: TextVal[]): ValidatorError[] => {
   return errors;
 };
 
+interface HalServiceDefinition {
+  service_definitions: DeployServiceDefinitionResponse[];
+}
+
 const useLatestCodeResults = (appId: string) => {
   const appOps = useQuery(fetchAppOperations({ id: appId }));
   const scanOp = useSelector((s: AppState) =>
@@ -463,11 +480,11 @@ export const CreateProjectGitSettingsPage = () => {
   );
   const existingDbStr = existingDbs
     .map((db) => {
-      const version = dbImages.find(
-        (img) => img.id === db.databaseImageId,
-      )?.version;
-      return `${db.handle}=${db.type}:${version}`;
+      const img = dbImages.find((img) => img.id === db.databaseImageId);
+      if (!img) return;
+      return `${db.handle}=${db.type}:${img.version}`;
     })
+    .filter(Boolean)
     .join("\n");
 
   useEffect(() => {
@@ -498,13 +515,8 @@ export const CreateProjectGitSettingsPage = () => {
   const [dbErrors, setDbErrors] = useState<ValidatorError[]>([]);
   const [envs, setEnvs] = useState(existingEnvStr);
   const [envErrors, setEnvErrors] = useState<ValidatorError[]>([]);
-  const [cmds, setCmds] = useState(
-    ["http:web=bundle exec rails server", "worker=bundle exec sidekiq"].join(
-      "\n",
-    ),
-  );
-  const [existingCmds, setExistingCmds] = useState<TextVal[]>([]);
-  const cmdList = parseText(cmds);
+  const [cmds, setCmds] = useState("");
+  const cmdList = parseText(cmds, () => ({ id: "", http: false }));
 
   const loader = useSelector((s: AppState) =>
     selectLoaderById(s, { id: `${deployProject}` }),
@@ -521,15 +533,6 @@ export const CreateProjectGitSettingsPage = () => {
             .join("\n")
         : "";
       setCmds(cmdsToSet);
-
-      // set cmd list from initial setting, which will get regrokked before submission
-      setExistingCmds(
-        serviceDefinitions.map((serviceDefinition) => ({
-          key: serviceDefinition.processType,
-          value: serviceDefinition.command,
-          meta: { id: serviceDefinition.id },
-        })),
-      );
     }
   }, [serviceDefinitions.length]);
 
@@ -537,7 +540,7 @@ export const CreateProjectGitSettingsPage = () => {
     e.preventDefault();
     let cancel = false;
 
-    const dbList = parseText<{ id: string }>(dbs);
+    const dbList = parseText(dbs, () => ({ id: "" }));
     const dberr = validateDbs(dbList, dbImages);
     if (dberr.length > 0) {
       cancel = true;
@@ -548,14 +551,14 @@ export const CreateProjectGitSettingsPage = () => {
       for (let i = 0; i < dbList.length; i += 1) {
         const db = dbList[i];
         dbImages.forEach((img) => {
-          if (img.version === db.value) {
+          if (img.version === db.value.split(":")[1]) {
             dbList[i].meta = { id: img.id };
           }
         });
       }
     }
 
-    const envList = parseText(envs);
+    const envList = parseText(envs, () => ({}));
     const enverr = validateEnvs(envList);
     if (enverr.length > 0) {
       cancel = true;
@@ -576,8 +579,7 @@ export const CreateProjectGitSettingsPage = () => {
         dbs: existingDbStr ? [] : dbList,
         envs: envList,
         cmds: cmdList,
-        existingCmds,
-        gitRef: scanOp.gitRef,
+        gitRef: scanOp.gitRef || "main",
       }),
     );
   };
@@ -648,7 +650,7 @@ export const CreateProjectGitSettingsPage = () => {
             feedbackMessage={dbErrors.map((e) => e.message).join(". ")}
             description={
               <div>
-                {existingEnvStr ? (
+                {existingDbStr ? (
                   <p>
                     Databases have already been created so you cannot make
                     changes to them in this screen anymore.
@@ -712,18 +714,7 @@ export const CreateProjectGitSettingsPage = () => {
             label="Service and Commands"
             htmlFor="commands"
             feedbackVariant="info"
-            description={
-              <div>
-                <p>
-                  Each line is separated by a service command in format:
-                  NAME=COMMAND.
-                </p>
-                <p>
-                  Prefix NAME with http: if the service requires an endpoint.
-                  (e.g. http:web=rails server)
-                </p>
-              </div>
-            }
+            description="Each line is separated by a service command in format: NAME=COMMAND."
           >
             <textarea
               name="commands"
@@ -746,24 +737,24 @@ export const CreateProjectGitSettingsPage = () => {
   );
 };
 
-interface MiniResource {
-  handle: string;
-}
-
 const createReadableResourceName = (
   op: DeployOperation,
-  resource: MiniResource,
+  handle: string,
 ): string => {
   if (op.resourceType === "app" && op.type === "deploy") {
     return "App deployment";
   }
 
   if (op.resourceType === "database" && op.type === "provision") {
-    return `Database provision ${resource.handle}`;
+    return `Database provision ${handle}`;
   }
 
   if (op.resourceType === "app" && op.type === "configure") {
     return "Initial configuration";
+  }
+
+  if (op.resourceType === "vhost" && op.type === "provision") {
+    return "HTTPS endpoint provision";
   }
 
   return `${op.resourceType}:${op.type}`;
@@ -838,7 +829,7 @@ const Op = ({
           ) : (
             <IconChevronDown variant="sm" />
           )}
-          <div>{createReadableResourceName(op, resource)}</div>
+          <div>{createReadableResourceName(op, resource.handle)}</div>
         </div>
         {status()}
       </div>
@@ -855,7 +846,7 @@ const DatabaseStatus = ({
   db,
   last = false,
 }: {
-  db: DeployDatabase;
+  db: Pick<DeployDatabase, "id" | "handle">;
   last: boolean;
 }) => {
   const provisionOp = useSelector((s: AppState) =>
@@ -865,7 +856,21 @@ const DatabaseStatus = ({
   return <Op op={provisionOp} resource={db} last={last} />;
 };
 
-const AppStatus = ({ app }: { app: DeployApp }) => {
+const EndpointStatus = ({
+  endpoint,
+  last = false,
+}: {
+  endpoint: Pick<DeployEndpoint, "id">;
+  last: boolean;
+}) => {
+  const provisionOp = useSelector((s: AppState) =>
+    selectLatestProvisionOp(s, { resourceId: endpoint.id }),
+  );
+
+  return <Op op={provisionOp} resource={{ handle: "" }} last={last} />;
+};
+
+const AppStatus = ({ app }: { app: Pick<DeployApp, "id" | "handle"> }) => {
   const configOp = useSelector((s: AppState) =>
     selectLatestConfigureOp(s, { appId: app.id }),
   );
@@ -884,9 +889,11 @@ const AppStatus = ({ app }: { app: DeployApp }) => {
 const ProjectStatus = ({
   app,
   dbs,
+  endpoints,
 }: {
   app: DeployApp;
   dbs: DeployDatabase[];
+  endpoints: DeployEndpoint[];
 }) => {
   return (
     <div>
@@ -894,7 +901,21 @@ const ProjectStatus = ({
 
       {dbs.map((db, i) => {
         return (
-          <DatabaseStatus key={db.id} db={db} last={i === dbs.length - 1} />
+          <DatabaseStatus
+            key={db.id}
+            db={db}
+            last={i === dbs.length - 1 && endpoints.length === 0}
+          />
+        );
+      })}
+
+      {endpoints.map((vhost, i) => {
+        return (
+          <EndpointStatus
+            key={vhost.id}
+            endpoint={vhost}
+            last={i === endpoints.length - 1}
+          />
         );
       })}
     </div>
@@ -1099,6 +1120,63 @@ const StatusBox = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+const Code = ({ children }: { children: React.ReactNode }) => {
+  return <code className="bg-orange-200 p-[2px]">{children}</code>;
+};
+
+const CreateEndpointView = ({
+  app,
+  serviceId,
+}: {
+  app: DeployApp;
+  serviceId: string;
+}) => {
+  const services = useSelector((s: AppState) =>
+    selectServicesByIds(s, { ids: app.serviceIds }),
+  );
+  const dispatch = useDispatch();
+  const [curServiceId, setServiceId] = useState(serviceId);
+  const action = provisionEndpoint({ appId: app.id, serviceId: curServiceId });
+  const loader = useLoader(action);
+  const onChange = (id: string) => {
+    setServiceId(id);
+  };
+  const onClick = () => {
+    dispatch(action);
+  };
+
+  useEffect(() => {}, [serviceId]);
+
+  return (
+    <div>
+      {services.map((service) => {
+        return (
+          <div key={service.id}>
+            <input
+              type="radio"
+              key="service"
+              value={service.id}
+              checked={serviceId === service.id}
+              onChange={() => onChange(service.id)}
+            />
+            <span className="ml-1">
+              {service.processType} <Code>{service.command}</Code>
+            </span>
+          </div>
+        );
+      })}
+      <Button
+        onClick={onClick}
+        isLoading={loader.isLoading}
+        disabled={!!serviceId}
+        className="mt-4"
+      >
+        Create endpoint
+      </Button>
+    </div>
+  );
+};
+
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
@@ -1116,8 +1194,16 @@ export const CreateProjectGitStatusPage = () => {
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
+  useQuery(fetchEndpointsByAppId({ appId }));
+  const vhosts = useSelector((s: AppState) =>
+    selectEndpointsByAppId(s, { id: appId }),
+  );
+  const vhost = vhosts.length > 0 ? vhosts[0] : null;
+  const resourceIds = [...dbs.map((db) => db.id), ...vhosts.map((vh) => vh.id)];
   const provisionOps = useSelector((s: AppState) =>
-    selectLatestProvisionOps(s, { resourceIds: dbs.map((db) => db.id) }),
+    selectLatestProvisionOps(s, {
+      resourceIds,
+    }),
   );
 
   const ops = [deployOp, ...provisionOps];
@@ -1185,7 +1271,13 @@ export const CreateProjectGitStatusPage = () => {
             <div>
               <h4 className={tokens.type.h4}>{env.handle}</h4>
               <p className="text-black-500 text-sm">
-                https://aptible.com/839583485/dashboard
+                {vhost ? (
+                  <a href={`https://${vhost.virtualDomain}`}>
+                    https://{vhost.virtualDomain}
+                  </a>
+                ) : (
+                  "pending http endpoint"
+                )}
               </p>
             </div>
           </div>
@@ -1200,9 +1292,16 @@ export const CreateProjectGitStatusPage = () => {
         {isInitialLoading ? (
           <Loading text="Loading resources ..." />
         ) : (
-          <ProjectStatus app={app} dbs={dbs} />
+          <ProjectStatus app={app} dbs={dbs} endpoints={vhosts} />
         )}
       </StatusBox>
+
+      {deployOp.status === "succeeded" ? (
+        <StatusBox>
+          <h4 className={tokens.type.h4}>Which service needs an endpoint?</h4>
+          <CreateEndpointView app={app} serviceId={vhost?.serviceId || ""} />
+        </StatusBox>
+      ) : null}
 
       <StatusBox>
         <h4 className={tokens.type.h4}>How to deploy changes</h4>
@@ -1216,12 +1315,6 @@ export const CreateProjectGitStatusPage = () => {
         <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
           View Project <IconArrowRight variant="sm" className="ml-2" />
         </ButtonLink>
-
-        {status === "failed" ? (
-          <ButtonLink variant="white" to={createProjectGitSettingsUrl(appId)}>
-            <IconEdit2 variant="sm" className="mr-2" /> Edit Project
-          </ButtonLink>
-        ) : null}
       </StatusBox>
     </div>
   );
