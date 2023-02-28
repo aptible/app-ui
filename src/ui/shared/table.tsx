@@ -13,7 +13,7 @@ export type CellProps = {
 export const Td = ({ children, className }: CellProps) => {
   const classes = cn(
     tokens.type["small lighter"],
-    "px-3 py-4",
+    "px-4 py-4",
     "whitespace-nowrap",
     className,
   );

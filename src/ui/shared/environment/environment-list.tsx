@@ -71,8 +71,8 @@ const EnvironmentDatabasesCell = ({ environment }: EnvironmentCellProps) => {
     selectDatabasesByEnvId(s, { envId: environment.id }),
   );
   return (
-    <Td>
-      <span className="text-center">{dbs.length}</span>
+    <Td className="center items-center justify-center">
+      <div className="text-center">{dbs.length}</div>
     </Td>
   );
 };
@@ -82,8 +82,8 @@ const EnvironmentAppsCell = ({ environment }: EnvironmentCellProps) => {
     selectAppsByEnvId(s, { envId: environment.id }),
   );
   return (
-    <Td>
-      <span className="text-center">{apps.length}</span>
+    <Td className="center items-center justify-center">
+      <div className="text-center">{apps.length}</div>
     </Td>
   );
 };
