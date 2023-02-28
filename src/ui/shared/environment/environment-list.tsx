@@ -21,18 +21,28 @@ import { Input } from "../input";
 import { ResourceListView } from "../resource-list-view";
 import { useSelector } from "react-redux";
 import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
-import { prettyDateRelative } from "@app/date";
+import { prettyEnglishDate, timeAgo } from "@app/date";
 import { Button } from "../button";
 interface EnvironmentCellProps {
   environment: DeployEnvironment;
 }
 
 const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
+  const environmentTypeColor =
+    environment.type === "development"
+      ? tokens.type["normal blue lighter"]
+      : tokens.type["normal lighter"];
   return (
-    <Td className="flex-1">
+    <Td className="min-w-fit pl-4 pr-8">
       <Link to={environmentResourcelUrl(environment.id)}>
+        <img
+          className="float-left mr-3"
+          alt="default environment logo"
+          src="/logo-environment.png"
+          style={{ width: 32, height: 32, marginTop: 4 }}
+        />
         <div className={tokens.type["medium label"]}>{environment.handle}</div>
-        <div className={tokens.type["normal lighter"]}>
+        <div className={environmentTypeColor}>
           {environment.type === "development"
             ? "Debug mode"
             : "Production mode"}
@@ -88,9 +98,10 @@ const EnvironmentActionCell = () => {
           cursor: "not-allowed",
           pointerEvents: "none",
           opacity: 0.5,
+          marginTop: 6,
         }}
       >
-        <IconEllipsis />
+        <IconEllipsis style={{ width: 16, height: 16 }} />
       </Button>
     </Td>
   );
@@ -102,15 +113,15 @@ const EnvironmentLastDeployedCell = ({ environment }: EnvironmentCellProps) => {
   );
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      <div className={tokens.type.darker}>
-        <span className="font-semibold">
-          {operation.type.toLocaleUpperCase()}
-        </span>{" "}
-        by {operation.userName}
+      <div
+        className={tokens.type.darker}
+        style={{ textTransform: "capitalize" }}
+      >
+        {prettyEnglishDate(operation.createdAt)}
       </div>
-      <span style={{ textTransform: "capitalize" }}>
-        {prettyDateRelative(operation.createdAt)}
-      </span>
+      <div>
+        {timeAgo(operation.createdAt)} by {operation.userName || "Unknown"}
+      </div>
     </Td>
   );
 };
@@ -118,13 +129,6 @@ const EnvironmentLastDeployedCell = ({ environment }: EnvironmentCellProps) => {
 const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   return (
     <tr>
-      <td className="2xl:flex-cell-xs sm:flex-cell-sm">
-        <img
-          alt="default environment logo"
-          src="/logo-environment.png"
-          style={{ width: 32, height: 32, margin: "0 -10px 0 8px" }}
-        />
-      </td>
       <EnvironmentPrimaryCell environment={environment} />
       <EnvironmentStackCell environment={environment} />
       <EnvironmentLastDeployedCell environment={environment} />
@@ -143,8 +147,6 @@ export function EnvironmentList() {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
 
-  const description =
-    "Environments are how you deploy your code on Aptible. Eventually, your Apps are deployed as one or more Containers.";
   const environments = useSelector((s: AppState) =>
     selectEnvironmentsForTableSearch(s, { search }),
   );
@@ -156,12 +158,15 @@ export function EnvironmentList() {
     >
       <ResourceListView
         title="Environments"
-        description={description}
         filterBar={
           <div className="flex flex-1 pt-4 gap-3 relative m-1">
-            <IconSearch className="absolute inline-block top-6 left-1.5" />
+            <IconSearch
+              className="absolute inline-block top-6 left-1.5"
+              color="#595E63"
+              style={{ width: 15, height: 15, marginTop: 2.5, marginLeft: 2.5 }}
+            />
             <Input
-              placeholder="Search Environments ..."
+              placeholder="Search ..."
               type="text"
               value={search}
               onChange={onChange}
@@ -172,10 +177,9 @@ export function EnvironmentList() {
         tableHeader={
           <TableHead
             headers={[
-              "",
               "Environment",
               "Stack",
-              "Last DEPLOYED",
+              "Last Deployed",
               "Apps",
               "Databases",
               "Actions",

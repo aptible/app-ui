@@ -15,9 +15,12 @@ export const tokens = {
     "subdued active link": "font-medium text-sm text-emerald-600",
 
     "small semibold darker": "text-sm font-semibold text-gray-900",
+    "small normal darker": "text-sm font-normal text-gray-900",
+    "small normal lighter": "text-sm font-normal text-gray-500",
     "medium label": "font-medium text-gray-900",
     darker: "text-gray-900",
     "normal lighter": "text-gray-500",
+    "normal blue lighter": "text-blue-500",
     "small lighter": "text-sm text-gray-500",
     "danger semibold": "font-medium text-red-700",
     "warn semibold": "font-medium text-yellow-700",

@@ -22,8 +22,8 @@ export const Td = ({ children, className }: CellProps) => {
 
 export const Th = ({ children, className }: CellProps) => {
   const classes = cn(
-    "px-3 py-4",
-    tokens.type["small semibold darker"],
+    "px-4 py-4",
+    tokens.type["small normal lighter"],
     "text-left",
     className,
   );

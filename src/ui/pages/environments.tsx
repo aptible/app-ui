@@ -24,10 +24,10 @@ export const EnvironmentsPage = () => {
               cursor: "not-allowed",
               pointerEvents: "none",
               opacity: 0.5,
-              marginBottom: "112.5px",
+              marginBottom: "65.5px",
             }}
           >
-            Create Environment
+            New Environment
           </ButtonIcon>
           <EnvironmentActivity />
         </div>
