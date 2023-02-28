@@ -15,7 +15,12 @@ import {
   homeUrl,
   signupUrl,
 } from "@app/routes";
-import { login, selectAuthLoader, selectIsOtpError } from "@app/auth";
+import {
+  login,
+  loginWebauthn,
+  selectAuthLoader,
+  selectIsOtpError,
+} from "@app/auth";
 import { validEmail } from "@app/string-utils";
 
 import {
@@ -59,18 +64,18 @@ export const LoginPage = () => {
   });
 
   const currentEmail = invitation ? invitation.email : email;
+  const loginPayload = {
+    username: currentEmail,
+    password,
+    otpToken,
+    makeCurrent: true,
+  };
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    dispatch(
-      login({
-        username: currentEmail,
-        password,
-        otpToken,
-        makeCurrent: true,
-      }),
-    );
+    dispatch(login(loginPayload));
   };
+
   const emailErrorMessage =
     currentEmail === "" || validEmail(currentEmail)
       ? null
@@ -80,6 +85,12 @@ export const LoginPage = () => {
   useEffect(() => {
     if (isOtpError) {
       setRequireOtp(true);
+      dispatch(
+        loginWebauthn({
+          ...loginPayload,
+          webauthn: loader.meta.exception_context.u2f,
+        }),
+      );
     }
   }, [isOtpError]);
 
@@ -169,6 +180,7 @@ export const LoginPage = () => {
                     autoComplete="off"
                     id="input-2fa"
                     className="flex-1 outline-0 py-1 bg-transparent"
+                    placeholder="Alternatively, touch your Security key now"
                     autoFocus
                   />
                 </FormGroup>
