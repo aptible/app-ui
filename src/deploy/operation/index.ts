@@ -1,3 +1,6 @@
+import { call, poll, fetchRetry, delay } from "saga-query";
+import { createAction, createSelector } from "@reduxjs/toolkit";
+
 import { api, combinePages, PaginateProps, thunks, Retryable } from "@app/api";
 import {
   defaultEntity,
@@ -16,8 +19,6 @@ import type {
   OperationStatus,
   OperationType,
 } from "@app/types";
-import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, poll, fetchRetry } from "saga-query";
 import { selectDeploy } from "../slice";
 
 export interface DeployOperationResponse {
@@ -284,6 +285,34 @@ export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
     fetchRetry(),
   ],
 );
+
+export const fetchOperationById = api.get<
+  { id: string },
+  DeployOperationResponse
+>("/operations/:id");
+
+export function* waitForOperation({
+  id,
+  wait = 3 * 1000,
+}: {
+  id: string;
+  wait?: number;
+}) {
+  while (true) {
+    const ctx = yield* call(fetchOperationById.run, fetchOperationById({ id }));
+
+    if (ctx.json.ok) {
+      if (
+        ctx.json.data.status === "succeeded" ||
+        ctx.json.data.status === "failed"
+      ) {
+        return ctx.json.data;
+      }
+    }
+
+    yield* delay(wait);
+  }
+}
 
 export const opEntities = {
   operation: defaultEntity({

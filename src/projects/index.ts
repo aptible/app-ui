@@ -8,23 +8,24 @@ import {
   setLoaderSuccess,
 } from "saga-query";
 
+import { ApiGen, DeployApp, excludesFalse } from "@app/types";
 import { createLog } from "@app/debug";
-import { combinePages, ThunkCtx, thunks } from "@app/api";
+import { ThunkCtx, thunks } from "@app/api";
 import {
   createAppOperation,
   createDeployApp,
   createDeployEnvironment,
+  fetchDatabase,
+  fetchDatabasesByEnvId,
   hasDeployApp,
   hasDeployEnvironment,
   provisionDatabase,
   selectAppById,
   selectEnvironmentByName,
 } from "@app/deploy";
-import { ApiGen, DeployApp } from "@app/types";
-import {
-  createServiceDefinition,
-  deleteServiceDefinition,
-} from "@app/deploy/app-service-definitions";
+import { createServiceDefinition } from "@app/deploy/app-service-definitions";
+import { waitForOperation } from "@app/deploy/operation";
+import { fetchConfiguration } from "@app/deploy/configuration";
 
 interface CreateProjectProps {
   name: string;
@@ -108,28 +109,56 @@ export const createProject = thunks.create<CreateProjectProps>(
   },
 );
 
+interface WaitDbProps {
+  id: number;
+  handle: string;
+  connectionUrl: string;
+}
+
+function* waitForDb(opId: string, dbId: string): Iterator<any, WaitDbProps> {
+  yield* call(waitForOperation, { id: opId });
+  const res = yield* call(fetchDatabase.run, fetchDatabase({ id: dbId }));
+  if (!res.json.ok) return { id: -1, handle: "", connectionUrl: "" };
+
+  return {
+    id: res.json.data.id,
+    handle: res.json.data.handle,
+    connectionUrl: res.json.data.connection_url,
+  };
+}
+
+export interface DbSelectorProps {
+  id: string;
+  imgId: string;
+  name: string;
+  env: string;
+  dbType: string;
+}
+
 export interface TextVal<
-  M extends { [key: string]: string } = { [key: string]: string },
+  M extends { [key: string]: unknown } = {
+    [key: string]: unknown;
+  },
 > {
   key: string;
   value: string;
-  meta?: M;
+  meta: M;
 }
 
 export interface CreateProjectSettingsProps {
   appId: string;
   envId: string;
-  dbs: TextVal<{ id: string }>[];
+  dbs: DbSelectorProps[];
   envs: TextVal[];
-  cmds: TextVal[];
-  existingCmds: TextVal[];
+  curEnvs: { [key: string]: any };
+  cmds: TextVal<{ id: string; http: boolean }>[];
   gitRef: string;
 }
 
 export const deployProject = thunks.create<CreateProjectSettingsProps>(
   "project-deploy",
   function* (ctx: ThunkCtx<CreateProjectSettingsProps>, next) {
-    const { appId, envId, dbs, envs, cmds, existingCmds, gitRef } = ctx.payload;
+    const { appId, envId, dbs, envs, cmds, gitRef, curEnvs } = ctx.payload;
     const id = ctx.name;
     yield put(setLoaderStart({ id }));
 
@@ -148,77 +177,177 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       return;
     }
 
-    // get all the service definitions and delete them first
-    const cmdIdsToDelete: string[] = existingCmds
-      .map((cmd: TextVal) => (cmd.meta?.id ? cmd.meta.id : ""))
-      .filter((cmdId: string) => !!cmdId);
-
-    yield all(
-      cmdIdsToDelete.map((cmdId) =>
-        call(
-          deleteServiceDefinition.run,
-          deleteServiceDefinition({
-            id: cmdId,
-          }),
-        ),
-      ),
-    );
-
     // TODO - convert this to a series of updates where possible (currently information is agnostic)
     // create all the new ones
-    yield all(
-      cmds.map((cmd) =>
-        call(
+    yield* all(
+      cmds.map((cmd) => {
+        const processType = cmd.key;
+        return call(
           createServiceDefinition.run,
           createServiceDefinition({
             appId,
-            processType: cmd.key,
+            processType,
             command: cmd.value,
           }),
-        ),
-      ),
+        );
+      }),
     );
 
-    yield all([
-      call(
-        createAppOperation.run,
-        createAppOperation({
-          type: "configure",
-          appId,
-          env: envs.reduce(
-            (acc, env) => ({ ...acc, [env.key]: env.value }),
-            {},
-          ),
-        }),
-      ),
+    const env: { [key: string]: any } = {};
+    // the way to "remove" env vars from config is to set them as empty
+    // so we do that here
+    Object.keys(curEnvs).forEach((key) => {
+      env[key] = "";
+    });
 
-      call(
-        createAppOperation.run,
-        createAppOperation({ type: "deploy", appId, gitRef }),
-      ),
+    envs.forEach((e) => {
+      env[e.key] = e.value;
+    });
+    // we want to also inject the db env vars with placeholders
+    dbs.forEach((db) => {
+      env[`${db.env}_TMP`] = `{{${db.name}}}`;
+    });
 
-      ...dbs
-        .filter((db) => db.meta?.id)
+    const results = yield* all(
+      dbs
         .map((db) => {
-          const handle = db.key;
-          const value = db.value.split(":");
-          const type = value[0];
-          if (!type) return;
+          const handle = db.name.toLocaleLowerCase();
+          const _type = db.dbType;
 
           return call(
             provisionDatabase.run,
             provisionDatabase({
-              handle: handle.toLocaleLowerCase(),
-              type,
+              handle,
+              type: _type,
               envId,
-              databaseImageId: db.meta?.id || "",
+              databaseImageId: db.imgId,
             }),
           );
         })
         .filter(Boolean),
-    ]);
+    );
+
+    /**
+     * now we hot-swap db env vars for the actual connection url
+     */
+
+    const waiting = results
+      .map((res) => {
+        if (!res.json) return;
+        const { opCtx, dbCtx } = res.json;
+        if (!opCtx.json.ok) return;
+        if (!dbCtx.json.ok) return;
+
+        return call(
+          waitForDb,
+          `${opCtx.json.data.id}`,
+          `${dbCtx.json.data.id}`,
+        );
+      })
+      .filter(excludesFalse);
+    const updatedDbs = yield* all(waiting);
+
+    yield* call(_updateEnvWithDbUrls, {
+      appId,
+      env,
+      dbs: updatedDbs,
+      force: true,
+    });
+
+    const deployCtx = yield* call(
+      createAppOperation.run,
+      createAppOperation({
+        type: "deploy",
+        appId,
+        gitRef,
+      }),
+    );
+
+    if (!deployCtx.json.ok) return;
+    yield* call(waitForOperation, { id: `${deployCtx.json.data.id}` });
 
     yield next();
     yield put(setLoaderSuccess({ id }));
   },
 );
+
+function* _updateEnvWithDbUrls({
+  appId,
+  env,
+  dbs,
+  force = false,
+}: {
+  appId: string;
+  env: { [key: string]: any };
+  dbs: WaitDbProps[];
+  force?: boolean;
+}) {
+  let swapped = false;
+  const nextEnv = { ...env };
+  dbs.forEach((db) => {
+    Object.keys(nextEnv).forEach((key) => {
+      if (nextEnv[key] !== `{{${db.handle}}}`) return;
+      nextEnv[key.replace("_TMP", "")] = db.connectionUrl;
+      nextEnv[key] = undefined;
+      swapped = true;
+    });
+  });
+
+  // no-op
+  if (!(force || swapped)) return;
+
+  // finally trigger the operation
+  const configureCtx = yield* call(
+    createAppOperation.run,
+    createAppOperation({
+      type: "configure",
+      appId,
+      env: nextEnv,
+    }),
+  );
+
+  if (!configureCtx.json.ok) return;
+  yield* call(waitForOperation, { id: `${configureCtx.json.data.id}` });
+}
+
+export const updateEnvWithDbUrls = thunks.create<{
+  appId: string;
+  envId: string;
+}>("update-env-with-db-urls", function* (ctx, next) {
+  const { appId, envId } = ctx.payload;
+  const app = yield* select(selectAppById, { id: appId });
+
+  const results = yield* all({
+    dbs: call(fetchDatabasesByEnvId.run, fetchDatabasesByEnvId({ envId })),
+    configure: call(
+      fetchConfiguration.run,
+      fetchConfiguration({ id: app.currentConfigurationId }),
+    ),
+  });
+
+  if (!results.dbs.json.ok) {
+    yield next();
+    return;
+  }
+
+  if (!results.configure.json.ok) {
+    yield next();
+    return;
+  }
+
+  const dbs = results.dbs.json.data._embedded.databases.map((db) => {
+    return {
+      id: db.id,
+      handle: db.handle,
+      connectionUrl: db.connection_url,
+    };
+  });
+
+  yield* call(_updateEnvWithDbUrls, {
+    appId,
+    dbs,
+    env: results.configure.json.data.env,
+  });
+
+  yield next();
+});

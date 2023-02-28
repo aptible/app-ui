@@ -1,12 +1,5 @@
 import { createSelector } from "@reduxjs/toolkit";
-import {
-  api,
-  cacheTimer,
-  combinePages,
-  DeployApiCtx,
-  PaginateProps,
-  thunks,
-} from "@app/api";
+import { api, cacheTimer } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -21,7 +14,7 @@ import type {
 import { selectDeploy } from "../slice";
 
 export interface DeployServiceDefinitionResponse {
-  id: string;
+  id: number;
   command: string;
   process_type: string;
   created_at: string;

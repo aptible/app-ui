@@ -1,8 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { useApi, useCache, useLoaderSuccess, useQuery } from "saga-query/react";
+import {
+  useApi,
+  useCache,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+} from "saga-query/react";
 import { selectDataById, selectLoaderById } from "saga-query";
 import cn from "classnames";
 
@@ -22,6 +28,7 @@ import {
   DeployApp,
   DeployDatabase,
   DeployDatabaseImage,
+  DeployEndpoint,
   DeployOperation,
   HalEmbedded,
   OperationStatus,
@@ -46,24 +53,32 @@ import {
   IconChevronUp,
   IconSettings,
   IconX,
-  IconChevronRight,
   IconArrowRight,
-  IconArrowLeft,
-  IconEdit2,
+  IconPlusCircle,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
-import { createProject, deployProject, TextVal } from "@app/projects";
+import {
+  createProject,
+  DbSelectorProps,
+  deployProject,
+  TextVal,
+  updateEnvWithDbUrls,
+} from "@app/projects";
 import {
   cancelAppOpsPoll,
   fetchAllStacks,
   fetchApp,
   fetchAppOperations,
   fetchDatabasesByEnvId,
+  fetchEndpointsByAppId,
   fetchEnvironment,
   pollAppOperations,
+  provisionEndpoint,
   selectAppById,
   selectDatabasesByEnvId,
+  selectEndpointsByAppId,
   selectEnvironmentById,
+  selectServicesByIds,
   selectStackPublicDefault,
 } from "@app/deploy";
 import {
@@ -88,7 +103,6 @@ import {
   fetchCodeScanResult,
 } from "@app/deploy/code-scan-result";
 import {
-  DeployServiceDefinitionResponse,
   fetchServiceDefinitionsByAppId,
   selectServiceDefinitionsByAppId,
 } from "@app/deploy/app-service-definitions";
@@ -351,9 +365,10 @@ export const CreateProjectGitPushPage = () => {
 
 const trim = (t: string) => t.trim();
 const parseText = <
-  M extends { [key: string]: string } = { [key: string]: string },
+  M extends { [key: string]: unknown } = { [key: string]: unknown },
 >(
   text: string,
+  meta: () => M,
 ): TextVal<M>[] =>
   text
     .split("\n")
@@ -363,49 +378,40 @@ const parseText = <
       return {
         key: vals[0],
         value: vals[1],
+        meta: meta(),
       };
-    });
+    })
+    .filter((t) => !!t.key);
 
 interface ValidatorError {
   item: TextVal;
   message: string;
 }
 
-const validateDbs = (
-  items: TextVal[],
-  dbImages: DeployDatabaseImage[],
-): ValidatorError[] => {
-  const errors: ValidatorError[] = [];
+interface DbValidatorError {
+  message: string;
+  item: DbSelectorProps;
+}
 
-  const validate = (item: TextVal) => {
-    if (!/^[0-9a-z._-]{1,64}$/.test(item.key)) {
+const validateDbs = (items: DbSelectorProps[]): DbValidatorError[] => {
+  const errors: DbValidatorError[] = [];
+  const envVars = new Set();
+
+  const validate = (item: DbSelectorProps) => {
+    if (!/^[0-9a-z._-]{1,64}$/.test(item.name)) {
       errors.push({
         item,
-        message: `[${item.key}] is not a valid handle: /\A[0-9a-z._-]{1,64}\z/`,
+        message: `[${item.name}] is not a valid handle: /\A[0-9a-z._-]{1,64}\z/`,
       });
     }
-    const [_type = "", version = ""] = item.value.split(":");
-    const imgs = dbImages.filter((img) => img.type === _type);
-    if (imgs.length === 0) {
+
+    if (envVars.has(item.env)) {
       errors.push({
         item,
-        message: `[${_type}] is not a valid database`,
+        message: `${item.env} has already been used, each database env var must be unique`,
       });
-      return;
-    }
-
-    let found = false;
-    imgs.forEach((img) => {
-      if (img.version === version) {
-        found = true;
-      }
-    });
-
-    if (!found) {
-      errors.push({
-        item,
-        message: `[${version}] is not a valid version for [${_type}]`,
-      });
+    } else {
+      envVars.add(item);
     }
   };
 
@@ -426,6 +432,7 @@ const validateEnvs = (items: TextVal[]): ValidatorError[] => {
     }
   };
 
+  console.log(items);
   items.forEach(validate);
   return errors;
 };
@@ -443,9 +450,189 @@ const useLatestCodeResults = (appId: string) => {
   return { scanOp, codeScan, appOps };
 };
 
-interface HalServiceDefinition {
-  service_definitions: DeployServiceDefinitionResponse[];
+const DatabaseNameInput = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (s: string) => void;
+}) => {
+  const change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.currentTarget.value);
+  };
+  return (
+    <FormGroup
+      label="Database alias"
+      htmlFor="dbname"
+      description="This is the name of the database which is an alias for your reference"
+    >
+      <Input name="dbname" value={value} onChange={change} />
+    </FormGroup>
+  );
+};
+
+const DatabaseEnvVarInput = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (s: string) => void;
+}) => {
+  const change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.currentTarget.value);
+  };
+  return (
+    <FormGroup
+      label="Environment variable"
+      htmlFor="envvar"
+      description="We will automatically inject this environment variable into your app with the correct connection string"
+    >
+      <Input name="envvar" value={value} onChange={change} />
+    </FormGroup>
+  );
+};
+
+const idCreator = () => {
+  let id = 0;
+  return () => {
+    id += 1;
+    return id;
+  };
+};
+const createId = idCreator();
+
+const Selector = ({
+  db,
+  images,
+  propChange,
+  onDelete,
+}: {
+  db: DbSelectorProps;
+  images: DeployDatabaseImage[];
+  propChange: (d: DbSelectorProps) => void;
+  onDelete: () => void;
+}) => {
+  const selectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const imgId = e.currentTarget.value;
+    const img = images.find((i) => i.id === imgId);
+    propChange({
+      ...db,
+      imgId,
+      name: `${db.name}-${img?.type || ""}`,
+      dbType: img?.type || "",
+    });
+  };
+
+  const sel = (
+    <div>
+      <div className="mb-2">
+        <DatabaseNameInput
+          value={db.name}
+          onChange={(value) => propChange({ ...db, name: value })}
+        />
+      </div>
+      <DatabaseEnvVarInput
+        value={db.env}
+        onChange={(value) => propChange({ ...db, env: value })}
+      />
+    </div>
+  );
+
+  return (
+    <div className="my-4">
+      <div className="flex justify-between items-center">
+        <select
+          onChange={selectChange}
+          value={db.imgId}
+          className="mb-2"
+          placeholder="select"
+        >
+          <option value="" disabled>
+            select a db
+          </option>
+          {images.map((img) => (
+            <option key={img.id} value={img.id}>
+              {img.type}:{img.version}
+            </option>
+          ))}
+        </select>
+        <Button variant="secondary" onClick={onDelete}>
+          Delete
+        </Button>
+      </div>
+      {db.imgId ? sel : null}
+      <hr className="my-4" />
+    </div>
+  );
+};
+
+type DbSelectorAction =
+  | { type: "add"; payload: DbSelectorProps }
+  | { type: "rm"; payload: string };
+
+function dbSelectorReducer(
+  state: { [key: string]: DbSelectorProps } = {},
+  action: DbSelectorAction,
+) {
+  if (action.type === "add") {
+    return { ...state, [action.payload.id]: action.payload };
+  }
+
+  if (action.type === "rm") {
+    const nextState = { ...state };
+    (nextState as any)[action.payload] = undefined;
+    return nextState;
+  }
+
+  return state;
 }
+
+const DatabaseSelectorForm = ({
+  dbMap,
+  dispatch,
+  namePrefix,
+  images,
+}: {
+  dbMap: { [key: string]: DbSelectorProps };
+  dispatch: (action: any) => void;
+  namePrefix: string;
+  images: DeployDatabaseImage[];
+}) => {
+  const onClick = () => {
+    const payload: DbSelectorProps = {
+      id: `${createId()}`,
+      imgId: "",
+      name: namePrefix,
+      env: "DATABASE_URL",
+      dbType: "",
+    };
+    dispatch({
+      type: "add",
+      payload,
+    });
+  };
+
+  return (
+    <div>
+      {Object.values(dbMap)
+        .sort((a, b) => a.id.localeCompare(b.id))
+        .map((db) => {
+          return (
+            <Selector
+              key={db.id}
+              images={images}
+              db={db}
+              propChange={(payload) => dispatch({ type: "add", payload })}
+              onDelete={() => dispatch({ type: "rm", payload: db.id })}
+            />
+          );
+        })}
+      <Button type="button" onClick={onClick}>
+        <IconPlusCircle className="mr-2" /> New
+      </Button>
+    </div>
+  );
+};
 
 export const CreateProjectGitSettingsPage = () => {
   const dispatch = useDispatch();
@@ -457,7 +644,7 @@ export const CreateProjectGitSettingsPage = () => {
   const { scanOp, codeScan, appOps } = useLatestCodeResults(appId);
   useQuery(fetchDatabasesByEnvId({ envId: app.environmentId }));
 
-  const dbQuery = useQuery(fetchAllDatabaseImages());
+  useQuery(fetchAllDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesAsList);
 
   useQuery(fetchServiceDefinitionsByAppId({ appId }));
@@ -468,18 +655,6 @@ export const CreateProjectGitSettingsPage = () => {
   const existingDbs = useSelector((s: AppState) =>
     selectDatabasesByEnvId(s, { envId: app.environmentId }),
   );
-  const existingDbStr = existingDbs
-    .map((db) => {
-      const version = dbImages.find(
-        (img) => img.id === db.databaseImageId,
-      )?.version;
-      return `${db.handle}=${db.type}:${version}`;
-    })
-    .join("\n");
-
-  useEffect(() => {
-    setDbs(existingDbStr);
-  }, [existingDbStr]);
 
   const curConfig = useCache<DeployConfigurationResponse>(
     fetchConfiguration({ id: app.currentConfigurationId }),
@@ -497,68 +672,47 @@ export const CreateProjectGitSettingsPage = () => {
     setEnvs(existingEnvStr);
   }, [existingEnvStr]);
 
-  const [dbs, setDbs] = useState(existingDbStr);
-  const [dbErrors, setDbErrors] = useState<ValidatorError[]>([]);
+  const [dbMap, dbDispatch] = useReducer(dbSelectorReducer, {});
+  const dbList = Object.values(dbMap).sort((a, b) => a.id.localeCompare(b.id));
+  const [dbErrors, setDbErrors] = useState<DbValidatorError[]>([]);
   const [envs, setEnvs] = useState(existingEnvStr);
   const [envErrors, setEnvErrors] = useState<ValidatorError[]>([]);
-  const [cmds, setCmds] = useState(
-    ["http:web=bundle exec rails server", "worker=bundle exec sidekiq"].join(
-      "\n",
-    ),
-  );
-  const [existingCmds, setExistingCmds] = useState<TextVal[]>([]);
-  const cmdList = parseText(cmds);
+  const [cmds, setCmds] = useState("");
+  const cmdList = parseText(cmds, () => ({ id: "", http: false }));
 
   const loader = useSelector((s: AppState) =>
     selectLoaderById(s, { id: `${deployProject}` }),
   );
 
   useEffect(() => {
-    if (serviceDefinitions.length !== 0) {
-      // hydrate inputs for consumption on load
-      const cmdsToSet = serviceDefinitions
-        ? serviceDefinitions
-            .map((serviceDefinition) => {
-              return `${serviceDefinition.processType}=${serviceDefinition.command}`;
-            })
-            .join("\n")
-        : "";
-      setCmds(cmdsToSet);
-
-      // set cmd list from initial setting, which will get regrokked before submission
-      setExistingCmds(
-        serviceDefinitions.map((serviceDefinition) => ({
-          key: serviceDefinition.processType,
-          value: serviceDefinition.command,
-          meta: { id: serviceDefinition.id },
-        })),
-      );
+    if (serviceDefinitions.length === 0) {
+      return;
     }
+
+    // hydrate inputs for consumption on load
+    const cmdsToSet = serviceDefinitions
+      ? serviceDefinitions
+          .map((serviceDefinition) => {
+            return `${serviceDefinition.processType}=${serviceDefinition.command}`;
+          })
+          .join("\n")
+      : "";
+    setCmds(cmdsToSet);
   }, [serviceDefinitions.length]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let cancel = false;
 
-    const dbList = parseText<{ id: string }>(dbs);
-    const dberr = validateDbs(dbList, dbImages);
+    const dberr = validateDbs(dbList);
     if (dberr.length > 0) {
       cancel = true;
       setDbErrors(dberr);
     } else {
       setDbErrors([]);
-
-      for (let i = 0; i < dbList.length; i += 1) {
-        const db = dbList[i];
-        dbImages.forEach((img) => {
-          if (img.version === db.value) {
-            dbList[i].meta = { id: img.id };
-          }
-        });
-      }
     }
 
-    const envList = parseText(envs);
+    const envList = parseText(envs, () => ({}));
     const enverr = validateEnvs(envList);
     if (enverr.length > 0) {
       cancel = true;
@@ -576,18 +730,16 @@ export const CreateProjectGitSettingsPage = () => {
         appId,
         envId: app.environmentId,
         // don't create new databases if they already exist
-        dbs: existingDbStr ? [] : dbList,
+        dbs: existingDbs.length > 0 ? [] : dbList,
         envs: envList,
+        curEnvs: curConfig.data?.env || {},
         cmds: cmdList,
-        existingCmds,
-        gitRef: scanOp.gitRef,
+        gitRef: scanOp.gitRef || "main",
       }),
     );
-  };
 
-  useLoaderSuccess(loader, () => {
     navigate(createProjectGitStatusUrl(appId));
-  });
+  };
 
   return (
     <div>
@@ -651,45 +803,23 @@ export const CreateProjectGitSettingsPage = () => {
             feedbackMessage={dbErrors.map((e) => e.message).join(". ")}
             description={
               <div>
-                {existingEnvStr ? (
+                {existingDbs.length > 0 ? (
                   <p>
                     Databases have already been created so you cannot make
                     changes to them in this screen anymore.
                   </p>
-                ) : (
-                  <>
-                    <p>
-                      You can provide as many databases as you need (each line
-                      is a separate database, e.g. NAME=DB:VERSION).
-                    </p>
-
-                    <p>Options include:</p>
-
-                    {dbQuery.isInitialLoading ? (
-                      <Loading text="Loading databases" />
-                    ) : (
-                      <ul className="inline-grid grid-cols-3">
-                        {dbImages.map((d) => {
-                          return (
-                            <li key={d.id}>
-                              {d.type}:{d.version}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </>
-                )}
+                ) : null}
               </div>
             }
           >
-            <textarea
-              name="databases"
-              className={tokens.type.textarea}
-              value={dbs}
-              onChange={(e) => setDbs(e.currentTarget.value)}
-              disabled={!!existingDbStr}
-            />
+            {existingDbs.length > 0 ? null : (
+              <DatabaseSelectorForm
+                images={dbImages}
+                namePrefix={app.handle}
+                dbMap={dbMap}
+                dispatch={dbDispatch}
+              />
+            )}
           </FormGroup>
 
           <hr className="my-4" />
@@ -697,7 +827,7 @@ export const CreateProjectGitSettingsPage = () => {
           <FormGroup
             label="Environment Variables"
             htmlFor="envs"
-            feedbackVariant={envErrors ? "danger" : "info"}
+            feedbackVariant={envErrors.length > 0 ? "danger" : "info"}
             feedbackMessage={envErrors.map((e) => e.message).join(". ")}
             description="Environment Variables (each line is a separate variable in format: ENV_VAR=VALUE)."
           >
@@ -711,30 +841,21 @@ export const CreateProjectGitSettingsPage = () => {
 
           <hr className="my-4" />
 
-          <FormGroup
-            label="Service and Commands"
-            htmlFor="commands"
-            feedbackVariant="info"
-            description={
-              <div>
-                <p>
-                  Each line is separated by a service command in format:
-                  NAME=COMMAND.
-                </p>
-                <p>
-                  Prefix NAME with http: if the service requires an endpoint.
-                  (e.g. http:web=rails server)
-                </p>
-              </div>
-            }
-          >
-            <textarea
-              name="commands"
-              className={tokens.type.textarea}
-              value={cmds}
-              onChange={(e) => setCmds(e.currentTarget.value)}
-            />
-          </FormGroup>
+          {codeScan.data?.procfile_present ? null : (
+            <FormGroup
+              label="Service and Commands"
+              htmlFor="commands"
+              feedbackVariant="info"
+              description="Each line is separated by a service command in format: NAME=COMMAND."
+            >
+              <textarea
+                name="commands"
+                className={tokens.type.textarea}
+                value={cmds}
+                onChange={(e) => setCmds(e.currentTarget.value)}
+              />
+            </FormGroup>
+          )}
 
           <Button
             type="submit"
@@ -749,24 +870,24 @@ export const CreateProjectGitSettingsPage = () => {
   );
 };
 
-interface MiniResource {
-  handle: string;
-}
-
 const createReadableResourceName = (
   op: DeployOperation,
-  resource: MiniResource,
+  handle: string,
 ): string => {
   if (op.resourceType === "app" && op.type === "deploy") {
     return "App deployment";
   }
 
   if (op.resourceType === "database" && op.type === "provision") {
-    return `Database provision ${resource.handle}`;
+    return `Database provision ${handle}`;
   }
 
   if (op.resourceType === "app" && op.type === "configure") {
     return "Initial configuration";
+  }
+
+  if (op.resourceType === "vhost" && op.type === "provision") {
+    return "HTTPS endpoint provision";
   }
 
   return `${op.resourceType}:${op.type}`;
@@ -841,7 +962,7 @@ const Op = ({
           ) : (
             <IconChevronDown variant="sm" />
           )}
-          <div>{createReadableResourceName(op, resource)}</div>
+          <div>{createReadableResourceName(op, resource.handle)}</div>
         </div>
         {status()}
       </div>
@@ -858,7 +979,7 @@ const DatabaseStatus = ({
   db,
   last = false,
 }: {
-  db: DeployDatabase;
+  db: Pick<DeployDatabase, "id" | "handle">;
   last: boolean;
 }) => {
   const provisionOp = useSelector((s: AppState) =>
@@ -868,7 +989,21 @@ const DatabaseStatus = ({
   return <Op op={provisionOp} resource={db} last={last} />;
 };
 
-const AppStatus = ({ app }: { app: DeployApp }) => {
+const EndpointStatus = ({
+  endpoint,
+  last = false,
+}: {
+  endpoint: Pick<DeployEndpoint, "id">;
+  last: boolean;
+}) => {
+  const provisionOp = useSelector((s: AppState) =>
+    selectLatestProvisionOp(s, { resourceId: endpoint.id }),
+  );
+
+  return <Op op={provisionOp} resource={{ handle: "" }} last={last} />;
+};
+
+const AppStatus = ({ app }: { app: Pick<DeployApp, "id" | "handle"> }) => {
   const configOp = useSelector((s: AppState) =>
     selectLatestConfigureOp(s, { appId: app.id }),
   );
@@ -887,17 +1022,33 @@ const AppStatus = ({ app }: { app: DeployApp }) => {
 const ProjectStatus = ({
   app,
   dbs,
+  endpoints,
 }: {
   app: DeployApp;
   dbs: DeployDatabase[];
+  endpoints: DeployEndpoint[];
 }) => {
   return (
     <div>
-      <AppStatus app={app} />
-
       {dbs.map((db, i) => {
         return (
-          <DatabaseStatus key={db.id} db={db} last={i === dbs.length - 1} />
+          <DatabaseStatus
+            key={db.id}
+            db={db}
+            last={i === dbs.length - 1 && endpoints.length === 0}
+          />
+        );
+      })}
+
+      <AppStatus app={app} />
+
+      {endpoints.map((vhost, i) => {
+        return (
+          <EndpointStatus
+            key={vhost.id}
+            endpoint={vhost}
+            last={i === endpoints.length - 1}
+          />
         );
       })}
     </div>
@@ -1102,10 +1253,69 @@ const StatusBox = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+const Code = ({ children }: { children: React.ReactNode }) => {
+  return <code className="bg-orange-200 p-[2px]">{children}</code>;
+};
+
+const CreateEndpointView = ({
+  app,
+  serviceId,
+}: {
+  app: DeployApp;
+  serviceId: string;
+}) => {
+  const services = useSelector((s: AppState) =>
+    selectServicesByIds(s, { ids: app.serviceIds }),
+  );
+  const dispatch = useDispatch();
+  const [curServiceId, setServiceId] = useState(serviceId);
+  const action = provisionEndpoint({ appId: app.id, serviceId: curServiceId });
+  const loader = useLoader(action);
+  const onChange = (id: string) => {
+    setServiceId(id);
+  };
+  const onClick = () => {
+    dispatch(action);
+  };
+
+  useEffect(() => {
+    setServiceId(serviceId);
+  }, [serviceId]);
+
+  return (
+    <div>
+      {services.map((service) => {
+        return (
+          <div key={service.id}>
+            <input
+              type="radio"
+              key="service"
+              value={service.id}
+              checked={curServiceId === service.id}
+              onChange={() => onChange(service.id)}
+            />
+            <span className="ml-1">
+              {service.processType} <Code>{service.command}</Code>
+            </span>
+          </div>
+        );
+      })}
+      <Button
+        onClick={onClick}
+        isLoading={loader.isLoading}
+        disabled={!!serviceId}
+        className="mt-4"
+      >
+        Create endpoint
+      </Button>
+    </div>
+  );
+};
+
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
-  useQuery(fetchApp({ id: appId }));
+  const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
   useQuery(fetchEnvironment({ id: envId }));
@@ -1119,8 +1329,16 @@ export const CreateProjectGitStatusPage = () => {
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
+  const endpointQuery = useQuery(fetchEndpointsByAppId({ appId }));
+  const vhosts = useSelector((s: AppState) =>
+    selectEndpointsByAppId(s, { id: appId }),
+  );
+  const vhost = vhosts.length > 0 ? vhosts[0] : null;
+  const resourceIds = [...dbs.map((db) => db.id), ...vhosts.map((vh) => vh.id)];
   const provisionOps = useSelector((s: AppState) =>
-    selectLatestProvisionOps(s, { resourceIds: dbs.map((db) => db.id) }),
+    selectLatestProvisionOps(s, {
+      resourceIds,
+    }),
   );
 
   const ops = [deployOp, ...provisionOps];
@@ -1136,6 +1354,13 @@ export const CreateProjectGitStatusPage = () => {
       cancel();
     };
   }, [appId, envId]);
+
+  useEffect(() => {
+    if (status !== "succeeded") return;
+    appQuery.trigger();
+    endpointQuery.trigger();
+    dispatch(updateEnvWithDbUrls({ appId, envId: env.id }));
+  }, [status, appId, env.id]);
 
   const header = () => {
     if (status === "succeeded") {
@@ -1188,7 +1413,17 @@ export const CreateProjectGitStatusPage = () => {
             <div>
               <h4 className={tokens.type.h4}>{env.handle}</h4>
               <p className="text-black-500 text-sm">
-                https://aptible.com/839583485/dashboard
+                {vhost ? (
+                  <a
+                    href={`https://${vhost.virtualDomain}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    https://{vhost.virtualDomain}
+                  </a>
+                ) : (
+                  "pending http endpoint"
+                )}
               </p>
             </div>
           </div>
@@ -1203,9 +1438,16 @@ export const CreateProjectGitStatusPage = () => {
         {isInitialLoading ? (
           <Loading text="Loading resources ..." />
         ) : (
-          <ProjectStatus app={app} dbs={dbs} />
+          <ProjectStatus app={app} dbs={dbs} endpoints={vhosts} />
         )}
       </StatusBox>
+
+      {deployOp.status === "succeeded" ? (
+        <StatusBox>
+          <h4 className={tokens.type.h4}>Which service needs an endpoint?</h4>
+          <CreateEndpointView app={app} serviceId={vhost?.serviceId || ""} />
+        </StatusBox>
+      ) : null}
 
       <StatusBox>
         <h4 className={tokens.type.h4}>How to deploy changes</h4>
@@ -1219,12 +1461,6 @@ export const CreateProjectGitStatusPage = () => {
         <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
           View Project <IconArrowRight variant="sm" className="ml-2" />
         </ButtonLink>
-
-        {status === "failed" ? (
-          <ButtonLink variant="white" to={createProjectGitSettingsUrl(appId)}>
-            <IconEdit2 variant="sm" className="mr-2" /> Edit Project
-          </ButtonLink>
-        ) : null}
       </StatusBox>
     </div>
   );

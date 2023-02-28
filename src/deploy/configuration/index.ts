@@ -9,8 +9,7 @@ export interface DeployConfigurationResponse {
   };
 }
 
-export const fetchConfiguration = api.get<{ id: string }>(
-  "/configurations/:id",
-  { saga: cacheTimer() },
-  api.cache(),
-);
+export const fetchConfiguration = api.get<
+  { id: string },
+  DeployConfigurationResponse
+>("/configurations/:id", { saga: cacheTimer() }, api.cache());

@@ -1,5 +1,7 @@
 import {
   call,
+  FetchJson,
+  Payload,
   put,
   setLoaderError,
   setLoaderStart,
@@ -11,11 +13,20 @@ import type {
   AppState,
   DeployDatabase,
   DeployOperationResponse,
+  HalEmbedded,
   LinkResponse,
   OperationStatus,
   ProvisionableStatus,
 } from "@app/types";
-import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
+import {
+  api,
+  cacheTimer,
+  combinePages,
+  DeployApiCtx,
+  PaginateProps,
+  ThunkCtx,
+  thunks,
+} from "@app/api";
 import {
   createReducerMap,
   createTable,
@@ -195,12 +206,13 @@ export const fetchAllDatabases = thunks.create(
   { saga: cacheTimer() },
   combinePages(fetchDatabases),
 );
-export const fetchDatabase = api.get<{ id: string }>("/databases/:id", {
-  saga: cacheTimer(),
-});
-export const fetchDatabasesByEnvId = api.get<{ envId: string }>(
-  "/accounts/:envId/databases",
+export const fetchDatabase = api.get<{ id: string }, DeployDatabaseResponse>(
+  "/databases/:id",
 );
+export const fetchDatabasesByEnvId = api.get<
+  { envId: string },
+  HalEmbedded<{ databases: DeployDatabaseResponse[] }>
+>("/accounts/:envId/databases");
 
 interface CreateDatabaseProps {
   handle: string;
@@ -228,52 +240,61 @@ export const createDatabase = api.post<
   yield next();
 });
 
-export const provisionDatabase = thunks.create<CreateDatabaseProps>(
-  "database-provision",
-  function* (ctx, next) {
-    yield put(setLoaderStart({ id: ctx.key }));
+interface CreateDbResult {
+  dbCtx: Omit<DeployApiCtx<any, any>, "payload" | "json"> &
+    Payload<CreateDatabaseProps> &
+    FetchJson<DeployDatabaseResponse, any>;
+  opCtx: Omit<DeployApiCtx<any, any>, "payload" | "json"> &
+    Payload<CreateDatabaseOpProps> &
+    FetchJson<DeployOperationResponse, any>;
+}
 
-    const dbCtx = yield* call(createDatabase.run, createDatabase(ctx.payload));
+export const provisionDatabase = thunks.create<
+  CreateDatabaseProps,
+  ThunkCtx<any, CreateDbResult>
+>("database-provision", function* (ctx, next) {
+  yield put(setLoaderStart({ id: ctx.key }));
 
-    if (!dbCtx.json.ok) {
-      yield put(
-        setLoaderError({ id: ctx.key, message: dbCtx.json.data.message }),
-      );
-      return;
-    }
+  const dbCtx = yield* call(createDatabase.run, createDatabase(ctx.payload));
 
-    yield next();
-
-    const opCtx = yield* call(
-      createDatabaseOperation.run,
-      createDatabaseOperation({
-        dbId: `${dbCtx.json.data.id}`,
-        containerSize: 1024,
-        diskSize: 10,
-        status: "queued",
-        type: "provision",
-      }),
-    );
-
-    if (!opCtx.json.ok) {
-      yield put(
-        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
-      );
-      return;
-    }
-
-    ctx.json = {
-      dbCtx,
-      opCtx,
-    };
+  if (!dbCtx.json.ok) {
     yield put(
-      setLoaderSuccess({
-        id: ctx.key,
-        meta: { dbId: dbCtx.json.data.id, opId: opCtx.json.data.id },
-      }),
+      setLoaderError({ id: ctx.key, message: dbCtx.json.data.message }),
     );
-  },
-);
+    return;
+  }
+
+  yield next();
+
+  const opCtx = yield* call(
+    createDatabaseOperation.run,
+    createDatabaseOperation({
+      dbId: `${dbCtx.json.data.id}`,
+      containerSize: 1024,
+      diskSize: 10,
+      status: "queued",
+      type: "provision",
+    }),
+  );
+
+  if (!opCtx.json.ok) {
+    yield put(
+      setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
+    );
+    return;
+  }
+
+  ctx.json = {
+    dbCtx,
+    opCtx,
+  };
+  yield put(
+    setLoaderSuccess({
+      id: ctx.key,
+      meta: { dbId: dbCtx.json.data.id, opId: opCtx.json.data.id },
+    }),
+  );
+});
 
 interface CreateDatabaseOpProps {
   dbId: string;
