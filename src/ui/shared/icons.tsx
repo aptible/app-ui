@@ -119,6 +119,18 @@ export const IconCheck = (props: Props) => {
   );
 };
 
+export const IconCheckCircle = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <polyline
+        xmlns="http://www.w3.org/2000/svg"
+        points="22 4 12 14.01 9 11.01"
+      />
+    </IconStrokeBase>
+  );
+};
+
 export const IconPlusCircle = (props: Props) => {
   return (
     <IconStrokeBase {...props}>
@@ -134,6 +146,16 @@ export const IconX = (props: Props) => {
     <IconStrokeBase {...props}>
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
+    </IconStrokeBase>
+  );
+};
+
+export const IconXCircle = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="15" y1="9" x2="9" y2="15" />
+      <line x1="9" y1="9" x2="15" y2="15" />
     </IconStrokeBase>
   );
 };

@@ -13,10 +13,10 @@ export const EnvironmentsPage = () => {
   return (
     <ListingPageLayout>
       <div className="flex">
-        <div className="mt-6 w-4/5 pr-5">
+        <div className="mt-6 w-2/3 pr-5">
           <EnvironmentList />
         </div>
-        <div className="mt-6 w-1/5">
+        <div className="mt-6 w-1/3">
           <ButtonIcon
             className="w-full mb-4"
             icon={<IconPlusCircle />}

@@ -5,79 +5,24 @@ import cn from "classnames";
 
 import {
   fetchAllEnvironments,
+  selectAppsByEnvId,
+  selectDatabasesByEnvId,
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
-import type { AppState, DeployEnvironment, OperationStatus } from "@app/types";
-import { appDetailUrl, environmentResourcelUrl } from "@app/routes";
+import type { AppState, DeployEnvironment } from "@app/types";
+import { environmentResourcelUrl } from "@app/routes";
 
-import {
-  IconCheck,
-  IconEllipsis,
-  IconInfo,
-  IconSearch,
-  IconSettings,
-  IconX,
-} from "../icons";
+import { IconEllipsis, IconSearch } from "../icons";
 import { TableHead, Td } from "../table";
 import { LoadResources } from "../load-resources";
 import { tokens } from "../tokens";
 import { Input } from "../input";
 import { ResourceListView } from "../resource-list-view";
 import { useSelector } from "react-redux";
-import {
-  selectLatestOpByEnvId,
-  selectLatestSuccessDeployOpByEnvId,
-} from "@app/deploy/operation";
+import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { prettyDateRelative } from "@app/date";
 import { Button } from "../button";
-
-const StatusPill = ({
-  status,
-  from,
-}: {
-  status: OperationStatus;
-  from: string;
-}) => {
-  const date = prettyDateRelative(from);
-
-  const className = cn(
-    "rounded-full border-2",
-    "text-sm font-semibold ",
-    "px-2 flex justify-between items-center w-fit",
-  );
-
-  if (status === "running" || status === "queued") {
-    return (
-      <div className={cn(className, "text-brown border-brown bg-orange-100")}>
-        Building <IconSettings color="#825804" className="mr-1" variant="sm" />
-      </div>
-    );
-  }
-
-  if (status === "failed") {
-    return (
-      <div className={cn(className, "text-red border-red-300 bg-red-100")}>
-        Failed <IconX color="#AD1A1A" variant="sm" />
-      </div>
-    );
-  }
-
-  if (status === "succeeded") {
-    return (
-      <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
-        Succeeded <IconCheck color="#00633F" className="mr-1" variant="sm" />
-      </div>
-    );
-  }
-
-  return (
-    <div className={cn(className, "text-gray-600 border-gray-300 bg-gray-100")}>
-      Not Deployed
-    </div>
-  );
-};
-
 interface EnvironmentCellProps {
   environment: DeployEnvironment;
 }
@@ -111,21 +56,40 @@ const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
-const EnvironmentStatusCell = ({ environment }: EnvironmentCellProps) => {
-  const operation = useSelector((s: AppState) =>
-    selectLatestOpByEnvId(s, { envId: environment.id }),
+const EnvironmentDatabasesCell = ({ environment }: EnvironmentCellProps) => {
+  const dbs = useSelector((s: AppState) =>
+    selectDatabasesByEnvId(s, { envId: environment.id }),
   );
   return (
     <Td>
-      <StatusPill status={operation.status} from={operation.createdAt} />
+      <span className="text-center">{dbs.length}</span>
+    </Td>
+  );
+};
+
+const EnvironmentAppsCell = ({ environment }: EnvironmentCellProps) => {
+  const apps = useSelector((s: AppState) =>
+    selectAppsByEnvId(s, { envId: environment.id }),
+  );
+  return (
+    <Td>
+      <span className="text-center">{apps.length}</span>
     </Td>
   );
 };
 
 const EnvironmentActionCell = () => {
   return (
-    <Td>
-      <Button variant="white" size="xs">
+    <Td className="flex gap-2 justify-end">
+      <Button
+        variant="white"
+        size="xs"
+        style={{
+          cursor: "not-allowed",
+          pointerEvents: "none",
+          opacity: 0.5,
+        }}
+      >
         <IconEllipsis />
       </Button>
     </Td>
@@ -158,13 +122,14 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
         <img
           alt="default environment logo"
           src="/logo-environment.png"
-          style={{ width: 40, height: 40, margin: "0 -24px 0 8px" }}
+          style={{ width: 32, height: 32, margin: "0 -10px 0 8px" }}
         />
       </td>
       <EnvironmentPrimaryCell environment={environment} />
       <EnvironmentStackCell environment={environment} />
-      <EnvironmentStatusCell environment={environment} />
       <EnvironmentLastDeployedCell environment={environment} />
+      <EnvironmentAppsCell environment={environment} />
+      <EnvironmentDatabasesCell environment={environment} />
       <EnvironmentActionCell />
     </tr>
   );
@@ -210,10 +175,12 @@ export function EnvironmentList() {
               "",
               "Environment",
               "Stack",
-              "Status",
-              "Last deployed",
+              "Last DEPLOYED",
+              "Apps",
+              "Databases",
               "Actions",
             ]}
+            rightAlignedFinalCol
           />
         }
         tableBody={

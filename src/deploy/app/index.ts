@@ -139,6 +139,14 @@ export const selectEnvironmentsForTableSearch = createSelector(
   },
 );
 
+export const selectAppsByEnvId = createSelector(
+  selectAppsAsList,
+  (_: AppState, props: { envId: string }) => props.envId,
+  (apps, envId) => {
+    return apps.filter((app) => app.environmentId === envId);
+  },
+);
+
 export const selectAppsForTable = createSelector(
   selectAppsAsList,
   selectEnvironments,

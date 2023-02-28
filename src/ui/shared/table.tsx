@@ -35,15 +35,21 @@ export const Th = ({ children, className }: CellProps) => {
   );
 };
 type Header = string | { name: string; className: string };
-export const TableHead = ({ headers }: { headers: Header[] }) => {
+export const TableHead = ({
+  headers,
+  rightAlignedFinalCol = false,
+}: { headers: Header[]; rightAlignedFinalCol?: boolean }) => {
   return (
     <thead className="bg-gray-50">
       <tr>
         {headers.map((header, i) => {
-          const [className, label] =
+          let [className, label] =
             typeof header === "string"
               ? ["", header]
               : [header.className, header.name];
+          if (rightAlignedFinalCol && i === headers.length - 1) {
+            className += " flex gap-2 justify-end";
+          }
           return (
             <Th
               className={className}
