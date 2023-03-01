@@ -31,7 +31,7 @@ export const EnvironmentActivity = () => {
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="text-left px-3 py-4" colSpan={2}>
+                  <th scope="col" className="text-left px-4 py-4" colSpan={2}>
                     <span className={tokens.type["small normal lighter"]}>
                       Recent Activity
                     </span>

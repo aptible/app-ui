@@ -1,7 +1,6 @@
 import { useQuery } from "saga-query/react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import cn from "classnames";
 
 import {
   fetchAllEnvironments,
@@ -58,7 +57,7 @@ const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
     selectStackById(s, { id: environment.stackId }),
   );
   return (
-    <Td>
+    <Td className="min-w-fit pl-8">
       <div className={tokens.type["medium label"]}>{stack.name}</div>
       <div className={tokens.type["normal lighter"]}>
         {!stack.organizationId ? "Shared" : "Dedicated"}
@@ -93,13 +92,13 @@ const EnvironmentActionCell = () => {
   return (
     <Td className="flex gap-2 justify-end">
       <Button
+        className="mt-2 mr-4"
         variant="white"
         size="xs"
         style={{
           cursor: "not-allowed",
           pointerEvents: "none",
           opacity: 0.5,
-          marginTop: 6,
         }}
       >
         <IconEllipsis style={{ width: 16, height: 16 }} />
@@ -112,6 +111,10 @@ const EnvironmentLastDeployedCell = ({ environment }: EnvironmentCellProps) => {
   const operation = useSelector((s: AppState) =>
     selectLatestSuccessDeployOpByEnvId(s, { envId: environment.id }),
   );
+  const userName =
+    operation.userName.length >= 15
+      ? `${operation.userName.slice(0, 15)}...`
+      : operation.userName;
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
       <div
@@ -121,7 +124,7 @@ const EnvironmentLastDeployedCell = ({ environment }: EnvironmentCellProps) => {
         {prettyEnglishDate(operation.createdAt)}
       </div>
       <div>
-        {timeAgo(operation.createdAt)} by {capitalize(operation.userName)}
+        {timeAgo(operation.createdAt)} by {capitalize(userName)}
       </div>
     </Td>
   );
@@ -186,6 +189,7 @@ export function EnvironmentList() {
               "Actions",
             ]}
             rightAlignedFinalCol
+            leftAlignedFirstCol
           />
         }
         tableBody={

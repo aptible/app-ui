@@ -13,7 +13,7 @@ export type CellProps = {
 export const Td = ({ children, className }: CellProps) => {
   const classes = cn(
     tokens.type["small lighter"],
-    "px-4 py-4",
+    "pl-8 py-4",
     "whitespace-nowrap",
     className,
   );
@@ -22,7 +22,7 @@ export const Td = ({ children, className }: CellProps) => {
 
 export const Th = ({ children, className }: CellProps) => {
   const classes = cn(
-    "px-4 py-4",
+    "pl-8 py-4",
     tokens.type["small normal lighter"],
     "text-left",
     className,
@@ -38,7 +38,12 @@ type Header = string | { name: string; className: string };
 export const TableHead = ({
   headers,
   rightAlignedFinalCol = false,
-}: { headers: Header[]; rightAlignedFinalCol?: boolean }) => {
+  leftAlignedFirstCol = false,
+}: {
+  headers: Header[];
+  rightAlignedFinalCol?: boolean;
+  leftAlignedFirstCol?: boolean;
+}) => {
   return (
     <thead className="bg-gray-50">
       <tr>
@@ -47,8 +52,11 @@ export const TableHead = ({
             typeof header === "string"
               ? ["", header]
               : [header.className, header.name];
+          if (leftAlignedFirstCol && i === 0) {
+            className += " pl-4";
+          }
           if (rightAlignedFinalCol && i === headers.length - 1) {
-            className += " flex gap-2 justify-end";
+            className += " flex gap-2 justify-end mr-4";
           }
           return (
             <Th
