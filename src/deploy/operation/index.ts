@@ -81,7 +81,7 @@ export const defaultDeployOperation = (
     ebsVolumeType: "",
     encryptedStackSettings: "",
     instanceProfile: "",
-    userName: "",
+    userName: "unknown",
     userEmail: "",
     env: "",
     ...op,
@@ -142,10 +142,17 @@ const selectors = slice.getSelectors(
 );
 export const selectOperationById = must(selectors.selectById);
 const { selectTableAsList } = selectors;
-export const selectOperationsAsList = createSelector(selectTableAsList, (ops) =>
-  ops.sort((a, b) => {
-    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-  }),
+export const selectOperationsAsList = createSelector(
+  selectTableAsList,
+  (_: AppState, props: { limit?: number }) => props,
+  (ops, { limit }) =>
+    ops
+      .sort((a, b) => {
+        return (
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+      })
+      .slice(0, limit),
 );
 
 export const selectOperationsByResourceId = createSelector(
@@ -182,6 +189,13 @@ export const selectOperationsByDatabaseId = createSelector(
     ),
 );
 
+export const selectLatestOpByEnvId = createSelector(
+  selectOperationsByEnvId,
+  (ops) =>
+    ops.find((op) => ["configure", "provision", "deploy"].includes(op.type)) ||
+    initOp,
+);
+
 export const selectLatestProvisionOp = createSelector(
   selectOperationsByResourceId,
   (ops) => ops.find((op) => op.type === "provision") || initOp,
@@ -205,6 +219,13 @@ export const selectLatestConfigureOp = createSelector(
 export const selectLatestDeployOp = createSelector(
   selectOperationsByAppId,
   (ops) => ops.find((op) => op.type === "deploy") || initOp,
+);
+
+export const selectLatestSuccessDeployOpByEnvId = createSelector(
+  selectOperationsByEnvId,
+  (ops) =>
+    ops.find((op) => op.type === "deploy" && op.status === "succeeded") ||
+    initOp,
 );
 
 export const selectLatestSucceessScanOp = createSelector(

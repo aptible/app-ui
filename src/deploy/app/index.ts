@@ -17,6 +17,7 @@ import type {
   AppState,
   LinkResponse,
   ProvisionableStatus,
+  DeployEnvironment,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 import { poll } from "saga-query";
@@ -114,6 +115,14 @@ export interface DeployAppRow extends DeployApp {
   envHandle: string;
 }
 
+export const selectAppsByEnvId = createSelector(
+  selectAppsAsList,
+  (_: AppState, props: { envId: string }) => props.envId,
+  (apps, envId) => {
+    return apps.filter((app) => app.environmentId === envId);
+  },
+);
+
 export const selectAppsForTable = createSelector(
   selectAppsAsList,
   selectEnvironments,
@@ -126,12 +135,9 @@ export const selectAppsForTable = createSelector(
       .sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
-const selectSearchProp = (_: AppState, props: { search: string }) =>
-  props.search.toLocaleLowerCase();
-
 export const selectAppsForTableSearch = createSelector(
   selectAppsForTable,
-  selectSearchProp,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (apps, search): DeployAppRow[] => {
     if (search === "") {
       return apps;

@@ -15,10 +15,9 @@ import {
 
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { ResourceListView } from "../resource-list-view";
-import { Input } from "../input";
+import { ResourceHeader, ResourceListView } from "../resource-list-view";
+import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
-import { IconSearch } from "../icons";
 
 type DatabaseCellProps = { database: DeployDatabase };
 
@@ -107,19 +106,18 @@ export function DatabaseList() {
   return (
     <LoadResources query={query} isEmpty={dbs.length === 0 && search === ""}>
       <ResourceListView
-        title="Databases"
-        description="Databases provide data persistency on Aptible."
-        filterBar={
-          <div className="flex flex-1 pt-6 gap-3 relative m-1">
-            <IconSearch className="absolute inline-block top-8 left-1.5" />
-            <Input
-              placeholder="Search Databases ..."
-              type="text"
-              value={search}
-              onChange={onChange}
-              className="search-bar pl-8"
-            />
-          </div>
+        header={
+          <ResourceHeader
+            title="Databases"
+            description="Databases provide data persistency on Aptible."
+            filterBar={
+              <InputSearch
+                placeholder="Search databases ..."
+                search={search}
+                onChange={onChange}
+              />
+            }
+          />
         }
         tableHeader={
           <TableHead headers={["Handle", "Environment", "Last Operation"]} />
