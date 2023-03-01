@@ -1,6 +1,5 @@
-import { createStore, applyMiddleware, compose } from "@reduxjs/toolkit";
+import { compose, configureStore } from "@reduxjs/toolkit";
 import type { Middleware, Store } from "@reduxjs/toolkit";
-import { PersistPartial } from "redux-persist/es/persistReducer";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 import { BATCH, prepareStore } from "saga-query";
@@ -60,14 +59,13 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
   // reset the store when a user logs out
   const baseReducer = resetReducer(prepared.reducer, persistConfig);
   const persistedReducer = persistReducer(persistConfig, baseReducer);
-  const composeEnhancers =
-    (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-  const store = createStore(
-    persistedReducer,
-    initState as AppState & PersistPartial,
-    composeEnhancers(applyMiddleware(...middleware)),
-  );
+  const store = configureStore({
+    preloadedState: initState,
+    reducer: persistedReducer,
+    devTools: process.env.NODE_ENV !== "production",
+    middleware: middleware,
+  });
   const persistor = persistStore(store);
 
   prepared.run();
