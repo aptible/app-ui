@@ -22,11 +22,7 @@ import type {
 import { createAction, createSelector } from "@reduxjs/toolkit";
 import { poll } from "saga-query";
 
-import {
-  selectEnvironments,
-  findEnvById,
-  selectEnvironmentsAsList,
-} from "../environment";
+import { selectEnvironments, findEnvById } from "../environment";
 import { deserializeImage } from "../image";
 import { deserializeDeployOperation } from "../operation";
 import { selectDeploy } from "../slice";
@@ -119,26 +115,6 @@ export interface DeployAppRow extends DeployApp {
   envHandle: string;
 }
 
-const selectSearchProp = (_: AppState, props: { search: string }) =>
-  props.search.toLocaleLowerCase();
-
-export const selectEnvironmentsForTableSearch = createSelector(
-  selectEnvironmentsAsList,
-  selectSearchProp,
-  (envs, search): DeployEnvironment[] => {
-    if (search === "") {
-      return envs;
-    }
-
-    return envs
-      .filter((env) => {
-        const handleMatch = env.handle.toLocaleLowerCase().includes(search);
-        return handleMatch;
-      })
-      .sort((a, b) => a.handle.localeCompare(b.handle));
-  },
-);
-
 export const selectAppsByEnvId = createSelector(
   selectAppsAsList,
   (_: AppState, props: { envId: string }) => props.envId,
@@ -161,7 +137,7 @@ export const selectAppsForTable = createSelector(
 
 export const selectAppsForTableSearch = createSelector(
   selectAppsForTable,
-  selectSearchProp,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (apps, search): DeployAppRow[] => {
     if (search === "") {
       return apps;

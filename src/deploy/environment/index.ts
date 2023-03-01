@@ -140,6 +140,23 @@ interface CreateEnvProps {
   orgId: string;
 }
 
+export const selectEnvironmentsForTableSearch = createSelector(
+  selectEnvironmentsAsList,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (envs, search): DeployEnvironment[] => {
+    if (search === "") {
+      return envs;
+    }
+
+    return envs
+      .filter((env) => {
+        const handleMatch = env.handle.toLocaleLowerCase().includes(search);
+        return handleMatch;
+      })
+      .sort((a, b) => a.handle.localeCompare(b.handle));
+  },
+);
+
 export const createDeployEnvironment = api.post<
   CreateEnvProps,
   DeployEnvironmentResponse

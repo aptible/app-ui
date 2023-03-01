@@ -20,7 +20,7 @@ const FormatDistanceLocale: { [key: string]: string } = {
   almostXYears: "{{count}}y",
 };
 
-const formatDistance = (token: string, count: string, options: any) => {
+const formatDistance = (token: string, count: string, options: any): string => {
   options = options || {};
 
   const result = FormatDistanceLocale[token].replace("{{count}}", count);
@@ -36,8 +36,9 @@ const formatDistance = (token: string, count: string, options: any) => {
   return result;
 };
 
-// taken from
-export const timeAgo = (dateStr: string = "") => {
+// very heavily borrowed/taken from:
+// https://github.com/date-fns/date-fns/issues/1706#issuecomment-836601089
+export const timeAgo = (dateStr: string = ""): string => {
   return formatDistanceToNowStrict(new Date(dateStr), {
     addSuffix: true,
     locale: {

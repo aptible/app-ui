@@ -81,7 +81,7 @@ export const defaultDeployOperation = (
     ebsVolumeType: "",
     encryptedStackSettings: "",
     instanceProfile: "",
-    userName: "",
+    userName: "unknown",
     userEmail: "",
     env: "",
     ...op,
@@ -142,10 +142,17 @@ const selectors = slice.getSelectors(
 );
 export const selectOperationById = must(selectors.selectById);
 const { selectTableAsList } = selectors;
-export const selectOperationsAsList = createSelector(selectTableAsList, (ops) =>
-  ops.sort((a, b) => {
-    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-  }),
+export const selectOperationsAsList = createSelector(
+  selectTableAsList,
+  (_: AppState, props: { limit?: number }) => props,
+  (ops, { limit }) =>
+    ops
+      .sort((a, b) => {
+        return (
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+      })
+      .slice(0, limit),
 );
 
 export const selectOperationsByResourceId = createSelector(

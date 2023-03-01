@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { IconCheckCircle, IconInfo, IconXCircle } from "../icons";
 import { Td } from "../table";
 import { tokens } from "../tokens";
+import { EnvironmentOperationActivity } from "./environment-operation-activity";
 
 export const IconForResource = (operationStatus: OperationStatus) => {
   if (operationStatus === "succeeded") {
@@ -19,9 +20,8 @@ export const IconForResource = (operationStatus: OperationStatus) => {
 
 export const EnvironmentActivity = () => {
   const operations = useSelector((s: AppState) =>
-    selectOperationsAsList(s),
-  ).slice(0, 5);
-  const environments = useSelector((s: AppState) => selectEnvironments(s));
+    selectOperationsAsList(s, { limit: 5 }),
+  );
 
   return (
     <div className="mt-6 flex flex-col">
@@ -40,26 +40,7 @@ export const EnvironmentActivity = () => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {operations.map((operation) => (
-                  <tr key={operation.id}>
-                    <Td className="py-0 pr-0">
-                      {IconForResource(operation.status)}
-                    </Td>
-                    <Td className="pl-0 2xl:flex-cell-md sm:flex-cell-sm">
-                      <span className="font-semibold text-black">
-                        {capitalize(operation.resourceType)} {operation.type}{" "}
-                        {operation.status}{" "}
-                      </span>
-                      <span>
-                        for{" "}
-                        {environments?.[operation.environmentId]?.handle ??
-                          "Unknown"}
-                      </span>
-                      <br />
-                      <span style={{ textTransform: "capitalize" }}>
-                        {prettyDateRelative(operation.createdAt)}
-                      </span>
-                    </Td>
-                  </tr>
+                  <EnvironmentOperationActivity operation={operation} />
                 ))}
               </tbody>
             </table>

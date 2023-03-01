@@ -23,6 +23,7 @@ import { useSelector } from "react-redux";
 import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { prettyEnglishDate, timeAgo } from "@app/date";
 import { Button } from "../button";
+import { capitalize } from "@app/string-utils";
 interface EnvironmentCellProps {
   environment: DeployEnvironment;
 }
@@ -120,7 +121,7 @@ const EnvironmentLastDeployedCell = ({ environment }: EnvironmentCellProps) => {
         {prettyEnglishDate(operation.createdAt)}
       </div>
       <div>
-        {timeAgo(operation.createdAt)} by {operation.userName || "Unknown"}
+        {timeAgo(operation.createdAt)} by {capitalize(operation.userName)}
       </div>
     </Td>
   );
