@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware } from "@reduxjs/toolkit";
+import { createStore, applyMiddleware, compose } from "@reduxjs/toolkit";
 import type { Middleware, Store } from "@reduxjs/toolkit";
 import { PersistPartial } from "redux-persist/es/persistReducer";
 import { persistStore, persistReducer } from "redux-persist";
@@ -60,11 +60,13 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
   // reset the store when a user logs out
   const baseReducer = resetReducer(prepared.reducer, persistConfig);
   const persistedReducer = persistReducer(persistConfig, baseReducer);
+  const composeEnhancers =
+    (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
   const store = createStore(
     persistedReducer,
     initState as AppState & PersistPartial,
-    applyMiddleware(...middleware),
+    composeEnhancers(applyMiddleware(...middleware)),
   );
   const persistor = persistStore(store);
 
