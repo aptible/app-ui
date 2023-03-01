@@ -9,7 +9,11 @@ import { TableHead, Td } from "./table";
 import { tokens } from "./tokens";
 import { Button, ButtonIcon } from "./button";
 import { LoadResources } from "./load-resources";
-import { EmptyResultView, ResourceListView } from "./resource-list-view";
+import {
+  EmptyResultView,
+  ResourceHeader,
+  ResourceListView,
+} from "./resource-list-view";
 import { IconPlusCircle } from "./icons";
 
 const EndpointListingRow = ({ endpoint }: { endpoint: DeployEndpoint }) => {
@@ -101,9 +105,13 @@ export function EndpointsOverview({
 
   return (
     <ResourceListView
-      title="Endpoints"
-      description="Endpoints let you expose your Apps on Aptible to clients over the public internet or your Stack's internal network."
-      actions={[<Button>Create Endpoint</Button>]}
+      header={
+        <ResourceHeader
+          title="Endpoints"
+          description="Endpoints let you expose your Apps on Aptible to clients over the public internet or your Stack's internal network."
+          actions={[<Button>Create Endpoint</Button>]}
+        />
+      }
       tableHeader={
         <TableHead
           headers={[

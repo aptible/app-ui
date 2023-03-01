@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ListingPageLayout } from "../layouts";
 
 import {
@@ -5,32 +6,45 @@ import {
   EnvironmentActivity,
   EnvironmentList,
   IconPlusCircle,
-  TableHead,
+  InputSearch,
+  ResourceHeader,
 } from "../shared";
 
 export const EnvironmentsPage = () => {
-  // TODO: BELOW BUTTON SUCKS, FIND A WAY TO LINE IT UP
+  const [search, setSearch] = useState("");
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
+    setSearch(ev.currentTarget.value);
+
   return (
     <ListingPageLayout>
-      <div className="flex">
-        <div className="mt-6 w-2/3 pr-5">
-          <EnvironmentList />
+      <div>
+        <ResourceHeader
+          title="Environments"
+          description="Environments are containers for your apps and databases."
+          actions={[
+            <div className="pl-2">
+              <ButtonIcon
+                className="w-full cursor-not-allowed pointer-events-none opacity-50"
+                icon={<IconPlusCircle />}
+              >
+                New Environment
+              </ButtonIcon>
+            </div>,
+          ]}
+          filterBar={
+            <InputSearch
+              placeholder="Search environments ..."
+              search={search}
+              onChange={onChange}
+            />
+          }
+        />
+      </div>
+      <div className="grid gap-4 lg:grid-cols-3 grid-cols-1">
+        <div className="lg:col-span-2 col-span-1">
+          <EnvironmentList search={search} />
         </div>
-        <div className="mt-6 w-1/3 flex flex-col">
-          <div className="flex flex-row place-content-center">
-            <ButtonIcon
-              className="w-auto mb-4 pl-8 pr-8 "
-              icon={<IconPlusCircle />}
-              style={{
-                cursor: "not-allowed",
-                pointerEvents: "none",
-                opacity: 0.5,
-                marginBottom: "45.5px",
-              }}
-            >
-              New Environment
-            </ButtonIcon>
-          </div>
+        <div className="col-span-1">
           <EnvironmentActivity />
         </div>
       </div>

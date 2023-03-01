@@ -18,21 +18,15 @@ export function ActionListView({
       "Avoid adding 3 or more actions. Instead, use a ListBox or Menu Component to provide more actions",
     );
   }
-  const classes = cn(
-    className,
-    {
-      "justify-start": align === "left",
-      "justify-end": align === "right",
-    },
-    "gap-2 flex h-full",
-  );
+  const classes = cn(className, {
+    "justify-start": align === "left",
+    "justify-end": align === "right",
+  });
 
   return (
     <div className={classes}>
       {actions?.map((a, i) => (
-        <div className="self-end" key={`action-${i}`}>
-          {a}
-        </div>
+        <div key={`action-${i}`}>{a}</div>
       ))}
     </div>
   );

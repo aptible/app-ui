@@ -1,6 +1,5 @@
 import { useQuery } from "saga-query/react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 
 import {
   fetchAllEnvironments,
@@ -12,17 +11,17 @@ import {
 import type { AppState, DeployEnvironment } from "@app/types";
 import { environmentResourcelUrl } from "@app/routes";
 
-import { IconEllipsis, IconSearch } from "../icons";
+import { IconEllipsis } from "../icons";
 import { TableHead, Td } from "../table";
 import { LoadResources } from "../load-resources";
 import { tokens } from "../tokens";
-import { Input } from "../input";
 import { ResourceListView } from "../resource-list-view";
 import { useSelector } from "react-redux";
 import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { prettyEnglishDate, timeAgo } from "@app/date";
 import { Button } from "../button";
 import { capitalize } from "@app/string-utils";
+
 interface EnvironmentCellProps {
   environment: DeployEnvironment;
 }
@@ -143,13 +142,9 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
-export function EnvironmentList() {
+export function EnvironmentList({ search }: { search: string }) {
   const query = useQuery(fetchAllEnvironments());
   useQuery(fetchAllEnvironments());
-
-  const [search, setSearch] = useState("");
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
 
   const environments = useSelector((s: AppState) =>
     selectEnvironmentsForTableSearch(s, { search }),
@@ -160,24 +155,8 @@ export function EnvironmentList() {
       query={query}
       isEmpty={environments.length === 0 && search === ""}
     >
+      <div />
       <ResourceListView
-        title="Environments"
-        filterBar={
-          <div className="flex flex-1 pt-4 gap-3 relative m-1">
-            <IconSearch
-              className="absolute inline-block top-6 left-1.5"
-              color="#595E63"
-              style={{ width: 15, height: 15, marginTop: 2.5, marginLeft: 2.5 }}
-            />
-            <Input
-              placeholder="Search ..."
-              type="text"
-              value={search}
-              onChange={onChange}
-              className="search-bar pl-8"
-            />
-          </div>
-        }
         tableHeader={
           <TableHead
             headers={[
