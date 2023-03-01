@@ -23,7 +23,9 @@ export const EnvironmentOperationActivity = ({
           {capitalize(operation.resourceType)} {operation.type}{" "}
           {operation.status}{" "}
         </span>
-        <span>for {environment?.handle ?? "Unknown"}</span>
+        <span className="text-black">
+          for {environment?.handle ?? "Unknown"}
+        </span>
         <br />
         <span style={{ textTransform: "capitalize" }}>
           {prettyDateRelative(operation.createdAt)}
