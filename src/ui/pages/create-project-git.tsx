@@ -683,31 +683,6 @@ export const CreateProjectGitSettingsPage = () => {
               </div>
             }
           >
-            <p>
-              Add new databases with generated keys or connect to existing
-              databases.
-            </p>
-
-            <p>
-              You can provide as many databases as you need (each line is a
-              separate database).
-            </p>
-
-            <p>Options include:</p>
-
-            {dbQuery.isInitialLoading ? (
-              <Loading text="Loading databases" />
-            ) : (
-              <ul className="inline-grid grid-cols-3">
-                {dbImages.map((d) => {
-                  return (
-                    <li key={d.id}>
-                      {d.type}={d.version}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
             <textarea
               name="databases"
               className={tokens.type.textarea}
