@@ -1,7 +1,7 @@
 import { selectOperationsAsList } from "@app/deploy/operation";
 import { AppState, OperationStatus } from "@app/types";
 import { useSelector } from "react-redux";
-import { IconCheckCircle, IconInfo, IconXCircle } from "../icons";
+import { IconCheckCircle, IconInfo, IconX } from "../icons";
 import { tokens } from "../tokens";
 import { EnvironmentOperationActivity } from "./environment-operation-activity";
 
@@ -11,7 +11,7 @@ export const IconForResource = (operationStatus: OperationStatus) => {
   } else if (operationStatus === "queued" || operationStatus === "running") {
     return <IconInfo color="#4361FF" />;
   }
-  return <IconXCircle color="#AD1A1A" />;
+  return <IconX color="#AD1A1A" />;
 };
 
 export const EnvironmentActivity = () => {
