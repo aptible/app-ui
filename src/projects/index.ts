@@ -9,7 +9,7 @@ import {
 } from "saga-query";
 
 import { createLog } from "@app/debug";
-import { ThunkCtx, thunks } from "@app/api";
+import { combinePages, ThunkCtx, thunks } from "@app/api";
 import {
   createAppOperation,
   createDeployApp,
@@ -21,6 +21,10 @@ import {
   selectEnvironmentByName,
 } from "@app/deploy";
 import { ApiGen, DeployApp } from "@app/types";
+import {
+  createServiceDefinition,
+  deleteServiceDefinition,
+} from "@app/deploy/app-service-definitions";
 
 interface CreateProjectProps {
   name: string;
@@ -118,13 +122,14 @@ export interface CreateProjectSettingsProps {
   dbs: TextVal<{ id: string }>[];
   envs: TextVal[];
   cmds: TextVal[];
+  existingCmds: TextVal[];
   gitRef: string;
 }
 
 export const deployProject = thunks.create<CreateProjectSettingsProps>(
   "project-deploy",
   function* (ctx: ThunkCtx<CreateProjectSettingsProps>, next) {
-    const { appId, envId, dbs, envs, gitRef } = ctx.payload;
+    const { appId, envId, dbs, envs, cmds, existingCmds, gitRef } = ctx.payload;
     const id = ctx.name;
     yield put(setLoaderStart({ id }));
 
@@ -142,6 +147,37 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       yield put(setLoaderError({ id, message }));
       return;
     }
+
+    // get all the service definitions and delete them first
+    const cmdIdsToDelete: string[] = existingCmds
+      .map((cmd: TextVal) => (cmd.meta?.id ? cmd.meta.id : ""))
+      .filter((cmdId: string) => !!cmdId);
+
+    yield all(
+      cmdIdsToDelete.map((cmdId) =>
+        call(
+          deleteServiceDefinition.run,
+          deleteServiceDefinition({
+            id: cmdId,
+          }),
+        ),
+      ),
+    );
+
+    // TODO - convert this to a series of updates where possible (currently information is agnostic)
+    // create all the new ones
+    yield all(
+      cmds.map((cmd) =>
+        call(
+          createServiceDefinition.run,
+          createServiceDefinition({
+            appId,
+            processType: cmd.key,
+            command: cmd.value,
+          }),
+        ),
+      ),
+    );
 
     yield all([
       call(

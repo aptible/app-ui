@@ -13,6 +13,7 @@ import type {
   DeployService,
   DeployStack,
   DeployOperation,
+  DeployServiceDefinition,
 } from "./deploy";
 import type { ModalState } from "./modal";
 
@@ -77,6 +78,7 @@ export interface DeployState {
   apps: MapEntity<DeployApp>;
   endpoints: MapEntity<DeployEndpoint>;
   environments: MapEntity<DeployEnvironment>;
+  serviceDefinitions: MapEntity<DeployServiceDefinition>;
   stacks: MapEntity<DeployStack>;
   disks: MapEntity<DeployDisk>;
   databases: MapEntity<DeployDatabase>;

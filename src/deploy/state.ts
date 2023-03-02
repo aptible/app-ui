@@ -1,6 +1,10 @@
 import { combineReducers } from "@reduxjs/toolkit";
 
 import { appReducers, appEntities } from "./app";
+import {
+  serviceDefinitionEntities,
+  serviceDefinitionReducers,
+} from "./app-service-definitions";
 import { stackReducers, stackEntities } from "./stack";
 import { environmentReducers, environmentEntities } from "./environment";
 import { endpointReducers, endpointEntities } from "./endpoint";
@@ -15,6 +19,7 @@ import { opEntities, opReducers } from "./operation";
 
 const allReducers: any[] = [
   appReducers,
+  serviceDefinitionReducers,
   stackReducers,
   environmentReducers,
   endpointReducers,
@@ -37,6 +42,7 @@ export const reducers = {
 
 export const entities = {
   ...appEntities,
+  ...serviceDefinitionEntities,
   ...stackEntities,
   ...environmentEntities,
   ...endpointEntities,

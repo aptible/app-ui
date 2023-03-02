@@ -88,6 +88,11 @@ import {
   fetchCodeScanResult,
 } from "@app/deploy/code-scan-result";
 import {
+  DeployServiceDefinitionResponse,
+  fetchServiceDefinitionsByAppId,
+  selectServiceDefinitionsByAppId,
+} from "@app/deploy/app-service-definitions";
+import {
   DeployConfigurationResponse,
   fetchConfiguration,
 } from "@app/deploy/configuration";
@@ -438,6 +443,10 @@ const useLatestCodeResults = (appId: string) => {
   return { scanOp, codeScan, appOps };
 };
 
+interface HalServiceDefinition {
+  service_definitions: DeployServiceDefinitionResponse[];
+}
+
 export const CreateProjectGitSettingsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -448,8 +457,13 @@ export const CreateProjectGitSettingsPage = () => {
   const { scanOp, codeScan, appOps } = useLatestCodeResults(appId);
   useQuery(fetchDatabasesByEnvId({ envId: app.environmentId }));
 
-  const query = useQuery(fetchAllDatabaseImages());
+  const dbQuery = useQuery(fetchAllDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesAsList);
+
+  useQuery(fetchServiceDefinitionsByAppId({ appId }));
+  const serviceDefinitions = useSelector((s: AppState) =>
+    selectServiceDefinitionsByAppId(s, { appId }),
+  );
 
   const existingDbs = useSelector((s: AppState) =>
     selectDatabasesByEnvId(s, { envId: app.environmentId }),
@@ -492,9 +506,36 @@ export const CreateProjectGitSettingsPage = () => {
       "\n",
     ),
   );
+  const [existingCmds, setExistingCmds] = useState<TextVal[]>([]);
+  const cmdList = parseText(cmds);
+
   const loader = useSelector((s: AppState) =>
     selectLoaderById(s, { id: `${deployProject}` }),
   );
+
+  useEffect(() => {
+    if (serviceDefinitions.length !== 0) {
+      // hydrate inputs for consumption on load
+      const cmdsToSet = serviceDefinitions
+        ? serviceDefinitions
+            .map((serviceDefinition) => {
+              return `${serviceDefinition.processType}=${serviceDefinition.command}`;
+            })
+            .join("\n")
+        : "";
+      setCmds(cmdsToSet);
+
+      // set cmd list from initial setting, which will get regrokked before submission
+      setExistingCmds(
+        serviceDefinitions.map((serviceDefinition) => ({
+          key: serviceDefinition.processType,
+          value: serviceDefinition.command,
+          meta: { id: serviceDefinition.id },
+        })),
+      );
+    }
+  }, [serviceDefinitions.length]);
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let cancel = false;
@@ -537,7 +578,8 @@ export const CreateProjectGitSettingsPage = () => {
         // don't create new databases if they already exist
         dbs: existingDbStr ? [] : dbList,
         envs: envList,
-        cmds: [],
+        cmds: cmdList,
+        existingCmds,
         gitRef: scanOp.gitRef,
       }),
     );
@@ -623,7 +665,7 @@ export const CreateProjectGitSettingsPage = () => {
 
                     <p>Options include:</p>
 
-                    {query.isInitialLoading ? (
+                    {dbQuery.isInitialLoading ? (
                       <Loading text="Loading databases" />
                     ) : (
                       <ul className="inline-grid grid-cols-3">
@@ -1080,6 +1122,7 @@ export const CreateProjectGitStatusPage = () => {
   const provisionOps = useSelector((s: AppState) =>
     selectLatestProvisionOps(s, { resourceIds: dbs.map((db) => db.id) }),
   );
+
   const ops = [deployOp, ...provisionOps];
   const [status, dateStr] = resolveOperationStatuses(ops);
   const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
