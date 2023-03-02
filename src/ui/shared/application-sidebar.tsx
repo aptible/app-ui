@@ -1,8 +1,13 @@
 import { UserMenu } from "./user-menu";
 import { AptibleLogo } from "./aptible-logo";
 
-import { IconLayers, IconBox, IconPlusCircle } from "@app/ui/shared";
-import { appsUrl, createProjectUrl, databasesUrl } from "@app/routes";
+import { IconLayers, IconBox, IconPlusCircle, IconGlobe } from "@app/ui/shared";
+import {
+  appsUrl,
+  createProjectUrl,
+  databasesUrl,
+  environmentsUrl,
+} from "@app/routes";
 import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import { useNavigate } from "react-router";
@@ -10,6 +15,7 @@ import { useNavigate } from "react-router";
 export const ApplicationSidebar = () => {
   const navigate = useNavigate();
   const navigation = [
+    { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
     { name: "Apps", to: appsUrl(), icon: <IconLayers /> },
     { name: "Databases", to: databasesUrl(), icon: <IconBox /> },
   ];

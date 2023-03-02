@@ -1,7 +1,14 @@
 import { AppState, DeployApp } from "@app/types";
 import { calcServiceMetrics, selectServiceById } from "@app/deploy";
 
-import { TableHead, Td, ResourceListView, Button, tokens } from "../../shared";
+import {
+  TableHead,
+  Td,
+  ResourceListView,
+  Button,
+  tokens,
+  ResourceHeader,
+} from "../../shared";
 import { useSelector } from "react-redux";
 
 const ServiceListRow = ({ serviceId }: { serviceId: string }) => {
@@ -54,12 +61,17 @@ const ServiceListRow = ({ serviceId }: { serviceId: string }) => {
 };
 
 export function ServicesOverview({ app }: { app: DeployApp }) {
+  const desc =
+    "Services are metadata that defines how many containers Aptible will start for your App, what Container Command they will run, their Memory Limits, and their CPU Limits.";
   return (
     <ResourceListView
-      title="Services"
-      description="Services are metadata that defines how many Containers
-      Aptible will start for your App, what Container Command they will run, their Memory Limits, and their CPU Limits."
-      actions={[<Button>Create Service</Button>]}
+      header={
+        <ResourceHeader
+          title="services"
+          description={desc}
+          actions={[<Button>Create Service</Button>]}
+        />
+      }
       tableHeader={
         <TableHead
           headers={[

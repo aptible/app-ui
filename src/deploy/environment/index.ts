@@ -35,6 +35,7 @@ interface DeployEnvironmentResponse {
   total_backup_size: number;
   _links: {
     environment: LinkResponse;
+    stack: LinkResponse;
   };
 }
 
@@ -56,7 +57,7 @@ export const deserializeDeployEnvironment = (
   totalDatabaseCount: payload.total_database_count,
   sweetnessStack: payload.sweetness_stack,
   totalBackupSize: payload.total_backup_size,
-  stackId: extractIdFromLink(payload._links.environment),
+  stackId: extractIdFromLink(payload._links.stack),
 });
 
 export const defaultDeployEnvironment = (
@@ -138,6 +139,23 @@ interface CreateEnvProps {
   stackId: string;
   orgId: string;
 }
+
+export const selectEnvironmentsForTableSearch = createSelector(
+  selectEnvironmentsAsList,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (envs, search): DeployEnvironment[] => {
+    if (search === "") {
+      return envs;
+    }
+
+    return envs
+      .filter((env) => {
+        const handleMatch = env.handle.toLocaleLowerCase().includes(search);
+        return handleMatch;
+      })
+      .sort((a, b) => a.handle.localeCompare(b.handle));
+  },
+);
 
 export const createDeployEnvironment = api.post<
   CreateEnvProps,

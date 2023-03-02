@@ -41,6 +41,23 @@ export const IconArrowRight = (props: Props) => {
   );
 };
 
+export const IconArrowLeft = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <line x1="19" y1="12" x2="5" y2="12" />
+      <polyline points="12 19 5 12 12 5" />
+    </IconStrokeBase>
+  );
+};
+
+export const IconEdit2 = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+    </IconStrokeBase>
+  );
+};
+
 export const IconChevronUp = (props: Props) => {
   return (
     <IconStrokeBase {...props}>
@@ -119,6 +136,18 @@ export const IconCheck = (props: Props) => {
   );
 };
 
+export const IconCheckCircle = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <polyline
+        xmlns="http://www.w3.org/2000/svg"
+        points="22 4 12 14.01 9 11.01"
+      />
+    </IconStrokeBase>
+  );
+};
+
 export const IconPlusCircle = (props: Props) => {
   return (
     <IconStrokeBase {...props}>
@@ -134,6 +163,16 @@ export const IconX = (props: Props) => {
     <IconStrokeBase {...props}>
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
+    </IconStrokeBase>
+  );
+};
+
+export const IconXCircle = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="15" y1="9" x2="9" y2="15" />
+      <line x1="9" y1="9" x2="15" y2="15" />
     </IconStrokeBase>
   );
 };
@@ -194,6 +233,26 @@ export const IconCreditCard = (props: Props) => {
     <IconStrokeBase {...props}>
       <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
       <line x1="1" y1="10" x2="23" y2="10" />
+    </IconStrokeBase>
+  );
+};
+
+export const IconGlobe = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </IconStrokeBase>
+  );
+};
+
+export const IconEllipsis = (props: Props) => {
+  return (
+    <IconStrokeBase {...props}>
+      <circle cx="12" cy="12" r="1" />
+      <circle cx="19" cy="12" r="1" />
+      <circle cx="5" cy="12" r="1" />
     </IconStrokeBase>
   );
 };

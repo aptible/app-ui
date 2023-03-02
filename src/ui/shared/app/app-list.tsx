@@ -16,12 +16,11 @@ import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
 import { appDetailUrl } from "@app/routes";
 
-import { IconSearch } from "../icons";
 import { TableHead, Td } from "../table";
 import { LoadResources } from "../load-resources";
 import { tokens } from "../tokens";
-import { Input } from "../input";
-import { ResourceListView } from "../resource-list-view";
+import { InputSearch } from "../input";
+import { ResourceHeader, ResourceListView } from "../resource-list-view";
 
 interface AppCellProps {
   app: DeployAppRow;
@@ -126,19 +125,18 @@ export function AppList() {
   return (
     <LoadResources query={query} isEmpty={apps.length === 0 && search === ""}>
       <ResourceListView
-        title="Apps"
-        description={description}
-        filterBar={
-          <div className="flex flex-1 pt-4 gap-3 relative m-1">
-            <IconSearch className="absolute inline-block top-6 left-1.5" />
-            <Input
-              placeholder="Search Apps ..."
-              type="text"
-              value={search}
-              onChange={onChange}
-              className="search-bar pl-8"
-            />
-          </div>
+        header={
+          <ResourceHeader
+            title="Apps"
+            description={description}
+            filterBar={
+              <InputSearch
+                placeholder="Search Apps ..."
+                search={search}
+                onChange={onChange}
+              />
+            }
+          />
         }
         tableHeader={
           <TableHead

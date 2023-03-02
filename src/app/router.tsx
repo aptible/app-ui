@@ -41,6 +41,15 @@ import {
   SettingsPageLayout,
 } from "@app/ui";
 import * as routes from "@app/routes";
+import { EnvironmentsPage } from "@app/ui/pages/environments";
+import { EnvironmentDetailLayout } from "@app/ui/layouts/environment-detail-layout";
+import { EnvironmentResourcesPage } from "@app/ui/pages/environment-detail-resources";
+import { EnvironmentSecurityPage } from "@app/ui/pages/environment-detail-security";
+import { EnvironmentCertificatesPage } from "@app/ui/pages/environment-detail-certificates";
+import { EnvironmentActivityPage } from "@app/ui/pages/environment-detail-activity";
+import { EnvironmentSettingsPage } from "@app/ui/pages/environment-detail-settings";
+import { EnvironmentIntegrationsPage } from "@app/ui/pages/environment-detail-integrations";
+import { EnvironmentBackupsPage } from "@app/ui/pages/environment-detail-backups";
 
 const appRoutes: RouteObject[] = [
   {
@@ -115,6 +124,50 @@ const appRoutes: RouteObject[] = [
               {
                 path: routes.DATABASE_SETTINGS_PATH,
                 element: <DatabaseSettingsPage />,
+              },
+            ],
+          },
+        ],
+      },
+
+      {
+        path: routes.ENVIRONMENTS_PATH,
+        children: [
+          {
+            index: true,
+            element: <EnvironmentsPage />,
+          },
+
+          {
+            element: <EnvironmentDetailLayout />,
+            children: [
+              {
+                path: routes.ENVIRONMENT_RESOURCES_PATH,
+                element: <EnvironmentResourcesPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_SECURITY_PATH,
+                element: <EnvironmentSecurityPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_INTEGRATIONS_PATH,
+                element: <EnvironmentIntegrationsPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_CERTIFICATES_PATH,
+                element: <EnvironmentCertificatesPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_ACTIVITY_PATH,
+                element: <EnvironmentActivityPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_BACKUPS_PATH,
+                element: <EnvironmentBackupsPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_SETTINGS_PATH,
+                element: <EnvironmentSettingsPage />,
               },
             ],
           },

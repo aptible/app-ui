@@ -1,6 +1,5 @@
-import { createStore, applyMiddleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import type { Middleware, Store } from "@reduxjs/toolkit";
-import { PersistPartial } from "redux-persist/es/persistReducer";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 import { BATCH, prepareStore } from "saga-query";
@@ -61,11 +60,12 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
   const baseReducer = resetReducer(prepared.reducer, persistConfig);
   const persistedReducer = persistReducer(persistConfig, baseReducer);
 
-  const store = createStore(
-    persistedReducer,
-    initState as AppState & PersistPartial,
-    applyMiddleware(...middleware),
-  );
+  const store = configureStore({
+    preloadedState: initState,
+    reducer: persistedReducer,
+    devTools: process.env.NODE_ENV !== "production",
+    middleware: middleware,
+  });
   const persistor = persistStore(store);
 
   prepared.run();
