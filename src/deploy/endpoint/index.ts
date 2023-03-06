@@ -138,20 +138,15 @@ export const endpointEntities = {
 };
 
 export interface CreateEndpointProps {
-  appId: string;
   serviceId: string;
 }
 
 export const createEndpoint = api.post<CreateEndpointProps>(
   "/services/:serviceId/vhosts",
   function* (ctx, next) {
-    const { appId, serviceId } = ctx.payload;
     const body = JSON.stringify({
-      app_id: appId,
-      service_id: serviceId,
       platform: "alb",
       type: "http_proxy_protocol",
-      status: "pending",
       default: true,
       acme: false,
       internal: false,

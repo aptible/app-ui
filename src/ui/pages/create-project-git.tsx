@@ -1269,7 +1269,7 @@ const CreateEndpointView = ({
   );
   const dispatch = useDispatch();
   const [curServiceId, setServiceId] = useState(serviceId);
-  const action = provisionEndpoint({ appId: app.id, serviceId: curServiceId });
+  const action = provisionEndpoint({ serviceId: curServiceId });
   const loader = useLoader(action);
   const onChange = (id: string) => {
     setServiceId(id);
