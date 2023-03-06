@@ -1,4 +1,4 @@
-import { api, cacheTimer } from "@app/api";
+import { api } from "@app/api";
 import { LinkResponse } from "@app/types";
 
 export interface DeployCodeScanResponse {
@@ -16,6 +16,5 @@ export interface DeployCodeScanResponse {
 
 export const fetchCodeScanResult = api.get<{ id: string }>(
   "/code_scan_results/:id",
-  { saga: cacheTimer() },
   api.cache(),
 );

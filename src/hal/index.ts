@@ -34,6 +34,8 @@ function transformResourceName(name: string | undefined | null): ResourceType {
       return "app";
     case "databases":
       return "database";
+    case "vhosts":
+      return "vhost";
     default:
       return "unknown";
   }

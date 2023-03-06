@@ -1,11 +1,4 @@
-import {
-  api,
-  cacheTimer,
-  combinePages,
-  DeployApiCtx,
-  PaginateProps,
-  thunks,
-} from "@app/api";
+import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -17,7 +10,7 @@ import type {
   AppState,
   LinkResponse,
   ProvisionableStatus,
-  DeployEnvironment,
+  DeployOperationResponse,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 import { poll } from "saga-query";
@@ -43,7 +36,7 @@ export interface DeployAppResponse {
   };
   _embedded: {
     // TODO: fill in
-    services: { id: string }[];
+    services: { id: number }[];
     current_image: any;
     last_deploy_operation: any;
     last_operation: any;
@@ -51,7 +44,7 @@ export interface DeployAppResponse {
 }
 
 export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
-  const serviceIds: string[] = payload._embedded.services.map((s: any) => s.id);
+  const serviceIds: string[] = payload._embedded.services.map((s) => `${s.id}`);
   const links = payload._links;
   const embedded = payload._embedded;
 
@@ -234,34 +227,34 @@ interface ConfigAppOpProps {
 }
 
 type CreateAppOpProps = ScanAppOpProps | DeployAppOpProps | ConfigAppOpProps;
-export type CreateAppOpCtx = DeployApiCtx<any, CreateAppOpProps>;
-export const createAppOperation = api.post<CreateAppOpProps>(
-  "/apps/:appId/operations",
-  function* (ctx: CreateAppOpCtx, next) {
-    const getBody = () => {
-      const { type } = ctx.payload;
-      switch (type) {
-        case "deploy":
-        case "scan_code": {
-          const { gitRef } = ctx.payload;
-          return { type, git_ref: gitRef };
-        }
+export const createAppOperation = api.post<
+  CreateAppOpProps,
+  DeployOperationResponse
+>("/apps/:appId/operations", function* (ctx, next) {
+  const { type } = ctx.payload;
 
-        case "configure": {
-          const { env } = ctx.payload;
-          return { type, env };
-        }
-
-        default:
-          return {};
+  const getBody = () => {
+    switch (type) {
+      case "deploy":
+      case "scan_code": {
+        const { gitRef } = ctx.payload;
+        return { type, git_ref: gitRef };
       }
-    };
 
-    const body = getBody();
-    ctx.request = ctx.req({ body: JSON.stringify(body) });
-    yield next();
-  },
-);
+      case "configure": {
+        const { env } = ctx.payload;
+        return { type, env };
+      }
+
+      default:
+        return {};
+    }
+  };
+
+  const body = getBody();
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield next();
+});
 
 export const appEntities = {
   app: defaultEntity({
