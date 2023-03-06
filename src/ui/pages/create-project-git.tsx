@@ -432,7 +432,6 @@ const validateEnvs = (items: TextVal[]): ValidatorError[] => {
     }
   };
 
-  console.log(items);
   items.forEach(validate);
   return errors;
 };
