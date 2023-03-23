@@ -22,7 +22,7 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
       [tokens.type.link]: !isActive,
       "border-transparent  hover:border-gray-300": "!isActive",
       [tokens.type["subdued active link"]]: isActive,
-      "border-emerald-500": isActive,
+      "border-amber-500": isActive,
     },
     "whitespace-nowrap py-4 px-1 border-b-2",
   );

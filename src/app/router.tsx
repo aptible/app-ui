@@ -69,12 +69,12 @@ const appRoutes: RouteObject[] = [
             index: true,
             element: <AppsPage />,
           },
+
           {
-            path: routes.APP_DETAIL_PATH,
             element: <AppDetailLayout />,
             children: [
               {
-                index: true,
+                path: routes.APP_OVERVIEW_PATH,
                 element: <AppDetailPage />,
               },
               {

@@ -53,6 +53,8 @@ export const APPS_PATH = "/apps";
 export const appsUrl = () => APPS_PATH;
 export const APP_DETAIL_PATH = "/apps/:id";
 export const appDetailUrl = (id: string) => `/apps/${id}`;
+export const APP_OVERVIEW_PATH = `${APP_DETAIL_PATH}/overview`;
+export const appOverviewUrl = (id: string) => `${appDetailUrl(id)}/overview`;
 export const APP_ACTIVITY_PATH = `${APP_DETAIL_PATH}/activity`;
 export const appActivityUrl = (id: string) => `${appDetailUrl(id)}/activity`;
 export const APP_SECURITY_PATH = `${APP_DETAIL_PATH}/security`;
