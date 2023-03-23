@@ -5,11 +5,13 @@ import { tokens } from "./tokens";
 export const PreCode = ({
   children,
   allowCopy = false,
+  // TODO - do we want to allow softwrap
 }: { children: React.ReactNode; allowCopy?: boolean }) => {
   const handleCopy = (e: SyntheticEvent) => {
     e.preventDefault();
     // TODO - THIS DOES NOT WORK PROPERLY WITHOUT UTIL/DEP
-    navigator.clipboard.writeText(children?.toString() ?? "");
+    // navigator.clipboard.writeText(children?.toString() ?? "");
+    console.log("wanting to copy data from target event", e);
   };
 
   return (

@@ -7,6 +7,7 @@ type Element = JSX.Element | React.ReactNode;
 type HeaderProps = {
   breadcrumbs?: Crumb[];
   actions?: ActionList;
+  detailsBox?: React.ReactNode;
   title: Element;
   tabs: TabItem[];
 };
@@ -14,6 +15,7 @@ type HeaderProps = {
 export const DetailPageHeaderView = ({
   breadcrumbs,
   title,
+  detailsBox,
   actions,
   tabs,
 }: HeaderProps) => {
@@ -34,6 +36,8 @@ export const DetailPageHeaderView = ({
           {actions && <ActionListView actions={actions} />}
         </div>
       </div>
+
+      {detailsBox ? detailsBox : null}
 
       {tabs && (
         <div className={cn(tokens.layout["main width"], "pt-1")}>

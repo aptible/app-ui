@@ -7,10 +7,12 @@ import { useQuery } from "saga-query/react";
 import {
   Box,
   Button,
+  ButtonIcon,
   FormGroup,
   IconAlertTriangle,
   IconCopy,
   IconExternalLink,
+  IconPlusCircle,
   IconTrash,
   Input,
   Label,
@@ -83,9 +85,65 @@ export const AppSettingsPage = () => {
           <p>
             {app.id} <IconCopy className="inline h-4" color="#888C90" />
           </p>
-          <Label className="my-4">Thumbnail Image</Label>
-          <br />
-          <Label className="my-4">Environment Variables</Label>
+          <div className="mt-4 flex" />
+          <FormGroup label="Thumbnail Image" htmlFor="thumbnail">
+            <div className="flex justify-between items-center">
+              <select
+                onChange={() => {}}
+                value={"test"}
+                className="mb-2"
+                placeholder="select"
+                disabled
+              >
+                <option value="test" disabled>
+                  Some Icon
+                </option>
+              </select>
+            </div>
+          </FormGroup>
+          <FormGroup
+            label="Environment Variables"
+            htmlFor="environment-variables"
+          >
+            <div className="flex">
+              <Input
+                className="flex w-1/2"
+                name="app-handle"
+                type="text"
+                value={handle}
+                onChange={(e) => setHandle(e.currentTarget.value)}
+                autoComplete="name"
+                data-testid="input-name"
+                id="input-name"
+              />
+              <Input
+                className="flex ml-4 w-1/2"
+                name="app-handle"
+                type="text"
+                value={handle}
+                onChange={(e) => setHandle(e.currentTarget.value)}
+                autoComplete="name"
+                data-testid="input-name"
+                id="input-name"
+              />
+              <ButtonIcon
+                className="flex ml-4 pr-2"
+                variant="white"
+                onClick={() => {}}
+                icon={<IconTrash color='#AD1A1A' />}
+                children={null}
+              />
+            </div>
+            <div className="flex mt-4">
+              <ButtonIcon
+                icon={<IconPlusCircle color="#FFF" />}
+                variant="secondary"
+                onClick={() => {}}
+              >
+                New
+              </ButtonIcon>
+            </div>
+          </FormGroup>
           <br />
           <hr />
           <br />
