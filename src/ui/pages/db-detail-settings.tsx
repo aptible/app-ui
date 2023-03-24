@@ -26,7 +26,7 @@ export const DatabaseSettingsPage = () => {
 
   useEffect(() => {
     setHandle(database.handle);
-  }, [database?.id]);
+  }, [database.id]);
 
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();

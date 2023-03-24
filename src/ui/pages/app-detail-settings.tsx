@@ -31,7 +31,7 @@ export const AppSettingsPage = () => {
 
   useEffect(() => {
     setHandle(app.handle);
-  }, [app?.id]);
+  }, [app.id]);
 
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
