@@ -9,7 +9,6 @@ import {
   appOverviewUrl,
   appSecurityUrl,
   appSettingsUrl,
-  appsUrl,
   environmentResourcelUrl,
 } from "@app/routes";
 

@@ -5,7 +5,7 @@ import { IconLayers, IconBox, IconPlusCircle, IconGlobe } from "@app/ui/shared";
 import {
   appsUrl,
   createProjectUrl,
-  databasesUrl,
+  databaseUrl,
   environmentsUrl,
 } from "@app/routes";
 import { ButtonIcon } from "./button";
@@ -17,7 +17,7 @@ export const ApplicationSidebar = () => {
   const navigation = [
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
     { name: "Apps", to: appsUrl(), icon: <IconLayers /> },
-    { name: "Databases", to: databasesUrl(), icon: <IconBox /> },
+    { name: "Databases", to: databaseUrl(), icon: <IconBox /> },
   ];
 
   return (
