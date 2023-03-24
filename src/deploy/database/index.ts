@@ -3,6 +3,7 @@ import {
   FetchJson,
   Payload,
   put,
+  select,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
@@ -33,7 +34,7 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 
-import { deserializeDeployOperation } from "../operation";
+import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { deserializeDisk } from "../disk";
 import { selectDeploy } from "../slice";
 import { createSelector } from "@reduxjs/toolkit";
@@ -357,3 +358,21 @@ export const databaseEntities = {
     save: addDeployDatabases,
   }),
 };
+
+export const deprovisionDatabase = thunks.create<{
+  dbId: string;
+}>("deprovision-database", function* (ctx, next) {
+  const { dbId } = ctx.payload;
+  yield* select(selectDatabaseById, { id: dbId });
+
+  const deprovisionCtx = yield* call(
+    createDatabaseOperation.run,
+    createDatabaseOperation({
+      type: "deprovision",
+      dbId,
+    }),
+  );
+
+  if (!deprovisionCtx.json.ok) return;
+  yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
+});

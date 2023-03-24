@@ -13,11 +13,11 @@ import type {
   DeployOperationResponse,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { poll } from "saga-query";
+import { call, poll, select } from "saga-query";
 
 import { selectEnvironments, findEnvById } from "../environment";
 import { deserializeImage } from "../image";
-import { deserializeDeployOperation } from "../operation";
+import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { selectDeploy } from "../slice";
 
 export * from "./utils";
@@ -276,3 +276,21 @@ export const appEntities = {
     save: addDeployApps,
   }),
 };
+
+export const deprovisionApp = thunks.create<{
+  appId: string;
+}>("deprovision-app", function* (ctx, next) {
+  const { appId } = ctx.payload;
+  yield* select(selectAppById, { id: appId });
+
+  const deprovisionCtx = yield* call(
+    createAppOperation.run,
+    createAppOperation({
+      type: "deprovision",
+      appId,
+    }),
+  );
+
+  if (!deprovisionCtx.json.ok) return;
+  yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
+});

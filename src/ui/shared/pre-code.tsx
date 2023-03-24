@@ -3,15 +3,15 @@ import { IconCopy } from "./icons";
 import { tokens } from "./tokens";
 
 export const PreCode = ({
-  children,
   allowCopy = false,
-  // TODO - do we want to allow softwrap
-}: { children: React.ReactNode; allowCopy?: boolean }) => {
+  text, // TODO - do we want to do this
+}: {
+  allowCopy?: boolean;
+  text: string[];
+}) => {
   const handleCopy = (e: SyntheticEvent) => {
     e.preventDefault();
-    // TODO - THIS DOES NOT WORK PROPERLY WITHOUT UTIL/DEP
-    // navigator.clipboard.writeText(children?.toString() ?? "");
-    console.log("wanting to copy data from target event", e);
+    navigator.clipboard.writeText(text.join(" "));
   };
 
   return (
@@ -23,7 +23,18 @@ export const PreCode = ({
           onClick={handleCopy}
         />
       ) : null}
-      <pre className={`${tokens.type.pre} text-sm pr-14`}>{children}</pre>
+      <pre className={`${tokens.type.pre} text-sm pr-14`}>
+        {text.map((textElem, idx) => {
+          const lastElement = idx === text.length - 1;
+          const highlightedText = lastElement ? "" : "text-lime";
+          return (
+            <span key={`${idx}-${textElem}`} className={highlightedText}>
+              {textElem}
+              {!lastElement && " "}
+            </span>
+          );
+        })}
+      </pre>
     </>
   );
 };

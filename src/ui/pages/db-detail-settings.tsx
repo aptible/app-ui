@@ -1,5 +1,4 @@
-import { selectDatabaseById } from "@app/deploy";
-import { deprovisionDatabase } from "@app/projects";
+import { deprovisionDatabase, selectDatabaseById } from "@app/deploy";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -78,7 +77,7 @@ export const DatabaseSettingsPage = () => {
             <Label className="text-base font-semibold text-gray-900 block">
               Thumbnail Image
             </Label>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
               <select
                 onChange={() => {}}
                 value={"test"}
@@ -90,6 +89,19 @@ export const DatabaseSettingsPage = () => {
                   Some Icon
                 </option>
               </select>
+            </div>
+            <hr />
+            <div className="flex mt-4">
+              <Button className="w-40 mb-4 flex" onClick={() => {}}>
+                Save Changes
+              </Button>
+              <Button
+                className="w-40 ml-4 mb-4 flex"
+                onClick={() => {}}
+                variant="white"
+              >
+                Cancel
+              </Button>
             </div>
           </FormGroup>
         </form>

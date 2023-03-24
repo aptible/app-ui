@@ -1,5 +1,4 @@
-import { fetchApp, selectAppById } from "@app/deploy";
-import { deprovisionApp } from "@app/projects";
+import { deprovisionApp, fetchApp, selectAppById } from "@app/deploy";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -58,15 +57,15 @@ export const AppSettingsPage = () => {
         <h1 className="text-lg text-gray-500">How To Deploy Changes</h1>
         <div className="mt-4">
           <h3 className="text-base font-semibold">Clone project code</h3>
-          <PreCode allowCopy>git clone {app.gitRepo}</PreCode>
+          <PreCode allowCopy text={["git", "clone", app.gitRepo]} />
         </div>
         <div className="mt-4">
           <h3 className="text-base font-semibold">Find project code</h3>
-          <PreCode allowCopy>cd {app.handle}</PreCode>
+          <PreCode allowCopy text={["cd", app.handle]} />
         </div>
         <div className="mt-4">
           <h3 className="text-base font-semibold">Deploy code changes</h3>
-          <PreCode allowCopy>git push {app.gitRepo}</PreCode>
+          <PreCode allowCopy text={["git", "push", app.gitRepo]} />
         </div>
       </Box>
       <Box>
