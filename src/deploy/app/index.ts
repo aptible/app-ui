@@ -226,35 +226,48 @@ interface ConfigAppOpProps {
   env: { [key: string]: string };
 }
 
-type CreateAppOpProps = ScanAppOpProps | DeployAppOpProps | ConfigAppOpProps;
-export const createAppOperation = api.post<
-  CreateAppOpProps,
-  DeployOperationResponse
->("/apps/:appId/operations", function* (ctx, next) {
-  const { type } = ctx.payload;
+interface DeprovisionAppOpProps {
+  type: "deprovision";
+  appId: string;
+}
 
-  const getBody = () => {
-    switch (type) {
-      case "deploy":
-      case "scan_code": {
-        const { gitRef } = ctx.payload;
-        return { type, git_ref: gitRef };
+type AppOpProps =
+  | ScanAppOpProps
+  | DeployAppOpProps
+  | DeprovisionAppOpProps
+  | ConfigAppOpProps;
+export const createAppOperation = api.post<AppOpProps, DeployOperationResponse>(
+  "/apps/:appId/operations",
+  function* (ctx, next) {
+    const { type } = ctx.payload;
+
+    const getBody = () => {
+      switch (type) {
+        case "deprovision": {
+          return { type };
+        }
+
+        case "deploy":
+        case "scan_code": {
+          const { gitRef } = ctx.payload;
+          return { type, git_ref: gitRef };
+        }
+
+        case "configure": {
+          const { env } = ctx.payload;
+          return { type, env };
+        }
+
+        default:
+          return {};
       }
+    };
 
-      case "configure": {
-        const { env } = ctx.payload;
-        return { type, env };
-      }
-
-      default:
-        return {};
-    }
-  };
-
-  const body = getBody();
-  ctx.request = ctx.req({ body: JSON.stringify(body) });
-  yield next();
-});
+    const body = getBody();
+    ctx.request = ctx.req({ body: JSON.stringify(body) });
+    yield next();
+  },
+);
 
 export const appEntities = {
   app: defaultEntity({

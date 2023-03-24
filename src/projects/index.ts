@@ -351,3 +351,21 @@ export const updateEnvWithDbUrls = thunks.create<{
 
   yield next();
 });
+
+export const deprovisionApp = thunks.create<{
+  appId: string;
+}>("deprovision-app", function* (ctx, next) {
+  const { appId } = ctx.payload;
+  yield* select(selectAppById, { id: appId });
+
+  const deprovisionCtx = yield* call(
+    createAppOperation.run,
+    createAppOperation({
+      type: "deprovision",
+      appId,
+    }),
+  );
+
+  if (!deprovisionCtx.json.ok) return;
+  yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
+});

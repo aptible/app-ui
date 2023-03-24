@@ -23,7 +23,7 @@ export const PreCode = ({
           onClick={handleCopy}
         />
       ) : null}
-      <pre className={`${tokens.type.pre} pr-14`}>{children}</pre>
+      <pre className={`${tokens.type.pre} text-sm pr-14`}>{children}</pre>
     </>
   );
 };

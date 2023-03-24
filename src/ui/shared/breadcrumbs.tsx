@@ -3,26 +3,31 @@ import { NavLink } from "react-router-dom";
 import { tokens } from "./tokens";
 
 export type Crumb = {
-  name: string;
+  name: string | null;
   to: string;
 };
 
 const navLink = ({ isActive }: { isActive: boolean }) =>
   cn(
-    "flex items-center",
+    "text-xl flex items-center",
     { [tokens.type.link]: !isActive },
-    { [tokens.type["subdued active link"]]: isActive },
+    { [tokens.type.link]: isActive },
   );
 
 export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
   return (
     <nav className="flex" aria-label="Breadcrumb">
       <ol className="flex items-center">
-        {crumbs.map((crumb) => (
+        {crumbs.map((crumb, idx) => (
           <li key={crumb.name}>
-            <NavLink className={navLink} to={crumb.to}>
-              {crumb.name}
-            </NavLink>
+            {crumb.to === null ? (
+              <div className="text-xl">&nbsp;{crumb.name}</div>
+            ) : (
+              <NavLink className={navLink} to={crumb.to}>
+                {" "}
+                {crumb.name} {idx !== crumbs.length && "/"}
+              </NavLink>
+            )}
           </li>
         ))}
       </ol>

@@ -1,7 +1,8 @@
 import { fetchApp, selectAppById } from "@app/deploy";
+import { deprovisionApp } from "@app/projects";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
 import {
@@ -17,13 +18,13 @@ import {
   Input,
   Label,
   PreCode,
-  tokens,
 } from "../shared";
 
 export const AppSettingsPage = () => {
   const [handle, setHandle] = useState<string>("");
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
   const [isDeprovisioning, setIsDeprovisioning] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
@@ -37,16 +38,18 @@ export const AppSettingsPage = () => {
     e.preventDefault();
   };
 
-  const deprovisionApp = (e: SyntheticEvent) => {
+  const requestDeprovisionApp = (e: SyntheticEvent) => {
     e.preventDefault();
 
     setIsDeprovisioning(true);
+    dispatch(deprovisionApp({ appId: app.id }));
   };
 
-  const disabledDeprovisioning = isDeprovisioning || handle !== deleteConfirm;
+  const disabledDeprovisioning =
+    isDeprovisioning || "delete" !== deleteConfirm.toLocaleLowerCase();
 
   return (
-    <div>
+    <div className="mb-4">
       <Box>
         <Button className="relative float-right" variant="white">
           View Docs
@@ -54,15 +57,15 @@ export const AppSettingsPage = () => {
         </Button>
         <h1 className="text-lg text-gray-500">How To Deploy Changes</h1>
         <div className="mt-4">
-          <h3 className={tokens.type.h4}>Clone project code</h3>
+          <h3 className="text-base font-semibold">Clone project code</h3>
           <PreCode allowCopy>git clone {app.gitRepo}</PreCode>
         </div>
         <div className="mt-4">
-          <h3 className={tokens.type.h4}>Find project code</h3>
+          <h3 className="text-base font-semibold">Find project code</h3>
           <PreCode allowCopy>cd {app.handle}</PreCode>
         </div>
         <div className="mt-4">
-          <h3 className={tokens.type.h4}>Deploy code changes</h3>
+          <h3 className="text-base font-semibold">Deploy code changes</h3>
           <PreCode allowCopy>git push {app.gitRepo}</PreCode>
         </div>
       </Box>
@@ -70,7 +73,10 @@ export const AppSettingsPage = () => {
         <h1 className="text-lg text-gray-500">App Settings</h1>
         <br />
         <form onSubmit={onSubmitForm}>
-          <FormGroup label="App Name" htmlFor="input-name">
+          <FormGroup label={""} htmlFor="input-name">
+            <Label className="text-base font-semibold text-gray-900 block">
+              App Name
+            </Label>
             <Input
               name="app-handle"
               type="text"
@@ -81,12 +87,17 @@ export const AppSettingsPage = () => {
               id="input-name"
             />
           </FormGroup>
-          <Label className="my-4">App ID</Label>
+          <Label className="text-base mt-4 font-semibold text-gray-900 block">
+            App ID
+          </Label>
           <p>
             {app.id} <IconCopy className="inline h-4" color="#888C90" />
           </p>
           <div className="mt-4 flex" />
-          <FormGroup label="Thumbnail Image" htmlFor="thumbnail">
+          <FormGroup label="" htmlFor="thumbnail">
+            <Label className="text-base font-semibold text-gray-900 block">
+              Thumbnail Image
+            </Label>
             <div className="flex justify-between items-center">
               <select
                 onChange={() => {}}
@@ -101,10 +112,10 @@ export const AppSettingsPage = () => {
               </select>
             </div>
           </FormGroup>
-          <FormGroup
-            label="Environment Variables"
-            htmlFor="environment-variables"
-          >
+          <FormGroup label="" htmlFor="environment-variables">
+            <Label className="text-base font-semibold text-gray-900 block">
+              Environment Variables
+            </Label>
             <div className="flex">
               <Input
                 className="flex w-1/2"
@@ -162,7 +173,7 @@ export const AppSettingsPage = () => {
         </form>
       </Box>
       <Box>
-        <h1 className="text-lg text-red-500">
+        <h1 className="text-lg text-red-500 font-semibold">
           <IconAlertTriangle
             className="inline pr-3 mb-1"
             style={{ width: 32 }}
@@ -196,7 +207,7 @@ export const AppSettingsPage = () => {
               }}
               disabled={disabledDeprovisioning}
               className="h-15 w-60 mb-0 ml-4 flex"
-              onClick={deprovisionApp}
+              onClick={requestDeprovisionApp}
             >
               <IconTrash color="#FFF" className="mr-2" />
               {isDeprovisioning ? "Deprovisioning..." : "Deprovision App"}

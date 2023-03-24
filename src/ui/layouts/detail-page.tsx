@@ -17,7 +17,7 @@ export function DetailPageLayout({ children, header }: Props) {
 
         <div className="md:pl-64 flex flex-col flex-1">
           {header}
-          <main className={cn(tokens.layout["main width"], "py-6")}>
+          <main className={cn(tokens.layout["main width"], "py-0")}>
             {children}
           </main>
         </div>
