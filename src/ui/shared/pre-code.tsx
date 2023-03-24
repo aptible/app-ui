@@ -21,6 +21,7 @@ export const PreCode = ({
           color="#888C90"
           className="mt-4 mr-4 float-right"
           onClick={handleCopy}
+          style={{ cursor: "pointer" }}
         />
       ) : null}
       <pre className={`${tokens.type.pre} text-sm pr-14`}>

@@ -334,11 +334,17 @@ export const CreateProjectGitPushPage = () => {
       <Box>
         <div>
           <h3 className={tokens.type.h3}>Add Aptible's Git Server</h3>
-          <PreCode text={["git", "remote", "add", "aptible", app.gitRepo]} />
+          <PreCode
+            text={["git", "remote", "add", "aptible", app.gitRepo]}
+            allowCopy
+          />
         </div>
         <div className="mt-4">
           <h3 className={tokens.type.h3}>Push your code to our scan branch</h3>
-          <PreCode text={["git", "push", "aptible", "main:aptible-scan"]} />
+          <PreCode
+            text={["git", "push", "aptible", "main:aptible-scan"]}
+            allowCopy
+          />
         </div>
 
         <hr className="my-4" />
@@ -1451,7 +1457,7 @@ export const CreateProjectGitStatusPage = () => {
           Commit changes to your local git repo and push to the Aptible git
           server.
         </p>
-        <PreCode text={["git", "push", "aptible", "main"]} />
+        <PreCode text={["git", "push", "aptible", "main"]} allowCopy />
         <hr />
 
         <ButtonLink to={appOverviewUrl(appId)} className="mt-4 mb-2">
