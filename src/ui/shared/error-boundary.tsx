@@ -6,7 +6,7 @@
 // taken from: https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/error_boundaries/
 
 import { Component, ErrorInfo, ReactNode } from "react";
-import { AptibleLogo, IconAlertTriangle } from "../shared";
+import { AptibleLogo, Button, IconAlertTriangle } from "../shared";
 
 interface Props {
   children?: ReactNode;
@@ -14,12 +14,14 @@ interface Props {
 
 interface State {
   message: string;
+  name: string;
   hasError: boolean;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     message: "Error - something went wrong",
+    name: "Error - something went wrong",
     hasError: false,
   };
 
@@ -28,6 +30,7 @@ export class ErrorBoundary extends Component<Props, State> {
     // with possible custom logic on help text
     return {
       message: err.message ?? "Error - something went wrong",
+      name: err.name ?? "Error - something went wrong",
       hasError: true,
     };
   }
@@ -54,15 +57,35 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
               <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                <h1 className="text-lg font-semibold text-red">
+                <h1 className="text-lg font-semibold text-red mb-">
                   <IconAlertTriangle
                     className="inline -mt-1 mr-2"
                     color="#AD1A1A"
                     style={{ width: 21, height: 21 }}
                   />
-                  Error - Something went wrong
+                  {this.state.name}
                 </h1>
-                <p className="mt-5">{this.state.message}</p>
+                <p className="my-5">{this.state.message}</p>
+                <hr />
+                <div className="flex mt-4 -mb-6">
+                  <Button
+                    className="w-40 mb-4 flex"
+                    onClick={() => {
+                      history.back();
+                    }}
+                  >
+                    <span className="text-sm">Back</span>
+                  </Button>
+                  <Button
+                    className="w-40 ml-4 mb-4 flex"
+                    onClick={() => {
+                      location.href = "/login";
+                    }}
+                    variant="white"
+                  >
+                    <span className="text-sm">Login</span>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
