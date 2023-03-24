@@ -98,6 +98,9 @@ function AppPageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentResourcelUrl(environment.id) },
   ];
+  // TODO - COME BACK TO THIS
+  // Need to kick a user back out of the details page (or lock specific pages if it is deleted)
+  // currently the network log will error with a 404 (as the record will be deleted)
 
   const tabs = [
     { name: "Overview", href: appOverviewUrl(id) },
