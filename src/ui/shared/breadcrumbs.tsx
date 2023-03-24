@@ -3,8 +3,8 @@ import { NavLink } from "react-router-dom";
 import { tokens } from "./tokens";
 
 export type Crumb = {
-  name: string | null;
-  to: string;
+  name: string;
+  to: string | null;
 };
 
 const navLink = ({ isActive }: { isActive: boolean }) =>
