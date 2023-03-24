@@ -13,6 +13,7 @@ import { createLog } from "@app/debug";
 import { ThunkCtx, thunks } from "@app/api";
 import {
   createAppOperation,
+  createDatabaseOperation,
   createDeployApp,
   createDeployEnvironment,
   fetchDatabase,
@@ -21,6 +22,7 @@ import {
   hasDeployEnvironment,
   provisionDatabase,
   selectAppById,
+  selectDatabaseById,
   selectEnvironmentByName,
 } from "@app/deploy";
 import { createServiceDefinition } from "@app/deploy/app-service-definitions";
@@ -363,6 +365,24 @@ export const deprovisionApp = thunks.create<{
     createAppOperation({
       type: "deprovision",
       appId,
+    }),
+  );
+
+  if (!deprovisionCtx.json.ok) return;
+  yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
+});
+
+export const deprovisionDatabase = thunks.create<{
+  dbId: string;
+}>("deprovision-database", function* (ctx, next) {
+  const { dbId } = ctx.payload;
+  yield* select(selectDatabaseById, { id: dbId });
+
+  const deprovisionCtx = yield* call(
+    createDatabaseOperation.run,
+    createDatabaseOperation({
+      type: "deprovision",
+      dbId,
     }),
   );
 

@@ -245,7 +245,7 @@ interface CreateDbResult {
     Payload<CreateDatabaseProps> &
     FetchJson<DeployDatabaseResponse, any>;
   opCtx: Omit<DeployApiCtx<any, any>, "payload" | "json"> &
-    Payload<CreateDatabaseOpProps> &
+    Payload<CreateDatabaseOpProps | DeprovisionDatabaseOpProps> &
     FetchJson<DeployOperationResponse, any>;
 }
 
@@ -300,21 +300,41 @@ interface CreateDatabaseOpProps {
   dbId: string;
   containerSize: number;
   diskSize: number;
-  type: string;
+  type: "provision";
   status: OperationStatus;
 }
 
+interface DeprovisionDatabaseOpProps {
+  dbId: string;
+  type: "deprovision";
+}
+
 export const createDatabaseOperation = api.post<
-  CreateDatabaseOpProps,
+  CreateDatabaseOpProps | DeprovisionDatabaseOpProps,
   DeployOperationResponse
 >("/databases/:dbId/operations", function* (ctx, next) {
-  const { containerSize, diskSize, type, status } = ctx.payload;
-  const body = {
-    container_size: containerSize,
-    disk_size: diskSize,
-    type,
-    status,
+  const { type } = ctx.payload;
+  const getBody = () => {
+    switch (type) {
+      case "deprovision": {
+        return { type };
+      }
+
+      case "provision": {
+        const { containerSize, diskSize, type, status } = ctx.payload;
+        return {
+          container_size: containerSize,
+          disk_size: diskSize,
+          type,
+          status,
+        };
+      }
+
+      default:
+        return {};
+    }
   };
+  const body = getBody();
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield next();
 });
