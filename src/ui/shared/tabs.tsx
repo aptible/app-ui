@@ -19,12 +19,12 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
   cn(
     "flex items-center",
     {
-      [tokens.type.link]: !isActive,
+      "font-normal text-base text-gray-500 hover:text-gray-700": !isActive,
       "border-transparent  hover:border-gray-300": "!isActive",
-      [tokens.type["subdued active link"]]: isActive,
-      "border-amber-500": isActive,
+      "font-semibold": isActive,
+      "border-orange-400": isActive,
     },
-    "whitespace-nowrap py-4 px-1 border-b-2",
+    "whitespace-nowrap py-4 px-1 border-b-3",
   );
 
 export const Tab = ({ label, to }: TabViewProps) => (
