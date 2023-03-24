@@ -40,7 +40,12 @@ export class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <>
+        <div
+          className="flex-1 h-full bg-no-repeat bg-center bg-cover"
+          style={{
+            backgroundImage: "url(/background-pattern-v2.png)",
+          }}
+        >
           <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
               <div className="flex items-center justify-center">
@@ -61,7 +66,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
             </div>
           </div>
-        </>
+        </div>
       );
     }
 
