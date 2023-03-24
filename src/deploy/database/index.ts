@@ -273,7 +273,6 @@ export const provisionDatabase = thunks.create<
       dbId: `${dbCtx.json.data.id}`,
       containerSize: 1024,
       diskSize: 10,
-      status: "queued",
       type: "provision",
     }),
   );
@@ -302,7 +301,6 @@ interface CreateDatabaseOpProps {
   containerSize: number;
   diskSize: number;
   type: "provision";
-  status: OperationStatus;
 }
 
 interface DeprovisionDatabaseOpProps {
@@ -322,12 +320,11 @@ export const createDatabaseOperation = api.post<
       }
 
       case "provision": {
-        const { containerSize, diskSize, type, status } = ctx.payload;
+        const { containerSize, diskSize, type } = ctx.payload;
         return {
           container_size: containerSize,
           disk_size: diskSize,
           type,
-          status,
         };
       }
 

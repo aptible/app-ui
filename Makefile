@@ -8,7 +8,7 @@ help:
 #: init - install node dependencies
 init:
 	yarn
-	echo "run `cp .env.example .env` and fill it in with your values"
+	@echo "run `cp .env.example .env` and fill it in with your values"
 .PHONY: init
 
 #: start - start development server
@@ -18,12 +18,12 @@ start:
 
 #: stop - does nothing
 stop:
-	echo "nothing to stop"
+	@echo "nothing to stop"
 .PHONY: stop
 
 #: destroy - does nothing
 destroy:
-	echo "nothing to destroy"
+	@echo "nothing to destroy"
 .PHONY: destroy
 
 #: lint - runs typescript, eslint, and prettier to check for any type errors, style errors, or formatting errors
@@ -34,7 +34,7 @@ lint:
 #: pretty - run prettier to auto format code
 pretty:
 	yarn format
-	echo "fyi we have a git pre-commit hook that will format only changed files"
+	@echo "fyi we have a git pre-commit hook that will format only changed files"
 .PHONY: pretty
 
 #: test - runs vitest on codebase
