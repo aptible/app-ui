@@ -20,7 +20,7 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
     "flex items-center",
     {
       "font-normal text-base text-gray-500 hover:text-gray-700": !isActive,
-      "border-transparent  hover:border-gray-300": "!isActive",
+      "border-transparent  hover:border-gray-300": !isActive,
       "font-semibold": isActive,
       "border-orange-400": isActive,
     },
