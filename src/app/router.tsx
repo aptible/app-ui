@@ -38,18 +38,19 @@ import {
   CreateProjectGitSettingsPage,
   CreateProjectGitStatusPage,
   CreateProjectNamePage,
+  EnvironmentsPage,
+  EnvironmentDetailLayout,
+  EnvironmentResourcesPage,
+  EnvironmentSecurityPage,
+  EnvironmentCertificatesPage,
+  EnvironmentActivityPage,
+  EnvironmentSettingsPage,
+  EnvironmentIntegrationsPage,
+  EnvironmentBackupsPage,
+  ErrorPage,
   SettingsPageLayout,
 } from "@app/ui";
 import * as routes from "@app/routes";
-import { EnvironmentsPage } from "@app/ui/pages/environments";
-import { EnvironmentDetailLayout } from "@app/ui/layouts/environment-detail-layout";
-import { EnvironmentResourcesPage } from "@app/ui/pages/environment-detail-resources";
-import { EnvironmentSecurityPage } from "@app/ui/pages/environment-detail-security";
-import { EnvironmentCertificatesPage } from "@app/ui/pages/environment-detail-certificates";
-import { EnvironmentActivityPage } from "@app/ui/pages/environment-detail-activity";
-import { EnvironmentSettingsPage } from "@app/ui/pages/environment-detail-settings";
-import { EnvironmentIntegrationsPage } from "@app/ui/pages/environment-detail-integrations";
-import { EnvironmentBackupsPage } from "@app/ui/pages/environment-detail-backups";
 
 const appRoutes: RouteObject[] = [
   {
@@ -317,6 +318,12 @@ const appRoutes: RouteObject[] = [
   {
     path: routes.NOT_FOUND_PATH,
     element: <NotFoundPage />,
+  },
+
+  {
+    path: routes.ERROR_PATH,
+    element: <ErrorPage />,
+    errorElement: <ErrorPage />,
   },
 
   {
