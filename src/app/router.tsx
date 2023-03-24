@@ -50,6 +50,7 @@ import { EnvironmentActivityPage } from "@app/ui/pages/environment-detail-activi
 import { EnvironmentSettingsPage } from "@app/ui/pages/environment-detail-settings";
 import { EnvironmentIntegrationsPage } from "@app/ui/pages/environment-detail-integrations";
 import { EnvironmentBackupsPage } from "@app/ui/pages/environment-detail-backups";
+import ErrorBoundary, { ErrorPage } from "@app/ui/pages/error";
 
 const appRoutes: RouteObject[] = [
   {
@@ -317,6 +318,12 @@ const appRoutes: RouteObject[] = [
   {
     path: routes.NOT_FOUND_PATH,
     element: <NotFoundPage />,
+  },
+
+  {
+    path: routes.ERROR_PATH,
+    element: <ErrorPage />,
+    errorElement: <ErrorPage />,
   },
 
   {

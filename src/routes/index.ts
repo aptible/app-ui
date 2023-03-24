@@ -101,6 +101,8 @@ export const ENVIRONMENT_SETTINGS_PATH = "/environments/:id/settings";
 export const environmentSettingsUrl = (id: string) =>
   `/environments/${id}/settings`;
 
+export const ERROR_PATH = "/error";
+
 export const SETTINGS_PATH = "/settings";
 export const settingsUrl = () => SETTINGS_PATH;
 export const TEAM_PATH = `${SETTINGS_PATH}/team`;
