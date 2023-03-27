@@ -73,13 +73,9 @@ export const DatabaseSettingsPage = () => {
             {database.id} <IconCopy className="inline h-4" color="#888C90" />
           </p>
           <div className="mt-4 flex" />
-          <FormGroup label="" htmlFor="thumbnail">
-            <Label className="text-base font-semibold text-gray-900 block">
-              Thumbnail Image
-            </Label>
+          <FormGroup label="Thumbnail Image" htmlFor="thumbnail">
             <div className="flex justify-between items-center mb-4">
               <select
-                onChange={() => {}}
                 value={"test"}
                 className="mb-2"
                 placeholder="select"

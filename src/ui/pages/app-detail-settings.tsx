@@ -72,10 +72,7 @@ export const AppSettingsPage = () => {
         <h1 className="text-lg text-gray-500">App Settings</h1>
         <br />
         <form onSubmit={onSubmitForm}>
-          <FormGroup label={""} htmlFor="input-name">
-            <Label className="text-base font-semibold text-gray-900 block">
-              App Name
-            </Label>
+          <FormGroup label="App Name" htmlFor="input-name">
             <Input
               name="app-handle"
               type="text"
@@ -93,13 +90,9 @@ export const AppSettingsPage = () => {
             {app.id} <IconCopy className="inline h-4" color="#888C90" />
           </p>
           <div className="mt-4 flex" />
-          <FormGroup label="" htmlFor="thumbnail">
-            <Label className="text-base font-semibold text-gray-900 block">
-              Thumbnail Image
-            </Label>
+          <FormGroup label="Thumbnail Image" htmlFor="thumbnail">
             <div className="flex justify-between items-center">
               <select
-                onChange={() => {}}
                 value={"test"}
                 className="mb-2"
                 placeholder="select"
@@ -111,10 +104,10 @@ export const AppSettingsPage = () => {
               </select>
             </div>
           </FormGroup>
-          <FormGroup label="" htmlFor="environment-variables">
-            <Label className="text-base font-semibold text-gray-900 block">
-              Environment Variables
-            </Label>
+          <FormGroup
+            label="Environment Variables"
+            htmlFor="environment-variables"
+          >
             <div className="flex">
               <Input
                 className="flex w-1/2"
