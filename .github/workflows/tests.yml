@@ -14,5 +14,9 @@ jobs:
         with:
           node-version: '19'
           cache: 'yarn'
+      - run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+          yarn -v
       - run: yarn --immutable
       - run: yarn test

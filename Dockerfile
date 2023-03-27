@@ -1,15 +1,18 @@
-FROM node:16 AS builder
+FROM node:19 AS builder
 
 ARG VITE_AUTH_URL=https://auth.aptible.com
 ARG VITE_BILLING_URL=https://goldenboy.aptible.com
 ARG VITE_API_URL=https://api.aptible.com
 ARG NODE_ENV=production
 
+RUN corepack enable
+RUN corepack prepare yarn@stable --activate
+
 ADD package.json /app/
 ADD yarn.lock /app/
 WORKDIR /app
 
-RUN yarn
+RUN yarn install --immutable
 ADD . /app
 
 RUN env | grep VITE
