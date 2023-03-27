@@ -69,12 +69,12 @@ const appRoutes: RouteObject[] = [
             index: true,
             element: <AppsPage />,
           },
+
           {
-            path: routes.APP_DETAIL_PATH,
             element: <AppDetailLayout />,
             children: [
               {
-                index: true,
+                path: routes.APP_OVERVIEW_PATH,
                 element: <AppDetailPage />,
               },
               {
@@ -103,11 +103,10 @@ const appRoutes: RouteObject[] = [
           },
 
           {
-            path: routes.DATABASE_DETAIL_PATH,
             element: <DatabaseDetailLayout />,
             children: [
               {
-                index: true,
+                path: routes.DATABASE_OVERVIEW_PATH,
                 element: <DatabaseDetailPage />,
               },
               {

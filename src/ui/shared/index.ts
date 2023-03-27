@@ -32,3 +32,4 @@ export * from "./verify-email";
 export * from "./modal-portal";
 export * from "./icons";
 export * from "./box";
+export * from "./pre-code";

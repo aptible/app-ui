@@ -14,7 +14,7 @@ import {
 import type { AppState } from "@app/types";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
-import { appDetailUrl } from "@app/routes";
+import { appOverviewUrl } from "@app/routes";
 
 import { TableHead, Td } from "../table";
 import { LoadResources } from "../load-resources";
@@ -29,7 +29,7 @@ interface AppCellProps {
 const AppPrimaryCell = ({ app }: AppCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={appDetailUrl(app.id)}>
+      <Link to={appOverviewUrl(app.id)}>
         <div className={tokens.type["medium label"]}>{app.handle}</div>
         <div className={tokens.type["normal lighter"]}>{app.envHandle}</div>
       </Link>

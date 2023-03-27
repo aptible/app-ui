@@ -13,6 +13,7 @@ import { createLog } from "@app/debug";
 import { ThunkCtx, thunks } from "@app/api";
 import {
   createAppOperation,
+  createDatabaseOperation,
   createDeployApp,
   createDeployEnvironment,
   fetchDatabase,
@@ -21,6 +22,7 @@ import {
   hasDeployEnvironment,
   provisionDatabase,
   selectAppById,
+  selectDatabaseById,
   selectEnvironmentByName,
 } from "@app/deploy";
 import { createServiceDefinition } from "@app/deploy/app-service-definitions";

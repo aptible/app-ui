@@ -3,6 +3,7 @@ import {
   FetchJson,
   Payload,
   put,
+  select,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
@@ -33,7 +34,7 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 
-import { deserializeDeployOperation } from "../operation";
+import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { deserializeDisk } from "../disk";
 import { selectDeploy } from "../slice";
 import { createSelector } from "@reduxjs/toolkit";
@@ -245,7 +246,7 @@ interface CreateDbResult {
     Payload<CreateDatabaseProps> &
     FetchJson<DeployDatabaseResponse, any>;
   opCtx: Omit<DeployApiCtx<any, any>, "payload" | "json"> &
-    Payload<CreateDatabaseOpProps> &
+    Payload<CreateDatabaseOpProps | DeprovisionDatabaseOpProps> &
     FetchJson<DeployOperationResponse, any>;
 }
 
@@ -300,21 +301,41 @@ interface CreateDatabaseOpProps {
   dbId: string;
   containerSize: number;
   diskSize: number;
-  type: string;
+  type: "provision";
   status: OperationStatus;
 }
 
+interface DeprovisionDatabaseOpProps {
+  dbId: string;
+  type: "deprovision";
+}
+
 export const createDatabaseOperation = api.post<
-  CreateDatabaseOpProps,
+  CreateDatabaseOpProps | DeprovisionDatabaseOpProps,
   DeployOperationResponse
 >("/databases/:dbId/operations", function* (ctx, next) {
-  const { containerSize, diskSize, type, status } = ctx.payload;
-  const body = {
-    container_size: containerSize,
-    disk_size: diskSize,
-    type,
-    status,
+  const { type } = ctx.payload;
+  const getBody = () => {
+    switch (type) {
+      case "deprovision": {
+        return { type };
+      }
+
+      case "provision": {
+        const { containerSize, diskSize, type, status } = ctx.payload;
+        return {
+          container_size: containerSize,
+          disk_size: diskSize,
+          type,
+          status,
+        };
+      }
+
+      default:
+        return {};
+    }
   };
+  const body = getBody();
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield next();
 });
@@ -337,3 +358,21 @@ export const databaseEntities = {
     save: addDeployDatabases,
   }),
 };
+
+export const deprovisionDatabase = thunks.create<{
+  dbId: string;
+}>("deprovision-database", function* (ctx, next) {
+  const { dbId } = ctx.payload;
+  yield* select(selectDatabaseById, { id: dbId });
+
+  const deprovisionCtx = yield* call(
+    createDatabaseOperation.run,
+    createDatabaseOperation({
+      type: "deprovision",
+      dbId,
+    }),
+  );
+
+  if (!deprovisionCtx.json.ok) return;
+  yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
+});

@@ -14,7 +14,7 @@ import cn from "classnames";
 
 import { prettyDateRelative, prettyDateTime } from "@app/date";
 import {
-  appDetailUrl,
+  appOverviewUrl,
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
   createProjectGitPushUrl,
@@ -55,6 +55,7 @@ import {
   IconX,
   IconArrowRight,
   IconPlusCircle,
+  PreCode,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import {
@@ -204,10 +205,6 @@ export const CreateProjectAddKeyPage = () => {
   );
 };
 
-const PreCode = ({ children }: { children: React.ReactNode }) => {
-  return <pre className={tokens.type.pre}>{children}</pre>;
-};
-
 export const CreateProjectNamePage = () => {
   const org = useSelector(selectOrganizationSelected);
   const stack = useSelector(selectStackPublicDefault);
@@ -337,11 +334,17 @@ export const CreateProjectGitPushPage = () => {
       <Box>
         <div>
           <h3 className={tokens.type.h3}>Add Aptible's Git Server</h3>
-          <PreCode>git remote add aptible {app.gitRepo}</PreCode>
+          <PreCode
+            text={["git", "remote", "add", "aptible", app.gitRepo]}
+            allowCopy
+          />
         </div>
         <div className="mt-4">
           <h3 className={tokens.type.h3}>Push your code to our scan branch</h3>
-          <PreCode>git push aptible main:aptible-scan</PreCode>
+          <PreCode
+            text={["git", "push", "aptible", "main:aptible-scan"]}
+            allowCopy
+          />
         </div>
 
         <hr className="my-4" />
@@ -1454,10 +1457,10 @@ export const CreateProjectGitStatusPage = () => {
           Commit changes to your local git repo and push to the Aptible git
           server.
         </p>
-        <PreCode>git push aptible main</PreCode>
+        <PreCode text={["git", "push", "aptible", "main"]} allowCopy />
         <hr />
 
-        <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
+        <ButtonLink to={appOverviewUrl(appId)} className="mt-4 mb-2">
           View Project <IconArrowRight variant="sm" className="ml-2" />
         </ButtonLink>
       </StatusBox>

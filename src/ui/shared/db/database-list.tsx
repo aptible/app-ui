@@ -18,13 +18,14 @@ import { tokens } from "../tokens";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
+import { databaseOverviewUrl } from "@app/routes";
 
 type DatabaseCellProps = { database: DeployDatabase };
 
 const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={`/databases/${database.id}`}>
+      <Link to={databaseOverviewUrl(database.id)}>
         <div className={tokens.type["medium label"]}>{database.handle}</div>
         <div className={tokens.type["normal lighter"]}>{database.type}</div>
       </Link>
