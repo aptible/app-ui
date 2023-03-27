@@ -55,6 +55,7 @@ import {
   IconX,
   IconArrowRight,
   IconPlusCircle,
+  PreCode,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import {
@@ -202,10 +203,6 @@ export const CreateProjectAddKeyPage = () => {
       </Box>
     </div>
   );
-};
-
-const PreCode = ({ children }: { children: React.ReactNode }) => {
-  return <pre className={tokens.type.pre}>{children}</pre>;
 };
 
 export const CreateProjectNamePage = () => {
