@@ -10,7 +10,8 @@ access controls, and ops.
 
 ## install
 
-- node `v16.14.2`
+- node `v18.15.x`
+- yarn `v2+`
 
 ```bash
 yarn
