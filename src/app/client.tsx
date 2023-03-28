@@ -16,7 +16,10 @@ export function init() {
   store.dispatch(bootup());
 
   const container = document.getElementById("app");
-  const root = createRoot(container!);
+  if (!container) {
+    throw new Error("#app element not found");
+  }
+  const root = createRoot(container);
 
   root.render(
     <PersistGate loading={<Loading />} persistor={persistor}>

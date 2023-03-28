@@ -573,7 +573,7 @@ type DbSelectorAction =
   | { type: "rm"; payload: string };
 
 function dbSelectorReducer(
-  state: { [key: string]: DbSelectorProps } = {},
+  state: { [key: string]: DbSelectorProps },
   action: DbSelectorAction,
 ) {
   if (action.type === "add") {

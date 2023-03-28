@@ -29,10 +29,8 @@ import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
 
 type EndpointUrl = "auth" | "api" | "billing";
 
-export interface AppCtx<P = any, S = any>
-  extends ApiCtx<P, S, { message: string }> {}
-export interface DeployApiCtx<P = any, S = any>
-  extends ApiCtx<P, S, { message: string }> {}
+export type AppCtx<P = any, S = any> = ApiCtx<P, S, { message: string }>;
+export type DeployApiCtx<P = any, S = any> = ApiCtx<P, S, { message: string }>;
 export interface AuthApiCtx<P = any, S = any>
   extends ApiCtx<P, S, AuthApiError> {
   elevated: boolean;
