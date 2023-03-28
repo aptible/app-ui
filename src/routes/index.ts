@@ -57,8 +57,8 @@ export const APP_OVERVIEW_PATH = `${APP_DETAIL_PATH}/overview`;
 export const appOverviewUrl = (id: string) => `${appDetailUrl(id)}/overview`;
 export const APP_ACTIVITY_PATH = `${APP_DETAIL_PATH}/activity`;
 export const appActivityUrl = (id: string) => `${appDetailUrl(id)}/activity`;
-export const APP_SECURITY_PATH = `${APP_DETAIL_PATH}/security`;
-export const appSecurityUrl = (id: string) => `${appDetailUrl(id)}/security`;
+export const APP_ENDPOINTS_PATH = `${APP_DETAIL_PATH}/endpoints`;
+export const appEndpointsUrl = (id: string) => `${appDetailUrl(id)}/endpoints`;
 export const APP_SETTINGS_PATH = `${APP_DETAIL_PATH}/settings`;
 export const appSettingsUrl = (id: string) => `${appDetailUrl(id)}/settings`;
 

@@ -11,7 +11,7 @@ import {
   AppEndpointsOverview,
 } from "../shared";
 
-export function AppDetailPage() {
+export function AppDetailEndpointsPage() {
   const { id = "" } = useParams();
   const { isInitialLoading, message } = useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
@@ -19,7 +19,7 @@ export function AppDetailPage() {
   if (hasDeployApp(app)) {
     return (
       <DetailPageSections>
-        <ServicesOverview app={app} />
+        <AppEndpointsOverview app={app} />
       </DetailPageSections>
     );
   }

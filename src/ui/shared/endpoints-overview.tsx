@@ -104,27 +104,23 @@ export function EndpointsOverview({
   );
 
   return (
-    <ResourceListView
-      header={
-        <ResourceHeader
-          title="Endpoints"
-          description="Endpoints let you expose your Apps on Aptible to clients over the public internet or your Stack's internal network."
-          actions={[<Button>Create Endpoint</Button>]}
-        />
-      }
-      tableHeader={
-        <TableHead
-          headers={[
-            "Endpoint",
-            "Placement",
-            "IP Filtering",
-            "Monthly Cost",
-            { name: "", className: "w-40" },
-          ]}
-        />
-      }
-      tableBody={body}
-    />
+    <div className="mb-4">
+      <ResourceListView
+        header={<ButtonIcon icon={<IconPlusCircle />}>New Endpoint</ButtonIcon>}
+        tableHeader={
+          <TableHead
+            headers={[
+              "Endpoint",
+              "Placement",
+              "IP Filtering",
+              "Monthly Cost",
+              { name: "", className: "w-40" },
+            ]}
+          />
+        }
+        tableBody={body}
+      />
+    </div>
   );
 }
 

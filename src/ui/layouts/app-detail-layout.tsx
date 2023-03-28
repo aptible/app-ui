@@ -7,7 +7,7 @@ import { selectAppById, selectEnvironmentById } from "@app/deploy";
 import {
   appActivityUrl,
   appOverviewUrl,
-  appSecurityUrl,
+  appEndpointsUrl,
   appSettingsUrl,
   environmentResourcelUrl,
 } from "@app/routes";
@@ -104,7 +104,7 @@ function AppPageHeader() {
   const tabs = [
     { name: "Overview", href: appOverviewUrl(id) },
     { name: "Activity", href: appActivityUrl(id) },
-    { name: "Security", href: appSecurityUrl(id) },
+    { name: "Endpoints", href: appEndpointsUrl(id) },
     { name: "Settings", href: appSettingsUrl(id) },
   ] as TabItem[];
 

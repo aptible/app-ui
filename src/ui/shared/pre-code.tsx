@@ -4,15 +4,22 @@ import { tokens } from "./tokens";
 
 export const PreCode = ({
   allowCopy = false,
+  invertedColors = true,
   text, // TODO - do we want to do this
 }: {
   allowCopy?: boolean;
+  invertedColors: boolean;
   text: string[];
 }) => {
   const handleCopy = (e: SyntheticEvent) => {
     e.preventDefault();
     navigator.clipboard.writeText(text.join(" "));
   };
+
+  const preTextColor = invertedColors ? "text-white" : "text-black";
+  const preStyle = invertedColors
+    ? "p-4 bg-black rounded"
+    : "p-4 bg-gray-100 rounded";
 
   return (
     <>
@@ -24,10 +31,11 @@ export const PreCode = ({
           style={{ cursor: "pointer" }}
         />
       ) : null}
-      <pre className={`${tokens.type.pre} text-sm pr-14`}>
+      <pre className={`${preStyle} ${preTextColor} text-sm pr-14`}>
         {text.map((textElem, idx) => {
           const lastElement = idx === text.length - 1;
-          const highlightedText = lastElement ? "" : "text-lime";
+          const highlightedText =
+            !invertedColors || lastElement ? preTextColor : "text-lime";
           return (
             <span key={`${idx}-${textElem}`} className={highlightedText}>
               {textElem}
