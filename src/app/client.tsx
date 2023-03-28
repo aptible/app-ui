@@ -1,12 +1,12 @@
-import { PersistGate } from "redux-persist/integration/react";
 import { createRoot } from "react-dom/client";
+import { PersistGate } from "redux-persist/integration/react";
 
 import { bootup } from "@app/bootup";
 import { Loading } from "@app/ui";
 
-import { setupStore } from "./store";
 import { App } from "./app";
 import { rootEntities } from "./packages";
+import { setupStore } from "./store";
 
 export function init() {
   const { store, persistor } = setupStore({

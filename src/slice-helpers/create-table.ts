@@ -1,6 +1,6 @@
-import { createSlice, createSelector } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 
-import { MapEntity, ActionWithPayload, excludesFalse } from "@app/types";
+import { ActionWithPayload, MapEntity, excludesFalse } from "@app/types";
 
 interface AnyState {
   [name: string]: any;

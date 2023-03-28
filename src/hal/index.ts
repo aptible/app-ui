@@ -1,18 +1,18 @@
 import { Next, select } from "saga-query";
 
+import type { DeployApiCtx } from "@app/api";
 import { createAssign, createReducerMap } from "@app/slice-helpers";
 import type {
   Action,
   AppState,
   EmbeddedMap,
   EntityMap,
-  IdEntity,
-  NestedEntity,
-  MapEntity,
   HalEmbedded,
+  IdEntity,
+  MapEntity,
+  NestedEntity,
   ResourceType,
 } from "@app/types";
-import type { DeployApiCtx } from "@app/api";
 
 export function extractIdFromLink(
   relation: { href: string } | null | undefined,

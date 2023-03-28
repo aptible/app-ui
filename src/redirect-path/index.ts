@@ -1,5 +1,5 @@
-import { createAssign, createReducerMap } from "@app/slice-helpers";
 import { HOME_PATH } from "@app/routes";
+import { createAssign, createReducerMap } from "@app/slice-helpers";
 import { AppState } from "@app/types";
 
 export const REDIRECT_NAME = "redirectPath";

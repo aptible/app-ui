@@ -1,10 +1,10 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { createLog } from "@app/debug";
 import {
+  closeCurrentModal,
   selectCurrentModal,
   selectModalProps,
-  closeCurrentModal,
 } from "@app/modal";
 
 const log = createLog("modal-portal");

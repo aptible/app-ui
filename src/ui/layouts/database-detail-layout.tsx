@@ -1,7 +1,6 @@
-import { Outlet, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Outlet, useParams } from "react-router-dom";
 
-import type { AppState, DeployDatabase } from "@app/types";
 import { selectDatabaseById } from "@app/deploy";
 import {
   databaseActivityUrl,
@@ -11,6 +10,7 @@ import {
   databaseSettingsUrl,
   databaseUrl,
 } from "@app/routes";
+import type { AppState, DeployDatabase } from "@app/types";
 
 import {
   Box,

@@ -1,26 +1,26 @@
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { useLoader } from "saga-query/react";
 
-import { validEmail } from "@app/string-utils";
-import { updateUser, selectCurrentUserId, updateEmail } from "@app/users";
 import { revokeAllTokens } from "@app/auth";
 import {
-  otpSetupUrl,
-  otpRecoveryCodesUrl,
   addSecurityKeyUrl,
+  otpRecoveryCodesUrl,
+  otpSetupUrl,
 } from "@app/routes";
+import { validEmail } from "@app/string-utils";
+import { selectCurrentUserId, updateEmail, updateUser } from "@app/users";
 
 import { useCurrentUser } from "../hooks";
 import {
-  Button,
-  Loading,
   Banner,
-  FormGroup,
   BannerMessages,
+  Button,
+  FormGroup,
   Input,
+  Loading,
 } from "../shared";
 
 interface SectionProps {

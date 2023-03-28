@@ -1,6 +1,6 @@
-import { NavLink } from "react-router-dom";
 import { tokens } from "./tokens";
 import cn from "classnames";
+import { NavLink } from "react-router-dom";
 
 type TabViewProps = {
   isActive: boolean;

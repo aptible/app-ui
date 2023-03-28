@@ -1,10 +1,9 @@
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { useQuery } from "saga-query/react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 
 import { prettyDateRelative } from "@app/date";
-import type { DeployDatabase, AppState } from "@app/types";
 import {
   fetchAllDatabases,
   fetchAllEnvironments,
@@ -12,12 +11,13 @@ import {
   selectEnvironmentById,
   selectStackById,
 } from "@app/deploy";
+import type { AppState, DeployDatabase } from "@app/types";
 
-import { TableHead, Td } from "../table";
-import { tokens } from "../tokens";
-import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
+import { ResourceHeader, ResourceListView } from "../resource-list-view";
+import { TableHead, Td } from "../table";
+import { tokens } from "../tokens";
 import { databaseOverviewUrl } from "@app/routes";
 
 type DatabaseCellProps = { database: DeployDatabase };

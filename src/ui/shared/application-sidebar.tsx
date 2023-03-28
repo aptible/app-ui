@@ -1,15 +1,15 @@
-import { UserMenu } from "./user-menu";
 import { AptibleLogo } from "./aptible-logo";
+import { UserMenu } from "./user-menu";
 
-import { IconLayers, IconBox, IconPlusCircle, IconGlobe } from "@app/ui/shared";
+import { ButtonIcon } from "./button";
+import { LinkNav } from "./link";
 import {
   appsUrl,
   createProjectUrl,
   databaseUrl,
   environmentsUrl,
 } from "@app/routes";
-import { ButtonIcon } from "./button";
-import { LinkNav } from "./link";
+import { IconBox, IconGlobe, IconLayers, IconPlusCircle } from "@app/ui/shared";
 import { useNavigate } from "react-router";
 
 export const ApplicationSidebar = () => {

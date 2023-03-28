@@ -1,7 +1,7 @@
 import cn from "classnames";
 import { Outlet } from "react-router";
 
-import { tokens, ApplicationSidebar, SettingsSidebar } from "../shared";
+import { ApplicationSidebar, SettingsSidebar, tokens } from "../shared";
 
 export function SettingsPageLayout() {
   return (

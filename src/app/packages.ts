@@ -1,18 +1,18 @@
 import { api, authApi, thunks } from "@app/api";
-import * as env from "@app/env";
-import * as users from "@app/users";
-import * as token from "@app/token";
-import * as invitations from "@app/invitations";
 import * as auth from "@app/auth";
-import * as hal from "@app/hal";
-import * as resetStore from "@app/reset-store";
-import * as redirectPath from "@app/redirect-path";
-import * as orgs from "@app/organizations";
 import * as bootup from "@app/bootup";
-import * as mfa from "@app/mfa";
-import * as theme from "@app/theme";
 import * as deploy from "@app/deploy";
+import * as env from "@app/env";
+import * as hal from "@app/hal";
+import * as invitations from "@app/invitations";
+import * as mfa from "@app/mfa";
 import * as modal from "@app/modal";
+import * as orgs from "@app/organizations";
+import * as redirectPath from "@app/redirect-path";
+import * as resetStore from "@app/reset-store";
+import * as theme from "@app/theme";
+import * as token from "@app/token";
+import * as users from "@app/users";
 
 const corePackages: any[] = [
   env,

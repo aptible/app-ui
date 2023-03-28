@@ -1,5 +1,5 @@
+import { Box, ButtonLink, IconArrowRight, tokens } from "../shared";
 import { createProjectGitUrl } from "@app/routes";
-import { ButtonLink, IconArrowRight, tokens, Box } from "../shared";
 
 export const CreateProjectPage = () => {
   return (

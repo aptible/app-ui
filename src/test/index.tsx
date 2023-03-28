@@ -4,8 +4,8 @@ import { MemoryRouter } from "react-router-dom";
 import { applyMiddleware, createStore } from "redux";
 import { prepareStore } from "saga-query";
 
-import type { AppState } from "@app/types";
 import { reducers, sagas } from "@app/app";
+import type { AppState } from "@app/types";
 
 export const setupIntegrationTest = (
   initState: Partial<AppState> = {},

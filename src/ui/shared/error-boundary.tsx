@@ -5,8 +5,8 @@
 // possible alternatives also exist like this: https://github.com/JoschuaSchneider/use-error-boundary
 // taken from: https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/error_boundaries/
 
-import { Component, ErrorInfo, ReactNode } from "react";
 import { AptibleLogo, Button, IconAlertTriangle } from "../shared";
+import { Component, ErrorInfo, ReactNode } from "react";
 
 interface Props {
   children?: ReactNode;

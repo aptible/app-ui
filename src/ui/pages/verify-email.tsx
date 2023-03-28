@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
 import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 import { verifyEmail } from "@app/auth";
-import { selectJWTToken } from "@app/token";
 import { homeUrl } from "@app/routes";
+import { selectJWTToken } from "@app/token";
 
 import { Loading, Progress, ResendVerificationEmail } from "../shared";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";

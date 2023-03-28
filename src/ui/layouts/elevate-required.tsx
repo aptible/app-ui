@@ -1,14 +1,14 @@
-import { useLocation } from "react-router";
-import { Outlet, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router";
+import { Navigate, Outlet } from "react-router-dom";
 import { useLoader } from "saga-query/react";
 
-import { loginUrl, elevateUrl } from "@app/routes";
-import {
-  selectIsUserAuthenticated,
-  selectIsElevatedTokenValid,
-} from "@app/token";
 import { fetchCurrentToken } from "@app/auth";
+import { elevateUrl, loginUrl } from "@app/routes";
+import {
+  selectIsElevatedTokenValid,
+  selectIsUserAuthenticated,
+} from "@app/token";
 
 import { Loading } from "../shared";
 

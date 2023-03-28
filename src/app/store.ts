@@ -1,17 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
 import type { Middleware, Store } from "@reduxjs/toolkit";
-import { persistStore, persistReducer } from "redux-persist";
+import debug from "debug";
+import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 import { BATCH, prepareStore } from "saga-query";
-import debug from "debug";
 
-import type { AppState } from "@app/types";
-import { resetReducer } from "@app/reset-store";
-import { TOKEN_NAME, ELEVATED_TOKEN_NAME } from "@app/token";
-import { THEME_NAME } from "@app/theme";
 import { REDIRECT_NAME } from "@app/redirect-path";
+import { resetReducer } from "@app/reset-store";
+import { THEME_NAME } from "@app/theme";
+import { ELEVATED_TOKEN_NAME, TOKEN_NAME } from "@app/token";
+import type { AppState } from "@app/types";
 
-import { sagas, reducers } from "./packages";
+import { reducers, sagas } from "./packages";
 
 interface Props {
   initState?: Partial<AppState>;

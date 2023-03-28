@@ -1,7 +1,7 @@
-import { forwardRef } from "react";
-import cn from "classnames";
-import { InputHTMLAttributes } from "react";
 import { IconSearch } from "./icons";
+import cn from "classnames";
+import { forwardRef } from "react";
+import { InputHTMLAttributes } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;

@@ -1,16 +1,16 @@
 import {
-  put,
   call,
+  put,
+  setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
-  setLoaderError,
 } from "saga-query";
 
-import { CreateTokenPayload, createToken } from "./token";
 import { AUTH_LOADER_ID } from "./loader";
+import { CreateTokenPayload, createToken } from "./token";
+import { webauthnGet } from "./webauthn";
 import { thunks } from "@app/api";
 import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
-import { webauthnGet } from "./webauthn";
 
 export const login = thunks.create<CreateTokenPayload>(
   "login",

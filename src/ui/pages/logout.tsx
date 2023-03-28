@@ -1,8 +1,8 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
-import { loginUrl } from "@app/routes";
 import { logout } from "@app/auth";
+import { loginUrl } from "@app/routes";
 
 import { Button } from "../shared";
 

@@ -1,6 +1,6 @@
-import { SyntheticEvent } from "react";
 import { IconCopy } from "./icons";
 import { tokens } from "./tokens";
+import { SyntheticEvent } from "react";
 
 export const PreCode = ({
   allowCopy = false,

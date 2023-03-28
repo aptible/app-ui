@@ -1,4 +1,4 @@
-import { authApi, AuthApiCtx } from "@app/api";
+import { AuthApiCtx, authApi } from "@app/api";
 
 interface VerifyEmail {
   challengeId: string;

@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useLoaderSuccess } from "saga-query/react";
 
-import { homeUrl } from "@app/routes";
 import { elevate } from "@app/auth";
 import { selectAuthLoader, selectIsOtpError } from "@app/auth";
+import { homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
-import { Input, FormGroup, Button, Alert, AptibleLogo } from "../shared";
+import { Alert, AptibleLogo, Button, FormGroup, Input } from "../shared";
 
 export const ElevatePage = () => {
   const dispatch = useDispatch();

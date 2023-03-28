@@ -1,26 +1,26 @@
-import { useQuery } from "saga-query/react";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 
 import { prettyDateRelative } from "@app/date";
 import {
-  calcServiceMetrics,
   DeployAppRow,
+  calcServiceMetrics,
   fetchAllApps,
   fetchAllEnvironments,
   selectAppsForTableSearch,
 } from "@app/deploy";
-import type { AppState } from "@app/types";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
 import { appOverviewUrl } from "@app/routes";
+import type { AppState } from "@app/types";
 
-import { TableHead, Td } from "../table";
-import { LoadResources } from "../load-resources";
-import { tokens } from "../tokens";
 import { InputSearch } from "../input";
+import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
+import { TableHead, Td } from "../table";
+import { tokens } from "../tokens";
 
 interface AppCellProps {
   app: DeployAppRow;

@@ -12,6 +12,7 @@
     "serve": "vite preview",
     "format.pretty": "rome format . --write",
     "format.lint": "rome check . --apply",
+    "format.unsafe": "rome check . --apply-unsafe",
     "format": "yarn format.pretty && yarn format.lint",
     "lint.check": "rome ci .",
     "lint.types": "tsc --noEmit",

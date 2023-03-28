@@ -1,21 +1,21 @@
 import { REHYDRATE } from "redux-persist";
 import { call, put, select, take } from "saga-query";
 
-import { fetchCurrentToken } from "@app/auth";
 import { thunks } from "@app/api";
+import { fetchCurrentToken } from "@app/auth";
+import {
+  fetchAllApps,
+  fetchAllDatabases,
+  fetchAllEnvironments,
+  fetchAllStacks,
+} from "@app/deploy";
 import {
   fetchOrganizations,
   selectOrganizationSelected,
 } from "@app/organizations";
-import { ApiGen } from "@app/types";
 import { selectAccessToken } from "@app/token";
+import { ApiGen } from "@app/types";
 import { fetchUsers } from "@app/users";
-import {
-  fetchAllEnvironments,
-  fetchAllStacks,
-  fetchAllDatabases,
-  fetchAllApps,
-} from "@app/deploy";
 
 export const bootup = thunks.create(
   "bootup",

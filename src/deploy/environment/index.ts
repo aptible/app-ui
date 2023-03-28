@@ -1,10 +1,9 @@
-import { createSelector } from "@reduxjs/toolkit";
 import {
+  DeployApiCtx,
+  PaginateProps,
   api,
   cacheTimer,
   combinePages,
-  DeployApiCtx,
-  PaginateProps,
   thunks,
 } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -14,6 +13,7 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import type { AppState, DeployEnvironment, LinkResponse } from "@app/types";
+import { createSelector } from "@reduxjs/toolkit";
 
 import { selectDeploy } from "../slice";
 

@@ -1,9 +1,3 @@
-import { deprovisionApp, fetchApp, selectAppById } from "@app/deploy";
-import { AppState } from "@app/types";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { useQuery } from "saga-query/react";
 import {
   Box,
   Button,
@@ -18,6 +12,12 @@ import {
   Label,
   PreCode,
 } from "../shared";
+import { deprovisionApp, fetchApp, selectAppById } from "@app/deploy";
+import { AppState } from "@app/types";
+import { SyntheticEvent, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router";
+import { useQuery } from "saga-query/react";
 
 export const AppSettingsPage = () => {
   const [handle, setHandle] = useState<string>("");
