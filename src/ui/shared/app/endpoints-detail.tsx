@@ -16,5 +16,5 @@ export function AppEndpointsOverview({ app }: { app: DeployApp }) {
     selectEndpointsByAppId(s, { id: app.id }),
   );
 
-  return <EndpointsView endpoints={endpoints} />;
+  return <EndpointsView endpoints={endpoints} parent={app.handle} />;
 }

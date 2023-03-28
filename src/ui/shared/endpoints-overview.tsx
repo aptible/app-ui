@@ -1,56 +1,166 @@
-import { DeployEndpoint, AppState } from "@app/types";
+import { DeployEndpoint, AppState, ProvisionableStatus } from "@app/types";
+import cn from "classnames";
 
-import { Td } from "./table";
-import { tokens } from "./tokens";
-import { Button, ButtonIcon } from "./button";
+import { ButtonIcon } from "./button";
 import { EmptyResultView } from "./resource-list-view";
-import { IconPlusCircle } from "./icons";
+import {
+  IconArrowRight,
+  IconCheck,
+  IconEllipsis,
+  IconInfo,
+  IconPlusCircle,
+  IconSettings,
+  IconX,
+} from "./icons";
 import { InputSearch } from "./input";
 import { ReactElement, useState } from "react";
+import { Box } from "./box";
 
-const EndpointListing = ({ endpoint }: { endpoint: DeployEndpoint }) => {
+import { capitalize } from "@app/string-utils";
+
+const EndpointStatusPill = ({
+  status,
+}: {
+  status: ProvisionableStatus;
+}): ReactElement => {
+  const className = cn(
+    "rounded-full border-2",
+    "text-sm font-semibold ",
+    "px-2 flex justify-between items-center w-fit",
+  );
+
+  if (
+    status === "provisioning" ||
+    status === "deprovisioning" ||
+    status === "pending"
+  ) {
+    return (
+      <div className={cn(className, "text-brown border-brown bg-orange-100")}>
+        <IconSettings color="#825804" className="mr-1" variant="sm" />
+        <div>{capitalize(status)}</div>
+      </div>
+    );
+  }
+
+  if (status === "deprovision_failed" || status === "provision_failed") {
+    return (
+      <div className={cn(className, "text-red border-red-300 bg-red-100")}>
+        <IconX color="#AD1A1A" variant="sm" />
+        <div> {capitalize(status.replace("_", " "))}</div>
+      </div>
+    );
+  }
+
+  if (status === "provisioned") {
+    return (
+      <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
+        <IconCheck color="#00633F" className="mr-1" variant="sm" />
+        Provisioned
+      </div>
+    );
+  }
+
   return (
-    <tr>
-      <Td className="flex-1">
-        <a href={`//${endpoint.userDomain}`} className={tokens.type.darker}>
-          {endpoint.userDomain}
-        </a>
-      </Td>
+    <div
+      className={cn(className, "text-indigo border-indigo-300 bg-indigo-100")}
+    >
+      <IconInfo color="#4361FF" className="mr-1" variant="sm" />
+      Unknown
+    </div>
+  );
+};
 
-      <Td className="flex-1">
-        <div className={tokens.type["normal lighter"]}>
-          {endpoint.internal ? "Internal" : "External"}
+const EndpointListing = ({
+  endpoint,
+  parent,
+}: { endpoint: DeployEndpoint; parent: string }) => {
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full py-6 -mt-5 -mb-5">
+      <Box>
+        <ButtonIcon
+          icon={
+            <IconEllipsis className="-mr-2" style={{ width: 16, height: 16 }} />
+          }
+          className="float-right"
+          type="submit"
+          variant="white"
+          size="xs"
+        />
+        <div className="flex">
+          <EndpointStatusPill status={endpoint.status} />
+          <span className="flex ml-4 text-gray-500 text-md">
+            {parent}
+            <IconArrowRight
+              className="inline mx-2 mt-1"
+              color="#6b7280"
+              style={{ height: 18, width: 18 }}
+            />
+            {endpoint.virtualDomain}
+          </span>
         </div>
-      </Td>
-
-      <Td className="flex-1">
-        <div className={tokens.type["normal lighter"]}>
-          {endpoint.ipWhitelist.length
-            ? endpoint.ipWhitelist.join(", ")
-            : "Disabled"}
+        <div className="flex w-1/1">
+          <div className="flex-col w-1/2">
+            <div className="mt-4">
+              <h3 className="text-base font-semibold text-gray-900">
+                Hostname
+              </h3>
+              <p>
+                <a
+                  href={`https://${endpoint.virtualDomain}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  https://{endpoint.virtualDomain}
+                </a>
+              </p>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-base font-semibold text-gray-900">
+                Placement
+              </h3>
+              <p>
+                {endpoint.externalHost
+                  ? "External (publicly accessible)"
+                  : "Internal"}
+              </p>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-base font-semibold text-gray-900">
+                Container Port
+              </h3>
+              {endpoint.containerExposedPorts} (TBD)
+            </div>
+            <div className="mt-4">
+              <h3 className="text-base font-semibold text-gray-900">
+                Platform
+              </h3>
+              <p>{endpoint.platform.toLocaleUpperCase()}</p>
+            </div>
+          </div>
+          <div className="flex-col w-1/2">
+            <div className="mt-4">
+              <h3 className="text-base font-semibold text-gray-900">
+                IP Filtering
+              </h3>
+              <p>
+                {endpoint.ipWhitelist.length
+                  ? endpoint.ipWhitelist.join(", ")
+                  : "Disabled"}
+              </p>
+            </div>
+          </div>
         </div>
-      </Td>
-
-      <Td className="flex-1">
-        <div className={tokens.type["normal lighter"]}>$5</div>
-      </Td>
-
-      <Td className="flex gap-2 justify-end w-40">
-        <Button type="submit" variant="white" size="xs">
-          Edit
-        </Button>
-        <Button type="submit" variant="white" size="xs">
-          Delete
-        </Button>
-      </Td>
-    </tr>
+      </Box>
+    </div>
   );
 };
 
 const EndpointsOverview = ({
   endpoints,
+  parent,
 }: {
   endpoints: DeployEndpoint[];
+  parent: string;
 }): ReactElement => {
   const [search, setSearch] = useState("");
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
@@ -74,13 +184,20 @@ const EndpointsOverview = ({
         </div>
       </div>
       {endpoints.map((endpoint) => (
-        <EndpointListing endpoint={endpoint} key={endpoint.id} />
+        <EndpointListing
+          endpoint={endpoint}
+          key={endpoint.id}
+          parent={parent}
+        />
       ))}
     </div>
   );
 };
 
-export function EndpointsView({ endpoints }: { endpoints?: DeployEndpoint[] }) {
+export function EndpointsView({
+  endpoints,
+  parent,
+}: { endpoints?: DeployEndpoint[]; parent: string }) {
   if (!endpoints) {
     return (
       <EmptyResultView
@@ -98,7 +215,7 @@ export function EndpointsView({ endpoints }: { endpoints?: DeployEndpoint[] }) {
 
   return (
     <div className="mt-4">
-      <EndpointsOverview endpoints={endpoints} />
+      <EndpointsOverview endpoints={endpoints} parent={parent} />
     </div>
   );
 }
