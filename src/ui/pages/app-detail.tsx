@@ -5,11 +5,7 @@ import { useSelector } from "react-redux";
 import { fetchApp, hasDeployApp, selectAppById } from "@app/deploy";
 import { AppState } from "@app/types";
 
-import {
-  DetailPageSections,
-  ServicesOverview,
-  AppEndpointsOverview,
-} from "../shared";
+import { DetailPageSections, ServicesOverview } from "../shared";
 
 export function AppDetailPage() {
   const { id = "" } = useParams();

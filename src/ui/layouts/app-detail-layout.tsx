@@ -103,8 +103,8 @@ function AppPageHeader() {
 
   const tabs = [
     { name: "Overview", href: appOverviewUrl(id) },
-    { name: "Activity", href: appActivityUrl(id) },
     { name: "Endpoints", href: appEndpointsUrl(id) },
+    { name: "Activity", href: appActivityUrl(id) },
     { name: "Settings", href: appSettingsUrl(id) },
   ] as TabItem[];
 

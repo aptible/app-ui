@@ -14,9 +14,10 @@ import {
   IconEllipsis,
   InputSearch,
   IconChevronDown,
+  IconChevronUp,
 } from "../../shared";
 import { useSelector } from "react-redux";
-import { ReactElement, useState } from "react";
+import { ReactElement, SyntheticEvent, useEffect, useState } from "react";
 
 const serviceListRow = ({
   serviceId,
@@ -60,7 +61,7 @@ const serviceListRow = ({
         </div>
       </Td>
 
-      <Td className="flex gap-2 justify-end w-40 mt-2">
+      <Td className="flex gap-2 justify-end w-40 mt-2 mr-2">
         <ButtonIcon
           icon={
             <IconEllipsis className="-mr-2" style={{ width: 16, height: 16 }} />
@@ -86,12 +87,31 @@ const serviceListRow = ({
   ];
 };
 
-export function ServicesOverview({ app }: { app: DeployApp }) {
+export function ServicesOverview({
+  app: { serviceIds: initialServiceIds },
+}: { app: DeployApp }) {
   // TODO - since app is already passed in, do we just want to have a utility or method on app itself
   // that lets us filter on it OOP-style? or some other mechanic to filter an app's services for this page?
   const [search, setSearch] = useState("");
+  const [sortedDescending, setSortedDescending] = useState(true);
+  const [serviceIds, setServiceIds] = useState<string[]>(initialServiceIds);
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
+
+  const sortIconProps = {
+    className: "inline",
+    color: "#6b7280",
+    style: { width: 14, height: 14 },
+    onClick: (e: SyntheticEvent) => {
+      e.preventDefault;
+      setSortedDescending(!sortedDescending);
+    },
+  };
+
+  useEffect(() => {
+    // TODO - probably need to map each id to a name, and sort by name (primitive resort for now)
+    setServiceIds([...serviceIds].reverse());
+  }, [sortedDescending]);
 
   return (
     <div className="mb-4">
@@ -112,14 +132,14 @@ export function ServicesOverview({ app }: { app: DeployApp }) {
               </div>
             </div>
             <p className="text-sm text-gray-500 mt-4">
-              <span>{app.serviceIds.length} Services</span>
+              <span>{serviceIds.length} Services</span>
               <span className="ml-5 cursor-pointer">
                 Sort: A to Z{" "}
-                <IconChevronDown
-                  className="inline"
-                  color="#6b7280"
-                  style={{ width: 14, height: 14 }}
-                />
+                {sortedDescending ? (
+                  <IconChevronUp {...sortIconProps} />
+                ) : (
+                  <IconChevronDown {...sortIconProps} />
+                )}
               </span>
             </p>
           </>
@@ -139,9 +159,7 @@ export function ServicesOverview({ app }: { app: DeployApp }) {
           />
         }
         tableBody={
-          <>
-            {app.serviceIds.map((serviceId) => serviceListRow({ serviceId }))}
-          </>
+          <>{serviceIds.map((serviceId) => serviceListRow({ serviceId }))}</>
         }
       />
     </div>
