@@ -12,8 +12,8 @@ ADD package.json /app/
 ADD yarn.lock /app/
 WORKDIR /app
 
-RUN yarn install --immutable
 ADD . /app
+RUN yarn install --immutable
 
 RUN env | grep VITE
 
