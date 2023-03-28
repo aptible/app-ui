@@ -1,13 +1,15 @@
-import { AppState, DeployApp } from "@app/types";
-import { calcServiceMetrics, selectServiceById } from "@app/deploy";
+import { AppState, DeployApp, DeployService } from "@app/types";
+import {
+  calcServiceMetrics,
+  selectServiceById,
+  selectServicesByIds,
+} from "@app/deploy";
 
 import {
   TableHead,
   Td,
   ResourceListView,
-  Button,
   tokens,
-  ResourceHeader,
   ButtonIcon,
   IconPlusCircle,
   PreCode,
@@ -20,15 +22,13 @@ import { useSelector } from "react-redux";
 import { ReactElement, SyntheticEvent, useEffect, useState } from "react";
 
 const serviceListRow = ({
-  serviceId,
-}: { serviceId: string }): ReactElement[] => {
-  const service = useSelector((s: AppState) =>
-    selectServiceById(s, { id: serviceId }),
-  );
+  service,
+}: { service?: DeployService }): ReactElement[] => {
+  if (!service) return [];
   const metrics = calcServiceMetrics(service);
 
   return [
-    <tr key={`${serviceId}`}>
+    <tr key={`${service.id}`}>
       <Td className="flex-1 pl-4">
         <div className={tokens.type.darker}>{service.handle}</div>
         <div className={tokens.type["normal lighter"]}>ID: {service.id}</div>
@@ -72,7 +72,7 @@ const serviceListRow = ({
         />
       </Td>
     </tr>,
-    <tr key={`${serviceId}.${service.command}`} className="border-none">
+    <tr key={`${service.id}.${service.command}`} className="border-none">
       <td colSpan={7} className="p-4">
         <span className="text-sm text-gray-500">Command</span>
         <div>
@@ -93,8 +93,8 @@ export function ServicesOverview({
   // TODO - since app is already passed in, do we just want to have a utility or method on app itself
   // that lets us filter on it OOP-style? or some other mechanic to filter an app's services for this page?
   const [search, setSearch] = useState("");
-  const [sortedDescending, setSortedDescending] = useState(true);
-  const [serviceIds, setServiceIds] = useState<string[]>(initialServiceIds);
+  const [sortedAscending, setSortedAscending] = useState(false);
+  const [serviceIds, setServiceIds] = useState<string[]>([]);
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
 
@@ -102,16 +102,27 @@ export function ServicesOverview({
     className: "inline",
     color: "#6b7280",
     style: { width: 14, height: 14 },
-    onClick: (e: SyntheticEvent) => {
-      e.preventDefault;
-      setSortedDescending(!sortedDescending);
-    },
   };
 
+  const services = useSelector((s: AppState) =>
+    selectServicesByIds(s, { ids: initialServiceIds }),
+  );
+
   useEffect(() => {
-    // TODO - probably need to map each id to a name, and sort by name (primitive resort for now)
-    setServiceIds([...serviceIds].reverse());
-  }, [sortedDescending]);
+    if (!serviceIds.length) {
+      const sortedServiceIdsByName = services
+        .map((service) => ({ handle: service.handle, id: service.id }))
+        .sort((a, b) => (a.handle > b.handle ? 1 : 0))
+        .map((service) => service.id);
+      setServiceIds(sortedServiceIdsByName);
+    }
+  }, [services, serviceIds]);
+
+  useEffect(() => {
+    if (serviceIds.length) {
+      setServiceIds([...serviceIds].reverse());
+    }
+  }, [sortedAscending]);
 
   return (
     <div className="mb-4">
@@ -131,11 +142,17 @@ export function ServicesOverview({
                 />
               </div>
             </div>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-gray-500 mt-4 select-none">
               <span>{serviceIds.length} Services</span>
-              <span className="ml-5 cursor-pointer">
+              <span
+                className="ml-5 cursor-pointer"
+                onClick={(e: SyntheticEvent) => {
+                  e.preventDefault;
+                  setSortedAscending(!sortedAscending);
+                }}
+              >
                 Sort: A to Z{" "}
-                {sortedDescending ? (
+                {sortedAscending ? (
                   <IconChevronUp {...sortIconProps} />
                 ) : (
                   <IconChevronDown {...sortIconProps} />
@@ -159,7 +176,15 @@ export function ServicesOverview({
           />
         }
         tableBody={
-          <>{serviceIds.map((serviceId) => serviceListRow({ serviceId }))}</>
+          <>
+            {serviceIds.map((serviceId) =>
+              serviceListRow({
+                service: services.find(
+                  (service: DeployService) => service.id === serviceId,
+                ),
+              }),
+            )}
+          </>
         }
       />
     </div>

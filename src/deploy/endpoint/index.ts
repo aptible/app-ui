@@ -1,4 +1,5 @@
 import {
+  all,
   call,
   put,
   setLoaderError,
@@ -125,6 +126,15 @@ export const fetchEndpointsByServiceId = api.get<{ id: string }>(
     saga: cacheTimer(),
   },
 );
+
+export function* fetchEndpointsByServiceIds({ ids }: { ids: string[] }) {
+  yield all(
+    ids.map((id) =>
+      call(fetchEndpointsByServiceId.run, fetchEndpointsByServiceId({ id })),
+    ),
+  );
+}
+
 export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
   saga: cacheTimer(),
 });

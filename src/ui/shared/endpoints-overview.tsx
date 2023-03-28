@@ -1,22 +1,14 @@
-import { useSelector } from "react-redux";
-import { UseApiResult, useQuery } from "saga-query/react";
-
 import { DeployEndpoint, AppState } from "@app/types";
-import { selectEndpointsByServiceIds } from "@app/deploy";
-import { fetchEndpointsByServiceId } from "@app/deploy";
 
-import { TableHead, Td } from "./table";
+import { Td } from "./table";
 import { tokens } from "./tokens";
 import { Button, ButtonIcon } from "./button";
-import { LoadResources } from "./load-resources";
-import {
-  EmptyResultView,
-  ResourceHeader,
-  ResourceListView,
-} from "./resource-list-view";
+import { EmptyResultView } from "./resource-list-view";
 import { IconPlusCircle } from "./icons";
+import { InputSearch } from "./input";
+import { ReactElement, useState } from "react";
 
-const EndpointListingRow = ({ endpoint }: { endpoint: DeployEndpoint }) => {
+const EndpointListing = ({ endpoint }: { endpoint: DeployEndpoint }) => {
   return (
     <tr>
       <Td className="flex-1">
@@ -55,76 +47,58 @@ const EndpointListingRow = ({ endpoint }: { endpoint: DeployEndpoint }) => {
   );
 };
 
-export function EndpointsOverview({
-  serviceIds,
-  query,
+const EndpointsOverview = ({
+  endpoints,
 }: {
-  serviceIds: string[];
-  query: UseApiResult<any>;
-}) {
-  const endpoints = useSelector((s: AppState) =>
-    selectEndpointsByServiceIds(s, { ids: serviceIds }),
-  );
-
-  const body = (
-    <LoadResources
-      query={query}
-      isEmpty={endpoints.length === 0}
-      loader={
-        <tr>
-          <td colSpan={5}>Loading...</td>
-        </tr>
-      }
-      error={(e) => (
-        <tr>
-          <td colSpan={5}>Error: {e}</td>
-        </tr>
-      )}
-      empty={
-        <tr>
-          <td colSpan={5}>
-            <EmptyResultView
-              title="No endpoints yet"
-              description="Expose this application to the public internet by adding an endpoint"
-              action={
-                <ButtonIcon icon={<IconPlusCircle />} className="inline-flex">
-                  Add Endpoint
-                </ButtonIcon>
-              }
-              className="p-6"
-            />
-          </td>
-        </tr>
-      }
-    >
-      {endpoints.map((endpoint) => (
-        <EndpointListingRow endpoint={endpoint} key={endpoint.id} />
-      ))}
-    </LoadResources>
-  );
+  endpoints: DeployEndpoint[];
+}): ReactElement => {
+  const [search, setSearch] = useState("");
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
+    setSearch(ev.currentTarget.value);
 
   return (
     <div className="mb-4">
-      <ResourceListView
-        header={<ButtonIcon icon={<IconPlusCircle />}>New Endpoint</ButtonIcon>}
-        tableHeader={
-          <TableHead
-            headers={[
-              "Endpoint",
-              "Placement",
-              "IP Filtering",
-              "Monthly Cost",
-              { name: "", className: "w-40" },
-            ]}
-          />
-        }
-        tableBody={body}
-      />
+      <div className="flex justify-between w-100">
+        <div className="flex w-1/2">
+          <ButtonIcon icon={<IconPlusCircle />}>New Endpoint</ButtonIcon>
+        </div>
+        <div className="flex w-1/2 justify-end">
+          {endpoints.length ? (
+            <InputSearch
+              className="self-end float-right]"
+              placeholder="Search endpoints ..."
+              search={search}
+              onChange={onChange}
+            />
+          ) : null}
+        </div>
+      </div>
+      {endpoints.map((endpoint) => (
+        <EndpointListing endpoint={endpoint} key={endpoint.id} />
+      ))}
     </div>
   );
-}
+};
 
-export function EndpointsView({ serviceId }: { serviceId: string }) {
-  const query = useQuery(fetchEndpointsByServiceId({ id: serviceId }));
-  return <EndpointsOverview query={query} serviceIds={[serviceId]} />;
+export function EndpointsView({ endpoints }: { endpoints?: DeployEndpoint[] }) {
+  if (!endpoints) {
+    return (
+      <EmptyResultView
+        title="No endpoints yet"
+        description="Expose this application to the public internet by adding an endpoint"
+        action={
+          <ButtonIcon icon={<IconPlusCircle />} className="inline-flex">
+            Add Endpoint
+          </ButtonIcon>
+        }
+        className="p-6 w-100"
+      />
+    );
+  }
+
+  return (
+    <div className="mt-4">
+      <EndpointsOverview endpoints={endpoints} />
+    </div>
+  );
 }
