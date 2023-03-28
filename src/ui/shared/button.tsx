@@ -11,7 +11,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
   shape?: Shape;
   isLoading?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const buttonLayout = {

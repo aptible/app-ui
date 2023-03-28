@@ -5,7 +5,14 @@ import { useCache } from "saga-query/react";
 import { fetchDatabaseOperations } from "@app/deploy";
 import type { DeployOperationResponse, HalEmbedded } from "@app/types";
 
-import { EmptyResources, Loading, LoadResources } from "../shared";
+import {
+  EmptyResources,
+  Loading,
+  LoadResources,
+  ResourceListView,
+  TableHead,
+} from "../shared";
+import { OperationListRow } from "../shared/operation-list-row";
 
 interface HalOperations {
   operations: DeployOperationResponse[];
@@ -32,12 +39,29 @@ export const DatabaseActivityPage = () => {
   const { operations } = query.data._embedded;
 
   return (
-    <LoadResources query={query} isEmpty={operations.length === 0}>
-      {operations.map((op) => (
-        <div key={op.id}>
-          {op.type} {op.status} {op.user_name} {op.updated_at}
-        </div>
-      ))}
-    </LoadResources>
+    <div className="mt-4">
+      <LoadResources query={query} isEmpty={operations.length === 0}>
+        <ResourceListView
+          tableHeader={
+            <TableHead
+              headers={[
+                "Time",
+                "Operation",
+                "View Logs in CLI",
+                "Download Logs",
+              ]}
+              centerAlignedColIndices={[2, 3]}
+            />
+          }
+          tableBody={
+            <>
+              {operations.map((operation) => (
+                <OperationListRow operation={operation} key={operation.id} />
+              ))}
+            </>
+          }
+        />
+      </LoadResources>
+    </div>
   );
 };

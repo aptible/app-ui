@@ -204,8 +204,10 @@ export interface DeployOperationResponse {
   type: string;
   status: OperationStatus;
   user_name: string;
+  created_at: string;
   updated_at: string;
   _links: {
+    account: LinkResponse;
     resource: LinkResponse;
     code_scan_result: LinkResponse;
   };
