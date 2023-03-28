@@ -1,4 +1,4 @@
-import { createSelector } from "@reduxjs/toolkit";
+import { selectDeploy } from "../slice";
 import { api, cacheTimer } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
@@ -11,7 +11,7 @@ import type {
   DeployServiceDefinition,
   LinkResponse,
 } from "@app/types";
-import { selectDeploy } from "../slice";
+import { createSelector } from "@reduxjs/toolkit";
 
 export interface DeployServiceDefinitionResponse {
   id: number;

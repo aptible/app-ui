@@ -1,22 +1,22 @@
-import { call, select } from "saga-query";
 import { createSelector } from "@reduxjs/toolkit";
+import { call, select } from "saga-query";
 
+import { AuthApiCtx, authApi, cacheTimer } from "@app/api";
+import { exchangeToken } from "@app/auth";
+import { defaultEntity } from "@app/hal";
 import {
+  createAssign,
   createReducerMap,
   createTable,
-  createAssign,
 } from "@app/slice-helpers";
-import { authApi, AuthApiCtx, cacheTimer } from "@app/api";
-import {
-  AppState,
-  Organization,
-  LinkResponse,
-  ApiGen,
-  HalEmbedded,
-} from "@app/types";
-import { defaultEntity } from "@app/hal";
 import { selectToken } from "@app/token";
-import { exchangeToken } from "@app/auth";
+import {
+  ApiGen,
+  AppState,
+  HalEmbedded,
+  LinkResponse,
+  Organization,
+} from "@app/types";
 
 interface OrganizationResponse {
   address: string;

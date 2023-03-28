@@ -1,13 +1,13 @@
-import { AppState, DeployApp } from "@app/types";
 import { calcServiceMetrics, selectServiceById } from "@app/deploy";
+import { AppState, DeployApp } from "@app/types";
 
 import {
+  Button,
+  ResourceHeader,
+  ResourceListView,
   TableHead,
   Td,
-  ResourceListView,
-  Button,
   tokens,
-  ResourceHeader,
 } from "../../shared";
 import { useSelector } from "react-redux";
 

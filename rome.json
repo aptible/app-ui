@@ -1,4 +1,7 @@
 {
+  "organizeImports": {
+    "enabled": true
+  },
   "formatter": {
     "enabled": true,
     "ignore": ["dist"],

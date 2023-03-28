@@ -1,5 +1,5 @@
-import { createSelector } from "@reduxjs/toolkit";
-import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
+import { selectDeploy } from "../slice";
+import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -7,7 +7,7 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import type { AppState, DeployStack } from "@app/types";
-import { selectDeploy } from "../slice";
+import { createSelector } from "@reduxjs/toolkit";
 
 export const deserializeDeployStack = (payload: any): DeployStack => {
   return {

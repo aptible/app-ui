@@ -1,9 +1,9 @@
-import { selectOperationsAsList } from "@app/deploy/operation";
-import { AppState, OperationStatus } from "@app/types";
-import { useSelector } from "react-redux";
 import { IconCheckCircle, IconInfo, IconX } from "../icons";
 import { tokens } from "../tokens";
 import { EnvironmentOperationActivity } from "./environment-operation-activity";
+import { selectOperationsAsList } from "@app/deploy/operation";
+import { AppState, OperationStatus } from "@app/types";
+import { useSelector } from "react-redux";
 
 export const IconForResource = (operationStatus: OperationStatus) => {
   if (operationStatus === "succeeded") {

@@ -1,7 +1,7 @@
 import { defaultEntity } from "@app/hal";
 
-import { addUsers } from "./slice";
 import { deserializeUser } from "./serializers";
+import { addUsers } from "./slice";
 
 export * from "./slice";
 export * from "./serializers";

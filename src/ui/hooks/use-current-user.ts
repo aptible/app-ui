@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useLoader } from "saga-query/react";
+import { useDispatch, useSelector } from "react-redux";
 import type { LoadingState } from "saga-query";
+import { useLoader } from "saga-query/react";
 
 import { User } from "@app/types";
-import { selectCurrentUser, selectCurrentUserId, fetchUser } from "@app/users";
+import { fetchUser, selectCurrentUser, selectCurrentUserId } from "@app/users";
 
 type CurrentUser = LoadingState & { user: User };
 

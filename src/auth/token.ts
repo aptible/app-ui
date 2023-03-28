@@ -1,12 +1,12 @@
 import { call, put } from "saga-query";
 
-import { authApi, AuthApiCtx } from "@app/api";
+import { AuthApiCtx, authApi } from "@app/api";
 import {
   TokenSuccessResponse,
   deserializeToken,
-  setToken,
-  setElevatedToken,
   resetToken,
+  setElevatedToken,
+  setToken,
 } from "@app/token";
 import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 

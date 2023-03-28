@@ -2,7 +2,7 @@ import type {
   CredentialCreationOptionsJSON,
   CredentialRequestOptionsJSON,
 } from "@github/webauthn-json";
-import { get, create } from "@github/webauthn-json";
+import { create, get } from "@github/webauthn-json";
 
 export function hasWebAuthnSupport(): boolean {
   let scope = null;

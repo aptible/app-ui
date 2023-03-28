@@ -1,5 +1,5 @@
-import { HalEmbedded } from "@app/types";
 import { fetchOtpCodes } from "@app/mfa";
+import { HalEmbedded } from "@app/types";
 import { useCache } from "saga-query/react";
 
 import { useCurrentUser } from "../hooks";

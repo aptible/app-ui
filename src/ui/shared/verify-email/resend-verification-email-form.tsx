@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLoader } from "saga-query/react";
 
 import { resendVerification } from "@app/auth";
-import { selectJWTToken } from "@app/token";
 import { selectOrigin } from "@app/env";
+import { selectJWTToken } from "@app/token";
 
 import { Button } from "../../shared";
 

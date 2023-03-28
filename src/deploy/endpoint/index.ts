@@ -21,8 +21,8 @@ import type {
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
-import { selectDeploy } from "../slice";
 import { selectAppById } from "../app";
+import { selectDeploy } from "../slice";
 
 export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
   return {

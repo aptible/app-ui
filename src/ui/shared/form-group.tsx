@@ -1,6 +1,6 @@
-import { PropsWithChildren, LabelHTMLAttributes } from "react";
 import { tokens } from "./tokens";
 import classNames from "classnames";
+import { LabelHTMLAttributes, PropsWithChildren } from "react";
 
 type LabelProps = LabelHTMLAttributes<HTMLLabelElement>;
 

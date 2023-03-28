@@ -1,5 +1,5 @@
-import type { User } from "@app/types";
 import { extractIdFromLink } from "@app/hal";
+import type { User } from "@app/types";
 
 import type { UserResponse } from "./types";
 

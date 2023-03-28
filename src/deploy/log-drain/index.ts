@@ -1,3 +1,4 @@
+import { selectDeploy } from "../slice";
 import { api, cacheTimer } from "@app/api";
 import { defaultEntity } from "@app/hal";
 import {
@@ -6,7 +7,6 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import { AppState, DeployLogDrain } from "@app/types";
-import { selectDeploy } from "../slice";
 
 export const deserializeLogDrain = (payload: any): DeployLogDrain => {
   return {

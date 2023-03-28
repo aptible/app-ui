@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode.react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useLoader } from "saga-query/react";
 
-import { setupOtp, selectOtp } from "@app/mfa";
-import { updateUser, selectCurrentUserId } from "@app/users";
+import { selectOtp, setupOtp } from "@app/mfa";
+import { selectCurrentUserId, updateUser } from "@app/users";
 
 import {
-  FormGroup,
-  Button,
-  Loading,
   BannerMessages,
+  Button,
   ExternalLink,
+  FormGroup,
+  Loading,
 } from "../shared";
 
 export const OtpSetupPage = () => {

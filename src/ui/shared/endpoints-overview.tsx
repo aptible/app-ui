@@ -1,20 +1,20 @@
 import { useSelector } from "react-redux";
 import { UseApiResult, useQuery } from "saga-query/react";
 
-import { DeployEndpoint, AppState } from "@app/types";
 import { selectEndpointsByServiceIds } from "@app/deploy";
 import { fetchEndpointsByServiceId } from "@app/deploy";
+import { AppState, DeployEndpoint } from "@app/types";
 
-import { TableHead, Td } from "./table";
-import { tokens } from "./tokens";
 import { Button, ButtonIcon } from "./button";
+import { IconPlusCircle } from "./icons";
 import { LoadResources } from "./load-resources";
 import {
   EmptyResultView,
   ResourceHeader,
   ResourceListView,
 } from "./resource-list-view";
-import { IconPlusCircle } from "./icons";
+import { TableHead, Td } from "./table";
+import { tokens } from "./tokens";
 
 const EndpointListingRow = ({ endpoint }: { endpoint: DeployEndpoint }) => {
   return (

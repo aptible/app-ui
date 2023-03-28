@@ -1,7 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 
-import type { AppState } from "@app/types";
 import { selectToken } from "@app/token";
+import type { AppState } from "@app/types";
 
 import { USERS_NAME } from "./constants";
 import { defaultUser } from "./serializers";

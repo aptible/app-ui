@@ -1,32 +1,32 @@
-import { useState, useEffect } from "react";
 import qs from "query-string";
-import { useLocation, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoaderSuccess } from "saga-query/react";
+import { useLocation, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import { useLoaderSuccess } from "saga-query/react";
 
-import { validatePasswordComplexity, signup } from "@app/auth";
+import { signup, validatePasswordComplexity } from "@app/auth";
+import { selectAuthLoader } from "@app/auth";
 import {
+  fetchInvitation,
   selectInvitationRequest,
   selectPendingInvitation,
-  fetchInvitation,
 } from "@app/invitations";
 import {
   acceptInvitationWithCodeUrl,
-  verifyEmailRequestUrl,
-  loginUrl,
   homeUrl,
+  loginUrl,
+  verifyEmailRequestUrl,
 } from "@app/routes";
-import { selectAuthLoader } from "@app/auth";
 import { validEmail } from "@app/string-utils";
 
 import {
-  Input,
-  FormGroup,
-  Button,
   AptibleLogo,
-  LoggedInBanner,
   BannerMessages,
+  Button,
+  FormGroup,
+  Input,
+  LoggedInBanner,
 } from "../shared";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 

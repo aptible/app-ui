@@ -1,7 +1,8 @@
-import { call, poll, fetchRetry, delay } from "saga-query";
 import { createAction, createSelector } from "@reduxjs/toolkit";
+import { call, delay, fetchRetry, poll } from "saga-query";
 
-import { api, combinePages, PaginateProps, thunks, Retryable } from "@app/api";
+import { selectDeploy } from "../slice";
+import { PaginateProps, Retryable, api, combinePages, thunks } from "@app/api";
 import {
   defaultEntity,
   extractIdFromLink,
@@ -19,7 +20,6 @@ import type {
   OperationStatus,
   OperationType,
 } from "@app/types";
-import { selectDeploy } from "../slice";
 
 export interface DeployOperationResponse {
   id: number;

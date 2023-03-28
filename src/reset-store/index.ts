@@ -1,12 +1,12 @@
 import type { Reducer } from "@reduxjs/toolkit";
 import type { PersistConfig } from "redux-persist";
-import { take, put } from "saga-query";
+import { put, take } from "saga-query";
 
-import type { Action, AppState } from "@app/types";
+import { ENTITIES_NAME } from "@app/hal";
+import { REDIRECT_NAME } from "@app/redirect-path";
 import { createAction } from "@app/slice-helpers";
 import { resetToken } from "@app/token";
-import { REDIRECT_NAME } from "@app/redirect-path";
-import { ENTITIES_NAME } from "@app/hal";
+import type { Action, AppState } from "@app/types";
 
 export const resetStore = createAction("RESET_STORE");
 

@@ -4,7 +4,7 @@ import { useCache } from "saga-query/react";
 
 import type { HalEmbedded } from "@app/types";
 
-import { EmptyResources, Loading, LoadResources } from "../shared";
+import { EmptyResources, LoadResources, Loading } from "../shared";
 import { fetchDatabaseBackups } from "@app/deploy";
 
 interface BackupResponse {

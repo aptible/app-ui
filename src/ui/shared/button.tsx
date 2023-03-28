@@ -1,7 +1,7 @@
+import { tokens } from "./tokens";
 import cn from "classnames";
 import { ButtonHTMLAttributes, FC } from "react";
 import { Link, LinkProps } from "react-router-dom";
-import { tokens } from "./tokens";
 
 export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 type Shape = "button" | "pill";

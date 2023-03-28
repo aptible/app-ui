@@ -1,14 +1,14 @@
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
-import { useSelector } from "react-redux";
 
 import { fetchApp, hasDeployApp, selectAppById } from "@app/deploy";
 import { AppState } from "@app/types";
 
 import {
+  AppEndpointsOverview,
   DetailPageSections,
   ServicesOverview,
-  AppEndpointsOverview,
 } from "../shared";
 
 export function AppDetailPage() {

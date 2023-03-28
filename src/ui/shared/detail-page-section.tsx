@@ -1,6 +1,6 @@
+import { tokens } from "./tokens";
 import cn from "classnames";
 import { Fragment } from "react";
-import { tokens } from "./tokens";
 
 type Element = React.ReactNode | JSX.Element;
 type SectionProps = {

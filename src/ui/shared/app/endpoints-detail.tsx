@@ -1,7 +1,7 @@
 import { useQuery } from "saga-query/react";
 
-import { DeployApp } from "@app/types";
 import { fetchEndpointsByAppId } from "@app/deploy";
+import { DeployApp } from "@app/types";
 
 import { EndpointsOverview } from "../../shared";
 

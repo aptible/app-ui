@@ -1,14 +1,14 @@
-import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useLoader } from "saga-query/react";
 
+import { fetchCurrentToken } from "@app/auth";
 import { loginUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
-import { fetchCurrentToken } from "@app/auth";
 
 import { Loading } from "../shared";
-import { useEffect } from "react";
 import { setRedirectPath } from "@app/redirect-path";
+import { useEffect } from "react";
 
 export const AuthRequired = () => {
   const loader = useLoader(fetchCurrentToken);

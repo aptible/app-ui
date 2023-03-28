@@ -2,7 +2,6 @@ import { logoutUrl, settingsUrl, teamUrl } from "@app/routes";
 
 import { useCurrentUser } from "../hooks";
 
-import { Loading } from "./loading";
 import {
   IconCreditCard,
   IconLogout,
@@ -10,6 +9,7 @@ import {
   IconUserCircle,
 } from "./icons";
 import { LinkNav } from "./link";
+import { Loading } from "./loading";
 
 export const UserMenu = () => {
   const { user, isLoading } = useCurrentUser();

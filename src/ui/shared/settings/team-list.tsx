@@ -1,8 +1,8 @@
-import { useQuery } from "saga-query/react";
 import { useSelector } from "react-redux";
+import { useQuery } from "saga-query/react";
 
-import { fetchUsers, selectUsersAsList } from "@app/users";
 import { selectOrganizationSelected } from "@app/organizations";
+import { fetchUsers, selectUsersAsList } from "@app/users";
 
 import { LoadResources } from "../../shared";
 import { TeamListView } from "./team-list-view";

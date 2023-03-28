@@ -1,13 +1,13 @@
-import { Outlet, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Outlet, useParams } from "react-router-dom";
 
 import { environmentsUrl } from "@app/routes";
 
 import { DetailPageHeaderView, TabItem } from "../shared";
 
 import { DetailPageLayout } from "./detail-page";
-import { AppState } from "@app/types";
 import { selectEnvironmentById } from "@app/deploy";
+import { AppState } from "@app/types";
 
 const crumbs = [{ name: "Environments", to: environmentsUrl() }];
 

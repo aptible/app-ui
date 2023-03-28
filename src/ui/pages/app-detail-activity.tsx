@@ -5,7 +5,7 @@ import { useCache } from "saga-query/react";
 import { fetchAppOperations } from "@app/deploy";
 import type { DeployOperationResponse, HalEmbedded } from "@app/types";
 
-import { EmptyResources, Loading, LoadResources } from "../shared";
+import { EmptyResources, LoadResources, Loading } from "../shared";
 
 interface HalOperations {
   operations: DeployOperationResponse[];
