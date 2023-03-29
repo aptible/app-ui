@@ -73,21 +73,21 @@ const EndpointStatusPill = ({
 const EndpointListing = ({
   endpoint,
   parent,
-}: { endpoint: DeployEndpoint; parent: string }) => {
-  return (
-    <div className="max-w-7xl mx-auto w-full py-6 -mt-5 -mb-5">
-      <Box>
-        <ButtonIcon
-          icon={
-            <IconEllipsis className="-mr-2" style={{ width: 16, height: 16 }} />
-          }
-          className="float-right"
-          type="submit"
-          variant="white"
-          size="xs"
-        />
-        <div className="flex">
-          <EndpointStatusPill status={endpoint.status} />
+}: { endpoint: DeployEndpoint; parent: string }) => (
+  <div className="max-w-7xl mx-auto w-full py-6 -mt-5 -mb-5">
+    <Box>
+      <ButtonIcon
+        icon={
+          <IconEllipsis className="-mr-2" style={{ width: 16, height: 16 }} />
+        }
+        className="float-right"
+        type="submit"
+        variant="white"
+        size="xs"
+      />
+      <div className="flex">
+        <EndpointStatusPill status={endpoint.status} />
+        {endpoint.status === "provisioning" ? null : (
           <span className="flex ml-4 text-gray-500 text-md">
             {parent}
             <IconArrowRight
@@ -95,15 +95,21 @@ const EndpointListing = ({
               color="#6b7280"
               style={{ height: 18, width: 18 }}
             />
-            {endpoint.virtualDomain}
+            {endpoint.type === "tcp"
+              ? endpoint.externalHost
+              : endpoint.virtualDomain}
           </span>
-        </div>
-        <div className="flex w-1/1">
-          <div className="flex-col w-1/2">
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Hostname
-              </h3>
+        )}
+      </div>
+      <div className="flex w-1/1">
+        <div className="flex-col w-1/2">
+          <div className="mt-4">
+            <h3 className="text-base font-semibold text-gray-900">Hostname</h3>
+            {endpoint.status === "provisioning" ? (
+              <p className="text-gray-500 italic">Provisioning</p>
+            ) : endpoint.type === "tcp" ? (
+              endpoint.externalHost
+            ) : (
               <p>
                 <a
                   href={`https://${endpoint.virtualDomain}`}
@@ -113,41 +119,37 @@ const EndpointListing = ({
                   https://{endpoint.virtualDomain}
                 </a>
               </p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Placement
-              </h3>
-              <p>
-                {endpoint.externalHost
-                  ? "External (publicly accessible)"
-                  : "Internal"}
-              </p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Platform
-              </h3>
-              <p>{endpoint.platform.toLocaleUpperCase()}</p>
-            </div>
+            )}
           </div>
-          <div className="flex-col w-1/2">
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                IP Filtering
-              </h3>
-              <p>
-                {endpoint.ipWhitelist.length
-                  ? endpoint.ipWhitelist.join(", ")
-                  : "Disabled"}
-              </p>
-            </div>
+          <div className="mt-4">
+            <h3 className="text-base font-semibold text-gray-900">Placement</h3>
+            <p>
+              {endpoint.externalHost
+                ? "External (publicly accessible)"
+                : "Internal"}
+            </p>
+          </div>
+          <div className="mt-4">
+            <h3 className="text-base font-semibold text-gray-900">Platform</h3>
+            <p>{endpoint.platform.toLocaleUpperCase()}</p>
           </div>
         </div>
-      </Box>
-    </div>
-  );
-};
+        <div className="flex-col w-1/2">
+          <div className="mt-4">
+            <h3 className="text-base font-semibold text-gray-900">
+              IP Filtering
+            </h3>
+            <p>
+              {endpoint.ipWhitelist.length
+                ? endpoint.ipWhitelist.join(", ")
+                : "Disabled"}
+            </p>
+          </div>
+        </div>
+      </div>
+    </Box>
+  </div>
+);
 
 const EndpointsOverview = ({
   endpoints,

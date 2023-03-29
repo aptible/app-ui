@@ -19,7 +19,7 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
     <nav className="flex" aria-label="Breadcrumb">
       <ol className="flex items-center">
         {crumbs.map((crumb, idx) => (
-          <li key={crumb.name}>
+          <li key={`${crumb.name}-${idx}`}>
             {crumb.to === null ? (
               <div className="text-xl">&nbsp;{crumb.name}</div>
             ) : (

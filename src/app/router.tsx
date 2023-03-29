@@ -23,7 +23,8 @@ import {
   DatabaseBackupsPage,
   DatabaseDetailLayout,
   DatabaseDetailPage,
-  DatabaseSecurityPage,
+  DatabaseClusterPage,
+  DatabaseScalePage,
   DatabaseSettingsPage,
   DatabasesPage,
   ElevatePage,
@@ -114,12 +115,16 @@ const appRoutes: RouteObject[] = [
                 element: <DatabaseActivityPage />,
               },
               {
-                path: routes.DATABASE_SECURITY_PATH,
-                element: <DatabaseSecurityPage />,
+                path: routes.DATABASE_CLUSTER_PATH,
+                element: <DatabaseClusterPage />,
               },
               {
                 path: routes.DATABASE_BACKUPS_PATH,
                 element: <DatabaseBackupsPage />,
+              },
+              {
+                path: routes.DATABASE_SCALE_PATH,
+                element: <DatabaseScalePage />,
               },
               {
                 path: routes.DATABASE_SETTINGS_PATH,

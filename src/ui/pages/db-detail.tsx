@@ -4,6 +4,7 @@ import { useQuery } from "saga-query/react";
 
 import {
   fetchDatabase,
+  fetchEndpointsByEnvironmentId,
   fetchEndpointsByServiceId,
   fetchEnvironmentServices,
   selectDatabaseById,
@@ -30,7 +31,9 @@ export function DatabaseDetailPage() {
   useQuery(fetchDatabase({ id }));
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
   useQuery(fetchEnvironmentServices({ id: database.environmentId }));
-  const query = useQuery(fetchEndpointsByServiceId({ id: database.serviceId }));
+  const query = useQuery(
+    fetchEndpointsByEnvironmentId({ id: database.environmentId }),
+  );
 
   return (
     <LoadResources query={query} isEmpty={false}>

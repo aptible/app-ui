@@ -94,7 +94,7 @@ export const AppSettingsPage = () => {
             <div className="flex justify-between items-center">
               <select
                 value={"test"}
-                className="mb-2"
+                className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
                 placeholder="select"
                 disabled
               >
@@ -150,8 +150,8 @@ export const AppSettingsPage = () => {
           <br />
           <hr />
           <br />
-          <div className="flex">
-            <Button className="w-40 mb-4 flex" onClick={() => {}}>
+          <div className="flex mt-4">
+            <Button className="w-40 mb-4 flex semibold" onClick={() => {}}>
               Save Changes
             </Button>
             <Button
@@ -159,7 +159,7 @@ export const AppSettingsPage = () => {
               onClick={() => {}}
               variant="white"
             >
-              Cancel
+              <span className="text-base semibold">Cancel</span>
             </Button>
           </div>
         </form>
