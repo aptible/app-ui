@@ -385,6 +385,7 @@ export const redeployApp = thunks.create<{
   if (result.json.message !== "success") {
     yield* put(setLoaderError({ id, message: result.json.message }));
     yield next();
+
     return;
   }
 
