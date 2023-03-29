@@ -84,13 +84,11 @@ const serviceListRow = ({
 };
 
 export function ServicesOverview({
-  app: { serviceIds: initialServiceIds },
-}: { app: DeployApp }) {
-  // TODO - since app is already passed in, do we just want to have a utility or method on app itself
-  // that lets us filter on it OOP-style? or some other mechanic to filter an app's services for this page?
+  serviceIds: initialServiceIds,
+}: { serviceIds: string[] }) {
   const [search, setSearch] = useState("");
   const [sortedAscending, setSortedAscending] = useState(false);
-  const [serviceIds, setServiceIds] = useState<string[]>([]);
+  const [serviceIds, setServiceIds] = useState<string[]>(initialServiceIds);
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
 
@@ -103,6 +101,10 @@ export function ServicesOverview({
   const services = useSelector((s: AppState) =>
     selectServicesByIds(s, { ids: initialServiceIds }),
   );
+
+  useEffect(() => {
+    setServiceIds(initialServiceIds);
+  }, [initialServiceIds]);
 
   useEffect(() => {
     if (!serviceIds.length) {

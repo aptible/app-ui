@@ -191,8 +191,8 @@ const EndpointsOverview = ({
 export function EndpointsView({
   endpoints,
   parent,
-}: { endpoints?: DeployEndpoint[]; parent: string }) {
-  if (!endpoints) {
+}: { endpoints: DeployEndpoint[]; parent: string }) {
+  if (!endpoints.length) {
     return (
       <EmptyResultView
         title="No endpoints yet"

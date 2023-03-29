@@ -1,5 +1,4 @@
 import { IconCopy } from "./icons";
-import { tokens } from "./tokens";
 import { SyntheticEvent } from "react";
 
 export const PreCode = ({
@@ -8,7 +7,7 @@ export const PreCode = ({
   text, // TODO - do we want to do this
 }: {
   allowCopy?: boolean;
-  invertedColors: boolean;
+  invertedColors?: boolean;
   text: string[];
 }) => {
   const handleCopy = (e: SyntheticEvent) => {

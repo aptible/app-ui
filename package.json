@@ -22,7 +22,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js}": [
-      "rome check --apply-unsafe"
+      "rome format --write",
+      "rome check --apply-suggested"
     ]
   },
   "dependencies": {

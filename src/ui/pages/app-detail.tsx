@@ -2,26 +2,25 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
 
-import { fetchApp, hasDeployApp, selectAppById } from "@app/deploy";
+import {
+  fetchEnvironmentServices,
+  hasDeployApp,
+  selectAppById,
+} from "@app/deploy";
 import { AppState } from "@app/types";
 
-import { DetailPageSections, ServicesOverview } from "../shared";
+import { DetailPageSections, LoadResources, ServicesOverview } from "../shared";
 
 export function AppDetailPage() {
   const { id = "" } = useParams();
-  const { isInitialLoading, message } = useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const query = useQuery(fetchEnvironmentServices({ id: app.environmentId }));
 
-  if (hasDeployApp(app)) {
-    return (
+  return (
+    <LoadResources query={query} isEmpty={false}>
       <DetailPageSections>
-        <ServicesOverview app={app} />
+        <ServicesOverview serviceIds={app.serviceIds} />
       </DetailPageSections>
-    );
-  }
-
-  if (isInitialLoading) {
-    return <span>Loading...</span>;
-  }
-  return <span>{message || "Something went wrong"}</span>;
+    </LoadResources>
+  );
 }

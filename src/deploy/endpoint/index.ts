@@ -120,20 +120,15 @@ export const selectEndpointsByAppId = createSelector(
 export const fetchEndpointsByAppId = api.get<{ appId: string }>(
   "/apps/:appId/vhosts",
 );
+export const fetchEndpointsByEnvironmentId = api.get<{ id: string }>(
+  "/accounts/:id/vhosts",
+);
 export const fetchEndpointsByServiceId = api.get<{ id: string }>(
   "/services/:id/vhosts",
   {
     saga: cacheTimer(),
   },
 );
-
-export function* fetchEndpointsByServiceIds({ ids }: { ids: string[] }) {
-  yield all(
-    ids.map((id) =>
-      call(fetchEndpointsByServiceId.run, fetchEndpointsByServiceId({ id })),
-    ),
-  );
-}
 
 export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
   saga: cacheTimer(),
