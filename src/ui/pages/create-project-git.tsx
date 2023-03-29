@@ -60,6 +60,7 @@ import {
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import {
   cancelAppOpsPoll,
+  createEndpointOperation,
   fetchAllStacks,
   fetchApp,
   fetchAppOperations,
@@ -109,7 +110,7 @@ import {
   TextVal,
   createProject,
   deployProject,
-  updateEnvWithDbUrls,
+  redeployApp,
 } from "@app/projects";
 
 export const CreateProjectLayout = () => {
@@ -418,7 +419,7 @@ const validateDbs = (items: DbSelectorProps[]): DbValidatorError[] => {
         message: `${item.env} has already been used, each database env var must be unique`,
       });
     } else {
-      envVars.add(item);
+      envVars.add(item.env);
     }
   };
 
@@ -917,18 +918,17 @@ const createReadableStatus = (status: OperationStatus): string => {
 const Op = ({
   op,
   resource,
-  last = false,
+  retry,
 }: {
   op: DeployOperation;
   resource: { handle: string };
-  last?: boolean;
+  retry?: () => void;
 }) => {
   const [isOpen, setOpen] = useState(false);
   if (!hasDeployOperation(op)) {
     return null;
   }
-
-  const extra = last ? "" : "border-b border-black-100";
+  const extra = "border-b border-black-100";
   const status = () => {
     const cns = "font-semibold flex justify-center items-center";
 
@@ -943,6 +943,18 @@ const Op = ({
     if (op.status === "failed") {
       return (
         <div className={cn(cns, "text-red")}>
+          {retry ? (
+            <Button
+              variant="white"
+              onClick={(e) => {
+                e.stopPropagation();
+                retry();
+              }}
+              className="mr-2"
+            >
+              retry
+            </Button>
+          ) : null}
           {createReadableStatus(op.status)}
         </div>
       );
@@ -983,44 +995,66 @@ const Op = ({
 
 const DatabaseStatus = ({
   db,
-  last = false,
 }: {
   db: Pick<DeployDatabase, "id" | "handle">;
-  last: boolean;
 }) => {
   const provisionOp = useSelector((s: AppState) =>
     selectLatestProvisionOp(s, { resourceId: db.id }),
   );
 
-  return <Op op={provisionOp} resource={db} last={last} />;
+  return <Op op={provisionOp} resource={db} />;
 };
 
 const EndpointStatus = ({
   endpoint,
-  last = false,
 }: {
   endpoint: Pick<DeployEndpoint, "id">;
-  last: boolean;
 }) => {
+  const dispatch = useDispatch();
   const provisionOp = useSelector((s: AppState) =>
     selectLatestProvisionOp(s, { resourceId: endpoint.id }),
   );
+  const retry = () => {
+    dispatch(
+      createEndpointOperation({
+        type: "provision",
+        endpointId: endpoint.id,
+      }),
+    );
+  };
 
-  return <Op op={provisionOp} resource={{ handle: "" }} last={last} />;
+  return <Op op={provisionOp} resource={{ handle: "" }} retry={retry} />;
 };
 
-const AppStatus = ({ app }: { app: Pick<DeployApp, "id" | "handle"> }) => {
+const AppStatus = ({
+  app,
+  gitRef,
+}: {
+  app: Pick<DeployApp, "id" | "handle" | "environmentId">;
+  gitRef: string;
+}) => {
+  const dispatch = useDispatch();
   const configOp = useSelector((s: AppState) =>
     selectLatestConfigureOp(s, { appId: app.id }),
   );
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
+  const retry = () => {
+    dispatch(
+      redeployApp({
+        appId: app.id,
+        envId: app.environmentId,
+        gitRef,
+        force: true,
+      }),
+    );
+  };
 
   return (
     <div>
-      <Op op={configOp} resource={app} />
-      <Op op={deployOp} resource={app} />
+      <Op op={configOp} resource={app} retry={retry} />
+      <Op op={deployOp} resource={app} retry={retry} />
     </div>
   );
 };
@@ -1029,33 +1063,23 @@ const ProjectStatus = ({
   app,
   dbs,
   endpoints,
+  gitRef,
 }: {
   app: DeployApp;
   dbs: DeployDatabase[];
   endpoints: DeployEndpoint[];
+  gitRef: string;
 }) => {
   return (
     <div>
-      {dbs.map((db, i) => {
-        return (
-          <DatabaseStatus
-            key={db.id}
-            db={db}
-            last={i === dbs.length - 1 && endpoints.length === 0}
-          />
-        );
+      {dbs.map((db) => {
+        return <DatabaseStatus key={db.id} db={db} />;
       })}
 
-      <AppStatus app={app} />
+      <AppStatus app={app} gitRef={gitRef} />
 
-      {endpoints.map((vhost, i) => {
-        return (
-          <EndpointStatus
-            key={vhost.id}
-            endpoint={vhost}
-            last={i === endpoints.length - 1}
-          />
-        );
+      {endpoints.map((vhost) => {
+        return <EndpointStatus key={vhost.id} endpoint={vhost} />;
       })}
     </div>
   );
@@ -1299,6 +1323,7 @@ const CreateEndpointView = ({
               value={service.id}
               checked={curServiceId === service.id}
               onChange={() => onChange(service.id)}
+              disabled={!!serviceId}
             />
             <span className="ml-1">
               {service.processType} <Code>{service.command}</Code>
@@ -1321,10 +1346,10 @@ const CreateEndpointView = ({
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
-  const appQuery = useQuery(fetchApp({ id: appId }));
+  useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
-  useQuery(fetchEnvironment({ id: envId }));
+  const appQuery = useQuery(fetchEnvironment({ id: envId }));
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
@@ -1340,7 +1365,7 @@ export const CreateProjectGitStatusPage = () => {
     selectEndpointsByAppId(s, { id: appId }),
   );
   const vhost = vhosts.length > 0 ? vhosts[0] : null;
-  const resourceIds = [...dbs.map((db) => db.id), ...vhosts.map((vh) => vh.id)];
+  const resourceIds = [...dbs.map((db) => db.id), ...vhosts.map((v) => v.id)];
   const provisionOps = useSelector((s: AppState) =>
     selectLatestProvisionOps(s, {
       resourceIds,
@@ -1361,12 +1386,30 @@ export const CreateProjectGitStatusPage = () => {
     };
   }, [appId, envId]);
 
+  const { scanOp } = useLatestCodeResults(appId);
+  const redeployLoader = useSelector((s: AppState) =>
+    selectLoaderById(s, { id: `${redeployApp}` }),
+  );
+  const gitRef = scanOp.gitRef || "main";
+  const redeploy = (force: boolean) => {
+    dispatch(
+      redeployApp({
+        appId,
+        envId: env.id,
+        gitRef,
+        force,
+      }),
+    );
+  };
+
+  // when the status is success we need to refetch the app and endpoints
+  // so we can grab the services and show them to the user for creating
+  // an endpoint.
   useEffect(() => {
     if (status !== "succeeded") return;
     appQuery.trigger();
     endpointQuery.trigger();
-    dispatch(updateEnvWithDbUrls({ appId, envId: env.id }));
-  }, [status, appId, env.id]);
+  }, [status]);
 
   const header = () => {
     if (status === "succeeded") {
@@ -1444,14 +1487,42 @@ export const CreateProjectGitStatusPage = () => {
         {isInitialLoading ? (
           <Loading text="Loading resources ..." />
         ) : (
-          <ProjectStatus app={app} dbs={dbs} endpoints={vhosts} />
+          <ProjectStatus
+            app={app}
+            dbs={dbs}
+            endpoints={vhosts}
+            gitRef={gitRef}
+          />
         )}
       </StatusBox>
 
-      {deployOp.status === "succeeded" ? (
+      {deployOp.status === "succeeded" && !vhost?.serviceId ? (
         <StatusBox>
           <h4 className={tokens.type.h4}>Which service needs an endpoint?</h4>
           <CreateEndpointView app={app} serviceId={vhost?.serviceId || ""} />
+        </StatusBox>
+      ) : null}
+
+      {deployOp.status === "failed" ? (
+        <StatusBox>
+          <h4 className={tokens.type.h4}>Deployment failed</h4>
+          <p className="text-black-500 my-4">
+            If the app deployment failed, you can view the error logs, make code
+            changes, and then push the code to us to redeploy. This screen will
+            track your deployment status.
+          </p>
+          <p className="text-black-500 my-4">
+            You can also try to trigger a redeploy now if you think it was a
+            transient error that caused the deployment to fail.
+          </p>
+
+          <Button
+            onClick={() => redeploy(true)}
+            isLoading={redeployLoader.isLoading}
+          >
+            Redeploy
+          </Button>
+          <p>{redeployLoader.isError ? redeployLoader.message : ""}</p>
         </StatusBox>
       ) : null}
 
