@@ -15,7 +15,7 @@ export * from "./settings";
 export * from "./apps";
 export * from "./app-detail";
 export * from "./app-detail-activity";
-export * from "./app-detail-security";
+export * from "./app-detail-endpoints";
 export * from "./app-detail-settings";
 export * from "./databases";
 export * from "./db-detail";

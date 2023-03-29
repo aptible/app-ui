@@ -4,30 +4,37 @@ import { useQuery } from "saga-query/react";
 
 import {
   fetchDatabase,
-  hasDeployDatabase,
+  fetchEndpointsByServiceId,
+  fetchEnvironmentServices,
   selectDatabaseById,
+  selectEndpointsByServiceIds,
 } from "@app/deploy";
 import { AppState, DeployDatabase } from "@app/types";
 
-import { DetailPageSections, EndpointsView } from "../shared";
+import { DetailPageSections, EndpointsView, LoadResources } from "../shared";
 
-const DatabasePageContent = ({ database }: { database: DeployDatabase }) => (
-  <DetailPageSections>
-    <EndpointsView serviceId={database.serviceId} />
-  </DetailPageSections>
-);
+const DatabasePageContent = ({ database }: { database: DeployDatabase }) => {
+  const endpoints = useSelector((s: AppState) =>
+    selectEndpointsByServiceIds(s, { ids: [database.serviceId] }),
+  );
+
+  return (
+    <DetailPageSections>
+      <EndpointsView endpoints={endpoints} parent="database" />
+    </DetailPageSections>
+  );
+};
 
 export function DatabaseDetailPage() {
   const { id = "" } = useParams();
-  const { isInitialLoading, message } = useQuery(fetchDatabase({ id }));
+  useQuery(fetchDatabase({ id }));
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  useQuery(fetchEnvironmentServices({ id: database.environmentId }));
+  const query = useQuery(fetchEndpointsByServiceId({ id: database.serviceId }));
 
-  if (hasDeployDatabase(database)) {
-    return <DatabasePageContent database={database} />;
-  }
-
-  if (isInitialLoading) {
-    return <span>Loading...</span>;
-  }
-  return <span>{message || "Something went wrong"}</span>;
+  return (
+    <LoadResources query={query} isEmpty={false}>
+      <DatabasePageContent database={database} />
+    </LoadResources>
+  );
 }

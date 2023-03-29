@@ -5,8 +5,8 @@ import { prettyEnglishDate } from "@app/date";
 import { selectAppById, selectEnvironmentById } from "@app/deploy";
 import {
   appActivityUrl,
+  appEndpointsUrl,
   appOverviewUrl,
-  appSecurityUrl,
   appSettingsUrl,
   environmentResourcelUrl,
 } from "@app/routes";
@@ -103,8 +103,8 @@ function AppPageHeader() {
 
   const tabs = [
     { name: "Overview", href: appOverviewUrl(id) },
+    { name: "Endpoints", href: appEndpointsUrl(id) },
     { name: "Activity", href: appActivityUrl(id) },
-    { name: "Security", href: appSecurityUrl(id) },
     { name: "Settings", href: appSettingsUrl(id) },
   ] as TabItem[];
 

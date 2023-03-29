@@ -1,4 +1,5 @@
 import {
+  all,
   call,
   put,
   setLoaderError,
@@ -119,12 +120,16 @@ export const selectEndpointsByAppId = createSelector(
 export const fetchEndpointsByAppId = api.get<{ appId: string }>(
   "/apps/:appId/vhosts",
 );
+export const fetchEndpointsByEnvironmentId = api.get<{ id: string }>(
+  "/accounts/:id/vhosts",
+);
 export const fetchEndpointsByServiceId = api.get<{ id: string }>(
   "/services/:id/vhosts",
   {
     saga: cacheTimer(),
   },
 );
+
 export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
   saga: cacheTimer(),
 });

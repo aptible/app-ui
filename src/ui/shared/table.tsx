@@ -39,10 +39,12 @@ export const TableHead = ({
   headers,
   rightAlignedFinalCol = false,
   leftAlignedFirstCol = false,
+  centerAlignedColIndices = [],
 }: {
   headers: Header[];
   rightAlignedFinalCol?: boolean;
   leftAlignedFirstCol?: boolean;
+  centerAlignedColIndices?: number[];
 }) => {
   return (
     <thead className="bg-gray-50">
@@ -52,11 +54,16 @@ export const TableHead = ({
             typeof header === "string"
               ? ["", header]
               : [header.className, header.name];
-          if (leftAlignedFirstCol && i === 0) {
-            className += " pl-4";
-          }
-          if (rightAlignedFinalCol && i === headers.length - 1) {
-            className += " flex gap-2 justify-end mr-4";
+
+          if (centerAlignedColIndices.includes(i)) {
+            className += "text-center";
+          } else {
+            if (leftAlignedFirstCol && i === 0) {
+              className += " pl-4";
+            }
+            if (rightAlignedFinalCol && i === headers.length - 1) {
+              className += " flex gap-2 justify-end mr-4";
+            }
           }
           return (
             <Th

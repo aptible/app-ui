@@ -4,9 +4,9 @@ import * as routes from "@app/routes";
 import {
   AddSecurityKeyPage,
   AppActivityPage,
+  AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailPage,
-  AppSecurityPage,
   AppSettingsPage,
   AppsPage,
   AuthRequired,
@@ -82,8 +82,8 @@ const appRoutes: RouteObject[] = [
                 element: <AppActivityPage />,
               },
               {
-                path: routes.APP_SECURITY_PATH,
-                element: <AppSecurityPage />,
+                path: routes.APP_ENDPOINTS_PATH,
+                element: <AppDetailEndpointsPage />,
               },
               {
                 path: routes.APP_SETTINGS_PATH,

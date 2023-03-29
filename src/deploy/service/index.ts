@@ -1,18 +1,39 @@
 import { api } from "@app/api";
-import { defaultEntity } from "@app/hal";
+import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type { AppState, DeployService } from "@app/types";
+import type {
+  AppState,
+  DeployService,
+  InstanceClass,
+  LinkResponse,
+} from "@app/types";
 
 import { CONTAINER_PROFILES, GB } from "../app/utils";
 import { selectDeploy } from "../slice";
 
-export const DEFAULT_INSTANCE_CLASS = "m4";
+export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m4";
 
-export const deserializeDeployService = (payload: any): DeployService => {
+interface DeployServiceResponse {
+  id: string;
+  handle: string;
+  created_at: string;
+  updated_at: string;
+  docker_repo: string;
+  docker_ref: string;
+  process_type: string;
+  command: string;
+  container_count: number;
+  container_memory_limit_mb: number;
+  instance_class: InstanceClass;
+}
+
+export const deserializeDeployService = (
+  payload: DeployServiceResponse,
+): DeployService => {
   return {
     id: `${payload.id}`,
     handle: payload.handle,
@@ -99,6 +120,9 @@ export const hasDeployService = (a: DeployService) => a.id !== "";
 export const serviceReducers = createReducerMap(slice);
 
 export const fetchService = api.get<{ id: string }>("/services/:id");
+export const fetchEnvironmentServices = api.get<{ id: string }>(
+  "/accounts/:id/services",
+);
 
 export const serviceEntities = {
   service: defaultEntity({
