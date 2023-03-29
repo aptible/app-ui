@@ -217,7 +217,11 @@ export const CreateProjectNamePage = () => {
     thunk.trigger();
   };
   const navigate = useNavigate();
-  useQuery(fetchAllStacks());
+  const stacksQuery = useQuery(fetchAllStacks());
+
+  useEffect(() => {
+    stacksQuery.trigger();
+  }, [org.id]);
 
   useLoaderSuccess(thunk, () => {
     navigate(createProjectGitPushUrl(thunk.meta.appId));
