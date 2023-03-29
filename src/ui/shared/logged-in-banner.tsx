@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
+import { Banner } from "../shared";
 import { homeUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
-import { Banner } from "../shared";
 
 export const LoggedInBanner = () => {
   const isAuthenticated = useSelector(selectIsUserAuthenticated);

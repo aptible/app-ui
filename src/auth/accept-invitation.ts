@@ -1,8 +1,8 @@
 import { call, select } from "saga-query";
 
-import { ApiGen } from "@app/types";
 import { authApi } from "@app/api";
 import { selectToken } from "@app/token";
+import { ApiGen } from "@app/types";
 
 import { exchangeToken } from "./token";
 

@@ -11,7 +11,8 @@
     "build": "tsc && vite build",
     "serve": "vite preview",
     "format.pretty": "rome format . --write",
-    "format.lint": "rome check . --apply-suggested",
+    "format.lint": "rome check . --apply",
+    "format.unsafe": "rome check . --apply-unsafe",
     "format": "yarn format.pretty && yarn format.lint",
     "lint.check": "rome ci .",
     "lint.types": "tsc --noEmit",
@@ -21,8 +22,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js}": [
-      "rome format --write",
-      "rome check --apply-suggested"
+      "rome check --apply-unsafe"
     ]
   },
   "dependencies": {
@@ -58,10 +58,10 @@
     "redux": "^4.2.0",
     "redux-batched-actions": "^0.5.0",
     "redux-persist": "^6.0.0",
-    "rome": "^11.0.0",
+    "rome": "^12.0.0",
     "saga-query": "^7.2.0",
     "tailwindcss": "^3.2.4",
-    "typescript": "^4.9.4",
+    "typescript": "^5.0.2",
     "vite": "^4.0.4",
     "vite-tsconfig-paths": "^4.0.5",
     "vitest": "^0.28.2"

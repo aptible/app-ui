@@ -1,13 +1,13 @@
 import {
   call,
   put,
-  setLoaderStart,
   setLoaderError,
+  setLoaderStart,
   setLoaderSuccess,
 } from "saga-query";
 
-import { elevateToken, ElevateToken, ElevateTokenCtx } from "./token";
 import { AUTH_LOADER_ID } from "./loader";
+import { ElevateToken, ElevateTokenCtx, elevateToken } from "./token";
 import { ThunkCtx, thunks } from "@app/api";
 
 export type ElevateCtx = ThunkCtx<ElevateToken>;

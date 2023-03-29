@@ -1,4 +1,4 @@
-import { extractResourceNameFromLink, extractIdFromLink } from "./index";
+import { extractIdFromLink, extractResourceNameFromLink } from "./index";
 
 describe("extractIdFromLink", () => {
   it("should safely handle null values", () => {

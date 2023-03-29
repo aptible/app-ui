@@ -8,9 +8,8 @@ import {
   setLoaderSuccess,
 } from "saga-query";
 
-import { ApiGen, DeployApp, excludesFalse } from "@app/types";
-import { createLog } from "@app/debug";
 import { ThunkCtx, thunks } from "@app/api";
+import { createLog } from "@app/debug";
 import {
   createAppOperation,
   createDatabaseOperation,
@@ -26,8 +25,9 @@ import {
   selectEnvironmentByName,
 } from "@app/deploy";
 import { createServiceDefinition } from "@app/deploy/app-service-definitions";
-import { waitForOperation } from "@app/deploy/operation";
 import { fetchConfiguration } from "@app/deploy/configuration";
+import { waitForOperation } from "@app/deploy/operation";
+import { ApiGen, DeployApp, excludesFalse } from "@app/types";
 
 interface CreateProjectProps {
   name: string;

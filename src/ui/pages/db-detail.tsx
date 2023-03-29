@@ -1,6 +1,6 @@
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
-import { useSelector } from "react-redux";
 
 import {
   fetchDatabase,

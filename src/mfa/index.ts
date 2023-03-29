@@ -1,13 +1,13 @@
 import { Next, select } from "saga-query";
 
+import { AuthApiCtx, authApi } from "@app/api";
+import { defaultEntity } from "@app/hal";
 import {
   createAssign,
-  createTable,
   createReducerMap,
+  createTable,
 } from "@app/slice-helpers";
-import { LinkResponse, ApiGen, AppState, U2fDevice, Otp } from "@app/types";
-import { defaultEntity } from "@app/hal";
-import { authApi, AuthApiCtx } from "@app/api";
+import { ApiGen, AppState, LinkResponse, Otp, U2fDevice } from "@app/types";
 
 const defaultOtp = (o: Partial<Otp> = {}): Otp => {
   return {

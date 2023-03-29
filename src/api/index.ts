@@ -1,38 +1,36 @@
 import {
-  createApi,
-  fetcher,
-  requestMonitor,
-  call,
-  select,
-  createPipe,
-  errorHandler,
-  dispatchActions,
-  timer,
-  put,
-  setLoaderStart,
-  setLoaderError,
   all,
+  call,
+  createApi,
+  createPipe,
+  dispatchActions,
+  errorHandler,
+  fetcher,
+  put,
+  requestMonitor,
+  select,
+  setLoaderError,
+  setLoaderStart,
   setLoaderSuccess,
+  timer,
 } from "saga-query";
 import type {
   ApiCtx,
+  CreateActionWithPayload,
+  LoaderCtx,
   Next,
   PipeCtx,
-  LoaderCtx,
-  CreateActionWithPayload,
 } from "saga-query";
 
 import { selectEnv } from "@app/env";
-import type { ApiGen, AuthApiError, Action, HalEmbedded } from "@app/types";
 import { halEntityParser } from "@app/hal";
 import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
+import type { Action, ApiGen, AuthApiError, HalEmbedded } from "@app/types";
 
 type EndpointUrl = "auth" | "api" | "billing";
 
-export interface AppCtx<P = any, S = any>
-  extends ApiCtx<P, S, { message: string }> {}
-export interface DeployApiCtx<P = any, S = any>
-  extends ApiCtx<P, S, { message: string }> {}
+export type AppCtx<P = any, S = any> = ApiCtx<P, S, { message: string }>;
+export type DeployApiCtx<P = any, S = any> = ApiCtx<P, S, { message: string }>;
 export interface AuthApiCtx<P = any, S = any>
   extends ApiCtx<P, S, AuthApiError> {
   elevated: boolean;

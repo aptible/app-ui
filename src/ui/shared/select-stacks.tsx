@@ -3,8 +3,8 @@ import { useQuery } from "saga-query/react";
 
 import { fetchAllStacks, selectStacksAsOptions } from "@app/deploy";
 
-import { Loading } from "./loading";
 import { EmptyResources, ErrorResources } from "./load-resources";
+import { Loading } from "./loading";
 import { SelectMenu } from "./select-menu";
 
 export const StackSelect = () => {

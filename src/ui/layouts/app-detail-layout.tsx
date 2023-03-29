@@ -1,8 +1,7 @@
-import { Outlet, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Outlet, useParams } from "react-router-dom";
 
 import { prettyEnglishDate } from "@app/date";
-import type { AppState, DeployApp } from "@app/types";
 import { selectAppById, selectEnvironmentById } from "@app/deploy";
 import {
   appActivityUrl,
@@ -11,6 +10,7 @@ import {
   appSettingsUrl,
   environmentResourcelUrl,
 } from "@app/routes";
+import type { AppState, DeployApp } from "@app/types";
 
 import {
   Box,

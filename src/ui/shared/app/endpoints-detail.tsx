@@ -1,7 +1,7 @@
 import { useQuery } from "saga-query/react";
 
-import { AppState, DeployApp } from "@app/types";
 import { fetchEndpointsByAppId, selectEndpointsByAppId } from "@app/deploy";
+import { DeployApp } from "@app/types";
 
 // TODO - use this in some way to prevent double load
 import { LoadResources } from "../load-resources";

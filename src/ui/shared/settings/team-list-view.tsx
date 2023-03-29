@@ -1,9 +1,9 @@
 import type { User } from "@app/types";
 
+import { Button } from "../button";
+import { InputSearch } from "../input";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
-import { InputSearch } from "../input";
-import { Button } from "../button";
 import { tokens } from "../tokens";
 
 const UserListRow = ({ user }: { user: User }) => {

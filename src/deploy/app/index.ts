@@ -1,4 +1,4 @@
-import { api, cacheTimer, combinePages, PaginateProps, thunks } from "@app/api";
+import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -6,16 +6,16 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import type {
-  DeployApp,
   AppState,
+  DeployApp,
+  DeployOperationResponse,
   LinkResponse,
   ProvisionableStatus,
-  DeployOperationResponse,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 import { call, poll, select } from "saga-query";
 
-import { selectEnvironments, findEnvById } from "../environment";
+import { findEnvById, selectEnvironments } from "../environment";
 import { deserializeImage } from "../image";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { selectDeploy } from "../slice";

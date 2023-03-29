@@ -1,7 +1,7 @@
-import cn from "classnames";
-import { PropsWithChildren } from "react";
 import { ActionList, ActionListView } from "./action-list-view";
 import { tokens } from "./tokens";
+import cn from "classnames";
+import { PropsWithChildren } from "react";
 
 type ModalProps = PropsWithChildren<{
   isOpen: boolean;

@@ -1,5 +1,5 @@
 import { createReducerMap } from "@app/slice-helpers";
-import { ActionWithPayload, AppState, ModalType, ModalState } from "@app/types";
+import { ActionWithPayload, AppState, ModalState, ModalType } from "@app/types";
 import { createSlice } from "@reduxjs/toolkit";
 
 const MODALS_NAME = "modal";

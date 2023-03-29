@@ -1,8 +1,8 @@
 import { select } from "saga-query";
 
 import { authApi } from "@app/api";
+import { resetToken, selectToken } from "@app/token";
 import { Token } from "@app/types";
-import { selectToken, resetToken } from "@app/token";
 
 export const logout = authApi.delete(
   "/tokens/:tokenId",

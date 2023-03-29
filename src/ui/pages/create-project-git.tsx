@@ -1,7 +1,9 @@
+import cn from "classnames";
 import { useEffect, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { selectDataById, selectLoaderById } from "saga-query";
 import {
   useApi,
   useCache,
@@ -9,8 +11,6 @@ import {
   useLoaderSuccess,
   useQuery,
 } from "saga-query/react";
-import { selectDataById, selectLoaderById } from "saga-query";
-import cn from "classnames";
 
 import { prettyDateRelative, prettyDateTime } from "@app/date";
 import {
@@ -22,7 +22,6 @@ import {
   createProjectGitStatusUrl,
 } from "@app/routes";
 import { fetchSSHKeys } from "@app/ssh-keys";
-import { selectCurrentUser } from "@app/users";
 import {
   AppState,
   DeployApp,
@@ -33,38 +32,32 @@ import {
   HalEmbedded,
   OperationStatus,
 } from "@app/types";
+import { selectCurrentUser } from "@app/users";
 
 import {
-  tokens,
-  Box,
-  Input,
-  Loading,
-  ErrorResources,
-  Button,
-  FormGroup,
-  BannerMessages,
-  Banner,
-  ButtonLink,
   ApplicationSidebar,
+  Banner,
+  BannerMessages,
+  Box,
+  Button,
+  ButtonLink,
+  ErrorResources,
+  FormGroup,
+  IconArrowRight,
   IconCheck,
-  IconInfo,
-  IconGitBranch,
   IconChevronDown,
   IconChevronUp,
+  IconGitBranch,
+  IconInfo,
+  IconPlusCircle,
   IconSettings,
   IconX,
-  IconArrowRight,
-  IconPlusCircle,
+  Input,
+  Loading,
   PreCode,
+  tokens,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
-import {
-  createProject,
-  DbSelectorProps,
-  deployProject,
-  TextVal,
-  updateEnvWithDbUrls,
-} from "@app/projects";
 import {
   cancelAppOpsPoll,
   fetchAllStacks,
@@ -83,6 +76,22 @@ import {
   selectStackPublicDefault,
 } from "@app/deploy";
 import {
+  fetchServiceDefinitionsByAppId,
+  selectServiceDefinitionsByAppId,
+} from "@app/deploy/app-service-definitions";
+import {
+  DeployCodeScanResponse,
+  fetchCodeScanResult,
+} from "@app/deploy/code-scan-result";
+import {
+  DeployConfigurationResponse,
+  fetchConfiguration,
+} from "@app/deploy/configuration";
+import {
+  fetchAllDatabaseImages,
+  selectDatabaseImagesAsList,
+} from "@app/deploy/database-images";
+import {
   cancelEnvOperationsPoll,
   fetchOperationLogs,
   hasDeployOperation,
@@ -96,21 +105,12 @@ import {
 } from "@app/deploy/operation";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
-  fetchAllDatabaseImages,
-  selectDatabaseImagesAsList,
-} from "@app/deploy/database-images";
-import {
-  DeployCodeScanResponse,
-  fetchCodeScanResult,
-} from "@app/deploy/code-scan-result";
-import {
-  fetchServiceDefinitionsByAppId,
-  selectServiceDefinitionsByAppId,
-} from "@app/deploy/app-service-definitions";
-import {
-  DeployConfigurationResponse,
-  fetchConfiguration,
-} from "@app/deploy/configuration";
+  DbSelectorProps,
+  TextVal,
+  createProject,
+  deployProject,
+  updateEnvWithDbUrls,
+} from "@app/projects";
 
 export const CreateProjectLayout = () => {
   return (
@@ -573,7 +573,7 @@ type DbSelectorAction =
   | { type: "rm"; payload: string };
 
 function dbSelectorReducer(
-  state: { [key: string]: DbSelectorProps } = {},
+  state: { [key: string]: DbSelectorProps },
   action: DbSelectorAction,
 ) {
   if (action.type === "add") {

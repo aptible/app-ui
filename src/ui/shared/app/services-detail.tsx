@@ -1,14 +1,10 @@
+import { calcServiceMetrics, selectServicesByIds } from "@app/deploy";
 import { AppState, DeployApp, DeployService } from "@app/types";
-import {
-  calcServiceMetrics,
-  selectServiceById,
-  selectServicesByIds,
-} from "@app/deploy";
 
 import {
+  ResourceListView,
   TableHead,
   Td,
-  ResourceListView,
   tokens,
   ButtonIcon,
   IconPlusCircle,

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 import { useLoader, useLoaderSuccess } from "saga-query/react";
 
-import { homeUrl } from "@app/routes";
 import { createOrganization } from "@app/organizations";
+import { homeUrl } from "@app/routes";
 
-import { Button, Banner, FormGroup, Progress } from "../shared";
+import { Banner, Button, FormGroup, Progress } from "../shared";
 
 const CreateOrgForm = () => {
   const dispatch = useDispatch();

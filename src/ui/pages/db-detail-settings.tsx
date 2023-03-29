@@ -1,8 +1,3 @@
-import { deprovisionDatabase, selectDatabaseById } from "@app/deploy";
-import { AppState } from "@app/types";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
 import {
   Box,
   Button,
@@ -14,6 +9,11 @@ import {
   Input,
   Label,
 } from "../shared";
+import { deprovisionDatabase, selectDatabaseById } from "@app/deploy";
+import { AppState } from "@app/types";
+import { SyntheticEvent, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router";
 
 export const DatabaseSettingsPage = () => {
   const { id = "" } = useParams();

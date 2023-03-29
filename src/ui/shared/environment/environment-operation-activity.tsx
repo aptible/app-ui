@@ -1,10 +1,10 @@
+import { Td } from "../table";
+import { IconForResource } from "./environment-activity";
 import { prettyDateRelative } from "@app/date";
 import { selectEnvironmentById } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployOperation } from "@app/types";
 import { useSelector } from "react-redux";
-import { Td } from "../table";
-import { IconForResource } from "./environment-activity";
 
 export const EnvironmentOperationActivity = ({
   operation,

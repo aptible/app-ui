@@ -1,5 +1,5 @@
-import { useQuery } from "saga-query/react";
 import { Link } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 
 import {
   fetchAllEnvironments,
@@ -8,19 +8,19 @@ import {
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
-import type { AppState, DeployEnvironment } from "@app/types";
 import { environmentResourcelUrl } from "@app/routes";
+import type { AppState, DeployEnvironment } from "@app/types";
 
-import { IconEllipsis } from "../icons";
-import { TableHead, Td } from "../table";
-import { LoadResources } from "../load-resources";
-import { tokens } from "../tokens";
-import { ResourceListView } from "../resource-list-view";
-import { useSelector } from "react-redux";
-import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
-import { prettyEnglishDate, timeAgo } from "@app/date";
 import { Button } from "../button";
+import { IconEllipsis } from "../icons";
+import { LoadResources } from "../load-resources";
+import { ResourceListView } from "../resource-list-view";
+import { TableHead, Td } from "../table";
+import { tokens } from "../tokens";
+import { prettyEnglishDate, timeAgo } from "@app/date";
+import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { capitalize } from "@app/string-utils";
+import { useSelector } from "react-redux";
 
 interface EnvironmentCellProps {
   environment: DeployEnvironment;

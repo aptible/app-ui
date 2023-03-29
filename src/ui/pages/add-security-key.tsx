@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useCache } from "saga-query/react";
 
-import { selectCurrentUserId } from "@app/users";
 import { fetchU2fChallenges } from "@app/mfa";
+import { selectCurrentUserId } from "@app/users";
 
 import { Banner, Button, ExternalLink, FormGroup } from "../shared";
 

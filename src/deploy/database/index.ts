@@ -1,7 +1,7 @@
 import {
-  call,
   FetchJson,
   Payload,
+  call,
   put,
   select,
   setLoaderError,
@@ -9,7 +9,21 @@ import {
   setLoaderSuccess,
 } from "saga-query";
 
+import {
+  DeployApiCtx,
+  PaginateProps,
+  ThunkCtx,
+  api,
+  cacheTimer,
+  combinePages,
+  thunks,
+} from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
+import {
+  createReducerMap,
+  createTable,
+  mustSelectEntity,
+} from "@app/slice-helpers";
 import type {
   AppState,
   DeployDatabase,
@@ -19,26 +33,12 @@ import type {
   OperationStatus,
   ProvisionableStatus,
 } from "@app/types";
-import {
-  api,
-  cacheTimer,
-  combinePages,
-  DeployApiCtx,
-  PaginateProps,
-  ThunkCtx,
-  thunks,
-} from "@app/api";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
 
-import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { deserializeDisk } from "../disk";
+import { findEnvById, selectEnvironments } from "../environment";
+import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { selectDeploy } from "../slice";
 import { createSelector } from "@reduxjs/toolkit";
-import { findEnvById, selectEnvironments } from "../environment";
 
 export interface DeployDatabaseResponse {
   id: number;
