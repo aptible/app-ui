@@ -1,5 +1,9 @@
 import { prettyEnglishDateWithTime, timeBetween } from "@app/date";
-import { selectAppById, selectDatabaseById } from "@app/deploy";
+import {
+  selectAppById,
+  selectDatabaseById,
+  selectEnvironmentById,
+} from "@app/deploy";
 import { extractIdFromLink, extractResourceNameFromLink } from "@app/hal";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployOperationResponse, OperationStatus } from "@app/types";
@@ -66,11 +70,15 @@ const OperationCell = ({ operation }: OperationCellProps) => {
 const ViewLogsCell = ({ operation }: OperationCellProps) => {
   const resourceType = extractResourceNameFromLink(operation._links.resource);
   const resourceId = extractIdFromLink(operation._links.resource);
+  const environmentId = extractIdFromLink(operation._links.account);
   const [resourceHandle, setResourceHandle] = useState("");
   const resource = useSelector((s: AppState) =>
     resourceType === "database"
       ? selectDatabaseById(s, { id: resourceId })
       : selectAppById(s, { id: resourceId }),
+  );
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: environmentId }),
   );
 
   useEffect(() => {
@@ -81,16 +89,13 @@ const ViewLogsCell = ({ operation }: OperationCellProps) => {
     <Td className="flex-1 justify-center">
       <div className="flex justify-center">
         <ButtonIcon
-          icon={
-            <IconCopy className="-mr-4 -ml-2 -my-2" style={{ width: 16 }} />
-          }
+          icon={<IconCopy className="-mr-2" variant="sm" />}
           onClick={(e: SyntheticEvent) => {
             e.preventDefault();
-            const environmentId = extractIdFromLink(operation._links.account);
             // the only choices are app or database for this flag
             const resourceString = resourceType === "database" ? "db" : "app";
             navigator.clipboard.writeText(
-              `aptible logs --${resourceString} ${resourceHandle} --env ${environmentId}`,
+              `aptible logs --${resourceString} ${resourceHandle} --env ${environment.handle}`,
             );
           }}
           variant="white"
@@ -111,12 +116,7 @@ const DownloadLogsCell = ({ operation }: OperationCellProps) => {
           rel="noreferrer"
         >
           <ButtonIcon
-            icon={
-              <IconDownload
-                className="-mr-4 -ml-2 -my-2"
-                style={{ width: 16 }}
-              />
-            }
+            icon={<IconDownload className="-mr-2" variant="sm" />}
             variant="white"
           />
         </a>

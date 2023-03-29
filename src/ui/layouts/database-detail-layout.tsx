@@ -2,7 +2,7 @@ import { Outlet, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import type { AppState, DeployDatabase } from "@app/types";
-import { selectDatabaseById } from "@app/deploy";
+import { selectDatabaseById, selectEnvironmentById } from "@app/deploy";
 import {
   databaseActivityUrl,
   databaseBackupsUrl,
@@ -10,6 +10,7 @@ import {
   databaseSecurityUrl,
   databaseSettingsUrl,
   databaseUrl,
+  environmentResourcelUrl,
 } from "@app/routes";
 
 import {
@@ -22,8 +23,6 @@ import {
 
 import { DetailPageLayout } from "./detail-page";
 import { prettyEnglishDate } from "@app/date";
-
-const crumbs = [{ name: "Databases", to: databaseUrl() }];
 
 const databaseDetailBox = ({
   database,
@@ -117,6 +116,12 @@ const databaseDetailBox = ({
 function DatabasePageHeader() {
   const { id = "" } = useParams();
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: database.environmentId }),
+  );
+  const crumbs = [
+    { name: environment.handle, to: environmentResourcelUrl(environment.id) },
+  ];
 
   const tabs = [
     { name: "Overview", href: databaseOverviewUrl(id) },

@@ -75,7 +75,7 @@ const EndpointListing = ({
   parent,
 }: { endpoint: DeployEndpoint; parent: string }) => {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full py-6 -mt-5 -mb-5">
+    <div className="max-w-7xl mx-auto w-full py-6 -mt-5 -mb-5">
       <Box>
         <ButtonIcon
           icon={
@@ -123,12 +123,6 @@ const EndpointListing = ({
                   ? "External (publicly accessible)"
                   : "Internal"}
               </p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Container Port
-              </h3>
-              {endpoint.containerExposedPorts} (TBD)
             </div>
             <div className="mt-4">
               <h3 className="text-base font-semibold text-gray-900">
