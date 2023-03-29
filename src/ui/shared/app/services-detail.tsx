@@ -2,20 +2,20 @@ import { calcServiceMetrics, selectServicesByIds } from "@app/deploy";
 import { AppState, DeployApp, DeployService } from "@app/types";
 
 import {
+  ButtonIcon,
+  IconChevronDown,
+  IconChevronUp,
+  IconEllipsis,
+  IconPlusCircle,
+  InputSearch,
+  PreCode,
   ResourceListView,
   TableHead,
   Td,
   tokens,
-  ButtonIcon,
-  IconPlusCircle,
-  PreCode,
-  IconEllipsis,
-  InputSearch,
-  IconChevronDown,
-  IconChevronUp,
 } from "../../shared";
-import { useSelector } from "react-redux";
 import { ReactElement, SyntheticEvent, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const serviceListRow = ({
   service,
@@ -122,6 +122,11 @@ export function ServicesOverview({
     }
   }, [sortedAscending]);
 
+  const handleSorting = (e: SyntheticEvent) => {
+    e.preventDefault;
+    setSortedAscending(!sortedAscending);
+  };
+
   return (
     <div className="mb-4">
       <ResourceListView
@@ -142,12 +147,10 @@ export function ServicesOverview({
             </div>
             <p className="text-sm text-gray-500 mt-4 select-none">
               <span>{serviceIds.length} Services</span>
-              <span
-                className="ml-5 cursor-pointer"
-                onClick={(e: SyntheticEvent) => {
-                  e.preventDefault;
-                  setSortedAscending(!sortedAscending);
-                }}
+              <div
+                className="ml-5 cursor-pointer inline"
+                onClick={handleSorting}
+                onKeyDown={handleSorting}
               >
                 Sort: A to Z{" "}
                 {sortedAscending ? (
@@ -155,7 +158,7 @@ export function ServicesOverview({
                 ) : (
                   <IconChevronDown {...sortIconProps} />
                 )}
-              </span>
+              </div>
             </p>
           </>
         }

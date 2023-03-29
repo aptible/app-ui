@@ -5,8 +5,8 @@ import { prettyEnglishDate } from "@app/date";
 import { selectAppById, selectEnvironmentById } from "@app/deploy";
 import {
   appActivityUrl,
-  appOverviewUrl,
   appEndpointsUrl,
+  appOverviewUrl,
   appSettingsUrl,
   environmentResourcelUrl,
 } from "@app/routes";

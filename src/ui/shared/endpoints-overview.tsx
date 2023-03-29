@@ -1,8 +1,8 @@
-import { DeployEndpoint, AppState, ProvisionableStatus } from "@app/types";
+import { AppState, DeployEndpoint, ProvisionableStatus } from "@app/types";
 import cn from "classnames";
 
+import { Box } from "./box";
 import { ButtonIcon } from "./button";
-import { EmptyResultView } from "./resource-list-view";
 import {
   IconArrowRight,
   IconCheck,
@@ -13,8 +13,8 @@ import {
   IconX,
 } from "./icons";
 import { InputSearch } from "./input";
+import { EmptyResultView } from "./resource-list-view";
 import { ReactElement, useState } from "react";
-import { Box } from "./box";
 
 import { capitalize } from "@app/string-utils";
 

@@ -1,3 +1,12 @@
+import { ButtonIcon } from "./button";
+import {
+  IconCheckCircle,
+  IconCopy,
+  IconDownload,
+  IconInfo,
+  IconX,
+} from "./icons";
+import { Td } from "./table";
 import { prettyEnglishDateWithTime, timeBetween } from "@app/date";
 import {
   selectAppById,
@@ -9,15 +18,6 @@ import { capitalize } from "@app/string-utils";
 import { AppState, DeployOperationResponse, OperationStatus } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { ButtonIcon } from "./button";
-import {
-  IconCheckCircle,
-  IconCopy,
-  IconDownload,
-  IconInfo,
-  IconX,
-} from "./icons";
-import { Td } from "./table";
 
 interface OperationCellProps {
   operation: DeployOperationResponse;
