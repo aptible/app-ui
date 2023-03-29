@@ -2,8 +2,8 @@ import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
 import {
-  calcMetrics,
   CONTAINER_PROFILES,
+  calcMetrics,
   selectDatabaseById,
   selectEnvironmentById,
   selectServiceById,
@@ -11,11 +11,11 @@ import {
 import {
   databaseActivityUrl,
   databaseBackupsUrl,
-  databaseOverviewUrl,
   databaseClusterUrl,
+  databaseOverviewUrl,
+  databaseScaleUrl,
   databaseSettingsUrl,
   environmentResourcelUrl,
-  databaseScaleUrl,
 } from "@app/routes";
 import type { AppState, DeployDatabase, DeployService } from "@app/types";
 

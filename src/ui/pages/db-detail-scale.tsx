@@ -1,3 +1,4 @@
+import { Box, Button, FormGroup, Input } from "../shared";
 import {
   fetchDatabase,
   fetchService,
@@ -9,7 +10,6 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
-import { Box, Button, FormGroup, Input } from "../shared";
 
 export const DatabaseScalePage = () => {
   const { id = "" } = useParams();
