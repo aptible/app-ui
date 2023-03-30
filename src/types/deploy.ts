@@ -244,6 +244,7 @@ export interface DeployDatabase extends Provisionable, Timestamps {
   disk: DeployDisk | null;
   serviceId: string;
   databaseImageId: string;
+  initializeFrom: string;
 }
 
 export interface DeployDatabaseImage extends Timestamps {

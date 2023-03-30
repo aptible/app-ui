@@ -55,6 +55,7 @@ export interface DeployDatabaseResponse {
     account: LinkResponse;
     service: LinkResponse;
     database_image: LinkResponse;
+    initialize_from: LinkResponse;
   };
   _embedded: {
     disk: any;
@@ -83,6 +84,7 @@ export const deserializeDeployDatabase = (
     environmentId: extractIdFromLink(links.account),
     serviceId: extractIdFromLink(links.service),
     disk: embedded.disk ? deserializeDisk(embedded.disk) : null,
+    initializeFrom: extractIdFromLink(links.initialize_from),
     lastOperation: embedded.last_operation
       ? deserializeDeployOperation(embedded.last_operation)
       : null,
@@ -108,6 +110,7 @@ export const defaultDeployDatabase = (
     environmentId: "",
     serviceId: "",
     disk: null,
+    initializeFrom: "",
     lastOperation: null,
     ...d,
   };
@@ -349,6 +352,20 @@ export const fetchDatabaseBackups = api.get<{ id: string }>(
   "/databases/:id/backups",
   { saga: cacheTimer() },
   api.cache(),
+);
+
+export const fetchDatabaseDependents = api.get<{ id: string }>(
+  "/databases/:id/dependents",
+  api.cache(),
+);
+
+export const selectDatabaseDependents = createSelector(
+  selectDatabasesAsList,
+  (_: AppState, props: { id: string }) => props.id,
+  (dbs, id) =>
+    dbs
+      .filter((db): boolean => db.initializeFrom === id)
+      .sort((a, b) => a.id.localeCompare(b.id)), // sort them to ensure an idempotent order
 );
 
 export const databaseEntities = {
