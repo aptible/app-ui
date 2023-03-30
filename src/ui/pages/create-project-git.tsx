@@ -1402,6 +1402,22 @@ export const CreateProjectGitStatusPage = () => {
     );
   };
 
+  // if the user started the deployment process but left before
+  // we could create an app deploy operation then we need to kick that
+  // off again here
+  useEffect(() => {
+    if (!hasDeployOperation(deployOp)) {
+      dispatch(
+        redeployApp({
+          appId,
+          envId: env.id,
+          gitRef,
+          force: true,
+        }),
+      );
+    }
+  }, []);
+
   // when the status is success we need to refetch the app and endpoints
   // so we can grab the services and show them to the user for creating
   // an endpoint.
