@@ -65,7 +65,7 @@ const clusterDatabaseRow = ({
 
       <Td className="flex-1">
         <div className={tokens.type.darker}>
-          {!!clusterDatabase.disk ? `${clusterDatabase.disk?.size} GB` : "N/A"}
+          {clusterDatabase.disk ? `${clusterDatabase.disk?.size} GB` : "N/A"}
         </div>
       </Td>
 
@@ -103,7 +103,7 @@ export const DatabaseClusterPage = () => {
     <LoadResources query={dependentsQuery} isEmpty={false}>
       <div className="text-sm text-gray-500 mt-4 select-none">
         <div className="ml-5 cursor-pointer inline">
-          {!!clusterDatabases.length ? clusterDatabases.length : 0} Cluster
+          {clusterDatabases.length ? clusterDatabases.length : 0} Cluster
           Members. Replicas can only be added via the Aptible CLI,{" "}
           <a href="https://aptible.com/docs" className="text-blue-500">
             view docs to learn more
