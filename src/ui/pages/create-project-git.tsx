@@ -1346,10 +1346,10 @@ const CreateEndpointView = ({
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
-  useQuery(fetchApp({ id: appId }));
+  const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
-  const appQuery = useQuery(fetchEnvironment({ id: envId }));
+  useQuery(fetchEnvironment({ id: envId }));
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
