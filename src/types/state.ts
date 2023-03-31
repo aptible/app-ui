@@ -6,6 +6,7 @@ import type {
   DeployEndpoint,
   DeployEnvironment,
   DeployLogDrain,
+  DeployMetricDrain,
   DeployOperation,
   DeployService,
   DeployServiceDefinition,
@@ -85,6 +86,7 @@ export interface DeployState {
   databaseImages: MapEntity<DeployDatabaseImage>;
   services: MapEntity<DeployService>;
   logDrains: MapEntity<DeployLogDrain>;
+  metricDrains: MapEntity<DeployMetricDrain>;
   operations: MapEntity<DeployOperation>;
 }
 

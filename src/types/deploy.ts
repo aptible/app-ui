@@ -283,6 +283,20 @@ export interface DeployLogDrain extends Provisionable, Timestamps {
   drainProxies: boolean;
 }
 
+export interface DeployMetricDrain extends Provisionable, Timestamps {
+  id: string;
+  handle: string;
+  drainType: string;
+  agggregatorCaCertificate: string;
+  aggregatorCaPrivateKeyBlob: string;
+  aggregatorHost: string;
+  aggregatorPortMapping: number[][];
+  aggregatorInstanceId: string;
+  aggregatorDockerName: string;
+  aggregatorAllocation: string[];
+  drainConfiguration: any;
+}
+
 export interface DeployServiceDefinition extends Timestamps {
   id: string;
   appId: string;
