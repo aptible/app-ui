@@ -72,12 +72,15 @@ export const databaseOverviewUrl = (id: string) =>
 export const DATABASE_ACTIVITY_PATH = `${DATABASE_DETAIL_PATH}/activity`;
 export const databaseActivityUrl = (id: string) =>
   `${databaseDetailUrl(id)}/activity`;
-export const DATABASE_SECURITY_PATH = `${DATABASE_DETAIL_PATH}/security`;
-export const databaseSecurityUrl = (id: string) =>
-  `${databaseDetailUrl(id)}/security`;
 export const DATABASE_BACKUPS_PATH = `${DATABASE_DETAIL_PATH}/backups`;
 export const databaseBackupsUrl = (id: string) =>
   `${databaseDetailUrl(id)}/backups`;
+export const DATABASE_CLUSTER_PATH = `${DATABASE_DETAIL_PATH}/cluster`;
+export const databaseClusterUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/cluster`;
+export const DATABASE_SCALE_PATH = `${DATABASE_DETAIL_PATH}/scale`;
+export const databaseScaleUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/scale`;
 export const DATABASE_SETTINGS_PATH = `${DATABASE_DETAIL_PATH}/settings`;
 export const databaseSettingsUrl = (id: string) =>
   `${databaseDetailUrl(id)}/settings`;

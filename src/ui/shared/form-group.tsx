@@ -34,6 +34,7 @@ type Props = PropsWithChildren<{
   description?: string | JSX.Element;
   feedbackMessage?: string | null;
   feedbackVariant?: Variant;
+  splitWidthInputs?: boolean;
 }>;
 
 export function FormGroups({ children }: PropsWithChildren<any>) {
@@ -47,15 +48,16 @@ export function FormGroup({
   label,
   htmlFor,
   description,
+  splitWidthInputs,
 }: Props) {
   return (
-    <div className="flex flex-col gap-2">
-      <div>
+    <div className={`flex gap-2 ${splitWidthInputs ? "" : "flex-col"}`}>
+      <div className={`${splitWidthInputs ? "w-1/2" : ""}`}>
         <Label htmlFor={htmlFor}>{label}</Label>
         {description ? <div className="text-black-500">{description}</div> : ""}
       </div>
 
-      <div className="flex flex-col gap-1">
+      <div className={`flex gap-1 ${splitWidthInputs ? "w-1/2" : "flex-col"}`}>
         {children}
         {feedbackMessage ? (
           <FormGroupFeedback

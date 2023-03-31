@@ -39,7 +39,7 @@ export const DatabaseActivityPage = () => {
   const { operations } = query.data._embedded;
 
   return (
-    <div className="mt-4">
+    <div className="my-4">
       <LoadResources query={query} isEmpty={operations.length === 0}>
         <ResourceListView
           tableHeader={
