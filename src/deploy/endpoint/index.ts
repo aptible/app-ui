@@ -52,6 +52,7 @@ export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
     virtualDomain: payload.virtual_domain,
     status: payload.status,
     serviceId: extractIdFromLink(payload._links.service),
+    certificateId: extractIdFromLink(payload._links.certificate),
   };
 };
 
@@ -83,6 +84,7 @@ export const defaultDeployEndpoint = (
     userDomain: "",
     virtualDomain: "",
     serviceId: "",
+    certificateId: "",
     ...e,
   };
 };

@@ -1,14 +1,17 @@
 import { selectDeploy } from "../slice";
 import { api, cacheTimer } from "@app/api";
-import { defaultEntity } from "@app/hal";
+import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
 import { AppState, DeployCertificate } from "@app/types";
+import { createSelector } from "@reduxjs/toolkit";
 
 export const deserializeCertificate = (payload: any): DeployCertificate => {
+  const links = payload._links;
+
   return {
     id: payload.id,
     commonName: payload.common_name,
@@ -34,6 +37,7 @@ export const deserializeCertificate = (payload: any): DeployCertificate => {
     privateKey: payload.private_key,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
+    environmentId: extractIdFromLink(links.account),
   };
 };
 
@@ -66,6 +70,7 @@ export const defaultDeployCertificate = (
     privateKey: "",
     createdAt: now,
     updatedAt: now,
+    environmentId: "",
     ...c,
   };
 };
@@ -83,6 +88,15 @@ const must = mustSelectEntity(initCertificate);
 export const selectCertificateById = must(selectors.selectById);
 export const { selectTableAsList: selectCertificatesAsList } = selectors;
 export const hasDeployCertificate = (a: DeployCertificate) => a.id !== "";
+
+export const selectCertificatesByEnvId = createSelector(
+  selectCertificatesAsList,
+  (_: AppState, props: { envId: string }) => props.envId,
+  (certs, envId) => {
+    return certs.filter((cert) => cert.environmentId === envId);
+  },
+);
+
 export const certificateReducers = createReducerMap(slice);
 
 export const fetchCertificates = api.get<{ id: string }>(

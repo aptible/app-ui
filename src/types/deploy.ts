@@ -75,6 +75,7 @@ export interface DeployEndpoint extends Provisionable, Timestamps {
   userDomain: string;
   virtualDomain: string;
   serviceId: string;
+  certificateId: string;
 }
 
 export interface DeployEnvironment extends Timestamps {
@@ -321,6 +322,7 @@ export interface DeployCertificate extends Timestamps {
   subjectAlternativeNames: string[];
   privateKeyAlgorithm: string;
   privateKey: string;
+  environmentId: string;
 }
 
 export interface DeployServiceDefinition extends Timestamps {
