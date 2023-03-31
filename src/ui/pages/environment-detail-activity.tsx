@@ -24,10 +24,6 @@ export const EnvironmentActivityPage = () => {
     fetchEnvironmentOperations({ id }),
   );
 
-  useEffect(() => {
-    query.trigger();
-  }, []);
-
   if (query.isInitialLoading) {
     return <Loading />;
   }

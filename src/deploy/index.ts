@@ -7,3 +7,5 @@ export * from "./database";
 export * from "./service";
 export * from "./log-drain";
 export * from "./database-images";
+export * from "./metric-drain";
+export * from "./certificate";

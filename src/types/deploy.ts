@@ -122,6 +122,7 @@ export type OperationStatus =
 
 export type ResourceType =
   | "app"
+  | "certificate"
   | "service"
   | "database"
   | "database_credential"

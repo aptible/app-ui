@@ -85,16 +85,13 @@ export const { selectTableAsList: selectCertificatesAsList } = selectors;
 export const hasDeployCertificate = (a: DeployCertificate) => a.id !== "";
 export const certificateReducers = createReducerMap(slice);
 
-export const fetchCertificates = api.get<{ environmentId: string }>(
-  "/accounts/:id/certificatess",
-  {
-    saga: cacheTimer(),
-  },
+export const fetchCertificates = api.get<{ id: string }>(
+  "/accounts/:id/certificates",
 );
 
 export const certificateEntities = {
-  certificates: defaultEntity({
-    id: "certificates",
+  certificate: defaultEntity({
+    id: "certificate",
     deserialize: deserializeCertificate,
     save: addDeployCertificates,
   }),

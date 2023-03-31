@@ -13,9 +13,6 @@ export const EnvironmentBackupsPage = () => {
   const query = useCache<HalEmbedded<HalBackups>>(
     fetchDatabaseBackupsByEnvironment({ id }),
   );
-  useEffect(() => {
-    query.trigger();
-  }, []);
 
   if (query.isInitialLoading) {
     return <Loading />;

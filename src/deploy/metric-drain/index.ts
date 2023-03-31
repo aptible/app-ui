@@ -65,11 +65,8 @@ export const { selectTableAsList: selectMetricDrainsAsList } = selectors;
 export const hasDeployMetricDrain = (a: DeployMetricDrain) => a.id !== "";
 export const metricDrainReducers = createReducerMap(slice);
 
-export const fetchMetricDrains = api.get<{ environmentId: string }>(
+export const fetchMetricDrains = api.get<{ id: string }>(
   "/accounts/:id/metric_drains",
-  {
-    saga: cacheTimer(),
-  },
 );
 
 export const metricDrainEntities = {
