@@ -6,7 +6,7 @@ import { selectAppById, selectEnvironmentById } from "@app/deploy";
 import {
   appActivityUrl,
   appEndpointsUrl,
-  appOverviewUrl,
+  appServicesUrl,
   appSettingsUrl,
   environmentResourcelUrl,
 } from "@app/routes";
@@ -102,7 +102,7 @@ function AppPageHeader() {
   // currently the network log will error with a 404 (as the record will be deleted)
 
   const tabs = [
-    { name: "Overview", href: appOverviewUrl(id) },
+    { name: "Services", href: appServicesUrl(id) },
     { name: "Endpoints", href: appEndpointsUrl(id) },
     { name: "Activity", href: appActivityUrl(id) },
     { name: "Settings", href: appSettingsUrl(id) },

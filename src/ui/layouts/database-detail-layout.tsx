@@ -12,7 +12,7 @@ import {
   databaseActivityUrl,
   databaseBackupsUrl,
   databaseClusterUrl,
-  databaseOverviewUrl,
+  databaseEndpointsUrl,
   databaseScaleUrl,
   databaseSettingsUrl,
   environmentResourcelUrl,
@@ -137,7 +137,7 @@ function DatabasePageHeader() {
   ];
 
   const tabs = [
-    { name: "Overview", href: databaseOverviewUrl(id) },
+    { name: "Endpoints", href: databaseEndpointsUrl(id) },
     { name: "Scale", href: databaseScaleUrl(id) },
     { name: "Activity", href: databaseActivityUrl(id) },
     { name: "Backups", href: databaseBackupsUrl(id) },

@@ -14,7 +14,7 @@ import {
 
 import { prettyDateRelative, prettyDateTime } from "@app/date";
 import {
-  appOverviewUrl,
+  appServicesUrl,
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
   createProjectGitPushUrl,
@@ -1460,7 +1460,7 @@ export const CreateProjectGitStatusPage = () => {
         <PreCode text={["git", "push", "aptible", "main"]} allowCopy />
         <hr />
 
-        <ButtonLink to={appOverviewUrl(appId)} className="mt-4 mb-2">
+        <ButtonLink to={appServicesUrl(appId)} className="mt-4 mb-2">
           View Project <IconArrowRight variant="sm" className="ml-2" />
         </ButtonLink>
       </StatusBox>

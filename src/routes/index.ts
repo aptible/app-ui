@@ -53,8 +53,8 @@ export const APPS_PATH = "/apps";
 export const appsUrl = () => APPS_PATH;
 export const APP_DETAIL_PATH = "/apps/:id";
 export const appDetailUrl = (id: string) => `/apps/${id}`;
-export const APP_OVERVIEW_PATH = `${APP_DETAIL_PATH}/overview`;
-export const appOverviewUrl = (id: string) => `${appDetailUrl(id)}/overview`;
+export const APP_SERVICES_PATH = `${APP_DETAIL_PATH}/services`;
+export const appServicesUrl = (id: string) => `${appDetailUrl(id)}/services`;
 export const APP_ACTIVITY_PATH = `${APP_DETAIL_PATH}/activity`;
 export const appActivityUrl = (id: string) => `${appDetailUrl(id)}/activity`;
 export const APP_ENDPOINTS_PATH = `${APP_DETAIL_PATH}/endpoints`;
@@ -66,9 +66,9 @@ export const DATABASES_PATH = "/databases";
 export const databaseUrl = () => DATABASES_PATH;
 export const DATABASE_DETAIL_PATH = "/databases/:id";
 export const databaseDetailUrl = (id: string) => `/databases/${id}`;
-export const DATABASE_OVERVIEW_PATH = `${DATABASE_DETAIL_PATH}/overview`;
-export const databaseOverviewUrl = (id: string) =>
-  `${databaseDetailUrl(id)}/overview`;
+export const DATABASE_ENDPOINTS_PATH = `${DATABASE_DETAIL_PATH}/endpoints`;
+export const databaseEndpointsUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/endpoints`;
 export const DATABASE_ACTIVITY_PATH = `${DATABASE_DETAIL_PATH}/activity`;
 export const databaseActivityUrl = (id: string) =>
   `${databaseDetailUrl(id)}/activity`;

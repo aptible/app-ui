@@ -6,7 +6,7 @@ import {
   AppActivityPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
-  AppDetailPage,
+  AppDetailServicesPage,
   AppSettingsPage,
   AppsPage,
   AuthRequired,
@@ -23,7 +23,7 @@ import {
   DatabaseBackupsPage,
   DatabaseClusterPage,
   DatabaseDetailLayout,
-  DatabaseDetailPage,
+  DatabaseEndpointsPage,
   DatabaseScalePage,
   DatabaseSettingsPage,
   DatabasesPage,
@@ -75,8 +75,8 @@ const appRoutes: RouteObject[] = [
             element: <AppDetailLayout />,
             children: [
               {
-                path: routes.APP_OVERVIEW_PATH,
-                element: <AppDetailPage />,
+                path: routes.APP_SERVICES_PATH,
+                element: <AppDetailServicesPage />,
               },
               {
                 path: routes.APP_ACTIVITY_PATH,
@@ -107,8 +107,8 @@ const appRoutes: RouteObject[] = [
             element: <DatabaseDetailLayout />,
             children: [
               {
-                path: routes.DATABASE_OVERVIEW_PATH,
-                element: <DatabaseDetailPage />,
+                path: routes.DATABASE_ENDPOINTS_PATH,
+                element: <DatabaseEndpointsPage />,
               },
               {
                 path: routes.DATABASE_ACTIVITY_PATH,
