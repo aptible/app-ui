@@ -96,9 +96,7 @@ export const selectStackPublicDefault = createSelector(
 export const hasDeployStack = (s: DeployStack) => s.organizationId !== "";
 export const stackReducers = createReducerMap(slice);
 
-export const fetchStacks = api.get<PaginateProps>("/stacks?page=:page", {
-  saga: cacheTimer(),
-});
+export const fetchStacks = api.get<PaginateProps>("/stacks?page=:page");
 export const fetchAllStacks = thunks.create(
   "fetch-all-stacks",
   { saga: cacheTimer() },

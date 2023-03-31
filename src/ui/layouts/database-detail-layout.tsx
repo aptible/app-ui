@@ -91,12 +91,7 @@ const databaseDetailBox = ({
               <h3 className="text-base font-semibold text-gray-900">
                 Disk Encryption
               </h3>
-              <p>
-                {
-                  // TODO - what is the source of this data?
-                }
-                AES-256
-              </p>
+              <p>AES-{(database.disk?.keyBytes || 32) * 8}</p>
             </div>
           </div>
           <div className="flex-col w-1/3">

@@ -94,7 +94,7 @@ export const DatabaseClusterPage = () => {
   const dependentsQuery = useQuery(fetchDatabaseDependents({ id }));
   useQuery(fetchAllDatabaseImages());
   useQuery(fetchEnvironmentServices({ id: database.environmentId }));
-  const services = useSelector((s: AppState) => selectServicesAsList(s));
+  const services = useSelector(selectServicesAsList);
   const databaseImages = useSelector((s: AppState) =>
     selectDatabaseImagesAsList(s),
   );
