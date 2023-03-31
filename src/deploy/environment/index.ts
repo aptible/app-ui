@@ -134,6 +134,12 @@ export const fetchAllEnvironments = thunks.create(
 
 export const fetchEnvironment = api.get<{ id: string }>("/accounts/:id");
 
+export const fetchEnvironmentOperations = api.get<{ id: string }>(
+  "/accounts/:id/operations",
+  { saga: cacheTimer() },
+  api.cache(),
+);
+
 interface CreateEnvProps {
   name: string;
   stackId: string;

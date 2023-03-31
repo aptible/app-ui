@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useQuery } from "saga-query/react";
@@ -107,7 +107,16 @@ const AppListRow = ({ app }: AppCellProps) => {
   );
 };
 
-export function AppList() {
+// TODO - can turn below to an interface as it has a common entrypoint for lists, not sure if we want to do this
+export function AppList({
+  resourceHeaderType = "title-bar",
+  skipDescription = false,
+  searchOverride = "",
+}: {
+  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
+  skipDescription?: boolean;
+  searchOverride?: string;
+}) {
   const query = useQuery(fetchAllApps());
   useQuery(fetchAllEnvironments());
 
@@ -116,28 +125,49 @@ export function AppList() {
     setSearch(ev.currentTarget.value);
 
   const apps = useSelector((s: AppState) =>
-    selectAppsForTableSearch(s, { search }),
+    selectAppsForTableSearch(s, {
+      search: searchOverride ? searchOverride : search,
+    }),
   );
 
   const description =
     "Apps are how you deploy your code on Aptible. Eventually, your Apps are deployed as one or more Containers.";
 
+  const resourceHeaderTitleBar = (): ReactElement | undefined => {
+    switch (resourceHeaderType) {
+      case "hidden":
+        return undefined;
+      case "title-bar":
+        return (
+          <ResourceHeader
+            title="Apps"
+            description={skipDescription ? undefined : description}
+            filterBar={
+              searchOverride ? undefined : (
+                <InputSearch
+                  placeholder="Search Apps ..."
+                  search={search}
+                  onChange={onChange}
+                />
+              )
+            }
+          />
+        );
+      case "simple-text":
+        return (
+          <p className="flex ml-4 text-gray-500 text-base">
+            {apps.length} App{apps.length > 1 && "s"}
+          </p>
+        );
+      default:
+        return undefined;
+    }
+  };
+
   return (
     <LoadResources query={query} isEmpty={apps.length === 0 && search === ""}>
       <ResourceListView
-        header={
-          <ResourceHeader
-            title="Apps"
-            description={description}
-            filterBar={
-              <InputSearch
-                placeholder="Search Apps ..."
-                search={search}
-                onChange={onChange}
-              />
-            }
-          />
-        }
+        header={resourceHeaderTitleBar()}
         tableHeader={
           <TableHead
             headers={[

@@ -37,8 +37,6 @@ export interface DeployOperationResponse {
   aborted: boolean;
   immediate: boolean;
   provisioned_iops: number;
-  disk_size: number;
-  container_size: number;
   ebs_volume_type: string;
   encrypted_stack_settings: string;
   instance_profile: string;
@@ -74,8 +72,6 @@ export const defaultDeployOperation = (
     gitRef: "",
     dockerRef: "",
     containerCount: 0,
-    diskSize: 0,
-    containerSize: 0,
     encryptedEnvJsonNew: "",
     destinationRegion: "",
     cancelled: false,
@@ -117,8 +113,6 @@ export const deserializeDeployOperation = (
     gitRef: payload.git_ref,
     dockerRef: payload.docker_ref,
     containerCount: payload.container_count,
-    diskSize: payload.disk_size,
-    containerSize: payload.container_size,
     encryptedEnvJsonNew: payload.encrypted_env_json_new,
     destinationRegion: payload.destination_region,
     cancelled: payload.cancelled,

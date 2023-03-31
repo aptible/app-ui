@@ -63,6 +63,24 @@ export interface DeployDatabaseResponse {
   };
 }
 
+export interface BackupResponse {
+  id: number;
+  aws_region: string;
+  created_by_email: string;
+  manual: boolean;
+  size: number;
+  _embedded: {
+    copied_from?: {
+      id: number;
+    };
+  };
+  created_at: string;
+}
+
+export interface HalBackups {
+  backups: BackupResponse[];
+}
+
 export const deserializeDeployDatabase = (
   payload: DeployDatabaseResponse,
 ): DeployDatabase => {
@@ -276,6 +294,7 @@ export const provisionDatabase = thunks.create<
       dbId: `${dbCtx.json.data.id}`,
       containerSize: 1024,
       diskSize: 10,
+      status: "queued",
       type: "provision",
     }),
   );
@@ -304,6 +323,7 @@ interface CreateDatabaseOpProps {
   containerSize: number;
   diskSize: number;
   type: "provision";
+  status: OperationStatus;
 }
 
 interface DeprovisionDatabaseOpProps {
@@ -323,11 +343,12 @@ export const createDatabaseOperation = api.post<
       }
 
       case "provision": {
-        const { containerSize, diskSize, type } = ctx.payload;
+        const { containerSize, diskSize, type, status } = ctx.payload;
         return {
           container_size: containerSize,
           disk_size: diskSize,
           type,
+          status,
         };
       }
 
@@ -347,6 +368,11 @@ export const fetchDatabaseOperations = api.get<{ id: string }>(
 );
 export const fetchDatabaseBackups = api.get<{ id: string }>(
   "/databases/:id/backups",
+  { saga: cacheTimer() },
+  api.cache(),
+);
+export const fetchDatabaseBackupsByEnvironment = api.get<{ id: string }>(
+  "/accounts/:id/backups",
   { saga: cacheTimer() },
   api.cache(),
 );
