@@ -93,9 +93,8 @@ const ViewLogsCell = ({ operation }: OperationCellProps) => {
           onClick={(e: SyntheticEvent) => {
             e.preventDefault();
             // the only choices are app or database for this flag
-            const resourceString = resourceType === "database" ? "db" : "app";
             navigator.clipboard.writeText(
-              `aptible logs --${resourceString} ${resourceHandle} --env ${environment.handle}`,
+              `aptible operation:logs ${operation.id}`,
             );
           }}
           variant="white"
