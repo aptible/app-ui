@@ -75,6 +75,7 @@ export interface DeployEndpoint extends Provisionable, Timestamps {
   userDomain: string;
   virtualDomain: string;
   serviceId: string;
+  certificateId: string;
 }
 
 export type OnboardingStatus =
@@ -131,6 +132,7 @@ export type OperationStatus =
 
 export type ResourceType =
   | "app"
+  | "certificate"
   | "service"
   | "database"
   | "database_credential"
@@ -193,8 +195,6 @@ export interface DeployOperation extends Timestamps {
   gitRef: string;
   dockerRef: string;
   containerCount: number;
-  diskSize: number;
-  containerSize: number;
   encryptedEnvJsonNew: string;
   destinationRegion: string;
   cancelled: boolean;
@@ -292,6 +292,46 @@ export interface DeployLogDrain extends Provisionable, Timestamps {
   drainDatabases: boolean;
   drainEphemeralSessions: boolean;
   drainProxies: boolean;
+}
+
+export interface DeployMetricDrain extends Provisionable, Timestamps {
+  id: string;
+  handle: string;
+  drainType: string;
+  agggregatorCaCertificate: string;
+  aggregatorCaPrivateKeyBlob: string;
+  aggregatorHost: string;
+  aggregatorPortMapping: number[][];
+  aggregatorInstanceId: string;
+  aggregatorDockerName: string;
+  aggregatorAllocation: string[];
+  drainConfiguration: any;
+}
+
+export interface DeployCertificate extends Timestamps {
+  id: string;
+  commonName: string;
+  certificateBody: string;
+  notBefore: string;
+  notAfter: string;
+  issuerCountry?: string;
+  issuerOrganization?: string;
+  issuerWebsite?: string;
+  issuerCommonName?: string;
+  subjectCountry?: string;
+  subjectState?: string;
+  subjectLocale?: string;
+  subjectOrganization?: string;
+  acme: boolean;
+  leafCertificate: string;
+  certificateChain: string;
+  sha256Fingerprint: string;
+  trusted: boolean;
+  selfSigned: boolean;
+  subjectAlternativeNames: string[];
+  privateKeyAlgorithm: string;
+  privateKey: string;
+  environmentId: string;
 }
 
 export interface DeployServiceDefinition extends Timestamps {

@@ -5,6 +5,7 @@ import {
   serviceDefinitionEntities,
   serviceDefinitionReducers,
 } from "./app-service-definitions";
+import { certificateEntities, certificateReducers } from "./certificate";
 import { databaseEntities, databaseReducers } from "./database";
 import {
   databaseImageEntities,
@@ -13,18 +14,21 @@ import {
 import { endpointEntities, endpointReducers } from "./endpoint";
 import { environmentEntities, environmentReducers } from "./environment";
 import { logDrainEntities, logDrainReducers } from "./log-drain";
+import { metricDrainEntities, metricDrainReducers } from "./metric-drain";
 import { opEntities, opReducers } from "./operation";
 import { serviceEntities, serviceReducers } from "./service";
 import { stackEntities, stackReducers } from "./stack";
 
 const allReducers: any[] = [
   appReducers,
+  certificateReducers,
   serviceDefinitionReducers,
   stackReducers,
   environmentReducers,
   endpointReducers,
   databaseReducers,
   logDrainReducers,
+  metricDrainReducers,
   serviceReducers,
   databaseImageReducers,
   opReducers,
@@ -42,12 +46,14 @@ export const reducers = {
 
 export const entities = {
   ...appEntities,
+  ...certificateEntities,
   ...serviceDefinitionEntities,
   ...stackEntities,
   ...environmentEntities,
   ...endpointEntities,
   ...databaseEntities,
   ...logDrainEntities,
+  ...metricDrainEntities,
   ...serviceEntities,
   ...databaseImageEntities,
   ...opEntities,

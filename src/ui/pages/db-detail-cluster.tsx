@@ -17,7 +17,7 @@ import {
   selectDatabaseImagesAsList,
   selectServicesAsList,
 } from "@app/deploy";
-import { databaseOverviewUrl } from "@app/routes";
+import { databaseEndpointsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import {
   AppState,
@@ -48,7 +48,7 @@ const clusterDatabaseRow = ({
   return (
     <tr key={`${clusterDatabase.id}`}>
       <Td className="flex-1 pl-4">
-        <Link to={databaseOverviewUrl(clusterDatabase.id)}>
+        <Link to={databaseEndpointsUrl(clusterDatabase.id)}>
           <div className={tokens.type.darker}>{clusterDatabase.handle}</div>
           <div className={tokens.type["normal lighter"]}>
             ID: {clusterDatabase.id}
@@ -94,7 +94,7 @@ export const DatabaseClusterPage = () => {
   const dependentsQuery = useQuery(fetchDatabaseDependents({ id }));
   useQuery(fetchAllDatabaseImages());
   useQuery(fetchEnvironmentServices({ id: database.environmentId }));
-  const services = useSelector((s: AppState) => selectServicesAsList(s));
+  const services = useSelector(selectServicesAsList);
   const databaseImages = useSelector((s: AppState) =>
     selectDatabaseImagesAsList(s),
   );

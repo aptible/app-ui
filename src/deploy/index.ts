@@ -7,6 +7,5 @@ export * from "./database";
 export * from "./service";
 export * from "./log-drain";
 export * from "./database-images";
-export * from "./app-service-definitions";
-export * from "./operation";
-export * from "./configuration";
+export * from "./metric-drain";
+export * from "./certificate";

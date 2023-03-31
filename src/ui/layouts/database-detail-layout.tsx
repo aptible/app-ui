@@ -12,7 +12,7 @@ import {
   databaseActivityUrl,
   databaseBackupsUrl,
   databaseClusterUrl,
-  databaseOverviewUrl,
+  databaseEndpointsUrl,
   databaseScaleUrl,
   databaseSettingsUrl,
   environmentResourcelUrl,
@@ -91,12 +91,7 @@ const databaseDetailBox = ({
               <h3 className="text-base font-semibold text-gray-900">
                 Disk Encryption
               </h3>
-              <p>
-                {
-                  // TODO - what is the source of this data?
-                }
-                AES-256
-              </p>
+              <p>AES-{(database.disk?.keyBytes || 32) * 8}</p>
             </div>
           </div>
           <div className="flex-col w-1/3">
@@ -137,7 +132,7 @@ function DatabasePageHeader() {
   ];
 
   const tabs = [
-    { name: "Overview", href: databaseOverviewUrl(id) },
+    { name: "Endpoints", href: databaseEndpointsUrl(id) },
     { name: "Scale", href: databaseScaleUrl(id) },
     { name: "Activity", href: databaseActivityUrl(id) },
     { name: "Backups", href: databaseBackupsUrl(id) },

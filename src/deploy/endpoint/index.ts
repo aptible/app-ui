@@ -17,11 +17,13 @@ import type {
   AppState,
   DeployEndpoint,
   DeployOperationResponse,
+  OperationStatus,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
-import { selectAppById } from "../app";
+import { selectAppById, selectAppsByEnvId } from "../app";
 import { selectDeploy } from "../slice";
+import { selectDatabasesByEnvId } from "../database";
 
 export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
   return {
@@ -48,6 +50,7 @@ export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
     virtualDomain: payload.virtual_domain,
     status: payload.status,
     serviceId: extractIdFromLink(payload._links.service),
+    certificateId: extractIdFromLink(payload._links.certificate),
   };
 };
 
@@ -79,6 +82,7 @@ export const defaultDeployEndpoint = (
     userDomain: "",
     virtualDomain: "",
     serviceId: "",
+    certificateId: "",
     ...e,
   };
 };
@@ -123,6 +127,27 @@ export const selectFirstEndpointByAppId = createSelector(
     }
 
     return endpoints[0];
+  },
+);
+
+export const selectEndpointsByEnvironmentId = createSelector(
+  selectAppsByEnvId,
+  selectDatabasesByEnvId,
+  selectEndpointsAsList,
+  (_: AppState, p: { envId: string }) => p.envId,
+  (apps, databases, endpoints, envId) => {
+    const serviceIdsUsedInAppsAndDatabases: string[] = [
+      // one app can have multiple services, so pull those out
+      ...apps
+        .filter((app) => app.environmentId === envId)
+        .map((app) => app.serviceIds),
+      databases
+        .filter((database) => database.environmentId === envId)
+        .map((db) => db.serviceId),
+    ].reduce((acc, elem) => acc.concat(...elem));
+    return endpoints.filter((endpoint) =>
+      serviceIdsUsedInAppsAndDatabases.includes(endpoint.serviceId),
+    );
   },
 );
 
@@ -183,16 +208,18 @@ export const deleteEndpoint = api.delete<{ id: string }>(
 
 interface CreateEndpointOpProps {
   endpointId: string;
-  type: "provision";
+  type: string;
+  status: OperationStatus;
 }
 
 export const createEndpointOperation = api.post<
   CreateEndpointOpProps,
   DeployOperationResponse
 >("/vhosts/:endpointId/operations", function* (ctx, next) {
-  const { type } = ctx.payload;
+  const { type, status } = ctx.payload;
   const body = {
     type,
+    status,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield next();
@@ -221,6 +248,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
       createEndpointOperation.run,
       createEndpointOperation({
         endpointId: `${endpointCtx.json.data.id}`,
+        status: "queued",
         type: "provision",
       }),
     );
