@@ -297,6 +297,31 @@ export interface DeployMetricDrain extends Provisionable, Timestamps {
   drainConfiguration: any;
 }
 
+export interface DeployCertificate extends Timestamps {
+  id: string;
+  commonName: string;
+  certificateBody: string;
+  notBefore: string;
+  notAfter: string;
+  issuerCountry?: string;
+  issuerOrganization?: string;
+  issuerWebsite?: string;
+  issuerCommonName?: string;
+  subjectCountry?: string;
+  subjectState?: string;
+  subjectLocale?: string;
+  subjectOrganization?: string;
+  acme: boolean;
+  leafCertificate: string;
+  certificateChain: string;
+  sha256Fingerprint: string;
+  trusted: boolean;
+  selfSigned: boolean;
+  subjectAlternativeNames: string[];
+  privateKeyAlgorithm: string;
+  privateKey: string;
+}
+
 export interface DeployServiceDefinition extends Timestamps {
   id: string;
   appId: string;

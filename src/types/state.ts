@@ -1,5 +1,6 @@
 import type {
   DeployApp,
+  DeployCertificate,
   DeployDatabase,
   DeployDatabaseImage,
   DeployDisk,
@@ -77,6 +78,7 @@ export type Theme = "light" | "dark";
 
 export interface DeployState {
   apps: MapEntity<DeployApp>;
+  certificates: MapEntity<DeployCertificate>;
   endpoints: MapEntity<DeployEndpoint>;
   environments: MapEntity<DeployEnvironment>;
   serviceDefinitions: MapEntity<DeployServiceDefinition>;
