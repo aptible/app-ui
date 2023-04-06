@@ -55,6 +55,7 @@ import {
   Input,
   Loading,
   PreCode,
+  StackSelect,
   tokens,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
@@ -74,7 +75,7 @@ import {
   selectEndpointsByAppId,
   selectEnvironmentById,
   selectServicesByIds,
-  selectStackPublicDefault,
+  selectStackPublicDefaultAsOption,
 } from "@app/deploy";
 import {
   fetchServiceDefinitionsByAppId,
@@ -208,10 +209,15 @@ export const CreateProjectAddKeyPage = () => {
 
 export const CreateProjectNamePage = () => {
   const org = useSelector(selectOrganizationSelected);
-  const stack = useSelector(selectStackPublicDefault);
+  const defaultStack = useSelector(selectStackPublicDefaultAsOption);
+  const [stackValue, setStackValue] = useState(defaultStack);
+  useEffect(() => {
+    setStackValue(defaultStack);
+  }, [defaultStack.value]);
+
   const [name, setName] = useState("");
   const thunk = useApi(
-    createProject({ name, stackId: stack.id, orgId: org.id }),
+    createProject({ name, stackId: stackValue.value, orgId: org.id }),
   );
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -234,8 +240,20 @@ export const CreateProjectNamePage = () => {
       <FormNav prev={createProjectAddKeyUrl()} />
 
       <Box>
-        <div className="my-2">Stack: {stack.name}</div>
         <form onSubmit={onSubmit}>
+          <FormGroup
+            label="Stack"
+            htmlFor="stack"
+            feedbackVariant="info"
+            className="mb-4"
+          >
+            <StackSelect
+              value={stackValue}
+              onSelect={(stack) => {
+                setStackValue(stack);
+              }}
+            />
+          </FormGroup>
           <FormGroup label="Project Name" htmlFor="name" feedbackVariant="info">
             <Input
               name="name"

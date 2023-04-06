@@ -5,9 +5,13 @@ import { fetchAllEnvironments, selectEnvironmentsAsOptions } from "@app/deploy";
 
 import { EmptyResources, ErrorResources } from "./load-resources";
 import { Loading } from "./loading";
-import { SelectMenu } from "./select-menu";
+import { Select, SelectOption } from "./select";
 
-export const EnvironmentSelect = () => {
+export const EnvironmentSelect = ({
+  onSelect,
+}: {
+  onSelect: (s: SelectOption) => void;
+}) => {
   const { isInitialLoading, isError, message } = useQuery(
     fetchAllEnvironments(),
   );
@@ -25,5 +29,5 @@ export const EnvironmentSelect = () => {
     return <EmptyResources />;
   }
 
-  return <SelectMenu options={options} />;
+  return <Select options={options} onSelect={onSelect} />;
 };
