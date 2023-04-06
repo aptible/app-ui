@@ -1,5 +1,4 @@
 import {
-  all,
   call,
   put,
   setLoaderError,

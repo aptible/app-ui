@@ -1342,10 +1342,10 @@ const CreateEndpointView = ({
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
-  useQuery(fetchApp({ id: appId }));
+  const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
-  const appQuery = useQuery(fetchEnvironment({ id: envId }));
+  useQuery(fetchEnvironment({ id: envId }));
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
@@ -1397,6 +1397,24 @@ export const CreateProjectGitStatusPage = () => {
       }),
     );
   };
+
+  // if the user started the deployment process but left before
+  // we could create an app deploy operation then we need to kick that
+  // off again here
+  useEffect(() => {
+    if (!appId) return;
+    if (!env.id) return;
+    if (!hasDeployOperation(deployOp)) {
+      dispatch(
+        redeployApp({
+          appId,
+          envId: env.id,
+          gitRef,
+          force: true,
+        }),
+      );
+    }
+  }, [appId, env.id, deployOp.id]);
 
   // when the status is success we need to refetch the app and endpoints
   // so we can grab the services and show them to the user for creating
