@@ -1406,6 +1406,8 @@ export const CreateProjectGitStatusPage = () => {
   // we could create an app deploy operation then we need to kick that
   // off again here
   useEffect(() => {
+    if (!appId) return;
+    if (!env.id) return;
     if (!hasDeployOperation(deployOp)) {
       dispatch(
         redeployApp({
@@ -1416,7 +1418,7 @@ export const CreateProjectGitStatusPage = () => {
         }),
       );
     }
-  }, []);
+  }, [appId, env.id, deployOp.id]);
 
   // when the status is success we need to refetch the app and endpoints
   // so we can grab the services and show them to the user for creating
