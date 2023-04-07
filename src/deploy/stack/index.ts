@@ -71,16 +71,20 @@ const initStack = defaultDeployStack();
 const must = mustSelectEntity(initStack);
 export const selectStackById = must(selectors.selectById);
 export const { selectTableAsList: selectStacksAsList } = selectors;
+
+export const stackToOption = (
+  stack: DeployStack,
+): { label: string; value: string } => {
+  return {
+    value: stack.id,
+    label: stack.name,
+  };
+};
+
 export const selectStacksAsOptions = createSelector(
   selectStacksAsList,
-  (stacks) => {
-    return stacks.map((s) => {
-      return {
-        label: s.name,
-        value: s.id,
-      };
-    });
-  },
+  (stacks) =>
+    stacks.map(stackToOption).sort((a, b) => a.label.localeCompare(b.label)),
 );
 export const selectStackPublicDefault = createSelector(
   selectStacksAsList,
@@ -92,6 +96,10 @@ export const selectStackPublicDefault = createSelector(
     // find first public stack
     return stacks.find((s) => s.public) || initStack;
   },
+);
+export const selectStackPublicDefaultAsOption = createSelector(
+  selectStackPublicDefault,
+  stackToOption,
 );
 export const hasDeployStack = (s: DeployStack) => s.organizationId !== "";
 export const stackReducers = createReducerMap(slice);

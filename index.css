@@ -2,6 +2,21 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@layer base {
+  a {
+    @apply text-indigo;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  a:focus, a:active {
+    @apply text-indigo-600;
+  }
+}
+
 html, body, #app {
   font-size: 14px;
   width: 100%;

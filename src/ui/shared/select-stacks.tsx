@@ -5,9 +5,9 @@ import { fetchAllStacks, selectStacksAsOptions } from "@app/deploy";
 
 import { EmptyResources, ErrorResources } from "./load-resources";
 import { Loading } from "./loading";
-import { SelectMenu } from "./select-menu";
+import { Select, SelectProps } from "./select";
 
-export const StackSelect = () => {
+export const StackSelect = (props: Omit<SelectProps, "options">) => {
   const { isInitialLoading, isError, message } = useQuery(fetchAllStacks());
   const options = useSelector(selectStacksAsOptions);
 
@@ -23,5 +23,5 @@ export const StackSelect = () => {
     return <EmptyResources />;
   }
 
-  return <SelectMenu options={options} />;
+  return <Select {...props} options={options} />;
 };

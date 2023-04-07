@@ -1,11 +1,7 @@
-import {
-  DeployApiCtx,
-  PaginateProps,
-  api,
-  cacheTimer,
-  combinePages,
-  thunks,
-} from "@app/api";
+import { createSelector } from "@reduxjs/toolkit";
+import { select } from "saga-query";
+
+import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -13,9 +9,9 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import type { AppState, DeployEnvironment, LinkResponse } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
 
 import { selectDeploy } from "../slice";
+import { selectStackById } from "../stack";
 
 interface DeployEnvironmentResponse {
   id: string;
@@ -162,11 +158,12 @@ export const createDeployEnvironment = api.post<
   DeployEnvironmentResponse
 >("/accounts", function* (ctx, next) {
   const { name, stackId, orgId } = ctx.payload;
+  const stack = yield* select(selectStackById, { id: stackId });
   const body = {
     handle: name,
     stack_id: stackId,
     organization_id: orgId,
-    type: "development",
+    type: stack.organizationId ? "production" : "development",
   };
   ctx.request = ctx.req({
     body: JSON.stringify(body),

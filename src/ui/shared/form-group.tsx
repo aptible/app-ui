@@ -28,36 +28,38 @@ export function FormGroupFeedback({ message, variant }: Feedback) {
 
 type Variant = "warn" | "danger" | "success" | "info";
 
-type Props = PropsWithChildren<{
+interface Props extends PropsWithChildren {
   label: string;
   htmlFor: string;
   description?: string | JSX.Element;
   feedbackMessage?: string | null;
   feedbackVariant?: Variant;
   splitWidthInputs?: boolean;
-}>;
-
-export function FormGroups({ children }: PropsWithChildren<any>) {
-  return <div className="flex flex-col gap-3">{children}</div>;
+  className?: string;
 }
 
 export function FormGroup({
-  feedbackVariant = "info",
   feedbackMessage,
   children,
   label,
   htmlFor,
   description,
   splitWidthInputs,
+  feedbackVariant = "info",
+  className = "",
 }: Props) {
   return (
-    <div className={`flex gap-2 ${splitWidthInputs ? "" : "flex-col"}`}>
+    <div className={`flex ${splitWidthInputs ? "" : "flex-col"} ${className}`}>
       <div className={`${splitWidthInputs ? "w-1/2" : ""}`}>
         <Label htmlFor={htmlFor}>{label}</Label>
-        {description ? <div className="text-black-500">{description}</div> : ""}
+        {description ? (
+          <div className="text-black-500 mb-2">{description}</div>
+        ) : (
+          ""
+        )}
       </div>
 
-      <div className={`flex gap-1 ${splitWidthInputs ? "w-1/2" : "flex-col"}`}>
+      <div className={`flex ${splitWidthInputs ? "w-1/2" : "flex-col"}`}>
         {children}
         {feedbackMessage ? (
           <FormGroupFeedback
