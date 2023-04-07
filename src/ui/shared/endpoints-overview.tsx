@@ -1,4 +1,4 @@
-import { AppState, DeployEndpoint, ProvisionableStatus } from "@app/types";
+import { DeployEndpoint, ProvisionableStatus } from "@app/types";
 import cn from "classnames";
 
 import { Box } from "./box";

@@ -2,11 +2,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
 
-import {
-  fetchEnvironmentServices,
-  hasDeployApp,
-  selectAppById,
-} from "@app/deploy";
+import { fetchEnvironmentServices, selectAppById } from "@app/deploy";
 import { AppState } from "@app/types";
 
 import { DetailPageSections, LoadResources, ServicesOverview } from "../shared";

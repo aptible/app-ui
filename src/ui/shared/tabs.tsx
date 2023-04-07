@@ -1,4 +1,3 @@
-import { tokens } from "./tokens";
 import cn from "classnames";
 import { NavLink } from "react-router-dom";
 

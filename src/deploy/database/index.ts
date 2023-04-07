@@ -30,7 +30,6 @@ import type {
   DeployOperationResponse,
   HalEmbedded,
   LinkResponse,
-  OperationStatus,
   ProvisionableStatus,
 } from "@app/types";
 

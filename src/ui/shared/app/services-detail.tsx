@@ -1,5 +1,5 @@
 import { calcServiceMetrics, selectServicesByIds } from "@app/deploy";
-import { AppState, DeployApp, DeployService } from "@app/types";
+import { AppState, DeployService } from "@app/types";
 
 import {
   ButtonIcon,

@@ -20,7 +20,6 @@ import {
   IconExternalLink,
   IconGitBranch,
   TabItem,
-  tokens,
 } from "../shared";
 
 import { DetailPageLayout } from "./detail-page";

@@ -1,16 +1,11 @@
 import { api } from "@app/api";
-import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { defaultEntity } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type {
-  AppState,
-  DeployService,
-  InstanceClass,
-  LinkResponse,
-} from "@app/types";
+import type { AppState, DeployService, InstanceClass } from "@app/types";
 
 import { CONTAINER_PROFILES, GB } from "../app/utils";
 import { selectDeploy } from "../slice";

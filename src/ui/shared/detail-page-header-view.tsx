@@ -3,7 +3,6 @@ import { Breadcrumbs, Crumb } from "./breadcrumbs";
 import { TabItem, Tabs } from "./tabs";
 import { tokens } from "./tokens";
 import cn from "classnames";
-type Element = JSX.Element | React.ReactNode;
 type HeaderProps = {
   breadcrumbs?: Crumb[];
   actions?: ActionList;
