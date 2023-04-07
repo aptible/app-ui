@@ -160,12 +160,19 @@ export interface PaginateProps {
   page: number;
 }
 
+interface CombinePagesProps {
+  max: number;
+}
+
 /**
  * Loops through all the pages of an endpoint automatically
  */
 export function combinePages<
   P extends { [key: string]: any } = { [key: string]: any },
->(actionFn: CreateActionWithPayload<DeployApiCtx, PaginateProps & P>) {
+>(
+  actionFn: CreateActionWithPayload<DeployApiCtx, PaginateProps & P>,
+  { max = 50 }: CombinePagesProps = { max: 50 },
+) {
   function* paginator(ctx: ThunkCtx, next: Next) {
     let results: DeployApiCtx[] = [];
     yield put(setLoaderStart({ id: ctx.key }));
@@ -188,7 +195,7 @@ export function combinePages<
       const cur = firstPage.json.data.current_page;
       const total = firstPage.json.data.total_count || 0;
       const per = firstPage.json.data.per_page || 0;
-      const lastPage = Math.ceil(total / per);
+      const lastPage = Math.min(max, Math.ceil(total / per));
       const fetchAll = [];
       for (let i = cur + 1; i <= lastPage; i += 1) {
         fetchAll.push(

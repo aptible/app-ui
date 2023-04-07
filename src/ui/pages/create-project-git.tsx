@@ -14,7 +14,6 @@ import {
 
 import { prettyDateRelative, prettyDateTime } from "@app/date";
 import {
-  appOverviewUrl,
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
   createProjectGitPushUrl,
@@ -41,6 +40,7 @@ import {
   Box,
   Button,
   ButtonLink,
+  ButtonLinkExternal,
   ErrorResources,
   FormGroup,
   IconArrowRight,
@@ -1615,9 +1615,12 @@ export const CreateProjectGitStatusPage = () => {
         />
         <hr />
 
-        <ButtonLink to={appOverviewUrl(appId)} className="mt-4 mb-2">
+        <ButtonLinkExternal
+          href={`https://dashboard.aptible.com/accounts/${envId}/apps`}
+          className="mt-4 mb-2"
+        >
           View Project <IconArrowRight variant="sm" className="ml-2" />
-        </ButtonLink>
+        </ButtonLinkExternal>
       </StatusBox>
     </div>
   );

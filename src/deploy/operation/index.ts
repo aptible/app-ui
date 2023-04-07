@@ -114,7 +114,7 @@ export const deserializeDeployOperation = (
     status: payload.status,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
-    gitRef: payload.git_ref,
+    gitRef: payload.git_ref || "",
     dockerRef: payload.docker_ref,
     containerCount: payload.container_count,
     diskSize: payload.disk_size,
