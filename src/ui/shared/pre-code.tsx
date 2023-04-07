@@ -1,24 +1,46 @@
 import { IconCopy } from "./icons";
 import { SyntheticEvent } from "react";
 
-export const PreCode = ({
-  allowCopy = false,
-  invertedColors = true,
-  text, // TODO - do we want to do this
-}: {
-  allowCopy?: boolean;
-  invertedColors?: boolean;
-  text: string[];
-}) => {
-  const handleCopy = (e: SyntheticEvent) => {
-    e.preventDefault();
-    navigator.clipboard.writeText(text.join(" "));
+interface TextSegment {
+  text: string;
+  className: string;
+}
+
+const createTextColor =
+  (color = "text-white", highlight = "text-lime") =>
+  (txt: string, idx: number): TextSegment => {
+    const lastElement = idx === txt.length - 1;
+    return {
+      text: txt,
+      className: lastElement ? color : highlight,
+    };
   };
 
-  const preTextColor = invertedColors ? "text-white" : "text-black";
-  const preStyle = invertedColors
-    ? "p-4 bg-black rounded"
-    : "p-4 bg-gray-100 rounded";
+export const listToInvertedTextColor = (list: string[]): TextSegment[] => {
+  return list.map(createTextColor());
+};
+
+export const listToTextColor = (list: string[]): TextSegment[] => {
+  return list.map(createTextColor("text-black"));
+};
+
+export const PreCode = ({
+  segments,
+  className = "bg-black",
+  allowCopy = false,
+}: {
+  segments: TextSegment[];
+  className?: string;
+  allowCopy?: boolean;
+}) => {
+  if (segments.length === 0) {
+    return null;
+  }
+
+  const handleCopy = (e: SyntheticEvent) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(segments.map((t) => t.text).join(" "));
+  };
 
   return (
     <>
@@ -30,15 +52,12 @@ export const PreCode = ({
           style={{ cursor: "pointer" }}
         />
       ) : null}
-      <pre className={`${preStyle} ${preTextColor} text-sm pr-14`}>
-        {text.map((textElem, idx) => {
-          const lastElement = idx === text.length - 1;
-          const highlightedText =
-            !invertedColors || lastElement ? preTextColor : "text-lime";
+      <pre className={`p-4 rounded text-sm pr-14 ${className}`}>
+        {segments.map(({ text, className }, idx) => {
           return (
-            <span key={`${idx}-${textElem}`} className={highlightedText}>
-              {textElem}
-              {!lastElement && " "}
+            <span key={`${idx}-${text}`} className={className}>
+              {text}
+              {idx === segments.length - 1 ? "" : " "}
             </span>
           );
         })}
