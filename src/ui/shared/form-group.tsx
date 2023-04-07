@@ -52,7 +52,11 @@ export function FormGroup({
     <div className={`flex ${splitWidthInputs ? "" : "flex-col"} ${className}`}>
       <div className={`${splitWidthInputs ? "w-1/2" : ""}`}>
         <Label htmlFor={htmlFor}>{label}</Label>
-        {description ? <div className="text-black-500">{description}</div> : ""}
+        {description ? (
+          <div className="text-black-500 mb-2">{description}</div>
+        ) : (
+          ""
+        )}
       </div>
 
       <div className={`flex ${splitWidthInputs ? "w-1/2" : "flex-col"}`}>

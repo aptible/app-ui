@@ -83,7 +83,8 @@ export const stackToOption = (
 
 export const selectStacksAsOptions = createSelector(
   selectStacksAsList,
-  (stacks) => stacks.map(stackToOption),
+  (stacks) =>
+    stacks.map(stackToOption).sort((a, b) => a.label.localeCompare(b.label)),
 );
 export const selectStackPublicDefault = createSelector(
   selectStacksAsList,

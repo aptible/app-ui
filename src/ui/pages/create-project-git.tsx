@@ -243,6 +243,18 @@ export const CreateProjectNamePage = () => {
         <form onSubmit={onSubmit}>
           <FormGroup
             label="Stack"
+            description={
+              <p>
+                The project will be created inside this{" "}
+                <a
+                  href="https://www.aptible.com/docs/stacks"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  stack
+                </a>
+              </p>
+            }
             htmlFor="stack"
             feedbackVariant="info"
             className="mb-4"
@@ -254,7 +266,12 @@ export const CreateProjectNamePage = () => {
               }}
             />
           </FormGroup>
-          <FormGroup label="Project Name" htmlFor="name" feedbackVariant="info">
+          <FormGroup
+            label="Project Name"
+            description="Lowercase alphanumerics, periods, and dashes only"
+            htmlFor="name"
+            feedbackVariant="info"
+          >
             <Input
               name="name"
               type="text"

@@ -1,3 +1,5 @@
+import cn from "classnames";
+
 export interface SelectOption {
   label: string;
   value: string;
@@ -16,9 +18,17 @@ export function Select({
   onSelect,
   defaultValue,
 }: SelectProps) {
+  const className = cn(
+    "border-black-100 text-black-300",
+    "hover:border-black hover:text-black-300",
+    "active:border-black-100 active:text-black",
+    "disabled:bg-black-50 disabled:border-black-100 disabled:text-black",
+    "rounded-md shadow-sm",
+  );
   return (
     <select
       name="stack"
+      className={className}
       value={value?.value}
       defaultValue={defaultValue?.value}
       onChange={(e) => {
