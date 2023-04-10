@@ -5,7 +5,6 @@ import { useQuery } from "saga-query/react";
 import {
   fetchDatabase,
   fetchEndpointsByEnvironmentId,
-  fetchEndpointsByServiceId,
   fetchEnvironmentServices,
   selectDatabaseById,
   selectEndpointsByServiceIds,
