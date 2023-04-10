@@ -164,7 +164,7 @@ export const CreateProjectGitPage = () => {
   return <Navigate to={createProjectAddNameUrl()} replace />;
 };
 
-const FormNav = ({
+const ProgressProject = ({
   cur,
   total = 4,
   prev = "",
@@ -218,7 +218,7 @@ export const CreateProjectAddKeyPage = () => {
         </p>
       </div>
 
-      <FormNav cur={-1} next={createProjectAddNameUrl()} />
+      <ProgressProject cur={-1} next={createProjectAddNameUrl()} />
 
       <Box>
         <AddSSHKeyForm onSuccess={onSuccess} />
@@ -257,7 +257,7 @@ export const CreateProjectNamePage = () => {
         <p className="my-4 text-gray-600">Provide a name for your project.</p>
       </div>
 
-      <FormNav cur={1} />
+      <ProgressProject cur={1} />
 
       <Box>
         <form onSubmit={onSubmit}>
@@ -383,7 +383,7 @@ export const CreateProjectGitPushPage = () => {
         <p className="my-4 text-gray-600">Git push your code to continue.</p>
       </div>
 
-      <FormNav
+      <ProgressProject
         cur={2}
         prev={createProjectAddKeyUrl()}
         next={createProjectGitSettingsUrl(appId)}
@@ -815,7 +815,7 @@ export const CreateProjectGitSettingsPage = () => {
         </p>
       </div>
 
-      <FormNav
+      <ProgressProject
         cur={3}
         prev={createProjectGitPushUrl(appId)}
         next={createProjectGitStatusUrl(appId)}
@@ -1524,7 +1524,7 @@ export const CreateProjectGitStatusPage = () => {
     <div>
       {header()}
 
-      <FormNav cur={4} prev={createProjectGitSettingsUrl(appId)} />
+      <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />
       <StatusBox>
         <div className="border-b border-black-100 pb-4 ">
           <div className="flex items-center">
