@@ -12,6 +12,7 @@ import {
   ResourceListView,
   TableHead,
   Td,
+  listToTextColor,
   tokens,
 } from "../../shared";
 import { ReactElement, SyntheticEvent, useEffect, useState } from "react";
@@ -19,7 +20,9 @@ import { useSelector } from "react-redux";
 
 const serviceListRow = ({
   service,
-}: { service?: DeployService }): ReactElement[] => {
+}: {
+  service?: DeployService;
+}): ReactElement[] => {
   if (!service) return [];
   const metrics = calcServiceMetrics(service);
 
@@ -73,9 +76,9 @@ const serviceListRow = ({
         <span className="text-sm text-gray-500">Command</span>
         <div>
           <PreCode
-            invertedColors={false}
             allowCopy
-            text={service.command.split(" ")}
+            segments={listToTextColor(service.command.split(" "))}
+            className="bg-gray-100"
           />
         </div>
       </td>
@@ -85,7 +88,9 @@ const serviceListRow = ({
 
 export function ServicesOverview({
   serviceIds: initialServiceIds,
-}: { serviceIds: string[] }) {
+}: {
+  serviceIds: string[];
+}) {
   const [search, setSearch] = useState("");
   const [sortedAscending, setSortedAscending] = useState(false);
   const [serviceIds, setServiceIds] = useState<string[]>(initialServiceIds);

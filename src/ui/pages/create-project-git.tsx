@@ -56,6 +56,7 @@ import {
   Loading,
   PreCode,
   StackSelect,
+  listToInvertedTextColor,
   tokens,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
@@ -194,7 +195,7 @@ export const CreateProjectAddKeyPage = () => {
       <div className="text-center">
         <h1 className={tokens.type.h1}>Deploy your code</h1>
         <p className="my-4 text-gray-600">
-          Add your SSH key to deploy code to Aptible.
+          Add your SSH key to push code into Aptible.
         </p>
       </div>
 
@@ -371,14 +372,20 @@ export const CreateProjectGitPushPage = () => {
         <div>
           <h3 className={tokens.type.h3}>Add Aptible's Git Server</h3>
           <PreCode
-            text={["git", "remote", "add", "aptible", app.gitRepo]}
+            segments={listToInvertedTextColor([
+              "git remote add aptible",
+              app.gitRepo,
+            ])}
             allowCopy
           />
         </div>
         <div className="mt-4">
           <h3 className={tokens.type.h3}>Push your code to our scan branch</h3>
           <PreCode
-            text={["git", "push", "aptible", "main:aptible-scan"]}
+            segments={listToInvertedTextColor([
+              "git push aptible",
+              "main:aptible-scan",
+            ])}
             allowCopy
           />
         </div>
@@ -1581,7 +1588,10 @@ export const CreateProjectGitStatusPage = () => {
           Commit changes to your local git repo and push to the Aptible git
           server.
         </p>
-        <PreCode text={["git", "push", "aptible", "main"]} allowCopy />
+        <PreCode
+          segments={listToInvertedTextColor(["git push aptible", "main"])}
+          allowCopy
+        />
         <hr />
 
         <ButtonLink to={appOverviewUrl(appId)} className="mt-4 mb-2">

@@ -37,7 +37,7 @@ export const tokens = {
     },
     styles: {
       primary:
-        "border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:bg-yellow-100",
+        "border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed",
       secondary:
         "border border-transparent font-bold text-white bg-indigo hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600",
       white:

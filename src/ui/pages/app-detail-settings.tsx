@@ -11,6 +11,7 @@ import {
   Input,
   Label,
   PreCode,
+  listToInvertedTextColor,
 } from "../shared";
 import { deprovisionApp, fetchApp, selectAppById } from "@app/deploy";
 import { AppState } from "@app/types";
@@ -57,15 +58,24 @@ export const AppSettingsPage = () => {
         <h1 className="text-lg text-gray-500">How To Deploy Changes</h1>
         <div className="mt-4">
           <h3 className="text-base font-semibold">Clone project code</h3>
-          <PreCode allowCopy text={["git", "clone", app.gitRepo]} />
+          <PreCode
+            allowCopy
+            segments={listToInvertedTextColor(["git", "clone", app.gitRepo])}
+          />
         </div>
         <div className="mt-4">
           <h3 className="text-base font-semibold">Find project code</h3>
-          <PreCode allowCopy text={["cd", app.handle]} />
+          <PreCode
+            allowCopy
+            segments={listToInvertedTextColor(["cd", app.handle])}
+          />
         </div>
         <div className="mt-4">
           <h3 className="text-base font-semibold">Deploy code changes</h3>
-          <PreCode allowCopy text={["git", "push", app.gitRepo]} />
+          <PreCode
+            allowCopy
+            segments={listToInvertedTextColor(["git", "push", app.gitRepo])}
+          />
         </div>
       </Box>
       <Box>
@@ -133,7 +143,7 @@ export const AppSettingsPage = () => {
                 className="flex ml-4 pr-2"
                 variant="white"
                 onClick={() => {}}
-                icon={<IconTrash color='#AD1A1A' />}
+                icon={<IconTrash color="#AD1A1A" />}
                 children={null}
               />
             </div>
