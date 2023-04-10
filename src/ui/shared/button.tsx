@@ -41,6 +41,30 @@ export const ButtonIcon = ({
   );
 };
 
+export const ButtonLinkExternal = ({
+  children,
+  layout = "auto",
+  variant = "primary",
+  size = "md",
+  shape = "button",
+  isLoading = false,
+  className = "",
+  ...props
+}: React.AnchorHTMLAttributes<HTMLAnchorElement> & ButtonProps) => {
+  const classes = cn(
+    "flex items-center justify-center",
+    buttonLayout[layout],
+    tokens.buttons.sizes[size],
+    tokens.buttons.styles[variant],
+    buttonShapeStyle(size, shape),
+  );
+  return (
+    <a {...props} className={`${className} ${classes}`}>
+      {isLoading ? "Loading ..." : children}
+    </a>
+  );
+};
+
 export const ButtonLink = ({
   children,
   layout = "auto",

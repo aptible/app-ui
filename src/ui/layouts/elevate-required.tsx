@@ -38,5 +38,7 @@ export const ElevateRequired = ({
     return <Navigate to={elevateUrl(location.pathname)} replace />;
   }
 
-  return <div>{children ? children : <Outlet />}</div>;
+  return (
+    <div className="w-full h-full">{children ? children : <Outlet />}</div>
+  );
 };

@@ -1,3 +1,4 @@
+import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 import {
   call,
   put,
@@ -6,11 +7,14 @@ import {
   setLoaderSuccess,
 } from "saga-query";
 
-import { AUTH_LOADER_ID } from "./loader";
-import { CreateTokenPayload, createToken } from "./token";
-import { webauthnGet } from "./webauthn";
 import { thunks } from "@app/api";
-import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
+import { createLog } from "@app/debug";
+
+import { AUTH_LOADER_ID } from "./loader";
+import { CreateTokenPayload, createToken, elevateToken } from "./token";
+import { webauthnGet } from "./webauthn";
+
+const log = createLog("login");
 
 export const login = thunks.create<CreateTokenPayload>(
   "login",
@@ -29,6 +33,9 @@ export const login = thunks.create<CreateTokenPayload>(
       );
       return;
     }
+
+    const elevateCtx = yield* call(elevateToken.run, elevateToken(ctx.payload));
+    log(elevateCtx);
 
     yield put(setLoaderSuccess({ id: AUTH_LOADER_ID }));
     yield next();

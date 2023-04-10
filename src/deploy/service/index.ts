@@ -35,7 +35,7 @@ export const deserializeDeployService = (
     dockerRepo: payload.docker_repo,
     dockerRef: payload.docker_ref,
     processType: payload.process_type,
-    command: payload.command,
+    command: payload.command || "",
     containerCount: payload.container_count,
     containerMemoryLimitMb: payload.container_memory_limit_mb,
     instanceClass: payload.instance_class || DEFAULT_INSTANCE_CLASS,
