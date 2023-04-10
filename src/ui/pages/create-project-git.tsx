@@ -106,6 +106,7 @@ import {
   selectLatestScanOp,
   selectLatestSucceessScanOp,
 } from "@app/deploy/operation";
+import { selectEnv } from "@app/env";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   DbSelectorProps,
@@ -163,25 +164,43 @@ export const CreateProjectGitPage = () => {
   return <Navigate to={createProjectAddNameUrl()} replace />;
 };
 
-const FormNav = ({
+const ProgressProject = ({
+  cur,
+  total = 4,
   prev = "",
   next = "",
 }: {
+  cur: number;
+  total?: number;
   prev?: string;
   next?: string;
 }) => {
-  return (
+  const env = useSelector(selectEnv);
+  const progress = (
     <div>
-      {prev ? (
-        <Link aria-disabled={!prev} to={prev} className="pr-2">
-          Prev
-        </Link>
-      ) : null}
-      {next ? (
-        <Link aria-disabled={!next} to={next}>
-          Next
-        </Link>
-      ) : null}
+      Step {cur} / {total}
+    </div>
+  );
+
+  if (env.isProduction && cur !== -1) {
+    return progress;
+  }
+
+  return (
+    <div className="flex">
+      {progress}
+      <div className="ml-4">
+        {prev ? (
+          <Link aria-disabled={!prev} to={prev} className="pr-2">
+            Prev
+          </Link>
+        ) : null}
+        {next ? (
+          <Link aria-disabled={!next} to={next}>
+            Next
+          </Link>
+        ) : null}
+      </div>
     </div>
   );
 };
@@ -199,7 +218,7 @@ export const CreateProjectAddKeyPage = () => {
         </p>
       </div>
 
-      <FormNav next={createProjectAddNameUrl()} />
+      <ProgressProject cur={-1} next={createProjectAddNameUrl()} />
 
       <Box>
         <AddSSHKeyForm onSuccess={onSuccess} />
@@ -238,7 +257,7 @@ export const CreateProjectNamePage = () => {
         <p className="my-4 text-gray-600">Provide a name for your project.</p>
       </div>
 
-      <FormNav prev={createProjectAddKeyUrl()} />
+      <ProgressProject cur={1} />
 
       <Box>
         <form onSubmit={onSubmit}>
@@ -364,7 +383,8 @@ export const CreateProjectGitPushPage = () => {
         <p className="my-4 text-gray-600">Git push your code to continue.</p>
       </div>
 
-      <FormNav
+      <ProgressProject
+        cur={2}
         prev={createProjectAddKeyUrl()}
         next={createProjectGitSettingsUrl(appId)}
       />
@@ -795,7 +815,8 @@ export const CreateProjectGitSettingsPage = () => {
         </p>
       </div>
 
-      <FormNav
+      <ProgressProject
+        cur={3}
         prev={createProjectGitPushUrl(appId)}
         next={createProjectGitStatusUrl(appId)}
       />
@@ -1503,7 +1524,7 @@ export const CreateProjectGitStatusPage = () => {
     <div>
       {header()}
 
-      <FormNav prev={createProjectGitSettingsUrl(appId)} />
+      <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />
       <StatusBox>
         <div className="border-b border-black-100 pb-4 ">
           <div className="flex items-center">
