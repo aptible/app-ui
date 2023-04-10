@@ -1,7 +1,7 @@
 import classNames from "classnames";
 
-import { StatusVariant, variantToClassName } from "@app/status-variant";
 import { IconAlertTriangle, IconInfo } from "./icons";
+import { StatusVariant, variantToClassName } from "@app/status-variant";
 
 export const Banner = ({
   children,
