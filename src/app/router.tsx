@@ -327,7 +327,6 @@ const appRoutes: RouteObject[] = [
   {
     path: routes.ERROR_PATH,
     element: <ErrorPage />,
-    errorElement: <ErrorPage />,
   },
 
   {
