@@ -23,8 +23,8 @@ export interface Env {
   authUrl: string;
   billingUrl: string;
   apiUrl: string;
-  origin: string;
   legacyDashboardUrl: string;
+  origin: "nextgen" | "ftux";
 }
 
 export interface User {

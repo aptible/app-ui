@@ -12,4 +12,5 @@ interface ImportMetaEnv {
   VITE_BILLING_URL: string;
   VITE_DEBUG: string;
   VITE_LEGACY_DASHBOARD_URL: string;
+  VITE_ORIGIN: string;
 }

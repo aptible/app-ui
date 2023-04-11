@@ -8,8 +8,10 @@ export const createEnv = (e: Partial<Env> = {}): Env => {
     authUrl: import.meta.env.VITE_AUTH_URL || "",
     billingUrl: import.meta.env.VITE_BILLING_URL || "",
     apiUrl: import.meta.env.VITE_API_URL || "",
-    legacyDashboardUrl: import.meta.env.VITE_LEGACY_DASHBOARD_URL || "",
-    origin: "nextgen",
+    legacyDashboardUrl:
+      import.meta.env.VITE_LEGACY_DASHBOARD_URL ||
+      "https://dashboard.aptible.com",
+    origin: (import.meta.env.VITE_ORIGIN as any) || "nextgen",
     ...e,
   };
 };
