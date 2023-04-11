@@ -60,7 +60,7 @@ export const AddSecurityKeyPage = () => {
       </div>
       <div>
         Aptible supports Security Keys that conform to the{" "}
-        <ExternalLink href="https://fidoalliance.org/">
+        <ExternalLink href="https://fidoalliance.org/" variant="info">
           FIDO U2F standard
         </ExternalLink>
         .

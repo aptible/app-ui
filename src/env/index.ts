@@ -9,7 +9,10 @@ export const createEnv = (e: Partial<Env> = {}): Env => {
     billingUrl: import.meta.env.VITE_BILLING_URL || "",
     apiUrl: import.meta.env.VITE_API_URL || "",
     sentryDsn: import.meta.env.VITE_SENTRY_DSN || "",
-    origin: "nextgen",
+    origin: (import.meta.env.VITE_ORIGIN as any) || "nextgen",
+    legacyDashboardUrl:
+      import.meta.env.VITE_LEGACY_DASHBOARD_URL ||
+      "https://dashboard.aptible.com",
     ...e,
   };
 };
@@ -24,3 +27,5 @@ export const { set: setEnv, reset: resetEnv } = env.actions;
 export const reducers = createReducerMap(env);
 export const selectEnv = (state: AppState) => state[ENV_NAME];
 export const selectOrigin = (state: AppState) => selectEnv(state).origin;
+export const selectLegacyDashboardUrl = (state: AppState) =>
+  selectEnv(state).legacyDashboardUrl;

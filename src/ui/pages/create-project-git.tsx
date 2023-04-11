@@ -12,8 +12,9 @@ import {
   useQuery,
 } from "saga-query/react";
 
-import { prettyDateRelative, prettyDateTime } from "@app/date";
+import { prettyDateRelative } from "@app/date";
 import {
+  appDetailUrl,
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
   createProjectGitPushUrl,
@@ -39,8 +40,10 @@ import {
   BannerMessages,
   Box,
   Button,
+  ButtonLink,
   ButtonLinkExternal,
   ErrorResources,
+  ExternalLink,
   FormGroup,
   IconArrowRight,
   IconCheck,
@@ -105,7 +108,7 @@ import {
   selectLatestScanOp,
   selectLatestSucceessScanOp,
 } from "@app/deploy/operation";
-import { selectEnv } from "@app/env";
+import { selectEnv, selectLegacyDashboardUrl, selectOrigin } from "@app/env";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   DbSelectorProps,
@@ -698,6 +701,56 @@ const DatabaseSelectorForm = ({
   );
 };
 
+const CodeScanInfo = ({
+  codeScan,
+}: {
+  codeScan: DeployCodeScanResponse | null;
+}) => {
+  if (!codeScan) return null;
+  if (codeScan.dockerfile_present) {
+    return (
+      <Banner variant="info">
+        <span>Your code has a </span>
+        <ExternalLink
+          href="https://www.aptible.com/docs/dockerfile"
+          variant="info"
+        >
+          Dockerfile
+        </ExternalLink>
+        <span> and will be used to build your Aptible app image.</span>
+      </Banner>
+    );
+  }
+
+  return (
+    <Banner variant="error">
+      <span>Your code needs a Dockerfile to deploy. </span>
+      <ExternalLink href="https://aptible.com/docs" variant="error">
+        View docs to learn how to add a Dockerfile.
+      </ExternalLink>
+    </Banner>
+  );
+
+  /*
+    TODO: uncomment when we have aptible/builder ready
+    return (
+    <Banner variant="info">
+      <span>Aptible did not detect a </span>
+      <ExternalLink href="https://www.aptible.com/docs/dockerfile">
+        Dockerfile
+      </ExternalLink>
+      <span>
+        {" "}
+        in your code, and will automatically create one during deployment.{" "}
+      </span>
+      <ExternalLink href="https://www.aptible.com/docs">
+        View docs to learn more
+      </ExternalLink>
+      <span>, or to add your own custom Dockerfile.</span>
+    </Banner>
+  ); */
+};
+
 export const CreateProjectGitSettingsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -705,7 +758,7 @@ export const CreateProjectGitSettingsPage = () => {
 
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  const { scanOp, codeScan, appOps } = useLatestCodeResults(appId);
+  const { scanOp, codeScan } = useLatestCodeResults(appId);
   useQuery(fetchDatabasesByEnvId({ envId: app.environmentId }));
 
   useQuery(fetchAllDatabaseImages());
@@ -821,45 +874,14 @@ export const CreateProjectGitSettingsPage = () => {
       />
 
       <Box>
-        {codeScan.isInitialLoading ? (
-          <Loading text="Loading code scan results ..." />
-        ) : (
-          <div>
-            <div className="flex items-center justify-between">
-              <h3 className={tokens.type.h3}>Code scan results</h3>
-              <Button
-                variant="white"
-                isLoading={appOps.isLoading}
-                onClick={() => appOps.trigger()}
-              >
-                Refresh
-              </Button>
-            </div>
+        <div className="mb-4">
+          {codeScan.isInitialLoading ? (
+            <Loading text="Loading code scan results ..." />
+          ) : (
+            <CodeScanInfo codeScan={codeScan.data} />
+          )}
+        </div>
 
-            <dl className="mt-2">
-              <dd>Last scan</dd>
-              <dt>{prettyDateTime(scanOp.updatedAt)}</dt>
-
-              <dd>
-                <code>Dockerfile</code> detected?
-              </dd>
-              <dt>{codeScan.data?.dockerfile_present ? "Yes" : "No"}</dt>
-
-              <dd>
-                <code>Procfile</code> detected?
-              </dd>
-              <dt>{codeScan.data?.procfile_present ? "Yes" : "No"}</dt>
-
-              <dd>
-                <code>aptible.yml</code> detected?
-              </dd>
-              <dt>{codeScan.data?.aptible_yml_present ? "Yes" : "No"}</dt>
-            </dl>
-          </div>
-        )}
-      </Box>
-
-      <Box>
         <form onSubmit={onSubmit}>
           <FormGroup
             label="Required Databases"
@@ -906,21 +928,38 @@ export const CreateProjectGitSettingsPage = () => {
 
           <hr className="my-4" />
 
-          {codeScan.data?.procfile_present ? null : (
-            <FormGroup
-              label="Service and Commands"
-              htmlFor="commands"
-              feedbackVariant="info"
-              description="Each line is separated by a service command in format: NAME=COMMAND."
-            >
-              <textarea
-                name="commands"
-                className={tokens.type.textarea}
-                value={cmds}
-                onChange={(e) => setCmds(e.currentTarget.value)}
-              />
-            </FormGroup>
-          )}
+          {codeScan.data?.procfile_present ? (
+            <div className="mb-4">
+              <Banner variant="info">
+                <span>Your code has a </span>
+                <ExternalLink
+                  href="https://aptible.com/docs/procfiles"
+                  variant="info"
+                >
+                  Procfile
+                </ExternalLink>
+                <span>
+                  , which will be used to determine your app's services and
+                  commands.
+                </span>
+              </Banner>
+            </div>
+          ) : null}
+
+          <FormGroup
+            label="Service and Commands"
+            htmlFor="commands"
+            feedbackVariant="info"
+            description="Each line is separated by a service command in format: NAME=COMMAND."
+          >
+            <textarea
+              name="commands"
+              className={tokens.type.textarea}
+              value={cmds}
+              onChange={(e) => setCmds(e.currentTarget.value)}
+              disabled={codeScan.data?.procfile_present}
+            />
+          </FormGroup>
 
           <Button
             type="submit"
@@ -1404,6 +1443,8 @@ const CreateEndpointView = ({
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
+  const origin = useSelector(selectOrigin);
+  const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
@@ -1614,12 +1655,18 @@ export const CreateProjectGitStatusPage = () => {
         />
         <hr />
 
-        <ButtonLinkExternal
-          href={`https://dashboard.aptible.com/accounts/${envId}/apps`}
-          className="mt-4 mb-2"
-        >
-          View Project <IconArrowRight variant="sm" className="ml-2" />
-        </ButtonLinkExternal>
+        {origin === "ftux" ? (
+          <ButtonLinkExternal
+            href={`${legacyUrl}/accounts/${envId}/apps`}
+            className="mt-4 mb-2"
+          >
+            View Project <IconArrowRight variant="sm" className="ml-2" />
+          </ButtonLinkExternal>
+        ) : (
+          <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
+            View Project <IconArrowRight variant="sm" className="ml-2" />
+          </ButtonLink>
+        )}
       </StatusBox>
     </div>
   );
