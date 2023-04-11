@@ -23,6 +23,7 @@ yarn
 export VITE_AUTH_URL="http://localhost:4000"
 export VITE_API_URL="http://localhost:4001"
 export VITE_BILLING_URL="http:localhost:4005"
+export VITE_LEGACY_DASHBOARD_URL="https://localhost:4200"
 ```
 
 ### .env
