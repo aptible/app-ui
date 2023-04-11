@@ -74,7 +74,10 @@ export const OtpSetupPage = () => {
         <div>
           To proceed, scan the QR code below with your 2FA app (we recommend
           using{" "}
-          <ExternalLink href="https://support.google.com/accounts/answer/1066447?hl=en">
+          <ExternalLink
+            href="https://support.google.com/accounts/answer/1066447?hl=en"
+            variant="info"
+          >
             Google Authenticator
           </ExternalLink>
           ), input the code generated, and click on Enable 2FA.
