@@ -22,6 +22,7 @@
   "dependencies": {
     "@github/webauthn-json": "^2.1.1",
     "@reduxjs/toolkit": "^1.9.1",
+    "@sentry/react": "^7.47.0",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tailwindcss/typography": "^0.5.9",
@@ -57,5 +58,6 @@
     "vite": "^4.0.4",
     "vite-tsconfig-paths": "^4.0.5",
     "vitest": "^0.28.2"
-  }
+  },
+  "packageManager": "yarn@3.5.0"
 }

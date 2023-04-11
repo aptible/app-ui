@@ -4,6 +4,7 @@ ARG VITE_AUTH_URL=https://auth.aptible.com
 ARG VITE_BILLING_URL=https://goldenboy.aptible.com
 ARG VITE_API_URL=https://api.aptible.com
 ARG NODE_ENV=production
+ARG SENTRY_DSN
 
 RUN corepack enable
 RUN corepack prepare yarn@stable --activate

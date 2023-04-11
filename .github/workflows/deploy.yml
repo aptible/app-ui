@@ -29,6 +29,8 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.docker-meta.outputs.tags }}
+          build-args: |
+            SENTRY_DSN=${{ secrets.SENTRY_DSN }}
   deploy:
     runs-on: ubuntu-latest
     needs: build

@@ -33,6 +33,7 @@ jobs:
             VITE_AUTH_URL=https://auth-api-master.aptible-staging.com
             VITE_BILLING_URL=https://billing-api-master.aptible-staging.com
             VITE_API_URL=https://deploy-api-master.aptible-staging.com
+            SENTRY_DSN=${{ secrets.SENTRY_DSN }}
   deploy:
     runs-on: ubuntu-latest
     needs: build
