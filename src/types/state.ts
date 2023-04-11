@@ -23,6 +23,7 @@ export interface Env {
   authUrl: string;
   billingUrl: string;
   apiUrl: string;
+  sentryDsn: string;
   legacyDashboardUrl: string;
   origin: "nextgen" | "ftux";
 }

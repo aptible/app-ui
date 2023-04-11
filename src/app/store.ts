@@ -12,6 +12,7 @@ import { ELEVATED_TOKEN_NAME, TOKEN_NAME } from "@app/token";
 import type { AppState } from "@app/types";
 
 import { reducers, sagas } from "./packages";
+import { sentryErrorReporter } from "./sentry";
 
 interface Props {
   initState?: Partial<AppState>;
@@ -48,6 +49,7 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
     middleware.push(logger);
   }
 
+  middleware.push(sentryErrorReporter);
   const prepared = prepareStore({
     reducers,
     sagas,
