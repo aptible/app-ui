@@ -66,9 +66,11 @@ export const ErrorBoundary = ({
   children,
 }: { children?: React.ReactNode }): ReactElement => {
   return (
-    <SentryErrorBoundary fallback={({ error }: { error: Error }) => (
-      <ErrorFallback error={error} />
-    )}>
+    <SentryErrorBoundary
+      fallback={({ error }: { error: Error }) => (
+        <ErrorFallback error={error} />
+      )}
+    >
       {children}
     </SentryErrorBoundary>
   );
