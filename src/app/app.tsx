@@ -10,6 +10,7 @@ import { ErrorBoundary } from "@app/ui/shared/error-boundary";
 import { RouterProvider } from "react-router";
 
 export const App = ({ store }: { store: Store<AppState> }) => {
+  // ErrorBoundary is set here if there are errors in the router and/or provider
   return (
     <StrictMode>
       <ErrorBoundary>

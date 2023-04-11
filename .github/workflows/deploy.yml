@@ -30,7 +30,7 @@ jobs:
           push: true
           tags: ${{ steps.docker-meta.outputs.tags }}
           build-args: |
-            SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN }}
   deploy:
     runs-on: ubuntu-latest
     needs: build

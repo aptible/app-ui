@@ -11,5 +11,5 @@ interface ImportMetaEnv {
   VITE_AUTH_URL: string;
   VITE_BILLING_URL: string;
   VITE_DEBUG: string;
-  SENTRY_DSN: string;
+  VITE_SENTRY_DSN: string;
 }

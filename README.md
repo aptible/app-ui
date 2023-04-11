@@ -23,7 +23,7 @@ yarn
 export VITE_AUTH_URL="http://localhost:4000"
 export VITE_API_URL="http://localhost:4001"
 export VITE_BILLING_URL="http:localhost:4005"
-export SENTRY_DSN="" # populate this as needed for error reporting, optional
+export VITE_SENTRY_DSN="" # populate this as needed for error reporting, optional
 ```
 
 ### .env
