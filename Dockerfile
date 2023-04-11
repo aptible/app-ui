@@ -3,6 +3,7 @@ FROM node:18.15-slim AS builder
 ARG VITE_AUTH_URL=https://auth.aptible.com
 ARG VITE_BILLING_URL=https://goldenboy.aptible.com
 ARG VITE_API_URL=https://api.aptible.com
+ARG VITE_LEGACY_DASHBOARD_URL=https://dashboard.aptible.com
 ARG NODE_ENV=production
 
 RUN corepack enable

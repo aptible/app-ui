@@ -7,12 +7,14 @@ import { loginUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 
 import { Loading } from "../shared";
+import { selectLegacyDashboardUrl } from "@app/env";
 import { setRedirectPath } from "@app/redirect-path";
 import { useEffect } from "react";
 
 export const AuthRequired = () => {
   const loader = useLoader(fetchCurrentToken);
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  const dashboardUrl = useSelector(selectLegacyDashboardUrl);
   const location = useLocation();
   const dispatch = useDispatch();
   const authed = loader.isLoading || isAuthenticated;
@@ -23,7 +25,11 @@ export const AuthRequired = () => {
     }
   }, [authed]);
 
-  if (!authed) {
+  if (!authed && dashboardUrl) {
+    // WARNING - this should be temporary
+    // if environment featureflag for dashboard.aptible.com, we will redirect to dashboard for login
+    window.location.href = dashboardUrl;
+  } else if (!authed) {
     return <Navigate to={loginUrl()} />;
   }
 

@@ -24,6 +24,7 @@ export interface Env {
   billingUrl: string;
   apiUrl: string;
   origin: string;
+  legacyDashboardUrl: string;
 }
 
 export interface User {
