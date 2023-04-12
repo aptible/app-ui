@@ -19,6 +19,8 @@ import {
   createProjectGitPushUrl,
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
+  homeUrl,
+  logoutUrl,
 } from "@app/routes";
 import { fetchSSHKeys } from "@app/ssh-keys";
 import {
@@ -34,7 +36,7 @@ import {
 import { selectCurrentUser } from "@app/users";
 
 import {
-  ApplicationSidebar,
+  AptibleLogo,
   Banner,
   BannerMessages,
   Box,
@@ -106,7 +108,7 @@ import {
   selectLatestScanOp,
   selectLatestSucceessScanOp,
 } from "@app/deploy/operation";
-import { selectEnv } from "@app/env";
+import { selectEnv, selectLegacyDashboardUrl, selectOrigin } from "@app/env";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   DbSelectorProps,
@@ -117,14 +119,40 @@ import {
 } from "@app/projects";
 
 export const CreateProjectLayout = () => {
+  const origin = useSelector(selectOrigin);
+  const legacyUrl = useSelector(selectLegacyDashboardUrl);
+  const org = useSelector(selectOrganizationSelected);
+  const orgSettingsUrl = `${legacyUrl}/organizations/${org.id}/members`;
   return (
     <>
-      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-        <ApplicationSidebar />
+      <div className="p-6 flex justify-between shadow bg-white border-b border-black-50">
+        <div className="flex">
+          <AptibleLogo />
+          <div className="ml-4">
+            {origin === "ftux" ? (
+              <a href={legacyUrl} className="text-black-300">
+                Back to dashboard
+              </a>
+            ) : (
+              <Link to={homeUrl()} className="text-black-300">
+                Back to dashboard
+              </Link>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <a href={orgSettingsUrl} className="text-black-300">
+            {org.name} Settings
+          </a>
+          <Link to={logoutUrl()} className="text-black-300 ml-4">
+            Logout
+          </Link>
+        </div>
       </div>
 
       <div
-        className="md:pl-64 flex flex-col flex-1 h-full bg-no-repeat bg-center bg-cover"
+        className="flex flex-col flex-1 h-full bg-no-repeat bg-center bg-cover"
         style={{
           backgroundImage: "url(/background-pattern-v2.png)",
         }}
