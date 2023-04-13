@@ -14,6 +14,7 @@ import {
 
 import { prettyDateRelative } from "@app/date";
 import {
+  appDetailUrl,
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
   createProjectGitPushUrl,
@@ -41,6 +42,7 @@ import {
   BannerMessages,
   Box,
   Button,
+  ButtonLink,
   ButtonLinkExternal,
   ErrorResources,
   ExternalLink,
@@ -1469,6 +1471,8 @@ const CreateEndpointView = ({
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
+  const origin = useSelector(selectOrigin);
+  const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
@@ -1679,12 +1683,18 @@ export const CreateProjectGitStatusPage = () => {
         />
         <hr />
 
-        <ButtonLinkExternal
-          href={`https://dashboard.aptible.com/accounts/${envId}/apps`}
-          className="mt-4 mb-2"
-        >
-          View Project <IconArrowRight variant="sm" className="ml-2" />
-        </ButtonLinkExternal>
+        {origin === "ftux" ? (
+          <ButtonLinkExternal
+            href={`${legacyUrl}/accounts/${envId}/apps`}
+            className="mt-4 mb-2"
+          >
+            View Project <IconArrowRight variant="sm" className="ml-2" />
+          </ButtonLinkExternal>
+        ) : (
+          <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
+            View Project <IconArrowRight variant="sm" className="ml-2" />
+          </ButtonLink>
+        )}
       </StatusBox>
     </div>
   );
