@@ -13,9 +13,13 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, poll, select } from "saga-query";
+import { call, fork, poll, select } from "saga-query";
 
-import { findEnvById, selectEnvironments } from "../environment";
+import {
+  findEnvById,
+  selectEnvironments,
+  updateDeployEnvironmentStatus,
+} from "../environment";
 import { deserializeImage } from "../image";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { selectDeploy } from "../slice";
@@ -212,11 +216,13 @@ export const createDeployApp = api.post<CreateAppProps, DeployAppResponse>(
 
 interface ScanAppOpProps {
   type: "scan_code";
+  envId: string;
   appId: string;
   gitRef: string;
 }
 interface DeployAppOpProps {
   type: "deploy";
+  envId: string;
   appId: string;
   gitRef: string;
 }
@@ -266,6 +272,28 @@ export const createAppOperation = api.post<AppOpProps, DeployOperationResponse>(
     const body = getBody();
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* fork(function* () {
+      if (type !== "scan_code" && type !== "deploy") {
+        return;
+      }
+      const op = yield* call(waitForOperation, { id: `${ctx.json.data.id}` });
+      if (op.status !== "succeeded") {
+        return;
+      }
+
+      yield call(
+        updateDeployEnvironmentStatus.run,
+        updateDeployEnvironmentStatus({
+          id: ctx.payload.envId,
+          status: type === "scan_code" ? "scanned" : "app_provisioned",
+        }),
+      );
+    });
   },
 );
 
@@ -293,4 +321,5 @@ export const deprovisionApp = thunks.create<{
 
   if (!deprovisionCtx.json.ok) return;
   yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
+  yield next();
 });

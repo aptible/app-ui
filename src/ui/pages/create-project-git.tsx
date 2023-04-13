@@ -20,6 +20,8 @@ import {
   createProjectGitPushUrl,
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
+  createProjectSetupUrl,
+  createProjectUrl,
   homeUrl,
   logoutUrl,
 } from "@app/routes";
@@ -30,6 +32,7 @@ import {
   DeployDatabase,
   DeployDatabaseImage,
   DeployEndpoint,
+  DeployEnvironment,
   DeployOperation,
   HalEmbedded,
   OperationStatus,
@@ -67,20 +70,27 @@ import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import {
   cancelAppOpsPoll,
   createEndpointOperation,
+  deriveAccountStatus,
+  fetchAllApps,
+  fetchAllEnvironments,
   fetchAllStacks,
   fetchApp,
   fetchAppOperations,
   fetchDatabasesByEnvId,
   fetchEndpointsByAppId,
   fetchEnvironment,
+  fetchEnvironmentById,
   pollAppOperations,
   provisionEndpoint,
   selectAppById,
+  selectAppsByEnvId,
   selectDatabasesByEnvId,
   selectEndpointsByAppId,
   selectEnvironmentById,
+  selectEnvironmentOnboarding,
   selectServicesByIds,
   selectStackPublicDefaultAsOption,
+  updateDeployEnvironmentStatus,
 } from "@app/deploy";
 import {
   fetchServiceDefinitionsByAppId,
@@ -120,7 +130,11 @@ import {
   redeployApp,
 } from "@app/projects";
 
-export const CreateProjectLayout = () => {
+export const CreateProjectLayout = ({
+  children,
+}: {
+  children?: React.ReactNode;
+}) => {
   const origin = useSelector(selectOrigin);
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const org = useSelector(selectOrganizationSelected);
@@ -165,7 +179,7 @@ export const CreateProjectLayout = () => {
               <div className="py-4">
                 <div className="flex justify-center container">
                   <div style={{ width: 700 }}>
-                    <Outlet />
+                    {children ? children : <Outlet />}
                   </div>
                 </div>
               </div>
@@ -174,6 +188,108 @@ export const CreateProjectLayout = () => {
         </main>
       </div>
     </>
+  );
+};
+
+export const CreateProjectSetupPage = () => {
+  const { envId = "" } = useParams();
+  const dispatch = useDispatch();
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: envId }),
+  );
+  const navigate = useNavigate();
+  const apps = useSelector((s: AppState) => selectAppsByEnvId(s, { envId }));
+  const app = apps[0];
+
+  useEffect(() => {
+    dispatch(fetchAllApps());
+    dispatch(fetchEnvironmentById({ id: envId }));
+  }, []);
+
+  useEffect(() => {
+    if (env.onboardingStatus === "initiated") {
+      navigate(createProjectGitPushUrl(app.id), { replace: true });
+    } else if (env.onboardingStatus === "scanned") {
+      navigate(createProjectGitSettingsUrl(app.id), { replace: true });
+    } else if (
+      env.onboardingStatus === "db_provisioned" ||
+      env.onboardingStatus === "app_provisioned"
+    ) {
+      navigate(createProjectGitStatusUrl(app.id), { replace: true });
+    } else {
+      navigate(appDetailUrl(app.id), { replace: true });
+    }
+  }, [env.id, apps]);
+
+  return <Loading text="Detecting project status ..." />;
+};
+
+const OnboardingLink = ({ env }: { env: DeployEnvironment }) => {
+  const origin = useSelector(selectOrigin);
+  const legacyUrl = useSelector(selectLegacyDashboardUrl);
+  const apps = useSelector((s: AppState) =>
+    selectAppsByEnvId(s, { envId: env.id }),
+  );
+  if (apps.length === 0) {
+    return null;
+  }
+  const app = apps[0];
+
+  if (env.onboardingStatus === "completed") {
+    if (origin === "ftux") {
+      return (
+        <a
+          href={`${legacyUrl}/accounts/${env.id}/apps`}
+          className="flex items-center"
+        >
+          View project <IconArrowRight variant="sm" color="#4361FF" />
+        </a>
+      );
+    } else {
+      return (
+        <Link to={appDetailUrl(app.id)} className="flex items-center">
+          View project <IconArrowRight variant="sm" color="#4361FF" />
+        </Link>
+      );
+    }
+  }
+
+  return (
+    <Link to={createProjectSetupUrl(env.id)} className="flex items-center">
+      Finish setup <IconArrowRight variant="sm" color="#4361FF" />
+    </Link>
+  );
+};
+
+export const ResumeSetupPage = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchAllEnvironments());
+    dispatch(fetchAllApps());
+  }, []);
+  const envs = useSelector(selectEnvironmentOnboarding);
+  return (
+    <div>
+      <ButtonLink to={createProjectUrl()}>
+        <IconPlusCircle className="mr-2" /> Deploy
+      </ButtonLink>
+      {envs.map((env) => {
+        return (
+          <div
+            key={env.id}
+            className={cn(
+              "flex items-center rounded p-4 mt-4",
+              env.onboardingStatus === "completed"
+                ? "bg-lime-100"
+                : "bg-off-white",
+            )}
+          >
+            <div className="mr-2">{env.handle}</div>
+            <OnboardingLink env={env} />
+          </div>
+        );
+      })}
+    </div>
   );
 };
 
@@ -1044,10 +1160,12 @@ const Op = ({
   op,
   resource,
   retry,
+  alwaysRetry = false,
 }: {
   op: DeployOperation;
   resource: { handle: string };
   retry?: () => void;
+  alwaysRetry?: boolean;
 }) => {
   const [isOpen, setOpen] = useState(false);
   if (!hasDeployOperation(op)) {
@@ -1060,6 +1178,18 @@ const Op = ({
     if (op.status === "succeeded") {
       return (
         <div className={cn(cns, "text-forest")}>
+          {retry && alwaysRetry ? (
+            <Button
+              variant="white"
+              onClick={(e) => {
+                e.stopPropagation();
+                retry();
+              }}
+              className="mr-2"
+            >
+              retry
+            </Button>
+          ) : null}
           {createReadableStatus(op.status)}
         </div>
       );
@@ -1178,8 +1308,8 @@ const AppStatus = ({
 
   return (
     <div>
-      <Op op={configOp} resource={app} retry={retry} />
-      <Op op={deployOp} resource={app} retry={retry} />
+      <Op op={configOp} resource={app} retry={retry} alwaysRetry />
+      <Op op={deployOp} resource={app} retry={retry} alwaysRetry />
     </div>
   );
 };
@@ -1437,6 +1567,10 @@ const CreateEndpointView = ({
     setServiceId(serviceId);
   }, [serviceId]);
 
+  useEffect(() => {
+    dispatch(fetchApp({ id: app.id }));
+  }, [app.id]);
+
   return (
     <div>
       {services.map((service) => {
@@ -1503,10 +1637,12 @@ export const CreateProjectGitStatusPage = () => {
   const [status, dateStr] = resolveOperationStatuses(ops);
   const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
+  const pollAction = pollEnvOperations({ envId });
+  const pollLoader = useLoader(pollAction);
   const cancel = () => dispatch(cancelEnvOperationsPoll());
   useEffect(() => {
     cancel();
-    dispatch(pollEnvOperations({ envId }));
+    dispatch(pollAction);
 
     return () => {
       cancel();
@@ -1514,6 +1650,32 @@ export const CreateProjectGitStatusPage = () => {
   }, [appId, envId]);
 
   const { scanOp } = useLatestCodeResults(appId);
+
+  useEffect(() => {
+    const accountStatusOps = [deployOp, scanOp, ...provisionOps];
+    const status = deriveAccountStatus(accountStatusOps);
+    if (status === env.onboardingStatus) {
+      return;
+    }
+
+    if (pollLoader.lastSuccess === 0) {
+      return;
+    }
+
+    dispatch(
+      updateDeployEnvironmentStatus({
+        id: envId,
+        status,
+      }),
+    );
+  }, [
+    deployOp.id,
+    scanOp.id,
+    provisionOps,
+    env.onboardingStatus,
+    pollLoader.lastSuccess,
+  ]);
+
   const redeployLoader = useSelector((s: AppState) =>
     selectLoaderById(s, { id: `${redeployApp}` }),
   );
@@ -1535,6 +1697,13 @@ export const CreateProjectGitStatusPage = () => {
   useEffect(() => {
     if (!appId) return;
     if (!env.id) return;
+    if (provisionOps.length === 0) return;
+    const stillProvisioning = provisionOps.some(
+      (op) => op.resourceType === "database" && op.status !== "succeeded",
+    );
+    if (stillProvisioning) {
+      return;
+    }
     if (!hasDeployOperation(deployOp)) {
       dispatch(
         redeployApp({
@@ -1545,7 +1714,7 @@ export const CreateProjectGitStatusPage = () => {
         }),
       );
     }
-  }, [appId, env.id, deployOp.id]);
+  }, [appId, env.id, deployOp.id, provisionOps]);
 
   // when the status is success we need to refetch the app and endpoints
   // so we can grab the services and show them to the user for creating
@@ -1624,7 +1793,7 @@ export const CreateProjectGitStatusPage = () => {
           <div className="flex items-center mt-1">
             <StatusPill status={status} from={dateStr} />
             <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
-              {deployOp.gitRef.slice(0, 12)}
+              {deployOp.gitRef.slice(0, 12) || "pending"}
             </Pill>
           </div>
         </div>
@@ -1667,7 +1836,9 @@ export const CreateProjectGitStatusPage = () => {
           >
             Redeploy
           </Button>
-          <p>{redeployLoader.isError ? redeployLoader.message : ""}</p>
+          <p className="mt-4">
+            {redeployLoader.isError ? redeployLoader.message : ""}
+          </p>
         </StatusBox>
       ) : null}
 
