@@ -23,11 +23,9 @@ yarn
 export VITE_AUTH_URL="http://localhost:4000"
 export VITE_API_URL="http://localhost:4001"
 export VITE_BILLING_URL="http:localhost:4005"
-<<<<<<< HEAD
 export VITE_SENTRY_DSN="" # populate this as needed for error reporting, optional
-=======
 export VITE_LEGACY_DASHBOARD_URL="https://localhost:4200"
->>>>>>> origin/main
+export VITE_ORIGIN="nextgen"
 ```
 
 ### .env
