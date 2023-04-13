@@ -6,10 +6,14 @@
 // taken from: https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/error_boundaries/
 
 import { AptibleLogo, Button, IconAlertTriangle } from "../shared";
-import { ErrorBoundary as SentryErrorBoundary } from "@sentry/react";
+import {
+  ErrorBoundary as SentryErrorBoundary,
+  captureException,
+} from "@sentry/react";
 import { ReactElement } from "react";
+import { useRouteError } from "react-router";
 
-function ErrorFallback({ error }: { error: Error | string }) {
+function GenericErrorFallback({ error }: { error: Error | string }) {
   const errorString = typeof error === "string" ? error : error.message;
   return (
     <div
@@ -62,16 +66,47 @@ function ErrorFallback({ error }: { error: Error | string }) {
   );
 }
 
-export const ErrorBoundary = ({
+// StandaloneErrorBoundary - the purpose of this component is to act as a wrapper for Sentry errors.
+// This extends Sentry's error boundary as per recommendation here:
+// https://docs.sentry.io/platforms/javascript/guides/react/features/error-boundary/
+// WARNING - this will NOT work in conjunction with react router and its own errorElements because
+// it catches errors one level before going to sentry.
+export const StandaloneErrorBoundary = ({
   children,
 }: { children?: React.ReactNode }): ReactElement => {
   return (
     <SentryErrorBoundary
       fallback={({ error }: { error: Error }) => (
-        <ErrorFallback error={error} />
+        <GenericErrorFallback error={error} />
       )}
     >
       {children}
     </SentryErrorBoundary>
+  );
+};
+
+// ReactRouterErrorElement - the purpose of this component is to act as a wrapper for react router errors
+// and then reuse the same error fallback component supplied above. This is done because errors will not
+// bubble up the same way and are fully caught by react router. Since this gets caught, the React
+// ErrorBoundary will never raise its OWN error and you will end up with no messaging (a blank page
+// as an error occurred, but without react knowing an error has occurred, thus never using the ErrorBoundary)
+// Link: https://reactrouter.com/en/main/route/error-element
+// See this comment:
+//    If you do not provide an errorElement in your route tree to handle a given error,
+//    errors will bubble up and be handled by a default errorElement which will print
+//    the error message and stack trace. Some folks have questioned why the stack trace
+//    shows up in production builds.
+export const ReactRouterErrorElement = () => {
+  const error = useRouteError();
+  const errorData: string | Error = error?.hasOwnProperty("message")
+    ? (error as Error)
+    : (error as Object).toString();
+  if (error) {
+    captureException(error);
+  }
+  return (
+    <div>
+      <GenericErrorFallback error={errorData} />
+    </div>
   );
 };

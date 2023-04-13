@@ -1,10 +1,10 @@
+import * as Sentry from "@sentry/react";
 import {
   all,
   call,
   createApi,
   createPipe,
   dispatchActions,
-  errorHandler,
   fetcher,
   put,
   requestMonitor,
@@ -39,6 +39,15 @@ export interface AuthApiCtx<P = any, S = any>
 export function* elevetatedMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   ctx.elevated = true;
   yield next();
+}
+
+function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
+  try {
+    yield next();
+  } catch (err: any) {
+    Sentry.captureException(err, { contexts: { saga: ctx as any } });
+    throw err;
+  }
 }
 
 function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
@@ -135,6 +144,7 @@ const MINUTES = 60 * SECONDS;
 export const cacheTimer = () => timer(5 * MINUTES);
 
 export const api = createApi<DeployApiCtx>();
+api.use(sentryErrorHandler);
 api.use(requestMonitor());
 api.use(api.routes());
 api.use(halEntityParser);
@@ -143,6 +153,7 @@ api.use(tokenMdw);
 api.use(fetcher());
 
 export const authApi = createApi<AuthApiCtx>();
+authApi.use(sentryErrorHandler);
 authApi.use(requestMonitor());
 authApi.use(authApi.routes());
 authApi.use(halEntityParser);
@@ -220,7 +231,7 @@ export interface Retryable {
 }
 
 export const thunks = createPipe<ThunkCtx>();
-thunks.use(errorHandler);
+thunks.use(sentryErrorHandler);
 thunks.use(function* (ctx, next) {
   ctx.json = null;
   yield next();

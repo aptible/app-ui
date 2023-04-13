@@ -54,6 +54,7 @@ import {
   TeamPage,
   VerifyEmailPage,
 } from "@app/ui";
+import { ReactRouterErrorElement } from "@app/ui/shared/error-boundary";
 
 const ftuxRoutes: RouteObject[] = [
   {
@@ -460,5 +461,10 @@ const appRoutes: RouteObject[] = [
   },
 ];
 
-export const ftuxRouter = createBrowserRouter(ftuxRoutes);
-export const router = createBrowserRouter(appRoutes);
+const errorPatch = (appRoute: RouteObject) => ({
+  ...appRoute,
+  errorElement: <ReactRouterErrorElement />,
+});
+
+export const ftuxRouter = createBrowserRouter(ftuxRoutes.map(errorPatch));
+export const router = createBrowserRouter(appRoutes.map(errorPatch));
