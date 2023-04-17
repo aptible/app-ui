@@ -274,6 +274,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       createAppOperation({
         type: "deploy",
         appId,
+        envId,
         gitRef,
       }),
     );
@@ -394,6 +395,7 @@ export const redeployApp = thunks.create<{
     createAppOperation({
       type: "deploy",
       appId: ctx.payload.appId,
+      envId: ctx.payload.envId,
       gitRef: ctx.payload.gitRef,
     }),
   );

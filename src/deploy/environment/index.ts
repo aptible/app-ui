@@ -1,5 +1,5 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { select } from "saga-query";
+import { latest, put, select } from "saga-query";
 
 import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -8,8 +8,20 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type { AppState, DeployEnvironment, LinkResponse } from "@app/types";
+import type {
+  AppState,
+  DeployEnvironment,
+  DeployOperation,
+  LinkResponse,
+  OnboardingStatus,
+} from "@app/types";
 
+import {
+  findLatestDeployOp,
+  findLatestSuccessDeployOp,
+  findLatestSuccessProvisionDbOp,
+  findLatestSuccessScanOp,
+} from "../operation";
 import { selectDeploy } from "../slice";
 import { selectStackById } from "../stack";
 
@@ -29,6 +41,7 @@ interface DeployEnvironmentResponse {
   total_database_count: number;
   sweetness_stack: string;
   total_backup_size: number;
+  onboarding_status: OnboardingStatus;
   _links: {
     environment: LinkResponse;
     stack: LinkResponse;
@@ -53,6 +66,7 @@ export const deserializeDeployEnvironment = (
   totalDatabaseCount: payload.total_database_count,
   sweetnessStack: payload.sweetness_stack,
   totalBackupSize: payload.total_backup_size,
+  onboardingStatus: payload.onboarding_status,
   stackId: extractIdFromLink(payload._links.stack),
 });
 
@@ -77,6 +91,7 @@ export const defaultDeployEnvironment = (
     sweetnessStack: "",
     totalBackupSize: 0,
     stackId: "",
+    onboardingStatus: "unknown",
     ...e,
   };
 };
@@ -85,7 +100,8 @@ export const DEPLOY_ENVIRONMENT_NAME = "environments";
 const slice = createTable<DeployEnvironment>({
   name: DEPLOY_ENVIRONMENT_NAME,
 });
-const { add: addDeployEnvironments } = slice.actions;
+const { add: addDeployEnvironments, patch: patchDeployEnvironments } =
+  slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_ENVIRONMENT_NAME],
 );
@@ -117,6 +133,12 @@ export const selectEnvironmentByName = createSelector(
     return envs.find((e) => e.handle === handle) || initEnv;
   },
 );
+export const selectEnvironmentOnboarding = createSelector(
+  selectEnvironmentsAsList,
+  (envs) => envs.filter((env) => env.onboardingStatus !== "unknown"),
+);
+
+export const fetchEnvironmentById = api.get<{ id: string }>("/accounts/:id");
 
 export const fetchEnvironments = api.get<PaginateProps>(
   "/accounts?page=:page",
@@ -127,8 +149,6 @@ export const fetchAllEnvironments = thunks.create(
   { saga: cacheTimer() },
   combinePages(fetchEnvironments),
 );
-
-export const fetchEnvironment = api.get<{ id: string }>("/accounts/:id");
 
 interface CreateEnvProps {
   name: string;
@@ -153,6 +173,59 @@ export const selectEnvironmentsForTableSearch = createSelector(
   },
 );
 
+export function deriveAccountStatus(ops: DeployOperation[]): OnboardingStatus {
+  const app = findLatestSuccessDeployOp(ops);
+  const appDeploy = findLatestDeployOp(ops);
+  const db = findLatestSuccessProvisionDbOp(ops);
+  const scan = findLatestSuccessScanOp(ops);
+  if (app && db && scan) {
+    return "completed";
+  }
+  // app was provisioned but failed
+  if (!app && appDeploy && db && scan) {
+    return "app_provisioned";
+  }
+  if (!app && db && scan) {
+    return "db_provisioned";
+  }
+  if (!app && !db && scan) {
+    return "scanned";
+  }
+
+  return "initiated";
+}
+
+interface EnvPatch {
+  id: string;
+  status: OnboardingStatus;
+}
+
+export const updateDeployEnvironmentStatus = api.patch<EnvPatch>(
+  "/accounts/:id",
+  { saga: latest },
+  function* (ctx, next) {
+    const { id, status } = ctx.payload;
+    const env = yield* select(selectEnvironmentById, { id });
+    if (env.onboardingStatus === status) {
+      return;
+    }
+
+    // optimistically update status to prevent this endpoint getting hit multiple times from the
+    // create project git status view
+    yield* put(patchDeployEnvironments({ [id]: { onboardingStatus: status } }));
+
+    const body = {
+      onboarding_status: status,
+    };
+
+    ctx.request = ctx.req({
+      body: JSON.stringify(body),
+    });
+
+    yield next();
+  },
+);
+
 export const createDeployEnvironment = api.post<
   CreateEnvProps,
   DeployEnvironmentResponse
@@ -164,6 +237,7 @@ export const createDeployEnvironment = api.post<
     stack_id: stackId,
     organization_id: orgId,
     type: stack.organizationId ? "production" : "development",
+    onboarding_status: "initiated",
   };
   ctx.request = ctx.req({
     body: JSON.stringify(body),

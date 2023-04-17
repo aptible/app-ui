@@ -187,6 +187,9 @@ export const selectOperationsByAppId = createSelector(
     ops.filter((op) => op.resourceType === "app" && op.resourceId === appId),
 );
 
+export const findLatestSuccessProvisionDbOp = (ops: DeployOperation[]) =>
+  ops.find((op) => op.resourceType === "database" && op.status === "succeeded");
+
 export const selectOperationsByDatabaseId = createSelector(
   selectOperationsAsList,
   (_: AppState, p: { dbId: string }) => p.dbId,
@@ -208,9 +211,10 @@ export const selectLatestProvisionOp = createSelector(
   (ops) => ops.find((op) => op.type === "provision") || initOp,
 );
 
+const initLatestProvOps: DeployOperation[] = [];
 export const selectLatestProvisionOps = createSelector(
   selectOperationsByResourceIds,
-  (ops) => ops.filter((op) => op.type === "provision") || [],
+  (ops) => ops.filter((op) => op.type === "provision") || initLatestProvOps,
 );
 
 export const selectLatestScanOp = createSelector(
@@ -223,23 +227,28 @@ export const selectLatestConfigureOp = createSelector(
   (ops) => ops.find((op) => op.type === "configure") || initOp,
 );
 
+export const findLatestDeployOp = (ops: DeployOperation[]) =>
+  ops.find((op) => op.type === "deploy");
+
 export const selectLatestDeployOp = createSelector(
   selectOperationsByAppId,
   (ops) => ops.find((op) => op.type === "deploy") || initOp,
 );
 
+export const findLatestSuccessDeployOp = (ops: DeployOperation[]) =>
+  ops.find((op) => op.type === "deploy" && op.status === "succeeded");
+
 export const selectLatestSuccessDeployOpByEnvId = createSelector(
   selectOperationsByEnvId,
-  (ops) =>
-    ops.find((op) => op.type === "deploy" && op.status === "succeeded") ||
-    initOp,
+  (ops) => findLatestSuccessDeployOp(ops) || initOp,
 );
+
+export const findLatestSuccessScanOp = (ops: DeployOperation[]) =>
+  ops.find((op) => op.type === "scan_code" && op.status === "succeeded");
 
 export const selectLatestSucceessScanOp = createSelector(
   selectOperationsByAppId,
-  (ops) =>
-    ops.find((op) => op.type === "scan_code" && op.status === "succeeded") ||
-    initOp,
+  (ops) => findLatestSuccessScanOp(ops) || initOp,
 );
 
 export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");

@@ -2,6 +2,7 @@ import {
   FetchJson,
   Payload,
   call,
+  fork,
   put,
   select,
   setLoaderError,
@@ -34,7 +35,11 @@ import type {
 } from "@app/types";
 
 import { deserializeDisk } from "../disk";
-import { findEnvById, selectEnvironments } from "../environment";
+import {
+  findEnvById,
+  selectEnvironments,
+  updateDeployEnvironmentStatus,
+} from "../environment";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { selectDeploy } from "../slice";
 import { createSelector } from "@reduxjs/toolkit";
@@ -276,6 +281,7 @@ export const provisionDatabase = thunks.create<
       containerSize: 1024,
       diskSize: 10,
       type: "provision",
+      envId: ctx.payload.envId,
     }),
   );
 
@@ -303,6 +309,7 @@ interface CreateDatabaseOpProps {
   containerSize: number;
   diskSize: number;
   type: "provision";
+  envId: string;
 }
 
 interface DeprovisionDatabaseOpProps {
@@ -337,6 +344,28 @@ export const createDatabaseOperation = api.post<
   const body = getBody();
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  yield* fork(function* () {
+    if (type !== "provision") {
+      return;
+    }
+    const op = yield* call(waitForOperation, { id: `${ctx.json.data.id}` });
+    if (op.status !== "succeeded") {
+      return;
+    }
+
+    yield call(
+      updateDeployEnvironmentStatus.run,
+      updateDeployEnvironmentStatus({
+        id: ctx.payload.envId,
+        status: "db_provisioned",
+      }),
+    );
+  });
 });
 
 export const fetchDatabaseOperations = api.get<{ id: string }>(
@@ -388,4 +417,5 @@ export const deprovisionDatabase = thunks.create<{
 
   if (!deprovisionCtx.json.ok) return;
   yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
+  yield next();
 });

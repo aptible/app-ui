@@ -77,6 +77,14 @@ export interface DeployEndpoint extends Provisionable, Timestamps {
   serviceId: string;
 }
 
+export type OnboardingStatus =
+  | "initiated"
+  | "scanned"
+  | "db_provisioned"
+  | "app_provisioned"
+  | "completed"
+  | "unknown";
+
 export interface DeployEnvironment extends Timestamps {
   id: string;
   type: "production" | "development";
@@ -92,6 +100,7 @@ export interface DeployEnvironment extends Timestamps {
   sweetnessStack: string;
   totalBackupSize: number;
   stackId: string;
+  onboardingStatus: OnboardingStatus;
 }
 
 export interface DeployStack extends Timestamps {

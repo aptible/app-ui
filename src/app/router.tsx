@@ -19,6 +19,7 @@ import {
   CreateProjectLayout,
   CreateProjectNamePage,
   CreateProjectPage,
+  CreateProjectSetupPage,
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
@@ -44,6 +45,7 @@ import {
   NotFoundPage,
   OtpRecoveryCodesPage,
   OtpSetupPage,
+  ResumeSetupPage,
   SSHSettingsPage,
   SecuritySettingsPage,
   SettingsPage,
@@ -52,6 +54,129 @@ import {
   TeamPage,
   VerifyEmailPage,
 } from "@app/ui";
+
+const ftuxRoutes: RouteObject[] = [
+  {
+    path: routes.HOME_PATH,
+    element: <AuthRequired />,
+    children: [
+      {
+        index: true,
+        element: (
+          <CreateProjectLayout>
+            <ResumeSetupPage />
+          </CreateProjectLayout>
+        ),
+      },
+      {
+        path: routes.LOGOUT_PATH,
+        element: <LogoutPage />,
+      },
+      {
+        path: routes.ELEVATE_PATH,
+        element: <ElevatePage />,
+      },
+
+      // create project routes
+      {
+        path: routes.CREATE_PROJECT_ADD_KEY_PATH,
+        element: (
+          <ElevateRequired>
+            <CreateProjectLayout />
+          </ElevateRequired>
+        ),
+        children: [
+          {
+            index: true,
+            element: <CreateProjectAddKeyPage />,
+          },
+        ],
+      },
+      {
+        path: routes.CREATE_PROJECT_ADD_NAME_PATH,
+        element: <CreateProjectLayout />,
+        children: [
+          {
+            index: true,
+            element: <CreateProjectNamePage />,
+          },
+        ],
+      },
+      {
+        path: routes.CREATE_PROJECT_GIT_PATH,
+        element: <CreateProjectLayout />,
+        children: [
+          {
+            index: true,
+            element: <CreateProjectGitPage />,
+          },
+        ],
+      },
+      {
+        path: routes.CREATE_PROJECT_SETUP_PATH,
+        element: <CreateProjectSetupPage />,
+      },
+      {
+        path: routes.CREATE_PROJECT_GIT_APP_PATH,
+        element: <CreateProjectLayout />,
+        children: [
+          {
+            path: routes.CREATE_PROJECT_GIT_PUSH_PATH,
+            element: <CreateProjectGitPushPage />,
+          },
+          {
+            path: routes.CREATE_PROJECT_GIT_SETTINGS_PATH,
+            element: <CreateProjectGitSettingsPage />,
+          },
+          {
+            path: routes.CREATE_PROJECT_GIT_STATUS_PATH,
+            element: <CreateProjectGitStatusPage />,
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    path: routes.CREATE_PROJECT_PATH,
+    element: <CreateProjectPage />,
+  },
+
+  {
+    path: routes.LOGIN_PATH,
+    element: <LoginPage />,
+  },
+
+  {
+    path: routes.VERIFY_EMAIL_REQUEST_PATH,
+    element: <VerifyEmailPage />,
+  },
+
+  {
+    path: routes.VERIFY_EMAIL_PATH,
+    element: <VerifyEmailPage />,
+  },
+
+  {
+    path: routes.SIGNUP_PATH,
+    element: <SignupPage />,
+  },
+
+  {
+    path: routes.NOT_FOUND_PATH,
+    element: <NotFoundPage />,
+  },
+
+  {
+    path: routes.ERROR_PATH,
+    element: <ErrorPage />,
+  },
+
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
+];
 
 const appRoutes: RouteObject[] = [
   {
@@ -335,4 +460,5 @@ const appRoutes: RouteObject[] = [
   },
 ];
 
+export const ftuxRouter = createBrowserRouter(ftuxRoutes);
 export const router = createBrowserRouter(appRoutes);
