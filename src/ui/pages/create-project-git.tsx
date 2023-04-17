@@ -78,16 +78,16 @@ import {
   fetchAppOperations,
   fetchDatabasesByEnvId,
   fetchEndpointsByAppId,
-  fetchEnvironment,
   fetchEnvironmentById,
+  hasDeployApp,
   pollAppOperations,
   provisionEndpoint,
   selectAppById,
-  selectAppsByEnvId,
   selectDatabasesByEnvId,
   selectEndpointsByAppId,
   selectEnvironmentById,
   selectEnvironmentOnboarding,
+  selectFirstAppByEnvId,
   selectServicesByIds,
   selectStackPublicDefaultAsOption,
   updateDeployEnvironmentStatus,
@@ -198,8 +198,7 @@ export const CreateProjectSetupPage = () => {
     selectEnvironmentById(s, { id: envId }),
   );
   const navigate = useNavigate();
-  const apps = useSelector((s: AppState) => selectAppsByEnvId(s, { envId }));
-  const app = apps[0];
+  const app = useSelector((s: AppState) => selectFirstAppByEnvId(s, { envId }));
 
   useEffect(() => {
     dispatch(fetchAllApps());
@@ -219,7 +218,7 @@ export const CreateProjectSetupPage = () => {
     } else {
       navigate(appDetailUrl(app.id), { replace: true });
     }
-  }, [env.id, apps]);
+  }, [env.id, app.id]);
 
   return <Loading text="Detecting project status ..." />;
 };
@@ -227,13 +226,13 @@ export const CreateProjectSetupPage = () => {
 const OnboardingLink = ({ env }: { env: DeployEnvironment }) => {
   const origin = useSelector(selectOrigin);
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
-  const apps = useSelector((s: AppState) =>
-    selectAppsByEnvId(s, { envId: env.id }),
+  const app = useSelector((s: AppState) =>
+    selectFirstAppByEnvId(s, { envId: env.id }),
   );
-  if (apps.length === 0) {
-    return null;
+
+  if (!hasDeployApp(app)) {
+    return <span>No apps found</span>;
   }
-  const app = apps[0];
 
   if (env.onboardingStatus === "completed") {
     if (origin === "ftux") {
@@ -273,6 +272,7 @@ export const ResumeSetupPage = () => {
       <ButtonLink to={createProjectUrl()}>
         <IconPlusCircle className="mr-2" /> Deploy
       </ButtonLink>
+      {envs.length === 0 ? <div>No environments found</div> : null}
       {envs.map((env) => {
         return (
           <div
@@ -1610,7 +1610,7 @@ export const CreateProjectGitStatusPage = () => {
   const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
-  useQuery(fetchEnvironment({ id: envId }));
+  useQuery(fetchEnvironmentById({ id: envId }));
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );

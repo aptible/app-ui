@@ -227,6 +227,9 @@ export const selectLatestConfigureOp = createSelector(
   (ops) => ops.find((op) => op.type === "configure") || initOp,
 );
 
+export const findLatestDeployOp = (ops: DeployOperation[]) =>
+  ops.find((op) => op.type === "deploy");
+
 export const selectLatestDeployOp = createSelector(
   selectOperationsByAppId,
   (ops) => ops.find((op) => op.type === "deploy") || initOp,
@@ -322,7 +325,6 @@ export function* waitForOperation({
       }
     }
 
-    console.log("WAITING");
     yield* delay(wait);
   }
 }

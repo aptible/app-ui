@@ -120,6 +120,11 @@ export const selectAppsByEnvId = createSelector(
   },
 );
 
+export const selectFirstAppByEnvId = createSelector(
+  selectAppsByEnvId,
+  (apps) => apps[0] || initApp,
+);
+
 export const selectAppsForTable = createSelector(
   selectAppsAsList,
   selectEnvironments,
