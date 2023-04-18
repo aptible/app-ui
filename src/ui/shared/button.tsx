@@ -7,7 +7,7 @@ export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 type Shape = "button" | "pill";
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   layout?: "block" | "auto";
-  variant?: "primary" | "secondary" | "white";
+  variant?: "primary" | "secondary" | "white" | "delete";
   size?: Size;
   shape?: Shape;
   isLoading?: boolean;

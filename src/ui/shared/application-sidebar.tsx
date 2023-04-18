@@ -5,7 +5,7 @@ import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import {
   appsUrl,
-  createProjectUrl,
+  createProjectGitUrl,
   databaseUrl,
   environmentsUrl,
 } from "@app/routes";
@@ -35,7 +35,7 @@ export const ApplicationSidebar = () => {
       <div className="px-3 w-full">
         <ButtonIcon
           className="w-full mb-4"
-          onClick={() => navigate(createProjectUrl())}
+          onClick={() => navigate(createProjectGitUrl())}
           icon={<IconPlusCircle />}
         >
           Create

@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
@@ -20,8 +20,8 @@ import {
   createProjectGitPushUrl,
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
+  createProjectGitUrl,
   createProjectSetupUrl,
-  createProjectUrl,
   homeUrl,
   logoutUrl,
 } from "@app/routes";
@@ -58,6 +58,7 @@ import {
   IconInfo,
   IconPlusCircle,
   IconSettings,
+  IconTrash,
   IconX,
   Input,
   Loading,
@@ -143,7 +144,9 @@ export const CreateProjectLayout = ({
     <>
       <div className="p-6 flex justify-between shadow bg-white border-b border-black-50">
         <div className="flex">
-          <AptibleLogo />
+          <Link to={homeUrl()}>
+            <AptibleLogo />
+          </Link>
           <div className="ml-4">
             {origin === "ftux" ? (
               <a href={legacyUrl} className="text-black-300">
@@ -269,7 +272,7 @@ export const ResumeSetupPage = () => {
   const envs = useSelector(selectEnvironmentOnboarding);
   return (
     <div>
-      <ButtonLink to={createProjectUrl()}>
+      <ButtonLink to={createProjectGitUrl()}>
         <IconPlusCircle className="mr-2" /> Deploy
       </ButtonLink>
       {envs.length === 0 ? <div>No environments found</div> : null}
@@ -310,6 +313,18 @@ export const CreateProjectGitPage = () => {
   return <Navigate to={createProjectAddNameUrl()} replace />;
 };
 
+const ProgressItem = ({ done = false }: { done?: boolean }) => {
+  return (
+    <div
+      className={`w-[20px] h-[4px] border mr-3 ${
+        done ? "bg-black border-black" : "bg-gray-100 border-gray-100"
+      }`}
+    >
+      {" "}
+    </div>
+  );
+};
+
 const ProgressProject = ({
   cur,
   total = 4,
@@ -322,18 +337,18 @@ const ProgressProject = ({
   next?: string;
 }) => {
   const env = useSelector(selectEnv);
-  const progress = (
-    <div>
-      Step {cur} / {total}
-    </div>
-  );
+  const steps = [];
+  for (let i = 1; i <= total; i += 1) {
+    steps.push(<ProgressItem key={`step-${i}`} done={cur >= i} />);
+  }
+  const progress = <div className="flex items-center">{steps}</div>;
 
   if (env.isProduction && cur !== -1) {
-    return progress;
+    return <div className="mt-6 flex justify-center">{progress}</div>;
   }
 
   return (
-    <div className="flex">
+    <div className="mt-4 flex justify-center">
       {progress}
       <div className="ml-4">
         {prev ? (
@@ -358,7 +373,9 @@ export const CreateProjectAddKeyPage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Deploy your code</h1>
+        <h1 className={tokens.type.h1}>
+          Get ready to deploy your app on Aptible
+        </h1>
         <p className="my-4 text-gray-600">
           Add your SSH key to push code into Aptible.
         </p>
@@ -399,8 +416,10 @@ export const CreateProjectNamePage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Deploy your code</h1>
-        <p className="my-4 text-gray-600">Provide a name for your project.</p>
+        <h1 className={tokens.type.h1}>
+          Get ready to deploy your app on Aptible
+        </h1>
+        <p className="my-4 text-gray-600">Name your Environment to continue.</p>
       </div>
 
       <ProgressProject cur={1} />
@@ -525,7 +544,9 @@ export const CreateProjectGitPushPage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Deploy your code</h1>
+        <h1 className={tokens.type.h1}>
+          Get ready to deploy your app on Aptible
+        </h1>
         <p className="my-4 text-gray-600">Git push your code to continue.</p>
       </div>
 
@@ -534,6 +555,7 @@ export const CreateProjectGitPushPage = () => {
         prev={createProjectAddKeyUrl()}
         next={createProjectGitSettingsUrl(appId)}
       />
+
       <Box>
         <div>
           <h3 className={tokens.type.h3}>Add Aptible's Git Server</h3>
@@ -568,7 +590,9 @@ export const CreateProjectGitPushPage = () => {
         {hasDeployOperation(scanOp) ? (
           <OpResult op={scanOp} />
         ) : (
-          <Loading text="Waiting for git push ..." />
+          <Banner variant="info">
+            Waiting on your git push to continue...
+          </Banner>
         )}
       </Box>
     </div>
@@ -767,8 +791,8 @@ const Selector = ({
             </option>
           ))}
         </select>
-        <Button variant="secondary" onClick={onDelete}>
-          Delete
+        <Button variant="delete" onClick={onDelete}>
+          Delete <IconTrash color="#fff" />
         </Button>
       </div>
       {db.imgId ? sel : null}
@@ -1005,10 +1029,8 @@ export const CreateProjectGitSettingsPage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Deploy your code</h1>
-        <p className="my-4 text-gray-600">
-          Review settings and click deploy to finish.
-        </p>
+        <h1 className={tokens.type.h1}>Review your Settings</h1>
+        <p className="my-4 text-gray-600">Review and click deploy to finish</p>
       </div>
 
       <ProgressProject
@@ -1161,25 +1183,28 @@ const Op = ({
   resource,
   retry,
   alwaysRetry = false,
+  status,
 }: {
   op: DeployOperation;
   resource: { handle: string };
   retry?: () => void;
   alwaysRetry?: boolean;
+  status: OperationStatus;
 }) => {
   const [isOpen, setOpen] = useState(false);
   if (!hasDeployOperation(op)) {
     return null;
   }
   const extra = "border-b border-black-100";
-  const status = () => {
+  const statusView = () => {
     const cns = "font-semibold flex justify-center items-center";
 
     if (op.status === "succeeded") {
       return (
         <div className={cn(cns, "text-forest")}>
-          {retry && alwaysRetry ? (
+          {retry && alwaysRetry && status === "succeeded" ? (
             <Button
+              size="sm"
               variant="white"
               onClick={(e) => {
                 e.stopPropagation();
@@ -1187,7 +1212,7 @@ const Op = ({
               }}
               className="mr-2"
             >
-              retry
+              Re-run
             </Button>
           ) : null}
           {createReadableStatus(op.status)}
@@ -1200,6 +1225,7 @@ const Op = ({
         <div className={cn(cns, "text-red")}>
           {retry ? (
             <Button
+              size="sm"
               variant="white"
               onClick={(e) => {
                 e.stopPropagation();
@@ -1207,7 +1233,7 @@ const Op = ({
               }}
               className="mr-2"
             >
-              retry
+              Re-run
             </Button>
           ) : null}
           {createReadableStatus(op.status)}
@@ -1237,7 +1263,7 @@ const Op = ({
           )}
           <div>{createReadableResourceName(op, resource.handle)}</div>
         </div>
-        {status()}
+        {statusView()}
       </div>
       {isOpen ? (
         <div className="pb-4">
@@ -1250,20 +1276,24 @@ const Op = ({
 
 const DatabaseStatus = ({
   db,
+  status,
 }: {
   db: Pick<DeployDatabase, "id" | "handle">;
+  status: OperationStatus;
 }) => {
   const provisionOp = useSelector((s: AppState) =>
     selectLatestProvisionOp(s, { resourceId: db.id }),
   );
 
-  return <Op op={provisionOp} resource={db} />;
+  return <Op op={provisionOp} resource={db} status={status} />;
 };
 
 const EndpointStatus = ({
   endpoint,
+  status,
 }: {
   endpoint: Pick<DeployEndpoint, "id">;
+  status: OperationStatus;
 }) => {
   const dispatch = useDispatch();
   const provisionOp = useSelector((s: AppState) =>
@@ -1278,15 +1308,24 @@ const EndpointStatus = ({
     );
   };
 
-  return <Op op={provisionOp} resource={{ handle: "" }} retry={retry} />;
+  return (
+    <Op
+      op={provisionOp}
+      resource={{ handle: "" }}
+      retry={retry}
+      status={status}
+    />
+  );
 };
 
 const AppStatus = ({
   app,
   gitRef,
+  status,
 }: {
   app: Pick<DeployApp, "id" | "handle" | "environmentId">;
   gitRef: string;
+  status: OperationStatus;
 }) => {
   const dispatch = useDispatch();
   const configOp = useSelector((s: AppState) =>
@@ -1308,8 +1347,20 @@ const AppStatus = ({
 
   return (
     <div>
-      <Op op={configOp} resource={app} retry={retry} alwaysRetry />
-      <Op op={deployOp} resource={app} retry={retry} alwaysRetry />
+      <Op
+        op={configOp}
+        resource={app}
+        retry={retry}
+        alwaysRetry
+        status={status}
+      />
+      <Op
+        op={deployOp}
+        resource={app}
+        retry={retry}
+        alwaysRetry
+        status={status}
+      />
     </div>
   );
 };
@@ -1319,22 +1370,26 @@ const ProjectStatus = ({
   dbs,
   endpoints,
   gitRef,
+  status,
 }: {
   app: DeployApp;
   dbs: DeployDatabase[];
   endpoints: DeployEndpoint[];
   gitRef: string;
+  status: OperationStatus;
 }) => {
   return (
     <div>
       {dbs.map((db) => {
-        return <DatabaseStatus key={db.id} db={db} />;
+        return <DatabaseStatus key={db.id} db={db} status={status} />;
       })}
 
-      <AppStatus app={app} gitRef={gitRef} />
+      <AppStatus app={app} gitRef={gitRef} status={status} />
 
       {endpoints.map((vhost) => {
-        return <EndpointStatus key={vhost.id} endpoint={vhost} />;
+        return (
+          <EndpointStatus key={vhost.id} endpoint={vhost} status={status} />
+        );
       })}
     </div>
   );
@@ -1585,7 +1640,13 @@ const CreateEndpointView = ({
               disabled={!!serviceId}
             />
             <span className="ml-1">
-              {service.processType} <Code>{service.command}</Code>
+              {service.processType === "cmd" ? (
+                "Docker CMD Service"
+              ) : (
+                <>
+                  {service.processType} <Code>{service.command}</Code>
+                </>
+              )}
             </span>
           </div>
         );
@@ -1610,6 +1671,9 @@ export const CreateProjectGitStatusPage = () => {
   const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
+  const configOp = useSelector((s: AppState) =>
+    selectLatestConfigureOp(s, { appId }),
+  );
   useQuery(fetchEnvironmentById({ id: envId }));
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
@@ -1626,14 +1690,17 @@ export const CreateProjectGitStatusPage = () => {
     selectEndpointsByAppId(s, { id: appId }),
   );
   const vhost = vhosts.length > 0 ? vhosts[0] : null;
-  const resourceIds = [...dbs.map((db) => db.id), ...vhosts.map((v) => v.id)];
+  const resourceIds = useMemo(
+    () => [...dbs.map((db) => db.id), ...vhosts.map((v) => v.id)],
+    [dbs, vhosts],
+  );
   const provisionOps = useSelector((s: AppState) =>
     selectLatestProvisionOps(s, {
       resourceIds,
     }),
   );
 
-  const ops = [deployOp, ...provisionOps];
+  const ops = [configOp, deployOp, ...provisionOps];
   const [status, dateStr] = resolveOperationStatuses(ops);
   const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
@@ -1681,6 +1748,9 @@ export const CreateProjectGitStatusPage = () => {
   );
   const gitRef = scanOp.gitRef || "main";
   const redeploy = (force: boolean) => {
+    if (redeployLoader.isLoading) {
+      return;
+    }
     dispatch(
       redeployApp({
         appId,
@@ -1694,7 +1764,7 @@ export const CreateProjectGitStatusPage = () => {
   // if the user started the deployment process but left before
   // we could create an app deploy operation then we need to kick that
   // off again here
-  useEffect(() => {
+  /* useEffect(() => {
     if (!appId) return;
     if (!env.id) return;
     if (provisionOps.length === 0) return;
@@ -1714,7 +1784,7 @@ export const CreateProjectGitStatusPage = () => {
         }),
       );
     }
-  }, [appId, env.id, deployOp.id, provisionOps]);
+  }, [appId, env.id, deployOp.id, provisionOps]); */
 
   // when the status is success we need to refetch the app and endpoints
   // so we can grab the services and show them to the user for creating
@@ -1752,7 +1822,7 @@ export const CreateProjectGitStatusPage = () => {
     return (
       <div className="text-center">
         <h1 className={tokens.type.h1}>Deploying your Code</h1>
-        <p className="my-4 text-gray-600">Estimated wait time is 5 minutes.</p>
+        <p className="my-4 text-gray-600">Deployment is in progress...</p>
       </div>
     );
   };
@@ -1762,6 +1832,7 @@ export const CreateProjectGitStatusPage = () => {
       {header()}
 
       <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />
+
       <StatusBox>
         <div className="border-b border-black-100 pb-4 ">
           <div className="flex items-center">
@@ -1802,6 +1873,7 @@ export const CreateProjectGitStatusPage = () => {
           <Loading text="Loading resources ..." />
         ) : (
           <ProjectStatus
+            status={status}
             app={app}
             dbs={dbs}
             endpoints={vhosts}
@@ -1866,6 +1938,10 @@ export const CreateProjectGitStatusPage = () => {
             View Project <IconArrowRight variant="sm" className="ml-2" />
           </ButtonLink>
         )}
+
+        <ButtonLink to={createProjectGitSettingsUrl(appId)} variant="white">
+          Back
+        </ButtonLink>
       </StatusBox>
     </div>
   );

@@ -46,13 +46,18 @@ export const ElevatePage = () => {
   }, [isOtpError]);
 
   return (
-    <div>
-      <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div
+      className="h-full bg-no-repeat bg-center bg-cover"
+      style={{
+        backgroundImage: "url(/background-pattern-v2.png)",
+      }}
+    >
+      <div className="min-h-full flex flex-col py-16 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="flex items-center justify-center">
             <AptibleLogo />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-semibold text-gray-900">
+          <h2 className="mt-6 mb-4 text-center text-3xl font-semibold text-gray-900">
             Elevate token
           </h2>
           <p>
