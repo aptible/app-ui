@@ -522,7 +522,7 @@ interface StarterOption extends SelectOption {
 const starterTemplateOptions: StarterOption[] = [
   { label: "Custom Code", value: "none", query: {} },
   {
-    label: "Ruby on Rails",
+    label: "Ruby on Rails v7",
     value: "git@github.com:aptible/template-rails.git",
     query: {
       dbs: ["database_url:postgresql:14", "redis_url:redis:3.0"],
@@ -530,17 +530,17 @@ const starterTemplateOptions: StarterOption[] = [
     },
   },
   {
-    label: "Django",
+    label: "Django v4",
     value: "git@github.com:aptible/template-django.git",
     query: { dbs: ["database_url:postgresql:14"], envs: ["secret_key"] },
   },
   {
-    label: "Express",
+    label: "Express v4",
     value: "git@github.com:aptible/template-express.git",
     query: { dbs: ["database_url:postgresql:14"] },
   },
   {
-    label: "Laravel",
+    label: "Laravel v10",
     value: "git@github.com:aptible/template-laravel.git",
     query: { dbs: ["database_url:postgresql:14"] },
   },
@@ -591,7 +591,9 @@ export const CreateProjectGitPushPage = () => {
 
       <Box>
         <div>
-          <h3 className={tokens.type.h3}>Deploy Custom Code or Starter Template</h3>
+          <h3 className={tokens.type.h3}>
+            Deploy Custom Code or Starter Template
+          </h3>
           <div className="my-2">
             <Select
               options={starterTemplateOptions}
