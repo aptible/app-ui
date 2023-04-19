@@ -2,7 +2,7 @@ import cn from "classnames";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { selectDataById, selectLoaderById } from "saga-query";
 import {
   useApi,
@@ -516,23 +516,31 @@ const OpResult = ({ op }: { op: DeployOperation }) => {
   );
 };
 
-const starterTemplateOptions: SelectOption[] = [
-  { label: "none", value: "none" },
+interface StarterOption extends SelectOption {
+  query: { [key: string]: string[] };
+}
+
+const starterTemplateOptions: StarterOption[] = [
+  { label: "none", value: "none", query: {} },
   {
     label: "rails",
     value: "git@github.com:aptible/template-rails.git",
+    query: { dbs: ["database_url:postgresql:14", "redis_url:redis:3.0"] },
   },
   {
     label: "django",
     value: "git@github.com:aptible/template-django.git",
+    query: { dbs: ["database_url:postgresql:14"], envs: ["secret_key"] },
   },
   {
     label: "express",
     value: "git@github.com:aptible/template-express.git",
+    query: { dbs: ["database_url:postgresql:14"] },
   },
   {
     label: "laravel",
     value: "git@github.com:aptible/template-laravel.git",
+    query: { dbs: ["database_url:postgresql:14"] },
   },
 ];
 
@@ -540,7 +548,7 @@ export const CreateProjectGitPushPage = () => {
   const navigate = useNavigate();
   const { appId = "" } = useParams();
 
-  const [starter, setStarter] = useState<SelectOption>();
+  const [starter, setStarter] = useState<StarterOption>();
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   usePollAppOperations(appId);
@@ -549,9 +557,18 @@ export const CreateProjectGitPushPage = () => {
     selectLatestDeployOp(s, { appId }),
   );
 
+  let query = "";
+  if (starter) {
+    const queryRaw: Record<string, string> = {};
+    Object.keys(starter.query).forEach((key) => {
+      queryRaw[key] = starter.query[key].join(",");
+    });
+    query = new URLSearchParams(queryRaw).toString();
+  }
+
   useEffect(() => {
     if (scanOp && scanOp.status === "succeeded") {
-      navigate(createProjectGitSettingsUrl(appId));
+      navigate(createProjectGitSettingsUrl(appId, query));
     }
   }, [scanOp]);
 
@@ -567,7 +584,7 @@ export const CreateProjectGitPushPage = () => {
       <ProgressProject
         cur={2}
         prev={createProjectAddKeyUrl()}
-        next={createProjectGitSettingsUrl(appId)}
+        next={createProjectGitSettingsUrl(appId, query)}
       />
 
       <Box>
@@ -579,7 +596,7 @@ export const CreateProjectGitPushPage = () => {
               options={starterTemplateOptions}
               value={starter}
               onSelect={(val) => {
-                setStarter(val);
+                setStarter(val as any);
               }}
             />
           </div>
@@ -853,7 +870,8 @@ const Selector = ({
 
 type DbSelectorAction =
   | { type: "add"; payload: DbSelectorProps }
-  | { type: "rm"; payload: string };
+  | { type: "rm"; payload: string }
+  | { type: "reset" };
 
 function dbSelectorReducer(
   state: { [key: string]: DbSelectorProps },
@@ -861,6 +879,10 @@ function dbSelectorReducer(
 ) {
   if (action.type === "add") {
     return { ...state, [action.payload.id]: action.payload };
+  }
+
+  if (action.type === "reset") {
+    return {};
   }
 
   if (action.type === "rm") {
@@ -973,6 +995,9 @@ export const CreateProjectGitSettingsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { appId = "" } = useParams();
+  const [searchParams] = useSearchParams();
+  const queryEnvsStr = searchParams.get("envs") || "";
+  const queryDbsStr = searchParams.get("dbs") || "";
 
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
@@ -1007,6 +1032,44 @@ export const CreateProjectGitSettingsPage = () => {
   useEffect(() => {
     setEnvs(existingEnvStr);
   }, [existingEnvStr]);
+
+  // prefill env vars based on query params
+  useEffect(() => {
+    if (!queryEnvsStr) return;
+    setEnvs(
+      queryEnvsStr
+        .split(",")
+        .map((env) => `${env}=""`.toLocaleUpperCase())
+        .join("\n"),
+    );
+  }, [queryEnvsStr]);
+
+  // prefill databases based on query params
+  useEffect(() => {
+    if (!queryDbsStr) return;
+    if (!app.handle) return;
+    const qdbs = queryDbsStr.split(",");
+    if (qdbs.length === 0) return;
+
+    dbDispatch({ type: "reset" });
+    qdbs.forEach((db) => {
+      const [env, type, version] = db.split(":");
+      const img = dbImages.find(
+        (i) => i.type === type && i.version === version,
+      );
+      if (!img) return;
+      dbDispatch({
+        type: "add",
+        payload: {
+          env: env.toLocaleUpperCase(),
+          id: `${createId()}`,
+          imgId: img.id,
+          name: `${app.handle}-${img?.type || ""}`,
+          dbType: img?.type || "",
+        },
+      });
+    });
+  }, [queryDbsStr, dbImages, app.handle]);
 
   const [dbMap, dbDispatch] = useReducer(dbSelectorReducer, {});
   const dbList = Object.values(dbMap).sort((a, b) => a.id.localeCompare(b.id));
