@@ -7,7 +7,7 @@ export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 type Shape = "button" | "pill";
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   layout?: "block" | "auto";
-  variant?: "primary" | "secondary" | "white";
+  variant?: "primary" | "secondary" | "white" | "delete";
   size?: Size;
   shape?: Shape;
   isLoading?: boolean;
@@ -107,7 +107,11 @@ export const Button: FC<ButtonProps> = ({
     buttonShapeStyle(size, shape),
   );
   return (
-    <button {...props} className={`${className} ${classes}`}>
+    <button
+      {...props}
+      className={`${className} ${classes}`}
+      disabled={isLoading || props.disabled}
+    >
       {isLoading ? "Loading ..." : children}
     </button>
   );

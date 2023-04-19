@@ -10,6 +10,7 @@ export interface SelectProps {
   defaultValue?: SelectOption;
   value?: SelectOption;
   onSelect: (s: SelectOption) => void;
+  className?: string;
 }
 
 export function Select({
@@ -17,18 +18,20 @@ export function Select({
   options,
   onSelect,
   defaultValue,
+  className = "",
 }: SelectProps) {
-  const className = cn(
+  const finClassName = cn(
     "border-black-100 text-black-300",
     "hover:border-black hover:text-black-300",
     "active:border-black-100 active:text-black",
     "disabled:bg-black-50 disabled:border-black-100 disabled:text-black",
     "rounded-md shadow-sm",
+    className,
   );
   return (
     <select
       name="stack"
-      className={className}
+      className={finClassName}
       value={value?.value}
       defaultValue={defaultValue?.value}
       onChange={(e) => {

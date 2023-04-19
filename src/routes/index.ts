@@ -135,8 +135,10 @@ export const CREATE_PROJECT_GIT_PUSH_PATH = "/apps/:appId/git/push";
 export const createProjectGitPushUrl = (appId: string) =>
   `/apps/${appId}/git/push`;
 export const CREATE_PROJECT_GIT_SETTINGS_PATH = "/apps/:appId/git/settings";
-export const createProjectGitSettingsUrl = (appId: string) =>
-  `/apps/${appId}/git/settings`;
+export const createProjectGitSettingsUrl = (
+  appId: string,
+  query: string = "",
+) => `/apps/${appId}/git/settings${query ? `?${query}` : ""}`;
 export const CREATE_PROJECT_GIT_STATUS_PATH = "/apps/:appId/git/status";
 export const createProjectGitStatusUrl = (appId: string) =>
   `/apps/${appId}/git/status`;

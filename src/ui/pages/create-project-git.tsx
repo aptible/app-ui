@@ -1,8 +1,8 @@
 import cn from "classnames";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { selectDataById, selectLoaderById } from "saga-query";
 import {
   useApi,
@@ -20,8 +20,8 @@ import {
   createProjectGitPushUrl,
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
+  createProjectGitUrl,
   createProjectSetupUrl,
-  createProjectUrl,
   homeUrl,
   logoutUrl,
 } from "@app/routes";
@@ -62,6 +62,8 @@ import {
   Input,
   Loading,
   PreCode,
+  Select,
+  SelectOption,
   StackSelect,
   listToInvertedTextColor,
   tokens,
@@ -143,7 +145,9 @@ export const CreateProjectLayout = ({
     <>
       <div className="p-6 flex justify-between shadow bg-white border-b border-black-50">
         <div className="flex">
-          <AptibleLogo />
+          <Link to={homeUrl()}>
+            <AptibleLogo />
+          </Link>
           <div className="ml-4">
             {origin === "ftux" ? (
               <a href={legacyUrl} className="text-black-300">
@@ -269,7 +273,7 @@ export const ResumeSetupPage = () => {
   const envs = useSelector(selectEnvironmentOnboarding);
   return (
     <div>
-      <ButtonLink to={createProjectUrl()}>
+      <ButtonLink to={createProjectGitUrl()}>
         <IconPlusCircle className="mr-2" /> Deploy
       </ButtonLink>
       {envs.length === 0 ? <div>No environments found</div> : null}
@@ -310,6 +314,18 @@ export const CreateProjectGitPage = () => {
   return <Navigate to={createProjectAddNameUrl()} replace />;
 };
 
+const ProgressItem = ({ done = false }: { done?: boolean }) => {
+  return (
+    <div
+      className={`w-[20px] h-[4px] border mr-3 ${
+        done ? "bg-black border-black" : "bg-gray-100 border-gray-100"
+      }`}
+    >
+      {" "}
+    </div>
+  );
+};
+
 const ProgressProject = ({
   cur,
   total = 4,
@@ -322,18 +338,18 @@ const ProgressProject = ({
   next?: string;
 }) => {
   const env = useSelector(selectEnv);
-  const progress = (
-    <div>
-      Step {cur} / {total}
-    </div>
-  );
+  const steps = [];
+  for (let i = 1; i <= total; i += 1) {
+    steps.push(<ProgressItem key={`step-${i}`} done={cur >= i} />);
+  }
+  const progress = <div className="flex items-center">{steps}</div>;
 
   if (env.isProduction && cur !== -1) {
-    return progress;
+    return <div className="mt-6 flex justify-center">{progress}</div>;
   }
 
   return (
-    <div className="flex">
+    <div className="mt-4 flex justify-center">
       {progress}
       <div className="ml-4">
         {prev ? (
@@ -358,7 +374,9 @@ export const CreateProjectAddKeyPage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Deploy your code</h1>
+        <h1 className={tokens.type.h1}>
+          Get ready to deploy your app on Aptible
+        </h1>
         <p className="my-4 text-gray-600">
           Add your SSH key to push code into Aptible.
         </p>
@@ -399,8 +417,10 @@ export const CreateProjectNamePage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Deploy your code</h1>
-        <p className="my-4 text-gray-600">Provide a name for your project.</p>
+        <h1 className={tokens.type.h1}>
+          Get ready to deploy your app on Aptible
+        </h1>
+        <p className="my-4 text-gray-600">Name your Environment to continue.</p>
       </div>
 
       <ProgressProject cur={1} />
@@ -455,6 +475,7 @@ export const CreateProjectNamePage = () => {
             className="mt-4 w-full"
             type="submit"
             isLoading={thunk.isLoading}
+            disabled={name === ""}
           >
             Create project
           </Button>
@@ -494,48 +515,103 @@ const OpResult = ({ op }: { op: DeployOperation }) => {
   );
 };
 
+interface StarterOption extends SelectOption {
+  query: { [key: string]: string[] };
+}
+
+const starterTemplateOptions: StarterOption[] = [
+  { label: "none", value: "none", query: {} },
+  {
+    label: "rails",
+    value: "git@github.com:aptible/template-rails.git",
+    query: {
+      dbs: ["database_url:postgresql:14", "redis_url:redis:3.0"],
+      envs: ["development_secret_key"],
+    },
+  },
+  {
+    label: "django",
+    value: "git@github.com:aptible/template-django.git",
+    query: { dbs: ["database_url:postgresql:14"], envs: ["secret_key"] },
+  },
+  {
+    label: "express",
+    value: "git@github.com:aptible/template-express.git",
+    query: { dbs: ["database_url:postgresql:14"] },
+  },
+  {
+    label: "laravel",
+    value: "git@github.com:aptible/template-laravel.git",
+    query: { dbs: ["database_url:postgresql:14"] },
+  },
+];
+
 export const CreateProjectGitPushPage = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { appId = "" } = useParams();
 
+  const [starter, setStarter] = useState<StarterOption>();
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  useQuery(pollAppOperations({ id: appId }));
+  usePollAppOperations(appId);
   const scanOp = useSelector((s: AppState) => selectLatestScanOp(s, { appId }));
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId }),
   );
 
-  useEffect(() => {
-    const cancel = () => dispatch(cancelAppOpsPoll());
-    cancel();
-    dispatch(pollAppOperations({ id: appId }));
-    return () => {
-      cancel();
-    };
-  }, [appId]);
+  let query = "";
+  if (starter) {
+    const queryRaw: Record<string, string> = {};
+    Object.keys(starter.query).forEach((key) => {
+      queryRaw[key] = starter.query[key].join(",");
+    });
+    query = new URLSearchParams(queryRaw).toString();
+  }
 
   useEffect(() => {
     if (scanOp && scanOp.status === "succeeded") {
-      navigate(createProjectGitSettingsUrl(appId));
+      navigate(createProjectGitSettingsUrl(appId, query));
     }
   }, [scanOp]);
 
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Deploy your code</h1>
+        <h1 className={tokens.type.h1}>
+          Get ready to deploy your app on Aptible
+        </h1>
         <p className="my-4 text-gray-600">Git push your code to continue.</p>
       </div>
 
       <ProgressProject
         cur={2}
         prev={createProjectAddKeyUrl()}
-        next={createProjectGitSettingsUrl(appId)}
+        next={createProjectGitSettingsUrl(appId, query)}
       />
+
       <Box>
         <div>
+          <h3 className={tokens.type.h3}>Find Your Git Repo</h3>
+          <p>Or use one of our starter templates</p>
+          <div className="my-2">
+            <Select
+              options={starterTemplateOptions}
+              value={starter}
+              onSelect={(val) => {
+                setStarter(val as any);
+              }}
+              className="w-full"
+            />
+          </div>
+          {starter && starter.value !== "none" ? (
+            <PreCode
+              segments={listToInvertedTextColor(["git clone", starter.value])}
+              allowCopy
+            />
+          ) : null}
+        </div>
+
+        <div className="mt-4">
           <h3 className={tokens.type.h3}>Add Aptible's Git Server</h3>
           <PreCode
             segments={listToInvertedTextColor([
@@ -545,6 +621,7 @@ export const CreateProjectGitPushPage = () => {
             allowCopy
           />
         </div>
+
         <div className="mt-4">
           <h3 className={tokens.type.h3}>Push your code to our scan branch</h3>
           <PreCode
@@ -568,7 +645,9 @@ export const CreateProjectGitPushPage = () => {
         {hasDeployOperation(scanOp) ? (
           <OpResult op={scanOp} />
         ) : (
-          <Loading text="Waiting for git push ..." />
+          <Banner variant="info">
+            Waiting on your git push to continue...
+          </Banner>
         )}
       </Box>
     </div>
@@ -661,6 +740,21 @@ const useLatestCodeResults = (appId: string) => {
   return { scanOp, codeScan, appOps };
 };
 
+const usePollAppOperations = (appId: string) => {
+  const dispatch = useDispatch();
+  const appOps = useQuery(pollAppOperations({ id: appId }));
+  useEffect(() => {
+    const cancel = () => dispatch(cancelAppOpsPoll());
+    cancel();
+    dispatch(pollAppOperations({ id: appId }));
+    return () => {
+      cancel();
+    };
+  }, [appId]);
+
+  return appOps;
+};
+
 const DatabaseNameInput = ({
   value,
   onChange,
@@ -717,19 +811,21 @@ const Selector = ({
   images,
   propChange,
   onDelete,
+  appHandle,
 }: {
   db: DbSelectorProps;
   images: DeployDatabaseImage[];
   propChange: (d: DbSelectorProps) => void;
   onDelete: () => void;
+  appHandle: string;
 }) => {
-  const selectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const imgId = e.currentTarget.value;
+  const selectChange = (option: SelectOption) => {
+    const imgId = option.value;
     const img = images.find((i) => i.id === imgId);
     propChange({
       ...db,
       imgId,
-      name: `${db.name}-${img?.type || ""}`,
+      name: `${appHandle}-${img?.type || ""}`,
       dbType: img?.type || "",
     });
   };
@@ -749,25 +845,25 @@ const Selector = ({
     </div>
   );
 
+  const imgOptions = [
+    { value: "", label: "select a db" },
+    ...images.map((img) => ({
+      label: `${img.type}:${img.version}`,
+      value: img.id,
+    })),
+  ];
+  const selectedValue = imgOptions.find((img) => img.value === db.imgId);
+
   return (
     <div className="my-4">
-      <div className="flex justify-between items-center">
-        <select
-          onChange={selectChange}
-          value={db.imgId}
-          className="mb-2"
-          placeholder="select"
-        >
-          <option value="" disabled>
-            select a db
-          </option>
-          {images.map((img) => (
-            <option key={img.id} value={img.id}>
-              {img.type}:{img.version}
-            </option>
-          ))}
-        </select>
-        <Button variant="secondary" onClick={onDelete}>
+      <div className="flex justify-between items-center mb-2">
+        <Select
+          onSelect={selectChange}
+          value={selectedValue}
+          options={imgOptions}
+          className="flex-1 mr-2"
+        />
+        <Button variant="delete" onClick={onDelete}>
           Delete
         </Button>
       </div>
@@ -779,7 +875,8 @@ const Selector = ({
 
 type DbSelectorAction =
   | { type: "add"; payload: DbSelectorProps }
-  | { type: "rm"; payload: string };
+  | { type: "rm"; payload: string }
+  | { type: "reset" };
 
 function dbSelectorReducer(
   state: { [key: string]: DbSelectorProps },
@@ -789,9 +886,13 @@ function dbSelectorReducer(
     return { ...state, [action.payload.id]: action.payload };
   }
 
+  if (action.type === "reset") {
+    return {};
+  }
+
   if (action.type === "rm") {
     const nextState = { ...state };
-    (nextState as any)[action.payload] = undefined;
+    delete nextState[action.payload];
     return nextState;
   }
 
@@ -803,11 +904,13 @@ const DatabaseSelectorForm = ({
   dispatch,
   namePrefix,
   images,
+  appHandle,
 }: {
   dbMap: { [key: string]: DbSelectorProps };
   dispatch: (action: any) => void;
   namePrefix: string;
   images: DeployDatabaseImage[];
+  appHandle: string;
 }) => {
   const onClick = () => {
     const payload: DbSelectorProps = {
@@ -835,6 +938,7 @@ const DatabaseSelectorForm = ({
               db={db}
               propChange={(payload) => dispatch({ type: "add", payload })}
               onDelete={() => dispatch({ type: "rm", payload: db.id })}
+              appHandle={appHandle}
             />
           );
         })}
@@ -899,9 +1003,13 @@ export const CreateProjectGitSettingsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { appId = "" } = useParams();
+  const [searchParams] = useSearchParams();
+  const queryEnvsStr = searchParams.get("envs") || "";
+  const queryDbsStr = searchParams.get("dbs") || "";
 
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  usePollAppOperations(appId);
   const { scanOp, codeScan } = useLatestCodeResults(appId);
   useQuery(fetchDatabasesByEnvId({ envId: app.environmentId }));
 
@@ -932,6 +1040,44 @@ export const CreateProjectGitSettingsPage = () => {
   useEffect(() => {
     setEnvs(existingEnvStr);
   }, [existingEnvStr]);
+
+  // prefill env vars based on query params
+  useEffect(() => {
+    if (!queryEnvsStr) return;
+    setEnvs(
+      queryEnvsStr
+        .split(",")
+        .map((env) => `${env}=""`.toLocaleUpperCase())
+        .join("\n"),
+    );
+  }, [queryEnvsStr]);
+
+  // prefill databases based on query params
+  useEffect(() => {
+    if (!queryDbsStr) return;
+    if (!app.handle) return;
+    const qdbs = queryDbsStr.split(",");
+    if (qdbs.length === 0) return;
+
+    dbDispatch({ type: "reset" });
+    qdbs.forEach((db) => {
+      const [env, type, version] = db.split(":");
+      const img = dbImages.find(
+        (i) => i.type === type && i.version === version,
+      );
+      if (!img) return;
+      dbDispatch({
+        type: "add",
+        payload: {
+          env: env.toLocaleUpperCase(),
+          id: `${createId()}`,
+          imgId: img.id,
+          name: `${app.handle}-${img?.type || ""}`,
+          dbType: img?.type || "",
+        },
+      });
+    });
+  }, [queryDbsStr, dbImages, app.handle]);
 
   const [dbMap, dbDispatch] = useReducer(dbSelectorReducer, {});
   const dbList = Object.values(dbMap).sort((a, b) => a.id.localeCompare(b.id));
@@ -1005,10 +1151,8 @@ export const CreateProjectGitSettingsPage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Deploy your code</h1>
-        <p className="my-4 text-gray-600">
-          Review settings and click deploy to finish.
-        </p>
+        <h1 className={tokens.type.h1}>Review your Settings</h1>
+        <p className="my-4 text-gray-600">Review and click deploy to finish</p>
       </div>
 
       <ProgressProject
@@ -1049,6 +1193,7 @@ export const CreateProjectGitSettingsPage = () => {
                 namePrefix={app.handle}
                 dbMap={dbMap}
                 dispatch={dbDispatch}
+                appHandle={app.handle}
               />
             )}
           </FormGroup>
@@ -1109,6 +1254,7 @@ export const CreateProjectGitSettingsPage = () => {
             type="submit"
             className="w-full mt-4"
             isLoading={loader.isLoading}
+            disabled={!codeScan.data?.dockerfile_present}
           >
             Save & Deploy
           </Button>
@@ -1161,25 +1307,28 @@ const Op = ({
   resource,
   retry,
   alwaysRetry = false,
+  status,
 }: {
   op: DeployOperation;
   resource: { handle: string };
   retry?: () => void;
   alwaysRetry?: boolean;
+  status: OperationStatus;
 }) => {
   const [isOpen, setOpen] = useState(false);
   if (!hasDeployOperation(op)) {
     return null;
   }
   const extra = "border-b border-black-100";
-  const status = () => {
+  const statusView = () => {
     const cns = "font-semibold flex justify-center items-center";
 
     if (op.status === "succeeded") {
       return (
         <div className={cn(cns, "text-forest")}>
-          {retry && alwaysRetry ? (
+          {retry && alwaysRetry && status === "succeeded" ? (
             <Button
+              size="sm"
               variant="white"
               onClick={(e) => {
                 e.stopPropagation();
@@ -1187,7 +1336,7 @@ const Op = ({
               }}
               className="mr-2"
             >
-              retry
+              Re-run
             </Button>
           ) : null}
           {createReadableStatus(op.status)}
@@ -1200,6 +1349,7 @@ const Op = ({
         <div className={cn(cns, "text-red")}>
           {retry ? (
             <Button
+              size="sm"
               variant="white"
               onClick={(e) => {
                 e.stopPropagation();
@@ -1207,7 +1357,7 @@ const Op = ({
               }}
               className="mr-2"
             >
-              retry
+              Re-run
             </Button>
           ) : null}
           {createReadableStatus(op.status)}
@@ -1237,7 +1387,7 @@ const Op = ({
           )}
           <div>{createReadableResourceName(op, resource.handle)}</div>
         </div>
-        {status()}
+        {statusView()}
       </div>
       {isOpen ? (
         <div className="pb-4">
@@ -1250,20 +1400,24 @@ const Op = ({
 
 const DatabaseStatus = ({
   db,
+  status,
 }: {
   db: Pick<DeployDatabase, "id" | "handle">;
+  status: OperationStatus;
 }) => {
   const provisionOp = useSelector((s: AppState) =>
     selectLatestProvisionOp(s, { resourceId: db.id }),
   );
 
-  return <Op op={provisionOp} resource={db} />;
+  return <Op op={provisionOp} resource={db} status={status} />;
 };
 
 const EndpointStatus = ({
   endpoint,
+  status,
 }: {
   endpoint: Pick<DeployEndpoint, "id">;
+  status: OperationStatus;
 }) => {
   const dispatch = useDispatch();
   const provisionOp = useSelector((s: AppState) =>
@@ -1278,15 +1432,24 @@ const EndpointStatus = ({
     );
   };
 
-  return <Op op={provisionOp} resource={{ handle: "" }} retry={retry} />;
+  return (
+    <Op
+      op={provisionOp}
+      resource={{ handle: "" }}
+      retry={retry}
+      status={status}
+    />
+  );
 };
 
 const AppStatus = ({
   app,
   gitRef,
+  status,
 }: {
   app: Pick<DeployApp, "id" | "handle" | "environmentId">;
   gitRef: string;
+  status: OperationStatus;
 }) => {
   const dispatch = useDispatch();
   const configOp = useSelector((s: AppState) =>
@@ -1308,8 +1471,20 @@ const AppStatus = ({
 
   return (
     <div>
-      <Op op={configOp} resource={app} retry={retry} alwaysRetry />
-      <Op op={deployOp} resource={app} retry={retry} alwaysRetry />
+      <Op
+        op={configOp}
+        resource={app}
+        retry={retry}
+        alwaysRetry
+        status={status}
+      />
+      <Op
+        op={deployOp}
+        resource={app}
+        retry={retry}
+        alwaysRetry
+        status={status}
+      />
     </div>
   );
 };
@@ -1319,22 +1494,26 @@ const ProjectStatus = ({
   dbs,
   endpoints,
   gitRef,
+  status,
 }: {
   app: DeployApp;
   dbs: DeployDatabase[];
   endpoints: DeployEndpoint[];
   gitRef: string;
+  status: OperationStatus;
 }) => {
   return (
     <div>
       {dbs.map((db) => {
-        return <DatabaseStatus key={db.id} db={db} />;
+        return <DatabaseStatus key={db.id} db={db} status={status} />;
       })}
 
-      <AppStatus app={app} gitRef={gitRef} />
+      <AppStatus app={app} gitRef={gitRef} status={status} />
 
       {endpoints.map((vhost) => {
-        return <EndpointStatus key={vhost.id} endpoint={vhost} />;
+        return (
+          <EndpointStatus key={vhost.id} endpoint={vhost} status={status} />
+        );
       })}
     </div>
   );
@@ -1585,7 +1764,13 @@ const CreateEndpointView = ({
               disabled={!!serviceId}
             />
             <span className="ml-1">
-              {service.processType} <Code>{service.command}</Code>
+              {service.processType === "cmd" ? (
+                "Docker CMD Service"
+              ) : (
+                <>
+                  {service.processType} <Code>{service.command}</Code>
+                </>
+              )}
             </span>
           </div>
         );
@@ -1610,6 +1795,9 @@ export const CreateProjectGitStatusPage = () => {
   const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
+  const configOp = useSelector((s: AppState) =>
+    selectLatestConfigureOp(s, { appId }),
+  );
   useQuery(fetchEnvironmentById({ id: envId }));
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
@@ -1626,14 +1814,19 @@ export const CreateProjectGitStatusPage = () => {
     selectEndpointsByAppId(s, { id: appId }),
   );
   const vhost = vhosts.length > 0 ? vhosts[0] : null;
-  const resourceIds = [...dbs.map((db) => db.id), ...vhosts.map((v) => v.id)];
+  const resourceIds = useMemo(
+    () => [...dbs.map((db) => db.id), ...vhosts.map((v) => v.id)],
+    [dbs, vhosts],
+  );
   const provisionOps = useSelector((s: AppState) =>
     selectLatestProvisionOps(s, {
       resourceIds,
     }),
   );
 
-  const ops = [deployOp, ...provisionOps];
+  const ops = [configOp, deployOp, ...provisionOps].filter((op) =>
+    hasDeployOperation(op),
+  );
   const [status, dateStr] = resolveOperationStatuses(ops);
   const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
@@ -1681,6 +1874,9 @@ export const CreateProjectGitStatusPage = () => {
   );
   const gitRef = scanOp.gitRef || "main";
   const redeploy = (force: boolean) => {
+    if (redeployLoader.isLoading) {
+      return;
+    }
     dispatch(
       redeployApp({
         appId,
@@ -1694,16 +1890,12 @@ export const CreateProjectGitStatusPage = () => {
   // if the user started the deployment process but left before
   // we could create an app deploy operation then we need to kick that
   // off again here
-  useEffect(() => {
+  /* useEffect(() => {
     if (!appId) return;
     if (!env.id) return;
-    if (provisionOps.length === 0) return;
-    const stillProvisioning = provisionOps.some(
-      (op) => op.resourceType === "database" && op.status !== "succeeded",
-    );
-    if (stillProvisioning) {
-      return;
-    }
+    if (status !== "succeeded") return;
+    if (redeployLoader.isLoading) return;
+
     if (!hasDeployOperation(deployOp)) {
       dispatch(
         redeployApp({
@@ -1714,7 +1906,7 @@ export const CreateProjectGitStatusPage = () => {
         }),
       );
     }
-  }, [appId, env.id, deployOp.id, provisionOps]);
+  }, [appId, env.id, deployOp.id, status, redeployLoader.isLoading]); */
 
   // when the status is success we need to refetch the app and endpoints
   // so we can grab the services and show them to the user for creating
@@ -1752,7 +1944,7 @@ export const CreateProjectGitStatusPage = () => {
     return (
       <div className="text-center">
         <h1 className={tokens.type.h1}>Deploying your Code</h1>
-        <p className="my-4 text-gray-600">Estimated wait time is 5 minutes.</p>
+        <p className="my-4 text-gray-600">Deployment is in progress...</p>
       </div>
     );
   };
@@ -1762,6 +1954,7 @@ export const CreateProjectGitStatusPage = () => {
       {header()}
 
       <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />
+
       <StatusBox>
         <div className="border-b border-black-100 pb-4 ">
           <div className="flex items-center">
@@ -1802,6 +1995,7 @@ export const CreateProjectGitStatusPage = () => {
           <Loading text="Loading resources ..." />
         ) : (
           <ProjectStatus
+            status={status}
             app={app}
             dbs={dbs}
             endpoints={vhosts}
@@ -1809,6 +2003,22 @@ export const CreateProjectGitStatusPage = () => {
           />
         )}
       </StatusBox>
+
+      {redeployLoader.isError ? (
+        <StatusBox>
+          <h4 className={tokens.type.h4}>Error!</h4>
+          <BannerMessages {...redeployLoader} />
+        </StatusBox>
+      ) : null}
+
+      {status === "succeeded" && !hasDeployOperation(deployOp) ? (
+        <StatusBox>
+          <h4 className={tokens.type.h4}>
+            Don't see an app deployment operation?
+          </h4>
+          <Button onClick={() => redeploy(true)}>Deploy!</Button>
+        </StatusBox>
+      ) : null}
 
       {deployOp.status === "succeeded" && !vhost?.serviceId ? (
         <StatusBox>
@@ -1866,6 +2076,10 @@ export const CreateProjectGitStatusPage = () => {
             View Project <IconArrowRight variant="sm" className="ml-2" />
           </ButtonLink>
         )}
+
+        <ButtonLink to={createProjectGitSettingsUrl(appId)} variant="white">
+          Back
+        </ButtonLink>
       </StatusBox>
     </div>
   );

@@ -41,7 +41,9 @@ export const tokens = {
       secondary:
         "border border-transparent font-bold text-white bg-indigo hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600",
       white:
-        "border border-black-100 font-bold shadow-sm text-xs text-black bg-white hover:bg-black-100 hover:border-black-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black-200",
+        "border border-black-100 font-bold shadow-sm text-black bg-white hover:bg-black-100 hover:border-black-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black-200",
+      delete:
+        "border border-red-100 font-bold shadow-sm text-white bg-red hover:bg-red-100 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-200",
     },
   },
 };
