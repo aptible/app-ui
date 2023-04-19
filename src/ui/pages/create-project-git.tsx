@@ -63,6 +63,8 @@ import {
   Input,
   Loading,
   PreCode,
+  Select,
+  SelectOption,
   StackSelect,
   listToInvertedTextColor,
   tokens,
@@ -514,10 +516,31 @@ const OpResult = ({ op }: { op: DeployOperation }) => {
   );
 };
 
+const starterTemplateOptions: SelectOption[] = [
+  { label: "none", value: "none" },
+  {
+    label: "rails",
+    value: "git@github.com:aptible/template-rails.git",
+  },
+  {
+    label: "django",
+    value: "git@github.com:aptible/template-django.git",
+  },
+  {
+    label: "express",
+    value: "git@github.com:aptible/template-express.git",
+  },
+  {
+    label: "laravel",
+    value: "git@github.com:aptible/template-laravel.git",
+  },
+];
+
 export const CreateProjectGitPushPage = () => {
   const navigate = useNavigate();
   const { appId = "" } = useParams();
 
+  const [starter, setStarter] = useState<SelectOption>();
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   usePollAppOperations(appId);
@@ -549,6 +572,26 @@ export const CreateProjectGitPushPage = () => {
 
       <Box>
         <div>
+          <h3 className={tokens.type.h3}>Find Your Git Repo</h3>
+          <p>Or use one of our starter templates</p>
+          <div className="my-2">
+            <Select
+              options={starterTemplateOptions}
+              value={starter}
+              onSelect={(val) => {
+                setStarter(val);
+              }}
+            />
+          </div>
+          {starter && starter.value !== "none" ? (
+            <PreCode
+              segments={listToInvertedTextColor(["git clone", starter.value])}
+              allowCopy
+            />
+          ) : null}
+        </div>
+
+        <div className="mt-4">
           <h3 className={tokens.type.h3}>Add Aptible's Git Server</h3>
           <PreCode
             segments={listToInvertedTextColor([
@@ -558,6 +601,7 @@ export const CreateProjectGitPushPage = () => {
             allowCopy
           />
         </div>
+
         <div className="mt-4">
           <h3 className={tokens.type.h3}>Push your code to our scan branch</h3>
           <PreCode
