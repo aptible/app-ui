@@ -1700,7 +1700,9 @@ export const CreateProjectGitStatusPage = () => {
     }),
   );
 
-  const ops = [configOp, deployOp, ...provisionOps];
+  const ops = [configOp, deployOp, ...provisionOps].filter((op) =>
+    hasDeployOperation(op),
+  );
   const [status, dateStr] = resolveOperationStatuses(ops);
   const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
@@ -1881,6 +1883,13 @@ export const CreateProjectGitStatusPage = () => {
           />
         )}
       </StatusBox>
+
+      {redeployLoader.isError ? (
+        <StatusBox>
+          <h4 className={tokens.type.h4}>Error!</h4>
+          <BannerMessages {...redeployLoader} />
+        </StatusBox>
+      ) : null}
 
       {deployOp.status === "succeeded" && !vhost?.serviceId ? (
         <StatusBox>
