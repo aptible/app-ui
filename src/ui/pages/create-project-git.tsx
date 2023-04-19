@@ -474,6 +474,7 @@ export const CreateProjectNamePage = () => {
             className="mt-4 w-full"
             type="submit"
             isLoading={thunk.isLoading}
+            disabled={name === ""}
           >
             Create project
           </Button>
