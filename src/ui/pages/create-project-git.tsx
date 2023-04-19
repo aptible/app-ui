@@ -514,26 +514,16 @@ const OpResult = ({ op }: { op: DeployOperation }) => {
 };
 
 export const CreateProjectGitPushPage = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { appId = "" } = useParams();
 
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  useQuery(pollAppOperations({ id: appId }));
+  usePollAppOperations(appId);
   const scanOp = useSelector((s: AppState) => selectLatestScanOp(s, { appId }));
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId }),
   );
-
-  useEffect(() => {
-    const cancel = () => dispatch(cancelAppOpsPoll());
-    cancel();
-    dispatch(pollAppOperations({ id: appId }));
-    return () => {
-      cancel();
-    };
-  }, [appId]);
 
   useEffect(() => {
     if (scanOp && scanOp.status === "succeeded") {
@@ -683,6 +673,21 @@ const useLatestCodeResults = (appId: string) => {
   );
 
   return { scanOp, codeScan, appOps };
+};
+
+const usePollAppOperations = (appId: string) => {
+  const dispatch = useDispatch();
+  const appOps = useQuery(pollAppOperations({ id: appId }));
+  useEffect(() => {
+    const cancel = () => dispatch(cancelAppOpsPoll());
+    cancel();
+    dispatch(pollAppOperations({ id: appId }));
+    return () => {
+      cancel();
+    };
+  }, [appId]);
+
+  return appOps;
 };
 
 const DatabaseNameInput = ({
@@ -926,6 +931,7 @@ export const CreateProjectGitSettingsPage = () => {
 
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  usePollAppOperations(appId);
   const { scanOp, codeScan } = useLatestCodeResults(appId);
   useQuery(fetchDatabasesByEnvId({ envId: app.environmentId }));
 

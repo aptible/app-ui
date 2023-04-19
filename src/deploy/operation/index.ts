@@ -251,8 +251,6 @@ export const selectLatestSucceessScanOp = createSelector(
   (ops) => findLatestSuccessScanOp(ops) || initOp,
 );
 
-export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
-
 interface EnvIdProps {
   envId: string;
 }
@@ -263,6 +261,7 @@ export const fetchEnvOperations = api.get<EnvOpProps>(
   "/accounts/:envId/operations?page=:page",
 );
 
+export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
 export const pollEnvOperations = thunks.create<EnvIdProps>(
   "poll-env-operations",
   { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
