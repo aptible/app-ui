@@ -1777,13 +1777,9 @@ export const CreateProjectGitStatusPage = () => {
   /* useEffect(() => {
     if (!appId) return;
     if (!env.id) return;
-    if (provisionOps.length === 0) return;
-    const stillProvisioning = provisionOps.some(
-      (op) => op.resourceType === "database" && op.status !== "succeeded",
-    );
-    if (stillProvisioning) {
-      return;
-    }
+    if (status !== "succeeded") return;
+    if (redeployLoader.isLoading) return;
+
     if (!hasDeployOperation(deployOp)) {
       dispatch(
         redeployApp({
@@ -1794,7 +1790,7 @@ export const CreateProjectGitStatusPage = () => {
         }),
       );
     }
-  }, [appId, env.id, deployOp.id, provisionOps]); */
+  }, [appId, env.id, deployOp.id, status, redeployLoader.isLoading]); */
 
   // when the status is success we need to refetch the app and endpoints
   // so we can grab the services and show them to the user for creating
@@ -1896,6 +1892,15 @@ export const CreateProjectGitStatusPage = () => {
         <StatusBox>
           <h4 className={tokens.type.h4}>Error!</h4>
           <BannerMessages {...redeployLoader} />
+        </StatusBox>
+      ) : null}
+
+      {status === "succeeded" && !hasDeployOperation(deployOp) ? (
+        <StatusBox>
+          <h4 className={tokens.type.h4}>
+            Don't see an app deployment operation?
+          </h4>
+          <Button onClick={() => redeploy(true)}>Deploy!</Button>
         </StatusBox>
       ) : null}
 
