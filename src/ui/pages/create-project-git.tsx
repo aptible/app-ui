@@ -815,7 +815,7 @@ function dbSelectorReducer(
 
   if (action.type === "rm") {
     const nextState = { ...state };
-    (nextState as any)[action.payload] = undefined;
+    delete nextState[action.payload];
     return nextState;
   }
 
@@ -1131,6 +1131,7 @@ export const CreateProjectGitSettingsPage = () => {
             type="submit"
             className="w-full mt-4"
             isLoading={loader.isLoading}
+            disabled={!codeScan.data?.dockerfile_present}
           >
             Save & Deploy
           </Button>
