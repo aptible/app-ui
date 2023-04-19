@@ -600,6 +600,7 @@ export const CreateProjectGitPushPage = () => {
               onSelect={(val) => {
                 setStarter(val as any);
               }}
+              className="w-full"
             />
           </div>
           {starter && starter.value !== "none" ? (
