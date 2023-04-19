@@ -107,7 +107,11 @@ export const Button: FC<ButtonProps> = ({
     buttonShapeStyle(size, shape),
   );
   return (
-    <button {...props} className={`${className} ${classes}`}>
+    <button
+      {...props}
+      className={`${className} ${classes}`}
+      disabled={isLoading || props.disabled}
+    >
       {isLoading ? "Loading ..." : children}
     </button>
   );

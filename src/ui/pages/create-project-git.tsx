@@ -58,7 +58,6 @@ import {
   IconInfo,
   IconPlusCircle,
   IconSettings,
-  IconTrash,
   IconX,
   Input,
   Loading,
@@ -525,7 +524,10 @@ const starterTemplateOptions: StarterOption[] = [
   {
     label: "rails",
     value: "git@github.com:aptible/template-rails.git",
-    query: { dbs: ["database_url:postgresql:14", "redis_url:redis:3.0"] },
+    query: {
+      dbs: ["database_url:postgresql:14", "redis_url:redis:3.0"],
+      envs: ["development_secret_key"],
+    },
   },
   {
     label: "django",
@@ -808,19 +810,21 @@ const Selector = ({
   images,
   propChange,
   onDelete,
+  appHandle,
 }: {
   db: DbSelectorProps;
   images: DeployDatabaseImage[];
   propChange: (d: DbSelectorProps) => void;
   onDelete: () => void;
+  appHandle: string;
 }) => {
-  const selectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const imgId = e.currentTarget.value;
+  const selectChange = (option: SelectOption) => {
+    const imgId = option.value;
     const img = images.find((i) => i.id === imgId);
     propChange({
       ...db,
       imgId,
-      name: `${db.name}-${img?.type || ""}`,
+      name: `${appHandle}-${img?.type || ""}`,
       dbType: img?.type || "",
     });
   };
@@ -840,26 +844,26 @@ const Selector = ({
     </div>
   );
 
+  const imgOptions = [
+    { value: "", label: "select a db" },
+    ...images.map((img) => ({
+      label: `${img.type}:${img.version}`,
+      value: img.id,
+    })),
+  ];
+  const selectedValue = imgOptions.find((img) => img.value === db.imgId);
+
   return (
     <div className="my-4">
-      <div className="flex justify-between items-center">
-        <select
-          onChange={selectChange}
-          value={db.imgId}
-          className="mb-2"
-          placeholder="select"
-        >
-          <option value="" disabled>
-            select a db
-          </option>
-          {images.map((img) => (
-            <option key={img.id} value={img.id}>
-              {img.type}:{img.version}
-            </option>
-          ))}
-        </select>
+      <div className="flex justify-between items-center mb-2">
+        <Select
+          onSelect={selectChange}
+          value={selectedValue}
+          options={imgOptions}
+          className="flex-1 mr-2"
+        />
         <Button variant="delete" onClick={onDelete}>
-          Delete <IconTrash color="#fff" />
+          Delete
         </Button>
       </div>
       {db.imgId ? sel : null}
@@ -899,11 +903,13 @@ const DatabaseSelectorForm = ({
   dispatch,
   namePrefix,
   images,
+  appHandle,
 }: {
   dbMap: { [key: string]: DbSelectorProps };
   dispatch: (action: any) => void;
   namePrefix: string;
   images: DeployDatabaseImage[];
+  appHandle: string;
 }) => {
   const onClick = () => {
     const payload: DbSelectorProps = {
@@ -931,6 +937,7 @@ const DatabaseSelectorForm = ({
               db={db}
               propChange={(payload) => dispatch({ type: "add", payload })}
               onDelete={() => dispatch({ type: "rm", payload: db.id })}
+              appHandle={appHandle}
             />
           );
         })}
@@ -1185,6 +1192,7 @@ export const CreateProjectGitSettingsPage = () => {
                 namePrefix={app.handle}
                 dbMap={dbMap}
                 dispatch={dbDispatch}
+                appHandle={app.handle}
               />
             )}
           </FormGroup>
