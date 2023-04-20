@@ -19,6 +19,7 @@ import type {
   LinkResponse,
   OperationStatus,
   OperationType,
+  ResourceType,
 } from "@app/types";
 
 export interface DeployOperationResponse {
@@ -208,7 +209,11 @@ export const selectLatestOpByEnvId = createSelector(
 
 export const selectLatestProvisionOp = createSelector(
   selectOperationsByResourceId,
-  (ops) => ops.find((op) => op.type === "provision") || initOp,
+  (_: AppState, p: { resourceType: ResourceType }) => p.resourceType,
+  (ops, resourceType) =>
+    ops.find(
+      (op) => op.type === "provision" && op.resourceType === resourceType,
+    ) || initOp,
 );
 
 const initLatestProvOps: DeployOperation[] = [];

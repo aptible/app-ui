@@ -304,7 +304,7 @@ function* _updateEnvWithDbUrls({
     Object.keys(nextEnv).forEach((key) => {
       if (nextEnv[key] !== `{{${db.handle}}}`) return;
       nextEnv[key.replace("_TMP", "")] = db.connectionUrl;
-      nextEnv[key] = undefined;
+      nextEnv[key] = "";
       swapped = true;
     });
   });

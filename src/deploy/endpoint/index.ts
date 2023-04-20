@@ -115,6 +115,17 @@ export const selectEndpointsByAppId = createSelector(
   },
 );
 
+export const selectFirstEndpointByAppId = createSelector(
+  selectEndpointsByAppId,
+  (endpoints) => {
+    if (endpoints.length === 0) {
+      return defaultDeployEndpoint();
+    }
+
+    return endpoints[0];
+  },
+);
+
 export const fetchEndpointsByAppId = api.get<{ appId: string }>(
   "/apps/:appId/vhosts",
 );

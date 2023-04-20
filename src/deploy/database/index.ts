@@ -202,7 +202,9 @@ export const selectDatabasesByEnvId = createSelector(
   selectDatabasesAsList,
   (_: AppState, props: { envId: string }) => props.envId,
   (dbs, envId) => {
-    return dbs.filter((db) => db.environmentId === envId);
+    return dbs
+      .filter((db) => db.environmentId === envId)
+      .sort((a, b) => a.id.localeCompare(b.id));
   },
 );
 

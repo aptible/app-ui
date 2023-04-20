@@ -76,7 +76,7 @@ export const defaultDeployEnvironment = (
   const now = new Date().toISOString();
   return {
     id: "",
-    handle: "",
+    handle: "Unknown",
     createdAt: now,
     updatedAt: now,
     type: "development",
@@ -108,6 +108,7 @@ const selectors = slice.getSelectors(
 const initEnv = defaultDeployEnvironment();
 const must = mustSelectEntity(initEnv);
 export const selectEnvironmentById = must(selectors.selectById);
+export const selectEnvironmentByIds = selectors.selectByIds;
 export const {
   selectTable: selectEnvironments,
   selectTableAsList: selectEnvironmentsAsList,

@@ -21,7 +21,6 @@ import {
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
   createProjectGitUrl,
-  createProjectSetupUrl,
   homeUrl,
   logoutUrl,
 } from "@app/routes";
@@ -35,6 +34,7 @@ import {
   DeployEnvironment,
   DeployOperation,
   HalEmbedded,
+  OnboardingStatus,
   OperationStatus,
 } from "@app/types";
 import { selectCurrentUser } from "@app/users";
@@ -69,6 +69,7 @@ import {
   tokens,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
+import { OnboardingLink } from "../shared/onboarding-link";
 import {
   cancelAppOpsPoll,
   createEndpointOperation,
@@ -81,15 +82,15 @@ import {
   fetchDatabasesByEnvId,
   fetchEndpointsByAppId,
   fetchEnvironmentById,
-  hasDeployApp,
+  hasDeployEndpoint,
   pollAppOperations,
   provisionEndpoint,
   selectAppById,
   selectDatabasesByEnvId,
-  selectEndpointsByAppId,
   selectEnvironmentById,
   selectEnvironmentOnboarding,
   selectFirstAppByEnvId,
+  selectFirstEndpointByAppId,
   selectServicesByIds,
   selectStackPublicDefaultAsOption,
   updateDeployEnvironmentStatus,
@@ -117,6 +118,7 @@ import {
   pollEnvOperations,
   selectLatestConfigureOp,
   selectLatestDeployOp,
+  selectLatestOpByEnvId,
   selectLatestProvisionOp,
   selectLatestProvisionOps,
   selectLatestScanOp,
@@ -227,40 +229,30 @@ export const CreateProjectSetupPage = () => {
   return <Loading text="Detecting project status ..." />;
 };
 
-const OnboardingLink = ({ env }: { env: DeployEnvironment }) => {
-  const origin = useSelector(selectOrigin);
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
+const EnvOverview = ({ env }: { env: DeployEnvironment }) => {
   const app = useSelector((s: AppState) =>
     selectFirstAppByEnvId(s, { envId: env.id }),
   );
-
-  if (!hasDeployApp(app)) {
-    return <span>No apps found</span>;
-  }
-
-  if (env.onboardingStatus === "completed") {
-    if (origin === "ftux") {
-      return (
-        <a
-          href={`${legacyUrl}/accounts/${env.id}/apps`}
-          className="flex items-center"
-        >
-          View project <IconArrowRight variant="sm" color="#4361FF" />
-        </a>
-      );
-    } else {
-      return (
-        <Link to={appDetailUrl(app.id)} className="flex items-center">
-          View project <IconArrowRight variant="sm" color="#4361FF" />
-        </Link>
-      );
-    }
-  }
+  const op = useSelector((s: AppState) =>
+    selectLatestOpByEnvId(s, { envId: env.id }),
+  );
+  const endpointQuery = useQuery(fetchEndpointsByAppId({ appId: app.id }));
+  useEffect(() => {
+    endpointQuery.trigger();
+  }, [app.id]);
 
   return (
-    <Link to={createProjectSetupUrl(env.id)} className="flex items-center">
-      Finish setup <IconArrowRight variant="sm" color="#4361FF" />
-    </Link>
+    <ProjectBox
+      env={env}
+      appId={app.id}
+      status={
+        <EnvStatusPill status={env.onboardingStatus} from={op.updatedAt} />
+      }
+    >
+      <div className="mt-4">
+        <OnboardingLink env={env} />
+      </div>
+    </ProjectBox>
   );
 };
 
@@ -273,26 +265,15 @@ export const ResumeSetupPage = () => {
   const envs = useSelector(selectEnvironmentOnboarding);
   return (
     <div>
+      <h1 className={`${tokens.type.h1} mb-6 text-center`}>Deploy Code</h1>
       <ButtonLink to={createProjectGitUrl()}>
         <IconPlusCircle className="mr-2" /> Deploy
       </ButtonLink>
       {envs.length === 0 ? <div>No environments found</div> : null}
-      {envs.map((env) => {
-        return (
-          <div
-            key={env.id}
-            className={cn(
-              "flex items-center rounded p-4 mt-4",
-              env.onboardingStatus === "completed"
-                ? "bg-lime-100"
-                : "bg-off-white",
-            )}
-          >
-            <div className="mr-2">{env.handle}</div>
-            <OnboardingLink env={env} />
-          </div>
-        );
-      })}
+
+      {envs.map((env) => (
+        <EnvOverview key={env.id} env={env} />
+      ))}
     </div>
   );
 };
@@ -1010,7 +991,6 @@ export const CreateProjectGitSettingsPage = () => {
 
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  usePollAppOperations(appId);
   const { scanOp, codeScan } = useLatestCodeResults(appId);
   useQuery(fetchDatabasesByEnvId({ envId: app.environmentId }));
 
@@ -1148,6 +1128,11 @@ export const CreateProjectGitSettingsPage = () => {
 
     navigate(createProjectGitStatusUrl(appId));
   };
+
+  useProjectOps({
+    envId: app.environmentId,
+    appId,
+  });
 
   return (
     <div>
@@ -1407,7 +1392,7 @@ const DatabaseStatus = ({
   status: OperationStatus;
 }) => {
   const provisionOp = useSelector((s: AppState) =>
-    selectLatestProvisionOp(s, { resourceId: db.id }),
+    selectLatestProvisionOp(s, { resourceId: db.id, resourceType: "database" }),
   );
 
   return <Op op={provisionOp} resource={db} status={status} />;
@@ -1422,7 +1407,10 @@ const EndpointStatus = ({
 }) => {
   const dispatch = useDispatch();
   const provisionOp = useSelector((s: AppState) =>
-    selectLatestProvisionOp(s, { resourceId: endpoint.id }),
+    selectLatestProvisionOp(s, {
+      resourceId: endpoint.id,
+      resourceType: "vhost",
+    }),
   );
   const retry = () => {
     dispatch(
@@ -1576,6 +1564,46 @@ const Pill = ({
     <div className={className}>
       {icon}
       <div className="ml-1">{children}</div>
+    </div>
+  );
+};
+
+const EnvStatusPill = ({
+  status,
+  from,
+}: {
+  status: OnboardingStatus;
+  from: string;
+}) => {
+  const date = prettyDateRelative(from);
+  const className = cn(
+    "rounded-full border-2",
+    "text-sm font-semibold ",
+    "px-2 flex justify-between items-center w-fit",
+  );
+  const inProgress = () => {
+    if (status === "initiated") return "Started";
+    if (status === "scanned") return "Code Pushed";
+    if (status === "db_provisioned") return "Database(s) Provisioned";
+    if (status === "app_provisioned") return "App Provisioned";
+    return "Unknown";
+  };
+
+  if (status === "completed") {
+    return (
+      <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
+        <IconCheck color="#00633F" className="mr-1" variant="sm" />
+        Completed {date}
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn(className, "text-brown border-brown bg-orange-100")}>
+      <IconSettings color="#825804" className="mr-1" variant="sm" />
+      <div>
+        {inProgress()} {date}
+      </div>
     </div>
   );
 };
@@ -1788,53 +1816,76 @@ const CreateEndpointView = ({
   );
 };
 
-export const CreateProjectGitStatusPage = () => {
-  const { appId = "" } = useParams();
-  const dispatch = useDispatch();
-  const origin = useSelector(selectOrigin);
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
-  const appQuery = useQuery(fetchApp({ id: appId }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  const envId = app.environmentId;
-  const configOp = useSelector((s: AppState) =>
-    selectLatestConfigureOp(s, { appId }),
+const ProjectBox = ({
+  env,
+  appId,
+  children,
+  status,
+}: {
+  env: DeployEnvironment;
+  appId: string;
+  children: React.ReactNode;
+  status: JSX.Element;
+}) => {
+  const vhost = useSelector((s: AppState) =>
+    selectFirstEndpointByAppId(s, { id: appId }),
   );
-  useQuery(fetchEnvironmentById({ id: envId }));
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId }),
+  );
+
+  return (
+    <StatusBox>
+      <div className="border-b border-black-100 pb-4 ">
+        <div className="flex items-center">
+          <div>
+            <img
+              alt="default project logo"
+              src="/logo-app.png"
+              style={{ width: 32, height: 32 }}
+              className="mr-3"
+            />
+          </div>
+          <div>
+            <h4 className={tokens.type.h4}>{env.handle}</h4>
+            <p className="text-black-500 text-sm">
+              {hasDeployEndpoint(vhost) ? (
+                <a
+                  href={`https://${vhost.virtualDomain}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  https://{vhost.virtualDomain}
+                </a>
+              ) : (
+                "pending http endpoint"
+              )}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center mt-1">
+          {status}
+          <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
+            {deployOp.gitRef.slice(0, 12) || "pending"}
+          </Pill>
+        </div>
+      </div>
+
+      {children}
+    </StatusBox>
+  );
+};
+
+const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
+  const dispatch = useDispatch();
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
-  useQuery(fetchDatabasesByEnvId({ envId }));
-  const dbs = useSelector((s: AppState) =>
-    selectDatabasesByEnvId(s, { envId }),
-  );
-  const deployOp = useSelector((s: AppState) =>
-    selectLatestDeployOp(s, { appId: app.id }),
-  );
-  const endpointQuery = useQuery(fetchEndpointsByAppId({ appId }));
-  const vhosts = useSelector((s: AppState) =>
-    selectEndpointsByAppId(s, { id: appId }),
-  );
-  const vhost = vhosts.length > 0 ? vhosts[0] : null;
-  const resourceIds = useMemo(
-    () => [...dbs.map((db) => db.id), ...vhosts.map((v) => v.id)],
-    [dbs, vhosts],
-  );
-  const provisionOps = useSelector((s: AppState) =>
-    selectLatestProvisionOps(s, {
-      resourceIds,
-    }),
-  );
-
-  const ops = [configOp, deployOp, ...provisionOps].filter((op) =>
-    hasDeployOperation(op),
-  );
-  const [status, dateStr] = resolveOperationStatuses(ops);
-  const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
   const pollAction = pollEnvOperations({ envId });
   const pollLoader = useLoader(pollAction);
-  const cancel = () => dispatch(cancelEnvOperationsPoll());
   useEffect(() => {
+    const cancel = () => dispatch(cancelEnvOperationsPoll());
     cancel();
     dispatch(pollAction);
 
@@ -1843,11 +1894,44 @@ export const CreateProjectGitStatusPage = () => {
     };
   }, [appId, envId]);
 
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId }),
+  );
+  const configOp = useSelector((s: AppState) =>
+    selectLatestConfigureOp(s, { appId }),
+  );
+
+  const vhost = useSelector((s: AppState) =>
+    selectFirstEndpointByAppId(s, { id: appId }),
+  );
+  const dbs = useSelector((s: AppState) =>
+    selectDatabasesByEnvId(s, { envId }),
+  );
+
+  const resourceIds = useMemo(() => {
+    const arr = [...dbs.map((db) => db.id)];
+    if (hasDeployEndpoint(vhost)) {
+      arr.push(vhost.id);
+    }
+    return arr;
+  }, [dbs, vhost]);
+
+  const provisionOps = useSelector((s: AppState) =>
+    selectLatestProvisionOps(s, {
+      resourceIds,
+    }),
+  );
+  const ops = useMemo(
+    () =>
+      [configOp, deployOp, ...provisionOps].filter((op) =>
+        hasDeployOperation(op),
+      ),
+    [configOp, deployOp, ...provisionOps],
+  );
   const { scanOp } = useLatestCodeResults(appId);
 
   useEffect(() => {
-    const accountStatusOps = [deployOp, scanOp, ...provisionOps];
-    const status = deriveAccountStatus(accountStatusOps);
+    const status = deriveAccountStatus([...ops, scanOp]);
     if (status === env.onboardingStatus) {
       return;
     }
@@ -1862,13 +1946,44 @@ export const CreateProjectGitStatusPage = () => {
         status,
       }),
     );
-  }, [
-    deployOp.id,
-    scanOp.id,
-    provisionOps,
-    env.onboardingStatus,
-    pollLoader.lastSuccess,
-  ]);
+  }, [ops, env.onboardingStatus, pollLoader.lastSuccess, scanOp]);
+
+  return { ops };
+};
+
+export const CreateProjectGitStatusPage = () => {
+  const { appId = "" } = useParams();
+  const dispatch = useDispatch();
+  const origin = useSelector(selectOrigin);
+  const legacyUrl = useSelector(selectLegacyDashboardUrl);
+  const appQuery = useQuery(fetchApp({ id: appId }));
+  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const envId = app.environmentId;
+
+  useQuery(fetchEnvironmentById({ id: envId }));
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: envId }),
+  );
+  useQuery(fetchDatabasesByEnvId({ envId }));
+  const dbs = useSelector((s: AppState) =>
+    selectDatabasesByEnvId(s, { envId }),
+  );
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
+  );
+  const endpointQuery = useQuery(fetchEndpointsByAppId({ appId }));
+  const vhost = useSelector((s: AppState) =>
+    selectFirstEndpointByAppId(s, { id: appId }),
+  );
+  const { ops } = useProjectOps({
+    envId,
+    appId,
+  });
+
+  const [status, dateStr] = resolveOperationStatuses(ops);
+  const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
+
+  const { scanOp } = useLatestCodeResults(appId);
 
   const redeployLoader = useSelector((s: AppState) =>
     selectLoaderById(s, { id: `${redeployApp}` }),
@@ -1956,42 +2071,11 @@ export const CreateProjectGitStatusPage = () => {
 
       <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />
 
-      <StatusBox>
-        <div className="border-b border-black-100 pb-4 ">
-          <div className="flex items-center">
-            <div>
-              <img
-                alt="default project logo"
-                src="/logo-app.png"
-                style={{ width: 32, height: 32 }}
-                className="mr-3"
-              />
-            </div>
-            <div>
-              <h4 className={tokens.type.h4}>{env.handle}</h4>
-              <p className="text-black-500 text-sm">
-                {vhost ? (
-                  <a
-                    href={`https://${vhost.virtualDomain}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    https://{vhost.virtualDomain}
-                  </a>
-                ) : (
-                  "pending http endpoint"
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center mt-1">
-            <StatusPill status={status} from={dateStr} />
-            <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
-              {deployOp.gitRef.slice(0, 12) || "pending"}
-            </Pill>
-          </div>
-        </div>
-
+      <ProjectBox
+        env={env}
+        appId={appId}
+        status={<StatusPill status={status} from={dateStr} />}
+      >
         {isInitialLoading ? (
           <Loading text="Loading resources ..." />
         ) : (
@@ -1999,11 +2083,11 @@ export const CreateProjectGitStatusPage = () => {
             status={status}
             app={app}
             dbs={dbs}
-            endpoints={vhosts}
+            endpoints={[vhost]}
             gitRef={gitRef}
           />
         )}
-      </StatusBox>
+      </ProjectBox>
 
       {redeployLoader.isError ? (
         <StatusBox>
