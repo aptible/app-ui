@@ -8,7 +8,7 @@ export const BannerMessages = (props: {
   message: string;
   className?: string;
 }) => {
-  const cls = "p-4 border rounded text-xs";
+  const cls = "p-4 border rounded";
   return (
     <div className={props.className}>
       {props.isSuccess ? (

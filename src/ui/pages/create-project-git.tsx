@@ -401,7 +401,11 @@ export const CreateProjectNamePage = () => {
         <h1 className={tokens.type.h1}>
           Get ready to deploy your app on Aptible
         </h1>
-        <p className="my-4 text-gray-600">Name your Environment to continue.</p>
+        <p className="mt-4 mb-2 text-gray-600">
+          An Aptible environment contains your app along with any required
+          databases.
+        </p>
+        <p className="mb-4 text-gray-600">Name your Environment to continue.</p>
       </div>
 
       <ProgressProject cur={1} />
@@ -434,7 +438,7 @@ export const CreateProjectNamePage = () => {
             />
           </FormGroup>
           <FormGroup
-            label="Project Name"
+            label="Environment Name"
             description="Lowercase alphanumerics, periods, and dashes only"
             htmlFor="name"
             feedbackVariant="info"
@@ -458,7 +462,7 @@ export const CreateProjectNamePage = () => {
             isLoading={thunk.isLoading}
             disabled={name === ""}
           >
-            Create project
+            Create Environment
           </Button>
         </form>
       </Box>
@@ -525,6 +529,13 @@ const starterTemplateOptions: StarterOption[] = [
     value: "git@github.com:aptible/template-laravel.git",
     query: { dbs: ["database_url:postgresql:14"] },
   },
+  {
+    label: "Deploy Demo App",
+    value: "git@github.com:aptible/deploy-demo-app.git",
+    query: {
+      dbs: ["database_url:postgresql:14", "redis_url:redis:3.0"],
+    },
+  },
 ];
 
 export const CreateProjectGitPushPage = () => {
@@ -561,7 +572,7 @@ export const CreateProjectGitPushPage = () => {
         <h1 className={tokens.type.h1}>
           Get ready to deploy your app on Aptible
         </h1>
-        <p className="my-4 text-gray-600">Git push your code to continue.</p>
+        <p className="my-4 text-gray-600">Push your code to continue.</p>
       </div>
 
       <ProgressProject
@@ -954,9 +965,12 @@ const CodeScanInfo = ({
 
   return (
     <Banner variant="error">
-      <span>Your code needs a Dockerfile to deploy. </span>
+      <span>
+        Your code needs a Dockerfile to deploy. Add a Dockerfile, commit it, and
+        re-push your code to continue,{" "}
+      </span>
       <ExternalLink href="https://aptible.com/docs" variant="error">
-        View docs to learn how to add a Dockerfile.
+        view our docs.
       </ExternalLink>
     </Banner>
   );
@@ -1053,8 +1067,8 @@ export const CreateProjectGitSettingsPage = () => {
           env: env.toLocaleUpperCase(),
           id: `${createId()}`,
           imgId: img.id,
-          name: `${app.handle}-${img?.type || ""}`,
-          dbType: img?.type || "",
+          name: `${app.handle}-${img.type || ""}`,
+          dbType: img.type || "",
         },
       });
     });
@@ -1067,6 +1081,31 @@ export const CreateProjectGitSettingsPage = () => {
   const [envErrors, setEnvErrors] = useState<ValidatorError[]>([]);
   const [cmds, setCmds] = useState("");
   const cmdList = parseText(cmds, () => ({ id: "", http: false }));
+
+  // rehydrate already existing databases
+  // this allows us to trigger a provision operation if we failed to do so
+  useEffect(() => {
+    if (existingDbs.length > 0) {
+      dbDispatch({ type: "reset" });
+      const envList = parseText(envs, () => ({}));
+      existingDbs.forEach((db) => {
+        const img = dbImages.find((i) => i.id === db.databaseImageId);
+        if (!img) return;
+        const env = envList.find((e) => e.value === `{{${db.handle}}}`);
+        if (!env) return;
+        dbDispatch({
+          type: "add",
+          payload: {
+            env: env.key.replace("_TMP", ""),
+            id: `${createId()}`,
+            imgId: img.id,
+            name: db.handle,
+            dbType: img.type || "",
+          },
+        });
+      });
+    }
+  }, [existingDbs, dbImages]);
 
   const loader = useSelector((s: AppState) =>
     selectLoaderById(s, { id: `${deployProject}` }),
@@ -1118,7 +1157,7 @@ export const CreateProjectGitSettingsPage = () => {
         appId,
         envId: app.environmentId,
         // don't create new databases if they already exist
-        dbs: existingDbs.length > 0 ? [] : dbList,
+        dbs: dbList,
         envs: envList,
         curEnvs: curConfig.data?.env || {},
         cmds: cmdList,
@@ -1138,7 +1177,7 @@ export const CreateProjectGitSettingsPage = () => {
     <div>
       <div className="text-center">
         <h1 className={tokens.type.h1}>Review your Settings</h1>
-        <p className="my-4 text-gray-600">Review and click deploy to finish</p>
+        <p className="my-4 text-gray-600">Review and click deploy to finish.</p>
       </div>
 
       <ProgressProject
@@ -1926,7 +1965,7 @@ const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
       [configOp, deployOp, ...provisionOps].filter((op) =>
         hasDeployOperation(op),
       ),
-    [configOp, deployOp, ...provisionOps],
+    [configOp, deployOp, provisionOps],
   );
   const { scanOp } = useLatestCodeResults(appId);
 
@@ -1988,6 +2027,10 @@ export const CreateProjectGitStatusPage = () => {
   const redeployLoader = useSelector((s: AppState) =>
     selectLoaderById(s, { id: `${redeployApp}` }),
   );
+  const deployProjectLoader = useSelector((s: AppState) =>
+    selectLoaderById(s, { id: `${deployProject}` }),
+  );
+
   const gitRef = scanOp.gitRef || "main";
   const redeploy = (force: boolean) => {
     if (redeployLoader.isLoading) {
@@ -2039,7 +2082,7 @@ export const CreateProjectGitStatusPage = () => {
         <div className="text-center">
           <h1 className={tokens.type.h1}>Deployed your Code</h1>
           <p className="my-4 text-gray-600">
-            All done! Deployment completed successfully
+            All done! Deployment completed successfully.
           </p>
         </div>
       );
@@ -2089,10 +2132,11 @@ export const CreateProjectGitStatusPage = () => {
         )}
       </ProjectBox>
 
-      {redeployLoader.isError ? (
+      {redeployLoader.isError || deployProjectLoader.isError ? (
         <StatusBox>
           <h4 className={tokens.type.h4}>Error!</h4>
           <BannerMessages {...redeployLoader} />
+          <BannerMessages {...deployProjectLoader} />
         </StatusBox>
       ) : null}
 

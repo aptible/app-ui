@@ -132,14 +132,20 @@ const { add: addDeployDatabases } = slice.actions;
 
 export const hasDeployDatabase = (a: DeployDatabase) => a.id !== "";
 export const databaseReducers = createReducerMap(slice);
-const initApp = defaultDeployDatabase();
-const must = mustSelectEntity(initApp);
+const initDb = defaultDeployDatabase();
+const must = mustSelectEntity(initDb);
 
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_DATABASE_NAME],
 );
 export const selectDatabaseById = must(selectors.selectById);
 export const { selectTableAsList: selectDatabasesAsList } = selectors;
+
+export const selectDatabaseByHandle = createSelector(
+  selectDatabasesAsList,
+  (_: AppState, p: { handle: string }) => p.handle,
+  (dbs, handle) => dbs.find((db) => db.handle === handle) || initDb,
+);
 
 export const selectDatabasesForTable = createSelector(
   selectDatabasesAsList,
@@ -251,9 +257,12 @@ export const createDatabase = api.post<
 });
 
 interface CreateDbResult {
-  dbCtx: Omit<DeployApiCtx<any, any>, "payload" | "json"> &
-    Payload<CreateDatabaseProps> &
-    FetchJson<DeployDatabaseResponse, any>;
+  dbCtx:
+    | null
+    | (Omit<DeployApiCtx<any, any>, "payload" | "json"> &
+        Payload<CreateDatabaseProps> &
+        FetchJson<DeployDatabaseResponse, any>);
+  dbId: string;
   opCtx: Omit<DeployApiCtx<any, any>, "payload" | "json"> &
     Payload<CreateDatabaseOpProps | DeprovisionDatabaseOpProps> &
     FetchJson<DeployOperationResponse, any>;
@@ -261,17 +270,27 @@ interface CreateDbResult {
 
 export const provisionDatabase = thunks.create<
   CreateDatabaseProps,
-  ThunkCtx<any, CreateDbResult>
+  ThunkCtx<CreateDatabaseProps, CreateDbResult>
 >("database-provision", function* (ctx, next) {
   yield put(setLoaderStart({ id: ctx.key }));
 
-  const dbCtx = yield* call(createDatabase.run, createDatabase(ctx.payload));
+  const dbAlreadyExists = yield* select(selectDatabaseByHandle, {
+    handle: ctx.payload.handle,
+  });
 
-  if (!dbCtx.json.ok) {
-    yield put(
-      setLoaderError({ id: ctx.key, message: dbCtx.json.data.message }),
-    );
-    return;
+  let dbId = dbAlreadyExists.id;
+  let dbCtx = null;
+  if (!hasDeployDatabase(dbAlreadyExists)) {
+    dbCtx = yield* call(createDatabase.run, createDatabase(ctx.payload));
+
+    if (!dbCtx.json.ok) {
+      yield put(
+        setLoaderError({ id: ctx.key, message: dbCtx.json.data.message }),
+      );
+      return;
+    }
+
+    dbId = `${dbCtx.json.data.id}`;
   }
 
   yield next();
@@ -279,13 +298,19 @@ export const provisionDatabase = thunks.create<
   const opCtx = yield* call(
     createDatabaseOperation.run,
     createDatabaseOperation({
-      dbId: `${dbCtx.json.data.id}`,
+      dbId,
       containerSize: 1024,
       diskSize: 10,
       type: "provision",
       envId: ctx.payload.envId,
     }),
   );
+
+  ctx.json = {
+    dbCtx,
+    opCtx,
+    dbId,
+  };
 
   if (!opCtx.json.ok) {
     yield put(
@@ -294,14 +319,10 @@ export const provisionDatabase = thunks.create<
     return;
   }
 
-  ctx.json = {
-    dbCtx,
-    opCtx,
-  };
   yield put(
     setLoaderSuccess({
       id: ctx.key,
-      meta: { dbId: dbCtx.json.data.id, opId: opCtx.json.data.id },
+      meta: { dbId, opId: opCtx.json.data.id },
     }),
   );
 });

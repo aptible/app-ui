@@ -27,7 +27,7 @@ import {
   selectEnvironmentByName,
   waitForOperation,
 } from "@app/deploy";
-import { ApiGen, DeployApp, excludesFalse } from "@app/types";
+import { ApiGen, DeployApp } from "@app/types";
 
 interface CreateProjectProps {
   name: string;
@@ -224,42 +224,47 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     });
 
     const results = yield* all(
-      dbs
-        .map((db) => {
-          const handle = db.name.toLocaleLowerCase();
-          const _type = db.dbType;
+      dbs.map((db) => {
+        const handle = db.name.toLocaleLowerCase();
+        const _type = db.dbType;
 
-          return call(
-            provisionDatabase.run,
-            provisionDatabase({
-              handle,
-              type: _type,
-              envId,
-              databaseImageId: db.imgId,
-            }),
-          );
-        })
-        .filter(Boolean),
+        return call(
+          provisionDatabase.run,
+          provisionDatabase({
+            handle,
+            type: _type,
+            envId,
+            databaseImageId: db.imgId,
+          }),
+        );
+      }),
     );
 
     /**
      * now we hot-swap db env vars for the actual connection url
      */
 
-    const waiting = results
-      .map((res) => {
-        if (!res.json) return;
-        const { opCtx, dbCtx } = res.json;
-        if (!opCtx.json.ok) return;
-        if (!dbCtx.json.ok) return;
+    console.log(results);
+    const waiting = [];
+    for (let i = 0; i < results.length; i += 1) {
+      const res = results[i];
+      console.log("RES", res);
+      if (!res.json) return;
 
-        return call(
-          waitForDb,
-          `${opCtx.json.data.id}`,
-          `${dbCtx.json.data.id}`,
-        );
-      })
-      .filter(excludesFalse);
+      const { opCtx, dbCtx, dbId } = res.json;
+      if (!opCtx.json.ok) {
+        yield put(setLoaderError({ id, message: opCtx.json.data.message }));
+        return;
+      }
+
+      if (dbCtx && !dbCtx.json.ok) {
+        yield put(setLoaderError({ id, message: dbCtx.json.data.message }));
+        return;
+      }
+
+      waiting.push(call(waitForDb, `${opCtx.json.data.id}`, dbId));
+    }
+
     const updatedDbs = yield* all(waiting);
 
     yield* call(_updateEnvWithDbUrls, {
@@ -279,7 +284,11 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       }),
     );
 
-    if (!deployCtx.json.ok) return;
+    if (!deployCtx.json.ok) {
+      yield put(setLoaderError({ id, message: deployCtx.json.data.message }));
+      return;
+    }
+
     yield* call(waitForOperation, { id: `${deployCtx.json.data.id}` });
 
     yield next();
