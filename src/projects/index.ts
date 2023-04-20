@@ -226,13 +226,13 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     const results = yield* all(
       dbs.map((db) => {
         const handle = db.name.toLocaleLowerCase();
-        const _type = db.dbType;
+        const dbType = db.dbType;
 
         return call(
           provisionDatabase.run,
           provisionDatabase({
             handle,
-            type: _type,
+            type: dbType,
             envId,
             databaseImageId: db.imgId,
           }),
@@ -244,11 +244,9 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
      * now we hot-swap db env vars for the actual connection url
      */
 
-    console.log(results);
     const waiting = [];
     for (let i = 0; i < results.length; i += 1) {
       const res = results[i];
-      console.log("RES", res);
       if (!res.json) return;
 
       const { opCtx, dbCtx, dbId } = res.json;
