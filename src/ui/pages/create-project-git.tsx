@@ -203,6 +203,8 @@ export const CreateProjectSetupPage = () => {
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
+  const origin = useSelector(selectOrigin);
+  const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const navigate = useNavigate();
   const app = useSelector((s: AppState) => selectFirstAppByEnvId(s, { envId }));
 
@@ -212,6 +214,10 @@ export const CreateProjectSetupPage = () => {
   }, []);
 
   useEffect(() => {
+    if (!env.id || !app.id) {
+      return;
+    }
+
     if (env.onboardingStatus === "initiated") {
       navigate(createProjectGitPushUrl(app.id), { replace: true });
     } else if (env.onboardingStatus === "scanned") {
@@ -222,7 +228,11 @@ export const CreateProjectSetupPage = () => {
     ) {
       navigate(createProjectGitStatusUrl(app.id), { replace: true });
     } else {
-      navigate(appDetailUrl(app.id), { replace: true });
+      if (origin === "ftux") {
+        window.location.href = `${legacyUrl}/accounts/${env.id}/apps`;
+      } else {
+        navigate(appDetailUrl(app.id), { replace: true });
+      }
     }
   }, [env.id, app.id]);
 
