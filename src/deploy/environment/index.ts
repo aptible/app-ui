@@ -19,7 +19,6 @@ import type {
 import {
   findLatestDeployOp,
   findLatestProvisionOp,
-  findLatestSuccessDeployOp,
   findLatestSuccessScanOp,
 } from "../operation";
 import { selectDeploy } from "../slice";
