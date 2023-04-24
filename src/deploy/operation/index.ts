@@ -235,6 +235,9 @@ export const selectLatestConfigureOp = createSelector(
 export const findLatestDeployOp = (ops: DeployOperation[]) =>
   ops.find((op) => op.type === "deploy");
 
+export const findLatestProvisionOp = (ops: DeployOperation[]) =>
+  ops.find((op) => op.type === "provision");
+
 export const selectLatestDeployOp = createSelector(
   selectOperationsByAppId,
   (ops) => ops.find((op) => op.type === "deploy") || initOp,

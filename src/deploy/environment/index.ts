@@ -18,8 +18,8 @@ import type {
 
 import {
   findLatestDeployOp,
+  findLatestProvisionOp,
   findLatestSuccessDeployOp,
-  findLatestSuccessProvisionDbOp,
   findLatestSuccessScanOp,
 } from "../operation";
 import { selectDeploy } from "../slice";
@@ -171,15 +171,14 @@ export const selectEnvironmentsForTableSearch = createSelector(
 );
 
 export function deriveAccountStatus(ops: DeployOperation[]): OnboardingStatus {
-  const app = findLatestSuccessDeployOp(ops);
-  const appDeploy = findLatestDeployOp(ops);
-  const db = findLatestSuccessProvisionDbOp(ops);
+  const app = findLatestDeployOp(ops);
+  const db = findLatestProvisionOp(ops);
   const scan = findLatestSuccessScanOp(ops);
   if (app && db && scan) {
     return "completed";
   }
   // app was provisioned but failed
-  if (!app && appDeploy && db && scan) {
+  if (!app && db && scan) {
     return "app_provisioned";
   }
   if (!app && db && scan) {

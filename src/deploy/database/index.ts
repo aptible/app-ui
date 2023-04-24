@@ -2,7 +2,6 @@ import {
   FetchJson,
   Payload,
   call,
-  fork,
   put,
   select,
   setLoaderError,
@@ -372,15 +371,7 @@ export const createDatabaseOperation = api.post<
     return;
   }
 
-  yield* fork(function* () {
-    if (type !== "provision") {
-      return;
-    }
-    const op = yield* call(waitForOperation, { id: `${ctx.json.data.id}` });
-    if (op.status !== "succeeded") {
-      return;
-    }
-
+  if (type === "provision") {
     yield call(
       updateDeployEnvironmentStatus.run,
       updateDeployEnvironmentStatus({
@@ -388,7 +379,7 @@ export const createDatabaseOperation = api.post<
         status: "db_provisioned",
       }),
     );
-  });
+  }
 });
 
 export const fetchDatabaseOperations = api.get<{ id: string }>(

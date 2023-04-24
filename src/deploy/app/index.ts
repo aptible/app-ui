@@ -13,7 +13,7 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, fork, poll, select } from "saga-query";
+import { call, poll, select } from "saga-query";
 
 import {
   findEnvById,
@@ -282,15 +282,7 @@ export const createAppOperation = api.post<AppOpProps, DeployOperationResponse>(
       return;
     }
 
-    yield* fork(function* () {
-      if (type !== "scan_code" && type !== "deploy") {
-        return;
-      }
-      const op = yield* call(waitForOperation, { id: `${ctx.json.data.id}` });
-      if (op.status !== "succeeded") {
-        return;
-      }
-
+    if (type === "scan_code" || type === "deploy") {
       yield call(
         updateDeployEnvironmentStatus.run,
         updateDeployEnvironmentStatus({
@@ -298,7 +290,7 @@ export const createAppOperation = api.post<AppOpProps, DeployOperationResponse>(
           status: type === "scan_code" ? "scanned" : "app_provisioned",
         }),
       );
-    });
+    }
   },
 );
 
