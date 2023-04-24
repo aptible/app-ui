@@ -1861,6 +1861,8 @@ const CreateEndpointView = ({
       >
         Create endpoint
       </Button>
+
+      <BannerMessages {...loader} className="mt-2" />
     </div>
   );
 };
@@ -2118,6 +2120,25 @@ export const CreateProjectGitStatusPage = () => {
     );
   };
 
+  const viewProject = () => {
+    if (status !== "succeeded") {
+      return null;
+    }
+
+    return origin === "ftux" ? (
+      <ButtonLinkExternal
+        href={`${legacyUrl}/accounts/${envId}/apps`}
+        className="mt-4 mb-2"
+      >
+        View Project <IconArrowRight variant="sm" className="ml-2" />
+      </ButtonLinkExternal>
+    ) : (
+      <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
+        View Project <IconArrowRight variant="sm" className="ml-2" />
+      </ButtonLink>
+    );
+  };
+
   return (
     <div>
       {header()}
@@ -2203,18 +2224,7 @@ export const CreateProjectGitStatusPage = () => {
         />
         <hr />
 
-        {origin === "ftux" ? (
-          <ButtonLinkExternal
-            href={`${legacyUrl}/accounts/${envId}/apps`}
-            className="mt-4 mb-2"
-          >
-            View Project <IconArrowRight variant="sm" className="ml-2" />
-          </ButtonLinkExternal>
-        ) : (
-          <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
-            View Project <IconArrowRight variant="sm" className="ml-2" />
-          </ButtonLink>
-        )}
+        {viewProject()}
 
         <ButtonLink to={createProjectGitSettingsUrl(appId)} variant="white">
           Back
