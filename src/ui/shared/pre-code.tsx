@@ -7,9 +7,9 @@ interface TextSegment {
 }
 
 const createTextColor =
-  (color = "text-white", highlight = "text-lime") =>
+  (len = 0, color = "text-white", highlight = "text-lime") =>
   (txt: string, idx: number): TextSegment => {
-    const lastElement = idx === txt.length - 1;
+    const lastElement = idx === len - 1;
     return {
       text: txt,
       className: lastElement ? color : highlight,
@@ -17,11 +17,11 @@ const createTextColor =
   };
 
 export const listToInvertedTextColor = (list: string[]): TextSegment[] => {
-  return list.map(createTextColor());
+  return list.map(createTextColor(list.length));
 };
 
 export const listToTextColor = (list: string[]): TextSegment[] => {
-  return list.map(createTextColor("text-black"));
+  return list.map(createTextColor(list.length, "text-black"));
 };
 
 export const PreCode = ({
