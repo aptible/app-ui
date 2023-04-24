@@ -449,7 +449,7 @@ export const CreateProjectNamePage = () => {
           </FormGroup>
           <FormGroup
             label="Environment Name"
-            description="Lowercase alphanumerics, periods, and dashes only"
+            description="Lowercase alphanumerics, periods, dashes, and underscores only"
             htmlFor="name"
             feedbackVariant="info"
           >
@@ -462,9 +462,7 @@ export const CreateProjectNamePage = () => {
             />
           </FormGroup>
 
-          {thunk.isError ? (
-            <BannerMessages {...thunk} className="my-2" />
-          ) : null}
+          <BannerMessages {...thunk} className="my-2" />
 
           <Button
             className="mt-4 w-full"
@@ -512,13 +510,15 @@ const OpResult = ({ op }: { op: DeployOperation }) => {
 
 interface StarterOption extends SelectOption {
   query: { [key: string]: string[] };
+  repo: string;
 }
 
 const starterTemplateOptions: StarterOption[] = [
-  { label: "Custom Code", value: "none", query: {} },
+  { label: "Custom Code", value: "none", query: {}, repo: "" },
   {
     label: "Ruby on Rails v7",
     value: "git@github.com:aptible/template-rails.git",
+    repo: "template-rails",
     query: {
       dbs: ["database_url:postgresql:14", "redis_url:redis:3.0"],
       envs: ["development_secret_key"],
@@ -527,21 +527,25 @@ const starterTemplateOptions: StarterOption[] = [
   {
     label: "Django v4",
     value: "git@github.com:aptible/template-django.git",
+    repo: "template-django",
     query: { dbs: ["database_url:postgresql:14"], envs: ["secret_key"] },
   },
   {
     label: "Express v4",
     value: "git@github.com:aptible/template-express.git",
+    repo: "template-express",
     query: { dbs: ["database_url:postgresql:14"] },
   },
   {
     label: "Laravel v10",
     value: "git@github.com:aptible/template-laravel.git",
+    repo: "template-laravel",
     query: { dbs: ["database_url:postgresql:14"] },
   },
   {
     label: "Deploy Demo App",
     value: "git@github.com:aptible/deploy-demo-app.git",
+    repo: "deploy-demo-app",
     query: {
       dbs: ["database_url:postgresql:14", "redis_url:redis:3.0"],
     },
@@ -593,9 +597,9 @@ export const CreateProjectGitPushPage = () => {
 
       <Box>
         <div>
-          <h3 className={tokens.type.h3}>
+          <h4 className={tokens.type.h4}>
             Deploy Custom Code or Starter Template
-          </h3>
+          </h4>
           <div className="my-2">
             <Select
               options={starterTemplateOptions}
@@ -606,16 +610,30 @@ export const CreateProjectGitPushPage = () => {
               className="w-full"
             />
           </div>
-          {starter && starter.value !== "none" ? (
-            <PreCode
-              segments={listToInvertedTextColor(["git clone", starter.value])}
-              allowCopy
-            />
-          ) : null}
         </div>
 
+        {starter && starter.value !== "none" ? (
+          <>
+            <div className="mt-4">
+              <h4 className={tokens.type.h4}>Clone your app</h4>
+              <PreCode
+                segments={listToInvertedTextColor(["git clone", starter.value])}
+                allowCopy
+              />
+            </div>
+
+            <div className="mt-4">
+              <h4 className={tokens.type.h4}>Select your app</h4>
+              <PreCode
+                segments={listToInvertedTextColor(["cd", starter.repo])}
+                allowCopy
+              />
+            </div>
+          </>
+        ) : null}
+
         <div className="mt-4">
-          <h3 className={tokens.type.h3}>Add Aptible's Git Server</h3>
+          <h4 className={tokens.type.h4}>Add Aptible's Git Server</h4>
           <PreCode
             segments={listToInvertedTextColor([
               "git remote add aptible",
@@ -626,7 +644,7 @@ export const CreateProjectGitPushPage = () => {
         </div>
 
         <div className="mt-4">
-          <h3 className={tokens.type.h3}>Push your code to our scan branch</h3>
+          <h4 className={tokens.type.h4}>Push your code to our scan branch</h4>
           <PreCode
             segments={listToInvertedTextColor([
               "git push aptible",
@@ -770,9 +788,9 @@ const DatabaseNameInput = ({
   };
   return (
     <FormGroup
-      label="Database alias"
+      label="Database Handle"
       htmlFor="dbname"
-      description="This is the name of the database which is an alias for your reference"
+      description="The name used to reference the database in Aptible."
     >
       <Input name="dbname" value={value} onChange={change} />
     </FormGroup>
@@ -793,7 +811,7 @@ const DatabaseEnvVarInput = ({
     <FormGroup
       label="Environment variable"
       htmlFor="envvar"
-      description="We will automatically inject this environment variable into your app with the correct connection string"
+      description="Variables will inject into your app with the correct connection string."
     >
       <Input name="envvar" value={value} onChange={change} />
     </FormGroup>
@@ -946,7 +964,7 @@ const DatabaseSelectorForm = ({
           );
         })}
       <Button type="button" onClick={onClick}>
-        <IconPlusCircle className="mr-2" /> New
+        <IconPlusCircle className="mr-2" /> New Database
       </Button>
     </div>
   );
@@ -1240,7 +1258,7 @@ export const CreateProjectGitSettingsPage = () => {
             htmlFor="envs"
             feedbackVariant={envErrors.length > 0 ? "danger" : "info"}
             feedbackMessage={envErrors.map((e) => e.message).join(". ")}
-            description="Environment Variables (each line is a separate variable in format: ENV_VAR=VALUE)."
+            description="Add any additional required variables, such as API keys, KNOWN_HOSTS setting, etc. Each line is a separate variable in format: ENV_VAR=VALUE."
           >
             <textarea
               name="envs"
@@ -1274,7 +1292,7 @@ export const CreateProjectGitSettingsPage = () => {
             label="Service and Commands"
             htmlFor="commands"
             feedbackVariant="info"
-            description="Each line is separated by a service command in format: NAME=COMMAND."
+            description="This is optional if you already have a Dockerfile or Procfile in your code repository.  Each line is a separate service and command in format: NAME=COMMAND."
           >
             <textarea
               name="commands"
@@ -1861,6 +1879,8 @@ const CreateEndpointView = ({
       >
         Create endpoint
       </Button>
+
+      <BannerMessages {...loader} className="mt-2" />
     </div>
   );
 };
@@ -2118,6 +2138,25 @@ export const CreateProjectGitStatusPage = () => {
     );
   };
 
+  const viewProject = () => {
+    if (status !== "succeeded") {
+      return null;
+    }
+
+    return origin === "ftux" ? (
+      <ButtonLinkExternal
+        href={`${legacyUrl}/accounts/${envId}/apps`}
+        className="mt-4 mb-2"
+      >
+        View Environment <IconArrowRight variant="sm" className="ml-2" />
+      </ButtonLinkExternal>
+    ) : (
+      <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
+        View Environment <IconArrowRight variant="sm" className="ml-2" />
+      </ButtonLink>
+    );
+  };
+
   return (
     <div>
       {header()}
@@ -2203,18 +2242,7 @@ export const CreateProjectGitStatusPage = () => {
         />
         <hr />
 
-        {origin === "ftux" ? (
-          <ButtonLinkExternal
-            href={`${legacyUrl}/accounts/${envId}/apps`}
-            className="mt-4 mb-2"
-          >
-            View Project <IconArrowRight variant="sm" className="ml-2" />
-          </ButtonLinkExternal>
-        ) : (
-          <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
-            View Project <IconArrowRight variant="sm" className="ml-2" />
-          </ButtonLink>
-        )}
+        {viewProject()}
 
         <ButtonLink to={createProjectGitSettingsUrl(appId)} variant="white">
           Back

@@ -4,7 +4,7 @@ export const tokens = {
   },
 
   type: {
-    h1: "text-gray-900 text-2xl font-semibold",
+    h1: "text-gray-900 text-3xl font-semibold",
     h2: "text-xl font-semibold text-gray-900",
     h3: "text-lg font-semibold text-gray-900",
     h4: "text-md font-semibold text-gray-900",
@@ -37,7 +37,7 @@ export const tokens = {
     },
     styles: {
       primary:
-        "border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed",
+        "border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed",
       secondary:
         "border border-transparent font-bold text-white bg-indigo hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600",
       white:
