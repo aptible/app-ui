@@ -35,11 +35,9 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
   const middleware: Middleware[] = [];
 
   if (import.meta.env.VITE_DEBUG === "true") {
-    const logger = (store: any) => (next: any) => (action: any) => {
+    const logger = (_: any) => (next: any) => (action: any) => {
       if (action.type === BATCH) {
-        log("== BATCH ==");
-        action.payload.forEach(log);
-        log("== END BATCH ==");
+        action.payload.forEach((act: any) => log("ACTION", act));
       } else {
         log("ACTION", action);
       }

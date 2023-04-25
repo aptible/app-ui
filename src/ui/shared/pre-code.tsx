@@ -57,8 +57,8 @@ export const PreCode = ({
       {allowCopy ? (
         <div
           title="Copy to clipboard"
-          className="absolute cursor-pointer"
-          style={{ right: 10, top: 12 }}
+          className="absolute cursor-pointer bg-black px-2"
+          style={{ right: 0, top: 12 }}
         >
           <IconCopy color="#888C90" onClick={handleCopy} />
         </div>

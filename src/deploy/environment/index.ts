@@ -1,5 +1,5 @@
-import { createSelector } from "@reduxjs/toolkit";
-import { latest, put, select } from "saga-query";
+import { createAction, createSelector } from "@reduxjs/toolkit";
+import { latest, poll, put, select } from "saga-query";
 
 import { PaginateProps, api, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -17,9 +17,8 @@ import type {
 } from "@app/types";
 
 import {
+  findLatestDbProvisionOp,
   findLatestDeployOp,
-  findLatestSuccessDeployOp,
-  findLatestSuccessProvisionDbOp,
   findLatestSuccessScanOp,
 } from "../operation";
 import { selectDeploy } from "../slice";
@@ -147,6 +146,13 @@ export const fetchAllEnvironments = thunks.create(
   combinePages(fetchEnvironments),
 );
 
+export const cancelEnvPoll = createAction("cancel-env-poll");
+export const pollEnvs = thunks.create(
+  "poll-envs",
+  { saga: poll(60 * 1000, `${cancelEnvPoll}`) },
+  combinePages(fetchEnvironments),
+);
+
 interface CreateEnvProps {
   name: string;
   stackId: string;
@@ -171,15 +177,13 @@ export const selectEnvironmentsForTableSearch = createSelector(
 );
 
 export function deriveAccountStatus(ops: DeployOperation[]): OnboardingStatus {
-  const app = findLatestSuccessDeployOp(ops);
-  const appDeploy = findLatestDeployOp(ops);
-  const db = findLatestSuccessProvisionDbOp(ops);
+  const app = findLatestDeployOp(ops);
+  const db = findLatestDbProvisionOp(ops);
   const scan = findLatestSuccessScanOp(ops);
   if (app && db && scan) {
     return "completed";
   }
-  // app was provisioned but failed
-  if (!app && appDeploy && db && scan) {
+  if (app && !db && scan) {
     return "app_provisioned";
   }
   if (!app && db && scan) {

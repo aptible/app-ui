@@ -287,8 +287,6 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       return;
     }
 
-    yield* call(waitForOperation, { id: `${deployCtx.json.data.id}` });
-
     yield next();
     yield put(setLoaderSuccess({ id }));
   },

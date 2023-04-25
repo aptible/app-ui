@@ -1,4 +1,4 @@
-import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
+import { PaginateProps, api, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -13,13 +13,9 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, fork, poll, select } from "saga-query";
+import { call, poll, select } from "saga-query";
 
-import {
-  findEnvById,
-  selectEnvironments,
-  updateDeployEnvironmentStatus,
-} from "../environment";
+import { findEnvById, selectEnvironments } from "../environment";
 import { deserializeImage } from "../image";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { selectDeploy } from "../slice";
@@ -170,13 +166,17 @@ export const selectAppsForTableSearch = createSelector(
   },
 );
 
-export const fetchApps = api.get<PaginateProps>("/apps?page=:page", {
-  saga: cacheTimer(),
-});
+export const fetchApps = api.get<PaginateProps>("/apps?page=:page");
 
 export const fetchAllApps = thunks.create(
   "fetch-all-apps",
-  { saga: cacheTimer() },
+  combinePages(fetchApps),
+);
+
+export const cancelAppsPoll = createAction("cancel-apps-poll");
+export const pollApps = thunks.create(
+  "poll-apps",
+  { saga: poll(60 * 1000, `${cancelAppsPoll}`) },
   combinePages(fetchApps),
 );
 
@@ -277,28 +277,6 @@ export const createAppOperation = api.post<AppOpProps, DeployOperationResponse>(
     const body = getBody();
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield next();
-
-    if (!ctx.json.ok) {
-      return;
-    }
-
-    yield* fork(function* () {
-      if (type !== "scan_code" && type !== "deploy") {
-        return;
-      }
-      const op = yield* call(waitForOperation, { id: `${ctx.json.data.id}` });
-      if (op.status !== "succeeded") {
-        return;
-      }
-
-      yield call(
-        updateDeployEnvironmentStatus.run,
-        updateDeployEnvironmentStatus({
-          id: ctx.payload.envId,
-          status: type === "scan_code" ? "scanned" : "app_provisioned",
-        }),
-      );
-    });
   },
 );
 
