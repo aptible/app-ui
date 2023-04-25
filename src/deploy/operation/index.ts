@@ -235,8 +235,8 @@ export const selectLatestConfigureOp = createSelector(
 export const findLatestDeployOp = (ops: DeployOperation[]) =>
   ops.find((op) => op.type === "deploy");
 
-export const findLatestProvisionOp = (ops: DeployOperation[]) =>
-  ops.find((op) => op.type === "provision");
+export const findLatestDbProvisionOp = (ops: DeployOperation[]) =>
+  ops.find((op) => op.resourceType === "database" && op.type === "provision");
 
 export const selectLatestDeployOp = createSelector(
   selectOperationsByAppId,

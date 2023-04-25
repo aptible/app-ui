@@ -1,4 +1,4 @@
-import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
+import { PaginateProps, api, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -170,13 +170,17 @@ export const selectAppsForTableSearch = createSelector(
   },
 );
 
-export const fetchApps = api.get<PaginateProps>("/apps?page=:page", {
-  saga: cacheTimer(),
-});
+export const fetchApps = api.get<PaginateProps>("/apps?page=:page");
 
 export const fetchAllApps = thunks.create(
   "fetch-all-apps",
-  { saga: cacheTimer() },
+  combinePages(fetchApps),
+);
+
+export const cancelAppsPoll = createAction("cancel-apps-poll");
+export const pollApps = thunks.create(
+  "poll-apps",
+  { saga: poll(60 * 1000, `${cancelAppsPoll}`) },
   combinePages(fetchApps),
 );
 
@@ -277,20 +281,6 @@ export const createAppOperation = api.post<AppOpProps, DeployOperationResponse>(
     const body = getBody();
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield next();
-
-    if (!ctx.json.ok) {
-      return;
-    }
-
-    if (type === "scan_code" || type === "deploy") {
-      yield call(
-        updateDeployEnvironmentStatus.run,
-        updateDeployEnvironmentStatus({
-          id: ctx.payload.envId,
-          status: type === "scan_code" ? "scanned" : "app_provisioned",
-        }),
-      );
-    }
   },
 );
 

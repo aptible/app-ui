@@ -366,20 +366,6 @@ export const createDatabaseOperation = api.post<
   const body = getBody();
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield next();
-
-  if (!ctx.json.ok) {
-    return;
-  }
-
-  if (type === "provision") {
-    yield call(
-      updateDeployEnvironmentStatus.run,
-      updateDeployEnvironmentStatus({
-        id: ctx.payload.envId,
-        status: "db_provisioned",
-      }),
-    );
-  }
 });
 
 export const fetchDatabaseOperations = api.get<{ id: string }>(

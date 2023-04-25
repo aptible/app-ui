@@ -1,5 +1,11 @@
 import cn from "classnames";
-import { useEffect, useMemo, useReducer, useState } from "react";
+import {
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
@@ -54,6 +60,7 @@ import {
   IconCheck,
   IconChevronDown,
   IconChevronUp,
+  IconCopy,
   IconGitBranch,
   IconInfo,
   IconPlusCircle,
@@ -72,10 +79,11 @@ import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { OnboardingLink } from "../shared/onboarding-link";
 import {
   cancelAppOpsPoll,
+  cancelAppsPoll,
+  cancelEnvPoll,
   createEndpointOperation,
   deriveAccountStatus,
   fetchAllApps,
-  fetchAllEnvironments,
   fetchAllStacks,
   fetchApp,
   fetchAppOperations,
@@ -84,6 +92,8 @@ import {
   fetchEnvironmentById,
   hasDeployEndpoint,
   pollAppOperations,
+  pollApps,
+  pollEnvs,
   provisionEndpoint,
   selectAppById,
   selectDatabasesByEnvId,
@@ -266,12 +276,40 @@ const EnvOverview = ({ env }: { env: DeployEnvironment }) => {
   );
 };
 
-export const ResumeSetupPage = () => {
+const usePollEnvs = () => {
   const dispatch = useDispatch();
+  const envs = useQuery(pollEnvs());
   useEffect(() => {
-    dispatch(fetchAllEnvironments());
-    dispatch(fetchAllApps());
+    const cancel = () => dispatch(cancelEnvPoll());
+    cancel();
+    envs.trigger();
+    return () => {
+      cancel();
+    };
   }, []);
+
+  return envs;
+};
+
+const usePollApps = () => {
+  const dispatch = useDispatch();
+  const apps = useQuery(pollApps());
+  useEffect(() => {
+    const cancel = () => dispatch(cancelAppsPoll());
+    cancel();
+    apps.trigger();
+    return () => {
+      cancel();
+    };
+  }, []);
+
+  return apps;
+};
+
+export const ResumeSetupPage = () => {
+  usePollEnvs();
+  usePollApps();
+
   const envs = useSelector(selectEnvironmentOnboarding);
   return (
     <div>
@@ -1146,14 +1184,13 @@ export const CreateProjectGitSettingsPage = () => {
 
     // hydrate inputs for consumption on load
     const cmdsToSet = serviceDefinitions
-      ? serviceDefinitions
-          .map((serviceDefinition) => {
-            return `${serviceDefinition.processType}=${serviceDefinition.command}`;
-          })
-          .join("\n")
-      : "";
+      .map((serviceDefinition) => {
+        return `${serviceDefinition.processType}=${serviceDefinition.command}`;
+      })
+      .join("\n");
+
     setCmds(cmdsToSet);
-  }, [serviceDefinitions.length]);
+  }, [serviceDefinitions]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -1372,6 +1409,13 @@ const Op = ({
   if (!hasDeployOperation(op)) {
     return null;
   }
+
+  const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
+
   const extra = "border-b border-black-100";
   const statusView = () => {
     const cns = "font-semibold flex justify-center items-center";
@@ -1427,18 +1471,33 @@ const Op = ({
 
   return (
     <div className={extra}>
-      <div
-        className="py-4 flex justify-between items-center cursor-pointer"
-        onClick={() => setOpen(!isOpen)}
-        onKeyUp={() => setOpen(!isOpen)}
-      >
-        <div className="font-semibold flex items-center">
-          {isOpen ? (
-            <IconChevronUp variant="sm" />
-          ) : (
-            <IconChevronDown variant="sm" />
-          )}
-          <div>{createReadableResourceName(op, resource.handle)}</div>
+      <div className="py-4 flex justify-between items-center">
+        <div className="flex flex-1">
+          <div
+            className="font-semibold flex items-center cursor-pointer"
+            onClick={() => setOpen(!isOpen)}
+            onKeyUp={() => setOpen(!isOpen)}
+          >
+            {isOpen ? (
+              <IconChevronUp variant="sm" />
+            ) : (
+              <IconChevronDown variant="sm" />
+            )}
+            <div>{createReadableResourceName(op, resource.handle)}</div>
+          </div>
+          <div className="flex items-center ml-2">
+            <div className="mr-2 text-xs text-black-300">id: {op.id}</div>
+            <div title={`aptible operation:logs ${op.id}`}>
+              <IconCopy
+                variant="sm"
+                color="#888C90"
+                className="cursor-pointer"
+                onClick={(e) =>
+                  handleCopy(e, `aptible operation:logs ${op.id}`)
+                }
+              />
+            </div>
+          </div>
         </div>
         {statusView()}
       </div>
@@ -2146,7 +2205,7 @@ export const CreateProjectGitStatusPage = () => {
     return origin === "ftux" ? (
       <ButtonLinkExternal
         href={`${legacyUrl}/accounts/${envId}/apps`}
-        className="mt-4 mb-2"
+        className="mt-4"
       >
         View Environment <IconArrowRight variant="sm" className="ml-2" />
       </ButtonLinkExternal>
@@ -2186,15 +2245,6 @@ export const CreateProjectGitStatusPage = () => {
           <h4 className={tokens.type.h4}>Error!</h4>
           <BannerMessages {...redeployLoader} />
           <BannerMessages {...deployProjectLoader} />
-        </StatusBox>
-      ) : null}
-
-      {status === "succeeded" && !hasDeployOperation(deployOp) ? (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>
-            Don't see an app deployment operation?
-          </h4>
-          <Button onClick={() => redeploy(true)}>Deploy!</Button>
         </StatusBox>
       ) : null}
 
@@ -2244,7 +2294,11 @@ export const CreateProjectGitStatusPage = () => {
 
         {viewProject()}
 
-        <ButtonLink to={createProjectGitSettingsUrl(appId)} variant="white">
+        <ButtonLink
+          to={createProjectGitSettingsUrl(appId)}
+          variant="white"
+          className="mt-2"
+        >
           Back
         </ButtonLink>
       </StatusBox>
