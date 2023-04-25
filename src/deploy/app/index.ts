@@ -15,11 +15,7 @@ import type {
 import { createAction, createSelector } from "@reduxjs/toolkit";
 import { call, poll, select } from "saga-query";
 
-import {
-  findEnvById,
-  selectEnvironments,
-  updateDeployEnvironmentStatus,
-} from "../environment";
+import { findEnvById, selectEnvironments } from "../environment";
 import { deserializeImage } from "../image";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { selectDeploy } from "../slice";

@@ -34,11 +34,7 @@ import type {
 } from "@app/types";
 
 import { deserializeDisk } from "../disk";
-import {
-  findEnvById,
-  selectEnvironments,
-  updateDeployEnvironmentStatus,
-} from "../environment";
+import { findEnvById, selectEnvironments } from "../environment";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { selectDeploy } from "../slice";
 import { createSelector } from "@reduxjs/toolkit";
