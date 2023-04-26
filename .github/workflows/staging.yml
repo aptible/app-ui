@@ -17,18 +17,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract tags for Docker images
-        id: docker-meta
-        uses: docker/metadata-action@v3
-        with:
-          images: quay.io/aptible/cloud-ui
-
       - name: Build and push Docker images
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
-          tags: ${{ steps.docker-meta.outputs.tags }}
+          tags:
+            - sbx-main
           build-args: |
             VITE_AUTH_URL=https://auth-sbx-main.aptible-sandbox.com
             VITE_BILLING_URL=https://billing-sbx-main.aptible-sandbox.com
@@ -46,7 +41,7 @@ jobs:
         with:
           app: 'app-ui-sbx-main'
           environment: 'sbx-main'
-          docker_img: 'quay.io/aptible/cloud-ui:main'
+          docker_img: 'quay.io/aptible/cloud-ui:sbx-main'
           username: ${{ secrets.APTIBLE_ROBOT_USERNAME }}
           password: ${{ secrets.APTIBLE_ROBOT_PASSWORD }}
           private_registry_username:  ${{ secrets.DOCKER_USERNAME }}
