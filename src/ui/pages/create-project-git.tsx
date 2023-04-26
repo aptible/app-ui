@@ -155,7 +155,7 @@ export const CreateProjectLayout = ({
   const orgSettingsUrl = `${legacyUrl}/organizations/${org.id}/members`;
   return (
     <>
-      <div className="p-6 flex justify-between shadow bg-white border-b border-black-50">
+      <div className="p-6 flex justify-between relative shadow bg-white border-b border-black-50">
         <div className="flex">
           <Link to={homeUrl()}>
             <AptibleLogo />
