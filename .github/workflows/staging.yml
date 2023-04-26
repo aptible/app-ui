@@ -22,8 +22,7 @@ jobs:
         with:
           context: .
           push: true
-          tags:
-            - sbx-main
+          tags: sbx-main
           build-args: |
             VITE_AUTH_URL=https://auth-sbx-main.aptible-sandbox.com
             VITE_BILLING_URL=https://billing-sbx-main.aptible-sandbox.com
