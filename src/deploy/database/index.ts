@@ -35,7 +35,11 @@ import type {
 
 import { deserializeDisk } from "../disk";
 import { findEnvById, selectEnvironments } from "../environment";
-import { deserializeDeployOperation, waitForOperation } from "../operation";
+import {
+  deserializeDeployOperation,
+  selectOperationsByDatabaseId,
+  waitForOperation,
+} from "../operation";
 import { selectDeploy } from "../slice";
 import { createSelector } from "@reduxjs/toolkit";
 
@@ -289,6 +293,12 @@ export const provisionDatabase = thunks.create<
   }
 
   yield next();
+
+  const dbOps = yield* select(selectOperationsByDatabaseId, { dbId });
+  const alreadyProvisioned = dbOps.find((op) => op.type === "provision");
+  if (alreadyProvisioned) {
+    return;
+  }
 
   const opCtx = yield* call(
     createDatabaseOperation.run,
