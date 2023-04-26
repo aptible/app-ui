@@ -578,7 +578,10 @@ const starterTemplateOptions: StarterOption[] = [
     label: "Laravel v10",
     value: "git@github.com:aptible/template-laravel.git",
     repo: "template-laravel",
-    query: { dbs: ["database_url:postgresql:14"] },
+    query: {
+      dbs: ["database_url:postgresql:14"],
+      envs: ["db_connection:aptible", "app_key"],
+    },
   },
   {
     label: "Deploy Demo App",
@@ -1108,7 +1111,10 @@ export const CreateProjectGitSettingsPage = () => {
     setEnvs(
       queryEnvsStr
         .split(",")
-        .map((env) => `${env}=""`.toLocaleUpperCase())
+        .map((env) => {
+          const [key, val = ""] = env.split(":");
+          return `${key.toLocaleUpperCase()}=${val}`;
+        })
         .join("\n"),
     );
   }, [queryEnvsStr]);
@@ -2198,12 +2204,9 @@ export const CreateProjectGitStatusPage = () => {
   };
 
   const viewProject = () => {
-    if (status !== "succeeded") {
-      return null;
-    }
-
     return origin === "ftux" ? (
       <ButtonLinkExternal
+        target="_blank"
         href={`${legacyUrl}/accounts/${envId}/apps`}
         className="mt-4"
       >
