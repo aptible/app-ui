@@ -30,12 +30,12 @@ jobs:
           push: true
           tags: ${{ steps.docker-meta.outputs.tags }}
           build-args: |
-            VITE_AUTH_URL=https://auth-api-master.aptible-staging.com
-            VITE_BILLING_URL=https://billing-api-master.aptible-staging.com
-            VITE_API_URL=https://deploy-api-master.aptible-staging.com
-            VITE_LEGACY_DASHBOARD_URL=https://dashboard.aptible-staging.com
+            VITE_AUTH_URL=https://auth-sbx-main.aptible-sandbox.com
+            VITE_BILLING_URL=https://billing-sbx-main.aptible-sandbox.com
+            VITE_API_URL=https://api-sbx-main.aptible-sandbox.com
+            VITE_LEGACY_DASHBOARD_URL=https://dashboard-sbx-main.aptible-sandbox.com
             VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN }}
-            VITE_ORIGIN=nextgen
+            VITE_ORIGIN=app
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -44,8 +44,8 @@ jobs:
       - uses: aptible/aptible-deploy-action@v1
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
-          app: 'cloud-ui-main'
-          environment: 'aptible-staging'
+          app: 'app-ui-sbx-main'
+          environment: 'sbx-main'
           docker_img: 'quay.io/aptible/cloud-ui:main'
           username: ${{ secrets.APTIBLE_ROBOT_USERNAME }}
           password: ${{ secrets.APTIBLE_ROBOT_PASSWORD }}

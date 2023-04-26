@@ -4,7 +4,7 @@ ARG VITE_AUTH_URL=https://auth.aptible.com
 ARG VITE_BILLING_URL=https://goldenboy.aptible.com
 ARG VITE_API_URL=https://api.aptible.com
 ARG VITE_LEGACY_DASHBOARD_URL=https://dashboard.aptible.com
-ARG VITE_ORIGIN=nextgen
+ARG VITE_ORIGIN=app
 ARG VITE_SENTRY_DSN
 ARG NODE_ENV=production
 
@@ -22,7 +22,7 @@ RUN env | grep VITE
 
 RUN yarn build
 
-FROM nginx:1.13.11 as nginx
+FROM nginx:1.24.0 as nginx
 
 ENV BUILD=/app
 ENV PORT=80
