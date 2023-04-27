@@ -1033,14 +1033,18 @@ const CodeScanInfo = ({
   }
 
   return (
-    <Banner variant="error">
+    <Banner variant="info">
       <span>
-        Your code needs a Dockerfile to deploy. Add a Dockerfile, commit it, and
-        re-push your code to continue,{" "}
+        Your code is missing a Dockerfile to deploy. We will try to generate one
+        for you. We recommend adding a{" "}
       </span>
-      <ExternalLink href="https://aptible.com/docs" variant="error">
-        view our docs.
+      <ExternalLink
+        href="https://www.aptible.com/docs/dockerfile"
+        variant="info"
+      >
+        Dockerfile
       </ExternalLink>
+      <span> to your repo, commit it, and push your code.</span>
     </Banner>
   );
 
