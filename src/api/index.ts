@@ -34,6 +34,7 @@ export type DeployApiCtx<P = any, S = any> = ApiCtx<P, S, { message: string }>;
 export interface AuthApiCtx<P = any, S = any>
   extends ApiCtx<P, S, AuthApiError> {
   elevated: boolean;
+  noToken: boolean;
 }
 
 export function* elevetatedMdw(ctx: AuthApiCtx, next: Next): ApiGen {
@@ -63,7 +64,12 @@ function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
   return env.apiUrl;
 }
 
-function* tokenMdw(ctx: ApiCtx, next: Next): ApiGen {
+function* tokenMdw(ctx: ApiCtx & { noToken?: boolean }, next: Next): ApiGen {
+  if (ctx.noToken) {
+    yield next();
+    return;
+  }
+
   const token = yield* select(selectAccessToken);
   if (!token) {
     yield next();

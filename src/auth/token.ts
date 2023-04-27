@@ -28,6 +28,7 @@ function saveToken(ctx: AuthApiCtx<any, TokenSuccessResponse>) {
 export const fetchCurrentToken = authApi.get<never, TokenSuccessResponse>(
   "/current_token",
   function* onFetchToken(ctx, next) {
+    ctx.noToken = true;
     yield next();
     if (!ctx.json.ok) {
       yield put(resetToken());
