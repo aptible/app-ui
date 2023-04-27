@@ -1,4 +1,10 @@
-import { Box, ButtonLink, IconArrowRight, tokens } from "../shared";
+import {
+  AptibleLogo,
+  Box,
+  ButtonLink,
+  IconArrowRight,
+  tokens,
+} from "../shared";
 import { createProjectGitUrl } from "@app/routes";
 
 export const CreateProjectPage = () => {
@@ -15,6 +21,9 @@ export const CreateProjectPage = () => {
             <div className="py-4">
               <div className="flex justify-center container">
                 <div style={{ width: 500 }}>
+                  <div className="flex items-center justify-center mb-5">
+                    <AptibleLogo />
+                  </div>
                   <div className="text-center">
                     <h1 className={tokens.type.h1}>Create an Environment</h1>
                     <p className="my-4 text-gray-600">
