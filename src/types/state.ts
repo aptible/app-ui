@@ -25,7 +25,7 @@ export interface Env {
   apiUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
-  origin: "nextgen" | "ftux";
+  origin: "nextgen" | "app";
 }
 
 export interface User {

@@ -161,7 +161,7 @@ export const CreateProjectLayout = ({
             <AptibleLogo />
           </Link>
           <div className="ml-4">
-            {origin === "ftux" ? (
+            {origin === "app" ? (
               <a href={legacyUrl} className="text-black-300">
                 Back to dashboard
               </a>
@@ -238,7 +238,7 @@ export const CreateProjectSetupPage = () => {
     ) {
       navigate(createProjectGitStatusUrl(app.id), { replace: true });
     } else {
-      if (origin === "ftux") {
+      if (origin === "app") {
         window.location.href = `${legacyUrl}/accounts/${env.id}/apps`;
       } else {
         navigate(appDetailUrl(app.id), { replace: true });
@@ -2204,7 +2204,7 @@ export const CreateProjectGitStatusPage = () => {
   };
 
   const viewProject = () => {
-    return origin === "ftux" ? (
+    return origin === "app" ? (
       <ButtonLinkExternal
         target="_blank"
         href={`${legacyUrl}/accounts/${envId}/apps`}
