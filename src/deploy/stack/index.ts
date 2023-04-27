@@ -86,6 +86,21 @@ export const selectStacksAsOptions = createSelector(
   (stacks) =>
     stacks.map(stackToOption).sort((a, b) => a.label.localeCompare(b.label)),
 );
+
+export const selectStacksByOrgAsOptions = createSelector(
+  selectStacksAsList,
+  (_: AppState, p: { orgId: string }) => p.orgId,
+  (stacks, orgId) => {
+    return stacks
+      .filter(
+        (stack) =>
+          stack.organizationId === "" || stack.organizationId === orgId,
+      )
+      .map(stackToOption)
+      .sort((a, b) => a.label.localeCompare(b.label));
+  },
+);
+
 export const selectStackPublicDefault = createSelector(
   selectStacksAsList,
   (stacks) => {
