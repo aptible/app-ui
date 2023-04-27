@@ -30,7 +30,7 @@ jobs:
           push: true
           tags: ${{ steps.docker-meta.outputs.tags }}
           build-args: |
-            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN }}
+            VITE_SENTRY_DSN=${{ secrets.PROD_SENTRY_DSN }}
             VITE_ORIGIN=app
   deploy:
     runs-on: ubuntu-latest
