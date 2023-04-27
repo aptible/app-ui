@@ -20,7 +20,7 @@ export const OnboardingLink = ({ env }: { env: DeployEnvironment }) => {
   }
 
   if (env.onboardingStatus === "completed") {
-    if (origin === "ftux") {
+    if (origin === "app") {
       return (
         <a
           href={`${legacyUrl}/accounts/${env.id}/apps`}
