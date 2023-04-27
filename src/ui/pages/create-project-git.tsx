@@ -559,7 +559,7 @@ const starterTemplateOptions: StarterOption[] = [
     repo: "template-rails",
     query: {
       dbs: ["database_url:postgresql:14", "redis_url:redis:3.0"],
-      envs: ["development_secret_key"],
+      envs: ["production_secret_key"],
     },
   },
   {
