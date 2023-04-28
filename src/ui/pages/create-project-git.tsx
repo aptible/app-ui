@@ -79,8 +79,6 @@ import { AddSSHKeyForm } from "../shared/add-ssh-key";
 import { OnboardingLink } from "../shared/onboarding-link";
 import {
   cancelAppOpsPoll,
-  cancelAppsPoll,
-  cancelEnvPoll,
   createEndpointOperation,
   deriveAccountStatus,
   fetchAllApps,
@@ -92,8 +90,6 @@ import {
   fetchEnvironmentById,
   hasDeployEndpoint,
   pollAppOperations,
-  pollApps,
-  pollEnvs,
   provisionEndpoint,
   selectAppById,
   selectDatabasesByEnvId,
@@ -256,10 +252,7 @@ const EnvOverview = ({ env }: { env: DeployEnvironment }) => {
   const op = useSelector((s: AppState) =>
     selectLatestOpByEnvId(s, { envId: env.id }),
   );
-  const endpointQuery = useQuery(fetchEndpointsByAppId({ appId: app.id }));
-  useEffect(() => {
-    endpointQuery.trigger();
-  }, [app.id]);
+  useQuery(fetchEndpointsByAppId({ appId: app.id }));
 
   return (
     <ProjectBox
@@ -276,40 +269,7 @@ const EnvOverview = ({ env }: { env: DeployEnvironment }) => {
   );
 };
 
-const usePollEnvs = () => {
-  const dispatch = useDispatch();
-  const envs = useQuery(pollEnvs());
-  useEffect(() => {
-    const cancel = () => dispatch(cancelEnvPoll());
-    cancel();
-    envs.trigger();
-    return () => {
-      cancel();
-    };
-  }, []);
-
-  return envs;
-};
-
-const usePollApps = () => {
-  const dispatch = useDispatch();
-  const apps = useQuery(pollApps());
-  useEffect(() => {
-    const cancel = () => dispatch(cancelAppsPoll());
-    cancel();
-    apps.trigger();
-    return () => {
-      cancel();
-    };
-  }, []);
-
-  return apps;
-};
-
 export const ResumeSetupPage = () => {
-  usePollEnvs();
-  usePollApps();
-
   const envs = useSelector(selectEnvironmentOnboarding);
   return (
     <div>
@@ -2151,27 +2111,6 @@ export const CreateProjectGitStatusPage = () => {
       }),
     );
   };
-
-  // if the user started the deployment process but left before
-  // we could create an app deploy operation then we need to kick that
-  // off again here
-  /* useEffect(() => {
-    if (!appId) return;
-    if (!env.id) return;
-    if (status !== "succeeded") return;
-    if (redeployLoader.isLoading) return;
-
-    if (!hasDeployOperation(deployOp)) {
-      dispatch(
-        redeployApp({
-          appId,
-          envId: env.id,
-          gitRef,
-          force: true,
-        }),
-      );
-    }
-  }, [appId, env.id, deployOp.id, status, redeployLoader.isLoading]); */
 
   // when the status is success we need to refetch the app and endpoints
   // so we can grab the services and show them to the user for creating

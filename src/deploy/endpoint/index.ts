@@ -6,7 +6,7 @@ import {
   setLoaderSuccess,
 } from "saga-query";
 
-import { api, cacheTimer, thunks } from "@app/api";
+import { api, cacheShortTimer, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -128,19 +128,21 @@ export const selectFirstEndpointByAppId = createSelector(
 
 export const fetchEndpointsByAppId = api.get<{ appId: string }>(
   "/apps/:appId/vhosts",
+  { saga: cacheShortTimer() },
 );
 export const fetchEndpointsByEnvironmentId = api.get<{ id: string }>(
   "/accounts/:id/vhosts",
+  { saga: cacheShortTimer() },
 );
 export const fetchEndpointsByServiceId = api.get<{ id: string }>(
   "/services/:id/vhosts",
   {
-    saga: cacheTimer(),
+    saga: cacheShortTimer(),
   },
 );
 
 export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
-  saga: cacheTimer(),
+  saga: cacheShortTimer(),
 });
 
 export const endpointEntities = {

@@ -118,7 +118,7 @@ interface WaitDbProps {
 }
 
 function* waitForDb(opId: string, dbId: string): Iterator<any, WaitDbProps> {
-  yield* call(waitForOperation, { id: opId });
+  yield* call(waitForOperation, { id: opId, skipFetch: true });
   const res = yield* call(fetchDatabase.run, fetchDatabase({ id: dbId }));
   if (!res.json.ok) return { id: "", handle: "", connectionUrl: "" };
 
@@ -329,7 +329,10 @@ function* _updateEnvWithDbUrls({
   );
 
   if (!configureCtx.json.ok) return;
-  yield* call(waitForOperation, { id: `${configureCtx.json.data.id}` });
+  yield* call(waitForOperation, {
+    id: `${configureCtx.json.data.id}`,
+    skipFetch: true,
+  });
 }
 
 export const updateEnvWithDbUrls = thunks.create<{
