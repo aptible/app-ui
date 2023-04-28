@@ -22,6 +22,7 @@ import type {
   PipeCtx,
 } from "saga-query";
 
+import { createLog } from "@app/debug";
 import { selectEnv } from "@app/env";
 import { halEntityParser } from "@app/hal";
 import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
@@ -37,8 +38,15 @@ export interface AuthApiCtx<P = any, S = any>
   noToken: boolean;
 }
 
+const log = createLog("saga-query");
+
 export function* elevetatedMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   ctx.elevated = true;
+  yield next();
+}
+
+function* debugMdw(ctx: PipeCtx, next: Next) {
+  log(`${ctx.name}`, ctx);
   yield next();
 }
 
@@ -150,6 +158,7 @@ const MINUTES = 60 * SECONDS;
 export const cacheTimer = () => timer(5 * MINUTES);
 
 export const api = createApi<DeployApiCtx>();
+api.use(debugMdw);
 api.use(sentryErrorHandler);
 api.use(requestMonitor());
 api.use(api.routes());
@@ -159,6 +168,7 @@ api.use(tokenMdw);
 api.use(fetcher());
 
 export const authApi = createApi<AuthApiCtx>();
+authApi.use(debugMdw);
 authApi.use(sentryErrorHandler);
 authApi.use(requestMonitor());
 authApi.use(authApi.routes());
@@ -237,6 +247,7 @@ export interface Retryable {
 }
 
 export const thunks = createPipe<ThunkCtx>();
+thunks.use(debugMdw);
 thunks.use(sentryErrorHandler);
 thunks.use(function* (ctx, next) {
   ctx.json = null;
