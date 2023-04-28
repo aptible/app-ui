@@ -727,6 +727,8 @@ const parseText = <
     .split("\n")
     .map(trim)
     .map((t) => {
+      // sometimes the value can contain an "=" so we need to only
+      // split the first "="
       const [key, ...values] = t.split("=").map(trim);
       const value = Array.isArray(values) ? values.join("=") : values;
       return {
@@ -1165,6 +1167,8 @@ export const CreateProjectGitSettingsPage = () => {
         const img = dbImages.find((i) => i.id === db.databaseImageId);
         if (!img) return;
         const env = envList.find((e) => e.value === `{{${db.handle}}}`);
+        // If we didn't detect an env var for the database then we probably
+        // lost it.  Try to recover by adding an env var
         if (!env) {
           const envFin = envList.find((e) => e.key === "DATABASE_URL");
           if (!envFin) {
