@@ -28,18 +28,22 @@ export const bootup = thunks.create(
       return;
     }
 
-    yield* call(fetchData);
+    yield* call(fetchInitialData.run, fetchInitialData());
 
     yield next();
   },
 );
 
-function* fetchData(): ApiGen {
-  yield* call(fetchOrganizations.run, fetchOrganizations());
-  const org = yield* select(selectOrganizationSelected);
-  yield* put(fetchUsers({ orgId: org.id }));
-  yield* put(fetchAllStacks());
-  yield* put(fetchAllEnvironments());
-  yield* put(fetchAllApps());
-  yield* put(fetchAllDatabases());
-}
+export const fetchInitialData = thunks.create(
+  "fetch-init-data",
+  function* (_, next) {
+    yield* call(fetchOrganizations.run, fetchOrganizations());
+    const org = yield* select(selectOrganizationSelected);
+    yield* put(fetchUsers({ orgId: org.id }));
+    yield* put(fetchAllStacks());
+    yield* put(fetchAllEnvironments());
+    yield* put(fetchAllApps());
+    yield* put(fetchAllDatabases());
+    yield next();
+  },
+);
