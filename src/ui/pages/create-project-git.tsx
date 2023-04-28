@@ -727,10 +727,11 @@ const parseText = <
     .split("\n")
     .map(trim)
     .map((t) => {
-      const vals = t.split("=").map(trim);
+      const [key, ...values] = t.split("=").map(trim);
+      const value = Array.isArray(values) ? values.join("=") : values;
       return {
-        key: vals[0],
-        value: vals[1],
+        key,
+        value,
         meta: meta(),
       };
     })
@@ -1165,7 +1166,10 @@ export const CreateProjectGitSettingsPage = () => {
         if (!img) return;
         const env = envList.find((e) => e.value === `{{${db.handle}}}`);
         if (!env) {
-          setEnvs(`${envs}\nDATABASE_URL_TMP={{${db.handle}}}`);
+          const envFin = envList.find((e) => e.key === "DATABASE_URL");
+          if (!envFin) {
+            setEnvs(`${envs}\nDATABASE_URL_TMP={{${db.handle}}}`);
+          }
         }
         dbDispatch({
           type: "add",
