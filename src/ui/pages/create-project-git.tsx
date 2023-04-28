@@ -728,7 +728,8 @@ const parseText = <
     .map(trim)
     .map((t) => {
       // sometimes the value can contain an "=" so we need to only
-      // split the first "="
+      // split the first "=", (e.g. SECRET_KEY=1234=)
+      // https://stackoverflow.com/a/54708145
       const [key, ...values] = t.split("=").map(trim);
       const value = Array.isArray(values) ? values.join("=") : values;
       return {
