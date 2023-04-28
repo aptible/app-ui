@@ -1,5 +1,6 @@
 import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 import {
+  batchActions,
   call,
   put,
   setLoaderError,
@@ -8,6 +9,7 @@ import {
 } from "saga-query";
 
 import { thunks } from "@app/api";
+import { fetchInitialData } from "@app/bootup";
 import { createLog } from "@app/debug";
 
 import { AUTH_LOADER_ID } from "./loader";
@@ -37,7 +39,12 @@ export const login = thunks.create<CreateTokenPayload>(
     const elevateCtx = yield* call(elevateToken.run, elevateToken(ctx.payload));
     log(elevateCtx);
 
-    yield put(setLoaderSuccess({ id: AUTH_LOADER_ID }));
+    yield put(
+      batchActions([
+        setLoaderSuccess({ id: AUTH_LOADER_ID }),
+        fetchInitialData(),
+      ]),
+    );
     yield next();
   },
 );
