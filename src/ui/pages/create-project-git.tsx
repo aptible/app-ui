@@ -82,6 +82,7 @@ import {
   createEndpointOperation,
   deriveAccountStatus,
   fetchAllApps,
+  fetchAllEnvironments,
   fetchAllStacks,
   fetchApp,
   fetchAppOperations,
@@ -271,13 +272,28 @@ const EnvOverview = ({ env }: { env: DeployEnvironment }) => {
 
 export const ResumeSetupPage = () => {
   const envs = useSelector(selectEnvironmentOnboarding);
+  const loader = useLoader(fetchAllEnvironments());
+  const view = () => {
+    if (loader.isInitialLoading) {
+      return (
+        <div className="mt-8">
+          <Loading text="Loading ..." />
+        </div>
+      );
+    } else if (envs.length === 0) {
+      return <div className="mt-8">No environments found</div>;
+    }
+
+    return null;
+  };
+
   return (
     <div>
       <h1 className={`${tokens.type.h1} mb-6 text-center`}>Deploy Code</h1>
       <ButtonLink to={createProjectGitUrl()}>
         <IconPlusCircle className="mr-2" /> Deploy
       </ButtonLink>
-      {envs.length === 0 ? <div>No environments found</div> : null}
+      {view()}
 
       {envs.map((env) => (
         <EnvOverview key={env.id} env={env} />
