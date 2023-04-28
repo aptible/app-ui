@@ -727,10 +727,14 @@ const parseText = <
     .split("\n")
     .map(trim)
     .map((t) => {
-      const vals = t.split("=").map(trim);
+      // sometimes the value can contain an "=" so we need to only
+      // split the first "=", (e.g. SECRET_KEY=1234=)
+      // https://stackoverflow.com/a/54708145
+      const [key, ...values] = t.split("=").map(trim);
+      const value = Array.isArray(values) ? values.join("=") : values;
       return {
-        key: vals[0],
-        value: vals[1],
+        key,
+        value,
         meta: meta(),
       };
     })
@@ -1164,11 +1168,18 @@ export const CreateProjectGitSettingsPage = () => {
         const img = dbImages.find((i) => i.id === db.databaseImageId);
         if (!img) return;
         const env = envList.find((e) => e.value === `{{${db.handle}}}`);
-        if (!env) return;
+        // If we didn't detect an env var for the database then we probably
+        // lost it.  Try to recover by adding an env var
+        if (!env) {
+          const envFin = envList.find((e) => e.key === "DATABASE_URL");
+          if (!envFin) {
+            setEnvs(`${envs}\nDATABASE_URL_TMP={{${db.handle}}}`);
+          }
+        }
         dbDispatch({
           type: "add",
           payload: {
-            env: env.key.replace("_TMP", ""),
+            env: env?.key.replace("_TMP", "") || "DATABASE_URL",
             id: `${createId()}`,
             imgId: img.id,
             name: db.handle,

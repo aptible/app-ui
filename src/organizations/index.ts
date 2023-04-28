@@ -102,18 +102,22 @@ function deserializeOrganization(o: OrganizationResponse): Organization {
 }
 
 type FetchOrgCtx = AuthApiCtx<
+  {},
   HalEmbedded<{ organizations: OrganizationResponse[] }>
 >;
-export const fetchOrganizations = authApi.get(
+export const fetchOrganizations = authApi.get<FetchOrgCtx>(
   "/organizations",
   { saga: cacheTimer() },
-  function* onFetchOrgs(ctx: FetchOrgCtx, next) {
+  function* onFetchOrgs(ctx, next) {
     yield next();
     if (!ctx.json.ok) {
       return;
     }
 
-    const orgs = ctx.json.data._embedded.organizations;
+    const orgs = ctx.json.data._embedded.organizations.sort(
+      (a, b) =>
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+    );
     if (orgs.length > 0) {
       ctx.actions.push(setOrganizationSelected(orgs[0].id));
     }
