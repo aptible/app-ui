@@ -16,6 +16,7 @@ export const Banner = ({
 
   return (
     <div
+      role="status"
       className={classNames(
         classes,
         "rounded-md px-6 py-3 shadow flex items-center",

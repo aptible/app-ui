@@ -20,6 +20,26 @@ export interface DeployDatabaseImageResponse {
   _type: "database_image";
 }
 
+export const defaultDatabaseImageResponse = (
+  i: Partial<DeployDatabaseImageResponse> = {},
+): DeployDatabaseImageResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 0,
+    default: true,
+    description: "",
+    discoverable: true,
+    docker_repo: "",
+    type: "",
+    version: "",
+    visible: true,
+    created_at: now,
+    updated_at: now,
+    _type: "database_image",
+    ...i,
+  };
+};
+
 export const deserializeDeployDatabaseImage = (
   payload: DeployDatabaseImageResponse,
 ): DeployDatabaseImage => {

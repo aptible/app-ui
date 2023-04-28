@@ -17,6 +17,8 @@ import type {
   AppState,
   DeployEndpoint,
   DeployOperationResponse,
+  LinkResponse,
+  ProvisionableStatus,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
@@ -24,7 +26,75 @@ import { selectAppById, selectAppsByEnvId } from "../app";
 import { selectDatabasesByEnvId } from "../database";
 import { selectDeploy } from "../slice";
 
-export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
+interface DeployEndpointResponse {
+  id: number;
+  acme: boolean;
+  acme_configuration: string;
+  acme_dns_challenge_host: string;
+  acme_status: string;
+  container_exposed_ports: string[];
+  container_port: string;
+  container_ports: string[];
+  default: boolean;
+  docker_name: string;
+  external_host: string;
+  external_http_port: string;
+  external_https_port: string;
+  internal: boolean;
+  ip_whitelist: string[];
+  platform: "alb" | "elb";
+  type: string;
+  user_domain: string;
+  virtual_domain: string;
+  status: ProvisionableStatus;
+  created_at: string;
+  updated_at: string;
+  _links: {
+    service: LinkResponse;
+    certificate: LinkResponse;
+  };
+  _type: "vhost";
+}
+
+export const defaultEndpointResponse = (
+  resp: Partial<DeployEndpointResponse> = {},
+): DeployEndpointResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 0,
+    acme: false,
+    acme_configuration: "",
+    acme_status: "",
+    acme_dns_challenge_host: "",
+    container_exposed_ports: [],
+    container_port: "",
+    container_ports: [],
+    default: true,
+    docker_name: "",
+    external_host: "",
+    external_http_port: "",
+    external_https_port: "",
+    internal: false,
+    ip_whitelist: [],
+    platform: "elb",
+    type: "",
+    user_domain: "",
+    virtual_domain: "",
+    status: "unknown",
+    created_at: now,
+    updated_at: now,
+    _links: {
+      service: { href: "" },
+      certificate: { href: "" },
+    },
+    _type: "vhost",
+    ...resp,
+  };
+};
+
+export const deserializeDeployEndpoint = (
+  payload: DeployEndpointResponse,
+): DeployEndpoint => {
   return {
     id: `${payload.id}`,
     acme: payload.acme,

@@ -6,10 +6,64 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type { AppState, DeployStack } from "@app/types";
+import type { AppState, DeployStack, LinkResponse } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
-export const deserializeDeployStack = (payload: any): DeployStack => {
+interface DeployStackResponse {
+  id: number;
+  name: string;
+  region: string;
+  default: boolean;
+  public: boolean;
+  created_at: string;
+  updated_at: string;
+  outbound_ip_addresses: string[];
+  memory_limits: boolean;
+  cpu_limits: boolean;
+  intrusion_detection: boolean;
+  expose_intrusion_detection_reports: boolean;
+  allow_t_instance_profile: boolean;
+  allow_c_instance_profile: boolean;
+  allow_m_instance_profile: boolean;
+  allow_r_instance_profile: boolean;
+  allow_granular_container_sizes: boolean;
+  _links: {
+    organization: LinkResponse;
+  };
+  _type: "stack";
+}
+
+export const defaultStackResponse = (
+  s: Partial<DeployStackResponse> = {},
+): DeployStackResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 1,
+    name: "",
+    region: "",
+    default: true,
+    public: true,
+    created_at: now,
+    updated_at: now,
+    outbound_ip_addresses: [],
+    memory_limits: false,
+    cpu_limits: false,
+    intrusion_detection: false,
+    expose_intrusion_detection_reports: false,
+    allow_c_instance_profile: true,
+    allow_m_instance_profile: true,
+    allow_r_instance_profile: true,
+    allow_t_instance_profile: true,
+    allow_granular_container_sizes: true,
+    _links: { organization: { href: "" } },
+    _type: "stack",
+    ...s,
+  };
+};
+
+export const deserializeDeployStack = (
+  payload: DeployStackResponse,
+): DeployStack => {
   return {
     id: `${payload.id}`,
     name: payload.name,

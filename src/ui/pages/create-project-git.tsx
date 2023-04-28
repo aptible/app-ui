@@ -1897,23 +1897,25 @@ const CreateEndpointView = ({
       {services.map((service) => {
         return (
           <div key={service.id}>
-            <input
-              type="radio"
-              key="service"
-              value={service.id}
-              checked={curServiceId === service.id}
-              onChange={() => onChange(service.id)}
-              disabled={!!serviceId}
-            />
-            <span className="ml-1">
-              {service.processType === "cmd" ? (
-                "Docker CMD Service"
-              ) : (
-                <>
-                  {service.processType} <Code>{service.command}</Code>
-                </>
-              )}
-            </span>
+            <label>
+              <input
+                type="radio"
+                key="service"
+                value={service.id}
+                checked={curServiceId === service.id}
+                onChange={() => onChange(service.id)}
+                disabled={!!serviceId}
+              />
+              <span className="ml-1">
+                {service.processType === "cmd" ? (
+                  "Docker CMD Service"
+                ) : (
+                  <>
+                    {service.processType} <Code>{service.command}</Code>
+                  </>
+                )}
+              </span>
+            </label>
           </div>
         );
       })}

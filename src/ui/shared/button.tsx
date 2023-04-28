@@ -59,7 +59,7 @@ export const ButtonLinkExternal = ({
     buttonShapeStyle(size, shape),
   );
   return (
-    <a {...props} className={`${className} ${classes}`}>
+    <a role="button" {...props} className={`${className} ${classes}`}>
       {isLoading ? "Loading ..." : children}
     </a>
   );
@@ -83,7 +83,7 @@ export const ButtonLink = ({
     buttonShapeStyle(size, shape),
   );
   return (
-    <Link {...props} className={`${className} ${classes}`}>
+    <Link role="button" {...props} className={`${className} ${classes}`}>
       {isLoading ? "Loading ..." : children}
     </Link>
   );

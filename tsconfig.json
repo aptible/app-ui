@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "target": "esnext",
+    "types": ["vitest/globals"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,

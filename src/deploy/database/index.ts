@@ -65,6 +65,7 @@ export interface DeployDatabaseResponse {
     disk: any;
     last_operation: any;
   };
+  _type: "database";
 }
 
 export interface BackupResponse {
@@ -84,6 +85,38 @@ export interface BackupResponse {
 export interface HalBackups {
   backups: BackupResponse[];
 }
+
+export const defaultDatabaseResponse = (
+  d: Partial<DeployDatabaseResponse> = {},
+): DeployDatabaseResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 1,
+    handle: "",
+    provisioned: true,
+    type: "",
+    status: "provisioned",
+    docker_repo: "",
+    current_kms_arn: "",
+    connection_url: "",
+    created_at: now,
+    updated_at: now,
+    _links: {
+      account: { href: "" },
+      service: { href: "" },
+      database_image: { href: "" },
+      initialize_from: { href: "" },
+      ...d._links,
+    },
+    _embedded: {
+      disk: null,
+      last_operation: null,
+      ...d._embedded,
+    },
+    _type: "database",
+    ...d,
+  };
+};
 
 export const deserializeDeployDatabase = (
   payload: DeployDatabaseResponse,

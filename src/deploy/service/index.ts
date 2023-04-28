@@ -12,8 +12,8 @@ import { selectDeploy } from "../slice";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m4";
 
-interface DeployServiceResponse {
-  id: string;
+export interface DeployServiceResponse {
+  id: number;
   handle: string;
   created_at: string;
   updated_at: string;
@@ -24,7 +24,29 @@ interface DeployServiceResponse {
   container_count: number;
   container_memory_limit_mb: number;
   instance_class: InstanceClass;
+  _type: "service";
 }
+
+export const defaultServiceResponse = (
+  s: Partial<DeployServiceResponse> = {},
+): DeployServiceResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 0,
+    handle: "",
+    docker_repo: "",
+    docker_ref: "",
+    process_type: "",
+    command: "",
+    container_count: 0,
+    container_memory_limit_mb: 0,
+    instance_class: "m4",
+    created_at: now,
+    updated_at: now,
+    _type: "service",
+    ...s,
+  };
+};
 
 export const deserializeDeployService = (
   payload: DeployServiceResponse,

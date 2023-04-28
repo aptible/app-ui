@@ -25,7 +25,7 @@ import { selectDeploy } from "../slice";
 import { selectStackById } from "../stack";
 
 interface DeployEnvironmentResponse {
-  id: string;
+  id: number;
   handle: string;
   created_at: string;
   updated_at: string;
@@ -45,7 +45,39 @@ interface DeployEnvironmentResponse {
     environment: LinkResponse;
     stack: LinkResponse;
   };
+  _type: "account";
 }
+
+export const defaultEnvResponse = (
+  e: Partial<DeployEnvironmentResponse> = {},
+): DeployEnvironmentResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 1,
+    handle: "",
+    created_at: now,
+    updated_at: now,
+    type: "development",
+    activated: true,
+    container_count: 0,
+    domain_count: 0,
+    total_disk_size: 0,
+    total_app_count: 0,
+    app_container_count: 0,
+    database_container_count: 0,
+    total_database_count: 0,
+    sweetness_stack: "",
+    total_backup_size: 0,
+    onboarding_status: "unknown",
+    _links: {
+      environment: { href: "" },
+      stack: { href: "" },
+      ...e._links,
+    },
+    _type: "account",
+    ...e,
+  };
+};
 
 export const deserializeDeployEnvironment = (
   payload: DeployEnvironmentResponse,

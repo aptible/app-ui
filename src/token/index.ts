@@ -39,6 +39,31 @@ export interface JWTToken {
   name: string;
 }
 
+export const defaultTokenResponse = (
+  t: Partial<TokenSuccessResponse> = {},
+): TokenSuccessResponse => {
+  const now = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(now.getDate() + 1);
+  return {
+    access_token: "",
+    created_at: now.toISOString(),
+    expires_at: tomorrow.toISOString(),
+    expires_in: tomorrow.toISOString(),
+    scope: "manage",
+    id: "",
+    token_type: "",
+    _links: {
+      self: { href: "" },
+      user: { href: "" },
+      actor: null,
+      ...t._links,
+    },
+    _type: "token",
+    ...t,
+  };
+};
+
 export const defaultJWTToken = (t: Partial<JWTToken> = {}): JWTToken => {
   return {
     id: "",
