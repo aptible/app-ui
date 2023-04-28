@@ -54,7 +54,9 @@ function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   try {
     yield next();
   } catch (err: any) {
-    Sentry.captureException(err, { contexts: { saga: ctx as any } });
+    Sentry.captureException(err, {
+      contexts: { saga: JSON.stringify(ctx) as any },
+    });
     throw err;
   }
 }
