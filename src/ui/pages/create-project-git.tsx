@@ -1164,11 +1164,13 @@ export const CreateProjectGitSettingsPage = () => {
         const img = dbImages.find((i) => i.id === db.databaseImageId);
         if (!img) return;
         const env = envList.find((e) => e.value === `{{${db.handle}}}`);
-        if (!env) return;
+        if (!env) {
+          setEnvs(`${envs}\nDATABASE_URL_TMP={{${db.handle}}}`);
+        }
         dbDispatch({
           type: "add",
           payload: {
-            env: env.key.replace("_TMP", ""),
+            env: env?.key.replace("_TMP", "") || "DATABASE_URL",
             id: `${createId()}`,
             imgId: img.id,
             name: db.handle,
