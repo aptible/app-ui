@@ -13,7 +13,7 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, poll, select } from "saga-query";
+import { call, createThrottle, poll, select } from "saga-query";
 
 import { findEnvById, selectEnvironments } from "../environment";
 import { deserializeImage } from "../image";
@@ -170,6 +170,7 @@ export const fetchApps = api.get<PaginateProps>("/apps?page=:page");
 
 export const fetchAllApps = thunks.create(
   "fetch-all-apps",
+  { saga: createThrottle(5 * 1000) },
   combinePages(fetchApps),
 );
 

@@ -1,5 +1,5 @@
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, delay, fetchRetry, poll } from "saga-query";
+import { call, delay, fetchRetry, poll, select } from "saga-query";
 
 import { selectDeploy } from "../slice";
 import { PaginateProps, Retryable, api, combinePages, thunks } from "@app/api";
@@ -320,19 +320,31 @@ export const fetchOperationById = api.get<
 export function* waitForOperation({
   id,
   wait = 3 * 1000,
+  skipFetch = false,
 }: {
   id: string;
   wait?: number;
+  skipFetch?: boolean;
 }) {
   while (true) {
-    const ctx = yield* call(fetchOperationById.run, fetchOperationById({ id }));
+    if (skipFetch) {
+      const op = yield* select(selectOperationById, { id });
+      if (op.status === "succeeded" || op.status === "failed") {
+        return op;
+      }
+    } else {
+      const ctx = yield* call(
+        fetchOperationById.run,
+        fetchOperationById({ id }),
+      );
 
-    if (ctx.json.ok) {
-      if (
-        ctx.json.data.status === "succeeded" ||
-        ctx.json.data.status === "failed"
-      ) {
-        return ctx.json.data;
+      if (ctx.json.ok) {
+        if (
+          ctx.json.data.status === "succeeded" ||
+          ctx.json.data.status === "failed"
+        ) {
+          return deserializeDeployOperation(ctx.json.data);
+        }
       }
     }
 
