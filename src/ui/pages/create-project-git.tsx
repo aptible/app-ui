@@ -210,8 +210,6 @@ export const CreateProjectSetupPage = () => {
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
-  const origin = useSelector(selectOrigin);
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const navigate = useNavigate();
   const app = useSelector((s: AppState) => selectFirstAppByEnvId(s, { envId }));
 
@@ -229,18 +227,9 @@ export const CreateProjectSetupPage = () => {
       navigate(createProjectGitPushUrl(app.id), { replace: true });
     } else if (env.onboardingStatus === "scanned") {
       navigate(createProjectGitSettingsUrl(app.id), { replace: true });
-    } else if (
-      env.onboardingStatus === "db_provisioned" ||
-      env.onboardingStatus === "app_provisioned"
-    ) {
-      navigate(createProjectGitStatusUrl(app.id), { replace: true });
-    } else {
-      if (origin === "app") {
-        window.location.href = `${legacyUrl}/accounts/${env.id}/apps`;
-      } else {
-        navigate(appDetailUrl(app.id), { replace: true });
-      }
     }
+
+    navigate(createProjectGitStatusUrl(app.id), { replace: true });
   }, [env.id, app.id]);
 
   return <Loading text="Detecting project status ..." />;
