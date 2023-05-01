@@ -13,7 +13,7 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, createThrottle, poll, select, selectLoaderById } from "saga-query";
+import { call, createThrottle, poll, select } from "saga-query";
 
 import { findEnvById, selectEnvironments } from "../environment";
 import { deserializeImage } from "../image";
