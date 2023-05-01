@@ -160,11 +160,16 @@ export const CreateProjectLayout = ({
           <div className="ml-4">
             {origin === "app" ? (
               <a href={legacyUrl} className="text-black-300">
-                Back to dashboard
+                Dashboard
               </a>
             ) : (
               <Link to={homeUrl()} className="text-black-300">
-                Back to dashboard
+                Dashboard
+              </Link>
+            )}
+            {origin === "app" && (
+              <Link to={homeUrl()} className="text-black-300 ml-4">
+                Deployments
               </Link>
             )}
           </div>
@@ -278,7 +283,7 @@ export const ResumeSetupPage = () => {
 
   return (
     <div>
-      <h1 className={`${tokens.type.h1} mb-6 text-center`}>Deploy Code</h1>
+      <h1 className={`${tokens.type.h1} mb-6 text-center`}>Deployments</h1>
       <ButtonLink to={createProjectGitUrl()}>
         <IconPlusCircle className="mr-2" /> Deploy
       </ButtonLink>
