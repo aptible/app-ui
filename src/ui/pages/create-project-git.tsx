@@ -1354,7 +1354,6 @@ export const CreateProjectGitSettingsPage = () => {
             type="submit"
             className="w-full mt-4"
             isLoading={loader.isLoading}
-            disabled={!codeScan.data?.dockerfile_present}
           >
             Save & Deploy
           </Button>
