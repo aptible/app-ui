@@ -115,7 +115,13 @@ const ftuxRoutes: RouteObject[] = [
       },
       {
         path: routes.CREATE_PROJECT_SETUP_PATH,
-        element: <CreateProjectSetupPage />,
+        element: <CreateProjectLayout />,
+        children: [
+          {
+            index: true,
+            element: <CreateProjectSetupPage />,
+          },
+        ],
       },
       {
         path: routes.CREATE_PROJECT_GIT_APP_PATH,
