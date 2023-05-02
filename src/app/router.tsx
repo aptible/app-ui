@@ -19,7 +19,8 @@ import {
   CreateProjectLayout,
   CreateProjectNamePage,
   CreateProjectPage,
-  CreateProjectSetupPage,
+  CreateProjectFromAccountSetupPage,
+  CreateProjectFromAppSetupPage,
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
@@ -119,7 +120,7 @@ const ftuxRoutes: RouteObject[] = [
         children: [
           {
             index: true,
-            element: <CreateProjectSetupPage />,
+            element: <CreateProjectFromAccountSetupPage />,
           },
         ],
       },
@@ -138,6 +139,10 @@ const ftuxRoutes: RouteObject[] = [
           {
             path: routes.CREATE_PROJECT_GIT_STATUS_PATH,
             element: <CreateProjectGitStatusPage />,
+          },
+          {
+            path: routes.CREATE_PROJECT_APP_SETUP_PATH,
+            element: <CreateProjectFromAppSetupPage />,
           },
         ],
       },
