@@ -89,7 +89,6 @@ import {
   fetchDatabasesByEnvId,
   fetchEndpointsByAppId,
   fetchEnvironmentById,
-  hasDeployApp,
   hasDeployEndpoint,
   pollAppOperations,
   provisionEndpoint,
