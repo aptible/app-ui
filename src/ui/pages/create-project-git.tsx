@@ -89,6 +89,7 @@ import {
   fetchDatabasesByEnvId,
   fetchEndpointsByAppId,
   fetchEnvironmentById,
+  hasDeployApp,
   hasDeployEndpoint,
   pollAppOperations,
   provisionEndpoint,
@@ -270,15 +271,15 @@ export const CreateProjectFromAppSetupPage = () => {
     }
 
     if (hasDeployOperation(deployOp)) {
-      navigate(createProjectGitStatusUrl(appId));
+      navigate(createProjectGitStatusUrl(app.id));
       return;
     } else if (hasDeployOperation(scanOp) && scanOp.status === "succeeded") {
-      navigate(createProjectGitSettingsUrl(appId));
+      navigate(createProjectGitSettingsUrl(app.id));
       return;
     }
 
     navigate(createProjectGitPushUrl(appId));
-  }, [env.id, app.id, appOps]);
+  }, [env.id, app.id, appOps, deployOp, scanOp]);
 
   return <Loading text={`Detecting app ${app.handle} status ...`} />;
 };
