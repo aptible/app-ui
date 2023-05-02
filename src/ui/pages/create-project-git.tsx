@@ -271,13 +271,11 @@ export const CreateProjectFromAppSetupPage = () => {
 
     if (hasDeployOperation(deployOp)) {
       navigate(createProjectGitStatusUrl(app.id));
-      return;
     } else if (hasDeployOperation(scanOp) && scanOp.status === "succeeded") {
       navigate(createProjectGitSettingsUrl(app.id));
-      return;
+    } else {
+      navigate(createProjectGitPushUrl(appId));
     }
-
-    navigate(createProjectGitPushUrl(appId));
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
   return <Loading text={`Detecting app ${app.handle} status ...`} />;
