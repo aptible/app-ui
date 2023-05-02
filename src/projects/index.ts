@@ -247,30 +247,28 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     const waiting = [];
     for (let i = 0; i < results.length; i += 1) {
       const res = results[i];
-      if (!res.json) return;
+      if (!res.json) continue;
 
       const { opCtx, dbCtx, dbId } = res.json;
       if (!opCtx.json.ok) {
         yield put(setLoaderError({ id, message: opCtx.json.data.message }));
-        return;
+        continue;
       }
 
       if (dbCtx && !dbCtx.json.ok) {
         yield put(setLoaderError({ id, message: dbCtx.json.data.message }));
-        return;
+        continue;
       }
 
       waiting.push(call(waitForDb, `${opCtx.json.data.id}`, dbId));
     }
 
-    const updatedDbs = yield* all(waiting);
+    yield* all(waiting);
 
-    yield* call(_updateEnvWithDbUrls, {
-      appId,
-      env,
-      dbs: updatedDbs,
-      force: true,
-    });
+    yield* call(
+      updateEnvWithDbUrls.run,
+      updateEnvWithDbUrls({ appId, envId, force: true }),
+    );
 
     const deployCtx = yield* call(
       createAppOperation.run,
