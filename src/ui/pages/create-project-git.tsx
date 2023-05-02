@@ -1185,18 +1185,11 @@ export const CreateProjectGitSettingsPage = () => {
         const img = dbImages.find((i) => i.id === db.databaseImageId);
         if (!img) return;
         const env = envList.find((e) => e.value === `{{${db.handle}}}`);
-        // If we didn't detect an env var for the database then we probably
-        // lost it.  Try to recover by adding an env var
-        if (!env) {
-          const envFin = envList.find((e) => e.key === "DATABASE_URL");
-          if (!envFin) {
-            setEnvs(`${envs}\nDATABASE_URL_TMP={{${db.handle}}}`);
-          }
-        }
+        if (!env) return;
         dbDispatch({
           type: "add",
           payload: {
-            env: env?.key.replace("_TMP", "") || "DATABASE_URL",
+            env: env.key.replace("_TMP", ""),
             id: `${createId()}`,
             imgId: img.id,
             name: db.handle,
@@ -2010,7 +2003,7 @@ const ProjectBox = ({
           <div>
             <h4 className={tokens.type.h4}>{env.handle}</h4>
             <p className="text-black-500 text-sm">
-              {hasDeployEndpoint(vhost) ? (
+              {hasDeployEndpoint(vhost) && vhost.status === "provisioned" ? (
                 <a
                   href={`https://${vhost.virtualDomain}`}
                   target="_blank"
