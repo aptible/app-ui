@@ -129,6 +129,10 @@ export const createProjectGitUrl = () => CREATE_PROJECT_GIT_PATH;
 export const CREATE_PROJECT_SETUP_PATH = "/accounts/:envId/setup";
 export const createProjectSetupUrl = (envId: string) =>
   `/accounts/${envId}/setup`;
+export const CREATE_PROJECT_APP_SETUP_PATH = "/apps/:appId/git/setup";
+export const createProjectGitAppSetupUrl = (appId: string) =>
+  `/apps/${appId}/git/setup`;
+
 export const CREATE_PROJECT_GIT_APP_PATH = "/apps/:appId/git";
 export const createProjectGitAppUrl = (appId: string) => `/apps/${appId}/git`;
 export const CREATE_PROJECT_GIT_PUSH_PATH = "/apps/:appId/git/push";

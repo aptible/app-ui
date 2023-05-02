@@ -209,7 +209,7 @@ export const CreateProjectLayout = ({
   );
 };
 
-export const CreateProjectSetupPage = () => {
+export const CreateProjectFromAccountSetupPage = () => {
   const { envId = "" } = useParams();
   const dispatch = useDispatch();
   const env = useSelector((s: AppState) =>
@@ -238,6 +238,49 @@ export const CreateProjectSetupPage = () => {
   }, [env.id, app.id]);
 
   return <Loading text="Detecting project status ..." />;
+};
+
+export const CreateProjectFromAppSetupPage = () => {
+  const { appId = "" } = useParams();
+  const dispatch = useDispatch();
+  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const navigate = useNavigate();
+  const { appOps, scanOp } = useLatestCodeResults(appId);
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId }),
+  );
+
+  useEffect(() => {
+    dispatch(fetchApp({ id: appId }));
+  }, [appId]);
+
+  useEffect(() => {
+    dispatch(fetchEnvironmentById({ id: app.environmentId }));
+  }, [app]);
+
+  useEffect(() => {
+    if (!env.id || !app.id) {
+      return;
+    }
+    if (appOps.isLoading) {
+      return;
+    }
+
+    if (hasDeployOperation(deployOp)) {
+      navigate(createProjectGitStatusUrl(app.id));
+      return;
+    } else if (hasDeployOperation(scanOp) && scanOp.status === "succeeded") {
+      navigate(createProjectGitSettingsUrl(app.id));
+      return;
+    }
+
+    navigate(createProjectGitPushUrl(appId));
+  }, [env.id, app.id, appOps, deployOp, scanOp]);
+
+  return <Loading text={`Detecting app ${app.handle} status ...`} />;
 };
 
 const EnvOverview = ({ env }: { env: DeployEnvironment }) => {
