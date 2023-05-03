@@ -1,7 +1,7 @@
 import { PublicKeyCredentialCreationOptionsJSON } from "@github/webauthn-json/dist/types/basic/json";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useCache } from "saga-query/react";
+import { useCache, useLoader } from "saga-query/react";
 
 import { fetchU2fChallenges } from "@app/mfa";
 import { selectCurrentUserId } from "@app/users";
@@ -21,6 +21,7 @@ export const AddSecurityKeyPage = () => {
   const userId = useSelector(selectCurrentUserId);
   const challenge = useCache<U2fChallenge>(fetchU2fChallenges({ userId }));
   const dispatch = useDispatch();
+  const loader = useLoader(createWebauthnDevice);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,9 +40,9 @@ export const AddSecurityKeyPage = () => {
       return;
     }
 
+    setError("");
     const u2f = await webauthnCreate({ publicKey: challenge.data.payload });
     dispatch(createWebauthnDevice({ userId, name, u2f }));
-    setError("");
   };
 
   return (
@@ -72,8 +73,13 @@ export const AddSecurityKeyPage = () => {
           <div>Pick a name that helps you remember this key</div>
         </FormGroup>
         {error ? <Banner variant="error">{error}</Banner> : null}
+        {loader.isError ? (
+          <Banner variant="error">{loader.message}</Banner>
+        ) : null}
         <div>
-          <Button type="submit">Register</Button>
+          <Button type="submit" isLoading={loader.isLoading}>
+            Register
+          </Button>
         </div>
       </form>
     </div>
