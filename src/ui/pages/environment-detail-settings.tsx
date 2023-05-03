@@ -1,26 +1,17 @@
 import {
   Box,
   Button,
-  ButtonIcon,
   FormGroup,
   IconAlertTriangle,
   IconCopy,
   IconExternalLink,
-  IconPlusCircle,
   IconTrash,
   Input,
-  Label,
-  PreCode,
 } from "../shared";
-import {
-  deprovisionApp,
-  fetchApp,
-  selectAppById,
-  selectEnvironmentById,
-} from "@app/deploy";
+import { fetchApp, selectEnvironmentById } from "@app/deploy";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
 
@@ -28,7 +19,6 @@ export const EnvironmentSettingsPage = () => {
   const [handle, setHandle] = useState<string>("");
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const dispatch = useDispatch();
 
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));

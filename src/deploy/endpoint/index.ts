@@ -17,13 +17,12 @@ import type {
   AppState,
   DeployEndpoint,
   DeployOperationResponse,
-  OperationStatus,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
 import { selectAppById, selectAppsByEnvId } from "../app";
-import { selectDeploy } from "../slice";
 import { selectDatabasesByEnvId } from "../database";
+import { selectDeploy } from "../slice";
 
 export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
   return {
@@ -209,17 +208,15 @@ export const deleteEndpoint = api.delete<{ id: string }>(
 interface CreateEndpointOpProps {
   endpointId: string;
   type: string;
-  status: OperationStatus;
 }
 
 export const createEndpointOperation = api.post<
   CreateEndpointOpProps,
   DeployOperationResponse
 >("/vhosts/:endpointId/operations", function* (ctx, next) {
-  const { type, status } = ctx.payload;
+  const { type } = ctx.payload;
   const body = {
     type,
-    status,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield next();
@@ -248,7 +245,6 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
       createEndpointOperation.run,
       createEndpointOperation({
         endpointId: `${endpointCtx.json.data.id}`,
-        status: "queued",
         type: "provision",
       }),
     );

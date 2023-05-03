@@ -7,7 +7,6 @@ import {
   Box,
   Button,
   DetailPageHeaderView,
-  IconCopy,
   IconExternalLink,
   TabItem,
 } from "../shared";

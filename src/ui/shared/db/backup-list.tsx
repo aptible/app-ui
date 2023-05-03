@@ -1,18 +1,12 @@
-import { ReactElement, useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { useCache } from "saga-query/react";
-
-import type { HalEmbedded } from "@app/types";
+import { ReactElement, useState } from "react";
 
 import {
   ButtonIcon,
-  EmptyResources,
   IconChevronDown,
   IconEllipsis,
   IconPlusCircle,
   InputSearch,
   LoadResources,
-  Loading,
   ResourceListView,
   TableHead,
   Td,
@@ -24,11 +18,7 @@ import { capitalize } from "@app/string-utils";
 import cn from "classnames";
 import { LoadingState } from "saga-query/*";
 
-const BackupTypePill = ({
-  manual,
-}: {
-  manual: boolean;
-}): ReactElement => {
+const BackupTypePill = ({ manual }: { manual: boolean }): ReactElement => {
   const className = cn(
     "rounded-full border-2",
     "text-sm font-semibold ",
@@ -51,7 +41,9 @@ const BackupTypePill = ({
 
 const backupListRow = ({
   backup,
-}: { backup: BackupResponse }): ReactElement => {
+}: {
+  backup: BackupResponse;
+}): ReactElement => {
   return (
     <tr key={`${backup.id}`}>
       <Td className="flex-1 pl-4">

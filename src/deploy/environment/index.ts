@@ -155,7 +155,6 @@ export const pollEnvs = thunks.create(
 
 export const fetchEnvironmentOperations = api.get<{ id: string }>(
   "/accounts/:id/operations",
-  { saga: cacheTimer() },
   api.cache(),
 );
 

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   AppList,
   ButtonIcon,
@@ -7,6 +6,7 @@ import {
   IconPlusCircle,
   InputSearch,
 } from "../shared";
+import { useState } from "react";
 
 export const EnvironmentResourcesPage = () => {
   const [search, setSearch] = useState("");

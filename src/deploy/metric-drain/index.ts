@@ -1,5 +1,5 @@
 import { selectDeploy } from "../slice";
-import { api, cacheTimer } from "@app/api";
+import { api } from "@app/api";
 import { defaultEntity } from "@app/hal";
 import {
   createReducerMap,

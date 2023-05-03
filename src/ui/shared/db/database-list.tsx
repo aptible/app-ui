@@ -116,7 +116,7 @@ export function DatabaseList({
 
   const description = "Databases provide data persistency on Aptible.";
 
-  const resourceHeaderTitleBar = (): ReactElement | undefined => {
+  const resourceHeaderTitleBar = () => {
     switch (resourceHeaderType) {
       case "hidden":
         return undefined;

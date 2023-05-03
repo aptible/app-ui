@@ -9,3 +9,7 @@ export * from "./log-drain";
 export * from "./database-images";
 export * from "./metric-drain";
 export * from "./certificate";
+export * from "./configuration";
+export * from "./service";
+export * from "./app-service-definitions";
+export * from "./operation";

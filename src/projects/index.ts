@@ -1,6 +1,7 @@
 import {
   all,
   call,
+  fork,
   put,
   select,
   setLoaderError,
@@ -14,18 +15,19 @@ import {
   createAppOperation,
   createDeployApp,
   createDeployEnvironment,
+  createServiceDefinition,
+  fetchConfiguration,
   fetchDatabase,
   fetchDatabasesByEnvId,
   hasDeployApp,
   hasDeployEnvironment,
   provisionDatabase,
   selectAppById,
+  selectDatabasesByEnvId,
   selectEnvironmentByName,
+  waitForOperation,
 } from "@app/deploy";
 import { ApiGen, DeployApp } from "@app/types";
-import { createServiceDefinition } from "@app/deploy/app-service-definitions";
-import { fetchConfiguration } from "@app/deploy/configuration";
-import { waitForOperation } from "@app/deploy/operation";
 
 interface CreateProjectProps {
   name: string;
@@ -110,7 +112,7 @@ export const createProject = thunks.create<CreateProjectProps>(
 );
 
 interface WaitDbProps {
-  id: number;
+  id: string;
   handle: string;
   connectionUrl: string;
 }
@@ -118,10 +120,10 @@ interface WaitDbProps {
 function* waitForDb(opId: string, dbId: string): Iterator<any, WaitDbProps> {
   yield* call(waitForOperation, { id: opId, skipFetch: true });
   const res = yield* call(fetchDatabase.run, fetchDatabase({ id: dbId }));
-  if (!res.json.ok) return { id: -1, handle: "", connectionUrl: "" };
+  if (!res.json.ok) return { id: "", handle: "", connectionUrl: "" };
 
   return {
-    id: res.json.data.id,
+    id: `${res.json.data.id}`,
     handle: res.json.data.handle,
     connectionUrl: res.json.data.connection_url,
   };
@@ -206,6 +208,19 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     // we want to also inject the db env vars with placeholders
     dbs.forEach((db) => {
       env[`${db.env}_TMP`] = `{{${db.name}}}`;
+    });
+
+    // Trigger configure operation now so we can store the env vars
+    // immediately.
+    yield* fork(function* () {
+      yield* call(
+        createAppOperation.run,
+        createAppOperation({
+          type: "configure",
+          appId,
+          env,
+        }),
+      );
     });
 
     const results = yield* all(
@@ -300,7 +315,8 @@ function* _updateEnvWithDbUrls({
   // no-op
   if (!(force || swapped)) return;
 
-  // finally trigger the operation
+  // finally trigger the operation to overwrite previous temporary
+  // env vars with real ones
   const configureCtx = yield* call(
     createAppOperation.run,
     createAppOperation({
@@ -320,8 +336,10 @@ function* _updateEnvWithDbUrls({
 export const updateEnvWithDbUrls = thunks.create<{
   appId: string;
   envId: string;
+  force?: boolean;
 }>("update-env-with-db-urls", function* (ctx, next) {
-  const { appId, envId } = ctx.payload;
+  const { appId, envId, force = false } = ctx.payload;
+  const id = ctx.name;
   const app = yield* select(selectAppById, { id: appId });
 
   const results = yield* all({
@@ -334,28 +352,26 @@ export const updateEnvWithDbUrls = thunks.create<{
 
   if (!results.dbs.json.ok) {
     yield next();
+    ctx.json = { message: "failed to fetch databases" };
     return;
   }
 
   if (!results.configure.json.ok) {
     yield next();
+    ctx.json = { message: "failed to fetch app env vars" };
     return;
   }
 
-  const dbs = results.dbs.json.data._embedded.databases.map((db) => {
-    return {
-      id: db.id,
-      handle: db.handle,
-      connectionUrl: db.connection_url,
-    };
-  });
+  const dbs = yield* select(selectDatabasesByEnvId, { envId });
 
   yield* call(_updateEnvWithDbUrls, {
     appId,
     dbs,
     env: results.configure.json.data.env,
+    force,
   });
 
+  yield* put(setLoaderSuccess({ id }));
   yield next();
   ctx.json = { message: "success" };
 });

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useParams } from "react-router";
 import { useCache } from "saga-query/react";
 

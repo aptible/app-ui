@@ -1,25 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router";
-import { useCache, useQuery } from "saga-query/react";
+import { useQuery } from "saga-query/react";
 
-import type { AppState, HalEmbedded } from "@app/types";
+import type { AppState } from "@app/types";
 
 import {
   ButtonIcon,
-  EmptyResources,
   IconPlusCircle,
   InputSearch,
-  Loading,
   LoadResources,
 } from "../shared";
-import {
-  fetchCertificates,
-  HalBackups,
-  selectCertificatesAsList,
-  selectCertificatesByEnvId,
-  selectEndpointsByEnvironmentId,
-} from "@app/deploy";
-import { DatabaseBackupsList } from "../shared/db/backup-list";
+import { fetchCertificates, selectCertificatesByEnvId } from "@app/deploy";
 import { useSelector } from "react-redux";
 
 export const EnvironmentCertificatesPage = () => {
@@ -31,9 +22,6 @@ export const EnvironmentCertificatesPage = () => {
   const query = useQuery(fetchCertificates({ id }));
   const certificates = useSelector((s: AppState) =>
     selectCertificatesByEnvId(s, { envId: id }),
-  );
-  const endpoints = useSelector((s: AppState) =>
-    selectEndpointsByEnvironmentId(s, { envId: id }),
   );
 
   return (
