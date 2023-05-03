@@ -11,6 +11,7 @@ import {
   Button,
   ExternalLink,
   FormGroup,
+  Input,
   Loading,
 } from "../shared";
 
@@ -100,7 +101,7 @@ export const OtpSetupPage = () => {
                 htmlFor="input-mfa"
                 feedbackVariant={error ? "danger" : "info"}
               >
-                <input
+                <Input
                   name="mfa"
                   type="mfa"
                   value={mfa}
