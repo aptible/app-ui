@@ -88,7 +88,7 @@ export const LoginPage = () => {
       dispatch(
         loginWebauthn({
           ...loginPayload,
-          webauthn: loader.meta.exception_context.u2f,
+          webauthn: loader.meta.exception_context.u2f?.payload,
         }),
       );
     }

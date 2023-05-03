@@ -1,15 +1,18 @@
+import { PublicKeyCredentialCreationOptionsJSON } from "@github/webauthn-json/dist/types/basic/json";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useCache } from "saga-query/react";
 
 import { fetchU2fChallenges } from "@app/mfa";
 import { selectCurrentUserId } from "@app/users";
 
-import { Banner, Button, ExternalLink, FormGroup } from "../shared";
+import { Banner, Button, FormGroup, Input } from "../shared";
+import { createWebauthnDevice, webauthnCreate } from "@app/auth";
 
 interface U2fChallenge {
   id: string;
   challenge: string;
+  payload: PublicKeyCredentialCreationOptionsJSON;
 }
 
 export const AddSecurityKeyPage = () => {
@@ -17,9 +20,9 @@ export const AddSecurityKeyPage = () => {
   const [error, setError] = useState("");
   const userId = useSelector(selectCurrentUserId);
   const challenge = useCache<U2fChallenge>(fetchU2fChallenges({ userId }));
+  const dispatch = useDispatch();
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    console.log(challenge.data);
     event.preventDefault();
     if (!name) {
       setError("name must not be blank");
@@ -36,14 +39,8 @@ export const AddSecurityKeyPage = () => {
       return;
     }
 
-    /* try {
-      await ensureSupport();
-    } catch (err: any) {
-      console.log(err);
-      setError(err.message);
-      return;
-    } */
-
+    const u2f = await webauthnCreate({ publicKey: challenge.data.payload });
+    dispatch(createWebauthnDevice({ userId, name, u2f }));
     setError("");
   };
 
@@ -58,20 +55,14 @@ export const AddSecurityKeyPage = () => {
         Security Keys help protect against phishing, and as a result, they can
         be more secure than token-based two-factor authentication.
       </div>
-      <div>
-        Aptible supports Security Keys that conform to the{" "}
-        <ExternalLink href="https://fidoalliance.org/" variant="info">
-          FIDO U2F standard
-        </ExternalLink>
-        .
-      </div>
+
       <form onSubmit={onSubmit}>
         <FormGroup
           label="Name"
           htmlFor="input-name"
           feedbackVariant={error ? "danger" : "info"}
         >
-          <input
+          <Input
             name="name"
             type="text"
             value={name}
