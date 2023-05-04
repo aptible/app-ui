@@ -67,7 +67,7 @@ export const { selectTableAsList: selectLogDrainsAsList } = selectors;
 export const hasDeployLogDrain = (a: DeployLogDrain) => a.id !== "";
 export const logDrainReducers = createReducerMap(slice);
 
-export const fetchLogDrains = api.get<{ environmentId: string }>(
+export const fetchLogDrains = api.get<{ id: string }>(
   "/accounts/:id/log_drains",
   {
     saga: cacheTimer(),

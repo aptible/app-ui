@@ -7,7 +7,7 @@ import { AppState } from "@app/types";
 
 import { DetailPageSections, LoadResources, ServicesOverview } from "../shared";
 
-export function AppDetailPage() {
+export function AppDetailServicesPage() {
   const { id = "" } = useParams();
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const query = useQuery(fetchEnvironmentServices({ id: app.environmentId }));

@@ -20,7 +20,8 @@ import type {
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
-import { selectAppById } from "../app";
+import { selectAppById, selectAppsByEnvId } from "../app";
+import { selectDatabasesByEnvId } from "../database";
 import { selectDeploy } from "../slice";
 
 export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
@@ -48,6 +49,7 @@ export const deserializeDeployEndpoint = (payload: any): DeployEndpoint => {
     virtualDomain: payload.virtual_domain,
     status: payload.status,
     serviceId: extractIdFromLink(payload._links.service),
+    certificateId: extractIdFromLink(payload._links.certificate),
   };
 };
 
@@ -79,6 +81,7 @@ export const defaultDeployEndpoint = (
     userDomain: "",
     virtualDomain: "",
     serviceId: "",
+    certificateId: "",
     ...e,
   };
 };
@@ -123,6 +126,27 @@ export const selectFirstEndpointByAppId = createSelector(
     }
 
     return endpoints[0];
+  },
+);
+
+export const selectEndpointsByEnvironmentId = createSelector(
+  selectAppsByEnvId,
+  selectDatabasesByEnvId,
+  selectEndpointsAsList,
+  (_: AppState, p: { envId: string }) => p.envId,
+  (apps, databases, endpoints, envId) => {
+    const serviceIdsUsedInAppsAndDatabases: string[] = [
+      // one app can have multiple services, so pull those out
+      ...apps
+        .filter((app) => app.environmentId === envId)
+        .map((app) => app.serviceIds),
+      databases
+        .filter((database) => database.environmentId === envId)
+        .map((db) => db.serviceId),
+    ].reduce((acc, elem) => acc.concat(...elem));
+    return endpoints.filter((endpoint) =>
+      serviceIdsUsedInAppsAndDatabases.includes(endpoint.serviceId),
+    );
   },
 );
 
@@ -183,7 +207,7 @@ export const deleteEndpoint = api.delete<{ id: string }>(
 
 interface CreateEndpointOpProps {
   endpointId: string;
-  type: "provision";
+  type: string;
 }
 
 export const createEndpointOperation = api.post<

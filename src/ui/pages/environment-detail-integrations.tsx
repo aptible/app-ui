@@ -1,9 +1,12 @@
-import { DetailPageSections } from "../shared";
+import { useParams } from "react-router";
+import { useQuery } from "saga-query/react";
+
+import { fetchLogDrains, fetchMetricDrains } from "@app/deploy";
 
 export const EnvironmentIntegrationsPage = () => {
-  return (
-    <DetailPageSections>
-      <p>Environment Integrations Content</p>
-    </DetailPageSections>
-  );
+  const { id = "" } = useParams();
+  useQuery(fetchMetricDrains({ id }));
+  useQuery(fetchLogDrains({ id }));
+
+  return null;
 };

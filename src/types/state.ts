@@ -1,11 +1,13 @@
 import type {
   DeployApp,
+  DeployCertificate,
   DeployDatabase,
   DeployDatabaseImage,
   DeployDisk,
   DeployEndpoint,
   DeployEnvironment,
   DeployLogDrain,
+  DeployMetricDrain,
   DeployOperation,
   DeployService,
   DeployServiceDefinition,
@@ -78,6 +80,7 @@ export type Theme = "light" | "dark";
 
 export interface DeployState {
   apps: MapEntity<DeployApp>;
+  certificates: MapEntity<DeployCertificate>;
   endpoints: MapEntity<DeployEndpoint>;
   environments: MapEntity<DeployEnvironment>;
   serviceDefinitions: MapEntity<DeployServiceDefinition>;
@@ -87,6 +90,7 @@ export interface DeployState {
   databaseImages: MapEntity<DeployDatabaseImage>;
   services: MapEntity<DeployService>;
   logDrains: MapEntity<DeployLogDrain>;
+  metricDrains: MapEntity<DeployMetricDrain>;
   operations: MapEntity<DeployOperation>;
 }
 

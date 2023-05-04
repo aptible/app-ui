@@ -18,14 +18,14 @@ import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { databaseOverviewUrl } from "@app/routes";
+import { databaseEndpointsUrl } from "@app/routes";
 
 type DatabaseCellProps = { database: DeployDatabase };
 
 const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={databaseOverviewUrl(database.id)}>
+      <Link to={databaseEndpointsUrl(database.id)}>
         <div className={tokens.type["medium label"]}>{database.handle}</div>
         <div className={tokens.type["normal lighter"]}>{database.type}</div>
       </Link>
@@ -92,7 +92,15 @@ const DatabaseListRow = ({ database }: { database: DeployDatabase }) => {
   );
 };
 
-export function DatabaseList() {
+export function DatabaseList({
+  resourceHeaderType = "title-bar",
+  skipDescription = false,
+  searchOverride = "",
+}: {
+  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
+  skipDescription?: boolean;
+  searchOverride?: string;
+}) {
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchAllEnvironments());
 
@@ -101,25 +109,48 @@ export function DatabaseList() {
     setSearch(ev.currentTarget.value);
 
   const dbs = useSelector((s: AppState) =>
-    selectDatabasesForTableSearch(s, { search }),
+    selectDatabasesForTableSearch(s, {
+      search: searchOverride ? searchOverride : search,
+    }),
   );
+
+  const description = "Databases provide data persistency on Aptible.";
+
+  const resourceHeaderTitleBar = () => {
+    switch (resourceHeaderType) {
+      case "hidden":
+        return undefined;
+      case "title-bar":
+        return (
+          <ResourceHeader
+            title="Databases"
+            description={skipDescription ? undefined : description}
+            filterBar={
+              searchOverride ? undefined : (
+                <InputSearch
+                  placeholder="Search databases ..."
+                  search={search}
+                  onChange={onChange}
+                />
+              )
+            }
+          />
+        );
+      case "simple-text":
+        return (
+          <p className="flex ml-4 text-gray-500 text-base">
+            {dbs.length} Database{dbs.length > 1 && "s"}
+          </p>
+        );
+      default:
+        return undefined;
+    }
+  };
 
   return (
     <LoadResources query={query} isEmpty={dbs.length === 0 && search === ""}>
       <ResourceListView
-        header={
-          <ResourceHeader
-            title="Databases"
-            description="Databases provide data persistency on Aptible."
-            filterBar={
-              <InputSearch
-                placeholder="Search databases ..."
-                search={search}
-                onChange={onChange}
-              />
-            }
-          />
-        }
+        header={resourceHeaderTitleBar()}
         tableHeader={
           <TableHead headers={["Handle", "Environment", "Last Operation"]} />
         }

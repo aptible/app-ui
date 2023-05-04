@@ -153,6 +153,11 @@ export const pollEnvs = thunks.create(
   combinePages(fetchEnvironments),
 );
 
+export const fetchEnvironmentOperations = api.get<{ id: string }>(
+  "/accounts/:id/operations",
+  api.cache(),
+);
+
 interface CreateEnvProps {
   name: string;
   stackId: string;

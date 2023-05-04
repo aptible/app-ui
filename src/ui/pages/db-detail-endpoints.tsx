@@ -13,7 +13,9 @@ import { AppState, DeployDatabase } from "@app/types";
 
 import { DetailPageSections, EndpointsView, LoadResources } from "../shared";
 
-const DatabasePageContent = ({ database }: { database: DeployDatabase }) => {
+const DatabaseEndpointsPageContent = ({
+  database,
+}: { database: DeployDatabase }) => {
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByServiceIds(s, { ids: [database.serviceId] }),
   );
@@ -25,7 +27,7 @@ const DatabasePageContent = ({ database }: { database: DeployDatabase }) => {
   );
 };
 
-export function DatabaseDetailPage() {
+export function DatabaseEndpointsPage() {
   const { id = "" } = useParams();
   useQuery(fetchDatabase({ id }));
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
@@ -36,7 +38,7 @@ export function DatabaseDetailPage() {
 
   return (
     <LoadResources query={query} isEmpty={false}>
-      <DatabasePageContent database={database} />
+      <DatabaseEndpointsPageContent database={database} />
     </LoadResources>
   );
 }
