@@ -1,4 +1,4 @@
-FROM node:18.15-slim AS builder
+FROM node:18.16-slim AS builder
 
 ARG VITE_AUTH_URL=https://auth.aptible.com
 ARG VITE_BILLING_URL=https://goldenboy.aptible.com
