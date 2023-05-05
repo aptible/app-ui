@@ -8,6 +8,8 @@ import {
 } from "@app/slice-helpers";
 import { AppState, DeployCertificate } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import { selectAppsByEnvId } from "../app";
+import { selectEndpointsByEnvironmentId } from "../endpoint";
 
 export const deserializeCertificate = (payload: any): DeployCertificate => {
   const links = payload._links;
@@ -110,3 +112,23 @@ export const certificateEntities = {
     save: addDeployCertificates,
   }),
 };
+
+export const selectAppsByCertificateId = createSelector(
+  selectAppsByEnvId,
+  selectEndpointsByEnvironmentId,
+  (_: AppState, p: { certificateId: string }) => p.certificateId,
+  (apps, endpoints, certificateId) => {
+    const serviceIdsInApps: string[] = apps
+      .flatMap((app) => app.serviceIds || []);
+    // TODO - revisit this, feels weird, might be more 1:1-ISH on the backend
+    const appsWithAppServiceEndpointsUsingCertificate = endpoints
+      .filter((endpoint) => endpoint.certificateId === certificateId)
+      .filter((endpoint) => serviceIdsInApps.includes(endpoint.serviceId))
+      .map((endpoint) => endpoint.serviceId);
+    return apps.filter((app) =>
+      app.serviceIds.filter((serviceId) =>
+        appsWithAppServiceEndpointsUsingCertificate.includes(serviceId),
+      ),
+    );
+  },
+);

@@ -143,7 +143,7 @@ export const selectEndpointsByEnvironmentId = createSelector(
       databases
         .filter((database) => database.environmentId === envId)
         .map((db) => db.serviceId),
-    ].reduce((acc, elem) => acc.concat(...elem));
+    ].flat();
     return endpoints.filter((endpoint) =>
       serviceIdsUsedInAppsAndDatabases.includes(endpoint.serviceId),
     );
@@ -270,4 +270,11 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
       }),
     );
   },
+);
+
+export const selectEndpointByEnvironmentAndCertificateId = createSelector(
+  selectEndpointsByEnvironmentId,
+  (_: AppState, p: { certificateId: string }) => p.certificateId,
+  (endpoints, certificateId) =>
+    endpoints.filter((endpoint) => endpoint.certificateId === certificateId),
 );
