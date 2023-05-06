@@ -1,17 +1,16 @@
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { hasDeployApp, selectFirstAppByEnvId } from "@app/deploy";
+import { hasDeployApp, selectEnvironmentById } from "@app/deploy";
 import { createProjectGitAppSetupUrl } from "@app/routes";
-import { AppState, DeployEnvironment } from "@app/types";
+import { AppState, DeployApp } from "@app/types";
 
 import { IconArrowRight } from "./icons";
+import { useSelector } from "react-redux";
 
-export const OnboardingLink = ({ env }: { env: DeployEnvironment }) => {
-  const app = useSelector((s: AppState) =>
-    selectFirstAppByEnvId(s, { envId: env.id }),
+export const OnboardingLink = ({ app }: { app: DeployApp }) => {
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
   );
-
   if (!hasDeployApp(app)) {
     return <span>No apps found</span>;
   }

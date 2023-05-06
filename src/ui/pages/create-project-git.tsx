@@ -37,10 +37,8 @@ import {
   DeployDatabase,
   DeployDatabaseImage,
   DeployEndpoint,
-  DeployEnvironment,
   DeployOperation,
   HalEmbedded,
-  OnboardingStatus,
   OperationStatus,
 } from "@app/types";
 import { selectCurrentUser } from "@app/users";
@@ -93,9 +91,9 @@ import {
   pollAppOperations,
   provisionEndpoint,
   selectAppById,
+  selectAppsByEnvOnboarding,
   selectDatabasesByEnvId,
   selectEnvironmentById,
-  selectEnvironmentOnboarding,
   selectFirstAppByEnvId,
   selectFirstEndpointByAppId,
   selectServicesByIds,
@@ -125,7 +123,6 @@ import {
   pollEnvOperations,
   selectLatestConfigureOp,
   selectLatestDeployOp,
-  selectLatestOpByEnvId,
   selectLatestProvisionOp,
   selectLatestProvisionOps,
   selectLatestScanOp,
@@ -281,42 +278,37 @@ export const CreateProjectFromAppSetupPage = () => {
   return <Loading text={`Detecting app ${app.handle} status ...`} />;
 };
 
-const EnvOverview = ({ env }: { env: DeployEnvironment }) => {
-  const app = useSelector((s: AppState) =>
-    selectFirstAppByEnvId(s, { envId: env.id }),
-  );
-  const op = useSelector((s: AppState) =>
-    selectLatestOpByEnvId(s, { envId: env.id }),
-  );
+const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   useQuery(fetchEndpointsByAppId({ appId: app.id }));
+  const { ops } = useProjectOps({ appId: app.id, envId: app.environmentId });
+  const [status, dateStr] = resolveOperationStatuses(ops);
 
   return (
     <ProjectBox
-      env={env}
+      handle={app.handle}
       appId={app.id}
-      status={
-        <EnvStatusPill status={env.onboardingStatus} from={op.updatedAt} />
-      }
+      status={<StatusPill status={status} from={dateStr} />}
     >
       <div className="mt-4">
-        <OnboardingLink env={env} />
+        <OnboardingLink app={app} />
       </div>
     </ProjectBox>
   );
 };
 
 export const ResumeSetupPage = () => {
-  const envs = useSelector(selectEnvironmentOnboarding);
-  const loader = useLoader(fetchAllEnvironments());
+  const apps = useSelector(selectAppsByEnvOnboarding);
+  const envsLoader = useLoader(fetchAllEnvironments());
+  const appsLoader = useLoader(fetchAllApps());
   const view = () => {
-    if (loader.isInitialLoading) {
+    if (envsLoader.isInitialLoading || appsLoader.isInitialLoading) {
       return (
         <div className="mt-8">
           <Loading text="Loading ..." />
         </div>
       );
-    } else if (envs.length === 0) {
-      return <div className="mt-8">No environments found</div>;
+    } else if (apps.length === 0) {
+      return <div className="mt-8">No deployments found</div>;
     }
 
     return null;
@@ -330,8 +322,8 @@ export const ResumeSetupPage = () => {
       </ButtonLink>
       {view()}
 
-      {envs.map((env) => (
-        <EnvOverview key={env.id} env={env} />
+      {apps.map((app) => (
+        <DeploymentOverview key={app.id} app={app} />
       ))}
     </div>
   );
@@ -1718,46 +1710,6 @@ const Pill = ({
   );
 };
 
-const EnvStatusPill = ({
-  status,
-  from,
-}: {
-  status: OnboardingStatus;
-  from: string;
-}) => {
-  const date = prettyDateRelative(from);
-  const className = cn(
-    "rounded-full border-2",
-    "text-sm font-semibold ",
-    "px-2 flex justify-between items-center w-fit",
-  );
-  const inProgress = () => {
-    if (status === "initiated") return "Started";
-    if (status === "scanned") return "Code Pushed";
-    if (status === "db_provisioned") return "Database(s) Provisioned";
-    if (status === "app_provisioned") return "App Provisioned";
-    return "Unknown";
-  };
-
-  if (status === "completed") {
-    return (
-      <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
-        <IconCheck color="#00633F" className="mr-1" variant="sm" />
-        Completed {date}
-      </div>
-    );
-  }
-
-  return (
-    <div className={cn(className, "text-brown border-brown bg-orange-100")}>
-      <IconSettings color="#825804" className="mr-1" variant="sm" />
-      <div>
-        {inProgress()} {date}
-      </div>
-    </div>
-  );
-};
-
 const StatusPill = ({
   status,
   from,
@@ -1969,15 +1921,15 @@ const CreateEndpointView = ({
 };
 
 const ProjectBox = ({
-  env,
   appId,
   children,
   status,
+  handle,
 }: {
-  env: DeployEnvironment;
   appId: string;
   children: React.ReactNode;
   status: JSX.Element;
+  handle: string;
 }) => {
   const vhost = useSelector((s: AppState) =>
     selectFirstEndpointByAppId(s, { id: appId }),
@@ -1999,7 +1951,7 @@ const ProjectBox = ({
             />
           </div>
           <div>
-            <h4 className={tokens.type.h4}>{env.handle}</h4>
+            <h4 className={tokens.type.h4}>{handle}</h4>
             <p className="text-black-500 text-sm">
               {hasDeployEndpoint(vhost) && vhost.status === "provisioned" ? (
                 <a
@@ -2223,7 +2175,7 @@ export const CreateProjectGitStatusPage = () => {
       <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />
 
       <ProjectBox
-        env={env}
+        handle={app.handle}
         appId={appId}
         status={<StatusPill status={status} from={dateStr} />}
       >

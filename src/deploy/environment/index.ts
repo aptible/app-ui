@@ -133,10 +133,6 @@ export const selectEnvironmentByName = createSelector(
     return envs.find((e) => e.handle === handle) || initEnv;
   },
 );
-export const selectEnvironmentOnboarding = createSelector(
-  selectEnvironmentsAsList,
-  (envs) => envs.filter((env) => env.onboardingStatus !== "unknown"),
-);
 
 export const fetchEnvironmentById = api.get<{ id: string }>("/accounts/:id");
 
