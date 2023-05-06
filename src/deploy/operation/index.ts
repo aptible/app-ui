@@ -273,6 +273,11 @@ export const fetchEnvOperations = api.get<EnvOpProps>(
   "/accounts/:envId/operations?page=:page",
 );
 
+export const fetchAllEnvOps = thunks.create<EnvIdProps>(
+  "fetch-all-env-ops",
+  combinePages(fetchEnvOperations, { max: 5 }),
+);
+
 export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
 export const pollEnvOperations = thunks.create<EnvIdProps>(
   "poll-env-operations",

@@ -118,6 +118,7 @@ import {
 } from "@app/deploy/database-images";
 import {
   cancelEnvOperationsPoll,
+  fetchAllEnvOps,
   fetchOperationLogs,
   hasDeployOperation,
   pollEnvOperations,
@@ -280,7 +281,12 @@ export const CreateProjectFromAppSetupPage = () => {
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   useQuery(fetchEndpointsByAppId({ appId: app.id }));
-  const { ops } = useProjectOps({ appId: app.id, envId: app.environmentId });
+  const loader = useQuery(fetchAllEnvOps({ envId: app.environmentId }));
+  const { ops } = useProjectOps({
+    appId: app.id,
+    envId: app.environmentId,
+    dataLoaded: loader.lastSuccess > 0,
+  });
   const [status, dateStr] = resolveOperationStatuses(ops);
 
   return (
@@ -1250,9 +1256,11 @@ export const CreateProjectGitSettingsPage = () => {
     navigate(createProjectGitStatusUrl(appId));
   };
 
+  const poller = useEnvOpsPoller({ appId, envId: app.environmentId });
   useProjectOps({
     envId: app.environmentId,
     appId,
+    dataLoaded: poller.lastSuccess > 0,
   });
 
   return (
@@ -1653,6 +1661,9 @@ const ProjectStatus = ({
 const resolveOperationStatuses = (
   stats: { status: OperationStatus; updatedAt: string }[],
 ): [OperationStatus, string] => {
+  if (stats.length === 0) {
+    return ["unknown", new Date().toISOString()];
+  }
   // sort the statuses from least recent to most recent
   // this allows us to return-early with the proper time in which the states
   // were first determined
@@ -1980,12 +1991,14 @@ const ProjectBox = ({
   );
 };
 
-const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
+const useEnvOpsPoller = ({
+  appId,
+  envId,
+}: {
+  appId: string;
+  envId: string;
+}) => {
   const dispatch = useDispatch();
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
-
   const pollAction = pollEnvOperations({ envId });
   const pollLoader = useLoader(pollAction);
   useEffect(() => {
@@ -1997,6 +2010,23 @@ const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
       cancel();
     };
   }, [appId, envId]);
+
+  return pollLoader;
+};
+
+const useProjectOps = ({
+  appId,
+  envId,
+  dataLoaded,
+}: {
+  appId: string;
+  envId: string;
+  dataLoaded: boolean;
+}) => {
+  const dispatch = useDispatch();
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: envId }),
+  );
 
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId }),
@@ -2040,7 +2070,7 @@ const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
       return;
     }
 
-    if (pollLoader.lastSuccess === 0) {
+    if (!dataLoaded) {
       return;
     }
 
@@ -2050,7 +2080,7 @@ const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
         status,
       }),
     );
-  }, [ops, env.onboardingStatus, pollLoader.lastSuccess, scanOp]);
+  }, [ops, env.onboardingStatus, dataLoaded, scanOp]);
 
   return { ops };
 };
@@ -2079,9 +2109,11 @@ export const CreateProjectGitStatusPage = () => {
   const vhost = useSelector((s: AppState) =>
     selectFirstEndpointByAppId(s, { id: appId }),
   );
+  const poller = useEnvOpsPoller({ envId, appId });
   const { ops } = useProjectOps({
     envId,
     appId,
+    dataLoaded: poller.lastSuccess > 0,
   });
 
   const [status, dateStr] = resolveOperationStatuses(ops);
