@@ -15,7 +15,11 @@ import type {
 import { createAction, createSelector } from "@reduxjs/toolkit";
 import { call, createThrottle, poll, select } from "saga-query";
 
-import { findEnvById, selectEnvironments } from "../environment";
+import {
+  findEnvById,
+  hasDeployEnvironment,
+  selectEnvironments,
+} from "../environment";
 import { deserializeImage } from "../image";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { selectDeploy } from "../slice";
@@ -162,6 +166,24 @@ export const selectAppsForTableSearch = createSelector(
         lastOpStatus !== "" && lastOpStatus.includes(search);
 
       return handleMatch || envMatch || opMatch || opStatusMatch || userMatch;
+    });
+  },
+);
+
+export const selectAppsByEnvOnboarding = createSelector(
+  selectEnvironments,
+  selectAppsAsList,
+  (envs, apps) => {
+    return apps.filter((app) => {
+      const env = findEnvById(envs, { id: app.environmentId });
+      if (!hasDeployEnvironment(env)) {
+        return false;
+      }
+      if (env.onboardingStatus === "unknown") {
+        return false;
+      }
+
+      return true;
     });
   },
 );

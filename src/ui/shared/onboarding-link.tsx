@@ -1,23 +1,25 @@
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { hasDeployApp, selectFirstAppByEnvId } from "@app/deploy";
-import { createProjectGitStatusUrl } from "@app/routes";
-import { AppState, DeployEnvironment } from "@app/types";
+import { hasDeployApp, selectEnvironmentById } from "@app/deploy";
+import { createProjectGitAppSetupUrl } from "@app/routes";
+import { AppState, DeployApp } from "@app/types";
 
 import { IconArrowRight } from "./icons";
+import { useSelector } from "react-redux";
 
-export const OnboardingLink = ({ env }: { env: DeployEnvironment }) => {
-  const app = useSelector((s: AppState) =>
-    selectFirstAppByEnvId(s, { envId: env.id }),
+export const OnboardingLink = ({ app }: { app: DeployApp }) => {
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
   );
-
   if (!hasDeployApp(app)) {
     return <span>No apps found</span>;
   }
 
   return (
-    <Link to={createProjectGitStatusUrl(app.id)} className="flex items-center">
+    <Link
+      to={createProjectGitAppSetupUrl(app.id)}
+      className="flex items-center"
+    >
       {env.onboardingStatus === "completed" ? (
         <>
           View status <IconArrowRight variant="sm" color="#4361FF" />
