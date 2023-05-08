@@ -148,6 +148,8 @@ export const CreateProjectLayout = ({
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const org = useSelector(selectOrganizationSelected);
   const orgSettingsUrl = `${legacyUrl}/organizations/${org.id}/members`;
+  const sshSettingsUrl = `${legacyUrl}/settings/protected/ssh`;
+
   return (
     <>
       <div className="p-6 flex justify-between relative shadow bg-white border-b border-black-50">
@@ -174,7 +176,18 @@ export const CreateProjectLayout = ({
         </div>
 
         <div>
-          <a href={orgSettingsUrl} className="text-black-300">
+          <a
+            href={sshSettingsUrl}
+            target="_blank"
+            className="text-black-300 ml-4"
+          >
+            Manage SSH Keys
+          </a>
+          <a
+            href={orgSettingsUrl}
+            target="_blank"
+            className="text-black-300 ml-4"
+          >
             {org.name} Settings
           </a>
           <Link to={logoutUrl()} className="text-black-300 ml-4">
@@ -383,11 +396,11 @@ const ProgressProject = ({
   const progress = <div className="flex items-center">{steps}</div>;
 
   if (env.isProduction && cur !== -1) {
-    return <div className="mt-6 flex justify-center">{progress}</div>;
+    return <div className="my-6 flex justify-center">{progress}</div>;
   }
 
   return (
-    <div className="mt-4 flex justify-center">
+    <div className="my-6 flex justify-center">
       {progress}
       <div className="ml-4">
         {prev ? (
@@ -412,9 +425,7 @@ export const CreateProjectAddKeyPage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>
-          Get ready to deploy your app on Aptible
-        </h1>
+        <h1 className={tokens.type.h1}>Add your SSH Key</h1>
         <p className="my-4 text-gray-600">
           Add your SSH key to push code into Aptible.
         </p>
@@ -455,14 +466,11 @@ export const CreateProjectNamePage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>
-          Get ready to deploy your app on Aptible
-        </h1>
+        <h1 className={tokens.type.h1}>Name your Environment</h1>
         <p className="mt-4 mb-2 text-gray-600">
           An Aptible environment contains your app along with any required
           databases.
         </p>
-        <p className="mb-4 text-gray-600">Name your Environment to continue.</p>
       </div>
 
       <ProgressProject cur={1} />
@@ -633,10 +641,11 @@ export const CreateProjectGitPushPage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>
-          Get ready to deploy your app on Aptible
-        </h1>
-        <p className="my-4 text-gray-600">Push your code to continue.</p>
+        <h1 className={tokens.type.h1}>Push your code to Aptible</h1>
+        <p className="my-4 text-gray-600">
+          We will look for a Dockerfile or generate one for you to deploy your
+          app
+        </p>
       </div>
 
       <ProgressProject
@@ -660,12 +669,23 @@ export const CreateProjectGitPushPage = () => {
               className="w-full"
             />
           </div>
+          {starter && starter.value !== "none" ? (
+            <div>
+              What's inside this template?{" "}
+              <ExternalLink
+                href={`https://github.com/aptible/${starter.repo}`}
+                variant="info"
+              >
+                View Source Code on GitHub
+              </ExternalLink>
+            </div>
+          ) : null}
         </div>
 
         {starter && starter.value !== "none" ? (
           <>
             <div className="mt-4">
-              <h4 className={tokens.type.h4}>Clone your app</h4>
+              <h4 className={tokens.type.h4}>Clone Template</h4>
               <PreCode
                 segments={listToInvertedTextColor(["git clone", starter.value])}
                 allowCopy
@@ -673,7 +693,7 @@ export const CreateProjectGitPushPage = () => {
             </div>
 
             <div className="mt-4">
-              <h4 className={tokens.type.h4}>Select your app</h4>
+              <h4 className={tokens.type.h4}>Select Template</h4>
               <PreCode
                 segments={listToInvertedTextColor(["cd", starter.repo])}
                 allowCopy
@@ -1266,8 +1286,10 @@ export const CreateProjectGitSettingsPage = () => {
   return (
     <div>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Review your Settings</h1>
-        <p className="my-4 text-gray-600">Review and click deploy to finish.</p>
+        <h1 className={tokens.type.h1}>Configure your App</h1>
+        <p className="my-4 text-gray-600">
+          Add required Databases and review settings to finish
+        </p>
       </div>
 
       <ProgressProject
