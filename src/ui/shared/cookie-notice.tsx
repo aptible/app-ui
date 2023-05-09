@@ -49,30 +49,6 @@ export const allCookies = (): CookieJar => {
   return cookies;
 };
 
-const allParams = (): Params => {
-  const params: Params = {};
-
-  const queryString =
-    window.location.search[0] === "?"
-      ? window.location.search.substr(1)
-      : window.location.search;
-  if (queryString.length < 1) {
-    return params;
-  }
-
-  const pairs = queryString.split("&");
-  for (let i = 0; i < pairs.length; i++) {
-    const pair = pairs[i].split("=");
-    params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
-  }
-
-  return params;
-};
-
-export const getParam = (key: any) => {
-  return allParams()[key];
-};
-
 export const CookieNotice = () => {
   const [showNotice, setShowNotice] = useState(false);
 
