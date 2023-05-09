@@ -4,12 +4,12 @@
   },
   "formatter": {
     "enabled": true,
-    "ignore": ["dist"],
+    "ignore": ["dist", "public/aptible.js"],
     "indentStyle": "space"
   },
   "linter": {
     "enabled": true,
-    "ignore": ["dist"],
+    "ignore": ["dist", "public/aptible.js"],
     "rules": {
       "recommended": true,
       "suspicious": {

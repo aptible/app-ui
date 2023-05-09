@@ -14,4 +14,5 @@ interface ImportMetaEnv {
   VITE_LEGACY_DASHBOARD_URL: string;
   VITE_SENTRY_DSN: string;
   VITE_ORIGIN: string;
+  VITE_TUNA_ENABLED: string;
 }
