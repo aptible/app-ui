@@ -105,7 +105,7 @@ const CreateProjectFooter = () => {
             are recycled, any data you stored on the filesystem will be gone. As
             a result, you should make sure you never use the filesystem for data
             you need to retain long term. Instead, this data should be stored in
-            a Database 2 or in a third-party storage solution, such as AWS S3.
+            a Database or in a third-party storage solution, such as AWS S3.
             Applications that rely on persistent local storage, or a volume
             shared between multiple containers, will need to be re-architected.
           </p>

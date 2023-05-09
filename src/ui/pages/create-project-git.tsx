@@ -159,7 +159,7 @@ export const CreateProjectLayout = ({
           </Link>
           <div className="ml-4">
             {origin === "app" ? (
-              <a href={legacyUrl} className="text-black-300">
+              <a href={legacyUrl} rel="noreferrer" className="text-black-300">
                 Dashboard
               </a>
             ) : (
@@ -180,6 +180,7 @@ export const CreateProjectLayout = ({
             href={sshSettingsUrl}
             target="_blank"
             className="text-black-300 ml-4"
+            rel="noreferrer"
           >
             Manage SSH Keys
           </a>
@@ -187,6 +188,7 @@ export const CreateProjectLayout = ({
             href={orgSettingsUrl}
             target="_blank"
             className="text-black-300 ml-4"
+            rel="noreferrer"
           >
             {org.name} Settings
           </a>
@@ -644,7 +646,7 @@ export const CreateProjectGitPushPage = () => {
         <h1 className={tokens.type.h1}>Push your code to Aptible</h1>
         <p className="my-4 text-gray-600">
           We will look for a Dockerfile or generate one for you to deploy your
-          app
+          app.
         </p>
       </div>
 
@@ -1080,25 +1082,6 @@ const CodeScanInfo = ({
       <span> to your repo, commit it, and push your code.</span>
     </Banner>
   );
-
-  /*
-    TODO: uncomment when we have aptible/builder ready
-    return (
-    <Banner variant="info">
-      <span>Aptible did not detect a </span>
-      <ExternalLink href="https://www.aptible.com/docs/dockerfile">
-        Dockerfile
-      </ExternalLink>
-      <span>
-        {" "}
-        in your code, and will automatically create one during deployment.{" "}
-      </span>
-      <ExternalLink href="https://www.aptible.com/docs">
-        View docs to learn more
-      </ExternalLink>
-      <span>, or to add your own custom Dockerfile.</span>
-    </Banner>
-  ); */
 };
 
 export const CreateProjectGitSettingsPage = () => {
@@ -1288,7 +1271,7 @@ export const CreateProjectGitSettingsPage = () => {
       <div className="text-center">
         <h1 className={tokens.type.h1}>Configure your App</h1>
         <p className="my-4 text-gray-600">
-          Add required Databases and review settings to finish
+          Add required Databases and review settings to finish.
         </p>
       </div>
 
