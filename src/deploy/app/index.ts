@@ -22,12 +22,13 @@ import {
 } from "../environment";
 import { deserializeImage } from "../image";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
+import { DeployServiceResponse } from "../service";
 import { selectDeploy } from "../slice";
 
 export * from "./utils";
 
 export interface DeployAppResponse {
-  id: string;
+  id: number;
   handle: string;
   git_repo: string;
   created_at: string;
@@ -40,12 +41,42 @@ export interface DeployAppResponse {
   };
   _embedded: {
     // TODO: fill in
-    services: { id: number }[];
+    services: DeployServiceResponse[];
     current_image: any;
     last_deploy_operation: any;
     last_operation: any;
   };
+  _type: "app";
 }
+
+export const defaultAppResponse = (
+  p: Partial<DeployAppResponse> = {},
+): DeployAppResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 1,
+    handle: "",
+    git_repo: "",
+    created_at: now,
+    updated_at: now,
+    deployment_method: "",
+    status: "provisioned",
+    _links: {
+      account: { href: "" },
+      current_configuration: { href: "" },
+      ...p._links,
+    },
+    _embedded: {
+      services: [],
+      current_image: null,
+      last_deploy_operation: null,
+      last_operation: null,
+      ...p._embedded,
+    },
+    ...p,
+    _type: "app",
+  };
+};
 
 export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
   const serviceIds: string[] = payload._embedded.services.map((s) => `${s.id}`);

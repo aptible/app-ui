@@ -42,6 +42,37 @@ interface OrganizationResponse {
   _type: "organization";
 }
 
+export const defaultOrgResponse = (
+  o: Partial<OrganizationResponse> = {},
+): OrganizationResponse => {
+  const now = new Date().toISOString();
+  return {
+    address: "",
+    city: "",
+    created_at: now,
+    updated_at: now,
+    emergency_phone: "",
+    id: "",
+    name: "",
+    ops_alert_email: "",
+    primary_phone: "",
+    security_alert_email: "",
+    state: "",
+    zip: "",
+    _links: {
+      billing_detail: { href: "" },
+      invitations: { href: "" },
+      roles: { href: "" },
+      security_officer: { href: "" },
+      self: { href: "" },
+      users: { href: "" },
+      ...o._links,
+    },
+    _type: "organization",
+    ...o,
+  };
+};
+
 export const ORGANIZATIONS_NAME = "organizations";
 export const ORGANIZATION_SELECTED_NAME = "organizationSelected";
 

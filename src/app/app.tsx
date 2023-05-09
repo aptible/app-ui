@@ -9,7 +9,7 @@ import { ftuxRouter, router } from "./router";
 import { selectOrigin } from "@app/env";
 import { RouterProvider } from "react-router";
 
-const AppRouter = () => {
+export const AppRouter = () => {
   const origin = useSelector(selectOrigin);
   return (
     <div className="h-full w-full">

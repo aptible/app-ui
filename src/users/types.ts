@@ -3,7 +3,7 @@ import type { HalEmbedded, LinkResponse } from "@app/types";
 export interface UserResponse {
   created_at: string;
   email: string;
-  id: string;
+  id: number;
   name: string;
   otp_enabled: boolean;
   public_key_fingerprint: null;
@@ -20,6 +20,7 @@ export interface UserResponse {
     ssh_keys: LinkResponse;
     u2f_devices: LinkResponse;
   };
+  _type: "user";
 }
 
 export type UsersResponse = HalEmbedded<{ users: UserResponse[] }>;

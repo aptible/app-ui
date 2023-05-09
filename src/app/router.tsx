@@ -57,7 +57,12 @@ import {
 } from "@app/ui";
 import { ReactRouterErrorElement } from "@app/ui/shared/error-boundary";
 
-const ftuxRoutes: RouteObject[] = [
+const errorPatch = (appRoute: RouteObject) => ({
+  ...appRoute,
+  errorElement: <ReactRouterErrorElement />,
+});
+
+export const ftuxRoutes: RouteObject[] = [
   {
     path: routes.HOME_PATH,
     element: <AuthRequired />,
@@ -188,9 +193,9 @@ const ftuxRoutes: RouteObject[] = [
     path: "*",
     element: <NotFoundPage />,
   },
-];
+].map(errorPatch);
 
-const appRoutes: RouteObject[] = [
+export const appRoutes: RouteObject[] = [
   {
     path: routes.HOME_PATH,
     element: <AuthRequired />,
@@ -470,12 +475,7 @@ const appRoutes: RouteObject[] = [
     path: "*",
     element: <NotFoundPage />,
   },
-];
+].map(errorPatch);
 
-const errorPatch = (appRoute: RouteObject) => ({
-  ...appRoute,
-  errorElement: <ReactRouterErrorElement />,
-});
-
-export const ftuxRouter = createBrowserRouter(ftuxRoutes.map(errorPatch));
-export const router = createBrowserRouter(appRoutes.map(errorPatch));
+export const ftuxRouter = createBrowserRouter(ftuxRoutes);
+export const router = createBrowserRouter(appRoutes);

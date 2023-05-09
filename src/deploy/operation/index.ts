@@ -54,7 +54,50 @@ export interface DeployOperationResponse {
     ssh_portal_connections: LinkResponse;
     user: LinkResponse;
   };
+  _type: "operation";
 }
+
+export const defaultOperationResponse = (
+  op: Partial<DeployOperationResponse> = {},
+): DeployOperationResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 0,
+    type: "",
+    status: "unknown",
+    created_at: now,
+    updated_at: now,
+    git_ref: "",
+    docker_ref: "",
+    container_count: 0,
+    encrypted_env_json_new: "",
+    destination_region: "",
+    automated: false,
+    cancelled: false,
+    aborted: false,
+    immediate: false,
+    provisioned_iops: 0,
+    ebs_volume_type: "",
+    encrypted_stack_settings: "",
+    instance_profile: "",
+    user_name: "",
+    user_email: "",
+    env: "",
+    _links: {
+      account: { href: "" },
+      code_scan_result: { href: "" },
+      ephemeral_sessions: { href: "" },
+      logs: { href: "" },
+      resource: { href: "" },
+      self: { href: "" },
+      ssh_portal_connections: { href: "" },
+      user: { href: "" },
+      ...op._links,
+    },
+    _type: "operation",
+    ...op,
+  };
+};
 
 export const defaultDeployOperation = (
   op: Partial<DeployOperation> = {},

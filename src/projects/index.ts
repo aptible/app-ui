@@ -79,7 +79,7 @@ export const createProject = thunks.create<CreateProjectProps>(
       }
 
       log(envCtx);
-      envId = envCtx.json.data.id;
+      envId = `${envCtx.json.data.id}`;
     }
 
     const appCtx = yield* call(
