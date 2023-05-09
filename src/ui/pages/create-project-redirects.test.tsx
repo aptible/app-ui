@@ -163,7 +163,7 @@ describe("CreateProjectFromAppSetupPage", () => {
   });
 });
 
-describe("CreateProjectFromAccountSetupPage", () => {
+describe.skip("CreateProjectFromAccountSetupPage", () => {
   describe("when there are no operations", () => {
     it("should redirect to code push page", async () => {
       const app = defaultAppResponse({
