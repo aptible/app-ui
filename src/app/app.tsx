@@ -8,8 +8,8 @@ import { ModalPortal, StandaloneErrorBoundary } from "@app/ui";
 import { ftuxRouter, router } from "./router";
 import { Tuna } from "./tuna";
 import { selectOrigin } from "@app/env";
-import { RouterProvider } from "react-router";
 import { CookieNotice } from "@app/ui/shared/cookie-notice";
+import { RouterProvider } from "react-router";
 
 const AppRouter = () => {
   const origin = useSelector(selectOrigin);
