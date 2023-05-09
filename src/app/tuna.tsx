@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 export const Tuna = () => {
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production") {
+    if (!import.meta.env.PROD) {
       return;
     }
 
