@@ -13,7 +13,7 @@ describe("Create project flow", () => {
 
       // deploy code landing page
       const el = await screen.findByRole("button");
-      expect(el.textContent).toEqual("Deploy your code");
+      expect(el.textContent).toEqual("Deploy with Git Push");
       // go to next page
       fireEvent.click(el);
 
@@ -30,10 +30,10 @@ describe("Create project flow", () => {
       fireEvent.click(btn);
 
       // push your code page
-      await screen.findByText(/Push your code to continue/);
+      await screen.findByText(/Push your code to Aptible/);
 
       // settings page
-      await screen.findByText(/Review your Settings/);
+      await screen.findByText(/Configure your App/);
 
       const banner = await screen.findByRole("status");
       expect(banner.textContent).toMatch(/Your code has a Dockerfile/);

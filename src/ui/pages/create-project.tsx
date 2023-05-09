@@ -22,7 +22,11 @@ const HelpTextAccordian = ({
   return (
     <>
       <div className="py-4">
-        <div className="flex cursor-pointer" onClick={() => setOpen(!isOpen)}>
+        <div
+          className="flex cursor-pointer"
+          onKeyUp={() => setOpen(!isOpen)}
+          onClick={() => setOpen(!isOpen)}
+        >
           {isOpen ? (
             <IconChevronUp className="w-[30px]" />
           ) : (
