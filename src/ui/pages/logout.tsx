@@ -4,14 +4,7 @@ import { useNavigate } from "react-router";
 import { logout } from "@app/auth";
 import { loginUrl } from "@app/routes";
 
-import {
-  AptibleLogo,
-  Box,
-  Button,
-  ButtonLink,
-  IconArrowRight,
-  tokens,
-} from "../shared";
+import { AptibleLogo, Box, Button, IconArrowRight, tokens } from "../shared";
 import { selectLegacyDashboardUrl } from "@app/env";
 
 export const LogoutPage = () => {
@@ -50,10 +43,10 @@ export const LogoutPage = () => {
             </div>
             <Box>
               <form onSubmit={onSubmit}>
-                <ButtonLink className="font-semibold">
+                <Button className="font-semibold w-full">
                   Log Out
                   <IconArrowRight className="ml-2" />
-                </ButtonLink>
+                </Button>
               </form>
             </Box>
           </div>
