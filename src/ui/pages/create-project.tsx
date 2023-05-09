@@ -11,7 +11,7 @@ import {
 import { createProjectGitUrl } from "@app/routes";
 import { useState } from "react";
 
-const HelpTextAccordian = ({
+const HelpTextAccordion = ({
   title,
   children,
 }: {
@@ -53,7 +53,7 @@ const CreateProjectFooter = () => {
       <hr className="my-1" />
 
       <div>
-        <HelpTextAccordian title="How do I deploy an App?">
+        <HelpTextAccordion title="How do I deploy an App?">
           <p className="my-2">
             Aptible's platform is production-ready from day one and provides the
             scalability you need.
@@ -69,8 +69,8 @@ const CreateProjectFooter = () => {
             </li>
             <li>Save & Deploy</li>
           </ol>
-        </HelpTextAccordian>
-        <HelpTextAccordian title="Is my App a good fit for Aptible?">
+        </HelpTextAccordion>
+        <HelpTextAccordion title="Is my App a good fit for Aptible?">
           <p className="my-2">
             Broadly speaking, if your App is already containerized, and aligns
             well with the{" "}
@@ -113,13 +113,13 @@ const CreateProjectFooter = () => {
             Applications that rely on persistent local storage, or a volume
             shared between multiple containers, will need to be re-architected.
           </p>
-        </HelpTextAccordian>
-        <HelpTextAccordian title="What if my App isn't containerized?">
+        </HelpTextAccordion>
+        <HelpTextAccordion title="What if my App isn't containerized?">
           <p className="my-2">
             We will scan the code you push up and try to automatically build a
             Docker image for you.
           </p>
-        </HelpTextAccordian>
+        </HelpTextAccordion>
       </div>
     </div>
   );
