@@ -9,7 +9,7 @@ import {
 import type { AppState, DeployStack, LinkResponse } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
-interface DeployStackResponse {
+export interface DeployStackResponse {
   id: number;
   name: string;
   region: string;

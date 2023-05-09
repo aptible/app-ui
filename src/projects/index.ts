@@ -25,6 +25,7 @@ import {
   selectAppById,
   selectDatabasesByEnvId,
   selectEnvironmentByName,
+  updateDeployEnvironmentStatus,
   waitForOperation,
 } from "@app/deploy";
 import { ApiGen, DeployApp } from "@app/types";
@@ -178,6 +179,13 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       yield put(setLoaderError({ id, message }));
       return;
     }
+
+    // optimistically mark `account.onboarding_state=completed`
+    // this is not great but waiting for all ops to complete is riddled
+    // with edge cases and weird scenarios (e.g. user closes app)
+    yield put(
+      updateDeployEnvironmentStatus({ id: envId, status: "completed" }),
+    );
 
     // TODO - convert this to a series of updates where possible (currently information is agnostic)
     // create all the new ones

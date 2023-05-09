@@ -78,10 +78,15 @@ export const setupAppIntegrationTest = (
 };
 
 export const setupIntegrationTest = (
+  path = "/",
   initState: Partial<AppState> = {},
-  path = "",
 ) => {
-  const { store } = setupTestStore(initState);
+  const { store } = setupTestStore({
+    ...initState,
+    env: testEnv,
+  });
+  store.dispatch(bootup());
+  store.dispatch({ type: REHYDRATE });
 
   const TestProvider = ({ children }: { children: React.ReactNode }) => {
     return (
