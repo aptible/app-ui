@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   AptibleLogo,
   Box,
@@ -10,6 +9,7 @@ import {
   tokens,
 } from "../shared";
 import { createProjectGitUrl } from "@app/routes";
+import { useState } from "react";
 
 const HelpTextAccordian = ({
   title,
@@ -32,7 +32,7 @@ const HelpTextAccordian = ({
         </div>
         {isOpen ? (
           <div className="flex mt-2">
-            <div className="w-[30px]"></div>
+            <div className="w-[30px]" />
             <div className="flex-1">{children}</div>
           </div>
         ) : null}
