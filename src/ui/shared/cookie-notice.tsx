@@ -26,7 +26,7 @@ export const writeCookie = (
   let cookieString = `${name}=${value}; expires=${expiresAt.toUTCString()}; `;
   cookieString += `domain=.${window.location.host}; path=/; SameSite=Lax`;
 
-  if (process.env.NODE_ENV !== "production") {
+  if (!import.meta.env.PROD) {
     console.log("writing cookie", cookieString);
   }
 
@@ -77,7 +77,7 @@ export const CookieNotice = () => {
   const [showNotice, setShowNotice] = useState(false);
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production") {
+    if (!import.meta.env.PROD) {
       return;
     }
 

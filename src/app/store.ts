@@ -63,7 +63,7 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
   const store = configureStore({
     preloadedState: initState,
     reducer: persistedReducer,
-    devTools: process.env.NODE_ENV !== "production",
+    devTools: import.meta.env.DEV,
     middleware: middleware,
   });
   const persistor = persistStore(store);
