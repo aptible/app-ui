@@ -1,11 +1,18 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+import { server, testApp, testEnv } from "@app/mocks";
 import { setupAppIntegrationTest } from "@app/test";
+import { rest } from "msw";
 
 describe("Create project flow", () => {
   describe("existing user with ssh keys", () => {
     it("should successfully provision resources within an environment", async () => {
+      server.use(
+        rest.get(`${testEnv.apiUrl}/apps/:id`, (_, res, ctx) => {
+          return res(ctx.json(testApp));
+        }),
+      );
       const { App } = setupAppIntegrationTest({
         initEntries: ["/create"],
       });

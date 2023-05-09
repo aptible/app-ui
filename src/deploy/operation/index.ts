@@ -2,7 +2,14 @@ import { createAction, createSelector } from "@reduxjs/toolkit";
 import { call, delay, fetchRetry, poll, select } from "saga-query";
 
 import { selectDeploy } from "../slice";
-import { PaginateProps, Retryable, api, combinePages, thunks } from "@app/api";
+import {
+  PaginateProps,
+  Retryable,
+  api,
+  cacheShortTimer,
+  combinePages,
+  thunks,
+} from "@app/api";
 import {
   defaultEntity,
   extractIdFromLink,
@@ -312,6 +319,7 @@ export const fetchEnvOperations = api.get<EnvOpProps>(
 
 export const fetchAllEnvOps = thunks.create<EnvIdProps>(
   "fetch-all-env-ops",
+  { saga: cacheShortTimer() },
   combinePages(fetchEnvOperations, { max: 10 }),
 );
 

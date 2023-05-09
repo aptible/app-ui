@@ -16,7 +16,14 @@ import {
   testToken,
   testUser,
 } from "./data";
-import { defaultDatabaseResponse, defaultOperationResponse } from "@app/deploy";
+import {
+  DeployAppResponse,
+  DeployDatabaseResponse,
+  DeployEnvironmentResponse,
+  DeployStackResponse,
+  defaultDatabaseResponse,
+  defaultOperationResponse,
+} from "@app/deploy";
 import { RestRequest, rest } from "msw";
 
 const isValidToken = ({ headers }: RestRequest) => {
@@ -50,25 +57,62 @@ const authHandlers = [
   }),
 ];
 
+export const stacksWithResources = (
+  {
+    stacks = [testStack],
+    accounts = [],
+    apps = [],
+    databases = [],
+  }: {
+    stacks?: DeployStackResponse[];
+    accounts?: DeployEnvironmentResponse[];
+    apps?: DeployAppResponse[];
+    databases?: DeployDatabaseResponse[];
+  } = { stacks: [testStack], accounts: [], apps: [], databases: [] },
+) => {
+  return [
+    rest.get(`${testEnv.apiUrl}/stacks`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(ctx.json({ _embedded: { stacks } }));
+    }),
+    rest.get(`${testEnv.apiUrl}/accounts`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(ctx.json({ _embedded: { accounts } }));
+    }),
+    rest.get(`${testEnv.apiUrl}/apps`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(ctx.json({ _embedded: { apps } }));
+    }),
+    rest.get(`${testEnv.apiUrl}/apps/:id`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(ctx.json(apps.find((app) => `${app.id}` === req.params.id)));
+    }),
+    rest.get(`${testEnv.apiUrl}/databases`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(ctx.json({ _embedded: { databases } }));
+    }),
+    rest.get(`${testEnv.apiUrl}/accounts/:envId/databases`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+
+      return res(ctx.json({ _embedded: { databases } }));
+    }),
+  ];
+};
+
 const apiHandlers = [
-  rest.get(`${testEnv.apiUrl}/stacks`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-    return res(ctx.json({ _embedded: { stacks: [testStack] } }));
-  }),
-  rest.get(`${testEnv.apiUrl}/accounts`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-    return res(ctx.json({ _embedded: { accounts: [] } }));
-  }),
-  rest.get(`${testEnv.apiUrl}/databases`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-    return res(ctx.json({ _embedded: { databases: [] } }));
-  }),
+  ...stacksWithResources(),
   rest.post(
     `${testEnv.apiUrl}/databases/:id/operations`,
     async (req, res, ctx) => {
@@ -78,18 +122,6 @@ const apiHandlers = [
       return res(ctx.json(testDatabaseOp));
     },
   ),
-  rest.get(`${testEnv.apiUrl}/apps`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-    return res(ctx.json({ _embedded: { apps: [] } }));
-  }),
-  rest.get(`${testEnv.apiUrl}/apps/:id`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-    return res(ctx.json(testApp));
-  }),
   rest.get(`${testEnv.apiUrl}/apps/:id/operations`, (req, res, ctx) => {
     if (!isValidToken(req)) {
       return res(ctx.status(401));
@@ -166,13 +198,6 @@ const apiHandlers = [
         onboarding_status: req.headers.get("onboarding_status"),
       }),
     );
-  }),
-  rest.get(`${testEnv.apiUrl}/accounts/:envId/databases`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
-    return res(ctx.json({ _embedded: { databases: [] } }));
   }),
   rest.post(
     `${testEnv.apiUrl}/accounts/:envId/databases`,

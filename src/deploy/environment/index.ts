@@ -11,20 +11,14 @@ import {
 import type {
   AppState,
   DeployEnvironment,
-  DeployOperation,
   LinkResponse,
   OnboardingStatus,
 } from "@app/types";
 
-import {
-  findLatestDbProvisionOp,
-  findLatestDeployOp,
-  findLatestSuccessScanOp,
-} from "../operation";
 import { selectDeploy } from "../slice";
 import { selectStackById } from "../stack";
 
-interface DeployEnvironmentResponse {
+export interface DeployEnvironmentResponse {
   id: number;
   handle: string;
   created_at: string;
@@ -208,26 +202,6 @@ export const selectEnvironmentsForTableSearch = createSelector(
       .sort((a, b) => a.handle.localeCompare(b.handle));
   },
 );
-
-export function deriveAccountStatus(ops: DeployOperation[]): OnboardingStatus {
-  const app = findLatestDeployOp(ops);
-  const db = findLatestDbProvisionOp(ops);
-  const scan = findLatestSuccessScanOp(ops);
-  if (app && db && scan) {
-    return "completed";
-  }
-  if (app && !db && scan) {
-    return "app_provisioned";
-  }
-  if (!app && db && scan) {
-    return "db_provisioned";
-  }
-  if (!app && !db && scan) {
-    return "scanned";
-  }
-
-  return "initiated";
-}
 
 interface EnvPatch {
   id: string;

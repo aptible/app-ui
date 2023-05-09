@@ -29,6 +29,7 @@ import {
   DatabaseScalePage,
   DatabaseSettingsPage,
   DatabasesPage,
+  DeploymentsPage,
   ElevatePage,
   ElevateRequired,
   EnvironmentActivityPage,
@@ -46,7 +47,6 @@ import {
   NotFoundPage,
   OtpRecoveryCodesPage,
   OtpSetupPage,
-  ResumeSetupPage,
   SSHSettingsPage,
   SecuritySettingsPage,
   SettingsPage,
@@ -71,7 +71,7 @@ export const ftuxRoutes: RouteObject[] = [
         index: true,
         element: (
           <CreateProjectLayout>
-            <ResumeSetupPage />
+            <DeploymentsPage />
           </CreateProjectLayout>
         ),
       },

@@ -78,7 +78,6 @@ import { OnboardingLink } from "../shared/onboarding-link";
 import {
   cancelAppOpsPoll,
   createEndpointOperation,
-  deriveAccountStatus,
   fetchAllApps,
   fetchAllEnvironments,
   fetchAllStacks,
@@ -87,7 +86,9 @@ import {
   fetchDatabasesByEnvId,
   fetchEndpointsByAppId,
   fetchEnvironmentById,
+  hasDeployApp,
   hasDeployEndpoint,
+  hasDeployEnvironment,
   pollAppOperations,
   provisionEndpoint,
   selectAppById,
@@ -98,7 +99,6 @@ import {
   selectFirstEndpointByAppId,
   selectServicesByIds,
   selectStackPublicDefaultAsOption,
-  updateDeployEnvironmentStatus,
 } from "@app/deploy";
 import {
   fetchServiceDefinitionsByAppId,
@@ -229,28 +229,39 @@ export const CreateProjectFromAccountSetupPage = () => {
     selectEnvironmentById(s, { id: envId }),
   );
   const navigate = useNavigate();
+  // just guessing which app to use to detect current status
   const app = useSelector((s: AppState) => selectFirstAppByEnvId(s, { envId }));
+  const { appOps, scanOp } = useLatestCodeResults(app.id);
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
+  );
 
   useEffect(() => {
     dispatch(fetchAllApps());
-    dispatch(fetchEnvironmentById({ id: envId }));
   }, []);
 
   useEffect(() => {
-    if (!env.id || !app.id) {
+    dispatch(fetchEnvironmentById({ id: envId }));
+  }, [envId]);
+
+  useEffect(() => {
+    if (!hasDeployEnvironment(env) || !hasDeployApp(app)) {
+      return;
+    }
+    if (appOps.lastSuccess === 0) {
       return;
     }
 
-    if (env.onboardingStatus === "initiated") {
-      navigate(createProjectGitPushUrl(app.id), { replace: true });
-    } else if (env.onboardingStatus === "scanned") {
-      navigate(createProjectGitSettingsUrl(app.id), { replace: true });
+    if (hasDeployOperation(deployOp)) {
+      navigate(createProjectGitStatusUrl(app.id));
+    } else if (hasDeployOperation(scanOp) && scanOp.status === "succeeded") {
+      navigate(createProjectGitSettingsUrl(app.id));
+    } else {
+      navigate(createProjectGitPushUrl(app.id));
     }
+  }, [env.id, app.id, appOps, deployOp, scanOp]);
 
-    navigate(createProjectGitStatusUrl(app.id), { replace: true });
-  }, [env.id, app.id]);
-
-  return <Loading text="Detecting project status ..." />;
+  return <Loading text={`Detecting app ${app.handle} status ...`} />;
 };
 
 export const CreateProjectFromAppSetupPage = () => {
@@ -275,10 +286,10 @@ export const CreateProjectFromAppSetupPage = () => {
   }, [app]);
 
   useEffect(() => {
-    if (!env.id || !app.id) {
+    if (!hasDeployEnvironment(env) || !hasDeployApp(app)) {
       return;
     }
-    if (appOps.isLoading) {
+    if (appOps.lastSuccess === 0) {
       return;
     }
 
@@ -287,7 +298,7 @@ export const CreateProjectFromAppSetupPage = () => {
     } else if (hasDeployOperation(scanOp) && scanOp.status === "succeeded") {
       navigate(createProjectGitSettingsUrl(app.id));
     } else {
-      navigate(createProjectGitPushUrl(appId));
+      navigate(createProjectGitPushUrl(app.id));
     }
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
@@ -296,11 +307,10 @@ export const CreateProjectFromAppSetupPage = () => {
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   useQuery(fetchEndpointsByAppId({ appId: app.id }));
-  const loader = useQuery(fetchAllEnvOps({ envId: app.environmentId }));
+  useQuery(fetchAllEnvOps({ envId: app.environmentId }));
   const { ops } = useProjectOps({
     appId: app.id,
     envId: app.environmentId,
-    dataLoaded: loader.lastSuccess > 0,
   });
   const [status, dateStr] = resolveOperationStatuses(ops);
 
@@ -317,7 +327,7 @@ const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   );
 };
 
-export const ResumeSetupPage = () => {
+export const DeploymentsPage = () => {
   const apps = useSelector(selectAppsByEnvOnboarding);
   const envsLoader = useLoader(fetchAllEnvironments());
   const appsLoader = useLoader(fetchAllApps());
@@ -1259,11 +1269,10 @@ export const CreateProjectGitSettingsPage = () => {
     navigate(createProjectGitStatusUrl(appId));
   };
 
-  const poller = useEnvOpsPoller({ appId, envId: app.environmentId });
+  useEnvOpsPoller({ appId, envId: app.environmentId });
   useProjectOps({
     envId: app.environmentId,
     appId,
-    dataLoaded: poller.lastSuccess > 0,
   });
 
   return (
@@ -2021,20 +2030,7 @@ const useEnvOpsPoller = ({
   return pollLoader;
 };
 
-const useProjectOps = ({
-  appId,
-  envId,
-  dataLoaded,
-}: {
-  appId: string;
-  envId: string;
-  dataLoaded: boolean;
-}) => {
-  const dispatch = useDispatch();
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
-
+const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId }),
   );
@@ -2069,25 +2065,6 @@ const useProjectOps = ({
       ),
     [configOp, deployOp, provisionOps],
   );
-  const { scanOp } = useLatestCodeResults(appId);
-
-  useEffect(() => {
-    const status = deriveAccountStatus([...ops, scanOp]);
-    if (status === env.onboardingStatus) {
-      return;
-    }
-
-    if (!dataLoaded) {
-      return;
-    }
-
-    dispatch(
-      updateDeployEnvironmentStatus({
-        id: envId,
-        status,
-      }),
-    );
-  }, [ops, env.onboardingStatus, dataLoaded, scanOp]);
 
   return { ops };
 };
@@ -2116,11 +2093,10 @@ export const CreateProjectGitStatusPage = () => {
   const vhost = useSelector((s: AppState) =>
     selectFirstEndpointByAppId(s, { id: appId }),
   );
-  const poller = useEnvOpsPoller({ envId, appId });
+  useEnvOpsPoller({ envId, appId });
   const { ops } = useProjectOps({
     envId,
     appId,
-    dataLoaded: poller.lastSuccess > 0,
   });
 
   const [status, dateStr] = resolveOperationStatuses(ops);
