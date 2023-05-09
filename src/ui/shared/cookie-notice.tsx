@@ -1,15 +1,15 @@
+import debug from "debug";
+
 import { Button } from "./button";
 import { useEffect, useState } from "react";
 
 const COOKIE_NAME = "cookieConsent";
 
+const log = debug("cookie-notice");
+
 interface CookieJar {
   [key: string]: string;
 }
-
-type Params = {
-  [key: string]: string;
-};
 
 export const getCookie = (name: string): string | undefined => {
   return allCookies()[name];
@@ -27,7 +27,7 @@ export const writeCookie = (
   cookieString += `domain=.${window.location.host}; path=/; SameSite=Lax`;
 
   if (!import.meta.env.PROD) {
-    console.log("writing cookie", cookieString);
+    log("writing cookie", cookieString);
   }
 
   window.document.cookie = cookieString;
