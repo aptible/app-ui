@@ -9,7 +9,7 @@ import { ftuxRouter, router } from "./router";
 import { Tuna } from "./tuna";
 import { selectOrigin } from "@app/env";
 import { RouterProvider } from "react-router";
-// import { CookieNotice } from "@app/ui/shared/cookie-notice";
+import { CookieNotice } from "@app/ui/shared/cookie-notice";
 
 const AppRouter = () => {
   const origin = useSelector(selectOrigin);
@@ -18,7 +18,7 @@ const AppRouter = () => {
       <StandaloneErrorBoundary>
         <ModalPortal />
         <Tuna />
-        {/* <CookieNotice /> */}
+        <CookieNotice />
       </StandaloneErrorBoundary>
       <RouterProvider router={origin === "nextgen" ? router : ftuxRouter} />
     </div>
