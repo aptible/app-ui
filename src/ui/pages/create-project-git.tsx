@@ -286,7 +286,7 @@ export const CreateProjectFromAppSetupPage = () => {
   }, [app]);
 
   useEffect(() => {
-    if (!env.id || !app.id) {
+    if (!hasDeployEnvironment(env) || !hasDeployApp(app)) {
       return;
     }
     if (appOps.lastSuccess === 0) {
