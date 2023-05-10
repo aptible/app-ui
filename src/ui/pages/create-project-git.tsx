@@ -2034,7 +2034,7 @@ const ProjectBox = ({
                   https://{vhost.virtualDomain}
                 </a>
               ) : (
-                "pending http endpoint"
+                "Pending http endpoint"
               )}
             </p>
           </div>
@@ -2052,7 +2052,7 @@ const ProjectBox = ({
           </Pill>
 
           <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
-            {deployOp.gitRef.slice(0, 7) || "pending"}
+            {deployOp.gitRef.slice(0, 7) || "Pending"}
           </Pill>
         </div>
       </div>
