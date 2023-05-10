@@ -2071,20 +2071,25 @@ const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
 
 const FeedbackForm = () => {
   const [feedback, setFeedback] = useState<string>("");
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState<boolean>(false);
 
-  // TODO
-  // 1. action that just sends feedback to endpoint
-  // 2. if feedback submitted, we probably just want to write it down for this environment
-  // 3. ensure after feedback is submitted, say a short thing about thanks for submitting feedback
+  const handleFeedbackSubmission = (e: SyntheticEvent) => {
+    e.preventDefault();
+    setFeedbackSubmitted(true);
+  };
 
-  // const action = provisionEndpoint({ serviceId: curServiceId });
-  // const loader = useLoader(action);
-  //   const onClick = () => {
-  //  dispatch(action);
-  //};
+  if (feedbackSubmitted) {
+    return (
+      <StatusBox>
+        <h4 className={`${tokens.type.h4} text-center py-4`}>
+          Thanks for your feedback!
+        </h4>
+      </StatusBox>
+    );
+  }
 
   return (
-    <>
+    <StatusBox>
       <h4 className={tokens.type.h4} />
       <FormGroup
         label="Share Feedback"
@@ -2102,12 +2107,12 @@ const FeedbackForm = () => {
         type="submit"
         variant="secondary"
         className="mt-4"
-        // isLoading={loader.isLoading}
+        onClick={handleFeedbackSubmission}
         isLoading={false}
       >
         Submit Feedback
       </Button>
-    </>
+    </StatusBox>
   );
 };
 
@@ -2311,9 +2316,7 @@ export const CreateProjectGitStatusPage = () => {
           Back
         </ButtonLink>
       </StatusBox>
-      <StatusBox>
-        <FeedbackForm />
-      </StatusBox>
+      <FeedbackForm />
     </div>
   );
 };

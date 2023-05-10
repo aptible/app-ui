@@ -14,7 +14,7 @@ import {
 } from "../shared";
 import { selectSurveyAnswered } from "@app/feedback";
 import { createProjectGitUrl } from "@app/routes";
-import { useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { useSelector } from "react-redux";
 
 const HelpTextAccordion = ({
@@ -139,6 +139,7 @@ export const CreateProjectPage = () => {
     useState<boolean>(false);
   const [surveyGithubIntegrationSet, setSurveyGithubIntegration] =
     useState<boolean>(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState<boolean>(false);
 
   const viewSurveyForm = () => {
     // TODO
@@ -148,10 +149,22 @@ export const CreateProjectPage = () => {
     // 1b. group things, send each separately as an event to tuna
     // 2. after promise.all equivalent is complete, go to deploy. ignore all errors as we send it over
 
+    if (feedbackSubmitted) {
+      return (
+        <h4 className={`${tokens.type.h4} text-center py-4`}>
+          Thanks for your feedback!
+        </h4>
+      );
+    }
+
+    const handleSurveySubmit = (e: SyntheticEvent) => {
+      setFeedbackSubmitted(true);
+    };
+
     return (
       <>
         <h4 className={`${tokens.type.h4} text-center py-4`}>
-          What should Aptible build next?
+          Choose what Aptible should build next
         </h4>
         <div className="grid grid-cols-1 gap-4">
           <div className="flex">
@@ -167,12 +180,12 @@ export const CreateProjectPage = () => {
               onClick={() => setSurveyDockerPushSet(!surveyDockerPushSet)}
               icon={
                 surveyDockerPushSet ? (
-                  <IconCheck color={surveyDockerPushSet ? "#FFF" : undefined} />
+                  <IconCheck color="#FFF" />
                 ) : (
-                  <IconThumbsUp />
+                  <IconThumbsUp color="#FFF" />
                 )
               }
-              variant={surveyDockerPushSet ? "success" : "primary"}
+              variant={surveyDockerPushSet ? "success" : "secondary"}
             />
           </div>
           <div className="flex">
@@ -187,14 +200,12 @@ export const CreateProjectPage = () => {
               onClick={() => setSurveyDockerComposeSet(!surveyDockerComposeSet)}
               icon={
                 surveyDockerComposeSet ? (
-                  <IconCheck
-                    color={surveyDockerComposeSet ? "#FFF" : undefined}
-                  />
+                  <IconCheck color="#FFF" />
                 ) : (
-                  <IconThumbsUp />
+                  <IconThumbsUp color="#FFF" />
                 )
               }
-              variant={surveyDockerComposeSet ? "success" : "primary"}
+              variant={surveyDockerComposeSet ? "success" : "secondary"}
             />
           </div>
           <div className="flex">
@@ -202,7 +213,7 @@ export const CreateProjectPage = () => {
               className="w-full pointer-events-none text-bold text-gray-500"
               variant="white"
             >
-              Deploy with Github Integration
+              Deploy with GitHub Integration
             </Button>
             <ButtonIcon
               className="ml-4 pr-2"
@@ -211,16 +222,21 @@ export const CreateProjectPage = () => {
               }
               icon={
                 surveyGithubIntegrationSet ? (
-                  <IconCheck
-                    color={surveyGithubIntegrationSet ? "#FFF" : undefined}
-                  />
+                  <IconCheck color="#FFF" />
                 ) : (
-                  <IconThumbsUp />
+                  <IconThumbsUp color="#FFF" />
                 )
               }
-              variant={surveyGithubIntegrationSet ? "success" : "primary"}
+              variant={surveyGithubIntegrationSet ? "success" : "secondary"}
             />
           </div>
+          {(surveyDockerPushSet ||
+            surveyDockerComposeSet ||
+            surveyGithubIntegrationSet) && (
+            <Button onClick={handleSurveySubmit} variant="secondary">
+              Submit Feedback
+            </Button>
+          )}
         </div>
       </>
     );

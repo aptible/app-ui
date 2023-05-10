@@ -4,7 +4,7 @@ import { AppState, Feedback } from "@app/types";
 export const createFeedback = (e: Partial<Feedback> = {}): Feedback => {
   return {
     surveyAnswered: false,
-    freeformFeedbackGiven: false,
+    freeformFeedbackGiven: true,
   };
 };
 
