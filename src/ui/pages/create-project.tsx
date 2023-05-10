@@ -135,10 +135,10 @@ const CreateProjectFooter = () => {
   );
 };
 
-export const CreateProjectPage = () => {
+export const FreeFormSurvey = () => {
   const dispatch = useDispatch();
   const feedback = useSelector(selectFeedback);
-  const preDeploySurveyAnswered = useSelector(selectPreDeploySurveyAnswered);
+
   const [surveyDockerPushSet, setSurveyDockerPushSet] =
     useState<boolean>(false);
   const [surveyDockerComposeSet, setSurveyDockerComposeSet] =
@@ -147,113 +147,115 @@ export const CreateProjectPage = () => {
     useState<boolean>(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState<boolean>(false);
 
-  const viewSurveyForm = () => {
-    if (feedbackSubmitted) {
-      return (
-        <h4 className={`${tokens.type.h4} text-center py-4`}>
-          Thanks for your feedback!
-        </h4>
-      );
-    }
-
-    const handleSurveySubmit = (e: SyntheticEvent) => {
-      e.preventDefault();
-      setFeedbackSubmitted(true);
-      const w = window as any;
-      if (w.aptible?.event) {
-        if (surveyDockerPushSet) {
-          w.aptible.event("feedback.survey.docker_push", null);
-        }
-        if (surveyDockerComposeSet) {
-          w.aptible.event("feedback.survey.docker_compose", null);
-        }
-        if (surveyGithubIntegrationSet) {
-          w.aptible.event("feedback.survey.github_integration", null);
-        }
-      }
-      dispatch(setFeedback({ ...feedback, preDeploySurveyAnswered: true }));
-    };
-
+  if (feedbackSubmitted) {
     return (
-      <>
-        <h4 className={`${tokens.type.h4} text-center py-4`}>
-          Choose what Aptible should build next
-        </h4>
-        <div className="grid grid-cols-1 gap-4">
-          <div className="flex">
-            <Button
-              className="w-full pointer-events-none text-bold text-gray-500"
-              variant="white"
-              disabled
-            >
-              Deploy with Docker Push
-            </Button>
-            <ButtonIcon
-              className="ml-4 pr-2"
-              onClick={() => setSurveyDockerPushSet(!surveyDockerPushSet)}
-              icon={
-                surveyDockerPushSet ? (
-                  <IconCheck color="#FFF" />
-                ) : (
-                  <IconThumbsUp color="#FFF" />
-                )
-              }
-              variant={surveyDockerPushSet ? "success" : "secondary"}
-            />
-          </div>
-          <div className="flex">
-            <Button
-              className="w-full pointer-events-none text-bold text-gray-500"
-              variant="white"
-            >
-              Deploy with Docker Compose
-            </Button>
-            <ButtonIcon
-              className="ml-4 pr-2"
-              onClick={() => setSurveyDockerComposeSet(!surveyDockerComposeSet)}
-              icon={
-                surveyDockerComposeSet ? (
-                  <IconCheck color="#FFF" />
-                ) : (
-                  <IconThumbsUp color="#FFF" />
-                )
-              }
-              variant={surveyDockerComposeSet ? "success" : "secondary"}
-            />
-          </div>
-          <div className="flex">
-            <Button
-              className="w-full pointer-events-none text-bold text-gray-500"
-              variant="white"
-            >
-              Deploy with GitHub Integration
-            </Button>
-            <ButtonIcon
-              className="ml-4 pr-2"
-              onClick={() =>
-                setSurveyGithubIntegration(!surveyGithubIntegrationSet)
-              }
-              icon={
-                surveyGithubIntegrationSet ? (
-                  <IconCheck color="#FFF" />
-                ) : (
-                  <IconThumbsUp color="#FFF" />
-                )
-              }
-              variant={surveyGithubIntegrationSet ? "success" : "secondary"}
-            />
-          </div>
-          {(surveyDockerPushSet ||
-            surveyDockerComposeSet ||
-            surveyGithubIntegrationSet) && (
-            <Button onClick={handleSurveySubmit} variant="secondary">
-              Submit Feedback
-            </Button>
-          )}
-        </div>
-      </>
+      <h4 className={`${tokens.type.h4} text-center py-4`}>
+        Thanks for your feedback!
+      </h4>
     );
+  }
+
+  const handleSurveySubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    setFeedbackSubmitted(true);
+    const w = window as any;
+    if (w.aptible?.event) {
+      if (surveyDockerPushSet) {
+        w.aptible.event("feedback.survey.docker_push", null);
+      }
+      if (surveyDockerComposeSet) {
+        w.aptible.event("feedback.survey.docker_compose", null);
+      }
+      if (surveyGithubIntegrationSet) {
+        w.aptible.event("feedback.survey.github_integration", null);
+      }
+    }
+    dispatch(setFeedback({ ...feedback, preDeploySurveyAnswered: true }));
   };
+
+  return (
+    <>
+      <h4 className={`${tokens.type.h4} text-center py-4`}>
+        Choose what Aptible should build next
+      </h4>
+      <div className="grid grid-cols-1 gap-4">
+        <div className="flex">
+          <Button
+            className="w-full pointer-events-none text-bold text-gray-500"
+            variant="white"
+            disabled
+          >
+            Deploy with Docker Push
+          </Button>
+          <ButtonIcon
+            className="ml-4 pr-2"
+            onClick={() => setSurveyDockerPushSet(!surveyDockerPushSet)}
+            icon={
+              surveyDockerPushSet ? (
+                <IconCheck color="#FFF" />
+              ) : (
+                <IconThumbsUp color="#FFF" />
+              )
+            }
+            variant={surveyDockerPushSet ? "success" : "secondary"}
+          />
+        </div>
+        <div className="flex">
+          <Button
+            className="w-full pointer-events-none text-bold text-gray-500"
+            variant="white"
+          >
+            Deploy with Docker Compose
+          </Button>
+          <ButtonIcon
+            className="ml-4 pr-2"
+            onClick={() => setSurveyDockerComposeSet(!surveyDockerComposeSet)}
+            icon={
+              surveyDockerComposeSet ? (
+                <IconCheck color="#FFF" />
+              ) : (
+                <IconThumbsUp color="#FFF" />
+              )
+            }
+            variant={surveyDockerComposeSet ? "success" : "secondary"}
+          />
+        </div>
+        <div className="flex">
+          <Button
+            className="w-full pointer-events-none text-bold text-gray-500"
+            variant="white"
+          >
+            Deploy with GitHub Integration
+          </Button>
+          <ButtonIcon
+            className="ml-4 pr-2"
+            onClick={() =>
+              setSurveyGithubIntegration(!surveyGithubIntegrationSet)
+            }
+            icon={
+              surveyGithubIntegrationSet ? (
+                <IconCheck color="#FFF" />
+              ) : (
+                <IconThumbsUp color="#FFF" />
+              )
+            }
+            variant={surveyGithubIntegrationSet ? "success" : "secondary"}
+          />
+        </div>
+        {(surveyDockerPushSet ||
+          surveyDockerComposeSet ||
+          surveyGithubIntegrationSet) && (
+          <Button onClick={handleSurveySubmit} variant="secondary">
+            Submit Feedback
+          </Button>
+        )}
+      </div>
+    </>
+  );
+};
+
+export const CreateProjectPage = () => {
+  const preDeploySurveyAnswered = useSelector(selectPreDeploySurveyAnswered);
 
   return (
     <div
@@ -294,7 +296,7 @@ export const CreateProjectPage = () => {
                     {!preDeploySurveyAnswered && (
                       <>
                         <hr className="h-px mt-8 mb-4 bg-gray-200 border-0 dark:bg-gray-700" />
-                        {viewSurveyForm()}
+                        <FreeFormSurvey />
                       </>
                     )}
                   </Box>
