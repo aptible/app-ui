@@ -1,12 +1,21 @@
 import { Link } from "react-router-dom";
 
-import { hasDeployApp } from "@app/deploy";
+import {
+  hasDeployApp,
+  hasDeployOperation,
+  selectLatestDeployOp,
+} from "@app/deploy";
 import { createProjectGitAppSetupUrl } from "@app/routes";
-import { DeployApp } from "@app/types";
+import { AppState, DeployApp } from "@app/types";
 
 import { IconArrowRight } from "./icons";
+import { useSelector } from "react-redux";
 
 export const OnboardingLink = ({ app }: { app: DeployApp }) => {
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
+  );
+
   if (!hasDeployApp(app)) {
     return <span>No apps found</span>;
   }
@@ -16,7 +25,7 @@ export const OnboardingLink = ({ app }: { app: DeployApp }) => {
       to={createProjectGitAppSetupUrl(app.id)}
       className="flex items-center"
     >
-      {app.lastDeployOperation ? (
+      {hasDeployOperation(deployOp) ? (
         <>
           View status <IconArrowRight variant="sm" color="#4361FF" />
         </>

@@ -119,7 +119,6 @@ import {
 } from "@app/deploy/database-images";
 import {
   cancelEnvOperationsPoll,
-  defaultDeployOperation,
   fetchOperationLogs,
   hasDeployOperation,
   pollEnvOperations,
@@ -307,15 +306,12 @@ export const CreateProjectFromAppSetupPage = () => {
   return <Loading text={`Detecting app ${app.handle} status ...`} />;
 };
 
-const fallbackDeployOp = defaultDeployOperation({
-  type: "deploy",
-  status: "unknown",
-});
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   useQuery(fetchEndpointsByAppId({ appId: app.id }));
-  const [status, dateStr] = resolveOperationStatuses([
-    app.lastDeployOperation || fallbackDeployOp,
-  ]);
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
+  );
+  const [status, dateStr] = resolveOperationStatuses([deployOp]);
 
   return (
     <ProjectBox
@@ -2034,7 +2030,7 @@ const ProjectBox = ({
                   https://{vhost.virtualDomain}
                 </a>
               ) : (
-                "Pending http endpoint"
+                "Pending HTTP Endpoint"
               )}
             </p>
           </div>

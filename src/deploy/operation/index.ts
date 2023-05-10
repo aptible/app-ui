@@ -117,7 +117,7 @@ export const defaultDeployOperation = (
     resourceId: "",
     resourceType: "unknown",
     type: "unknown",
-    status: "queued",
+    status: "unknown",
     createdAt: now,
     updatedAt: now,
     gitRef: "",
