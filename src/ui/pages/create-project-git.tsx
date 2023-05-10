@@ -2102,8 +2102,8 @@ const FeedbackForm = () => {
   }
 
   const submitButtonClass = freeformSurveyData
-    ? `mt-4`
-    : `mt-4 disabled pointer-events-none hover:bg-indigo-300 bg-indigo-300`;
+    ? "mt-4"
+    : "mt-4 disabled pointer-events-none hover:bg-indigo-300 bg-indigo-300";
   const maxFreeformSurveyDataLength = 300;
 
   return (
