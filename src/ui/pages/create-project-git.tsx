@@ -2076,6 +2076,12 @@ const FeedbackForm = () => {
   const handleFeedbackSubmission = (e: SyntheticEvent) => {
     e.preventDefault();
     setFeedbackSubmitted(true);
+    const w = window as any;
+    if (w.aptible?.event) {
+      if (feedback) {
+        w.aptible.event("feedback.survey.post_deploy_feedback", feedback);
+      }
+    }
   };
 
   if (feedbackSubmitted) {
@@ -2097,6 +2103,7 @@ const FeedbackForm = () => {
         description="What would you like to change about this deployment experience?"
       >
         <textarea
+          maxLength={300}
           name="feedback"
           className={tokens.type.textarea}
           value={feedback}

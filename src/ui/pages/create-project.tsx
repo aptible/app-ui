@@ -142,13 +142,6 @@ export const CreateProjectPage = () => {
   const [feedbackSubmitted, setFeedbackSubmitted] = useState<boolean>(false);
 
   const viewSurveyForm = () => {
-    // TODO
-    // add a submission async function that will:
-    // 1. save that someone stored to state
-    // 1a. if someone previously voted, hide this form from state (as it will be rehydrated from redux reducer)
-    // 1b. group things, send each separately as an event to tuna
-    // 2. after promise.all equivalent is complete, go to deploy. ignore all errors as we send it over
-
     if (feedbackSubmitted) {
       return (
         <h4 className={`${tokens.type.h4} text-center py-4`}>
@@ -170,7 +163,7 @@ export const CreateProjectPage = () => {
           w.aptible.event("feedback.survey.github_integration", null);
         }
       }
-      
+
       setFeedbackSubmitted(true);
     };
 
