@@ -2,16 +2,12 @@ import { server } from "@app/mocks";
 import matchers, {
   TestingLibraryMatchers,
 } from "@testing-library/jest-dom/matchers";
-// https://github.com/vitest-dev/vitest/issues/2008#issuecomment-1486481384
-import "node-fetch";
 import { expect } from "vitest";
 
-declare global {
-  namespace Vi {
-    interface JestAssertion<T = any>
-      extends jest.Matchers<void, T>,
-        TestingLibraryMatchers<T, void> {}
-  }
+declare module "vitest" {
+  interface JestAssertion<T = any>
+    extends jest.Matchers<void, T>,
+      TestingLibraryMatchers<T, void> {}
 }
 
 expect.extend(matchers);
