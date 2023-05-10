@@ -24,7 +24,8 @@ export const writeCookie = (
   expiresAt.setDate(expiresAt.getDate() + expiresInDays);
 
   let cookieString = `${name}=${value}; expires=${expiresAt.toUTCString()}; `;
-  cookieString += `domain=.${window.location.host}; path=/; SameSite=Lax`;
+  const baseDomain = window.location.hostname.split(".").slice(-2).join(".");
+  cookieString += `domain=.${baseDomain}; path=/; SameSite=Lax`;
 
   if (!import.meta.env.PROD) {
     log("writing cookie", cookieString);
