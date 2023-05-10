@@ -371,7 +371,7 @@ export const DeploymentsPage = () => {
           onClick={resetFilter}
           className="mt-8 mb-2"
         >
-          Reset filters
+          Show All
         </Button>
       ) : (
         <div className="mt-8" />
