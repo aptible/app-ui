@@ -19,7 +19,9 @@ describe("Create project flow", () => {
       render(<App />);
 
       // deploy code landing page
-      const el = await screen.findByRole("button");
+      const el = await screen.getByRole("button", {
+        name: "Deploy with Git Push",
+      });
       expect(el.textContent).toEqual("Deploy with Git Push");
       // go to next page
       fireEvent.click(el);

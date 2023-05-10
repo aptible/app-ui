@@ -3,8 +3,8 @@ import { AppState, Feedback } from "@app/types";
 
 export const createFeedback = (e: Partial<Feedback> = {}): Feedback => {
   return {
-    preDeploySurveyAnswered: false,
-    freeformFeedbackGiven: false,
+    preDeploySurveyAnswered: e.preDeploySurveyAnswered || false,
+    freeformFeedbackGiven: e.freeformFeedbackGiven || false,
   };
 };
 
