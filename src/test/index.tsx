@@ -78,8 +78,15 @@ export const setupAppIntegrationTest = (
 };
 
 export const setupIntegrationTest = (
-  path = "/",
-  initState: Partial<AppState> = {},
+  {
+    path = "/",
+    initState = {},
+    initEntries = ["/"],
+  }: {
+    path?: string;
+    initState?: Partial<AppState>;
+    initEntries?: string[];
+  } = { path: "/", initState: {}, initEntries: ["/"] },
 ) => {
   const { store } = setupTestStore({
     ...initState,
@@ -91,7 +98,7 @@ export const setupIntegrationTest = (
   const TestProvider = ({ children }: { children: React.ReactNode }) => {
     return (
       <Provider store={store}>
-        <MemoryRouter>
+        <MemoryRouter initialEntries={initEntries}>
           <Routes>
             <Route path={path} element={children} />
           </Routes>

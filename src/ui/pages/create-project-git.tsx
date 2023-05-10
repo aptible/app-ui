@@ -331,9 +331,20 @@ const DeploymentOverview = ({ app }: { app: DeployApp }) => {
 };
 
 export const DeploymentsPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const accountIds =
+    searchParams.get("accounts")?.split(",").filter(Boolean) || [];
   const apps = useSelector(selectAppsByEnvOnboarding);
   const envsLoader = useLoader(fetchAllEnvironments());
   const appsLoader = useLoader(fetchAllApps());
+  const filteredApps = apps.filter((app) => {
+    if (accountIds.length === 0) return true;
+    return accountIds.includes(app.environmentId);
+  });
+  const resetFilter = () => {
+    setSearchParams({});
+  };
+
   const view = () => {
     if (envsLoader.isInitialLoading || appsLoader.isInitialLoading) {
       return (
@@ -350,15 +361,31 @@ export const DeploymentsPage = () => {
 
   return (
     <div>
-      <h1 className={`${tokens.type.h1} mb-6 text-center`}>Deployments</h1>
+      <h1 className={`${tokens.type.h1} mb-6 text-center`}>App Deployments</h1>
       <ButtonLink to={createProjectGitUrl()}>
         <IconPlusCircle className="mr-2" /> Deploy
       </ButtonLink>
+
       {view()}
 
-      {apps.map((app) => (
-        <DeploymentOverview key={app.id} app={app} />
-      ))}
+      {accountIds.length > 0 && apps.length > 0 ? (
+        <Button
+          variant="white"
+          size="sm"
+          onClick={resetFilter}
+          className="mt-8 mb-2"
+        >
+          Reset filters
+        </Button>
+      ) : (
+        <div className="mt-8" />
+      )}
+
+      <div>
+        {filteredApps.map((app) => (
+          <DeploymentOverview key={app.id} app={app} />
+        ))}
+      </div>
     </div>
   );
 };
@@ -1755,7 +1782,10 @@ const StatusPill = ({
 
   if (status === "running" || status === "queued") {
     return (
-      <div className={cn(className, "text-brown border-brown bg-orange-100")}>
+      <div
+        className={cn(className, "text-brown border-brown bg-orange-100")}
+        role="status"
+      >
         <IconSettings color="#825804" className="mr-1" variant="sm" />
         <div>
           {status === "running" ? "Building" : "Queued"} {date}
@@ -1766,7 +1796,10 @@ const StatusPill = ({
 
   if (status === "failed") {
     return (
-      <div className={cn(className, "text-red border-red-300 bg-red-100")}>
+      <div
+        className={cn(className, "text-red border-red-300 bg-red-100")}
+        role="status"
+      >
         <IconX color="#AD1A1A" variant="sm" />
         <div>Failed {date}</div>
       </div>
@@ -1775,7 +1808,10 @@ const StatusPill = ({
 
   if (status === "succeeded") {
     return (
-      <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
+      <div
+        className={cn(className, "text-forest border-lime-300 bg-lime-100")}
+        role="status"
+      >
         <IconCheck color="#00633F" className="mr-1" variant="sm" />
         Deployed {date}
       </div>
@@ -1785,6 +1821,7 @@ const StatusPill = ({
   return (
     <div
       className={cn(className, "text-indigo border-indigo-300 bg-indigo-100")}
+      role="status"
     >
       <IconInfo color="#4361FF" className="mr-1" variant="sm" />
       Not deployed
@@ -1868,7 +1905,7 @@ const LogViewer = ({ op }: { op: DeployOperation }) => {
 
 const StatusBox = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="mt-8">
+    <div className="mt-8 first:mt-0">
       <div className="bg-white p-5 shadow rounded-lg border border-black-100">
         {children}
       </div>
