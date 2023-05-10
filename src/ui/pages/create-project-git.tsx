@@ -130,6 +130,7 @@ import {
   selectLatestSucceessScanOp,
 } from "@app/deploy/operation";
 import { selectEnv, selectLegacyDashboardUrl, selectOrigin } from "@app/env";
+import { selectFeedback, setFeedback } from "@app/feedback";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   DbSelectorProps,
@@ -2069,6 +2070,66 @@ const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
   return { ops };
 };
 
+const FeedbackForm = () => {
+  const dispatch = useDispatch();
+  const feedback = useSelector(selectFeedback);
+  const [freeformSurveyData, setFreeFormSurveyData] = useState<string>("");
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState<boolean>(false);
+
+  const handleFeedbackSubmission = (e: SyntheticEvent) => {
+    e.preventDefault();
+    setFeedbackSubmitted(true);
+    const w = window as any;
+    if (w.aptible?.event) {
+      if (freeformSurveyData) {
+        w.aptible.event(
+          "feedback.survey.post_deploy_feedback",
+          freeformSurveyData,
+        );
+      }
+    }
+    dispatch(setFeedback({ ...feedback, freeformFeedbackGiven: true }));
+  };
+
+  if (feedbackSubmitted) {
+    return (
+      <StatusBox>
+        <h4 className={`${tokens.type.h4} text-center py-4`}>
+          Thanks for your feedback!
+        </h4>
+      </StatusBox>
+    );
+  }
+
+  return (
+    <StatusBox>
+      <h4 className={tokens.type.h4} />
+      <FormGroup
+        label="Share Feedback"
+        htmlFor="feedback"
+        description="What would you like to change about this deployment experience?"
+      >
+        <textarea
+          maxLength={300}
+          name="feedback"
+          className={tokens.type.textarea}
+          value={freeformSurveyData}
+          onChange={(e) => setFreeFormSurveyData(e.currentTarget.value)}
+        />
+      </FormGroup>
+      <Button
+        type="submit"
+        variant="secondary"
+        className="mt-4"
+        onClick={handleFeedbackSubmission}
+        isLoading={false}
+      >
+        Submit Feedback
+      </Button>
+    </StatusBox>
+  );
+};
+
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
@@ -2269,6 +2330,7 @@ export const CreateProjectGitStatusPage = () => {
           Back
         </ButtonLink>
       </StatusBox>
+      <FeedbackForm />
     </div>
   );
 };
