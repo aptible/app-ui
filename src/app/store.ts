@@ -13,6 +13,7 @@ import type { AppState } from "@app/types";
 
 import { reducers, sagas } from "./packages";
 import { sentryErrorReporter } from "./sentry";
+import { FEEDBACK_NAME } from "@app/feedback";
 
 interface Props {
   initState?: Partial<AppState>;
@@ -26,7 +27,13 @@ interface AppStore<State> {
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: [TOKEN_NAME, ELEVATED_TOKEN_NAME, THEME_NAME, REDIRECT_NAME],
+  whitelist: [
+    TOKEN_NAME,
+    ELEVATED_TOKEN_NAME,
+    THEME_NAME,
+    REDIRECT_NAME,
+    FEEDBACK_NAME,
+  ],
 };
 
 const log = debug("redux");

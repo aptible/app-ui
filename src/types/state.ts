@@ -31,7 +31,7 @@ export interface Env {
 }
 
 export interface Feedback {
-  surveyAnswered: boolean;
+  preDeploySurveyAnswered: boolean;
   freeformFeedbackGiven: boolean;
 }
 

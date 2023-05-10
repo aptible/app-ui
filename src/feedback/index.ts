@@ -3,7 +3,7 @@ import { AppState, Feedback } from "@app/types";
 
 export const createFeedback = (e: Partial<Feedback> = {}): Feedback => {
   return {
-    surveyAnswered: false,
+    preDeploySurveyAnswered: false,
     freeformFeedbackGiven: false,
   };
 };
@@ -17,7 +17,7 @@ const feedback = createAssign<Feedback>({
 export const { set: setFeedback, reset: resetFeedback } = feedback.actions;
 export const reducers = createReducerMap(feedback);
 export const selectFeedback = (state: AppState) => state[FEEDBACK_NAME];
-export const selectSurveyAnswered = (state: AppState) =>
-  selectFeedback(state).surveyAnswered;
+export const selectPreDeploySurveyAnswered = (state: AppState) =>
+  selectFeedback(state).preDeploySurveyAnswered;
 export const selectFreeformFeedbackGiven = (state: AppState) =>
   selectFeedback(state).freeformFeedbackGiven;

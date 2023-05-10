@@ -12,10 +12,14 @@ import {
   IconThumbsUp,
   tokens,
 } from "../shared";
-import { selectSurveyAnswered } from "@app/feedback";
+import {
+  selectFeedback,
+  selectPreDeploySurveyAnswered,
+  setFeedback,
+} from "@app/feedback";
 import { createProjectGitUrl } from "@app/routes";
 import { SyntheticEvent, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const HelpTextAccordion = ({
   title,
@@ -132,7 +136,9 @@ const CreateProjectFooter = () => {
 };
 
 export const CreateProjectPage = () => {
-  const surveyAnswered = useSelector(selectSurveyAnswered);
+  const dispatch = useDispatch();
+  const feedback = useSelector(selectFeedback);
+  const preDeploySurveyAnswered = useSelector(selectPreDeploySurveyAnswered);
   const [surveyDockerPushSet, setSurveyDockerPushSet] =
     useState<boolean>(false);
   const [surveyDockerComposeSet, setSurveyDockerComposeSet] =
@@ -151,6 +157,8 @@ export const CreateProjectPage = () => {
     }
 
     const handleSurveySubmit = (e: SyntheticEvent) => {
+      e.preventDefault();
+      setFeedbackSubmitted(true);
       const w = window as any;
       if (w.aptible?.event) {
         if (surveyDockerPushSet) {
@@ -163,8 +171,7 @@ export const CreateProjectPage = () => {
           w.aptible.event("feedback.survey.github_integration", null);
         }
       }
-
-      setFeedbackSubmitted(true);
+      dispatch(setFeedback({ ...feedback, preDeploySurveyAnswered: true }));
     };
 
     return (
@@ -284,7 +291,7 @@ export const CreateProjectPage = () => {
                       Deploy with Git Push
                       <IconArrowRight className="ml-2" />
                     </ButtonLink>
-                    {!surveyAnswered && (
+                    {!preDeploySurveyAnswered && (
                       <>
                         <hr className="h-px mt-8 mb-4 bg-gray-200 border-0 dark:bg-gray-700" />
                         {viewSurveyForm()}

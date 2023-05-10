@@ -130,6 +130,7 @@ import {
   selectLatestSucceessScanOp,
 } from "@app/deploy/operation";
 import { selectEnv, selectLegacyDashboardUrl, selectOrigin } from "@app/env";
+import { selectFeedback, setFeedback } from "@app/feedback";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   DbSelectorProps,
@@ -2070,7 +2071,9 @@ const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
 };
 
 const FeedbackForm = () => {
-  const [feedback, setFeedback] = useState<string>("");
+  const dispatch = useDispatch();
+  const feedback = useSelector(selectFeedback);
+  const [freeformSurveyData, setFreeFormSurveyData] = useState<string>("");
   const [feedbackSubmitted, setFeedbackSubmitted] = useState<boolean>(false);
 
   const handleFeedbackSubmission = (e: SyntheticEvent) => {
@@ -2078,10 +2081,14 @@ const FeedbackForm = () => {
     setFeedbackSubmitted(true);
     const w = window as any;
     if (w.aptible?.event) {
-      if (feedback) {
-        w.aptible.event("feedback.survey.post_deploy_feedback", feedback);
+      if (freeformSurveyData) {
+        w.aptible.event(
+          "feedback.survey.post_deploy_feedback",
+          freeformSurveyData,
+        );
       }
     }
+    dispatch(setFeedback({ ...feedback, freeformFeedbackGiven: true }));
   };
 
   if (feedbackSubmitted) {
@@ -2106,8 +2113,8 @@ const FeedbackForm = () => {
           maxLength={300}
           name="feedback"
           className={tokens.type.textarea}
-          value={feedback}
-          onChange={(e) => setFeedback(e.currentTarget.value)}
+          value={freeformSurveyData}
+          onChange={(e) => setFreeFormSurveyData(e.currentTarget.value)}
         />
       </FormGroup>
       <Button
