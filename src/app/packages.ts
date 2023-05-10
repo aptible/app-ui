@@ -3,6 +3,7 @@ import * as auth from "@app/auth";
 import * as bootup from "@app/bootup";
 import * as deploy from "@app/deploy";
 import * as env from "@app/env";
+import * as feedback from "@app/feedback";
 import * as hal from "@app/hal";
 import * as invitations from "@app/invitations";
 import * as mfa from "@app/mfa";
@@ -16,6 +17,7 @@ import * as users from "@app/users";
 
 const corePackages: any[] = [
   env,
+  feedback,
   auth,
   users,
   token,

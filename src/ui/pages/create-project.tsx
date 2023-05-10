@@ -12,8 +12,10 @@ import {
   IconThumbsUp,
   tokens,
 } from "../shared";
+import { selectSurveyAnswered } from "@app/feedback";
 import { createProjectGitUrl } from "@app/routes";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const HelpTextAccordion = ({
   title,
@@ -130,6 +132,7 @@ const CreateProjectFooter = () => {
 };
 
 export const CreateProjectPage = () => {
+  const surveyAnswered = useSelector(selectSurveyAnswered);
   const [surveyDockerPushSet, setSurveyDockerPushSet] =
     useState<boolean>(false);
   const [surveyDockerComposeSet, setSurveyDockerComposeSet] =
@@ -137,12 +140,91 @@ export const CreateProjectPage = () => {
   const [surveyGithubIntegrationSet, setSurveyGithubIntegration] =
     useState<boolean>(false);
 
-  // TODO
-  // add a submission async function that will:
-  // 1. save that someone stored to state
-  // 1a. if someone previously voted, hide this form from state (as it will be rehydrated from redux reducer)
-  // 1b. group things, send each separately as an event to tuna
-  // 2. after promise.all equivalent is complete, go to deploy. ignore all errors as we send it over
+  const viewSurveyForm = () => {
+    // TODO
+    // add a submission async function that will:
+    // 1. save that someone stored to state
+    // 1a. if someone previously voted, hide this form from state (as it will be rehydrated from redux reducer)
+    // 1b. group things, send each separately as an event to tuna
+    // 2. after promise.all equivalent is complete, go to deploy. ignore all errors as we send it over
+
+    return (
+      <>
+        <h4 className={`${tokens.type.h4} text-center py-4`}>
+          What should Aptible build next?
+        </h4>
+        <div className="grid grid-cols-1 gap-4">
+          <div className="flex">
+            <Button
+              className="w-full pointer-events-none text-bold text-gray-500"
+              variant="white"
+              disabled
+            >
+              Deploy with Docker Push
+            </Button>
+            <ButtonIcon
+              className="ml-4 pr-2"
+              onClick={() => setSurveyDockerPushSet(!surveyDockerPushSet)}
+              icon={
+                surveyDockerPushSet ? (
+                  <IconCheck color={surveyDockerPushSet ? "#FFF" : undefined} />
+                ) : (
+                  <IconThumbsUp />
+                )
+              }
+              variant={surveyDockerPushSet ? "success" : "primary"}
+            />
+          </div>
+          <div className="flex">
+            <Button
+              className="w-full pointer-events-none text-bold text-gray-500"
+              variant="white"
+            >
+              Deploy with Docker Compose
+            </Button>
+            <ButtonIcon
+              className="ml-4 pr-2"
+              onClick={() => setSurveyDockerComposeSet(!surveyDockerComposeSet)}
+              icon={
+                surveyDockerComposeSet ? (
+                  <IconCheck
+                    color={surveyDockerComposeSet ? "#FFF" : undefined}
+                  />
+                ) : (
+                  <IconThumbsUp />
+                )
+              }
+              variant={surveyDockerComposeSet ? "success" : "primary"}
+            />
+          </div>
+          <div className="flex">
+            <Button
+              className="w-full pointer-events-none text-bold text-gray-500"
+              variant="white"
+            >
+              Deploy with Github Integration
+            </Button>
+            <ButtonIcon
+              className="ml-4 pr-2"
+              onClick={() =>
+                setSurveyGithubIntegration(!surveyGithubIntegrationSet)
+              }
+              icon={
+                surveyGithubIntegrationSet ? (
+                  <IconCheck
+                    color={surveyGithubIntegrationSet ? "#FFF" : undefined}
+                  />
+                ) : (
+                  <IconThumbsUp />
+                )
+              }
+              variant={surveyGithubIntegrationSet ? "success" : "primary"}
+            />
+          </div>
+        </div>
+      </>
+    );
+  };
 
   return (
     <div
@@ -180,97 +262,12 @@ export const CreateProjectPage = () => {
                       Deploy with Git Push
                       <IconArrowRight className="ml-2" />
                     </ButtonLink>
-                    <hr className="h-px mt-8 mb-4 bg-gray-200 border-0 dark:bg-gray-700" />
-                    <h4 className={`${tokens.type.h4} text-center py-4`}>
-                      What should Aptible build next?
-                    </h4>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="flex">
-                        <Button
-                          className="w-full pointer-events-none text-bold text-gray-500"
-                          variant="white"
-                          disabled
-                        >
-                          Deploy with Docker Push
-                        </Button>
-                        <ButtonIcon
-                          className="ml-4"
-                          onClick={() =>
-                            setSurveyDockerPushSet(!surveyDockerPushSet)
-                          }
-                          icon={
-                            surveyDockerPushSet ? (
-                              <IconCheck
-                                color={surveyDockerPushSet ? "#FFF" : undefined}
-                              />
-                            ) : (
-                              <IconThumbsUp />
-                            )
-                          }
-                          variant={surveyDockerPushSet ? "success" : "primary"}
-                        />
-                      </div>
-                      <div className="flex">
-                        <Button
-                          className="w-full pointer-events-none text-bold text-gray-500"
-                          variant="white"
-                        >
-                          Deploy with Docker Compose
-                        </Button>
-                        <ButtonIcon
-                          className="ml-4"
-                          onClick={() =>
-                            setSurveyDockerComposeSet(!surveyDockerComposeSet)
-                          }
-                          icon={
-                            surveyDockerComposeSet ? (
-                              <IconCheck
-                                color={
-                                  surveyDockerComposeSet ? "#FFF" : undefined
-                                }
-                              />
-                            ) : (
-                              <IconThumbsUp />
-                            )
-                          }
-                          variant={
-                            surveyDockerComposeSet ? "success" : "primary"
-                          }
-                        />
-                      </div>
-                      <div className="flex">
-                        <Button
-                          className="w-full pointer-events-none text-bold text-gray-500"
-                          variant="white"
-                        >
-                          Deploy with Github Integration
-                        </Button>
-                        <ButtonIcon
-                          className="ml-4"
-                          onClick={() =>
-                            setSurveyGithubIntegration(
-                              !surveyGithubIntegrationSet,
-                            )
-                          }
-                          icon={
-                            surveyGithubIntegrationSet ? (
-                              <IconCheck
-                                color={
-                                  surveyGithubIntegrationSet
-                                    ? "#FFF"
-                                    : undefined
-                                }
-                              />
-                            ) : (
-                              <IconThumbsUp />
-                            )
-                          }
-                          variant={
-                            surveyGithubIntegrationSet ? "success" : "primary"
-                          }
-                        />
-                      </div>
-                    </div>
+                    {!surveyAnswered && (
+                      <>
+                        <hr className="h-px mt-8 mb-4 bg-gray-200 border-0 dark:bg-gray-700" />
+                        {viewSurveyForm()}
+                      </>
+                    )}
                   </Box>
 
                   <div className="mt-6">

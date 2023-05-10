@@ -30,6 +30,11 @@ export interface Env {
   origin: "nextgen" | "app";
 }
 
+export interface Feedback {
+  surveyAnswered: boolean;
+  freeformFeedbackGiven: boolean;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -96,6 +101,7 @@ export interface DeployState {
 
 export interface AppState extends QueryState {
   env: Env;
+  feedback: Feedback;
   users: MapEntity<User>;
   token: Token;
   elevatedToken: Token;
