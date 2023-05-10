@@ -158,7 +158,7 @@ describe("Deployments page", () => {
     expect(screen.queryByText(apps[2].handle)).not.toBeInTheDocument();
 
     // reset query params
-    const resetBtn = await screen.findByText("Reset filters");
+    const resetBtn = await screen.findByText("Show All");
     fireEvent.click(resetBtn);
 
     // should see all apps nows
