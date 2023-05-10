@@ -140,7 +140,7 @@ const SignupPageForm = () => {
             Already have an account?{" "}
             <Link
               to={loginUrl()}
-              className="font-medium text-gray-600 hover:text-gray-500"
+              className="font-medium text-emerald-600 hover:text-emerald-500"
             >
               Log In
             </Link>
