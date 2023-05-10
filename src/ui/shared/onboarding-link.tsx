@@ -27,7 +27,7 @@ export const OnboardingLink = ({ app }: { app: DeployApp }) => {
     >
       {hasDeployOperation(deployOp) ? (
         <>
-          View status <IconArrowRight variant="sm" color="#4361FF" />
+          View Status <IconArrowRight variant="sm" color="#4361FF" />
         </>
       ) : (
         <>
