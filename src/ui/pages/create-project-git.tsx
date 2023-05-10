@@ -60,6 +60,7 @@ import {
   IconChevronUp,
   IconCopy,
   IconGitBranch,
+  IconGlobe,
   IconInfo,
   IconPlusCircle,
   IconSettings,
@@ -118,7 +119,7 @@ import {
 } from "@app/deploy/database-images";
 import {
   cancelEnvOperationsPoll,
-  fetchAllEnvOps,
+  defaultDeployOperation,
   fetchOperationLogs,
   hasDeployOperation,
   pollEnvOperations,
@@ -306,14 +307,15 @@ export const CreateProjectFromAppSetupPage = () => {
   return <Loading text={`Detecting app ${app.handle} status ...`} />;
 };
 
+const fallbackDeployOp = defaultDeployOperation({
+  type: "deploy",
+  status: "unknown",
+});
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   useQuery(fetchEndpointsByAppId({ appId: app.id }));
-  useQuery(fetchAllEnvOps({ envId: app.environmentId }));
-  const { ops } = useProjectOps({
-    appId: app.id,
-    envId: app.environmentId,
-  });
-  const [status, dateStr] = resolveOperationStatuses(ops);
+  const [status, dateStr] = resolveOperationStatuses([
+    app.lastDeployOperation || fallbackDeployOp,
+  ]);
 
   return (
     <ProjectBox
@@ -1785,7 +1787,7 @@ const StatusPill = ({
       className={cn(className, "text-indigo border-indigo-300 bg-indigo-100")}
     >
       <IconInfo color="#4361FF" className="mr-1" variant="sm" />
-      Unknown {date}
+      Not deployed
     </div>
   );
 };
@@ -1965,6 +1967,11 @@ const ProjectBox = ({
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId }),
   );
+  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const legacyUrl = useSelector(selectLegacyDashboardUrl);
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
 
   return (
     <StatusBox>
@@ -1997,8 +2004,18 @@ const ProjectBox = ({
         </div>
         <div className="flex items-center mt-1">
           {status}
+
+          <Pill icon={<IconGlobe color="#595E63" variant="sm" />}>
+            <ExternalLink
+              href={`${legacyUrl}/accounts/${app.environmentId}`}
+              variant="info"
+            >
+              {env.handle}
+            </ExternalLink>
+          </Pill>
+
           <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
-            {deployOp.gitRef.slice(0, 12) || "pending"}
+            {deployOp.gitRef.slice(0, 7) || "pending"}
           </Pill>
         </div>
       </div>
