@@ -158,6 +158,19 @@ export const CreateProjectPage = () => {
     }
 
     const handleSurveySubmit = (e: SyntheticEvent) => {
+      const w = window as any;
+      if (w.aptible?.event) {
+        if (surveyDockerPushSet) {
+          w.aptible.event("feedback.survey.docker_push", null);
+        }
+        if (surveyDockerComposeSet) {
+          w.aptible.event("feedback.survey.docker_compose", null);
+        }
+        if (surveyGithubIntegrationSet) {
+          w.aptible.event("feedback.survey.github_integration", null);
+        }
+      }
+      
       setFeedbackSubmitted(true);
     };
 
