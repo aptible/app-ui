@@ -2101,6 +2101,11 @@ const FeedbackForm = () => {
     );
   }
 
+  const submitButtonClass = freeformSurveyData
+    ? "mt-4"
+    : "mt-4 disabled pointer-events-none hover:bg-indigo-300 bg-indigo-300";
+  const maxFreeformSurveyDataLength = 300;
+
   return (
     <StatusBox>
       <h4 className={tokens.type.h4} />
@@ -2110,22 +2115,32 @@ const FeedbackForm = () => {
         description="What would you like to change about this deployment experience?"
       >
         <textarea
-          maxLength={300}
+          maxLength={maxFreeformSurveyDataLength}
           name="feedback"
           className={tokens.type.textarea}
           value={freeformSurveyData}
           onChange={(e) => setFreeFormSurveyData(e.currentTarget.value)}
         />
       </FormGroup>
-      <Button
-        type="submit"
-        variant="secondary"
-        className="mt-4"
-        onClick={handleFeedbackSubmission}
-        isLoading={false}
-      >
-        Submit Feedback
-      </Button>
+      <div>
+        <div className="float-right mr-2">
+          <p className="text-right text-sm">
+            {freeformSurveyData.length} / {maxFreeformSurveyDataLength}
+          </p>
+        </div>
+        <div>
+          <Button
+            disabled={!freeformSurveyData}
+            type="submit"
+            variant="secondary"
+            className={submitButtonClass}
+            onClick={handleFeedbackSubmission}
+            isLoading={false}
+          >
+            Submit Feedback
+          </Button>
+        </div>
+      </div>
     </StatusBox>
   );
 };

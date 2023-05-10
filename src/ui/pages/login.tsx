@@ -110,7 +110,7 @@ export const LoginPage = () => {
             Don't have an account?{" "}
             <Link
               to={signupUrl()}
-              className="font-medium text-emerald-600 hover:text-emerald-500"
+              className="font-medium text-emerald-600 hover:text-gray-500"
             >
               Sign up
             </Link>
@@ -190,7 +190,7 @@ export const LoginPage = () => {
                 <div className="text-sm">
                   <Link
                     to={RESET_REQUEST_PASSWORD_PATH}
-                    className="font-medium text-emerald-600 hover:text-emerald-500"
+                    className="font-medium text-emerald-600 hover:text-gray-500"
                   >
                     Forgot your password?
                   </Link>
