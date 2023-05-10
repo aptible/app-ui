@@ -2069,6 +2069,48 @@ const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
   return { ops };
 };
 
+const FeedbackForm = () => {
+  const [feedback, setFeedback] = useState<string>("");
+
+  // TODO
+  // 1. action that just sends feedback to endpoint
+  // 2. if feedback submitted, we probably just want to write it down for this environment
+  // 3. ensure after feedback is submitted, say a short thing about thanks for submitting feedback
+
+  // const action = provisionEndpoint({ serviceId: curServiceId });
+  // const loader = useLoader(action);
+  //   const onClick = () => {
+  //  dispatch(action);
+  //};
+
+  return (
+    <>
+      <h4 className={tokens.type.h4} />
+      <FormGroup
+        label="Share Feedback"
+        htmlFor="feedback"
+        description="What would you like to change about this deployment experience?"
+      >
+        <textarea
+          name="feedback"
+          className={tokens.type.textarea}
+          value={feedback}
+          onChange={(e) => setFeedback(e.currentTarget.value)}
+        />
+      </FormGroup>
+      <Button
+        type="submit"
+        variant="secondary"
+        className="mt-4"
+        // isLoading={loader.isLoading}
+        isLoading={false}
+      >
+        Submit Feedback
+      </Button>
+    </>
+  );
+};
+
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
@@ -2268,6 +2310,9 @@ export const CreateProjectGitStatusPage = () => {
         >
           Back
         </ButtonLink>
+      </StatusBox>
+      <StatusBox>
+        <FeedbackForm />
       </StatusBox>
     </div>
   );
