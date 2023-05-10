@@ -158,18 +158,18 @@ export const CreateProjectLayout = ({
           <Link to={homeUrl()}>
             <AptibleLogo />
           </Link>
-          <div className="ml-4">
+          <div className="ml-5">
             {origin === "app" ? (
-              <a href={legacyUrl} rel="noreferrer" className="text-black-300">
+              <a href={legacyUrl} rel="noreferrer" className="text-black-500">
                 Dashboard
               </a>
             ) : (
-              <Link to={homeUrl()} className="text-black-300">
+              <Link to={homeUrl()} className="text-black-500">
                 Dashboard
               </Link>
             )}
             {origin === "app" && (
-              <Link to={homeUrl()} className="text-black-300 ml-4">
+              <Link to={homeUrl()} className="text-black-500 ml-5">
                 Deployments
               </Link>
             )}
@@ -180,7 +180,7 @@ export const CreateProjectLayout = ({
           <a
             href={sshSettingsUrl}
             target="_blank"
-            className="text-black-300 ml-4"
+            className="text-black-500 ml-5"
             rel="noreferrer"
           >
             Manage SSH Keys
@@ -188,12 +188,12 @@ export const CreateProjectLayout = ({
           <a
             href={orgSettingsUrl}
             target="_blank"
-            className="text-black-300 ml-4"
+            className="text-black-500 ml-5"
             rel="noreferrer"
           >
             {org.name} Settings
           </a>
-          <Link to={logoutUrl()} className="text-black-300 ml-4">
+          <Link to={logoutUrl()} className="text-black-500 ml-5">
             Logout
           </Link>
         </div>
