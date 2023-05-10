@@ -2,6 +2,8 @@ import { server } from "@app/mocks";
 import matchers, {
   TestingLibraryMatchers,
 } from "@testing-library/jest-dom/matchers";
+// https://github.com/vitest-dev/vitest/issues/2008#issuecomment-1486481384
+import "node-fetch";
 import { expect } from "vitest";
 
 declare global {
