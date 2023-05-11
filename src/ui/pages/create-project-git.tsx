@@ -2370,7 +2370,7 @@ export const CreateProjectGitStatusPage = () => {
               href="https://www.aptible.com/docs/endpoints"
               variant="info"
             >
-              Endpoint Docs
+              View Docs
             </ExternalLink>
           </div>
         </StatusBox>
