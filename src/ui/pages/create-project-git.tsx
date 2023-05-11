@@ -2366,13 +2366,13 @@ export const CreateProjectGitStatusPage = () => {
               href={`${legacyUrl}/apps/${app.id}/vhosts`}
               variant="info"
             >
-              Manage Endpoints <IconArrowRight />
+              Manage Endpoints
             </ExternalLink>
             <ExternalLink
               href="https://www.aptible.com/docs/endpoints"
               variant="info"
             >
-              Endpoint Docs <IconArrowRight />
+              Endpoint Docs
             </ExternalLink>
           </div>
         </StatusBox>
