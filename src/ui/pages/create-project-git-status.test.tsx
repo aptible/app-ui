@@ -1,6 +1,6 @@
-import { setupIntegrationTest } from "@app/test";
-import { fireEvent, render, screen } from "@testing-library/react";
 import { CreateProjectGitStatusPage } from "./create-project-git";
+import { defaultEndpointResponse } from "@app/deploy";
+import { defaultHalHref } from "@app/hal";
 import {
   createId,
   server,
@@ -11,12 +11,12 @@ import {
   testServiceRails,
 } from "@app/mocks";
 import {
-  createProjectGitStatusUrl,
   CREATE_PROJECT_GIT_STATUS_PATH,
+  createProjectGitStatusUrl,
 } from "@app/routes";
+import { setupIntegrationTest } from "@app/test";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { rest } from "msw";
-import { defaultEndpointResponse } from "@app/deploy";
-import { defaultHalHref } from "@app/hal";
 
 describe("CreateProjectGitStatusPage", () => {
   describe("when app deployed and no vhost provisioned yet", () => {
