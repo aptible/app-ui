@@ -86,6 +86,10 @@ export const defaultDeployService = (
   };
 };
 
+export const serviceCommandText = (service: DeployService) => {
+  return service.processType === "cmd" ? "Docker CMD" : service.command;
+};
+
 export const calcServiceMetrics = (service: DeployService) => {
   const containerProfile =
     CONTAINER_PROFILES[service.instanceClass || DEFAULT_INSTANCE_CLASS];

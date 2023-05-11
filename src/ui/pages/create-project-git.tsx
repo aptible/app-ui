@@ -95,11 +95,14 @@ import {
   selectAppById,
   selectAppsByEnvOnboarding,
   selectDatabasesByEnvId,
+  selectEndpointsByAppId,
   selectEnvironmentById,
   selectFirstAppByEnvId,
   selectFirstEndpointByAppId,
+  selectServiceById,
   selectServicesByIds,
   selectStackPublicDefaultAsOption,
+  serviceCommandText,
 } from "@app/deploy";
 import {
   fetchServiceDefinitionsByAppId,
@@ -1913,18 +1916,16 @@ const Code = ({ children }: { children: React.ReactNode }) => {
   return <code className="bg-orange-200 p-[2px]">{children}</code>;
 };
 
-const CreateEndpointView = ({
-  app,
-  serviceId,
-}: {
-  app: DeployApp;
-  serviceId: string;
-}) => {
+const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
   const services = useSelector((s: AppState) =>
     selectServicesByIds(s, { ids: app.serviceIds }),
   );
+  const vhosts = useSelector((s: AppState) =>
+    selectEndpointsByAppId(s, { id: app.id }),
+  );
   const dispatch = useDispatch();
-  const [curServiceId, setServiceId] = useState(serviceId);
+  const [curServiceId, setServiceId] = useState("");
+  const hasSelected = !!curServiceId;
   const action = provisionEndpoint({ serviceId: curServiceId });
   const loader = useLoader(action);
   const onChange = (id: string) => {
@@ -1933,10 +1934,6 @@ const CreateEndpointView = ({
   const onClick = () => {
     dispatch(action);
   };
-
-  useEffect(() => {
-    setServiceId(serviceId);
-  }, [serviceId]);
 
   useEffect(() => {
     dispatch(fetchApp({ id: app.id }));
@@ -1954,16 +1951,12 @@ const CreateEndpointView = ({
                 value={service.id}
                 checked={curServiceId === service.id}
                 onChange={() => onChange(service.id)}
-                disabled={!!serviceId}
+                disabled={
+                  !!vhosts.find((vhost) => vhost.serviceId === service.id)
+                }
               />
               <span className="ml-1">
-                {service.processType === "cmd" ? (
-                  "Docker CMD Service"
-                ) : (
-                  <>
-                    {service.processType} <Code>{service.command}</Code>
-                  </>
-                )}
+                {service.processType} <Code>{serviceCommandText(service)}</Code>
               </span>
             </label>
           </div>
@@ -1972,7 +1965,7 @@ const CreateEndpointView = ({
       <Button
         onClick={onClick}
         isLoading={loader.isLoading}
-        disabled={!!serviceId}
+        disabled={!hasSelected}
         className="mt-4"
       >
         Create endpoint
@@ -2195,6 +2188,25 @@ const FeedbackForm = () => {
   );
 };
 
+const VhostRow = ({ vhost }: { vhost: DeployEndpoint }) => {
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: vhost.serviceId }),
+  );
+  const cmd = serviceCommandText(service);
+  return (
+    <div>
+      <div className="gap-1 py-2">
+        <p className="font-semibold">{vhost.virtualDomain}</p>
+        <p className="text-gray-500">Service: {service.handle}</p>
+        <p className="text-gray-500">
+          Command: <Code>{cmd}</Code>
+        </p>
+      </div>
+      <hr className="my-2" />
+    </div>
+  );
+};
+
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
@@ -2216,8 +2228,8 @@ export const CreateProjectGitStatusPage = () => {
     selectLatestDeployOp(s, { appId: app.id }),
   );
   const endpointQuery = useQuery(fetchEndpointsByAppId({ appId }));
-  const vhost = useSelector((s: AppState) =>
-    selectFirstEndpointByAppId(s, { id: appId }),
+  const vhosts = useSelector((s: AppState) =>
+    selectEndpointsByAppId(s, { id: appId }),
   );
   useEnvOpsPoller({ envId, appId });
   const { ops } = useProjectOps({
@@ -2327,7 +2339,7 @@ export const CreateProjectGitStatusPage = () => {
             status={status}
             app={app}
             dbs={dbs}
-            endpoints={[vhost]}
+            endpoints={vhosts}
             gitRef={gitRef}
           />
         )}
@@ -2341,12 +2353,44 @@ export const CreateProjectGitStatusPage = () => {
         </StatusBox>
       ) : null}
 
-      {deployOp.status === "succeeded" && !vhost?.serviceId ? (
+      {app.serviceIds.length > 0 && vhosts.length > 0 ? (
         <StatusBox>
-          <h4 className={tokens.type.h4}>Which service needs an endpoint?</h4>
-          <CreateEndpointView app={app} serviceId={vhost?.serviceId || ""} />
+          <h4 className={tokens.type.h4}>Current Endpoints</h4>
+          {vhosts.map((vhost) => (
+            <VhostRow key={vhost.id} vhost={vhost} />
+          ))}
+          <div className="flex gap-3">
+            <ExternalLink
+              href={`${legacyUrl}/apps/${app.id}/vhosts`}
+              variant="info"
+            >
+              Manage Endpoints
+            </ExternalLink>
+            <ExternalLink
+              href="https://www.aptible.com/docs/endpoints"
+              variant="info"
+            >
+              View Docs
+            </ExternalLink>
+          </div>
         </StatusBox>
-      ) : null}
+      ) : (
+        <StatusBox>
+          <h4 className={tokens.type.h4}>
+            Which service needs an{" "}
+            <ExternalLink
+              href="https://www.aptible.com/docs/endpoints"
+              variant="info"
+            >
+              Endpoint
+            </ExternalLink>
+            ?
+          </h4>
+          <div className="mt-2">
+            <CreateEndpointForm app={app} />
+          </div>
+        </StatusBox>
+      )}
 
       {deployOp.status === "failed" ? (
         <StatusBox>

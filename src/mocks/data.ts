@@ -72,11 +72,13 @@ export const testDatabaseId = createId();
 
 export const testServiceRails = defaultServiceResponse({
   id: createId(),
-  handle: createText("rails s"),
+  handle: createText("web"),
+  command: "rails s",
 });
 export const testServiceSidekiq = defaultServiceResponse({
   id: createId(),
-  handle: createText("rake sidekiq"),
+  handle: createText("background"),
+  command: "rake sidekiq",
 });
 
 export const testApp = defaultAppResponse({
