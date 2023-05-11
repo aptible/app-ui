@@ -78,7 +78,7 @@ describe("Create project flow", () => {
       expect(ops.length).toEqual(3);
 
       // create https endpoint
-      await screen.findByText("Which service needs an endpoint?");
+      await screen.findByText(/Which service needs an/);
 
       const vhostSelector = await screen.findAllByRole("radio");
       fireEvent.click(vhostSelector[0]);

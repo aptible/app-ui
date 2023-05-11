@@ -1924,6 +1924,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
   );
   const dispatch = useDispatch();
   const [curServiceId, setServiceId] = useState("");
+  const hasSelected = !!curServiceId;
   const action = provisionEndpoint({ serviceId: curServiceId });
   const loader = useLoader(action);
   const onChange = (id: string) => {
@@ -1966,7 +1967,12 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
           </div>
         );
       })}
-      <Button onClick={onClick} isLoading={loader.isLoading} className="mt-4">
+      <Button
+        onClick={onClick}
+        isLoading={loader.isLoading}
+        disabled={!hasSelected}
+        className="mt-4"
+      >
         Create endpoint
       </Button>
 
@@ -2355,17 +2361,36 @@ export const CreateProjectGitStatusPage = () => {
           {vhosts.map((vhost) => (
             <VhostRow key={vhost.id} vhost={vhost} />
           ))}
-          <ExternalLink
-            href={`${legacyUrl}/apps/${app.id}/vhosts`}
-            variant="info"
-          >
-            Manage Endpoints
-          </ExternalLink>
+          <div className="flex gap-3">
+            <ExternalLink
+              href={`${legacyUrl}/apps/${app.id}/vhosts`}
+              variant="info"
+            >
+              Manage Endpoints
+            </ExternalLink>
+            <ExternalLink
+              href="https://www.aptible.com/docs/endpoints"
+              variant="info"
+            >
+              Endpoint Docs
+            </ExternalLink>
+          </div>
         </StatusBox>
       ) : (
         <StatusBox>
-          <h4 className={tokens.type.h4}>Which service needs an endpoint?</h4>
-          <CreateEndpointForm app={app} />
+          <h4 className={tokens.type.h4}>
+            Which service needs an{" "}
+            <ExternalLink
+              href="https://www.aptible.com/docs/endpoints"
+              variant="info"
+            >
+              Endpoint
+            </ExternalLink>
+            ?
+          </h4>
+          <div className="mt-2">
+            <CreateEndpointForm app={app} />
+          </div>
         </StatusBox>
       )}
 

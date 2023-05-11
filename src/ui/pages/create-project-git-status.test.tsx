@@ -37,7 +37,7 @@ describe("CreateProjectGitStatusPage", () => {
         </TestProvider>,
       );
 
-      const txt = await screen.findByText("Which service needs an endpoint?");
+      const txt = await screen.findByText(/Which service needs an/);
       expect(txt).toBeInTheDocument();
       const btn = await screen.findByRole("button", {
         name: "Create endpoint",
