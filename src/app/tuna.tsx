@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import { useLocation } from "react-router";
 
 export const Tuna = () => {
+  const loc = useLocation();
   useEffect(() => {
     if (!import.meta.env.PROD) {
       return;
@@ -14,6 +16,6 @@ export const Tuna = () => {
         w.aptible.event("pageview", null);
       }
     }
-  }, []);
+  }, [loc.pathname]);
   return null;
 };
