@@ -1,5 +1,6 @@
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
+import { Tuna } from "./tuna";
 import * as routes from "@app/routes";
 import {
   AddSecurityKeyPage,
@@ -56,7 +57,6 @@ import {
   VerifyEmailPage,
 } from "@app/ui";
 import { ReactRouterErrorElement } from "@app/ui/shared/error-boundary";
-import { Tuna } from "./tuna";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
