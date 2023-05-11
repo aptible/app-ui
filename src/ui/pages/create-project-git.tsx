@@ -102,6 +102,7 @@ import {
   selectServiceById,
   selectServicesByIds,
   selectStackPublicDefaultAsOption,
+  serviceCommandText,
 } from "@app/deploy";
 import {
   fetchServiceDefinitionsByAppId,
@@ -1955,13 +1956,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
                 }
               />
               <span className="ml-1">
-                {service.processType === "cmd" ? (
-                  "Docker CMD"
-                ) : (
-                  <>
-                    {service.processType} <Code>{service.command}</Code>
-                  </>
-                )}
+                {service.processType} <Code>{serviceCommandText(service)}</Code>
               </span>
             </label>
           </div>
@@ -2197,7 +2192,7 @@ const VhostRow = ({ vhost }: { vhost: DeployEndpoint }) => {
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: vhost.serviceId }),
   );
-  const cmd = service.processType === "cmd" ? "Docker CMD" : service.command;
+  const cmd = serviceCommandText(service);
   return (
     <div>
       <div className="gap-1 py-2">
