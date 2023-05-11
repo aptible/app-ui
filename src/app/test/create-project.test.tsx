@@ -19,7 +19,7 @@ describe("Create project flow", () => {
       render(<App />);
 
       // deploy code landing page
-      const el = await screen.getByRole("button", {
+      const el = screen.getByRole("button", {
         name: "Deploy with Git Push",
       });
       expect(el.textContent).toEqual("Deploy with Git Push");
