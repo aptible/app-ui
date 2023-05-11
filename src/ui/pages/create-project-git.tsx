@@ -1956,7 +1956,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
               />
               <span className="ml-1">
                 {service.processType === "cmd" ? (
-                  "Docker CMD Service"
+                  "Docker CMD"
                 ) : (
                   <>
                     {service.processType} <Code>{service.command}</Code>
@@ -2197,12 +2197,15 @@ const VhostRow = ({ vhost }: { vhost: DeployEndpoint }) => {
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: vhost.serviceId }),
   );
+  const cmd = service.processType === "cmd" ? "Docker CMD" : service.command;
   return (
     <div>
-      <div className="flex gap-1 py-2">
+      <div className="gap-1 py-2">
         <p className="font-semibold">{vhost.virtualDomain}</p>
-        <p>{service.handle}</p>
-        <Code>{service.command}</Code>
+        <p className="text-gray-500">Service: {service.handle}</p>
+        <p className="text-gray-500">
+          Command: <Code>{cmd}</Code>
+        </p>
       </div>
       <hr className="my-2" />
     </div>
