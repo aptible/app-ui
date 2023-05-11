@@ -56,11 +56,25 @@ import {
   VerifyEmailPage,
 } from "@app/ui";
 import { ReactRouterErrorElement } from "@app/ui/shared/error-boundary";
+import { Tuna } from "./tuna";
+
+const trackingPatch = (appRoute: RouteObject) => ({
+  ...appRoute,
+  element: (
+    <>
+      <Tuna />
+      {appRoute.element}
+    </>
+  ),
+});
 
 const errorPatch = (appRoute: RouteObject) => ({
   ...appRoute,
   errorElement: <ReactRouterErrorElement />,
 });
+
+const applyPatches = (appRoute: RouteObject) =>
+  errorPatch(trackingPatch(appRoute));
 
 export const ftuxRoutes: RouteObject[] = [
   {
@@ -193,7 +207,7 @@ export const ftuxRoutes: RouteObject[] = [
     path: "*",
     element: <NotFoundPage />,
   },
-].map(errorPatch);
+].map(applyPatches);
 
 export const appRoutes: RouteObject[] = [
   {
@@ -475,7 +489,7 @@ export const appRoutes: RouteObject[] = [
     path: "*",
     element: <NotFoundPage />,
   },
-].map(errorPatch);
+].map(applyPatches);
 
 export const ftuxRouter = createBrowserRouter(ftuxRoutes);
 export const router = createBrowserRouter(appRoutes);

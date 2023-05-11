@@ -6,7 +6,6 @@ import type { AppState } from "@app/types";
 import { ModalPortal, StandaloneErrorBoundary } from "@app/ui";
 
 import { ftuxRouter, router } from "./router";
-import { Tuna } from "./tuna";
 import { selectOrigin } from "@app/env";
 import { CookieNotice } from "@app/ui/shared/cookie-notice";
 import { RouterProvider } from "react-router";
@@ -17,7 +16,6 @@ export const AppRouter = () => {
     <div className="h-full w-full">
       <StandaloneErrorBoundary>
         <ModalPortal />
-        <Tuna />
         <CookieNotice />
       </StandaloneErrorBoundary>
       <RouterProvider router={origin === "nextgen" ? router : ftuxRouter} />
