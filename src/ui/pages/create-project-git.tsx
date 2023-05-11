@@ -60,6 +60,7 @@ import {
   IconChevronUp,
   IconCopy,
   IconGitBranch,
+  IconGlobe,
   IconInfo,
   IconPlusCircle,
   IconSettings,
@@ -118,7 +119,6 @@ import {
 } from "@app/deploy/database-images";
 import {
   cancelEnvOperationsPoll,
-  fetchAllEnvOps,
   fetchOperationLogs,
   hasDeployOperation,
   pollEnvOperations,
@@ -158,18 +158,18 @@ export const CreateProjectLayout = ({
           <Link to={homeUrl()}>
             <AptibleLogo />
           </Link>
-          <div className="ml-4">
+          <div className="ml-5">
             {origin === "app" ? (
-              <a href={legacyUrl} rel="noreferrer" className="text-black-300">
+              <a href={legacyUrl} rel="noreferrer" className="text-black-500">
                 Dashboard
               </a>
             ) : (
-              <Link to={homeUrl()} className="text-black-300">
+              <Link to={homeUrl()} className="text-black-500">
                 Dashboard
               </Link>
             )}
             {origin === "app" && (
-              <Link to={homeUrl()} className="text-black-300 ml-4">
+              <Link to={homeUrl()} className="text-black-500 ml-5">
                 Deployments
               </Link>
             )}
@@ -180,7 +180,7 @@ export const CreateProjectLayout = ({
           <a
             href={sshSettingsUrl}
             target="_blank"
-            className="text-black-300 ml-4"
+            className="text-black-500 ml-5"
             rel="noreferrer"
           >
             Manage SSH Keys
@@ -188,12 +188,12 @@ export const CreateProjectLayout = ({
           <a
             href={orgSettingsUrl}
             target="_blank"
-            className="text-black-300 ml-4"
+            className="text-black-500 ml-5"
             rel="noreferrer"
           >
             {org.name} Settings
           </a>
-          <Link to={logoutUrl()} className="text-black-300 ml-4">
+          <Link to={logoutUrl()} className="text-black-500 ml-5">
             Logout
           </Link>
         </div>
@@ -308,12 +308,10 @@ export const CreateProjectFromAppSetupPage = () => {
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   useQuery(fetchEndpointsByAppId({ appId: app.id }));
-  useQuery(fetchAllEnvOps({ envId: app.environmentId }));
-  const { ops } = useProjectOps({
-    appId: app.id,
-    envId: app.environmentId,
-  });
-  const [status, dateStr] = resolveOperationStatuses(ops);
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
+  );
+  const [status, dateStr] = resolveOperationStatuses([deployOp]);
 
   return (
     <ProjectBox
@@ -329,9 +327,20 @@ const DeploymentOverview = ({ app }: { app: DeployApp }) => {
 };
 
 export const DeploymentsPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const accountIds =
+    searchParams.get("accounts")?.split(",").filter(Boolean) || [];
   const apps = useSelector(selectAppsByEnvOnboarding);
   const envsLoader = useLoader(fetchAllEnvironments());
   const appsLoader = useLoader(fetchAllApps());
+  const filteredApps = apps.filter((app) => {
+    if (accountIds.length === 0) return true;
+    return accountIds.includes(app.environmentId);
+  });
+  const resetFilter = () => {
+    setSearchParams({});
+  };
+
   const view = () => {
     if (envsLoader.isInitialLoading || appsLoader.isInitialLoading) {
       return (
@@ -348,15 +357,31 @@ export const DeploymentsPage = () => {
 
   return (
     <div>
-      <h1 className={`${tokens.type.h1} mb-6 text-center`}>Deployments</h1>
+      <h1 className={`${tokens.type.h1} mb-6 text-center`}>App Deployments</h1>
       <ButtonLink to={createProjectGitUrl()}>
         <IconPlusCircle className="mr-2" /> Deploy
       </ButtonLink>
+
       {view()}
 
-      {apps.map((app) => (
-        <DeploymentOverview key={app.id} app={app} />
-      ))}
+      {accountIds.length > 0 && apps.length > 0 ? (
+        <Button
+          variant="white"
+          size="sm"
+          onClick={resetFilter}
+          className="mt-8 mb-2"
+        >
+          Show All
+        </Button>
+      ) : (
+        <div className="mt-8" />
+      )}
+
+      <div>
+        {filteredApps.map((app) => (
+          <DeploymentOverview key={app.id} app={app} />
+        ))}
+      </div>
     </div>
   );
 };
@@ -1753,7 +1778,10 @@ const StatusPill = ({
 
   if (status === "running" || status === "queued") {
     return (
-      <div className={cn(className, "text-brown border-brown bg-orange-100")}>
+      <div
+        className={cn(className, "text-brown border-brown bg-orange-100")}
+        role="status"
+      >
         <IconSettings color="#825804" className="mr-1" variant="sm" />
         <div>
           {status === "running" ? "Building" : "Queued"} {date}
@@ -1764,7 +1792,10 @@ const StatusPill = ({
 
   if (status === "failed") {
     return (
-      <div className={cn(className, "text-red border-red-300 bg-red-100")}>
+      <div
+        className={cn(className, "text-red border-red-300 bg-red-100")}
+        role="status"
+      >
         <IconX color="#AD1A1A" variant="sm" />
         <div>Failed {date}</div>
       </div>
@@ -1773,7 +1804,10 @@ const StatusPill = ({
 
   if (status === "succeeded") {
     return (
-      <div className={cn(className, "text-forest border-lime-300 bg-lime-100")}>
+      <div
+        className={cn(className, "text-forest border-lime-300 bg-lime-100")}
+        role="status"
+      >
         <IconCheck color="#00633F" className="mr-1" variant="sm" />
         Deployed {date}
       </div>
@@ -1783,9 +1817,10 @@ const StatusPill = ({
   return (
     <div
       className={cn(className, "text-indigo border-indigo-300 bg-indigo-100")}
+      role="status"
     >
       <IconInfo color="#4361FF" className="mr-1" variant="sm" />
-      Unknown {date}
+      Not deployed
     </div>
   );
 };
@@ -1866,7 +1901,7 @@ const LogViewer = ({ op }: { op: DeployOperation }) => {
 
 const StatusBox = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="mt-8">
+    <div className="mt-8 first:mt-0">
       <div className="bg-white p-5 shadow rounded-lg border border-black-100">
         {children}
       </div>
@@ -1965,6 +2000,11 @@ const ProjectBox = ({
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId }),
   );
+  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const legacyUrl = useSelector(selectLegacyDashboardUrl);
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
 
   return (
     <StatusBox>
@@ -1990,15 +2030,25 @@ const ProjectBox = ({
                   https://{vhost.virtualDomain}
                 </a>
               ) : (
-                "pending http endpoint"
+                "Pending HTTP Endpoint"
               )}
             </p>
           </div>
         </div>
         <div className="flex items-center mt-1">
           {status}
+
+          <Pill icon={<IconGlobe color="#595E63" variant="sm" />}>
+            <ExternalLink
+              href={`${legacyUrl}/accounts/${app.environmentId}`}
+              variant="info"
+            >
+              {env.handle}
+            </ExternalLink>
+          </Pill>
+
           <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
-            {deployOp.gitRef.slice(0, 12) || "pending"}
+            {deployOp.gitRef.slice(0, 7) || "Pending"}
           </Pill>
         </div>
       </div>

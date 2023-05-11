@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 
-import { hasDeployApp, selectEnvironmentById } from "@app/deploy";
+import {
+  hasDeployApp,
+  hasDeployOperation,
+  selectLatestDeployOp,
+} from "@app/deploy";
 import { createProjectGitAppSetupUrl } from "@app/routes";
 import { AppState, DeployApp } from "@app/types";
 
@@ -8,9 +12,10 @@ import { IconArrowRight } from "./icons";
 import { useSelector } from "react-redux";
 
 export const OnboardingLink = ({ app }: { app: DeployApp }) => {
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: app.environmentId }),
+  const deployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
   );
+
   if (!hasDeployApp(app)) {
     return <span>No apps found</span>;
   }
@@ -20,13 +25,13 @@ export const OnboardingLink = ({ app }: { app: DeployApp }) => {
       to={createProjectGitAppSetupUrl(app.id)}
       className="flex items-center"
     >
-      {env.onboardingStatus === "completed" ? (
+      {hasDeployOperation(deployOp) ? (
         <>
-          View status <IconArrowRight variant="sm" color="#4361FF" />
+          View Status <IconArrowRight variant="sm" color="#4361FF" />
         </>
       ) : (
         <>
-          Finish setup <IconArrowRight variant="sm" color="#4361FF" />
+          Finish Setup <IconArrowRight variant="sm" color="#4361FF" />
         </>
       )}
     </Link>
