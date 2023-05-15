@@ -8,9 +8,9 @@ import {
 
 import { AUTH_LOADER_ID } from "./loader";
 import { ElevateToken, elevateToken } from "./token";
+import { webauthnGet } from "./webauthn";
 import { ThunkCtx, thunks } from "@app/api";
 import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
-import { webauthnGet } from "./webauthn";
 
 export const elevate = thunks.create<ElevateToken>(
   "elevate",
