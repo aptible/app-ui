@@ -43,6 +43,7 @@ import {
   EnvironmentSettingsPage,
   EnvironmentsPage,
   ErrorPage,
+  ForgotPassPage,
   LoginPage,
   LogoutPage,
   NotFoundPage,
@@ -176,6 +177,11 @@ export const ftuxRoutes: RouteObject[] = [
   {
     path: routes.LOGIN_PATH,
     element: <LoginPage />,
+  },
+
+  {
+    path: routes.RESET_REQUEST_PASSWORD_PATH,
+    element: <ForgotPassPage />,
   },
 
   {
