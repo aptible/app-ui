@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { useLoaderSuccess } from "saga-query/react";
 
-import { elevate } from "@app/auth";
+import { elevate, elevateWebauthn } from "@app/auth";
 import { selectAuthLoader, selectIsOtpError } from "@app/auth";
 import { homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
@@ -27,21 +27,27 @@ export const ElevatePage = () => {
     navigate(redirect || homeUrl());
   });
 
+  const loginPayload = {
+    username: user.email,
+    password,
+    otpToken,
+  };
+
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    dispatch(
-      elevate({
-        username: user.email,
-        password,
-        otpToken,
-      }),
-    );
+    dispatch(elevate(loginPayload));
   };
 
   const isOtpError = useSelector(selectIsOtpError);
   useEffect(() => {
     if (isOtpError) {
       setRequireOtp(true);
+      dispatch(
+        elevateWebauthn({
+          ...loginPayload,
+          webauthn: loader.meta.exception_context.u2f?.payload,
+        }),
+      );
     }
   }, [isOtpError]);
 

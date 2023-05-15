@@ -61,7 +61,6 @@ export const createToken = authApi.post<
 });
 
 export type ElevateToken = Omit<CreateTokenPayload, "makeCurrent">;
-export type ElevateTokenCtx = AuthApiCtx<TokenSuccessResponse, ElevateToken>;
 
 export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
   "create-elevated-token",
@@ -73,6 +72,7 @@ export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
         username: ctx.payload.username,
         password: ctx.payload.password,
         otp_token: ctx.payload.otpToken,
+        u2f: ctx.payload.u2f,
         make_current: false,
         expires_in: 30 * 60, // 30 mins
         grant_type: "password",
