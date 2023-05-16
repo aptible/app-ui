@@ -1,0 +1,49 @@
+name: staging
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Log in to Quay
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            quay.io/aptible/cloud-ui:sbx-main-nextgen
+          build-args: |
+            VITE_AUTH_URL=https://auth-sbx-main.aptible-sandbox.com
+            VITE_BILLING_URL=https://billing-sbx-main.aptible-sandbox.com
+            VITE_API_URL=https://api-sbx-main.aptible-sandbox.com
+            VITE_LEGACY_DASHBOARD_URL=https://dashboard-sbx-main.aptible-sandbox.com
+            VITE_SENTRY_DSN=${{ secrets.STAGING_SENTRY_DSN }}
+            VITE_ORIGIN=nextgen
+            VITE_TUNA_ENABLED=true
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: aptible/aptible-deploy-action@v1
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        with:
+          app: 'app-ui-nextgen-sbx-main'
+          environment: 'sbx-main'
+          docker_img: 'quay.io/aptible/cloud-ui:sbx-main-nextgen'
+          username: ${{ secrets.APTIBLE_ROBOT_USERNAME }}
+          password: ${{ secrets.APTIBLE_ROBOT_PASSWORD }}
+          private_registry_username:  ${{ secrets.DOCKER_USERNAME }}
+          private_registry_password:  ${{ secrets.DOCKER_PASSWORD }}
