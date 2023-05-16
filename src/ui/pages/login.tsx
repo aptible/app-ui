@@ -16,8 +16,8 @@ import {
   selectPendingInvitation,
 } from "@app/invitations";
 import {
-  RESET_REQUEST_PASSWORD_PATH,
   acceptInvitationWithCodeUrl,
+  forgotPassUrl,
   homeUrl,
   signupUrl,
 } from "@app/routes";
@@ -202,7 +202,7 @@ export const LoginPage = () => {
               <div className="flex items-center justify-between">
                 <div className="text-sm">
                   <Link
-                    to={RESET_REQUEST_PASSWORD_PATH}
+                    to={forgotPassUrl()}
                     className="font-medium text-emerald-600 hover:text-gray-500"
                   >
                     Forgot your password?

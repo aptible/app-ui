@@ -3,7 +3,6 @@ export * from "./button";
 export * from "./external-link";
 export * from "./banner";
 export * from "./form-group";
-export * from "./banner-messages";
 export * from "./tokens";
 export * from "./menu-button";
 export * from "./detail-page-section";
