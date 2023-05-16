@@ -127,7 +127,7 @@ export const ElevatePage = () => {
                 />
               </FormGroup>
 
-              {!requireOtp ? (
+              {requireOtp ? (
                 <FormGroup
                   label="2FA"
                   htmlFor="input-2fa"
@@ -149,8 +149,6 @@ export const ElevatePage = () => {
                     value={otpToken}
                     onChange={(e) => setOtpToken(e.currentTarget.value)}
                     autoComplete="off"
-                    id="input-2fa"
-                    className="flex-1 outline-0 py-1 bg-transparent"
                     autoFocus
                   />
                 </FormGroup>
