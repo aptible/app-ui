@@ -3,12 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { useLoaderSuccess } from "saga-query/react";
 
-import { elevate } from "@app/auth";
+import { elevate, elevateWebauthn } from "@app/auth";
 import { selectAuthLoader, selectIsOtpError } from "@app/auth";
 import { homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
-import { Alert, AptibleLogo, Button, FormGroup, Input } from "../shared";
+import {
+  Alert,
+  AptibleLogo,
+  Button,
+  ExternalLink,
+  FormGroup,
+  Input,
+} from "../shared";
 
 export const ElevatePage = () => {
   const dispatch = useDispatch();
@@ -27,21 +34,27 @@ export const ElevatePage = () => {
     navigate(redirect || homeUrl());
   });
 
+  const loginPayload = {
+    username: user.email,
+    password,
+    otpToken,
+  };
+
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    dispatch(
-      elevate({
-        username: user.email,
-        password,
-        otpToken,
-      }),
-    );
+    dispatch(elevate(loginPayload));
   };
 
   const isOtpError = useSelector(selectIsOtpError);
   useEffect(() => {
     if (isOtpError) {
       setRequireOtp(true);
+      dispatch(
+        elevateWebauthn({
+          ...loginPayload,
+          webauthn: loader.meta.exception_context.u2f?.payload,
+        }),
+      );
     }
   }, [isOtpError]);
 
@@ -63,7 +76,7 @@ export const ElevatePage = () => {
           <p>
             We require a short-lived elevated token before allowing changes to
             authentication credentials (i.e. changing password, adding pubkey,
-            disabling 2FA).
+            disabling 2FA). This token lasts for 15 minutes.
           </p>
         </div>
 
@@ -115,14 +128,27 @@ export const ElevatePage = () => {
               </FormGroup>
 
               {requireOtp ? (
-                <FormGroup label="2FA" htmlFor="input-2fa">
+                <FormGroup
+                  label="2FA"
+                  htmlFor="input-2fa"
+                  description={
+                    <p>
+                      Read our 2fa{" "}
+                      <ExternalLink
+                        href="https://www.aptible.com/docs/password-authentication#2-factor-authentication-2fa"
+                        variant="info"
+                      >
+                        docs
+                      </ExternalLink>{" "}
+                      to learn more.
+                    </p>
+                  }
+                >
                   <Input
                     type="number"
                     value={otpToken}
                     onChange={(e) => setOtpToken(e.currentTarget.value)}
                     autoComplete="off"
-                    id="input-2fa"
-                    className="flex-1 outline-0 py-1 bg-transparent"
                     autoFocus
                   />
                 </FormGroup>
