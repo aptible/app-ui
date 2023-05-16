@@ -29,7 +29,7 @@ export const addSecurityKeyUrl = () => ADD_SECURITY_KEY_PATH;
 export const RESET_REQUEST_PASSWORD_PATH = "/reset-password";
 export const resetPassUrl = () => RESET_REQUEST_PASSWORD_PATH;
 export const RESET_PASSWORD_PATH =
-  "/reset-password/:challengeId/:verificationCode";
+  "/password/update/:challengeId/:verificationCode";
 export const resetPassVerify = (
   challengeId: string,
   verificationCode: string,

@@ -20,6 +20,11 @@ export const forgotPass = authApi.post<{ email: string }>(
     });
 
     yield next();
+
+    ctx.loader = {
+      id: ctx.name,
+      message: "Check your email to change your password.",
+    };
   },
 );
 
@@ -30,7 +35,7 @@ interface ResetPass {
 }
 
 export const resetPass = authApi.post<ResetPass>(
-  ["/verifications", "reset-pass"],
+  ["/verifications", "pass"],
   function* (ctx, next) {
     const { challengeId, password, verificationCode } = ctx.payload;
     ctx.request = ctx.req({

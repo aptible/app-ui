@@ -46,7 +46,11 @@ export const testToken = defaultTokenResponse({
   },
 });
 
-export const testUser = defaultUserResponse({ id: testUserId });
+export const testEmail = "test@aptible.com";
+export const testUser = defaultUserResponse({
+  id: testUserId,
+  email: testEmail,
+});
 export const testSshKey = defaultSshKeyResponse({ id: `${createId()}` });
 
 export const testOrg = defaultOrgResponse({

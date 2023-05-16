@@ -12,12 +12,14 @@ export const BannerMessages = (props: {
   return (
     <div className={props.className}>
       {props.isSuccess ? (
-        <div className={cn(cls, variantToColor("success"))}>
+        <div className={cn(cls, variantToColor("success"))} role="status">
           Success! {props.message}
         </div>
       ) : null}
       {props.isError ? (
-        <div className={cn(cls, variantToColor("error"))}>{props.message}</div>
+        <div className={cn(cls, variantToColor("error"))} role="status">
+          {props.message}
+        </div>
       ) : null}
     </div>
   );
