@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { HeroBgLayout } from "../layouts";
 import { Box, Button, FormGroup, Input, tokens } from "../shared";
-import { Link } from "react-router-dom";
 import { loginUrl } from "@app/routes";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const ForgotPassPage = () => {
   const [email, setEmail] = useState("");

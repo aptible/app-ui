@@ -30,8 +30,10 @@ export const RESET_REQUEST_PASSWORD_PATH = "/reset-password";
 export const resetPassUrl = () => RESET_REQUEST_PASSWORD_PATH;
 export const RESET_PASSWORD_PATH =
   "/reset-password/:challengeId/:verificationCode";
-export const resetPassVerify = (challengeId: string, verificationCode: string) =>
-  `${RESET_REQUEST_PASSWORD_PATH}/${challengeId}/${verificationCode}`;
+export const resetPassVerify = (
+  challengeId: string,
+  verificationCode: string,
+) => `${RESET_REQUEST_PASSWORD_PATH}/${challengeId}/${verificationCode}`;
 export const VERIFY_EMAIL_REQUEST_PATH = "/verify";
 export const verifyEmailRequestUrl = () => VERIFY_EMAIL_REQUEST_PATH;
 export const VERIFY_EMAIL_PATH = "/verify/:verificationId/:verificationCode";
