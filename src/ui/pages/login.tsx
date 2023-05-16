@@ -27,6 +27,7 @@ import {
   Alert,
   AptibleLogo,
   Button,
+  ExternalLink,
   FormGroup,
   IconAlertCircle,
   Input,
@@ -172,7 +173,22 @@ export const LoginPage = () => {
               </FormGroup>
 
               {requireOtp ? (
-                <FormGroup label="2FA" htmlFor="input-2fa">
+                <FormGroup
+                  label="2FA"
+                  htmlFor="input-2fa"
+                  description={
+                    <p>
+                      Read our 2fa{" "}
+                      <ExternalLink
+                        href="https://www.aptible.com/docs/password-authentication#2-factor-authentication-2fa"
+                        variant="info"
+                      >
+                        docs
+                      </ExternalLink>{" "}
+                      to learn more.
+                    </p>
+                  }
+                >
                   <Input
                     type="number"
                     value={otpToken}

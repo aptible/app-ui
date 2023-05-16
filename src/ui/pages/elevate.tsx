@@ -8,7 +8,14 @@ import { selectAuthLoader, selectIsOtpError } from "@app/auth";
 import { homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
-import { Alert, AptibleLogo, Button, FormGroup, Input } from "../shared";
+import {
+  Alert,
+  AptibleLogo,
+  Button,
+  ExternalLink,
+  FormGroup,
+  Input,
+} from "../shared";
 
 export const ElevatePage = () => {
   const dispatch = useDispatch();
@@ -69,7 +76,7 @@ export const ElevatePage = () => {
           <p>
             We require a short-lived elevated token before allowing changes to
             authentication credentials (i.e. changing password, adding pubkey,
-            disabling 2FA).
+            disabling 2FA). This token lasts for 15 minutes.
           </p>
         </div>
 
@@ -120,8 +127,23 @@ export const ElevatePage = () => {
                 />
               </FormGroup>
 
-              {requireOtp ? (
-                <FormGroup label="2FA" htmlFor="input-2fa">
+              {!requireOtp ? (
+                <FormGroup
+                  label="2FA"
+                  htmlFor="input-2fa"
+                  description={
+                    <p>
+                      Read our 2fa{" "}
+                      <ExternalLink
+                        href="https://www.aptible.com/docs/password-authentication#2-factor-authentication-2fa"
+                        variant="info"
+                      >
+                        docs
+                      </ExternalLink>{" "}
+                      to learn more.
+                    </p>
+                  }
+                >
                   <Input
                     type="number"
                     value={otpToken}
