@@ -28,7 +28,7 @@ export const ForgotPassPage = () => {
   return (
     <HeroBgLayout>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Reset your password</h1>
+        <h1 className={tokens.type.h1}>Forgot Password?</h1>
         <p className="mt-6 text-gray-600">
           Provide the email address associated with your account and we will
           send you a reset password email.
@@ -79,7 +79,7 @@ export const ForgotPassVerifyPage = () => {
   return (
     <HeroBgLayout>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Reset your password</h1>
+        <h1 className={tokens.type.h1}>Reset Password</h1>
         <p className="mt-6 text-gray-600">Finish changing your password.</p>
       </div>
       <Box>

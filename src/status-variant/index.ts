@@ -38,11 +38,11 @@ export const variantToColor = (s: StatusVariant): string => {
 export const variantToClassName = (s: StatusVariant): string => {
   switch (s) {
     case "warning":
-      return "bg-orange-200 border-orange-200";
+      return "bg-orange text-white";
     case "success":
-      return "bg-green-200 border-green-200";
+      return "bg-forest text-white";
     case "error":
-      return "text-white bg-red";
+      return "bg-red text-white";
     case "info":
       return "bg-black-50 border-black-100 border-1";
     default:
