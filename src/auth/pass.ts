@@ -23,7 +23,7 @@ export const forgotPass = authApi.post<{ email: string }>(
 
     ctx.loader = {
       id: ctx.name,
-      message: "Check your email to change your password.",
+      message: "Success! Check your email to change your password.",
     };
   },
 );
