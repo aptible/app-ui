@@ -181,7 +181,7 @@ export const ftuxRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.RESET_REQUEST_PASSWORD_PATH,
+    path: routes.FORGOT_PASS_PATH,
     element: <ForgotPassPage />,
   },
 
@@ -483,12 +483,12 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.RESET_REQUEST_PASSWORD_PATH,
+    path: routes.FORGOT_PASS_PATH,
     element: <ForgotPassPage />,
   },
 
   {
-    path: routes.RESET_PASSWORD_PATH,
+    path: routes.FORGOT_PASS_PATH,
     element: <ForgotPassVerifyPage />,
   },
 

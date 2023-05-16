@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 
 import { ForgotPassPage, ForgotPassVerifyPage } from "./forgot-pass";
 import { testEmail } from "@app/mocks";
-import { RESET_PASSWORD_PATH, resetPassVerify } from "@app/routes";
+import { RESET_PASSWORD_PATH, resetPassVerifyUrl } from "@app/routes";
 import { setupIntegrationTest } from "@app/test";
 
 describe("ForgotPassPage", () => {
@@ -41,7 +41,7 @@ describe("ForgotPassVerifyPage", () => {
   it("should allow user to change their password", async () => {
     const { TestProvider } = setupIntegrationTest({
       path: RESET_PASSWORD_PATH,
-      initEntries: [resetPassVerify("111", "222")],
+      initEntries: [resetPassVerifyUrl("111", "222")],
     });
     render(
       <TestProvider>

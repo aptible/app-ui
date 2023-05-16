@@ -1,7 +1,28 @@
 import classNames from "classnames";
 
-import { IconAlertTriangle, IconInfo } from "./icons";
 import { StatusVariant, variantToClassName } from "@app/status-variant";
+
+import { IconAlertTriangle, IconCheckCircle, IconInfo } from "./icons";
+
+const VariantIcon = ({ variant = "info" }: { variant: StatusVariant }) => {
+  if (variant === "error") {
+    return <IconAlertTriangle color="#fff" />;
+  }
+
+  if (variant === "warning") {
+    return <IconAlertTriangle color="#fff" />;
+  }
+
+  if (variant === "success") {
+    return <IconCheckCircle />;
+  }
+
+  if (variant === "info") {
+    return <IconInfo />;
+  }
+
+  return <IconInfo />;
+};
 
 export const Banner = ({
   children,
@@ -24,7 +45,7 @@ export const Banner = ({
       )}
     >
       <div className="mr-2">
-        {variant === "info" ? <IconInfo /> : <IconAlertTriangle color="#fff" />}
+        <VariantIcon variant={variant} />
       </div>
       <div>{children}</div>
     </div>

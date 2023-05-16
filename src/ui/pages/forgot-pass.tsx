@@ -107,7 +107,7 @@ export const ForgotPassVerifyPage = () => {
             <BannerMessages className="my-2" {...loader} />
           ) : null}
           {loader.isSuccess ? (
-            <Banner>
+            <Banner className="my-2" variant="success">
               Success! Continue to <Link to={loginUrl()}>login</Link>
             </Banner>
           ) : null}
