@@ -33,6 +33,7 @@ export function ModalHeading({
 }: ModalHeadingProps) {
   const closeButton = onClose ? (
     <button
+      type="button"
       className={cn(tokens.type["subdued active link"], "p-0 text-sm")}
       onClick={() => onClose()}
       onKeyDown={() => onClose()}

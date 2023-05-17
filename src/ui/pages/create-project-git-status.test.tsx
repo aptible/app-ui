@@ -40,7 +40,7 @@ describe("CreateProjectGitStatusPage", () => {
       const txt = await screen.findByText(/Which service needs an/);
       expect(txt).toBeInTheDocument();
       const btn = await screen.findByRole("button", {
-        name: "Create endpoint",
+        name: "Create Endpoint",
       });
       expect(btn).toBeInTheDocument();
       const vhostSelector = await screen.findAllByRole("radio");

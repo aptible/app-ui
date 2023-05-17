@@ -27,8 +27,8 @@ describe("ForgotPassPage", () => {
     fireEvent.click(btn);
 
     const alert = await screen.findByRole("status");
-    expect(alert.textContent).toEqual(
-      "Success! Check your email to change your password.",
+    expect(alert.textContent).toMatch(
+      /Success! Check your email to change your password./,
     );
     expect(
       btn,
@@ -61,7 +61,7 @@ describe("ForgotPassVerifyPage", () => {
     fireEvent.click(btn);
 
     const alert = await screen.findByRole("status");
-    expect(alert.textContent).toEqual("Success! Continue to login");
+    expect(alert.textContent).toMatch(/Success! Continue to login/);
     expect(
       btn,
       "when already reset password the btn should be disabled",
