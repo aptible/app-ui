@@ -18,7 +18,7 @@ import {
   useQuery,
 } from "saga-query/react";
 
-import { prettyDateRelative } from "@app/date";
+import { prettyDateRelative, timeBetween } from "@app/date";
 import {
   appDetailUrl,
   createProjectAddKeyUrl,
@@ -1472,7 +1472,23 @@ const Op = ({
   alwaysRetry?: boolean;
   status: OperationStatus;
 }) => {
+  const [runningTime, setRunningTime] = useState<string>("");
   const [isOpen, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (["succeeded", "failed"].includes(op.status)) return;
+
+    const interval = setInterval(() => {
+      setRunningTime(
+        timeBetween({
+          startDate: op.createdAt,
+          endDate: new Date().toString(),
+        }),
+      );
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [op.status]);
+
   if (!hasDeployOperation(op)) {
     return null;
   }
@@ -1486,6 +1502,10 @@ const Op = ({
   const extra = "border-b border-black-100";
   const statusView = () => {
     const cns = "font-semibold flex justify-center items-center";
+    const completedTime = timeBetween({
+      startDate: op.createdAt,
+      endDate: op.updatedAt,
+    });
 
     if (op.status === "succeeded") {
       return (
@@ -1503,6 +1523,9 @@ const Op = ({
               Re-run
             </Button>
           ) : null}
+          <span className={`mx-2 ${tokens.type["small lighter"]}`}>
+            {completedTime}{" "}
+          </span>
           {createReadableStatus(op.status)}
         </div>
       );
@@ -1524,15 +1547,26 @@ const Op = ({
               Re-run
             </Button>
           ) : null}
+          <span className={`mx-2 ${tokens.type["small lighter"]}`}>
+            {completedTime}{" "}
+          </span>
           {createReadableStatus(op.status)}
         </div>
       );
     }
 
     return (
-      <div className={cn(cns, "text-black-500")}>
-        {createReadableStatus(op.status)}
-      </div>
+      <>
+        <div className={cn(cns, "text-black-500")}>
+          {runningTime && (
+            <span className={`mx-2 ${tokens.type["small lighter"]}`}>
+              {" "}
+              {runningTime}
+            </span>
+          )}
+          {createReadableStatus(op.status)}
+        </div>
+      </>
     );
   };
 
