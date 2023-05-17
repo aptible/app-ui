@@ -142,6 +142,7 @@ import {
   deployProject,
   redeployApp,
 } from "@app/projects";
+import { timeBetween } from "@app/date";
 
 export const CreateProjectLayout = ({
   children,
@@ -1472,10 +1473,27 @@ const Op = ({
   alwaysRetry?: boolean;
   status: OperationStatus;
 }) => {
+  const [runningTime, setRunningTime] = useState<string | null>(null);
   const [isOpen, setOpen] = useState(false);
   if (!hasDeployOperation(op)) {
     return null;
   }
+
+  useEffect(() => {
+    if (!["succeeded", "failed"].includes(op.status)) {
+      const interval = setInterval(() => {
+        setRunningTime(
+          op.createdAt && op.updatedAt
+            ? timeBetween({
+                startDate: op.createdAt,
+                endDate: new Date().toString(),
+              })
+            : null,
+        );
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [op.status]);
 
   const handleCopy = (e: SyntheticEvent, text: string) => {
     e.preventDefault();
@@ -1486,6 +1504,10 @@ const Op = ({
   const extra = "border-b border-black-100";
   const statusView = () => {
     const cns = "font-semibold flex justify-center items-center";
+    const completedTime =
+      op.createdAt && op.updatedAt
+        ? timeBetween({ startDate: op.createdAt, endDate: op.updatedAt })
+        : null;
 
     if (op.status === "succeeded") {
       return (
@@ -1503,6 +1525,11 @@ const Op = ({
               Re-run
             </Button>
           ) : null}
+          {completedTime && (
+            <span className={`mx-2 ${tokens.type["small lighter"]}`}>
+              {completedTime}{" "}
+            </span>
+          )}
           {createReadableStatus(op.status)}
         </div>
       );
@@ -1524,15 +1551,28 @@ const Op = ({
               Re-run
             </Button>
           ) : null}
+          {completedTime && (
+            <span className={`mx-2 ${tokens.type["small lighter"]}`}>
+              {completedTime}{" "}
+            </span>
+          )}
           {createReadableStatus(op.status)}
         </div>
       );
     }
 
     return (
-      <div className={cn(cns, "text-black-500")}>
-        {createReadableStatus(op.status)}
-      </div>
+      <>
+        <div className={cn(cns, "text-black-500")}>
+          {runningTime && (
+            <span className={`mx-2 ${tokens.type["small lighter"]}`}>
+              {" "}
+              {runningTime}
+            </span>
+          )}
+          {createReadableStatus(op.status)}
+        </div>
+      </>
     );
   };
 
