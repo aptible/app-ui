@@ -18,7 +18,7 @@ import {
   useQuery,
 } from "saga-query/react";
 
-import { prettyDateRelative } from "@app/date";
+import { prettyDateRelative, timeBetween } from "@app/date";
 import {
   appDetailUrl,
   createProjectAddKeyUrl,
@@ -142,7 +142,6 @@ import {
   deployProject,
   redeployApp,
 } from "@app/projects";
-import { timeBetween } from "@app/date";
 
 export const CreateProjectLayout = ({
   children,
