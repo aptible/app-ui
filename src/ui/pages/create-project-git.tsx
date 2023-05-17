@@ -1472,7 +1472,7 @@ const Op = ({
   alwaysRetry?: boolean;
   status: OperationStatus;
 }) => {
-  const [runningTime, setRunningTime] = useState<string | null>(null);
+  const [runningTime, setRunningTime] = useState<string>("");
   const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
@@ -1502,9 +1502,10 @@ const Op = ({
   const extra = "border-b border-black-100";
   const statusView = () => {
     const cns = "font-semibold flex justify-center items-center";
-    const completedTime = op.updatedAt
-      ? timeBetween({ startDate: op.createdAt, endDate: op.updatedAt })
-      : null;
+    const completedTime = timeBetween({
+      startDate: op.createdAt,
+      endDate: op.updatedAt,
+    });
 
     if (op.status === "succeeded") {
       return (
@@ -1522,11 +1523,9 @@ const Op = ({
               Re-run
             </Button>
           ) : null}
-          {completedTime && (
-            <span className={`mx-2 ${tokens.type["small lighter"]}`}>
-              {completedTime}{" "}
-            </span>
-          )}
+          <span className={`mx-2 ${tokens.type["small lighter"]}`}>
+            {completedTime}{" "}
+          </span>
           {createReadableStatus(op.status)}
         </div>
       );
@@ -1548,11 +1547,9 @@ const Op = ({
               Re-run
             </Button>
           ) : null}
-          {completedTime ? (
-            <span className={`mx-2 ${tokens.type["small lighter"]}`}>
-              {completedTime}{" "}
-            </span>
-          ) : null}
+          <span className={`mx-2 ${tokens.type["small lighter"]}`}>
+            {completedTime}{" "}
+          </span>
           {createReadableStatus(op.status)}
         </div>
       );
