@@ -203,8 +203,8 @@ export const CreateProjectLayout = ({
         </div>
       </div>
 
-      <HeroBgLayout showLogo={false}>
-        <div style={{ width: 700 }}>{children ? children : <Outlet />}</div>
+      <HeroBgLayout showLogo={false} width={700}>
+        {children ? children : <Outlet />}
       </HeroBgLayout>
     </>
   );

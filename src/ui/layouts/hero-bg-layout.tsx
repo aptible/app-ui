@@ -4,7 +4,8 @@ import { Outlet } from "react-router";
 export const HeroBgLayout = ({
   showLogo = true,
   children,
-}: { showLogo?: boolean; children: React.ReactNode }) => {
+  width = 500,
+}: { showLogo?: boolean; children: React.ReactNode; width: number }) => {
   return (
     <div
       className="flex flex-col flex-1 h-full bg-no-repeat bg-center bg-cover"
@@ -17,7 +18,7 @@ export const HeroBgLayout = ({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
             <div className="py-4">
               <div className="flex justify-center container">
-                <div style={{ width: 500 }}>
+                <div style={{ width }}>
                   {showLogo ? (
                     <div className="flex items-center justify-center mb-5">
                       <AptibleLogo width={160} />
