@@ -43,6 +43,7 @@ import {
 } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 
+import { HeroBgLayout } from "../layouts";
 import {
   AptibleLogo,
   Banner,
@@ -142,7 +143,6 @@ import {
   deployProject,
   redeployApp,
 } from "@app/projects";
-import { HeroBgLayout } from "../layouts";
 
 export const CreateProjectLayout = ({
   children,
