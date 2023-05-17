@@ -5,7 +5,7 @@ export const HeroBgLayout = ({
   showLogo = true,
   children,
   width = 500,
-}: { showLogo?: boolean; children: React.ReactNode; width: number }) => {
+}: { showLogo?: boolean; children: React.ReactNode; width?: number }) => {
   return (
     <div
       className="flex flex-col flex-1 h-full bg-no-repeat bg-center bg-cover"
