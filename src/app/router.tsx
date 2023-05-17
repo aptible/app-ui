@@ -56,6 +56,7 @@ import {
   SettingsPageLayout,
   SignupPage,
   TeamPage,
+  UnauthRequired,
   VerifyEmailPage,
 } from "@app/ui";
 import { ReactRouterErrorElement } from "@app/ui/shared/error-boundary";
@@ -177,17 +178,35 @@ export const ftuxRoutes: RouteObject[] = [
 
   {
     path: routes.LOGIN_PATH,
-    element: <LoginPage />,
+    element: <UnauthRequired />,
+    children: [
+      {
+        index: true,
+        element: <LoginPage />,
+      },
+    ],
   },
 
   {
     path: routes.FORGOT_PASS_PATH,
-    element: <ForgotPassPage />,
+    element: <UnauthRequired />,
+    children: [
+      {
+        index: true,
+        element: <ForgotPassPage />,
+      },
+    ],
   },
 
   {
     path: routes.RESET_PASSWORD_PATH,
-    element: <ForgotPassVerifyPage />,
+    element: <UnauthRequired />,
+    children: [
+      {
+        index: true,
+        element: <ForgotPassVerifyPage />,
+      },
+    ],
   },
 
   {

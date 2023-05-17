@@ -7,3 +7,4 @@ export * from "./app-detail-layout";
 export * from "./database-detail-layout";
 export * from "./environment-detail-layout";
 export * from "./hero-bg-layout";
+export * from "./unauth-required";
