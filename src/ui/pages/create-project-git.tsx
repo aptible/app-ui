@@ -1548,11 +1548,11 @@ const Op = ({
               Re-run
             </Button>
           ) : null}
-          {completedTime && (
+          {completedTime ? (
             <span className={`mx-2 ${tokens.type["small lighter"]}`}>
               {completedTime}{" "}
             </span>
-          )}
+          ) : null}
           {createReadableStatus(op.status)}
         </div>
       );
