@@ -1479,7 +1479,7 @@ const Op = ({
     if (!["succeeded", "failed"].includes(op.status)) {
       const interval = setInterval(() => {
         setRunningTime(
-          op.createdAt && op.updatedAt
+          op.createdAt
             ? timeBetween({
                 startDate: op.createdAt,
                 endDate: new Date().toString(),
