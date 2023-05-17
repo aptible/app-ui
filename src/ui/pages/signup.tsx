@@ -3,10 +3,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { useLoaderSuccess } from "saga-query/react";
+import { useLoader, useLoaderSuccess } from "saga-query/react";
 
-import { signup, validatePasswordComplexity } from "@app/auth";
-import { selectAuthLoader } from "@app/auth";
+import {
+  fetchCurrentToken,
+  signup,
+  validatePasswordComplexity,
+} from "@app/auth";
 import {
   fetchInvitation,
   selectInvitationRequest,
@@ -20,14 +23,8 @@ import {
 } from "@app/routes";
 import { validEmail } from "@app/string-utils";
 
-import {
-  AptibleLogo,
-  BannerMessages,
-  Button,
-  FormGroup,
-  Input,
-  LoggedInBanner,
-} from "../shared";
+import { HeroBgLayout } from "../layouts";
+import { BannerMessages, Button, FormGroup, Input } from "../shared";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 
 const createQueryStringValue =
@@ -43,21 +40,20 @@ const createQueryStringValue =
     return returnValue || "";
   };
 
-const SignupPageForm = () => {
+export const SignupPage = () => {
+  const loader = useLoader(fetchCurrentToken);
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const getQueryStringValue = createQueryStringValue(location.search);
   const redirectPath = useSelector(selectRedirectPath);
+  const { isLoading } = loader;
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState(getQueryStringValue("email"));
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passError, setPassError] = useState("");
-
-  const loader = useSelector(selectAuthLoader);
-  const { isLoading } = loader;
 
   const invitationRequest = useSelector(selectInvitationRequest);
   const invitation = useSelector(selectPendingInvitation);
@@ -124,19 +120,24 @@ const SignupPageForm = () => {
     }
   });
 
-  return (
-    <div>
-      <LoggedInBanner />
+  // presentError - this value is set because in specific scenarios, we do not need the
+  // middleware error message presented - namely on Unauthorized checks, as we do a
+  // validation of the current token to see if a user is loaded. for all other
+  const presentError = loader.isError && loader.message !== "Unauthorized";
 
-      <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="flex items-center justify-center">
-            <AptibleLogo />
-          </div>
-          <h2 className="mt-6 text-center text-3xl font-semibold text-gray-900">
-            Create your Aptible Account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+  return (
+    <HeroBgLayout>
+      <h2 className="mt-6 text-center text-5xl font-bold text-gray-900">
+        Get started for free
+      </h2>
+      <div className="flex text-center items-center justify-center mt-4">
+        <div className="max-w-2xl">
+          <p>
+            Aptible's PaaS automates the work of provisioning, managing, and
+            scaling infrastructure, so you can focus on what matters:{" "}
+            <strong>your product.</strong>
+          </p>
+          <p className="mt-4 text-center text-sm text-gray-600">
             Already have an account?{" "}
             <Link
               to={loginUrl()}
@@ -146,84 +147,80 @@ const SignupPageForm = () => {
             </Link>
           </p>
         </div>
+      </div>
 
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form className="space-y-6" onSubmit={onSubmitForm}>
-              <FormGroup label="Your name" htmlFor="name">
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  required={true}
-                  value={name}
-                  disabled={isLoading}
-                  autoFocus={true}
-                  className="w-full"
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </FormGroup>
+      <div className="mt-0 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-4 px-4 shadow sm:rounded-lg sm:px-10">
+          <form className="space-y-6" onSubmit={onSubmitForm}>
+            <FormGroup label="Your name" htmlFor="name">
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                required={true}
+                value={name}
+                disabled={isLoading}
+                autoFocus={true}
+                className="w-full"
+                onChange={(e) => setName(e.target.value)}
+              />
+            </FormGroup>
 
-              <FormGroup
-                label="Your email"
-                htmlFor="email"
-                feedbackVariant={emailError ? "danger" : "info"}
-                feedbackMessage={emailError}
+            <FormGroup
+              label="Your email"
+              htmlFor="email"
+              feedbackVariant={emailError ? "danger" : "info"}
+              feedbackMessage={emailError}
+            >
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required={true}
+                disabled={isLoading}
+                value={invitation ? invitation.email : email}
+                className="w-full"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </FormGroup>
+
+            <FormGroup
+              label="Password"
+              htmlFor="password"
+              feedbackVariant={passError ? "danger" : "info"}
+              feedbackMessage={passError}
+            >
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required={true}
+                value={password}
+                className="w-full"
+                disabled={isLoading}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </FormGroup>
+
+            {presentError ? <BannerMessages {...loader} /> : null}
+            <div>
+              <Button
+                type="submit"
+                variant="primary"
+                layout="block"
+                size="lg"
+                disabled={disableSave}
+                isLoading={loader.isLoading}
               >
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required={true}
-                  disabled={isLoading}
-                  value={invitation ? invitation.email : email}
-                  className="w-full"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </FormGroup>
-
-              <FormGroup
-                label="Password"
-                htmlFor="password"
-                feedbackVariant={passError ? "danger" : "info"}
-                feedbackMessage={passError}
-              >
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required={true}
-                  value={password}
-                  className="w-full"
-                  disabled={isLoading}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </FormGroup>
-
-              {loader.isError ? <BannerMessages {...loader} /> : null}
-              <div>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  layout="block"
-                  size="lg"
-                  disabled={disableSave}
-                  isLoading={loader.isLoading}
-                >
-                  Create Account
-                </Button>
-              </div>
-            </form>
-          </div>
+                Create Account
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
-    </div>
+    </HeroBgLayout>
   );
-};
-
-export const SignupPage = () => {
-  return <SignupPageForm />;
 };
