@@ -1474,9 +1474,6 @@ const Op = ({
 }) => {
   const [runningTime, setRunningTime] = useState<string | null>(null);
   const [isOpen, setOpen] = useState(false);
-  if (!hasDeployOperation(op)) {
-    return null;
-  }
 
   useEffect(() => {
     if (!["succeeded", "failed"].includes(op.status)) {
@@ -1493,6 +1490,10 @@ const Op = ({
       return () => clearInterval(interval);
     }
   }, [op.status]);
+
+  if (!hasDeployOperation(op)) {
+    return null;
+  }
 
   const handleCopy = (e: SyntheticEvent, text: string) => {
     e.preventDefault();
