@@ -1476,19 +1476,17 @@ const Op = ({
   const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!["succeeded", "failed"].includes(op.status)) {
-      const interval = setInterval(() => {
-        setRunningTime(
-          op.createdAt
-            ? timeBetween({
-                startDate: op.createdAt,
-                endDate: new Date().toString(),
-              })
-            : null,
-        );
-      }, 1000);
-      return () => clearInterval(interval);
-    }
+    if (["succeeded", "failed"].includes(op.status)) return;
+
+    const interval = setInterval(() => {
+      setRunningTime(
+        timeBetween({
+          startDate: op.createdAt,
+          endDate: new Date().toString(),
+        }),
+      );
+    }, 1000);
+    return () => clearInterval(interval);
   }, [op.status]);
 
   if (!hasDeployOperation(op)) {
@@ -1504,10 +1502,9 @@ const Op = ({
   const extra = "border-b border-black-100";
   const statusView = () => {
     const cns = "font-semibold flex justify-center items-center";
-    const completedTime =
-      op.createdAt && op.updatedAt
-        ? timeBetween({ startDate: op.createdAt, endDate: op.updatedAt })
-        : null;
+    const completedTime = op.updatedAt
+      ? timeBetween({ startDate: op.createdAt, endDate: op.updatedAt })
+      : null;
 
     if (op.status === "succeeded") {
       return (
