@@ -1,9 +1,4 @@
-export type StatusVariant =
-  | "warning"
-  | "success"
-  | "error"
-  | "info"
-  | "default";
+import { StatusVariant } from "@app/types";
 
 export const variantToTextColor = (s: StatusVariant): string => {
   switch (s) {

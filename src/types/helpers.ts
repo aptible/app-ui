@@ -22,3 +22,10 @@ export interface ActionWithPayload<P = any, T extends string = string>
 export interface MapEntity<E> {
   [key: string]: E | undefined;
 }
+
+export type StatusVariant =
+  | "warning"
+  | "success"
+  | "error"
+  | "info"
+  | "default";

@@ -12,6 +12,7 @@ import * as orgs from "@app/organizations";
 import * as redirectPath from "@app/redirect-path";
 import * as resetStore from "@app/reset-store";
 import * as theme from "@app/theme";
+import * as toast from "@app/toast";
 import * as token from "@app/token";
 import * as users from "@app/users";
 
@@ -32,6 +33,7 @@ const corePackages: any[] = [
   theme,
   deploy,
   modal,
+  toast,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {
@@ -52,6 +54,8 @@ const initialSagas = {
   api: api.saga(),
   authApi: authApi.saga(),
   thunks: thunks.saga(),
+  toastAdder: toast.toastAdder,
+  toastCleaner: toast.toastCleaner,
 };
 
 export const sagas = corePackages.reduce((acc, pkg) => {

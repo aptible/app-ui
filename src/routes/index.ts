@@ -150,3 +150,6 @@ export const createProjectGitSettingsUrl = (appId: string, query = "") =>
 export const CREATE_PROJECT_GIT_STATUS_PATH = "/apps/:appId/git/status";
 export const createProjectGitStatusUrl = (appId: string) =>
   `/apps/${appId}/git/status`;
+
+export const PLAYGROUND_PATH = "/playground";
+export const playgroundUrl = () => PLAYGROUND_PATH;

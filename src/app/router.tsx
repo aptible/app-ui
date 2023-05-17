@@ -50,6 +50,7 @@ import {
   NotFoundPage,
   OtpRecoveryCodesPage,
   OtpSetupPage,
+  PlaygroundPage,
   SSHSettingsPage,
   SecuritySettingsPage,
   SettingsPage,
@@ -213,6 +214,11 @@ export const ftuxRoutes: RouteObject[] = [
   {
     path: routes.ERROR_PATH,
     element: <ErrorPage />,
+  },
+
+  {
+    path: routes.PLAYGROUND_PATH,
+    element: <PlaygroundPage />,
   },
 
   {
@@ -505,6 +511,11 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.ERROR_PATH,
     element: <ErrorPage />,
+  },
+
+  {
+    path: routes.PLAYGROUND_PATH,
+    element: <PlaygroundPage />,
   },
 
   {

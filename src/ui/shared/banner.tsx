@@ -1,6 +1,7 @@
 import classNames from "classnames";
 
-import { StatusVariant, variantToClassName } from "@app/status-variant";
+import { variantToClassName } from "@app/status-variant";
+import { StatusVariant } from "@app/types";
 
 import { IconAlertTriangle, IconCheck, IconInfo } from "./icons";
 

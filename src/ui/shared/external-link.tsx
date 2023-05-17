@@ -1,4 +1,4 @@
-import { StatusVariant } from "@app/status-variant";
+import { StatusVariant } from "@app/types";
 
 const variantToLinks = (variant: StatusVariant): string => {
   switch (variant) {
