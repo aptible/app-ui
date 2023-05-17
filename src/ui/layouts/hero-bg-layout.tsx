@@ -14,9 +14,9 @@ export const HeroBgLayout = ({
       }}
     >
       <main className="flex-1">
-        <div className="py-16">
+        <div className={showLogo ? "py-16" : "py-10"}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-            <div className="py-4">
+            <div className={showLogo ? "py-4" : "py-0"}>
               <div className="flex justify-center container">
                 <div style={{ width }}>
                   {showLogo ? (
