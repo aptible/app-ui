@@ -76,11 +76,11 @@ describe("Deployments page", () => {
       </TestProvider>,
     );
 
-    const btn = await screen.findByRole("button");
+    const btn = await screen.findByRole("link");
     expect(btn).toBeInTheDocument();
     expect(await screen.findByText(app.handle)).toBeInTheDocument();
     const status = await screen.findByRole("status");
-    expect(status.textContent).toBe("Deployed 04/08/2023");
+    expect(status.textContent).toMatch(/Deployed 04\/08\/2023/);
   });
 
   it("should show a list of apps for accounts filtered by `accounts` query param", async () => {
@@ -251,7 +251,7 @@ describe("Deployments page", () => {
       </TestProvider>,
     );
 
-    const btn = await screen.findByRole("button");
+    const btn = await screen.findByRole("link");
     expect(btn).toBeInTheDocument();
     expect(await screen.findByText(apps[0].handle)).toBeInTheDocument();
     expect(await screen.findByText(apps[1].handle)).toBeInTheDocument();

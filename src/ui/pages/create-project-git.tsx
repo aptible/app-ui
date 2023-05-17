@@ -1968,7 +1968,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
         disabled={!hasSelected}
         className="mt-4"
       >
-        Create endpoint
+        Create Endpoint
       </Button>
 
       <BannerMessages {...loader} className="mt-2" />

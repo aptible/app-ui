@@ -25,12 +25,8 @@ const FormatDistanceLocale: { [key: string]: string } = {
   almostXYears: "{{count}}y",
 };
 
-const formatDistanceAgo = (
-  token: string,
-  count: string,
-  options: any,
-): string => {
-  options = options || {};
+const formatDistanceAgo = (token: string, count: string, opts: any): string => {
+  const options = opts || {};
 
   const result = FormatDistanceLocale[token].replace("{{count}}", count);
 
@@ -54,7 +50,7 @@ const formatDistance = (
 
 // very heavily borrowed/taken from:
 // https://github.com/date-fns/date-fns/issues/1706#issuecomment-836601089
-export const timeAgo = (dateStr: string = ""): string => {
+export const timeAgo = (dateStr = ""): string => {
   return formatDistanceToNowStrict(new Date(dateStr), {
     addSuffix: true,
     locale: {
@@ -77,22 +73,22 @@ export const timeBetween = ({
   });
 };
 
-export const prettyEnglishDate = (dateStr: string = "") => {
+export const prettyEnglishDate = (dateStr = "") => {
   return format(new Date(dateStr), "MMM dd, yyyy");
 };
 
-export const prettyEnglishDateWithTime = (dateStr: string = "") => {
+export const prettyEnglishDateWithTime = (dateStr = "") => {
   return format(new Date(dateStr), "MMM dd, yyyy 'at' hh:mm a");
 };
 
-export const prettyDateTime = (dateStr: string = "") => {
+export const prettyDateTime = (dateStr = "") => {
   return format(new Date(dateStr), "yyyy-MM-dd hh:mm:ss aaa");
 };
 
-export const prettyDate = (dateStr: string = "") => {
+export const prettyDate = (dateStr = "") => {
   return format(new Date(dateStr), "yyyy-MM-dd");
 };
 
-export const prettyDateRelative = (dateStr: string = "") => {
+export const prettyDateRelative = (dateStr = "") => {
   return formatRelative(new Date(dateStr), new Date());
 };

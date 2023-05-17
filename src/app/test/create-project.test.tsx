@@ -19,10 +19,10 @@ describe("Create project flow", () => {
       render(<App />);
 
       // deploy code landing page
-      const el = screen.getByRole("button", {
-        name: "Deploy with Git Push",
+      const el = screen.getByRole("link", {
+        name: /Deploy with Git Push/,
       });
-      expect(el.textContent).toEqual("Deploy with Git Push");
+      expect(el.textContent).toMatch(/Deploy with Git Push/);
       // go to next page
       fireEvent.click(el);
 
@@ -65,8 +65,8 @@ describe("Create project flow", () => {
       fireEvent.click(saveBtn);
 
       // status page
-      await screen.findByRole("button", {
-        name: "View Environment",
+      await screen.findByRole("link", {
+        name: /View Environment/,
       });
       const status = await screen.findByText(/Deployed today/);
       expect(status).toBeInTheDocument();
@@ -82,7 +82,9 @@ describe("Create project flow", () => {
 
       const vhostSelector = await screen.findAllByRole("radio");
       fireEvent.click(vhostSelector[0]);
-      const httpBtn = await screen.findByText("Create endpoint");
+      const httpBtn = await screen.findByRole("button", {
+        name: "Create Endpoint",
+      });
       fireEvent.click(httpBtn);
 
       await screen.findByText("HTTPS endpoint provision");

@@ -54,6 +54,7 @@ export const ForgotPassPage = () => {
             className="w-full mt-4"
             disabled={email === "" || loader.isSuccess}
             isLoading={loader.isLoading}
+            type="submit"
           >
             Reset password
           </Button>
@@ -99,6 +100,7 @@ export const ForgotPassVerifyPage = () => {
             className="w-full mt-4"
             disabled={pass === "" || loader.isSuccess}
             isLoading={loader.isLoading}
+            type="submit"
           >
             Change password
           </Button>
