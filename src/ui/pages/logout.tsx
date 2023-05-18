@@ -13,7 +13,7 @@ export const LogoutPage = () => {
   const navigate = useNavigate();
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const logoutSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     dispatch(logout());
     navigate(loginUrl());
@@ -32,12 +32,10 @@ export const LogoutPage = () => {
         </p>
       </div>
       <Box>
-        <form onSubmit={onSubmit}>
-          <Button className="font-semibold w-full">
-            Log Out
-            <IconArrowRight className="ml-2" />
-          </Button>
-        </form>
+        <Button onClick={logoutSubmit} className="font-semibold w-full">
+          Log Out
+          <IconArrowRight className="ml-2" />
+        </Button>
       </Box>
     </HeroBgLayout>
   );
