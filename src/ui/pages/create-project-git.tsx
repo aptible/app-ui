@@ -1122,7 +1122,7 @@ export const CreateProjectGitSettingsPage = () => {
   const { scanOp, codeScan } = useLatestCodeResults(appId);
   useQuery(fetchDatabasesByEnvId({ envId: app.environmentId }));
 
-  useQuery(fetchAllDatabaseImages());
+  const imgLoader = useQuery(fetchAllDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesAsList);
 
   useQuery(fetchServiceDefinitionsByAppId({ appId }));
@@ -1316,32 +1316,36 @@ export const CreateProjectGitSettingsPage = () => {
         </div>
 
         <form onSubmit={onSubmit}>
-          <FormGroup
-            label=""
-            htmlFor="databases"
-            feedbackVariant={dbErrors ? "danger" : "info"}
-            feedbackMessage={dbErrors.map((e) => e.message).join(". ")}
-            description={
-              <div>
-                {existingDbs.length > 0 ? (
-                  <p>
-                    Databases have already been created so you cannot make
-                    changes to them in this screen anymore.
-                  </p>
-                ) : null}
-              </div>
-            }
-          >
-            {existingDbs.length > 0 ? null : (
-              <DatabaseSelectorForm
-                images={dbImages}
-                namePrefix={app.handle}
-                dbMap={dbMap}
-                dispatch={dbDispatch}
-                appHandle={app.handle}
-              />
-            )}
-          </FormGroup>
+          {imgLoader.isInitialLoading ? (
+            <Loading text="Loading Databases..." />
+          ) : (
+            <FormGroup
+              label=""
+              htmlFor="databases"
+              feedbackVariant={dbErrors ? "danger" : "info"}
+              feedbackMessage={dbErrors.map((e) => e.message).join(". ")}
+              description={
+                <div>
+                  {existingDbs.length > 0 ? (
+                    <p>
+                      Databases have already been created so you cannot make
+                      changes to them in this screen anymore.
+                    </p>
+                  ) : null}
+                </div>
+              }
+            >
+              {existingDbs.length > 0 ? null : (
+                <DatabaseSelectorForm
+                  images={dbImages}
+                  namePrefix={app.handle}
+                  dbMap={dbMap}
+                  dispatch={dbDispatch}
+                  appHandle={app.handle}
+                />
+              )}
+            </FormGroup>
+          )}
 
           <hr className="my-4" />
 
@@ -1353,6 +1357,7 @@ export const CreateProjectGitSettingsPage = () => {
             description="Add any additional required variables, such as API keys, KNOWN_HOSTS setting, etc. Each line is a separate variable in format: ENV_VAR=VALUE."
           >
             <textarea
+              id="envs"
               name="envs"
               className={tokens.type.textarea}
               value={envs}
@@ -1396,10 +1401,12 @@ export const CreateProjectGitSettingsPage = () => {
               />
             ) : null}
           </FormGroup>
+
           {showServiceCommands ? null : (
             <Button
               onClick={() => setShowServiceCommands(true)}
               variant="secondary"
+              disabled={codeScan.data?.procfile_present}
             >
               <IconPlusCircle color="#fff" className="mr-2" />
               Configure
