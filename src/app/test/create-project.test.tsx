@@ -53,7 +53,7 @@ describe("Create project flow", () => {
       fireEvent.click(dbBtn);
 
       const dbSelector = await screen.findByRole("combobox");
-      userEvent.selectOptions(dbSelector, "postgres:14");
+      userEvent.selectOptions(dbSelector, "postgres v14");
       const dbEnvVar = await screen.findByRole("textbox", { name: "envvar" });
       expect(dbEnvVar).toHaveDisplayValue("DATABASE_URL");
 

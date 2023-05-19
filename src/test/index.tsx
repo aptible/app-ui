@@ -14,10 +14,13 @@ import { ftuxRoutes } from "@app/app/router";
 import { bootup } from "@app/bootup";
 import { testEnv } from "@app/mocks";
 import type { AppState } from "@app/types";
-import { configureStore } from "@reduxjs/toolkit";
+import { Store, configureStore } from "@reduxjs/toolkit";
+import { waitFor } from "@testing-library/react";
 import { REHYDRATE } from "redux-persist";
 
-export const setupTestStore = (initState: Partial<AppState> = {}) => {
+export const setupTestStore = (
+  initState: Partial<AppState> = {},
+): { store: Store<AppState> } => {
   const middleware = [];
   const prepared = prepareStore({
     reducers: reducers,
@@ -35,7 +38,7 @@ export const setupTestStore = (initState: Partial<AppState> = {}) => {
 
   prepared.run();
 
-  return { store };
+  return { store: store as any };
 };
 
 /**
@@ -107,4 +110,12 @@ export const setupIntegrationTest = (
     );
   };
   return { store, TestProvider };
+};
+
+export const waitForToken = (store: Store<AppState>) => {
+  return waitFor(() => {
+    if (store.getState().token.accessToken === "") {
+      throw new Error("no token");
+    }
+  });
 };
