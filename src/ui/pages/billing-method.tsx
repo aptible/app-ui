@@ -178,7 +178,7 @@ export const BillingMethodPage = () => {
           </FormGroup>
           <div className="flex justify-between gap-4 mt-4">
             <div>
-              <h4 className={`text-sm font-semibold mb-2`}>State</h4>
+              <h4 className={"text-sm font-semibold mb-2"}>State</h4>
               <div className="flex">
                 <Select
                   className="w-full"
@@ -203,7 +203,7 @@ export const BillingMethodPage = () => {
             </FormGroup>
           </div>
           <div className="mb-4">
-            <h4 className={`text-sm font-semibold mb-2`}>Country</h4>
+            <h4 className={"text-sm font-semibold mb-2"}>Country</h4>
             <div className="flex mb-2">
               <Select
                 className="w-full"
