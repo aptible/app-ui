@@ -854,6 +854,13 @@ const validateEnvs = (items: TextVal[]): ValidatorError[] => {
         message: `${item.key} does not match regex: /[a-zA-Z_]+[a-zA-Z0-9_]*/`,
       });
     }
+
+    if (item.value === "") {
+      errors.push({
+        item,
+        message: `${item.key} is blank, either provide a value or remove the environment variable`,
+      });
+    }
   };
 
   items.forEach(validate);
@@ -899,11 +906,7 @@ const DatabaseNameInput = ({
     onChange(e.currentTarget.value);
   };
   return (
-    <FormGroup
-      label="Database Handle"
-      htmlFor="dbname"
-      description="The name used to reference the database in Aptible."
-    >
+    <FormGroup label="Database Handle" htmlFor="dbname" className="flex-1">
       <Input name="dbname" value={value} onChange={change} />
     </FormGroup>
   );
@@ -920,11 +923,7 @@ const DatabaseEnvVarInput = ({
     onChange(e.currentTarget.value);
   };
   return (
-    <FormGroup
-      label="Environment variable"
-      htmlFor="envvar"
-      description="Variables will inject into your app with the correct connection string."
-    >
+    <FormGroup label="Environment Variable" htmlFor="envvar" className="flex-1">
       <Input name="envvar" value={value} onChange={change} />
     </FormGroup>
   );
@@ -964,13 +963,11 @@ const Selector = ({
   };
 
   const sel = (
-    <div>
-      <div className="mb-2">
-        <DatabaseNameInput
-          value={db.name}
-          onChange={(value) => propChange({ ...db, name: value })}
-        />
-      </div>
+    <div className="flex justify-between gap-3 mt-4">
+      <DatabaseNameInput
+        value={db.name}
+        onChange={(value) => propChange({ ...db, name: value })}
+      />
       <DatabaseEnvVarInput
         value={db.env}
         onChange={(value) => propChange({ ...db, env: value })}
@@ -979,17 +976,22 @@ const Selector = ({
   );
 
   const imgOptions = [
-    { value: "", label: "select a db" },
+    { value: "", label: "Choose a Database" },
     ...images.map((img) => ({
-      label: `${img.type}:${img.version}`,
+      label: `${img.type} v${img.version}`,
       value: img.id,
     })),
   ];
   const selectedValue = imgOptions.find((img) => img.value === db.imgId);
 
   return (
-    <div className="my-4">
-      <div className="flex justify-between items-center mb-2">
+    <div className="mb-4">
+      <h4 className={`${tokens.type.h4} mb-2`}>Database</h4>
+      <p className="text-black-500 mb-2">
+        Choose a database type and handle. The environment variable here will be
+        injected into your app with the connection URL.
+      </p>
+      <div className="flex mb-2">
         <Select
           onSelect={selectChange}
           value={selectedValue}
@@ -1075,8 +1077,8 @@ const DatabaseSelectorForm = ({
             />
           );
         })}
-      <Button type="button" onClick={onClick}>
-        <IconPlusCircle className="mr-2" /> New Database
+      <Button type="button" onClick={onClick} variant="secondary">
+        <IconPlusCircle className="mr-2" color="#fff" /> New Database
       </Button>
     </div>
   );
@@ -1133,7 +1135,7 @@ export const CreateProjectGitSettingsPage = () => {
   const { scanOp, codeScan } = useLatestCodeResults(appId);
   useQuery(fetchDatabasesByEnvId({ envId: app.environmentId }));
 
-  useQuery(fetchAllDatabaseImages());
+  const imgLoader = useQuery(fetchAllDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesAsList);
 
   useQuery(fetchServiceDefinitionsByAppId({ appId }));
@@ -1209,6 +1211,7 @@ export const CreateProjectGitSettingsPage = () => {
   const [envErrors, setEnvErrors] = useState<ValidatorError[]>([]);
   const [cmds, setCmds] = useState("");
   const cmdList = parseText(cmds, () => ({ id: "", http: false }));
+  const [showServiceCommands, setShowServiceCommands] = useState(false);
 
   // rehydrate already existing databases
   // this allows us to trigger a provision operation if we failed to do so
@@ -1326,32 +1329,36 @@ export const CreateProjectGitSettingsPage = () => {
         </div>
 
         <form onSubmit={onSubmit}>
-          <FormGroup
-            label="Required Databases"
-            htmlFor="databases"
-            feedbackVariant={dbErrors ? "danger" : "info"}
-            feedbackMessage={dbErrors.map((e) => e.message).join(". ")}
-            description={
-              <div>
-                {existingDbs.length > 0 ? (
-                  <p>
-                    Databases have already been created so you cannot make
-                    changes to them in this screen anymore.
-                  </p>
-                ) : null}
-              </div>
-            }
-          >
-            {existingDbs.length > 0 ? null : (
-              <DatabaseSelectorForm
-                images={dbImages}
-                namePrefix={app.handle}
-                dbMap={dbMap}
-                dispatch={dbDispatch}
-                appHandle={app.handle}
-              />
-            )}
-          </FormGroup>
+          {imgLoader.isInitialLoading ? (
+            <Loading text="Loading Databases..." />
+          ) : (
+            <FormGroup
+              label=""
+              htmlFor="databases"
+              feedbackVariant={dbErrors ? "danger" : "info"}
+              feedbackMessage={dbErrors.map((e) => e.message).join(". ")}
+              description={
+                <div>
+                  {existingDbs.length > 0 ? (
+                    <p>
+                      Databases have already been created so you cannot make
+                      changes to them in this screen anymore.
+                    </p>
+                  ) : null}
+                </div>
+              }
+            >
+              {existingDbs.length > 0 ? null : (
+                <DatabaseSelectorForm
+                  images={dbImages}
+                  namePrefix={app.handle}
+                  dbMap={dbMap}
+                  dispatch={dbDispatch}
+                  appHandle={app.handle}
+                />
+              )}
+            </FormGroup>
+          )}
 
           <hr className="my-4" />
 
@@ -1363,6 +1370,7 @@ export const CreateProjectGitSettingsPage = () => {
             description="Add any additional required variables, such as API keys, KNOWN_HOSTS setting, etc. Each line is a separate variable in format: ENV_VAR=VALUE."
           >
             <textarea
+              id="envs"
               name="envs"
               className={tokens.type.textarea}
               value={envs}
@@ -1394,16 +1402,31 @@ export const CreateProjectGitSettingsPage = () => {
             label="Service and Commands"
             htmlFor="commands"
             feedbackVariant="info"
-            description="This is optional if you already have a Dockerfile or Procfile in your code repository.  Each line is a separate service and command in format: NAME=COMMAND."
+            description="This is optional if you already have a Dockerfile or Procfile in your code repository.  Each line is a separate service and command in format: NAME=COMMAND (e.g. web=bundle exec rails server)."
           >
-            <textarea
-              name="commands"
-              className={tokens.type.textarea}
-              value={cmds}
-              onChange={(e) => setCmds(e.currentTarget.value)}
-              disabled={codeScan.data?.procfile_present}
-            />
+            {showServiceCommands ? (
+              <textarea
+                name="commands"
+                className={tokens.type.textarea}
+                value={cmds}
+                onChange={(e) => setCmds(e.currentTarget.value)}
+                disabled={codeScan.data?.procfile_present}
+              />
+            ) : null}
           </FormGroup>
+
+          {showServiceCommands ? null : (
+            <Button
+              onClick={() => setShowServiceCommands(true)}
+              variant="secondary"
+              disabled={codeScan.data?.procfile_present}
+            >
+              <IconPlusCircle color="#fff" className="mr-2" />
+              Configure
+            </Button>
+          )}
+
+          <hr className="my-4" />
 
           <Button
             type="submit"
@@ -2471,7 +2494,7 @@ export const CreateProjectGitStatusPage = () => {
           variant="white"
           className="mt-2"
         >
-          Back
+          Edit Configuration
         </ButtonLink>
       </StatusBox>
       <FeedbackForm />

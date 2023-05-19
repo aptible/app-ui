@@ -26,8 +26,8 @@ import {
 } from "@app/deploy";
 import { RestRequest, rest } from "msw";
 
-const isValidToken = ({ headers }: RestRequest) => {
-  const authorization = headers.get("authorization");
+const isValidToken = (req: RestRequest) => {
+  const authorization = req.headers.get("authorization");
   return `Bearer ${testToken.access_token}` === authorization;
 };
 
