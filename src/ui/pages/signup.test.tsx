@@ -16,5 +16,16 @@ describe("Signup page", () => {
     });
   });
   // if authed, expect redirect
+  it("the sign up page should render", async () => {
+    const { TestProvider } = setupIntegrationTest();
+    render(
+      <TestProvider>
+        <SignupPage />
+      </TestProvider>,
+    );
+    const el = await screen.findByRole("button");
+    await waitFor(() => {
+      expect(el.textContent).toEqual("Create Account");
+    });
+  });
 });
-

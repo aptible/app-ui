@@ -9,7 +9,13 @@ import { homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
 import { HeroBgLayout } from "../layouts";
-import { Alert, Button, ExternalLink, FormGroup, Input } from "../shared";
+import {
+  BannerMessages,
+  Button,
+  ExternalLink,
+  FormGroup,
+  Input,
+} from "../shared";
 
 export const ElevatePage = () => {
   const dispatch = useDispatch();
@@ -66,24 +72,7 @@ export const ElevatePage = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={onSubmit}>
-            {loader.isError ? (
-              <div className="mb-8">
-                <Alert
-                  title="Something went wrong"
-                  variant="danger"
-                  icon={
-                    <div className="h-5 w-5 text-red-400" aria-hidden="true">
-                      icon
-                    </div>
-                  }
-                >
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li>{loader.message}</li>
-                  </ul>
-                </Alert>
-              </div>
-            ) : null}
-
+            <BannerMessages className="my-2" {...loader} />
             <FormGroup label="Email" htmlFor="input-email">
               <Input
                 name="email"
@@ -112,7 +101,7 @@ export const ElevatePage = () => {
 
             {requireOtp ? (
               <FormGroup
-                label="2FA"
+                label="Two-Factor Authentication Required"
                 htmlFor="input-2fa"
                 description={
                   <p>

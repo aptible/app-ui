@@ -50,6 +50,7 @@ export const SignupPage = () => {
   const { isLoading } = loader;
 
   const [name, setName] = useState("");
+  const [company, setCompany] = useState("");
   const [email, setEmail] = useState(getQueryStringValue("email"));
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -126,8 +127,8 @@ export const SignupPage = () => {
   const presentError = loader.isError && loader.message !== "Unauthorized";
 
   return (
-    <HeroBgLayout>
-      <h2 className="mt-6 text-center text-5xl font-bold text-gray-900">
+    <HeroBgLayout width={500}>
+      <h2 className="mt-6 text-center text-4xl font-bold text-gray-900">
         Get started for free
       </h2>
       <div className="flex text-center items-center justify-center mt-4">
@@ -137,22 +138,13 @@ export const SignupPage = () => {
             scaling infrastructure, so you can focus on what matters:{" "}
             <strong>your product.</strong>
           </p>
-          <p className="mt-4 text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link
-              to={loginUrl()}
-              className="font-medium text-emerald-600 hover:text-emerald-500"
-            >
-              Log In
-            </Link>
-          </p>
         </div>
       </div>
 
-      <div className="mt-0 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-4 px-4 shadow sm:rounded-lg sm:px-10">
+      <div className="mt-8">
+        <div className="bg-white py-6 px-6 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={onSubmitForm}>
-            <FormGroup label="Your name" htmlFor="name">
+            <FormGroup label="Name" htmlFor="name">
               <Input
                 id="name"
                 name="name"
@@ -167,8 +159,23 @@ export const SignupPage = () => {
               />
             </FormGroup>
 
+            <FormGroup label="Company" htmlFor="company">
+              <Input
+                id="company"
+                name="company"
+                type="text"
+                autoComplete="company"
+                required={true}
+                value={company}
+                disabled={isLoading}
+                autoFocus={true}
+                className="w-full"
+                onChange={(e) => setCompany(e.target.value)}
+              />
+            </FormGroup>
+
             <FormGroup
-              label="Your email"
+              label="Email"
               htmlFor="email"
               feedbackVariant={emailError ? "danger" : "info"}
               feedbackMessage={emailError}
@@ -218,6 +225,23 @@ export const SignupPage = () => {
                 Create Account
               </Button>
             </div>
+            <p className="mt-4 text-center text-sm text-gray-600">
+              If you already have an account, you can{" "}
+              <Link to={loginUrl()} className="font-medium">
+                log in here
+              </Link>
+              .
+            </p>
+            <p className="mt-4 text-center text-sm text-gray-600">
+              By submitting this form, I confirm that I have read and agree to
+              Aptible's{" "}
+              <a href="https://www.aptible.com/legal/terms-of-service">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="https://www.aptible.com/legal/privacy">Privacy Policy</a>
+              .
+            </p>
           </form>
         </div>
       </div>

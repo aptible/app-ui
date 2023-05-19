@@ -60,7 +60,7 @@ const authHandlers = [
       return res(ctx.status(401));
     }
 
-    return res(ctx.status(200));
+    return res(ctx.status(204));
   }),
   rest.post(`${testEnv.authUrl}/verifications`, (req, res, ctx) => {
     if (!isValidToken(req)) {

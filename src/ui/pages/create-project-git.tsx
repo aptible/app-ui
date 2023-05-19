@@ -143,6 +143,7 @@ import {
   deployProject,
   redeployApp,
 } from "@app/projects";
+import { validHandle } from "@app/string-utils";
 
 export const CreateProjectLayout = ({
   children,
@@ -474,11 +475,22 @@ export const CreateProjectNamePage = () => {
   }, [defaultStack.value]);
 
   const [name, setName] = useState("");
+  const [environmentNameError, setEnvironmentNameError] = useState("");
   const thunk = useApi(
     createProject({ name, stackId: stackValue.value, orgId: org.id }),
   );
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!validHandle(name)) {
+      setEnvironmentNameError(
+        "Not a valid environment name (letters, numbers, and following symbols (., -, _).",
+      );
+      return;
+    } else {
+      setEnvironmentNameError("");
+    }
+
     thunk.trigger();
   };
   const navigate = useNavigate();
@@ -531,7 +543,8 @@ export const CreateProjectNamePage = () => {
             label="Environment Name"
             description="Lowercase alphanumerics, periods, dashes, and underscores only"
             htmlFor="name"
-            feedbackVariant="info"
+            feedbackVariant={environmentNameError ? "danger" : "info"}
+            feedbackMessage={environmentNameError}
           >
             <Input
               name="name"
@@ -1931,7 +1944,7 @@ const StatusBox = ({ children }: { children: React.ReactNode }) => {
 };
 
 const Code = ({ children }: { children: React.ReactNode }) => {
-  return <code className="bg-orange-200 p-[2px]">{children}</code>;
+  return <code className="bg-gray-200 p-[2px]">{children}</code>;
 };
 
 const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
@@ -2404,19 +2417,23 @@ export const CreateProjectGitStatusPage = () => {
             </ExternalLink>
             ?
           </h4>
-          <div className="mt-2">
-            <CreateEndpointForm app={app} />
-          </div>
+          {app.serviceIds.length ? (
+            <div className="mt-2">
+              <CreateEndpointForm app={app} />
+            </div>
+          ) : (
+            <p>Your services will appear here shortly...</p>
+          )}
         </StatusBox>
       )}
 
       {deployOp.status === "failed" ? (
         <StatusBox>
-          <h4 className={tokens.type.h4}>Deployment failed</h4>
+          <h4 className={tokens.type.h4}>Deployment Failed</h4>
           <p className="text-black-500 my-4">
-            If the app deployment failed, you can view the error logs, make code
-            changes, and then push the code to us to redeploy. This screen will
-            track your deployment status.
+            View the error logs, make code changes, and then push your code
+            again to redeploy or click Redeploy to try again without making
+            changes.
           </p>
           <p className="text-black-500 my-4">
             You can also try to trigger a redeploy now if you think it was a

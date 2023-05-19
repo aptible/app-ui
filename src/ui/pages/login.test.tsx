@@ -11,6 +11,6 @@ describe("Login page", () => {
       </TestProvider>,
     );
     const el = await screen.findByRole("button");
-    expect(el.textContent).toEqual("Sign in");
+    expect(el.textContent).toEqual("Log in");
   });
 });

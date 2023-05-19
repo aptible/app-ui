@@ -18,10 +18,10 @@ export type Feedback = {
 
 export function FormGroupFeedback({ message, variant }: Feedback) {
   const classes = classNames("text-sm mt-1", {
-    ["text-red-100"]: variant === "danger",
+    ["text-red-400"]: variant === "danger",
     ["text-limegreen"]: variant === "success",
-    ["text-orange-100"]: variant === "warn",
-    ["text-indigo-100"]: variant === "info",
+    ["text-orange-400"]: variant === "warn",
+    ["text-indigo-400"]: variant === "info",
   });
   return <div className={classes}>{message}</div>;
 }
