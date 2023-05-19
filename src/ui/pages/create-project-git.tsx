@@ -9,7 +9,12 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
-import { selectDataById, selectLoaderById } from "saga-query";
+import {
+  batchActions,
+  resetLoaderById,
+  selectDataById,
+  selectLoaderById,
+} from "saga-query";
 import {
   useApi,
   useCache,
@@ -2309,12 +2314,15 @@ export const CreateProjectGitStatusPage = () => {
       return;
     }
     dispatch(
-      redeployApp({
-        appId,
-        envId: env.id,
-        gitRef,
-        force,
-      }),
+      batchActions([
+        resetLoaderById(`${deployProject}`),
+        redeployApp({
+          appId,
+          envId: env.id,
+          gitRef,
+          force,
+        }),
+      ]),
     );
   };
 
@@ -2399,11 +2407,17 @@ export const CreateProjectGitStatusPage = () => {
         )}
       </ProjectBox>
 
-      {redeployLoader.isError || deployProjectLoader.isError ? (
+      {deployProjectLoader.isError ? (
+        <StatusBox>
+          <h4 className={tokens.type.h4}>Error!</h4>
+          <BannerMessages {...deployProjectLoader} />
+        </StatusBox>
+      ) : null}
+
+      {redeployLoader.isError ? (
         <StatusBox>
           <h4 className={tokens.type.h4}>Error!</h4>
           <BannerMessages {...redeployLoader} />
-          <BannerMessages {...deployProjectLoader} />
         </StatusBox>
       ) : null}
 
@@ -2450,7 +2464,7 @@ export const CreateProjectGitStatusPage = () => {
         </StatusBox>
       )}
 
-      {deployOp.status === "failed" ? (
+      {deployOp.status === "failed" || redeployLoader.isLoading ? (
         <StatusBox>
           <h4 className={tokens.type.h4}>Deployment Failed</h4>
           <p className="text-black-500 my-4">
@@ -2469,9 +2483,6 @@ export const CreateProjectGitStatusPage = () => {
           >
             Redeploy
           </Button>
-          <p className="mt-4">
-            {redeployLoader.isError ? redeployLoader.message : ""}
-          </p>
         </StatusBox>
       ) : null}
 

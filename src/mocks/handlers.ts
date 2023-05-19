@@ -3,6 +3,7 @@ import {
   testAccount,
   testApp,
   testCodeScanResult,
+  testConfiguration,
   testDatabaseId,
   testDatabaseOp,
   testEndpoint,
@@ -269,6 +270,9 @@ const apiHandlers = [
         },
       }),
     );
+  }),
+  rest.get(`${testEnv.apiUrl}/configurations/:id`, (_, res, ctx) => {
+    return res(ctx.json(testConfiguration));
   }),
   rest.get(`${testEnv.apiUrl}/code_scan_results/:id`, (req, res, ctx) => {
     if (!isValidToken(req)) {
