@@ -1,5 +1,4 @@
 import { SignupPage } from "./signup";
-import { homeUrl, signupUrl } from "@app/routes";
 import { setupIntegrationTest } from "@app/test";
 import { render, screen, waitFor } from "@testing-library/react";
 
