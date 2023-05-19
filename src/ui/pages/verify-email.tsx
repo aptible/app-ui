@@ -3,12 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useLoader, useLoaderSuccess } from "saga-query/react";
 
+import { Box, Loading, ResendVerificationEmail } from "../shared";
 import { verifyEmail } from "@app/auth";
+import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import { homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
-import { Loading, Progress, ResendVerificationEmail } from "../shared";
-import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
+import { HeroBgLayout } from "../layouts";
 
 export const VerifyEmailPage = () => {
   const dispatch = useDispatch();
@@ -42,30 +43,32 @@ export const VerifyEmailPage = () => {
     );
   }
 
-  if (verifyEmailLoader.isError) {
-    return (
-      <div>
-        <Progress steps={3} currentStep={2} />
-        <p className="text-h3 text-gray-500 leading-normal">
-          Failed to verify your email, the token may have expired. Resend the
-          verification email and try again.
-        </p>
-        <p>{verifyEmailLoader.message}</p>
-
-        <ResendVerificationEmail />
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <Progress steps={3} currentStep={2} />
-      <p className="text-h3 text-gray-500 leading-normal">
-        Before you can continue setting up your Aptible account, you&apos;ll
-        need to verify your email address. Find our verification email sent to{" "}
-        {user.email} and click on the included link to proceed.
-      </p>
-      <ResendVerificationEmail />
-    </div>
+    <HeroBgLayout>
+      <h2 className="mt-6 text-center text-4xl font-bold text-gray-900">
+        Check your Email
+      </h2>
+      <div className="flex text-center items-center justify-center mt-4">
+        <div className="max-w-2xl">
+          {verifyEmailLoader.isError ? (
+            <>
+              <p className="text-h3 text-gray-500 leading-normal">
+                Failed to verify your email, the token may have expired. Resend
+                the verification email and try again.
+              </p>
+              <p>{verifyEmailLoader.message}</p>
+            </>
+          ) : (
+            <p className="text-h3 text-gray-500 leading-normal">
+              We've sent a verification link to {user.email}. Click the link in
+              the email to confirm your account.
+            </p>
+          )}
+        </div>
+      </div>
+      <Box>
+        <ResendVerificationEmail />
+      </Box>
+    </HeroBgLayout>
   );
 };
