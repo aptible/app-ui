@@ -53,10 +53,6 @@ export const BillingMethodPage = () => {
     event.preventDefault();
   };
 
-  const commonLabelProps = {
-    className: "text-sm",
-  };
-
   return (
     <HeroBgLayout>
       <div className="text-center mt-16">
@@ -68,25 +64,19 @@ export const BillingMethodPage = () => {
       </div>
       <Box>
         <form className="space-y-6" onSubmit={onSubmitForm}>
+          <FormGroup label="Credit Card Number" htmlFor="credit-card-number">
+            <Input
+              name="credit-card-number"
+              value={creditCardNumber}
+              onChange={(e) => setCreditCardNumber(e.target.value)}
+              required
+            />
+          </FormGroup>
           <div className="flex justify-between gap-4 mt-4">
-            <FormGroup
-              label="Credit Card Number"
-              htmlFor="credit-card-number"
-              className="w-1/2"
-              labelProps={commonLabelProps}
-            >
-              <Input
-                name="credit-card-number"
-                value={creditCardNumber}
-                onChange={(e) => setCreditCardNumber(e.target.value)}
-                required
-              />
-            </FormGroup>
             <FormGroup
               label="Expiration Date"
               htmlFor="credit-card-number"
-              className="w-1/4"
-              labelProps={commonLabelProps}
+              className="w-1/2"
             >
               <Input
                 name="credit-card-number"
@@ -99,8 +89,7 @@ export const BillingMethodPage = () => {
             <FormGroup
               label="Security Code"
               htmlFor="credit-card-number"
-              className="w-1/4"
-              labelProps={commonLabelProps}
+              className="w-1/2"
             >
               <Input
                 name="credit-card-number"
@@ -111,11 +100,7 @@ export const BillingMethodPage = () => {
             </FormGroup>
           </div>
 
-          <FormGroup
-            label="Name on Card"
-            htmlFor="name-on-card"
-            labelProps={commonLabelProps}
-          >
+          <FormGroup label="Name on Card" htmlFor="name-on-card">
             <Input
               id="name-on-card"
               name="name-on-card"
@@ -128,11 +113,7 @@ export const BillingMethodPage = () => {
             />
           </FormGroup>
 
-          <FormGroup
-            label="Street Address"
-            htmlFor="street-address"
-            labelProps={commonLabelProps}
-          >
+          <FormGroup label="Street Address" htmlFor="street-address">
             <Input
               id="street-address"
               name="street-address"
@@ -146,11 +127,7 @@ export const BillingMethodPage = () => {
             />
           </FormGroup>
 
-          <FormGroup
-            label="Apt, Suite, Etc. "
-            htmlFor="apt-suite-etc"
-            labelProps={commonLabelProps}
-          >
+          <FormGroup label="Apt, Suite, Etc. " htmlFor="apt-suite-etc">
             <Input
               id="apt-suite-etc"
               name="apt-suite-etc"
@@ -164,7 +141,7 @@ export const BillingMethodPage = () => {
             />
           </FormGroup>
 
-          <FormGroup label="City " htmlFor="city" labelProps={commonLabelProps}>
+          <FormGroup label="City " htmlFor="city">
             <Input
               id="city"
               name="city"
@@ -178,7 +155,7 @@ export const BillingMethodPage = () => {
           </FormGroup>
           <div className="flex justify-between gap-4 mt-4">
             <div>
-              <h4 className={"text-sm font-semibold mb-2"}>State</h4>
+              <h4 className={"text-md font-semibold mb-2"}>State</h4>
               <div className="flex">
                 <Select
                   className="w-full"
@@ -188,12 +165,7 @@ export const BillingMethodPage = () => {
                 />
               </div>
             </div>
-            <FormGroup
-              label="Zipcode"
-              htmlFor="zipcode"
-              className="flex-1"
-              labelProps={commonLabelProps}
-            >
+            <FormGroup label="Zipcode" htmlFor="zipcode" className="flex-1">
               <Input
                 name="zipcode"
                 value={zipcode}
@@ -203,7 +175,7 @@ export const BillingMethodPage = () => {
             </FormGroup>
           </div>
           <div className="mb-4">
-            <h4 className={"text-sm font-semibold mb-2"}>Country</h4>
+            <h4 className={"text-md font-semibold mb-2"}>Country</h4>
             <div className="flex mb-2">
               <Select
                 className="w-full"
