@@ -100,7 +100,7 @@ export const LoginPage = () => {
       </h2>
       <div className="flex text-center items-center justify-center mt-4">
         <div className="max-w-2xl">
-          <p className="mt-2 text-center text-md text-gray-600">
+          <p>
             Don't have an account?{" "}
             <Link to={signupUrl()} className="font-medium">
               Sign up
