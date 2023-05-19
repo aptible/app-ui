@@ -41,7 +41,7 @@ export const NotFoundPage = () => {
           View Docs
         </Button>
         <Button className="mt-4 w-full" onClick={goToStatus} variant="white">
-          View Status page
+          View Status Page
         </Button>
       </Box>
     </HeroBgLayout>
