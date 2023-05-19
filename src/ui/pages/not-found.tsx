@@ -26,7 +26,7 @@ export const NotFoundPage = () => {
   return (
     <HeroBgLayout>
       <div className="text-center mt-16">
-        <h1 className={tokens.type.h1}>Page Not Found</h1>
+        <h1 className={`${tokens.type.h1} text-center`}>Page Not Found</h1>
         <p className="my-6 text-gray-600">
           We can't find the page you're looking for.
           <br />

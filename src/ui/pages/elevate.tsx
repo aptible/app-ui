@@ -15,6 +15,7 @@ import {
   ExternalLink,
   FormGroup,
   Input,
+  tokens,
 } from "../shared";
 import { Link } from "react-router-dom";
 
@@ -61,9 +62,9 @@ export const ElevatePage = () => {
 
   return (
     <HeroBgLayout>
-      <h2 className="mt-6 text-center text-4xl font-bold text-gray-900">
+      <h1 className={`${tokens.type.h1} text-center`}>
         Re-enter your credentials
-      </h2>
+      </h1>
       <div className="flex text-center items-center justify-center mt-4">
         <div className="max-w-2xl">
           <p>You must confirm your credentials before proceeding.</p>

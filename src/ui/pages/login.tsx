@@ -30,6 +30,7 @@ import {
   ExternalLink,
   FormGroup,
   Input,
+  tokens,
 } from "../shared";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 
@@ -95,9 +96,7 @@ export const LoginPage = () => {
 
   return (
     <HeroBgLayout width={500}>
-      <h2 className="mt-6 text-center text-4xl font-bold text-gray-900">
-        Log In
-      </h2>
+      <h1 className={`${tokens.type.h1} text-center`}>Log In</h1>
       <div className="flex text-center items-center justify-center mt-4">
         <div className="max-w-2xl">
           <p>

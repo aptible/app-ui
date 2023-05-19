@@ -24,7 +24,7 @@ import {
 import { validEmail } from "@app/string-utils";
 
 import { HeroBgLayout } from "../layouts";
-import { BannerMessages, Button, FormGroup, Input } from "../shared";
+import { BannerMessages, Button, FormGroup, Input, tokens } from "../shared";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 
 const createQueryStringValue =
@@ -129,9 +129,7 @@ export const SignupPage = () => {
 
   return (
     <HeroBgLayout width={500}>
-      <h2 className="mt-6 text-center text-4xl font-bold text-gray-900">
-        Get started for free
-      </h2>
+      <h1 className={`${tokens.type.h1} text-center`}>Get started for free</h1>
       <div className="flex text-center items-center justify-center mt-4">
         <div className="max-w-2xl">
           <p>
