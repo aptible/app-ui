@@ -1,6 +1,6 @@
 import { BillingMethodPage } from "./billing-method";
 import { setupIntegrationTest } from "@app/test";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 describe("Billing Method page", () => {
   it("the billing method page should render", async () => {
@@ -11,8 +11,6 @@ describe("Billing Method page", () => {
       </TestProvider>,
     );
     const el = await screen.findByRole("button");
-    await waitFor(() => {
-      expect(el.textContent).toEqual("Save & Finish");
-    });
+    expect(el.textContent).toEqual("Save & Finish");
   });
 });

@@ -3,7 +3,7 @@ import { UnauthRequired } from "./unauth-required";
 import { server, testEnv } from "@app/mocks";
 import { homeUrl } from "@app/routes";
 import { setupIntegrationTest } from "@app/test";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { rest } from "msw";
 
 describe("UnauthRequired", () => {
@@ -19,11 +19,9 @@ describe("UnauthRequired", () => {
       ],
     });
     server.use(
-      ...[
-        rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
-          return res(ctx.status(200));
-        }),
-      ],
+      rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
+        return res(ctx.status(200));
+      }),
     );
     render(
       <TestProvider>
@@ -35,10 +33,8 @@ describe("UnauthRequired", () => {
     );
     const el = await screen.findByText("Test element");
     const home = await screen.queryByText("Simulated home");
-    await waitFor(() => {
-      expect(el.textContent).toBeDefined;
-      expect(home).toBeNull;
-    });
+    expect(el.textContent).toBeDefined;
+    expect(home).toBeNull;
   });
   // if authed, expect redirect
   it("should redirect you to root when logged in", async () => {
@@ -62,9 +58,7 @@ describe("UnauthRequired", () => {
     );
     const el = await screen.queryByText("Test element");
     const home = await screen.findByText("Simulated home");
-    await waitFor(() => {
-      expect(el).toBeNull;
-      expect(home.textContent).toBeDefined;
-    });
+    expect(el).toBeNull;
+    expect(home.textContent).toBeDefined;
   });
 });

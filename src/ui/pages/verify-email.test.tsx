@@ -2,7 +2,7 @@ import { VerifyEmailPage } from "./verify-email";
 
 import { server, testEnv } from "@app/mocks";
 import { setupIntegrationTest } from "@app/test";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { rest } from "msw";
 
 describe("Verify email page", () => {
@@ -14,9 +14,7 @@ describe("Verify email page", () => {
       </TestProvider>,
     );
     const el = await screen.findByRole("button");
-    await waitFor(() => {
-      expect(el.textContent).toEqual("Resend Verification Email");
-    });
+    expect(el.textContent).toEqual("Resend Verification Email");
   });
   it("the verify email page should properly fail", async () => {
     const { TestProvider } = setupIntegrationTest();
@@ -26,17 +24,13 @@ describe("Verify email page", () => {
       </TestProvider>,
     );
     server.use(
-      ...[
-        rest.get(`${testEnv.authUrl}/verifications`, (_, res, ctx) => {
-          return res(ctx.status(401));
-        }),
-      ],
+      rest.get(`${testEnv.authUrl}/verifications`, (_, res, ctx) => {
+        return res(ctx.status(401));
+      }),
     );
     const el = await screen.findByRole("button");
     const errorText = await screen.queryByText("Failed to verify your email");
-    await waitFor(() => {
-      expect(errorText).toBeDefined;
-      expect(el.textContent).toEqual("Resend Verification Email");
-    });
+    expect(errorText).toBeDefined;
+    expect(el.textContent).toEqual("Resend Verification Email");
   });
 });
