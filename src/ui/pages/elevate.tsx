@@ -5,7 +5,7 @@ import { useLoaderSuccess } from "saga-query/react";
 
 import { elevate, elevateWebauthn } from "@app/auth";
 import { selectAuthLoader, selectIsOtpError } from "@app/auth";
-import { homeUrl } from "@app/routes";
+import { forgotPassUrl, homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
 import { HeroBgLayout } from "../layouts";
@@ -16,6 +16,7 @@ import {
   FormGroup,
   Input,
 } from "../shared";
+import { Link } from "react-router-dom";
 
 export const ElevatePage = () => {
   const dispatch = useDispatch();
@@ -60,16 +61,16 @@ export const ElevatePage = () => {
 
   return (
     <HeroBgLayout>
-      <h2 className="mt-6 mb-4 text-center text-3xl font-semibold text-gray-900">
-        Elevate token
+      <h2 className="mt-6 text-center text-4xl font-bold text-gray-900">
+        Re-enter your credentials
       </h2>
-      <p>
-        We require a short-lived elevated token before allowing changes to
-        authentication credentials (i.e. changing password, adding pubkey,
-        disabling 2FA). This token lasts for 15 minutes.
-      </p>
+      <div className="flex text-center items-center justify-center mt-4">
+        <div className="max-w-2xl">
+          <p>You must confirm your credentials before proceeding.</p>
+        </div>
+      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-8">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={onSubmit}>
             <BannerMessages className="my-2" {...loader} />
@@ -129,14 +130,19 @@ export const ElevatePage = () => {
             <div>
               <Button
                 isLoading={loader.isLoading}
-                disabled={loader.isLoading}
+                disabled={loader.isLoading || !password}
                 type="submit"
                 layout="block"
                 size="lg"
               >
-                Elevate token
+                Confirm
               </Button>
             </div>
+            <p className="text-center">
+              <Link to={forgotPassUrl()} className="text-sm text-center">
+                Forgot your password?
+              </Link>
+            </p>
           </form>
         </div>
       </div>

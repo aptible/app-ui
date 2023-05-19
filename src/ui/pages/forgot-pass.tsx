@@ -51,7 +51,7 @@ export const ForgotPassPage = () => {
               />
             </FormGroup>
             <Button
-              className="w-full mt-4"
+              className="w-full mt-6"
               disabled={email === "" || loader.isSuccess}
               isLoading={loader.isLoading}
               type="submit"

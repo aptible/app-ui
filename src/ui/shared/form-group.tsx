@@ -30,6 +30,7 @@ type Variant = "warn" | "danger" | "success" | "info";
 
 interface Props extends PropsWithChildren {
   label: string;
+  labelProps?: LabelProps;
   htmlFor: string;
   description?: string | JSX.Element;
   feedbackMessage?: string | null;
@@ -42,6 +43,7 @@ export function FormGroup({
   feedbackMessage,
   children,
   label,
+  labelProps,
   htmlFor,
   description,
   splitWidthInputs,
@@ -51,7 +53,9 @@ export function FormGroup({
   return (
     <div className={`flex ${splitWidthInputs ? "" : "flex-col"} ${className}`}>
       <div className={`${splitWidthInputs ? "w-1/2" : ""}`}>
-        <Label htmlFor={htmlFor}>{label}</Label>
+        <Label htmlFor={htmlFor} {...labelProps}>
+          {label}
+        </Label>
         <div className="text-black-500 mb-2">{description}</div>
       </div>
 

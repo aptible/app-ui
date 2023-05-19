@@ -1,20 +1,28 @@
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
-
-import { logout } from "@app/auth";
-import { loginUrl } from "@app/routes";
-
 import { HeroBgLayout } from "../layouts";
-import { Box, Button, IconArrowRight, tokens } from "../shared";
+import { Box, Button, FormGroup, Input, tokens } from "../shared";
+
+import { logoutUrl } from "@app/routes";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const BillingMethodPage = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [creditCardNumber, setCreditCardNumber] = useState<string>("");
+  const [expiration, setExpiration] = useState<string>("");
+  const [securityCode, setSecurityCode] = useState<string>("");
+  const [nameOnCard, setNameOnCard] = useState<string>("");
+  const [streetAddress, setStreetAddress] = useState<string>("");
+  const [aptSuiteEtc, setAptSuiteEtc] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [state, setState] = useState<string>("");
+  const [zipcode, setZipcode] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
 
-  const logoutSubmit = (event: React.SyntheticEvent) => {
+  const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    dispatch(logout());
-    navigate(loginUrl());
+  };
+
+  const commonLabelProps = {
+    className: "text-sm",
   };
 
   return (
@@ -27,10 +35,165 @@ export const BillingMethodPage = () => {
         </p>
       </div>
       <Box>
-        <Button onClick={logoutSubmit} className="font-semibold w-full">
-          Log Out
-          <IconArrowRight className="ml-2" />
-        </Button>
+        <form className="space-y-6" onSubmit={onSubmitForm}>
+          <div className="flex justify-between gap-4 mt-4">
+            <FormGroup
+              label="Credit Card Number"
+              htmlFor="credit-card-number"
+              className="w-1/2"
+              labelProps={commonLabelProps}
+            >
+              <Input
+                name="credit-card-number"
+                value={creditCardNumber}
+                onChange={(e) => setCreditCardNumber(e.target.value)}
+                required
+              />
+            </FormGroup>
+            <FormGroup
+              label="Expiration Date"
+              htmlFor="credit-card-number"
+              className="w-1/4"
+              labelProps={commonLabelProps}
+            >
+              <Input
+                name="credit-card-number"
+                value={expiration}
+                placeholder="MM / YY"
+                onChange={(e) => setExpiration(e.target.value)}
+                required
+              />
+            </FormGroup>
+            <FormGroup
+              label="Security Code"
+              htmlFor="credit-card-number"
+              className="w-1/4"
+              labelProps={commonLabelProps}
+            >
+              <Input
+                name="credit-card-number"
+                value={securityCode}
+                onChange={(e) => setSecurityCode(e.target.value)}
+                required
+              />
+            </FormGroup>
+          </div>
+
+          <FormGroup
+            label="Name on Card"
+            htmlFor="name-on-card"
+            labelProps={commonLabelProps}
+          >
+            <Input
+              id="name-on-card"
+              name="name-on-card"
+              type="text"
+              autoComplete="name-on-card"
+              required
+              className="w-full"
+              value={nameOnCard}
+              onChange={(e) => setNameOnCard(e.target.value)}
+            />
+          </FormGroup>
+
+          <FormGroup
+            label="Street Address"
+            htmlFor="street-address"
+            labelProps={commonLabelProps}
+          >
+            <Input
+              id="street-address"
+              name="street-address"
+              type="text"
+              autoComplete="street-address"
+              required
+              className="w-full"
+              placeholder="Street and number, P.O. box, c/o."
+              value={streetAddress}
+              onChange={(e) => setStreetAddress(e.target.value)}
+            />
+          </FormGroup>
+
+          <FormGroup
+            label="Apt, Suite, Etc. "
+            htmlFor="apt-suite-etc"
+            labelProps={commonLabelProps}
+          >
+            <Input
+              id="apt-suite-etc"
+              name="apt-suite-etc"
+              type="text"
+              autoComplete="apt-suite-etc"
+              placeholder="Optional"
+              required={false}
+              className="w-full"
+              value={aptSuiteEtc}
+              onChange={(e) => setAptSuiteEtc(e.target.value)}
+            />
+          </FormGroup>
+
+          <FormGroup label="City " htmlFor="city" labelProps={commonLabelProps}>
+            <Input
+              id="city"
+              name="city"
+              type="text"
+              autoComplete="city"
+              required
+              className="w-full"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
+          </FormGroup>
+          <div className="flex justify-between gap-4 mt-4">
+            <FormGroup
+              label="State"
+              htmlFor="state"
+              className="flex-1"
+              labelProps={commonLabelProps}
+            >
+              <Input
+                name="state"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                required
+              />
+            </FormGroup>
+            <FormGroup
+              label="Zipcode"
+              htmlFor="zipcode"
+              className="flex-1"
+              labelProps={commonLabelProps}
+            >
+              <Input
+                name="zipcode"
+                value={zipcode}
+                onChange={(e) => setZipcode(e.target.value)}
+                required
+              />
+            </FormGroup>
+          </div>
+          <FormGroup
+            label="Country"
+            htmlFor="country"
+            className="flex-1"
+            labelProps={commonLabelProps}
+          >
+            <Input
+              name="country"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              required
+            />
+          </FormGroup>
+          <Button className="mt-4 font-semibold w-full">Save & Finish</Button>
+        </form>
+        <div className="text-center text-sm mt-4">
+          <p>
+            Prefer to speak to someone first?{" "}
+            <a href="https://www.aptible.com/contact">Schedule a demo</a> or go
+            to <Link to={logoutUrl()}>Logout</Link>
+          </p>
+        </div>
       </Box>
     </HeroBgLayout>
   );

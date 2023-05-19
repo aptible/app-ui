@@ -332,12 +332,12 @@ export const DeploymentsPage = () => {
   const view = () => {
     if (envsLoader.isInitialLoading || appsLoader.isInitialLoading) {
       return (
-        <div className="mt-8">
+        <div className="mt-4">
           <Loading text="Loading ..." />
         </div>
       );
     } else if (apps.length === 0) {
-      return <div className="mt-8">No deployments found</div>;
+      return <div className="mt-4">No deployments found</div>;
     }
 
     return null;
@@ -1935,7 +1935,7 @@ const LogViewer = ({ op }: { op: DeployOperation }) => {
 
 const StatusBox = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="mt-8 first:mt-0">
+    <div className="mt-4 first:mt-0">
       <div className="bg-white p-5 shadow rounded-lg border border-black-100">
         {children}
       </div>
@@ -1944,7 +1944,7 @@ const StatusBox = ({ children }: { children: React.ReactNode }) => {
 };
 
 const Code = ({ children }: { children: React.ReactNode }) => {
-  return <code className="bg-gray-200 p-[2px]">{children}</code>;
+  return <code className="bg-gray-200 text-black p-[2px]">{children}</code>;
 };
 
 const CreateEndpointForm = ({ app }: { app: DeployApp }) => {

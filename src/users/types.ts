@@ -26,6 +26,7 @@ export interface UserResponse {
 export type UsersResponse = HalEmbedded<{ users: UserResponse[] }>;
 
 export interface CreateUserForm {
+  company: string;
   name: string;
   email: string;
   password: string;

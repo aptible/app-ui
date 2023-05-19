@@ -98,6 +98,7 @@ export const SignupPage = () => {
 
     dispatch(
       signup({
+        company,
         name,
         email: invitation ? invitation.email : email,
         password,
@@ -150,10 +151,10 @@ export const SignupPage = () => {
                 name="name"
                 type="text"
                 autoComplete="name"
+                autoFocus={true}
                 required={true}
                 value={name}
                 disabled={isLoading}
-                autoFocus={true}
                 className="w-full"
                 onChange={(e) => setName(e.target.value)}
               />
@@ -168,7 +169,6 @@ export const SignupPage = () => {
                 required={true}
                 value={company}
                 disabled={isLoading}
-                autoFocus={true}
                 className="w-full"
                 onChange={(e) => setCompany(e.target.value)}
               />

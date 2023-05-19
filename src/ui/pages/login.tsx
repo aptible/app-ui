@@ -177,7 +177,7 @@ export const LoginPage = () => {
             <div>
               <Button
                 isLoading={loader.isLoading}
-                disabled={loader.isLoading}
+                disabled={loader.isLoading || !(email && password)}
                 type="submit"
                 variant="primary"
                 layout="block"

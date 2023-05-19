@@ -28,7 +28,7 @@ function* setAuthError(ctx: AuthApiCtx) {
 export const signup = thunks.create<CreateUserForm>(
   "signup",
   function* onSignup(ctx, next): ApiGen {
-    const { email, password } = ctx.payload;
+    const { company, email, password } = ctx.payload;
     yield* put(setLoaderStart({ id: AUTH_LOADER_ID }));
 
     const userCtx = yield* call(createUser.run, createUser(ctx.payload));
@@ -59,7 +59,7 @@ export const signup = thunks.create<CreateUserForm>(
 
     const orgCtx = yield* call(
       createOrganization.run,
-      createOrganization({ name: email }),
+      createOrganization({ name: company }),
     );
 
     log(orgCtx);
