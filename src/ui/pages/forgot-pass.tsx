@@ -54,7 +54,7 @@ export const ForgotPassPage = () => {
               isLoading={loader.isLoading}
               type="submit"
             >
-              Reset password
+              Reset Password
             </Button>
           </form>
         </Box>

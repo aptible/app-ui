@@ -182,7 +182,7 @@ export const LoginPage = () => {
                 layout="block"
                 size="lg"
               >
-                Log in
+                Log In
               </Button>
             </div>
             <p className="text-center">
