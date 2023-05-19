@@ -1,6 +1,15 @@
 import { HeroBgLayout } from "../layouts";
-import { Box, Button, FormGroup, Input, tokens } from "../shared";
+import {
+  Box,
+  Button,
+  FormGroup,
+  Input,
+  Select,
+  SelectOption,
+  tokens,
+} from "../shared";
 
+import { countries, states } from "@app/geography";
 import { logoutUrl } from "@app/routes";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -16,6 +25,29 @@ export const BillingMethodPage = () => {
   const [state, setState] = useState<string>("");
   const [zipcode, setZipcode] = useState<string>("");
   const [country, setCountry] = useState<string>("");
+
+  const stateOptions = states.map(({ shortCode, label }) => ({
+    value: shortCode,
+    label,
+  }));
+  const countryOptions = countries.map(({ shortCode, label }) => ({
+    value: shortCode,
+    label,
+  }));
+
+  const selectCountry = (option: SelectOption) => {
+    setCountry(option.value);
+  };
+  const selectState = (option: SelectOption) => {
+    setState(option.value);
+  };
+
+  const selectedState = stateOptions.find(
+    (stateOption) => stateOption.value === state,
+  );
+  const selectedCountry = countryOptions.find(
+    (countryOption) => countryOption.value === country,
+  );
 
   const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -145,19 +177,17 @@ export const BillingMethodPage = () => {
             />
           </FormGroup>
           <div className="flex justify-between gap-4 mt-4">
-            <FormGroup
-              label="State"
-              htmlFor="state"
-              className="flex-1"
-              labelProps={commonLabelProps}
-            >
-              <Input
-                name="state"
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                required
-              />
-            </FormGroup>
+            <div>
+              <h4 className={`text-sm font-semibold mb-2`}>State</h4>
+              <div className="flex">
+                <Select
+                  className="w-full"
+                  onSelect={selectState}
+                  value={selectedState}
+                  options={stateOptions}
+                />
+              </div>
+            </div>
             <FormGroup
               label="Zipcode"
               htmlFor="zipcode"
@@ -172,19 +202,17 @@ export const BillingMethodPage = () => {
               />
             </FormGroup>
           </div>
-          <FormGroup
-            label="Country"
-            htmlFor="country"
-            className="flex-1"
-            labelProps={commonLabelProps}
-          >
-            <Input
-              name="country"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              required
-            />
-          </FormGroup>
+          <div className="mb-4">
+            <h4 className={`text-sm font-semibold mb-2`}>Country</h4>
+            <div className="flex mb-2">
+              <Select
+                className="w-full"
+                onSelect={selectCountry}
+                value={selectedCountry}
+                options={countryOptions}
+              />
+            </div>
+          </div>
           <Button className="mt-4 font-semibold w-full">Save & Finish</Button>
         </form>
         <div className="text-center text-sm mt-4">
