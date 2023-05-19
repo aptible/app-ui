@@ -5,6 +5,15 @@ import { useLocation, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { useLoader, useLoaderSuccess } from "saga-query/react";
 
+import { HeroBgLayout } from "../layouts";
+import {
+  BannerMessages,
+  Button,
+  CreateProjectFooter,
+  FormGroup,
+  Input,
+  tokens,
+} from "../shared";
 import {
   fetchCurrentToken,
   signup,
@@ -15,6 +24,7 @@ import {
   selectInvitationRequest,
   selectPendingInvitation,
 } from "@app/invitations";
+import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
   acceptInvitationWithCodeUrl,
   homeUrl,
@@ -22,10 +32,6 @@ import {
   verifyEmailRequestUrl,
 } from "@app/routes";
 import { validEmail } from "@app/string-utils";
-
-import { HeroBgLayout } from "../layouts";
-import { BannerMessages, Button, FormGroup, Input, tokens } from "../shared";
-import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 
 const createQueryStringValue =
   (queryString: string) => (key: string): string => {
@@ -242,6 +248,9 @@ export const SignupPage = () => {
             </p>
           </form>
         </div>
+      </div>
+      <div className="mt-6">
+        <CreateProjectFooter />
       </div>
     </HeroBgLayout>
   );
