@@ -28,7 +28,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: latest-nextgen
+          tags: |
+            quay.io/aptible/cloud-ui:latest-nextgen
           build-args: |
             VITE_SENTRY_DSN=${{ secrets.PROD_SENTRY_DSN }}
             VITE_ORIGIN=nextgen
