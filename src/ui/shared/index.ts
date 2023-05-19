@@ -22,7 +22,6 @@ export * from "./application-sidebar";
 export * from "./settings-sidebar";
 export * from "./endpoints-overview";
 export * from "./progress";
-export * from "./logged-in-banner";
 export * from "./app";
 export * from "./db";
 export * from "./environment";
