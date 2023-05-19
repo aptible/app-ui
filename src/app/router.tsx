@@ -11,6 +11,7 @@ import {
   AppSettingsPage,
   AppsPage,
   AuthRequired,
+  BillingMethodPage,
   CreateOrgPage,
   CreateProjectAddKeyPage,
   CreateProjectFromAccountSetupPage,
@@ -382,6 +383,11 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
+        path: routes.BILLING_METHOD_PAGE,
+        element: <BillingMethodPage />,
+      },
+
+      {
         path: routes.CREATE_ORG_PATH,
         element: <CreateOrgPage />,
       },
@@ -498,17 +504,35 @@ export const appRoutes: RouteObject[] = [
 
   {
     path: routes.LOGIN_PATH,
-    element: <LoginPage />,
+    element: <UnauthRequired />,
+    children: [
+      {
+        index: true,
+        element: <LoginPage />,
+      },
+    ],
   },
 
   {
     path: routes.FORGOT_PASS_PATH,
-    element: <ForgotPassPage />,
+    element: <UnauthRequired />,
+    children: [
+      {
+        index: true,
+        element: <ForgotPassPage />,
+      },
+    ],
   },
 
   {
     path: routes.FORGOT_PASS_PATH,
-    element: <ForgotPassVerifyPage />,
+    element: <UnauthRequired />,
+    children: [
+      {
+        index: true,
+        element: <ForgotPassVerifyPage />,
+      },
+    ],
   },
 
   {
