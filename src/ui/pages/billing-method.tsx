@@ -185,7 +185,7 @@ export const BillingMethodPage = () => {
               />
             </div>
           </div>
-          <Button className="mt-4 font-semibold w-full">Save & Finish</Button>
+          <Button type="submit" className="mt-4 font-semibold w-full">Save & Finish</Button>
         </form>
         <div className="text-center text-sm mt-4">
           <p>
