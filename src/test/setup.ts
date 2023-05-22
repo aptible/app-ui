@@ -23,6 +23,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 // so they don't affect other tests.
 afterEach(() => {
   server.resetHandlers();
+  // https://testing-library.com/docs/react-testing-library/api/#cleanup
   cleanup();
 });
 
