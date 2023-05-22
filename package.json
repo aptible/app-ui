@@ -17,7 +17,7 @@
     "lint.check": "rome ci .",
     "lint.types": "tsc --noEmit",
     "lint": "yarn lint.types && yarn lint.check && yarn lint.circular",
-    "lint.circular": "dpdm --no-tree --exit-code circular:1 -T ./src/app/init.ts",
+    "lint.circular": "dpdm --no-tree --exit-code circular:1 ./src/app/init.ts",
     "test": "yarn lint && vitest run"
   },
   "dependencies": {
