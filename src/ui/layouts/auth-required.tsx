@@ -1,15 +1,15 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useLoader } from "saga-query/react";
 
 import { fetchCurrentToken } from "@app/auth";
+import { selectEnv } from "@app/env";
+import { setRedirectPath } from "@app/redirect-path";
 import { loginUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 
 import { Loading } from "../shared";
-import { selectEnv } from "@app/env";
-import { setRedirectPath } from "@app/redirect-path";
-import { useEffect } from "react";
 
 export const AuthRequired = () => {
   const loader = useLoader(fetchCurrentToken);

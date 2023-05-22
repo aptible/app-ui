@@ -9,8 +9,8 @@ import {
 } from "saga-query";
 
 import { thunks } from "@app/api";
-import { fetchInitialData } from "@app/bootup";
 import { createLog } from "@app/debug";
+import { fetchInitialData } from "@app/initial-data";
 
 import { AUTH_LOADER_ID } from "./loader";
 import { CreateTokenPayload, createToken, elevateToken } from "./token";

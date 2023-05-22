@@ -4,15 +4,16 @@
 // https://github.com/facebook/react/issues/24595 and https://github.com/facebook/react/issues/14347
 // possible alternatives also exist like this: https://github.com/JoschuaSchneider/use-error-boundary
 // taken from: https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/error_boundaries/
-
-import { HeroBgLayout } from "../layouts";
-import { Button, IconAlertTriangle } from "../shared";
 import {
   ErrorBoundary as SentryErrorBoundary,
   captureException,
 } from "@sentry/react";
 import { ReactElement } from "react";
 import { useRouteError } from "react-router";
+
+import { Button, IconAlertTriangle } from "../shared";
+
+import { HeroBgLayout } from "./hero-bg-layout";
 
 function GenericErrorFallback({ error }: { error: Error | string }) {
   const errorString = typeof error === "string" ? error : error.message;
@@ -62,7 +63,9 @@ function GenericErrorFallback({ error }: { error: Error | string }) {
 // it catches errors one level before going to sentry.
 export const StandaloneErrorBoundary = ({
   children,
-}: { children?: React.ReactNode }): ReactElement => {
+}: {
+  children?: React.ReactNode;
+}): ReactElement => {
   return (
     <SentryErrorBoundary
       fallback={({ error }: { error: Error }) => (

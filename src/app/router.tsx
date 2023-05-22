@@ -51,6 +51,7 @@ import {
   NotFoundPage,
   OtpRecoveryCodesPage,
   OtpSetupPage,
+  ReactRouterErrorElement,
   SSHSettingsPage,
   SecuritySettingsPage,
   SettingsPage,
@@ -60,7 +61,6 @@ import {
   UnauthRequired,
   VerifyEmailPage,
 } from "@app/ui";
-import { ReactRouterErrorElement } from "@app/ui/shared/error-boundary";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,

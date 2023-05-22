@@ -1,10 +1,21 @@
-import { Td } from "../table";
-import { IconForResource } from "./environment-activity";
+import { useSelector } from "react-redux";
+
 import { prettyDateRelative } from "@app/date";
 import { selectEnvironmentById } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
-import { AppState, DeployOperation } from "@app/types";
-import { useSelector } from "react-redux";
+import { AppState, DeployOperation, OperationStatus } from "@app/types";
+
+import { IconCheckCircle, IconInfo, IconX } from "../icons";
+import { Td } from "../table";
+
+export const IconForResource = (operationStatus: OperationStatus) => {
+  if (operationStatus === "succeeded") {
+    return <IconCheckCircle color="#00633F" />;
+  } else if (operationStatus === "queued" || operationStatus === "running") {
+    return <IconInfo color="#4361FF" />;
+  }
+  return <IconX color="#AD1A1A" />;
+};
 
 export const EnvironmentOperationActivity = ({
   operation,
