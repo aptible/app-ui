@@ -25,12 +25,16 @@ export const login = thunks.create<CreateTokenPayload>(
     const tokenCtx = yield* call(createToken.run, createToken(ctx.payload));
 
     if (!tokenCtx.json.ok) {
-      const { message, error, code, exception_context } = tokenCtx.json.data;
+      const { error, code, exception_context } = tokenCtx.json.data;
+      const is_warning = error === "otp_token_required";
+      const message = is_warning
+        ? "You must enter your 2FA token to continue"
+        : tokenCtx.json.data.message;
       yield put(
         setLoaderError({
           id: AUTH_LOADER_ID,
           message,
-          meta: { error, code, exception_context },
+          meta: { error, is_warning, code, exception_context },
         }),
       );
       return;

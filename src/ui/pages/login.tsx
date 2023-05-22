@@ -94,6 +94,9 @@ export const LoginPage = () => {
     }
   }, [isOtpError]);
 
+  const meta = loader.meta as any;
+  const bannerData = { ...loader, ...{ isWarning: meta?.is_warning } };
+
   return (
     <HeroBgLayout width={500}>
       <h1 className={`${tokens.type.h1} text-center`}>Log In</h1>
@@ -111,7 +114,7 @@ export const LoginPage = () => {
       <div className="mt-8">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={onSubmit}>
-            <BannerMessages className="my-2" {...loader} />
+            <BannerMessages className="my-2" {...bannerData} />
 
             <FormGroup
               label="Email"
