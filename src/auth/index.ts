@@ -7,3 +7,4 @@ export * from "./token";
 export * from "./elevate";
 export * from "./loader";
 export * from "./webauthn";
+export * from "./organization";

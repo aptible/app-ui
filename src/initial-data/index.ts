@@ -1,16 +1,14 @@
 import { call, put, select } from "saga-query";
 
 import { thunks } from "@app/api";
+import { fetchOrganizations } from "@app/auth";
 import {
   fetchAllApps,
   fetchAllDatabases,
   fetchAllEnvironments,
   fetchAllStacks,
 } from "@app/deploy";
-import {
-  fetchOrganizations,
-  selectOrganizationSelected,
-} from "@app/organizations";
+import { selectOrganizationSelected } from "@app/organizations";
 import { fetchUsers } from "@app/users";
 
 export const fetchInitialData = thunks.create(

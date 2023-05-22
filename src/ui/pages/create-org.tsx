@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { useLoader, useLoaderSuccess } from "saga-query/react";
 
-import { createOrganization } from "@app/organizations";
+import { createOrganization } from "@app/auth";
 import { homeUrl } from "@app/routes";
 
 import { Banner, Button, FormGroup, Progress } from "../shared";

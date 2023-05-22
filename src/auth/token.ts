@@ -1,6 +1,7 @@
+import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 import { call, put } from "saga-query";
 
-import { AuthApiCtx, authApi } from "@app/api";
+import { authApi } from "@app/api";
 import {
   TokenSuccessResponse,
   deserializeToken,
@@ -8,7 +9,7 @@ import {
   setElevatedToken,
   setToken,
 } from "@app/token";
-import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
+import { AuthApiCtx } from "@app/types";
 
 export interface CreateTokenPayload {
   username: string;

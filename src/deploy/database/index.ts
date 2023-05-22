@@ -10,7 +10,6 @@ import {
 } from "saga-query";
 
 import {
-  DeployApiCtx,
   PaginateProps,
   ThunkCtx,
   api,
@@ -26,6 +25,7 @@ import {
 } from "@app/slice-helpers";
 import type {
   AppState,
+  DeployApiCtx,
   DeployDatabase,
   DeployOperationResponse,
   HalEmbedded,
