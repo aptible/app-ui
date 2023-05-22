@@ -2,6 +2,7 @@ import { server } from "@app/mocks";
 import matchers, {
   TestingLibraryMatchers,
 } from "@testing-library/jest-dom/matchers";
+import { cleanup } from "@testing-library/react";
 import { expect } from "vitest";
 
 declare module "vitest" {
@@ -17,7 +18,10 @@ beforeAll(() => server.listen());
 
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  cleanup();
+});
 
 // Clean up after the tests are finished.
 afterAll(() => server.close());
