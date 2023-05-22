@@ -2,9 +2,13 @@ import { UnauthRequired } from "./unauth-required";
 
 import { server, testEnv } from "@app/mocks";
 import { homeUrl } from "@app/routes";
-import { setupIntegrationTest } from "@app/test";
+import { setupIntegrationTest, waitForToken } from "@app/test";
 import { render, screen } from "@testing-library/react";
 import { rest } from "msw";
+
+const HomeMock = () => {
+  return <div>Simulated home</div>;
+};
 
 describe("UnauthRequired", () => {
   it("should allow child to render without a redirect when current token expired", async () => {
@@ -14,7 +18,7 @@ describe("UnauthRequired", () => {
       additionalRoutes: [
         {
           path: homeUrl(),
-          element: <p>Simulated home</p>,
+          element: <HomeMock />,
         },
       ],
     });
@@ -25,40 +29,41 @@ describe("UnauthRequired", () => {
     );
     render(
       <TestProvider>
-        <div>
-          <UnauthRequired />
-          <p>Test element</p>
-        </div>
+        <UnauthRequired>
+          <div>Test element</div>
+        </UnauthRequired>
       </TestProvider>,
     );
     const el = await screen.findByText("Test element");
-    const home = await screen.queryByText("Simulated home");
-    expect(el.textContent).toBeDefined;
-    expect(home).toBeNull;
+    const home = screen.queryByText("Simulated home");
+    expect(el).toBeInTheDocument();
+    expect(home).not.toBeInTheDocument();
   });
   // if authed, expect redirect
   it("should redirect you to root when logged in", async () => {
-    const { TestProvider } = setupIntegrationTest({
+    const { TestProvider, store } = setupIntegrationTest({
       path: "/mock",
       initEntries: ["/mock"],
       additionalRoutes: [
         {
           path: homeUrl(),
-          element: <p>Simulated home</p>,
+          element: <HomeMock />,
         },
       ],
     });
+
+    await waitForToken(store);
+
     render(
       <TestProvider>
-        <div>
-          <UnauthRequired />
-          <p>Test element</p>
-        </div>
+        <UnauthRequired>
+          <div>Test element</div>
+        </UnauthRequired>
       </TestProvider>,
     );
-    const el = await screen.queryByText("Test element");
+    const el = screen.queryByText("Test element");
     const home = await screen.findByText("Simulated home");
-    expect(el).toBeNull;
-    expect(home.textContent).toBeDefined;
+    expect(el).not.toBeInTheDocument();
+    expect(home).toBeInTheDocument();
   });
 });

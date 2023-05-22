@@ -1,22 +1,21 @@
+import { ReactElement, SyntheticEvent, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+
 import { calcServiceMetrics, selectServicesByIds } from "@app/deploy";
 import { AppState, DeployService } from "@app/types";
 
+import { ButtonIcon } from "../button";
 import {
-  ButtonIcon,
   IconChevronDown,
   IconChevronUp,
   IconEllipsis,
   IconPlusCircle,
-  InputSearch,
-  PreCode,
-  ResourceListView,
-  TableHead,
-  Td,
-  listToTextColor,
-  tokens,
-} from "../../shared";
-import { ReactElement, SyntheticEvent, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+} from "../icons";
+import { InputSearch } from "../input";
+import { PreCode, listToTextColor } from "../pre-code";
+import { ResourceListView } from "../resource-list-view";
+import { TableHead, Td } from "../table";
+import { tokens } from "../tokens";
 
 const serviceListRow = ({
   service,

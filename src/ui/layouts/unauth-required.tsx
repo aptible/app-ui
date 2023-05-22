@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useLoader } from "saga-query/react";
 
 import { fetchCurrentToken } from "@app/auth";
@@ -7,10 +7,25 @@ import { homeUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 
 import { Loading } from "../shared";
+import { useEffect } from "react";
 
-export const UnauthRequired = () => {
+export const UnauthRequired = ({
+  children,
+}: {
+  children?: React.ReactNode;
+}) => {
   const loader = useLoader(fetchCurrentToken);
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loader.isLoading) {
+      return;
+    }
+    if (isAuthenticated) {
+      navigate(homeUrl(), { replace: true });
+    }
+  }, [isAuthenticated, loader]);
 
   if (loader.isLoading) {
     return (
@@ -20,9 +35,5 @@ export const UnauthRequired = () => {
     );
   }
 
-  if (isAuthenticated) {
-    return <Navigate replace to={homeUrl()} />;
-  }
-
-  return <Outlet />;
+  return children ? <>{children}</> : <Outlet />;
 };

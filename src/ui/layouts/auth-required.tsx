@@ -1,15 +1,15 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useLoader } from "saga-query/react";
 
 import { fetchCurrentToken } from "@app/auth";
+import { selectEnv } from "@app/env";
+import { setRedirectPath } from "@app/redirect-path";
 import { loginUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 
 import { Loading } from "../shared";
-import { selectEnv } from "@app/env";
-import { setRedirectPath } from "@app/redirect-path";
-import { useEffect } from "react";
 
 export const AuthRequired = () => {
   const loader = useLoader(fetchCurrentToken);
@@ -17,6 +17,7 @@ export const AuthRequired = () => {
   const config = useSelector(selectEnv);
   const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const authed = loader.isLoading || isAuthenticated;
 
   useEffect(() => {
@@ -25,14 +26,20 @@ export const AuthRequired = () => {
     }
   }, [authed]);
 
-  // only redirect in production
-  if (config.isProduction && !authed && config.legacyDashboardUrl) {
-    // WARNING - this should be temporary
-    // if environment featureflag for dashboard.aptible.com, we will redirect to dashboard for login
-    window.location.href = config.legacyDashboardUrl;
-  } else if (!authed) {
-    return <Navigate to={loginUrl()} />;
-  }
+  useEffect(() => {
+    if (loader.isLoading) {
+      return;
+    }
+
+    // only redirect in production
+    if (config.isProduction && !authed && config.legacyDashboardUrl) {
+      // WARNING - this should be temporary
+      // if environment featureflag for dashboard.aptible.com, we will redirect to dashboard for login
+      window.location.href = config.legacyDashboardUrl;
+    } else if (!authed) {
+      navigate(loginUrl());
+    }
+  }, [config, authed, loader]);
 
   if (loader.isLoading) {
     return (

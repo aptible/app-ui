@@ -9,7 +9,6 @@ import {
 } from "saga-query";
 
 import { thunks } from "@app/api";
-import { fetchInitialData } from "@app/bootup";
 import { createLog } from "@app/debug";
 
 import { AUTH_LOADER_ID } from "./loader";
@@ -42,7 +41,7 @@ export const login = thunks.create<CreateTokenPayload>(
     yield put(
       batchActions([
         setLoaderSuccess({ id: AUTH_LOADER_ID }),
-        fetchInitialData(),
+        { type: "@@saga-query/fetch-initial-data" },
       ]),
     );
     yield next();

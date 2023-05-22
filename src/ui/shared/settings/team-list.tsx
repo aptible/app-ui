@@ -4,7 +4,7 @@ import { useQuery } from "saga-query/react";
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchUsers, selectUsersAsList } from "@app/users";
 
-import { LoadResources } from "../../shared";
+import { LoadResources } from "../load-resources";
 import { TeamListView } from "./team-list-view";
 
 export function TeamList() {

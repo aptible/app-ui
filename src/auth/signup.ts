@@ -6,14 +6,14 @@ import {
   setLoaderSuccess,
 } from "saga-query";
 
-import { AuthApiCtx, thunks } from "@app/api";
+import { thunks } from "@app/api";
 import { createLog } from "@app/debug";
+import { ApiGen, AuthApiCtx } from "@app/types";
 import { CreateUserForm, createUser } from "@app/users";
 
 import { AUTH_LOADER_ID } from "./loader";
+import { createOrganization } from "./organization";
 import { createToken, elevateToken } from "./token";
-import { createOrganization } from "@app/organizations";
-import { ApiGen } from "@app/types";
 
 const log = createLog("signup");
 

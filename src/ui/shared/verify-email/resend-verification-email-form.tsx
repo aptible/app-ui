@@ -6,7 +6,7 @@ import { resendVerification } from "@app/auth";
 import { selectOrigin } from "@app/env";
 import { selectJWTToken } from "@app/token";
 
-import { Button } from "../../shared";
+import { Button } from "../button";
 
 export const ResendVerificationEmail = () => {
   const dispatch = useDispatch();

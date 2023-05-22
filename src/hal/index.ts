@@ -1,10 +1,10 @@
 import { Next, select } from "saga-query";
 
-import type { DeployApiCtx } from "@app/api";
 import { createAssign, createReducerMap } from "@app/slice-helpers";
 import type {
   Action,
   AppState,
+  DeployApiCtx,
   EmbeddedMap,
   EntityMap,
   HalEmbedded,

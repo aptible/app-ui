@@ -1,12 +1,11 @@
+import { useSelector } from "react-redux";
 import { useQuery } from "saga-query/react";
 
 import { fetchEndpointsByAppId, selectEndpointsByAppId } from "@app/deploy";
 import { AppState, DeployApp } from "@app/types";
 
+import { EndpointsView } from "../endpoints-overview";
 import { LoadResources } from "../load-resources";
-
-import { EndpointsView } from "../../shared";
-import { useSelector } from "react-redux";
 
 export function AppEndpointsOverview({ app }: { app: DeployApp }) {
   const query = useQuery(fetchEndpointsByAppId({ appId: app.id }));

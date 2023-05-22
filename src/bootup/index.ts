@@ -1,21 +1,11 @@
 import { REHYDRATE } from "redux-persist";
-import { call, put, select, take } from "saga-query";
+import { call, select, take } from "saga-query";
 
 import { thunks } from "@app/api";
 import { fetchCurrentToken } from "@app/auth";
-import {
-  fetchAllApps,
-  fetchAllDatabases,
-  fetchAllEnvironments,
-  fetchAllStacks,
-} from "@app/deploy";
-import {
-  fetchOrganizations,
-  selectOrganizationSelected,
-} from "@app/organizations";
+import { fetchInitialData } from "@app/initial-data";
 import { selectAccessToken } from "@app/token";
 import { ApiGen } from "@app/types";
-import { fetchUsers } from "@app/users";
 
 export const bootup = thunks.create(
   "bootup",
@@ -30,20 +20,6 @@ export const bootup = thunks.create(
 
     yield* call(fetchInitialData.run, fetchInitialData());
 
-    yield next();
-  },
-);
-
-export const fetchInitialData = thunks.create(
-  "fetch-init-data",
-  function* (_, next) {
-    yield* call(fetchOrganizations.run, fetchOrganizations());
-    const org = yield* select(selectOrganizationSelected);
-    yield* put(fetchUsers({ orgId: org.id }));
-    yield* put(fetchAllStacks());
-    yield* put(fetchAllEnvironments());
-    yield* put(fetchAllApps());
-    yield* put(fetchAllDatabases());
     yield next();
   },
 );

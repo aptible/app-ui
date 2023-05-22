@@ -26,17 +26,16 @@ import { createLog } from "@app/debug";
 import { selectEnv } from "@app/env";
 import { halEntityParser } from "@app/hal";
 import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
-import type { Action, ApiGen, AuthApiError, HalEmbedded } from "@app/types";
+import type {
+  Action,
+  ApiGen,
+  AppCtx,
+  AuthApiCtx,
+  DeployApiCtx,
+  HalEmbedded,
+} from "@app/types";
 
 type EndpointUrl = "auth" | "api" | "billing";
-
-export type AppCtx<P = any, S = any> = ApiCtx<P, S, { message: string }>;
-export type DeployApiCtx<P = any, S = any> = ApiCtx<P, S, { message: string }>;
-export interface AuthApiCtx<P = any, S = any>
-  extends ApiCtx<P, S, AuthApiError> {
-  elevated: boolean;
-  noToken: boolean;
-}
 
 const log = createLog("saga-query");
 

@@ -31,5 +31,4 @@ export * from "./modal-portal";
 export * from "./icons";
 export * from "./box";
 export * from "./pre-code";
-export * from "./error-boundary";
 export * from "./how-it-works-footer";

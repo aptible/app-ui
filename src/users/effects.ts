@@ -1,8 +1,8 @@
 import { Next, select } from "saga-query";
 
-import { AuthApiCtx, authApi, cacheTimer, elevetatedMdw } from "@app/api";
+import { authApi, cacheTimer, elevetatedMdw } from "@app/api";
 import { selectOrigin } from "@app/env";
-import type { ApiGen } from "@app/types";
+import type { ApiGen, AuthApiCtx } from "@app/types";
 
 import type { CreateUserForm, UserResponse } from "./types";
 
