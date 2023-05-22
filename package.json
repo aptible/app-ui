@@ -16,7 +16,8 @@
     "format": "yarn format.pretty && yarn format.lint",
     "lint.check": "rome ci .",
     "lint.types": "tsc --noEmit",
-    "lint": "yarn lint.types && yarn lint.check",
+    "lint": "yarn lint.types && yarn lint.check && yarn lint.circular",
+    "lint.circular": "dpdm --no-tree --exit-code circular:1 -T ./src/app/init.ts",
     "test": "yarn lint && vitest run"
   },
   "dependencies": {
@@ -40,6 +41,7 @@
     "classnames": "^2.3.2",
     "date-fns": "^2.30.0",
     "debug": "^4.3.4",
+    "dpdm": "^3.13.0",
     "history": "^5.3.0",
     "jsdom": "^21.1.2",
     "msw": "^1.2.1",
