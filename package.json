@@ -6,18 +6,16 @@
   "license": "MIT",
   "private": true,
   "type": "module",
+  "packageManager": "yarn@3.5.0",
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "format.pretty": "rome format . --write",
-    "format.lint": "rome check . --apply",
-    "format.unsafe": "rome check . --apply-unsafe",
-    "format": "yarn format.pretty && yarn format.lint",
-    "lint.check": "rome ci .",
+    "format": "rome check . --apply-unsafe",
     "lint.types": "tsc --noEmit",
-    "lint": "yarn lint.types && yarn lint.check && yarn lint.circular",
+    "lint.check": "rome ci .",
     "lint.circular": "dpdm --no-tree --no-warning --exit-code circular:1 ./src/app/init.ts",
+    "lint": "yarn lint.types && yarn lint.check && yarn lint.circular",
     "test": "yarn lint && vitest run"
   },
   "dependencies": {
@@ -63,6 +61,5 @@
     "vite": "^4.3.7",
     "vite-tsconfig-paths": "^4.2.0",
     "vitest": "^0.31.0"
-  },
-  "packageManager": "yarn@3.5.0"
+  }
 }
