@@ -27,6 +27,10 @@ export const AuthRequired = () => {
   }, [authed]);
 
   useEffect(() => {
+    if (loader.isLoading) {
+      return;
+    }
+
     // only redirect in production
     if (config.isProduction && !authed && config.legacyDashboardUrl) {
       // WARNING - this should be temporary
@@ -35,7 +39,7 @@ export const AuthRequired = () => {
     } else if (!authed) {
       navigate(loginUrl());
     }
-  }, [config, authed]);
+  }, [config, authed, loader]);
 
   if (loader.isLoading) {
     return (

@@ -1,6 +1,7 @@
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router";
-import { Navigate, Outlet } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
+import { Outlet } from "react-router-dom";
 import { useLoader } from "saga-query/react";
 
 import { fetchCurrentToken } from "@app/auth";
@@ -21,10 +22,23 @@ export const ElevateRequired = ({
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
   const isElevatedTokenValid = useSelector(selectIsElevatedTokenValid);
   const location = useLocation();
+  const navigate = useNavigate();
 
-  if (loader.lastRun > 0 && !loader.isLoading && !isAuthenticated) {
-    return <Navigate to={loginUrl()} />;
-  }
+  useEffect(() => {
+    if (loader.isLoading) {
+      return;
+    }
+
+    if (loader.lastRun > 0 && !isAuthenticated) {
+      navigate(loginUrl());
+      return;
+    }
+
+    if (!isElevatedTokenValid) {
+      navigate(elevateUrl(location.pathname), { replace: true });
+      return;
+    }
+  }, [loader, isAuthenticated, isElevatedTokenValid]);
 
   if (loader.isLoading) {
     return (
@@ -32,10 +46,6 @@ export const ElevateRequired = ({
         <Loading />
       </div>
     );
-  }
-
-  if (!isElevatedTokenValid) {
-    return <Navigate to={elevateUrl(location.pathname)} replace />;
   }
 
   return (
