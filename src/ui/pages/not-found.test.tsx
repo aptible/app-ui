@@ -1,7 +1,7 @@
 import { NotFoundPage } from "./not-found";
 
 import { setupIntegrationTest } from "@app/test";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 describe("Not found page page", () => {
   it("the not found page should render", async () => {
@@ -12,8 +12,6 @@ describe("Not found page page", () => {
       </TestProvider>,
     );
     const el = await screen.queryByText("Page Not Found");
-    await waitFor(() => {
-      expect(el).toBeDefined;
-    });
+    expect(el).toBeDefined;
   });
 });
