@@ -16,6 +16,7 @@ import {
 } from "../shared";
 import {
   fetchCurrentToken,
+  selectAuthLoader,
   signup,
   validatePasswordComplexity,
 } from "@app/auth";
@@ -47,13 +48,14 @@ const createQueryStringValue =
   };
 
 export const SignupPage = () => {
-  const loader = useLoader(fetchCurrentToken);
+  const fetchTokenLoader = useLoader(fetchCurrentToken);
+  const fetchSignupLoader = useSelector(selectAuthLoader);
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const getQueryStringValue = createQueryStringValue(location.search);
   const redirectPath = useSelector(selectRedirectPath);
-  const { isLoading } = loader;
+  const { isLoading } = fetchSignupLoader;
 
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -113,13 +115,13 @@ export const SignupPage = () => {
     );
   };
 
-  useLoaderSuccess(loader, () => {
+  useLoaderSuccess(fetchSignupLoader, () => {
     if (invitationRequest.invitationId) {
       navigate(acceptInvitationWithCodeUrl(invitationRequest));
     } else {
       // if the api returns with a user.verified = true, skip email request page
       // this can happen in development when ENV['DISABLE_EMAIL_VERIFICATION']=1
-      if (loader.meta.verified) {
+      if (fetchSignupLoader.meta.verified) {
         navigate(redirectPath || homeUrl());
         dispatch(resetRedirectPath());
         return;
@@ -131,7 +133,8 @@ export const SignupPage = () => {
   // presentError - this value is set because in specific scenarios, we do not need the
   // middleware error message presented - namely on Unauthorized checks, as we do a
   // validation of the current token to see if a user is loaded. for all other
-  const presentError = loader.isError && loader.message !== "Unauthorized";
+  const presentError =
+    fetchTokenLoader.isError && fetchTokenLoader.message !== "Unauthorized";
 
   return (
     <HeroBgLayout width={500}>
@@ -216,7 +219,7 @@ export const SignupPage = () => {
               />
             </FormGroup>
 
-            {presentError ? <BannerMessages {...loader} /> : null}
+            {presentError ? <BannerMessages {...fetchTokenLoader} /> : null}
             <div>
               <Button
                 type="submit"
@@ -224,7 +227,7 @@ export const SignupPage = () => {
                 layout="block"
                 size="lg"
                 disabled={disableSave}
-                isLoading={loader.isLoading}
+                isLoading={fetchTokenLoader.isLoading}
               >
                 Create Account
               </Button>
