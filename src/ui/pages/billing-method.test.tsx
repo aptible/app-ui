@@ -1,16 +1,16 @@
-import { LoginPage } from "./login";
+import { BillingMethodPage } from "./billing-method";
 import { setupIntegrationTest } from "@app/test";
 import { render, screen } from "@testing-library/react";
 
-describe("Login page", () => {
-  it("the log in button is visible", async () => {
+describe("Billing Method page", () => {
+  it("the billing method page should render", async () => {
     const { TestProvider } = setupIntegrationTest();
     render(
       <TestProvider>
-        <LoginPage />
+        <BillingMethodPage />
       </TestProvider>,
     );
     const el = await screen.findByRole("button");
-    expect(el.textContent).toEqual("Log In");
+    expect(el.textContent).toEqual("Save & Finish");
   });
 });

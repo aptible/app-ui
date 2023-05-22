@@ -30,7 +30,7 @@ export const ResendVerificationEmail = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <div className="flex flex-col justify-between mt-9 mb-6">
+      <div className="flex flex-col justify-between">
         <Button
           isLoading={resendVerificationLoader.isLoading}
           disabled={resendVerificationLoader.isLoading}

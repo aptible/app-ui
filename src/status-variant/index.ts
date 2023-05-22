@@ -38,7 +38,7 @@ export const variantToColor = (s: StatusVariant): string => {
 export const variantToClassName = (s: StatusVariant): string => {
   switch (s) {
     case "warning":
-      return "bg-orange text-white";
+      return "bg-orange-400 text-white";
     case "success":
       return "bg-forest text-white";
     case "error":

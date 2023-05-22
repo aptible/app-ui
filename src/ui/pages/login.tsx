@@ -23,15 +23,14 @@ import {
 } from "@app/routes";
 import { validEmail } from "@app/string-utils";
 
+import { HeroBgLayout } from "../layouts";
 import {
-  Alert,
-  AptibleLogo,
+  BannerMessages,
   Button,
   ExternalLink,
   FormGroup,
-  IconAlertCircle,
   Input,
-  LoggedInBanner,
+  tokens,
 } from "../shared";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 
@@ -95,137 +94,126 @@ export const LoginPage = () => {
     }
   }, [isOtpError]);
 
+  const isOtpRequired = loader.message === "OtpTokenRequired";
   return (
-    <div>
-      <LoggedInBanner />
-
-      <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="flex items-center justify-center">
-            <AptibleLogo />
-          </div>
-          <h2 className="mt-6 text-center text-3xl font-semibold text-gray-900">
-            Log in to Aptible
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+    <HeroBgLayout width={500}>
+      <h1 className={`${tokens.type.h1} text-center`}>Log In</h1>
+      <div className="flex text-center items-center justify-center mt-4">
+        <div className="max-w-2xl">
+          <p>
             Don't have an account?{" "}
-            <Link
-              to={signupUrl()}
-              className="font-medium text-emerald-600 hover:text-gray-500"
-            >
+            <Link to={signupUrl()} className="font-medium">
               Sign up
             </Link>
           </p>
         </div>
+      </div>
 
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form className="space-y-6" onSubmit={onSubmit}>
-              {loader.isError ? (
-                <div className="mb-8">
-                  <Alert
-                    title="Something went wrong"
-                    variant="danger"
-                    icon={
-                      <div className="h-5 w-5 text-red-400" aria-hidden="true">
-                        <IconAlertCircle />
-                      </div>
-                    }
-                  >
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>{loader.message}</li>
-                    </ul>
-                  </Alert>
-                </div>
-              ) : null}
+      <div className="mt-8">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form className="space-y-6" onSubmit={onSubmit}>
+            {isOtpRequired ? (
+              <BannerMessages
+                className="my-2"
+                isSuccess={false}
+                isError={false}
+                isWarning
+                message="You must enter your 2FA token to continue"
+              />
+            ) : (
+              <BannerMessages className="my-2" {...loader} />
+            )}
 
+            <FormGroup
+              label="Email"
+              htmlFor="email"
+              feedbackVariant={emailErrorMessage ? "danger" : "info"}
+              feedbackMessage={emailErrorMessage}
+            >
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                autoFocus={true}
+                required={true}
+                disabled={!!invitation}
+                value={invitation ? invitation.email : email}
+                className="w-full"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </FormGroup>
+
+            <FormGroup label="Password" htmlFor="password">
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required={true}
+                value={password}
+                className="w-full"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </FormGroup>
+
+            {requireOtp ? (
               <FormGroup
-                label="Email address"
-                htmlFor="email"
-                feedbackVariant={emailErrorMessage ? "danger" : "info"}
-                feedbackMessage={emailErrorMessage}
+                label="Two-Factor Authentication Required"
+                htmlFor="input-2fa"
+                description={
+                  <p>
+                    Read our 2fa{" "}
+                    <ExternalLink
+                      href="https://www.aptible.com/docs/password-authentication#2-factor-authentication-2fa"
+                      variant="info"
+                    >
+                      docs
+                    </ExternalLink>{" "}
+                    to learn more.
+                  </p>
+                }
               >
                 <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  autoFocus={true}
-                  required={true}
-                  disabled={!!invitation}
-                  value={invitation ? invitation.email : email}
-                  className="w-full"
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="number"
+                  value={otpToken}
+                  onChange={(e) => setOtpToken(e.currentTarget.value)}
+                  autoComplete="off"
+                  autoFocus
                 />
               </FormGroup>
+            ) : null}
 
-              <FormGroup label="Password" htmlFor="password">
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required={true}
-                  value={password}
-                  className="w-full"
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </FormGroup>
-
-              {requireOtp ? (
-                <FormGroup
-                  label="2FA"
-                  htmlFor="input-2fa"
-                  description={
-                    <p>
-                      Read our 2fa{" "}
-                      <ExternalLink
-                        href="https://www.aptible.com/docs/password-authentication#2-factor-authentication-2fa"
-                        variant="info"
-                      >
-                        docs
-                      </ExternalLink>{" "}
-                      to learn more.
-                    </p>
-                  }
-                >
-                  <Input
-                    type="number"
-                    value={otpToken}
-                    onChange={(e) => setOtpToken(e.currentTarget.value)}
-                    autoComplete="off"
-                    autoFocus
-                  />
-                </FormGroup>
-              ) : null}
-
-              <div className="flex items-center justify-between">
-                <div className="text-sm">
-                  <Link
-                    to={forgotPassUrl()}
-                    className="font-medium text-emerald-600 hover:text-gray-500"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
-              </div>
-
-              <div>
-                <Button
-                  isLoading={loader.isLoading}
-                  disabled={loader.isLoading}
-                  type="submit"
-                  variant="primary"
-                  layout="block"
-                  size="lg"
-                >
-                  Sign in
-                </Button>
-              </div>
-            </form>
-          </div>
+            <div>
+              <Button
+                isLoading={loader.isLoading}
+                disabled={loader.isLoading || !(email && password)}
+                type="submit"
+                variant="primary"
+                layout="block"
+                size="lg"
+              >
+                Log In
+              </Button>
+            </div>
+            <p className="text-center">
+              <Link to={forgotPassUrl()} className="text-sm text-center">
+                Forgot your password?
+              </Link>
+            </p>
+            <p className="mt-4 text-center text-sm text-gray-600">
+              By submitting this form, I confirm that I have read and agree to
+              Aptible's{" "}
+              <a href="https://www.aptible.com/legal/terms-of-service">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="https://www.aptible.com/legal/privacy">Privacy Policy</a>
+              .
+            </p>
+          </form>
         </div>
       </div>
-    </div>
+    </HeroBgLayout>
   );
 };

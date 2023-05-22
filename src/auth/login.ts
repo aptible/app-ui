@@ -25,7 +25,7 @@ export const login = thunks.create<CreateTokenPayload>(
     const tokenCtx = yield* call(createToken.run, createToken(ctx.payload));
 
     if (!tokenCtx.json.ok) {
-      const { message, error, code, exception_context } = tokenCtx.json.data;
+      const { error, code, exception_context, message } = tokenCtx.json.data;
       yield put(
         setLoaderError({
           id: AUTH_LOADER_ID,

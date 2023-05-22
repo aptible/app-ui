@@ -28,40 +28,37 @@ export const ForgotPassPage = () => {
   return (
     <HeroBgLayout>
       <div className="text-center">
-        <h1 className={tokens.type.h1}>Forgot Password?</h1>
+        <h1 className={`${tokens.type.h1} text-center`}>Reset your password</h1>
         <p className="mt-6 text-gray-600">
-          Provide the email address associated with your account and we will
-          send you a reset password email.
-        </p>
-        <p className="mt-2 mb-6 text-gray-600">
-          Or if you remember your password, you can go back to{" "}
-          <Link to={loginUrl()}>login</Link>.
+          Check your email for reset instructions or go back to{" "}
+          <Link to={loginUrl()}>Log In</Link>.
         </p>
       </div>
-      <Box>
-        <form onSubmit={onSubmit}>
-          <FormGroup label="Email" htmlFor="email">
-            <Input
-              type="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.currentTarget.value)}
-              placeholder="Enter your email"
-              className="w-full"
-            />
-          </FormGroup>
-          <Button
-            className="w-full mt-4"
-            disabled={email === "" || loader.isSuccess}
-            isLoading={loader.isLoading}
-            type="submit"
-          >
-            Reset password
-          </Button>
-
-          <BannerMessages className="my-2" {...loader} />
-        </form>
-      </Box>
+      <div className="pt-4">
+        <Box>
+          <form onSubmit={onSubmit}>
+            <BannerMessages className="my-2" {...loader} />
+            <FormGroup label="Email" htmlFor="email">
+              <Input
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.currentTarget.value)}
+                placeholder="Enter your email"
+                className="w-full"
+              />
+            </FormGroup>
+            <Button
+              className="w-full mt-6"
+              disabled={email === "" || loader.isSuccess}
+              isLoading={loader.isLoading}
+              type="submit"
+            >
+              Reset Password
+            </Button>
+          </form>
+        </Box>
+      </div>
     </HeroBgLayout>
   );
 };

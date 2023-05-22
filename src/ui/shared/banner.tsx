@@ -55,17 +55,27 @@ export const Banner = ({
 export const BannerMessages = ({
   isSuccess,
   isError,
+  isWarning,
   message,
   className,
 }: {
   isSuccess: boolean;
   isError: boolean;
+  isWarning?: boolean;
   message: string;
   className?: string;
 }) => {
   if (isSuccess) {
     return (
       <Banner className={className} variant="success">
+        {message}
+      </Banner>
+    );
+  }
+
+  if (isWarning) {
+    return (
+      <Banner className={className} variant="warning">
         {message}
       </Banner>
     );

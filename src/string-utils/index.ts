@@ -1,9 +1,14 @@
+const VALID_HANDLE_REGEX = /^[0-9a-z._-]{1,64}$/;
 const VALID_EMAIL_REGEX =
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 export function validEmail(email: string): boolean {
   return !!email && !!email.toLowerCase().match(VALID_EMAIL_REGEX);
 }
+
+// this mirrors handle validation on backend
+export const validHandle = (handle: string): boolean =>
+  !!handle && !!handle.match(VALID_HANDLE_REGEX);
 
 export const capitalize = (s: string) => {
   return s.charAt(0).toUpperCase() + s.slice(1);

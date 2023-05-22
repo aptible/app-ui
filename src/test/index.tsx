@@ -1,12 +1,5 @@
 import { Provider } from "react-redux";
-import {
-  Route,
-  RouteObject,
-  RouterProvider,
-  Routes,
-  createMemoryRouter,
-} from "react-router";
-import { MemoryRouter } from "react-router-dom";
+import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
 import { prepareStore } from "saga-query";
 
 import { reducers, rootEntities, sagas } from "@app/app";
@@ -85,10 +78,12 @@ export const setupIntegrationTest = (
     path = "/",
     initState = {},
     initEntries = ["/"],
+    additionalRoutes = [],
   }: {
     path?: string;
     initState?: Partial<AppState>;
     initEntries?: string[];
+    additionalRoutes?: RouteObject[];
   } = { path: "/", initState: {}, initEntries: ["/"] },
 ) => {
   const { store } = setupTestStore({
@@ -99,13 +94,19 @@ export const setupIntegrationTest = (
   store.dispatch({ type: REHYDRATE });
 
   const TestProvider = ({ children }: { children: React.ReactNode }) => {
+    const router = createMemoryRouter(
+      [
+        {
+          path,
+          element: children,
+        },
+        ...additionalRoutes,
+      ],
+      { initialEntries: initEntries, initialIndex: 0 },
+    );
     return (
       <Provider store={store}>
-        <MemoryRouter initialEntries={initEntries}>
-          <Routes>
-            <Route path={path} element={children} />
-          </Routes>
-        </MemoryRouter>
+        <RouterProvider router={router} />
       </Provider>
     );
   };

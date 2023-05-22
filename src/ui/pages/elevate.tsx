@@ -5,11 +5,19 @@ import { useLoaderSuccess } from "saga-query/react";
 
 import { elevate, elevateWebauthn } from "@app/auth";
 import { selectAuthLoader, selectIsOtpError } from "@app/auth";
-import { homeUrl } from "@app/routes";
+import { forgotPassUrl, homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
 import { HeroBgLayout } from "../layouts";
-import { Alert, Button, ExternalLink, FormGroup, Input } from "../shared";
+import {
+  BannerMessages,
+  Button,
+  ExternalLink,
+  FormGroup,
+  Input,
+  tokens,
+} from "../shared";
+import { Link } from "react-router-dom";
 
 export const ElevatePage = () => {
   const dispatch = useDispatch();
@@ -54,36 +62,19 @@ export const ElevatePage = () => {
 
   return (
     <HeroBgLayout>
-      <h2 className="mt-6 mb-4 text-center text-3xl font-semibold text-gray-900">
-        Elevate token
-      </h2>
-      <p>
-        We require a short-lived elevated token before allowing changes to
-        authentication credentials (i.e. changing password, adding pubkey,
-        disabling 2FA). This token lasts for 15 minutes.
-      </p>
+      <h1 className={`${tokens.type.h1} text-center`}>
+        Re-enter your credentials
+      </h1>
+      <div className="flex text-center items-center justify-center mt-4">
+        <div className="max-w-2xl">
+          <p>You must confirm your credentials before proceeding.</p>
+        </div>
+      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-8">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={onSubmit}>
-            {loader.isError ? (
-              <div className="mb-8">
-                <Alert
-                  title="Something went wrong"
-                  variant="danger"
-                  icon={
-                    <div className="h-5 w-5 text-red-400" aria-hidden="true">
-                      icon
-                    </div>
-                  }
-                >
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li>{loader.message}</li>
-                  </ul>
-                </Alert>
-              </div>
-            ) : null}
-
+            <BannerMessages className="my-2" {...loader} />
             <FormGroup label="Email" htmlFor="input-email">
               <Input
                 name="email"
@@ -112,7 +103,7 @@ export const ElevatePage = () => {
 
             {requireOtp ? (
               <FormGroup
-                label="2FA"
+                label="Two-Factor Authentication Required"
                 htmlFor="input-2fa"
                 description={
                   <p>
@@ -140,14 +131,19 @@ export const ElevatePage = () => {
             <div>
               <Button
                 isLoading={loader.isLoading}
-                disabled={loader.isLoading}
+                disabled={loader.isLoading || !password}
                 type="submit"
                 layout="block"
                 size="lg"
               >
-                Elevate token
+                Confirm
               </Button>
             </div>
+            <p className="text-center">
+              <Link to={forgotPassUrl()} className="text-sm text-center">
+                Forgot your password?
+              </Link>
+            </p>
           </form>
         </div>
       </div>

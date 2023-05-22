@@ -136,6 +136,7 @@ module.exports = {
     extend: {
       padding: ["first", "last"],
     },
+    opacity: ({ after }) => after(["disabled"]),
   },
   plugins: [
     require("@tailwindcss/typography"),

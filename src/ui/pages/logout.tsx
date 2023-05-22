@@ -22,7 +22,7 @@ export const LogoutPage = () => {
   return (
     <HeroBgLayout>
       <div className="text-center mt-16">
-        <h1 className={tokens.type.h1}>Confirm Log Out</h1>
+        <h1 className={`${tokens.type.h1} text-center`}>Confirm Log Out</h1>
         <p className="my-6 text-gray-600">
           Click to log out to continue or visit{" "}
           <a href={`${legacyUrl}/settings/protected/admin`}>
