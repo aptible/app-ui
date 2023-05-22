@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useLoader } from "saga-query/react";
 
 import { fetchCurrentToken } from "@app/auth";
@@ -17,6 +17,7 @@ export const AuthRequired = () => {
   const config = useSelector(selectEnv);
   const location = useLocation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const authed = loader.isLoading || isAuthenticated;
 
   useEffect(() => {
@@ -25,14 +26,16 @@ export const AuthRequired = () => {
     }
   }, [authed]);
 
-  // only redirect in production
-  if (config.isProduction && !authed && config.legacyDashboardUrl) {
-    // WARNING - this should be temporary
-    // if environment featureflag for dashboard.aptible.com, we will redirect to dashboard for login
-    window.location.href = config.legacyDashboardUrl;
-  } else if (!authed) {
-    return <Navigate to={loginUrl()} />;
-  }
+  useEffect(() => {
+    // only redirect in production
+    if (config.isProduction && !authed && config.legacyDashboardUrl) {
+      // WARNING - this should be temporary
+      // if environment featureflag for dashboard.aptible.com, we will redirect to dashboard for login
+      window.location.href = config.legacyDashboardUrl;
+    } else if (!authed) {
+      navigate(loginUrl());
+    }
+  }, [config, authed]);
 
   if (loader.isLoading) {
     return (
