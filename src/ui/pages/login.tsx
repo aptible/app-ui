@@ -94,7 +94,7 @@ export const LoginPage = () => {
     }
   }, [isOtpError]);
 
-  const isOtpRequired = loader.message === "otp_token_required";
+  const isOtpRequired = loader.message === "OtpTokenRequired";
   return (
     <HeroBgLayout width={500}>
       <h1 className={`${tokens.type.h1} text-center`}>Log In</h1>
