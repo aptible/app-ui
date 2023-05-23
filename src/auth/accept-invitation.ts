@@ -38,6 +38,14 @@ export const acceptInvitation = authApi.post<any, AcceptInvitation>(
     // After accepting an invitation, we need to refresh our token to get elevated permissions
     // Once the elevated permissions are granted, we need to reload all assets using bootup.
     const token = yield* select(selectToken);
-    yield* call(exchangeToken.run, exchangeToken(token));
+    yield* call(
+      exchangeToken.run,
+      exchangeToken({
+        actorToken: token.accessToken,
+        subjectToken: token.userUrl,
+        subjectTokenType: "aptible:user:href",
+        scope: "manage",
+      }),
+    );
   },
 );

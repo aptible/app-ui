@@ -25,3 +25,10 @@ export const selectCurrentUser = createSelector(
     return curUsers[userId] || defaultUser();
   },
 );
+
+export const selectCanImpersonate = createSelector(
+  selectCurrentUser,
+  (user) => {
+    return user.superuser || user.readOnlyImpersonate;
+  },
+);

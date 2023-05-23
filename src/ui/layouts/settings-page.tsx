@@ -3,7 +3,11 @@ import { Outlet } from "react-router";
 
 import { ApplicationSidebar, SettingsSidebar, tokens } from "../shared";
 
-export function SettingsPageLayout() {
+export function SettingsPageLayout({
+  children,
+}: {
+  children?: React.ReactNode;
+}) {
   return (
     <>
       <div className="flex w-full h-full">
@@ -17,7 +21,7 @@ export function SettingsPageLayout() {
 
         <div className="flex flex-col flex-1">
           <main className={cn(tokens.layout["main width"], "py-6")}>
-            <Outlet />
+            {children ? children : <Outlet />}
           </main>
         </div>
       </div>
