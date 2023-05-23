@@ -1,5 +1,6 @@
 import {
   defaultAppResponse,
+  defaultConfigurationResponse,
   defaultDatabaseImageResponse,
   defaultEndpointResponse,
   defaultEnvResponse,
@@ -9,6 +10,7 @@ import {
 } from "@app/deploy";
 import { defaultCodeScanResponse } from "@app/deploy/code-scan-result";
 import { createEnv } from "@app/env";
+import { defaultHalHref } from "@app/hal";
 import { defaultOrgResponse } from "@app/organizations";
 import { defaultSshKeyResponse } from "@app/ssh-keys";
 import { defaultTokenResponse } from "@app/token";
@@ -169,5 +171,12 @@ export const testEndpoint = defaultEndpointResponse({
   _links: {
     service: { href: `${testEnv.apiUrl}/services/${testServiceRails.id}` },
     certificate: { href: "" },
+  },
+});
+
+export const testConfiguration = defaultConfigurationResponse({
+  id: createId(),
+  _links: {
+    resource: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
   },
 });

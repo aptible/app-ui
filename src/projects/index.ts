@@ -419,5 +419,5 @@ export const redeployApp = thunks.create<{
     return;
   }
 
-  yield* put(setLoaderSuccess({ id }));
+  yield* put(setLoaderSuccess({ id, message: "Redeploy initiated" }));
 });

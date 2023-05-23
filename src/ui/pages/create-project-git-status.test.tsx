@@ -1,5 +1,9 @@
 import { CreateProjectGitStatusPage } from "./create-project-git";
-import { defaultEndpointResponse } from "@app/deploy";
+import {
+  defaultAppResponse,
+  defaultEndpointResponse,
+  defaultOperationResponse,
+} from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import {
   createId,
@@ -7,16 +11,24 @@ import {
   stacksWithResources,
   testAccount,
   testApp,
+  testConfiguration,
   testEnv,
   testServiceRails,
 } from "@app/mocks";
+import { deployProject } from "@app/projects";
 import {
   CREATE_PROJECT_GIT_STATUS_PATH,
   createProjectGitStatusUrl,
 } from "@app/routes";
-import { setupIntegrationTest } from "@app/test";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { setupIntegrationTest, waitForToken } from "@app/test";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { rest } from "msw";
+import { defaultLoadingItem } from "saga-query";
 
 describe("CreateProjectGitStatusPage", () => {
   describe("when app deployed and no vhost provisioned yet", () => {
@@ -99,6 +111,84 @@ describe("CreateProjectGitStatusPage", () => {
         name: "Manage Endpoints",
       });
       expect(link).toBeInTheDocument();
+    });
+  });
+
+  describe("when there is a deploy error", () => {
+    it("should display the error and when redeployed should hide error", async () => {
+      const appId = testApp.id;
+      const app = defaultAppResponse({
+        id: appId,
+        handle: `${testAccount.handle}-app`,
+        _links: {
+          account: defaultHalHref(
+            `${testEnv.apiUrl}/accounts/${testAccount.id}`,
+          ),
+          current_configuration: defaultHalHref(
+            `${testEnv.apiUrl}/configurations/${testConfiguration.id}`,
+          ),
+        },
+        _embedded: {
+          services: [testServiceRails],
+          current_image: null,
+          last_operation: null,
+          last_deploy_operation: defaultOperationResponse({
+            id: createId(),
+            type: "deploy",
+            status: "failed",
+            updated_at: new Date("2023-04-08T14:00:00.0000").toISOString(),
+            _links: {
+              resource: defaultHalHref(`${testEnv.apiUrl}/apps/${appId}`),
+              account: defaultHalHref(
+                `${testEnv.apiUrl}/accounts/${testAccount.id}`,
+              ),
+              code_scan_result: defaultHalHref(),
+              ephemeral_sessions: defaultHalHref(),
+              logs: defaultHalHref(),
+              ssh_portal_connections: defaultHalHref(),
+              self: defaultHalHref(),
+              user: defaultHalHref(),
+            },
+          }),
+        },
+      });
+
+      const handlers = stacksWithResources({
+        accounts: [testAccount],
+        apps: [app],
+      });
+      server.use(...handlers);
+
+      const { TestProvider, store } = setupIntegrationTest({
+        path: CREATE_PROJECT_GIT_STATUS_PATH,
+        initEntries: [createProjectGitStatusUrl(`${app.id}`)],
+        initState: {
+          "@@saga-query/loaders": {
+            [`${deployProject}`]: defaultLoadingItem({
+              status: "error",
+              message: "Plan limit exceeded",
+            }),
+          },
+        },
+      });
+      render(
+        <TestProvider>
+          <CreateProjectGitStatusPage />
+        </TestProvider>,
+      );
+
+      await waitForToken(store);
+
+      await screen.findByText("Plan limit exceeded");
+      const btn = await screen.findByRole("button", { name: "Redeploy" });
+      fireEvent.click(btn);
+
+      await waitForElementToBeRemoved(() =>
+        screen.queryByText(/View the error logs, make code changes/),
+      );
+      await screen.findByText(/App deployment/);
+      await screen.findAllByText(/DONE/);
+      expect(screen.queryByText("Plan limit exceeded")).not.toBeInTheDocument();
     });
   });
 });
