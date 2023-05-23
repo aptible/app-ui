@@ -1,71 +1,26 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { DeploymentsPage } from "./create-project-git";
-import {
-  defaultAppResponse,
-  defaultEnvResponse,
-  defaultOperationResponse,
-} from "@app/deploy";
+import { defaultAppResponse, defaultEnvResponse } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import {
   createId,
   createText,
   server,
   stacksWithResources,
+  testAppDeployed,
   testEnv,
+  testEnvExpress,
   testStack,
 } from "@app/mocks";
 import { setupIntegrationTest } from "@app/test";
 
 describe("Deployments page", () => {
   it("should show last deployment status", async () => {
-    const envExpress = defaultEnvResponse({
-      id: createId(),
-      handle: createText("express"),
-      onboarding_status: "initiated",
-      _links: {
-        stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-        environment: defaultHalHref(),
-      },
-    });
-    const accounts = [envExpress];
-    const appId = createId();
-    const app = defaultAppResponse({
-      id: appId,
-      handle: `${envExpress.handle}-app`,
-      _links: {
-        account: defaultHalHref(`${testEnv.apiUrl}/accounts/${envExpress.id}`),
-        current_configuration: defaultHalHref(),
-      },
-      _embedded: {
-        services: [],
-        current_image: null,
-        last_operation: null,
-        last_deploy_operation: defaultOperationResponse({
-          id: createId(),
-          type: "deploy",
-          status: "succeeded",
-          updated_at: new Date("2023-04-08T14:00:00.0000").toISOString(),
-          _links: {
-            resource: defaultHalHref(`${testEnv.apiUrl}/apps/${appId}`),
-            account: defaultHalHref(
-              `${testEnv.apiUrl}/accounts/${envExpress.id}`,
-            ),
-            code_scan_result: defaultHalHref(),
-            ephemeral_sessions: defaultHalHref(),
-            logs: defaultHalHref(),
-            ssh_portal_connections: defaultHalHref(),
-            self: defaultHalHref(),
-            user: defaultHalHref(),
-          },
-        }),
-      },
-    });
-
     server.use(
       ...stacksWithResources({
-        accounts,
-        apps: [app],
+        accounts: [testEnvExpress],
+        apps: [testAppDeployed],
       }),
     );
 
@@ -78,7 +33,7 @@ describe("Deployments page", () => {
 
     const btn = await screen.findByRole("link");
     expect(btn).toBeInTheDocument();
-    expect(await screen.findByText(app.handle)).toBeInTheDocument();
+    expect(await screen.findByText(testAppDeployed.handle)).toBeInTheDocument();
     const status = await screen.findByRole("status");
     expect(status.textContent).toMatch(/Deployed 04\/08\/2023/);
   });

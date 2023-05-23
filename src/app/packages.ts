@@ -5,6 +5,7 @@ import * as deploy from "@app/deploy";
 import * as env from "@app/env";
 import * as feedback from "@app/feedback";
 import * as hal from "@app/hal";
+import * as initData from "@app/initial-data";
 import * as invitations from "@app/invitations";
 import * as mfa from "@app/mfa";
 import * as modal from "@app/modal";
@@ -32,6 +33,7 @@ const corePackages: any[] = [
   theme,
   deploy,
   modal,
+  initData,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {
@@ -52,6 +54,7 @@ const initialSagas = {
   api: api.saga(),
   authApi: authApi.saga(),
   thunks: thunks.saga(),
+  watchFetchInitData: initData.watchFetchInitData,
 };
 
 export const sagas = corePackages.reduce((acc, pkg) => {

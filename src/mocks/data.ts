@@ -49,9 +49,9 @@ export const testToken = defaultTokenResponse({
   access_token: `${mockJwt(createId().toString())}`,
   id: `${createId()}`,
   _links: {
-    self: { href: "" },
-    user: { href: `${testEnv.authUrl}/users/${testUserId}` },
-    actor: null,
+    self: defaultHalHref(),
+    user: defaultHalHref(`${testEnv.authUrl}/users/${testUserId}`),
+    actor: defaultHalHref(),
   },
 });
 
@@ -178,5 +178,47 @@ export const testConfiguration = defaultConfigurationResponse({
   id: createId(),
   _links: {
     resource: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
+  },
+});
+
+export const testEnvExpress = defaultEnvResponse({
+  id: createId(),
+  handle: createText("express"),
+  onboarding_status: "initiated",
+  _links: {
+    stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
+    environment: defaultHalHref(),
+  },
+});
+export const testAppDeployedId = createId();
+export const testAppDeployed = defaultAppResponse({
+  id: testAppDeployedId,
+  handle: `${testEnvExpress.handle}-app`,
+  _links: {
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testEnvExpress.id}`),
+    current_configuration: defaultHalHref(),
+  },
+  _embedded: {
+    services: [],
+    current_image: null,
+    last_operation: null,
+    last_deploy_operation: defaultOperationResponse({
+      id: createId(),
+      type: "deploy",
+      status: "succeeded",
+      updated_at: new Date("2023-04-08T14:00:00.0000").toISOString(),
+      _links: {
+        resource: defaultHalHref(`${testEnv.apiUrl}/apps/${testAppDeployedId}`),
+        account: defaultHalHref(
+          `${testEnv.apiUrl}/accounts/${testEnvExpress.id}`,
+        ),
+        code_scan_result: defaultHalHref(),
+        ephemeral_sessions: defaultHalHref(),
+        logs: defaultHalHref(),
+        ssh_portal_connections: defaultHalHref(),
+        self: defaultHalHref(),
+        user: defaultHalHref(),
+      },
+    }),
   },
 });

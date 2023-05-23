@@ -14,6 +14,10 @@ export interface Action<T extends string = string> {
   type: T;
 }
 
+export interface AnyAction<T extends string = string> extends Action<T> {
+  [key: string]: any;
+}
+
 export interface ActionWithPayload<P = any, T extends string = string>
   extends Action<T> {
   payload: P;

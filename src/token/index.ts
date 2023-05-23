@@ -1,9 +1,10 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import { createAssign, createReducerMap } from "@app/slice-helpers";
-import { AppState, Token } from "@app/types";
+import { AppState, LinkResponse, Token } from "@app/types";
 
 import { parseJwt } from "./jwt-parser";
+import { defaultHalHref } from "@app/hal";
 
 export * from "./jwt-parser";
 
@@ -16,13 +17,9 @@ export interface TokenSuccessResponse {
   scope: string;
   token_type: string;
   _links: {
-    self: {
-      href: string;
-    };
-    user: {
-      href: string;
-    };
-    actor?: { href: string } | null;
+    self: LinkResponse;
+    user: LinkResponse;
+    actor?: LinkResponse;
   };
   _type: "token";
 }
@@ -56,7 +53,7 @@ export const defaultTokenResponse = (
     _links: {
       self: { href: "" },
       user: { href: "" },
-      actor: null,
+      actor: { href: "" },
       ...t._links,
     },
     _type: "token",
@@ -90,12 +87,11 @@ export const defaultToken = (t: Partial<Token> = {}): Token => {
 };
 
 export function deserializeToken(t: TokenSuccessResponse): Token {
-  const actorUrl = t._links.actor ? t._links.actor.href : t._links.user.href;
   return {
     tokenId: t.id,
     accessToken: t.access_token,
-    userUrl: t._links.user.href,
-    actorUrl,
+    userUrl: defaultHalHref(t._links.user?.href).href,
+    actorUrl: defaultHalHref(t._links.actor?.href).href,
   };
 }
 

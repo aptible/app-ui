@@ -9,13 +9,12 @@ import type {
   EntityMap,
   HalEmbedded,
   IdEntity,
-  LinkResponse,
   MapEntity,
   NestedEntity,
   ResourceType,
 } from "@app/types";
 
-export const defaultHalHref = (href = ""): LinkResponse => {
+export const defaultHalHref = (href = ""): { href: string } => {
   return { href };
 };
 
