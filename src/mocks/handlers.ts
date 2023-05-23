@@ -70,6 +70,9 @@ const authHandlers = [
 
     return res(ctx.status(200));
   }),
+  rest.post(`${testEnv.authUrl}/tokens`, (_, res, ctx) => {
+    return res(ctx.json(testToken));
+  }),
 ];
 
 export const stacksWithResources = (

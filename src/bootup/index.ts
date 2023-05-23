@@ -3,7 +3,7 @@ import { call, select, take } from "saga-query";
 
 import { thunks } from "@app/api";
 import { fetchCurrentToken } from "@app/auth";
-import { fetchInitialData } from "@app/initial-data";
+import { onFetchInitData } from "@app/initial-data";
 import { selectAccessToken } from "@app/token";
 import { ApiGen } from "@app/types";
 
@@ -18,7 +18,7 @@ export const bootup = thunks.create(
       return;
     }
 
-    yield* call(fetchInitialData.run, fetchInitialData());
+    yield* call(onFetchInitData);
 
     yield next();
   },

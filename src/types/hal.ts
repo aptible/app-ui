@@ -1,8 +1,8 @@
 import type { MapEntity } from "./helpers";
 
-export type LinkResponse = {
+export interface LinkResponse {
   href: string;
-} | null;
+}
 
 export interface HalEmbedded<E> {
   _embedded: E;
