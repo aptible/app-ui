@@ -42,6 +42,16 @@ const authHandlers = [
     }
     return res(ctx.json({ _embedded: { organizations: [testOrg] } }));
   }),
+  rest.post(`${testEnv.authUrl}/users`, (req, res, ctx) => {
+    return res(ctx.json(testUser));
+  }),
+  rest.post(`${testEnv.authUrl}/organizations`, (req, res, ctx) => {
+    if (!isValidToken(req)) {
+      return res(ctx.status(401));
+    }
+
+    return res(ctx.json(testOrg));
+  }),
   rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (req, res, ctx) => {
     if (!isValidToken(req)) {
       return res(ctx.status(401));

@@ -220,6 +220,7 @@ export const SignupPage = () => {
             </FormGroup>
 
             {presentError ? <BannerMessages {...fetchTokenLoader} /> : null}
+            <BannerMessages {...fetchSignupLoader} />
             <div>
               <Button
                 type="submit"
