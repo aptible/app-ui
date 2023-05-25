@@ -1,4 +1,5 @@
 import type {
+  DeployActivePlan,
   DeployApp,
   DeployCertificate,
   DeployDatabase,
@@ -9,6 +10,7 @@ import type {
   DeployLogDrain,
   DeployMetricDrain,
   DeployOperation,
+  DeployPlan,
   DeployService,
   DeployServiceDefinition,
   DeployStack,
@@ -97,6 +99,8 @@ export interface DeployState {
   logDrains: MapEntity<DeployLogDrain>;
   metricDrains: MapEntity<DeployMetricDrain>;
   operations: MapEntity<DeployOperation>;
+  active_plans: MapEntity<DeployActivePlan>;
+  plans: MapEntity<DeployPlan>;
 }
 
 export interface AppState extends QueryState {

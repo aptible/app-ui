@@ -74,9 +74,10 @@ describe("Signup page", () => {
       </TestProvider>,
     );
 
-    const setValidPassword = async () => await act(async () => {
-      await userEvent.type(pass, "Aptible!1234");
-    })
+    const setValidPassword = async () =>
+      await act(async () => {
+        await userEvent.type(pass, "Aptible!1234");
+      });
 
     const btn = await screen.findByRole("button", { name: "Create Account" });
 
@@ -102,13 +103,13 @@ describe("Signup page", () => {
     // will not redirect yet
     fireEvent.click(btn);
     expect(await screen.findByText("Get started for free")).toBeInTheDocument();
-    
+
     const email = await screen.findByRole("textbox", { name: "email" });
     const pass = await screen.findByLabelText("password");
-    
+
     await setValidPassword();
     await act(async () => {
-      await userEvent.type(email, 'invalid');
+      await userEvent.type(email, "invalid");
     });
     fireEvent.click(btn);
     expect(await screen.findByText("Get started for free")).toBeInTheDocument();

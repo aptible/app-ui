@@ -13,3 +13,4 @@ export * from "./configuration";
 export * from "./service";
 export * from "./app-service-definitions";
 export * from "./operation";
+export * from "./plan";
