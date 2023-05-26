@@ -1,7 +1,7 @@
 import { Button, ButtonLinkExternal } from "./button";
 import { IconCheckCircle } from "./icons";
 import { tokens } from "./tokens";
-import { updateActivePlan } from "@app/deploy";
+import { updateAndRefreshActivePlans } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { DeployActivePlan, DeployPlan, PlanName } from "@app/types";
 import { ReactElement, SyntheticEvent } from "react";
@@ -228,7 +228,7 @@ const PlanCard = ({
   const handlePlanChange = (e: SyntheticEvent) => {
     e.preventDefault();
     dispatch(
-      updateActivePlan({
+      updateAndRefreshActivePlans({
         id: activePlan.id,
         planId: plan.id,
       }),

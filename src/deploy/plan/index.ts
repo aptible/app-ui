@@ -1,5 +1,5 @@
 import { selectDeploy } from "../slice";
-import { api } from "@app/api";
+import { api, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -14,6 +14,13 @@ import {
   PlanName,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import {
+  call,
+  put,
+  setLoaderError,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "saga-query";
 
 export interface DeployPlanResponse {
   id: number;
@@ -183,7 +190,8 @@ export const DEPLOY_ACTIVE_PLAN_NAME = "active_plans";
 const activePlanSlice = createTable<DeployActivePlan>({
   name: DEPLOY_ACTIVE_PLAN_NAME,
 });
-const { add: addActivePlans } = activePlanSlice.actions;
+const { add: addActivePlans, remove: removeActivePlans } =
+  activePlanSlice.actions;
 
 const initActivePlan = defaultActivePlan();
 const mustActivePlan = mustSelectEntity(initActivePlan);
@@ -235,6 +243,52 @@ export const updateActivePlan = api.put<UpdateActivePlan>(
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield next();
+  },
+);
+
+export const updateAndRefreshActivePlans = thunks.create<UpdateActivePlan>(
+  "update-and-refresh-active-plans",
+  function* (ctx, next) {
+    yield put(setLoaderStart({ id: ctx.key }));
+
+    const updateActivePlanCtx = yield* call(
+      updateActivePlan.run,
+      updateActivePlan(ctx.payload),
+    );
+    if (!updateActivePlanCtx.json.ok) {
+      yield put(
+        setLoaderError({
+          id: ctx.key,
+          message: updateActivePlanCtx.json.data.message,
+        }),
+      );
+      return;
+    }
+    yield next();
+
+    ctx.actions.push(removeActivePlans([ctx.payload.id]));
+
+    const fetchActivePlansCtx = yield* call(
+      fetchActivePlans.run,
+      fetchActivePlans({
+        organization_id: updateActivePlanCtx.json.data.organization_id,
+      }),
+    );
+    if (!fetchActivePlansCtx.json.ok) {
+      yield put(
+        setLoaderError({
+          id: ctx.key,
+          message: fetchActivePlansCtx.json.data.message,
+        }),
+      );
+      return;
+    }
+
+    yield put(
+      setLoaderSuccess({
+        id: ctx.key,
+      }),
+    );
   },
 );
 
