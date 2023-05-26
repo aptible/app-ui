@@ -61,12 +61,16 @@ const PlanCostBlock = ({
   precedingPlan?: DeployPlan;
 }): ReactElement => {
   return (
-    <div>
+    <div className="flex justify-between mb-4">
       <div>
-        <p>Starts at {(precedingPlan?.costCents || 0) / 100}</p>
+        <p>Starts at</p>
+        <h3 className={tokens.type.h4}>
+          ${(precedingPlan?.costCents || 0) / 100}
+        </h3>
       </div>
       <div>
-        <p>Approx. Max Invoice {(plan?.costCents || 0) / 100}</p>
+        <p>Approx. Max Invoice</p>
+        <h3 className={tokens.type.h4}>${(plan?.costCents || 0) / 100}</h3>
       </div>
     </div>
   );
