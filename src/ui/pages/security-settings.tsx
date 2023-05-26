@@ -71,7 +71,7 @@ const ChangePassword = () => {
       >
         <Input
           name="password"
-          type="password"
+          type="new-password"
           value={pass}
           onChange={(e) => setPass(e.currentTarget.value)}
           data-testid="input-password"
@@ -85,7 +85,7 @@ const ChangePassword = () => {
       >
         <Input
           name="config-password"
-          type="password"
+          type="new-password"
           value={confirmPass}
           onChange={(e) => setConfirmPass(e.currentTarget.value)}
           data-testid="input-confirm-password"
@@ -250,30 +250,26 @@ const LogOut = () => {
 
 export const SecuritySettingsPage = () => {
   return (
-    <div className="p-4">
-      <h1>Security Settings</h1>
+    <div>
+      <Section title="Change your password">
+        <ChangePassword />
+      </Section>
 
-      <div className="m-8">
-        <Section title="Change your password">
-          <ChangePassword />
-        </Section>
+      <Section title="2-Factor authentication">
+        <MultiFactor />
+      </Section>
 
-        <Section title="2-Factor authentication">
-          <MultiFactor />
-        </Section>
+      <Section title="Change your email">
+        <ChangeEmail />
+      </Section>
 
-        <Section title="Change your email">
-          <ChangeEmail />
-        </Section>
+      <Section title="Security keys">
+        <SecurityKeys />
+      </Section>
 
-        <Section title="Security keys">
-          <SecurityKeys />
-        </Section>
-
-        <Section title="Log out other sessions">
-          <LogOut />
-        </Section>
-      </div>
+      <Section title="Log out other sessions">
+        <LogOut />
+      </Section>
     </div>
   );
 };

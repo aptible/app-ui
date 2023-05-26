@@ -9,6 +9,7 @@ export interface UserResponse {
   public_key_fingerprint: null;
   ssh_public_key: null;
   superuser: boolean;
+  read_only_impersonate: boolean;
   updated_at: string;
   username: string;
   verified: boolean;

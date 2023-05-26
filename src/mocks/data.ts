@@ -36,14 +36,16 @@ export const testEnv = createEnv({
   legacyDashboardUrl: "https://dashboard.aptible.com",
 });
 
-const mockJwtHeaders = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+export const mockJwtHeaders = btoa(
+  JSON.stringify({ alg: "HS256", typ: "JWT" }),
+);
 const mockJwtPayload = btoa(
   JSON.stringify({ someBackendData: `${testEnv.authUrl}/data` }),
 );
 export const mockJwt = (mixin: string, id: string | number = "1") =>
   `${mockJwtHeaders}.${mockJwtPayload}.not_real_${mixin}_${id}`;
 
-const testUserId = createId();
+export const testUserId = createId();
 
 export const testToken = defaultTokenResponse({
   access_token: `${mockJwt(createId().toString())}`,
@@ -51,7 +53,7 @@ export const testToken = defaultTokenResponse({
   _links: {
     self: defaultHalHref(),
     user: defaultHalHref(`${testEnv.authUrl}/users/${testUserId}`),
-    actor: defaultHalHref(),
+    actor: defaultHalHref(`${testEnv.authUrl}/users/${testUserId}`),
   },
 });
 

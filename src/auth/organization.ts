@@ -50,7 +50,15 @@ export const createOrganization = authApi.post<CreateOrg, OrganizationResponse>(
       return;
     }
 
-    yield* call(exchangeToken.run, exchangeToken(token));
+    yield* call(
+      exchangeToken.run,
+      exchangeToken({
+        actorToken: token.accessToken,
+        subjectToken: token.userUrl,
+        subjectTokenType: "aptible:user:href",
+        scope: "manage",
+      }),
+    );
     ctx.actions.push(setOrganizationSelected(ctx.json.data.id));
   },
 );

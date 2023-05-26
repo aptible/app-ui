@@ -1,7 +1,9 @@
 import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
-import { call, put } from "saga-query";
+import { call, put, setLoaderSuccess } from "saga-query";
 
+import { AUTH_LOADER_ID } from "./loader";
 import { authApi } from "@app/api";
+import { resetStore } from "@app/reset-store";
 import {
   TokenSuccessResponse,
   deserializeToken,
@@ -92,31 +94,48 @@ export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
   },
 );
 
-interface ExchangeToken {
-  accessToken: string;
-  userUrl: string;
+export interface ExchangeToken {
+  actorToken: string;
+  subjectToken: string;
+  subjectTokenType: string;
+  scope: string;
+  ssoOrganization?: string;
 }
 
 export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
   "exchange-token",
   function* onExchangeToken(ctx, next) {
+    const {
+      actorToken,
+      subjectToken,
+      subjectTokenType,
+      scope,
+      ssoOrganization = "",
+    } = ctx.payload;
     ctx.request = ctx.req({
       url: "/tokens",
       method: "POST",
       body: JSON.stringify({
         expires_in: 86090,
+        _source: "app-ui",
         grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
         actor_token_type: "urn:ietf:params:oauth:token-type:jwt",
-        actor_token: ctx.payload.accessToken,
-        subject_token_type: "aptible:user:href",
-        subject_token: ctx.payload.userUrl,
-        scope: "manage",
-        _source: "deploy",
+        actor_token: actorToken,
+        subject_token_type: subjectTokenType,
+        subject_token: subjectToken,
+        scope: scope,
+        sso_organization: ssoOrganization,
       }),
     });
 
     yield next();
+    // `exchangeToken` is used when a new user creates an org as well as when
+    // a user impersonates another user.
+    // Regardless, we want to reset the store first then save the token because
+    // resetStore will delete the token stored inside redux.
+    ctx.actions.push(resetStore(), setLoaderSuccess({ id: AUTH_LOADER_ID }));
     yield* call(saveToken, ctx);
+    ctx.loader = { id: ctx.name, message: "Success" };
   },
 );
 
