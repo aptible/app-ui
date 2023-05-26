@@ -11,7 +11,9 @@ import {
   DeployActivePlan,
   DeployPlan,
   LinkResponse,
+  PlanName,
 } from "@app/types";
+import { createSelector } from "@reduxjs/toolkit";
 
 export interface DeployPlanResponse {
   id: number;
@@ -77,7 +79,7 @@ export const defaultPlan = (c: Partial<DeployPlan> = {}): DeployPlan => {
     includedDiskGb: 0,
     includedVhosts: 0,
     manualBackupLimitPerDb: 0,
-    name: "",
+    name: "starter",
     updatedAt: now,
     vhostLimit: 0,
     ...c,
@@ -128,7 +130,7 @@ export const deserializePlan = (payload: DeployPlanResponse): DeployPlan => {
     includedDiskGb: payload.included_disk_gb,
     includedVhosts: payload.included_vhosts,
     manualBackupLimitPerDb: payload.manual_backup_limit_per_db,
-    name: payload.name,
+    name: payload.name as PlanName,
     updatedAt: payload.updated_at,
     vhostLimit: payload.vhost_limit,
   };
@@ -195,8 +197,19 @@ export const selectActivePlanById = mustActivePlan(
 export const { selectTableAsList: selectActivePlansAsList } =
   activePlanSelectors;
 export const activePlanReducers = createReducerMap(activePlanSlice);
+export const selectFirstActivePlan = createSelector(
+  selectActivePlansAsList,
+  (activePlans) => {
+    if (activePlans.length === 0) {
+      return defaultActivePlan();
+    }
 
-export const fetchPlans = api.get<{}>("/plans", api.cache());
+    return activePlans[0];
+  },
+);
+
+export const fetchPlans = api.get("/plans", api.cache());
+export const fetchPlanById = api.get<{ id: string }>("/plans/:id", api.cache());
 
 export const fetchAllActivePlans = api.get<{ organization_id: string }>(
   "/active_plans",
@@ -209,7 +222,7 @@ export const fetchActivePlans = api.get<{ organization_id: string }>(
 );
 
 export const planEntities = {
-  app: defaultEntity({
+  plan: defaultEntity({
     id: "plan",
     deserialize: deserializePlan,
     save: addPlans,
@@ -217,7 +230,7 @@ export const planEntities = {
 };
 
 export const activePlanEntities = {
-  app: defaultEntity({
+  active_plan: defaultEntity({
     id: "active_plan",
     deserialize: deserializeActivePlan,
     save: addActivePlans,
