@@ -8,7 +8,7 @@ type HeaderProps = {
   actions?: ActionList;
   detailsBox?: React.ReactNode;
   title: string;
-  tabs: TabItem[];
+  tabs?: TabItem[];
 };
 
 export const DetailPageHeaderView = ({

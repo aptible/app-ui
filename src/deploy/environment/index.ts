@@ -138,6 +138,18 @@ export const {
   selectTable: selectEnvironments,
   selectTableAsList: selectEnvironmentsAsList,
 } = selectors;
+// TODO: remove `slice`
+export const selectEnvsAsIds = createSelector(
+  selectEnvironmentsAsList,
+  (envs) =>
+    envs
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      )
+      .slice(0, Math.min(envs.length, 5))
+      .map((env) => env.id),
+);
 export const findEnvById = must(selectors.findById);
 export const selectEnvironmentsAsOptions = createSelector(
   selectEnvironmentsAsList,

@@ -15,6 +15,7 @@ import {
   extractIdFromLink,
   extractResourceNameFromLink,
 } from "@app/hal";
+import { appDetailUrl, databaseDetailUrl } from "@app/routes";
 import {
   createReducerMap,
   createTable,
@@ -324,10 +325,21 @@ export const fetchAllEnvOps = thunks.create<EnvIdProps>(
 );
 
 export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
-export const pollEnvOperations = thunks.create<EnvIdProps>(
+export const pollEnvAllOperations = thunks.create<EnvIdProps>(
   "poll-env-operations",
   { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
   combinePages(fetchEnvOperations),
+);
+
+export const pollEnvOperations = api.get<EnvIdProps>(
+  ["/accounts/:envId/operations", "poll"],
+  { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
+);
+
+export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
+export const pollOrgOperations = api.get<{ orgId: string }>(
+  "/organizations/:orgId/operations?per_page=100",
+  { saga: poll(5 * 1000, `${cancelOrgOperationsPoll}`) },
 );
 
 export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
@@ -408,4 +420,33 @@ export const opEntities = {
     deserialize: deserializeDeployOperation,
     save: addDeployOperations,
   }),
+};
+
+export const createReadableStatus = (status: OperationStatus): string => {
+  switch (status) {
+    case "queued":
+      return "Queued";
+    case "running":
+      return "Pending";
+    case "succeeded":
+      return "DONE";
+    case "failed":
+      return "FAILED";
+    default:
+      return status;
+  }
+};
+
+export const getResourceUrl = ({
+  resourceId,
+  resourceType,
+}: Pick<DeployOperation, "resourceId" | "resourceType">) => {
+  switch (resourceType) {
+    case "app":
+      return appDetailUrl(resourceId);
+    case "database":
+      return databaseDetailUrl(resourceId);
+    default:
+      return "";
+  }
 };

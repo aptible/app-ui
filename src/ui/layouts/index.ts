@@ -9,3 +9,4 @@ export * from "./environment-detail-layout";
 export * from "./hero-bg-layout";
 export * from "./unauth-required";
 export * from "./error-boundary";
+export * from "./op-detail-layout";

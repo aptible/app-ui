@@ -43,3 +43,4 @@ export * from "./billing-method";
 export * from "./impersonate";
 export * from "./plans";
 export * from "./sso";
+export * from "./activity";

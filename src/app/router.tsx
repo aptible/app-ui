@@ -3,6 +3,7 @@ import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
 import * as routes from "@app/routes";
 import {
+  ActivityPage,
   AddSecurityKeyPage,
   AppActivityPage,
   AppDetailEndpointsPage,
@@ -50,6 +51,7 @@ import {
   LoginPage,
   LogoutPage,
   NotFoundPage,
+  OpDetailLayout,
   OtpRecoveryCodesPage,
   OtpSetupPage,
   PlansPage,
@@ -66,6 +68,7 @@ import {
   UnauthRequired,
   VerifyEmailPage,
 } from "@app/ui";
+import { OpDetailPage } from "@app/ui/pages/op-detail";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -265,8 +268,13 @@ export const appRoutes: RouteObject[] = [
           },
 
           {
+            path: routes.APP_DETAIL_PATH,
             element: <AppDetailLayout />,
             children: [
+              {
+                index: true,
+                element: <AppDetailServicesPage />,
+              },
               {
                 path: routes.APP_SERVICES_PATH,
                 element: <AppDetailServicesPage />,
@@ -297,8 +305,13 @@ export const appRoutes: RouteObject[] = [
           },
 
           {
+            path: routes.DATABASE_DETAIL_PATH,
             element: <DatabaseDetailLayout />,
             children: [
+              {
+                index: true,
+                element: <DatabaseEndpointsPage />,
+              },
               {
                 path: routes.DATABASE_ENDPOINTS_PATH,
                 element: <DatabaseEndpointsPage />,
@@ -337,8 +350,13 @@ export const appRoutes: RouteObject[] = [
           },
 
           {
+            path: routes.ENVIRONMENT_DETAIL_PATH,
             element: <EnvironmentDetailLayout />,
             children: [
+              {
+                index: true,
+                element: <EnvironmentResourcesPage />,
+              },
               {
                 path: routes.ENVIRONMENT_RESOURCES_PATH,
                 element: <EnvironmentResourcesPage />,
@@ -368,6 +386,22 @@ export const appRoutes: RouteObject[] = [
                 element: <EnvironmentSettingsPage />,
               },
             ],
+          },
+        ],
+      },
+
+      {
+        path: routes.ACTIVITY_PATH,
+        element: <ActivityPage />,
+      },
+
+      {
+        path: routes.OPERATION_DETAIL_PATH,
+        element: <OpDetailLayout />,
+        children: [
+          {
+            index: true,
+            element: <OpDetailPage />,
           },
         ],
       },

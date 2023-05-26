@@ -101,6 +101,8 @@ export const databaseSettingsUrl = (id: string) =>
 
 export const ENVIRONMENTS_PATH = "/environments";
 export const environmentsUrl = () => ENVIRONMENTS_PATH;
+export const ENVIRONMENT_DETAIL_PATH = "/environments/:id";
+export const environmentDetailUrl = (id: string) => `/environments/${id}`;
 export const ENVIRONMENT_RESOURCES_PATH = "/environments/:id/resources";
 export const environmentResourcelUrl = (id: string) =>
   `/environments/${id}/resources`;
@@ -166,3 +168,8 @@ export const ssoDirectUrl = (orgId: string) => `/sso/${orgId}`;
 export const SSO_ORG_FAILURE_PATH = "/sso/failure";
 export const ssoFailureUrl = (message = "") =>
   `${SSO_ORG_FAILURE_PATH}?message=${message}`;
+
+export const ACTIVITY_PATH = "/activity";
+export const activityUrl = () => ACTIVITY_PATH;
+export const OPERATION_DETAIL_PATH = "/operations/:id";
+export const operationDetailUrl = (id: string) => `/operations/${id}`;

@@ -2,6 +2,7 @@ import {
   FetchJson,
   Payload,
   call,
+  poll,
   put,
   select,
   setLoaderError,
@@ -42,7 +43,7 @@ import {
   waitForOperation,
 } from "../operation";
 import { selectDeploy } from "../slice";
-import { createSelector } from "@reduxjs/toolkit";
+import { createAction, createSelector } from "@reduxjs/toolkit";
 
 export interface DeployDatabaseResponse {
   id: number;
@@ -190,7 +191,11 @@ const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_DATABASE_NAME],
 );
 export const selectDatabaseById = must(selectors.selectById);
-export const { selectTableAsList: selectDatabasesAsList } = selectors;
+export const {
+  selectTableAsList: selectDatabasesAsList,
+  selectTable: selectDatabases,
+} = selectors;
+export const findDatabaseById = must(selectors.findById);
 
 export const selectDatabaseByHandle = createSelector(
   selectDatabasesAsList,
@@ -433,6 +438,14 @@ export const fetchDatabaseOperations = api.get<{ id: string }>(
   { saga: cacheTimer() },
   api.cache(),
 );
+
+export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
+export const pollDatabaseOperations = api.get<{ id: string }>(
+  ["/databases/:id/operations", "poll"],
+  { saga: poll(5 * 1000, `${cancelDatabaseOpsPoll}`) },
+  api.cache(),
+);
+
 export const fetchDatabaseBackups = api.get<{ id: string }>(
   "/databases/:id/backups",
   { saga: cacheTimer() },

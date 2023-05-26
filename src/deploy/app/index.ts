@@ -137,7 +137,9 @@ const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_APP_NAME],
 );
 export const selectAppById = must(selectors.selectById);
-export const { selectTableAsList: selectAppsAsList } = selectors;
+export const { selectTableAsList: selectAppsAsList, selectTable: selectApps } =
+  selectors;
+export const findAppById = must(selectors.findById);
 
 export interface DeployAppRow extends DeployApp {
   envHandle: string;
