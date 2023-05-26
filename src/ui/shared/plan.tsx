@@ -1,9 +1,11 @@
 import { Button, ButtonLinkExternal } from "./button";
 import { IconCheckCircle } from "./icons";
 import { tokens } from "./tokens";
+import { updateActivePlan } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { DeployActivePlan, DeployPlan, PlanName } from "@app/types";
-import { ReactElement } from "react";
+import { ReactElement, SyntheticEvent } from "react";
+import { useDispatch } from "react-redux";
 
 const descriptionTextForPlan = (planName: PlanName): string =>
   ({
@@ -24,8 +26,14 @@ const discountForPlan = (planName: PlanName): string =>
 const PlanButton = ({
   available,
   contactUs,
+  onClick,
   selected,
-}: { available: boolean; contactUs: boolean; selected: boolean }) => {
+}: {
+  available: boolean;
+  contactUs: boolean;
+  onClick: (e: SyntheticEvent) => void;
+  selected: boolean;
+}) => {
   if (contactUs) {
     return (
       <ButtonLinkExternal href="https://aptible.com/contact" className="w-full">
@@ -50,7 +58,11 @@ const PlanButton = ({
     );
   }
 
-  return <Button className="w-full">Select Plan</Button>;
+  return (
+    <Button className="w-full" onClick={onClick}>
+      Select Plan
+    </Button>
+  );
 };
 
 const PlanCostBlock = ({
@@ -194,20 +206,34 @@ const BulletListForPlan = ({
 };
 
 const PlanCard = ({
+  activePlan,
   plan,
   available,
   selected,
   precedingPlan,
 }: {
+  activePlan: DeployActivePlan;
   plan: DeployPlan;
   available: boolean;
   selected: boolean;
   precedingPlan?: DeployPlan;
 }): ReactElement => {
+  const dispatch = useDispatch();
+
   const borderColor = selected ? "border-orange-200" : "border-black-100";
   const bottomSectionBgColor = selected
     ? "bg-orange-100 border-orange-200"
     : "bg-gray-100 border-gray-200";
+
+  const handlePlanChange = (e: SyntheticEvent) => {
+    e.preventDefault();
+    dispatch(
+      updateActivePlan({
+        id: activePlan.id,
+        planId: plan.id,
+      }),
+    );
+  };
 
   // on responsive stack em (4/2/1 if possible or just stack)
   // hover color change only on button
@@ -231,6 +257,7 @@ const PlanCard = ({
             available={available}
             contactUs={plan.name === "enterprise"}
             selected={selected}
+            onClick={handlePlanChange}
           />
         </div>
       </div>
@@ -279,6 +306,7 @@ export const Plans = ({
         <PlanCard
           key={plan.id}
           plan={plan}
+          activePlan={activePlan}
           available={activePlan.availablePlans.includes(plan.name)}
           precedingPlan={idx > 0 ? plans[idx - 1] : undefined}
           selected={plan.name === selectedPlan.name}

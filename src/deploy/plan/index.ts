@@ -221,6 +221,23 @@ export const fetchActivePlans = api.get<{ organization_id: string }>(
   api.cache(),
 );
 
+interface UpdateActivePlan {
+  id: string;
+  planId: string;
+}
+
+export const updateActivePlan = api.put<UpdateActivePlan>(
+  "/active_plans/:id",
+  function* (ctx, next) {
+    const { planId } = ctx.payload;
+    const body = {
+      plan_id: planId,
+    };
+    ctx.request = ctx.req({ body: JSON.stringify(body) });
+    yield next();
+  },
+);
+
 export const planEntities = {
   plan: defaultEntity({
     id: "plan",
