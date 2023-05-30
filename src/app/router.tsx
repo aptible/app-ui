@@ -46,6 +46,7 @@ import {
   ErrorPage,
   ForgotPassPage,
   ForgotPassVerifyPage,
+  ImpersonatePage,
   LoginPage,
   LogoutPage,
   NotFoundPage,
@@ -415,6 +416,10 @@ export const appRoutes: RouteObject[] = [
             path: routes.TEAM_PATH,
             element: <TeamPage />,
           },
+          {
+            path: routes.IMPERSONATE_PATH,
+            element: <ImpersonatePage />,
+          },
         ],
       },
 
@@ -479,7 +484,11 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    element: <ElevateRequired />,
+    element: (
+      <ElevateRequired>
+        <SettingsPageLayout />
+      </ElevateRequired>
+    ),
     children: [
       {
         path: routes.SECURITY_SETTINGS_PATH,

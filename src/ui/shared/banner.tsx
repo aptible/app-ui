@@ -65,6 +65,8 @@ export const BannerMessages = ({
   message: string;
   className?: string;
 }) => {
+  if (!message) return null;
+
   if (isSuccess) {
     return (
       <Banner className={className} variant="success">

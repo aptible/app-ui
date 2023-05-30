@@ -40,4 +40,5 @@ export * from "./environments";
 export * from "./error";
 export * from "./forgot-pass";
 export * from "./billing-method";
+export * from "./impersonate";
 export * from "./plans";

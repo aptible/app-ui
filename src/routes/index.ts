@@ -25,6 +25,8 @@ export const OTP_RECOVERY_CODES_PATH = "/settings/otp-recovery-codes";
 export const otpRecoveryCodesUrl = () => OTP_RECOVERY_CODES_PATH;
 export const ADD_SECURITY_KEY_PATH = "/settings/add-security-key";
 export const addSecurityKeyUrl = () => ADD_SECURITY_KEY_PATH;
+export const IMPERSONATE_PATH = "/settings/impersonate";
+export const impersonateUrl = () => IMPERSONATE_PATH;
 
 export const FORGOT_PASS_PATH = "/forgot-password";
 export const forgotPassUrl = () => FORGOT_PASS_PATH;

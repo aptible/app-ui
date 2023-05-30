@@ -134,8 +134,12 @@ export const selectIsTokenValid = createSelector(
   (jwtToken) => jwtToken.scope === "manage" && !hasExpired(jwtToken),
 );
 
-export const selectIsImpersonated = (state: AppState) =>
-  selectActorUrl(state) !== selectUserUrl(state);
+export const selectIsImpersonated = (state: AppState) => {
+  if (!selectActorUrl(state)) {
+    return false;
+  }
+  return selectActorUrl(state) !== selectUserUrl(state);
+};
 export const selectIsUserAuthenticated = (state: AppState) =>
   !!selectAccessToken(state);
 

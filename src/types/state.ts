@@ -43,6 +43,7 @@ export interface User {
   email: string;
   otpEnabled: boolean;
   superuser: boolean;
+  readOnlyImpersonate: boolean;
   username: string;
   verified: boolean;
   currentOtpId: string;
