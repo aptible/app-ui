@@ -1,18 +1,9 @@
-import { useNavigate } from "react-router";
-
 import { loginUrl } from "@app/routes";
 
 import { HeroBgLayout } from "../layouts";
-import { Box, Button, tokens } from "../shared";
+import { Box, Button, ButtonLink, tokens } from "../shared";
 
 export const NotFoundPage = () => {
-  const navigate = useNavigate();
-
-  const gotoLogin = (event: React.SyntheticEvent) => {
-    event.preventDefault();
-    navigate(loginUrl());
-  };
-
   const goToDocs = (event: React.SyntheticEvent) => {
     event.preventDefault();
     window.location.href = "https://www.aptible.com/docs";
@@ -34,9 +25,7 @@ export const NotFoundPage = () => {
         </p>
       </div>
       <Box>
-        <Button onClick={gotoLogin} className="font-semibold w-full">
-          Back to Login
-        </Button>
+        <ButtonLink to={loginUrl()}>Back to Login</ButtonLink>
         <Button className="mt-4 w-full" onClick={goToDocs} variant="white">
           View Docs
         </Button>

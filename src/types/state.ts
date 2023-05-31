@@ -24,6 +24,7 @@ import type { QueryState } from "saga-query";
 export interface Env {
   isProduction: boolean;
   isDev: boolean;
+  appUrl: string;
   authUrl: string;
   billingUrl: string;
   apiUrl: string;

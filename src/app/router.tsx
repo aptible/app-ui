@@ -59,6 +59,9 @@ import {
   SettingsPage,
   SettingsPageLayout,
   SignupPage,
+  SsoDirectPage,
+  SsoFailurePage,
+  SsoLoginPage,
   TeamPage,
   UnauthRequired,
   VerifyEmailPage,
@@ -559,6 +562,21 @@ export const appRoutes: RouteObject[] = [
         element: <SignupPage />,
       },
     ],
+  },
+
+  {
+    path: routes.SSO_ORG_FAILURE_PATH,
+    element: <SsoFailurePage />,
+  },
+
+  {
+    path: routes.SSO_PATH,
+    element: <SsoLoginPage />,
+  },
+
+  {
+    path: routes.SSO_DIRECT_PATH,
+    element: <SsoDirectPage />,
   },
 
   {

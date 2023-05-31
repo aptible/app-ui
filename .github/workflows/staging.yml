@@ -25,6 +25,7 @@ jobs:
           tags: |
             quay.io/aptible/cloud-ui:sbx-main
           build-args: |
+            VITE_APP_URL=https://app-sbx-main.aptible-sandbox.com
             VITE_AUTH_URL=https://auth-sbx-main.aptible-sandbox.com
             VITE_BILLING_URL=https://billing-sbx-main.aptible-sandbox.com
             VITE_API_URL=https://api-sbx-main.aptible-sandbox.com

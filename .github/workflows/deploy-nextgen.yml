@@ -32,6 +32,7 @@ jobs:
             quay.io/aptible/cloud-ui:latest-nextgen
           build-args: |
             VITE_SENTRY_DSN=${{ secrets.PROD_SENTRY_DSN }}
+            VITE_APP_URL=https://nextgen.aptible.com
             VITE_ORIGIN=nextgen
             VITE_TUNA_ENABLED=true
 
