@@ -267,23 +267,6 @@ export const updateAndRefreshActivePlans = thunks.create<UpdateActivePlan>(
     yield next();
 
     ctx.actions.push(removeActivePlans([ctx.payload.id]));
-
-    const fetchActivePlansCtx = yield* call(
-      fetchActivePlans.run,
-      fetchActivePlans({
-        organization_id: updateActivePlanCtx.json.data.organization_id,
-      }),
-    );
-    if (!fetchActivePlansCtx.json.ok) {
-      yield put(
-        setLoaderError({
-          id: ctx.key,
-          message: fetchActivePlansCtx.json.data.message,
-        }),
-      );
-      return;
-    }
-
     yield put(
       setLoaderSuccess({
         id: ctx.key,
