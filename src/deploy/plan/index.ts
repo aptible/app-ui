@@ -1,6 +1,6 @@
 import { selectDeploy } from "../slice";
 import { api, thunks } from "@app/api";
-import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
@@ -89,6 +89,65 @@ export const defaultPlan = (c: Partial<DeployPlan> = {}): DeployPlan => {
     name: "starter",
     updatedAt: now,
     vhostLimit: 0,
+    ...c,
+  };
+};
+
+export const defaultActivePlanResponse = (
+  c: Partial<DeployActivePlanResponse> = {},
+): DeployActivePlanResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 0,
+    automated_backup_limit_per_db: 0,
+    available_plans: [],
+    compliance_dashboard_access: false,
+    container_memory_limit: 0,
+    cost_cents: 0,
+    cpu_allowed_profiles: 0,
+    created_at: now,
+    disk_limit: 0,
+    environment_limit: undefined,
+    ephemeral_session_limit: 0,
+    included_container_mb: 0,
+    included_disk_gb: 0,
+    included_vhosts: 0,
+    manual_backup_limit_per_db: 0,
+    organization_id: "",
+    updated_at: now,
+    vhost_limit: 0,
+    _links: {
+      organization: defaultHalHref(),
+      plan: defaultHalHref(),
+    },
+    _type: "active_plan",
+    ...c,
+  };
+};
+
+export const defaultPlanResponse = (
+  c: Partial<DeployPlanResponse> = {},
+): DeployPlanResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 0,
+    automated_backup_limit_per_db: 0,
+    compliance_dashboard_access: false,
+    container_memory_limit: 0,
+    cost_cents: 0,
+    cpu_allowed_profiles: 0,
+    created_at: now,
+    disk_limit: 0,
+    environment_limit: undefined,
+    ephemeral_session_limit: 0,
+    included_container_mb: 0,
+    included_disk_gb: 0,
+    included_vhosts: 0,
+    manual_backup_limit_per_db: 0,
+    name: "starter",
+    updated_at: now,
+    vhost_limit: 0,
+    _type: "plan",
     ...c,
   };
 };
@@ -216,17 +275,15 @@ export const selectFirstActivePlan = createSelector(
   },
 );
 
-export const fetchPlans = api.get("/plans", api.cache());
-export const fetchPlanById = api.get<{ id: string }>("/plans/:id", api.cache());
+export const fetchPlans = api.get("/plans");
+export const fetchPlanById = api.get<{ id: string }>("/plans/:id");
 
 export const fetchAllActivePlans = api.get<{ organization_id: string }>(
   "/active_plans",
-  api.cache(),
 );
 
 export const fetchActivePlans = api.get<{ organization_id: string }>(
   "/active_plans?organization_id=:organization_id",
-  api.cache(),
 );
 
 interface UpdateActivePlan {

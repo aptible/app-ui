@@ -1,14 +1,17 @@
 import {
   createId,
   testAccount,
+  testActivePlan,
   testApp,
   testCodeScanResult,
   testConfiguration,
   testDatabaseId,
   testDatabaseOp,
   testEndpoint,
+  testEnterprisePlan,
   testEnv,
   testOrg,
+  testPlan,
   testPostgresDatabaseImage,
   testRedisDatabaseImage,
   testScanOperation,
@@ -340,6 +343,34 @@ const apiHandlers = [
       );
     },
   ),
+  rest.get(`${testEnv.apiUrl}/active_plans`, async (req, res, ctx) => {
+    if (!isValidToken(req)) {
+      return res(ctx.status(401));
+    }
+    return res(ctx.json({ _embedded: { active_plans: [testActivePlan] } }));
+  }),
+  rest.put(`${testEnv.apiUrl}/active_plans/:id`, async (req, res, ctx) => {
+    if (!isValidToken(req)) {
+      return res(ctx.status(401));
+    }
+    return res(ctx.json({ _embedded: { active_plans: [testActivePlan] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/plans*`, async (req, res, ctx) => {
+    if (!isValidToken(req)) {
+      return res(ctx.status(401));
+    }
+
+    return res(
+      ctx.json({ _embedded: { plans: [testPlan, testEnterprisePlan] } }),
+    );
+  }),
+  rest.get(`${testEnv.apiUrl}/plans/:id`, async (req, res, ctx) => {
+    if (!isValidToken(req)) {
+      return res(ctx.status(401));
+    }
+
+    return res(ctx.json({ ...testPlan }));
+  }),
 ];
 
 export const handlers = [...authHandlers, ...apiHandlers];
