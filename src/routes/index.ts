@@ -158,3 +158,11 @@ export const createProjectGitSettingsUrl = (appId: string, query = "") =>
 export const CREATE_PROJECT_GIT_STATUS_PATH = "/apps/:appId/git/status";
 export const createProjectGitStatusUrl = (appId: string) =>
   `/apps/${appId}/git/status`;
+
+export const SSO_PATH = "/sso";
+export const ssoUrl = () => SSO_PATH;
+export const SSO_DIRECT_PATH = "/sso/:orgId";
+export const ssoDirectUrl = (orgId: string) => `/sso/${orgId}`;
+export const SSO_ORG_FAILURE_PATH = "/sso/failure";
+export const ssoFailureUrl = (message = "") =>
+  `${SSO_ORG_FAILURE_PATH}?message=${message}`;

@@ -1,5 +1,6 @@
 FROM node:18.16-slim AS builder
 
+ARG VITE_APP_URL=https://app.aptible.com
 ARG VITE_AUTH_URL=https://auth.aptible.com
 ARG VITE_BILLING_URL=https://goldenboy.aptible.com
 ARG VITE_API_URL=https://api.aptible.com

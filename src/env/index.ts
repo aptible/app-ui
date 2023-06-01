@@ -5,6 +5,7 @@ export const createEnv = (e: Partial<Env> = {}): Env => {
   return {
     isProduction: import.meta.env.PROD,
     isDev: import.meta.env.DEV,
+    appUrl: import.meta.env.VITE_APP_URL || "",
     authUrl: import.meta.env.VITE_AUTH_URL || "",
     billingUrl: import.meta.env.VITE_BILLING_URL || "",
     apiUrl: import.meta.env.VITE_API_URL || "",
