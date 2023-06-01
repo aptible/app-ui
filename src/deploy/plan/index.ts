@@ -268,7 +268,7 @@ export const selectFirstActivePlan = createSelector(
   selectActivePlansAsList,
   (activePlans) => {
     if (activePlans.length === 0) {
-      return defaultActivePlan();
+      return initActivePlan;
     }
 
     return activePlans[0];

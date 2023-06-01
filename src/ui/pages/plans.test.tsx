@@ -85,8 +85,8 @@ describe("Plans page", () => {
       </TestProvider>,
     );
     setupActionablePlanResponses();
-    expect(await screen.findByText("Choose a Plan")).toBeDefined();
-    expect(await screen.findByText("Starter")).toBeDefined();
+    await screen.findByText("Choose a Plan");
+    await screen.findByText("Starter");
     const errText = await screen.queryByText(
       "Unable to load plan data to allow for selection.",
     );
@@ -100,8 +100,8 @@ describe("Plans page", () => {
       </TestProvider>,
     );
     setupActionablePlanResponses();
-    expect(await screen.findByText("Choose a Plan")).toBeDefined();
-    expect(await screen.findByText("Growth")).toBeDefined();
+    await screen.findByText("Choose a Plan");
+    await screen.findByText("Growth");
 
     const errText = await screen.queryByText(
       "Unable to load plan data to allow for selection.",
@@ -121,12 +121,12 @@ describe("Plans page", () => {
     setupActionablePlanResponses([
       rest.put(`${testEnv.apiUrl}/active_plans/:id`, commonFail),
     ]);
-    expect(await screen.findByText("Choose a Plan")).toBeDefined();
-    expect(await screen.findByText("Growth")).toBeDefined();
+    await screen.findByText("Choose a Plan");
+    await screen.findByText("Growth");
     const el = await screen.getByText("Select Plan");
     fireEvent.click(el);
 
-    expect(await screen.findByText("mock error message")).toBeDefined();
+    await screen.findByText("mock error message");
   });
   it("errors on active plan load failure", async () => {
     const { TestProvider } = setupIntegrationTest();
@@ -136,7 +136,7 @@ describe("Plans page", () => {
       </TestProvider>,
     );
     server.use(rest.get(`${testEnv.apiUrl}/active_plans*`, commonFail));
-    expect(await screen.findByText("mock error message")).toBeDefined();
+    await screen.findByText("mock error message");
   });
   it("errors on plans list load failure", async () => {
     const { TestProvider } = setupIntegrationTest();
@@ -146,6 +146,6 @@ describe("Plans page", () => {
       </TestProvider>,
     );
     server.use(rest.get(`${testEnv.apiUrl}/plans*`, commonFail));
-    expect(await screen.findByText("mock error message")).toBeDefined();
+    await screen.findByText("mock error message");
   });
 });
