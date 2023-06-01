@@ -569,6 +569,7 @@ export const appRoutes: RouteObject[] = [
     element: <UnauthRequired />,
     children: [
       {
+        index: true,
         element: <SsoFailurePage />,
       },
     ],
@@ -579,6 +580,7 @@ export const appRoutes: RouteObject[] = [
     element: <UnauthRequired />,
     children: [
       {
+        index: true,
         element: <SsoLoginPage />,
       },
     ],
@@ -589,6 +591,7 @@ export const appRoutes: RouteObject[] = [
     element: <UnauthRequired />,
     children: [
       {
+        index: true,
         element: <SsoDirectPage />,
       },
     ],
