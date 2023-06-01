@@ -16,6 +16,12 @@ import { environmentEntities, environmentReducers } from "./environment";
 import { logDrainEntities, logDrainReducers } from "./log-drain";
 import { metricDrainEntities, metricDrainReducers } from "./metric-drain";
 import { opEntities, opReducers } from "./operation";
+import {
+  activePlanEntities,
+  activePlanReducers,
+  planEntities,
+  planReducers,
+} from "./plan";
 import { serviceEntities, serviceReducers } from "./service";
 import { stackEntities, stackReducers } from "./stack";
 
@@ -32,6 +38,8 @@ const allReducers: any[] = [
   serviceReducers,
   databaseImageReducers,
   opReducers,
+  planReducers,
+  activePlanReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -57,4 +65,6 @@ export const entities = {
   ...serviceEntities,
   ...databaseImageEntities,
   ...opEntities,
+  ...planEntities,
+  ...activePlanEntities,
 };

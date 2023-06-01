@@ -59,4 +59,45 @@ describe("Login page", () => {
       ).toBeInTheDocument();
     });
   });
+
+  describe("on failed login", () => {
+    it("should error properly", async () => {
+      const { App } = setupAppIntegrationTest({ initEntries: [loginUrl()] });
+      render(<App />);
+
+      server.use(
+        ...stacksWithResources({
+          accounts: [testEnvExpress],
+          apps: [testAppDeployed],
+        }),
+        rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
+          return res(ctx.status(401));
+        }),
+        rest.post(`${testEnv.authUrl}/tokens`, (_, res, ctx) => {
+          return res(
+            ctx.status(401),
+            ctx.set("Content-Type", "application/json"),
+            ctx.json({
+              code: 401,
+              exception_context: {},
+              error: "invalid_credentials",
+              message: "mock error message",
+            }),
+          );
+        }),
+      );
+
+      const email = await screen.findByRole("textbox", { name: "email" });
+      await act(async () => {
+        await userEvent.type(email, testEmail);
+      });
+      const pass = await screen.findByLabelText("Password");
+      await act(async () => {
+        await userEvent.type(pass, "1234");
+      });
+      const btn = await screen.findByRole("button");
+      fireEvent.click(btn);
+      expect(await screen.findByText("mock error message")).toBeInTheDocument();
+    });
+  });
 });

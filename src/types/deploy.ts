@@ -142,6 +142,8 @@ export type ResourceType =
   | "backup"
   | "image"
   | "ephemeral_session"
+  | "plan"
+  | "active_plan"
   | "unknown";
 
 // https://github.com/aptible/deploy-api/blob/3b197beaa5bcbbed991c1eac73d5c99a4fdf8f95/app/models/operation.rb#L54
@@ -346,4 +348,31 @@ export interface DeployPrereleaseCommand extends Timestamps {
   appId: string;
   command: string;
   index: number;
+}
+
+export type PlanName = "starter" | "growth" | "scale" | "enterprise";
+export interface DeployPlan extends Timestamps {
+  id: string;
+  automatedBackupLimitPerDb: number;
+  complianceDashboardAccess: boolean;
+  containerMemoryLimit: number;
+  costCents: number;
+  cpuAllowedProfiles: any;
+  createdAt: string;
+  diskLimit: number;
+  environmentLimit?: number;
+  ephemeralSessionLimit: number;
+  includedContainerMb: number;
+  includedDiskGb: number;
+  includedVhosts: number;
+  manualBackupLimitPerDb: number;
+  name: PlanName;
+  updatedAt: string;
+  vhostLimit: number;
+}
+
+export interface DeployActivePlan extends Omit<DeployPlan, "name"> {
+  availablePlans: string[];
+  organizationId: string;
+  planId: string;
 }

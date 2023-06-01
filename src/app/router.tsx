@@ -52,6 +52,7 @@ import {
   NotFoundPage,
   OtpRecoveryCodesPage,
   OtpSetupPage,
+  PlansPage,
   ReactRouterErrorElement,
   SSHSettingsPage,
   SecuritySettingsPage,
@@ -381,6 +382,11 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.VERIFY_EMAIL_PATH,
         element: <VerifyEmailPage />,
+      },
+
+      {
+        path: routes.PLANS_PATH,
+        element: <PlansPage />,
       },
 
       {

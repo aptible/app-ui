@@ -45,6 +45,9 @@ export const verifyEmailUrl = (
   verificationCode: string,
 ) => `/verify/${verificationId}/${verificationCode}`;
 
+export const PLANS_PATH = "/plans";
+export const plansUrl = () => PLANS_PATH;
+
 export const BILLING_METHOD_PAGE = "/billing";
 export const billingMethodUrl = () => BILLING_METHOD_PAGE;
 

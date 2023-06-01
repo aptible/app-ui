@@ -51,16 +51,30 @@ export const CreateProjectFooter = () => {
             Aptible's platform is production-ready from day one and provides the
             scalability you need.
           </p>
+          <p className="my-2">
+            Deploy your code instantly to production-ready Apps and Databases.
+            To get started, we will walk you through the following steps:
+          </p>
           <ol className="list-decimal list-inside">
-            <li>Signup for an account</li>
-            <li>Add your public SSH key</li>
-            <li>Create an environment</li>
-            <li>Push your code to our Git server</li>
             <li>
-              Configure your App (e.g. databases, environment variable, services
-              and commands)
+              Sign up for an Aptible account{" "}
+              <i>(if you have not done so already)</i>
             </li>
-            <li>Save & Deploy</li>
+            <li>
+              Add an SSH key <i>(if you have not done so already)</i>
+            </li>
+            <li>Create an environment</li>
+            <li>
+              Deploy a starter template, an example App, or your own custom code
+            </li>
+            <li>
+              Push your code to Aptible using <pre>git push</pre>
+            </li>
+            <li>
+              Configure your App (e.g. Databases, Environment Variables,
+              Services and Commands)
+            </li>
+            <li>Save, deploy and view logs - all from the Aptible Dashboard</li>
           </ol>
         </HelpTextAccordion>
         <HelpTextAccordion title="Is my App a good fit for Aptible?">

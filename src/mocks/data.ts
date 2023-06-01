@@ -1,10 +1,12 @@
 import {
+  defaultActivePlanResponse,
   defaultAppResponse,
   defaultConfigurationResponse,
   defaultDatabaseImageResponse,
   defaultEndpointResponse,
   defaultEnvResponse,
   defaultOperationResponse,
+  defaultPlanResponse,
   defaultServiceResponse,
   defaultStackResponse,
 } from "@app/deploy";
@@ -173,6 +175,26 @@ export const testEndpoint = defaultEndpointResponse({
   _links: {
     service: { href: `${testEnv.apiUrl}/services/${testServiceRails.id}` },
     certificate: { href: "" },
+  },
+});
+
+export const testPlan = defaultPlanResponse({
+  id: createId(),
+});
+export const testEnterprisePlan = defaultPlanResponse({
+  id: createId(),
+  name: "enterprise",
+});
+
+export const testActivePlan = defaultActivePlanResponse({
+  id: createId(),
+  available_plans: ["growth", "scale"],
+  organization_id: testOrg.id,
+  _links: {
+    organization: defaultHalHref(
+      `${testEnv.authUrl}/organizations/${testOrg.id}`,
+    ),
+    plan: defaultHalHref(`${testEnv.apiUrl}/plans/${testPlan.id}`),
   },
 });
 
