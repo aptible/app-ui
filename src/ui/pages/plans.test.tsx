@@ -108,8 +108,12 @@ describe("Plans page", () => {
     );
     expect(errText).not.toBeInTheDocument();
 
-    const el = await screen.getByText("Select Plan");
-    fireEvent.click(el);
+    const el = await screen.findByRole("button", {
+      name: /Select Plan/,
+    });
+
+    await fireEvent.click(el);
+    await screen.findByText(/Successfully updated plan to Growth/);
   });
   it("the plans page is visible, renders with plans found, but errors when user selects", async () => {
     const { TestProvider } = setupIntegrationTest();
@@ -119,14 +123,17 @@ describe("Plans page", () => {
       </TestProvider>,
     );
     setupActionablePlanResponses([
-      rest.put(`${testEnv.apiUrl}/active_plans/:id`, commonFail),
+      rest.put(`${testEnv.apiUrl}/active_plans*`, commonFail),
     ]);
     await screen.findByText("Choose a Plan");
     await screen.findByText("Growth");
-    const el = await screen.getByText("Select Plan");
-    fireEvent.click(el);
 
-    await screen.findByText("mock error message");
+    const el = await screen.findByRole("button", {
+      name: /Select Plan/,
+    });
+
+    await fireEvent.click(el);
+    await screen.findByText(/mock error message/);
   });
   it("errors on active plan load failure", async () => {
     const { TestProvider } = setupIntegrationTest();
@@ -136,7 +143,7 @@ describe("Plans page", () => {
       </TestProvider>,
     );
     server.use(rest.get(`${testEnv.apiUrl}/active_plans*`, commonFail));
-    await screen.findByText("mock error message");
+    await screen.findByText(/mock error message/);
   });
   it("errors on plans list load failure", async () => {
     const { TestProvider } = setupIntegrationTest();
@@ -146,6 +153,6 @@ describe("Plans page", () => {
       </TestProvider>,
     );
     server.use(rest.get(`${testEnv.apiUrl}/plans*`, commonFail));
-    await screen.findByText("mock error message");
+    await screen.findByText(/mock error message/);
   });
 });

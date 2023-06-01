@@ -6,6 +6,7 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
+import { capitalize } from "@app/string-utils";
 import {
   AppState,
   DeployActivePlan,
@@ -289,6 +290,7 @@ export const fetchActivePlans = api.get<{ organization_id: string }>(
 interface UpdateActivePlan {
   id: string;
   planId: string;
+  name: string;
 }
 
 export const updateActivePlan = api.put<UpdateActivePlan>(
@@ -315,7 +317,7 @@ export const updateAndRefreshActivePlans = thunks.create<UpdateActivePlan>(
     if (!updateActivePlanCtx.json.ok) {
       yield put(
         setLoaderError({
-          id: ctx.key,
+          id: ctx.name,
           message: updateActivePlanCtx.json.data.message,
         }),
       );
@@ -326,7 +328,10 @@ export const updateAndRefreshActivePlans = thunks.create<UpdateActivePlan>(
     ctx.actions.push(removeActivePlans([ctx.payload.id]));
     yield put(
       setLoaderSuccess({
-        id: ctx.key,
+        id: ctx.name,
+        message: `Successfully updated plan to ${capitalize(
+          ctx.payload.name,
+        )}.`,
       }),
     );
   },

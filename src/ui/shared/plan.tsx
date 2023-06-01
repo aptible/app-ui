@@ -231,6 +231,7 @@ const PlanCard = ({
       updateAndRefreshActivePlans({
         id: activePlan.id,
         planId: plan.id,
+        name: plan.name,
       }),
     );
   };

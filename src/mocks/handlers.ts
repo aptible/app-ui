@@ -353,7 +353,7 @@ const apiHandlers = [
     if (!isValidToken(req)) {
       return res(ctx.status(401));
     }
-    return res(ctx.json({ _embedded: { active_plans: [testActivePlan] } }));
+    return res(ctx.json({ _embedded: { active_plan: testActivePlan } }));
   }),
   rest.get(`${testEnv.apiUrl}/plans*`, async (req, res, ctx) => {
     if (!isValidToken(req)) {
