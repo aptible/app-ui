@@ -270,7 +270,6 @@ export const fetchDatabases = api.get<PaginateProps>("/databases?page=:page", {
 });
 export const fetchAllDatabases = thunks.create(
   "fetch-all-databases",
-  { saga: cacheTimer() },
   combinePages(fetchDatabases),
 );
 export const fetchDatabase = api.get<{ id: string }, DeployDatabaseResponse>(

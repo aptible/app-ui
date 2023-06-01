@@ -84,7 +84,7 @@ export const setupIntegrationTest = (
     initState?: Partial<AppState>;
     initEntries?: string[];
     additionalRoutes?: RouteObject[];
-  } = { path: "/", initState: {}, initEntries: ["/"] },
+  } = { path: "/", initState: {}, initEntries: ["/"], additionalRoutes: [] },
 ) => {
   const { store } = setupTestStore({
     ...initState,

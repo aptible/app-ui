@@ -2,12 +2,7 @@ import { logoutUrl, settingsUrl, teamUrl } from "@app/routes";
 
 import { useCurrentUser } from "../hooks";
 
-import {
-  IconCreditCard,
-  IconLogout,
-  IconSettings,
-  IconUserCircle,
-} from "./icons";
+import { IconLogout, IconSettings, IconUserCircle } from "./icons";
 import { LinkNav } from "./link";
 import { Loading } from "./loading";
 
@@ -26,7 +21,6 @@ export const UserMenu = () => {
         name="Profile Settings"
       />
       <LinkNav to={teamUrl()} icon={<IconSettings />} name="Team Settings" />
-      <LinkNav to={settingsUrl()} icon={<IconCreditCard />} name="Billing" />
       <LinkNav to={logoutUrl()} icon={<IconLogout />} name="Logout" />
     </div>
   );

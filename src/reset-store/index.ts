@@ -1,6 +1,6 @@
 import type { Reducer } from "@reduxjs/toolkit";
 import type { PersistConfig } from "redux-persist";
-import { put, take } from "saga-query";
+import { BATCH, put, take } from "saga-query";
 
 import { ENTITIES_NAME } from "@app/hal";
 import { REDIRECT_NAME } from "@app/redirect-path";
@@ -28,12 +28,22 @@ const keepState = (
 export const resetReducer =
   (rootReducer: Reducer, persistConfig: PersistConfig<any>) =>
   (state: AppState | undefined, action: Action<any>) => {
-    if (action.type === `${resetStore}`) {
+    let reset = false;
+    if (action.type === BATCH) {
+      const actions = (action as any).payload as Action[];
+      actions.forEach((act) => {
+        if (act.type === `${resetStore}`) {
+          reset = true;
+        }
+      });
+    } else if (action.type === `${resetStore}`) {
+      reset = true;
+    }
+
+    if (reset) {
       const { storage, key } = persistConfig;
       storage.removeItem(`persist:${key}`);
-
       const nextState = keepState(state);
-
       return rootReducer(nextState, action);
     }
 
