@@ -566,17 +566,32 @@ export const appRoutes: RouteObject[] = [
 
   {
     path: routes.SSO_ORG_FAILURE_PATH,
-    element: <SsoFailurePage />,
+    element: <UnauthRequired />,
+    children: [
+      {
+        element: <SsoFailurePage />,
+      },
+    ],
   },
 
   {
     path: routes.SSO_PATH,
-    element: <SsoLoginPage />,
+    element: <UnauthRequired />,
+    children: [
+      {
+        element: <SsoLoginPage />,
+      },
+    ],
   },
 
   {
     path: routes.SSO_DIRECT_PATH,
-    element: <SsoDirectPage />,
+    element: <UnauthRequired />,
+    children: [
+      {
+        element: <SsoDirectPage />,
+      },
+    ],
   },
 
   {
