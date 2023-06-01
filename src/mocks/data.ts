@@ -187,7 +187,7 @@ export const testEnterprisePlan = defaultPlanResponse({
 
 export const testActivePlan = defaultActivePlanResponse({
   id: createId(),
-  available_plans: [ "growth", "scale" ],
+  available_plans: ["growth", "scale"],
   organization_id: testOrg.id,
   _links: {
     organization: defaultHalHref(

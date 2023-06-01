@@ -6,6 +6,7 @@ import {
   selectFirstActivePlan,
   selectPlanById,
   selectPlansAsList,
+  updateActivePlan,
 } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
 import { logoutUrl } from "@app/routes";
@@ -13,13 +14,14 @@ import { logoutUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { useQuery } from "saga-query/react";
+import { useLoader, useQuery } from "saga-query/react";
 
 export const PlansPage = () => {
   const org = useSelector(selectOrganizationSelected);
   const plans = useSelector(selectPlansAsList);
   const activePlan = useSelector(selectFirstActivePlan);
 
+  const updatePlanLoader = useLoader(updateActivePlan);
   const planLoader = useQuery(fetchPlans());
   const activePlanLoader = useQuery(
     fetchActivePlans({ organization_id: org.id }),
@@ -40,17 +42,22 @@ export const PlansPage = () => {
           </p>
         </div>
       </div>
+      {updatePlanLoader.isError || updatePlanLoader.meta?.isWarning ? (
+        <BannerMessages {...updatePlanLoader} />
+      ) : null}
       {planLoader.isError || planLoader.meta?.isWarning ? (
         <BannerMessages {...planLoader} />
       ) : null}
       {activePlanLoader.isError || activePlanLoader.meta?.isWarning ? (
         <BannerMessages {...activePlanLoader} />
       ) : null}
-      {planLoader.isSuccess && activePlanLoader.isSuccess ? <Plans
-        plans={plans}
-        activePlan={activePlan}
-        selectedPlan={selectedPlan}
-      /> : null}
+      {planLoader.isSuccess && activePlanLoader.isSuccess ? (
+        <Plans
+          plans={plans}
+          activePlan={activePlan}
+          selectedPlan={selectedPlan}
+        />
+      ) : null}
     </HeroBgLayout>
   );
 };
