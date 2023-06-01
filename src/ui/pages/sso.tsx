@@ -1,16 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 
 import { selectEnv } from "@app/env";
-import { loginUrl, ssoFailureUrl } from "@app/routes";
+import { loginUrl, ssoDirectUrl, ssoFailureUrl } from "@app/routes";
 
 import { HeroBgLayout } from "../layouts";
 import {
+  Banner,
   Box,
   Button,
   ButtonLink,
+  ExternalLink,
   FormGroup,
   Input,
   Loading,
@@ -18,6 +20,13 @@ import {
 } from "../shared";
 
 export const SsoLoginPage = () => {
+  const navigate = useNavigate();
+  const [org, setOrg] = useState("");
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    navigate(ssoDirectUrl(org));
+  };
+
   return (
     <HeroBgLayout>
       <div className="text-center mt-16">
@@ -28,12 +37,19 @@ export const SsoLoginPage = () => {
         </p>
       </div>
       <Box>
-        <form>
+        <form onSubmit={onSubmit}>
           <FormGroup label="Organization ID / Name" htmlFor="org">
-            <Input type="text" name="org" id="org" />
+            <Input
+              type="text"
+              name="org"
+              id="org"
+              onChange={(e) => setOrg(e.currentTarget.value)}
+            />
           </FormGroup>
 
-          <Button type="submit">Log In</Button>
+          <Button type="submit" className="w-full mt-4" disabled={org === ""}>
+            Log In
+          </Button>
         </form>
       </Box>
     </HeroBgLayout>
@@ -51,13 +67,15 @@ export const SsoDirectPage = () => {
     window.location.href = url;
   }, [orgId]);
 
-  return <Loading />;
+  return (
+    <HeroBgLayout>
+      <Loading />
+    </HeroBgLayout>
+  );
 };
 
 export const SsoFailurePage = () => {
   const [params] = useSearchParams();
-  const status = params.get("status");
-  const error = params.get("error");
   const message = params.get("message");
 
   return (
@@ -66,33 +84,25 @@ export const SsoFailurePage = () => {
         <h1 className={`${tokens.type.h1} text-center`}>
           We could not process your Single Sign-On (SSO) login
         </h1>
-        <p className="my-6 text-gray-600">
-          {status} {error} {message}
-        </p>
+        <Banner variant="error" className="my-6">
+          {message}
+        </Banner>
       </div>
       <Box>
         <ButtonLink to={loginUrl()} className="font-semibold w-full">
           Back to Login
         </ButtonLink>
 
-        <ul className="list-disc list-inside mt-4">
-          <li>
-            <b>Not an Enterprise customer?</b> Contact support via the link
-            below to learn more about upgrading your account to support SSO
-          </li>
-          <li>
-            <b>No SSO provider setup for Aptible Deploy?</b> Contact your
-            company's Account Owner to complete the process
-          </li>
-          <li>
-            <b>Forgot or unsure of your organization ID?</b> Contact your
-            company's Deploy Admin
-          </li>
-          <li>
-            <b>Never setup an account?</b> Contact your Deploy Admin for an
-            account invitation and create your account to enable SSO
-          </li>
-        </ul>
+        <p className="mt-4">
+          Not an Enterprise customer?{" "}
+          <ExternalLink
+            href="https://aptible.zendesk.com/hc/en-us/requests/new"
+            variant="info"
+          >
+            Contact support
+          </ExternalLink>{" "}
+          to learn more about upgrading your account to support SSO.
+        </p>
       </Box>
     </HeroBgLayout>
   );
