@@ -25,8 +25,7 @@ import { ImpersonatePage } from "./impersonate";
 const testImpersonatedOrgId = `${createId()}`;
 const testImpersonatedEmail = "impersonated@aptible.com";
 
-// this test is failing in CI, no clue why
-describe.skip("when no email or org supplied", () => {
+describe("when no email or org supplied", () => {
   it("should have the button disabled", async () => {
     const token = testImpersonateToken("read-only");
     const testUser = defaultUserResponse({
