@@ -1,5 +1,20 @@
+import { Request, Response, fetch } from "@remix-run/web-fetch";
+
+// https://github.com/remix-run/react-router/issues/10375#issuecomment-1535303470
 // https://github.com/vitest-dev/vitest/issues/3077#issuecomment-1484093141
-import "whatwg-fetch";
+if (!globalThis.fetch) {
+  // Built-in lib.dom.d.ts expects `fetch(Request | string, ...)` but the web
+  // fetch API allows a URL so @remix-run/web-fetch defines
+  // `fetch(string | URL | Request, ...)`
+  // @ts-expect-error
+  globalThis.fetch = fetch;
+  // Same as above, lib.dom.d.ts doesn't allow a URL to the Request constructor
+  // @ts-expect-error
+  globalThis.Request = Request;
+  // web-std/fetch Response does not currently implement Response.error()
+  // @ts-expect-error
+  globalThis.Response = Response;
+}
 
 import { server } from "@app/mocks";
 import matchers, {
@@ -18,6 +33,11 @@ expect.extend(matchers);
 
 // Establish API mocking before all tests.
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+
+beforeEach(() => {
+  // https://github.com/testing-library/react-testing-library/issues/518#issuecomment-1423342825
+  window.history.pushState({}, "", "/");
+});
 
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.

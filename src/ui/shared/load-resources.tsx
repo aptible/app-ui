@@ -28,14 +28,22 @@ export function LoadResources({
   error = (message) => <ErrorResources message={message} />,
 }: LoadResourcesProps): JSX.Element {
   const { isInitialLoading, isError, message: errorMessage } = query;
+
+  if (!isEmpty) {
+    return <>{children}</>;
+  }
+
   if (isInitialLoading) {
     return loader;
   }
+
   if (isError && errorMessage) {
     return error(errorMessage);
   }
+
   if (isEmpty) {
     return empty;
   }
+
   return <>{children}</>;
 }

@@ -9,12 +9,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate, useParams } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
-import {
-  batchActions,
-  resetLoaderById,
-  selectDataById,
-  selectLoaderById,
-} from "saga-query";
+import { batchActions, resetLoaderById, selectLoaderById } from "saga-query";
 import {
   useApi,
   useCache,
@@ -73,6 +68,7 @@ import {
   IconX,
   Input,
   Loading,
+  LogViewer,
   PreCode,
   Select,
   SelectOption,
@@ -128,9 +124,9 @@ import {
 } from "@app/deploy/database-images";
 import {
   cancelEnvOperationsPoll,
-  fetchOperationLogs,
+  createReadableStatus,
   hasDeployOperation,
-  pollEnvOperations,
+  pollEnvAllOperations,
   selectLatestConfigureOp,
   selectLatestDeployOp,
   selectLatestProvisionOp,
@@ -1469,21 +1465,6 @@ const createReadableResourceName = (
   return `${op.resourceType}:${op.type}`;
 };
 
-const createReadableStatus = (status: OperationStatus): string => {
-  switch (status) {
-    case "queued":
-      return "Queued";
-    case "running":
-      return "Pending";
-    case "succeeded":
-      return "DONE";
-    case "failed":
-      return "FAILED";
-    default:
-      return status;
-  }
-};
-
 const Op = ({
   op,
   resource,
@@ -1887,80 +1868,6 @@ const StatusPill = ({
   );
 };
 
-const LogLine = ({ text }: { text: string }) => {
-  const parts = text.split("-- :");
-  if (parts.length === 1) {
-    return (
-      <div>
-        <span className="text-lime">{parts[0]}</span>
-      </div>
-    );
-  }
-
-  const leftPart = parts[0]
-    .replace("+0000", "")
-    .replace(/\d\d\d\d-\d\d-\d\d/, "")
-    .trim();
-  const rightPart = parts[1].trim();
-
-  const Type = () => {
-    if (leftPart.endsWith("ERROR")) {
-      return <span className="text-red-300">{rightPart}</span>;
-    }
-
-    if (leftPart.endsWith("WARNING")) {
-      return <span className="text-orange-300">{rightPart}</span>;
-    }
-
-    return <span className="text-lime">{rightPart}</span>;
-  };
-
-  return (
-    <div className="text-sm">
-      <span className="text-black-200">{leftPart}: </span>
-      <Type />
-    </div>
-  );
-};
-
-const LogViewer = ({ op }: { op: DeployOperation }) => {
-  const wrapper = "font-mono bg-black p-2 rounded-lg text-black-200";
-  const action = fetchOperationLogs({ id: op.id });
-  const loader = useApi(action);
-  const data: string = useSelector((s: AppState) =>
-    selectDataById(s, { id: action.payload.key }),
-  );
-  useEffect(() => {
-    if (op.status === "succeeded" || op.status === "failed") {
-      loader.trigger();
-    }
-  }, [op.status]);
-
-  if (op.status === "queued" || op.status === "running") {
-    return (
-      <div className={wrapper}>
-        Operation {op.status}, logs will display after operation completes.
-      </div>
-    );
-  }
-
-  if (loader.isInitialLoading) {
-    return <div className={wrapper}>Fetching logs ...</div>;
-  }
-
-  if (!data) {
-    return <div className={wrapper}>No data found</div>;
-  }
-
-  return (
-    <div className={wrapper}>
-      {data.split("\n").map((line, i) => {
-        return <LogLine key={`log-${i}`} text={line} />;
-      })}
-    </div>
-  );
-};
-
 const StatusBox = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="mt-4 first:mt-0">
@@ -2118,7 +2025,7 @@ const useEnvOpsPoller = ({
   envId: string;
 }) => {
   const dispatch = useDispatch();
-  const pollAction = pollEnvOperations({ envId });
+  const pollAction = pollEnvAllOperations({ envId });
   const pollLoader = useLoader(pollAction);
   useEffect(() => {
     const cancel = () => dispatch(cancelEnvOperationsPoll());
@@ -2297,7 +2204,7 @@ export const CreateProjectGitStatusPage = () => {
   });
 
   const [status, dateStr] = resolveOperationStatuses(ops);
-  const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
+  const { isInitialLoading } = useQuery(pollEnvAllOperations({ envId }));
 
   const { scanOp } = useLatestCodeResults(appId);
 
