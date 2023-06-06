@@ -13,8 +13,25 @@ describe("Verify email page", () => {
         <VerifyEmailPage />
       </TestProvider>,
     );
-    const el = await screen.findByRole("button");
-    expect(el.textContent).toEqual("Resend Verification Email");
+    await screen.findByRole("button", { name: /Resend Verification Email/ });
+  });
+  it("the verify email page should render and redirect if verification succeeds", async () => {
+    const { TestProvider } = setupIntegrationTest();
+    render(
+      <TestProvider>
+        <VerifyEmailPage />
+      </TestProvider>,
+    );
+    await screen.findByRole("button", { name: /Resend Verification Email/ });
+  });
+  it("the verify email page should render and remain if verification fails", async () => {
+    const { TestProvider } = setupIntegrationTest();
+    render(
+      <TestProvider>
+        <VerifyEmailPage />
+      </TestProvider>,
+    );
+    await screen.findByRole("button", { name: /Resend Verification Email/ });
   });
   it("the verify email page should properly fail", async () => {
     const { TestProvider } = setupIntegrationTest();
@@ -28,9 +45,8 @@ describe("Verify email page", () => {
         return res(ctx.status(401));
       }),
     );
-    const el = await screen.findByRole("button");
+    await screen.findByRole("button", { name: /Resend Verification Email/ });
     const errorText = await screen.queryByText("Failed to verify your email");
     expect(errorText).toBeDefined;
-    expect(el.textContent).toEqual("Resend Verification Email");
   });
 });

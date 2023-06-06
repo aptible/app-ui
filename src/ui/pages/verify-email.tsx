@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useLoader, useLoaderSuccess } from "saga-query/react";
 
-import { Box, Loading, ResendVerificationEmail } from "../shared";
-import { fetchCurrentToken, verifyEmail } from "@app/auth";
+import { Box, Button, Loading, ResendVerificationEmail } from "../shared";
+import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
-import { homeUrl } from "@app/routes";
+import { homeUrl, loginUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
 import { HeroBgLayout } from "../layouts";
@@ -21,6 +21,12 @@ export const VerifyEmailPage = () => {
   const navigate = useNavigate();
   const verifyEmailLoader = useLoader(verifyEmail);
   const redirectPath = useSelector(selectRedirectPath);
+
+  const logoutSubmit = (event: React.SyntheticEvent) => {
+    event.preventDefault();
+    dispatch(logout());
+    navigate(loginUrl());
+  };
 
   useEffect(() => {
     if (params.verificationCode && params.verificationId && userId) {
@@ -83,6 +89,13 @@ export const VerifyEmailPage = () => {
       </div>
       <Box>
         <ResendVerificationEmail />
+        <Button
+          onClick={logoutSubmit}
+          className="font-semibold w-full mt-4"
+          variant="white"
+        >
+          Log Out
+        </Button>
       </Box>
     </HeroBgLayout>
   );

@@ -1,17 +1,26 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
+import { selectEnv } from "@app/env";
 import { verifyEmailRequestUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
 export const useVerifiedRequired = () => {
+  const config = useSelector(selectEnv);
   const navigate = useNavigate();
-  const user = useSelector(selectJWTToken);
+  const { pathname } = useLocation();
+  const { verified } = useSelector(selectJWTToken);
 
   useEffect(() => {
-    if (!user.verified) {
+    // allow users to log out if they are presently logged in to come back to this page
+    // only allow this for nextgen app
+    if (
+      !verified &&
+      !["/logout"].includes(pathname) &&
+      config.origin === "nextgen"
+    ) {
       navigate(verifyEmailRequestUrl());
     }
-  }, [user.verified]);
+  }, [config.origin, pathname, verified]);
 };
