@@ -37,7 +37,7 @@ export const VerifyEmailPage = () => {
         }),
       );
     }
-  }, [params.verificationId, params.verificationCode, userId]);
+  }, [params.verificationId, params.verificationCode, userId, verified]);
 
   useEffect(() => {
     if (loader.isLoading) {

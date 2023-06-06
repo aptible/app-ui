@@ -100,6 +100,7 @@ describe("AuthRequired", () => {
         <h1>Test element</h1>
       </TestProvider>,
     );
+    await waitForElementToBeRemoved(() => screen.queryByText("loading ..."));
     await screen.findByText("Simulated verify");
     expect(screen.queryByText("Test element")).not.toBeInTheDocument();
   });
