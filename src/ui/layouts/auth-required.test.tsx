@@ -58,7 +58,7 @@ describe("AuthRequired", () => {
     await screen.findByText("Simulated login");
     expect(screen.queryByText("Test element")).not.toBeInTheDocument();
   });
-  it("should redirect when current token expired", async () => {
+  it("should redirect when user is not yet verified", async () => {
     const { TestProvider } = setupIntegrationTest({
       path: "/mock",
       initEntries: ["/mock"],
