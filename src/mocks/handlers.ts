@@ -69,6 +69,16 @@ const authHandlers = [
 
     return res(ctx.json({ _embedded: { ssh_keys: [testSshKey] } }));
   }),
+  rest.post(
+    `${testEnv.authUrl}/users/:userId/email_verification_challenges`,
+    (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+
+      return res(ctx.status(204));
+    },
+  ),
   rest.post(`${testEnv.authUrl}/password/resets/new`, (req, res, ctx) => {
     if (!isValidToken(req)) {
       return res(ctx.status(401));
