@@ -12,6 +12,7 @@ import * as modal from "@app/modal";
 import * as orgs from "@app/organizations";
 import * as redirectPath from "@app/redirect-path";
 import * as resetStore from "@app/reset-store";
+import * as roles from "@app/roles";
 import * as theme from "@app/theme";
 import * as token from "@app/token";
 import * as users from "@app/users";
@@ -34,6 +35,7 @@ const corePackages: any[] = [
   deploy,
   modal,
   initData,
+  roles,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {

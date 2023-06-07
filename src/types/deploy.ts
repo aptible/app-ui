@@ -378,3 +378,20 @@ export interface DeployActivePlan extends Omit<DeployPlan, "name"> {
   organizationId: string;
   planId: string;
 }
+
+export type PermissionScope =
+  | "unknown"
+  | "basic_read"
+  | "read"
+  | "admin"
+  | "observability"
+  | "deploy"
+  | "sensitive"
+  | "tunnel"
+  | "destroy";
+export interface Permission {
+  id: string;
+  environmentId: string;
+  roleId: string;
+  scope: PermissionScope;
+}

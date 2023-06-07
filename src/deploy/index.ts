@@ -15,3 +15,4 @@ export * from "./app-service-definitions";
 export * from "./operation";
 export * from "./plan";
 export * from "./activity";
+export * from "./permission";

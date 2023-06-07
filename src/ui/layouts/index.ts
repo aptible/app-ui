@@ -10,3 +10,4 @@ export * from "./hero-bg-layout";
 export * from "./unauth-required";
 export * from "./error-boundary";
 export * from "./op-detail-layout";
+export * from "./perm-required";

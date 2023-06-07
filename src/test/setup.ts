@@ -36,7 +36,9 @@ beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
 beforeEach(() => {
   // https://github.com/testing-library/react-testing-library/issues/518#issuecomment-1423342825
-  window.history.pushState({}, "", "/");
+  if (typeof window !== "undefined") {
+    window.history.pushState({}, "", "/");
+  }
 });
 
 // Reset any request handlers that we may add during the tests,
