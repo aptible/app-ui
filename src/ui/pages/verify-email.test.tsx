@@ -2,12 +2,7 @@ import { VerifyEmailPage } from "./verify-email";
 
 import { server, testEnv } from "@app/mocks";
 import { setupIntegrationTest } from "@app/test";
-import {
-  fireEvent,
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { rest } from "msw";
 
 describe("Verify email page", () => {
