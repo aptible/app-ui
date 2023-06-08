@@ -1106,20 +1106,60 @@ const CodeScanInfo = ({
     );
   }
 
-  return (
-    <Banner variant="info">
+  const commonHelpText = (
+    <>
       <span>
-        Your code is missing a Dockerfile to deploy. We will try to generate one
-        for you. We recommend adding a{" "}
-      </span>
-      <ExternalLink
-        href="https://www.aptible.com/docs/dockerfile"
-        variant="info"
-      >
-        Dockerfile
-      </ExternalLink>
+          We recommend adding a{" "}
+          </span>
+          <ExternalLink
+            href="https://www.aptible.com/docs/dockerfile"
+            variant="info"
+          >
+            Dockerfile
+          </ExternalLink>
       <span> to your repo, commit it, and push your code.</span>
-    </Banner>
+    </>
+  )
+
+  if (codeScan.languages_detected?.includes("python")) {
+    return (
+      <Banner variant="info">
+        <div className="ml-2">
+          <p>
+            <strong>We have detected a Python application that does not contain a Dockerfile.</strong>
+          </p>
+          <p className="my-2">
+            There will need to be a <pre className="inline">requirements.txt</pre> and/or{" "}
+            <pre className="inline">pyproject.toml</pre> in the root directory of your app
+            We suggest ensuring the following:
+          </p>
+          <ul className="list-disc ml-4 my-2">
+            <li>If a Django project, we will run: <pre className="inline">python manage.py migrate && 
+              gunicorn $DJANGO_PROJECT_NAME.wsgi</pre>.</li>
+            <li>Otherwise, if pyproject.toml is found, we will run 
+              <pre className="inline">python -m $MODULE_NAME</pre>.
+            </li>
+            <li>
+              Finally, if above two conditions are not met, a <pre className="inline">main.py</pre> 
+              must be present in the root directory of your application for us to continue.
+            </li>
+          </ul>
+          <p>{commonHelpText}</p>
+        </div>
+      </Banner>
+    );
+  }
+
+  return (
+    <>
+      <Banner variant="info">
+      <p>
+        Your code is missing a Dockerfile to deploy. We will try to generate one
+        for you. {" "}
+        {commonHelpText}
+      </p>
+      </Banner>
+    </>
   );
 };
 
