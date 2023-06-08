@@ -34,8 +34,8 @@ import { usePoller } from "../hooks";
 import { useInterval } from "../hooks/use-interval";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { DetailPageLayout } from "./detail-page";
-import { useMemo, useState } from "react";
 import cn from "classnames";
+import { useMemo, useState } from "react";
 
 const databaseDetailBox = ({
   database,

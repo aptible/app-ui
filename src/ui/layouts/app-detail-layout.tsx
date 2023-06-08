@@ -33,8 +33,8 @@ import { useInterval } from "../hooks/use-interval";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { DetailPageLayout } from "./detail-page";
 import { capitalize } from "@app/string-utils";
-import { useMemo, useState } from "react";
 import cn from "classnames";
+import { useMemo, useState } from "react";
 
 const appDetailBox = ({ app }: { app: DeployApp }): React.ReactElement => (
   <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>

@@ -306,7 +306,6 @@ export const IconThumbsUp = (props: Props) => {
   );
 };
 
-
 export const IconRefresh = (props: Props) => {
   return (
     <IconStrokeBase {...props} title="Refresh Icon">
