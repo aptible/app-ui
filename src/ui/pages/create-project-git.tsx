@@ -1134,17 +1134,19 @@ const CodeScanInfo = ({
   if (!codeScan) return null;
   if (codeScan.dockerfile_present) {
     return (
-      <Banner variant="info">
-        <span>Your code has a </span>
-        <ExternalLink
-          href="https://www.aptible.com/docs/dockerfile"
-          variant="info"
-        >
-          Dockerfile
-        </ExternalLink>
-        <span> and will be used to build your Aptible app image.</span>
+      <>
+        <Banner variant="info">
+          <span>Your code has a </span>
+          <ExternalLink
+            href="https://www.aptible.com/docs/dockerfile"
+            variant="info"
+          >
+            Dockerfile
+          </ExternalLink>
+          <span> and will be used to build your Aptible app image.</span>
+        </Banner>
         <DockerfileDataView dockerfileData={codeScan.dockerfile_data} />
-      </Banner>
+      </>
     );
   }
 
@@ -1163,42 +1165,44 @@ const CodeScanInfo = ({
 
   if (codeScan.languages_detected?.includes("python")) {
     return (
-      <Banner variant="info">
-        <div className="ml-2">
-          <p>
-            <strong>
-              We have detected a Python application that does not contain a
-              Dockerfile.
-            </strong>
-          </p>
-          <p className="my-2">
-            There will need to be a{" "}
-            <pre className="inline">requirements.txt</pre> and/or{" "}
-            <pre className="inline">pyproject.toml</pre> in the root directory
-            of your app. We suggest ensuring the following:
-          </p>
-          <ul className="list-disc ml-4 my-2">
-            <li>
-              If a Django project, we will run:{" "}
-              <pre className="inline">
-                python manage.py migrate && gunicorn $DJANGO_PROJECT_NAME.wsgi
-              </pre>
+      <>
+        <Banner variant="info">
+          <div className="ml-2">
+            <p>
+              We have detected a Python application that does not contain a{" "}
+              <ExternalLink
+                href="https://www.aptible.com/docs/dockerfile"
+                variant="info"
+              >
+                Dockerfile
+              </ExternalLink>
               .
-            </li>
-            <li>
-              Otherwise, if pyproject.toml is found, we will run
-              <pre className="inline">python -m $MODULE_NAME</pre>.
-            </li>
-            <li>
-              Finally, if above two conditions are not met, a{" "}
-              <pre className="inline">main.py</pre>
-              must be present in the root directory of your application for us
-              to continue.
-            </li>
-          </ul>
-          <p>{commonHelpText}</p>
-        </div>
-      </Banner>
+            </p>
+          </div>
+        </Banner>
+        <p className="my-4">
+          There will need to be a requirements.txt and/or pyproject.toml in the
+          root directory of your app. We suggest ensuring the following:
+        </p>
+        <p className="my-4">
+          If a Django project, we will run:{" "}
+          <span className="bg-gray-200 font-mono">
+            python manage.py migrate && gunicorn $PROJECT.wsgi
+          </span>
+          .
+        </p>
+        <p className="my-4">
+          Otherwise, if pyproject.toml is found, we will run{" "}
+          <span className="bg-gray-200 font-mono">python -m $MODULE_NAME</span>.
+        </p>
+        <p className="my-4">
+          Finally, if above two conditions are not met, a main.py must be
+          present in the root directory of your application for us to continue.
+        </p>
+        <p className="my-4">
+          <strong>{commonHelpText}</strong>
+        </p>
+      </>
     );
   }
 
