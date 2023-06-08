@@ -1,6 +1,14 @@
 import { SyntheticEvent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
+import {
+  selectFeedback,
+  selectPreDeploySurveyAnswered,
+  setFeedback,
+} from "@app/feedback";
+import { createProjectGitUrl } from "@app/routes";
+import { selectIsUserAuthenticated } from "@app/token";
+
 import { HeroBgLayout } from "../layouts";
 import {
   Box,
@@ -13,12 +21,7 @@ import {
   IconThumbsUp,
   tokens,
 } from "../shared";
-import {
-  selectFeedback,
-  selectPreDeploySurveyAnswered,
-  setFeedback,
-} from "@app/feedback";
-import { createProjectGitUrl } from "@app/routes";
+import { CreateProjectLayout } from "./create-project-git";
 
 export const FreeFormSurvey = () => {
   const dispatch = useDispatch();
@@ -141,9 +144,11 @@ export const FreeFormSurvey = () => {
 
 export const CreateProjectPage = () => {
   const preDeploySurveyAnswered = useSelector(selectPreDeploySurveyAnswered);
+  const isUserAuthenticated = useSelector(selectIsUserAuthenticated);
+  const Wrapper = isUserAuthenticated ? CreateProjectLayout : HeroBgLayout;
 
   return (
-    <HeroBgLayout>
+    <Wrapper>
       <div className="text-center mt-16">
         <h1 className={tokens.type.h1}>Deploy your App</h1>
         <p className="my-6 text-gray-600">
@@ -169,6 +174,6 @@ export const CreateProjectPage = () => {
       <div className="mt-6">
         <CreateProjectFooter />
       </div>
-    </HeroBgLayout>
+    </Wrapper>
   );
 };
