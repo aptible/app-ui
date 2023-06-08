@@ -1085,6 +1085,47 @@ const DatabaseSelectorForm = ({
   );
 };
 
+const DockerfileDataView = ({
+  dockerfileData,
+}: { dockerfileData: string | undefined }) => {
+  const [isOpen, setOpen] = useState(false);
+
+  if (!dockerfileData) {
+    return null;
+  }
+
+  const segments = dockerfileData.split("\n").map((line) => ({
+    text: `${line}\n`,
+    className: line?.[0] === "#" ? "text-white" : "text-lime",
+  }));
+
+  return (
+    <div>
+      <div className="py-4 flex justify-between items-center">
+        <div className="flex flex-1">
+          <div
+            className="font-semibold flex items-center cursor-pointer"
+            onClick={() => setOpen(!isOpen)}
+            onKeyUp={() => setOpen(!isOpen)}
+          >
+            {isOpen ? (
+              <IconChevronUp variant="sm" />
+            ) : (
+              <IconChevronDown variant="sm" />
+            )}
+            <p className="ml-2">View scanned Dockerfile:</p>
+          </div>
+        </div>
+      </div>
+      {isOpen ? (
+        <div className="pb-4">
+          <PreCode allowCopy segments={segments} />
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
 const CodeScanInfo = ({
   codeScan,
 }: {
@@ -1102,6 +1143,7 @@ const CodeScanInfo = ({
           Dockerfile
         </ExternalLink>
         <span> and will be used to build your Aptible app image.</span>
+        <DockerfileDataView dockerfileData={codeScan.dockerfile_data} />
       </Banner>
     );
   }
