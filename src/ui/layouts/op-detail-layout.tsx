@@ -7,14 +7,15 @@ import { activityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployOperation } from "@app/types";
 
-import { Box, DetailPageHeaderView, OpStatus } from "../shared";
+import { Box, DetailPageHeaderView, OpStatus, tokens } from "../shared";
 
 import { DetailPageLayout } from "./detail-page";
+import cn from "classnames";
 
 const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
   const url = getResourceUrl(op);
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full py-6 -mt-5">
+    <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
       <Box>
         <h1 className="text-md text-gray-500">Operation Details</h1>
         <div className="flex w-1/1">

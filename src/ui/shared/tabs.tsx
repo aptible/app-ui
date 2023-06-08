@@ -20,9 +20,10 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
     {
       "font-normal text-base text-gray-500 hover:text-gray-700": !isActive,
       "border-transparent  hover:border-gray-300": !isActive,
-      "font-semibold": isActive,
+      "font-semibold text-black": isActive,
       "border-orange-400": isActive,
     },
+    "focus:text-black",
     "whitespace-nowrap py-4 px-1 border-b-3",
   );
 

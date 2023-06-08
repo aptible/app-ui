@@ -16,6 +16,7 @@ import { InputSearch } from "./input";
 import { EmptyResultView } from "./resource-list-view";
 import { ReactElement, useState } from "react";
 
+import { tokens } from "./tokens";
 import { capitalize } from "@app/string-utils";
 
 const EndpointStatusPill = ({
@@ -74,7 +75,7 @@ const EndpointListing = ({
   endpoint,
   parent,
 }: { endpoint: DeployEndpoint; parent: string }) => (
-  <div className="max-w-7xl mx-auto w-full py-6 -mt-5 -mb-5">
+  <div className="mx-auto w-full py-6 -mt-5 -mb-5">
     <Box>
       <ButtonIcon
         icon={
