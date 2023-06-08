@@ -20,7 +20,6 @@ const selectActivityForTable = createSelector(
     ops
       .map((op): DeployActivityRow => {
         const env = findEnvById(envs, { id: op.environmentId });
-
         let resourceHandle = "";
         if (op.resourceType === "app") {
           const app = findAppById(apps, { id: op.resourceId });
