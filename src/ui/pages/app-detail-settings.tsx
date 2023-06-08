@@ -128,7 +128,7 @@ export const AppSettingsPage = () => {
               id="input-name"
             />
             {handle !== app.handle && drains.length ? (
-              <Banner variant="info" iconOverride={null} className="mt-4">
+              <Banner variant="info" showIcon={false} className="mt-4">
                 <p>
                   You must <b>restart the app</b> for the new name to appear in
                   the following log and metric drains, view the docs (
@@ -162,64 +162,6 @@ export const AppSettingsPage = () => {
             {app.id} <IconCopy className="inline h-4" color="#888C90" />
           </p>
           <div className="mt-4 flex" />
-          <FormGroup label="Thumbnail Image" htmlFor="thumbnail">
-            <div className="flex justify-between items-center">
-              <select
-                value={"test"}
-                className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                placeholder="select"
-                disabled
-              >
-                <option value="test" disabled>
-                  Some Icon
-                </option>
-              </select>
-            </div>
-          </FormGroup>
-          <FormGroup
-            label="Environment Variables"
-            htmlFor="environment-variables"
-          >
-            <div className="flex">
-              <Input
-                className="flex w-1/2"
-                name="app-handle"
-                type="text"
-                value={handle}
-                onChange={(e) => setHandle(e.currentTarget.value)}
-                autoComplete="name"
-                data-testid="input-name"
-                id="input-name"
-              />
-              <Input
-                className="flex ml-4 w-1/2"
-                name="app-handle"
-                type="text"
-                value={handle}
-                onChange={(e) => setHandle(e.currentTarget.value)}
-                autoComplete="name"
-                data-testid="input-name"
-                id="input-name"
-              />
-              <ButtonIcon
-                className="flex ml-4 pr-2"
-                variant="white"
-                onClick={() => {}}
-                icon={<IconTrash color="#AD1A1A" />}
-                children={null}
-              />
-            </div>
-            <div className="flex mt-4">
-              <ButtonIcon
-                icon={<IconPlusCircle color="#FFF" />}
-                variant="secondary"
-                onClick={() => {}}
-              >
-                New
-              </ButtonIcon>
-            </div>
-          </FormGroup>
-          <br />
           <hr />
           <br />
           <div className="flex mt-4">

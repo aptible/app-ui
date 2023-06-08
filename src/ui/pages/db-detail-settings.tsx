@@ -59,10 +59,8 @@ export const DatabaseSettingsPage = () => {
     e.preventDefault();
 
     setIsUpdating(true);
-    setTimeout(() => {
-      dispatch(updateDatabase({ id, handle }));
-      setIsUpdating(false);
-    }, 500);
+    dispatch(updateDatabase({ id, handle }));
+    setIsUpdating(false);
   };
 
   const requestDeprovisionDatabase = (e: SyntheticEvent) => {
@@ -75,7 +73,7 @@ export const DatabaseSettingsPage = () => {
   };
 
   const disabledDeprovisioning =
-    isDeprovisioning || "delete" !== deleteConfirm.toLocaleLowerCase();
+    isDeprovisioning || database.handle !== handle;
 
   return (
     <div className="mb-4">
@@ -102,9 +100,9 @@ export const DatabaseSettingsPage = () => {
             />
           </FormGroup>
           {handle !== database.handle && drains.length ? (
-            <Banner variant="info" iconOverride={null} className="mt-4">
+            <Banner variant="info" showIcon={false} className="mt-4">
               <p>
-                You must <b>restart the database</b> for the new name to appear
+                You must <b>reload the database</b> for the new name to appear
                 in the following log and metric drains, view the docs (
                 <ExternalLink
                   variant="default"

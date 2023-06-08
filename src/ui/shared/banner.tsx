@@ -2,7 +2,7 @@ import classNames from "classnames";
 
 import { StatusVariant, variantToClassName } from "@app/status-variant";
 
-import { IconAlertTriangle, IconCheck, IconInfo } from "./icons";
+import { IconAlertTriangle, IconCheck, IconInfo, IconRefresh } from "./icons";
 
 const VariantIcon = ({ variant = "info" }: { variant: StatusVariant }) => {
   if (variant === "error") {
@@ -21,6 +21,14 @@ const VariantIcon = ({ variant = "info" }: { variant: StatusVariant }) => {
     return <IconInfo />;
   }
 
+  if (variant === "progress") {
+    return (
+      <div className="animate-spin-slow 5s">
+        <IconRefresh color="#FFF" />
+      </div>
+    );
+  }
+
   return <IconInfo />;
 };
 
@@ -28,12 +36,12 @@ export const Banner = ({
   children,
   className = "",
   variant = "info",
-  iconOverride,
+  showIcon = true,
 }: {
   children: React.ReactNode;
   className?: string;
   variant?: StatusVariant;
-  iconOverride?: React.ReactNode;
+  showIcon?: boolean;
 }) => {
   const classes = variantToClassName(variant);
 
@@ -46,13 +54,9 @@ export const Banner = ({
         className,
       )}
     >
-      <div className="mr-2">
-        {iconOverride !== undefined ? (
-          iconOverride
-        ) : (
-          <VariantIcon variant={variant} />
-        )}
-      </div>
+      {showIcon ? <div className="mr-2">
+        <VariantIcon variant={variant} />
+      </div> : null}
       <div>{children}</div>
     </div>
   );

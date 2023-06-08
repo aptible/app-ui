@@ -1,11 +1,11 @@
 import { Banner } from "./banner";
 import { IconRefresh } from "./icons";
 import { timeAgo } from "@app/date";
-import { selectLatestOpByAppId, selectLatestOpByDatabaseId } from "@app/deploy";
+import { selectLatestOpByAppId, selectLatestOpByDatabaseId, selectLatestOpByResourceId } from "@app/deploy";
 import { operationDetailUrl } from "@app/routes";
 import { StatusVariant } from "@app/status-variant";
 import { capitalize } from "@app/string-utils";
-import { AppState, ResourceType } from "@app/types";
+import { AppState, OperationStatus, OperationType, ResourceType } from "@app/types";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -14,6 +14,17 @@ const BannerWrapper = ({
 }: {
   children?: React.ReactNode;
 }) => <div className="m-4">{children}</div>;
+
+const operationStatusToBannerStatus = (operationStatus: OperationStatus): StatusVariant => {
+  if (operationStatus === "succeeded") {
+    return "success";
+  } else if (operationStatus === "failed") {
+    return "error";
+  } else if (operationStatus === "running" || operationStatus === "queued") {
+    return "progress";
+  }
+  return "default";
+}
 
 export const ActiveOperationNotice = ({
   resourceId,
@@ -24,35 +35,31 @@ export const ActiveOperationNotice = ({
   resourceType: Extract<ResourceType, "app" | "database">;
   heartbeat?: Date;
 }) => {
-  const operation = useSelector((s: AppState) => {
-    if (resourceType === "app") {
-      return selectLatestOpByAppId(s, { appId: resourceId });
-    } else {
-      return selectLatestOpByDatabaseId(s, { dbId: resourceId });
-    }
-  });
+  const operation = useSelector((s: AppState) => selectLatestOpByResourceId(s, { resourceId }));
+  const operationTypeAndStatusToDisplay: {
+    [key in OperationType]?: OperationStatus[]
+  } = {
+    "configure": ["failed", "running", "queued"],
+    "deploy": ["failed", "running", "queued"],
+    "deprovision": ["failed", "running", "queued", "succeeded"],
+    "provision": ["failed", "running", "queued"]
+  }
 
   if (!operation) {
     return null;
   }
 
-  const bannerStatus: StatusVariant =
-    operation.status === "succeeded"
-      ? "success"
-      : operation.status === "failed"
-      ? "error"
-      : operation.status === "running" || operation.status === "queued"
-      ? "primary"
-      : "default";
+  if (!operationTypeAndStatusToDisplay[operation.type]?.includes(operation.status)) {
+    return null;
+  }
 
   const gerundOfOpType =
     operation.type === "configure" ? "configuring" : `${operation.type}ing`;
 
-  // is most recent operation a failure and deprovision or provision
   if (["failed", "succeeded"].includes(operation.status)) {
     return (
       <BannerWrapper>
-        <Banner variant={bannerStatus}>
+        <Banner variant={operationStatusToBannerStatus(operation.status)}>
           <p>
             {capitalize(operation.status)} {gerundOfOpType}{" "}
             <b>{resourceType}</b> ({timeAgo(operation.createdAt)}) -{" "}
@@ -68,17 +75,11 @@ export const ActiveOperationNotice = ({
     );
   }
 
-  // is provision or deprovision operation running?
   if (["running", "queued"].includes(operation.status)) {
     return (
       <BannerWrapper>
         <Banner
-          variant={bannerStatus}
-          iconOverride={
-            <div className="animate-spin-slow 5s">
-              <IconRefresh color="#FFF" />
-            </div>
-          }
+          variant={operationStatusToBannerStatus(operation.status)}
         >
           <p>
             {capitalize(operation.type)}ing <b>{resourceType}</b> (

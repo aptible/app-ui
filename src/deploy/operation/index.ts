@@ -218,7 +218,7 @@ export const selectLatestProvisionOps = createSelector(
   selectOperationsAsList,
   (_: AppState, props: { resourceIds: string[] }) => props.resourceIds,
   (ops, resourceIds) => {
-    const results = [];
+    const results: DeployOperation[] = [];
     for (let i = 0; i < resourceIds.length; i += 1) {
       const id = resourceIds[i];
       const op = ops.find((o) => o.resourceId === id && o.type === "provision");
@@ -277,6 +277,16 @@ export const selectLatestOpByAppId = createSelector(
       ["configure", "provision", "deploy", "deprovision"].includes(op.type),
     ) || initOp,
 );
+
+export const selectLatestOpByResourceId = createSelector(
+  selectOperationsAsList,
+  (_: AppState, p: { resourceId: string }) => p.resourceId,
+  (ops, resourceId) =>
+    ops.find((op) =>
+      op.resourceId === resourceId && ["configure", "provision", "deploy", "deprovision"].includes(op.type),
+    ) || initOp
+);
+
 
 export const selectLatestProvisionOp = createSelector(
   selectOperationsByResourceId,

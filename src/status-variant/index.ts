@@ -4,7 +4,7 @@ export type StatusVariant =
   | "error"
   | "info"
   | "default"
-  | "primary";
+  | "progress";
 
 export const variantToTextColor = (s: StatusVariant): string => {
   switch (s) {
@@ -16,7 +16,7 @@ export const variantToTextColor = (s: StatusVariant): string => {
       return "text-red-200";
     case "info":
       return "text-blue-200";
-    case "primary":
+    case "progress":
       return "text-indigo-200";
     default:
       return "text-black";
@@ -33,7 +33,7 @@ export const variantToColor = (s: StatusVariant): string => {
       return "bg-red-200";
     case "info":
       return "bg-black-50";
-    case "primary":
+    case "progress":
       return "bg-indigo-200";
     default:
       return "";
@@ -50,7 +50,7 @@ export const variantToClassName = (s: StatusVariant): string => {
       return "bg-red text-white";
     case "info":
       return "bg-black-50 border-black-100 border-1";
-    case "primary":
+    case "progress":
       return "bg-indigo text-white";
     default:
       return "";
@@ -67,7 +67,7 @@ export const variantToHoverColor = (s: StatusVariant): string => {
       return "hover:bg-red-100";
     case "info":
       return "hover:bg-blue-100";
-    case "primary":
+    case "progress":
       return "hover:bg-indigo-100";
     default:
       return "hover:bg-grey-100";
