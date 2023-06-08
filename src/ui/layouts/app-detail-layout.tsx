@@ -28,6 +28,7 @@ import {
 } from "../shared";
 
 import { usePoller } from "../hooks";
+import { useInterval } from "../hooks/use-interval";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { DetailPageLayout } from "./detail-page";
 import { capitalize } from "@app/string-utils";
@@ -108,10 +109,10 @@ function AppPageHeader() {
 
   const poller = useMemo(() => pollAppOperations({ id }), [id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
+  useInterval(() => setHeartbeat(new Date()), 1000);
   usePoller({
     action: poller,
     cancel,
-    heartbeatFunc: setHeartbeat,
   });
 
   // TODO - COME BACK TO THIS

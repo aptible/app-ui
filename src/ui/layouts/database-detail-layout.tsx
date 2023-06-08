@@ -30,6 +30,7 @@ import {
 } from "../shared";
 
 import { usePoller } from "../hooks";
+import { useInterval } from "../hooks/use-interval";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { DetailPageLayout } from "./detail-page";
 import { useMemo, useState } from "react";
@@ -139,10 +140,10 @@ function DatabasePageHeader() {
 
   const poller = useMemo(() => pollDatabaseOperations({ id }), [id]);
   const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);
+  useInterval(() => setHeartbeat(new Date()), 1000);
   usePoller({
     action: poller,
     cancel,
-    heartbeatFunc: setHeartbeat,
   });
 
   const tabs = [
