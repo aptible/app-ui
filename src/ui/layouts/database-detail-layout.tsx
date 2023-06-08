@@ -127,7 +127,7 @@ const databaseDetailBox = ({
 function DatabasePageHeader() {
   const { id = "" } = useParams();
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
-  const [heartbeat, setHeartbeat] = useState<Date>(new Date());
+  const [_, setHeartbeat] = useState<Date>(new Date());
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
   );
@@ -157,11 +157,7 @@ function DatabasePageHeader() {
 
   return (
     <>
-      <ActiveOperationNotice
-        heartbeat={heartbeat}
-        resourceId={id}
-        resourceType="database"
-      />
+      <ActiveOperationNotice resourceId={id} resourceType="database" />
       <DetailPageHeaderView
         breadcrumbs={crumbs}
         title={database ? database.handle : "Loading..."}

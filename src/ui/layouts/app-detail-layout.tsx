@@ -102,7 +102,7 @@ function AppPageHeader() {
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
-  const [heartbeat, setHeartbeat] = useState<Date>(new Date());
+  const [_, setHeartbeat] = useState<Date>(new Date());
   const crumbs = [
     { name: environment.handle, to: environmentResourcelUrl(environment.id) },
   ];
@@ -128,11 +128,7 @@ function AppPageHeader() {
 
   return (
     <>
-      <ActiveOperationNotice
-        resourceId={app.id}
-        resourceType="app"
-        heartbeat={heartbeat}
-      />
+      <ActiveOperationNotice resourceId={app.id} resourceType="app" />
       <DetailPageHeaderView
         breadcrumbs={crumbs}
         title={app ? app.handle : "Loading..."}

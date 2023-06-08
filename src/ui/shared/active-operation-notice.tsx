@@ -35,11 +35,9 @@ const operationStatusToBannerStatus = (
 export const ActiveOperationNotice = ({
   resourceId,
   resourceType,
-  heartbeat,
 }: {
   resourceId: string;
   resourceType: Extract<ResourceType, "app" | "database">;
-  heartbeat?: Date;
 }) => {
   const operation = useSelector((s: AppState) =>
     selectLatestOpByResourceId(s, { resourceId }),
