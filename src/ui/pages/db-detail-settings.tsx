@@ -72,8 +72,7 @@ export const DatabaseSettingsPage = () => {
     navigate(databaseActivityUrl(id));
   };
 
-  const disabledDeprovisioning =
-    isDeprovisioning || database.handle !== handle;
+  const disabledDeprovisioning = isDeprovisioning || database.handle !== handle;
 
   return (
     <div className="mb-4">

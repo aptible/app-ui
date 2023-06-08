@@ -54,9 +54,11 @@ export const Banner = ({
         className,
       )}
     >
-      {showIcon ? <div className="mr-2">
-        <VariantIcon variant={variant} />
-      </div> : null}
+      {showIcon ? (
+        <div className="mr-2">
+          <VariantIcon variant={variant} />
+        </div>
+      ) : null}
       <div>{children}</div>
     </div>
   );
