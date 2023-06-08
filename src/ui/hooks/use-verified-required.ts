@@ -19,7 +19,6 @@ export const useVerifiedRequired = () => {
     // only allow this for nextgen app
     if (
       !user.isLoading &&
-      !user.isInitialLoading &&
       !verified &&
       pathname !== "/logout" &&
       config.origin === "nextgen"
@@ -29,7 +28,6 @@ export const useVerifiedRequired = () => {
   }, [
     config.origin,
     user.isLoading,
-    user.isInitialLoading,
     pathname,
     verified,
   ]);

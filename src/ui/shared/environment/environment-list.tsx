@@ -137,7 +137,6 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
       <EnvironmentLastDeployedCell environment={environment} />
       <EnvironmentAppsCell environment={environment} />
       <EnvironmentDatabasesCell environment={environment} />
-      <EnvironmentActionCell />
     </tr>
   );
 };
@@ -165,10 +164,10 @@ export function EnvironmentList({ search }: { search: string }) {
               "Last Deployed",
               "Apps",
               "Databases",
-              "Actions",
             ]}
             rightAlignedFinalCol
             leftAlignedFirstCol
+            centerAlignedColIndices={[3,4]}
           />
         }
         tableBody={

@@ -113,7 +113,8 @@ export function ServicesOverview({
   }, [initialServiceIds]);
 
   useEffect(() => {
-    if (!serviceIds.length) {
+    // TODO - verify this is now fixed
+    if (serviceIds.length) {
       const sortedServiceIdsByName = services
         .map((service) => ({ handle: service.handle, id: service.id }))
         .sort((a, b) => (a.handle > b.handle ? 1 : 0))
