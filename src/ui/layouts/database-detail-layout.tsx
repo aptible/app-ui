@@ -25,9 +25,11 @@ import {
   DetailPageHeaderView,
   IconExternalLink,
   TabItem,
+  tokens,
 } from "../shared";
 
 import { DetailPageLayout } from "./detail-page";
+import cn from "classnames";
 
 const databaseDetailBox = ({
   database,
@@ -38,7 +40,7 @@ const databaseDetailBox = ({
 }): React.ReactElement => {
   const metrics = calcMetrics([service]);
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full py-6 -mt-5 -mb-5">
+    <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
       <Box>
         <div className="flex flex-row-reverse">
           <Button className="ml-5" variant="white">

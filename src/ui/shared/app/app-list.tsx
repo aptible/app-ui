@@ -130,9 +130,6 @@ export function AppList({
     }),
   );
 
-  const description =
-    "Apps are how you deploy your code on Aptible. Eventually, your Apps are deployed as one or more Containers.";
-
   const resourceHeaderTitleBar = (): ReactElement | undefined => {
     switch (resourceHeaderType) {
       case "hidden":
@@ -141,7 +138,6 @@ export function AppList({
         return (
           <ResourceHeader
             title="Apps"
-            description={skipDescription ? undefined : description}
             filterBar={
               searchOverride ? undefined : (
                 <InputSearch

@@ -20,13 +20,15 @@ import {
   IconExternalLink,
   IconGitBranch,
   TabItem,
+  tokens,
 } from "../shared";
 
 import { DetailPageLayout } from "./detail-page";
 import { capitalize } from "@app/string-utils";
+import cn from "classnames";
 
 const appDetailBox = ({ app }: { app: DeployApp }): React.ReactElement => (
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full py-6 -mt-5 -mb-5">
+  <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
     <Box>
       <Button className="flex ml-auto" variant="white">
         View Docs

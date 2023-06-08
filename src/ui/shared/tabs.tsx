@@ -20,9 +20,10 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
     {
       "font-normal text-base text-gray-500 hover:text-gray-700": !isActive,
       "border-transparent  hover:border-gray-300": !isActive,
-      "font-semibold": isActive,
+      "font-semibold text-black": isActive,
       "border-orange-400": isActive,
     },
+    "focus:text-black",
     "whitespace-nowrap py-4 px-1 border-b-3",
   );
 
@@ -34,7 +35,10 @@ export const Tab = ({ label, to }: TabViewProps) => (
 
 export const Tabs = ({ tabs }: { tabs: TabItem[] }) => {
   return (
-    <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+    <nav
+      className="-mb-px flex space-x-8 bg-white border-black-200 border-b"
+      aria-label="Tabs"
+    >
       {tabs.map((tab) => (
         <Tab
           key={tab.name}

@@ -114,8 +114,6 @@ export function DatabaseList({
     }),
   );
 
-  const description = "Databases provide data persistency on Aptible.";
-
   const resourceHeaderTitleBar = () => {
     switch (resourceHeaderType) {
       case "hidden":
@@ -124,7 +122,6 @@ export function DatabaseList({
         return (
           <ResourceHeader
             title="Databases"
-            description={skipDescription ? undefined : description}
             filterBar={
               searchOverride ? undefined : (
                 <InputSearch

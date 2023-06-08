@@ -2,8 +2,8 @@ import { useNavigate } from "react-router";
 
 import {
   IconBox,
-  IconDownload,
   IconGlobe,
+  IconHeart,
   IconLayers,
   IconPlusCircle,
 } from "./icons";
@@ -26,7 +26,7 @@ export const ApplicationSidebar = () => {
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
     { name: "Apps", to: appsUrl(), icon: <IconLayers /> },
     { name: "Databases", to: databaseUrl(), icon: <IconBox /> },
-    { name: "Activity", to: activityUrl(), icon: <IconDownload /> },
+    { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
   ];
 
   return (
