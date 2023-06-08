@@ -11,8 +11,6 @@ import {
 import { environmentResourcelUrl } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
 
-import { Button } from "../button";
-import { IconEllipsis } from "../icons";
 import { LoadResources } from "../load-resources";
 import { ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
@@ -83,25 +81,6 @@ const EnvironmentAppsCell = ({ environment }: EnvironmentCellProps) => {
   return (
     <Td className="center items-center justify-center">
       <div className="text-center">{apps.length}</div>
-    </Td>
-  );
-};
-
-const EnvironmentActionCell = () => {
-  return (
-    <Td className="flex gap-2 justify-end">
-      <Button
-        className="mt-2 mr-4"
-        variant="white"
-        size="xs"
-        style={{
-          cursor: "not-allowed",
-          pointerEvents: "none",
-          opacity: 0.5,
-        }}
-      >
-        <IconEllipsis style={{ width: 16, height: 16 }} />
-      </Button>
     </Td>
   );
 };

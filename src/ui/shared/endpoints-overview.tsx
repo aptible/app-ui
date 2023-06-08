@@ -16,7 +16,6 @@ import { InputSearch } from "./input";
 import { EmptyResultView } from "./resource-list-view";
 import { ReactElement, useState } from "react";
 
-import { tokens } from "./tokens";
 import { capitalize } from "@app/string-utils";
 
 const EndpointStatusPill = ({
