@@ -23,11 +23,11 @@ export const defaultCodeScanResponse = (
   return {
     id: 0,
     aptible_yml_present: false,
-    aptible_yml_data: '',
+    aptible_yml_data: "",
     dockerfile_present: false,
-    dockerfile_data: '',
+    dockerfile_data: "",
     procfile_present: false,
-    procfile_data: '',
+    procfile_data: "",
     languages_detected: [],
     _links: {
       app: { href: "" },
