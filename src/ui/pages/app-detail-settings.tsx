@@ -63,10 +63,8 @@ export const AppSettingsPage = () => {
     e.preventDefault();
 
     setIsUpdating(true);
-    setTimeout(() => {
-      dispatch(updateApp({ id, handle }));
-      setIsUpdating(false);
-    }, 500);
+    dispatch(updateApp({ id, handle }));
+    setIsUpdating(false);
   };
 
   const requestDeprovisionApp = (e: SyntheticEvent) => {
