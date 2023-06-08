@@ -4,6 +4,8 @@ import { Outlet, useParams } from "react-router-dom";
 import {
   CONTAINER_PROFILES,
   calcMetrics,
+  cancelDatabaseOpsPoll,
+  pollDatabaseOperations,
   selectDatabaseById,
   selectEnvironmentById,
   selectServiceById,
@@ -27,7 +29,10 @@ import {
   TabItem,
 } from "../shared";
 
+import { usePoller } from "../hooks";
+import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { DetailPageLayout } from "./detail-page";
+import { useMemo, useState } from "react";
 
 const databaseDetailBox = ({
   database,
@@ -121,6 +126,7 @@ const databaseDetailBox = ({
 function DatabasePageHeader() {
   const { id = "" } = useParams();
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const [heartbeat, setHeartbeat] = useState<Date>(new Date());
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
   );
@@ -130,6 +136,14 @@ function DatabasePageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentResourcelUrl(environment.id) },
   ];
+
+  const poller = useMemo(() => pollDatabaseOperations({ id }), [id]);
+  const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);
+  usePoller({
+    action: poller,
+    cancel,
+    heartbeatFunc: setHeartbeat,
+  });
 
   const tabs = [
     { name: "Endpoints", href: databaseEndpointsUrl(id) },
@@ -141,12 +155,19 @@ function DatabasePageHeader() {
   ] as TabItem[];
 
   return (
-    <DetailPageHeaderView
-      breadcrumbs={crumbs}
-      title={database ? database.handle : "Loading..."}
-      detailsBox={databaseDetailBox({ database, service })}
-      tabs={tabs}
-    />
+    <>
+      <ActiveOperationNotice
+        heartbeat={heartbeat}
+        resourceId={id}
+        resourceType="database"
+      />
+      <DetailPageHeaderView
+        breadcrumbs={crumbs}
+        title={database ? database.handle : "Loading..."}
+        detailsBox={databaseDetailBox({ database, service })}
+        tabs={tabs}
+      />
+    </>
   );
 }
 

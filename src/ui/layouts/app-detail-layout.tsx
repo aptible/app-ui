@@ -2,7 +2,12 @@ import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
 import { prettyEnglishDate } from "@app/date";
-import { selectAppById, selectEnvironmentById } from "@app/deploy";
+import {
+  cancelAppOpsPoll,
+  pollAppOperations,
+  selectAppById,
+  selectEnvironmentById,
+} from "@app/deploy";
 import {
   appActivityUrl,
   appEndpointsUrl,
@@ -22,8 +27,11 @@ import {
   TabItem,
 } from "../shared";
 
+import { usePoller } from "../hooks";
+import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { DetailPageLayout } from "./detail-page";
 import { capitalize } from "@app/string-utils";
+import { useMemo, useState } from "react";
 
 const appDetailBox = ({ app }: { app: DeployApp }): React.ReactElement => (
   <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full py-6 -mt-5 -mb-5">
@@ -93,9 +101,19 @@ function AppPageHeader() {
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
+  const [heartbeat, setHeartbeat] = useState<Date>(new Date());
   const crumbs = [
     { name: environment.handle, to: environmentResourcelUrl(environment.id) },
   ];
+
+  const poller = useMemo(() => pollAppOperations({ id }), [id]);
+  const cancel = useMemo(() => cancelAppOpsPoll(), []);
+  usePoller({
+    action: poller,
+    cancel,
+    heartbeatFunc: setHeartbeat,
+  });
+
   // TODO - COME BACK TO THIS
   // Need to kick a user back out of the details page (or lock specific pages if it is deleted)
   // currently the network log will error with a 404 (as the record will be deleted)
@@ -109,6 +127,11 @@ function AppPageHeader() {
 
   return (
     <>
+      <ActiveOperationNotice
+        resourceId={app.id}
+        resourceType="app"
+        heartbeat={heartbeat}
+      />
       <DetailPageHeaderView
         breadcrumbs={crumbs}
         title={app ? app.handle : "Loading..."}

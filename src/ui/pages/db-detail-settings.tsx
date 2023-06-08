@@ -1,6 +1,8 @@
 import {
+  Banner,
   Box,
   Button,
+  ExternalLink,
   FormGroup,
   IconAlertTriangle,
   IconCopy,
@@ -9,20 +11,45 @@ import {
   Input,
   Label,
 } from "../shared";
-import { deprovisionDatabase, selectDatabaseById } from "@app/deploy";
-import { AppState } from "@app/types";
+import {
+  deprovisionDatabase,
+  fetchLogDrains,
+  fetchMetricDrains,
+  selectDatabaseById,
+  selectLogDrainsByEnvId,
+  selectMetricDrainsByEnvId,
+  updateDatabase,
+} from "@app/deploy";
+import { databaseActivityUrl } from "@app/routes";
+import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import { useLoader, useQuery } from "saga-query/react";
 
 export const DatabaseSettingsPage = () => {
   const { id = "" } = useParams();
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
   const [handle, setHandle] = useState<string>("");
   const [isDeprovisioning, setIsDeprovisioning] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const logDrains = useSelector((s: AppState) =>
+    selectLogDrainsByEnvId(s, { envId: database.environmentId }),
+  );
+  const metricDrains = useSelector((s: AppState) =>
+    selectMetricDrainsByEnvId(s, { envId: database.environmentId }),
+  );
+  const updatingDatabaseLoader = useLoader(updateDatabase);
+
+  useQuery(fetchLogDrains({ id: database.environmentId }));
+  useQuery(fetchMetricDrains({ id: database.environmentId }));
+
+  const drains: (DeployLogDrain | DeployMetricDrain)[] =
+    [...logDrains, ...metricDrains] || [];
 
   useEffect(() => {
     setHandle(database.handle);
@@ -30,13 +57,21 @@ export const DatabaseSettingsPage = () => {
 
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    setIsUpdating(true);
+    setTimeout(() => {
+      dispatch(updateDatabase({ id, handle }));
+      setIsUpdating(false);
+    }, 500);
   };
 
   const requestDeprovisionDatabase = (e: SyntheticEvent) => {
     e.preventDefault();
 
+    setIsUpdating(true);
     setIsDeprovisioning(true);
     dispatch(deprovisionDatabase({ dbId: database.id }));
+    navigate(databaseActivityUrl(id));
   };
 
   const disabledDeprovisioning =
@@ -66,6 +101,33 @@ export const DatabaseSettingsPage = () => {
               id="input-name"
             />
           </FormGroup>
+          {handle !== database.handle && drains.length ? (
+            <Banner variant="info" iconOverride={null} className="mt-4">
+              <p>
+                You must <b>restart the database</b> for the new name to appear
+                in the following log and metric drains, view the docs (
+                <ExternalLink
+                  variant="default"
+                  href="https://www.aptible.com/docs/log-drains"
+                >
+                  log drains
+                </ExternalLink>
+                ,{" "}
+                <ExternalLink
+                  variant="default"
+                  href="https://www.aptible.com/docs/metric-drains"
+                >
+                  metric drains
+                </ExternalLink>
+                ) to learn more:
+              </p>
+              <ul className="list-disc ml-4 mt-2">
+                {drains.map((drain) => (
+                  <li>{drain.handle}</li>
+                ))}
+              </ul>
+            </Banner>
+          ) : null}
           <Label className="text-base mt-4 font-semibold text-gray-900 block">
             Database ID
           </Label>
@@ -88,15 +150,14 @@ export const DatabaseSettingsPage = () => {
             </div>
             <hr />
             <div className="flex mt-4">
-              <Button className="w-40 mb-4 flex semibold" onClick={() => {}}>
-                Save Changes
-              </Button>
               <Button
-                className="w-40 ml-4 mb-4 flex"
-                onClick={() => {}}
-                variant="white"
+                className="w-40 mb-4 flex semibold"
+                type="submit"
+                disabled={isUpdating || updatingDatabaseLoader.isLoading}
               >
-                <span className="text-base semibold">Cancel</span>
+                {isUpdating || updatingDatabaseLoader.isLoading
+                  ? "Loading ..."
+                  : "Save Changes"}
               </Button>
             </div>
           </FormGroup>

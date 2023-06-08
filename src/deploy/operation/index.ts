@@ -262,6 +262,22 @@ export const selectLatestOpByEnvId = createSelector(
     initOp,
 );
 
+export const selectLatestOpByDatabaseId = createSelector(
+  selectOperationsByDatabaseId,
+  (ops) =>
+    ops.find((op) =>
+      ["configure", "provision", "deploy", "deprovision"].includes(op.type),
+    ) || initOp,
+);
+
+export const selectLatestOpByAppId = createSelector(
+  selectOperationsByAppId,
+  (ops) =>
+    ops.find((op) =>
+      ["configure", "provision", "deploy", "deprovision"].includes(op.type),
+    ) || initOp,
+);
+
 export const selectLatestProvisionOp = createSelector(
   selectOperationsByResourceId,
   (_: AppState, p: { resourceType: ResourceType }) => p.resourceType,

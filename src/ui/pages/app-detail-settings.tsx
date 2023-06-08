@@ -1,7 +1,9 @@
 import {
+  Banner,
   Box,
   Button,
   ButtonIcon,
+  ExternalLink,
   FormGroup,
   IconAlertTriangle,
   IconCopy,
@@ -13,22 +15,47 @@ import {
   PreCode,
   listToInvertedTextColor,
 } from "../shared";
-import { deprovisionApp, fetchApp, selectAppById } from "@app/deploy";
-import { AppState } from "@app/types";
+import {
+  deprovisionApp,
+  fetchApp,
+  fetchLogDrains,
+  fetchMetricDrains,
+  selectAppById,
+  selectLogDrainsByEnvId,
+  selectMetricDrainsByEnvId,
+  updateApp,
+} from "@app/deploy";
+import { appActivityUrl } from "@app/routes";
+import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { useQuery } from "saga-query/react";
+import { useNavigate, useParams } from "react-router";
+import { useLoader, useQuery } from "saga-query/react";
 
 export const AppSettingsPage = () => {
   const [handle, setHandle] = useState<string>("");
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
   const [isDeprovisioning, setIsDeprovisioning] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const updatingAppLoader = useLoader(updateApp);
 
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const logDrains = useSelector((s: AppState) =>
+    selectLogDrainsByEnvId(s, { envId: app.environmentId }),
+  );
+  const metricDrains = useSelector((s: AppState) =>
+    selectMetricDrainsByEnvId(s, { envId: app.environmentId }),
+  );
+
+  useQuery(fetchLogDrains({ id: app.environmentId }));
+  useQuery(fetchMetricDrains({ id: app.environmentId }));
+
+  const drains: (DeployLogDrain | DeployMetricDrain)[] =
+    [...logDrains, ...metricDrains] || [];
 
   useEffect(() => {
     setHandle(app.handle);
@@ -36,13 +63,21 @@ export const AppSettingsPage = () => {
 
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    setIsUpdating(true);
+    setTimeout(() => {
+      dispatch(updateApp({ id, handle }));
+      setIsUpdating(false);
+    }, 500);
   };
 
   const requestDeprovisionApp = (e: SyntheticEvent) => {
     e.preventDefault();
 
+    setIsUpdating(true);
     setIsDeprovisioning(true);
     dispatch(deprovisionApp({ appId: app.id }));
+    navigate(appActivityUrl(id));
   };
 
   const disabledDeprovisioning =
@@ -92,6 +127,33 @@ export const AppSettingsPage = () => {
               data-testid="input-name"
               id="input-name"
             />
+            {handle !== app.handle && drains.length ? (
+              <Banner variant="info" iconOverride={null} className="mt-4">
+                <p>
+                  You must <b>restart the app</b> for the new name to appear in
+                  the following log and metric drains, view the docs (
+                  <ExternalLink
+                    variant="default"
+                    href="https://www.aptible.com/docs/log-drains"
+                  >
+                    log drains
+                  </ExternalLink>
+                  ,{" "}
+                  <ExternalLink
+                    variant="default"
+                    href="https://www.aptible.com/docs/metric-drains"
+                  >
+                    metric drains
+                  </ExternalLink>
+                  ) to learn more:
+                </p>
+                <ul className="list-disc ml-4 mt-2">
+                  {drains.map((drain) => (
+                    <li>{drain.handle}</li>
+                  ))}
+                </ul>
+              </Banner>
+            ) : null}
           </FormGroup>
           <Label className="text-base mt-4 font-semibold text-gray-900 block">
             App ID
@@ -161,15 +223,14 @@ export const AppSettingsPage = () => {
           <hr />
           <br />
           <div className="flex mt-4">
-            <Button className="w-40 mb-4 flex semibold" onClick={() => {}}>
-              Save Changes
-            </Button>
             <Button
-              className="w-40 ml-4 mb-4 flex"
-              onClick={() => {}}
-              variant="white"
+              className="w-40 mb-4 flex semibold"
+              type="submit"
+              disabled={isUpdating || updatingAppLoader.isLoading}
             >
-              <span className="text-base semibold">Cancel</span>
+              {isUpdating || updatingAppLoader.isLoading
+                ? "Loading ..."
+                : "Save Changes"}
             </Button>
           </div>
         </form>

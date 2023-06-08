@@ -1,7 +1,6 @@
-import { ReactElement, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { ReactElement, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
-import { batchActions } from "saga-query";
 import { useLoader, useQuery } from "saga-query/react";
 
 import { prettyDateRelative } from "@app/date";
@@ -28,11 +27,12 @@ import {
 } from "@app/deploy";
 import { environmentDetailUrl, operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import type { Action, AppState } from "@app/types";
+import type { AppState } from "@app/types";
 
+import { usePoller } from "../hooks/use-poller";
+import { IconRefresh } from "./icons";
 import { InputSearch } from "./input";
 import { LoadResources } from "./load-resources";
-import { Loading } from "./loading";
 import { OpStatus } from "./op-status";
 import { ResourceHeader, ResourceListView } from "./resource-list-view";
 import { TableHead, Td } from "./table";
@@ -142,7 +142,14 @@ function ActivityTable({
               search={search}
               onChange={onChange}
             />
-            {isLoading ? <Loading text="Refreshing ..." /> : null}
+            {isLoading ? (
+              <div className="animate-spin-slow 5s">
+                <IconRefresh
+                  color="#111920"
+                  style={{ width: 14, height: 14 }}
+                />
+              </div>
+            ) : null}
           </div>
         }
       />
@@ -175,16 +182,6 @@ function ActivityTable({
     />
   );
 }
-
-const usePoller = ({ action, cancel }: { action: Action; cancel: Action }) => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(batchActions([cancel, action]));
-    return () => {
-      dispatch(cancel);
-    };
-  }, [action, cancel]);
-};
 
 export function ActivityByOrg({ orgId }: { orgId: string }) {
   const [params, setParams] = useSearchParams();

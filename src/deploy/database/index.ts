@@ -497,3 +497,20 @@ export const deprovisionDatabase = thunks.create<{
   yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
   yield next();
 });
+
+interface UpdateDatabase {
+  id: string;
+  handle: string;
+}
+
+export const updateDatabase = api.put<UpdateDatabase>(
+  "/databases/:id",
+  function* (ctx, next) {
+    const { handle } = ctx.payload;
+    const body = {
+      handle,
+    };
+    ctx.request = ctx.req({ body: JSON.stringify(body) });
+    yield next();
+  },
+);

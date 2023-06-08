@@ -362,3 +362,17 @@ export const deprovisionApp = thunks.create<{
   yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
   yield next();
 });
+
+interface UpdateApp {
+  id: string;
+  handle: string;
+}
+
+export const updateApp = api.put<UpdateApp>("/apps/:id", function* (ctx, next) {
+  const { handle } = ctx.payload;
+  const body = {
+    handle,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield next();
+});
