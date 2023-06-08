@@ -1133,7 +1133,7 @@ const CodeScanInfo = ({
             There will need to be a{" "}
             <pre className="inline">requirements.txt</pre> and/or{" "}
             <pre className="inline">pyproject.toml</pre> in the root directory
-            of your app We suggest ensuring the following:
+            of your app. We suggest ensuring the following:
           </p>
           <ul className="list-disc ml-4 my-2">
             <li>
