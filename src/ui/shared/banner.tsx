@@ -28,10 +28,12 @@ export const Banner = ({
   children,
   className = "",
   variant = "info",
+  iconOverride,
 }: {
   children: React.ReactNode;
   className?: string;
   variant?: StatusVariant;
+  iconOverride?: React.ReactNode;
 }) => {
   const classes = variantToClassName(variant);
 
@@ -45,7 +47,11 @@ export const Banner = ({
       )}
     >
       <div className="mr-2">
-        <VariantIcon variant={variant} />
+        {iconOverride !== undefined ? (
+          iconOverride
+        ) : (
+          <VariantIcon variant={variant} />
+        )}
       </div>
       <div>{children}</div>
     </div>
