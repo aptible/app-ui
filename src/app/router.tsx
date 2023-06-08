@@ -219,12 +219,12 @@ export const ftuxRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.VERIFY_EMAIL_REQUEST_PATH,
+    path: routes.VERIFY_EMAIL_PATH,
     element: <VerifyEmailPage />,
   },
 
   {
-    path: routes.VERIFY_EMAIL_PATH,
+    path: routes.VERIFY_EMAIL_REQUEST_PATH,
     element: <VerifyEmailPage />,
   },
 

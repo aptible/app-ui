@@ -9,6 +9,7 @@ import { setRedirectPath } from "@app/redirect-path";
 import { loginUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 
+import { useVerifiedRequired } from "../hooks";
 import { Loading } from "../shared";
 
 export const AuthRequired = () => {
@@ -19,6 +20,7 @@ export const AuthRequired = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const authed = loader.isLoading || isAuthenticated;
+  useVerifiedRequired();
 
   useEffect(() => {
     if (!authed) {
@@ -32,7 +34,12 @@ export const AuthRequired = () => {
     }
 
     // only redirect in production
-    if (config.isProduction && !authed && config.legacyDashboardUrl) {
+    if (
+      config.isProduction &&
+      config.origin === "app" &&
+      !authed &&
+      config.legacyDashboardUrl
+    ) {
       // WARNING - this should be temporary
       // if environment featureflag for dashboard.aptible.com, we will redirect to dashboard for login
       window.location.href = config.legacyDashboardUrl;

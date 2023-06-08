@@ -27,7 +27,7 @@ interface ResendVerification {
 }
 
 export const resendVerification = authApi.post<ResendVerification>(
-  "/users/:userId/email_verification_challenge",
+  "/users/:userId/email_verification_challenges",
   function* onResendVerification(
     ctx: AuthApiCtx<any, ResendVerification>,
     next,

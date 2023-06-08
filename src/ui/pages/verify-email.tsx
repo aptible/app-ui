@@ -3,24 +3,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useLoader, useLoaderSuccess } from "saga-query/react";
 
-import { Box, Loading, ResendVerificationEmail } from "../shared";
-import { verifyEmail } from "@app/auth";
+import { Box, Button, Loading, ResendVerificationEmail } from "../shared";
+import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
-import { homeUrl } from "@app/routes";
+import { homeUrl, loginUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
 import { HeroBgLayout } from "../layouts";
+import { selectCurrentUser } from "@app/users";
 
 export const VerifyEmailPage = () => {
+  const loader = useLoader(fetchCurrentToken);
   const dispatch = useDispatch();
-  const user = useSelector(selectJWTToken);
+  const { id: userId, email } = useSelector(selectJWTToken);
+  const { verified } = useSelector(selectCurrentUser);
   const params = useParams();
   const navigate = useNavigate();
   const verifyEmailLoader = useLoader(verifyEmail);
   const redirectPath = useSelector(selectRedirectPath);
 
+  const logoutSubmit = (event: React.SyntheticEvent) => {
+    event.preventDefault();
+    dispatch(logout());
+    navigate(loginUrl());
+  };
+
   useEffect(() => {
-    if (params.verificationCode && params.verificationId && user.id) {
+    if (params.verificationCode && params.verificationId && userId) {
       dispatch(
         verifyEmail({
           challengeId: params.verificationId,
@@ -28,7 +37,19 @@ export const VerifyEmailPage = () => {
         }),
       );
     }
-  }, [params.verificationId, params.verificationCode, user.id]);
+  }, [params.verificationId, params.verificationCode, userId, verified]);
+
+  useEffect(() => {
+    if (loader.isLoading) {
+      return;
+    }
+
+    if (verified) {
+      // if already verified dump them back at root, no need
+      // to display this page at all
+      navigate(homeUrl());
+    }
+  }, [loader.isLoading, navigate, verified]);
 
   useLoaderSuccess(verifyEmailLoader, () => {
     navigate(redirectPath || homeUrl());
@@ -60,14 +81,21 @@ export const VerifyEmailPage = () => {
             </>
           ) : (
             <p className="text-h3 text-gray-500 leading-normal">
-              We've sent a verification link to {user.email}. Click the link in
-              the email to confirm your account.
+              We've sent a verification link to {email}. Click the link in the
+              email to confirm your account.
             </p>
           )}
         </div>
       </div>
       <Box>
         <ResendVerificationEmail />
+        <Button
+          onClick={logoutSubmit}
+          className="font-semibold w-full mt-4"
+          variant="white"
+        >
+          Log Out
+        </Button>
       </Box>
     </HeroBgLayout>
   );

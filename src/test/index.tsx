@@ -59,7 +59,10 @@ export const setupAppIntegrationTest = (
   const router = createMemoryRouter(routes, { initialEntries: initEntries });
   const { store } = setupTestStore({
     ...initState,
-    env: testEnv,
+    env: {
+      ...testEnv,
+      ...initState.env,
+    },
   });
   store.dispatch(bootup());
   store.dispatch({ type: REHYDRATE });
@@ -88,7 +91,10 @@ export const setupIntegrationTest = (
 ) => {
   const { store } = setupTestStore({
     ...initState,
-    env: testEnv,
+    env: {
+      ...testEnv,
+      ...initState.env,
+    },
   });
   store.dispatch(bootup());
   store.dispatch({ type: REHYDRATE });
