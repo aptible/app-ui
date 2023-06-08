@@ -35,11 +35,13 @@ const environmentDetailBox = ({
 }): React.ReactElement => (
   <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full py-6 -mt-5 -mb-5">
     <Box>
-      <Button className="flex ml-auto" variant="white">
-        View Docs
-        <IconExternalLink className="inline ml-3 h-5 mt-0" />
-      </Button>
-      <h1 className="text-md text-gray-500 -mt-10">App Details</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg text-gray-500">Environment Details</h1>
+        <Button className="flex ml-auto" variant="white" size="sm">
+          View Docs
+          <IconExternalLink className="inline ml-3 h-5 mt-0" />
+        </Button>
+      </div>
       <div className="flex w-1/1">
         <div className="flex-col w-1/4">
           <div className="mt-4">

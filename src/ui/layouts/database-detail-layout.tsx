@@ -46,16 +46,18 @@ const databaseDetailBox = ({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full py-6 -mt-5 -mb-5">
       <Box>
-        <div className="flex flex-row-reverse">
-          <Button className="ml-5" variant="white">
-            View Docs
-            <IconExternalLink className="inline ml-3 h-5 mt-0" />
-          </Button>
-          <Button className="ml-5" variant="white">
-            View Credentials
-          </Button>
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg text-gray-500">Database Details</h1>
+          <div className="flex">
+            <Button className="ml-5" variant="white" size="sm">
+              View Docs
+              <IconExternalLink className="inline ml-3 h-5 mt-0" />
+            </Button>
+            <Button className="ml-5" variant="white" size="sm">
+              View Credentials
+            </Button>
+          </div>
         </div>
-        <h1 className="text-md text-gray-500 -mt-5">Database Details</h1>
         <div className="flex w-1/1">
           <div className="flex-col w-1/3">
             <div className="mt-4">

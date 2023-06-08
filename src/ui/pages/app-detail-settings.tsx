@@ -82,7 +82,7 @@ export const AppSettingsPage = () => {
   return (
     <div className="mb-4">
       <Box>
-        <Button className="relative float-right" variant="white">
+        <Button className="relative float-right" variant="white" size="sm">
           View Docs
           <IconExternalLink className="inline ml-3 h-5 mt-0" />
         </Button>
