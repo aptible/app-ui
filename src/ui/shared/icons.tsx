@@ -306,12 +306,21 @@ export const IconThumbsUp = (props: Props) => {
   );
 };
 
+
 export const IconRefresh = (props: Props) => {
   return (
     <IconStrokeBase {...props} title="Refresh Icon">
       <polyline points="23 4 23 10 17 10" />
       <polyline points="1 20 1 14 7 14" />
       <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+    </IconStrokeBase>
+  );
+};
+
+export const IconHeart = (props: Props) => {
+  return (
+    <IconStrokeBase {...props} title="Activity Icon">
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
     </IconStrokeBase>
   );
 };

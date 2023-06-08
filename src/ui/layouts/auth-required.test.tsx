@@ -16,6 +16,14 @@ const LoginMock = () => {
 const VerifyMock = () => {
   return <div>Simulated verify</div>;
 };
+const mockUnverifiedUser = {
+  users: [
+    {
+      ...testUser,
+      verified: false,
+    },
+  ],
+};
 
 describe("AuthRequired", () => {
   it("should allow child to render without a redirect when current token active", async () => {
@@ -81,18 +89,14 @@ describe("AuthRequired", () => {
         (req, res, ctx) => {
           return res(
             ctx.json({
-              _embedded: {
-                users: [
-                  {
-                    ...testUser,
-                    verified: false,
-                  },
-                ],
-              },
+              _embedded: mockUnverifiedUser,
             }),
           );
         },
       ),
+      rest.get(`${testEnv.authUrl}/users/:userId`, (req, res, ctx) => {
+        return res(ctx.json(mockUnverifiedUser));
+      }),
     );
     render(
       <TestProvider>
@@ -100,7 +104,6 @@ describe("AuthRequired", () => {
         <h1>Test element</h1>
       </TestProvider>,
     );
-    await waitForElementToBeRemoved(() => screen.queryByText("loading ..."));
     await screen.findByText("Simulated verify");
     expect(screen.queryByText("Test element")).not.toBeInTheDocument();
   });

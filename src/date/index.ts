@@ -63,7 +63,10 @@ export const timeAgo = (dateStr = ""): string => {
 export const timeBetween = ({
   startDate,
   endDate,
-}: { startDate: string; endDate: string }): string => {
+}: {
+  startDate: string;
+  endDate: string;
+}): string => {
   return formatDistanceStrict(new Date(startDate), new Date(endDate), {
     addSuffix: true,
     locale: {
@@ -91,4 +94,10 @@ export const prettyDate = (dateStr = "") => {
 
 export const prettyDateRelative = (dateStr = "") => {
   return formatRelative(new Date(dateStr), new Date());
+};
+
+export const dateFromToday = (days: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d;
 };

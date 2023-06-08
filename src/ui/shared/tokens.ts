@@ -1,6 +1,6 @@
 export const tokens = {
   layout: {
-    "main width": "max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full",
+    "main width": "mx-auto px-4 sm:px-6 md:px-8 w-full",
   },
 
   type: {

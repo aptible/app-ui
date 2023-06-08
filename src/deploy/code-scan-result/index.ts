@@ -4,8 +4,12 @@ import { LinkResponse } from "@app/types";
 export interface DeployCodeScanResponse {
   id: number;
   aptible_yml_present: boolean;
+  aptible_yml_data?: string;
   dockerfile_present: boolean;
+  dockerfile_data?: string;
   procfile_present: boolean;
+  procfile_data?: string;
+  languages_detected: string[];
   _links: {
     app: LinkResponse;
     operation: LinkResponse;
@@ -19,8 +23,12 @@ export const defaultCodeScanResponse = (
   return {
     id: 0,
     aptible_yml_present: false,
+    aptible_yml_data: "",
     dockerfile_present: false,
+    dockerfile_data: "",
     procfile_present: false,
+    procfile_data: "",
+    languages_detected: [],
     _links: {
       app: { href: "" },
       operation: { href: "" },

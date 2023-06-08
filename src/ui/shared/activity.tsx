@@ -124,17 +124,18 @@ function ActivityTable({
   search,
   isLoading,
   onChange,
+  hideActivityTitle = false,
 }: {
   ops: DeployActivityRow[];
   search: string;
   isLoading: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  hideActivityTitle?: boolean;
 }) {
   const resourceHeaderTitleBar = (): ReactElement | undefined => {
     return (
       <ResourceHeader
-        title="Activity"
-        description="Realtime activity dashboard.  This view does not perform a historical search and will only display the most recent Operations."
+        title={hideActivityTitle ? "" : "Activity"}
         filterBar={
           <div className="flex items-center gap-3">
             <InputSearch
@@ -251,6 +252,7 @@ export function ActivityByEnv({ envId }: { envId: string }) {
         onChange={onChange}
         isLoading={loader.isLoading}
         search={search}
+        hideActivityTitle
       />
     </LoadResources>
   );
@@ -288,6 +290,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
         onChange={onChange}
         isLoading={loader.isLoading}
         search={search}
+        hideActivityTitle
       />
     </LoadResources>
   );
@@ -325,6 +328,7 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
         onChange={onChange}
         isLoading={loader.isLoading}
         search={search}
+        hideActivityTitle
       />
     </LoadResources>
   );

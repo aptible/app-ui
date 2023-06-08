@@ -9,6 +9,7 @@ import {
   DetailPageHeaderView,
   IconExternalLink,
   TabItem,
+  tokens,
 } from "../shared";
 
 import { DetailPageLayout } from "./detail-page";
@@ -23,6 +24,7 @@ import {
   DeployEnvironment,
   DeployStack,
 } from "@app/types";
+import cn from "classnames";
 
 const environmentDetailBox = ({
   environment,
@@ -33,7 +35,7 @@ const environmentDetailBox = ({
   stack: DeployStack;
   endpoints: DeployEndpoint[];
 }): React.ReactElement => (
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full py-6 -mt-5 -mb-5">
+  <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
     <Box>
       <div className="flex items-center justify-between">
         <h1 className="text-lg text-gray-500">Environment Details</h1>
