@@ -167,7 +167,7 @@ export function EnvironmentList({ search }: { search: string }) {
             ]}
             rightAlignedFinalCol
             leftAlignedFirstCol
-            centerAlignedColIndices={[3,4]}
+            centerAlignedColIndices={[3, 4]}
           />
         }
         tableBody={

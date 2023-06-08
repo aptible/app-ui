@@ -19,7 +19,7 @@ export const DetailPageHeaderView = ({
   tabs,
 }: HeaderProps) => {
   return (
-    <div className={cn("bg-white", "border-black-200", "border-b")}>
+    <div>
       <div className={cn(tokens.layout["main width"], "pt-8")}>
         {breadcrumbs && (
           <Breadcrumbs crumbs={[...breadcrumbs, { to: null, name: title }]} />

@@ -1,11 +1,7 @@
 import { ListingPageLayout } from "../layouts";
 import { useState } from "react";
 
-import {
-  EnvironmentList,
-  InputSearch,
-  ResourceHeader,
-} from "../shared";
+import { EnvironmentList, InputSearch, ResourceHeader } from "../shared";
 
 export const EnvironmentsPage = () => {
   const [search, setSearch] = useState("");

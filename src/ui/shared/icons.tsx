@@ -309,7 +309,7 @@ export const IconThumbsUp = (props: Props) => {
 export const IconHeart = (props: Props) => {
   return (
     <IconStrokeBase {...props} title="Activity Icon">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
     </IconStrokeBase>
-  )
-}
+  );
+};

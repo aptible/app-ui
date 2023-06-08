@@ -25,10 +25,5 @@ export const useVerifiedRequired = () => {
     ) {
       navigate(verifyEmailRequestUrl());
     }
-  }, [
-    config.origin,
-    user.isLoading,
-    pathname,
-    verified,
-  ]);
+  }, [config.origin, user.isLoading, pathname, verified]);
 };
