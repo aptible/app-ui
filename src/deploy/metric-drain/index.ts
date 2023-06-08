@@ -73,7 +73,11 @@ export const selectMetricDrainsByEnvId = createSelector(
   (metricDrains, envId) => {
     return metricDrains
       .filter((metricDrain) => metricDrain.environmentId === envId)
-      .sort((a, b) => a.id.localeCompare(b.id));
+      .sort((a, b) => {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
   },
 );
 export const hasDeployMetricDrain = (a: DeployMetricDrain) => a.id !== "";

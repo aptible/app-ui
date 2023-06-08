@@ -75,7 +75,11 @@ export const selectLogDrainsByEnvId = createSelector(
   (logDrains, envId) => {
     return logDrains
       .filter((logDrain) => logDrain.environmentId === envId)
-      .sort((a, b) => a.id.localeCompare(b.id));
+      .sort((a, b) => {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
   },
 );
 export const hasDeployLogDrain = (a: DeployLogDrain) => a.id !== "";
