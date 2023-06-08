@@ -20,7 +20,6 @@ export const EnvironmentsPage = () => {
       <div>
         <ResourceHeader
           title="Environments"
-          description="Environments are containers for your apps and databases."
           actions={[
             <div className="pl-2">
               <ButtonIcon

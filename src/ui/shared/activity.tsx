@@ -134,7 +134,6 @@ function ActivityTable({
     return (
       <ResourceHeader
         title="Activity"
-        description="Realtime activity dashboard.  This view does not perform a historical search and will only display the most recent Operations."
         filterBar={
           <div className="flex items-center gap-3">
             <InputSearch
