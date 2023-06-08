@@ -21,7 +21,7 @@ const serviceListRow = ({
   service,
 }: {
   service?: DeployService;
-}): ReactElement[] => {
+}): React.ReactNode[] => {
   if (!service) return [];
   const metrics = calcServiceMetrics(service);
 
@@ -59,7 +59,7 @@ const serviceListRow = ({
         </div>
       </Td>
 
-      <Td className="flex gap-2 justify-end w-40 mt-2 mr-2">
+      <Td className="flex justify-end mt-2 mr-2">
         <ButtonIcon
           icon={
             <IconEllipsis className="-mr-2" style={{ width: 16, height: 16 }} />
@@ -70,18 +70,20 @@ const serviceListRow = ({
         />
       </Td>
     </tr>,
-    <tr key={`${service.id}.${service.command}`} className="border-none">
-      <td colSpan={7} className="p-4">
-        <span className="text-sm text-gray-500">Command</span>
-        <div>
-          <PreCode
-            allowCopy
-            segments={listToTextColor(service.command.split(" "))}
-            className="bg-gray-100"
-          />
-        </div>
-      </td>
-    </tr>,
+    service.command ? (
+      <tr key={`${service.id}.${service.command}`} className="border-none">
+        <td colSpan={7} className="p-4">
+          <span className="text-sm text-gray-500">Command</span>
+          <div>
+            <PreCode
+              allowCopy
+              segments={listToTextColor(service.command.split(" "))}
+              className="bg-gray-100"
+            />
+          </div>
+        </td>
+      </tr>
+    ) : null,
   ];
 };
 
