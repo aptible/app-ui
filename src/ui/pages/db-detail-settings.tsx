@@ -72,7 +72,8 @@ export const DatabaseSettingsPage = () => {
     navigate(databaseActivityUrl(id));
   };
 
-  const disabledDeprovisioning = isDeprovisioning || database.handle !== handle;
+  const disabledDeprovisioning =
+    isDeprovisioning || database.handle !== deleteConfirm;
 
   return (
     <div className="mb-4">
@@ -174,7 +175,7 @@ export const DatabaseSettingsPage = () => {
           <p>
             This will permanently deprovision <strong>{database.handle}</strong>{" "}
             database. This action cannot be undone. If you want to proceed, type
-            Delete below to continue.
+            the <strong>{database.handle}</strong> below to continue.
           </p>
           <div className="flex mt-4 wd-60">
             <Input
@@ -192,7 +193,6 @@ export const DatabaseSettingsPage = () => {
               style={{
                 backgroundColor: "#AD1A1A",
                 color: "#FFF",
-                opacity: disabledDeprovisioning ? 0.5 : 1,
               }}
               disabled={disabledDeprovisioning}
               className="h-15 w-70 mb-0 ml-4 flex"

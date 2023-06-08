@@ -77,7 +77,7 @@ export const AppSettingsPage = () => {
   };
 
   const disabledDeprovisioning =
-    isDeprovisioning || "delete" !== deleteConfirm.toLocaleLowerCase();
+    isDeprovisioning || app.handle !== deleteConfirm;
 
   return (
     <div className="mb-4">
@@ -185,8 +185,8 @@ export const AppSettingsPage = () => {
         <div className="mt-2">
           <p>
             This will permanently deprovision <strong>{app.handle}</strong> app.
-            This action cannot be undone. If you want to proceed, type Delete
-            below to continue.
+            This action cannot be undone. If you want to proceed, type the{" "}
+            <strong>{app.handle}</strong> below to continue.
           </p>
           <div className="flex mt-4 wd-60">
             <Input
@@ -204,7 +204,6 @@ export const AppSettingsPage = () => {
               style={{
                 backgroundColor: "#AD1A1A",
                 color: "#FFF",
-                opacity: disabledDeprovisioning ? 0.5 : 1,
               }}
               disabled={disabledDeprovisioning}
               className="h-15 w-60 mb-0 ml-4 flex"
