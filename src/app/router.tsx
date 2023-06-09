@@ -589,13 +589,7 @@ export const appRoutes: RouteObject[] = [
 
   {
     path: routes.SIGNUP_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SignupPage />,
-      },
-    ],
+    element: <SignupPage />,
   },
 
   {

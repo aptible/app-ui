@@ -33,6 +33,7 @@ import {
   verifyEmailRequestUrl,
 } from "@app/routes";
 import { validEmail } from "@app/string-utils";
+import { selectIsUserAuthenticated } from "@app/token";
 
 const createQueryStringValue =
   (queryString: string) => (key: string): string => {
@@ -55,6 +56,7 @@ export const SignupPage = () => {
   const navigate = useNavigate();
   const getQueryStringValue = createQueryStringValue(location.search);
   const redirectPath = useSelector(selectRedirectPath);
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
   const { isLoading } = fetchSignupLoader;
 
   const [name, setName] = useState("");
@@ -68,6 +70,16 @@ export const SignupPage = () => {
   const invitation = useSelector(selectPendingInvitation);
 
   const [challengeToken] = useState<string>(getQueryStringValue("token"));
+
+  useEffect(() => {
+    if (fetchSignupLoader.isLoading) {
+      return;
+    }
+
+    if (isAuthenticated) {
+      navigate(homeUrl());
+    }
+  }, [fetchSignupLoader.isLoading, isAuthenticated]);
 
   useEffect(() => {
     if (!invitation && invitationRequest.invitationId) {

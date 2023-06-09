@@ -6,7 +6,7 @@ import { useCurrentUser } from "./use-current-user";
 import { verifyEmailRequestUrl } from "@app/routes";
 import { selectCurrentUser } from "@app/users";
 
-const ignoreList = ["logout"];
+const ignoreList = ["/logout"];
 
 export const useVerifiedRequired = () => {
   const user = useCurrentUser();
