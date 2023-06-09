@@ -477,9 +477,9 @@ export const opEntities = {
 export const createReadableStatus = (status: OperationStatus): string => {
   switch (status) {
     case "queued":
-      return "Queued";
+      return "QUEUED";
     case "running":
-      return "Pending";
+      return "PENDING";
     case "succeeded":
       return "DONE";
     case "failed":
