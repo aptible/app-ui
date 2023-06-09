@@ -63,6 +63,7 @@ export const testEmail = "test@aptible.com";
 export const testUser = defaultUserResponse({
   id: testUserId,
   email: testEmail,
+  verified: true,
 });
 export const testSshKey = defaultSshKeyResponse({ id: `${createId()}` });
 

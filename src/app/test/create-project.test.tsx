@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { server, testApp, testEnv } from "@app/mocks";
-import { setupAppIntegrationTest } from "@app/test";
+import { setupAppIntegrationTest, waitForToken } from "@app/test";
 import { rest } from "msw";
 
 describe("Create project flow", () => {
@@ -13,10 +13,12 @@ describe("Create project flow", () => {
           return res(ctx.json(testApp));
         }),
       );
-      const { App } = setupAppIntegrationTest({
+      const { App, store } = setupAppIntegrationTest({
         initEntries: ["/create"],
       });
       render(<App />);
+
+      await waitForToken(store);
 
       // deploy code landing page
       const el = screen.getByRole("link", {
