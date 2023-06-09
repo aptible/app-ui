@@ -6,6 +6,8 @@ import { useCurrentUser } from "./use-current-user";
 import { verifyEmailRequestUrl } from "@app/routes";
 import { selectCurrentUser } from "@app/users";
 
+// ignoreList - in some cases you will NOT want to force verification urls
+// allow users to log out if they are presently logged in to come back to this page (ex: can't get into their email)
 const ignoreList = ["/logout"];
 
 export const useVerifiedRequired = () => {
@@ -18,7 +20,6 @@ export const useVerifiedRequired = () => {
     if (ignoreList.includes(pathname)) return;
     if (user.lastSuccess === 0) return;
     if (user.isLoading) return;
-    // allow users to log out if they are presently logged in to come back to this page
     if (!verified) {
       navigate(verifyEmailRequestUrl());
     }
