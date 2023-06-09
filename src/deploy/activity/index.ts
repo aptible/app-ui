@@ -35,7 +35,7 @@ const selectActivityForTable = createSelector(
       })
       .sort(
         (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       ),
 );
 

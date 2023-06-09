@@ -28,7 +28,7 @@ const op1 = defaultDeployOperation({
   resourceType: "app",
   type: "deploy",
   environmentId: env1.id,
-  updatedAt: dateFromToday(-2).toISOString(),
+  createdAt: dateFromToday(-2).toISOString(),
 });
 
 const db1 = defaultDeployDatabase({
@@ -42,7 +42,7 @@ const op2 = defaultDeployOperation({
   resourceType: "database",
   type: "provision",
   environmentId: env2.id,
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date().toISOString(),
 });
 
 const vhost1 = defaultDeployEndpoint({
@@ -55,7 +55,7 @@ const op3 = defaultDeployOperation({
   resourceType: "vhost",
   type: "provision",
   environmentId: env2.id,
-  updatedAt: dateFromToday(-1).toISOString(),
+  createdAt: dateFromToday(-1).toISOString(),
 });
 const state: DeepPartial<AppState> = {
   deploy: {
