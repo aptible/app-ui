@@ -71,7 +71,6 @@ export const FreeFormSurvey = () => {
           <Button
             className="w-full pointer-events-none text-bold text-gray-500"
             variant="white"
-            disabled
           >
             Deploy with Docker Push
           </Button>

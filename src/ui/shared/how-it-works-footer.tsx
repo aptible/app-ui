@@ -68,7 +68,7 @@ export const CreateProjectFooter = () => {
               Deploy a starter template, an example App, or your own custom code
             </li>
             <li>
-              Push your code to Aptible using <pre>git push</pre>
+              Push your code to Aptible using <span className="bg-gray-200 font-mono">git push</span>
             </li>
             <li>
               Configure your App (e.g. Databases, Environment Variables,
