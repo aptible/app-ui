@@ -6,6 +6,7 @@ import {
   selectAppsByEnvId,
   selectDatabasesByEnvId,
   selectEnvironmentsForTableSearch,
+  selectStackById,
 } from "@app/deploy";
 import { environmentResourcelUrl } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
@@ -13,7 +14,6 @@ import type { AppState, DeployEnvironment } from "@app/types";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
-import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 import { prettyEnglishDate, timeAgo } from "@app/date";
@@ -88,11 +88,29 @@ const EnvironmentLastDeployedCell = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
+const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
+  const stack = useSelector((s: AppState) =>
+    selectStackById(s, { id: environment.stackId }),
+  );
+
+  return (
+    <Td className="2xl:flex-cell-md sm:flex-cell-sm">
+      <div>
+        <div>{stack.name}</div>
+        <div className={tokens.type["normal lighter"]}>
+          {stack.organizationId ? "Dedicated Stack " : "Shared Stack "}(
+          {stack.region})
+        </div>
+      </div>
+    </Td>
+  );
+};
+
 const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   return (
     <tr>
       <EnvironmentPrimaryCell environment={environment} />
-      <EnvStackCell environmentId={environment.id} />
+      <EnvironmentStackCell environment={environment} />
       <EnvironmentLastDeployedCell environment={environment} />
       <EnvironmentAppsCell environment={environment} />
       <EnvironmentDatabasesCell environment={environment} />

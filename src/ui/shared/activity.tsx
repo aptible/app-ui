@@ -23,7 +23,7 @@ import {
   selectAppById,
   selectDatabaseById,
 } from "@app/deploy";
-import { environmentDetailUrl, operationDetailUrl } from "@app/routes";
+import { operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState } from "@app/types";
 
@@ -33,6 +33,7 @@ import { InputSearch } from "./input";
 import { LoadResources } from "./load-resources";
 import { OpStatus } from "./op-status";
 import { ResourceHeader, ResourceListView } from "./resource-list-view";
+import { EnvStackCell } from "./resource-table";
 import { TableHead, Td } from "./table";
 
 interface OpCellProps {
@@ -43,14 +44,6 @@ const OpPrimaryCell = ({ op }: OpCellProps) => {
   return (
     <Td className="flex-1">
       <Link to={operationDetailUrl(op.id)}>{capitalize(op.type)}</Link>
-    </Td>
-  );
-};
-
-const OpEnvCell = ({ op }: OpCellProps) => {
-  return (
-    <Td className="flex-1">
-      <Link to={environmentDetailUrl(op.environmentId)}>{op.envHandle}</Link>
     </Td>
   );
 };
@@ -105,7 +98,7 @@ const OpListRow = ({ op }: OpCellProps) => {
     <tr>
       <OpPrimaryCell op={op} />
       <OpStatusCell op={op} />
-      <OpEnvCell op={op} />
+      <EnvStackCell environmentId={op.environmentId} />
       <OpResourceTypeCell op={op} />
       <OpResourceHandleCell op={op} />
       <OpUserCell op={op} />
