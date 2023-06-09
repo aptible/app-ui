@@ -34,7 +34,6 @@ import { LoadResources } from "./load-resources";
 import { OpStatus } from "./op-status";
 import { ResourceHeader, ResourceListView } from "./resource-list-view";
 import { TableHead, Td } from "./table";
-import { tokens } from "./tokens";
 
 interface OpCellProps {
   op: DeployActivityRow;
@@ -43,9 +42,7 @@ interface OpCellProps {
 const OpPrimaryCell = ({ op }: OpCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={operationDetailUrl(op.id)}>
-        <div className={tokens.type["medium label"]}>{capitalize(op.type)}</div>
-      </Link>
+      <Link to={operationDetailUrl(op.id)}>{capitalize(op.type)}</Link>
     </Td>
   );
 };
