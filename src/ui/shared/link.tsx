@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 const active = "bg-off-white font-semibold text-black";
 const inactive = "hover:bg-black-50 hover:text-black text-black-500";
-const navButton = "block p-2 rounded-md";
+const navButton = "block p-2 rounded-md hover:no-underline";
 
 export const navLink = ({ isActive }: { isActive: boolean }) =>
   cn(navButton, { [inactive]: !isActive, [active]: isActive });

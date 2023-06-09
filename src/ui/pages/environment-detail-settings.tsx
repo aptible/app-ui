@@ -3,17 +3,15 @@ import {
   Button,
   FormGroup,
   IconAlertTriangle,
-  IconCopy,
   IconExternalLink,
   IconTrash,
   Input,
 } from "../shared";
-import { fetchApp, selectEnvironmentById } from "@app/deploy";
+import { selectEnvironmentById } from "@app/deploy";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { useQuery } from "saga-query/react";
 
 export const EnvironmentSettingsPage = () => {
   const [handle, setHandle] = useState<string>("");
@@ -21,7 +19,6 @@ export const EnvironmentSettingsPage = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const { id = "" } = useParams();
-  useQuery(fetchApp({ id }));
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id }),
   );
@@ -53,11 +50,6 @@ export const EnvironmentSettingsPage = () => {
         <h1 className="text-lg text-gray-500">Environment Settings</h1>
         <br />
         <form onSubmit={onSubmitForm}>
-          <FormGroup label="Mode" htmlFor="input-mode">
-            <p className="mb-4">
-              {environment.type === "development" ? "Debug" : "Production"}
-            </p>
-          </FormGroup>
           <FormGroup label="Environment Name" htmlFor="input-name">
             <Input
               className="mb-4"
@@ -70,29 +62,7 @@ export const EnvironmentSettingsPage = () => {
               id="input-name"
             />
           </FormGroup>
-          <FormGroup label="Environment ID" htmlFor="input-mode">
-            <p className="mb-4">
-              {environment.id}{" "}
-              <IconCopy className="inline h-4" color="#888C90" />
-            </p>
-          </FormGroup>
-          <FormGroup label="Thumbnail Image" htmlFor="thumbnail">
-            <div className="flex justify-between items-center">
-              <select
-                value={"test"}
-                className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                placeholder="select"
-                disabled
-              >
-                <option value="test" disabled>
-                  Some Icon
-                </option>
-              </select>
-            </div>
-          </FormGroup>
-          <br />
           <hr />
-          <br />
           <div className="flex mt-4">
             <Button className="w-40 mb-4 flex semibold" onClick={() => {}}>
               Save Changes

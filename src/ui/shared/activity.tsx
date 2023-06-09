@@ -124,18 +124,21 @@ function ActivityTable({
   search,
   isLoading,
   onChange,
-  hideActivityTitle = false,
+  title = "",
+  description = "",
 }: {
   ops: DeployActivityRow[];
   search: string;
   isLoading: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  hideActivityTitle?: boolean;
+  title?: string;
+  description?: string;
 }) {
   const resourceHeaderTitleBar = (): ReactElement | undefined => {
     return (
       <ResourceHeader
-        title={hideActivityTitle ? "" : "Activity"}
+        title={title}
+        description={description}
         filterBar={
           <div className="flex items-center gap-3">
             <InputSearch
@@ -215,6 +218,8 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
         onChange={onChange}
         isLoading={loader.isLoading}
         search={search}
+        title="Activity"
+        description="Realtime dashboard of your organization's operations in the last week."
       />
     </LoadResources>
   );
@@ -252,7 +257,6 @@ export function ActivityByEnv({ envId }: { envId: string }) {
         onChange={onChange}
         isLoading={loader.isLoading}
         search={search}
-        hideActivityTitle
       />
     </LoadResources>
   );
@@ -290,7 +294,6 @@ export function ActivityByApp({ appId }: { appId: string }) {
         onChange={onChange}
         isLoading={loader.isLoading}
         search={search}
-        hideActivityTitle
       />
     </LoadResources>
   );
@@ -328,7 +331,6 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
         onChange={onChange}
         isLoading={loader.isLoading}
         search={search}
-        hideActivityTitle
       />
     </LoadResources>
   );

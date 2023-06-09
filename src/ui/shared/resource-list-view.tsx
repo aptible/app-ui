@@ -47,7 +47,7 @@ export const ResourceHeader = ({
 }: ResourceHeaderProps) => {
   return (
     <div className="my-2">
-      <div className="flex">
+      <div className="flex mb-2">
         <div className="flex-1">
           <h1 className={cn(tokens.type.h2)}>{title}</h1>
           {description && (
@@ -61,7 +61,7 @@ export const ResourceHeader = ({
         ) : null}
       </div>
 
-      {filterBar ? <div className="my-4">{filterBar}</div> : null}
+      {filterBar ? <div className="mb-4">{filterBar}</div> : null}
     </div>
   );
 };

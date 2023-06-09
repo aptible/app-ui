@@ -25,6 +25,7 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
     },
     "focus:text-black",
     "whitespace-nowrap py-4 px-1 border-b-3",
+    "hover:no-underline",
   );
 
 export const Tab = ({ label, to }: TabViewProps) => (
@@ -36,7 +37,7 @@ export const Tab = ({ label, to }: TabViewProps) => (
 export const Tabs = ({ tabs }: { tabs: TabItem[] }) => {
   return (
     <nav
-      className="-mb-px flex space-x-8 bg-white border-black-200 border-b"
+      className="flex space-x-8 bg-white border-black-200 border-b"
       aria-label="Tabs"
     >
       {tabs.map((tab) => (

@@ -6,18 +6,20 @@ import {
   selectAppsByEnvId,
   selectDatabasesByEnvId,
   selectEnvironmentsForTableSearch,
-  selectStackById,
 } from "@app/deploy";
 import { environmentResourcelUrl } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
 
+import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
-import { ResourceListView } from "../resource-list-view";
+import { ResourceHeader, ResourceListView } from "../resource-list-view";
+import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 import { prettyEnglishDate, timeAgo } from "@app/date";
 import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { capitalize } from "@app/string-utils";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 
 interface EnvironmentCellProps {
@@ -30,34 +32,12 @@ const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
       ? tokens.type["normal blue lighter"]
       : tokens.type["normal lighter"];
   return (
-    <Td className="min-w-fit pl-4 pr-8">
+    <Td>
       <Link to={environmentResourcelUrl(environment.id)}>
-        <img
-          className="float-left mr-3"
-          alt="default environment logo"
-          src="/logo-environment.png"
-          style={{ width: 32, height: 32, marginTop: 4 }}
-        />
         <div className={tokens.type["medium label"]}>{environment.handle}</div>
-        <div className={environmentTypeColor}>
-          {environment.type === "development"
-            ? "Debug mode"
-            : "Production mode"}
-        </div>
       </Link>
-    </Td>
-  );
-};
-
-const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
-  const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: environment.stackId }),
-  );
-  return (
-    <Td className="min-w-fit pl-8">
-      <div className={tokens.type["medium label"]}>{stack.name}</div>
-      <div className={tokens.type["normal lighter"]}>
-        {!stack.organizationId ? "Shared" : "Dedicated"}
+      <div className={environmentTypeColor}>
+        {environment.type === "development" ? "Development" : "Production"}
       </div>
     </Td>
   );
@@ -112,7 +92,7 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   return (
     <tr>
       <EnvironmentPrimaryCell environment={environment} />
-      <EnvironmentStackCell environment={environment} />
+      <EnvStackCell environmentId={environment.id} />
       <EnvironmentLastDeployedCell environment={environment} />
       <EnvironmentAppsCell environment={environment} />
       <EnvironmentDatabasesCell environment={environment} />
@@ -120,9 +100,12 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
-export function EnvironmentList({ search }: { search: string }) {
+export function EnvironmentList() {
   const query = useQuery(fetchAllEnvironments());
-  useQuery(fetchAllEnvironments());
+
+  const [search, setSearch] = useState("");
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
+    setSearch(ev.currentTarget.value);
 
   const environments = useSelector((s: AppState) =>
     selectEnvironmentsForTableSearch(s, { search }),
@@ -133,8 +116,19 @@ export function EnvironmentList({ search }: { search: string }) {
       query={query}
       isEmpty={environments.length === 0 && search === ""}
     >
-      <div />
       <ResourceListView
+        header={
+          <ResourceHeader
+            title="Environments"
+            filterBar={
+              <InputSearch
+                placeholder="Search environments ..."
+                search={search}
+                onChange={onChange}
+              />
+            }
+          />
+        }
         tableHeader={
           <TableHead
             headers={[

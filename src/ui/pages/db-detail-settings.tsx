@@ -5,7 +5,6 @@ import {
   ExternalLink,
   FormGroup,
   IconAlertTriangle,
-  IconCopy,
   IconExternalLink,
   IconTrash,
   Input,
@@ -126,39 +125,20 @@ export const DatabaseSettingsPage = () => {
               </ul>
             </Banner>
           ) : null}
-          <Label className="text-base mt-4 font-semibold text-gray-900 block">
-            Database ID
-          </Label>
-          <p>
-            {database.id} <IconCopy className="inline h-4" color="#888C90" />
-          </p>
-          <div className="mt-4 flex" />
-          <FormGroup label="Thumbnail Image" htmlFor="thumbnail">
-            <div className="flex justify-between items-center mb-4">
-              <select
-                value={"test"}
-                className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                placeholder="select"
-                disabled
-              >
-                <option value="test" disabled>
-                  Some Icon
-                </option>
-              </select>
-            </div>
-            <hr />
-            <div className="flex mt-4">
-              <Button
-                className="w-40 mb-4 flex semibold"
-                type="submit"
-                disabled={isUpdating || updatingDatabaseLoader.isLoading}
-              >
-                {isUpdating || updatingDatabaseLoader.isLoading
-                  ? "Loading ..."
-                  : "Save Changes"}
-              </Button>
-            </div>
-          </FormGroup>
+
+          <hr />
+
+          <div className="flex mt-4">
+            <Button
+              className="w-40 mb-4 flex semibold"
+              type="submit"
+              disabled={isUpdating || updatingDatabaseLoader.isLoading}
+            >
+              {isUpdating || updatingDatabaseLoader.isLoading
+                ? "Loading ..."
+                : "Save Changes"}
+            </Button>
+          </div>
         </form>
       </Box>
 

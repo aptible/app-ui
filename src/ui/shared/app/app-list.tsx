@@ -19,6 +19,7 @@ import type { AppState } from "@app/types";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
+import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 
@@ -31,8 +32,8 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
     <Td className="flex-1">
       <Link to={appServicesUrl(app.id)}>
         <div className={tokens.type["medium label"]}>{app.handle}</div>
-        <div className={tokens.type["normal lighter"]}>{app.envHandle}</div>
       </Link>
+      <div className={tokens.type["normal lighter"]}>{app.envHandle}</div>
     </Td>
   );
 };
@@ -100,6 +101,7 @@ const AppListRow = ({ app }: AppCellProps) => {
   return (
     <tr>
       <AppPrimaryCell app={app} />
+      <EnvStackCell environmentId={app.environmentId} />
       <AppServicesCell app={app} />
       <AppCostCell app={app} />
       <AppLastOpCell app={app} />
@@ -110,7 +112,6 @@ const AppListRow = ({ app }: AppCellProps) => {
 // TODO - can turn below to an interface as it has a common entrypoint for lists, not sure if we want to do this
 export function AppList({
   resourceHeaderType = "title-bar",
-  skipDescription = false,
   searchOverride = "",
 }: {
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
@@ -168,6 +169,7 @@ export function AppList({
           <TableHead
             headers={[
               "Handle",
+              "Environment",
               "Services",
               "Estimated Monthly Cost",
               "Last operation",

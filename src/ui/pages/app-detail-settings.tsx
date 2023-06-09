@@ -5,11 +5,9 @@ import {
   ExternalLink,
   FormGroup,
   IconAlertTriangle,
-  IconCopy,
   IconExternalLink,
   IconTrash,
   Input,
-  Label,
   PreCode,
   listToInvertedTextColor,
 } from "../shared";
@@ -151,15 +149,9 @@ export const AppSettingsPage = () => {
               </Banner>
             ) : null}
           </FormGroup>
-          <Label className="text-base mt-4 font-semibold text-gray-900 block">
-            App ID
-          </Label>
-          <p>
-            {app.id} <IconCopy className="inline h-4" color="#888C90" />
-          </p>
-          <div className="mt-4 flex" />
+
           <hr />
-          <br />
+
           <div className="flex mt-4">
             <Button
               className="w-40 mb-4 flex semibold"
