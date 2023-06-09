@@ -1,5 +1,5 @@
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, delay, fetchRetry, poll, select } from "saga-query";
+import { call, delay, fetchRetry, poll, put, select } from "saga-query";
 
 import { selectDeploy } from "../slice";
 import {
@@ -22,6 +22,7 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import type {
+  ApiGen,
   AppState,
   DeployOperation,
   LinkResponse,
@@ -183,7 +184,8 @@ export const deserializeDeployOperation = (
 
 export const DEPLOY_OP_NAME = "operations";
 const slice = createTable<DeployOperation>({ name: DEPLOY_OP_NAME });
-const { add: addDeployOperations } = slice.actions;
+export const { add: addDeployOperations, patch: patchDeployOperations } =
+  slice.actions;
 export const hasDeployOperation = (a: DeployOperation) => a.id !== "";
 export const opReducers = createReducerMap(slice);
 
@@ -218,7 +220,7 @@ export const selectLatestProvisionOps = createSelector(
   selectOperationsAsList,
   (_: AppState, props: { resourceIds: string[] }) => props.resourceIds,
   (ops, resourceIds) => {
-    const results = [];
+    const results: DeployOperation[] = [];
     for (let i = 0; i < resourceIds.length; i += 1) {
       const id = resourceIds[i];
       const op = ops.find((o) => o.resourceId === id && o.type === "provision");
@@ -260,6 +262,33 @@ export const selectLatestOpByEnvId = createSelector(
   (ops) =>
     ops.find((op) => ["configure", "provision", "deploy"].includes(op.type)) ||
     initOp,
+);
+
+export const selectLatestOpByDatabaseId = createSelector(
+  selectOperationsByDatabaseId,
+  (ops) =>
+    ops.find((op) =>
+      ["configure", "provision", "deploy", "deprovision"].includes(op.type),
+    ) || initOp,
+);
+
+export const selectLatestOpByAppId = createSelector(
+  selectOperationsByAppId,
+  (ops) =>
+    ops.find((op) =>
+      ["configure", "provision", "deploy", "deprovision"].includes(op.type),
+    ) || initOp,
+);
+
+export const selectLatestOpByResourceId = createSelector(
+  selectOperationsAsList,
+  (_: AppState, p: { resourceId: string }) => p.resourceId,
+  (ops, resourceId) =>
+    ops.find(
+      (op) =>
+        op.resourceId === resourceId &&
+        ["configure", "provision", "deploy", "deprovision"].includes(op.type),
+    ) || initOp,
 );
 
 export const selectLatestProvisionOp = createSelector(
@@ -379,6 +408,8 @@ export const fetchOperationById = api.get<
   DeployOperationResponse
 >("/operations/:id");
 
+type WaitResult = DeployOperation | undefined;
+
 export function* waitForOperation({
   id,
   wait = 3 * 1000,
@@ -387,7 +418,7 @@ export function* waitForOperation({
   id: string;
   wait?: number;
   skipFetch?: boolean;
-}) {
+}): ApiGen<WaitResult> {
   while (true) {
     if (skipFetch) {
       const op = yield* select(selectOperationById, { id });
@@ -406,6 +437,22 @@ export function* waitForOperation({
           ctx.json.data.status === "failed"
         ) {
           return deserializeDeployOperation(ctx.json.data);
+        }
+      } else {
+        const op = yield* select(selectOperationById, { id });
+        // When a deprovision happens and it is successful, the API will
+        // eventually return a 404 because the operation is "soft" deleted.
+        // As a result, we "hack" the FE by checking for this edge case
+        // and then marking the operation as successful.
+        // This is okay because after the user refreshes the page, the
+        // operation will disappear.
+        if (op.type === "deprovision" && ctx.response?.status === 404) {
+          yield* put(
+            patchDeployOperations({
+              [op.id]: { id: op.id, status: "succeeded" },
+            }),
+          );
+          return { ...op, status: "succeeded" };
         }
       }
     }

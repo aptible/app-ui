@@ -4,6 +4,8 @@ import { Outlet, useParams } from "react-router-dom";
 import {
   CONTAINER_PROFILES,
   calcMetrics,
+  cancelDatabaseOpsPoll,
+  pollDatabaseOperations,
   selectDatabaseById,
   selectEnvironmentById,
   selectServiceById,
@@ -28,8 +30,12 @@ import {
   tokens,
 } from "../shared";
 
+import { usePoller } from "../hooks";
+import { useInterval } from "../hooks/use-interval";
+import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { DetailPageLayout } from "./detail-page";
 import cn from "classnames";
+import { useMemo, useState } from "react";
 
 const databaseDetailBox = ({
   database,
@@ -42,16 +48,18 @@ const databaseDetailBox = ({
   return (
     <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
       <Box>
-        <div className="flex flex-row-reverse">
-          <Button className="ml-5" variant="white">
-            View Docs
-            <IconExternalLink className="inline ml-3 h-5 mt-0" />
-          </Button>
-          <Button className="ml-5" variant="white">
-            View Credentials
-          </Button>
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg text-gray-500">Database Details</h1>
+          <div className="flex">
+            <Button className="ml-5" variant="white" size="sm">
+              View Docs
+              <IconExternalLink className="inline ml-3 h-5 mt-0" />
+            </Button>
+            <Button className="ml-5" variant="white" size="sm">
+              View Credentials
+            </Button>
+          </div>
         </div>
-        <h1 className="text-md text-gray-500 -mt-5">Database Details</h1>
         <div className="flex w-1/1">
           <div className="flex-col w-1/3">
             <div className="mt-4">
@@ -123,6 +131,7 @@ const databaseDetailBox = ({
 function DatabasePageHeader() {
   const { id = "" } = useParams();
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const [_, setHeartbeat] = useState<Date>(new Date());
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
   );
@@ -132,6 +141,14 @@ function DatabasePageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentResourcelUrl(environment.id) },
   ];
+
+  const poller = useMemo(() => pollDatabaseOperations({ id }), [id]);
+  const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);
+  useInterval(() => setHeartbeat(new Date()), 1000);
+  usePoller({
+    action: poller,
+    cancel,
+  });
 
   const tabs = [
     { name: "Endpoints", href: databaseEndpointsUrl(id) },
@@ -143,12 +160,15 @@ function DatabasePageHeader() {
   ] as TabItem[];
 
   return (
-    <DetailPageHeaderView
-      breadcrumbs={crumbs}
-      title={database ? database.handle : "Loading..."}
-      detailsBox={databaseDetailBox({ database, service })}
-      tabs={tabs}
-    />
+    <>
+      <ActiveOperationNotice resourceId={id} resourceType="database" />
+      <DetailPageHeaderView
+        breadcrumbs={crumbs}
+        title={database ? database.handle : "Loading..."}
+        detailsBox={databaseDetailBox({ database, service })}
+        tabs={tabs}
+      />
+    </>
   );
 }
 

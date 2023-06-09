@@ -8,14 +8,13 @@ import {
   fetchAllDatabases,
   fetchAllEnvironments,
   selectDatabasesForTableSearch,
-  selectEnvironmentById,
-  selectStackById,
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
+import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 import { databaseEndpointsUrl } from "@app/routes";
@@ -27,33 +26,10 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
     <Td className="flex-1">
       <Link to={databaseEndpointsUrl(database.id)}>
         <div className={tokens.type["medium label"]}>{database.handle}</div>
-        <div className={tokens.type["normal lighter"]}>{database.type}</div>
       </Link>
+      <div className={tokens.type["normal lighter"]}>{database.type}</div>
     </Td>
   );
-};
-
-const DatabaseStackCell = ({ database }: DatabaseCellProps) => {
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: database.environmentId }),
-  );
-  const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: env.stackId }),
-  );
-
-  const content = stack ? (
-    <div>
-      <div className={tokens.type.darker}>{env.handle}</div>
-      <div className={tokens.type["normal lighter"]}>
-        {stack.organizationId ? "Dedicated Stack " : "Shared Stack "}
-        {stack.region}
-      </div>
-    </div>
-  ) : (
-    <span>Loading...</span>
-  );
-
-  return <Td className="2xl:flex-cell-md sm:flex-cell-sm">{content}</Td>;
 };
 
 const LastOpCell = ({ database }: DatabaseCellProps) => {
@@ -86,7 +62,7 @@ const DatabaseListRow = ({ database }: { database: DeployDatabase }) => {
   return (
     <tr>
       <DatabasePrimaryCell database={database} />
-      <DatabaseStackCell database={database} />
+      <EnvStackCell environmentId={database.environmentId} />
       <LastOpCell database={database} />
     </tr>
   );
@@ -94,7 +70,6 @@ const DatabaseListRow = ({ database }: { database: DeployDatabase }) => {
 
 export function DatabaseList({
   resourceHeaderType = "title-bar",
-  skipDescription = false,
   searchOverride = "",
 }: {
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";

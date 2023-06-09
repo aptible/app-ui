@@ -1,34 +1,57 @@
 import {
+  Banner,
   Box,
   Button,
-  ButtonIcon,
+  ExternalLink,
   FormGroup,
   IconAlertTriangle,
-  IconCopy,
   IconExternalLink,
-  IconPlusCircle,
   IconTrash,
   Input,
-  Label,
   PreCode,
   listToInvertedTextColor,
 } from "../shared";
-import { deprovisionApp, fetchApp, selectAppById } from "@app/deploy";
-import { AppState } from "@app/types";
+import {
+  deprovisionApp,
+  fetchApp,
+  fetchLogDrains,
+  fetchMetricDrains,
+  selectAppById,
+  selectLogDrainsByEnvId,
+  selectMetricDrainsByEnvId,
+  updateApp,
+} from "@app/deploy";
+import { appActivityUrl } from "@app/routes";
+import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { useQuery } from "saga-query/react";
+import { useNavigate, useParams } from "react-router";
+import { useLoader, useQuery } from "saga-query/react";
 
 export const AppSettingsPage = () => {
   const [handle, setHandle] = useState<string>("");
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
   const [isDeprovisioning, setIsDeprovisioning] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const updatingAppLoader = useLoader(updateApp);
 
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const logDrains = useSelector((s: AppState) =>
+    selectLogDrainsByEnvId(s, { envId: app.environmentId }),
+  );
+  const metricDrains = useSelector((s: AppState) =>
+    selectMetricDrainsByEnvId(s, { envId: app.environmentId }),
+  );
+
+  useQuery(fetchLogDrains({ id: app.environmentId }));
+  useQuery(fetchMetricDrains({ id: app.environmentId }));
+
+  const drains: (DeployLogDrain | DeployMetricDrain)[] =
+    [...logDrains, ...metricDrains] || [];
 
   useEffect(() => {
     setHandle(app.handle);
@@ -36,22 +59,28 @@ export const AppSettingsPage = () => {
 
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    setIsUpdating(true);
+    dispatch(updateApp({ id, handle }));
+    setIsUpdating(false);
   };
 
   const requestDeprovisionApp = (e: SyntheticEvent) => {
     e.preventDefault();
 
+    setIsUpdating(true);
     setIsDeprovisioning(true);
     dispatch(deprovisionApp({ appId: app.id }));
+    navigate(appActivityUrl(id));
   };
 
   const disabledDeprovisioning =
-    isDeprovisioning || "delete" !== deleteConfirm.toLocaleLowerCase();
+    isDeprovisioning || app.handle !== deleteConfirm;
 
   return (
     <div className="mb-4">
       <Box>
-        <Button className="relative float-right" variant="white">
+        <Button className="relative float-right" variant="white" size="sm">
           View Docs
           <IconExternalLink className="inline ml-3 h-5 mt-0" />
         </Button>
@@ -92,84 +121,46 @@ export const AppSettingsPage = () => {
               data-testid="input-name"
               id="input-name"
             />
+            {handle !== app.handle && drains.length ? (
+              <Banner variant="info" showIcon={false} className="mt-4">
+                <p>
+                  You must <b>restart the app</b> for the new name to appear in
+                  the following log and metric drains, view the docs (
+                  <ExternalLink
+                    variant="default"
+                    href="https://www.aptible.com/docs/log-drains"
+                  >
+                    log drains
+                  </ExternalLink>
+                  ,{" "}
+                  <ExternalLink
+                    variant="default"
+                    href="https://www.aptible.com/docs/metric-drains"
+                  >
+                    metric drains
+                  </ExternalLink>
+                  ) to learn more:
+                </p>
+                <ul className="list-disc ml-4 mt-2">
+                  {drains.map((drain) => (
+                    <li>{drain.handle}</li>
+                  ))}
+                </ul>
+              </Banner>
+            ) : null}
           </FormGroup>
-          <Label className="text-base mt-4 font-semibold text-gray-900 block">
-            App ID
-          </Label>
-          <p>
-            {app.id} <IconCopy className="inline h-4" color="#888C90" />
-          </p>
-          <div className="mt-4 flex" />
-          <FormGroup label="Thumbnail Image" htmlFor="thumbnail">
-            <div className="flex justify-between items-center">
-              <select
-                value={"test"}
-                className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                placeholder="select"
-                disabled
-              >
-                <option value="test" disabled>
-                  Some Icon
-                </option>
-              </select>
-            </div>
-          </FormGroup>
-          <FormGroup
-            label="Environment Variables"
-            htmlFor="environment-variables"
-          >
-            <div className="flex">
-              <Input
-                className="flex w-1/2"
-                name="app-handle"
-                type="text"
-                value={handle}
-                onChange={(e) => setHandle(e.currentTarget.value)}
-                autoComplete="name"
-                data-testid="input-name"
-                id="input-name"
-              />
-              <Input
-                className="flex ml-4 w-1/2"
-                name="app-handle"
-                type="text"
-                value={handle}
-                onChange={(e) => setHandle(e.currentTarget.value)}
-                autoComplete="name"
-                data-testid="input-name"
-                id="input-name"
-              />
-              <ButtonIcon
-                className="flex ml-4 pr-2"
-                variant="white"
-                onClick={() => {}}
-                icon={<IconTrash color="#AD1A1A" />}
-                children={null}
-              />
-            </div>
-            <div className="flex mt-4">
-              <ButtonIcon
-                icon={<IconPlusCircle color="#FFF" />}
-                variant="secondary"
-                onClick={() => {}}
-              >
-                New
-              </ButtonIcon>
-            </div>
-          </FormGroup>
-          <br />
+
           <hr />
-          <br />
+
           <div className="flex mt-4">
-            <Button className="w-40 mb-4 flex semibold" onClick={() => {}}>
-              Save Changes
-            </Button>
             <Button
-              className="w-40 ml-4 mb-4 flex"
-              onClick={() => {}}
-              variant="white"
+              className="w-40 mb-4 flex semibold"
+              type="submit"
+              disabled={isUpdating || updatingAppLoader.isLoading}
             >
-              <span className="text-base semibold">Cancel</span>
+              {isUpdating || updatingAppLoader.isLoading
+                ? "Loading ..."
+                : "Save Changes"}
             </Button>
           </div>
         </form>
@@ -186,8 +177,8 @@ export const AppSettingsPage = () => {
         <div className="mt-2">
           <p>
             This will permanently deprovision <strong>{app.handle}</strong> app.
-            This action cannot be undone. If you want to proceed, type Delete
-            below to continue.
+            This action cannot be undone. If you want to proceed, type the{" "}
+            <strong>{app.handle}</strong> below to continue.
           </p>
           <div className="flex mt-4 wd-60">
             <Input
@@ -205,7 +196,6 @@ export const AppSettingsPage = () => {
               style={{
                 backgroundColor: "#AD1A1A",
                 color: "#FFF",
-                opacity: disabledDeprovisioning ? 0.5 : 1,
               }}
               disabled={disabledDeprovisioning}
               className="h-15 w-60 mb-0 ml-4 flex"

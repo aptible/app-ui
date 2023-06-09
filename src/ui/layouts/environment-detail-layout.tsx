@@ -14,10 +14,12 @@ import {
 
 import { DetailPageLayout } from "./detail-page";
 import {
+  fetchEnvironmentById,
   selectEndpointsByEnvironmentId,
   selectEnvironmentById,
   selectStackById,
 } from "@app/deploy";
+import { capitalize } from "@app/string-utils";
 import {
   AppState,
   DeployEndpoint,
@@ -25,6 +27,7 @@ import {
   DeployStack,
 } from "@app/types";
 import cn from "classnames";
+import { useQuery } from "saga-query/react";
 
 const environmentDetailBox = ({
   environment,
@@ -37,16 +40,22 @@ const environmentDetailBox = ({
 }): React.ReactElement => (
   <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
     <Box>
-      <Button className="flex ml-auto" variant="white">
-        View Docs
-        <IconExternalLink className="inline ml-3 h-5 mt-0" />
-      </Button>
-      <h1 className="text-md text-gray-500 -mt-10">App Details</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg text-gray-500">Environment Details</h1>
+        <Button className="flex ml-auto" variant="white" size="sm">
+          View Docs
+          <IconExternalLink className="inline ml-3 h-5 mt-0" />
+        </Button>
+      </div>
       <div className="flex w-1/1">
         <div className="flex-col w-1/4">
           <div className="mt-4">
+            <h3 className="text-base font-semibold text-gray-900">ID</h3>
+            <p>{environment.id}</p>
+          </div>
+          <div className="mt-4">
             <h3 className="text-base font-semibold text-gray-900">Mode</h3>
-            <p>{environment.type === "development" ? "Debug" : "Production"}</p>
+            <p>{capitalize(environment.type)}</p>
           </div>
           <div className="mt-4">
             <h3 className="text-base font-semibold text-gray-900">Stack</h3>
@@ -71,22 +80,6 @@ const environmentDetailBox = ({
             {environment.databaseContainerCount > 0 && "s"} using{" "}
             {environment.totalDiskSize} GB of disk
           </div>
-        </div>
-        <div className="flex-col w-1/4">
-          <div className="mt-4">
-            <h3 className="text-base font-semibold text-gray-900">
-              {environment.totalAppCount} App
-              {environment.totalAppCount > 0 && "s"}
-            </h3>
-            Using {environment.appContainerCount} container
-            {environment.appContainerCount > 0 && "s"}
-          </div>
-          <div className="mt-4">
-            <h3 className="text-base font-semibold text-gray-900">Backups</h3>
-            {environment.totalBackupSize} GB
-          </div>
-        </div>
-        <div className="flex-col w-1/4">
           <div className="mt-4">
             <h3 className="text-base font-semibold text-gray-900">
               {endpoints.length} Endpoint{environment.totalAppCount > 0 && "s"}
@@ -109,6 +102,12 @@ const environmentDetailBox = ({
             )}
           </div>
         </div>
+        <div className="flex-col w-1/4">
+          <div className="mt-4">
+            <h3 className="text-base font-semibold text-gray-900">Backups</h3>
+            {environment.totalBackupSize} GB
+          </div>
+        </div>
       </div>
     </Box>
   </div>
@@ -116,6 +115,8 @@ const environmentDetailBox = ({
 
 function EnvironmentPageHeader(): React.ReactElement {
   const { id = "" } = useParams();
+  useQuery(fetchEnvironmentById({ id }));
+
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id }),
   );

@@ -1,14 +1,17 @@
 import { selectDeploy } from "../slice";
 import { api, cacheTimer } from "@app/api";
-import { defaultEntity } from "@app/hal";
+import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
 import { AppState, DeployLogDrain } from "@app/types";
+import { createSelector } from "@reduxjs/toolkit";
 
 export const deserializeLogDrain = (payload: any): DeployLogDrain => {
+  const links = payload._links;
+
   return {
     id: payload.id,
     handle: payload.handle,
@@ -23,6 +26,7 @@ export const deserializeLogDrain = (payload: any): DeployLogDrain => {
     drainDatabases: payload.drain_databases,
     drainEphemeralSessions: payload.drain_ephemeral_sessions,
     drainProxies: payload.drain_proxies,
+    environmentId: extractIdFromLink(links.account),
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     status: payload.status,
@@ -47,6 +51,7 @@ export const defaultDeployLogDrain = (
     drainProxies: false,
     drainEphemeralSessions: false,
     drainDatabases: false,
+    environmentId: "",
     createdAt: now,
     updatedAt: now,
     status: "pending",
@@ -64,6 +69,19 @@ const initLogDrain = defaultDeployLogDrain();
 const must = mustSelectEntity(initLogDrain);
 export const selectLogDrainById = must(selectors.selectById);
 export const { selectTableAsList: selectLogDrainsAsList } = selectors;
+export const selectLogDrainsByEnvId = createSelector(
+  selectLogDrainsAsList,
+  (_: AppState, props: { envId: string }) => props.envId,
+  (logDrains, envId) => {
+    return logDrains
+      .filter((logDrain) => logDrain.environmentId === envId)
+      .sort((a, b) => {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+  },
+);
 export const hasDeployLogDrain = (a: DeployLogDrain) => a.id !== "";
 export const logDrainReducers = createReducerMap(slice);
 

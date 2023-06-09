@@ -9,7 +9,7 @@ export type Crumb = {
 
 const navLink = ({ isActive }: { isActive: boolean }) =>
   cn(
-    "text-xl flex items-center",
+    "text-xl",
     { [tokens.type.link]: !isActive },
     { [tokens.type.link]: isActive },
   );
@@ -17,20 +17,23 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
 export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
   return (
     <nav className="flex" aria-label="Breadcrumb">
-      <ol className="flex items-center">
+      <div className="flex items-center">
         {crumbs.map((crumb, idx) => (
-          <li key={`${crumb.name}-${idx}`}>
+          <div key={`${crumb.name}-${idx}`}>
             {crumb.to === null ? (
               <div className="text-xl">&nbsp;{crumb.name}</div>
             ) : (
-              <NavLink className={navLink} to={crumb.to}>
-                {" "}
-                {crumb.name} {idx !== crumbs.length && "/"}
-              </NavLink>
+              <>
+                <NavLink className={navLink} to={crumb.to}>
+                  {" "}
+                  {crumb.name}
+                </NavLink>
+                <span className="text-xl">{idx !== crumbs.length && " /"}</span>
+              </>
             )}
-          </li>
+          </div>
         ))}
-      </ol>
+      </div>
     </nav>
   );
 }

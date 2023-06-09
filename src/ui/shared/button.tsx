@@ -106,6 +106,7 @@ export const Button: FC<ButtonProps> = ({
     tokens.buttons.sizes[size],
     tokens.buttons.styles[variant],
     buttonShapeStyle(size, shape),
+    { "opacity-50": props.disabled },
   );
   return (
     <button

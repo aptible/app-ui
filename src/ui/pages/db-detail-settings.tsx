@@ -1,28 +1,54 @@
 import {
+  Banner,
   Box,
   Button,
+  ExternalLink,
   FormGroup,
   IconAlertTriangle,
-  IconCopy,
   IconExternalLink,
   IconTrash,
   Input,
   Label,
 } from "../shared";
-import { deprovisionDatabase, selectDatabaseById } from "@app/deploy";
-import { AppState } from "@app/types";
+import {
+  deprovisionDatabase,
+  fetchLogDrains,
+  fetchMetricDrains,
+  selectDatabaseById,
+  selectLogDrainsByEnvId,
+  selectMetricDrainsByEnvId,
+  updateDatabase,
+} from "@app/deploy";
+import { databaseActivityUrl } from "@app/routes";
+import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import { useLoader, useQuery } from "saga-query/react";
 
 export const DatabaseSettingsPage = () => {
   const { id = "" } = useParams();
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
   const [handle, setHandle] = useState<string>("");
   const [isDeprovisioning, setIsDeprovisioning] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const logDrains = useSelector((s: AppState) =>
+    selectLogDrainsByEnvId(s, { envId: database.environmentId }),
+  );
+  const metricDrains = useSelector((s: AppState) =>
+    selectMetricDrainsByEnvId(s, { envId: database.environmentId }),
+  );
+  const updatingDatabaseLoader = useLoader(updateDatabase);
+
+  useQuery(fetchLogDrains({ id: database.environmentId }));
+  useQuery(fetchMetricDrains({ id: database.environmentId }));
+
+  const drains: (DeployLogDrain | DeployMetricDrain)[] =
+    [...logDrains, ...metricDrains] || [];
 
   useEffect(() => {
     setHandle(database.handle);
@@ -30,22 +56,28 @@ export const DatabaseSettingsPage = () => {
 
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    setIsUpdating(true);
+    dispatch(updateDatabase({ id, handle }));
+    setIsUpdating(false);
   };
 
   const requestDeprovisionDatabase = (e: SyntheticEvent) => {
     e.preventDefault();
 
+    setIsUpdating(true);
     setIsDeprovisioning(true);
     dispatch(deprovisionDatabase({ dbId: database.id }));
+    navigate(databaseActivityUrl(id));
   };
 
   const disabledDeprovisioning =
-    isDeprovisioning || "delete" !== deleteConfirm.toLocaleLowerCase();
+    isDeprovisioning || database.handle !== deleteConfirm;
 
   return (
     <div className="mb-4">
       <Box>
-        <Button className="relative float-right" variant="white">
+        <Button className="relative float-right" variant="white" size="sm">
           View Docs
           <IconExternalLink className="inline ml-3 h-5 mt-0" />
         </Button>
@@ -66,40 +98,47 @@ export const DatabaseSettingsPage = () => {
               id="input-name"
             />
           </FormGroup>
-          <Label className="text-base mt-4 font-semibold text-gray-900 block">
-            Database ID
-          </Label>
-          <p>
-            {database.id} <IconCopy className="inline h-4" color="#888C90" />
-          </p>
-          <div className="mt-4 flex" />
-          <FormGroup label="Thumbnail Image" htmlFor="thumbnail">
-            <div className="flex justify-between items-center mb-4">
-              <select
-                value={"test"}
-                className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                placeholder="select"
-                disabled
-              >
-                <option value="test" disabled>
-                  Some Icon
-                </option>
-              </select>
-            </div>
-            <hr />
-            <div className="flex mt-4">
-              <Button className="w-40 mb-4 flex semibold" onClick={() => {}}>
-                Save Changes
-              </Button>
-              <Button
-                className="w-40 ml-4 mb-4 flex"
-                onClick={() => {}}
-                variant="white"
-              >
-                <span className="text-base semibold">Cancel</span>
-              </Button>
-            </div>
-          </FormGroup>
+          {handle !== database.handle && drains.length ? (
+            <Banner variant="info" showIcon={false} className="mt-4">
+              <p>
+                You must <b>reload the database</b> for the new name to appear
+                in the following log and metric drains, view the docs (
+                <ExternalLink
+                  variant="default"
+                  href="https://www.aptible.com/docs/log-drains"
+                >
+                  log drains
+                </ExternalLink>
+                ,{" "}
+                <ExternalLink
+                  variant="default"
+                  href="https://www.aptible.com/docs/metric-drains"
+                >
+                  metric drains
+                </ExternalLink>
+                ) to learn more:
+              </p>
+              <ul className="list-disc ml-4 mt-2">
+                {drains.map((drain) => (
+                  <li>{drain.handle}</li>
+                ))}
+              </ul>
+            </Banner>
+          ) : null}
+
+          <hr />
+
+          <div className="flex mt-4">
+            <Button
+              className="w-40 mb-4 flex semibold"
+              type="submit"
+              disabled={isUpdating || updatingDatabaseLoader.isLoading}
+            >
+              {isUpdating || updatingDatabaseLoader.isLoading
+                ? "Loading ..."
+                : "Save Changes"}
+            </Button>
+          </div>
         </form>
       </Box>
 
@@ -116,7 +155,7 @@ export const DatabaseSettingsPage = () => {
           <p>
             This will permanently deprovision <strong>{database.handle}</strong>{" "}
             database. This action cannot be undone. If you want to proceed, type
-            Delete below to continue.
+            the <strong>{database.handle}</strong> below to continue.
           </p>
           <div className="flex mt-4 wd-60">
             <Input
@@ -134,7 +173,6 @@ export const DatabaseSettingsPage = () => {
               style={{
                 backgroundColor: "#AD1A1A",
                 color: "#FFF",
-                opacity: disabledDeprovisioning ? 0.5 : 1,
               }}
               disabled={disabledDeprovisioning}
               className="h-15 w-70 mb-0 ml-4 flex"

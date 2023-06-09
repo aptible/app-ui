@@ -294,6 +294,7 @@ export interface DeployLogDrain extends Provisionable, Timestamps {
   drainDatabases: boolean;
   drainEphemeralSessions: boolean;
   drainProxies: boolean;
+  environmentId: string;
 }
 
 export interface DeployMetricDrain extends Provisionable, Timestamps {
@@ -308,6 +309,7 @@ export interface DeployMetricDrain extends Provisionable, Timestamps {
   aggregatorDockerName: string;
   aggregatorAllocation: string[];
   drainConfiguration: any;
+  environmentId: string;
 }
 
 export interface DeployCertificate extends Timestamps {

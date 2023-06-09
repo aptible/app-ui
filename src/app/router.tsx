@@ -1,4 +1,4 @@
-import { RouteObject, createBrowserRouter } from "react-router-dom";
+import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 
 import { Tuna } from "./tuna";
 import * as routes from "@app/routes";
@@ -256,7 +256,7 @@ export const appRoutes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <AppsPage />,
+        element: <Navigate to={routes.appsUrl()} />,
       },
 
       {
@@ -589,13 +589,7 @@ export const appRoutes: RouteObject[] = [
 
   {
     path: routes.SIGNUP_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SignupPage />,
-      },
-    ],
+    element: <SignupPage />,
   },
 
   {
