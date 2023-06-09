@@ -391,6 +391,11 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
+        path: routes.IMPERSONATE_PATH,
+        element: <ImpersonatePage />,
+      },
+
+      {
         path: routes.ACTIVITY_PATH,
         element: <ActivityPage />,
       },
@@ -452,10 +457,6 @@ export const appRoutes: RouteObject[] = [
           {
             path: routes.TEAM_PATH,
             element: <TeamPage />,
-          },
-          {
-            path: routes.IMPERSONATE_PATH,
-            element: <ImpersonatePage />,
           },
         ],
       },

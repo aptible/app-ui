@@ -1,16 +1,9 @@
-import { impersonateUrl, securitySettingsUrl, teamUrl } from "@app/routes";
-import { selectCanImpersonate } from "@app/users";
+import { securitySettingsUrl, teamUrl } from "@app/routes";
 import cn from "classnames";
-import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 
 export function SettingsSidebar() {
-  const canImpersonate = useSelector(selectCanImpersonate);
   const profileNav = [{ name: "Security Settings", to: securitySettingsUrl() }];
-
-  if (canImpersonate) {
-    profileNav.push({ name: "Impersonate", to: impersonateUrl() });
-  }
 
   const companyNav = [
     { name: "Team", to: teamUrl() },
