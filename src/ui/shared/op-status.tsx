@@ -12,5 +12,9 @@ export const OpStatus = ({ status }: Pick<DeployOperation, "status">) => {
     return <span className="text-red">{str}</span>;
   }
 
+  if (status === "queued" || status === "running") {
+    return <span className="text-indigo">{str}</span>;
+  }
+
   return <span className="text-black-500">{str}</span>;
 };
