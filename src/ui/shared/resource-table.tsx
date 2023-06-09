@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 import { selectEnvironmentById, selectStackById } from "@app/deploy";
+import { environmentDetailUrl } from "@app/routes";
 import { AppState } from "@app/types";
 
 import { Td } from "./table";
@@ -14,17 +16,15 @@ export const EnvStackCell = ({ environmentId }: { environmentId: string }) => {
     selectStackById(s, { id: env.stackId }),
   );
 
-  const content = stack ? (
-    <div>
-      <div className={tokens.type.darker}>{env.handle}</div>
-      <div className={tokens.type["normal lighter"]}>
-        {stack.organizationId ? "Dedicated Stack " : "Shared Stack "}(
-        {stack.region})
+  return (
+    <Td className="2xl:flex-cell-md sm:flex-cell-sm">
+      <div>
+        <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
+        <div className={tokens.type["normal lighter"]}>
+          {stack.organizationId ? "Dedicated Stack " : "Shared Stack "}(
+          {stack.region})
+        </div>
       </div>
-    </div>
-  ) : (
-    <span>Loading...</span>
+    </Td>
   );
-
-  return <Td className="2xl:flex-cell-md sm:flex-cell-sm">{content}</Td>;
 };
