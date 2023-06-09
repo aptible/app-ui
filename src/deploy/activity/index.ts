@@ -27,6 +27,8 @@ const selectActivityForTable = createSelector(
         } else if (op.resourceType === "database") {
           const db = findDatabaseById(dbs, { id: op.resourceId });
           resourceHandle = db.handle;
+        } else {
+          resourceHandle = op.resourceId;
         }
 
         return { ...op, envHandle: env.handle, resourceHandle };

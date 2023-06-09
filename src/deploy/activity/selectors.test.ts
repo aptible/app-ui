@@ -69,7 +69,7 @@ const state: DeepPartial<AppState> = {
 
 const op1Row = { ...op1, envHandle: env1.handle, resourceHandle: app1.handle };
 const op2Row = { ...op2, envHandle: env2.handle, resourceHandle: db1.handle };
-const op3Row = { ...op3, envHandle: env2.handle, resourceHandle: "" };
+const op3Row = { ...op3, envHandle: env2.handle, resourceHandle: vhost1.id };
 
 const createOps = (n: number) => {
   const ops: { [key: string]: DeployOperation } = {};

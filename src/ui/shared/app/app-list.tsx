@@ -30,9 +30,7 @@ interface AppCellProps {
 const AppPrimaryCell = ({ app }: AppCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={appServicesUrl(app.id)}>
-        <div className={tokens.type["medium label"]}>{app.handle}</div>
-      </Link>
+      <Link to={appServicesUrl(app.id)}>{app.handle}</Link>
       <div className={tokens.type["normal lighter"]}>{app.envHandle}</div>
     </Td>
   );

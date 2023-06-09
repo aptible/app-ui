@@ -10,9 +10,6 @@ import {
   cancelDatabaseOpsPoll,
   cancelEnvOperationsPoll,
   cancelOrgOperationsPoll,
-  fetchAllApps,
-  fetchAllDatabases,
-  fetchAllEnvironments,
   fetchApp,
   fetchDatabase,
   fetchEnvironmentById,
@@ -21,6 +18,7 @@ import {
   pollDatabaseOperations,
   pollEnvOperations,
   pollOrgOperations,
+  prettyResourceType,
   selectActivityForTableSearch,
   selectAppById,
   selectDatabaseById,
@@ -36,7 +34,6 @@ import { LoadResources } from "./load-resources";
 import { OpStatus } from "./op-status";
 import { ResourceHeader, ResourceListView } from "./resource-list-view";
 import { TableHead, Td } from "./table";
-import { tokens } from "./tokens";
 
 interface OpCellProps {
   op: DeployActivityRow;
@@ -45,9 +42,7 @@ interface OpCellProps {
 const OpPrimaryCell = ({ op }: OpCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={operationDetailUrl(op.id)}>
-        <div className={tokens.type["medium label"]}>{capitalize(op.type)}</div>
-      </Link>
+      <Link to={operationDetailUrl(op.id)}>{capitalize(op.type)}</Link>
     </Td>
   );
 };
@@ -71,7 +66,7 @@ const OpStatusCell = ({ op }: OpCellProps) => {
 const OpResourceTypeCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-      <div>{capitalize(op.resourceType)}</div>
+      <div>{prettyResourceType(op.resourceType)}</div>
     </Td>
   );
 };
@@ -191,9 +186,6 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const loader = useLoader(pollOrgOperations);
-  useQuery(fetchAllEnvironments());
-  useQuery(fetchAllApps());
-  useQuery(fetchAllDatabases());
 
   const poller = useMemo(() => pollOrgOperations({ orgId }), [orgId]);
   const cancel = useMemo(() => cancelOrgOperationsPoll(), []);
@@ -230,8 +222,6 @@ export function ActivityByEnv({ envId }: { envId: string }) {
   const search = params.get("search") || "";
   const loader = useLoader(pollEnvOperations);
   useQuery(fetchEnvironmentById({ id: envId }));
-  useQuery(fetchAllApps());
-  useQuery(fetchAllDatabases());
 
   const poller = useMemo(() => pollEnvOperations({ envId }), [envId]);
   const cancel = useMemo(() => cancelEnvOperationsPoll(), []);

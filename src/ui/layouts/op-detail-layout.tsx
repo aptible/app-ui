@@ -2,7 +2,11 @@ import { useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
 
 import { prettyEnglishDateWithTime } from "@app/date";
-import { getResourceUrl, selectOperationById } from "@app/deploy";
+import {
+  getResourceUrl,
+  prettyResourceType,
+  selectOperationById,
+} from "@app/deploy";
 import { activityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployOperation } from "@app/types";
@@ -43,7 +47,7 @@ const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
               <h3 className="text-base font-semibold text-gray-900">
                 Resource Type
               </h3>
-              {capitalize(op.resourceType)}
+              {prettyResourceType(op.resourceType)}
             </div>
             <div className="mt-4">
               <h3 className="text-base font-semibold text-gray-900">

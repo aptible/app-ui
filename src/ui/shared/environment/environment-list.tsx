@@ -34,7 +34,7 @@ const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
   return (
     <Td>
       <Link to={environmentResourcelUrl(environment.id)}>
-        <div className={tokens.type["medium label"]}>{environment.handle}</div>
+        {environment.handle}
       </Link>
       <div className={environmentTypeColor}>
         {environment.type === "development" ? "Development" : "Production"}

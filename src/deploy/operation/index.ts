@@ -21,6 +21,7 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
+import { capitalize } from "@app/string-utils";
 import type {
   ApiGen,
   AppState,
@@ -148,6 +149,10 @@ const transformOperationType = (
   if (!type) return "unknown";
   // TODO: make this more strict?
   return type as OperationType;
+};
+
+export const prettyResourceType = (rType: ResourceType): string => {
+  return capitalize(rType.replace("_", " "));
 };
 
 export const deserializeDeployOperation = (
@@ -367,7 +372,7 @@ export const pollEnvOperations = api.get<EnvIdProps>(
 
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
 export const pollOrgOperations = api.get<{ orgId: string }>(
-  "/organizations/:orgId/operations?per_page=100",
+  "/organizations/:orgId/operations?per_page=250",
   { saga: poll(5 * 1000, `${cancelOrgOperationsPoll}`) },
 );
 
