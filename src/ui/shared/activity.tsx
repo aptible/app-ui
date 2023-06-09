@@ -10,9 +10,6 @@ import {
   cancelDatabaseOpsPoll,
   cancelEnvOperationsPoll,
   cancelOrgOperationsPoll,
-  fetchAllApps,
-  fetchAllDatabases,
-  fetchAllEnvironments,
   fetchApp,
   fetchDatabase,
   fetchEnvironmentById,
@@ -21,6 +18,7 @@ import {
   pollDatabaseOperations,
   pollEnvOperations,
   pollOrgOperations,
+  prettyResourceType,
   selectActivityForTableSearch,
   selectAppById,
   selectDatabaseById,
@@ -71,7 +69,7 @@ const OpStatusCell = ({ op }: OpCellProps) => {
 const OpResourceTypeCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-      <div>{capitalize(op.resourceType)}</div>
+      <div>{prettyResourceType(op.resourceType)}</div>
     </Td>
   );
 };
@@ -191,9 +189,6 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const loader = useLoader(pollOrgOperations);
-  useQuery(fetchAllEnvironments());
-  useQuery(fetchAllApps());
-  useQuery(fetchAllDatabases());
 
   const poller = useMemo(() => pollOrgOperations({ orgId }), [orgId]);
   const cancel = useMemo(() => cancelOrgOperationsPoll(), []);
@@ -230,8 +225,6 @@ export function ActivityByEnv({ envId }: { envId: string }) {
   const search = params.get("search") || "";
   const loader = useLoader(pollEnvOperations);
   useQuery(fetchEnvironmentById({ id: envId }));
-  useQuery(fetchAllApps());
-  useQuery(fetchAllDatabases());
 
   const poller = useMemo(() => pollEnvOperations({ envId }), [envId]);
   const cancel = useMemo(() => cancelEnvOperationsPoll(), []);

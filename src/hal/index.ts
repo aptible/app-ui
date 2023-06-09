@@ -40,6 +40,12 @@ function transformResourceName(name: string | undefined | null): ResourceType {
       return "database";
     case "vhosts":
       return "vhost";
+    case "ephemeral_sessions":
+      return "ephemeral_session";
+    case "backups":
+      return "backup";
+    case "services":
+      return "service";
     default:
       return "unknown";
   }
