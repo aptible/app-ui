@@ -12,6 +12,7 @@ import {
   tokens,
 } from "../shared";
 
+import { usePermsRequired } from "../hooks";
 import { DetailPageLayout } from "./detail-page";
 import {
   fetchEnvironmentById,
@@ -127,6 +128,11 @@ function EnvironmentPageHeader(): React.ReactElement {
     selectEndpointsByEnvironmentId(s, { envId: environment.id }),
   );
   const crumbs = [{ name: stack.name, to: environmentsUrl() }];
+
+  usePermsRequired({
+    envId: id,
+    scope: "read",
+  });
 
   const tabs = [
     { name: "Resources", href: `/environments/${id}/resources` },

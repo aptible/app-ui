@@ -30,7 +30,7 @@ import {
   tokens,
 } from "../shared";
 
-import { usePoller } from "../hooks";
+import { usePermsRequired, usePoller } from "../hooks";
 import { useInterval } from "../hooks/use-interval";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { DetailPageLayout } from "./detail-page";
@@ -141,6 +141,11 @@ function DatabasePageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentResourcelUrl(environment.id) },
   ];
+
+  usePermsRequired({
+    envId: database.environmentId,
+    scope: "read",
+  });
 
   const poller = useMemo(() => pollDatabaseOperations({ id }), [id]);
   const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);

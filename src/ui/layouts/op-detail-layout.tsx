@@ -13,6 +13,7 @@ import type { AppState, DeployOperation } from "@app/types";
 
 import { Box, DetailPageHeaderView, OpStatus, tokens } from "../shared";
 
+import { usePermsRequired } from "../hooks";
 import { DetailPageLayout } from "./detail-page";
 import cn from "classnames";
 
@@ -71,6 +72,11 @@ const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
 function OpPageHeader() {
   const { id = "" } = useParams();
   const op = useSelector((s: AppState) => selectOperationById(s, { id }));
+
+  usePermsRequired({
+    envId: op.environmentId,
+    scope: "read",
+  });
 
   return (
     <DetailPageHeaderView

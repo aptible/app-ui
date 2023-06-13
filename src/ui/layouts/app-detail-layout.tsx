@@ -28,7 +28,7 @@ import {
   tokens,
 } from "../shared";
 
-import { usePoller } from "../hooks";
+import { usePermsRequired, usePoller } from "../hooks";
 import { useInterval } from "../hooks/use-interval";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { DetailPageLayout } from "./detail-page";
@@ -110,6 +110,11 @@ function AppPageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentResourcelUrl(environment.id) },
   ];
+
+  usePermsRequired({
+    envId: app.environmentId,
+    scope: "read",
+  });
 
   const poller = useMemo(() => pollAppOperations({ id }), [id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
