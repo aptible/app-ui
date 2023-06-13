@@ -14,6 +14,7 @@ import { defaultCodeScanResponse } from "@app/deploy/code-scan-result";
 import { createEnv } from "@app/env";
 import { defaultHalHref } from "@app/hal";
 import { defaultOrgResponse } from "@app/organizations";
+import { defaultRoleResponse } from "@app/roles";
 import { defaultSshKeyResponse } from "@app/ssh-keys";
 import { defaultTokenResponse } from "@app/token";
 import { defaultUserResponse } from "@app/users";
@@ -65,6 +66,7 @@ export const testUser = defaultUserResponse({
   email: testEmail,
   verified: false,
 });
+
 export const testSshKey = defaultSshKeyResponse({ id: `${createId()}` });
 
 export const testOrg = defaultOrgResponse({
@@ -75,6 +77,15 @@ export const testStack = defaultStackResponse({
   id: createId(),
   name: createText("stack"),
   region: "us-east-1",
+});
+
+export const testRole = defaultRoleResponse({
+  id: `${createId()}`,
+  name: "Deploy User",
+  type: "platform_user",
+  _links: {
+    organization: defaultHalHref(testOrg.id),
+  },
 });
 
 export const testAccount = defaultEnvResponse({

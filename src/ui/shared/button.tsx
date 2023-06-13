@@ -1,6 +1,9 @@
 import { tokens } from "./tokens";
+import { selectUserHasPerms } from "@app/deploy";
+import { AppState, PermissionScope } from "@app/types";
 import cn from "classnames";
 import { ButtonHTMLAttributes, FC } from "react";
+import { useSelector } from "react-redux";
 import { Link, LinkProps } from "react-router-dom";
 
 export type Size = "xs" | "sm" | "md" | "lg" | "xl";
@@ -119,3 +122,46 @@ export const Button: FC<ButtonProps> = ({
     </button>
   );
 };
+
+const ButtonPermission = ({
+  scope,
+  envId,
+  children,
+  ...props
+}: { scope: PermissionScope; envId: string } & ButtonProps) => {
+  const hasPerm = useSelector((s: AppState) =>
+    selectUserHasPerms(s, { scope, envId }),
+  );
+
+  let disabled = props.disabled;
+  if (!hasPerm) {
+    disabled = true;
+  }
+
+  return (
+    <Button {...props} disabled={disabled}>
+      {children}
+    </Button>
+  );
+};
+
+const createButtonPermission = (
+  scope: PermissionScope,
+  creatorProps: ButtonProps = {},
+) => {
+  return ({ envId, children, ...props }: { envId: string } & ButtonProps) => {
+    return (
+      <ButtonPermission
+        scope={scope}
+        envId={envId}
+        {...creatorProps}
+        {...props}
+      >
+        {children}
+      </ButtonPermission>
+    );
+  };
+};
+
+export const ButtonCreate = createButtonPermission("deploy");
+export const ButtonDestroy = createButtonPermission("destroy");

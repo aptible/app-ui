@@ -16,6 +16,7 @@ import { environmentEntities, environmentReducers } from "./environment";
 import { logDrainEntities, logDrainReducers } from "./log-drain";
 import { metricDrainEntities, metricDrainReducers } from "./metric-drain";
 import { opEntities, opReducers } from "./operation";
+import { permissionEntities, permissionReducers } from "./permission";
 import {
   activePlanEntities,
   activePlanReducers,
@@ -40,6 +41,7 @@ const allReducers: any[] = [
   opReducers,
   planReducers,
   activePlanReducers,
+  permissionReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -67,4 +69,5 @@ export const entities = {
   ...opEntities,
   ...planEntities,
   ...activePlanEntities,
+  ...permissionEntities,
 };

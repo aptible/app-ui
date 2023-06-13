@@ -14,6 +14,7 @@ import {
   testPlan,
   testPostgresDatabaseImage,
   testRedisDatabaseImage,
+  testRole,
   testScanOperation,
   testSshKey,
   testStack,
@@ -69,6 +70,20 @@ const authHandlers = [
     }
 
     return res(ctx.json({ _embedded: { users: [testUser] } }));
+  }),
+  rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (req, res, ctx) => {
+    if (!isValidToken(req)) {
+      return res(ctx.status(401));
+    }
+
+    return res(ctx.json({ _embedded: { roles: [testRole] } }));
+  }),
+  rest.get(`${testEnv.authUrl}/users/:userId/roles`, (req, res, ctx) => {
+    if (!isValidToken(req)) {
+      return res(ctx.status(401));
+    }
+
+    return res(ctx.json({ _embedded: { roles: [testRole] } }));
   }),
   rest.get(`${testEnv.authUrl}/users/:userId/ssh_keys`, (req, res, ctx) => {
     if (!isValidToken(req)) {
