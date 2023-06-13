@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  FormGroup,
-  IconAlertTriangle,
-  IconExternalLink,
-  IconTrash,
-  Input,
-} from "../shared";
+import { Box, Button, FormGroup, IconExternalLink, Input } from "../shared";
 import { selectEnvironmentById } from "@app/deploy";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
@@ -15,8 +7,8 @@ import { useParams } from "react-router";
 
 export const EnvironmentSettingsPage = () => {
   const [handle, setHandle] = useState<string>("");
-  const [deleteConfirm, setDeleteConfirm] = useState<string>("");
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  // const [deleteConfirm, setDeleteConfirm] = useState<string>("");
+  // const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const { id = "" } = useParams();
   const environment = useSelector((s: AppState) =>
@@ -31,14 +23,14 @@ export const EnvironmentSettingsPage = () => {
     e.preventDefault();
   };
 
-  const requestDeprovisionApp = (e: SyntheticEvent) => {
-    e.preventDefault();
+  // const requestDeprovisionApp = (e: SyntheticEvent) => {
+  //   e.preventDefault();
 
-    setIsDeleting(true);
-  };
+  //   setIsDeleting(true);
+  // };
 
-  const disabledDeleting =
-    isDeleting || "delete" !== deleteConfirm.toLocaleLowerCase();
+  // const disabledDeleting =
+  // isDeleting || "delete" !== deleteConfirm.toLocaleLowerCase();
 
   return (
     <div className="mb-4">
@@ -53,6 +45,7 @@ export const EnvironmentSettingsPage = () => {
           <FormGroup label="Environment Name" htmlFor="input-name">
             <Input
               className="mb-4"
+              disabled
               name="env-handle"
               type="text"
               value={handle}
@@ -62,27 +55,21 @@ export const EnvironmentSettingsPage = () => {
               id="input-name"
             />
           </FormGroup>
-          <hr />
+          {/* <hr />
           <div className="flex mt-4">
             <Button className="w-40 mb-4 flex semibold" onClick={() => {}}>
               Save Changes
             </Button>
-            <Button
-              className="w-40 ml-4 mb-4 flex"
-              onClick={() => {}}
-              variant="white"
-            >
-              <span className="text-base semibold">Cancel</span>
-            </Button>
-          </div>
+          </div> */}
         </form>
       </Box>
-      <Box>
+      {/* <Box>
         <h1 className="text-lg text-red-500 font-semibold">
           <IconAlertTriangle
             className="inline pr-3 mb-1"
             style={{ width: 32 }}
             color="#AD1A1A"
+            disabled
           />
           Delete Environment
         </h1>
@@ -118,7 +105,7 @@ export const EnvironmentSettingsPage = () => {
             </Button>
           </div>
         </div>
-      </Box>
+      </Box> */}
     </div>
   );
 };

@@ -4,12 +4,7 @@ import { useQuery } from "saga-query/react";
 
 import type { AppState } from "@app/types";
 
-import {
-  ButtonIcon,
-  IconPlusCircle,
-  InputSearch,
-  LoadResources,
-} from "../shared";
+import { InputSearch, LoadResources } from "../shared";
 import { fetchCertificates, selectCertificatesByEnvId } from "@app/deploy";
 import { useSelector } from "react-redux";
 
@@ -29,7 +24,7 @@ export const EnvironmentCertificatesPage = () => {
       <div className="mt-4">
         <div className="flex justify-between w-100">
           <div className="flex w-1/2">
-            <ButtonIcon icon={<IconPlusCircle />}>New Certificate</ButtonIcon>
+            {/* <ButtonIcon icon={<IconPlusCircle />}>New Certificate</ButtonIcon> */}
           </div>
           <div className="flex w-1/2 justify-end">
             <InputSearch

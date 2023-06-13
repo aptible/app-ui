@@ -5,12 +5,7 @@ import { calcServiceMetrics, selectServicesByIds } from "@app/deploy";
 import { AppState, DeployService } from "@app/types";
 
 import { ButtonIcon } from "../button";
-import {
-  IconChevronDown,
-  IconChevronUp,
-  IconEllipsis,
-  IconPlusCircle,
-} from "../icons";
+import { IconChevronDown, IconChevronUp, IconEllipsis } from "../icons";
 import { InputSearch } from "../input";
 import { PreCode, listToTextColor } from "../pre-code";
 import { ResourceListView } from "../resource-list-view";
@@ -140,7 +135,7 @@ export function ServicesOverview({
           <>
             <div className="flex justify-between w-100">
               <div className="flex w-1/2">
-                <ButtonIcon icon={<IconPlusCircle />}>New Service</ButtonIcon>
+                {/* <ButtonIcon icon={<IconPlusCircle />}>New Service</ButtonIcon> */}
               </div>
               <div className="flex w-1/2 justify-end">
                 <InputSearch
