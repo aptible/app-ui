@@ -28,7 +28,7 @@ export const ApplicationSidebar = () => {
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
     { name: "Apps", to: appsUrl(), icon: <IconLayers /> },
     { name: "Databases", to: databaseUrl(), icon: <IconBox /> },
-    { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud />, },
+    { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
   ];
 

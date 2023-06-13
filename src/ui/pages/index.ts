@@ -44,3 +44,4 @@ export * from "./impersonate";
 export * from "./plans";
 export * from "./sso";
 export * from "./activity";
+export * from "./deployments";
