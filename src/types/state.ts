@@ -14,6 +14,8 @@ import type {
   DeployService,
   DeployServiceDefinition,
   DeployStack,
+  Permission,
+  Timestamps,
 } from "./deploy";
 import type { EntityMap } from "./hal";
 import type { MapEntity } from "./helpers";
@@ -55,6 +57,14 @@ export interface Token {
   accessToken: string;
   userUrl: string;
   actorUrl: string;
+}
+
+export type RoleType = "owner" | "platform_owner" | "platform_user";
+export interface Role extends Timestamps {
+  id: string;
+  name: string;
+  type: RoleType;
+  organizationId: string;
 }
 
 export interface AuthApiError {
@@ -103,6 +113,7 @@ export interface DeployState {
   operations: MapEntity<DeployOperation>;
   active_plans: MapEntity<DeployActivePlan>;
   plans: MapEntity<DeployPlan>;
+  permissions: MapEntity<Permission>;
 }
 
 export interface AppState extends QueryState {
@@ -123,4 +134,6 @@ export interface AppState extends QueryState {
   theme: Theme;
   deploy: DeployState;
   modal: ModalState;
+  roles: MapEntity<Role>;
+  currentUserRoles: string[];
 }

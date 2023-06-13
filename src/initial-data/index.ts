@@ -1,6 +1,18 @@
-import { call, put, select, setLoaderSuccess, takeEvery } from "saga-query";
+import {
+  batchActions,
+  call,
+  put,
+  select,
+  setLoaderSuccess,
+  takeEvery,
+} from "saga-query";
 
-import { AUTH_LOADER_ID, fetchOrganizations } from "@app/auth";
+import {
+  AUTH_LOADER_ID,
+  fetchCurrentUserRoles,
+  fetchOrganizations,
+  fetchRoles,
+} from "@app/auth";
 import {
   fetchAllApps,
   fetchAllDatabases,
@@ -9,16 +21,23 @@ import {
 } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
 import { AnyAction } from "@app/types";
-import { fetchUsers } from "@app/users";
+import { fetchUsers, selectCurrentUserId } from "@app/users";
 
 export function* onFetchInitData() {
   yield* call(fetchOrganizations.run, fetchOrganizations());
   const org = yield* select(selectOrganizationSelected);
-  yield* put(fetchUsers({ orgId: org.id }));
-  yield* put(fetchAllStacks());
-  yield* put(fetchAllEnvironments());
-  yield* put(fetchAllApps());
-  yield* put(fetchAllDatabases());
+  const userId = yield* select(selectCurrentUserId);
+  yield* put(
+    batchActions([
+      fetchUsers({ orgId: org.id }),
+      fetchRoles({ orgId: org.id }),
+      fetchCurrentUserRoles({ userId: userId }),
+      fetchAllStacks(),
+      fetchAllEnvironments(),
+      fetchAllApps(),
+      fetchAllDatabases(),
+    ]),
+  );
 }
 
 export function* watchFetchInitData() {

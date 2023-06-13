@@ -15,6 +15,7 @@ import type {
   OnboardingStatus,
 } from "@app/types";
 
+import { PermissionResponse } from "../permission";
 import { selectDeploy } from "../slice";
 import { selectStackById } from "../stack";
 
@@ -35,6 +36,9 @@ export interface DeployEnvironmentResponse {
   sweetness_stack: string;
   total_backup_size: number;
   onboarding_status: OnboardingStatus;
+  _embedded: {
+    permissions: PermissionResponse[];
+  };
   _links: {
     environment: LinkResponse;
     stack: LinkResponse;
@@ -63,6 +67,9 @@ export const defaultEnvResponse = (
     sweetness_stack: "",
     total_backup_size: 0,
     onboarding_status: "unknown",
+    _embedded: {
+      permissions: [],
+    },
     _links: {
       environment: { href: "" },
       stack: { href: "" },

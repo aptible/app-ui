@@ -36,6 +36,7 @@ export * from "./plan";
 export * from "./log-viewer";
 export * from "./op-status";
 export * from "./activity";
+export * from "./permission";
 export * from "./pill";
 export * from "./resource-group-box";
 export * from "./op-status";
