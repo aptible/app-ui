@@ -27,16 +27,12 @@ interface EnvironmentCellProps {
 }
 
 const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
-  const environmentTypeColor =
-    environment.type === "development"
-      ? tokens.type["normal blue lighter"]
-      : tokens.type["normal lighter"];
   return (
     <Td>
       <Link to={environmentResourcelUrl(environment.id)}>
         {environment.handle}
       </Link>
-      <div className={environmentTypeColor}>
+      <div className={tokens.type["normal lighter"]}>
         {environment.type === "development" ? "Development" : "Production"}
       </div>
     </Td>
