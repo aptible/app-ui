@@ -99,6 +99,9 @@ export const DATABASE_SETTINGS_PATH = `${DATABASE_DETAIL_PATH}/settings`;
 export const databaseSettingsUrl = (id: string) =>
   `${databaseDetailUrl(id)}/settings`;
 
+export const DEPLOYMENTS_PATH = "/deployments";
+export const deploymentsUrl = () => DEPLOYMENTS_PATH;
+
 export const ENVIRONMENTS_PATH = "/environments";
 export const environmentsUrl = () => ENVIRONMENTS_PATH;
 export const ENVIRONMENT_DETAIL_PATH = "/environments/:id";
