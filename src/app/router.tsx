@@ -70,6 +70,7 @@ import {
   VerifyEmailPage,
 } from "@app/ui";
 import { OpDetailPage } from "@app/ui/pages/op-detail";
+import { StylesPage } from "@app/ui/pages/styles";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -644,6 +645,11 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.ERROR_PATH,
     element: <ErrorPage />,
+  },
+
+  {
+    path: routes.STYLES_PATH,
+    element: <StylesPage />,
   },
 
   {
