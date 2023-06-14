@@ -1,9 +1,7 @@
 import {
   AppList,
-  ButtonIcon,
   DatabaseList,
   DetailPageSections,
-  IconPlusCircle,
   InputSearch,
 } from "../shared";
 import { useState } from "react";
@@ -17,10 +15,10 @@ export const EnvironmentResourcesPage = () => {
     <DetailPageSections>
       <div className="flex mt-4">
         <div className="flex w-1/2">
-          <ButtonIcon icon={<IconPlusCircle />}>New App</ButtonIcon>
+          {/* <ButtonIcon icon={<IconPlusCircle />}>New App</ButtonIcon>
           <div className="ml-4">
             <ButtonIcon icon={<IconPlusCircle />}>New Database</ButtonIcon>
-          </div>
+          </div> */}
         </div>
         <div className="flex w-1/2 justify-end">
           <InputSearch

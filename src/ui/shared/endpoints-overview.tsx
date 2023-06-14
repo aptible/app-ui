@@ -199,11 +199,11 @@ export function EndpointsView({
       <EmptyResultView
         title="No endpoints yet"
         description="Expose this application to the public internet by adding an endpoint"
-        action={
-          <ButtonIcon icon={<IconPlusCircle />} className="inline-flex">
-            Add Endpoint
-          </ButtonIcon>
-        }
+        // action={
+        //   <ButtonIcon icon={<IconPlusCircle />} className="inline-flex">
+        //     Add Endpoint
+        //   </ButtonIcon>
+        // }
         className="p-6 w-100"
       />
     );

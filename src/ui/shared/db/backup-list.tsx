@@ -4,7 +4,6 @@ import {
   ButtonIcon,
   IconChevronDown,
   IconEllipsis,
-  IconPlusCircle,
   InputSearch,
   LoadResources,
   ResourceListView,
@@ -112,7 +111,7 @@ export const DatabaseBackupsList = ({
       <div className="mt-4">
         <div className="flex justify-between w-100">
           <div className="flex w-1/2">
-            <ButtonIcon icon={<IconPlusCircle />}>New Backup</ButtonIcon>
+            {/* <ButtonIcon icon={<IconPlusCircle />}>New Backup</ButtonIcon> */}
           </div>
           <div className="flex w-1/2 justify-end">
             <InputSearch
