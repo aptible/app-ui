@@ -12,7 +12,7 @@ import {
   IconPlusCircle,
 } from "../icons";
 import { InputSearch } from "../input";
-import { PreCode, listToTextColor } from "../pre-code";
+import { PreCode, listToInvertedTextColor } from "../pre-code";
 import { ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
@@ -77,8 +77,7 @@ const serviceListRow = ({
           <div>
             <PreCode
               allowCopy
-              segments={listToTextColor(service.command.split(" "))}
-              className="bg-gray-100"
+              segments={listToInvertedTextColor(service.command.split(" "))}
             />
           </div>
         </td>
