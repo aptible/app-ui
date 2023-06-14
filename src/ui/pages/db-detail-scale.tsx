@@ -1,4 +1,4 @@
-import { Box, Button, FormGroup, Input } from "../shared";
+import { Box, FormGroup, Input } from "../shared";
 import {
   fetchDatabase,
   fetchService,
@@ -123,7 +123,7 @@ export const DatabaseScalePage = () => {
               </FormGroup>
             </div>
           </div>
-          <hr />
+          {/* <hr />
           <div className="flex mt-4">
             <Button className="w-40 mb-4 flex font-semibold" onClick={() => {}}>
               Save Changes
@@ -135,7 +135,7 @@ export const DatabaseScalePage = () => {
             >
               <span className="text-base font-semibold">Cancel</span>
             </Button>
-          </div>
+          </div> */}
         </form>
       </Box>
     </div>
