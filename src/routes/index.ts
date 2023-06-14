@@ -173,3 +173,6 @@ export const ACTIVITY_PATH = "/activity";
 export const activityUrl = () => ACTIVITY_PATH;
 export const OPERATION_DETAIL_PATH = "/operations/:id";
 export const operationDetailUrl = (id: string) => `/operations/${id}`;
+
+export const STYLES_PATH = "/styles";
+export const stylesUrl = () => STYLES_PATH;
