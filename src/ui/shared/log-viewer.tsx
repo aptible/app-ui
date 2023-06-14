@@ -6,7 +6,7 @@ import { useApi } from "saga-query/react";
 import { fetchOperationLogs } from "@app/deploy";
 import { AppState, DeployOperation } from "@app/types";
 
-const LogLine = ({ text }: { text: string }) => {
+export const LogLine = ({ text }: { text: string }) => {
   const parts = text.split("-- :");
   if (parts.length === 1) {
     return (
