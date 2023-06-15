@@ -105,7 +105,10 @@ export const DatabaseClusterPage = () => {
         <div className="text-base inline">
           {clusterDatabases.length ? clusterDatabases.length : 0} Cluster
           Members. Replicas can only be added via the Aptible CLI,{" "}
-          <a href="https://aptible.com/docs" className="text-blue-500">
+          <a
+            href="https://www.aptible.com/docs/replication-clustering"
+            className="text-blue-500"
+          >
             view docs to learn more
           </a>
           .
