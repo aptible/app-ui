@@ -12,7 +12,8 @@ const AptibleMark = () => (
 );
 
 export const AptibleLogoOnly = () => (
-  <svg viewBox="-1.5 0 20 15" fill="none" width={24} className="">
+  <svg viewBox="-1.5 0 20 15" fill="none" width={24}>
+    <title>Aptible Logo Without Text</title>
     <AptibleMark />
   </svg>
 );

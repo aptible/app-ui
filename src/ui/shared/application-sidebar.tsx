@@ -42,14 +42,16 @@ export const ApplicationSidebar = () => {
   return (
     <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-        <div
+        <button
+          aria-label={`${collapsed ? "Expand" : "Collapse"} Menu`}
+          type="button"
           className={`${
             collapsed ? "mt-0 mx-4 my-4" : "absolute top-4 right-4"
           } hover:cursor-pointer`}
           onClick={() => dispatch(setCollapsed({ collapsed: !collapsed }))}
         >
           <IconHamburger color="#888C90" />
-        </div>
+        </button>
         <div className="flex items-center flex-shrink-0 px-4">
           <Link to={environmentsUrl()}>
             {collapsed ? <AptibleLogoOnly /> : <AptibleLogo />}
