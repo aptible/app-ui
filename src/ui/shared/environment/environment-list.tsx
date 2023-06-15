@@ -29,15 +29,18 @@ interface EnvironmentCellProps {
 const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
   return (
     <Td>
-      <Link
-        to={environmentResourcelUrl(environment.id)}
-        className={tokens.type["table link"]}
-      >
-        {environment.handle}
+      <Link to={environmentResourcelUrl(environment.id)} className="flex">
+        <img src="/logo-environment.png" className="w-8 h-8 mt-1 mr-2" />
+        <p className="leading-4 mt-0">
+          <span className={tokens.type["table link"]}>
+            {environment.handle}
+          </span>
+          <br />
+          <span className={tokens.type["normal lighter"]}>
+            {environment.type === "development" ? "Development" : "Production"}
+          </span>
+        </p>
       </Link>
-      <div className={tokens.type["normal lighter"]}>
-        {environment.type === "development" ? "Development" : "Production"}
-      </div>
     </Td>
   );
 };
