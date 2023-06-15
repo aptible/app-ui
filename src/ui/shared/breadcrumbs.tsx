@@ -16,19 +16,21 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
 
 export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
   return (
-    <nav className="flex" aria-label="Breadcrumb">
+    <nav className="flex -mt-1" aria-label="Breadcrumb">
       <div className="flex items-center">
         {crumbs.map((crumb, idx) => (
           <div key={`${crumb.name}-${idx}`}>
             {crumb.to === null ? (
-              <div className="text-xl">&nbsp;{crumb.name}</div>
+              <div className="text-xl font-semibold">&nbsp;{crumb.name}</div>
             ) : (
               <>
                 <NavLink className={navLink} to={crumb.to}>
                   {" "}
                   {crumb.name}
                 </NavLink>
-                <span className="text-xl">{idx !== crumbs.length && " /"}</span>
+                <span className="text-xl text-gray-500">
+                  {idx !== crumbs.length && " /"}
+                </span>
               </>
             )}
           </div>
