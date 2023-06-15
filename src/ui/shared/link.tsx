@@ -12,17 +12,19 @@ export const LinkNav = ({
   icon,
   name,
   to,
+  hideName = false,
 }: {
   icon: JSX.Element;
   name: string;
   to: string;
+  hideName?: boolean;
 }) => (
   <NavLink className={navLink} to={to} key={to}>
     <div className="flex items-center">
       <div className="mr-3" aria-hidden="true">
         {icon}
       </div>
-      <div>{name}</div>
+      {hideName ? null : <div>{name}</div>}
     </div>
   </NavLink>
 );

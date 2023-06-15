@@ -4,6 +4,7 @@ import {
   IconBox,
   IconCloud,
   IconGlobe,
+  IconHamburger,
   IconHeart,
   IconLayers,
   IconPlusCircle,
@@ -17,13 +18,16 @@ import {
   environmentsUrl,
 } from "@app/routes";
 
-import { AptibleLogo } from "./aptible-logo";
+import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
 import { ButtonIcon } from "./button";
-import { ExternalLink } from "./external-link";
 import { LinkNav } from "./link";
 import { UserMenu } from "./user-menu";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const ApplicationSidebar = () => {
+  const [mobileMenuEnabled, setMobileMenuEnabled] = useState(false);
+
   const navigate = useNavigate();
   const navigation = [
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
@@ -36,12 +40,22 @@ export const ApplicationSidebar = () => {
   return (
     <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+        <div
+          className={`${
+            mobileMenuEnabled ? "mt-0 mx-4 my-4" : "absolute top-4 right-4"
+          } hover:cursor-pointer`}
+          onClick={() => setMobileMenuEnabled(!mobileMenuEnabled)}
+        >
+          <IconHamburger color="#888C90" />
+        </div>
         <div className="flex items-center flex-shrink-0 px-4">
-          <AptibleLogo />
+          <Link to={environmentsUrl()}>
+            {mobileMenuEnabled ? <AptibleLogoOnly /> : <AptibleLogo />}
+          </Link>
         </div>
         <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
           {navigation.map((item) => (
-            <LinkNav key={item.name} {...item} />
+            <LinkNav key={item.name} {...item} hideName={mobileMenuEnabled} />
           ))}
         </nav>
       </div>
@@ -49,31 +63,47 @@ export const ApplicationSidebar = () => {
         <ButtonIcon
           className="w-full mb-4"
           onClick={() => navigate(createProjectGitUrl())}
-          icon={<IconPlusCircle />}
+          icon={
+            <IconPlusCircle
+              style={
+                mobileMenuEnabled
+                  ? {
+                      width: 12,
+                      height: 12,
+                      marginRight: -8,
+                      marginLeft: -2,
+                      transform: "scale(2.5, 2.5)",
+                    }
+                  : {}
+              }
+            />
+          }
         >
-          Create
+          {mobileMenuEnabled ? "" : "Create"}
         </ButtonIcon>
-        <UserMenu />
-        <div className="my-6 flex justify-between text-xs text-gray-500">
-          <a
-            className="text-gray-500 hover:text-indigo"
-            href="https://aptible.com/docs"
-          >
-            DOCS
-          </a>
-          <a
-            className="text-gray-500 hover:text-indigo"
-            href="https://aptible.com/support"
-          >
-            SUPPORT
-          </a>
-          <a
-            className="text-gray-500 hover:text-indigo"
-            href="https://aptible.com/cli"
-          >
-            INSTALL CLI
-          </a>
-        </div>
+        <UserMenu hideName={mobileMenuEnabled} />
+        {mobileMenuEnabled ? null : (
+          <div className="my-6 flex justify-between text-xs text-gray-500">
+            <a
+              className="text-gray-500 hover:text-indigo"
+              href="https://aptible.com/docs"
+            >
+              DOCS
+            </a>
+            <a
+              className="text-gray-500 hover:text-indigo"
+              href="https://aptible.com/support"
+            >
+              SUPPORT
+            </a>
+            <a
+              className="text-gray-500 hover:text-indigo"
+              href="https://aptible.com/cli"
+            >
+              INSTALL CLI
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

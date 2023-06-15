@@ -10,7 +10,7 @@ import { IconAlertCircle } from "./icons";
 import { LinkNav } from "./link";
 import { Loading } from "./loading";
 
-export const UserMenu = () => {
+export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
   const { user, isLoading } = useCurrentUser();
   const canImpersonate = useSelector(selectCanImpersonate);
 
@@ -19,16 +19,27 @@ export const UserMenu = () => {
   }
 
   return (
-    <div className="w-full">
-      <LinkNav to={settingsUrl()} icon={<IconUserCircle />} name="Settings" />
+    <div className="w-full mb-2">
+      <LinkNav
+        to={settingsUrl()}
+        icon={<IconUserCircle />}
+        name="Settings"
+        hideName={hideName}
+      />
       {canImpersonate ? (
         <LinkNav
           to={impersonateUrl()}
           icon={<IconAlertCircle />}
           name="Impersonate"
+          hideName={hideName}
         />
       ) : null}
-      <LinkNav to={logoutUrl()} icon={<IconLogout />} name="Logout" />
+      <LinkNav
+        to={logoutUrl()}
+        icon={<IconLogout />}
+        name="Logout"
+        hideName={hideName}
+      />
     </div>
   );
 };

@@ -331,3 +331,13 @@ export const IconCloud = (props: Props) => {
     </IconStrokeBase>
   );
 };
+
+export const IconHamburger = (props: Props) => {
+  return (
+    <IconStrokeBase {...props} title="Hamburger Menu Icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M3.75 6.75H20.25M3.75 12H20.25M3.75 17.25H20.25" />
+      </svg>
+    </IconStrokeBase>
+  );
+};
