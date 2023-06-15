@@ -52,9 +52,7 @@ const appDetailBox = ({ app }: { app: DeployApp }): React.ReactElement => (
             <h3 className="text-base font-semibold text-gray-900">
               Git Remote
             </h3>
-            <p>
-              {app.gitRepo} <IconCopy className="inline h-4" color="#888C90" />
-            </p>
+            <p>{app.gitRepo}</p>
           </div>
           <div className="mt-4">
             <h3 className="text-base font-semibold text-gray-900">Git Ref</h3>
