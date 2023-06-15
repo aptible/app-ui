@@ -26,14 +26,20 @@ type DatabaseCellProps = { database: DeployDatabase };
 const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td className="flex-1">
-      <Link
-        to={databaseEndpointsUrl(database.id)}
-        className={tokens.type["table link"]}
-      >
-        {database.handle}
-      </Link>
-      <div className={tokens.type["normal lighter"]}>
-        {capitalize(database.type)}
+      <div className="flex">
+        <Link to={databaseEndpointsUrl(database.id)} className="flex">
+          <img
+            src={`/logo-${database.type}.png`}
+            className="w-8 h-8 mt-1 mr-2"
+          />
+          <p className="leading-4 -mt-0">
+            <span className={tokens.type["table link"]}>{database.handle}</span>
+            <br />
+            <span className={tokens.type["normal lighter"]}>
+              {capitalize(database.type)}
+            </span>
+          </p>
+        </Link>
       </div>
     </Td>
   );
