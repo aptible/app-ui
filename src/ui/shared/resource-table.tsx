@@ -19,7 +19,12 @@ export const EnvStackCell = ({ environmentId }: { environmentId: string }) => {
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
       <div>
-        <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
+        <Link
+          to={environmentDetailUrl(env.id)}
+          className={tokens.type["table link"]}
+        >
+          {env.handle}
+        </Link>
         <div className={tokens.type["normal lighter"]}>
           {stack.organizationId ? "Dedicated Stack " : "Shared Stack "}(
           {stack.region})

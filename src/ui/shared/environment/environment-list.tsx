@@ -29,7 +29,10 @@ interface EnvironmentCellProps {
 const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
   return (
     <Td>
-      <Link to={environmentResourcelUrl(environment.id)}>
+      <Link
+        to={environmentResourcelUrl(environment.id)}
+        className={tokens.type["table link"]}
+      >
         {environment.handle}
       </Link>
       <div className={tokens.type["normal lighter"]}>

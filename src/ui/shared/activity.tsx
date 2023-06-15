@@ -35,6 +35,7 @@ import { OpStatus } from "./op-status";
 import { ResourceHeader, ResourceListView } from "./resource-list-view";
 import { EnvStackCell } from "./resource-table";
 import { TableHead, Td } from "./table";
+import { tokens } from "./tokens";
 
 interface OpCellProps {
   op: DeployActivityRow;
@@ -43,7 +44,12 @@ interface OpCellProps {
 const OpPrimaryCell = ({ op }: OpCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={operationDetailUrl(op.id)}>{capitalize(op.type)}</Link>
+      <Link
+        to={operationDetailUrl(op.id)}
+        className={tokens.type["table link"]}
+      >
+        {capitalize(op.type)}
+      </Link>
     </Td>
   );
 };
@@ -69,7 +75,9 @@ const OpResourceHandleCell = ({ op }: OpCellProps) => {
   return (
     <Td>
       {url ? (
-        <Link to={url}>{op.resourceHandle}</Link>
+        <Link to={url} className={tokens.type["table link"]}>
+          {op.resourceHandle}
+        </Link>
       ) : (
         <div>{op.resourceHandle}</div>
       )}
@@ -88,7 +96,9 @@ const OpLastUpdatedCell = ({ op }: OpCellProps) => {
 const OpUserCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-      <a href={`mailto:${op.userEmail}`}>{op.userName}</a>
+      <a href={`mailto:${op.userEmail}`} className={tokens.type["table link"]}>
+        {op.userName}
+      </a>
     </Td>
   );
 };
