@@ -18,7 +18,7 @@ import {
   useQuery,
 } from "saga-query/react";
 
-import { prettyDateRelative, timeBetween } from "@app/date";
+import { timeBetween } from "@app/date";
 import {
   appDetailUrl,
   createProjectAddKeyUrl,
@@ -26,7 +26,6 @@ import {
   createProjectGitPushUrl,
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
-  createProjectGitUrl,
   homeUrl,
   logoutUrl,
 } from "@app/routes";
@@ -56,16 +55,10 @@ import {
   ExternalLink,
   FormGroup,
   IconArrowRight,
-  IconCheck,
   IconChevronDown,
   IconChevronUp,
   IconCopy,
-  IconGitBranch,
-  IconGlobe,
-  IconInfo,
   IconPlusCircle,
-  IconSettings,
-  IconX,
   Input,
   Loading,
   LogViewer,
@@ -74,15 +67,17 @@ import {
   SelectOption,
   StackSelect,
   listToInvertedTextColor,
+  resolveOperationStatuses,
   tokens,
 } from "../shared";
 import { AddSSHKeyForm } from "../shared/add-ssh-key";
-import { OnboardingLink } from "../shared/onboarding-link";
+import { StatusPill } from "../shared/pill";
+import { ResourceGroupBox } from "../shared/resource-group-box";
+import { StatusBox } from "../shared/status-box";
 import {
   cancelAppOpsPoll,
   createEndpointOperation,
   fetchAllApps,
-  fetchAllEnvironments,
   fetchAllStacks,
   fetchApp,
   fetchAppOperations,
@@ -95,7 +90,6 @@ import {
   pollAppOperations,
   provisionEndpoint,
   selectAppById,
-  selectAppsByEnvOnboarding,
   selectDatabasesByEnvId,
   selectEndpointsByAppId,
   selectEnvironmentById,
@@ -293,86 +287,6 @@ export const CreateProjectFromAppSetupPage = () => {
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
   return <Loading text={`Detecting app ${app.handle} status ...`} />;
-};
-
-const DeploymentOverview = ({ app }: { app: DeployApp }) => {
-  useQuery(fetchEndpointsByAppId({ appId: app.id }));
-  const deployOp = useSelector((s: AppState) =>
-    selectLatestDeployOp(s, { appId: app.id }),
-  );
-  const [status, dateStr] = resolveOperationStatuses([deployOp]);
-
-  return (
-    <ProjectBox
-      handle={app.handle}
-      appId={app.id}
-      status={<StatusPill status={status} from={dateStr} />}
-    >
-      <div className="mt-4">
-        <OnboardingLink app={app} />
-      </div>
-    </ProjectBox>
-  );
-};
-
-export const DeploymentsPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const accountIds =
-    searchParams.get("accounts")?.split(",").filter(Boolean) || [];
-  const apps = useSelector(selectAppsByEnvOnboarding);
-  const envsLoader = useLoader(fetchAllEnvironments());
-  const appsLoader = useLoader(fetchAllApps());
-  const filteredApps = apps.filter((app) => {
-    if (accountIds.length === 0) return true;
-    return accountIds.includes(app.environmentId);
-  });
-  const resetFilter = () => {
-    setSearchParams({});
-  };
-
-  const view = () => {
-    if (envsLoader.isInitialLoading || appsLoader.isInitialLoading) {
-      return (
-        <div className="mt-4">
-          <Loading text="Loading ..." />
-        </div>
-      );
-    } else if (apps.length === 0) {
-      return <div className="mt-4">No deployments found</div>;
-    }
-
-    return null;
-  };
-
-  return (
-    <div>
-      <h1 className={`${tokens.type.h1} mb-6 text-center`}>App Deployments</h1>
-      <ButtonLink to={createProjectGitUrl()}>
-        <IconPlusCircle className="mr-2" /> Deploy
-      </ButtonLink>
-
-      {view()}
-
-      {accountIds.length > 0 && apps.length > 0 ? (
-        <Button
-          variant="white"
-          size="sm"
-          onClick={resetFilter}
-          className="mt-8 mb-2"
-        >
-          Show All
-        </Button>
-      ) : (
-        <div className="mt-8" />
-      )}
-
-      <div>
-        {filteredApps.map((app) => (
-          <DeploymentOverview key={app.id} app={app} />
-        ))}
-      </div>
-    </div>
-  );
 };
 
 export const CreateProjectGitPage = () => {
@@ -1836,143 +1750,6 @@ const ProjectStatus = ({
   );
 };
 
-const resolveOperationStatuses = (
-  stats: { status: OperationStatus; updatedAt: string }[],
-): [OperationStatus, string] => {
-  if (stats.length === 0) {
-    return ["unknown", new Date().toISOString()];
-  }
-  // sort the statuses from least recent to most recent
-  // this allows us to return-early with the proper time in which the states
-  // were first determined
-  const statuses = stats.sort(
-    (a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
-  );
-
-  let success = 0;
-  for (let i = 0; i < statuses.length; i += 1) {
-    const st = statuses[i];
-    if (st.status === "queued") {
-      return ["queued", st.updatedAt];
-    }
-
-    if (st.status === "running") {
-      return ["running", st.updatedAt];
-    }
-
-    if (st.status === "failed") {
-      return ["failed", st.updatedAt];
-    }
-
-    if (st.status === "succeeded") {
-      success += 1;
-    }
-  }
-
-  if (success === statuses.length) {
-    return [
-      "succeeded",
-      statuses.at(-1)?.updatedAt || new Date().toISOString(),
-    ];
-  }
-
-  return ["unknown", new Date().toISOString()];
-};
-
-const Pill = ({
-  children,
-  icon,
-}: {
-  children: React.ReactNode;
-  icon: JSX.Element;
-}) => {
-  const className = cn(
-    "rounded-full border-2",
-    "text-sm font-semibold text-black-500",
-    "ml-2 px-2 flex justify-between items-center w-fit",
-  );
-  return (
-    <div className={className}>
-      {icon}
-      <div className="ml-1">{children}</div>
-    </div>
-  );
-};
-
-const StatusPill = ({
-  status,
-  from,
-}: {
-  status: OperationStatus;
-  from: string;
-}) => {
-  const date = prettyDateRelative(from);
-
-  const className = cn(
-    "rounded-full border-2",
-    "text-sm font-semibold ",
-    "px-2 flex justify-between items-center w-fit",
-  );
-
-  if (status === "running" || status === "queued") {
-    return (
-      <div
-        className={cn(className, "text-brown border-brown bg-orange-100")}
-        role="status"
-      >
-        <IconSettings color="#825804" className="mr-1" variant="sm" />
-        <div>
-          {status === "running" ? "Building" : "Queued"} {date}
-        </div>
-      </div>
-    );
-  }
-
-  if (status === "failed") {
-    return (
-      <div
-        className={cn(className, "text-red border-red-300 bg-red-100")}
-        role="status"
-      >
-        <IconX color="#AD1A1A" variant="sm" />
-        <div>Failed {date}</div>
-      </div>
-    );
-  }
-
-  if (status === "succeeded") {
-    return (
-      <div
-        className={cn(className, "text-forest border-lime-300 bg-lime-100")}
-        role="status"
-      >
-        <IconCheck color="#00633F" className="mr-1" variant="sm" />
-        Deployed {date}
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className={cn(className, "text-indigo border-indigo-300 bg-indigo-100")}
-      role="status"
-    >
-      <IconInfo color="#4361FF" className="mr-1" variant="sm" />
-      Not deployed
-    </div>
-  );
-};
-
-const StatusBox = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="mt-4 first:mt-0">
-      <div className="bg-white p-5 shadow rounded-lg border border-black-100">
-        {children}
-      </div>
-    </div>
-  );
-};
-
 const Code = ({ children }: { children: React.ReactNode }) => {
   return <code className="bg-gray-200 text-black p-[2px]">{children}</code>;
 };
@@ -2034,81 +1811,6 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
 
       <BannerMessages {...loader} className="mt-2" />
     </div>
-  );
-};
-
-const ProjectBox = ({
-  appId,
-  children,
-  status,
-  handle,
-}: {
-  appId: string;
-  children: React.ReactNode;
-  status: JSX.Element;
-  handle: string;
-}) => {
-  const vhost = useSelector((s: AppState) =>
-    selectFirstEndpointByAppId(s, { id: appId }),
-  );
-  const deployOp = useSelector((s: AppState) =>
-    selectLatestDeployOp(s, { appId }),
-  );
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: app.environmentId }),
-  );
-
-  return (
-    <StatusBox>
-      <div className="border-b border-black-100 pb-4 ">
-        <div className="flex items-center">
-          <div>
-            <img
-              alt="default project logo"
-              src="/logo-app.png"
-              style={{ width: 32, height: 32 }}
-              className="mr-3"
-            />
-          </div>
-          <div>
-            <h4 className={tokens.type.h4}>{handle}</h4>
-            <p className="text-black-500 text-sm">
-              {hasDeployEndpoint(vhost) && vhost.status === "provisioned" ? (
-                <a
-                  href={`https://${vhost.virtualDomain}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  https://{vhost.virtualDomain}
-                </a>
-              ) : (
-                "Pending HTTP Endpoint"
-              )}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center mt-1">
-          {status}
-
-          <Pill icon={<IconGlobe color="#595E63" variant="sm" />}>
-            <ExternalLink
-              href={`${legacyUrl}/accounts/${app.environmentId}`}
-              variant="info"
-            >
-              {env.handle}
-            </ExternalLink>
-          </Pill>
-
-          <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
-            {deployOp.gitRef.slice(0, 7) || "Pending"}
-          </Pill>
-        </div>
-      </div>
-
-      {children}
-    </StatusBox>
   );
 };
 
@@ -2391,7 +2093,7 @@ export const CreateProjectGitStatusPage = () => {
 
       <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />
 
-      <ProjectBox
+      <ResourceGroupBox
         handle={app.handle}
         appId={appId}
         status={<StatusPill status={status} from={dateStr} />}
@@ -2407,7 +2109,7 @@ export const CreateProjectGitStatusPage = () => {
             gitRef={gitRef}
           />
         )}
-      </ProjectBox>
+      </ResourceGroupBox>
 
       {deployProjectLoader.isError ? (
         <StatusBox>

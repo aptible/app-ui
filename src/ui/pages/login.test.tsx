@@ -53,7 +53,10 @@ describe("Login page", () => {
       const btn = await screen.findByRole("button");
       fireEvent.click(btn);
 
-      await screen.findByText("App Deployments");
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Deployments",
+      });
       expect(
         await screen.findByText(testAppDeployed.handle),
       ).toBeInTheDocument();

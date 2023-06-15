@@ -33,6 +33,7 @@ import {
   DatabaseSettingsPage,
   DatabasesPage,
   DeploymentsPage,
+  DeploymentsPageWithMenus,
   ElevatePage,
   ElevateRequired,
   EnvironmentActivityPage,
@@ -258,6 +259,11 @@ export const appRoutes: RouteObject[] = [
       {
         index: true,
         element: <Navigate to={routes.appsUrl()} />,
+      },
+
+      {
+        path: routes.DEPLOYMENTS_PATH,
+        element: <DeploymentsPageWithMenus />,
       },
 
       {
@@ -511,6 +517,10 @@ export const appRoutes: RouteObject[] = [
           {
             path: routes.CREATE_PROJECT_GIT_STATUS_PATH,
             element: <CreateProjectGitStatusPage />,
+          },
+          {
+            path: routes.CREATE_PROJECT_APP_SETUP_PATH,
+            element: <CreateProjectFromAppSetupPage />,
           },
         ],
       },

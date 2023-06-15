@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 
 import {
   IconBox,
+  IconCloud,
   IconGlobe,
   IconHeart,
   IconLayers,
@@ -12,6 +13,7 @@ import {
   appsUrl,
   createProjectGitUrl,
   databaseUrl,
+  deploymentsUrl,
   environmentsUrl,
 } from "@app/routes";
 
@@ -26,6 +28,7 @@ export const ApplicationSidebar = () => {
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
     { name: "Apps", to: appsUrl(), icon: <IconLayers /> },
     { name: "Databases", to: databaseUrl(), icon: <IconBox /> },
+    { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
   ];
 

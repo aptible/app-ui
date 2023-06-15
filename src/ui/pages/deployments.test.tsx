@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import { DeploymentsPage } from "./create-project-git";
+import { DeploymentsPage } from "./deployments";
 import { defaultAppResponse, defaultEnvResponse } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import {
