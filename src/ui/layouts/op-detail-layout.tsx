@@ -21,7 +21,7 @@ const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
   return (
     <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
       <Box>
-        <h1 className="text-md text-gray-500">Operation Details</h1>
+        <h1 className="text-lg text-gray-500">Operation Details</h1>
         <div className="flex w-1/1">
           <div className="flex-col w-1/2">
             <div className="mt-4">
