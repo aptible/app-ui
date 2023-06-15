@@ -3,10 +3,10 @@ import { useNavigate } from "react-router";
 import {
   IconBox,
   IconCloud,
+  IconCylinder,
   IconGlobe,
   IconHamburger,
   IconHeart,
-  IconLayers,
   IconPlusCircle,
 } from "./icons";
 import {
@@ -23,6 +23,7 @@ import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import { UserMenu } from "./user-menu";
 import { selectNav, setCollapsed } from "@app/nav";
+import { useLayoutEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -33,11 +34,23 @@ export const ApplicationSidebar = () => {
   const navigate = useNavigate();
   const navigation = [
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
-    { name: "Apps", to: appsUrl(), icon: <IconLayers /> },
-    { name: "Databases", to: databaseUrl(), icon: <IconBox /> },
+    { name: "Apps", to: appsUrl(), icon: <IconBox /> },
+    { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
   ];
+
+  useLayoutEffect(() => {
+    // if entering medium breakpoint, force a responsive menu
+    function updateSize() {
+      if (window.innerWidth <= 767) {
+        dispatch(setCollapsed({ collapsed: true }));
+      }
+    }
+    window.addEventListener("resize", updateSize);
+    updateSize();
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
@@ -46,13 +59,13 @@ export const ApplicationSidebar = () => {
           aria-label={`${collapsed ? "Expand" : "Collapse"} Menu`}
           type="button"
           className={`${
-            collapsed ? "mt-0 mx-4 my-4" : "absolute top-4 right-4"
+            collapsed ? "mt-0 ml-4 my-4" : "absolute top-4 right-4"
           } hover:cursor-pointer`}
           onClick={() => dispatch(setCollapsed({ collapsed: !collapsed }))}
         >
           <IconHamburger color="#888C90" />
         </button>
-        <div className="flex items-center flex-shrink-0 px-4">
+        <div className="flex items-center flex-shrink-0 pl-4">
           <Link to={environmentsUrl()}>
             {collapsed ? <AptibleLogoOnly /> : <AptibleLogo />}
           </Link>
