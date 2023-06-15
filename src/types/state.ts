@@ -97,6 +97,10 @@ export interface Otp {
 
 export type Theme = "light" | "dark";
 
+export interface Nav {
+  collapsed: boolean;
+}
+
 export interface DeployState {
   apps: MapEntity<DeployApp>;
   certificates: MapEntity<DeployCertificate>;
@@ -132,6 +136,7 @@ export interface AppState extends QueryState {
   otp: Otp;
   data: MapEntity<any>;
   theme: Theme;
+  nav: Nav;
   deploy: DeployState;
   modal: ModalState;
   roles: MapEntity<Role>;

@@ -131,6 +131,7 @@ import {
 } from "@app/deploy/operation";
 import { selectEnv, selectLegacyDashboardUrl, selectOrigin } from "@app/env";
 import { selectFeedback, setFeedback } from "@app/feedback";
+import { selectNav } from "@app/nav";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   DbSelectorProps,
@@ -149,16 +150,20 @@ export const CreateProjectLayout = ({
   const origin = useSelector(selectOrigin);
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const org = useSelector(selectOrganizationSelected);
+  const { collapsed } = useSelector(selectNav);
+  const collapsedOffset = collapsed ? 14 : 64;
   const orgSettingsUrl = `${legacyUrl}/organizations/${org.id}/members`;
   const sshSettingsUrl = `${legacyUrl}/settings/protected/ssh`;
 
   if (origin === "nextgen") {
     return (
       <div>
-        <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+        <div
+          className={`hidden md:flex md:w-${collapsedOffset} md:flex-col md:fixed md:inset-y-0`}
+        >
           <ApplicationSidebar />
         </div>
-        <div className="md:ml-64">
+        <div className={`md:pl-${collapsedOffset}`}>
           <HeroBgLayout showLogo={false} width={700}>
             <div className="min-h-screen -my-16 pt-16">
               {children ? children : <Outlet />}

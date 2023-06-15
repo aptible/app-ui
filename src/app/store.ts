@@ -14,6 +14,7 @@ import type { AppState } from "@app/types";
 import { reducers, sagas } from "./packages";
 import { sentryErrorReporter } from "./sentry";
 import { FEEDBACK_NAME } from "@app/feedback";
+import { NAV_NAME } from "@app/nav";
 
 interface Props {
   initState?: Partial<AppState>;
@@ -31,6 +32,7 @@ const persistConfig = {
     TOKEN_NAME,
     ELEVATED_TOKEN_NAME,
     THEME_NAME,
+    NAV_NAME,
     REDIRECT_NAME,
     FEEDBACK_NAME,
   ],

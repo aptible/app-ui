@@ -22,11 +22,13 @@ import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
 import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import { UserMenu } from "./user-menu";
-import { useState } from "react";
+import { selectNav, setCollapsed } from "@app/nav";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 export const ApplicationSidebar = () => {
-  const [mobileMenuEnabled, setMobileMenuEnabled] = useState(false);
+  const dispatch = useDispatch();
+  const { collapsed } = useSelector(selectNav);
 
   const navigate = useNavigate();
   const navigation = [
@@ -42,47 +44,49 @@ export const ApplicationSidebar = () => {
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
         <div
           className={`${
-            mobileMenuEnabled ? "mt-0 mx-4 my-4" : "absolute top-4 right-4"
+            collapsed ? "mt-0 mx-4 my-4" : "absolute top-4 right-4"
           } hover:cursor-pointer`}
-          onClick={() => setMobileMenuEnabled(!mobileMenuEnabled)}
+          onClick={() => dispatch(setCollapsed({ collapsed: !collapsed }))}
         >
           <IconHamburger color="#888C90" />
         </div>
         <div className="flex items-center flex-shrink-0 px-4">
           <Link to={environmentsUrl()}>
-            {mobileMenuEnabled ? <AptibleLogoOnly /> : <AptibleLogo />}
+            {collapsed ? <AptibleLogoOnly /> : <AptibleLogo />}
           </Link>
         </div>
         <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
           {navigation.map((item) => (
-            <LinkNav key={item.name} {...item} hideName={mobileMenuEnabled} />
+            <LinkNav key={item.name} {...item} hideName={collapsed} />
           ))}
         </nav>
       </div>
-      <div className="px-3 w-full">
-        <ButtonIcon
-          className="w-full mb-4"
-          onClick={() => navigate(createProjectGitUrl())}
-          icon={
-            <IconPlusCircle
-              style={
-                mobileMenuEnabled
-                  ? {
-                      width: 12,
-                      height: 12,
-                      marginRight: -8,
-                      marginLeft: -2,
-                      transform: "scale(2.5, 2.5)",
-                    }
-                  : {}
-              }
-            />
-          }
-        >
-          {mobileMenuEnabled ? "" : "Create"}
-        </ButtonIcon>
-        <UserMenu hideName={mobileMenuEnabled} />
-        {mobileMenuEnabled ? null : (
+      <div className="px-2 w-full">
+        <div className="ml-0">
+          <ButtonIcon
+            className="w-full mb-4"
+            onClick={() => navigate(createProjectGitUrl())}
+            icon={
+              <IconPlusCircle
+                style={
+                  collapsed
+                    ? {
+                        width: 12,
+                        height: 12,
+                        marginRight: -8,
+                        marginLeft: -2,
+                        transform: "scale(2.5, 2.5)",
+                      }
+                    : {}
+                }
+              />
+            }
+          >
+            {collapsed ? "" : "Create"}
+          </ButtonIcon>
+        </div>
+        <UserMenu hideName={collapsed} />
+        {collapsed ? null : (
           <div className="my-6 flex justify-between text-xs text-gray-500">
             <a
               className="text-gray-500 hover:text-indigo"
