@@ -95,7 +95,7 @@ const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
       <div>
-        <div>{stack.name}</div>
+        <div className="text-black">{stack.name}</div>
         <div className={tokens.type["normal lighter"]}>
           {stack.organizationId ? "Dedicated Stack " : "Shared Stack "}(
           {stack.region})
