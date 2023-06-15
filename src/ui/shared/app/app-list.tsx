@@ -149,7 +149,7 @@ export function AppList({
         );
       case "simple-text":
         return (
-          <p className="flex ml-4 text-gray-500 text-base">
+          <p className="flex text-gray-500 text-base">
             {apps.length} App{apps.length > 1 && "s"}
           </p>
         );

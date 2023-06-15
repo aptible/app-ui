@@ -111,7 +111,7 @@ export function DatabaseList({
         );
       case "simple-text":
         return (
-          <p className="flex ml-4 text-gray-500 text-base">
+          <p className="flex text-gray-500 text-base">
             {dbs.length} Database{dbs.length > 1 && "s"}
           </p>
         );
