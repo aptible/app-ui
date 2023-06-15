@@ -2,10 +2,10 @@ import { ApplicationSidebar } from "../shared";
 
 type Props = {
   children: React.ReactNode;
-  margin?: boolean;
+  withoutMargin?: boolean;
 };
 
-export function ListingPageLayout({ children, margin = true }: Props) {
+export function ListingPageLayout({ children, withoutMargin = false }: Props) {
   return (
     <>
       <div>
@@ -15,8 +15,10 @@ export function ListingPageLayout({ children, margin = true }: Props) {
 
         <div className="md:pl-64 flex flex-col flex-1">
           <main className="flex-1">
-            <div className={margin ? "mx-auto px-4 sm:px-6 md:px-8" : ""}>
-              <div className={margin ? "py-4" : ""}>{children}</div>
+            <div
+              className={withoutMargin ? "" : "mx-auto px-4 sm:px-6 md:px-8"}
+            >
+              <div className={withoutMargin ? "" : "py-4"}>{children}</div>
             </div>
           </main>
         </div>

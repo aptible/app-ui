@@ -120,7 +120,7 @@ export const DeploymentsPage = ({
 };
 
 export const DeploymentsPageWithMenus = () => (
-  <ListingPageLayout margin={false}>
+  <ListingPageLayout withoutMargin>
     <div className="my-4 py-4 mx-auto px-8">
       <DeploymentsPage
         headerStyle={tokens.type.h2}
