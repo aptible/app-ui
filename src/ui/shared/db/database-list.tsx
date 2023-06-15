@@ -13,11 +13,13 @@ import type { AppState, DeployDatabase } from "@app/types";
 
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
+import { OpStatus } from "../op-status";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 import { databaseEndpointsUrl } from "@app/routes";
+import { capitalize } from "@app/string-utils";
 
 type DatabaseCellProps = { database: DeployDatabase };
 
@@ -36,16 +38,12 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
       {database.lastOperation ? (
         <>
           <div className={tokens.type.darker}>
-            <span className="font-semibold">
-              {database.lastOperation.type.toLocaleUpperCase()}
-            </span>{" "}
-            by {database.lastOperation.userName}
+            {capitalize(database.lastOperation.type)} by{" "}
+            {database.lastOperation.userName}
           </div>
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
-            <span className="font-semibold">
-              {database.lastOperation.status.toLocaleUpperCase()}
-            </span>{" "}
+            <OpStatus status={database.lastOperation.status} />{" "}
             {prettyDateRelative(database.lastOperation.createdAt)}
           </div>
         </>

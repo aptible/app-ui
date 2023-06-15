@@ -485,7 +485,7 @@ export const createReadableStatus = (status: OperationStatus): string => {
     case "failed":
       return "FAILED";
     default:
-      return status;
+      return status.toLocaleUpperCase();
   }
 };
 
