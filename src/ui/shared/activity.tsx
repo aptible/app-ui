@@ -130,7 +130,7 @@ function ActivityTable({
         filterBar={
           <div className="flex items-center gap-3">
             <InputSearch
-              placeholder="Search Operations..."
+              placeholder="Search operations..."
               search={search}
               onChange={onChange}
             />

@@ -22,7 +22,7 @@ export const EnvironmentResourcesPage = () => {
         </div>
         <div className="flex w-1/2 justify-end">
           <InputSearch
-            placeholder="Search ..."
+            placeholder="Search..."
             search={search}
             onChange={onChange}
           />

@@ -136,7 +136,7 @@ export function EnvironmentList() {
             title="Environments"
             filterBar={
               <InputSearch
-                placeholder="Search environments ..."
+                placeholder="Search environments..."
                 search={search}
                 onChange={onChange}
               />

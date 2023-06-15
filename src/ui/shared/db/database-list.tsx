@@ -98,7 +98,7 @@ export function DatabaseList({
             filterBar={
               searchOverride ? undefined : (
                 <InputSearch
-                  placeholder="Search databases ..."
+                  placeholder="Search databases..."
                   search={search}
                   onChange={onChange}
                 />

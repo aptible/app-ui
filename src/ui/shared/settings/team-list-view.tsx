@@ -29,7 +29,7 @@ const UserListRow = ({ user }: { user: User }) => {
 
 const FilterBarView = () => {
   return (
-    <InputSearch placeholder="Search users ..." search="" onChange={() => {}} />
+    <InputSearch placeholder="Search users..." search="" onChange={() => {}} />
   );
 };
 

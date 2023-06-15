@@ -37,7 +37,7 @@ describe("AuthRequired", () => {
         <h1>Test element</h1>
       </TestProvider>,
     );
-    await waitForElementToBeRemoved(() => screen.queryByText("loading ..."));
+    await waitForElementToBeRemoved(() => screen.queryByText("loading..."));
     expect(screen.queryByText("Test element")).toBeInTheDocument();
   });
   it("should redirect when current token expired", async () => {
@@ -62,7 +62,7 @@ describe("AuthRequired", () => {
         <h1>Test element</h1>
       </TestProvider>,
     );
-    await waitForElementToBeRemoved(() => screen.queryByText("loading ..."));
+    await waitForElementToBeRemoved(() => screen.queryByText("loading..."));
     await screen.findByText("Simulated login");
     expect(screen.queryByText("Test element")).not.toBeInTheDocument();
   });

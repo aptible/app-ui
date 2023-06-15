@@ -135,7 +135,7 @@ export const DatabaseSettingsPage = () => {
               disabled={isUpdating || updatingDatabaseLoader.isLoading}
             >
               {isUpdating || updatingDatabaseLoader.isLoading
-                ? "Loading ..."
+                ? "Loading..."
                 : "Save Changes"}
             </Button>
           </div>

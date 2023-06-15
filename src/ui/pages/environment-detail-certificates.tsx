@@ -29,7 +29,7 @@ export const EnvironmentCertificatesPage = () => {
           <div className="flex w-1/2 justify-end">
             <InputSearch
               className="self-end float-right]"
-              placeholder="Search certificates ..."
+              placeholder="Search certificates..."
               search={search}
               onChange={onChange}
             />

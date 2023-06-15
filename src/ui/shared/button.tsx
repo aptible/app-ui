@@ -63,7 +63,7 @@ export const ButtonLinkExternal = ({
   );
   return (
     <a {...props} className={`${className} ${classes}`}>
-      {isLoading ? "Loading ..." : children}
+      {isLoading ? "Loading..." : children}
     </a>
   );
 };
@@ -87,7 +87,7 @@ export const ButtonLink = ({
   );
   return (
     <Link {...props} className={`${className} ${classes}`}>
-      {isLoading ? "Loading ..." : children}
+      {isLoading ? "Loading..." : children}
     </Link>
   );
 };
@@ -118,7 +118,7 @@ export const Button: FC<ButtonProps> = ({
       className={`${className} ${classes}`}
       disabled={isLoading || props.disabled}
     >
-      {isLoading ? "Loading ..." : children}
+      {isLoading ? "Loading..." : children}
     </button>
   );
 };

@@ -140,7 +140,7 @@ export function AppList({
             filterBar={
               searchOverride ? undefined : (
                 <InputSearch
-                  placeholder="Search Apps ..."
+                  placeholder="Search apps..."
                   search={search}
                   onChange={onChange}
                 />

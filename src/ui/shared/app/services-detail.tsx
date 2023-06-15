@@ -139,7 +139,7 @@ export function ServicesOverview({
               <div className="flex w-1/2 justify-end">
                 <InputSearch
                   className="self-end float-right]"
-                  placeholder="Search apps ..."
+                  placeholder="Search apps..."
                   search={search}
                   onChange={onChange}
                 />

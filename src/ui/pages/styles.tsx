@@ -136,7 +136,7 @@ const Forms = () => {
       </h1>
       <InputSearch
         className="mt-4"
-        placeholder="Search field ..."
+        placeholder="Search field..."
         search={search}
         onChange={onChange}
       />

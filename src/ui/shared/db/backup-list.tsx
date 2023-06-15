@@ -116,7 +116,7 @@ export const DatabaseBackupsList = ({
           <div className="flex w-1/2 justify-end">
             <InputSearch
               className="self-end float-right]"
-              placeholder="Search backups ..."
+              placeholder="Search backups..."
               search={search}
               onChange={onChange}
             />

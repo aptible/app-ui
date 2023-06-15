@@ -245,7 +245,7 @@ export const CreateProjectFromAccountSetupPage = () => {
     }
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
-  return <Loading text={`Detecting app ${app.handle} status ...`} />;
+  return <Loading text={`Detecting app ${app.handle} status...`} />;
 };
 
 export const CreateProjectFromAppSetupPage = () => {
@@ -286,7 +286,7 @@ export const CreateProjectFromAppSetupPage = () => {
     }
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
-  return <Loading text={`Detecting app ${app.handle} status ...`} />;
+  return <Loading text={`Detecting app ${app.handle} status...`} />;
 };
 
 export const CreateProjectGitPage = () => {
@@ -1332,7 +1332,7 @@ export const CreateProjectGitSettingsPage = () => {
       <Box>
         <div className="mb-4">
           {codeScan.isInitialLoading ? (
-            <Loading text="Loading code scan results ..." />
+            <Loading text="Loading code scan results..." />
           ) : (
             <CodeScanInfo codeScan={codeScan.data} />
           )}
@@ -2099,7 +2099,7 @@ export const CreateProjectGitStatusPage = () => {
         status={<StatusPill status={status} from={dateStr} />}
       >
         {isInitialLoading ? (
-          <Loading text="Loading resources ..." />
+          <Loading text="Loading resources..." />
         ) : (
           <ProjectStatus
             status={status}
