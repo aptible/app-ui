@@ -21,7 +21,6 @@ import {
   Box,
   Button,
   DetailPageHeaderView,
-  IconCopy,
   IconExternalLink,
   IconGitBranch,
   TabItem,

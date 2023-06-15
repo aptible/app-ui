@@ -99,11 +99,11 @@ export const DatabaseBackupsList = ({
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
 
-  const sortIconProps = {
-    className: "inline",
-    color: "#6b7280",
-    style: { width: 14, height: 14 },
-  };
+  // const sortIconProps = {
+  //   className: "inline",
+  //   color: "#6b7280",
+  //   style: { width: 14, height: 14 },
+  // };
 
   return (
     <LoadResources query={query} isEmpty={backups.length === 0}>
