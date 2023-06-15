@@ -28,6 +28,7 @@ import { capitalize } from "@app/string-utils";
 import type { AppState } from "@app/types";
 
 import { usePoller } from "../hooks/use-poller";
+import { Button } from "./button";
 import { IconRefresh } from "./icons";
 import { InputSearch } from "./input";
 import { LoadResources } from "./load-resources";
@@ -85,6 +86,20 @@ const OpResourceHandleCell = ({ op }: OpCellProps) => {
   );
 };
 
+const OpActionsCell = ({ op }: OpCellProps) => {
+  return (
+    <Td>
+      <div>
+        <Link to={operationDetailUrl(op.id)}>
+          <Button variant="white" color="white" size="sm" className="px-0">
+            Logs
+          </Button>
+        </Link>
+      </div>
+    </Td>
+  );
+};
+
 const OpLastUpdatedCell = ({ op }: OpCellProps) => {
   return (
     <Td>
@@ -94,13 +109,7 @@ const OpLastUpdatedCell = ({ op }: OpCellProps) => {
 };
 
 const OpUserCell = ({ op }: OpCellProps) => {
-  return (
-    <Td>
-      <a href={`mailto:${op.userEmail}`} className={tokens.type["table link"]}>
-        {op.userName}
-      </a>
-    </Td>
-  );
+  return <Td>{op.userName}</Td>;
 };
 
 const OpListRow = ({ op }: OpCellProps) => {
@@ -113,6 +122,7 @@ const OpListRow = ({ op }: OpCellProps) => {
       <OpResourceHandleCell op={op} />
       <OpUserCell op={op} />
       <OpLastUpdatedCell op={op} />
+      <OpActionsCell op={op} />
     </tr>
   );
 };
@@ -172,6 +182,7 @@ function ActivityTable({
               "Resource",
               "User",
               "Last Updated",
+              "Actions",
             ]}
           />
         }
