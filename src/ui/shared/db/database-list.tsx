@@ -32,7 +32,9 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
       >
         {database.handle}
       </Link>
-      <div className={tokens.type["normal lighter"]}>{database.type}</div>
+      <div className={tokens.type["normal lighter"]}>
+        {capitalize(database.type)}
+      </div>
     </Td>
   );
 };
