@@ -13,7 +13,7 @@ export type CellProps = {
 export const Td = ({ children, className }: CellProps) => {
   const classes = cn(
     tokens.type["small lighter"],
-    "pl-8 py-4",
+    "pl-4 py-4",
     "whitespace-nowrap",
     className,
   );
@@ -22,7 +22,7 @@ export const Td = ({ children, className }: CellProps) => {
 
 export const Th = ({ children, className }: CellProps) => {
   const classes = cn(
-    "pl-8 py-4",
+    "pl-4 py-4",
     tokens.type["small normal lighter"],
     "text-left",
     className,
