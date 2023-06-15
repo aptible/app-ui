@@ -35,7 +35,6 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
       <Link to={appServicesUrl(app.id)} className={tokens.type["table link"]}>
         {app.handle}
       </Link>
-      <div className={tokens.type["normal lighter"]}>{app.envHandle}</div>
     </Td>
   );
 };
