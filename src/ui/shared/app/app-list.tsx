@@ -13,7 +13,7 @@ import {
 } from "@app/deploy";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
-import { appServicesUrl } from "@app/routes";
+import { appServicesUrl, operationDetailUrl } from "@app/routes";
 import type { AppState } from "@app/types";
 
 import { InputSearch } from "../input";
@@ -85,7 +85,13 @@ const AppLastOpCell = ({ app }: AppCellProps) => {
       {app.lastOperation ? (
         <>
           <div className={tokens.type.darker}>
-            {capitalize(app.lastOperation.type)} by {app.lastOperation.userName}
+            <Link
+              to={operationDetailUrl(app.lastOperation.id)}
+              className={tokens.type["table link"]}
+            >
+              {capitalize(app.lastOperation.type)} by{" "}
+              {app.lastOperation.userName}
+            </Link>
           </div>
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
