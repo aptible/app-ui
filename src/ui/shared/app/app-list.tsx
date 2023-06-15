@@ -68,7 +68,7 @@ const AppCostCell = ({ app }: AppCellProps) => {
 
   return (
     <Td>
-      <div className={tokens.type.darker}>${cost}</div>
+      <div className={tokens.type.darker}>${cost.toFixed(2)}</div>
     </Td>
   );
 };
