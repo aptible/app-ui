@@ -19,6 +19,7 @@ import {
 
 import { AptibleLogo } from "./aptible-logo";
 import { ButtonIcon } from "./button";
+import { ExternalLink } from "./external-link";
 import { LinkNav } from "./link";
 import { UserMenu } from "./user-menu";
 
@@ -54,9 +55,24 @@ export const ApplicationSidebar = () => {
         </ButtonIcon>
         <UserMenu />
         <div className="my-6 flex justify-between text-xs text-gray-500">
-          <a href="https://aptible.com/docs">DOCS</a>
-          <a href="https://aptible.com/support">SUPPORT</a>
-          <a href="https://aptible.com/cli">INSTALL CLI</a>
+          <a
+            className="text-gray-500 hover:text-indigo"
+            href="https://aptible.com/docs"
+          >
+            DOCS
+          </a>
+          <a
+            className="text-gray-500 hover:text-indigo"
+            href="https://aptible.com/support"
+          >
+            SUPPORT
+          </a>
+          <a
+            className="text-gray-500 hover:text-indigo"
+            href="https://aptible.com/cli"
+          >
+            INSTALL CLI
+          </a>
         </div>
       </div>
     </div>

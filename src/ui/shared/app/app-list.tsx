@@ -61,11 +61,10 @@ const AppCostCell = ({ app }: AppCellProps) => {
   const services = useSelector((s: AppState) =>
     selectServicesByIds(s, { ids: app.serviceIds }),
   );
-  const cost =
-    services.reduce((acc, service) => {
-      const mm = calcServiceMetrics(service);
-      return acc + mm.estimatedCostInDollars;
-    }, 0);
+  const cost = services.reduce((acc, service) => {
+    const mm = calcServiceMetrics(service);
+    return acc + mm.estimatedCostInDollars;
+  }, 0);
 
   return (
     <Td>
