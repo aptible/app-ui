@@ -44,6 +44,7 @@ import { selectCurrentUser } from "@app/users";
 
 import { HeroBgLayout } from "../layouts";
 import {
+  ApplicationSidebar,
   AptibleLogo,
   Banner,
   BannerMessages,
@@ -150,6 +151,23 @@ export const CreateProjectLayout = ({
   const org = useSelector(selectOrganizationSelected);
   const orgSettingsUrl = `${legacyUrl}/organizations/${org.id}/members`;
   const sshSettingsUrl = `${legacyUrl}/settings/protected/ssh`;
+
+  if (origin === "nextgen") {
+    return (
+      <div>
+        <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+          <ApplicationSidebar />
+        </div>
+        <div className="md:ml-64">
+          <HeroBgLayout showLogo={false} width={700}>
+            <div className="min-h-screen -my-16 pt-16">
+              {children ? children : <Outlet />}
+            </div>
+          </HeroBgLayout>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
