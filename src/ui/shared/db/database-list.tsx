@@ -31,6 +31,7 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
           <img
             src={`/logo-${database.type}.png`}
             className="w-8 h-8 mt-1 mr-2"
+            aria-label={`${database.type} Database`}
           />
           <p className="leading-4">
             <span className={tokens.type["table link"]}>{database.handle}</span>

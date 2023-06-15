@@ -33,7 +33,11 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
   return (
     <Td className="flex-1">
       <Link to={appServicesUrl(app.id)} className="flex">
-        <img src="/logo-app.png" className="w-8 h-8 mr-2 align-middle" />
+        <img
+          src="/logo-app.png"
+          className="w-8 h-8 mr-2 align-middle"
+          aria-label="App"
+        />
         <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
       </Link>
     </Td>
