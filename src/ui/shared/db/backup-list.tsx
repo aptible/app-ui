@@ -2,7 +2,6 @@ import { ReactElement, useState } from "react";
 
 import {
   ButtonIcon,
-  IconChevronDown,
   IconEllipsis,
   InputSearch,
   LoadResources,
@@ -122,7 +121,7 @@ export const DatabaseBackupsList = ({
             />
           </div>
         </div>
-        <div className="text-sm text-gray-500 mt-4 select-none">
+        {/* <div className="text-sm text-gray-500 mt-4 select-none">
           <div className="ml-5 cursor-pointer inline">
             Older than: <IconChevronDown {...sortIconProps} />
           </div>
@@ -141,7 +140,7 @@ export const DatabaseBackupsList = ({
           <div className="ml-5 cursor-pointer inline">
             Source: Originals <IconChevronDown {...sortIconProps} />
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="my-4">
         <ResourceListView
