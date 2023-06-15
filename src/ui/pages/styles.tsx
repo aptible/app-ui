@@ -1,19 +1,25 @@
 import {
+  AptibleLogo,
   Banner,
   Button,
   ButtonIcon,
   ButtonLink,
+  IconGitBranch,
   IconPlusCircle,
   Input,
   InputSearch,
   LogLine,
+  Pill,
   Select,
   SelectOption,
+  StatusPill,
   TableHead,
   Tabs,
   Td,
   tokens,
 } from "../shared";
+import { Breadcrumbs } from "../shared/breadcrumbs";
+import { OperationStatus } from "@app/types";
 import { useState } from "react";
 
 const StylesWrapper = ({
@@ -32,6 +38,9 @@ const StylesWrapper = ({
 
 const StylesNavigation = () => (
   <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
+    <div className="mb-4">
+      <AptibleLogo />
+    </div>
     {[
       { name: "Colors", to: "#colors" },
       { name: "Typography", to: "#typography" },
@@ -43,7 +52,7 @@ const StylesNavigation = () => (
       { name: "Pills", to: "#pills" },
       { name: "Navigation", to: "#navigation" },
     ].map(({ name, to }) => (
-      <a className="block p-2 rounded-md hover:no-underline" href={to} key={to}>
+      <a className={tokens.type["table link"]} href={to} key={to}>
         <div className="flex items-center">
           <div>{name}</div>
         </div>
@@ -351,11 +360,33 @@ const Logs = () => (
   </div>
 );
 
+const operationStatuses: OperationStatus[] = [
+  "queued",
+  "failed",
+  "running",
+  "succeeded",
+  "unknown",
+];
 const Pills = () => (
   <div>
     <h1 id="pills" className={tokens.type.h1}>
       Pills
     </h1>
+    <div className="mt-4">
+      <h3 className={tokens.type.h3}>Customizable pill with icon</h3>
+      <Pill icon={<IconGitBranch variant="sm" />} key="test">
+        Basic Icon With Pill
+      </Pill>
+    </div>
+    <div className="mt-4">
+      <h3 className={tokens.type.h3}>Operation status and time-based pill</h3>
+      {operationStatuses.map((status) => (
+        <div className="mt-4">
+          <StatusPill from={new Date().toString()} status={status} />
+        </div>
+      ))}
+    </div>
+    <br />
   </div>
 );
 
@@ -364,16 +395,35 @@ const Navigation = () => (
     <h1 id="navigation" className={tokens.type.h1}>
       Navigation
     </h1>
-    <Tabs
-      tabs={[
-        { name: "Tab 1", current: true, href: "#" },
-        { name: "Tab 2", current: false, href: "/" },
-        { name: "Tab 3", current: false, href: "/" },
-        { name: "Tab 4", current: false, href: "/" },
-        { name: "Tab 5", current: false, href: "/" },
-        { name: "Tab 6", current: false, href: "/" },
-      ]}
-    />
+    <div className="mt-4">
+      <h3 className={tokens.type.h3}>Tabs</h3>
+      <div className="mt-4">
+        <Tabs
+          tabs={[
+            { name: "Tab 1", current: true, href: "#" },
+            { name: "Tab 2", current: false, href: "/" },
+            { name: "Tab 3", current: false, href: "/" },
+            { name: "Tab 4", current: false, href: "/" },
+            { name: "Tab 5", current: false, href: "/" },
+            { name: "Tab 6", current: false, href: "/" },
+          ]}
+        />
+      </div>
+    </div>
+    <div className="mt-4">
+      <h3 className={tokens.type.h3}>Breadcrumbs</h3>
+      <div className="mt-4">
+        <Breadcrumbs
+          crumbs={[
+            { to: "/", name: "Crumb 1" },
+            { to: "/", name: "Crumb 2" },
+            { to: "/", name: "Crumb 3" },
+            { to: "/", name: "Crumb 4" },
+            { to: "/styles", name: "Crumb 5" },
+          ]}
+        />
+      </div>
+    </div>
   </div>
 );
 
