@@ -152,6 +152,10 @@ export const CreateProjectLayout = ({
   const org = useSelector(selectOrganizationSelected);
   const { collapsed } = useSelector(selectNav);
   const collapsedOffset = collapsed ? 14 : 64;
+  const bodyLeftMargin = collapsed
+    ? `pl-${collapsedOffset}`
+    : `md:pl-${collapsedOffset}`;
+
   const orgSettingsUrl = `${legacyUrl}/organizations/${org.id}/members`;
   const sshSettingsUrl = `${legacyUrl}/settings/protected/ssh`;
 
@@ -159,11 +163,13 @@ export const CreateProjectLayout = ({
     return (
       <div>
         <div
-          className={`hidden md:flex md:w-${collapsedOffset} md:flex-col md:fixed md:inset-y-0`}
+          className={`flex md:w-${collapsedOffset} flex-col fixed inset-y-0`}
+          style={{ width: collapsedOffset * 3.5 }}
         >
           <ApplicationSidebar />
         </div>
-        <div className={`md:pl-${collapsedOffset}`}>
+
+        <div className={`${bodyLeftMargin} flex flex-col flex-1`}>
           <HeroBgLayout showLogo={false} width={700}>
             <div className="min-h-screen -my-16 pt-16">
               {children ? children : <Outlet />}
