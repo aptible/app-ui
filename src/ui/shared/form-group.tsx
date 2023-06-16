@@ -60,7 +60,7 @@ export function FormGroup({
         <Label htmlFor={htmlFor} {...labelProps}>
           {label}
         </Label>
-        <div className="text-black-500 mb-2">{description}</div>
+        <div className="text-black-500 mb-1">{description}</div>
       </div>
 
       <div className={`flex ${splitWidthInputs ? "w-1/2" : "flex-col"}`}>
