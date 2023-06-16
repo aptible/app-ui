@@ -104,19 +104,19 @@ export const ApplicationSidebar = () => {
         {collapsed ? null : (
           <div className="my-6 flex justify-between text-xs text-gray-500">
             <a
-              className="text-gray-500 hover:text-indigo"
+              className="text-gray-500 hover:text-indigo px-3"
               href="https://aptible.com/docs"
             >
               DOCS
             </a>
             <a
-              className="text-gray-500 hover:text-indigo"
+              className="text-gray-500 hover:text-indigo px-3"
               href="https://aptible.com/support"
             >
               SUPPORT
             </a>
             <a
-              className="text-gray-500 hover:text-indigo"
+              className="text-gray-500 hover:text-indigo px-3"
               href="https://aptible.com/cli"
             >
               INSTALL CLI
