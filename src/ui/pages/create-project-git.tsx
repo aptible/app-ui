@@ -44,7 +44,6 @@ import { selectCurrentUser } from "@app/users";
 
 import { HeroBgLayout, MenuWrappedPage } from "../layouts";
 import {
-  ApplicationSidebar,
   AptibleLogo,
   Banner,
   BannerMessages,
@@ -131,7 +130,6 @@ import {
 } from "@app/deploy/operation";
 import { selectEnv, selectLegacyDashboardUrl, selectOrigin } from "@app/env";
 import { selectFeedback, setFeedback } from "@app/feedback";
-import { selectNav } from "@app/nav";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   DbSelectorProps,

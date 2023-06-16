@@ -8,7 +8,6 @@ import {
   IconCheck,
   IconEllipsis,
   IconInfo,
-  IconPlusCircle,
   IconSettings,
   IconX,
 } from "./icons";
