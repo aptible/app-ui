@@ -1,4 +1,4 @@
-import { ListingPageLayout } from "../layouts";
+import { MenuWrappedPage } from "../layouts/menu-wrapper";
 import {
   Button,
   ButtonLink,
@@ -120,7 +120,7 @@ export const DeploymentsPage = ({
 };
 
 export const DeploymentsPageWithMenus = () => (
-  <ListingPageLayout withoutMargin>
+  <MenuWrappedPage withoutMargin>
     <div className="my-4 py-4 mx-auto px-8">
       <DeploymentsPage
         headerStyle={tokens.type.h2}
@@ -128,5 +128,5 @@ export const DeploymentsPageWithMenus = () => (
         showDeployButton={false}
       />
     </div>
-  </ListingPageLayout>
+  </MenuWrappedPage>
 );

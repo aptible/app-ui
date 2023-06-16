@@ -33,7 +33,7 @@ import {
 import { usePoller } from "../hooks";
 import { useInterval } from "../hooks/use-interval";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
-import { DetailPageLayout } from "./detail-page";
+import { MenuWrappedPage } from "./menu-wrapper";
 import cn from "classnames";
 import { useMemo, useState } from "react";
 
@@ -181,8 +181,8 @@ function DatabasePageHeader() {
 
 export const DatabaseDetailLayout = () => {
   return (
-    <DetailPageLayout header={<DatabasePageHeader />}>
+    <MenuWrappedPage header={<DatabasePageHeader />}>
       <Outlet />
-    </DetailPageLayout>
+    </MenuWrappedPage>
   );
 };

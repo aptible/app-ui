@@ -12,7 +12,7 @@ import {
   tokens,
 } from "../shared";
 
-import { DetailPageLayout } from "./detail-page";
+import { MenuWrappedPage } from "./menu-wrapper";
 import {
   fetchEnvironmentById,
   selectEndpointsByEnvironmentId,
@@ -161,9 +161,9 @@ function EnvironmentPageHeader(): React.ReactElement {
 export const EnvironmentDetailLayout = () => {
   return (
     <>
-      <DetailPageLayout header={<EnvironmentPageHeader />}>
+      <MenuWrappedPage header={<EnvironmentPageHeader />}>
         <Outlet />
-      </DetailPageLayout>
+      </MenuWrappedPage>
     </>
   );
 };

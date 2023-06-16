@@ -1,11 +1,10 @@
-import { ListingPageLayout } from "../layouts";
-
+import { MenuWrappedPage } from "../layouts/menu-wrapper";
 import { AppList } from "../shared";
 
 export const AppsPage = () => {
   return (
-    <ListingPageLayout>
+    <MenuWrappedPage>
       <AppList />
-    </ListingPageLayout>
+    </MenuWrappedPage>
   );
 };

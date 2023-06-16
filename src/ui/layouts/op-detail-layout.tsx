@@ -13,7 +13,7 @@ import type { AppState, DeployOperation } from "@app/types";
 
 import { Box, DetailPageHeaderView, OpStatus, tokens } from "../shared";
 
-import { DetailPageLayout } from "./detail-page";
+import { MenuWrappedPage } from "./menu-wrapper";
 import cn from "classnames";
 
 const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
@@ -83,8 +83,8 @@ function OpPageHeader() {
 
 export const OpDetailLayout = () => {
   return (
-    <DetailPageLayout header={<OpPageHeader />}>
+    <MenuWrappedPage header={<OpPageHeader />}>
       <Outlet />
-    </DetailPageLayout>
+    </MenuWrappedPage>
   );
 };

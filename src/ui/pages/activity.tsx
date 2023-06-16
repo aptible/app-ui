@@ -2,14 +2,14 @@ import { useSelector } from "react-redux";
 
 import { selectOrganizationSelected } from "@app/organizations";
 
-import { ListingPageLayout } from "../layouts";
+import { MenuWrappedPage } from "../layouts/menu-wrapper";
 import { ActivityByOrg } from "../shared";
 
 export const ActivityPage = () => {
   const org = useSelector(selectOrganizationSelected);
   return (
-    <ListingPageLayout>
+    <MenuWrappedPage>
       <ActivityByOrg orgId={org.id} />
-    </ListingPageLayout>
+    </MenuWrappedPage>
   );
 };

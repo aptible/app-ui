@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { homeUrl } from "@app/routes";
 import { selectCanImpersonate, selectCurrentUser } from "@app/users";
 
-import { ListingPageLayout } from "../layouts";
+import { MenuWrappedPage } from "../layouts/menu-wrapper";
 import { BannerMessages, Button, FormGroup, Input } from "../shared";
 import { ExchangeToken, exchangeToken } from "@app/auth";
 import { selectOrganizationSelected } from "@app/organizations";
@@ -98,7 +98,7 @@ export const ImpersonatePage = () => {
   };
 
   return (
-    <ListingPageLayout>
+    <MenuWrappedPage>
       <form className="flex flex-col gap-4" onSubmit={onSubmit}>
         <BannerMessages {...loader} />
 
@@ -164,6 +164,6 @@ export const ImpersonatePage = () => {
           <div className="text-black-500">{curOrg.id}</div>
         </div>
       </form>
-    </ListingPageLayout>
+    </MenuWrappedPage>
   );
 };

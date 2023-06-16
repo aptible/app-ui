@@ -1,11 +1,11 @@
-import { ListingPageLayout } from "../layouts";
+import { MenuWrappedPage } from "../layouts/menu-wrapper";
 
 import { DatabaseList } from "../shared";
 
 export const DatabasesPage = () => {
   return (
-    <ListingPageLayout>
+    <MenuWrappedPage>
       <DatabaseList />
-    </ListingPageLayout>
+    </MenuWrappedPage>
   );
 };
