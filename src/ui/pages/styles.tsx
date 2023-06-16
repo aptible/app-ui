@@ -59,9 +59,7 @@ const StylesWrapper = ({
   <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
     <div className="flex">
       <div className="pb-4 fixed">{navigation}</div>
-      <div className="ml-40 pb-4 overflow-y-auto w-full mr-2">
-        {children}
-      </div>
+      <div className="ml-40 pb-4 overflow-y-auto w-full mr-2">{children}</div>
     </div>
   </div>
 );

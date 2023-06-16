@@ -21,12 +21,12 @@ export function MenuWrappedPage({
   return (
     <div className="flex">
       <div
-        className={`flex md:w-${collapsedOffset} flex-col fixed inset-y-0`}
+        className={`flex w-${collapsedOffset} flex-col fixed inset-y-0`}
         style={{ width: collapsedOffset * 3.5 }}
       >
         <ApplicationSidebar />
       </div>
-      <div style={{ width: collapsedOffset * 3.5 }} />
+      <div className="flex" style={{ marginLeft: collapsedOffset * 3.5 }} />
       {secondaryMenus}
       <div className={"flex flex-col flex-1"}>
         {header}
