@@ -8,4 +8,4 @@ export * from "./unauth-required";
 export * from "./error-boundary";
 export * from "./op-detail-layout";
 export * from "./perm-required";
-export * from "./menu-wrapper";
+export * from "./menu-wrapped-page";

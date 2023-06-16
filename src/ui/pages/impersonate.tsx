@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { homeUrl } from "@app/routes";
 import { selectCanImpersonate, selectCurrentUser } from "@app/users";
 
-import { MenuWrappedPage } from "../layouts/menu-wrapper";
+import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
 import { BannerMessages, Button, FormGroup, Input } from "../shared";
 import { ExchangeToken, exchangeToken } from "@app/auth";
 import { selectOrganizationSelected } from "@app/organizations";

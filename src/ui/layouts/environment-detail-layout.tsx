@@ -12,7 +12,7 @@ import {
   tokens,
 } from "../shared";
 
-import { MenuWrappedPage } from "./menu-wrapper";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 import {
   fetchEnvironmentById,
   selectEndpointsByEnvironmentId,

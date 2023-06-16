@@ -1,4 +1,4 @@
-import { MenuWrappedPage } from "../layouts/menu-wrapper";
+import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
 import {
   Button,
   ButtonLink,

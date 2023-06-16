@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 
 import { selectOrganizationSelected } from "@app/organizations";
 
-import { MenuWrappedPage } from "../layouts/menu-wrapper";
+import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
 import { ActivityByOrg } from "../shared";
 
 export const ActivityPage = () => {

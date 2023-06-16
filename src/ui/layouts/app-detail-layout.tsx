@@ -30,7 +30,7 @@ import {
 import { usePoller } from "../hooks";
 import { useInterval } from "../hooks/use-interval";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
-import { MenuWrappedPage } from "./menu-wrapper";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 import { capitalize } from "@app/string-utils";
 import cn from "classnames";
 import { useMemo, useState } from "react";

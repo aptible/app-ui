@@ -13,7 +13,7 @@ import type { AppState, DeployOperation } from "@app/types";
 
 import { Box, DetailPageHeaderView, OpStatus, tokens } from "../shared";
 
-import { MenuWrappedPage } from "./menu-wrapper";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 import cn from "classnames";
 
 const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
