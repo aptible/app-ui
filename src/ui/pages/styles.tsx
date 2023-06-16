@@ -58,8 +58,8 @@ const StylesWrapper = ({
 }: { children: React.ReactNode; navigation: React.ReactNode }) => (
   <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
     <div className="flex">
-      <div className=" pt-5 pb-4 fixed">{navigation}</div>
-      <div className="ml-40 pt-5 pb-4 overflow-y-auto w-full mr-2">
+      <div className="pb-4 fixed">{navigation}</div>
+      <div className="ml-40 pb-4 overflow-y-auto w-full mr-2">
         {children}
       </div>
     </div>
@@ -67,7 +67,7 @@ const StylesWrapper = ({
 );
 
 const StylesNavigation = () => (
-  <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
+  <nav className="mt-2 flex-1 px-2 bg-white space-y-1">
     <div className="mb-4">
       <AptibleLogo />
     </div>
