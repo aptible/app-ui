@@ -159,7 +159,7 @@ export const AppSettingsPage = () => {
               disabled={isUpdating || updatingAppLoader.isLoading}
             >
               {isUpdating || updatingAppLoader.isLoading
-                ? "Loading ..."
+                ? "Loading..."
                 : "Save Changes"}
             </Button>
           </div>

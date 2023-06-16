@@ -64,7 +64,7 @@ export const LogViewer = ({ op }: { op: DeployOperation }) => {
   }
 
   if (loader.isInitialLoading) {
-    return <div className={wrapper}>Fetching logs ...</div>;
+    return <div className={wrapper}>Fetching logs...</div>;
   }
 
   if (!data) {

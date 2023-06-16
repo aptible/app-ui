@@ -28,6 +28,7 @@ import { capitalize } from "@app/string-utils";
 import type { AppState } from "@app/types";
 
 import { usePoller } from "../hooks/use-poller";
+import { Button } from "./button";
 import { IconRefresh } from "./icons";
 import { InputSearch } from "./input";
 import { LoadResources } from "./load-resources";
@@ -35,6 +36,7 @@ import { OpStatus } from "./op-status";
 import { ResourceHeader, ResourceListView } from "./resource-list-view";
 import { EnvStackCell } from "./resource-table";
 import { TableHead, Td } from "./table";
+import { tokens } from "./tokens";
 
 interface OpCellProps {
   op: DeployActivityRow;
@@ -43,7 +45,12 @@ interface OpCellProps {
 const OpPrimaryCell = ({ op }: OpCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={operationDetailUrl(op.id)}>{capitalize(op.type)}</Link>
+      <Link
+        to={operationDetailUrl(op.id)}
+        className={tokens.type["table link"]}
+      >
+        {capitalize(op.type)}
+      </Link>
     </Td>
   );
 };
@@ -69,10 +76,26 @@ const OpResourceHandleCell = ({ op }: OpCellProps) => {
   return (
     <Td>
       {url ? (
-        <Link to={url}>{op.resourceHandle}</Link>
+        <Link to={url} className={tokens.type["table link"]}>
+          {op.resourceHandle}
+        </Link>
       ) : (
         <div>{op.resourceHandle}</div>
       )}
+    </Td>
+  );
+};
+
+const OpActionsCell = ({ op }: OpCellProps) => {
+  return (
+    <Td>
+      <div>
+        <Link to={operationDetailUrl(op.id)}>
+          <Button variant="white" color="white" size="sm" className="px-0">
+            Logs
+          </Button>
+        </Link>
+      </div>
     </Td>
   );
 };
@@ -86,11 +109,7 @@ const OpLastUpdatedCell = ({ op }: OpCellProps) => {
 };
 
 const OpUserCell = ({ op }: OpCellProps) => {
-  return (
-    <Td>
-      <a href={`mailto:${op.userEmail}`}>{op.userName}</a>
-    </Td>
-  );
+  return <Td>{op.userName}</Td>;
 };
 
 const OpListRow = ({ op }: OpCellProps) => {
@@ -103,6 +122,7 @@ const OpListRow = ({ op }: OpCellProps) => {
       <OpResourceHandleCell op={op} />
       <OpUserCell op={op} />
       <OpLastUpdatedCell op={op} />
+      <OpActionsCell op={op} />
     </tr>
   );
 };
@@ -130,7 +150,7 @@ function ActivityTable({
         filterBar={
           <div className="flex items-center gap-3">
             <InputSearch
-              placeholder="Search Operations..."
+              placeholder="Search operations..."
               search={search}
               onChange={onChange}
             />
@@ -149,29 +169,32 @@ function ActivityTable({
   };
 
   return (
-    <ResourceListView
-      header={resourceHeaderTitleBar()}
-      tableHeader={
-        <TableHead
-          headers={[
-            "Type",
-            "Status",
-            "Environment",
-            "Resource Type",
-            "Resource",
-            "User",
-            "Last Updated",
-          ]}
-        />
-      }
-      tableBody={
-        <>
-          {ops.map((op) => (
-            <OpListRow op={op} key={op.id} />
-          ))}
-        </>
-      }
-    />
+    <div className="my-4">
+      <ResourceListView
+        header={resourceHeaderTitleBar()}
+        tableHeader={
+          <TableHead
+            headers={[
+              "Type",
+              "Status",
+              "Environment",
+              "Resource Type",
+              "Resource",
+              "User",
+              "Last Updated",
+              "Actions",
+            ]}
+          />
+        }
+        tableBody={
+          <>
+            {ops.map((op) => (
+              <OpListRow op={op} key={op.id} />
+            ))}
+          </>
+        }
+      />
+    </div>
   );
 }
 

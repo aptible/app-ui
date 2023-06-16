@@ -13,15 +13,17 @@ import {
 } from "@app/deploy";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
-import { appServicesUrl } from "@app/routes";
+import { appServicesUrl, operationDetailUrl } from "@app/routes";
 import type { AppState } from "@app/types";
 
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
+import { OpStatus } from "../op-status";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
+import { capitalize } from "@app/string-utils";
 
 interface AppCellProps {
   app: DeployAppRow;
@@ -30,8 +32,14 @@ interface AppCellProps {
 const AppPrimaryCell = ({ app }: AppCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={appServicesUrl(app.id)}>{app.handle}</Link>
-      <div className={tokens.type["normal lighter"]}>{app.envHandle}</div>
+      <Link to={appServicesUrl(app.id)} className="flex">
+        <img
+          src="/logo-app.png"
+          className="w-8 h-8 mr-2 align-middle"
+          aria-label="App"
+        />
+        <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
+      </Link>
     </Td>
   );
 };
@@ -64,7 +72,13 @@ const AppCostCell = ({ app }: AppCellProps) => {
 
   return (
     <Td>
-      <div className={tokens.type.darker}>${cost}</div>
+      <div className={tokens.type.darker}>
+        {cost.toLocaleString("en", {
+          style: "currency",
+          currency: "USD",
+          minimumFractionDigits: 2,
+        })}
+      </div>
     </Td>
   );
 };
@@ -75,16 +89,17 @@ const AppLastOpCell = ({ app }: AppCellProps) => {
       {app.lastOperation ? (
         <>
           <div className={tokens.type.darker}>
-            <span className="font-semibold">
-              {app.lastOperation.type.toLocaleUpperCase()}
-            </span>{" "}
-            by {app.lastOperation.userName}
+            <Link
+              to={operationDetailUrl(app.lastOperation.id)}
+              className={tokens.type["table link"]}
+            >
+              {capitalize(app.lastOperation.type)} by{" "}
+              {app.lastOperation.userName}
+            </Link>
           </div>
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
-            <span className="font-semibold">
-              {app.lastOperation.status.toLocaleUpperCase()}
-            </span>{" "}
+            <OpStatus status={app.lastOperation.status} />{" "}
             {prettyDateRelative(app.lastOperation.createdAt)}
           </div>
         </>
@@ -140,7 +155,7 @@ export function AppList({
             filterBar={
               searchOverride ? undefined : (
                 <InputSearch
-                  placeholder="Search Apps ..."
+                  placeholder="Search apps..."
                   search={search}
                   onChange={onChange}
                 />
@@ -150,7 +165,7 @@ export function AppList({
         );
       case "simple-text":
         return (
-          <p className="flex ml-4 text-gray-500 text-base">
+          <p className="flex text-gray-500 text-base">
             {apps.length} App{apps.length > 1 && "s"}
           </p>
         );
@@ -170,7 +185,7 @@ export function AppList({
               "Environment",
               "Services",
               "Estimated Monthly Cost",
-              "Last operation",
+              "Last Operation",
             ]}
           />
         }

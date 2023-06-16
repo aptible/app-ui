@@ -172,7 +172,7 @@ const EndpointsOverview = ({
           {endpoints.length ? (
             <InputSearch
               className="self-end float-right]"
-              placeholder="Search endpoints ..."
+              placeholder="Search endpoints..."
               search={search}
               onChange={onChange}
             />

@@ -102,47 +102,52 @@ export const DatabaseClusterPage = () => {
   return (
     <LoadResources query={dependentsQuery} isEmpty={false}>
       <div className="text-sm text-gray-500 mt-4 select-none">
-        <div className="ml-5 cursor-pointer inline">
+        <div className="text-base inline">
           {clusterDatabases.length ? clusterDatabases.length : 0} Cluster
           Members. Replicas can only be added via the Aptible CLI,{" "}
-          <a href="https://aptible.com/docs" className="text-blue-500">
+          <a
+            href="https://www.aptible.com/docs/replication-clustering"
+            className="text-blue-500"
+          >
             view docs to learn more
           </a>
           .
         </div>
       </div>
-      <div className="my-4">
-        <ResourceListView
-          tableHeader={
-            <TableHead
-              headers={[
-                "Database",
-                "Type",
-                "Disk Size",
-                "Container Size",
-                "Profile",
-              ]}
-            />
-          }
-          tableBody={
-            <>
-              {clusterDatabases
-                .map((clusterDatabase) =>
-                  clusterDatabaseRow({
-                    clusterDatabase,
-                    service: services.find(
-                      (s) => s.id === clusterDatabase.serviceId,
-                    ),
-                    databaseImage: databaseImages.find(
-                      (d) => d.id === clusterDatabase.databaseImageId,
-                    ),
-                  }),
-                )
-                .filter((reactElement) => !!reactElement)}
-            </>
-          }
-        />
-      </div>
+      {clusterDatabases.length ? (
+        <div className="my-4">
+          <ResourceListView
+            tableHeader={
+              <TableHead
+                headers={[
+                  "Database",
+                  "Type",
+                  "Disk Size",
+                  "Container Size",
+                  "Profile",
+                ]}
+              />
+            }
+            tableBody={
+              <>
+                {clusterDatabases
+                  .map((clusterDatabase) =>
+                    clusterDatabaseRow({
+                      clusterDatabase,
+                      service: services.find(
+                        (s) => s.id === clusterDatabase.serviceId,
+                      ),
+                      databaseImage: databaseImages.find(
+                        (d) => d.id === clusterDatabase.databaseImageId,
+                      ),
+                    }),
+                  )
+                  .filter((reactElement) => !!reactElement)}
+              </>
+            }
+          />
+        </div>
+      ) : null}
     </LoadResources>
   );
 };

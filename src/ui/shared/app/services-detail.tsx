@@ -139,13 +139,13 @@ export function ServicesOverview({
               <div className="flex w-1/2 justify-end">
                 <InputSearch
                   className="self-end float-right]"
-                  placeholder="Search apps ..."
+                  placeholder="Search apps..."
                   search={search}
                   onChange={onChange}
                 />
               </div>
             </div>
-            <div className="text-sm text-gray-500 mt-4 select-none">
+            <div className="text-base text-gray-500 mt-4 select-none">
               <span>{serviceIds.length} Services</span>
               <div
                 className="ml-5 cursor-pointer inline"

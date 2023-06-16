@@ -2,7 +2,6 @@ import { ReactElement, useState } from "react";
 
 import {
   ButtonIcon,
-  IconChevronDown,
   IconEllipsis,
   InputSearch,
   LoadResources,
@@ -100,11 +99,11 @@ export const DatabaseBackupsList = ({
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
 
-  const sortIconProps = {
-    className: "inline",
-    color: "#6b7280",
-    style: { width: 14, height: 14 },
-  };
+  // const sortIconProps = {
+  //   className: "inline",
+  //   color: "#6b7280",
+  //   style: { width: 14, height: 14 },
+  // };
 
   return (
     <LoadResources query={query} isEmpty={backups.length === 0}>
@@ -116,13 +115,13 @@ export const DatabaseBackupsList = ({
           <div className="flex w-1/2 justify-end">
             <InputSearch
               className="self-end float-right]"
-              placeholder="Search backups ..."
+              placeholder="Search backups..."
               search={search}
               onChange={onChange}
             />
           </div>
         </div>
-        <div className="text-sm text-gray-500 mt-4 select-none">
+        {/* <div className="text-sm text-gray-500 mt-4 select-none">
           <div className="ml-5 cursor-pointer inline">
             Older than: <IconChevronDown {...sortIconProps} />
           </div>
@@ -141,7 +140,7 @@ export const DatabaseBackupsList = ({
           <div className="ml-5 cursor-pointer inline">
             Source: Originals <IconChevronDown {...sortIconProps} />
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="my-4">
         <ResourceListView

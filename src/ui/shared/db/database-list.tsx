@@ -13,19 +13,35 @@ import type { AppState, DeployDatabase } from "@app/types";
 
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
+import { OpStatus } from "../op-status";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { databaseEndpointsUrl } from "@app/routes";
+import { databaseEndpointsUrl, operationDetailUrl } from "@app/routes";
+import { capitalize } from "@app/string-utils";
 
 type DatabaseCellProps = { database: DeployDatabase };
 
 const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={databaseEndpointsUrl(database.id)}>{database.handle}</Link>
-      <div className={tokens.type["normal lighter"]}>{database.type}</div>
+      <div className="flex">
+        <Link to={databaseEndpointsUrl(database.id)} className="flex">
+          <img
+            src={`/logo-${database.type}.png`}
+            className="w-8 h-8 mt-1 mr-2"
+            aria-label={`${database.type} Database`}
+          />
+          <p className="leading-4">
+            <span className={tokens.type["table link"]}>{database.handle}</span>
+            <br />
+            <span className={tokens.type["normal lighter"]}>
+              {capitalize(database.type)}
+            </span>
+          </p>
+        </Link>
+      </div>
     </Td>
   );
 };
@@ -36,16 +52,17 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
       {database.lastOperation ? (
         <>
           <div className={tokens.type.darker}>
-            <span className="font-semibold">
-              {database.lastOperation.type.toLocaleUpperCase()}
-            </span>{" "}
-            by {database.lastOperation.userName}
+            <Link
+              to={operationDetailUrl(database.lastOperation.id)}
+              className={tokens.type["table link"]}
+            >
+              {capitalize(database.lastOperation.type)} by{" "}
+              {database.lastOperation.userName}
+            </Link>
           </div>
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
-            <span className="font-semibold">
-              {database.lastOperation.status.toLocaleUpperCase()}
-            </span>{" "}
+            <OpStatus status={database.lastOperation.status} />{" "}
             {prettyDateRelative(database.lastOperation.createdAt)}
           </div>
         </>
@@ -98,7 +115,7 @@ export function DatabaseList({
             filterBar={
               searchOverride ? undefined : (
                 <InputSearch
-                  placeholder="Search databases ..."
+                  placeholder="Search databases..."
                   search={search}
                   onChange={onChange}
                 />
@@ -108,7 +125,7 @@ export function DatabaseList({
         );
       case "simple-text":
         return (
-          <p className="flex ml-4 text-gray-500 text-base">
+          <p className="flex text-gray-500 text-base">
             {dbs.length} Database{dbs.length > 1 && "s"}
           </p>
         );

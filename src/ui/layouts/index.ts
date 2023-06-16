@@ -1,8 +1,5 @@
 export * from "./auth-required";
 export * from "./elevate-required";
-export * from "./detail-page";
-export * from "./listing-page";
-export * from "./settings-page";
 export * from "./app-detail-layout";
 export * from "./database-detail-layout";
 export * from "./environment-detail-layout";
@@ -11,3 +8,4 @@ export * from "./unauth-required";
 export * from "./error-boundary";
 export * from "./op-detail-layout";
 export * from "./perm-required";
+export * from "./menu-wrapped-page";

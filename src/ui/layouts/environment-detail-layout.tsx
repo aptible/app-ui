@@ -12,7 +12,7 @@ import {
   tokens,
 } from "../shared";
 
-import { DetailPageLayout } from "./detail-page";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 import {
   fetchEnvironmentById,
   selectEndpointsByEnvironmentId,
@@ -41,7 +41,14 @@ const environmentDetailBox = ({
   <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
     <Box>
       <div className="flex items-center justify-between">
-        <h1 className="text-lg text-gray-500">Environment Details</h1>
+        <div className="flex">
+          <img
+            src={"/logo-environment.png"}
+            className="w-8 h-8 mr-3"
+            aria-label="Environment"
+          />
+          <h1 className="text-lg text-gray-500">Environment Details</h1>
+        </div>
         <Button className="flex ml-auto" variant="white" size="sm">
           View Docs
           <IconExternalLink className="inline ml-3 h-5 mt-0" />
@@ -154,9 +161,9 @@ function EnvironmentPageHeader(): React.ReactElement {
 export const EnvironmentDetailLayout = () => {
   return (
     <>
-      <DetailPageLayout header={<EnvironmentPageHeader />}>
+      <MenuWrappedPage header={<EnvironmentPageHeader />}>
         <Outlet />
-      </DetailPageLayout>
+      </MenuWrappedPage>
     </>
   );
 };

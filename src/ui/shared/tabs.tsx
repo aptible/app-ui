@@ -37,7 +37,7 @@ export const Tab = ({ label, to }: TabViewProps) => (
 export const Tabs = ({ tabs }: { tabs: TabItem[] }) => {
   return (
     <nav
-      className="flex space-x-8 bg-white border-black-200 border-b"
+      className="flex space-x-8 bg-white border-black-100 border-b"
       aria-label="Tabs"
     >
       {tabs.map((tab) => (

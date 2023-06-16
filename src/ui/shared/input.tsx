@@ -26,7 +26,7 @@ interface InputSearchProps extends React.HTMLProps<HTMLDivElement> {
 export const InputSearch = ({
   search,
   onChange,
-  placeholder = "Search ...",
+  placeholder = "Search...",
   className = "",
   ...props
 }: InputSearchProps) => {

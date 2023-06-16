@@ -1,6 +1,6 @@
 export const Loading = ({
   className = "",
-  text = "loading ...",
+  text = "loading...",
 }: {
   className?: string;
   text?: string;

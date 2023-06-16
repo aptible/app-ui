@@ -44,6 +44,7 @@ import { selectCurrentUser } from "@app/users";
 
 import { HeroBgLayout } from "../layouts";
 import {
+  ApplicationSidebar,
   AptibleLogo,
   Banner,
   BannerMessages,
@@ -130,6 +131,7 @@ import {
 } from "@app/deploy/operation";
 import { selectEnv, selectLegacyDashboardUrl, selectOrigin } from "@app/env";
 import { selectFeedback, setFeedback } from "@app/feedback";
+import { selectNav } from "@app/nav";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   DbSelectorProps,
@@ -148,8 +150,35 @@ export const CreateProjectLayout = ({
   const origin = useSelector(selectOrigin);
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const org = useSelector(selectOrganizationSelected);
+  const { collapsed } = useSelector(selectNav);
+  const collapsedOffset = collapsed ? 14 : 64;
+  const bodyLeftMargin = collapsed
+    ? `pl-${collapsedOffset}`
+    : `md:pl-${collapsedOffset}`;
+
   const orgSettingsUrl = `${legacyUrl}/organizations/${org.id}/members`;
   const sshSettingsUrl = `${legacyUrl}/settings/protected/ssh`;
+
+  if (origin === "nextgen") {
+    return (
+      <div>
+        <div
+          className={`flex md:w-${collapsedOffset} flex-col fixed inset-y-0`}
+          style={{ width: collapsedOffset * 3.5 }}
+        >
+          <ApplicationSidebar />
+        </div>
+
+        <div className={`${bodyLeftMargin} flex flex-col flex-1`}>
+          <HeroBgLayout showLogo={false} width={700}>
+            <div className="min-h-screen -my-16 pt-16">
+              {children ? children : <Outlet />}
+            </div>
+          </HeroBgLayout>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -245,7 +274,7 @@ export const CreateProjectFromAccountSetupPage = () => {
     }
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
-  return <Loading text={`Detecting app ${app.handle} status ...`} />;
+  return <Loading text={`Detecting app ${app.handle} status...`} />;
 };
 
 export const CreateProjectFromAppSetupPage = () => {
@@ -286,7 +315,7 @@ export const CreateProjectFromAppSetupPage = () => {
     }
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
-  return <Loading text={`Detecting app ${app.handle} status ...`} />;
+  return <Loading text={`Detecting app ${app.handle} status...`} />;
 };
 
 export const CreateProjectGitPage = () => {
@@ -1332,7 +1361,7 @@ export const CreateProjectGitSettingsPage = () => {
       <Box>
         <div className="mb-4">
           {codeScan.isInitialLoading ? (
-            <Loading text="Loading code scan results ..." />
+            <Loading text="Loading code scan results..." />
           ) : (
             <CodeScanInfo codeScan={codeScan.data} />
           )}
@@ -2099,7 +2128,7 @@ export const CreateProjectGitStatusPage = () => {
         status={<StatusPill status={status} from={dateStr} />}
       >
         {isInitialLoading ? (
-          <Loading text="Loading resources ..." />
+          <Loading text="Loading resources..." />
         ) : (
           <ProjectStatus
             status={status}

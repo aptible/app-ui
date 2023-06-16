@@ -33,7 +33,7 @@ import {
 import { usePoller } from "../hooks";
 import { useInterval } from "../hooks/use-interval";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
-import { DetailPageLayout } from "./detail-page";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 import cn from "classnames";
 import { useMemo, useState } from "react";
 
@@ -49,7 +49,14 @@ const databaseDetailBox = ({
     <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
       <Box>
         <div className="flex items-center justify-between">
-          <h1 className="text-lg text-gray-500">Database Details</h1>
+          <div className="flex">
+            <img
+              src={`/logo-${database.type}.png`}
+              className="w-8 h-8 mr-3"
+              aria-label={`${database.type} Database`}
+            />
+            <h1 className="text-lg text-gray-500">Database Details</h1>
+          </div>
           <div className="flex">
             <Button className="ml-5" variant="white" size="sm">
               View Docs
@@ -174,8 +181,8 @@ function DatabasePageHeader() {
 
 export const DatabaseDetailLayout = () => {
   return (
-    <DetailPageLayout header={<DatabasePageHeader />}>
+    <MenuWrappedPage header={<DatabasePageHeader />}>
       <Outlet />
-    </DetailPageLayout>
+    </MenuWrappedPage>
   );
 };

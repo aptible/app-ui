@@ -1,10 +1,10 @@
-import { ListingPageLayout } from "../layouts";
+import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
 import { EnvironmentList } from "../shared";
 
 export const EnvironmentsPage = () => {
   return (
-    <ListingPageLayout>
+    <MenuWrappedPage>
       <EnvironmentList />
-    </ListingPageLayout>
+    </MenuWrappedPage>
   );
 };

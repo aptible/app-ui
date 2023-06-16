@@ -60,7 +60,6 @@ import {
   SSHSettingsPage,
   SecuritySettingsPage,
   SettingsPage,
-  SettingsPageLayout,
   SignupPage,
   SsoDirectPage,
   SsoFailurePage,
@@ -455,7 +454,7 @@ export const appRoutes: RouteObject[] = [
 
       {
         path: routes.SETTINGS_PATH,
-        element: <SettingsPageLayout />,
+        element: <SettingsPage />,
         children: [
           {
             index: true,
@@ -535,7 +534,7 @@ export const appRoutes: RouteObject[] = [
   {
     element: (
       <ElevateRequired>
-        <SettingsPageLayout />
+        <SettingsPage />
       </ElevateRequired>
     ),
     children: [
