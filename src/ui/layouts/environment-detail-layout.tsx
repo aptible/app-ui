@@ -19,7 +19,6 @@ import {
   selectEnvironmentById,
   selectStackById,
 } from "@app/deploy";
-import { capitalize } from "@app/string-utils";
 import {
   AppState,
   DeployEndpoint,

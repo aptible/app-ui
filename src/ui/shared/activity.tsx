@@ -25,7 +25,7 @@ import {
 } from "@app/deploy";
 import { operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import type { AppState } from "@app/types";
+import type { AppState, ResourceType } from "@app/types";
 
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
@@ -42,7 +42,22 @@ interface OpCellProps {
   op: DeployActivityRow;
 }
 
-const OpPrimaryCell = ({ op }: OpCellProps) => {
+const getImageForResourceType = (resourceType: ResourceType) => {
+  const imageToUse = `/logo-${resourceType}.png`;
+  if (!["app", "database"].includes(resourceType)) {
+    return null;
+  }
+
+  return (
+    <img
+      src={imageToUse}
+      className="w-8 h-8 mr-2 mt-2 align-middle"
+      aria-label={resourceType}
+    />
+  );
+};
+
+const OpTypeCell = ({ op }: OpCellProps) => {
   return (
     <Td className="flex-1">
       <Link
@@ -63,25 +78,23 @@ const OpStatusCell = ({ op }: OpCellProps) => {
   );
 };
 
-const OpResourceTypeCell = ({ op }: OpCellProps) => {
-  return (
-    <Td>
-      <div>{prettyResourceType(op.resourceType)}</div>
-    </Td>
-  );
-};
-
-const OpResourceHandleCell = ({ op }: OpCellProps) => {
+const OpResourceCell = ({ op }: OpCellProps) => {
   const url = getResourceUrl(op);
   return (
     <Td>
-      {url ? (
-        <Link to={url} className={tokens.type["table link"]}>
-          {op.resourceHandle}
-        </Link>
-      ) : (
-        <div>{op.resourceHandle}</div>
-      )}
+      <div className="flex">
+        {getImageForResourceType(op.resourceType)}
+        <div>
+          {url ? (
+            <Link to={url} className={tokens.type["table link"]}>
+              {op.resourceHandle}
+            </Link>
+          ) : (
+            <div>{op.resourceHandle}</div>
+          )}
+          <div>{prettyResourceType(op.resourceType)}</div>
+        </div>
+      </div>
     </Td>
   );
 };
@@ -115,11 +128,10 @@ const OpUserCell = ({ op }: OpCellProps) => {
 const OpListRow = ({ op }: OpCellProps) => {
   return (
     <tr>
-      <OpPrimaryCell op={op} />
+      <OpResourceCell op={op} />
       <OpStatusCell op={op} />
+      <OpTypeCell op={op} />
       <EnvStackCell environmentId={op.environmentId} />
-      <OpResourceTypeCell op={op} />
-      <OpResourceHandleCell op={op} />
       <OpUserCell op={op} />
       <OpLastUpdatedCell op={op} />
       <OpActionsCell op={op} />
@@ -175,11 +187,10 @@ function ActivityTable({
         tableHeader={
           <TableHead
             headers={[
-              "Type",
-              "Status",
-              "Environment",
-              "Resource Type",
               "Resource",
+              "Status",
+              "Operation Type",
+              "Environment",
               "User",
               "Last Updated",
               "Actions",
