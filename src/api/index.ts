@@ -25,8 +25,11 @@ import type {
 import { createLog } from "@app/debug";
 import { selectEnv } from "@app/env";
 import { halEntityParser } from "@app/hal";
-import { resetStore } from "@app/reset-store";
-import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
+import {
+  resetToken,
+  selectAccessToken,
+  selectElevatedAccessToken,
+} from "@app/token";
 import type {
   Action,
   ApiGen,
@@ -157,7 +160,7 @@ function* expiredToken(ctx: ApiCtx, next: Next) {
   yield next();
   if (!ctx.response) return;
   if (ctx.response.status === 401) {
-    ctx.actions.push(resetStore());
+    ctx.actions.push(resetToken());
   }
 }
 
