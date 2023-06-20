@@ -35,13 +35,9 @@ const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
           className="w-8 h-8 mt-1 mr-2"
           aria-label="Environment"
         />
-        <p className="leading-4 mt-0">
+        <p className="leading-4 mt-2">
           <span className={tokens.type["table link"]}>
             {environment.handle}
-          </span>
-          <br />
-          <span className={tokens.type["normal lighter"]}>
-            {environment.type === "development" ? "Development" : "Production"}
           </span>
         </p>
       </Link>
