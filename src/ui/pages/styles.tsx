@@ -4,6 +4,7 @@ import {
   Button,
   ButtonIcon,
   ButtonLink,
+  FormGroup,
   IconAlertTriangle,
   IconArrowLeft,
   IconArrowRight,
@@ -220,6 +221,22 @@ const Forms = () => {
       <textarea className={`${tokens.type.textarea} mt-4`}>
         Editable textarea
       </textarea>
+      <br />
+      <h3 className={tokens.type.h3}>Form Groups</h3>
+      <br />
+      <FormGroup htmlFor="input - name" label="Input (label)">
+        <Input
+          name="app-handle"
+          type="text"
+          value={formInput}
+          onChange={(e) => setFormInput(e.currentTarget.value)}
+          autoComplete="name"
+          data-testid="input-name"
+          id="input-name"
+          placeholder="Input"
+        />
+      </FormGroup>
+      <br />
     </div>
   );
 };
@@ -463,43 +480,43 @@ const Icons = () => (
     </h1>
     <div className="mt-4">
       {[
-        <IconArrowRight />,
-        <IconArrowLeft />,
-        <IconEdit2 />,
-        <IconChevronUp />,
-        <IconChevronRight />,
-        <IconChevronDown />,
-        <IconCylinder />,
-        <IconTrash />,
-        <IconBox />,
-        <IconSettings />,
-        <IconSearch />,
-        <IconCheck />,
-        <IconCheckCircle />,
-        <IconPlusCircle />,
-        <IconX />,
-        <IconXCircle />,
-        <IconAlertTriangle />,
-        <IconLayers />,
-        <IconLogout />,
-        <IconGitBranch />,
-        <IconInfo />,
-        <IconCreditCard />,
-        <IconGlobe />,
-        <IconEllipsis />,
-        <IconExternalLink />,
-        <IconCopy />,
-        <IconDownload />,
-        <IconThumbsUp />,
-        <IconRefresh />,
-        <IconHeart />,
-        <IconCloud />,
-        <IconHamburger />,
-      ].map((icon) => (
+        ["IconArrowRight", <IconArrowRight />],
+        ["IconArrowLeft", <IconArrowLeft />],
+        ["IconEdit2", <IconEdit2 />],
+        ["IconChevronUp", <IconChevronUp />],
+        ["IconChevronRight", <IconChevronRight />],
+        ["IconChevronDown", <IconChevronDown />],
+        ["IconCylinder", <IconCylinder />],
+        ["IconTrash", <IconTrash />],
+        ["IconBox", <IconBox />],
+        ["IconSettings", <IconSettings />],
+        ["IconSearch", <IconSearch />],
+        ["IconCheck", <IconCheck />],
+        ["IconCheckCircle", <IconCheckCircle />],
+        ["IconPlusCircle", <IconPlusCircle />],
+        ["IconX", <IconX />],
+        ["IconXCircle", <IconXCircle />],
+        ["IconAlertTriangle", <IconAlertTriangle />],
+        ["IconLayers", <IconLayers />],
+        ["IconLogout", <IconLogout />],
+        ["IconGitBranch", <IconGitBranch />],
+        ["IconInfo", <IconInfo />],
+        ["IconCreditCard", <IconCreditCard />],
+        ["IconGlobe", <IconGlobe />],
+        ["IconEllipsis", <IconEllipsis />],
+        ["IconExternalLink", <IconExternalLink />],
+        ["IconCopy", <IconCopy />],
+        ["IconDownload", <IconDownload />],
+        ["IconThumbsUp", <IconThumbsUp />],
+        ["IconRefresh", <IconRefresh />],
+        ["IconHeart", <IconHeart />],
+        ["IconCloud", <IconCloud />],
+        ["IconHamburger", <IconHamburger />],
+      ].map(([title, icon]) => (
         <div>
           <div className="inline-block -mb-1">{icon}</div>{" "}
           <span>
-            <pre className="inline">{icon.type.name}</pre>
+            <pre className="inline">{title}</pre>
           </span>
         </div>
       ))}

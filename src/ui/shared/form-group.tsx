@@ -51,7 +51,11 @@ export function FormGroup({
   className = "",
 }: Props) {
   return (
-    <div className={`flex ${splitWidthInputs ? "" : "flex-col"} ${className}`}>
+    <div
+      className={`flex gap-1 ${
+        splitWidthInputs ? "" : "flex-col"
+      } ${className}`}
+    >
       <div className={`${splitWidthInputs ? "w-1/2" : ""}`}>
         <Label htmlFor={htmlFor} {...labelProps}>
           {label}
