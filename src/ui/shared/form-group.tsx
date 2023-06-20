@@ -52,7 +52,7 @@ export function FormGroup({
 }: Props) {
   return (
     <div
-      className={`flex gap-4 ${
+      className={`flex ${
         splitWidthInputs ? "" : "flex-col"
       } ${className}`}
     >
