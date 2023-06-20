@@ -122,7 +122,7 @@ const Tables = () => (
     <h1 id="tables" className={tokens.type.h1}>
       Tables
     </h1>
-    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg my-4 mx-4">
+    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg my-4 mx-4">
       <table className="min-w-full divide-y divide-gray-300">
         <TableHead
           headers={Array(8)
