@@ -9,6 +9,7 @@ import {
   calcServiceMetrics,
   fetchAllApps,
   fetchAllEnvironments,
+  selectAppsForTableByEnvironmentId,
   selectAppsForTableSearch,
 } from "@app/deploy";
 import { selectServicesByIds } from "@app/deploy";
@@ -16,12 +17,13 @@ import { calcMetrics } from "@app/deploy";
 import { appServicesUrl, operationDetailUrl } from "@app/routes";
 import type { AppState } from "@app/types";
 
+import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
-import { TableHead, Td } from "../table";
+import { Header, TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 import { capitalize } from "@app/string-utils";
 
@@ -122,11 +124,21 @@ const AppListRow = ({ app }: AppCellProps) => {
   );
 };
 
+const appHeaders: Header[] = [
+  "Handle",
+  "Environment",
+  "Services",
+  "Estimated Monthly Cost",
+  "Last Operation",
+];
+
 // TODO - can turn below to an interface as it has a common entrypoint for lists, not sure if we want to do this
 export function AppList({
+  environmentId = "",
   resourceHeaderType = "title-bar",
   searchOverride = "",
 }: {
+  environmentId?: string;
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   skipDescription?: boolean;
   searchOverride?: string;
@@ -139,9 +151,11 @@ export function AppList({
     setSearch(ev.currentTarget.value);
 
   const apps = useSelector((s: AppState) =>
-    selectAppsForTableSearch(s, {
-      search: searchOverride ? searchOverride : search,
-    }),
+    environmentId
+      ? selectAppsForTableByEnvironmentId(s, { envId: environmentId })
+      : selectAppsForTableSearch(s, {
+          search: searchOverride ? searchOverride : search,
+        }),
   );
 
   const resourceHeaderTitleBar = (): ReactElement | undefined => {
@@ -166,7 +180,7 @@ export function AppList({
       case "simple-text":
         return (
           <p className="flex text-gray-500 text-base">
-            {apps.length} App{apps.length > 1 && "s"}
+            {apps.length} App{apps.length !== 1 && "s"}
           </p>
         );
       default:
@@ -175,20 +189,19 @@ export function AppList({
   };
 
   return (
-    <LoadResources query={query} isEmpty={apps.length === 0 && search === ""}>
+    <LoadResources
+      empty={
+        <EmptyResourcesTable
+          headers={appHeaders}
+          titleBar={resourceHeaderTitleBar()}
+        />
+      }
+      query={query}
+      isEmpty={apps.length === 0 && search === ""}
+    >
       <ResourceListView
         header={resourceHeaderTitleBar()}
-        tableHeader={
-          <TableHead
-            headers={[
-              "Handle",
-              "Environment",
-              "Services",
-              "Estimated Monthly Cost",
-              "Last Operation",
-            ]}
-          />
-        }
+        tableHeader={<TableHead headers={appHeaders} />}
         tableBody={
           <>
             {apps.map((app) => (

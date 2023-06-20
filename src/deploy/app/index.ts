@@ -170,6 +170,14 @@ export const selectAppsForTable = createSelector(
       .sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
+export const selectAppsForTableByEnvironmentId = createSelector(
+  selectAppsForTable,
+  (_: AppState, props: { envId: string }) => props.envId,
+  (apps, envId) => {
+    return apps.filter((app) => app.environmentId === envId);
+  },
+);
+
 export const selectAppsForTableSearch = createSelector(
   selectAppsForTable,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),

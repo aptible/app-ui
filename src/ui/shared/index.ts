@@ -40,3 +40,4 @@ export * from "./permission";
 export * from "./pill";
 export * from "./resource-group-box";
 export * from "./op-status";
+export * from "./empty-resources-table";

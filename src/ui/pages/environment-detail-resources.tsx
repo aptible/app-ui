@@ -5,8 +5,10 @@ import {
   InputSearch,
 } from "../shared";
 import { useState } from "react";
+import { useParams } from "react-router";
 
 export const EnvironmentResourcesPage = () => {
+  const { id = "" } = useParams();
   const [search, setSearch] = useState("");
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
@@ -30,11 +32,13 @@ export const EnvironmentResourcesPage = () => {
           </div>
         </div>
         <AppList
+          environmentId={id}
           skipDescription
           resourceHeaderType="simple-text"
           searchOverride={search}
         />
         <DatabaseList
+          environmentId={id}
           skipDescription
           resourceHeaderType="simple-text"
           searchOverride={search}

@@ -7,10 +7,12 @@ import { prettyDateRelative } from "@app/date";
 import {
   fetchAllDatabases,
   fetchAllEnvironments,
+  selectDatabasesByEnvId,
   selectDatabasesForTableSearch,
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
+import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
@@ -83,10 +85,14 @@ const DatabaseListRow = ({ database }: { database: DeployDatabase }) => {
   );
 };
 
+const dbHeaders = ["Handle", "Environment", "Last Operation"];
+
 export function DatabaseList({
+  environmentId = "",
   resourceHeaderType = "title-bar",
   searchOverride = "",
 }: {
+  environmentId?: string;
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   skipDescription?: boolean;
   searchOverride?: string;
@@ -99,9 +105,11 @@ export function DatabaseList({
     setSearch(ev.currentTarget.value);
 
   const dbs = useSelector((s: AppState) =>
-    selectDatabasesForTableSearch(s, {
-      search: searchOverride ? searchOverride : search,
-    }),
+    environmentId
+      ? selectDatabasesByEnvId(s, { envId: environmentId })
+      : selectDatabasesForTableSearch(s, {
+          search: searchOverride ? searchOverride : search,
+        }),
   );
 
   const resourceHeaderTitleBar = () => {
@@ -126,7 +134,7 @@ export function DatabaseList({
       case "simple-text":
         return (
           <p className="flex text-gray-500 text-base">
-            {dbs.length} Database{dbs.length > 1 && "s"}
+            {dbs.length} Database{dbs.length !== 1 && "s"}
           </p>
         );
       default:
@@ -135,12 +143,19 @@ export function DatabaseList({
   };
 
   return (
-    <LoadResources query={query} isEmpty={dbs.length === 0 && search === ""}>
+    <LoadResources
+      empty={
+        <EmptyResourcesTable
+          headers={dbHeaders}
+          titleBar={resourceHeaderTitleBar()}
+        />
+      }
+      query={query}
+      isEmpty={dbs.length === 0 && search === ""}
+    >
       <ResourceListView
         header={resourceHeaderTitleBar()}
-        tableHeader={
-          <TableHead headers={["Handle", "Environment", "Last Operation"]} />
-        }
+        tableHeader={<TableHead headers={dbHeaders} />}
         tableBody={
           <>
             {dbs.map((database) => (
