@@ -31,7 +31,7 @@ export function MenuWrappedPage({
       <div className={"flex flex-col flex-1"}>
         {header}
         <main className="flex-1">
-          <div className={withoutMargin ? "" : "mx-auto px-4 sm:px-6 md:px-8"}>
+          <div className={withoutMargin ? "" : "mx-auto px-8"}>
             <div className={withoutMargin ? "" : "py-4"}>{children}</div>
           </div>
         </main>
