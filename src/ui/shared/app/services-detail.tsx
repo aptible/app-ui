@@ -1,11 +1,11 @@
-import { SyntheticEvent, useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 
 import { calcServiceMetrics, selectServicesByIds } from "@app/deploy";
 import { AppState, DeployService } from "@app/types";
 
 import { ButtonIcon } from "../button";
-import { IconChevronDown, IconChevronUp, IconEllipsis } from "../icons";
+import { IconEllipsis } from "../icons";
 import { InputSearch } from "../input";
 import { PreCode, listToInvertedTextColor } from "../pre-code";
 import { ResourceListView } from "../resource-list-view";
@@ -82,50 +82,17 @@ const serviceListRow = ({
 };
 
 export function ServicesOverview({
-  serviceIds: initialServiceIds,
+  serviceIds,
 }: {
   serviceIds: string[];
 }) {
   const [search, setSearch] = useState("");
-  const [sortedAscending, setSortedAscending] = useState(false);
-  const [serviceIds, setServiceIds] = useState<string[]>(initialServiceIds);
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
 
-  const sortIconProps = {
-    className: "inline",
-    color: "#6b7280",
-    style: { width: 14, height: 14 },
-  };
-
   const services = useSelector((s: AppState) =>
-    selectServicesByIds(s, { ids: initialServiceIds }),
+    selectServicesByIds(s, { ids: serviceIds }),
   );
-
-  useEffect(() => {
-    setServiceIds(initialServiceIds);
-  }, [initialServiceIds]);
-
-  useEffect(() => {
-    if (serviceIds.length) {
-      const sortedServiceIdsByName = services
-        .map((service) => ({ handle: service.handle, id: service.id }))
-        .sort((a, b) => (a.handle > b.handle ? 1 : 0))
-        .map((service) => service.id);
-      setServiceIds(sortedServiceIdsByName);
-    }
-  }, [services, serviceIds]);
-
-  useEffect(() => {
-    if (serviceIds.length) {
-      setServiceIds([...serviceIds].reverse());
-    }
-  }, [sortedAscending]);
-
-  const handleSorting = (e: SyntheticEvent) => {
-    e.preventDefault;
-    setSortedAscending(!sortedAscending);
-  };
 
   return (
     <div className="mb-4">
@@ -147,18 +114,6 @@ export function ServicesOverview({
             </div>
             <div className="text-base text-gray-500 mt-4 select-none">
               <span>{serviceIds.length} Services</span>
-              <div
-                className="ml-5 cursor-pointer inline"
-                onClick={handleSorting}
-                onKeyDown={handleSorting}
-              >
-                Sort: A to Z{" "}
-                {sortedAscending ? (
-                  <IconChevronUp {...sortIconProps} />
-                ) : (
-                  <IconChevronDown {...sortIconProps} />
-                )}
-              </div>
             </div>
           </>
         }
