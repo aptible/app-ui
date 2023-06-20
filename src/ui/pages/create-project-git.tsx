@@ -42,9 +42,8 @@ import {
 } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 
-import { HeroBgLayout } from "../layouts";
+import { HeroBgLayout, MenuWrappedPage } from "../layouts";
 import {
-  ApplicationSidebar,
   AptibleLogo,
   Banner,
   BannerMessages,
@@ -131,7 +130,6 @@ import {
 } from "@app/deploy/operation";
 import { selectEnv, selectLegacyDashboardUrl, selectOrigin } from "@app/env";
 import { selectFeedback, setFeedback } from "@app/feedback";
-import { selectNav } from "@app/nav";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   DbSelectorProps,
@@ -150,33 +148,19 @@ export const CreateProjectLayout = ({
   const origin = useSelector(selectOrigin);
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const org = useSelector(selectOrganizationSelected);
-  const { collapsed } = useSelector(selectNav);
-  const collapsedOffset = collapsed ? 14 : 64;
-  const bodyLeftMargin = collapsed
-    ? `pl-${collapsedOffset}`
-    : `md:pl-${collapsedOffset}`;
 
   const orgSettingsUrl = `${legacyUrl}/organizations/${org.id}/members`;
   const sshSettingsUrl = `${legacyUrl}/settings/protected/ssh`;
 
   if (origin === "nextgen") {
     return (
-      <div>
-        <div
-          className={`flex md:w-${collapsedOffset} flex-col fixed inset-y-0`}
-          style={{ width: collapsedOffset * 3.5 }}
-        >
-          <ApplicationSidebar />
-        </div>
-
-        <div className={`${bodyLeftMargin} flex flex-col flex-1`}>
-          <HeroBgLayout showLogo={false} width={700}>
-            <div className="min-h-screen -my-16 pt-16">
-              {children ? children : <Outlet />}
-            </div>
-          </HeroBgLayout>
-        </div>
-      </div>
+      <MenuWrappedPage>
+        <HeroBgLayout showLogo={false} width="100%">
+          <div className="min-h-screen -my-16 pt-16">
+            {children ? children : <Outlet />}
+          </div>
+        </HeroBgLayout>
+      </MenuWrappedPage>
     );
   }
 

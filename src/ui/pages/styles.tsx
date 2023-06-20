@@ -4,8 +4,38 @@ import {
   Button,
   ButtonIcon,
   ButtonLink,
+  IconAlertTriangle,
+  IconArrowLeft,
+  IconArrowRight,
+  IconBox,
+  IconCheck,
+  IconCheckCircle,
+  IconChevronDown,
+  IconChevronRight,
+  IconChevronUp,
+  IconCloud,
+  IconCopy,
+  IconCreditCard,
+  IconCylinder,
+  IconDownload,
+  IconEdit2,
+  IconEllipsis,
+  IconExternalLink,
   IconGitBranch,
+  IconGlobe,
+  IconHamburger,
+  IconHeart,
+  IconInfo,
+  IconLayers,
+  IconLogout,
   IconPlusCircle,
+  IconRefresh,
+  IconSearch,
+  IconSettings,
+  IconThumbsUp,
+  IconTrash,
+  IconX,
+  IconXCircle,
   Input,
   InputSearch,
   LogLine,
@@ -28,16 +58,14 @@ const StylesWrapper = ({
 }: { children: React.ReactNode; navigation: React.ReactNode }) => (
   <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
     <div className="flex">
-      <div className=" pt-5 pb-4 fixed">{navigation}</div>
-      <div className="ml-40 pt-5 pb-4 overflow-y-auto w-full mr-2">
-        {children}
-      </div>
+      <div className="pb-4 fixed">{navigation}</div>
+      <div className="ml-40 pb-4 overflow-y-auto w-full mr-2">{children}</div>
     </div>
   </div>
 );
 
 const StylesNavigation = () => (
-  <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
+  <nav className="mt-2 flex-1 px-2 bg-white space-y-1">
     <div className="mb-4">
       <AptibleLogo />
     </div>
@@ -51,6 +79,7 @@ const StylesNavigation = () => (
       { name: "Logs", to: "#logs" },
       { name: "Pills", to: "#pills" },
       { name: "Navigation", to: "#navigation" },
+      { name: "Icons", to: "#icons" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
         <div className="flex items-center">
@@ -427,6 +456,57 @@ const Navigation = () => (
   </div>
 );
 
+const Icons = () => (
+  <div>
+    <h1 id="icons" className={tokens.type.h1}>
+      Icons
+    </h1>
+    <div className="mt-4">
+      {[
+        <IconArrowRight />,
+        <IconArrowLeft />,
+        <IconEdit2 />,
+        <IconChevronUp />,
+        <IconChevronRight />,
+        <IconChevronDown />,
+        <IconCylinder />,
+        <IconTrash />,
+        <IconBox />,
+        <IconSettings />,
+        <IconSearch />,
+        <IconCheck />,
+        <IconCheckCircle />,
+        <IconPlusCircle />,
+        <IconX />,
+        <IconXCircle />,
+        <IconAlertTriangle />,
+        <IconLayers />,
+        <IconLogout />,
+        <IconGitBranch />,
+        <IconInfo />,
+        <IconCreditCard />,
+        <IconGlobe />,
+        <IconEllipsis />,
+        <IconExternalLink />,
+        <IconCopy />,
+        <IconDownload />,
+        <IconThumbsUp />,
+        <IconRefresh />,
+        <IconHeart />,
+        <IconCloud />,
+        <IconHamburger />,
+      ].map((icon) => (
+        <div>
+          <div className="inline-block -mb-1">{icon}</div>{" "}
+          <span>
+            <pre className="inline">{icon.type.name}</pre>
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
@@ -455,6 +535,9 @@ export const StylesPage = () => (
       <hr />
       <br />
       <Navigation />
+      <hr />
+      <br />
+      <Icons />
     </StylesWrapper>
   </div>
 );

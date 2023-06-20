@@ -8,7 +8,6 @@ import {
   IconCheck,
   IconEllipsis,
   IconInfo,
-  IconPlusCircle,
   IconSettings,
   IconX,
 } from "./icons";
@@ -166,7 +165,7 @@ const EndpointsOverview = ({
     <div className="mb-4">
       <div className="flex justify-between w-100">
         <div className="flex w-1/2">
-          <ButtonIcon icon={<IconPlusCircle />}>New Endpoint</ButtonIcon>
+          {/* <ButtonIcon icon={<IconPlusCircle />}>New Endpoint</ButtonIcon> */}
         </div>
         <div className="flex w-1/2 justify-end">
           {endpoints.length ? (
