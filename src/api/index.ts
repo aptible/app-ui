@@ -25,6 +25,7 @@ import type {
 import { createLog } from "@app/debug";
 import { selectEnv } from "@app/env";
 import { halEntityParser } from "@app/hal";
+import { resetStore } from "@app/reset-store";
 import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
 import type {
   Action,
@@ -152,6 +153,14 @@ function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
   yield next();
 }
 
+function* expiredToken(ctx: ApiCtx, next: Next) {
+  yield next();
+  if (!ctx.response) return;
+  if (ctx.response.status === 401) {
+    ctx.actions.push(resetStore());
+  }
+}
+
 const MS = 1000;
 const SECONDS = 1 * MS;
 const MINUTES = 60 * SECONDS;
@@ -162,6 +171,7 @@ export const cacheShortTimer = () => timer(5 * SECONDS);
 export const api = createApi<DeployApiCtx>();
 api.use(debugMdw);
 api.use(sentryErrorHandler);
+api.use(expiredToken);
 api.use(requestMonitor());
 api.use(api.routes());
 api.use(halEntityParser);
@@ -172,6 +182,7 @@ api.use(fetcher());
 export const authApi = createApi<AuthApiCtx>();
 authApi.use(debugMdw);
 authApi.use(sentryErrorHandler);
+authApi.use(expiredToken);
 authApi.use(requestMonitor());
 authApi.use(authApi.routes());
 authApi.use(halEntityParser);
