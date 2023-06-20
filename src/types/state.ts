@@ -141,4 +141,5 @@ export interface AppState extends QueryState {
   modal: ModalState;
   roles: MapEntity<Role>;
   currentUserRoles: string[];
+  signal: AbortController;
 }

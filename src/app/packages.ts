@@ -14,6 +14,7 @@ import * as orgs from "@app/organizations";
 import * as redirectPath from "@app/redirect-path";
 import * as resetStore from "@app/reset-store";
 import * as roles from "@app/roles";
+import * as signal from "@app/signal";
 import * as theme from "@app/theme";
 import * as token from "@app/token";
 import * as users from "@app/users";
@@ -38,6 +39,7 @@ const corePackages: any[] = [
   initData,
   roles,
   nav,
+  signal,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {
@@ -59,6 +61,7 @@ const initialSagas = {
   authApi: authApi.saga(),
   thunks: thunks.saga(),
   watchFetchInitData: initData.watchFetchInitData,
+  signal: signal.watchSignal,
 };
 
 export const sagas = corePackages.reduce((acc, pkg) => {

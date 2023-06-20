@@ -4,13 +4,18 @@ import { BATCH, put, take } from "saga-query";
 
 import { ENTITIES_NAME } from "@app/hal";
 import { REDIRECT_NAME } from "@app/redirect-path";
+import { SIGNAL_NAME } from "@app/signal";
 import { createAction } from "@app/slice-helpers";
 import { resetToken } from "@app/token";
 import type { Action, AppState } from "@app/types";
 
 export const resetStore = createAction("RESET_STORE");
 
-const ALLOW_LIST: (keyof AppState)[] = [REDIRECT_NAME, ENTITIES_NAME];
+const ALLOW_LIST: (keyof AppState)[] = [
+  REDIRECT_NAME,
+  ENTITIES_NAME,
+  SIGNAL_NAME,
+];
 
 const keepState = (
   state: AppState | undefined,
