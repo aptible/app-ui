@@ -19,7 +19,6 @@ import {
   selectEnvironmentById,
   selectStackById,
 } from "@app/deploy";
-import { capitalize } from "@app/string-utils";
 import {
   AppState,
   DeployEndpoint,
@@ -55,21 +54,17 @@ const environmentDetailBox = ({
         </Button>
       </div>
       <div className="flex w-1/1">
-        <div className="flex-col w-1/4">
+        <div className="flex-col w-1/3">
           <div className="mt-4">
             <h3 className="text-base font-semibold text-gray-900">ID</h3>
             <p>{environment.id}</p>
-          </div>
-          <div className="mt-4">
-            <h3 className="text-base font-semibold text-gray-900">Mode</h3>
-            <p>{capitalize(environment.type)}</p>
           </div>
           <div className="mt-4">
             <h3 className="text-base font-semibold text-gray-900">Stack</h3>
             <p>{stack.name}</p>
           </div>
         </div>
-        <div className="flex-col w-1/4">
+        <div className="flex-col w-1/3">
           <div className="mt-4">
             <h3 className="text-base font-semibold text-gray-900">
               {environment.totalAppCount} App
@@ -97,7 +92,6 @@ const environmentDetailBox = ({
               ) : (
                 <p>
                   <a
-                    className="text-blue-500"
                     href={`https://${endpoint.virtualDomain}`}
                     target="_blank"
                     rel="noreferrer"
@@ -109,7 +103,7 @@ const environmentDetailBox = ({
             )}
           </div>
         </div>
-        <div className="flex-col w-1/4">
+        <div className="flex-col w-1/3">
           <div className="mt-4">
             <h3 className="text-base font-semibold text-gray-900">Backups</h3>
             {environment.totalBackupSize} GB

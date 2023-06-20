@@ -97,7 +97,7 @@ export const ApplicationSidebar = () => {
               />
             }
           >
-            {collapsed ? "" : "Create"}
+            {collapsed ? "" : "Deploy"}
           </ButtonIcon>
         </div>
         <UserMenu hideName={collapsed} />
