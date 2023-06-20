@@ -11,6 +11,7 @@ import {
   testAppDeployed,
   testEnv,
   testEnvExpress,
+  testOrg,
   testStack,
 } from "@app/mocks";
 import { setupIntegrationTest } from "@app/test";
@@ -42,6 +43,7 @@ describe("Deployments page", () => {
     const envExpress = defaultEnvResponse({
       id: createId(),
       handle: createText("express"),
+      organization_id: testOrg.id,
       onboarding_status: "initiated",
       _links: {
         stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
@@ -51,6 +53,7 @@ describe("Deployments page", () => {
     const envLaravel = defaultEnvResponse({
       id: createId(),
       handle: createText("laravel"),
+      organization_id: testOrg.id,
       onboarding_status: "completed",
       _links: {
         stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
@@ -126,6 +129,7 @@ describe("Deployments page", () => {
     const envExpress = defaultEnvResponse({
       id: createId(),
       handle: createText("express"),
+      organization_id: testOrg.id,
       onboarding_status: "initiated",
       _links: {
         stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
@@ -135,6 +139,7 @@ describe("Deployments page", () => {
     const envLaravel = defaultEnvResponse({
       id: createId(),
       handle: createText("laravel"),
+      organization_id: testOrg.id,
       onboarding_status: "completed",
       _links: {
         stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
@@ -144,6 +149,7 @@ describe("Deployments page", () => {
     const envLegacy = defaultEnvResponse({
       id: createId(),
       handle: createText("legacy"),
+      organization_id: testOrg.id,
       onboarding_status: "unknown",
       _links: {
         stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },

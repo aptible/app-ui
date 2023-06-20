@@ -88,6 +88,7 @@ export type OnboardingStatus =
 
 export interface DeployEnvironment extends Timestamps {
   id: string;
+  organizationId: string;
   type: "production" | "development";
   handle: string;
   activated: boolean;

@@ -91,6 +91,7 @@ export const testRole = defaultRoleResponse({
 export const testAccount = defaultEnvResponse({
   id: createId(),
   handle: createText("account"),
+  organization_id: testOrg.id,
   _links: {
     stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
     environment: { href: "" },
@@ -219,6 +220,7 @@ export const testConfiguration = defaultConfigurationResponse({
 
 export const testEnvExpress = defaultEnvResponse({
   id: createId(),
+  organization_id: testOrg.id,
   handle: createText("express"),
   onboarding_status: "initiated",
   _links: {

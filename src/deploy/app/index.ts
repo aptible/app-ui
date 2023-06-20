@@ -19,11 +19,13 @@ import {
   findEnvById,
   hasDeployEnvironment,
   selectEnvironments,
+  selectEnvironmentsByOrg,
 } from "../environment";
 import { deserializeImage } from "../image";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { DeployServiceResponse } from "../service";
 import { selectDeploy } from "../slice";
+import { selectOrganizationSelectedId } from "@app/organizations";
 
 export * from "./utils";
 
@@ -158,8 +160,20 @@ export const selectFirstAppByEnvId = createSelector(
   (apps) => apps[0] || initApp,
 );
 
-export const selectAppsForTable = createSelector(
+export const selectAppsByOrgAsList = createSelector(
   selectAppsAsList,
+  selectEnvironmentsByOrg,
+  selectOrganizationSelectedId,
+  (apps, envs) => {
+    return apps.filter((app) => {
+      const env = findEnvById(envs, { id: app.environmentId });
+      return hasDeployEnvironment(env);
+    });
+  },
+);
+
+export const selectAppsForTable = createSelector(
+  selectAppsByOrgAsList,
   selectEnvironments,
   (apps, envs) =>
     apps
