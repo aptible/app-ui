@@ -33,7 +33,7 @@ import {
 import cn from "classnames";
 import { useQuery } from "saga-query/react";
 
-const environmentDetailBox = ({
+const EnvironmentDetailBox = ({
   environment,
   latestOperation,
   stack,
@@ -169,12 +169,14 @@ function EnvironmentPageHeader(): React.ReactElement {
   return (
     <DetailPageHeaderView
       breadcrumbs={crumbs}
-      detailsBox={environmentDetailBox({
-        endpoints,
-        environment,
-        latestOperation,
-        stack,
-      })}
+      detailsBox={
+        <EnvironmentDetailBox
+          endpoints={endpoints}
+          environment={environment}
+          latestOperation={latestOperation}
+          stack={stack}
+        />
+      }
       title={environment ? environment.handle : "Loading..."}
       tabs={tabs}
     />
