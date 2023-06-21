@@ -2,12 +2,12 @@ import { createSelector } from "@reduxjs/toolkit";
 
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
-import { selectOperationById, selectOperationsAsList } from "../operation";
 import {
   findEnvById,
   hasDeployEnvironment,
   selectEnvironmentsByOrg,
 } from "../environment";
+import { selectOperationById, selectOperationsAsList } from "../operation";
 import type { AppState, DeployOperation } from "@app/types";
 
 export interface DeployActivityRow extends DeployOperation {
