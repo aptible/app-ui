@@ -41,7 +41,7 @@ describe("LogoutPage", () => {
       });
       server.use(
         rest.get(`${testEnv.apiUrl}/apps/:id`, async (_, res, ctx) => {
-          await sleep(500);
+          await sleep(200);
           return res(ctx.json(testApp));
         }),
       );
@@ -59,7 +59,7 @@ describe("LogoutPage", () => {
       fireEvent.click(logout);
 
       await screen.findByText(/Login!/);
-      await sleep(1000);
+      await sleep(500);
 
       expect(store.getState().deploy).toEqual({
         active_plans: {},
