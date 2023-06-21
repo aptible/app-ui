@@ -145,7 +145,7 @@ const DbsResourceHeaderTitleBar = ({
     case "simple-text":
       return (
         <p className="flex text-gray-500 text-base">
-          {dbs.length} App{dbs.length !== 1 && "s"}
+          {dbs.length} Database{dbs.length !== 1 && "s"}
         </p>
       );
     default:
