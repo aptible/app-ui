@@ -17,13 +17,13 @@ import { Box, DetailPageHeaderView, OpStatus, tokens } from "../shared";
 import { MenuWrappedPage } from "./menu-wrapped-page";
 import cn from "classnames";
 
-const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
+const opDetailBox = ({ op }: { op: DeployOperation }) => {
   const url = getResourceUrl(op);
   const resourceHandle = useSelector((s: AppState) =>
     selectResourceNameByOperationId(s, { id: op.id }),
   );
   return (
-    <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
+    <div className={cn(tokens.layout["main width"], "py-6")}>
       <Box>
         <h1 className="text-lg text-gray-500">Operation Details</h1>
         <div className="flex w-1/1">

@@ -43,10 +43,10 @@ const databaseDetailBox = ({
 }: {
   database: DeployDatabase;
   service: DeployService;
-}): React.ReactElement => {
+}) => {
   const metrics = calcMetrics([service]);
   return (
-    <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
+    <div className={cn(tokens.layout["main width"], "py-6")}>
       <Box>
         <div className="flex items-center justify-between">
           <div className="flex">

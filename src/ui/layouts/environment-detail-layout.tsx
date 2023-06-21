@@ -43,13 +43,10 @@ const environmentDetailBox = ({
   latestOperation: DeployOperation;
   stack: DeployStack;
   endpoints: DeployEndpoint[];
-}): React.ReactElement => {
-  const userName =
-    latestOperation.userName.length >= 15
-      ? `${latestOperation.userName.slice(0, 15)}...`
-      : latestOperation.userName;
+}) => {
+  const userName = latestOperation.userName.slice(0, 15);
   return (
-    <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
+    <div className={cn(tokens.layout["main width"], "py-6")}>
       <Box>
         <div className="flex items-center justify-between">
           <div className="flex">

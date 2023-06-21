@@ -1,6 +1,7 @@
 import {
   Banner,
   Box,
+  BoxGroup,
   Button,
   ButtonLinkExternal,
   ExternalLink,
@@ -79,7 +80,7 @@ export const AppSettingsPage = () => {
     isDeprovisioning || app.handle !== deleteConfirm;
 
   return (
-    <div className="mb-4">
+    <BoxGroup>
       <Box>
         <ButtonLinkExternal
           href="https://www.aptible.com/docs/managing-apps"
@@ -213,6 +214,6 @@ export const AppSettingsPage = () => {
           </div>
         </div>
       </Box>
-    </div>
+    </BoxGroup>
   );
 };
