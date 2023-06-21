@@ -1,6 +1,6 @@
 import {
-  AppList,
-  DatabaseList,
+  AppListByEnvironment,
+  DatabaseListByEnvironment,
   DetailPageSections,
   InputSearch,
 } from "../shared";
@@ -31,17 +31,19 @@ export const EnvironmentResourcesPage = () => {
             />
           </div>
         </div>
-        <AppList
+        <AppListByEnvironment
           environmentId={id}
           skipDescription
           resourceHeaderType="simple-text"
-          searchOverride={search}
+          search={search}
+          onChange={onChange}
         />
-        <DatabaseList
+        <DatabaseListByEnvironment
           environmentId={id}
           skipDescription
           resourceHeaderType="simple-text"
-          searchOverride={search}
+          search={search}
+          onChange={onChange}
         />
       </DetailPageSections>
     </div>

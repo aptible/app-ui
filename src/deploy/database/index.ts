@@ -260,6 +260,59 @@ export const selectDatabasesForTableSearch = createSelector(
   },
 );
 
+export const selectDatabasesForTableSearchByEnvironmentId = createSelector(
+  selectDatabasesForTable,
+  selectSearchProp,
+  (_: AppState, props: { envId?: string }) => props.envId || "",
+  (dbs, search, envId): DeployDatabaseRow[] => {
+    if (search === "" && envId === "") {
+      return dbs;
+    }
+
+    return dbs.filter((db) => {
+      const handle = db.handle.toLocaleLowerCase();
+      const envHandle = db.envHandle.toLocaleLowerCase();
+      const dbType = db.type.toLocaleLowerCase();
+
+      let lastOpUser = "";
+      let lastOpType = "";
+      let lastOpStatus = "";
+      if (db.lastOperation) {
+        lastOpUser = db.lastOperation.userName.toLocaleLowerCase();
+        lastOpType = db.lastOperation.type.toLocaleLowerCase();
+        lastOpStatus = db.lastOperation.status.toLocaleLowerCase();
+      }
+
+      const handleMatch = handle.includes(search);
+      const envMatch = envHandle.includes(search);
+      const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
+      const opMatch = lastOpType !== "" && lastOpType.includes(search);
+      const opStatusMatch =
+        lastOpStatus !== "" && lastOpStatus.includes(search);
+      const dbTypeMatch = dbType.includes(search);
+      const envIdMatch = envId !== "" && db.environmentId === envId;
+
+      const searchMatch =
+        handleMatch ||
+        dbTypeMatch ||
+        envMatch ||
+        opMatch ||
+        opStatusMatch ||
+        userMatch;
+
+      if (envId !== "") {
+        if (search !== "") {
+          return envIdMatch && searchMatch;
+        }
+
+        return envIdMatch;
+      }
+
+      return searchMatch;
+    });
+  },
+);
+
 export const selectDatabasesByEnvId = createSelector(
   selectDatabasesAsList,
   (_: AppState, props: { envId: string }) => props.envId,

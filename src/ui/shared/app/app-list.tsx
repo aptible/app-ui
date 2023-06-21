@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useQuery } from "saga-query/react";
@@ -9,8 +9,9 @@ import {
   calcServiceMetrics,
   fetchAllApps,
   fetchAllEnvironments,
-  selectAppsForTableByEnvironmentId,
-  selectAppsForTableSearch,
+  fetchEnvironmentById,
+  selectAppsForTable,
+  selectAppsForTableSearchByEnvironmentId,
 } from "@app/deploy";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
@@ -132,9 +133,71 @@ const appHeaders: Header[] = [
   "Last Operation",
 ];
 
-// TODO - can turn below to an interface as it has a common entrypoint for lists, not sure if we want to do this
-export function AppList({
-  environmentId = "",
+const AppList = ({
+  apps,
+  headerTitleBar,
+}: {
+  apps: DeployAppRow[];
+  headerTitleBar: React.ReactNode;
+}) => {
+  return (
+    <ResourceListView
+      header={headerTitleBar}
+      tableHeader={<TableHead headers={appHeaders} />}
+      tableBody={
+        <>
+          {apps.map((app) => (
+            <AppListRow app={app} key={app.id} />
+          ))}
+        </>
+      }
+    />
+  );
+};
+
+const AppsResourceHeaderTitleBar = ({
+  apps,
+  resourceHeaderType = "title-bar",
+  search = "",
+  searchOverride = "",
+  onChange,
+}: {
+  apps: DeployAppRow[];
+  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
+  search?: string;
+  searchOverride?: string;
+  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+}) => {
+  switch (resourceHeaderType) {
+    case "hidden":
+      return null;
+    case "title-bar":
+      return (
+        <ResourceHeader
+          title="Apps"
+          filterBar={
+            searchOverride ? undefined : (
+              <InputSearch
+                placeholder="Search apps..."
+                search={search}
+                onChange={onChange}
+              />
+            )
+          }
+        />
+      );
+    case "simple-text":
+      return (
+        <p className="flex text-gray-500 text-base">
+          {apps.length} App{apps.length !== 1 && "s"}
+        </p>
+      );
+    default:
+      return null;
+  }
+};
+
+export const AppListByOrg = ({
   resourceHeaderType = "title-bar",
   searchOverride = "",
 }: {
@@ -142,74 +205,102 @@ export function AppList({
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   skipDescription?: boolean;
   searchOverride?: string;
-}) {
+}) => {
   const query = useQuery(fetchAllApps());
   useQuery(fetchAllEnvironments());
 
   const [search, setSearch] = useState("");
+  const apps = useSelector(selectAppsForTable);
+
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
-
-  const apps = useSelector((s: AppState) =>
-    environmentId
-      ? selectAppsForTableByEnvironmentId(s, { envId: environmentId })
-      : selectAppsForTableSearch(s, {
-          search: searchOverride ? searchOverride : search,
-        }),
-  );
-
-  const resourceHeaderTitleBar = (): ReactElement | undefined => {
-    switch (resourceHeaderType) {
-      case "hidden":
-        return undefined;
-      case "title-bar":
-        return (
-          <ResourceHeader
-            title="Apps"
-            filterBar={
-              searchOverride ? undefined : (
-                <InputSearch
-                  placeholder="Search apps..."
-                  search={search}
-                  onChange={onChange}
-                />
-              )
-            }
-          />
-        );
-      case "simple-text":
-        return (
-          <p className="flex text-gray-500 text-base">
-            {apps.length} App{apps.length !== 1 && "s"}
-          </p>
-        );
-      default:
-        return undefined;
-    }
-  };
 
   return (
     <LoadResources
       empty={
         <EmptyResourcesTable
           headers={appHeaders}
-          titleBar={resourceHeaderTitleBar()}
+          titleBar={
+            <AppsResourceHeaderTitleBar
+              apps={apps}
+              searchOverride={searchOverride}
+              resourceHeaderType={resourceHeaderType}
+              search={search}
+              onChange={onChange}
+            />
+          }
         />
       }
       query={query}
       isEmpty={apps.length === 0 && search === ""}
     >
-      <ResourceListView
-        header={resourceHeaderTitleBar()}
-        tableHeader={<TableHead headers={appHeaders} />}
-        tableBody={
-          <>
-            {apps.map((app) => (
-              <AppListRow app={app} key={app.id} />
-            ))}
-          </>
+      <AppList
+        apps={apps}
+        headerTitleBar={
+          <AppsResourceHeaderTitleBar
+            apps={apps}
+            searchOverride={searchOverride}
+            resourceHeaderType={resourceHeaderType}
+            search={search}
+            onChange={onChange}
+          />
         }
       />
     </LoadResources>
   );
-}
+};
+
+export const AppListByEnvironment = ({
+  environmentId,
+  resourceHeaderType = "title-bar",
+  search = "",
+  onChange,
+}: {
+  environmentId: string;
+  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
+  skipDescription?: boolean;
+  search?: string;
+  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+}) => {
+  const query = useQuery(fetchAllApps());
+  useQuery(fetchEnvironmentById({ id: environmentId }));
+
+  const apps = useSelector((s: AppState) =>
+    selectAppsForTableSearchByEnvironmentId(s, {
+      envId: environmentId,
+      search,
+    }),
+  );
+
+  return (
+    <LoadResources
+      empty={
+        <EmptyResourcesTable
+          headers={appHeaders}
+          titleBar={
+            <AppsResourceHeaderTitleBar
+              apps={apps}
+              resourceHeaderType={resourceHeaderType}
+              search={search}
+              onChange={onChange}
+            />
+          }
+        />
+      }
+      query={query}
+      isEmpty={apps.length === 0 && search === ""}
+    >
+      <AppList
+        apps={apps}
+        headerTitleBar={
+          <AppsResourceHeaderTitleBar
+            apps={apps}
+            resourceHeaderType={resourceHeaderType}
+            search={search}
+            onChange={onChange}
+          />
+        }
+      />
+    </LoadResources>
+  );
+};

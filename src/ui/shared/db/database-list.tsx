@@ -5,10 +5,12 @@ import { useQuery } from "saga-query/react";
 
 import { prettyDateRelative } from "@app/date";
 import {
+  DeployDatabaseRow,
   fetchAllDatabases,
   fetchAllEnvironments,
-  selectDatabasesByEnvId,
+  fetchEnvironmentById,
   selectDatabasesForTableSearch,
+  selectDatabasesForTableSearchByEnvironmentId,
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
@@ -87,8 +89,71 @@ const DatabaseListRow = ({ database }: { database: DeployDatabase }) => {
 
 const dbHeaders = ["Handle", "Environment", "Last Operation"];
 
-export function DatabaseList({
-  environmentId = "",
+const DatabaseList = ({
+  dbs,
+  headerTitleBar,
+}: {
+  dbs: DeployDatabaseRow[];
+  headerTitleBar: React.ReactNode;
+}) => {
+  return (
+    <ResourceListView
+      header={headerTitleBar}
+      tableHeader={<TableHead headers={dbHeaders} />}
+      tableBody={
+        <>
+          {dbs.map((db) => (
+            <DatabaseListRow database={db} key={db.id} />
+          ))}
+        </>
+      }
+    />
+  );
+};
+
+const DbsResourceHeaderTitleBar = ({
+  dbs,
+  resourceHeaderType = "title-bar",
+  search = "",
+  searchOverride = "",
+  onChange,
+}: {
+  dbs: DeployDatabaseRow[];
+  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
+  search?: string;
+  searchOverride?: string;
+  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+}) => {
+  switch (resourceHeaderType) {
+    case "hidden":
+      return null;
+    case "title-bar":
+      return (
+        <ResourceHeader
+          title="Apps"
+          filterBar={
+            searchOverride ? undefined : (
+              <InputSearch
+                placeholder="Search databases..."
+                search={search}
+                onChange={onChange}
+              />
+            )
+          }
+        />
+      );
+    case "simple-text":
+      return (
+        <p className="flex text-gray-500 text-base">
+          {dbs.length} App{dbs.length !== 1 && "s"}
+        </p>
+      );
+    default:
+      return null;
+  }
+};
+
+export function DatabaseListByOrg({
   resourceHeaderType = "title-bar",
   searchOverride = "",
 }: {
@@ -101,69 +166,103 @@ export function DatabaseList({
   useQuery(fetchAllEnvironments());
 
   const [search, setSearch] = useState("");
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
-
   const dbs = useSelector((s: AppState) =>
-    environmentId
-      ? selectDatabasesByEnvId(s, { envId: environmentId })
-      : selectDatabasesForTableSearch(s, {
-          search: searchOverride ? searchOverride : search,
-        }),
+    selectDatabasesForTableSearch(s, {
+      search: searchOverride ? searchOverride : search,
+    }),
   );
 
-  const resourceHeaderTitleBar = () => {
-    switch (resourceHeaderType) {
-      case "hidden":
-        return undefined;
-      case "title-bar":
-        return (
-          <ResourceHeader
-            title="Databases"
-            filterBar={
-              searchOverride ? undefined : (
-                <InputSearch
-                  placeholder="Search databases..."
-                  search={search}
-                  onChange={onChange}
-                />
-              )
-            }
-          />
-        );
-      case "simple-text":
-        return (
-          <p className="flex text-gray-500 text-base">
-            {dbs.length} Database{dbs.length !== 1 && "s"}
-          </p>
-        );
-      default:
-        return undefined;
-    }
-  };
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
+    setSearch(ev.currentTarget.value);
 
   return (
     <LoadResources
       empty={
         <EmptyResourcesTable
           headers={dbHeaders}
-          titleBar={resourceHeaderTitleBar()}
+          titleBar={
+            <DbsResourceHeaderTitleBar
+              dbs={dbs}
+              searchOverride={searchOverride}
+              resourceHeaderType={resourceHeaderType}
+              search={search}
+              onChange={onChange}
+            />
+          }
         />
       }
       query={query}
       isEmpty={dbs.length === 0 && search === ""}
     >
-      <ResourceListView
-        header={resourceHeaderTitleBar()}
-        tableHeader={<TableHead headers={dbHeaders} />}
-        tableBody={
-          <>
-            {dbs.map((database) => (
-              <DatabaseListRow database={database} key={database.id} />
-            ))}
-          </>
+      <DatabaseList
+        dbs={dbs}
+        headerTitleBar={
+          <DbsResourceHeaderTitleBar
+            dbs={dbs}
+            searchOverride={searchOverride}
+            resourceHeaderType={resourceHeaderType}
+            search={search}
+            onChange={onChange}
+          />
         }
       />
     </LoadResources>
   );
 }
+
+export const DatabaseListByEnvironment = ({
+  environmentId,
+  resourceHeaderType = "title-bar",
+  search = "",
+  onChange,
+}: {
+  environmentId: string;
+  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
+  skipDescription?: boolean;
+  search?: string;
+  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+}) => {
+  const query = useQuery(fetchAllDatabases());
+  useQuery(fetchEnvironmentById({ id: environmentId }));
+
+  const dbs = useSelector((s: AppState) =>
+    selectDatabasesForTableSearchByEnvironmentId(s, {
+      envId: environmentId,
+      search,
+    }),
+  );
+
+  return (
+    <LoadResources
+      empty={
+        <EmptyResourcesTable
+          headers={dbHeaders}
+          titleBar={
+            <DbsResourceHeaderTitleBar
+              dbs={dbs}
+              searchOverride={search}
+              resourceHeaderType={resourceHeaderType}
+              search={search}
+              onChange={onChange}
+            />
+          }
+        />
+      }
+      query={query}
+      isEmpty={dbs.length === 0 && search === ""}
+    >
+      <DatabaseList
+        dbs={dbs}
+        headerTitleBar={
+          <DbsResourceHeaderTitleBar
+            dbs={dbs}
+            searchOverride={search}
+            resourceHeaderType={resourceHeaderType}
+            search={search}
+            onChange={onChange}
+          />
+        }
+      />
+    </LoadResources>
+  );
+};
