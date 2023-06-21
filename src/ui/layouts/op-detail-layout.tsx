@@ -6,6 +6,7 @@ import {
   getResourceUrl,
   prettyResourceType,
   selectOperationById,
+  selectResourceNameByOperationId,
 } from "@app/deploy";
 import { activityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
@@ -18,6 +19,9 @@ import cn from "classnames";
 
 const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
   const url = getResourceUrl(op);
+  const resourceHandle = useSelector((s: AppState) =>
+    selectResourceNameByOperationId(s, { id: op.id }),
+  );
   return (
     <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
       <Box>
@@ -53,7 +57,9 @@ const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
               <h3 className="text-base font-semibold text-gray-900">
                 Resource
               </h3>
-              <p>{url ? <Link to={url}>{op.id}</Link> : op.id}</p>
+              <p>
+                {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
+              </p>
             </div>
             <div className="mt-4">
               <h3 className="text-base font-semibold text-gray-900">User</h3>
