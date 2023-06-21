@@ -10,7 +10,7 @@ import {
   fetchAllApps,
   fetchAllEnvironments,
   fetchEnvironmentById,
-  selectAppsForTable,
+  selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
 } from "@app/deploy";
 import { selectServicesByIds } from "@app/deploy";
@@ -210,7 +210,11 @@ export const AppListByOrg = ({
   useQuery(fetchAllEnvironments());
 
   const [search, setSearch] = useState("");
-  const apps = useSelector(selectAppsForTable);
+  const apps = useSelector((s: AppState) =>
+    selectAppsForTableSearch(s, {
+      search: searchOverride ? searchOverride : search,
+    }),
+  );
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
