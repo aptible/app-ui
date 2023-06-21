@@ -170,6 +170,28 @@ export const selectAppsForTable = createSelector(
       .sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
+const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
+  const handle = app.handle.toLocaleLowerCase();
+  const envHandle = app.envHandle.toLocaleLowerCase();
+
+  let lastOpUser = "";
+  let lastOpType = "";
+  let lastOpStatus = "";
+  if (app.lastOperation) {
+    lastOpUser = app.lastOperation.userName.toLocaleLowerCase();
+    lastOpType = app.lastOperation.type.toLocaleLowerCase();
+    lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
+  }
+
+  const handleMatch = handle.includes(search);
+  const envMatch = envHandle.includes(search);
+  const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
+  const opMatch = lastOpType !== "" && lastOpType.includes(search);
+  const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
+
+  return handleMatch || envMatch || opMatch || opStatusMatch || userMatch;
+};
+
 export const selectAppsForTableSearchByEnvironmentId = createSelector(
   selectAppsForTable,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
@@ -180,27 +202,7 @@ export const selectAppsForTableSearchByEnvironmentId = createSelector(
     }
 
     return apps.filter((app) => {
-      const handle = app.handle.toLocaleLowerCase();
-      const envHandle = app.envHandle.toLocaleLowerCase();
-
-      let lastOpUser = "";
-      let lastOpType = "";
-      let lastOpStatus = "";
-      if (app.lastOperation) {
-        lastOpUser = app.lastOperation.userName.toLocaleLowerCase();
-        lastOpType = app.lastOperation.type.toLocaleLowerCase();
-        lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
-      }
-
-      const handleMatch = handle.includes(search);
-      const envMatch = envHandle.includes(search);
-      const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
-      const opMatch = lastOpType !== "" && lastOpType.includes(search);
-      const opStatusMatch =
-        lastOpStatus !== "" && lastOpStatus.includes(search);
-
-      const searchMatch =
-        handleMatch || envMatch || opMatch || opStatusMatch || userMatch;
+      const searchMatch = computeSearchMatch(app, search);
       const envIdMatch = envId !== "" && app.environmentId === envId;
 
       if (envId !== "") {
@@ -224,28 +226,7 @@ export const selectAppsForTableSearch = createSelector(
       return apps;
     }
 
-    return apps.filter((app) => {
-      const handle = app.handle.toLocaleLowerCase();
-      const envHandle = app.envHandle.toLocaleLowerCase();
-
-      let lastOpUser = "";
-      let lastOpType = "";
-      let lastOpStatus = "";
-      if (app.lastOperation) {
-        lastOpUser = app.lastOperation.userName.toLocaleLowerCase();
-        lastOpType = app.lastOperation.type.toLocaleLowerCase();
-        lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
-      }
-
-      const handleMatch = handle.includes(search);
-      const envMatch = envHandle.includes(search);
-      const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
-      const opMatch = lastOpType !== "" && lastOpType.includes(search);
-      const opStatusMatch =
-        lastOpStatus !== "" && lastOpStatus.includes(search);
-
-      return handleMatch || envMatch || opMatch || opStatusMatch || userMatch;
-    });
+    return apps.filter((app) => computeSearchMatch(app, search));
   },
 );
 
