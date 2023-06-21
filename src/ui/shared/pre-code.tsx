@@ -44,7 +44,9 @@ export const PreCode = ({
 
   return (
     <div className="relative">
-      <pre className={`p-4 rounded text-sm pr-14 overflow-x-auto ${className}`}>
+      <pre
+        className={`p-4 rounded-lg text-sm pr-14 overflow-x-auto ${className}`}
+      >
         {segments.map(({ text, className }, idx) => {
           return (
             <span key={`${idx}-${text}`} className={className}>

@@ -1,4 +1,10 @@
-import { Box, Button, FormGroup, IconExternalLink, Input } from "../shared";
+import {
+  Box,
+  ButtonLinkExternal,
+  FormGroup,
+  IconExternalLink,
+  Input,
+} from "../shared";
 import { selectEnvironmentById } from "@app/deploy";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
@@ -35,10 +41,15 @@ export const EnvironmentSettingsPage = () => {
   return (
     <div className="mb-4">
       <Box>
-        <Button className="relative float-right" variant="white" size="sm">
+        <ButtonLinkExternal
+          href="https://www.aptible.com/docs/environments"
+          className="relative float-right"
+          variant="white"
+          size="sm"
+        >
           View Docs
           <IconExternalLink className="inline ml-3 h-5 mt-0" />
-        </Button>
+        </ButtonLinkExternal>
         <h1 className="text-lg text-gray-500">Environment Settings</h1>
         <br />
         <form onSubmit={onSubmitForm}>

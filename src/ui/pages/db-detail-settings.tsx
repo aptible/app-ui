@@ -2,6 +2,7 @@ import {
   Banner,
   Box,
   Button,
+  ButtonLinkExternal,
   ExternalLink,
   FormGroup,
   IconAlertTriangle,
@@ -77,10 +78,15 @@ export const DatabaseSettingsPage = () => {
   return (
     <div className="mb-4">
       <Box>
-        <Button className="relative float-right" variant="white" size="sm">
+        <ButtonLinkExternal
+          href="https://www.aptible.com/docs/managing-databases"
+          className="relative float-right"
+          variant="white"
+          size="sm"
+        >
           View Docs
           <IconExternalLink className="inline ml-3 h-5 mt-0" />
-        </Button>
+        </ButtonLinkExternal>
         <h1 className="text-lg text-gray-500">Database Settings</h1>
         <br />
         <form onSubmit={onSubmitForm}>

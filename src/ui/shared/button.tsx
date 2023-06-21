@@ -60,6 +60,7 @@ export const ButtonLinkExternal = ({
     tokens.buttons.sizes[size],
     tokens.buttons.styles[variant],
     buttonShapeStyle(size, shape),
+    "hover:no-underline cursor-pointer",
   );
   return (
     <a {...props} className={`${className} ${classes}`}>
@@ -84,6 +85,7 @@ export const ButtonLink = ({
     tokens.buttons.sizes[size],
     tokens.buttons.styles[variant],
     buttonShapeStyle(size, shape),
+    "hover:no-underline cursor-pointer",
   );
   return (
     <Link {...props} className={`${className} ${classes}`}>

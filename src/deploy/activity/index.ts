@@ -3,7 +3,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
 import { findEnvById, selectEnvironments } from "../environment";
-import { selectOperationsAsList } from "../operation";
+import { selectOperationById, selectOperationsAsList } from "../operation";
 import type { AppState, DeployOperation } from "@app/types";
 
 export interface DeployActivityRow extends DeployOperation {
@@ -106,5 +106,25 @@ export const selectActivityForTableSearch = createSelector(
     });
 
     return filtered.slice(0, Math.min(ops.length, MAX_RESULTS));
+  },
+);
+
+export const selectResourceNameByOperationId = createSelector(
+  selectOperationById,
+  selectDatabases,
+  selectApps,
+  (op, dbs, apps) => {
+    let resourceHandle = "";
+    if (op.resourceType === "app") {
+      const app = findAppById(apps, { id: op.resourceId });
+      resourceHandle = app.handle;
+    } else if (op.resourceType === "database") {
+      const db = findDatabaseById(dbs, { id: op.resourceId });
+      resourceHandle = db.handle;
+    } else {
+      resourceHandle = op.resourceId;
+    }
+
+    return resourceHandle;
   },
 );

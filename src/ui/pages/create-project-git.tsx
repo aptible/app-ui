@@ -1328,7 +1328,7 @@ export const CreateProjectGitSettingsPage = () => {
   });
 
   return (
-    <div>
+    <div className="mb-8">
       <div className="text-center">
         <h1 className={tokens.type.h1}>Configure your App</h1>
         <p className="my-4 text-gray-600">
@@ -2101,7 +2101,7 @@ export const CreateProjectGitStatusPage = () => {
   };
 
   return (
-    <div>
+    <div className="mb-8">
       {header()}
 
       <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />

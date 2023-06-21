@@ -23,7 +23,7 @@ import type { AppState, DeployDatabase, DeployService } from "@app/types";
 
 import {
   Box,
-  Button,
+  ButtonLinkExternal,
   DetailPageHeaderView,
   IconExternalLink,
   TabItem,
@@ -43,10 +43,10 @@ const databaseDetailBox = ({
 }: {
   database: DeployDatabase;
   service: DeployService;
-}): React.ReactElement => {
+}) => {
   const metrics = calcMetrics([service]);
   return (
-    <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
+    <div className={cn(tokens.layout["main width"], "py-6")}>
       <Box>
         <div className="flex items-center justify-between">
           <div className="flex">
@@ -58,13 +58,18 @@ const databaseDetailBox = ({
             <h1 className="text-lg text-gray-500">Database Details</h1>
           </div>
           <div className="flex">
-            <Button className="ml-5" variant="white" size="sm">
+            <ButtonLinkExternal
+              href="https://www.aptible.com/docs/databases"
+              className="ml-5"
+              variant="white"
+              size="sm"
+            >
               View Docs
               <IconExternalLink className="inline ml-3 h-5 mt-0" />
-            </Button>
-            <Button className="ml-5" variant="white" size="sm">
+            </ButtonLinkExternal>
+            {/* <Button className="ml-5" variant="white" size="sm">
               View Credentials
-            </Button>
+            </Button> */}
           </div>
         </div>
         <div className="flex w-1/1">

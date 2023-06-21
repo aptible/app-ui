@@ -19,7 +19,7 @@ import type { AppState, DeployApp } from "@app/types";
 
 import {
   Box,
-  Button,
+  ButtonLinkExternal,
   DetailPageHeaderView,
   IconExternalLink,
   IconGitBranch,
@@ -35,8 +35,8 @@ import { capitalize } from "@app/string-utils";
 import cn from "classnames";
 import { useMemo, useState } from "react";
 
-const appDetailBox = ({ app }: { app: DeployApp }): React.ReactElement => (
-  <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
+const appDetailBox = ({ app }: { app: DeployApp }) => (
+  <div className={cn(tokens.layout["main width"], "py-6")}>
     <Box>
       <div className="flex items-center justify-between">
         <div className="flex">
@@ -47,12 +47,17 @@ const appDetailBox = ({ app }: { app: DeployApp }): React.ReactElement => (
           />
           <h1 className="text-lg text-gray-500">App Details</h1>
         </div>
-        <Button className="flex ml-auto" variant="white" size="sm">
+        <ButtonLinkExternal
+          href="https://www.aptible.com/docs/apps"
+          className="flex ml-auto"
+          variant="white"
+          size="sm"
+        >
           View Docs
           <IconExternalLink className="inline ml-3 h-5 mt-0" />
-        </Button>
+        </ButtonLinkExternal>
       </div>
-      <div className="flex w-1/1">
+      <div className="flex">
         <div className="flex-col w-1/2">
           <div className="mt-4">
             <h3 className="text-base font-semibold text-gray-900">
