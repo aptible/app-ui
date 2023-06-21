@@ -81,7 +81,7 @@ function OpPageHeader() {
   return (
     <DetailPageHeaderView
       breadcrumbs={[{ name: "Activity", to: activityUrl() }]}
-      title={op.id ? op.id : "Loading..."}
+      title={op.id ? `Operation: ${op.id}` : "Loading..."}
       detailsBox={opDetailBox({ op })}
     />
   );
