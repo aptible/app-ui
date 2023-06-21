@@ -24,3 +24,34 @@ html, body, #app {
   overflow-x: hidden;
 }
 
+.tooltip-inner {
+  display: none;
+  z-index: 1;
+}
+
+.tooltip-inner:before {
+  content: '';
+  display: inline;
+  width: 0;
+  height: 0;
+  position: absolute;
+  border-right: 8px solid transparent;
+  border-left: 8px solid transparent;
+}
+
+.tooltip:hover .tooltip-inner {
+  display: inline;
+}
+
+.tooltip-top {
+  left: 0;
+  top: 0;
+  transform: translate(0%, -110%);
+}
+
+.tooltip-top:before {
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, calc(100% - 1px));
+  border-top: 8px solid #111920;
+}

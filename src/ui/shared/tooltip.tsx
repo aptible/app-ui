@@ -1,22 +1,17 @@
 import cn from 'classnames';
-import { useState } from 'react';
 
-export const Tooltip = ({ children }: { children: React.ReactNode }) => {
-  const [hover, setHover] = useState(false);
-  const onMouseEnter = () => {
-    console.log('enter');
-    setHover(true);
-  };
-  const onMouseLeave = () => {
-    console.log('leave');
-    setHover(false);
-  };
-
-  return <div className="relative" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-    {children}
+export const Tooltip = ({ children, text }: { children: React.ReactNode, text: string }) => {
+  return <div className="relative tooltip">
+    <div className="cursor-pointer">{children}</div>
     <div className={cn([
-      "absolute top-0 left-0",
-      hover ? '' : 'hidden',
-    ])}></div>
+      "tooltip-inner",
+      "shadow",
+      "absolute",
+      "rounded-md",
+      "px-3 py-2",
+      "max-w-xs",
+      "bg-black text-white",
+      `tooltip-top`
+    ])}>{text}</div>
   </div>
 }
