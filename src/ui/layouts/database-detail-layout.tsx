@@ -24,6 +24,7 @@ import type { AppState, DeployDatabase, DeployService } from "@app/types";
 import {
   Box,
   Button,
+  ButtonLinkExternal,
   DetailPageHeaderView,
   IconExternalLink,
   TabItem,
@@ -58,13 +59,13 @@ const databaseDetailBox = ({
             <h1 className="text-lg text-gray-500">Database Details</h1>
           </div>
           <div className="flex">
-            <Button className="ml-5" variant="white" size="sm">
+            <ButtonLinkExternal className="ml-5" variant="white" size="sm">
               View Docs
               <IconExternalLink className="inline ml-3 h-5 mt-0" />
-            </Button>
-            <Button className="ml-5" variant="white" size="sm">
+            </ButtonLinkExternal>
+            {/* <Button className="ml-5" variant="white" size="sm">
               View Credentials
-            </Button>
+            </Button> */}
           </div>
         </div>
         <div className="flex w-1/1">
