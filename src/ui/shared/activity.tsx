@@ -169,7 +169,6 @@ function ActivityTable({
   description?: string;
 }) {
   const resourceHeaderTitleBar = (): ReactElement | undefined => {
-    console.log(ops);
     return (
       <ResourceHeader
         title={title}

@@ -210,7 +210,7 @@ export interface DeployOperation extends Timestamps {
   userEmail: string;
   userName: string;
   env: any;
-  note: any;
+  note: string;
 }
 
 export interface DeployOperationResponse {

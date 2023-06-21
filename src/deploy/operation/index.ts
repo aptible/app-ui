@@ -187,7 +187,7 @@ export const deserializeDeployOperation = (
     userEmail: payload.user_email,
     userName: payload.user_name,
     env: payload.env,
-    note: payload.note
+    note: payload.note,
   };
 };
 
