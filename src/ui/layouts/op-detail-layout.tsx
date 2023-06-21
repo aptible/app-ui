@@ -29,7 +29,7 @@ const opDetailBox = ({ op }: { op: DeployOperation }) => {
         <div className="flex w-1/1">
           <div className="flex-col w-1/2">
             <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">Type</h3>
+              <h3 className="text-base font-semibold text-gray-900">Operation Type</h3>
               <p>{capitalize(op.type)}</p>
             </div>
             <div className="mt-4">
@@ -67,6 +67,12 @@ const opDetailBox = ({ op }: { op: DeployOperation }) => {
                 <a href={`mailto:${op.userEmail}`}>{op.userName}</a>
               </p>
             </div>
+            {op.note ? <div className="mt-4">
+              <h3 className="text-base font-semibold text-gray-900">Note</h3>
+              <p>
+                {op.note}
+              </p>
+            </div> : null}
           </div>
         </div>
       </Box>

@@ -54,6 +54,7 @@ export interface DeployOperationResponse {
   user_email: string;
   user_name: string;
   env: string;
+  note: string;
   _links: {
     account: LinkResponse;
     code_scan_result: LinkResponse;
@@ -93,6 +94,7 @@ export const defaultOperationResponse = (
     user_name: "",
     user_email: "",
     env: "",
+    note: "",
     _links: {
       account: { href: "" },
       code_scan_result: { href: "" },
@@ -139,6 +141,7 @@ export const defaultDeployOperation = (
     userName: "unknown",
     userEmail: "",
     env: "",
+    note: "",
     ...op,
   };
 };
@@ -184,6 +187,7 @@ export const deserializeDeployOperation = (
     userEmail: payload.user_email,
     userName: payload.user_name,
     env: payload.env,
+    note: payload.note
   };
 };
 

@@ -66,6 +66,7 @@ const OpTypeCell = ({ op }: OpCellProps) => {
       >
         {capitalize(op.type)}
       </Link>
+      <div>ID: {op.id}</div>
     </Td>
   );
 };
@@ -122,7 +123,20 @@ const OpLastUpdatedCell = ({ op }: OpCellProps) => {
 };
 
 const OpUserCell = ({ op }: OpCellProps) => {
-  return <Td>{op.userName}</Td>;
+  if (!op.note) {
+    return (
+      <Td>
+        <div>{op.userName}</div>
+      </Td>
+    );
+  } else {
+    return (
+      <Td>
+        <div>{op.userName}</div>
+        <div>Note: {op.note}</div>
+      </Td>
+    );
+  }
 };
 
 const OpListRow = ({ op }: OpCellProps) => {
@@ -155,6 +169,7 @@ function ActivityTable({
   description?: string;
 }) {
   const resourceHeaderTitleBar = (): ReactElement | undefined => {
+    console.log(ops);
     return (
       <ResourceHeader
         title={title}
