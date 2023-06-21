@@ -1,22 +1,5 @@
 import cn from "classnames";
 
-/*
- *.tooltip-inner {
-  display: none;
-  z-index: 1;
-}
-
-.tooltip:hover .tooltip-inner {
-  display: inline;
-}
-
-.tooltip-top {
-  left: 0;
-  top: 0;
-  transform: translate(0%, -110%);
-}
-*/
-
 export const Tooltip = ({
   children,
   text,
