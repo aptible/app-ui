@@ -242,7 +242,7 @@ const PlanCard = ({
   // don't forget helper text on growth/scale/enterprise only (not on starter)
   return (
     <div
-      className={`w-full rounded overflow-hidden bg-white pt-14 px-0 mx-0 border ${borderColor} rounded relative sm:mt-4`}
+      className={`w-full rounded-lg overflow-hidden bg-white pt-14 px-0 mx-0 border ${borderColor} relative sm:mt-4`}
     >
       <div className="mb-8 mx-4" style={{ height: 135, minWidth: 225 }}>
         <div style={{ height: 95 }}>

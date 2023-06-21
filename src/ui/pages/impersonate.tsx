@@ -144,7 +144,7 @@ export const ImpersonatePage = () => {
             id="sso"
             name="sso"
             onChange={(e) => setSSO(e.currentTarget.checked)}
-            className="rounded h-6"
+            className="rounded-lg h-6"
           />
         </FormGroup>
 

@@ -73,7 +73,7 @@ const EndpointListing = ({
   endpoint,
   parent,
 }: { endpoint: DeployEndpoint; parent: string }) => (
-  <div className="mx-auto w-full py-6 -mt-5 -mb-5">
+  <div className="mx-auto w-full py-6">
     <Box>
       <ButtonIcon
         icon={

@@ -103,7 +103,7 @@ const OpActionsCell = ({ op }: OpCellProps) => {
   return (
     <Td>
       <div>
-        <Link to={operationDetailUrl(op.id)}>
+        <Link to={operationDetailUrl(op.id)} className="hover:no-underline">
           <Button variant="white" color="white" size="sm" className="px-0">
             Logs
           </Button>

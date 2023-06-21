@@ -6,6 +6,7 @@ import {
   getResourceUrl,
   prettyResourceType,
   selectOperationById,
+  selectResourceNameByOperationId,
 } from "@app/deploy";
 import { activityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
@@ -16,10 +17,13 @@ import { Box, DetailPageHeaderView, OpStatus, tokens } from "../shared";
 import { MenuWrappedPage } from "./menu-wrapped-page";
 import cn from "classnames";
 
-const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
+const opDetailBox = ({ op }: { op: DeployOperation }) => {
   const url = getResourceUrl(op);
+  const resourceHandle = useSelector((s: AppState) =>
+    selectResourceNameByOperationId(s, { id: op.id }),
+  );
   return (
-    <div className={cn(tokens.layout["main width"], "py-6 -mt-5 -mb-5")}>
+    <div className={cn(tokens.layout["main width"], "py-6")}>
       <Box>
         <h1 className="text-lg text-gray-500">Operation Details</h1>
         <div className="flex w-1/1">
@@ -53,7 +57,9 @@ const opDetailBox = ({ op }: { op: DeployOperation }): React.ReactElement => {
               <h3 className="text-base font-semibold text-gray-900">
                 Resource
               </h3>
-              <p>{url ? <Link to={url}>{op.id}</Link> : op.id}</p>
+              <p>
+                {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
+              </p>
             </div>
             <div className="mt-4">
               <h3 className="text-base font-semibold text-gray-900">User</h3>
@@ -75,7 +81,7 @@ function OpPageHeader() {
   return (
     <DetailPageHeaderView
       breadcrumbs={[{ name: "Activity", to: activityUrl() }]}
-      title={op.id ? op.id : "Loading..."}
+      title={op.id ? `Operation: ${op.id}` : "Loading..."}
       detailsBox={opDetailBox({ op })}
     />
   );

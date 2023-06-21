@@ -71,10 +71,7 @@ const EnvironmentLastDeployedCell = ({ environment }: EnvironmentCellProps) => {
   const operation = useSelector((s: AppState) =>
     selectLatestSuccessDeployOpByEnvId(s, { envId: environment.id }),
   );
-  const userName =
-    operation.userName.length >= 15
-      ? `${operation.userName.slice(0, 15)}...`
-      : operation.userName;
+  const userName = operation.userName.slice(0, 15);
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
       <div
