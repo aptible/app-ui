@@ -40,6 +40,7 @@ import {
   Input,
   InputSearch,
   LogLine,
+  OrgPicker,
   Pill,
   Select,
   SelectOption,
@@ -524,6 +525,15 @@ const Icons = () => (
   </div>
 );
 
+const Info = () => (
+  <div>
+    <h1 id="info" className={tokens.type.h1}>
+      Info
+    </h1>
+    <OrgPicker />
+  </div>
+);
+
 export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
@@ -555,6 +565,9 @@ export const StylesPage = () => (
       <hr />
       <br />
       <Icons />
+      <hr />
+      <br />
+      <Info />
     </StylesWrapper>
   </div>
 );
