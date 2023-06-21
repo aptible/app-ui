@@ -82,6 +82,7 @@ const StylesNavigation = () => (
       { name: "Pills", to: "#pills" },
       { name: "Navigation", to: "#navigation" },
       { name: "Icons", to: "#icons" },
+      { name: "Info", to: "#info" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
         <div className="flex items-center">
