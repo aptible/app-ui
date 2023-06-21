@@ -66,6 +66,7 @@ const OpTypeCell = ({ op }: OpCellProps) => {
       >
         {capitalize(op.type)}
       </Link>
+      <div>ID: {op.id}</div>
     </Td>
   );
 };
@@ -122,7 +123,12 @@ const OpLastUpdatedCell = ({ op }: OpCellProps) => {
 };
 
 const OpUserCell = ({ op }: OpCellProps) => {
-  return <Td>{op.userName}</Td>;
+  return (
+    <Td>
+      <div>{op.userName}</div>
+      {op.note ? <div>Note: {op.note}</div> : null}
+    </Td>
+  );
 };
 
 const OpListRow = ({ op }: OpCellProps) => {
