@@ -60,8 +60,6 @@ const initialSagas = {
   api: api.saga(),
   authApi: authApi.saga(),
   thunks: thunks.saga(),
-  watchFetchInitData: initData.watchFetchInitData,
-  signal: signal.watchSignal,
 };
 
 export const sagas = corePackages.reduce((acc, pkg) => {

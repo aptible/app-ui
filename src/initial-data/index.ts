@@ -40,7 +40,7 @@ export function* onFetchInitData() {
   );
 }
 
-export function* watchFetchInitData() {
+function* watchFetchInitData() {
   const act = (action: AnyAction) => {
     const matched =
       action.type === `${setLoaderSuccess}` &&
@@ -49,3 +49,5 @@ export function* watchFetchInitData() {
   };
   yield* takeEvery(act, onFetchInitData);
 }
+
+export const sagas = { watchFetchInitData };
