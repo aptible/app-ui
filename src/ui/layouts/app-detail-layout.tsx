@@ -19,7 +19,7 @@ import type { AppState, DeployApp } from "@app/types";
 
 import {
   Box,
-  Button,
+  ButtonLinkExternal,
   DetailPageHeaderView,
   IconExternalLink,
   IconGitBranch,
@@ -47,10 +47,15 @@ const appDetailBox = ({ app }: { app: DeployApp }): React.ReactElement => (
           />
           <h1 className="text-lg text-gray-500">App Details</h1>
         </div>
-        <Button className="flex ml-auto" variant="white" size="sm">
+        <ButtonLinkExternal
+          href="https://www.aptible.com/docs/apps"
+          className="flex ml-auto"
+          variant="white"
+          size="sm"
+        >
           View Docs
           <IconExternalLink className="inline ml-3 h-5 mt-0" />
-        </Button>
+        </ButtonLinkExternal>
       </div>
       <div className="flex w-1/1">
         <div className="flex-col w-1/2">

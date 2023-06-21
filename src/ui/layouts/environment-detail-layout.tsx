@@ -5,7 +5,7 @@ import { environmentsUrl } from "@app/routes";
 
 import {
   Box,
-  Button,
+  ButtonLinkExternal,
   DetailPageHeaderView,
   IconExternalLink,
   TabItem,
@@ -60,10 +60,15 @@ const environmentDetailBox = ({
             />
             <h1 className="text-lg text-gray-500">Environment Details</h1>
           </div>
-          <Button className="flex ml-auto" variant="white" size="sm">
+          <ButtonLinkExternal
+            href="https://www.aptible.com/docs/environments"
+            className="flex ml-auto"
+            variant="white"
+            size="sm"
+          >
             View Docs
             <IconExternalLink className="inline ml-3 h-5 mt-0" />
-          </Button>
+          </ButtonLinkExternal>
         </div>
         <div className="flex w-1/1">
           <div className="flex-col w-1/3">

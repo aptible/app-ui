@@ -23,7 +23,6 @@ import type { AppState, DeployDatabase, DeployService } from "@app/types";
 
 import {
   Box,
-  Button,
   ButtonLinkExternal,
   DetailPageHeaderView,
   IconExternalLink,
@@ -59,7 +58,12 @@ const databaseDetailBox = ({
             <h1 className="text-lg text-gray-500">Database Details</h1>
           </div>
           <div className="flex">
-            <ButtonLinkExternal className="ml-5" variant="white" size="sm">
+            <ButtonLinkExternal
+              href="https://www.aptible.com/docs/databases"
+              className="ml-5"
+              variant="white"
+              size="sm"
+            >
               View Docs
               <IconExternalLink className="inline ml-3 h-5 mt-0" />
             </ButtonLinkExternal>
