@@ -141,7 +141,9 @@ const Tables = () => (
                 {Array(8)
                   .fill(0)
                   .map((_, colIdx) => (
-                    <Td key={colIdx}>{`Cell - ${colIdx + 1} x ${rowIdx + 1}`}</Td>
+                    <Td key={colIdx}>{`Cell - ${colIdx + 1} x ${
+                      rowIdx + 1
+                    }`}</Td>
                   ))}
               </tr>
             ))}
@@ -212,7 +214,8 @@ const Forms = () => {
         options={options}
       />
       <p className="mt-4">
-        <input type="radio" key="service" value="radio" defaultChecked /> Radio checked
+        <input type="radio" key="service" value="radio" defaultChecked /> Radio
+        checked
       </p>
       <p className="mt-4">
         <input type="radio" key="service" value="radio" /> Radio unchecked
@@ -221,7 +224,10 @@ const Forms = () => {
         <input type="radio" key="service" value="radio" disabled /> Radio
         disabled
       </p>
-      <textarea className={`${tokens.type.textarea} mt-4`} defaultValue="Editable textarea" />
+      <textarea
+        className={`${tokens.type.textarea} mt-4`}
+        defaultValue="Editable textarea"
+      />
       <br />
       <h3 className={tokens.type.h3}>Form Groups</h3>
       <br />

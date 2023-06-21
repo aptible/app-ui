@@ -41,4 +41,4 @@ export * from "./pill";
 export * from "./resource-group-box";
 export * from "./op-status";
 export * from "./org-picker";
-export * from './tooltip';
+export * from "./tooltip";
