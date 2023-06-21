@@ -30,7 +30,7 @@ interface SectionProps {
 
 const Section = ({ children, title }: SectionProps) => {
   return (
-    <div className="bg-grey border rounded p-4 my-4">
+    <div className="bg-grey border rounded-lg p-4 my-4">
       <h2>{title}</h2>
       <div className="my-4">{children}</div>
     </div>

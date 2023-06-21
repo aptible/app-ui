@@ -25,7 +25,7 @@ export const tokens = {
     "small lighter": "text-sm text-gray-500",
     textarea:
       "appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 text-base w-full h-32 disabled:bg-black-50 disabled:cursor-not-allowed",
-    pre: "p-4 bg-black rounded text-white",
+    pre: "p-4 bg-black rounded-lg text-white",
   },
 
   buttons: {
