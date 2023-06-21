@@ -25,7 +25,7 @@ interface AppStore<State> {
   persistor: any;
 }
 
-const persistConfig = {
+export const persistConfig = {
   key: "root",
   storage,
   whitelist: [

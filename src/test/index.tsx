@@ -1,15 +1,16 @@
+import { Store, configureStore } from "@reduxjs/toolkit";
+import { waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
+import { REHYDRATE } from "redux-persist";
 import { prepareStore } from "saga-query";
 
-import { reducers, rootEntities, sagas } from "@app/app";
+import { persistConfig, reducers, rootEntities, sagas } from "@app/app";
 import { ftuxRoutes } from "@app/app/router";
 import { bootup } from "@app/bootup";
 import { testEnv } from "@app/mocks";
+import { resetReducer } from "@app/reset-store";
 import type { AppState } from "@app/types";
-import { Store, configureStore } from "@reduxjs/toolkit";
-import { waitFor } from "@testing-library/react";
-import { REHYDRATE } from "redux-persist";
 
 export const setupTestStore = (
   initState: Partial<AppState> = {},
@@ -21,10 +22,11 @@ export const setupTestStore = (
   });
 
   middleware.push(...prepared.middleware);
+  const baseReducer = resetReducer(prepared.reducer, persistConfig);
 
   const store = configureStore({
     preloadedState: { ...initState, entities: rootEntities },
-    reducer: prepared.reducer,
+    reducer: baseReducer,
     devTools: false,
     middleware: middleware,
   });

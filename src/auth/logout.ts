@@ -9,9 +9,9 @@ import {
 } from "saga-query";
 
 import { authApi, thunks } from "@app/api";
+import { resetStore } from "@app/reset-store";
 import {
   resetElevatedToken,
-  resetToken,
   selectElevatedToken,
   selectToken,
 } from "@app/token";
@@ -29,7 +29,7 @@ export const logout = thunks.create("logout", function* (ctx, next) {
   yield* next();
   yield* put(
     batchActions([
-      resetToken(),
+      resetStore(),
       resetElevatedToken(),
       setLoaderSuccess({ id: ctx.name }),
     ]),

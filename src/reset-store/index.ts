@@ -2,6 +2,7 @@ import type { Reducer } from "@reduxjs/toolkit";
 import type { PersistConfig } from "redux-persist";
 import { BATCH, put, select, take } from "saga-query";
 
+import { ENV_NAME } from "@app/env";
 import { ENTITIES_NAME } from "@app/hal";
 import { REDIRECT_NAME } from "@app/redirect-path";
 import { SIGNAL_NAME, selectSignal, setSignal } from "@app/signal";
@@ -15,6 +16,7 @@ const ALLOW_LIST: (keyof AppState)[] = [
   REDIRECT_NAME,
   ENTITIES_NAME,
   SIGNAL_NAME,
+  ENV_NAME,
 ];
 
 const keepState = (
