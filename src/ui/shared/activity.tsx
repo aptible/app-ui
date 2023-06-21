@@ -123,20 +123,12 @@ const OpLastUpdatedCell = ({ op }: OpCellProps) => {
 };
 
 const OpUserCell = ({ op }: OpCellProps) => {
-  if (!op.note) {
-    return (
-      <Td>
-        <div>{op.userName}</div>
-      </Td>
-    );
-  } else {
-    return (
-      <Td>
-        <div>{op.userName}</div>
-        <div>Note: {op.note}</div>
-      </Td>
-    );
-  }
+  return (
+    <Td>
+      <div>{op.userName}</div>
+      {op.note ? <div>Note: {op.note}</div> : null}
+    </Td>
+  );
 };
 
 const OpListRow = ({ op }: OpCellProps) => {
