@@ -5,16 +5,18 @@ import { defaultDeployEnvironment } from "../environment";
 import { defaultDeployOperation } from "../operation";
 import { selectActivityForTableSearch } from "./index";
 import { dateFromToday } from "@app/date";
-import { createId } from "@app/mocks";
+import { createId, testOrg } from "@app/mocks";
 import { AppState, DeepPartial, DeployOperation } from "@app/types";
 
 const env1 = defaultDeployEnvironment({
   id: `${createId()}`,
   handle: "my-env",
+  organizationId: testOrg.id,
 });
 const env2 = defaultDeployEnvironment({
   id: `${createId()}`,
   handle: "your-env",
+  organizationId: testOrg.id,
 });
 
 const app1 = defaultDeployApp({
@@ -65,6 +67,7 @@ const state: DeepPartial<AppState> = {
     databases: { [db1.id]: db1 },
     endpoints: { [vhost1.id]: vhost1 },
   },
+  organizationSelected: testOrg.id,
 };
 
 const op1Row = { ...op1, envHandle: env1.handle, resourceHandle: app1.handle };

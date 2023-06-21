@@ -33,7 +33,7 @@ lint:
 
 #: pretty - run prettier to auto format code
 pretty:
-	yarn format
+	yarn fmt
 	@echo "fyi we have a git pre-commit hook that will format only changed files"
 .PHONY: pretty
 

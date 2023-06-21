@@ -1,6 +1,6 @@
 interface Props extends React.SVGProps<SVGSVGElement> {
   color?: string;
-  variant?: "base" | "sm";
+  variant?: "base" | "sm" | "lg";
 }
 
 const IconStrokeBase = ({
@@ -12,6 +12,7 @@ const IconStrokeBase = ({
 }: Props & { title: string }) => {
   const size = (() => {
     if (variant === "sm") return 16;
+    if (variant === "lg") return 32;
     return 24;
   })();
 
@@ -341,6 +342,14 @@ export const IconHamburger = (props: Props) => {
   return (
     <IconStrokeBase {...props} title="Hamburger Menu Icon">
       <path d="M3.75 6.75H20.25M3.75 12H20.25M3.75 17.25H20.25" />
+    </IconStrokeBase>
+  );
+};
+
+export const IconWorkplace = (props: Props) => {
+  return (
+    <IconStrokeBase {...props} title="Workplace Icon">
+      <path d="M3.75 21H20.25M4.5 3H19.5M5.25 3V21M18.75 3V21M9 6.75H10.5M9 9.75H10.5M9 12.75H10.5M13.5 6.75H15M13.5 9.75H15M13.5 12.75H15M9 21V17.625C9 17.004 9.504 16.5 10.125 16.5H13.875C14.496 16.5 15 17.004 15 17.625V21" />
     </IconStrokeBase>
   );
 };

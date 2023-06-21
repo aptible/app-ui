@@ -21,6 +21,7 @@ import {
 import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
 import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
+import { OrgPicker } from "./org-picker";
 import { UserMenu } from "./user-menu";
 import { selectNav, setCollapsed } from "@app/nav";
 import { useLayoutEffect } from "react";
@@ -65,17 +66,26 @@ export const ApplicationSidebar = () => {
         >
           <IconHamburger color="#888C90" />
         </button>
+
         <div className="flex items-center flex-shrink-0 pl-4">
           <Link to={environmentsUrl()}>
             {collapsed ? <AptibleLogoOnly /> : <AptibleLogo />}
           </Link>
         </div>
-        <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
+
+        {collapsed ? null : (
+          <div className="mt-5 px-4">
+            <OrgPicker />
+          </div>
+        )}
+
+        <nav className="mt-3 flex-1 px-2 bg-white space-y-1">
           {navigation.map((item) => (
             <LinkNav key={item.name} {...item} hideName={collapsed} />
           ))}
         </nav>
       </div>
+
       <div className="px-2 w-full">
         <div className="ml-0">
           <ButtonIcon
@@ -100,7 +110,9 @@ export const ApplicationSidebar = () => {
             {collapsed ? "" : "Deploy"}
           </ButtonIcon>
         </div>
+
         <UserMenu hideName={collapsed} />
+
         {collapsed ? null : (
           <div className="my-6 flex justify-between text-xs text-gray-500">
             <a

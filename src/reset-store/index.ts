@@ -1,16 +1,23 @@
 import type { Reducer } from "@reduxjs/toolkit";
 import type { PersistConfig } from "redux-persist";
-import { BATCH, put, take } from "saga-query";
+import { BATCH, put, select, take } from "saga-query";
 
+import { ENV_NAME } from "@app/env";
 import { ENTITIES_NAME } from "@app/hal";
 import { REDIRECT_NAME } from "@app/redirect-path";
+import { SIGNAL_NAME, selectSignal, setSignal } from "@app/signal";
 import { createAction } from "@app/slice-helpers";
 import { resetToken } from "@app/token";
 import type { Action, AppState } from "@app/types";
 
 export const resetStore = createAction("RESET_STORE");
 
-const ALLOW_LIST: (keyof AppState)[] = [REDIRECT_NAME, ENTITIES_NAME];
+const ALLOW_LIST: (keyof AppState)[] = [
+  REDIRECT_NAME,
+  ENTITIES_NAME,
+  SIGNAL_NAME,
+  ENV_NAME,
+];
 
 const keepState = (
   state: AppState | undefined,
@@ -57,4 +64,13 @@ function* watchResetToken() {
   }
 }
 
-export const sagas = { watchResetToken };
+function* watchSignal() {
+  while (true) {
+    yield* take(`${resetStore}`);
+    const signal = yield* select(selectSignal);
+    signal.abort("reset store");
+    yield* put(setSignal(new AbortController()));
+  }
+}
+
+export const sagas = { watchResetToken, watchSignal };

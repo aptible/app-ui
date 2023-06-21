@@ -7,17 +7,22 @@ import { loginUrl } from "@app/routes";
 import { HeroBgLayout } from "../layouts";
 import { Box, Button, IconArrowRight, tokens } from "../shared";
 import { selectLegacyDashboardUrl } from "@app/env";
+import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 export const LogoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
+  const loader = useLoader(logout);
 
   const logoutSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     dispatch(logout());
-    navigate(loginUrl());
   };
+
+  useLoaderSuccess(loader, () => {
+    navigate(loginUrl());
+  });
 
   return (
     <HeroBgLayout>

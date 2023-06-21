@@ -36,13 +36,19 @@ import type {
 } from "@app/types";
 
 import { deserializeDisk } from "../disk";
-import { findEnvById, selectEnvironments } from "../environment";
+import {
+  findEnvById,
+  hasDeployEnvironment,
+  selectEnvironments,
+  selectEnvironmentsByOrg,
+} from "../environment";
 import {
   deserializeDeployOperation,
   selectOperationsByDatabaseId,
   waitForOperation,
 } from "../operation";
 import { selectDeploy } from "../slice";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
 export interface DeployDatabaseResponse {
@@ -203,8 +209,20 @@ export const selectDatabaseByHandle = createSelector(
   (dbs, handle) => dbs.find((db) => db.handle === handle) || initDb,
 );
 
-export const selectDatabasesForTable = createSelector(
+export const selectDatabasesByOrgAsList = createSelector(
   selectDatabasesAsList,
+  selectEnvironmentsByOrg,
+  selectOrganizationSelectedId,
+  (dbs, envs) => {
+    return dbs.filter((db) => {
+      const env = findEnvById(envs, { id: db.environmentId });
+      return hasDeployEnvironment(env);
+    });
+  },
+);
+
+export const selectDatabasesForTable = createSelector(
+  selectDatabasesByOrgAsList,
   selectEnvironments,
   (dbs, envs) =>
     dbs
