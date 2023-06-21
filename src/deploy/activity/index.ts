@@ -2,7 +2,11 @@ import { createSelector } from "@reduxjs/toolkit";
 
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
-import { findEnvById, selectEnvironments } from "../environment";
+import {
+  findEnvById,
+  hasDeployEnvironment,
+  selectEnvironmentsByOrg,
+} from "../environment";
 import { selectOperationById, selectOperationsAsList } from "../operation";
 import type { AppState, DeployOperation } from "@app/types";
 
@@ -13,11 +17,15 @@ export interface DeployActivityRow extends DeployOperation {
 
 const selectActivityForTable = createSelector(
   selectOperationsAsList,
-  selectEnvironments,
+  selectEnvironmentsByOrg,
   selectDatabases,
   selectApps,
   (ops, envs, dbs, apps) =>
     ops
+      .filter((op) => {
+        const env = findEnvById(envs, { id: op.environmentId });
+        return hasDeployEnvironment(env);
+      })
       .map((op): DeployActivityRow => {
         const env = findEnvById(envs, { id: op.environmentId });
         let resourceHandle = "";

@@ -119,6 +119,9 @@ const authHandlers = [
   rest.post(`${testEnv.authUrl}/tokens`, (_, res, ctx) => {
     return res(ctx.json(testToken));
   }),
+  rest.delete(`${testEnv.authUrl}/tokens/:id`, (_, res, ctx) => {
+    return res(ctx.status(204));
+  }),
 ];
 
 export const stacksWithResources = (

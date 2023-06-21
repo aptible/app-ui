@@ -84,7 +84,7 @@ const { selectTable: selectOrganizations } = organizations.getSelectors(
   (s: AppState) => s[ORGANIZATIONS_NAME],
 );
 
-const selectOrganizationSelectedId = (s: AppState) =>
+export const selectOrganizationSelectedId = (s: AppState) =>
   s[ORGANIZATION_SELECTED_NAME] || "";
 
 export const defaultOrganization = (

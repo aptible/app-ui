@@ -1,5 +1,6 @@
 import {
   all,
+  batchActions,
   call,
   put,
   select,
@@ -8,9 +9,9 @@ import {
 } from "saga-query";
 
 import { authApi, thunks } from "@app/api";
+import { resetStore } from "@app/reset-store";
 import {
   resetElevatedToken,
-  resetToken,
   selectElevatedToken,
   selectToken,
 } from "@app/token";
@@ -26,6 +27,11 @@ export const logout = thunks.create("logout", function* (ctx, next) {
     call(deleteToken.run, deleteToken({ id: elevatedToken.tokenId })),
   ]);
   yield* next();
-  ctx.actions.push(resetToken(), resetElevatedToken());
-  yield* put(setLoaderSuccess({ id: ctx.name }));
+  yield* put(
+    batchActions([
+      resetStore(),
+      resetElevatedToken(),
+      setLoaderSuccess({ id: ctx.name }),
+    ]),
+  );
 });

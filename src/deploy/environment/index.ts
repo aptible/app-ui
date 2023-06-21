@@ -8,19 +8,23 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type {
+import {
   AppState,
   DeployEnvironment,
   LinkResponse,
+  MapEntity,
   OnboardingStatus,
+  excludesFalse,
 } from "@app/types";
 
 import { PermissionResponse } from "../permission";
 import { selectDeploy } from "../slice";
 import { selectStackById } from "../stack";
+import { selectOrganizationSelectedId } from "@app/organizations";
 
 export interface DeployEnvironmentResponse {
   id: number;
+  organization_id: string;
   handle: string;
   created_at: string;
   updated_at: string;
@@ -52,6 +56,7 @@ export const defaultEnvResponse = (
   const now = new Date().toISOString();
   return {
     id: 1,
+    organization_id: "",
     handle: "",
     created_at: now,
     updated_at: now,
@@ -84,6 +89,7 @@ export const deserializeDeployEnvironment = (
   payload: DeployEnvironmentResponse,
 ): DeployEnvironment => ({
   id: `${payload.id}`,
+  organizationId: payload.organization_id,
   handle: payload.handle,
   createdAt: payload.created_at,
   updatedAt: payload.updated_at,
@@ -108,6 +114,7 @@ export const defaultDeployEnvironment = (
   const now = new Date().toISOString();
   return {
     id: "",
+    organizationId: "",
     handle: "Unknown",
     createdAt: now,
     updatedAt: now,
@@ -193,8 +200,27 @@ interface CreateEnvProps {
   orgId: string;
 }
 
-export const selectEnvironmentsForTableSearch = createSelector(
+export const selectEnvironmentsByOrg = createSelector(
   selectEnvironmentsAsList,
+  selectOrganizationSelectedId,
+  (envs, orgId) => {
+    if (orgId === "") return {};
+    return envs
+      .filter((env) => env.organizationId === orgId)
+      .reduce<MapEntity<DeployEnvironment>>((acc, env) => {
+        acc[env.id] = env;
+        return acc;
+      }, {});
+  },
+);
+
+export const selectEnvironmentsByOrgAsList = createSelector(
+  selectEnvironmentsByOrg,
+  (envs) => Object.values(envs).filter(excludesFalse),
+);
+
+export const selectEnvironmentsForTableSearch = createSelector(
+  selectEnvironmentsByOrgAsList,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (envs, search): DeployEnvironment[] => {
     if (search === "") {

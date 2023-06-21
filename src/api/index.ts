@@ -7,6 +7,7 @@ import {
   dispatchActions,
   fetcher,
   put,
+  race,
   requestMonitor,
   select,
   setLoaderError,
@@ -25,7 +26,12 @@ import type {
 import { createLog } from "@app/debug";
 import { selectEnv } from "@app/env";
 import { halEntityParser } from "@app/hal";
-import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
+import { selectSignal } from "@app/signal";
+import {
+  resetToken,
+  selectAccessToken,
+  selectElevatedAccessToken,
+} from "@app/token";
 import type {
   Action,
   ApiGen,
@@ -152,6 +158,29 @@ function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
   yield next();
 }
 
+function* expiredToken(ctx: ApiCtx, next: Next) {
+  yield next();
+  if (!ctx.response) return;
+  if (ctx.response.status === 401) {
+    ctx.actions.push(resetToken());
+  }
+}
+
+function* aborter(ctx: ApiCtx, next: Next) {
+  const signal = yield* select(selectSignal);
+  const aborted = () =>
+    new Promise<void>((resolve) => {
+      signal.signal.addEventListener("abort", () => {
+        resolve();
+      });
+    });
+  ctx.request = ctx.req({
+    signal: signal.signal,
+  });
+
+  yield* race([next(), call(aborted)]);
+}
+
 const MS = 1000;
 const SECONDS = 1 * MS;
 const MINUTES = 60 * SECONDS;
@@ -162,7 +191,9 @@ export const cacheShortTimer = () => timer(5 * SECONDS);
 export const api = createApi<DeployApiCtx>();
 api.use(debugMdw);
 api.use(sentryErrorHandler);
+api.use(expiredToken);
 api.use(requestMonitor());
+api.use(aborter);
 api.use(api.routes());
 api.use(halEntityParser);
 api.use(requestApi);
@@ -172,7 +203,9 @@ api.use(fetcher());
 export const authApi = createApi<AuthApiCtx>();
 authApi.use(debugMdw);
 authApi.use(sentryErrorHandler);
+authApi.use(expiredToken);
 authApi.use(requestMonitor());
+authApi.use(aborter);
 authApi.use(authApi.routes());
 authApi.use(halEntityParser);
 authApi.use(requestAuth);
