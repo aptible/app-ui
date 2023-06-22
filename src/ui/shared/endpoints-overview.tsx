@@ -73,17 +73,8 @@ const EndpointListing = ({
   endpoint,
   parent,
 }: { endpoint: DeployEndpoint; parent: string }) => (
-  <div className="mx-auto w-full py-6">
+  <div className="mx-auto w-full py-2">
     <Box>
-      <ButtonIcon
-        icon={
-          <IconEllipsis className="-mr-2" style={{ width: 16, height: 16 }} />
-        }
-        className="float-right"
-        type="submit"
-        variant="white"
-        size="xs"
-      />
       <div className="flex">
         <EndpointStatusPill status={endpoint.status} />
         {endpoint.status === "provisioning" ? null : (
@@ -100,7 +91,7 @@ const EndpointListing = ({
           </span>
         )}
       </div>
-      <div className="flex w-1/1">
+      <div className="flex">
         <div className="flex-col w-1/2">
           <div className="mt-4">
             <h3 className="text-base font-semibold text-gray-900">Hostname</h3>

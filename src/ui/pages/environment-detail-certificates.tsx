@@ -5,7 +5,6 @@ import { useQuery } from "saga-query/react";
 import type { AppState, DeployCertificate } from "@app/types";
 
 import {
-  ExternalLink,
   InputSearch,
   LoadResources,
   Pill,
@@ -21,10 +20,10 @@ import { prettyEnglishDate } from "@app/date";
 import {
   fetchCertificates,
   fetchEndpointsByEnvironmentId,
+  selectAppsByCertificateId,
   selectCertificatesByEnvId,
-  selectEndpointByEnvironmentAndCertificateId,
 } from "@app/deploy";
-import { appServicesUrl } from "@app/routes";
+import { appEndpointsUrl } from "@app/routes";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -79,6 +78,12 @@ const CertificateValidDateRangeCell = ({
             {prettyEnglishDate(certificate.notBefore)} -{" "}
             {prettyEnglishDate(certificate.notAfter)}
           </span>
+          {new Date(certificate.notAfter) <= new Date() ? (
+            <>
+              <br />
+              <span className="text-sm text-red">Expired</span>
+            </>
+          ) : null}
         </p>
       </div>
     </Td>
@@ -108,8 +113,8 @@ const CertificateIssuerCell = ({
 const CertificateServicesCell = ({
   certificate,
 }: { certificate: DeployCertificate }) => {
-  const endpointsForCertificate = useSelector((s: AppState) =>
-    selectEndpointByEnvironmentAndCertificateId(s, {
+  const appsForCertificate = useSelector((s: AppState) =>
+    selectAppsByCertificateId(s, {
       certificateId: certificate.id,
       envId: certificate.environmentId,
     }),
@@ -120,21 +125,20 @@ const CertificateServicesCell = ({
       <div className="flex">
         <p className="leading-4">
           <span className={tokens.type.darker}>
-            {endpointsForCertificate.length > 0
-              ? endpointsForCertificate.map((endpointForCertificate, idx) => (
-                  <>
-                    {idx > 0 ? <br /> : null}
+            {appsForCertificate.length > 0
+              ? appsForCertificate.flat().map((appForCertificate, idx) => (
+                  <div>
                     <span>
                       <Link
-                        to={appServicesUrl(certificate.id)}
-                        key={endpointForCertificate.id}
+                        to={appEndpointsUrl(appForCertificate.id)}
+                        key={appForCertificate.id}
                       >
-                        endpointForCertificate.endpointForCertificate
+                        {appForCertificate.handle}
                       </Link>
                     </span>
-                  </>
+                  </div>
                 ))
-              : "No Endpoint Found"}
+              : "No Apps Found"}
           </span>
         </p>
       </div>
@@ -161,7 +165,7 @@ const certificatesHeaders = [
   "Certificate",
   "Date Range",
   "Issuer",
-  "Services",
+  "Apps",
   "Status",
 ];
 
