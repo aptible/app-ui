@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
 
@@ -8,10 +8,12 @@ import {
   ExternalLink,
   InputSearch,
   LoadResources,
+  Pill,
   ResourceHeader,
   ResourceListView,
   TableHead,
   Td,
+  pillStyles,
   tokens,
 } from "../shared";
 import { EmptyResourcesTable } from "../shared/empty-resources-table";
@@ -23,7 +25,6 @@ import {
   selectEndpointByEnvironmentAndCertificateId,
 } from "@app/deploy";
 import { appServicesUrl } from "@app/routes";
-import cn from "classnames";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -32,23 +33,12 @@ const CertificateTrustedPill = ({
 }: {
   certificate: DeployCertificate;
 }): ReactElement => {
-  const className = cn(
-    "rounded-full border-2",
-    "text-sm font-semibold ",
-    "px-2 flex justify-between items-center w-fit",
-  );
-
   return (
-    <div
-      className={cn(
-        className,
-        certificate.trusted
-          ? "bg-lime-100 text-green-400 border-lime-300"
-          : "bg-red-100 text-red-400 border-red-300",
-      )}
+    <Pill
+      className={certificate.trusted ? pillStyles.success : pillStyles.error}
     >
-      <div>{certificate.trusted ? "Trusted" : "Untrusted"}</div>
-    </div>
+      {certificate.trusted ? "Trusted" : "Untrusted"}
+    </Pill>
   );
 };
 
@@ -58,16 +48,7 @@ const ManagedHTTPSPill = ({
   certificate: DeployCertificate;
 }): ReactElement | null => {
   return certificate.acme ? (
-    <div
-      className={cn(
-        "rounded-full border-2",
-        "text-sm font-semibold ",
-        "px-2 flex justify-between items-center w-fit",
-        "bg-lime-100 text-green-400 border-lime-300",
-      )}
-    >
-      )<div>Managed HTTPS</div>
-    </div>
+    <Pill className={pillStyles.success}>Managed HTTPS</Pill>
   ) : null;
 };
 
@@ -179,11 +160,9 @@ const CertificateStatusCell = ({
   return (
     <Td className="flex-1">
       <div className="flex">
-        <p className="leading-4">
-          <span className={tokens.type.darker}>
-            <CertificateTrustedPill certificate={certificate} />
-            <ManagedHTTPSPill certificate={certificate} />
-          </span>
+        <p className="leading-4 flex flex-col gap-2">
+          <CertificateTrustedPill certificate={certificate} />
+          <ManagedHTTPSPill certificate={certificate} />
         </p>
       </div>
     </Td>

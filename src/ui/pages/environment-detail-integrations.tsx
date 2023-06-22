@@ -67,7 +67,7 @@ const LogDrainHandleCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
           <span className={tokens.type.darker}>{logDrain.handle}</span>
           <br />
           <span className={tokens.type["small lighter"]}>
-            {logDrain.drainType}
+            {capitalize(logDrain.drainType.replace("_", " "))}
           </span>
         </p>
       </div>
