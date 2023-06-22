@@ -17,7 +17,7 @@ import {
   databaseEndpointsUrl,
   databaseScaleUrl,
   databaseSettingsUrl,
-  environmentResourcelUrl,
+  environmentDatabasesUrl,
 } from "@app/routes";
 import type { AppState, DeployDatabase, DeployService } from "@app/types";
 
@@ -151,7 +151,7 @@ function DatabasePageHeader() {
     selectEnvironmentById(s, { id: database.environmentId }),
   );
   const crumbs = [
-    { name: environment.handle, to: environmentResourcelUrl(environment.id) },
+    { name: environment.handle, to: environmentDatabasesUrl(environment.id) },
   ];
 
   const poller = useMemo(() => pollDatabaseOperations({ id }), [id]);

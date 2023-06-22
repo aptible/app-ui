@@ -77,40 +77,6 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
-const DatabaseListRow = ({ database }: { database: DeployDatabase }) => {
-  return (
-    <tr>
-      <DatabasePrimaryCell database={database} />
-      <EnvStackCell environmentId={database.environmentId} />
-      <LastOpCell database={database} />
-    </tr>
-  );
-};
-
-const dbHeaders = ["Handle", "Environment", "Last Operation"];
-
-const DatabaseList = ({
-  dbs,
-  headerTitleBar,
-}: {
-  dbs: DeployDatabaseRow[];
-  headerTitleBar: React.ReactNode;
-}) => {
-  return (
-    <ResourceListView
-      header={headerTitleBar}
-      tableHeader={<TableHead headers={dbHeaders} />}
-      tableBody={
-        <>
-          {dbs.map((db) => (
-            <DatabaseListRow database={db} key={db.id} />
-          ))}
-        </>
-      }
-    />
-  );
-};
-
 const DbsResourceHeaderTitleBar = ({
   dbs,
   resourceHeaderType = "title-bar",
@@ -122,15 +88,18 @@ const DbsResourceHeaderTitleBar = ({
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   search?: string;
   searchOverride?: string;
-  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   switch (resourceHeaderType) {
     case "hidden":
       return null;
     case "title-bar":
+      if (!onChange) {
+        return null;
+      }
       return (
         <ResourceHeader
-          title="Apps"
+          title="Databases"
           filterBar={
             searchOverride ? undefined : (
               <InputSearch
@@ -175,11 +144,13 @@ export function DatabaseListByOrg({
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
 
+  const headers = ["Handle", "Environment", "Last Operation"];
+
   return (
     <LoadResources
       empty={
         <EmptyResourcesTable
-          headers={dbHeaders}
+          headers={headers}
           titleBar={
             <DbsResourceHeaderTitleBar
               dbs={dbs}
@@ -194,16 +165,27 @@ export function DatabaseListByOrg({
       query={query}
       isEmpty={dbs.length === 0 && search === ""}
     >
-      <DatabaseList
-        dbs={dbs}
-        headerTitleBar={
+      <ResourceListView
+        header={
           <DbsResourceHeaderTitleBar
             dbs={dbs}
-            searchOverride={searchOverride}
+            searchOverride={search}
             resourceHeaderType={resourceHeaderType}
             search={search}
             onChange={onChange}
           />
+        }
+        tableHeader={<TableHead headers={headers} />}
+        tableBody={
+          <>
+            {dbs.map((db) => (
+              <tr key={db.id}>
+                <DatabasePrimaryCell database={db} />
+                <EnvStackCell environmentId={db.environmentId} />
+                <LastOpCell database={db} />
+              </tr>
+            ))}
+          </>
         }
       />
     </LoadResources>
@@ -214,13 +196,12 @@ export const DatabaseListByEnvironment = ({
   environmentId,
   resourceHeaderType = "title-bar",
   search = "",
-  onChange,
 }: {
   environmentId: string;
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   skipDescription?: boolean;
   search?: string;
-  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchEnvironmentById({ id: environmentId }));
@@ -232,18 +213,18 @@ export const DatabaseListByEnvironment = ({
     }),
   );
 
+  const headers = ["Handle", "Environment", "Last Operation"];
+
   return (
     <LoadResources
       empty={
         <EmptyResourcesTable
-          headers={dbHeaders}
+          headers={headers}
           titleBar={
             <DbsResourceHeaderTitleBar
               dbs={dbs}
               searchOverride={search}
               resourceHeaderType={resourceHeaderType}
-              search={search}
-              onChange={onChange}
             />
           }
         />
@@ -251,16 +232,25 @@ export const DatabaseListByEnvironment = ({
       query={query}
       isEmpty={dbs.length === 0 && search === ""}
     >
-      <DatabaseList
-        dbs={dbs}
-        headerTitleBar={
+      <ResourceListView
+        header={
           <DbsResourceHeaderTitleBar
             dbs={dbs}
             searchOverride={search}
             resourceHeaderType={resourceHeaderType}
-            search={search}
-            onChange={onChange}
           />
+        }
+        tableHeader={<TableHead headers={headers} />}
+        tableBody={
+          <>
+            {dbs.map((db) => (
+              <tr key={db.id}>
+                <DatabasePrimaryCell database={db} />
+                <EnvStackCell environmentId={db.environmentId} />
+                <LastOpCell database={db} />
+              </tr>
+            ))}
+          </>
         }
       />
     </LoadResources>

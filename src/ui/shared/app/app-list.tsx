@@ -166,7 +166,7 @@ const AppsResourceHeaderTitleBar = ({
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   search?: string;
   searchOverride?: string;
-  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   switch (resourceHeaderType) {
     case "hidden":
@@ -180,7 +180,7 @@ const AppsResourceHeaderTitleBar = ({
               <InputSearch
                 placeholder="Search apps..."
                 search={search}
-                onChange={onChange}
+                onChange={() => {}}
               />
             )
           }
@@ -264,7 +264,7 @@ export const AppListByEnvironment = ({
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   skipDescription?: boolean;
   search?: string;
-  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const query = useQuery(fetchAllApps());
   useQuery(fetchEnvironmentById({ id: environmentId }));

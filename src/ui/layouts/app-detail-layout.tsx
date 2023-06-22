@@ -13,7 +13,7 @@ import {
   appEndpointsUrl,
   appServicesUrl,
   appSettingsUrl,
-  environmentResourcelUrl,
+  environmentAppsUrl,
 } from "@app/routes";
 import type { AppState, DeployApp } from "@app/types";
 
@@ -117,7 +117,7 @@ function AppPageHeader() {
   );
   const [_, setHeartbeat] = useState<Date>(new Date());
   const crumbs = [
-    { name: environment.handle, to: environmentResourcelUrl(environment.id) },
+    { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
 
   const poller = useMemo(() => pollAppOperations({ id }), [id]);

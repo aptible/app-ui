@@ -158,7 +158,8 @@ function EnvironmentPageHeader(): React.ReactElement {
   const crumbs = [{ name: stack.name, to: environmentsUrl() }];
 
   const tabs = [
-    { name: "Resources", href: `/environments/${id}/resources` },
+    { name: "Apps", href: `/environments/${id}/apps` },
+    { name: "Databases", href: `/environments/${id}/databases` },
     { name: "Integrations", href: `/environments/${id}/integrations` },
     { name: "Certificates", href: `/environments/${id}/certificates` },
     { name: "Activity", href: `/environments/${id}/activity` },
