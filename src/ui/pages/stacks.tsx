@@ -50,8 +50,8 @@ function StackListRow({ stack }: { stack: DeployStack }) {
           <img
             src={
               stackType === "dedicated"
-                ? "/logo-dedicated-stack.png"
-                : "/logo-stack.png"
+                ? "/resource-types/logo-dedicated-stack.png"
+                : "/resource-types/logo-stack.png"
             }
             alt="stack icon"
             className="w-8 h-8 mr-2"
@@ -60,15 +60,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
         </div>
       </Td>
       <Td>{stack.region}</Td>
-      <Td>
-        <span
-          className={
-            stackType === "dedicated" ? "text-forest" : "text-orange-400"
-          }
-        >
-          {capitalize(stackType)}
-        </span>
-      </Td>
+      <Td>{capitalize(stackType)}</Td>
       <Td>
         {stack.cpuLimits ? "CPU" : ""}
         {stack.cpuLimits && stack.memoryLimits ? ", " : ""}
@@ -101,11 +93,16 @@ function StackList() {
           <ResourceHeader
             title="Stacks"
             filterBar={
-              <InputSearch
-                placeholder="Search stacks..."
-                search={search}
-                onChange={onChange}
-              />
+              <div>
+                <InputSearch
+                  placeholder="Search stacks..."
+                  search={search}
+                  onChange={onChange}
+                />
+                <p className="flex text-gray-500 mt-4 text-base">
+                  {stacks.length} Stack{stacks.length !== 1 && "s"}
+                </p>
+              </div>
             }
           />
         }
