@@ -81,13 +81,11 @@ const DbsResourceHeaderTitleBar = ({
   dbs,
   resourceHeaderType = "title-bar",
   search = "",
-  searchOverride = "",
   onChange,
 }: {
   dbs: DeployDatabaseRow[];
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   search?: string;
-  searchOverride?: string;
   onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   switch (resourceHeaderType) {
@@ -102,13 +100,11 @@ const DbsResourceHeaderTitleBar = ({
           title="Databases"
           filterBar={
             <div className="pt-1">
-              {searchOverride ? undefined : (
-                <InputSearch
-                  placeholder="Search databases..."
-                  search={search}
-                  onChange={onChange}
-                />
-              )}
+              <InputSearch
+                placeholder="Search databases..."
+                search={search}
+                onChange={onChange}
+              />
               <p className="flex text-gray-500 mt-4 text-base">
                 {dbs.length} Database{dbs.length !== 1 && "s"}
               </p>
@@ -129,12 +125,10 @@ const DbsResourceHeaderTitleBar = ({
 
 export function DatabaseListByOrg({
   resourceHeaderType = "title-bar",
-  searchOverride = "",
 }: {
   environmentId?: string;
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   skipDescription?: boolean;
-  searchOverride?: string;
 }) {
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchAllEnvironments());
@@ -142,7 +136,7 @@ export function DatabaseListByOrg({
   const [search, setSearch] = useState("");
   const dbs = useSelector((s: AppState) =>
     selectDatabasesForTableSearch(s, {
-      search: searchOverride ? searchOverride : search,
+      search,
     }),
   );
 
@@ -159,7 +153,6 @@ export function DatabaseListByOrg({
           titleBar={
             <DbsResourceHeaderTitleBar
               dbs={dbs}
-              searchOverride={searchOverride}
               resourceHeaderType={resourceHeaderType}
               search={search}
               onChange={onChange}
@@ -174,7 +167,6 @@ export function DatabaseListByOrg({
         header={
           <DbsResourceHeaderTitleBar
             dbs={dbs}
-            searchOverride={search}
             resourceHeaderType={resourceHeaderType}
             search={search}
             onChange={onChange}
@@ -228,7 +220,7 @@ export const DatabaseListByEnvironment = ({
           titleBar={
             <DbsResourceHeaderTitleBar
               dbs={dbs}
-              searchOverride={search}
+              search={search}
               resourceHeaderType={resourceHeaderType}
             />
           }
@@ -241,7 +233,7 @@ export const DatabaseListByEnvironment = ({
         header={
           <DbsResourceHeaderTitleBar
             dbs={dbs}
-            searchOverride={search}
+            search={search}
             resourceHeaderType={resourceHeaderType}
           />
         }

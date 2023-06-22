@@ -159,13 +159,11 @@ const AppsResourceHeaderTitleBar = ({
   apps,
   resourceHeaderType = "title-bar",
   search = "",
-  searchOverride = "",
   onChange,
 }: {
   apps: DeployAppRow[];
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   search?: string;
-  searchOverride?: string;
   onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   switch (resourceHeaderType) {
@@ -177,13 +175,11 @@ const AppsResourceHeaderTitleBar = ({
           title="Apps"
           filterBar={
             <div className="pt-1">
-              {searchOverride ? undefined : (
-                <InputSearch
-                  placeholder="Search apps..."
-                  search={search}
-                  onChange={() => {}}
-                />
-              )}
+              <InputSearch
+                placeholder="Search apps..."
+                search={search}
+                onChange={onChange}
+              />
               <p className="flex text-gray-500 mt-4 text-base">
                 {apps.length} App{apps.length !== 1 && "s"}
               </p>
@@ -204,21 +200,17 @@ const AppsResourceHeaderTitleBar = ({
 
 export const AppListByOrg = ({
   resourceHeaderType = "title-bar",
-  searchOverride = "",
 }: {
   environmentId?: string;
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   skipDescription?: boolean;
-  searchOverride?: string;
 }) => {
   const query = useQuery(fetchAllApps());
   useQuery(fetchAllEnvironments());
 
   const [search, setSearch] = useState("");
   const apps = useSelector((s: AppState) =>
-    selectAppsForTableSearch(s, {
-      search: searchOverride ? searchOverride : search,
-    }),
+    selectAppsForTableSearch(s, { search }),
   );
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
@@ -232,7 +224,6 @@ export const AppListByOrg = ({
           titleBar={
             <AppsResourceHeaderTitleBar
               apps={apps}
-              searchOverride={searchOverride}
               resourceHeaderType={resourceHeaderType}
               search={search}
               onChange={onChange}
@@ -248,7 +239,6 @@ export const AppListByOrg = ({
         headerTitleBar={
           <AppsResourceHeaderTitleBar
             apps={apps}
-            searchOverride={searchOverride}
             resourceHeaderType={resourceHeaderType}
             search={search}
             onChange={onChange}
