@@ -12,10 +12,7 @@ export const EnvironmentDatabasesPage = () => {
             <ButtonIcon icon={<IconPlusCircle />}>New Database</ButtonIcon>
           </div>
         </div> */}
-        <DatabaseListByEnvironment
-          environmentId={id}
-          resourceHeaderType="simple-text"
-        />
+        <DatabaseListByEnvironment environmentId={id} />
       </DetailPageSections>
     </div>
   );
