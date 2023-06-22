@@ -13,6 +13,7 @@ import {
   tokens,
 } from "../shared";
 import { EmptyResourcesTable } from "../shared/empty-resources-table";
+import { prettyDateRelative } from "@app/date";
 import {
   fetchLogDrains,
   fetchMetricDrains,
@@ -74,21 +75,6 @@ const LogDrainHandleCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
     </Td>
   );
 };
-
-const LogDrainDestinationCell = ({
-  logDrain,
-}: { logDrain: DeployLogDrain }) => {
-  return (
-    <Td className="flex-1">
-      <div className="flex">
-        <p className="leading-4">
-          <span className={tokens.type.darker}>{logDrain.drainHost}</span>
-        </p>
-      </div>
-    </Td>
-  );
-};
-
 const LogDrainSourcesCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   const drainSources = [];
   if (logDrain.drainApps) {
@@ -117,7 +103,23 @@ const LogDrainSourcesCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   );
 };
 
-const logDrainsHeaders = ["Status", "Handle", "Destination", "Sources"];
+const LogDrainLastUpdatedCell = ({
+  logDrain,
+}: { logDrain: DeployLogDrain }) => {
+  return (
+    <Td className="flex-1">
+      <div className="flex">
+        <p className="leading-4">
+          <span className={tokens.type.darker}>
+            {capitalize(prettyDateRelative(logDrain.updatedAt))}
+          </span>
+        </p>
+      </div>
+    </Td>
+  );
+};
+
+const logDrainsHeaders = ["Status", "Handle", "Sources", "Last Updated"];
 
 const LogDrainsResourceHeaderTitleBar = ({
   logDrains,
@@ -204,8 +206,8 @@ const LogDrainsSection = ({ id }: { id: string }) => {
               <tr key={logDrain.id}>
                 <LogDrainPrimaryCell logDrain={logDrain} />
                 <LogDrainHandleCell logDrain={logDrain} />
-                <LogDrainDestinationCell logDrain={logDrain} />
                 <LogDrainSourcesCell logDrain={logDrain} />
+                <LogDrainLastUpdatedCell logDrain={logDrain} />
               </tr>
             ))}
           </>
@@ -239,7 +241,7 @@ const MetricDrainHandleCell = ({
           <span className={tokens.type.darker}>{metricDrain.handle}</span>
           <br />
           <span className={tokens.type["small lighter"]}>
-            {metricDrain.drainType}
+            {capitalize(metricDrain.drainType.replace("_", " "))}
           </span>
         </p>
       </div>
@@ -247,7 +249,23 @@ const MetricDrainHandleCell = ({
   );
 };
 
-const metricDrainsHeaders = ["Status", "Handle"];
+const MetricDrainLastUpdatedCell = ({
+  metricDrain,
+}: { metricDrain: DeployMetricDrain }) => {
+  return (
+    <Td className="flex-1">
+      <div className="flex">
+        <p className="leading-4">
+          <span className={tokens.type.darker}>
+            {capitalize(prettyDateRelative(metricDrain.updatedAt))}
+          </span>
+        </p>
+      </div>
+    </Td>
+  );
+};
+
+const metricDrainsHeaders = ["Status", "Handle", "Last Updated"];
 
 const MetricDrainsResourceHeaderTitleBar = ({
   metricDrains,
@@ -334,6 +352,7 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
               <tr key={metricDrain.id}>
                 <MetricDrainPrimaryCell metricDrain={metricDrain} />
                 <MetricDrainHandleCell metricDrain={metricDrain} />
+                <MetricDrainLastUpdatedCell metricDrain={metricDrain} />
               </tr>
             ))}
           </>
