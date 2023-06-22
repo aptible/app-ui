@@ -155,24 +155,24 @@ const AppList = ({
   );
 };
 
+type HeaderTypes =
+  | {
+      resourceHeaderType: "title-bar";
+      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+    }
+  | { resourceHeaderType: "simple-text"; onChange?: null }
+
 const AppsResourceHeaderTitleBar = ({
   apps,
-  resourceHeaderType = "title-bar",
   search = "",
+  resourceHeaderType,
   onChange,
 }: {
   apps: DeployAppRow[];
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   search?: string;
-  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-}) => {
+} & HeaderTypes) => {
   switch (resourceHeaderType) {
-    case "hidden":
-      return null;
     case "title-bar":
-      if (!onChange) {
-        return null;
-      }
       return (
         <ResourceHeader
           title="Apps"
@@ -201,13 +201,7 @@ const AppsResourceHeaderTitleBar = ({
   }
 };
 
-export const AppListByOrg = ({
-  resourceHeaderType = "title-bar",
-}: {
-  environmentId?: string;
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
-  skipDescription?: boolean;
-}) => {
+export const AppListByOrg = () => {
   const query = useQuery(fetchAllApps());
   useQuery(fetchAllEnvironments());
 
@@ -227,8 +221,8 @@ export const AppListByOrg = ({
           titleBar={
             <AppsResourceHeaderTitleBar
               apps={apps}
-              resourceHeaderType={resourceHeaderType}
               search={search}
+              resourceHeaderType="title-bar"
               onChange={onChange}
             />
           }
@@ -242,8 +236,8 @@ export const AppListByOrg = ({
         headerTitleBar={
           <AppsResourceHeaderTitleBar
             apps={apps}
-            resourceHeaderType={resourceHeaderType}
             search={search}
+            resourceHeaderType="title-bar"
             onChange={onChange}
           />
         }
@@ -254,15 +248,8 @@ export const AppListByOrg = ({
 
 export const AppListByEnvironment = ({
   environmentId,
-  resourceHeaderType = "title-bar",
-  search = "",
-  onChange,
 }: {
   environmentId: string;
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
-  skipDescription?: boolean;
-  search?: string;
-  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const query = useQuery(fetchAllApps());
   useQuery(fetchEnvironmentById({ id: environmentId }));
@@ -270,7 +257,7 @@ export const AppListByEnvironment = ({
   const apps = useSelector((s: AppState) =>
     selectAppsForTableSearchByEnvironmentId(s, {
       envId: environmentId,
-      search,
+      search: "",
     }),
   );
 
@@ -282,24 +269,20 @@ export const AppListByEnvironment = ({
           titleBar={
             <AppsResourceHeaderTitleBar
               apps={apps}
-              resourceHeaderType={resourceHeaderType}
-              search={search}
-              onChange={onChange}
+              resourceHeaderType="simple-text"
             />
           }
         />
       }
       query={query}
-      isEmpty={apps.length === 0 && search === ""}
+      isEmpty={apps.length === 0}
     >
       <AppList
         apps={apps}
         headerTitleBar={
           <AppsResourceHeaderTitleBar
             apps={apps}
-            resourceHeaderType={resourceHeaderType}
-            search={search}
-            onChange={onChange}
+            resourceHeaderType="simple-text"
           />
         }
       />
