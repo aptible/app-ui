@@ -182,7 +182,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
           titleBar={
             <LogDrainsResourceHeaderTitleBar
               logDrains={logDrains}
-              resourceHeaderType="title-bar"
+              resourceHeaderType="simple-text"
             />
           }
         />
@@ -312,7 +312,7 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
           titleBar={
             <MetricDrainsResourceHeaderTitleBar
               metricDrains={metricDrains}
-              resourceHeaderType="title-bar"
+              resourceHeaderType="simple-text"
             />
           }
         />
