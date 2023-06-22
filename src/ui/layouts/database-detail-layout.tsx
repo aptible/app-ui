@@ -51,7 +51,7 @@ const databaseDetailBox = ({
         <div className="flex items-center justify-between">
           <div className="flex">
             <img
-              src={`/logo-${database.type}.png`}
+              src={`/database-types/logo-${database.type}.png`}
               className="w-8 h-8 mr-3"
               aria-label={`${database.type} Database`}
             />

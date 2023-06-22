@@ -51,7 +51,7 @@ const EnvironmentDetailBox = ({
         <div className="flex items-center justify-between">
           <div className="flex">
             <img
-              src={"/logo-environment.png"}
+              src={"/resource-types/logo-environment.png"}
               className="w-8 h-8 mr-3"
               aria-label="Environment"
             />

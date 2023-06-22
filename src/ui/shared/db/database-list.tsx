@@ -33,7 +33,7 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
       <div className="flex">
         <Link to={databaseEndpointsUrl(database.id)} className="flex">
           <img
-            src={`/logo-${database.type}.png`}
+            src={`/database-types/logo-${database.type}.png`}
             className="w-8 h-8 mt-1 mr-2"
             aria-label={`${database.type} Database`}
           />

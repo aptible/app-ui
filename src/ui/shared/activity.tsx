@@ -43,8 +43,22 @@ interface OpCellProps {
 }
 
 const getImageForResourceType = (resourceType: ResourceType) => {
-  const imageToUse = `/logo-${resourceType}.png`;
-  if (!["app", "database"].includes(resourceType)) {
+  const imageToUse = `/resource-types/logo-${resourceType}.png`;
+  if (
+    ![
+      "app",
+      "certificates",
+      "credentials",
+      "database",
+      "ephemeral_session",
+      "image",
+      "plan",
+      "plus",
+      "service",
+      "unknown",
+      "vhost",
+    ].includes(resourceType)
+  ) {
     return null;
   }
 

@@ -31,7 +31,7 @@ const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
     <Td>
       <Link to={environmentAppsUrl(environment.id)} className="flex">
         <img
-          src="/logo-environment.png"
+          src="/resource-types/logo-environment.png"
           className="w-8 h-8 mt-1 mr-2"
           aria-label="Environment"
         />

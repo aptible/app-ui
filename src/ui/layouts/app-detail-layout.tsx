@@ -41,7 +41,7 @@ const appDetailBox = ({ app }: { app: DeployApp }) => (
       <div className="flex items-center justify-between">
         <div className="flex">
           <img
-            src={"/logo-app.png"}
+            src={"/resource-types/logo-app.png"}
             className="w-8 h-8 mr-3"
             aria-label="App"
           />

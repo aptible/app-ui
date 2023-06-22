@@ -37,7 +37,7 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
     <Td className="flex-1">
       <Link to={appServicesUrl(app.id)} className="flex">
         <img
-          src="/logo-app.png"
+          src="/resource-types/logo-app.png"
           className="w-8 h-8 mr-2 align-middle"
           aria-label="App"
         />
