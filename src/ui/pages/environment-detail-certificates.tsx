@@ -231,10 +231,6 @@ const CertificatesResourceHeaderTitleBar = ({
 };
 
 export const EnvironmentCertificatesPage = () => {
-  const [search, setSearch] = useState("");
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
-
   const { id = "" } = useParams();
   const query = useQuery(fetchCertificates({ id }));
   const certificates = useSelector((s: AppState) =>
@@ -250,8 +246,6 @@ export const EnvironmentCertificatesPage = () => {
             <CertificatesResourceHeaderTitleBar
               certificates={certificates}
               resourceHeaderType="title-bar"
-              search={search}
-              onChange={onChange}
             />
           }
         />
@@ -263,8 +257,7 @@ export const EnvironmentCertificatesPage = () => {
         header={
           <CertificatesResourceHeaderTitleBar
             certificates={certificates}
-            searchOverride={search}
-            resourceHeaderType="title-bar"
+            resourceHeaderType="simple-text"
           />
         }
         tableHeader={<TableHead headers={certificatesHeaders} />}
