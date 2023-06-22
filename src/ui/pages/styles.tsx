@@ -48,6 +48,7 @@ import {
   TableHead,
   Tabs,
   Td,
+  pillStyles,
   tokens,
 } from "../shared";
 import { Breadcrumbs } from "../shared/breadcrumbs";
@@ -422,9 +423,23 @@ const Pills = () => (
     </h1>
     <div className="mt-4">
       <h3 className={tokens.type.h3}>Customizable pill with icon</h3>
-      <Pill icon={<IconGitBranch variant="sm" />} key="test">
-        Basic Icon With Pill
-      </Pill>
+      <div className="mt-4">
+        <Pill icon={<IconGitBranch variant="sm" />} key="test">
+          Basic Icon With Pill
+        </Pill>
+      </div>
+      <div className="mt-4">
+        <Pill className={pillStyles.error}>Error Pill</Pill>
+      </div>
+      <div className="mt-4">
+        <Pill className={pillStyles.pending}>Pending Pill</Pill>
+      </div>
+      <div className="mt-4">
+        <Pill className={pillStyles.progress}>Progress Pill</Pill>
+      </div>
+      <div className="mt-4">
+        <Pill className={pillStyles.success}>Success Pill</Pill>
+      </div>
     </div>
     <div className="mt-4">
       <h3 className={tokens.type.h3}>Operation status and time-based pill</h3>
