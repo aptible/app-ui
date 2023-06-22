@@ -7,6 +7,7 @@ import {
   IconGlobe,
   IconHamburger,
   IconHeart,
+  IconLayers,
   IconPlusCircle,
 } from "./icons";
 import {
@@ -16,6 +17,7 @@ import {
   databaseUrl,
   deploymentsUrl,
   environmentsUrl,
+  stacksUrl,
 } from "@app/routes";
 
 import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
@@ -34,6 +36,7 @@ export const ApplicationSidebar = () => {
 
   const navigate = useNavigate();
   const navigation = [
+    { name: "Stacks", to: stacksUrl(), icon: <IconLayers /> },
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
     { name: "Apps", to: appsUrl(), icon: <IconBox /> },
     { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },

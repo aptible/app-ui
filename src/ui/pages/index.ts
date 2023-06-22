@@ -46,3 +46,4 @@ export * from "./plans";
 export * from "./sso";
 export * from "./activity";
 export * from "./deployments";
+export * from "./stacks";

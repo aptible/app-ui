@@ -65,6 +65,7 @@ import {
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
+  StacksPage,
   TeamPage,
   UnauthRequired,
   VerifyEmailPage,
@@ -264,6 +265,16 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.DEPLOYMENTS_PATH,
         element: <DeploymentsPageWithMenus />,
+      },
+
+      {
+        path: routes.STACKS_PATH,
+        children: [
+          {
+            index: true,
+            element: <StacksPage />,
+          },
+        ],
       },
 
       {
