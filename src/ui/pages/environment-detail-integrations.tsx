@@ -267,35 +267,34 @@ const MetricDrainLastUpdatedCell = ({
 
 const metricDrainsHeaders = ["Status", "Handle", "Last Updated"];
 
+type HeaderTypes =
+  | {
+      resourceHeaderType: "title-bar";
+      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+    }
+  | { resourceHeaderType: "simple-text"; onChange?: null };
+
 const MetricDrainsResourceHeaderTitleBar = ({
   metricDrains,
-  resourceHeaderType = "title-bar",
+  resourceHeaderType,
   search = "",
-  searchOverride = "",
   onChange,
 }: {
   metricDrains: DeployMetricDrain[];
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   search?: string;
-  searchOverride?: string;
-  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-}) => {
+} & HeaderTypes) => {
   switch (resourceHeaderType) {
-    case "hidden":
-      return null;
     case "title-bar":
       return (
         <ResourceHeader
           title="Metric Drains"
           filterBar={
             <div className="pt-1">
-              {searchOverride ? undefined : (
-                <InputSearch
-                  placeholder="Search metric drains..."
-                  search={search}
-                  onChange={() => {}}
-                />
-              )}
+              <InputSearch
+                placeholder="Search metric drains..."
+                search={search}
+                onChange={onChange}
+              />
               <p className="flex text-gray-500 mt-4 text-base">
                 {metricDrains.length} Metric Drain
                 {metricDrains.length !== 1 && "s"}

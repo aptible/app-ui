@@ -168,35 +168,34 @@ const certificatesHeaders = [
   "Status",
 ];
 
+type HeaderTypes =
+  | {
+      resourceHeaderType: "title-bar";
+      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+    }
+  | { resourceHeaderType: "simple-text"; onChange?: null };
+
 const CertificatesResourceHeaderTitleBar = ({
   certificates,
-  resourceHeaderType = "title-bar",
+  resourceHeaderType,
   search = "",
-  searchOverride = "",
   onChange,
 }: {
   certificates: DeployCertificate[];
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   search?: string;
-  searchOverride?: string;
-  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-}) => {
+} & HeaderTypes) => {
   switch (resourceHeaderType) {
-    case "hidden":
-      return null;
     case "title-bar":
       return (
         <ResourceHeader
           title="Certificates"
           filterBar={
             <div className="pt-1">
-              {searchOverride ? undefined : (
-                <InputSearch
-                  placeholder="Search certificates..."
-                  search={search}
-                  onChange={() => {}}
-                />
-              )}
+              <InputSearch
+                placeholder="Search certificates..."
+                search={search}
+                onChange={onChange}
+              />
               <p className="flex text-gray-500 mt-4 text-base">
                 {certificates.length} Certificate
                 {certificates.length !== 1 && "s"}
