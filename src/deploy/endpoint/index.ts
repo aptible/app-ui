@@ -220,6 +220,13 @@ export const selectEndpointsByEnvironmentId = createSelector(
   },
 );
 
+export const selectEndpointByEnvironmentAndCertificateId = createSelector(
+  selectEndpointsByEnvironmentId,
+  (_: AppState, p: { certificateId: string }) => p.certificateId,
+  (endpoints, certificateId) =>
+    endpoints.filter((endpoint) => endpoint.certificateId === certificateId),
+);
+
 export const fetchEndpointsByAppId = api.get<{ appId: string }>(
   "/apps/:appId/vhosts",
   { saga: cacheShortTimer() },
