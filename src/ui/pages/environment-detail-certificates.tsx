@@ -5,6 +5,7 @@ import { useQuery } from "saga-query/react";
 import type { AppState, DeployCertificate } from "@app/types";
 
 import {
+  ExternalLink,
   InputSearch,
   LoadResources,
   ResourceHeader,
@@ -84,7 +85,22 @@ const CertificatePrimaryCell = ({
       <div className="flex">
         <p className="leading-4">
           <span className={tokens.type.darker}>
-            {endpointsForCertificate?.[0]?.externalHost || "No Host Found"}
+            {endpointsForCertificate.length > 0
+              ? endpointsForCertificate.map((endpointForCertificate, idx) => (
+                  <>
+                    {idx > 0 ? <br /> : null}
+                    <span>
+                      <ExternalLink
+                        href={endpointForCertificate.externalHost}
+                        key={endpointForCertificate.id}
+                        variant="default"
+                      >
+                        endpointForCertificate.endpointForCertificate
+                      </ExternalLink>
+                    </span>
+                  </>
+                ))
+              : "No Host Found"}
           </span>
         </p>
       </div>
