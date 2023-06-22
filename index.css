@@ -24,3 +24,11 @@ html, body, #app {
   overflow-x: hidden;
 }
 
+.tooltip-inner {
+  display: none;
+  transform: translate(0%, -110%);
+}
+
+.tooltip:hover .tooltip-inner {
+  display: inline;
+}
