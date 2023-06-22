@@ -1,4 +1,3 @@
-import { ReactElement } from "react";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
 
@@ -31,7 +30,7 @@ const CertificateTrustedPill = ({
   certificate,
 }: {
   certificate: DeployCertificate;
-}): ReactElement => {
+}) => {
   return (
     <Pill
       className={certificate.trusted ? pillStyles.success : pillStyles.error}
@@ -45,7 +44,7 @@ const ManagedHTTPSPill = ({
   certificate,
 }: {
   certificate: DeployCertificate;
-}): ReactElement | null => {
+}) => {
   return certificate.acme ? (
     <Pill className={pillStyles.success}>Managed HTTPS</Pill>
   ) : null;
