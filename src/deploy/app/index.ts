@@ -262,6 +262,23 @@ export const selectAppsByEnvOnboarding = createSelector(
   },
 );
 
+export const selectAppsByStack = createSelector(
+  selectAppsAsList,
+  selectEnvironments,
+  (_: AppState, p: { stackId: string }) => p.stackId,
+  (apps, envs, stackId) => {
+    return apps.filter((app) => {
+      const env = findEnvById(envs, { id: app.environmentId });
+      return env.stackId === stackId;
+    });
+  },
+);
+
+export const selectAppsCountByStack = createSelector(
+  selectAppsByStack,
+  (apps) => apps.length,
+);
+
 export const fetchApps = api.get<PaginateProps>("/apps?page=:page");
 
 export const fetchAllApps = thunks.create(

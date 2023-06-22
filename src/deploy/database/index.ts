@@ -315,6 +315,23 @@ export const selectDatabasesByEnvId = createSelector(
   },
 );
 
+export const selectDatabasesByStack = createSelector(
+  selectDatabasesAsList,
+  selectEnvironments,
+  (_: AppState, p: { stackId: string }) => p.stackId,
+  (dbs, envs, stackId) => {
+    return dbs.filter((db) => {
+      const env = findEnvById(envs, { id: db.environmentId });
+      return env.stackId === stackId;
+    });
+  },
+);
+
+export const selectDatabasesCountByStack = createSelector(
+  selectDatabasesByStack,
+  (dbs) => dbs.length,
+);
+
 export const fetchDatabases = api.get<PaginateProps>("/databases?page=:page", {
   saga: cacheTimer(),
 });

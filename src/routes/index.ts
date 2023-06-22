@@ -181,3 +181,6 @@ export const operationDetailUrl = (id: string) => `/operations/${id}`;
 
 export const STYLES_PATH = "/styles";
 export const stylesUrl = () => STYLES_PATH;
+
+export const STACKS_PATH = "/stacks";
+export const stacksUrl = () => STACKS_PATH;
