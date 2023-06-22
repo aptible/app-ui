@@ -2,10 +2,8 @@ import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
 
 import {
-  InputSearch,
   LoadResources,
   Pill,
-  ResourceHeader,
   ResourceListView,
   TableHead,
   Td,
@@ -121,53 +119,6 @@ const LogDrainLastUpdatedCell = ({
 
 const logDrainsHeaders = ["Status", "Handle", "Sources", "Last Updated"];
 
-type HeaderTypes =
-  | {
-      resourceHeaderType: "title-bar";
-      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-    }
-  | { resourceHeaderType: "simple-text"; onChange?: null };
-
-const LogDrainsResourceHeaderTitleBar = ({
-  logDrains,
-  resourceHeaderType,
-  search = "",
-  onChange,
-}: {
-  logDrains: DeployLogDrain[];
-  search?: string;
-} & HeaderTypes) => {
-  switch (resourceHeaderType) {
-    case "title-bar":
-      return (
-        <ResourceHeader
-          title="Log Drains"
-          filterBar={
-            <div className="pt-1">
-              <InputSearch
-                placeholder="Search log drains..."
-                search={search}
-                onChange={onChange}
-              />
-              <p className="flex text-gray-500 mt-4 text-base">
-                {logDrains.length} Log Drain
-                {logDrains.length !== 1 && "s"}
-              </p>
-            </div>
-          }
-        />
-      );
-    case "simple-text":
-      return (
-        <p className="flex text-gray-500 text-base">
-          {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
-        </p>
-      );
-    default:
-      return null;
-  }
-};
-
 const LogDrainsSection = ({ id }: { id: string }) => {
   const query = useQuery(fetchLogDrains({ id }));
 
@@ -181,10 +132,9 @@ const LogDrainsSection = ({ id }: { id: string }) => {
         <EmptyResourcesTable
           headers={logDrainsHeaders}
           titleBar={
-            <LogDrainsResourceHeaderTitleBar
-              logDrains={logDrains}
-              resourceHeaderType="simple-text"
-            />
+            <p className="flex text-gray-500 text-base">
+              {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
+            </p>
           }
         />
       }
@@ -193,10 +143,9 @@ const LogDrainsSection = ({ id }: { id: string }) => {
     >
       <ResourceListView
         header={
-          <LogDrainsResourceHeaderTitleBar
-            logDrains={logDrains}
-            resourceHeaderType="simple-text"
-          />
+          <p className="flex text-gray-500 text-base">
+            {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
+          </p>
         }
         tableHeader={<TableHead headers={logDrainsHeaders} />}
         tableBody={
@@ -266,46 +215,6 @@ const MetricDrainLastUpdatedCell = ({
 
 const metricDrainsHeaders = ["Status", "Handle", "Last Updated"];
 
-const MetricDrainsResourceHeaderTitleBar = ({
-  metricDrains,
-  resourceHeaderType,
-  search = "",
-  onChange,
-}: {
-  metricDrains: DeployMetricDrain[];
-  search?: string;
-} & HeaderTypes) => {
-  switch (resourceHeaderType) {
-    case "title-bar":
-      return (
-        <ResourceHeader
-          title="Metric Drains"
-          filterBar={
-            <div className="pt-1">
-              <InputSearch
-                placeholder="Search metric drains..."
-                search={search}
-                onChange={onChange}
-              />
-              <p className="flex text-gray-500 mt-4 text-base">
-                {metricDrains.length} Metric Drain
-                {metricDrains.length !== 1 && "s"}
-              </p>
-            </div>
-          }
-        />
-      );
-    case "simple-text":
-      return (
-        <p className="flex text-gray-500 text-base">
-          {metricDrains.length} Metric Drain{metricDrains.length !== 1 && "s"}
-        </p>
-      );
-    default:
-      return null;
-  }
-};
-
 const MetricDrainsSection = ({ id }: { id: string }) => {
   const query = useQuery(fetchMetricDrains({ id }));
 
@@ -319,10 +228,10 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
         <EmptyResourcesTable
           headers={metricDrainsHeaders}
           titleBar={
-            <MetricDrainsResourceHeaderTitleBar
-              metricDrains={metricDrains}
-              resourceHeaderType="simple-text"
-            />
+            <p className="flex text-gray-500 text-base">
+              {metricDrains.length} Metric Drain
+              {metricDrains.length !== 1 && "s"}
+            </p>
           }
         />
       }
@@ -331,10 +240,9 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
     >
       <ResourceListView
         header={
-          <MetricDrainsResourceHeaderTitleBar
-            metricDrains={metricDrains}
-            resourceHeaderType="simple-text"
-          />
+          <p className="flex text-gray-500 text-base">
+            {metricDrains.length} Metric Drain{metricDrains.length !== 1 && "s"}
+          </p>
         }
         tableHeader={<TableHead headers={metricDrainsHeaders} />}
         tableBody={

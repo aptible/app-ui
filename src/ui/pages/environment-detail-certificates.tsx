@@ -4,10 +4,8 @@ import { useQuery } from "saga-query/react";
 import type { AppState, DeployCertificate } from "@app/types";
 
 import {
-  InputSearch,
   LoadResources,
   Pill,
-  ResourceHeader,
   ResourceListView,
   TableHead,
   Td,
@@ -168,53 +166,6 @@ const certificatesHeaders = [
   "Status",
 ];
 
-type HeaderTypes =
-  | {
-      resourceHeaderType: "title-bar";
-      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-    }
-  | { resourceHeaderType: "simple-text"; onChange?: null };
-
-const CertificatesResourceHeaderTitleBar = ({
-  certificates,
-  resourceHeaderType,
-  search = "",
-  onChange,
-}: {
-  certificates: DeployCertificate[];
-  search?: string;
-} & HeaderTypes) => {
-  switch (resourceHeaderType) {
-    case "title-bar":
-      return (
-        <ResourceHeader
-          title="Certificates"
-          filterBar={
-            <div className="pt-1">
-              <InputSearch
-                placeholder="Search certificates..."
-                search={search}
-                onChange={onChange}
-              />
-              <p className="flex text-gray-500 mt-4 text-base">
-                {certificates.length} Certificate
-                {certificates.length !== 1 && "s"}
-              </p>
-            </div>
-          }
-        />
-      );
-    case "simple-text":
-      return (
-        <p className="flex text-gray-500 text-base">
-          {certificates.length} Certificate{certificates.length !== 1 && "s"}
-        </p>
-      );
-    default:
-      return null;
-  }
-};
-
 export const EnvironmentCertificatesPage = () => {
   const { id = "" } = useParams();
   const query = useQuery(fetchCertificates({ id }));
@@ -229,10 +180,10 @@ export const EnvironmentCertificatesPage = () => {
         <EmptyResourcesTable
           headers={certificatesHeaders}
           titleBar={
-            <CertificatesResourceHeaderTitleBar
-              certificates={certificates}
-              resourceHeaderType="simple-text"
-            />
+            <p className="flex text-gray-500 text-base">
+              {certificates.length} Certificate
+              {certificates.length !== 1 && "s"}
+            </p>
           }
         />
       }
@@ -241,10 +192,9 @@ export const EnvironmentCertificatesPage = () => {
     >
       <ResourceListView
         header={
-          <CertificatesResourceHeaderTitleBar
-            certificates={certificates}
-            resourceHeaderType="simple-text"
-          />
+          <p className="flex text-gray-500 text-base">
+            {certificates.length} Certificate{certificates.length !== 1 && "s"}
+          </p>
         }
         tableHeader={<TableHead headers={certificatesHeaders} />}
         tableBody={
