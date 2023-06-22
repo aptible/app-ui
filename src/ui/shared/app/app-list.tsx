@@ -160,7 +160,7 @@ type HeaderTypes =
       resourceHeaderType: "title-bar";
       onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
     }
-  | { resourceHeaderType: "simple-text"; onChange?: null }
+  | { resourceHeaderType: "simple-text"; onChange?: null };
 
 const AppsResourceHeaderTitleBar = ({
   apps,

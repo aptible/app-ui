@@ -14,7 +14,6 @@ export const EnvironmentDatabasesPage = () => {
         </div> */}
         <DatabaseListByEnvironment
           environmentId={id}
-          skipDescription
           resourceHeaderType="simple-text"
         />
       </DetailPageSections>

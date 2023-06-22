@@ -196,9 +196,7 @@ export const DatabaseListByEnvironment = ({
 }: {
   environmentId: string;
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
-  skipDescription?: boolean;
   search?: string;
-  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchEnvironmentById({ id: environmentId }));

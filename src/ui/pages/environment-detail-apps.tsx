@@ -12,11 +12,7 @@ export const EnvironmentAppsPage = () => {
             <ButtonIcon icon={<IconPlusCircle />}>New App</ButtonIcon>
           </div>
         </div> */}
-        <AppListByEnvironment
-          environmentId={id}
-          skipDescription
-          resourceHeaderType="simple-text"
-        />
+        <AppListByEnvironment environmentId={id} />
       </DetailPageSections>
     </div>
   );
