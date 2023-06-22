@@ -124,7 +124,13 @@ const selectors = slice.getSelectors(
 const initStack = defaultDeployStack();
 const must = mustSelectEntity(initStack);
 export const selectStackById = must(selectors.selectById);
-export const { selectTableAsList: selectStacksAsList } = selectors;
+export const { selectTable: selectStacks } = selectors;
+export const selectStacksAsList = createSelector(
+  selectors.selectTableAsList,
+  (stacks) => {
+    return stacks.sort((a, b) => a.name.localeCompare(b.name));
+  },
+);
 
 export const stackToOption = (
   stack: DeployStack,
@@ -155,6 +161,21 @@ export const selectStacksByOrgAsOptions = createSelector(
   },
 );
 
+export type StackType = "shared" | "dedicated";
+/*
+ * A stack with no organization id could be a coordinator or a shared stack
+ * A stack with public set to true could be a shared stack, but is never a coordinator
+ * (we also have shared stacks that are no longer public because they’re too full)
+ *
+ * The API only ever returns:
+ *  - Stacks that belong to your org
+ *  - Stacks that are public
+ *  - Stacks that have no org id and are not public, but you have an account on
+ */
+export const getStackType = (stack: DeployStack): StackType => {
+  return stack.organizationId === "" ? "shared" : "dedicated";
+};
+
 export const selectStackPublicDefault = createSelector(
   selectStacksAsList,
   (stacks) => {
@@ -170,7 +191,34 @@ export const selectStackPublicDefaultAsOption = createSelector(
   selectStackPublicDefault,
   stackToOption,
 );
-export const hasDeployStack = (s: DeployStack) => s.organizationId !== "";
+export const hasDeployStack = (s: DeployStack) => s.id !== "";
+
+export const selectStacksForTableSearch = createSelector(
+  selectStacksAsList,
+  (_: AppState, p: { search: string }) => p.search,
+  (stacks, search) => {
+    if (search === "") {
+      return stacks;
+    }
+
+    const searchLower = search.toLocaleLowerCase();
+
+    return stacks
+      .filter((stack) => {
+        const name = stack.name.toLocaleLowerCase();
+        const region = stack.region.toLocaleLowerCase();
+        const type = getStackType(stack);
+
+        const nameMatch = name.includes(searchLower);
+        const regionMatch = region.includes(searchLower);
+        const typeMatch = type.includes(searchLower);
+
+        return nameMatch || regionMatch || typeMatch;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  },
+);
+
 export const stackReducers = createReducerMap(slice);
 
 export const fetchStacks = api.get<PaginateProps>("/stacks?page=:page");

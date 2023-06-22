@@ -184,6 +184,54 @@ export const selectAppsForTable = createSelector(
       .sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
+const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
+  const handle = app.handle.toLocaleLowerCase();
+  const envHandle = app.envHandle.toLocaleLowerCase();
+
+  let lastOpUser = "";
+  let lastOpType = "";
+  let lastOpStatus = "";
+  if (app.lastOperation) {
+    lastOpUser = app.lastOperation.userName.toLocaleLowerCase();
+    lastOpType = app.lastOperation.type.toLocaleLowerCase();
+    lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
+  }
+
+  const handleMatch = handle.includes(search);
+  const envMatch = envHandle.includes(search);
+  const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
+  const opMatch = lastOpType !== "" && lastOpType.includes(search);
+  const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
+
+  return handleMatch || envMatch || opMatch || opStatusMatch || userMatch;
+};
+
+export const selectAppsForTableSearchByEnvironmentId = createSelector(
+  selectAppsForTable,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: AppState, props: { envId?: string }) => props.envId || "",
+  (apps, search, envId): DeployAppRow[] => {
+    if (search === "" && envId === "") {
+      return apps;
+    }
+
+    return apps.filter((app) => {
+      const searchMatch = computeSearchMatch(app, search);
+      const envIdMatch = envId !== "" && app.environmentId === envId;
+
+      if (envId !== "") {
+        if (search !== "") {
+          return envIdMatch && searchMatch;
+        }
+
+        return envIdMatch;
+      }
+
+      return searchMatch;
+    });
+  },
+);
+
 export const selectAppsForTableSearch = createSelector(
   selectAppsForTable,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
@@ -192,28 +240,7 @@ export const selectAppsForTableSearch = createSelector(
       return apps;
     }
 
-    return apps.filter((app) => {
-      const handle = app.handle.toLocaleLowerCase();
-      const envHandle = app.envHandle.toLocaleLowerCase();
-
-      let lastOpUser = "";
-      let lastOpType = "";
-      let lastOpStatus = "";
-      if (app.lastOperation) {
-        lastOpUser = app.lastOperation.userName.toLocaleLowerCase();
-        lastOpType = app.lastOperation.type.toLocaleLowerCase();
-        lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
-      }
-
-      const handleMatch = handle.includes(search);
-      const envMatch = envHandle.includes(search);
-      const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
-      const opMatch = lastOpType !== "" && lastOpType.includes(search);
-      const opStatusMatch =
-        lastOpStatus !== "" && lastOpStatus.includes(search);
-
-      return handleMatch || envMatch || opMatch || opStatusMatch || userMatch;
-    });
+    return apps.filter((app) => computeSearchMatch(app, search));
   },
 );
 
@@ -233,6 +260,23 @@ export const selectAppsByEnvOnboarding = createSelector(
       return true;
     });
   },
+);
+
+export const selectAppsByStack = createSelector(
+  selectAppsAsList,
+  selectEnvironments,
+  (_: AppState, p: { stackId: string }) => p.stackId,
+  (apps, envs, stackId) => {
+    return apps.filter((app) => {
+      const env = findEnvById(envs, { id: app.environmentId });
+      return env.stackId === stackId;
+    });
+  },
+);
+
+export const selectAppsCountByStack = createSelector(
+  selectAppsByStack,
+  (apps) => apps.length,
 );
 
 export const fetchApps = api.get<PaginateProps>("/apps?page=:page");

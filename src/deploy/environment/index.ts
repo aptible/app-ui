@@ -236,6 +236,19 @@ export const selectEnvironmentsForTableSearch = createSelector(
   },
 );
 
+export const selectEnvironmentsByStack = createSelector(
+  selectEnvironmentsAsList,
+  (_: AppState, p: { stackId: string }) => p.stackId,
+  (envs, stackId) => {
+    return envs.filter((env) => env.stackId === stackId);
+  },
+);
+
+export const selectEnvironmentsCountByStack = createSelector(
+  selectEnvironmentsByStack,
+  (envs) => envs.length,
+);
+
 interface EnvPatch {
   id: string;
   status: OnboardingStatus;

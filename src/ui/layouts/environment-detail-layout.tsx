@@ -51,7 +51,7 @@ const EnvironmentDetailBox = ({
         <div className="flex items-center justify-between">
           <div className="flex">
             <img
-              src={"/logo-environment.png"}
+              src={"/resource-types/logo-environment.png"}
               className="w-8 h-8 mr-3"
               aria-label="Environment"
             />
@@ -158,7 +158,8 @@ function EnvironmentPageHeader(): React.ReactElement {
   const crumbs = [{ name: stack.name, to: environmentsUrl() }];
 
   const tabs = [
-    { name: "Resources", href: `/environments/${id}/resources` },
+    { name: "Apps", href: `/environments/${id}/apps` },
+    { name: "Databases", href: `/environments/${id}/databases` },
     { name: "Integrations", href: `/environments/${id}/integrations` },
     { name: "Certificates", href: `/environments/${id}/certificates` },
     { name: "Activity", href: `/environments/${id}/activity` },

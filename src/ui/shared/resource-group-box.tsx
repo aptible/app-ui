@@ -44,7 +44,7 @@ export const ResourceGroupBox = ({
           <div>
             <img
               alt="default project logo"
-              src="/logo-app.png"
+              src="/resource-types/logo-app.png"
               style={{ width: 32, height: 32 }}
               className="mr-3"
             />

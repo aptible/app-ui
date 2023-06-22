@@ -5,12 +5,16 @@ import { useQuery } from "saga-query/react";
 
 import { prettyDateRelative } from "@app/date";
 import {
+  DeployDatabaseRow,
   fetchAllDatabases,
   fetchAllEnvironments,
+  fetchEnvironmentById,
   selectDatabasesForTableSearch,
+  selectDatabasesForTableSearchByEnvironmentId,
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
+import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
@@ -29,7 +33,7 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
       <div className="flex">
         <Link to={databaseEndpointsUrl(database.id)} className="flex">
           <img
-            src={`/logo-${database.type}.png`}
+            src={`/database-types/logo-${database.type}.png`}
             className="w-8 h-8 mt-1 mr-2"
             aria-label={`${database.type} Database`}
           />
@@ -73,82 +77,168 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
-const DatabaseListRow = ({ database }: { database: DeployDatabase }) => {
-  return (
-    <tr>
-      <DatabasePrimaryCell database={database} />
-      <EnvStackCell environmentId={database.environmentId} />
-      <LastOpCell database={database} />
-    </tr>
-  );
+type HeaderTypes =
+  | {
+      resourceHeaderType: "title-bar";
+      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+    }
+  | { resourceHeaderType: "simple-text"; onChange?: null };
+
+const DbsResourceHeaderTitleBar = ({
+  dbs,
+  resourceHeaderType = "title-bar",
+  search = "",
+  onChange,
+}: {
+  dbs: DeployDatabaseRow[];
+  search?: string;
+} & HeaderTypes) => {
+  switch (resourceHeaderType) {
+    case "title-bar":
+      if (!onChange) {
+        return null;
+      }
+      return (
+        <ResourceHeader
+          title="Databases"
+          filterBar={
+            <div className="pt-1">
+              <InputSearch
+                placeholder="Search databases..."
+                search={search}
+                onChange={onChange}
+              />
+              <p className="flex text-gray-500 mt-4 text-base">
+                {dbs.length} Database{dbs.length !== 1 && "s"}
+              </p>
+            </div>
+          }
+        />
+      );
+    case "simple-text":
+      return (
+        <p className="flex text-gray-500 text-base">
+          {dbs.length} Database{dbs.length !== 1 && "s"}
+        </p>
+      );
+    default:
+      return null;
+  }
 };
 
-export function DatabaseList({
-  resourceHeaderType = "title-bar",
-  searchOverride = "",
-}: {
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
-  skipDescription?: boolean;
-  searchOverride?: string;
-}) {
+export const DatabaseListByOrg = () => {
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchAllEnvironments());
 
   const [search, setSearch] = useState("");
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
-
   const dbs = useSelector((s: AppState) =>
     selectDatabasesForTableSearch(s, {
-      search: searchOverride ? searchOverride : search,
+      search,
     }),
   );
 
-  const resourceHeaderTitleBar = () => {
-    switch (resourceHeaderType) {
-      case "hidden":
-        return undefined;
-      case "title-bar":
-        return (
-          <ResourceHeader
-            title="Databases"
-            filterBar={
-              searchOverride ? undefined : (
-                <InputSearch
-                  placeholder="Search databases..."
-                  search={search}
-                  onChange={onChange}
-                />
-              )
-            }
-          />
-        );
-      case "simple-text":
-        return (
-          <p className="flex text-gray-500 text-base">
-            {dbs.length} Database{dbs.length > 1 && "s"}
-          </p>
-        );
-      default:
-        return undefined;
-    }
-  };
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
+    setSearch(ev.currentTarget.value);
+
+  const headers = ["Handle", "Environment", "Last Operation"];
 
   return (
-    <LoadResources query={query} isEmpty={dbs.length === 0 && search === ""}>
+    <LoadResources
+      empty={
+        <EmptyResourcesTable
+          headers={headers}
+          titleBar={
+            <DbsResourceHeaderTitleBar
+              dbs={dbs}
+              resourceHeaderType="title-bar"
+              search={search}
+              onChange={onChange}
+            />
+          }
+        />
+      }
+      query={query}
+      isEmpty={dbs.length === 0 && search === ""}
+    >
       <ResourceListView
-        header={resourceHeaderTitleBar()}
-        tableHeader={
-          <TableHead headers={["Handle", "Environment", "Last Operation"]} />
+        header={
+          <DbsResourceHeaderTitleBar
+            dbs={dbs}
+            resourceHeaderType="title-bar"
+            search={search}
+            onChange={onChange}
+          />
         }
+        tableHeader={<TableHead headers={headers} />}
         tableBody={
           <>
-            {dbs.map((database) => (
-              <DatabaseListRow database={database} key={database.id} />
+            {dbs.map((db) => (
+              <tr key={db.id}>
+                <DatabasePrimaryCell database={db} />
+                <EnvStackCell environmentId={db.environmentId} />
+                <LastOpCell database={db} />
+              </tr>
             ))}
           </>
         }
       />
     </LoadResources>
   );
-}
+};
+
+export const DatabaseListByEnvironment = ({
+  environmentId,
+}: {
+  environmentId: string;
+}) => {
+  const query = useQuery(fetchAllDatabases());
+  useQuery(fetchEnvironmentById({ id: environmentId }));
+
+  const dbs = useSelector((s: AppState) =>
+    selectDatabasesForTableSearchByEnvironmentId(s, {
+      envId: environmentId,
+      search: "",
+    }),
+  );
+
+  const headers = ["Handle", "Environment", "Last Operation"];
+
+  return (
+    <LoadResources
+      empty={
+        <EmptyResourcesTable
+          headers={headers}
+          titleBar={
+            <DbsResourceHeaderTitleBar
+              dbs={dbs}
+              resourceHeaderType="simple-text"
+            />
+          }
+        />
+      }
+      query={query}
+      isEmpty={dbs.length === 0}
+    >
+      <ResourceListView
+        header={
+          <DbsResourceHeaderTitleBar
+            dbs={dbs}
+            resourceHeaderType="simple-text"
+          />
+        }
+        tableHeader={<TableHead headers={headers} />}
+        tableBody={
+          <>
+            {dbs.map((db) => (
+              <tr key={db.id}>
+                <DatabasePrimaryCell database={db} />
+                <EnvStackCell environmentId={db.environmentId} />
+                <LastOpCell database={db} />
+              </tr>
+            ))}
+          </>
+        }
+      />
+    </LoadResources>
+  );
+};

@@ -37,11 +37,12 @@ import {
   ElevatePage,
   ElevateRequired,
   EnvironmentActivityPage,
+  EnvironmentAppsPage,
   EnvironmentBackupsPage,
   EnvironmentCertificatesPage,
+  EnvironmentDatabasesPage,
   EnvironmentDetailLayout,
   EnvironmentIntegrationsPage,
-  EnvironmentResourcesPage,
   EnvironmentSecurityPage,
   EnvironmentSettingsPage,
   EnvironmentsPage,
@@ -64,6 +65,7 @@ import {
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
+  StacksPage,
   TeamPage,
   UnauthRequired,
   VerifyEmailPage,
@@ -266,6 +268,16 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
+        path: routes.STACKS_PATH,
+        children: [
+          {
+            index: true,
+            element: <StacksPage />,
+          },
+        ],
+      },
+
+      {
         path: routes.APPS_PATH,
         children: [
           {
@@ -361,11 +373,15 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <EnvironmentResourcesPage />,
+                element: <EnvironmentAppsPage />,
               },
               {
-                path: routes.ENVIRONMENT_RESOURCES_PATH,
-                element: <EnvironmentResourcesPage />,
+                path: routes.ENVIRONMENT_APPS_PATH,
+                element: <EnvironmentAppsPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_DATABASES_PATH,
+                element: <EnvironmentDatabasesPage />,
               },
               {
                 path: routes.ENVIRONMENT_SECURITY_PATH,

@@ -8,7 +8,7 @@ import {
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
-import { environmentResourcelUrl } from "@app/routes";
+import { environmentAppsUrl } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
 
 import { InputSearch } from "../input";
@@ -29,9 +29,9 @@ interface EnvironmentCellProps {
 const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
   return (
     <Td>
-      <Link to={environmentResourcelUrl(environment.id)} className="flex">
+      <Link to={environmentAppsUrl(environment.id)} className="flex">
         <img
-          src="/logo-environment.png"
+          src="/resource-types/logo-environment.png"
           className="w-8 h-8 mt-1 mr-2"
           aria-label="Environment"
         />
@@ -138,11 +138,17 @@ export function EnvironmentList() {
           <ResourceHeader
             title="Environments"
             filterBar={
-              <InputSearch
-                placeholder="Search environments..."
-                search={search}
-                onChange={onChange}
-              />
+              <>
+                <InputSearch
+                  placeholder="Search environments..."
+                  search={search}
+                  onChange={onChange}
+                />
+                <p className="flex text-gray-500 mt-4 text-base">
+                  {environments.length} Environment
+                  {environments.length !== 1 ? "s" : ""}
+                </p>
+              </>
             }
           />
         }

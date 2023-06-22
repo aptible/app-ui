@@ -13,7 +13,7 @@ import {
   appEndpointsUrl,
   appServicesUrl,
   appSettingsUrl,
-  environmentResourcelUrl,
+  environmentAppsUrl,
 } from "@app/routes";
 import type { AppState, DeployApp } from "@app/types";
 
@@ -41,7 +41,7 @@ const appDetailBox = ({ app }: { app: DeployApp }) => (
       <div className="flex items-center justify-between">
         <div className="flex">
           <img
-            src={"/logo-app.png"}
+            src={"/resource-types/logo-app.png"}
             className="w-8 h-8 mr-3"
             aria-label="App"
           />
@@ -117,7 +117,7 @@ function AppPageHeader() {
   );
   const [_, setHeartbeat] = useState<Date>(new Date());
   const crumbs = [
-    { name: environment.handle, to: environmentResourcelUrl(environment.id) },
+    { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
 
   const poller = useMemo(() => pollAppOperations({ id }), [id]);

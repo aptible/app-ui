@@ -1,10 +1,10 @@
 import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
-import { AppList } from "../shared";
+import { AppListByOrg } from "../shared";
 
 export const AppsPage = () => {
   return (
     <MenuWrappedPage>
-      <AppList />
+      <AppListByOrg />
     </MenuWrappedPage>
   );
 };
