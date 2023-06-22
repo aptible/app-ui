@@ -37,11 +37,12 @@ import {
   ElevatePage,
   ElevateRequired,
   EnvironmentActivityPage,
+  EnvironmentAppsPage,
   EnvironmentBackupsPage,
   EnvironmentCertificatesPage,
+  EnvironmentDatabasesPage,
   EnvironmentDetailLayout,
   EnvironmentIntegrationsPage,
-  EnvironmentResourcesPage,
   EnvironmentSecurityPage,
   EnvironmentSettingsPage,
   EnvironmentsPage,
@@ -361,11 +362,15 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <EnvironmentResourcesPage />,
+                element: <EnvironmentAppsPage />,
               },
               {
-                path: routes.ENVIRONMENT_RESOURCES_PATH,
-                element: <EnvironmentResourcesPage />,
+                path: routes.ENVIRONMENT_APPS_PATH,
+                element: <EnvironmentAppsPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_DATABASES_PATH,
+                element: <EnvironmentDatabasesPage />,
               },
               {
                 path: routes.ENVIRONMENT_SECURITY_PATH,

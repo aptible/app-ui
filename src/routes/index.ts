@@ -106,9 +106,11 @@ export const ENVIRONMENTS_PATH = "/environments";
 export const environmentsUrl = () => ENVIRONMENTS_PATH;
 export const ENVIRONMENT_DETAIL_PATH = "/environments/:id";
 export const environmentDetailUrl = (id: string) => `/environments/${id}`;
-export const ENVIRONMENT_RESOURCES_PATH = "/environments/:id/resources";
-export const environmentResourcelUrl = (id: string) =>
-  `/environments/${id}/resources`;
+export const ENVIRONMENT_APPS_PATH = "/environments/:id/apps";
+export const environmentAppsUrl = (id: string) => `/environments/${id}/apps`;
+export const ENVIRONMENT_DATABASES_PATH = "/environments/:id/databases";
+export const environmentDatabasesUrl = (id: string) =>
+  `/environments/${id}/database`;
 export const ENVIRONMENT_SECURITY_PATH = "/environments/:id/security";
 export const environmentSecurityUrl = (id: string) =>
   `/environments/${id}/security`;

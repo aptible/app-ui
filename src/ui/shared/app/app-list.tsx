@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useQuery } from "saga-query/react";
@@ -9,19 +9,22 @@ import {
   calcServiceMetrics,
   fetchAllApps,
   fetchAllEnvironments,
+  fetchEnvironmentById,
   selectAppsForTableSearch,
+  selectAppsForTableSearchByEnvironmentId,
 } from "@app/deploy";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
 import { appServicesUrl, operationDetailUrl } from "@app/routes";
 import type { AppState } from "@app/types";
 
+import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
-import { TableHead, Td } from "../table";
+import { Header, TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 import { capitalize } from "@app/string-utils";
 
@@ -34,7 +37,7 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
     <Td className="flex-1">
       <Link to={appServicesUrl(app.id)} className="flex">
         <img
-          src="/logo-app.png"
+          src="/resource-types/logo-app.png"
           className="w-8 h-8 mr-2 align-middle"
           aria-label="App"
         />
@@ -122,81 +125,167 @@ const AppListRow = ({ app }: AppCellProps) => {
   );
 };
 
-// TODO - can turn below to an interface as it has a common entrypoint for lists, not sure if we want to do this
-export function AppList({
-  resourceHeaderType = "title-bar",
-  searchOverride = "",
+const appHeaders: Header[] = [
+  "Handle",
+  "Environment",
+  "Services",
+  "Estimated Monthly Cost",
+  "Last Operation",
+];
+
+const AppList = ({
+  apps,
+  headerTitleBar,
 }: {
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
-  skipDescription?: boolean;
-  searchOverride?: string;
-}) {
+  apps: DeployAppRow[];
+  headerTitleBar: React.ReactNode;
+}) => {
+  return (
+    <ResourceListView
+      header={headerTitleBar}
+      tableHeader={<TableHead headers={appHeaders} />}
+      tableBody={
+        <>
+          {apps.map((app) => (
+            <AppListRow app={app} key={app.id} />
+          ))}
+        </>
+      }
+    />
+  );
+};
+
+type HeaderTypes =
+  | {
+      resourceHeaderType: "title-bar";
+      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+    }
+  | { resourceHeaderType: "simple-text"; onChange?: null };
+
+const AppsResourceHeaderTitleBar = ({
+  apps,
+  search = "",
+  resourceHeaderType,
+  onChange,
+}: {
+  apps: DeployAppRow[];
+  search?: string;
+} & HeaderTypes) => {
+  switch (resourceHeaderType) {
+    case "title-bar":
+      return (
+        <ResourceHeader
+          title="Apps"
+          filterBar={
+            <div className="pt-1">
+              <InputSearch
+                placeholder="Search apps..."
+                search={search}
+                onChange={onChange}
+              />
+              <p className="flex text-gray-500 mt-4 text-base">
+                {apps.length} App{apps.length !== 1 && "s"}
+              </p>
+            </div>
+          }
+        />
+      );
+    case "simple-text":
+      return (
+        <p className="flex text-gray-500 text-base">
+          {apps.length} App{apps.length !== 1 && "s"}
+        </p>
+      );
+    default:
+      return null;
+  }
+};
+
+export const AppListByOrg = () => {
   const query = useQuery(fetchAllApps());
   useQuery(fetchAllEnvironments());
 
   const [search, setSearch] = useState("");
+  const apps = useSelector((s: AppState) =>
+    selectAppsForTableSearch(s, { search }),
+  );
+
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(ev.currentTarget.value);
 
-  const apps = useSelector((s: AppState) =>
-    selectAppsForTableSearch(s, {
-      search: searchOverride ? searchOverride : search,
-    }),
-  );
-
-  const resourceHeaderTitleBar = (): ReactElement | undefined => {
-    switch (resourceHeaderType) {
-      case "hidden":
-        return undefined;
-      case "title-bar":
-        return (
-          <ResourceHeader
-            title="Apps"
-            filterBar={
-              searchOverride ? undefined : (
-                <InputSearch
-                  placeholder="Search apps..."
-                  search={search}
-                  onChange={onChange}
-                />
-              )
-            }
-          />
-        );
-      case "simple-text":
-        return (
-          <p className="flex text-gray-500 text-base">
-            {apps.length} App{apps.length > 1 && "s"}
-          </p>
-        );
-      default:
-        return undefined;
-    }
-  };
-
   return (
-    <LoadResources query={query} isEmpty={apps.length === 0 && search === ""}>
-      <ResourceListView
-        header={resourceHeaderTitleBar()}
-        tableHeader={
-          <TableHead
-            headers={[
-              "Handle",
-              "Environment",
-              "Services",
-              "Estimated Monthly Cost",
-              "Last Operation",
-            ]}
+    <LoadResources
+      empty={
+        <EmptyResourcesTable
+          headers={appHeaders}
+          titleBar={
+            <AppsResourceHeaderTitleBar
+              apps={apps}
+              search={search}
+              resourceHeaderType="title-bar"
+              onChange={onChange}
+            />
+          }
+        />
+      }
+      query={query}
+      isEmpty={apps.length === 0 && search === ""}
+    >
+      <AppList
+        apps={apps}
+        headerTitleBar={
+          <AppsResourceHeaderTitleBar
+            apps={apps}
+            search={search}
+            resourceHeaderType="title-bar"
+            onChange={onChange}
           />
-        }
-        tableBody={
-          <>
-            {apps.map((app) => (
-              <AppListRow app={app} key={app.id} />
-            ))}
-          </>
         }
       />
     </LoadResources>
   );
-}
+};
+
+export const AppListByEnvironment = ({
+  environmentId,
+}: {
+  environmentId: string;
+}) => {
+  const query = useQuery(fetchAllApps());
+  useQuery(fetchEnvironmentById({ id: environmentId }));
+
+  const apps = useSelector((s: AppState) =>
+    selectAppsForTableSearchByEnvironmentId(s, {
+      envId: environmentId,
+      search: "",
+    }),
+  );
+
+  return (
+    <LoadResources
+      empty={
+        <EmptyResourcesTable
+          headers={appHeaders}
+          titleBar={
+            <AppsResourceHeaderTitleBar
+              apps={apps}
+              resourceHeaderType="simple-text"
+            />
+          }
+        />
+      }
+      query={query}
+      isEmpty={apps.length === 0}
+    >
+      <AppList
+        apps={apps}
+        headerTitleBar={
+          <AppsResourceHeaderTitleBar
+            apps={apps}
+            resourceHeaderType="simple-text"
+          />
+        }
+      />
+    </LoadResources>
+  );
+};

@@ -17,7 +17,7 @@ import {
   databaseEndpointsUrl,
   databaseScaleUrl,
   databaseSettingsUrl,
-  environmentResourcelUrl,
+  environmentDatabasesUrl,
 } from "@app/routes";
 import type { AppState, DeployDatabase, DeployService } from "@app/types";
 
@@ -51,7 +51,7 @@ const databaseDetailBox = ({
         <div className="flex items-center justify-between">
           <div className="flex">
             <img
-              src={`/logo-${database.type}.png`}
+              src={`/database-types/logo-${database.type}.png`}
               className="w-8 h-8 mr-3"
               aria-label={`${database.type} Database`}
             />
@@ -151,7 +151,7 @@ function DatabasePageHeader() {
     selectEnvironmentById(s, { id: database.environmentId }),
   );
   const crumbs = [
-    { name: environment.handle, to: environmentResourcelUrl(environment.id) },
+    { name: environment.handle, to: environmentDatabasesUrl(environment.id) },
   ];
 
   const poller = useMemo(() => pollDatabaseOperations({ id }), [id]);
