@@ -121,35 +121,34 @@ const LogDrainLastUpdatedCell = ({
 
 const logDrainsHeaders = ["Status", "Handle", "Sources", "Last Updated"];
 
+type HeaderTypes =
+  | {
+      resourceHeaderType: "title-bar";
+      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+    }
+  | { resourceHeaderType: "simple-text"; onChange?: null };
+
 const LogDrainsResourceHeaderTitleBar = ({
   logDrains,
-  resourceHeaderType = "title-bar",
+  resourceHeaderType,
   search = "",
-  searchOverride = "",
   onChange,
 }: {
   logDrains: DeployLogDrain[];
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   search?: string;
-  searchOverride?: string;
-  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-}) => {
+} & HeaderTypes) => {
   switch (resourceHeaderType) {
-    case "hidden":
-      return null;
     case "title-bar":
       return (
         <ResourceHeader
           title="Log Drains"
           filterBar={
             <div className="pt-1">
-              {searchOverride ? undefined : (
-                <InputSearch
-                  placeholder="Search log drains..."
-                  search={search}
-                  onChange={() => {}}
-                />
-              )}
+              <InputSearch
+                placeholder="Search log drains..."
+                search={search}
+                onChange={onChange}
+              />
               <p className="flex text-gray-500 mt-4 text-base">
                 {logDrains.length} Log Drain
                 {logDrains.length !== 1 && "s"}
@@ -266,13 +265,6 @@ const MetricDrainLastUpdatedCell = ({
 };
 
 const metricDrainsHeaders = ["Status", "Handle", "Last Updated"];
-
-type HeaderTypes =
-  | {
-      resourceHeaderType: "title-bar";
-      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-    }
-  | { resourceHeaderType: "simple-text"; onChange?: null };
 
 const MetricDrainsResourceHeaderTitleBar = ({
   metricDrains,
