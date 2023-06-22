@@ -35,13 +35,9 @@ const CertificateTrustedPill = ({
 }): ReactElement => {
   return (
     <Pill
-      className={
-        certificate.trusted || certificate.acme
-          ? pillStyles.success
-          : pillStyles.error
-      }
+      className={certificate.trusted ? pillStyles.success : pillStyles.error}
     >
-      {certificate.trusted || certificate.acme ? "Trusted" : "Untrusted"}
+      {certificate.trusted ? "Trusted" : "Untrusted"}
     </Pill>
   );
 };
