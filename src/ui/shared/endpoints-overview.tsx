@@ -2,11 +2,9 @@ import { DeployEndpoint, ProvisionableStatus } from "@app/types";
 import cn from "classnames";
 
 import { Box } from "./box";
-import { ButtonIcon } from "./button";
 import {
   IconArrowRight,
   IconCheck,
-  IconEllipsis,
   IconInfo,
   IconSettings,
   IconX,

@@ -12,7 +12,7 @@ interface ResourceHeaderProps {
 }
 
 interface GenericResourceListProps {
-  header?: JSX.Element;
+  header?: React.ReactNode;
   tableHeader: JSX.Element;
   tableBody: JSX.Element;
 }

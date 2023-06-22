@@ -34,7 +34,7 @@ export const Th = ({ children, className }: CellProps) => {
     </th>
   );
 };
-type Header = string | { name: string; className: string };
+export type Header = string | { name: string; className: string };
 export const TableHead = ({
   headers,
   rightAlignedFinalCol = false,
