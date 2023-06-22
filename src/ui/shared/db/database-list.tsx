@@ -128,7 +128,6 @@ export function DatabaseListByOrg({
 }: {
   environmentId?: string;
   resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
-  skipDescription?: boolean;
 }) {
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchAllEnvironments());
