@@ -176,13 +176,18 @@ const AppsResourceHeaderTitleBar = ({
         <ResourceHeader
           title="Apps"
           filterBar={
-            searchOverride ? undefined : (
-              <InputSearch
-                placeholder="Search apps..."
-                search={search}
-                onChange={() => {}}
-              />
-            )
+            <div className="pt-1">
+              {searchOverride ? undefined : (
+                <InputSearch
+                  placeholder="Search apps..."
+                  search={search}
+                  onChange={() => {}}
+                />
+              )}
+              <p className="flex text-gray-500 mt-4 text-base">
+                {apps.length} App{apps.length !== 1 && "s"}
+              </p>
+            </div>
           }
         />
       );

@@ -101,13 +101,18 @@ const DbsResourceHeaderTitleBar = ({
         <ResourceHeader
           title="Databases"
           filterBar={
-            searchOverride ? undefined : (
-              <InputSearch
-                placeholder="Search databases..."
-                search={search}
-                onChange={onChange}
-              />
-            )
+            <div className="pt-1">
+              {searchOverride ? undefined : (
+                <InputSearch
+                  placeholder="Search databases..."
+                  search={search}
+                  onChange={onChange}
+                />
+              )}
+              <p className="flex text-gray-500 mt-4 text-base">
+                {dbs.length} Database{dbs.length !== 1 && "s"}
+              </p>
+            </div>
           }
         />
       );

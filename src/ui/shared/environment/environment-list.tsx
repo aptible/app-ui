@@ -138,11 +138,17 @@ export function EnvironmentList() {
           <ResourceHeader
             title="Environments"
             filterBar={
-              <InputSearch
-                placeholder="Search environments..."
-                search={search}
-                onChange={onChange}
-              />
+              <>
+                <InputSearch
+                  placeholder="Search environments..."
+                  search={search}
+                  onChange={onChange}
+                />
+                <p className="flex text-gray-500 mt-4 text-base">
+                  {environments.length} Environment
+                  {environments.length !== 1 ? "s" : ""}
+                </p>
+              </>
             }
           />
         }

@@ -174,20 +174,25 @@ function ActivityTable({
         title={title}
         description={description}
         filterBar={
-          <div className="flex items-center gap-3">
-            <InputSearch
-              placeholder="Search operations..."
-              search={search}
-              onChange={onChange}
-            />
-            {isLoading ? (
-              <div className="animate-spin-slow 5s">
-                <IconRefresh
-                  color="#111920"
-                  style={{ width: 14, height: 14 }}
-                />
-              </div>
-            ) : null}
+          <div className="pt-1">
+            <div className="flex items-center gap-3">
+              <InputSearch
+                placeholder="Search operations..."
+                search={search}
+                onChange={onChange}
+              />
+              {isLoading ? (
+                <div className="animate-spin-slow 5s">
+                  <IconRefresh
+                    color="#111920"
+                    style={{ width: 14, height: 14 }}
+                  />
+                </div>
+              ) : null}
+            </div>
+            <p className="flex text-gray-500 mt-4 text-base">
+              {ops.length} Operation{ops.length !== 1 ? "s" : ""}
+            </p>
           </div>
         }
       />
