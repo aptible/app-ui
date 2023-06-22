@@ -240,7 +240,7 @@ export const EnvironmentCertificatesPage = () => {
           titleBar={
             <CertificatesResourceHeaderTitleBar
               certificates={certificates}
-              resourceHeaderType="title-bar"
+              resourceHeaderType="simple-text"
             />
           }
         />
