@@ -17,31 +17,34 @@ import {
   fetchLogDrains,
   fetchMetricDrains,
   selectLogDrainsByEnvId,
+  selectMetricDrainsByEnvId,
 } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
-import { AppState, DeployLogDrain } from "@app/types";
+import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { useSelector } from "react-redux";
 
-const LogDrainStatusPill = ({ logDrain }: { logDrain: DeployLogDrain }) => {
+const DrainStatusPill = ({
+  drain,
+}: { drain: DeployLogDrain | DeployMetricDrain }) => {
   let pillClass = pillStyles.progress;
   if (
-    logDrain.status === "pending" ||
-    logDrain.status === "provisioning" ||
-    logDrain.status === "deprovisioning"
+    drain.status === "pending" ||
+    drain.status === "provisioning" ||
+    drain.status === "deprovisioning"
   ) {
     pillClass = pillStyles.pending;
   }
-  if (logDrain.status === "provisioned") {
+  if (drain.status === "provisioned") {
     pillClass = pillStyles.success;
   }
   if (
-    logDrain.status === "deprovision_failed" ||
-    logDrain.status === "provision_failed"
+    drain.status === "deprovision_failed" ||
+    drain.status === "provision_failed"
   ) {
     pillClass = pillStyles.error;
   }
 
-  return <Pill className={pillClass}>{capitalize(logDrain.status)}</Pill>;
+  return <Pill className={pillClass}>{capitalize(drain.status)}</Pill>;
 };
 
 const LogDrainPrimaryCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
@@ -49,7 +52,7 @@ const LogDrainPrimaryCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
     <Td className="flex-1">
       <div className="flex">
         <p className="leading-4">
-          <LogDrainStatusPill logDrain={logDrain} />
+          <DrainStatusPill drain={logDrain} />
         </p>
       </div>
     </Td>
@@ -212,10 +215,132 @@ const LogDrainsSection = ({ id }: { id: string }) => {
   );
 };
 
-const MetricDrainsSection = ({ id }: { id: string }) => {
-  useQuery(fetchMetricDrains({ id }));
+const MetricDrainPrimaryCell = ({
+  metricDrain,
+}: { metricDrain: DeployMetricDrain }) => {
+  return (
+    <Td className="flex-1">
+      <div className="flex">
+        <p className="leading-4">
+          <DrainStatusPill drain={metricDrain} />
+        </p>
+      </div>
+    </Td>
+  );
+};
 
-  return null;
+const MetricDrainHandleCell = ({
+  metricDrain,
+}: { metricDrain: DeployMetricDrain }) => {
+  return (
+    <Td className="flex-1">
+      <div className="flex">
+        <p className="leading-4">
+          <span className={tokens.type.darker}>{metricDrain.handle}</span>
+          <br />
+          <span className={tokens.type["small lighter"]}>
+            {metricDrain.drainType}
+          </span>
+        </p>
+      </div>
+    </Td>
+  );
+};
+
+const metricDrainsHeaders = ["Status", "Handle"];
+
+const MetricDrainsResourceHeaderTitleBar = ({
+  metricDrains,
+  resourceHeaderType = "title-bar",
+  search = "",
+  searchOverride = "",
+  onChange,
+}: {
+  metricDrains: DeployMetricDrain[];
+  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
+  search?: string;
+  searchOverride?: string;
+  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+}) => {
+  switch (resourceHeaderType) {
+    case "hidden":
+      return null;
+    case "title-bar":
+      return (
+        <ResourceHeader
+          title="Metric Drains"
+          filterBar={
+            <div className="pt-1">
+              {searchOverride ? undefined : (
+                <InputSearch
+                  placeholder="Search metric drains..."
+                  search={search}
+                  onChange={() => {}}
+                />
+              )}
+              <p className="flex text-gray-500 mt-4 text-base">
+                {metricDrains.length} Metric Drain
+                {metricDrains.length !== 1 && "s"}
+              </p>
+            </div>
+          }
+        />
+      );
+    case "simple-text":
+      return (
+        <p className="flex text-gray-500 text-base">
+          {metricDrains.length} Metric Drain{metricDrains.length !== 1 && "s"}
+        </p>
+      );
+    default:
+      return null;
+  }
+};
+
+const MetricDrainsSection = ({ id }: { id: string }) => {
+  const query = useQuery(fetchMetricDrains({ id }));
+
+  const metricDrains = useSelector((s: AppState) =>
+    selectMetricDrainsByEnvId(s, { envId: id }),
+  );
+
+  return (
+    <LoadResources
+      empty={
+        <EmptyResourcesTable
+          headers={metricDrainsHeaders}
+          titleBar={
+            <MetricDrainsResourceHeaderTitleBar
+              metricDrains={metricDrains}
+              resourceHeaderType="title-bar"
+            />
+          }
+        />
+      }
+      query={query}
+      isEmpty={metricDrains.length === 0}
+    >
+      <ResourceListView
+        header={
+          <MetricDrainsResourceHeaderTitleBar
+            metricDrains={metricDrains}
+            resourceHeaderType="simple-text"
+          />
+        }
+        tableHeader={<TableHead headers={metricDrainsHeaders} />}
+        tableBody={
+          <>
+            {metricDrains.map((metricDrain) => (
+              <tr key={metricDrain.id}>
+                <MetricDrainPrimaryCell metricDrain={metricDrain} />
+                <MetricDrainHandleCell metricDrain={metricDrain} />
+              </tr>
+            ))}
+          </>
+        }
+      />
+    </LoadResources>
+  );
 };
 
 export const EnvironmentIntegrationsPage = () => {
