@@ -77,6 +77,13 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
+type HeaderTypes =
+  | {
+      resourceHeaderType: "title-bar";
+      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+    }
+  | { resourceHeaderType: "simple-text"; onChange?: null };
+
 const DbsResourceHeaderTitleBar = ({
   dbs,
   resourceHeaderType = "title-bar",
@@ -84,13 +91,9 @@ const DbsResourceHeaderTitleBar = ({
   onChange,
 }: {
   dbs: DeployDatabaseRow[];
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
   search?: string;
-  onChange?: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-}) => {
+} & HeaderTypes) => {
   switch (resourceHeaderType) {
-    case "hidden":
-      return null;
     case "title-bar":
       if (!onChange) {
         return null;
@@ -123,12 +126,7 @@ const DbsResourceHeaderTitleBar = ({
   }
 };
 
-export function DatabaseListByOrg({
-  resourceHeaderType = "title-bar",
-}: {
-  environmentId?: string;
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
-}) {
+export const DatabaseListByOrg = () => {
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchAllEnvironments());
 
@@ -152,7 +150,7 @@ export function DatabaseListByOrg({
           titleBar={
             <DbsResourceHeaderTitleBar
               dbs={dbs}
-              resourceHeaderType={resourceHeaderType}
+              resourceHeaderType="title-bar"
               search={search}
               onChange={onChange}
             />
@@ -166,7 +164,7 @@ export function DatabaseListByOrg({
         header={
           <DbsResourceHeaderTitleBar
             dbs={dbs}
-            resourceHeaderType={resourceHeaderType}
+            resourceHeaderType="title-bar"
             search={search}
             onChange={onChange}
           />
@@ -186,16 +184,12 @@ export function DatabaseListByOrg({
       />
     </LoadResources>
   );
-}
+};
 
 export const DatabaseListByEnvironment = ({
   environmentId,
-  resourceHeaderType = "title-bar",
-  search = "",
 }: {
   environmentId: string;
-  resourceHeaderType?: "title-bar" | "simple-text" | "hidden";
-  search?: string;
 }) => {
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchEnvironmentById({ id: environmentId }));
@@ -203,7 +197,7 @@ export const DatabaseListByEnvironment = ({
   const dbs = useSelector((s: AppState) =>
     selectDatabasesForTableSearchByEnvironmentId(s, {
       envId: environmentId,
-      search,
+      search: "",
     }),
   );
 
@@ -217,21 +211,19 @@ export const DatabaseListByEnvironment = ({
           titleBar={
             <DbsResourceHeaderTitleBar
               dbs={dbs}
-              search={search}
-              resourceHeaderType={resourceHeaderType}
+              resourceHeaderType="simple-text"
             />
           }
         />
       }
       query={query}
-      isEmpty={dbs.length === 0 && search === ""}
+      isEmpty={dbs.length === 0}
     >
       <ResourceListView
         header={
           <DbsResourceHeaderTitleBar
             dbs={dbs}
-            search={search}
-            resourceHeaderType={resourceHeaderType}
+            resourceHeaderType="simple-text"
           />
         }
         tableHeader={<TableHead headers={headers} />}
