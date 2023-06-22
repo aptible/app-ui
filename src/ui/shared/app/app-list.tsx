@@ -170,6 +170,9 @@ const AppsResourceHeaderTitleBar = ({
     case "hidden":
       return null;
     case "title-bar":
+      if (!onChange) {
+        return null;
+      }
       return (
         <ResourceHeader
           title="Apps"
