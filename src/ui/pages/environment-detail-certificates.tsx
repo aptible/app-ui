@@ -20,7 +20,7 @@ import { EmptyResourcesTable } from "../shared/empty-resources-table";
 import { prettyEnglishDate } from "@app/date";
 import {
   fetchCertificates,
-  selectAppsByCertificateId,
+  fetchEndpointsByEnvironmentId,
   selectCertificatesByEnvId,
   selectEndpointByEnvironmentAndCertificateId,
 } from "@app/deploy";
@@ -35,9 +35,13 @@ const CertificateTrustedPill = ({
 }): ReactElement => {
   return (
     <Pill
-      className={certificate.trusted ? pillStyles.success : pillStyles.error}
+      className={
+        certificate.trusted || certificate.acme
+          ? pillStyles.success
+          : pillStyles.error
+      }
     >
-      {certificate.trusted ? "Trusted" : "Untrusted"}
+      {certificate.trusted || certificate.acme ? "Trusted" : "Untrusted"}
     </Pill>
   );
 };
@@ -55,33 +59,12 @@ const ManagedHTTPSPill = ({
 const CertificatePrimaryCell = ({
   certificate,
 }: { certificate: DeployCertificate }) => {
-  const endpointsForCertificate = useSelector((s: AppState) =>
-    selectEndpointByEnvironmentAndCertificateId(s, {
-      certificateId: certificate.id,
-      envId: certificate.environmentId,
-    }),
-  );
   return (
     <Td className="flex-1">
       <div className="flex">
         <p className="leading-4">
           <span className={tokens.type.darker}>
-            {endpointsForCertificate.length > 0
-              ? endpointsForCertificate.map((endpointForCertificate, idx) => (
-                  <>
-                    {idx > 0 ? <br /> : null}
-                    <span>
-                      <ExternalLink
-                        href={endpointForCertificate.externalHost}
-                        key={endpointForCertificate.id}
-                        variant="default"
-                      >
-                        endpointForCertificate.endpointForCertificate
-                      </ExternalLink>
-                    </span>
-                  </>
-                ))
-              : "No Host Found"}
+            {certificate.commonName || "Unnamed"}
           </span>
         </p>
       </div>
@@ -114,11 +97,11 @@ const CertificateIssuerCell = ({
       <div className="flex">
         <p className="leading-4">
           <span className={tokens.type.darker}>
-            {certificate.issuerCommonName || "Unknown Issuer"}
+            {certificate.issuerOrganization || "Unknown Issuer"}
           </span>
           <br />
           <span className={tokens.type["small lighter"]}>
-            Fingerprint: {certificate.sha256Fingerprint || "N/A"}
+            Fingerprint: {certificate.sha256Fingerprint.slice(0, 8) || "N/A"}
           </span>
         </p>
       </div>
@@ -129,24 +112,33 @@ const CertificateIssuerCell = ({
 const CertificateServicesCell = ({
   certificate,
 }: { certificate: DeployCertificate }) => {
-  const appsForCertificate = useSelector((s: AppState) =>
-    selectAppsByCertificateId(s, {
+  const endpointsForCertificate = useSelector((s: AppState) =>
+    selectEndpointByEnvironmentAndCertificateId(s, {
       certificateId: certificate.id,
       envId: certificate.environmentId,
     }),
   );
+
   return (
     <Td className="flex-1">
       <div className="flex">
         <p className="leading-4">
           <span className={tokens.type.darker}>
-            {appsForCertificate.length > 0
-              ? appsForCertificate.map((app) => (
-                  <p className="text-blue-500" key={app.id}>
-                    <Link to={appServicesUrl(app.id)}>{app.handle}</Link>
-                  </p>
+            {endpointsForCertificate.length > 0
+              ? endpointsForCertificate.map((endpointForCertificate, idx) => (
+                  <>
+                    {idx > 0 ? <br /> : null}
+                    <span>
+                      <Link
+                        to={appServicesUrl(certificate.id)}
+                        key={endpointForCertificate.id}
+                      >
+                        endpointForCertificate.endpointForCertificate
+                      </Link>
+                    </span>
+                  </>
                 ))
-              : "None"}
+              : "No Endpoint Found"}
           </span>
         </p>
       </div>
@@ -160,10 +152,10 @@ const CertificateStatusCell = ({
   return (
     <Td className="flex-1">
       <div className="flex">
-        <p className="leading-4 flex flex-col gap-2">
+        <div className="leading-4 flex flex-col gap-2">
           <CertificateTrustedPill certificate={certificate} />
           <ManagedHTTPSPill certificate={certificate} />
-        </p>
+        </div>
       </div>
     </Td>
   );
@@ -228,6 +220,7 @@ const CertificatesResourceHeaderTitleBar = ({
 export const EnvironmentCertificatesPage = () => {
   const { id = "" } = useParams();
   const query = useQuery(fetchCertificates({ id }));
+  useQuery(fetchEndpointsByEnvironmentId({ id }));
   const certificates = useSelector((s: AppState) =>
     selectCertificatesByEnvId(s, { envId: id }),
   );

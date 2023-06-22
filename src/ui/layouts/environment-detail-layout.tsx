@@ -113,7 +113,7 @@ const EnvironmentDetailBox = ({
                 endpoint.type === "tcp" ? (
                   endpoint.externalHost
                 ) : (
-                  <p>
+                  <p key={endpoint.id}>
                     <a
                       href={`https://${endpoint.virtualDomain}`}
                       target="_blank"

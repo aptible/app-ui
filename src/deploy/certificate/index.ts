@@ -31,7 +31,7 @@ export const deserializeCertificate = (payload: any): DeployCertificate => {
     acme: payload.acme,
     leafCertificate: payload.leaf_certificate,
     certificateChain: payload.certificate_chain,
-    sha256Fingerprint: payload.sha_256_fingerprint,
+    sha256Fingerprint: payload.sha256_fingerprint,
     trusted: payload.trusted,
     selfSigned: payload.self_signed,
     subjectAlternativeNames: payload.subject_alternative_names,
