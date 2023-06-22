@@ -15,7 +15,7 @@ export const EnvironmentAppsPage = () => {
         <AppListByEnvironment
           environmentId={id}
           skipDescription
-          resourceHeaderType="hidden"
+          resourceHeaderType="simple-text"
         />
       </DetailPageSections>
     </div>
