@@ -15,6 +15,8 @@ import {
 import { MenuWrappedPage } from "./menu-wrapped-page";
 import { timeAgo } from "@app/date";
 import {
+  fetchAllApps,
+  fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchEnvironmentOperations,
   selectEndpointsByEnvironmentId,
@@ -32,6 +34,21 @@ import {
 } from "@app/types";
 import cn from "classnames";
 import { useQuery } from "saga-query/react";
+
+const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
+  endpoint.type === "tcp" ? (
+    <div>{endpoint.externalHost}</div>
+  ) : (
+    <p key={endpoint.id}>
+      <a
+        href={`https://${endpoint.virtualDomain}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {endpoint.virtualDomain}
+      </a>
+    </p>
+  );
 
 const EnvironmentDetailBox = ({
   environment,
@@ -109,21 +126,11 @@ const EnvironmentDetailBox = ({
                 {endpoints.length} Endpoint
                 {environment.totalAppCount > 0 && "s"}
               </h3>
-              {endpoints.map((endpoint) =>
-                endpoint.type === "tcp" ? (
-                  endpoint.externalHost
-                ) : (
-                  <p key={endpoint.id}>
-                    <a
-                      href={`https://${endpoint.virtualDomain}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {endpoint.virtualDomain}
-                    </a>
-                  </p>
-                ),
-              )}
+              {endpoints.length <= 5
+                ? endpoints.map((endpoint) => (
+                    <EndpointList endpoint={endpoint} />
+                  ))
+                : null}
             </div>
           </div>
           <div className="flex-col w-1/3">
@@ -141,6 +148,8 @@ const EnvironmentDetailBox = ({
 function EnvironmentPageHeader(): React.ReactElement {
   const { id = "" } = useParams();
   useQuery(fetchEnvironmentById({ id }));
+  useQuery(fetchAllApps());
+  useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
 
   const latestOperation = useSelector((s: AppState) =>

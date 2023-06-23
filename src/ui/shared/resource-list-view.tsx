@@ -1,7 +1,6 @@
 import { ActionList, ActionListView } from "./action-list-view";
 import { tokens } from "./tokens";
 import cn from "classnames";
-import { ReactNode } from "react";
 
 type Element = React.ReactNode | JSX.Element;
 
@@ -13,7 +12,7 @@ interface ResourceHeaderProps {
 }
 
 interface GenericResourceListProps {
-  header?: ReactNode;
+  header?: React.ReactNode;
   tableHeader: JSX.Element;
   tableBody: JSX.Element;
 }
