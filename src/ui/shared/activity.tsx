@@ -206,31 +206,29 @@ function ActivityTable({
   };
 
   return (
-    <div className="my-4">
-      <ResourceListView
-        header={resourceHeaderTitleBar()}
-        tableHeader={
-          <TableHead
-            headers={[
-              "Resource",
-              "Status",
-              "Operation Type",
-              "Environment",
-              "User",
-              "Last Updated",
-              "Actions",
-            ]}
-          />
-        }
-        tableBody={
-          <>
-            {ops.map((op) => (
-              <OpListRow op={op} key={op.id} />
-            ))}
-          </>
-        }
-      />
-    </div>
+    <ResourceListView
+      header={resourceHeaderTitleBar()}
+      tableHeader={
+        <TableHead
+          headers={[
+            "Resource",
+            "Status",
+            "Operation Type",
+            "Environment",
+            "User",
+            "Last Updated",
+            "Actions",
+          ]}
+        />
+      }
+      tableBody={
+        <>
+          {ops.map((op) => (
+            <OpListRow op={op} key={op.id} />
+          ))}
+        </>
+      }
+    />
   );
 }
 

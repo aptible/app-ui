@@ -184,3 +184,15 @@ export const stylesUrl = () => STYLES_PATH;
 
 export const STACKS_PATH = "/stacks";
 export const stacksUrl = () => STACKS_PATH;
+
+export const STACK_DETAIL_PATH = "/stacks/:id";
+export const stackDetailUrl = (id: string) => `/stacks/${id}`;
+export const STACK_DETAIL_ENVS_PATH = `${STACK_DETAIL_PATH}/environments`;
+export const stackDetailEnvsUrl = (id: string) =>
+  `${stackDetailUrl(id)}/environments`;
+export const STACK_DETAIL_VPN_TUNNELS_PATH = `${STACK_DETAIL_PATH}/vpn-tunnels`;
+export const stackDetailVpnTunnelsUrl = (id: string) =>
+  `${stackDetailUrl(id)}/vpn-tunnels`;
+export const STACK_DETAIL_VPC_PEERING_PATH = `${STACK_DETAIL_PATH}/vpc-peering`;
+export const stackDetailVpcPeeringsUrl = (id: string) =>
+  `${stackDetailUrl(id)}/vpc-peering`;
