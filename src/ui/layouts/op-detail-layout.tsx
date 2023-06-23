@@ -23,7 +23,7 @@ const opDetailBox = ({ op }: { op: DeployOperation }) => {
     selectResourceNameByOperationId(s, { id: op.id }),
   );
   return (
-    <div className={cn(tokens.layout["main width"], "py-6")}>
+    <div className={cn(tokens.layout["main width"], "pt-6")}>
       <Box>
         <h1 className="text-lg text-gray-500">Operation Details</h1>
         <div className="flex w-1/1">
