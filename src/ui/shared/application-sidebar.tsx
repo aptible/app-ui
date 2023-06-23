@@ -77,7 +77,7 @@ export const ApplicationSidebar = () => {
         </div>
 
         {collapsed ? null : (
-          <div className="mt-5 px-4">
+          <div className="mt-5 px-3">
             <OrgPicker />
           </div>
         )}
