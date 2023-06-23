@@ -47,7 +47,7 @@ const getImageForResourceType = (resourceType: ResourceType) => {
   if (
     ![
       "app",
-      "backup"
+      "backup",
       "certificates",
       "credentials",
       "database",
