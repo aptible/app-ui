@@ -8,7 +8,18 @@ Aptible's PaaS automates the work of provisioning, managing, and scaling infrast
 <img src="https://user-images.githubusercontent.com/4295811/248316533-f285fc02-3669-4d6f-96fe-fb854d148407.png"  style="max-width: 100%;">
 
 ## Getting Started
-app-ui requires node `v18.15.x` and yarn `v2+` or later. To run app-ui on http://localhost:4200 run these commands:
+app-ui requires node `v18.15.x` and yarn `v2+` or later.
+
+**Add Environment Variables**
+In root of app-ui create a `.env` file with these environment variables:
+```bash
+VITE_AUTH_URL="https://auth.aptible.com"
+VITE_API_URL="https://api.aptible.com"
+VITE_ORIGIN="nextgen"
+```
+
+**Start Commands**
+Go to http://localhost:4200 and run these commands:
 ```bash
 cd app-ui
 ```
@@ -25,7 +36,7 @@ yarn start
 ## Troubleshooting
 
 **After running `yarn start`, stuck on a blank page that says loading...**
-<br>
+
 Unset your environment variables in terminal, by running the following commands:
 
 ```bash
@@ -38,42 +49,18 @@ unset VITE_BILLING URL
 ```
 Then re-run `yarn start` and the UI should load.
 
-## sites
+## Sites
 
 - `prod` https://nextgen.aptible.com
 - `staging` https://cloud-ui-main.aptible-staging.com
 
-## install
-
-- node `v18.15.x`
-- yarn `v2+`
-
-```bash
-yarn
-```
-
-## environment variables
-
-```bash
-export VITE_AUTH_URL="http://localhost:4000"
-export VITE_API_URL="http://localhost:4001"
-export VITE_BILLING_URL="http:localhost:4005"
-export VITE_SENTRY_DSN="" # populate this as needed for error reporting, optional
-export VITE_LEGACY_DASHBOARD_URL="https://localhost:4200"
-export VITE_ORIGIN="nextgen" # switch this value to app to test currently active user flows
-```
-
-### .env
-
-Copy `.env.example` to `.env.local`
-
-## dev server
+## Dev Server
 
 ```bash
 yarn dev
 ```
 
-open browser to http://localhost:4200
+Open browser to http://localhost:4200
 
 ## test
 
@@ -81,9 +68,9 @@ open browser to http://localhost:4200
 yarn test
 ```
 
-## continuous deployment
+## Continuous Deployment
 
-### staging
+### Staging
 
 Once merged to `main` we deploy to `staging` 
 
@@ -92,7 +79,7 @@ This will deploy two apps:
 * `app-sbx-main.aptible-sandbox.com` - our critical path for what is currently active on Aptible
 * `nextgen-sbx-main.aptible-sandbox.com` - our planned changes that include cut-over functionality from existing frontend apps
 
-### prod
+### Production
 
 1. Create a github release
 2. Deployment paths for above apps:
