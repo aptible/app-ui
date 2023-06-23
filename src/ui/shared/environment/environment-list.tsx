@@ -138,6 +138,7 @@ export function EnvironmentList() {
           <ResourceHeader
             title="Environments"
             filterBar={
+              <div className="pt-1">
               <>
                 <InputSearch
                   placeholder="Search environments..."
@@ -149,6 +150,7 @@ export function EnvironmentList() {
                   {environments.length !== 1 ? "s" : ""}
                 </p>
               </>
+              </div>
             }
           />
         }

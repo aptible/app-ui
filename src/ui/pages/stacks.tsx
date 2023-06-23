@@ -93,7 +93,7 @@ function StackList() {
           <ResourceHeader
             title="Stacks"
             filterBar={
-              <div>
+              <div className="pt-1">
                 <InputSearch
                   placeholder="Search stacks..."
                   search={search}
