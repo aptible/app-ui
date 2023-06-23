@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { useQuery } from "saga-query/react";
+import { useLoader, useQuery } from "saga-query/react";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -251,7 +251,7 @@ export const AppListByEnvironment = ({
 }: {
   environmentId: string;
 }) => {
-  const query = useQuery(fetchAllApps());
+  const loader = useLoader(fetchAllApps());
   useQuery(fetchEnvironmentById({ id: environmentId }));
 
   const apps = useSelector((s: AppState) =>
@@ -274,7 +274,7 @@ export const AppListByEnvironment = ({
           }
         />
       }
-      query={query}
+      query={loader}
       isEmpty={apps.length === 0}
     >
       <AppList

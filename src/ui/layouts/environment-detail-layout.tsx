@@ -15,6 +15,8 @@ import {
 import { MenuWrappedPage } from "./menu-wrapped-page";
 import { timeAgo } from "@app/date";
 import {
+  fetchAllApps,
+  fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchEnvironmentOperations,
   selectEndpointsByEnvironmentId,
@@ -146,6 +148,8 @@ const EnvironmentDetailBox = ({
 function EnvironmentPageHeader(): React.ReactElement {
   const { id = "" } = useParams();
   useQuery(fetchEnvironmentById({ id }));
+  useQuery(fetchAllApps());
+  useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
 
   const latestOperation = useSelector((s: AppState) =>
