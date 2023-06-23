@@ -33,6 +33,21 @@ import {
 import cn from "classnames";
 import { useQuery } from "saga-query/react";
 
+const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
+  endpoint.type === "tcp" ? (
+    <div>{endpoint.externalHost}</div>
+  ) : (
+    <p key={endpoint.id}>
+      <a
+        href={`https://${endpoint.virtualDomain}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {endpoint.virtualDomain}
+      </a>
+    </p>
+  );
+
 const EnvironmentDetailBox = ({
   environment,
   latestOperation,
@@ -110,21 +125,9 @@ const EnvironmentDetailBox = ({
                 {environment.totalAppCount > 0 && "s"}
               </h3>
               {endpoints.length <= 5
-                ? endpoints.map((endpoint) =>
-                    endpoint.type === "tcp" ? (
-                      endpoint.externalHost
-                    ) : (
-                      <p key={endpoint.id}>
-                        <a
-                          href={`https://${endpoint.virtualDomain}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {endpoint.virtualDomain}
-                        </a>
-                      </p>
-                    ),
-                  )
+                ? endpoints.map((endpoint) => (
+                    <EndpointList endpoint={endpoint} />
+                  ))
                 : null}
             </div>
           </div>
