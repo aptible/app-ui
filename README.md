@@ -33,7 +33,7 @@ yarn start
 ```
 
 **3. All done! Go to http://localhost:4200**
-The web app will live update after committing changes.
+<br>The web app will live update after committing changes.
 
 ## Troubleshooting
 
