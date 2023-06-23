@@ -109,21 +109,23 @@ const EnvironmentDetailBox = ({
                 {endpoints.length} Endpoint
                 {environment.totalAppCount > 0 && "s"}
               </h3>
-              {endpoints.length <= 5 ? endpoints.map((endpoint) =>
-                endpoint.type === "tcp" ? (
-                  endpoint.externalHost
-                ) : (
-                  <p key={endpoint.id}>
-                    <a
-                      href={`https://${endpoint.virtualDomain}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {endpoint.virtualDomain}
-                    </a>
-                  </p>
-                ),
-              ) : null}
+              {endpoints.length <= 5
+                ? endpoints.map((endpoint) =>
+                    endpoint.type === "tcp" ? (
+                      endpoint.externalHost
+                    ) : (
+                      <p key={endpoint.id}>
+                        <a
+                          href={`https://${endpoint.virtualDomain}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {endpoint.virtualDomain}
+                        </a>
+                      </p>
+                    ),
+                  )
+                : null}
             </div>
           </div>
           <div className="flex-col w-1/3">
