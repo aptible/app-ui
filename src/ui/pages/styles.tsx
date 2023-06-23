@@ -254,6 +254,7 @@ const Colors = () => (
     <h1 id="colors" className={tokens.type.h1}>
       Colors
     </h1>
+    <br />
     <h3 className={tokens.type.h3}>Main Colors</h3>
     <div className="flex my-2">
       <div className="rounded-full bg-black w-8 h-8 block mr-2" />
