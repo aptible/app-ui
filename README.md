@@ -5,6 +5,8 @@
 
 Aptible's PaaS automates the work of provisioning, managing, and scaling infrastructure, so you can focus on what matters: your product.
 
+<img src="https://user-images.githubusercontent.com/4295811/248316533-f285fc02-3669-4d6f-96fe-fb854d148407.png"  style="max-width: 100%;">
+
 ## sites
 
 - `prod` https://nextgen.aptible.com
