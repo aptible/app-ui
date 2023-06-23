@@ -13,13 +13,13 @@ Aptible's PaaS automates the work of provisioning, managing, and scaling infrast
 <br>app-ui requires node `v18.15.x` and yarn `v2+` or later.
 
 **2. Create `.env` file with environment variables**
-<br>Add file to the root of app-ui:
+<br>Add file to the root of app-ui with these variables:
 ```bash
 VITE_AUTH_URL="https://auth.aptible.com"
 VITE_API_URL="https://api.aptible.com"
 VITE_ORIGIN="nextgen"
 ```
-These variables point to which API/Auth to use. You optionally swap them with `sbx.main` URLs.
+Environment variables point to which API/Auth to use. You can optionally swap them with `sbx.main` URLs.
 
 **3. Run Start Commands**
 ```bash
