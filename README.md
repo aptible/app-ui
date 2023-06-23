@@ -12,8 +12,8 @@ Aptible's PaaS automates the work of provisioning, managing, and scaling infrast
 **1. Install Node and Yarn**
 <br>app-ui requires node `v18.15.x` and yarn `v2+` or later.
 
-**2. Create `.env` file and add environment variables**
-<br>Add `.env` file with these variables in the root of app-ui:
+**2. Create `.env` file with these environment variables**
+<br>Add `.env` file in the root of app-ui:
 ```bash
 VITE_AUTH_URL="https://auth.aptible.com"
 VITE_API_URL="https://api.aptible.com"
