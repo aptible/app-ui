@@ -8,11 +8,24 @@ Aptible's PaaS automates the work of provisioning, managing, and scaling infrast
 <img src="https://user-images.githubusercontent.com/4295811/248316533-f285fc02-3669-4d6f-96fe-fb854d148407.png"  style="max-width: 100%;">
 
 ## Getting Started
-App-ui requires node `v18.15.x` or later and yarn `v2+` or later. To run app-ui on http://localhost:4200 run these commands:
+app-ui requires node `v18.15.x` and yarn `v2+` or later. To run app-ui on http://localhost:4200 run these commands:
+```bash
+cd app-ui
+```
+```bash
+yarn set version berry
+```
+```bash
+yarn
+```
+```bash
+yarn start
+```
 
 ## Troubleshooting
 
 **After running `yarn start`, stuck on a blank page that says loading...**
+<br>
 Unset your environment variables in terminal, by running the following commands:
 
 ```bash
