@@ -11,8 +11,8 @@ export const OrgPicker = () => {
   return (
     <div
       className={cn([
-        "border-2 border-black-100 bg-white rounded-lg",
-        "p-2.5",
+        "border border-gray-200 bg-white rounded-lg",
+        "px-2 py-1",
         "flex items-center",
       ])}
     >
