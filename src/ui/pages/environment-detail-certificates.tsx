@@ -15,7 +15,7 @@ import {
 import { EmptyResourcesTable } from "../shared/empty-resources-table";
 import { prettyEnglishDate } from "@app/date";
 import {
-  fetchCertificates,
+  fetchCertificatesByEnvironmentId,
   fetchEndpointsByEnvironmentId,
   selectAppsByCertificateId,
   selectCertificatesByEnvId,
@@ -168,7 +168,7 @@ const certificatesHeaders = [
 
 export const EnvironmentCertificatesPage = () => {
   const { id = "" } = useParams();
-  const query = useQuery(fetchCertificates({ id }));
+  const query = useQuery(fetchCertificatesByEnvironmentId({ id }));
   useQuery(fetchEndpointsByEnvironmentId({ id }));
   const certificates = useSelector((s: AppState) =>
     selectCertificatesByEnvId(s, { envId: id }),

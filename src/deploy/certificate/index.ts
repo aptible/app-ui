@@ -8,14 +8,46 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import { AppState, DeployCertificate } from "@app/types";
+import { AppState, DeployCertificate, LinkResponse } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
-export const deserializeCertificate = (payload: any): DeployCertificate => {
+interface DeployCertificateResponse {
+  id: number;
+  common_name: string;
+  certificate_body: string;
+  not_before: string;
+  not_after: string;
+  issuer_country?: string;
+  issuer_organization?: string;
+  issuer_website?: string;
+  issuer_common_name?: string;
+  subject_country?: string;
+  subject_state?: string;
+  subject_locale?: string;
+  subject_organization?: string;
+  acme: boolean;
+  leaf_certificate: string;
+  certificate_chain: string;
+  sha256_fingerprint: string;
+  trusted: boolean;
+  self_signed: boolean;
+  subject_alternative_names: string[];
+  private_key_algorithm: string;
+  private_key: string;
+  created_at: string;
+  updated_at: string;
+  _links: {
+    account: LinkResponse;
+  };
+}
+
+export const deserializeCertificate = (
+  payload: DeployCertificateResponse,
+): DeployCertificate => {
   const links = payload._links;
 
   return {
-    id: payload.id,
+    id: payload.id.toString(),
     commonName: payload.common_name,
     certificateBody: payload.certificate_body,
     notBefore: payload.not_before,
@@ -101,7 +133,7 @@ export const selectCertificatesByEnvId = createSelector(
 
 export const certificateReducers = createReducerMap(slice);
 
-export const fetchCertificates = api.get<{ id: string }>(
+export const fetchCertificatesByEnvironmentId = api.get<{ id: string }>(
   "/accounts/:id/certificates",
 );
 
@@ -118,18 +150,16 @@ export const selectAppsByCertificateId = createSelector(
   selectEndpointsByEnvironmentId,
   (_: AppState, p: { certificateId: string }) => p.certificateId,
   (apps, endpoints, certificateId) => {
-    const serviceIdsInApps: string[] = apps.flatMap(
-      (app) => app.serviceIds || [],
+    const endpointsWithCertificates = endpoints.filter(
+      (endpoint) => endpoint.certificateId === certificateId,
     );
-    // TODO - revisit this, feels weird, might be more 1:1-ISH on the backend
-    const appsWithAppServiceEndpointsUsingCertificate = endpoints
-      .filter((endpoint) => endpoint.certificateId === certificateId)
-      .filter((endpoint) => serviceIdsInApps.includes(endpoint.serviceId))
-      .map((endpoint) => endpoint.serviceId);
-    return apps.filter((app) =>
-      app.serviceIds.filter((serviceId) =>
-        appsWithAppServiceEndpointsUsingCertificate.includes(serviceId),
-      ),
-    );
+
+    return apps.filter((app) => {
+      return app.serviceIds.some((appServiceId) => {
+        return endpointsWithCertificates.find(
+          (endpoint) => endpoint.serviceId === appServiceId,
+        );
+      });
+    });
   },
 );
