@@ -58,16 +58,15 @@ Then re-run `yarn start` and the site should load.
 - `prod` https://nextgen.aptible.com
 - `staging` https://cloud-ui-main.aptible-staging.com
 
-## Dev Server
+## Other Yarn Command
 
+### Dev Server
 ```bash
 yarn dev
 ```
-
 Open browser to http://localhost:4200
 
-## test
-
+### Test
 ```bash
 yarn test
 ```
