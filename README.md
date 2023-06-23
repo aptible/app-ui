@@ -19,7 +19,7 @@ VITE_AUTH_URL="https://auth.aptible.com"
 VITE_API_URL="https://api.aptible.com"
 VITE_ORIGIN="nextgen"
 ```
-These variables point to which API/Auth to use. You can also use sbx.main as well.
+These variables point to which API/Auth to use. You optionally swap them with `sbx.main` URLs.
 
 **3. Run Start Commands**
 ```bash
