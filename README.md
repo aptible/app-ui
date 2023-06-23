@@ -10,15 +10,15 @@ Aptible's PaaS automates the work of provisioning, managing, and scaling infrast
 ## Getting Started
 app-ui requires node `v18.15.x` and yarn `v2+` or later.
 
-**Add Environment Variables**
-in root of app-ui, create a `.env` file with these variables:
+**1. Add Environment Variables**
+<br>Create a `.env` file with these variables in the root of app-ui:
 ```bash
 VITE_AUTH_URL="https://auth.aptible.com"
 VITE_API_URL="https://api.aptible.com"
 VITE_ORIGIN="nextgen"
 ```
 
-**Run Start Commands**
+**2. Run Start Commands**
 ```bash
 cd app-ui
 ```
@@ -32,7 +32,7 @@ yarn
 yarn start
 ```
 
-**View app on http://localhost:4200**
+**3. All done! Go to http://localhost:4200**
 The web app will live update after committing changes.
 
 ## Troubleshooting
