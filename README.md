@@ -8,9 +8,11 @@ Aptible's PaaS automates the work of provisioning, managing, and scaling infrast
 <img src="https://user-images.githubusercontent.com/4295811/248316533-f285fc02-3669-4d6f-96fe-fb854d148407.png"  style="max-width: 100%;">
 
 ## Getting Started
-app-ui requires node `v18.15.x` and yarn `v2+` or later.
 
-**1. Add Environment Variables**
+**1. Install Node and Yarn**
+<br>app-ui requires node `v18.15.x` and yarn `v2+` or later.
+
+**2. Add Environment Variables**
 <br>Create a `.env` file with these variables in the root of app-ui:
 ```bash
 VITE_AUTH_URL="https://auth.aptible.com"
@@ -18,7 +20,7 @@ VITE_API_URL="https://api.aptible.com"
 VITE_ORIGIN="nextgen"
 ```
 
-**2. Run Start Commands**
+**3. Run Start Commands**
 ```bash
 cd app-ui
 ```
@@ -32,12 +34,12 @@ yarn
 yarn start
 ```
 
-**3. All done! Go to http://localhost:4200**
+**4. All done! Go to http://localhost:4200**
 <br>The web app will live update after committing changes.
 
 ## Troubleshooting
 
-**After running `yarn start`, stuck on a blank page that says loading...**
+**After running `yarn start`, I'm stuck on a blank page that says loading...**
 
 Unset your environment variables in terminal, by running the following commands:
 
@@ -49,7 +51,7 @@ unset VITE_AUTH_URL
 unset VITE API URL
 unset VITE_BILLING URL
 ```
-Then re-run `yarn start` and the UI should load.
+Then re-run `yarn start` and the site should load.
 
 ## Sites
 
