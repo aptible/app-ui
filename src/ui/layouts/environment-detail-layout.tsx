@@ -109,7 +109,7 @@ const EnvironmentDetailBox = ({
                 {endpoints.length} Endpoint
                 {environment.totalAppCount > 0 && "s"}
               </h3>
-              {endpoints.map((endpoint) =>
+              {endpoints.length <= 5 ? endpoints.map((endpoint) =>
                 endpoint.type === "tcp" ? (
                   endpoint.externalHost
                 ) : (
@@ -123,7 +123,7 @@ const EnvironmentDetailBox = ({
                     </a>
                   </p>
                 ),
-              )}
+              ) : null}
             </div>
           </div>
           <div className="flex-col w-1/3">
