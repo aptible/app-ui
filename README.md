@@ -19,7 +19,8 @@ VITE_AUTH_URL="https://auth.aptible.com"
 VITE_API_URL="https://api.aptible.com"
 VITE_ORIGIN="nextgen"
 ```
-Environment variables point to which API/Auth to use. You can optionally swap them with `*sbx-main` URLs. Here's an example:
+Environment variables point to which API/Auth to use. You can optionally swap them with `*sbx-main` URLs.
+<br>Here's an example:
 ```bash
 VITE_APP_URL="http://localhost:4200"
 VITE_AUTH_URL="http://localhost:4000"
