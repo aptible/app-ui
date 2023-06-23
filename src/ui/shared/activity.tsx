@@ -54,7 +54,6 @@ const getImageForResourceType = (resourceType: ResourceType) => {
       "ephemeral_session",
       "image",
       "plan",
-      "plus",
       "service",
       "unknown",
       "vhost",
