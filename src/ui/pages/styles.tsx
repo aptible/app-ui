@@ -96,11 +96,10 @@ const StylesNavigation = () => (
 );
 
 const Banners = () => (
-  <div>
+  <div className="pt-16 space-y-4">
     <h1 id="banners" className={tokens.type.h1}>
       Banners
     </h1>
-    <br />
     <Banner className="mt-2" variant="default">
       Default banner
     </Banner>
@@ -123,7 +122,7 @@ const Banners = () => (
 );
 
 const Tables = () => (
-  <div>
+  <div className="pt-16 space-y-4">
     <h1 id="tables" className={tokens.type.h1}>
       Tables
     </h1>
@@ -175,7 +174,7 @@ const Forms = () => {
   );
 
   return (
-    <div>
+    <div className="pt-16 space-y-4">
       <h1 id="forms" className={tokens.type.h1}>
         Forms
       </h1>
@@ -229,9 +228,9 @@ const Forms = () => {
         className={`${tokens.type.textarea} mt-4`}
         defaultValue="Editable textarea"
       />
-      <br />
+
       <h3 className={tokens.type.h3}>Form Groups</h3>
-      <br />
+
       <FormGroup htmlFor="input - name" label="Input (label)">
         <Input
           name="app-handle"
@@ -244,17 +243,16 @@ const Forms = () => {
           placeholder="Input"
         />
       </FormGroup>
-      <br />
     </div>
   );
 };
 
 const Colors = () => (
-  <div>
+  <div className="pt-12 space-y-4">
     <h1 id="colors" className={tokens.type.h1}>
       Colors
     </h1>
-    <br />
+
     <h3 className={tokens.type.h3}>Main Colors</h3>
     <div className="flex my-2">
       <div className="rounded-full bg-black w-8 h-8 block mr-2" />
@@ -313,17 +311,17 @@ const Colors = () => (
 );
 
 const Typography = () => (
-  <div>
+  <div className="pt-16 space-y-4">
     <h1 id="typography" className={tokens.type.h1}>
       Typography
     </h1>
-    <br />
+
     <h1 className={tokens.type.h1}>H1 Heading</h1>
     <h2 className={tokens.type.h2}>H2 Heading</h2>
     <h3 className={tokens.type.h3}>H3 Heading</h3>
     <h4 className={tokens.type.h4}>H4 Heading</h4>
     <p>Paragraph text</p>
-    <br />
+
     <p>
       <a href="/">Link Text (Unstyled)</a>
     </p>
@@ -332,7 +330,7 @@ const Typography = () => (
         Link Text (Styled as tokens.type.link)
       </a>
     </p>
-    <br />
+
     <p>Paragraph variants</p>
     <p className={tokens.type["small semibold darker"]}>
       Small semibold darker
@@ -340,19 +338,19 @@ const Typography = () => (
     <p className={tokens.type["small normal darker"]}>Small normal darker</p>
     <p className={tokens.type["small normal lighter"]}>Small normal lighter</p>
     <p className={tokens.type["medium label"]}>Medium label</p>
-    <br />
+
     <p className={tokens.type.textarea}>Textarea format</p>
-    <br />
+
     <p className={tokens.type.pre}>Preformatted code</p>
   </div>
 );
 
 const Buttons = () => (
-  <div>
+  <div className="pt-16 space-y-4">
     <h1 id="buttons" className={tokens.type.h1}>
       Buttons
     </h1>
-    <br />
+
     <h3 className={tokens.type.h3}>Button Variants</h3>
     <Button className="mt-2">Button Default</Button>
     <Button className="mt-2" variant="primary">
@@ -370,11 +368,11 @@ const Buttons = () => (
     <Button className="mt-2" variant="white">
       White Button
     </Button>
-    <br />
+
     <ButtonIcon icon={<IconPlusCircle />}>Button Icon</ButtonIcon>
-    <br />
+
     <ButtonLink to="#">Button Link</ButtonLink>
-    <br />
+
     <h3 className={tokens.type.h3}>Button Sizes</h3>
     <Button className="mt-2" size="xs">
       Extra Small
@@ -391,7 +389,7 @@ const Buttons = () => (
     <Button className="mt-2" size="xl">
       Extra Large
     </Button>
-    <br />
+
     <h3 className={tokens.type.h3}>Button States</h3>
     <Button className="mt-2" disabled>
       Button Disabled
@@ -401,7 +399,7 @@ const Buttons = () => (
 );
 
 const Logs = () => (
-  <div>
+  <div className="pt-16 space-y-4">
     <h1 id="logs" className={tokens.type.h1}>
       Logs
     </h1>
@@ -423,7 +421,7 @@ const operationStatuses: OperationStatus[] = [
   "unknown",
 ];
 const Pills = () => (
-  <div>
+  <div className="pt-16 space-y-4">
     <h1 id="pills" className={tokens.type.h1}>
       Pills
     </h1>
@@ -455,12 +453,11 @@ const Pills = () => (
         </div>
       ))}
     </div>
-    <br />
   </div>
 );
 
 const Navigation = () => (
-  <div>
+  <div className="pt-16 space-y-4">
     <h1 id="navigation" className={tokens.type.h1}>
       Navigation
     </h1>
@@ -497,11 +494,11 @@ const Navigation = () => (
 );
 
 const Icons = () => (
-  <div>
+  <div className="pt-16 space-y-4">
     <h1 id="icons" className={tokens.type.h1}>
       Icons
     </h1>
-    <div className="mt-4">
+    <div className="mt-4 space-y-4">
       {[
         ["IconArrowRight", <IconArrowRight />],
         ["IconArrowLeft", <IconArrowLeft />],
@@ -548,7 +545,7 @@ const Icons = () => (
 );
 
 const Info = () => (
-  <div className="flex flex-col gap-3">
+  <div className="pt-16 space-y-4">
     <h1 id="info" className={tokens.type.h1}>
       Info
     </h1>
@@ -566,35 +563,15 @@ export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
       <Colors />
-      <hr />
-      <br />
       <Typography />
-      <hr />
-      <br />
       <Buttons />
-      <hr />
-      <br />
       <Banners />
-      <hr />
-      <br />
       <Tables />
-      <hr />
-      <br />
       <Forms />
-      <hr />
-      <br />
       <Logs />
-      <hr />
-      <br />
       <Pills />
-      <hr />
-      <br />
       <Navigation />
-      <hr />
-      <br />
       <Icons />
-      <hr />
-      <br />
       <Info />
     </StylesWrapper>
   </div>
