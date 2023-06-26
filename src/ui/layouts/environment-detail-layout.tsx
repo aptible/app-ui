@@ -1,18 +1,7 @@
 import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 
-import { environmentsUrl } from "@app/routes";
-
-import {
-  Box,
-  ButtonLinkExternal,
-  DetailPageHeaderView,
-  IconExternalLink,
-  TabItem,
-  tokens,
-} from "../shared";
-
-import { MenuWrappedPage } from "./menu-wrapped-page";
 import { timeAgo } from "@app/date";
 import {
   fetchAllApps,
@@ -24,6 +13,7 @@ import {
   selectLatestSuccessDeployOpByEnvId,
   selectStackById,
 } from "@app/deploy";
+import { environmentsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import {
   AppState,
@@ -32,8 +22,17 @@ import {
   DeployOperation,
   DeployStack,
 } from "@app/types";
-import cn from "classnames";
-import { useQuery } from "saga-query/react";
+
+import {
+  DetailHeader,
+  DetailInfoGrid,
+  DetailInfoItem,
+  DetailPageHeaderView,
+  DetailTitleBar,
+  TabItem,
+} from "../shared";
+
+import { MenuWrappedPage } from "./menu-wrapped-page";
 
 const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
   endpoint.type === "tcp" ? (
@@ -50,7 +49,7 @@ const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
     </p>
   );
 
-const EnvironmentDetailBox = ({
+export function EnvHeader({
   environment,
   latestOperation,
   stack,
@@ -60,90 +59,64 @@ const EnvironmentDetailBox = ({
   latestOperation: DeployOperation;
   stack: DeployStack;
   endpoints: DeployEndpoint[];
-}) => {
+}) {
   const userName = latestOperation.userName.slice(0, 15);
   return (
-    <div className={cn(tokens.layout["main width"], "py-6")}>
-      <Box>
-        <div className="flex items-center justify-between">
-          <div className="flex">
-            <img
-              src={"/resource-types/logo-environment.png"}
-              className="w-8 h-8 mr-3"
-              aria-label="Environment"
-            />
-            <h1 className="text-lg text-gray-500">Environment Details</h1>
-          </div>
-          <ButtonLinkExternal
-            href="https://www.aptible.com/docs/environments"
-            className="flex ml-auto"
-            variant="white"
-            size="sm"
-          >
-            View Docs
-            <IconExternalLink className="inline ml-3 h-5 mt-0" />
-          </ButtonLinkExternal>
-        </div>
-        <div className="flex w-1/1">
-          <div className="flex-col w-1/3">
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">ID</h3>
-              <p>{environment.id}</p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">Stack</h3>
-              <p>{stack.name}</p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Last Deployed
-              </h3>
-              <p>
-                {timeAgo(latestOperation.createdAt)} by {capitalize(userName)}
-              </p>
-            </div>
-          </div>
-          <div className="flex-col w-1/3">
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                {environment.totalAppCount} App
-                {environment.totalAppCount > 0 && "s"}
-              </h3>
-              Using {environment.appContainerCount} container
-              {environment.appContainerCount > 0 && "s"}
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                {environment.totalDatabaseCount} Database
-                {environment.totalDatabaseCount > 0 && "s"}
-              </h3>
-              {environment.databaseContainerCount} container
-              {environment.databaseContainerCount > 0 && "s"} using{" "}
-              {environment.totalDiskSize} GB of disk
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                {endpoints.length} Endpoint
-                {environment.totalAppCount > 0 && "s"}
-              </h3>
-              {endpoints.length <= 5
-                ? endpoints.map((endpoint) => (
-                    <EndpointList endpoint={endpoint} />
-                  ))
-                : null}
-            </div>
-          </div>
-          <div className="flex-col w-1/3">
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">Backups</h3>
-              {environment.totalBackupSize} GB
-            </div>
-          </div>
-        </div>
-      </Box>
-    </div>
+    <DetailHeader>
+      <DetailTitleBar
+        title="Environment Details"
+        icon={
+          <img
+            src={"/resource-types/logo-environment.png"}
+            className="w-8 h-8 mr-3"
+            aria-label="Environment"
+          />
+        }
+        docsUrl="https://www.aptible.com/docs/environments"
+      />
+
+      <DetailInfoGrid>
+        <DetailInfoItem title="ID">{environment.id}</DetailInfoItem>
+        <DetailInfoItem
+          title={`${environment.totalAppCount} App${
+            environment.totalAppCount > 0 && "s"
+          }`}
+        >
+          Using {environment.appContainerCount} container
+          {environment.appContainerCount > 0 && "s"}
+        </DetailInfoItem>
+        <DetailInfoItem title="Backups">
+          {environment.totalBackupSize} GB
+        </DetailInfoItem>
+
+        <DetailInfoItem title="Stack">{stack.name}</DetailInfoItem>
+        <DetailInfoItem
+          title={`${environment.totalDatabaseCount} Database${
+            environment.totalDatabaseCount > 0 && "s"
+          }`}
+        >
+          {environment.databaseContainerCount} container
+          {environment.databaseContainerCount > 0 && "s"} using{" "}
+          {environment.totalDiskSize} GB of disk
+        </DetailInfoItem>
+        <div />
+
+        <DetailInfoItem title="Last Deployed">
+          {timeAgo(latestOperation.createdAt)} by {capitalize(userName)}
+        </DetailInfoItem>
+        <DetailInfoItem
+          title={`${endpoints.length} Endpoint${
+            environment.totalAppCount > 0 && "s"
+          }`}
+        >
+          {endpoints.length <= 5
+            ? endpoints.map((endpoint) => <EndpointList endpoint={endpoint} />)
+            : null}
+        </DetailInfoItem>
+      </DetailInfoGrid>
+    </DetailHeader>
   );
-};
+}
 
 function EnvironmentPageHeader(): React.ReactElement {
   const { id = "" } = useParams();
@@ -166,7 +139,7 @@ function EnvironmentPageHeader(): React.ReactElement {
   );
   const crumbs = [{ name: stack.name, to: environmentsUrl() }];
 
-  const tabs = [
+  const tabs: TabItem[] = [
     { name: "Apps", href: `/environments/${id}/apps` },
     { name: "Databases", href: `/environments/${id}/databases` },
     { name: "Integrations", href: `/environments/${id}/integrations` },
@@ -174,20 +147,20 @@ function EnvironmentPageHeader(): React.ReactElement {
     { name: "Activity", href: `/environments/${id}/activity` },
     { name: "Backups", href: `/environments/${id}/backups` },
     { name: "Settings", href: `/environments/${id}/settings` },
-  ] as TabItem[];
+  ];
 
   return (
     <DetailPageHeaderView
       breadcrumbs={crumbs}
       detailsBox={
-        <EnvironmentDetailBox
+        <EnvHeader
           endpoints={endpoints}
           environment={environment}
           latestOperation={latestOperation}
           stack={stack}
         />
       }
-      title={environment ? environment.handle : "Loading..."}
+      title={environment.handle}
       tabs={tabs}
     />
   );

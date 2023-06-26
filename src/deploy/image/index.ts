@@ -14,3 +14,17 @@ export const deserializeImage = (payload: any): DeployImage | null => {
     createdAt: payload.created_at,
   };
 };
+
+export const defaultDeployImage = (img: Partial<DeployImage>): DeployImage => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    gitRepo: "",
+    gitRef: "",
+    dockerRepo: "",
+    dockerRef: "",
+    createdAt: now,
+    updatedAt: now,
+    ...img,
+  };
+};

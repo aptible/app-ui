@@ -9,3 +9,4 @@ export * from "./error-boundary";
 export * from "./op-detail-layout";
 export * from "./perm-required";
 export * from "./menu-wrapped-page";
+export * from "./stack-detail-layout";

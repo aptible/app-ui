@@ -1,9 +1,11 @@
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
 import { prettyEnglishDate } from "@app/date";
 import {
   cancelAppOpsPoll,
+  fetchApp,
   pollAppOperations,
   selectAppById,
   selectEnvironmentById,
@@ -15,102 +17,61 @@ import {
   appSettingsUrl,
   environmentAppsUrl,
 } from "@app/routes";
+import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
-
-import {
-  Box,
-  ButtonLinkExternal,
-  DetailPageHeaderView,
-  IconExternalLink,
-  IconGitBranch,
-  TabItem,
-  tokens,
-} from "../shared";
 
 import { usePoller } from "../hooks";
 import { useInterval } from "../hooks/use-interval";
-import { ActiveOperationNotice } from "../shared/active-operation-notice";
-import { MenuWrappedPage } from "./menu-wrapped-page";
-import { capitalize } from "@app/string-utils";
-import cn from "classnames";
-import { useMemo, useState } from "react";
+import {
+  ActiveOperationNotice,
+  DetailHeader,
+  DetailInfoGrid,
+  DetailInfoItem,
+  DetailPageHeaderView,
+  DetailTitleBar,
+  TabItem,
+} from "../shared";
 
-const appDetailBox = ({ app }: { app: DeployApp }) => (
-  <div className={cn(tokens.layout["main width"], "py-6")}>
-    <Box>
-      <div className="flex items-center justify-between">
-        <div className="flex">
+import { MenuWrappedPage } from "./menu-wrapped-page";
+import { useQuery } from "saga-query/react";
+
+export function AppHeader({ app }: { app: DeployApp }) {
+  return (
+    <DetailHeader>
+      <DetailTitleBar
+        title="App Details"
+        icon={
           <img
             src={"/resource-types/logo-app.png"}
             className="w-8 h-8 mr-3"
             aria-label="App"
           />
-          <h1 className="text-lg text-gray-500">App Details</h1>
-        </div>
-        <ButtonLinkExternal
-          href="https://www.aptible.com/docs/apps"
-          className="flex ml-auto"
-          variant="white"
-          size="sm"
-        >
-          View Docs
-          <IconExternalLink className="inline ml-3 h-5 mt-0" />
-        </ButtonLinkExternal>
-      </div>
-      <div className="flex">
-        <div className="flex-col w-1/2">
-          <div className="mt-4">
-            <h3 className="text-base font-semibold text-gray-900">
-              Git Remote
-            </h3>
-            <p>{app.gitRepo}</p>
-          </div>
-          <div className="mt-4">
-            <h3 className="text-base font-semibold text-gray-900">Git Ref</h3>
-            <p>Unused</p>
-          </div>
-          <div className="mt-4">
-            <h3 className="text-base font-semibold text-gray-900">
-              Docker Image
-            </h3>
-            {app.currentImage?.dockerRepo}
-          </div>
-        </div>
-        <div className="flex-col w-1/2">
-          <div className="mt-4">
-            <h3 className="text-base font-semibold text-gray-900">
-              Repository
-            </h3>
-            <p>{app.handle}</p>
-          </div>
-          <div className="mt-4">
-            <h3 className="text-base font-semibold text-gray-900">Branch</h3>
-            <p>
-              <IconGitBranch
-                className="inline"
-                style={{ width: 16, height: 16 }}
-              />{" "}
-              main
-            </p>
-          </div>
-          <div className="mt-4">
-            <h3 className="text-base font-semibold text-gray-900">
-              Last Deployed
-            </h3>
-            {app.lastDeployOperation
-              ? `${capitalize(
-                  app.lastDeployOperation.type,
-                )} on ${prettyEnglishDate(app.lastDeployOperation?.createdAt)}`
-              : "Unknown"}
-          </div>
-        </div>
-      </div>
-    </Box>
-  </div>
-);
+        }
+        docsUrl="https://www.aptible.com/docs/apps"
+      />
+
+      <DetailInfoGrid>
+        <DetailInfoItem title="Git Remote">{app.gitRepo}</DetailInfoItem>
+        <DetailInfoItem title="Last Deployed">
+          {app.lastDeployOperation
+            ? `${capitalize(
+                app.lastDeployOperation.type,
+              )} on ${prettyEnglishDate(app.lastDeployOperation?.createdAt)}`
+            : "Unknown"}
+        </DetailInfoItem>
+        <div />
+
+        <DetailInfoItem title="Docker Image">
+          {app.currentImage?.dockerRepo}
+        </DetailInfoItem>
+      </DetailInfoGrid>
+    </DetailHeader>
+  );
+}
 
 function AppPageHeader() {
   const { id = "" } = useParams();
+  useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: app.environmentId }),
@@ -132,20 +93,20 @@ function AppPageHeader() {
   // Need to kick a user back out of the details page (or lock specific pages if it is deleted)
   // currently the network log will error with a 404 (as the record will be deleted)
 
-  const tabs = [
+  const tabs: TabItem[] = [
     { name: "Services", href: appServicesUrl(id) },
     { name: "Endpoints", href: appEndpointsUrl(id) },
     { name: "Activity", href: appActivityUrl(id) },
     { name: "Settings", href: appSettingsUrl(id) },
-  ] as TabItem[];
+  ];
 
   return (
     <>
       <ActiveOperationNotice resourceId={app.id} resourceType="app" />
       <DetailPageHeaderView
         breadcrumbs={crumbs}
-        title={app ? app.handle : "Loading..."}
-        detailsBox={appDetailBox({ app })}
+        title={app.handle}
+        detailsBox={<AppHeader app={app} />}
         tabs={tabs}
       />
     </>

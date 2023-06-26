@@ -121,7 +121,7 @@ export const DeploymentsPage = ({
 
 export const DeploymentsPageWithMenus = () => (
   <MenuWrappedPage withoutMargin>
-    <div className="my-4 py-3 mx-auto px-8">
+    <div>
       <DeploymentsPage
         headerStyle={tokens.type.h2}
         leftAlignTitle

@@ -21,7 +21,9 @@ import {
   TableHead,
   Td,
 } from "../shared";
+import { stackDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
+import { Link } from "react-router-dom";
 
 export function StacksPage() {
   return (
@@ -56,7 +58,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
             alt="stack icon"
             className="w-8 h-8 mr-2"
           />
-          <div>{stack.name}</div>
+          <Link to={stackDetailUrl(stack.id)}>{stack.name}</Link>
         </div>
       </Td>
       <Td>{stack.region}</Td>
