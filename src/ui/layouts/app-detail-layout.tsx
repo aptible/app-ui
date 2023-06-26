@@ -35,7 +35,7 @@ import {
 import { MenuWrappedPage } from "./menu-wrapped-page";
 import { useQuery } from "saga-query/react";
 
-function AppHeader({ app }: { app: DeployApp }) {
+export function AppHeader({ app }: { app: DeployApp }) {
   return (
     <DetailHeader>
       <DetailTitleBar

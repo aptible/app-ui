@@ -23,11 +23,11 @@ import {
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
 
-function OpHeader({ op }: { op: DeployOperation }) {
+export function OpHeader({
+  op,
+  resourceHandle,
+}: { op: DeployOperation; resourceHandle: string }) {
   const url = getResourceUrl(op);
-  const resourceHandle = useSelector((s: AppState) =>
-    selectResourceNameByOperationId(s, { id: op.id }),
-  );
 
   return (
     <DetailHeader>
@@ -61,12 +61,15 @@ function OpHeader({ op }: { op: DeployOperation }) {
 function OpPageHeader() {
   const { id = "" } = useParams();
   const op = useSelector((s: AppState) => selectOperationById(s, { id }));
+  const resourceHandle = useSelector((s: AppState) =>
+    selectResourceNameByOperationId(s, { id: op.id }),
+  );
 
   return (
     <DetailPageHeaderView
       breadcrumbs={[{ name: "Activity", to: activityUrl() }]}
       title={`Operation: ${op.id}`}
-      detailsBox={<OpHeader op={op} />}
+      detailsBox={<OpHeader op={op} resourceHandle={resourceHandle} />}
     />
   );
 }

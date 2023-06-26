@@ -22,7 +22,7 @@ import {
 import { MenuWrappedPage } from "./menu-wrapped-page";
 import { capitalize } from "@app/string-utils";
 
-function StackHeader({ stack }: { stack: DeployStack }) {
+export function StackHeader({ stack }: { stack: DeployStack }) {
   const stackType = getStackType(stack);
   return (
     <DetailHeader>

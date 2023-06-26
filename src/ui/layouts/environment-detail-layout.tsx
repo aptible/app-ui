@@ -49,7 +49,7 @@ const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
     </p>
   );
 
-function EnvHeader({
+export function EnvHeader({
   environment,
   latestOperation,
   stack,
@@ -78,8 +78,9 @@ function EnvHeader({
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{environment.id}</DetailInfoItem>
         <DetailInfoItem
-          title={`${environment.totalAppCount} App
-                ${environment.totalAppCount > 0 && "s"}`}
+          title={`${environment.totalAppCount} App${
+            environment.totalAppCount > 0 && "s"
+          }`}
         >
           Using {environment.appContainerCount} container
           {environment.appContainerCount > 0 && "s"}

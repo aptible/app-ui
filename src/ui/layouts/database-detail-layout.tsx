@@ -36,7 +36,7 @@ import { ActiveOperationNotice } from "../shared/active-operation-notice";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
 
-function DatabaseHeader({
+export function DatabaseHeader({
   database,
   service,
 }: {
