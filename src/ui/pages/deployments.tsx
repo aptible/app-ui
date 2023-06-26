@@ -85,7 +85,7 @@ export const DeploymentsPage = ({
   return (
     <div>
       <h1
-        className={`${headerStyle} mb-6 ${leftAlignTitle ? "" : "text-center"}`}
+        className={`${headerStyle} mb-4 ${leftAlignTitle ? "" : "text-center"}`}
       >
         Deployments
       </h1>
@@ -121,7 +121,7 @@ export const DeploymentsPage = ({
 
 export const DeploymentsPageWithMenus = () => (
   <MenuWrappedPage withoutMargin>
-    <div className="my-4 py-4 mx-auto px-8">
+    <div className="my-4 py-3 mx-auto px-8">
       <DeploymentsPage
         headerStyle={tokens.type.h2}
         leftAlignTitle
