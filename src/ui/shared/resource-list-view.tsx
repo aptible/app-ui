@@ -14,7 +14,7 @@ interface ResourceHeaderProps {
 interface GenericResourceListProps {
   header?: React.ReactNode;
   tableHeader: JSX.Element;
-  tableBody: JSX.Element;
+  tableBody: React.ReactNode;
 }
 
 interface EmptyResultProps {
