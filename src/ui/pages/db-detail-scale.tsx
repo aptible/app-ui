@@ -5,11 +5,11 @@ import {
   selectDatabaseById,
   selectServiceById,
 } from "@app/deploy";
+import { useQuery } from "@app/fx";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { useQuery } from "saga-query/react";
 
 export const DatabaseScalePage = () => {
   const { id = "" } = useParams();

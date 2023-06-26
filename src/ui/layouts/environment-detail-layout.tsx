@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
-import { useQuery } from "saga-query/react";
 
 import { timeAgo } from "@app/date";
 import {
@@ -14,6 +13,7 @@ import {
   selectStackById,
 } from "@app/deploy";
 import { environmentsUrl } from "@app/routes";
+import { useQuery } from "@app/fx";
 import { capitalize } from "@app/string-utils";
 import {
   AppState,

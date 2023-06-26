@@ -1,7 +1,7 @@
+import { useLoader, useLoaderSuccess } from "@app/fx";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 import { createOrganization } from "@app/auth";
 import { homeUrl } from "@app/routes";

@@ -1,7 +1,7 @@
+import { useLoader } from "@app/fx";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { LoadingState } from "saga-query";
-import { useLoader } from "saga-query/react";
 
 import { User } from "@app/types";
 import { fetchUser, selectCurrentUser, selectCurrentUserId } from "@app/users";

@@ -8,9 +8,9 @@ import { selectCanImpersonate, selectCurrentUser } from "@app/users";
 import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
 import { BannerMessages, Button, FormGroup, Input } from "../shared";
 import { ExchangeToken, exchangeToken } from "@app/auth";
+import { useLoader } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { selectAccessToken, selectIsImpersonated } from "@app/token";
-import { useLoader } from "saga-query/react";
 
 function prepSubject(
   email = "",

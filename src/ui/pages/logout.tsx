@@ -7,7 +7,7 @@ import { loginUrl } from "@app/routes";
 import { HeroBgLayout } from "../layouts";
 import { Box, Button, IconArrowRight, tokens } from "../shared";
 import { selectLegacyDashboardUrl } from "@app/env";
-import { useLoader, useLoaderSuccess } from "saga-query/react";
+import { useLoader, useLoaderSuccess } from "@app/fx";
 
 export const LogoutPage = () => {
   const dispatch = useDispatch();

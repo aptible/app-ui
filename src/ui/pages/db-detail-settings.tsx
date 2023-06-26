@@ -20,12 +20,12 @@ import {
   selectMetricDrainsByEnvId,
   updateDatabase,
 } from "@app/deploy";
+import { useLoader, useQuery } from "@app/fx";
 import { databaseActivityUrl } from "@app/routes";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { useLoader, useQuery } from "saga-query/react";
 
 export const DatabaseSettingsPage = () => {
   const { id = "" } = useParams();

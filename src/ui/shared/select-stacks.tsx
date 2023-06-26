@@ -1,5 +1,5 @@
+import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
-import { useQuery } from "saga-query/react";
 
 import { fetchAllStacks, selectStacksByOrgAsOptions } from "@app/deploy";
 

@@ -1,7 +1,7 @@
+import { useLoader, useQuery } from "@app/fx";
 import { ReactElement, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
-import { useLoader, useQuery } from "saga-query/react";
 
 import { prettyDateRelative } from "@app/date";
 import {

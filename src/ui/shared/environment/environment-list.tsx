@@ -1,5 +1,5 @@
+import { useQuery } from "@app/fx";
 import { Link } from "react-router-dom";
-import { useQuery } from "saga-query/react";
 
 import {
   fetchAllEnvironments,

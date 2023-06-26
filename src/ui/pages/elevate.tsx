@@ -1,7 +1,7 @@
+import { useLoaderSuccess } from "@app/fx";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
-import { useLoaderSuccess } from "saga-query/react";
 
 import { elevate, elevateWebauthn } from "@app/auth";
 import { selectAuthLoader, selectIsOtpError } from "@app/auth";

@@ -1,7 +1,7 @@
+import { useLoader } from "@app/fx";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useLoader } from "saga-query/react";
 
 import { fetchCurrentToken } from "@app/auth";
 import { selectEnv } from "@app/env";

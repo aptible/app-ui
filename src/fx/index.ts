@@ -15,7 +15,7 @@ export {
   createThrottle,
   latest,
   take,
-  fork
+  fork,
 } from "saga-query";
 export type {
   LoadingState,
