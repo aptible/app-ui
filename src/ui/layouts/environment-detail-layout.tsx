@@ -12,8 +12,8 @@ import {
   selectLatestSuccessDeployOpByEnvId,
   selectStackById,
 } from "@app/deploy";
-import { environmentsUrl } from "@app/routes";
 import { useQuery } from "@app/fx";
+import { environmentsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import {
   AppState,
