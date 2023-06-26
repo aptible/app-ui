@@ -20,6 +20,6 @@ export const bootup = thunks.create(
 
     yield* call(onFetchInitData);
 
-    yield next();
+    yield* next();
   },
 );

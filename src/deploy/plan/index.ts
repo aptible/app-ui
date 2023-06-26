@@ -301,7 +301,7 @@ export const updateActivePlan = api.put<UpdateActivePlan>(
       plan_id: planId,
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
-    yield next();
+    yield* next();
   },
 );
 
@@ -323,7 +323,7 @@ export const updateAndRefreshActivePlans = thunks.create<UpdateActivePlan>(
       );
       return;
     }
-    yield next();
+    yield* next();
 
     ctx.actions.push(removeActivePlans([ctx.payload.id]));
     yield put(

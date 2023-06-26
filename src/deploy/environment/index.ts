@@ -276,7 +276,7 @@ export const updateDeployEnvironmentStatus = api.patch<EnvPatch>(
       body: JSON.stringify(body),
     });
 
-    yield next();
+    yield* next();
   },
 );
 
@@ -297,7 +297,7 @@ export const createDeployEnvironment = api.post<
     body: JSON.stringify(body),
   });
 
-  yield next();
+  yield* next();
 });
 
 export const environmentEntities = {

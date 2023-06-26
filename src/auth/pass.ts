@@ -19,7 +19,7 @@ export const forgotPass = authApi.post<{ email: string }>(
       }),
     });
 
-    yield next();
+    yield* next();
 
     if (!ctx.json.ok) {
       ctx.loader = {
@@ -56,6 +56,6 @@ export const resetPass = authApi.post<ResetPass>(
       }),
     });
 
-    yield next();
+    yield* next();
   },
 );

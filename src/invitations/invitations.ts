@@ -82,7 +82,7 @@ export const fetchInvitations = authApi.get<
   if (!token) {
     return;
   }
-  yield next();
+  yield* next();
   if (!ctx.json.ok) {
     return;
   }
@@ -101,7 +101,7 @@ export const fetchInvitations = authApi.get<
 export const fetchInvitation = authApi.get<{ id: string }, InvitationResponse>(
   "/invitations/:id",
   function* onFetchInvitation(ctx, next) {
-    yield next();
+    yield* next();
     if (!ctx.json.ok) {
       return;
     }
@@ -124,6 +124,6 @@ export const resetInvitation = authApi.post<string>(
         invitation_id: ctx.payload,
       }),
     });
-    yield next();
+    yield* next();
   },
 );

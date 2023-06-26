@@ -30,7 +30,7 @@ export const createUser = authApi.post<CreateUserForm, UserResponse>(
       body: JSON.stringify({ ...ctx.payload, origin }),
     });
 
-    yield next();
+    yield* next();
   },
 );
 
@@ -68,7 +68,7 @@ function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
   ctx.request = ctx.req({
     body: JSON.stringify(payload),
   });
-  yield next();
+  yield* next();
 }
 
 export const updateUser = authApi.patch<PatchUser>(

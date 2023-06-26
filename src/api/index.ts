@@ -47,17 +47,17 @@ const log = createLog("@app/fx");
 
 export function* elevetatedMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   ctx.elevated = true;
-  yield next();
+  yield* next();
 }
 
 function* debugMdw(ctx: PipeCtx, next: Next) {
   log(`${ctx.name}`, ctx);
-  yield next();
+  yield* next();
 }
 
 function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   try {
-    yield next();
+    yield* next();
   } catch (err: any) {
     Sentry.captureException(err, {
       contexts: { saga: JSON.stringify(ctx) as any },
@@ -81,13 +81,13 @@ function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
 
 function* tokenMdw(ctx: ApiCtx & { noToken?: boolean }, next: Next): ApiGen {
   if (ctx.noToken) {
-    yield next();
+    yield* next();
     return;
   }
 
   const token = yield* select(selectAccessToken);
   if (!token) {
-    yield next();
+    yield* next();
     return;
   }
 
@@ -96,18 +96,18 @@ function* tokenMdw(ctx: ApiCtx & { noToken?: boolean }, next: Next): ApiGen {
       Authorization: `Bearer ${token}`,
     },
   });
-  yield next();
+  yield* next();
 }
 
 function* elevatedTokenMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   if (!ctx.elevated) {
-    yield next();
+    yield* next();
     return;
   }
 
   const token = yield* select(selectElevatedAccessToken);
   if (!token) {
-    yield next();
+    yield* next();
     return;
   }
 
@@ -116,7 +116,7 @@ function* elevatedTokenMdw(ctx: AuthApiCtx, next: Next): ApiGen {
       Authorization: `Bearer ${token}`,
     },
   });
-  yield next();
+  yield* next();
 }
 
 function* getUrl(ctx: AppCtx, endpoint: EndpointUrl): ApiGen<string> {
@@ -141,7 +141,7 @@ function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
     },
   });
 
-  yield next();
+  yield* next();
 }
 
 function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
@@ -155,11 +155,11 @@ function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
     },
   });
 
-  yield next();
+  yield* next();
 }
 
 function* expiredToken(ctx: ApiCtx, next: Next) {
-  yield next();
+  yield* next();
   if (!ctx.response) return;
   if (ctx.response.status === 401) {
     ctx.actions.push(resetToken());
@@ -247,7 +247,7 @@ export function combinePages<
     if (!firstPage.json.ok) {
       const message = firstPage.json.data.message;
       yield* put(setLoaderError({ id: ctx.key, message }));
-      yield next();
+      yield* next();
       return;
     }
 
@@ -271,7 +271,7 @@ export function combinePages<
 
     ctx.json = { data: results };
     yield* put(setLoaderSuccess({ id: ctx.key }));
-    yield next();
+    yield* next();
   }
 
   return paginator;
@@ -286,7 +286,7 @@ thunks.use(debugMdw);
 thunks.use(sentryErrorHandler);
 thunks.use(function* (ctx, next) {
   ctx.json = null;
-  yield next();
+  yield* next();
 });
 thunks.use(dispatchActions);
 thunks.use(thunks.routes());

@@ -29,7 +29,7 @@ export const acceptInvitation = authApi.post<any, AcceptInvitation>(
       });
     }
 
-    yield next();
+    yield* next();
 
     if (!ctx.json.ok) {
       return;

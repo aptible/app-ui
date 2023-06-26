@@ -108,7 +108,7 @@ export const createProject = thunks.create<CreateProjectProps>(
         meta: { envId, appId },
       }),
     );
-    yield next();
+    yield* next();
   },
 );
 
@@ -293,7 +293,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       return;
     }
 
-    yield next();
+    yield* next();
     yield put(setLoaderSuccess({ id }));
   },
 );
@@ -359,13 +359,13 @@ export const updateEnvWithDbUrls = thunks.create<{
   });
 
   if (!results.dbs.json.ok) {
-    yield next();
+    yield* next();
     ctx.json = { message: "failed to fetch databases" };
     return;
   }
 
   if (!results.configure.json.ok) {
-    yield next();
+    yield* next();
     ctx.json = { message: "failed to fetch app env vars" };
     return;
   }
@@ -380,7 +380,7 @@ export const updateEnvWithDbUrls = thunks.create<{
   });
 
   yield* put(setLoaderSuccess({ id }));
-  yield next();
+  yield* next();
   ctx.json = { message: "success" };
 });
 
@@ -399,7 +399,7 @@ export const redeployApp = thunks.create<{
 
   if (result.json.message !== "success") {
     yield* put(setLoaderError({ id, message: result.json.message }));
-    yield next();
+    yield* next();
 
     return;
   }
@@ -415,7 +415,7 @@ export const redeployApp = thunks.create<{
   );
   if (!deployCtx.json.ok) {
     yield* put(setLoaderError({ id, message: deployCtx.json.data.message }));
-    yield next();
+    yield* next();
     return;
   }
 

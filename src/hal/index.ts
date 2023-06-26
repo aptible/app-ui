@@ -78,7 +78,7 @@ export function* halEntityParser(
   ctx: DeployApiCtx<any, HalEmbedded<{ [key: string]: any }>>,
   next: Next,
 ) {
-  yield next();
+  yield* next();
 
   if (!ctx.json.ok) {
     return;

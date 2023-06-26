@@ -387,7 +387,7 @@ export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
       ctx.cache = true;
       ctx.bodyType = "text";
 
-      yield next();
+      yield* next();
 
       if (!ctx.json.ok) {
         return;

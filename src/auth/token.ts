@@ -32,7 +32,7 @@ export const fetchCurrentToken = authApi.get<never, TokenSuccessResponse>(
   "/current_token",
   function* onFetchToken(ctx, next) {
     ctx.noToken = true;
-    yield next();
+    yield* next();
     if (!ctx.json.ok) {
       yield put(resetToken());
       return;
@@ -59,7 +59,7 @@ export const createToken = authApi.post<
     }),
   });
 
-  yield next();
+  yield* next();
   yield* call(saveToken, ctx);
 });
 
@@ -84,7 +84,7 @@ export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
       }),
     });
 
-    yield next();
+    yield* next();
 
     if (!ctx.json.ok) {
       return;
@@ -128,7 +128,7 @@ export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
       }),
     });
 
-    yield next();
+    yield* next();
     // `exchangeToken` is used when a new user creates an org as well as when
     // a user impersonates another user.
     // Regardless, we want to reset the store first then save the token because
@@ -142,7 +142,7 @@ export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
 export const revokeAllTokens = authApi.post(
   "/tokens/revoke_all_accessible",
   function* onRevokeAll(ctx, next) {
-    yield next();
+    yield* next();
     if (!ctx.json.ok) {
       return;
     }

@@ -85,6 +85,6 @@ export const signup = thunks.create<CreateUserForm>(
         },
       }),
     );
-    yield next();
+    yield* next();
   },
 );
