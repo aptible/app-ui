@@ -1,4 +1,4 @@
-import { Next, select } from "saga-query";
+import { Next, select } from "@app/fx";
 
 import { authApi, cacheTimer, elevetatedMdw } from "@app/api";
 import { selectOrigin } from "@app/env";

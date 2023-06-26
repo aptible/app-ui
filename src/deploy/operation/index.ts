@@ -1,5 +1,5 @@
+import { call, delay, fetchRetry, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, delay, fetchRetry, poll, put, select } from "saga-query";
 
 import { selectDeploy } from "../slice";
 import {

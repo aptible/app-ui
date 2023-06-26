@@ -7,7 +7,7 @@ import {
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
-} from "saga-query";
+} from "@app/fx";
 
 import { ThunkCtx, thunks } from "@app/api";
 import { createLog } from "@app/debug";

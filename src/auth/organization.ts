@@ -1,4 +1,4 @@
-import { call, select } from "saga-query";
+import { call, select } from "@app/fx";
 
 import { authApi, cacheTimer } from "@app/api";
 import {

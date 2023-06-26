@@ -1,4 +1,4 @@
-import { select } from "saga-query";
+import { select } from "@app/fx";
 
 import { authApi } from "@app/api";
 import { selectOrigin } from "@app/env";

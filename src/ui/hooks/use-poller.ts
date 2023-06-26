@@ -1,6 +1,6 @@
+import { Action, batchActions } from "@app/fx";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Action, batchActions } from "saga-query";
 
 export const usePoller = ({
   action,

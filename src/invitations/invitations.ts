@@ -1,5 +1,5 @@
+import { select } from "@app/fx";
 import { isBefore } from "date-fns";
-import { select } from "saga-query";
 
 import { authApi } from "@app/api";
 import { selectOrigin } from "@app/env";

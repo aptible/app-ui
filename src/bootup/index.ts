@@ -1,5 +1,5 @@
+import { call, select, take } from "@app/fx";
 import { REHYDRATE } from "redux-persist";
-import { call, select, take } from "saga-query";
 
 import { thunks } from "@app/api";
 import { fetchCurrentToken } from "@app/auth";

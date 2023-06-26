@@ -4,6 +4,7 @@ import {
   defaultEndpointResponse,
   defaultOperationResponse,
 } from "@app/deploy";
+import { defaultLoadingItem } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
 import {
   createId,
@@ -28,7 +29,6 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { rest } from "msw";
-import { defaultLoadingItem } from "saga-query";
 
 describe("CreateProjectGitStatusPage", () => {
   describe("when app deployed and no vhost provisioned yet", () => {

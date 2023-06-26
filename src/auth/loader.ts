@@ -1,5 +1,5 @@
-import { selectLoaderById } from "saga-query";
-import type { LoadingState } from "saga-query";
+import { selectLoaderById } from "@app/fx";
+import type { LoadingState } from "@app/fx";
 
 import type { AppState, AuthLoader, AuthLoaderMessage } from "@app/types";
 

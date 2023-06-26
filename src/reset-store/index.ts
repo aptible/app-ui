@@ -1,6 +1,6 @@
+import { BATCH, put, select, take } from "@app/fx";
 import type { Reducer } from "@reduxjs/toolkit";
 import type { PersistConfig } from "redux-persist";
-import { BATCH, put, select, take } from "saga-query";
 
 import { ENV_NAME } from "@app/env";
 import { ENTITIES_NAME } from "@app/hal";

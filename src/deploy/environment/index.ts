@@ -1,5 +1,5 @@
+import { latest, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { latest, poll, put, select } from "saga-query";
 
 import { PaginateProps, api, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";

@@ -1,3 +1,5 @@
+import type { QueryState } from "@app/fx";
+
 import type {
   DeployActivePlan,
   DeployApp,
@@ -21,7 +23,6 @@ import type { EntityMap } from "./hal";
 import type { MapEntity } from "./helpers";
 import type { Invitation, InvitationRequest } from "./invitations";
 import type { ModalState } from "./modal";
-import type { QueryState } from "saga-query";
 
 export interface Env {
   isProduction: boolean;

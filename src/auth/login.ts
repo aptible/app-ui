@@ -1,11 +1,11 @@
-import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 import {
   call,
   put,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
-} from "saga-query";
+} from "@app/fx";
+import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 
 import { thunks } from "@app/api";
 import { createLog } from "@app/debug";

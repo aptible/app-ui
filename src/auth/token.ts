@@ -1,5 +1,5 @@
+import { call, put, setLoaderSuccess } from "@app/fx";
 import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
-import { call, put, setLoaderSuccess } from "saga-query";
 
 import { AUTH_LOADER_ID } from "./loader";
 import { authApi } from "@app/api";

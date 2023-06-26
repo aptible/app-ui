@@ -1,4 +1,4 @@
-import { Next, select } from "saga-query";
+import { Next, select } from "@app/fx";
 
 import { createAssign, createReducerMap } from "@app/slice-helpers";
 import type {

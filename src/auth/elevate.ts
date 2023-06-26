@@ -4,7 +4,7 @@ import {
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
-} from "saga-query";
+} from "@app/fx";
 
 import { AUTH_LOADER_ID } from "./loader";
 import { ElevateToken, elevateToken } from "./token";

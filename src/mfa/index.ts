@@ -1,4 +1,4 @@
-import { Next, select } from "saga-query";
+import { Next, select } from "@app/fx";
 
 import { authApi } from "@app/api";
 import { defaultEntity } from "@app/hal";

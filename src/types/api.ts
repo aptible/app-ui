@@ -1,4 +1,4 @@
-import type { ApiCtx } from "saga-query";
+import type { ApiCtx } from "@app/fx";
 
 import type { AuthApiError } from "./state";
 

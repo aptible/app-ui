@@ -4,7 +4,7 @@ import {
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
-} from "saga-query";
+} from "@app/fx";
 
 import { api, cacheShortTimer, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";

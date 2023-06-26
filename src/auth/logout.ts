@@ -6,7 +6,7 @@ import {
   select,
   setLoaderStart,
   setLoaderSuccess,
-} from "saga-query";
+} from "@app/fx";
 
 import { authApi, thunks } from "@app/api";
 import { resetStore } from "@app/reset-store";

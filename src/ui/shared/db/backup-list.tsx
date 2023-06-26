@@ -12,9 +12,9 @@ import {
 } from "../";
 import { prettyEnglishDateWithTime } from "@app/date";
 import { BackupResponse } from "@app/deploy";
+import { LoadingState } from "@app/fx";
 import { capitalize } from "@app/string-utils";
 import cn from "classnames";
-import { LoadingState } from "saga-query/*";
 
 const BackupTypePill = ({ manual }: { manual: boolean }): ReactElement => {
   const className = cn(
