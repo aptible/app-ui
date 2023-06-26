@@ -14,7 +14,7 @@ interface ResourceHeaderProps {
 interface GenericResourceListProps {
   header?: React.ReactNode;
   tableHeader: JSX.Element;
-  tableBody: JSX.Element;
+  tableBody: React.ReactNode;
 }
 
 interface EmptyResultProps {
@@ -46,7 +46,7 @@ export const ResourceHeader = ({
   actions = [],
 }: ResourceHeaderProps) => {
   return (
-    <div className="my-2">
+    <div>
       <div className="flex mb-2">
         <div className="flex-1">
           <h1 className={cn(tokens.type.h2)}>{title}</h1>
@@ -73,7 +73,7 @@ export const ResourceListView = ({
 }: GenericResourceListProps) => {
   return (
     <div>
-      {header ? <div className="my-4">{header}</div> : null}
+      {header ? <div>{header}</div> : null}
 
       <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
         <table className="min-w-full divide-y divide-gray-300">

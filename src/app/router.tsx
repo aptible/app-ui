@@ -65,6 +65,11 @@ import {
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
+  StackDetailEnvironmentsPage,
+  StackDetailLayout,
+  StackDetailPage,
+  StackDetailVpcPeeringPage,
+  StackDetailVpnTunnelsPage,
   StacksPage,
   TeamPage,
   UnauthRequired,
@@ -273,6 +278,28 @@ export const appRoutes: RouteObject[] = [
           {
             index: true,
             element: <StacksPage />,
+          },
+          {
+            path: routes.STACK_DETAIL_PATH,
+            element: <StackDetailLayout />,
+            children: [
+              {
+                index: true,
+                element: <StackDetailPage />,
+              },
+              {
+                path: routes.STACK_DETAIL_ENVS_PATH,
+                element: <StackDetailEnvironmentsPage />,
+              },
+              {
+                path: routes.STACK_DETAIL_VPC_PEERING_PATH,
+                element: <StackDetailVpcPeeringPage />,
+              },
+              {
+                path: routes.STACK_DETAIL_VPN_TUNNELS_PATH,
+                element: <StackDetailVpnTunnelsPage />,
+              },
+            ],
           },
         ],
       },

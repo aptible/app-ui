@@ -21,3 +21,27 @@ export const deserializeDisk = (payload: any): DeployDisk => {
     keyBytes: payload.key_bytes,
   };
 };
+
+export const defaultDeployDisk = (d: Partial<DeployDisk> = {}): DeployDisk => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    attached: true,
+    availabilityZone: "",
+    baselineIops: 0,
+    provisionedIops: 0,
+    createdAt: now,
+    updatedAt: now,
+    currentKmsArn: "",
+    device: "",
+    ebsVolumeId: "",
+    ebsVolumeType: "",
+    ec2InstanceId: "",
+    filesystem: "",
+    handle: "",
+    host: "",
+    size: 0,
+    keyBytes: 0,
+    ...d,
+  };
+};

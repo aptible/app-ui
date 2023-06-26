@@ -1,6 +1,18 @@
+import { useState } from "react";
+
+import { OperationStatus } from "@app/types";
+
+import {
+  AppHeader,
+  DatabaseHeader,
+  EnvHeader,
+  OpHeader,
+  StackHeader,
+} from "../layouts";
 import {
   AptibleLogo,
   Banner,
+  Breadcrumbs,
   Button,
   ButtonIcon,
   ButtonLink,
@@ -52,9 +64,17 @@ import {
   pillStyles,
   tokens,
 } from "../shared";
-import { Breadcrumbs } from "../shared/breadcrumbs";
-import { OperationStatus } from "@app/types";
-import { useState } from "react";
+import {
+  defaultDeployApp,
+  defaultDeployDatabase,
+  defaultDeployEndpoint,
+  defaultDeployEnvironment,
+  defaultDeployOperation,
+  defaultDeployService,
+  defaultDeployStack,
+} from "@app/deploy";
+import { defaultDeployDisk } from "@app/deploy/disk";
+import { defaultDeployImage } from "@app/deploy/image";
 
 const StylesWrapper = ({
   children,
@@ -63,7 +83,9 @@ const StylesWrapper = ({
   <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
     <div className="flex">
       <div className="pb-4 fixed">{navigation}</div>
-      <div className="ml-40 pb-4 overflow-y-auto w-full mr-2">{children}</div>
+      <div className="ml-40 pb-4 overflow-y-auto w-full mr-2 flex flex-col gap-6">
+        {children}
+      </div>
     </div>
   </div>
 );
@@ -85,6 +107,7 @@ const StylesNavigation = () => (
       { name: "Navigation", to: "#navigation" },
       { name: "Icons", to: "#icons" },
       { name: "Info", to: "#info" },
+      { name: "Detail Boxes", to: "#detail-boxes" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
         <div className="flex items-center">
@@ -561,40 +584,92 @@ const Info = () => (
   </div>
 );
 
+const DetailBoxes = () => {
+  const appId = "222";
+  const op = defaultDeployOperation({
+    createdAt: new Date("2023-06-25").toISOString(),
+    userName: "Aptible Bot",
+    type: "deploy",
+    resourceType: "app",
+    resourceId: appId,
+    status: "succeeded",
+  });
+  const app = defaultDeployApp({
+    id: appId,
+    handle: "My App",
+    gitRepo: "some.git@repo.com",
+    lastDeployOperation: op,
+    currentImage: defaultDeployImage({ dockerRepo: "some.docker.repo" }),
+  });
+
+  const db = defaultDeployDatabase({
+    type: "postgresql",
+    disk: defaultDeployDisk({
+      provisionedIops: 1000,
+      size: 100,
+      ebsVolumeType: "idk",
+      keyBytes: 32,
+    }),
+  });
+  const service = defaultDeployService({
+    instanceClass: "m4",
+    containerMemoryLimitMb: 4096,
+  });
+  const stack = defaultDeployStack({
+    name: "Primary stack",
+    organizationId: "123",
+    region: "us-east-1",
+    outboundIpAddresses: ["192.168.1.1", "192.168.1.2", "192.168.1.3"],
+  });
+  const env = defaultDeployEnvironment({
+    id: "123",
+    stackId: stack.id,
+    appContainerCount: 4,
+    databaseContainerCount: 10,
+    totalAppCount: 4,
+    totalDatabaseCount: 10,
+    totalBackupSize: 1024,
+  });
+  const ept = defaultDeployEndpoint({
+    id: "333",
+    virtualDomain: "https://something.great",
+  });
+
+  return (
+    <div className="flex flex-col gap-3">
+      <h1 id="detail-boxes" className={tokens.type.h1}>
+        Detail Boxes
+      </h1>
+
+      <StackHeader stack={stack} />
+      <EnvHeader
+        stack={stack}
+        environment={env}
+        latestOperation={op}
+        endpoints={[ept]}
+      />
+      <AppHeader app={app} />
+      <DatabaseHeader database={db} service={service} />
+      <OpHeader op={op} resourceHandle={app.handle} />
+    </div>
+  );
+};
+
 export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
       <Colors />
-      <hr />
-      <br />
       <Typography />
-      <hr />
-      <br />
       <Buttons />
-      <hr />
-      <br />
       <Banners />
-      <hr />
-      <br />
       <Tables />
-      <hr />
-      <br />
       <Forms />
-      <hr />
-      <br />
       <Logs />
-      <hr />
-      <br />
       <Pills />
-      <hr />
-      <br />
       <Navigation />
-      <hr />
-      <br />
       <Icons />
-      <hr />
-      <br />
       <Info />
+      <DetailBoxes />
     </StylesWrapper>
   </div>
 );

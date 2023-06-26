@@ -10,7 +10,7 @@ type TabViewProps = {
 
 export type TabItem = {
   name: string;
-  current: boolean;
+  current?: boolean;
   href: string;
 };
 
@@ -43,7 +43,7 @@ export const Tabs = ({ tabs }: { tabs: TabItem[] }) => {
       {tabs.map((tab) => (
         <Tab
           key={tab.name}
-          isActive={tab.current}
+          isActive={!!tab.current}
           label={tab.name}
           to={tab.href}
         />

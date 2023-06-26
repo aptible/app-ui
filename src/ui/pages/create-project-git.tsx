@@ -154,7 +154,7 @@ export const CreateProjectLayout = ({
 
   if (origin === "nextgen") {
     return (
-      <MenuWrappedPage withoutMargin>
+      <MenuWrappedPage>
         <HeroBgLayout showLogo={false} width="100%">
           <div className="min-h-screen -my-16 pt-16">
             {children ? children : <Outlet />}

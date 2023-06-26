@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
@@ -21,124 +22,70 @@ import {
 } from "@app/routes";
 import type { AppState, DeployDatabase, DeployService } from "@app/types";
 
-import {
-  Box,
-  ButtonLinkExternal,
-  DetailPageHeaderView,
-  IconExternalLink,
-  TabItem,
-  tokens,
-} from "../shared";
-
 import { usePoller } from "../hooks";
 import { useInterval } from "../hooks/use-interval";
+import {
+  DetailHeader,
+  DetailInfoGrid,
+  DetailInfoItem,
+  DetailPageHeaderView,
+  DetailTitleBar,
+  TabItem,
+} from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
-import { MenuWrappedPage } from "./menu-wrapped-page";
-import cn from "classnames";
-import { useMemo, useState } from "react";
 
-const databaseDetailBox = ({
+import { MenuWrappedPage } from "./menu-wrapped-page";
+
+export function DatabaseHeader({
   database,
   service,
 }: {
   database: DeployDatabase;
   service: DeployService;
-}) => {
+}) {
   const metrics = calcMetrics([service]);
   return (
-    <div className={cn(tokens.layout["main width"], "py-6")}>
-      <Box>
-        <div className="flex items-center justify-between">
-          <div className="flex">
-            <img
-              src={`/database-types/logo-${database.type}.png`}
-              className="w-8 h-8 mr-3"
-              aria-label={`${database.type} Database`}
-            />
-            <h1 className="text-lg text-gray-500">Database Details</h1>
-          </div>
-          <div className="flex">
-            <ButtonLinkExternal
-              href="https://www.aptible.com/docs/databases"
-              className="ml-5"
-              variant="white"
-              size="sm"
-            >
-              View Docs
-              <IconExternalLink className="inline ml-3 h-5 mt-0" />
-            </ButtonLinkExternal>
-            {/* <Button className="ml-5" variant="white" size="sm">
-              View Credentials
-            </Button> */}
-          </div>
-        </div>
-        <div className="flex w-1/1">
-          <div className="flex-col w-1/3">
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">Type</h3>
-              <p>{database.type}</p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Disk Size
-              </h3>
-              <p>{database.disk?.size || 0} GB</p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Container Size
-              </h3>
-              <p>
-                {
-                  // TODO - need to update container on API side (memory)
-                }
-                N/A
-              </p>
-            </div>
-          </div>
-          <div className="flex-col w-1/3">
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Disk IOPS
-              </h3>
-              <p>{database.disk?.provisionedIops}</p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Disk Type
-              </h3>
-              <p>{database.disk?.ebsVolumeType}</p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Disk Encryption
-              </h3>
-              <p>AES-{(database.disk?.keyBytes || 32) * 8}</p>
-            </div>
-          </div>
-          <div className="flex-col w-1/3">
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Memory Limit
-              </h3>
-              <p>{metrics.totalMemoryLimit / 1024} GB</p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                CPU Share
-              </h3>
-              <p>{metrics.totalCPU}</p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-base font-semibold text-gray-900">Profile</h3>
-              <p>{CONTAINER_PROFILES[service.instanceClass].name}</p>
-            </div>
-          </div>
-        </div>
-      </Box>
-    </div>
+    <DetailHeader>
+      <DetailTitleBar
+        title="Database Details"
+        icon={
+          <img
+            src={`/database-types/logo-${database.type}.png`}
+            className="w-8 h-8 mr-3"
+            aria-label={`${database.type} Database`}
+          />
+        }
+        docsUrl="https://www.aptible.com/docs/databases"
+      />
+
+      <DetailInfoGrid>
+        <DetailInfoItem title="Type">{database.type}</DetailInfoItem>
+        <DetailInfoItem title="Disk IOPS">
+          {database.disk?.provisionedIops}
+        </DetailInfoItem>
+        <DetailInfoItem title="Memory Limit">
+          {metrics.totalMemoryLimit / 1024} GB
+        </DetailInfoItem>
+
+        <DetailInfoItem title="Disk Size">
+          {database.disk?.size || 0} GB
+        </DetailInfoItem>
+        <DetailInfoItem title="Disk Type">
+          {database.disk?.ebsVolumeType}
+        </DetailInfoItem>
+        <DetailInfoItem title="CPU Share">{metrics.totalCPU}</DetailInfoItem>
+
+        <DetailInfoItem title="Container Size">N/A</DetailInfoItem>
+        <DetailInfoItem title="Disk Encryption">
+          AES-{(database.disk?.keyBytes || 32) * 8}
+        </DetailInfoItem>
+        <DetailInfoItem title="Profile">
+          {CONTAINER_PROFILES[service.instanceClass].name}
+        </DetailInfoItem>
+      </DetailInfoGrid>
+    </DetailHeader>
   );
-};
+}
 
 function DatabasePageHeader() {
   const { id = "" } = useParams();
@@ -177,7 +124,7 @@ function DatabasePageHeader() {
       <DetailPageHeaderView
         breadcrumbs={crumbs}
         title={database ? database.handle : "Loading..."}
-        detailsBox={databaseDetailBox({ database, service })}
+        detailsBox={<DatabaseHeader database={database} service={service} />}
         tabs={tabs}
       />
     </>
