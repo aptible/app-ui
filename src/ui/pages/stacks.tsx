@@ -61,7 +61,9 @@ function StackListRow({ stack }: { stack: DeployStack }) {
           <Link
             to={stackDetailUrl(stack.id)}
             className="text-black hover:text-indigo"
-          >{stack.name}</Link>
+          >
+            {stack.name}
+          </Link>
         </div>
       </Td>
       <Td>{stack.region}</Td>
