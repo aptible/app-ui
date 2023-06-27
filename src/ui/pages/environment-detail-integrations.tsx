@@ -132,7 +132,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
         <EmptyResourcesTable
           headers={logDrainsHeaders}
           titleBar={
-            <p className="flex text-gray-500 text-base">
+            <p className="flex text-gray-500 text-base mb-4">
               {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
             </p>
           }
@@ -143,7 +143,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
     >
       <ResourceListView
         header={
-          <p className="flex text-gray-500 text-base">
+          <p className="flex text-gray-500 text-base mb-4">
             {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
           </p>
         }
@@ -228,7 +228,7 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
         <EmptyResourcesTable
           headers={metricDrainsHeaders}
           titleBar={
-            <p className="flex text-gray-500 text-base">
+            <p className="flex text-gray-500 text-base my-4">
               {metricDrains.length} Metric Drain
               {metricDrains.length !== 1 && "s"}
             </p>
@@ -240,7 +240,7 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
     >
       <ResourceListView
         header={
-          <p className="flex text-gray-500 text-base">
+          <p className="flex text-gray-500 text-base my-4">
             {metricDrains.length} Metric Drain{metricDrains.length !== 1 && "s"}
           </p>
         }
