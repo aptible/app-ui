@@ -15,6 +15,9 @@ export const HeroBgLayout = ({
       className="flex flex-col flex-1 h-full bg-no-repeat bg-center bg-cover"
       style={{
         backgroundImage: "url(/background-pattern-v2.png)",
+        marginLeft: "-2rem",
+        marginRight: "-2rem",
+        marginTop: "-2rem",
       }}
     >
       <main className="flex-1">
