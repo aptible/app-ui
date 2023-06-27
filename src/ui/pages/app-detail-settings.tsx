@@ -172,7 +172,7 @@ export const AppSettingsPage = () => {
           </div>
         </form>
       </Box>
-      <Box>
+      <Box className="mb-8">
         <h1 className="text-lg text-red-500 font-semibold">
           <IconAlertTriangle
             className="inline pr-3 mb-1"

@@ -148,7 +148,7 @@ export const DatabaseSettingsPage = () => {
         </form>
       </Box>
 
-      <Box className="mt-4">
+      <Box className="mt-4 mb-8">
         <h1 className="text-lg text-red-500 font-semibold">
           <IconAlertTriangle
             className="inline pr-3 mb-1"
