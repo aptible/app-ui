@@ -153,15 +153,15 @@ const EndpointsOverview = ({
   return (
     <div className="mb-4">
       <div className="flex mb-4">
-          {endpoints.length ? (
-            <InputSearch
-              className="self-end"
-              placeholder="Search endpoints..."
-              search={search}
-              onChange={onChange}
-            />
-          ) : null}
-        </div>
+        {endpoints.length ? (
+          <InputSearch
+            className="self-end"
+            placeholder="Search endpoints..."
+            search={search}
+            onChange={onChange}
+          />
+        ) : null}
+      </div>
       {endpoints.map((endpoint) => (
         <EndpointListing
           endpoint={endpoint}
