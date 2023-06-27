@@ -1,8 +1,6 @@
 import { ReactElement, useState } from "react";
 
 import {
-  ButtonIcon,
-  IconEllipsis,
   InputSearch,
   LoadResources,
   ResourceListView,

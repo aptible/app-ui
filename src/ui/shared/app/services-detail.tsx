@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useSelector } from "react-redux";
 
 import { calcServiceMetrics, selectServicesByIds } from "@app/deploy";
