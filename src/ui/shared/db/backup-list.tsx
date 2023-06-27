@@ -73,17 +73,6 @@ const backupListRow = ({
           <BackupTypePill manual={backup.manual} />
         </div>
       </Td>
-
-      <Td className="flex gap-2 justify-end mt-2 mr-4">
-        <ButtonIcon
-          icon={
-            <IconEllipsis className="-mr-2" style={{ width: 16, height: 16 }} />
-          }
-          type="submit"
-          variant="white"
-          size="xs"
-        />
-      </Td>
     </tr>
   );
 };
@@ -107,20 +96,15 @@ export const DatabaseBackupsList = ({
 
   return (
     <LoadResources query={query} isEmpty={backups.length === 0}>
-      <div className="mt-4">
-        <div className="flex justify-between w-100">
-          <div className="flex w-1/2">
-            {/* <ButtonIcon icon={<IconPlusCircle />}>New Backup</ButtonIcon> */}
-          </div>
-          <div className="flex w-1/2 justify-end">
+      <div className="">
+        <div className="flex mt-2">
             <InputSearch
-              className="self-end float-right]"
+              className="mb-2"
               placeholder="Search backups..."
               search={search}
               onChange={onChange}
             />
           </div>
-        </div>
         {/* <div className="text-sm text-gray-500 mt-4 select-none">
           <div className="ml-5 cursor-pointer inline">
             Older than: <IconChevronDown {...sortIconProps} />
@@ -146,8 +130,7 @@ export const DatabaseBackupsList = ({
         <ResourceListView
           tableHeader={
             <TableHead
-              rightAlignedFinalCol
-              headers={["Time", "Size", "Creator", "Region", "Type", "Actions"]}
+              headers={["Time", "Size", "Creator", "Region", "Type"]}
             />
           }
           tableBody={<>{backups.map((backup) => backupListRow({ backup }))}</>}
