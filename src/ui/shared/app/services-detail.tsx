@@ -53,21 +53,10 @@ const serviceListRow = ({
           ${metrics.estimatedCostInDollars}
         </div>
       </Td>
-
-      <Td className="flex justify-end mt-2 mr-2">
-        <ButtonIcon
-          icon={
-            <IconEllipsis className="-mr-2" style={{ width: 16, height: 16 }} />
-          }
-          type="submit"
-          variant="white"
-          size="xs"
-        />
-      </Td>
     </tr>,
     service.command ? (
       <tr key={`${service.id}.${service.command}`} className="border-none">
-        <td colSpan={7} className="p-4">
+        <td colSpan={6} className="p-4">
           <span className="text-sm text-gray-500">Command</span>
           <div>
             <PreCode
@@ -99,27 +88,13 @@ export function ServicesOverview({
       <ResourceListView
         header={
           <>
-            <div className="flex justify-between w-100">
-              <div className="flex w-1/2">
-                {/* <ButtonIcon icon={<IconPlusCircle />}>New Service</ButtonIcon> */}
-              </div>
-              <div className="flex w-1/2 justify-end">
-                <InputSearch
-                  className="self-end float-right]"
-                  placeholder="Search apps..."
-                  search={search}
-                  onChange={onChange}
-                />
-              </div>
-            </div>
-            <div className="text-base text-gray-500 mt-4 select-none">
+            <div className="text-base text-gray-500 mb-4 select-none">
               <span>{serviceIds.length} Services</span>
             </div>
           </>
         }
         tableHeader={
           <TableHead
-            rightAlignedFinalCol
             headers={[
               "Service",
               "Memory Limit",
@@ -127,7 +102,6 @@ export function ServicesOverview({
               "Container Count",
               "Profile",
               "Monthly Cost",
-              "Actions",
             ]}
           />
         }

@@ -152,21 +152,16 @@ const EndpointsOverview = ({
 
   return (
     <div className="mb-4">
-      <div className="flex justify-between w-100">
-        <div className="flex w-1/2">
-          {/* <ButtonIcon icon={<IconPlusCircle />}>New Endpoint</ButtonIcon> */}
-        </div>
-        <div className="flex w-1/2 justify-end">
+      <div className="flex mb-4">
           {endpoints.length ? (
             <InputSearch
-              className="self-end float-right]"
+              className="self-end"
               placeholder="Search endpoints..."
               search={search}
               onChange={onChange}
             />
           ) : null}
         </div>
-      </div>
       {endpoints.map((endpoint) => (
         <EndpointListing
           endpoint={endpoint}
@@ -198,7 +193,7 @@ export function EndpointsView({
   }
 
   return (
-    <div className="mt-4">
+    <div className="mt-3">
       <EndpointsOverview endpoints={endpoints} parent={parent} />
     </div>
   );
