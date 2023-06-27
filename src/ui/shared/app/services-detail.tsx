@@ -4,9 +4,6 @@ import { useSelector } from "react-redux";
 import { calcServiceMetrics, selectServicesByIds } from "@app/deploy";
 import { AppState, DeployService } from "@app/types";
 
-import { ButtonIcon } from "../button";
-import { IconEllipsis } from "../icons";
-import { InputSearch } from "../input";
 import { PreCode, listToInvertedTextColor } from "../pre-code";
 import { ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
@@ -75,10 +72,6 @@ export function ServicesOverview({
 }: {
   serviceIds: string[];
 }) {
-  const [search, setSearch] = useState("");
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
-
   const services = useSelector((s: AppState) =>
     selectServicesByIds(s, { ids: serviceIds }),
   );
