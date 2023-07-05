@@ -23,12 +23,12 @@ import {
   selectMetricDrainsByEnvId,
   updateApp,
 } from "@app/deploy";
+import { useLoader, useQuery } from "@app/fx";
 import { appActivityUrl } from "@app/routes";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { useLoader, useQuery } from "saga-query/react";
 
 export const AppSettingsPage = () => {
   const [handle, setHandle] = useState<string>("");

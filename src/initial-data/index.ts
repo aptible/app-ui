@@ -5,7 +5,7 @@ import {
   select,
   setLoaderSuccess,
   takeEvery,
-} from "saga-query";
+} from "@app/fx";
 
 import {
   AUTH_LOADER_ID,

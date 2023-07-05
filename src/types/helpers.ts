@@ -1,4 +1,4 @@
-import type { SagaIterator } from "saga-query";
+import type { SagaIterator } from "@app/fx";
 
 // https://stackoverflow.com/a/47636222
 export const excludesFalse = <T>(n?: T): n is T => Boolean(n);

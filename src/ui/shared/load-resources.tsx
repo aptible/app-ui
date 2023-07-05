@@ -1,4 +1,4 @@
-import type { LoadingState } from "saga-query";
+import type { LoadingState } from "@app/fx";
 
 import { Loading } from "./loading";
 

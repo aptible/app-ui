@@ -1,4 +1,4 @@
-import { call, select } from "saga-query";
+import { call, select } from "@app/fx";
 
 import { authApi } from "@app/api";
 import { selectToken } from "@app/token";
@@ -29,7 +29,7 @@ export const acceptInvitation = authApi.post<any, AcceptInvitation>(
       });
     }
 
-    yield next();
+    yield* next();
 
     if (!ctx.json.ok) {
       return;

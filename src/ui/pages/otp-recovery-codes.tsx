@@ -1,6 +1,6 @@
+import { useCache } from "@app/fx";
 import { fetchOtpCodes } from "@app/mfa";
 import { HalEmbedded } from "@app/types";
-import { useCache } from "saga-query/react";
 
 import { useCurrentUser } from "../hooks";
 import { Loading } from "../shared";

@@ -1,6 +1,6 @@
+import { useLoader } from "@app/fx";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoader } from "saga-query/react";
 
 import { resendVerification } from "@app/auth";
 import { selectOrigin } from "@app/env";

@@ -4,7 +4,7 @@ import {
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
-} from "saga-query";
+} from "@app/fx";
 
 import { AUTH_LOADER_ID } from "./loader";
 import { ElevateToken, elevateToken } from "./token";
@@ -31,7 +31,7 @@ export const elevate = thunks.create<ElevateToken>(
     }
 
     yield* put(setLoaderSuccess({ id: AUTH_LOADER_ID }));
-    yield next();
+    yield* next();
   },
 );
 
@@ -50,7 +50,7 @@ export const elevateWebauthn = thunks.create<
   try {
     const u2f = yield* call(webauthnGet, webauthn);
     yield* call(elevate.run, elevate({ ...props, u2f }));
-    yield next();
+    yield* next();
   } catch (err) {
     yield put(
       setLoaderError({

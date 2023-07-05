@@ -1,8 +1,8 @@
+import { useLoader } from "@app/fx";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { Outlet } from "react-router-dom";
-import { useLoader } from "saga-query/react";
 
 import { fetchCurrentToken } from "@app/auth";
 import { elevateUrl, loginUrl } from "@app/routes";

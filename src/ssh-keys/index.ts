@@ -49,5 +49,5 @@ export const addSSHKey = authApi.post<{
     body: JSON.stringify(body),
   });
 
-  yield next();
+  yield* next();
 });

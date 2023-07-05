@@ -1,5 +1,5 @@
+import type { LoadingItemState } from "@app/fx";
 import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
-import type { LoadingItemState } from "saga-query";
 
 export interface AuthLoaderMessage {
   error: string;

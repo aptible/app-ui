@@ -1,9 +1,9 @@
+import { useLoader, useLoaderSuccess } from "@app/fx";
 import qs from "query-string";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 import { HeroBgLayout } from "../layouts";
 import {

@@ -1,4 +1,4 @@
-import { call, select } from "saga-query";
+import { call, select } from "@app/fx";
 
 import { authApi, cacheTimer } from "@app/api";
 import {
@@ -18,7 +18,7 @@ export const fetchOrganizations = authApi.get<FetchOrgCtx>(
   "/organizations",
   { saga: cacheTimer() },
   function* onFetchOrgs(ctx, next) {
-    yield next();
+    yield* next();
     if (!ctx.json.ok) {
       return;
     }
@@ -44,7 +44,7 @@ export const createOrganization = authApi.post<CreateOrg, OrganizationResponse>(
     ctx.request = ctx.req({
       body: JSON.stringify({ name }),
     });
-    yield next();
+    yield* next();
     const token = yield* select(selectToken);
     if (!ctx.json.ok) {
       return;

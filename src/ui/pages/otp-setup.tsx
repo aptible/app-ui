@@ -1,7 +1,7 @@
+import { useLoader } from "@app/fx";
 import QRCode from "qrcode.react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoader } from "saga-query/react";
 
 import { selectOtp, setupOtp } from "@app/mfa";
 import { selectCurrentUserId, updateUser } from "@app/users";

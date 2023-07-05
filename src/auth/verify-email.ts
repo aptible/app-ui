@@ -17,7 +17,7 @@ export const verifyEmail = authApi.post<VerifyEmail>(
         verification_code: verificationCode,
       }),
     });
-    yield next();
+    yield* next();
   },
 );
 
@@ -36,6 +36,6 @@ export const resendVerification = authApi.post<ResendVerification>(
     ctx.request = ctx.req({
       body: JSON.stringify({ origin }),
     });
-    yield next();
+    yield* next();
   },
 );

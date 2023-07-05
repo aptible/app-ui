@@ -1,8 +1,8 @@
+import { useLoader } from "@app/fx";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { useLoader } from "saga-query/react";
 
 import { revokeAllTokens } from "@app/auth";
 import {

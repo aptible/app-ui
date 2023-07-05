@@ -11,10 +11,10 @@ import {
 import { selectOrganizationSelected } from "@app/organizations";
 import { logoutUrl } from "@app/routes";
 
+import { useLoader, useQuery } from "@app/fx";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { useLoader, useQuery } from "saga-query/react";
 
 export const PlansPage = () => {
   const org = useSelector(selectOrganizationSelected);

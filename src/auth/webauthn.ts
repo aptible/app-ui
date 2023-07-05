@@ -62,6 +62,6 @@ export const createWebauthnDevice = authApi.post<CreateWebauthnDeviceProps>(
     ctx.request = ctx.req({
       body: JSON.stringify({ u2f, name, version: "WEBAUTHN" }),
     });
-    yield next();
+    yield* next();
   },
 );

@@ -1,5 +1,12 @@
 import { selectDeploy } from "../slice";
 import { api, thunks } from "@app/api";
+import {
+  call,
+  put,
+  setLoaderError,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -15,13 +22,6 @@ import {
   PlanName,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
-import {
-  call,
-  put,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "saga-query";
 
 export interface DeployPlanResponse {
   id: number;
@@ -301,7 +301,7 @@ export const updateActivePlan = api.put<UpdateActivePlan>(
       plan_id: planId,
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
-    yield next();
+    yield* next();
   },
 );
 
@@ -323,7 +323,7 @@ export const updateAndRefreshActivePlans = thunks.create<UpdateActivePlan>(
       );
       return;
     }
-    yield next();
+    yield* next();
 
     ctx.actions.push(removeActivePlans([ctx.payload.id]));
     yield put(

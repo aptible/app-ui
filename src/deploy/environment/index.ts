@@ -1,5 +1,5 @@
+import { latest, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { latest, poll, put, select } from "saga-query";
 
 import { PaginateProps, api, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -276,7 +276,7 @@ export const updateDeployEnvironmentStatus = api.patch<EnvPatch>(
       body: JSON.stringify(body),
     });
 
-    yield next();
+    yield* next();
   },
 );
 
@@ -297,7 +297,7 @@ export const createDeployEnvironment = api.post<
     body: JSON.stringify(body),
   });
 
-  yield next();
+  yield* next();
 });
 
 export const environmentEntities = {

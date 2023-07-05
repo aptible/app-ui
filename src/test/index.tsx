@@ -1,9 +1,9 @@
+import { prepareStore } from "@app/fx";
 import { Store, configureStore } from "@reduxjs/toolkit";
 import { waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
 import { REHYDRATE } from "redux-persist";
-import { prepareStore } from "saga-query";
 
 import { persistConfig, reducers, rootEntities, sagas } from "@app/app";
 import { ftuxRoutes } from "@app/app/router";

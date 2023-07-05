@@ -8,7 +8,7 @@ import {
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
-} from "saga-query";
+} from "@app/fx";
 
 import {
   PaginateProps,
@@ -370,7 +370,7 @@ export const createDatabase = api.post<
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
 
-  yield next();
+  yield* next();
 });
 
 interface CreateDbResult {
@@ -410,7 +410,7 @@ export const provisionDatabase = thunks.create<
     dbId = `${dbCtx.json.data.id}`;
   }
 
-  yield next();
+  yield* next();
 
   const dbOps = yield* select(selectOperationsByDatabaseId, { dbId });
   const alreadyProvisioned = dbOps.find((op) => op.type === "provision");
@@ -492,7 +492,7 @@ export const createDatabaseOperation = api.post<
   };
   const body = getBody();
   ctx.request = ctx.req({ body: JSON.stringify(body) });
-  yield next();
+  yield* next();
 });
 
 export const fetchDatabaseOperations = api.get<{ id: string }>(
@@ -557,7 +557,7 @@ export const deprovisionDatabase = thunks.create<{
 
   if (!deprovisionCtx.json.ok) return;
   yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
-  yield next();
+  yield* next();
 });
 
 interface UpdateDatabase {
@@ -573,6 +573,6 @@ export const updateDatabase = api.put<UpdateDatabase>(
       handle,
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
-    yield next();
+    yield* next();
   },
 );

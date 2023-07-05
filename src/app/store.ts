@@ -1,9 +1,9 @@
+import { BATCH, prepareStore } from "@app/fx";
 import { configureStore } from "@reduxjs/toolkit";
 import type { Middleware, Store } from "@reduxjs/toolkit";
 import debug from "debug";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
-import { BATCH, prepareStore } from "saga-query";
 
 import { REDIRECT_NAME } from "@app/redirect-path";
 import { resetReducer } from "@app/reset-store";

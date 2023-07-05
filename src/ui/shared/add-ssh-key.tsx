@@ -1,6 +1,6 @@
+import { useLoader, useLoaderSuccess } from "@app/fx";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 import { prettyDate } from "@app/date";
 import { addSSHKey } from "@app/ssh-keys";

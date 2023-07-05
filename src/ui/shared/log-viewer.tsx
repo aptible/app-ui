@@ -1,7 +1,7 @@
+import { useApi } from "@app/fx";
+import { selectDataById } from "@app/fx";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { selectDataById } from "saga-query";
-import { useApi } from "saga-query/react";
 
 import { fetchOperationLogs } from "@app/deploy";
 import { AppState, DeployOperation } from "@app/types";

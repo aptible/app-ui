@@ -4,7 +4,7 @@ import {
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
-} from "saga-query";
+} from "@app/fx";
 
 import { api, cacheShortTimer, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -270,14 +270,14 @@ export const createEndpoint = api.post<CreateEndpointProps>(
     });
     ctx.request = ctx.req({ body });
 
-    yield next();
+    yield* next();
   },
 );
 
 export const deleteEndpoint = api.delete<{ id: string }>(
   "/vhosts/:id",
   function* (ctx, next) {
-    yield next();
+    yield* next();
     ctx.actions.push(removeDeployEndpoints([ctx.payload.id]));
   },
 );
@@ -296,7 +296,7 @@ export const createEndpointOperation = api.post<
     type,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
-  yield next();
+  yield* next();
 });
 
 export const provisionEndpoint = thunks.create<CreateEndpointProps>(
@@ -316,7 +316,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
       return;
     }
 
-    yield next();
+    yield* next();
 
     const opCtx = yield* call(
       createEndpointOperation.run,

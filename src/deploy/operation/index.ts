@@ -1,5 +1,5 @@
+import { call, delay, fetchRetry, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, delay, fetchRetry, poll, put, select } from "saga-query";
 
 import { selectDeploy } from "../slice";
 import {
@@ -387,7 +387,7 @@ export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
       ctx.cache = true;
       ctx.bodyType = "text";
 
-      yield next();
+      yield* next();
 
       if (!ctx.json.ok) {
         return;

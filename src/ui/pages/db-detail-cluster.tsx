@@ -17,6 +17,7 @@ import {
   selectDatabaseImagesAsList,
   selectServicesAsList,
 } from "@app/deploy";
+import { useQuery } from "@app/fx";
 import { databaseEndpointsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import {
@@ -29,7 +30,6 @@ import { ReactElement } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { useQuery } from "saga-query/react";
 
 const clusterDatabaseRow = ({
   clusterDatabase,

@@ -1,7 +1,7 @@
+import { useLoader, useLoaderSuccess } from "@app/fx";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 import { Box, Button, Loading, ResendVerificationEmail } from "../shared";
 import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";

@@ -1,4 +1,4 @@
-import { Next, select } from "saga-query";
+import { Next, select } from "@app/fx";
 
 import { authApi } from "@app/api";
 import { defaultEntity } from "@app/hal";
@@ -101,7 +101,7 @@ const deserializeOtp = (data: OtpResponse): Otp => {
 function* elevateAndCache(ctx: AuthApiCtx, next: Next) {
   ctx.cache = true;
   ctx.elevated = true;
-  yield next();
+  yield* next();
 }
 
 export const fetchOtpCodes = authApi.get<{ otpId: string }>(
@@ -117,7 +117,7 @@ export const setupOtp = authApi.post<SetupOtp, OtpResponse>(
       return;
     }
 
-    yield next();
+    yield* next();
 
     if (!ctx.json.ok) {
       return;

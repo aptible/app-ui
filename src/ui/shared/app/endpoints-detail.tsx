@@ -1,5 +1,5 @@
+import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
-import { useQuery } from "saga-query/react";
 
 import { fetchEndpointsByAppId, selectEndpointsByAppId } from "@app/deploy";
 import { AppState, DeployApp } from "@app/types";

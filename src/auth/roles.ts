@@ -9,7 +9,7 @@ export const fetchCurrentUserRoles = authApi.get<
   { userId: string },
   HalEmbedded<{ roles: RoleResponse[] }>
 >("/users/:userId/roles", function* (ctx, next) {
-  yield next();
+  yield* next();
 
   if (!ctx.json.ok) {
     return;

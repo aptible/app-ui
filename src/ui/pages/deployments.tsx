@@ -17,11 +17,11 @@ import {
   selectAppsByEnvOnboarding,
   selectLatestDeployOp,
 } from "@app/deploy";
+import { useLoader, useQuery } from "@app/fx";
 import { createProjectGitUrl } from "@app/routes";
 import { AppState, DeployApp } from "@app/types";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { useLoader, useQuery } from "saga-query/react";
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   useQuery(fetchEndpointsByAppId({ appId: app.id }));

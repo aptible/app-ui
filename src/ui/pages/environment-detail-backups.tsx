@@ -1,5 +1,5 @@
+import { useCache } from "@app/fx";
 import { useParams } from "react-router";
-import { useCache } from "saga-query/react";
 
 import type { HalEmbedded } from "@app/types";
 

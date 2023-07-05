@@ -1,4 +1,4 @@
-import { Next, select } from "saga-query";
+import { Next, select } from "@app/fx";
 
 import { authApi, cacheTimer, elevetatedMdw } from "@app/api";
 import { selectOrigin } from "@app/env";
@@ -30,7 +30,7 @@ export const createUser = authApi.post<CreateUserForm, UserResponse>(
       body: JSON.stringify({ ...ctx.payload, origin }),
     });
 
-    yield next();
+    yield* next();
   },
 );
 
@@ -68,7 +68,7 @@ function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
   ctx.request = ctx.req({
     body: JSON.stringify(payload),
   });
-  yield next();
+  yield* next();
 }
 
 export const updateUser = authApi.patch<PatchUser>(

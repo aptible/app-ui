@@ -1,6 +1,6 @@
+import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { useQuery } from "saga-query/react";
 
 import { LogViewer } from "../shared";
 import { fetchOperationById, selectOperationById } from "@app/deploy";

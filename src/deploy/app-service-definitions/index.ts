@@ -106,7 +106,7 @@ export const createServiceDefinition = api.post<
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
 
-  yield next();
+  yield* next();
 });
 
 export const serviceDefinitionEntities = {

@@ -1,4 +1,5 @@
 import { PaginateProps, api, combinePages, thunks } from "@app/api";
+import { call, createThrottle, poll, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -13,7 +14,6 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { call, createThrottle, poll, select } from "saga-query";
 
 import {
   findEnvById,
@@ -329,7 +329,7 @@ export const createDeployApp = api.post<CreateAppProps, DeployAppResponse>(
       body: JSON.stringify(body),
     });
 
-    yield next();
+    yield* next();
   },
 );
 
@@ -390,7 +390,7 @@ export const createAppOperation = api.post<AppOpProps, DeployOperationResponse>(
 
     const body = getBody();
     ctx.request = ctx.req({ body: JSON.stringify(body) });
-    yield next();
+    yield* next();
   },
 );
 
@@ -418,7 +418,7 @@ export const deprovisionApp = thunks.create<{
 
   if (!deprovisionCtx.json.ok) return;
   yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
-  yield next();
+  yield* next();
 });
 
 interface UpdateApp {
@@ -432,5 +432,5 @@ export const updateApp = api.put<UpdateApp>("/apps/:id", function* (ctx, next) {
     handle,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
-  yield next();
+  yield* next();
 });
