@@ -54,6 +54,7 @@ import {
   LogLine,
   OrgPicker,
   Pill,
+  Secret,
   Select,
   SelectOption,
   StatusPill,
@@ -653,6 +654,18 @@ const DetailBoxes = () => {
   );
 };
 
+const Secrets = () => {
+  return (
+    <div className="flex flex-col gap-3">
+      <h1 id="detail-boxes" className={tokens.type.h1}>
+        Secrets
+      </h1>
+      <Secret secret="secret-value-showing-by-default" showAsOpened />
+      <Secret secret="secret-value-hidden-by-default" />
+    </div>
+  );
+};
+
 export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
@@ -668,6 +681,7 @@ export const StylesPage = () => (
       <Icons />
       <Info />
       <DetailBoxes />
+      <Secrets />
     </StylesWrapper>
   </div>
 );

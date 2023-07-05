@@ -11,6 +11,7 @@ import {
   tokens,
 } from "../shared";
 import { EmptyResourcesTable } from "../shared/empty-resources-table";
+import { Secret } from "../shared/secret";
 import { prettyDateRelative } from "@app/date";
 import {
   fetchLogDrains,
@@ -101,6 +102,16 @@ const LogDrainSourcesCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   );
 };
 
+const LogDrainCredentialsCell = ({
+  logDrain,
+}: { logDrain: DeployLogDrain }) => {
+  return (
+    <Td className="flex flex-1 gap-2 justify-end mr-4">
+      <Secret secret={logDrain?.loggingToken || logDrain?.drainPassword} />
+    </Td>
+  );
+};
+
 const LogDrainLastUpdatedCell = ({
   logDrain,
 }: { logDrain: DeployLogDrain }) => {
@@ -117,7 +128,13 @@ const LogDrainLastUpdatedCell = ({
   );
 };
 
-const logDrainsHeaders = ["Status", "Handle", "Sources", "Last Updated"];
+const logDrainsHeaders = [
+  "Status",
+  "Handle",
+  "Sources",
+  "Last Updated",
+  "Credentials",
+];
 
 const LogDrainsSection = ({ id }: { id: string }) => {
   const query = useQuery(fetchLogDrains({ id }));
@@ -147,7 +164,9 @@ const LogDrainsSection = ({ id }: { id: string }) => {
             {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
           </p>
         }
-        tableHeader={<TableHead headers={logDrainsHeaders} />}
+        tableHeader={
+          <TableHead headers={logDrainsHeaders} rightAlignedFinalCol />
+        }
         tableBody={
           <>
             {logDrains.map((logDrain) => (
@@ -156,6 +175,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
                 <LogDrainHandleCell logDrain={logDrain} />
                 <LogDrainSourcesCell logDrain={logDrain} />
                 <LogDrainLastUpdatedCell logDrain={logDrain} />
+                <LogDrainCredentialsCell logDrain={logDrain} />
               </tr>
             ))}
           </>
@@ -223,41 +243,44 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
   );
 
   return (
-    <LoadResources
-      empty={
-        <EmptyResourcesTable
-          headers={metricDrainsHeaders}
-          titleBar={
+    <div className="mb-4">
+      <LoadResources
+        empty={
+          <EmptyResourcesTable
+            headers={metricDrainsHeaders}
+            titleBar={
+              <p className="flex text-gray-500 text-base my-4">
+                {metricDrains.length} Metric Drain
+                {metricDrains.length !== 1 && "s"}
+              </p>
+            }
+          />
+        }
+        query={query}
+        isEmpty={metricDrains.length === 0}
+      >
+        <ResourceListView
+          header={
             <p className="flex text-gray-500 text-base my-4">
               {metricDrains.length} Metric Drain
               {metricDrains.length !== 1 && "s"}
             </p>
           }
+          tableHeader={<TableHead headers={metricDrainsHeaders} />}
+          tableBody={
+            <>
+              {metricDrains.map((metricDrain) => (
+                <tr key={metricDrain.id}>
+                  <MetricDrainPrimaryCell metricDrain={metricDrain} />
+                  <MetricDrainHandleCell metricDrain={metricDrain} />
+                  <MetricDrainLastUpdatedCell metricDrain={metricDrain} />
+                </tr>
+              ))}
+            </>
+          }
         />
-      }
-      query={query}
-      isEmpty={metricDrains.length === 0}
-    >
-      <ResourceListView
-        header={
-          <p className="flex text-gray-500 text-base my-4">
-            {metricDrains.length} Metric Drain{metricDrains.length !== 1 && "s"}
-          </p>
-        }
-        tableHeader={<TableHead headers={metricDrainsHeaders} />}
-        tableBody={
-          <>
-            {metricDrains.map((metricDrain) => (
-              <tr key={metricDrain.id}>
-                <MetricDrainPrimaryCell metricDrain={metricDrain} />
-                <MetricDrainHandleCell metricDrain={metricDrain} />
-                <MetricDrainLastUpdatedCell metricDrain={metricDrain} />
-              </tr>
-            ))}
-          </>
-        }
-      />
-    </LoadResources>
+      </LoadResources>
+    </div>
   );
 };
 
