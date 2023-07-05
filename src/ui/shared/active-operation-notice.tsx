@@ -17,7 +17,7 @@ const BannerWrapper = ({
   children,
 }: {
   children?: React.ReactNode;
-}) => <div className="m-4">{children}</div>;
+}) => <div className="mb-4">{children}</div>;
 
 const operationStatusToBannerStatus = (
   operationStatus: OperationStatus,
