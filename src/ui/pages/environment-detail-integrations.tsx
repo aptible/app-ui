@@ -105,7 +105,6 @@ const LogDrainSourcesCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
 const LogDrainCredentialsCell = ({
   logDrain,
 }: { logDrain: DeployLogDrain }) => {
-  console.log(logDrain);
   return (
     <Td className="flex flex-1 gap-2 justify-end mr-4">
       <Secret secret={logDrain?.loggingToken || logDrain?.drainPassword} />
