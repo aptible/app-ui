@@ -13,7 +13,7 @@ import {
   selectStackById,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
-import { environmentsUrl } from "@app/routes";
+import { stackDetailEnvsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import {
   AppState,
@@ -106,7 +106,7 @@ export function EnvHeader({
         </DetailInfoItem>
         <DetailInfoItem
           title={`${endpoints.length} Endpoint${
-            environment.totalAppCount > 0 && "s"
+            environment.totalAppCount > 0 ? "s" : ""
           }`}
         >
           {endpoints.length <= 5
@@ -137,7 +137,7 @@ function EnvironmentPageHeader(): React.ReactElement {
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByEnvironmentId(s, { envId: environment.id }),
   );
-  const crumbs = [{ name: stack.name, to: environmentsUrl() }];
+  const crumbs = [{ name: stack.name, to: stackDetailEnvsUrl(id) }];
 
   const tabs: TabItem[] = [
     { name: "Apps", href: `/environments/${id}/apps` },

@@ -110,7 +110,7 @@ export const ENVIRONMENT_APPS_PATH = "/environments/:id/apps";
 export const environmentAppsUrl = (id: string) => `/environments/${id}/apps`;
 export const ENVIRONMENT_DATABASES_PATH = "/environments/:id/databases";
 export const environmentDatabasesUrl = (id: string) =>
-  `/environments/${id}/database`;
+  `/environments/${id}/databases`;
 export const ENVIRONMENT_SECURITY_PATH = "/environments/:id/security";
 export const environmentSecurityUrl = (id: string) =>
   `/environments/${id}/security`;
