@@ -48,7 +48,7 @@ export const OpStatus = ({ status }: Pick<DeployOperation, "status">) => {
   const str = createReadableStatus(status);
 
   if (status === "queued") {
-    return <span className="font-semibold text-gray-300">{str}</span>;
+    return <span className="font-semibold text-gray-400">{str}</span>;
   }
 
   if (status === "succeeded") {
