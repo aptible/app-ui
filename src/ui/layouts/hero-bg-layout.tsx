@@ -12,7 +12,7 @@ export const HeroBgLayout = ({
 }) => {
   return (
     <div
-      className="flex flex-col flex-1 h-full bg-no-repeat bg-center bg-cover"
+      className="flex flex-col flex-1 h-full bg-no-repeat bg-center bg-cover -ml-8 -mr-8 -mt-8"
       style={{
         backgroundImage: "url(/background-pattern-v2.png)",
       }}

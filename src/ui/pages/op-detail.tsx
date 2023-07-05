@@ -11,7 +11,7 @@ export const OpDetailPage = () => {
   useQuery(fetchOperationById({ id }));
   const op = useSelector((s: AppState) => selectOperationById(s, { id }));
   return (
-    <div className="py-6">
+    <div className="py-2">
       <LogViewer op={op} />
     </div>
   );

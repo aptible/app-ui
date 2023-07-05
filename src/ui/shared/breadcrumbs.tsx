@@ -16,7 +16,7 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
 
 export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
   return (
-    <nav className="flex -mt-1" aria-label="Breadcrumb">
+    <nav className="flex" aria-label="Breadcrumb">
       <div className="flex items-center">
         {crumbs.map((crumb, idx) => (
           <div key={`${crumb.name}-${idx}`}>

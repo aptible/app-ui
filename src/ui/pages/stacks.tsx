@@ -58,7 +58,12 @@ function StackListRow({ stack }: { stack: DeployStack }) {
             alt="stack icon"
             className="w-8 h-8 mr-2"
           />
-          <Link to={stackDetailUrl(stack.id)}>{stack.name}</Link>
+          <Link
+            to={stackDetailUrl(stack.id)}
+            className="text-black hover:text-indigo"
+          >
+            {stack.name}
+          </Link>
         </div>
       </Td>
       <Td>{stack.region}</Td>
@@ -95,7 +100,7 @@ function StackList() {
           <ResourceHeader
             title="Stacks"
             filterBar={
-              <div>
+              <div className="pt-1">
                 <InputSearch
                   placeholder="Search stacks..."
                   search={search}

@@ -21,7 +21,6 @@ export function MenuWrappedPage({ children, header }: Props) {
       >
         <ApplicationSidebar />
       </div>
-
       <div
         className="flex w-full p-8"
         style={{ marginLeft: collapsedOffset * 3.5 }}

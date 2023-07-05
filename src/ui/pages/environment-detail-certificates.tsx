@@ -178,7 +178,7 @@ export const EnvironmentCertificatesPage = () => {
         <EmptyResourcesTable
           headers={certificatesHeaders}
           titleBar={
-            <p className="flex text-gray-500 text-base">
+            <p className="flex text-gray-500 text-base mb-4">
               {certificates.length} Certificate
               {certificates.length !== 1 && "s"}
             </p>
@@ -190,7 +190,7 @@ export const EnvironmentCertificatesPage = () => {
     >
       <ResourceListView
         header={
-          <p className="flex text-gray-500 text-base">
+          <p className="flex text-gray-500 text-base mb-4">
             {certificates.length} Certificate{certificates.length !== 1 && "s"}
           </p>
         }

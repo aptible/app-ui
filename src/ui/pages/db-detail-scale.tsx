@@ -32,7 +32,7 @@ export const DatabaseScalePage = () => {
   }, [database]);
 
   return (
-    <div className="my-4">
+    <div>
       <BoxGroup>
         <Box>
           <form onSubmit={onSubmitForm}>
