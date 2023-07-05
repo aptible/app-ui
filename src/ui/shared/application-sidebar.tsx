@@ -132,7 +132,7 @@ export const ApplicationSidebar = () => {
             </a>
             <a
               className="text-gray-500 hover:text-indigo px-3"
-              href="https://aptible.com/cli"
+              href="https://www.aptible.com/docs/cli"
             >
               INSTALL CLI
             </a>
