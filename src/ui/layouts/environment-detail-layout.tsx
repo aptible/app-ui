@@ -78,9 +78,8 @@ export function EnvHeader({
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{environment.id}</DetailInfoItem>
         <DetailInfoItem
-          title={`${environment.totalAppCount} App${
-            environment.totalAppCount > 0 && "s"
-          }`}
+          title={`${environment.totalAppCount} App${environment.totalAppCount > 0 && "s"
+            }`}
         >
           Using {environment.appContainerCount} container
           {environment.appContainerCount > 0 && "s"}
@@ -91,9 +90,8 @@ export function EnvHeader({
 
         <DetailInfoItem title="Stack">{stack.name}</DetailInfoItem>
         <DetailInfoItem
-          title={`${environment.totalDatabaseCount} Database${
-            environment.totalDatabaseCount > 0 && "s"
-          }`}
+          title={`${environment.totalDatabaseCount} Database${environment.totalDatabaseCount > 0 && "s"
+            }`}
         >
           {environment.databaseContainerCount} container
           {environment.databaseContainerCount > 0 && "s"} using{" "}
@@ -105,9 +103,8 @@ export function EnvHeader({
           {timeAgo(latestOperation.createdAt)} by {capitalize(userName)}
         </DetailInfoItem>
         <DetailInfoItem
-          title={`${endpoints.length} Endpoint${
-            environment.totalAppCount > 0 && "s"
-          }`}
+          title={`${endpoints.length} Endpoint${environment.totalAppCount > 0 ? "s" : ""
+            }`}
         >
           {endpoints.length <= 5
             ? endpoints.map((endpoint) => <EndpointList endpoint={endpoint} />)
