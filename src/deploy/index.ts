@@ -17,3 +17,4 @@ export * from "./plan";
 export * from "./activity";
 export * from "./permission";
 export * from "./release";
+export * from "./container";

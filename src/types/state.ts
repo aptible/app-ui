@@ -4,6 +4,7 @@ import type {
   DeployActivePlan,
   DeployApp,
   DeployCertificate,
+  DeployContainer,
   DeployDatabase,
   DeployDatabaseImage,
   DeployDisk,
@@ -121,6 +122,7 @@ export interface DeployState {
   plans: MapEntity<DeployPlan>;
   permissions: MapEntity<Permission>;
   releases: MapEntity<DeployRelease>;
+  containers: MapEntity<DeployContainer>;
 }
 
 export interface AppState extends QueryState {

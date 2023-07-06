@@ -147,6 +147,7 @@ export type ResourceType =
   | "plan"
   | "active_plan"
   | "release"
+  | "container"
   | "unknown";
 
 // https://github.com/aptible/deploy-api/blob/3b197beaa5bcbbed991c1eac73d5c99a4fdf8f95/app/models/operation.rb#L54
@@ -405,4 +406,19 @@ export interface DeployRelease extends Timestamps {
   dockerRef: string;
   dockerRepo: string;
   serviceId: string;
+}
+
+export interface DeployContainer extends Timestamps {
+  id: string;
+  awsInstanceId: string;
+  createdAt: string;
+  dockerName: string;
+  host: string;
+  layer: string;
+  memoryLimit: number;
+  port: number;
+  portMapping: number[][];
+  status: string;
+  updatedAt: string;
+  releaseId: string;
 }

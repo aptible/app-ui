@@ -6,6 +6,7 @@ import {
   serviceDefinitionReducers,
 } from "./app-service-definitions";
 import { certificateEntities, certificateReducers } from "./certificate";
+import { containerEntities, containerReducers } from "./container";
 import { databaseEntities, databaseReducers } from "./database";
 import {
   databaseImageEntities,
@@ -44,6 +45,7 @@ const allReducers: any[] = [
   activePlanReducers,
   permissionReducers,
   releaseReducers,
+  containerReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -73,4 +75,5 @@ export const entities = {
   ...activePlanEntities,
   ...permissionEntities,
   ...releaseEntities,
+  ...containerEntities,
 };

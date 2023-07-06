@@ -6,6 +6,7 @@ import {
 import { AppState, DeployRelease, LinkResponse } from "@app/types";
 import { selectDeploy } from "../slice";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { api } from "@app/api";
 
 export interface DeployReleaseResponse {
   id: number;
@@ -54,7 +55,7 @@ export const deserializeDeployRelease = (
 };
 
 export const defaultDeployRelease = (
-  c: Partial<DeployRelease> = {},
+  r: Partial<DeployRelease> = {},
 ): DeployRelease => {
   const now = new Date().toISOString();
   return {
@@ -64,6 +65,7 @@ export const defaultDeployRelease = (
     createdAt: now,
     updatedAt: now,
     serviceId: "",
+    ...r,
   };
 };
 
@@ -81,8 +83,11 @@ export const selectReleaseById = must(selectors.selectById);
 export const selectReleaseByIds = selectors.selectByIds;
 export const { selectTableAsList: selectReleaseAsList } = selectors;
 export const releaseReducers = createReducerMap(slice);
+
+export const fetchRelease = api.get<{ id: string }>("/releases/:id");
+
 export const releaseEntities = {
-  permission: defaultEntity({
+  release: defaultEntity({
     id: "release",
     save: addDeployReleases,
     deserialize: deserializeDeployRelease,
