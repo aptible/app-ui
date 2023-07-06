@@ -2,6 +2,8 @@ import { useQuery } from "@app/fx";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { IconInfo } from "../icons";
+import { Tooltip } from "../Tooltip";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -108,9 +110,16 @@ const DbsResourceHeaderTitleBar = ({
                 search={search}
                 onChange={onChange}
               />
-              <p className="flex text-gray-500 mt-4 text-base">
-                {dbs.length} Database{dbs.length !== 1 && "s"}
-              </p>
+              <div className="flex">
+                <p className="flex text-gray-500 mt-4 text-base">
+                  {dbs.length} Database{dbs.length !== 1 && "s"}
+                </p>
+                <div className="mt-4">
+                  <Tooltip text="Databases provide data persistence and are automatically configured and managed.">
+                    <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
+                  </Tooltip>
+                </div>
+              </div>
             </div>
           }
         />
