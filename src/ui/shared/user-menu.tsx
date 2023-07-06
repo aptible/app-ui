@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 
-import { impersonateUrl, logoutUrl, settingsUrl } from "@app/routes";
+import { impersonateUrl, logoutUrl } from "@app/routes";
 import { selectCanImpersonate } from "@app/users";
 
 import { useCurrentUser } from "../hooks";
