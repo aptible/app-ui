@@ -1,8 +1,8 @@
+import { Tooltip } from "./Tooltip";
 import { useLoader, useQuery } from "@app/fx";
 import { ReactElement, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
-import { Tooltip } from "./Tooltip";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -30,7 +30,7 @@ import type { AppState, ResourceType } from "@app/types";
 
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
-import { IconRefresh, IconInfo } from "./icons";
+import { IconInfo, IconRefresh } from "./icons";
 import { InputSearch } from "./input";
 import { LoadResources } from "./load-resources";
 import { OpStatus } from "./op-status";
@@ -202,10 +202,10 @@ function ActivityTable({
                 {ops.length} Operation{ops.length !== 1 ? "s" : ""}
               </p>
               <div className="mt-4">
-                  <Tooltip text="Operations show real-time changes to resources, such as Apps and Databases.">
-                    <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
-                  </Tooltip>
-                </div>
+                <Tooltip text="Operations show real-time changes to resources, such as Apps and Databases.">
+                  <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
+                </Tooltip>
+              </div>
             </div>
           </div>
         }

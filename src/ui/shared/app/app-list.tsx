@@ -1,9 +1,9 @@
+import { Tooltip } from "../Tooltip";
+import { IconInfo } from "../icons";
 import { useLoader, useQuery } from "@app/fx";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { IconInfo } from "../icons";
-import { Tooltip } from "../Tooltip";
 
 import { prettyDateRelative } from "@app/date";
 import {

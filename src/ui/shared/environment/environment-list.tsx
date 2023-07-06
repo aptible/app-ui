@@ -1,7 +1,5 @@
-import { useQuery } from "@app/fx";
-import { Link } from "react-router-dom";
-import { IconInfo } from "../icons";
 import { Tooltip } from "../Tooltip";
+import { IconInfo } from "../icons";
 import {
   fetchAllEnvironments,
   selectAppsByEnvId,
@@ -9,8 +7,10 @@ import {
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
+import { useQuery } from "@app/fx";
 import { environmentAppsUrl } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
+import { Link } from "react-router-dom";
 
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";

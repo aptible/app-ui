@@ -14,13 +14,13 @@ import { AppState, DeployStack } from "@app/types";
 
 import { MenuWrappedPage } from "../layouts";
 import {
+  IconInfo,
   InputSearch,
   LoadResources,
   ResourceHeader,
   ResourceListView,
   TableHead,
   Td,
-  IconInfo,
   Tooltip,
 } from "../shared";
 import { stackDetailUrl } from "@app/routes";
@@ -108,7 +108,7 @@ function StackList() {
                   search={search}
                   onChange={onChange}
                 />
-               <div className="flex">
+                <div className="flex">
                   <p className="text-gray-500 mt-4 text-base">
                     {stacks.length} Stack{stacks.length !== 1 && "s"}
                   </p>
