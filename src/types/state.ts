@@ -13,6 +13,7 @@ import type {
   DeployMetricDrain,
   DeployOperation,
   DeployPlan,
+  DeployRelease,
   DeployService,
   DeployServiceDefinition,
   DeployStack,
@@ -119,6 +120,7 @@ export interface DeployState {
   active_plans: MapEntity<DeployActivePlan>;
   plans: MapEntity<DeployPlan>;
   permissions: MapEntity<Permission>;
+  releases: MapEntity<DeployRelease>;
 }
 
 export interface AppState extends QueryState {

@@ -23,6 +23,7 @@ import {
   planEntities,
   planReducers,
 } from "./plan";
+import { releaseEntities, releaseReducers } from "./release";
 import { serviceEntities, serviceReducers } from "./service";
 import { stackEntities, stackReducers } from "./stack";
 
@@ -42,6 +43,7 @@ const allReducers: any[] = [
   planReducers,
   activePlanReducers,
   permissionReducers,
+  releaseReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -70,4 +72,5 @@ export const entities = {
   ...planEntities,
   ...activePlanEntities,
   ...permissionEntities,
+  ...releaseEntities,
 };
