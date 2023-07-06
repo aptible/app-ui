@@ -20,6 +20,8 @@ import {
   ResourceListView,
   TableHead,
   Td,
+  IconInfo,
+  Tooltip,
 } from "../shared";
 import { stackDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
@@ -106,8 +108,9 @@ function StackList() {
                   search={search}
                   onChange={onChange}
                 />
-                <p className="flex text-gray-500 mt-4 text-base">
+               <p className="flex text-gray-500 mt-4 text-base">
                   {stacks.length} Stack{stacks.length !== 1 && "s"}
+                   <Tooltip text="Stacks are collections of environments tied to virtualized infrastructure."><IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" /></Tooltip>
                 </p>
               </div>
             }
