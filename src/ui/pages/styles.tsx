@@ -109,6 +109,7 @@ const StylesNavigation = () => (
       { name: "Icons", to: "#icons" },
       { name: "Info", to: "#info" },
       { name: "Detail Boxes", to: "#detail-boxes" },
+      { name: "Secrets", to: "#secrets" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
         <div className="flex items-center">
@@ -657,7 +658,7 @@ const DetailBoxes = () => {
 const Secrets = () => {
   return (
     <div className="flex flex-col gap-3">
-      <h1 id="detail-boxes" className={tokens.type.h1}>
+      <h1 id="secrets" className={tokens.type.h1}>
         Secrets
       </h1>
       <Secret secret="secret-value-showing-by-default" showAsOpened />
