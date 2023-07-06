@@ -11,7 +11,6 @@ import {
   tokens,
 } from "../shared";
 import { EmptyResourcesTable } from "../shared/empty-resources-table";
-import { Secret } from "../shared/secret";
 import { prettyDateRelative } from "@app/date";
 import {
   fetchLogDrains,
@@ -102,16 +101,6 @@ const LogDrainSourcesCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   );
 };
 
-const LogDrainCredentialsCell = ({
-  logDrain,
-}: { logDrain: DeployLogDrain }) => {
-  return (
-    <Td className="flex flex-1 gap-2 justify-end mr-4">
-      <Secret secret={logDrain?.loggingToken || logDrain?.drainPassword} />
-    </Td>
-  );
-};
-
 const LogDrainLastUpdatedCell = ({
   logDrain,
 }: { logDrain: DeployLogDrain }) => {
@@ -128,13 +117,7 @@ const LogDrainLastUpdatedCell = ({
   );
 };
 
-const logDrainsHeaders = [
-  "Status",
-  "Handle",
-  "Sources",
-  "Last Updated",
-  "Credentials",
-];
+const logDrainsHeaders = ["Status", "Handle", "Sources", "Last Updated"];
 
 const LogDrainsSection = ({ id }: { id: string }) => {
   const query = useQuery(fetchLogDrains({ id }));
@@ -175,7 +158,6 @@ const LogDrainsSection = ({ id }: { id: string }) => {
                 <LogDrainHandleCell logDrain={logDrain} />
                 <LogDrainSourcesCell logDrain={logDrain} />
                 <LogDrainLastUpdatedCell logDrain={logDrain} />
-                <LogDrainCredentialsCell logDrain={logDrain} />
               </tr>
             ))}
           </>
