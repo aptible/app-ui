@@ -77,6 +77,7 @@ import {
 } from "@app/ui";
 import { OpDetailPage } from "@app/ui/pages/op-detail";
 import { StylesPage } from "@app/ui/pages/styles";
+import { AppDetailServicePage } from "@app/ui/pages/app-detail-service";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -323,6 +324,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.APP_SERVICES_PATH,
                 element: <AppDetailServicesPage />,
+              },
+              {
+                path: routes.APP_SERVICE_PATH,
+                element: <AppDetailServicePage />,
               },
               {
                 path: routes.APP_ACTIVITY_PATH,

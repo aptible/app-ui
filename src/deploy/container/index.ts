@@ -12,6 +12,7 @@ import {
 import { selectDeploy } from "../slice";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { api } from "@app/api";
+import { createSelector } from "@reduxjs/toolkit";
 
 export interface DeployContainerResponse {
   id: number;
@@ -114,6 +115,14 @@ export const selectContainerById = must(selectors.selectById);
 export const selectContainerByIds = selectors.selectByIds;
 export const { selectTableAsList: selectContainerAsList } = selectors;
 export const containerReducers = createReducerMap(slice);
+
+export const selectContainersByReleaseId = createSelector(
+  selectContainerAsList,
+  (_: AppState, props: { releaseId: string }) => props.releaseId,
+  (containers, releaseId) => {
+    return containers.filter((container) => container.releaseId === releaseId);
+  },
+);
 
 export const fetchContainersByReleaseId = api.get<
   { releaseId: string },
