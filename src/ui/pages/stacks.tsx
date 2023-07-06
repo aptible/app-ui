@@ -108,10 +108,16 @@ function StackList() {
                   search={search}
                   onChange={onChange}
                 />
-               <p className="flex text-gray-500 mt-4 text-base">
-                  {stacks.length} Stack{stacks.length !== 1 && "s"}
-                   <Tooltip text="Stacks are collections of environments tied to virtualized infrastructure."><IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" /></Tooltip>
-                </p>
+               <div className="flex">
+                  <p className="text-gray-500 mt-4 text-base">
+                    {stacks.length} Stack{stacks.length !== 1 && "s"}
+                  </p>
+                  <div className="mt-4">
+                    <Tooltip text="Stacks represent the virtualized infrastructure where resources are deployed.">
+                      <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
+                    </Tooltip>
+                  </div>
+                </div>
               </div>
             }
           />

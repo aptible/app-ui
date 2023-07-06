@@ -1,6 +1,7 @@
 import { useQuery } from "@app/fx";
 import { Link } from "react-router-dom";
-
+import { IconInfo } from "../icons";
+import { Tooltip } from "../Tooltip";
 import {
   fetchAllEnvironments,
   selectAppsByEnvId,
@@ -145,10 +146,17 @@ export function EnvironmentList() {
                     search={search}
                     onChange={onChange}
                   />
-                  <p className="flex text-gray-500 mt-4 text-base">
-                    {environments.length} Environment
-                    {environments.length !== 1 ? "s" : ""}
-                  </p>
+                  <div className="flex">
+                    <p className="flex text-gray-500 mt-4 text-base">
+                      {environments.length} Environment
+                      {environments.length !== 1 ? "s" : ""}
+                    </p>
+                    <div className="mt-4">
+                      <Tooltip text="An environment is how you separate resources like staging and production.">
+                        <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
+                      </Tooltip>
+                    </div>
+                  </div>
                 </>
               </div>
             }
