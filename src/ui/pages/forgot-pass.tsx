@@ -29,7 +29,7 @@ export const ForgotPassPage = () => {
     <HeroBgLayout>
       <div className="text-center">
         <h1 className={`${tokens.type.h1} text-center`}>Reset your password</h1>
-        <p className="mt-6 text-gray-600">
+        <p className="mt-6 text-gray-600 mb-4">
           Check your email for reset instructions or go back to{" "}
           <Link to={loginUrl()}>Log In</Link>.
         </p>

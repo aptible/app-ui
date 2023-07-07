@@ -162,8 +162,8 @@ export const SignupPage = () => {
       </div>
 
       <div className="mt-8">
-        <div className="bg-white py-6 px-6 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={onSubmitForm}>
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-black-100">
+          <form className="space-y-4" onSubmit={onSubmitForm}>
             <FormGroup label="Name" htmlFor="name">
               <Input
                 id="name"

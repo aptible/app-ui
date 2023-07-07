@@ -66,11 +66,11 @@ export const VerifyEmailPage = () => {
 
   return (
     <HeroBgLayout>
-      <h2 className="mt-6 text-center text-4xl font-bold text-gray-900">
+      <h2 className="mt-6 text-center text-3xl font-semibold text-gray-900">
         Check your Email
       </h2>
       <div className="flex text-center items-center justify-center mt-4">
-        <div className="max-w-2xl">
+        <div className="max-w-2xl mb-8">
           {verifyEmailLoader.isError ? (
             <>
               <p className="text-h3 text-gray-500 leading-normal">
