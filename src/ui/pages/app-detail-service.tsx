@@ -46,10 +46,10 @@ const AppServiceDataTable = ({
   }
 
   // combine all the query data into a singular dataset
-  const resultantData: { [columnName: string]: string[] | number[] } = {};
+  const resultantData: { [columnName: string]: (string | number)[] } = {};
   constructQueries.forEach((query, queryIdx) => {
     // timefield is always time_0, deltas are used sometimes with time_1 where available
-    query.data.columns.forEach((colDataSeries: string[] | number[]) => {
+    query.data.columns.forEach((colDataSeries: (string | number)[]) => {
       const colName =
         typeof colDataSeries[0] === "string" &&
         colDataSeries[0].includes("time_")
