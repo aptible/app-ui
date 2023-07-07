@@ -13,7 +13,7 @@ import { AppState, DeployContainer } from "@app/types";
 import { LoadResources, Loading, TableHead, Td } from "../shared";
 import {
   fetchContainersByReleaseId,
-  selectContainersByReleaseId,
+  selectContainersByReleaseIdByLayerType,
 } from "@app/deploy/container";
 import { fetchMetricTunnelForAppCpu } from "@app/metric-tunnel";
 import { useEffect } from "react";
@@ -104,7 +104,10 @@ export function AppDetailServicePage() {
   useQuery(fetchRelease({ id: service.currentReleaseId }));
   useQuery(fetchContainersByReleaseId({ releaseId: service.currentReleaseId }));
   const containers = useSelector((s: AppState) =>
-    selectContainersByReleaseId(s, { releaseId: service.currentReleaseId }),
+    selectContainersByReleaseIdByLayerType(s, {
+      layers: ["app", "database"],
+      releaseId: service.currentReleaseId,
+    }),
   );
 
   const dataToFetch = ["cpu_pct", "la", "memory_all"];
