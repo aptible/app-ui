@@ -32,13 +32,13 @@ import {
   selectAccessToken,
   selectElevatedAccessToken,
 } from "@app/token";
-import {
-  type Action,
-  type ApiGen,
-  type AppCtx,
-  type AuthApiCtx,
-  type DeployApiCtx,
-  type HalEmbedded,
+import type {
+  Action,
+  ApiGen,
+  AppCtx,
+  AuthApiCtx,
+  DeployApiCtx,
+  HalEmbedded,
   MetricTunnelCtx,
 } from "@app/types";
 
