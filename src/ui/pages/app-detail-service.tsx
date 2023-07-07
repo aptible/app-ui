@@ -92,7 +92,6 @@ const AppServiceDataTable = ({
       </table>
     </div>
   );
-  return <p>{container.id}</p>;
 };
 
 export function AppDetailServicePage() {
