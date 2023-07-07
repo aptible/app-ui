@@ -9,3 +9,8 @@ export interface AuthApiCtx<P = any, S = any>
   elevated: boolean;
   noToken: boolean;
 }
+export type MetricTunnelCtx<P = any, S = any> = ApiCtx<
+  P,
+  S,
+  { message: string }
+>;

@@ -1,19 +1,27 @@
 import { useSelector } from "react-redux";
 
-import { calcServiceMetrics, selectServicesByIds } from "@app/deploy";
-import { AppState, DeployService } from "@app/types";
+import {
+  calcServiceMetrics,
+  selectAppById,
+  selectServicesByIds,
+} from "@app/deploy";
+import { AppState, DeployApp, DeployService } from "@app/types";
 
+import { ButtonLink } from "../button";
 import { PreCode, listToInvertedTextColor } from "../pre-code";
 import { ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
+import { appServicePathUrl } from "@app/routes";
 
 const serviceListRow = ({
+  app,
   service,
 }: {
+  app?: DeployApp;
   service?: DeployService;
 }): React.ReactNode[] => {
-  if (!service) return [];
+  if (!app || !service) return [];
   const metrics = calcServiceMetrics(service);
 
   return [
@@ -49,6 +57,16 @@ const serviceListRow = ({
           ${metrics.estimatedCostInDollars}
         </div>
       </Td>
+      <Td className="flex-1">
+        <ButtonLink
+          className="w-20"
+          size="sm"
+          to={appServicePathUrl(app.id, service.id)}
+          variant="primary"
+        >
+          Metrics
+        </ButtonLink>
+      </Td>
     </tr>,
     service.command ? (
       <tr key={`${service.id}.${service.command}`} className="border-none">
@@ -67,10 +85,13 @@ const serviceListRow = ({
 };
 
 export function ServicesOverview({
+  appId,
   serviceIds,
 }: {
+  appId: string;
   serviceIds: string[];
 }) {
+  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const services = useSelector((s: AppState) =>
     selectServicesByIds(s, { ids: serviceIds }),
   );
@@ -94,6 +115,7 @@ export function ServicesOverview({
               "Container Count",
               "Profile",
               "Monthly Cost",
+              "Actions",
             ]}
           />
         }
@@ -101,6 +123,7 @@ export function ServicesOverview({
           <>
             {serviceIds.map((serviceId) =>
               serviceListRow({
+                app,
                 service: services.find(
                   (service: DeployService) => service.id === serviceId,
                 ),

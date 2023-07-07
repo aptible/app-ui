@@ -9,9 +9,11 @@ import {
   pollAppOperations,
   selectAppById,
   selectEnvironmentById,
+  selectServiceById,
 } from "@app/deploy";
 import {
   appActivityUrl,
+  appDetailUrl,
   appEndpointsUrl,
   appServicesUrl,
   appSettingsUrl,
@@ -70,9 +72,12 @@ export function AppHeader({ app }: { app: DeployApp }) {
 }
 
 function AppPageHeader() {
-  const { id = "" } = useParams();
+  const { id = "", serviceId = "" } = useParams();
   useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: serviceId }),
+  );
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
@@ -80,6 +85,12 @@ function AppPageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
+  if (serviceId) {
+    crumbs.push({
+      name: app.handle,
+      to: appDetailUrl(app.id),
+    });
+  }
 
   const poller = useMemo(() => pollAppOperations({ id }), [id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
@@ -105,7 +116,7 @@ function AppPageHeader() {
       <ActiveOperationNotice resourceId={app.id} resourceType="app" />
       <DetailPageHeaderView
         breadcrumbs={crumbs}
-        title={app.handle}
+        title={serviceId ? service.handle : app.handle}
         detailsBox={<AppHeader app={app} />}
         tabs={tabs}
       />

@@ -109,6 +109,7 @@ const StylesNavigation = () => (
       { name: "Icons", to: "#icons" },
       { name: "Info", to: "#info" },
       { name: "Detail Boxes", to: "#detail-boxes" },
+      { name: "Secrets", to: "#secrets" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
         <div className="flex items-center">
@@ -150,7 +151,7 @@ const Tables = () => (
     <h1 id="tables" className={tokens.type.h1}>
       Tables
     </h1>
-    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg my-4 mx-4">
+    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg my-4 mx-4 sm:my-auto sm:mx-auto">
       <table className="min-w-full divide-y divide-gray-300">
         <TableHead
           headers={Array(8)
@@ -657,7 +658,7 @@ const DetailBoxes = () => {
 const Secrets = () => {
   return (
     <div className="flex flex-col gap-3">
-      <h1 id="detail-boxes" className={tokens.type.h1}>
+      <h1 id="secrets" className={tokens.type.h1}>
         Secrets
       </h1>
       <Secret secret="secret-value-showing-by-default" showAsOpened />

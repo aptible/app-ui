@@ -1,11 +1,16 @@
 import { api } from "@app/api";
-import { defaultEntity } from "@app/hal";
+import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type { AppState, DeployService, InstanceClass } from "@app/types";
+import type {
+  AppState,
+  DeployService,
+  InstanceClass,
+  LinkResponse,
+} from "@app/types";
 
 import { CONTAINER_PROFILES, GB } from "../app/utils";
 import { selectDeploy } from "../slice";
@@ -24,6 +29,9 @@ export interface DeployServiceResponse {
   container_count: number;
   container_memory_limit_mb: number;
   instance_class: InstanceClass;
+  _links: {
+    current_release: LinkResponse;
+  };
   _type: "service";
 }
 
@@ -43,6 +51,10 @@ export const defaultServiceResponse = (
     instance_class: "m4",
     created_at: now,
     updated_at: now,
+    _links: {
+      current_release: { href: "" },
+      ...s._links,
+    },
     _type: "service",
     ...s,
   };
@@ -51,6 +63,8 @@ export const defaultServiceResponse = (
 export const deserializeDeployService = (
   payload: DeployServiceResponse,
 ): DeployService => {
+  const links = payload._links;
+
   return {
     id: `${payload.id}`,
     handle: payload.handle,
@@ -60,6 +74,7 @@ export const deserializeDeployService = (
     command: payload.command || "",
     containerCount: payload.container_count,
     containerMemoryLimitMb: payload.container_memory_limit_mb,
+    currentReleaseId: extractIdFromLink(links.current_release),
     instanceClass: payload.instance_class || DEFAULT_INSTANCE_CLASS,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
@@ -79,6 +94,7 @@ export const defaultDeployService = (
     command: "",
     containerCount: 0,
     containerMemoryLimitMb: 0,
+    currentReleaseId: "",
     instanceClass: DEFAULT_INSTANCE_CLASS,
     createdAt: now,
     updatedAt: now,

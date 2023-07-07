@@ -4,6 +4,7 @@ import type {
   DeployActivePlan,
   DeployApp,
   DeployCertificate,
+  DeployContainer,
   DeployDatabase,
   DeployDatabaseImage,
   DeployDisk,
@@ -13,6 +14,7 @@ import type {
   DeployMetricDrain,
   DeployOperation,
   DeployPlan,
+  DeployRelease,
   DeployService,
   DeployServiceDefinition,
   DeployStack,
@@ -31,6 +33,7 @@ export interface Env {
   authUrl: string;
   billingUrl: string;
   apiUrl: string;
+  metricTunnelUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
   origin: "nextgen" | "app";
@@ -119,6 +122,8 @@ export interface DeployState {
   active_plans: MapEntity<DeployActivePlan>;
   plans: MapEntity<DeployPlan>;
   permissions: MapEntity<Permission>;
+  releases: MapEntity<DeployRelease>;
+  containers: MapEntity<DeployContainer>;
 }
 
 export interface AppState extends QueryState {

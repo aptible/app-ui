@@ -1,4 +1,4 @@
-import { api, authApi, thunks } from "@app/api";
+import { api, authApi, metricTunnelApi, thunks } from "@app/api";
 import * as auth from "@app/auth";
 import * as bootup from "@app/bootup";
 import * as deploy from "@app/deploy";
@@ -59,6 +59,7 @@ export const reducers = corePackages.reduce((acc, pkg) => {
 const initialSagas = {
   api: api.saga(),
   authApi: authApi.saga(),
+  metricTunnelApi: metricTunnelApi.saga(),
   thunks: thunks.saga(),
 };
 

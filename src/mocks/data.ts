@@ -37,6 +37,7 @@ export const testEnv = createEnv({
   apiUrl: "https://api.aptible.com",
   billingUrl: "https://billing.aptible.com",
   legacyDashboardUrl: "https://dashboard.aptible.com",
+  metricTunnelUrl: "https://metrictunnel.aptible.com",
 });
 
 export const mockJwtHeaders = btoa(

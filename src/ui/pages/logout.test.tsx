@@ -77,6 +77,8 @@ describe("LogoutPage", () => {
         serviceDefinitions: {},
         services: {},
         stacks: {},
+        releases: {},
+        containers: {},
       });
     });
   });

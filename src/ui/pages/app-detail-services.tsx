@@ -15,7 +15,7 @@ export function AppDetailServicesPage() {
   return (
     <LoadResources query={query} isEmpty={false}>
       <DetailPageSections>
-        <ServicesOverview serviceIds={app.serviceIds} />
+        <ServicesOverview appId={app.id} serviceIds={app.serviceIds} />
       </DetailPageSections>
     </LoadResources>
   );

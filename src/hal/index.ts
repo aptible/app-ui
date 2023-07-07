@@ -46,6 +46,10 @@ function transformResourceName(name: string | undefined | null): ResourceType {
       return "backup";
     case "services":
       return "service";
+    case "releases":
+      return "release";
+    case "containers":
+      return "container";
     default:
       return "unknown";
   }

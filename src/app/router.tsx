@@ -75,6 +75,7 @@ import {
   UnauthRequired,
   VerifyEmailPage,
 } from "@app/ui";
+import { AppDetailServicePage } from "@app/ui/pages/app-detail-service";
 import { OpDetailPage } from "@app/ui/pages/op-detail";
 import { StylesPage } from "@app/ui/pages/styles";
 
@@ -323,6 +324,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.APP_SERVICES_PATH,
                 element: <AppDetailServicesPage />,
+              },
+              {
+                path: routes.APP_SERVICE_PATH,
+                element: <AppDetailServicePage />,
               },
               {
                 path: routes.APP_ACTIVITY_PATH,
