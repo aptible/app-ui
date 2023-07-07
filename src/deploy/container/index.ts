@@ -124,6 +124,18 @@ export const selectContainersByReleaseId = createSelector(
   },
 );
 
+export const selectContainersByReleaseIdByLayerType = createSelector(
+  selectContainerAsList,
+  (_: AppState, props: { releaseId: string }) => props.releaseId,
+  (_: AppState, props: { layers: string[] }) => props.layers,
+  (containers, releaseId, layers) => {
+    return containers.filter(
+      (container) =>
+        layers.includes(container.layer) && container.releaseId === releaseId,
+    );
+  },
+);
+
 export const fetchContainersByReleaseId = api.get<
   { releaseId: string },
   HalEmbedded<{ containers: DeployContainerResponse[] }>
