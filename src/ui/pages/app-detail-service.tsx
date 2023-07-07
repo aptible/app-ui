@@ -22,6 +22,9 @@ const AppServiceDataTable = ({
   container,
   dataToFetch,
 }: { container: DeployContainer; dataToFetch: string[] }) => {
+  // WARNING - this requires a better long term solution. We are doing this just to set up the
+  // queries / transform data for viewing this in browser (as there are concurrent metrictunnel changes to this)
+  // We likely will want a cachable/datastore-based solution at some point. This is temporary
   const constructQueries = dataToFetch.map((datumToFetch) =>
     useCache(
       fetchMetricTunnelForAppCpu({
@@ -61,7 +64,6 @@ const AppServiceDataTable = ({
       });
     });
   });
-  console.log(resultantData);
   // keep the date columns in front
   const prefixedColumnHeaders = Object.keys(resultantData).filter((column) =>
     column.includes("time_"),
