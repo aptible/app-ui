@@ -16,7 +16,7 @@ export const Tooltip = ({
           "absolute",
           "rounded-md",
           "px-3 py-2",
-          "max-w-xs",
+          "w-96",
           "bg-black text-white",
         ])}
       >

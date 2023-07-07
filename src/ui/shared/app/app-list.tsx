@@ -1,3 +1,5 @@
+import { IconInfo } from "../icons";
+import { Tooltip } from "../tooltip";
 import { useLoader, useQuery } from "@app/fx";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -183,9 +185,16 @@ const AppsResourceHeaderTitleBar = ({
                 search={search}
                 onChange={onChange}
               />
-              <p className="flex text-gray-500 mt-4 text-base">
-                {apps.length} App{apps.length !== 1 && "s"}
-              </p>
+              <div className="flex">
+                <p className="flex text-gray-500 mt-4 text-base">
+                  {apps.length} App{apps.length !== 1 && "s"}
+                </p>
+                <div className="mt-4">
+                  <Tooltip text="Apps are how you deploy your code, scale services, and manage endpoints.">
+                    <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
+                  </Tooltip>
+                </div>
+              </div>
             </div>
           }
         />
