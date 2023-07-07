@@ -1,5 +1,5 @@
-import { Tooltip } from "../Tooltip";
 import { IconInfo } from "../icons";
+import { Tooltip } from "../tooltip";
 import {
   fetchAllEnvironments,
   selectAppsByEnvId,

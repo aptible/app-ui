@@ -1,4 +1,4 @@
-import { Tooltip } from "./Tooltip";
+import { Tooltip } from "./tooltip";
 import { useLoader, useQuery } from "@app/fx";
 import { ReactElement, useMemo } from "react";
 import { useSelector } from "react-redux";

@@ -1,5 +1,5 @@
-import { Tooltip } from "../Tooltip";
 import { IconInfo } from "../icons";
+import { Tooltip } from "../tooltip";
 import { useQuery } from "@app/fx";
 import { useState } from "react";
 import { useSelector } from "react-redux";
