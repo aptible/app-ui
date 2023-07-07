@@ -85,16 +85,12 @@ const AppServiceDataTable = ({
   }
 
   return (
-    <>
-      <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg my-4 mx-4 sm:my-auto sm:mx-auto">
-        <table className="min-w-full divide-y divide-gray-300">
-          <TableHead headers={columnHeaders} />
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {tableRows}
-          </tbody>
-        </table>
-      </div>
-    </>
+    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg my-4 mx-4 sm:my-auto sm:mx-auto">
+      <table className="min-w-full divide-y divide-gray-300">
+        <TableHead headers={columnHeaders} />
+        <tbody className="divide-y divide-gray-200 bg-white">{tableRows}</tbody>
+      </table>
+    </div>
   );
   return <p>{container.id}</p>;
 };
@@ -116,11 +112,13 @@ export function AppDetailServicePage() {
   return (
     <LoadResources query={query} isEmpty={false}>
       {containers.map((container) => (
-        <AppServiceDataTable
-          key={container.id}
-          container={container}
-          dataToFetch={dataToFetch}
-        />
+        <div className="my-4">
+          <AppServiceDataTable
+            key={container.id}
+            container={container}
+            dataToFetch={dataToFetch}
+          />
+        </div>
       ))}
     </LoadResources>
   );
