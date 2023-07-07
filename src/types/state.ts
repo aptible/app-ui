@@ -33,6 +33,7 @@ export interface Env {
   authUrl: string;
   billingUrl: string;
   apiUrl: string;
+  metricTunnelUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
   origin: "nextgen" | "app";

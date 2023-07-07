@@ -9,6 +9,7 @@ export const createEnv = (e: Partial<Env> = {}): Env => {
     authUrl: import.meta.env.VITE_AUTH_URL || "",
     billingUrl: import.meta.env.VITE_BILLING_URL || "",
     apiUrl: import.meta.env.VITE_API_URL || "",
+    metricTunnelUrl: import.meta.env.VITE_METRIC_TUNNEL_URL || "",
     sentryDsn: import.meta.env.VITE_SENTRY_DSN || "",
     origin: (import.meta.env.VITE_ORIGIN as any) || "nextgen",
     legacyDashboardUrl:

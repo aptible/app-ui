@@ -32,16 +32,17 @@ import {
   selectAccessToken,
   selectElevatedAccessToken,
 } from "@app/token";
-import type {
-  Action,
-  ApiGen,
-  AppCtx,
-  AuthApiCtx,
-  DeployApiCtx,
-  HalEmbedded,
+import {
+  MetricTunnelCtx,
+  type Action,
+  type ApiGen,
+  type AppCtx,
+  type AuthApiCtx,
+  type DeployApiCtx,
+  type HalEmbedded,
 } from "@app/types";
 
-type EndpointUrl = "auth" | "api" | "billing";
+type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel";
 
 const log = createLog("@app/fx");
 
@@ -74,6 +75,10 @@ function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
 
   if (endpoint === "billing") {
     return env.billingUrl;
+  }
+
+  if (endpoint === "metrictunnel") {
+    return env.metricTunnelUrl;
   }
 
   return env.apiUrl;
@@ -158,6 +163,20 @@ function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
   yield* next();
 }
 
+function* requestMetricTunnel(ctx: ApiCtx, next: Next): ApiGen {
+  const url = yield* call(getUrl, ctx, "metrictunnel" as const);
+  ctx.request = ctx.req({
+    url,
+    // https://github.com/github/fetch#sending-cookies
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  yield* next();
+}
+
 function* expiredToken(ctx: ApiCtx, next: Next) {
   yield* next();
   if (!ctx.response) return;
@@ -212,6 +231,18 @@ authApi.use(requestAuth);
 authApi.use(tokenMdw);
 authApi.use(elevatedTokenMdw);
 authApi.use(fetcher());
+
+export const metricTunnelApi = createApi<MetricTunnelCtx>();
+metricTunnelApi.use(debugMdw);
+metricTunnelApi.use(sentryErrorHandler);
+metricTunnelApi.use(expiredToken);
+metricTunnelApi.use(requestMonitor());
+metricTunnelApi.use(aborter);
+metricTunnelApi.use(metricTunnelApi.routes());
+metricTunnelApi.use(requestMetricTunnel);
+metricTunnelApi.use(aborter);
+metricTunnelApi.use(tokenMdw);
+metricTunnelApi.use(fetcher());
 
 export interface ThunkCtx<P = any, D = any> extends PipeCtx<P>, LoaderCtx<P> {
   actions: Action[];
