@@ -84,7 +84,7 @@ const AppServiceDataTable = ({
 
   return (
     <>
-      <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg my-4 mx-4">
+      <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg my-4 mx-4 sm:my-auto sm:mx-auto">
         <table className="min-w-full divide-y divide-gray-300">
           <TableHead headers={columnHeaders} />
           <tbody className="divide-y divide-gray-200 bg-white">
