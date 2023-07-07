@@ -1,12 +1,12 @@
+import { selectDeploy } from "../slice";
+import { api } from "@app/api";
+import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
 import { AppState, DeployRelease, LinkResponse } from "@app/types";
-import { selectDeploy } from "../slice";
-import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { api } from "@app/api";
 
 export interface DeployReleaseResponse {
   id: number;

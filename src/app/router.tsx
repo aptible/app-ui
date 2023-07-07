@@ -75,9 +75,9 @@ import {
   UnauthRequired,
   VerifyEmailPage,
 } from "@app/ui";
+import { AppDetailServicePage } from "@app/ui/pages/app-detail-service";
 import { OpDetailPage } from "@app/ui/pages/op-detail";
 import { StylesPage } from "@app/ui/pages/styles";
-import { AppDetailServicePage } from "@app/ui/pages/app-detail-service";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,

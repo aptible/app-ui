@@ -1,3 +1,6 @@
+import { selectDeploy } from "../slice";
+import { api } from "@app/api";
+import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
@@ -9,9 +12,6 @@ import {
   HalEmbedded,
   LinkResponse,
 } from "@app/types";
-import { selectDeploy } from "../slice";
-import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { api } from "@app/api";
 import { createSelector } from "@reduxjs/toolkit";
 
 export interface DeployContainerResponse {

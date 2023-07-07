@@ -18,8 +18,10 @@ import {
 import { fetchMetricTunnelForAppCpu } from "@app/metric-tunnel";
 import { useEffect } from "react";
 
-const AppServiceDataTable = ({ container }: { container: DeployContainer }) => {
-  const dataToFetch = ["cpu_pct", "la", "memory_all"];
+const AppServiceDataTable = ({
+  container,
+  dataToFetch,
+}: { container: DeployContainer; dataToFetch: string[] }) => {
   const constructQueries = dataToFetch.map((datumToFetch) =>
     useCache(
       fetchMetricTunnelForAppCpu({
@@ -41,24 +43,25 @@ const AppServiceDataTable = ({ container }: { container: DeployContainer }) => {
   }
 
   // combine all the query data into a singular dataset
-  const resultantData: { [columnName: string]: string[] | number[] } = [];
-  constructQueries.forEach((query) => {
+  const resultantData: { [columnName: string]: string[] | number[] } = {};
+  constructQueries.forEach((query, queryIdx) => {
     // timefield is always time_0, deltas are used sometimes with time_1 where available
-    query.data.columns.forEach(
-      (colDataSeries: string[] | number[], idx: number) => {
-        const colName = colDataSeries[0].includes("time_")
+    query.data.columns.forEach((colDataSeries: string[] | number[]) => {
+      const colName =
+        typeof colDataSeries[0] === "string" &&
+        colDataSeries[0].includes("time_")
           ? colDataSeries[0]
-          : `${dataToFetch[idx]} - ${colDataSeries[0]}`;
-        resultantData[colName] = [];
-        colDataSeries.forEach((elem: string | number, idx) => {
-          if (idx === 0) {
-            return;
-          }
-          resultantData[colName].push(elem);
-        });
-      },
-    );
+          : `${dataToFetch[queryIdx]} - ${colDataSeries[0]}`;
+      resultantData[colName] = [];
+      colDataSeries.forEach((elem: string | number, idx) => {
+        if (idx === 0) {
+          return;
+        }
+        resultantData[colName].push(elem);
+      });
+    });
   });
+  console.log(resultantData);
   // keep the date columns in front
   const prefixedColumnHeaders = Object.keys(resultantData).filter((column) =>
     column.includes("time_"),
@@ -107,10 +110,15 @@ export function AppDetailServicePage() {
     selectContainersByReleaseId(s, { releaseId: service.currentReleaseId }),
   );
 
+  const dataToFetch = ["cpu_pct", "la", "memory_all"];
   return (
     <LoadResources query={query} isEmpty={false}>
       {containers.map((container) => (
-        <AppServiceDataTable key={container.id} container={container} />
+        <AppServiceDataTable
+          key={container.id}
+          container={container}
+          dataToFetch={dataToFetch}
+        />
       ))}
     </LoadResources>
   );
