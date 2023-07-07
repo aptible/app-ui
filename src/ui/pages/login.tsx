@@ -110,8 +110,8 @@ export const LoginPage = () => {
       </div>
 
       <div className="mt-8">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={onSubmit}>
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-black-100">
+          <form className="space-y-4" onSubmit={onSubmit}>
             {isOtpRequired ? (
               <BannerMessages
                 className="my-2"
@@ -163,7 +163,7 @@ export const LoginPage = () => {
                 htmlFor="input-2fa"
                 description={
                   <p>
-                    Read our 2fa{" "}
+                    Read our 2FA{" "}
                     <ExternalLink
                       href="https://www.aptible.com/docs/password-authentication#2-factor-authentication-2fa"
                       variant="info"
