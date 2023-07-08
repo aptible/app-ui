@@ -31,7 +31,7 @@ export function DatabaseMetricsPage() {
     }),
   );
 
-  const dataToFetch = ["cpu_pct", "la", "memory_all"];
+  const dataToFetch = ["cpu_pct", "la", "memory_all", "iops", "fs"];
   return (
     <LoadResources query={query} isEmpty={false}>
       {containers.map((container) => (
