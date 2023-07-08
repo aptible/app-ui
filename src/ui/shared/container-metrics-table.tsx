@@ -1,6 +1,6 @@
 import { Loading } from "./loading";
 import { TableHead, Td } from "./table";
-import { fetchMetricTunnelForAppCpu } from "@app/metric-tunnel";
+import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
 import { DeployContainer } from "@app/types";
 import { useEffect } from "react";
 import { useCache } from "saga-query/react";
@@ -14,7 +14,7 @@ export const ContainerMetricsDataTable = ({
   // We likely will want a cachable/datastore-based solution at some point. This is temporary
   const constructQueries = dataToFetch.map((datumToFetch) =>
     useCache(
-      fetchMetricTunnelForAppCpu({
+      fetchMetricTunnelDataForContainer({
         containerId: container.id,
         horizon: "1h",
         metric: datumToFetch,
