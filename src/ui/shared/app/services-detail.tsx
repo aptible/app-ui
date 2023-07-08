@@ -70,7 +70,7 @@ const serviceListRow = ({
     </tr>,
     service.command ? (
       <tr key={`${service.id}.${service.command}`} className="border-none">
-        <td colSpan={6} className="p-4">
+        <td colSpan={7} className="p-4">
           <span className="text-sm text-gray-500">Command</span>
           <div>
             <PreCode
