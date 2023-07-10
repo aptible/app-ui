@@ -189,7 +189,7 @@ export const ContainerMetricsChart = ({
   // prune date indices that have no data at all
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {chartsToCreate.map((chartToCreate) => (
         <div className="bg-white px-5 pt-2 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px]">
           <LineChartWrapper chart={chartToCreate} />
