@@ -48,7 +48,7 @@ export function DatabaseMetricsPage() {
           disabled={viewTab === "chart"}
           onClick={() => setViewTab("chart")}
         >
-          Chart
+          Charts
         </Button>
         <Button
           className={`rounded-l-none ${

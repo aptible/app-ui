@@ -72,6 +72,7 @@ const LineChartWrapper = ({
               color: "#111920",
               maxRotation: 0,
               minRotation: 0,
+              autoSkip: true,
               maxTicksLimit: 7,
             },
           },
