@@ -73,7 +73,7 @@ const LineChartWrapper = ({
               maxRotation: 0,
               minRotation: 0,
               autoSkip: true,
-              maxTicksLimit: 7,
+              maxTicksLimit: 5,
             },
           },
           y: {
@@ -189,9 +189,9 @@ export const ContainerMetricsChart = ({
   // prune date indices that have no data at all
 
   return (
-    <div>
+    <div className="grid grid-cols-2 gap-4">
       {chartsToCreate.map((chartToCreate) => (
-        <div className="bg-white p-5 my-4 shadow rounded-lg border border-black-100 relative w-full min-h-[400px]">
+        <div className="bg-white px-5 pt-2 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px]">
           <LineChartWrapper chart={chartToCreate} />
         </div>
       ))}
