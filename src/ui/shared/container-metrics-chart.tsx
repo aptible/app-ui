@@ -37,6 +37,11 @@ const LineChartWrapper = ({
         datasets,
       }}
       options={{
+        responsive: true,
+        animation: {
+        duration: 0,
+        easing: 'linear'
+      },
         plugins: {
           legend: {
             labels: {
@@ -64,9 +69,13 @@ const LineChartWrapper = ({
             },
             ticks: {
               color: "#111920",
+              maxRotation: 0,
+              minRotation: 0,
+              maxTicksLimit: 7,
             },
           },
           y: {
+            min: 0,
             border: {
               display: false,
             },
@@ -178,7 +187,7 @@ export const ContainerMetricsChart = ({
   // prune date indices that have no data at all
 
   return (
-    <div className="bg-white p-5 my-4 shadow rounded-lg border border-black-100">
+    <div className="bg-white p-5 my-4 shadow rounded-lg border border-black-100 relative mx-auto w-full">
       {chartsToCreate.map((chartToCreate) => (
         <LineChartWrapper chart={chartToCreate} />
       ))}
