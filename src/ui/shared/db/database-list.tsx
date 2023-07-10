@@ -24,7 +24,7 @@ import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { databaseEndpointsUrl, operationDetailUrl } from "@app/routes";
+import { databaseMetricsUrl, operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 
 type DatabaseCellProps = { database: DeployDatabase };
@@ -33,7 +33,7 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td className="flex-1">
       <div className="flex">
-        <Link to={databaseEndpointsUrl(database.id)} className="flex">
+        <Link to={databaseMetricsUrl(database.id)} className="flex">
           <img
             src={`/database-types/logo-${database.type}.png`}
             className="w-8 h-8 mt-1 mr-2"
