@@ -187,9 +187,11 @@ export const ContainerMetricsChart = ({
   // prune date indices that have no data at all
 
   return (
-    <div className="bg-white p-5 my-4 shadow rounded-lg border border-black-100 relative mx-auto w-full">
+    <div>
       {chartsToCreate.map((chartToCreate) => (
-        <LineChartWrapper chart={chartToCreate} />
+        <div className="bg-white p-5 my-4 shadow rounded-lg border border-black-100 relative w-full max-h-[400px]">
+          <LineChartWrapper chart={chartToCreate} />
+        </div>
       ))}
     </div>
   );
