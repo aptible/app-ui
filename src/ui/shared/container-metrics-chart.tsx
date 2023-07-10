@@ -1,9 +1,9 @@
+import { Loading } from "./loading";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
 import { DeployContainer } from "@app/types";
 import React, { useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import { useCache } from "saga-query/react";
-import { Loading } from "./loading";
 
 type Dataset = {
   label?: string;
@@ -40,9 +40,9 @@ const LineChartWrapper = ({
         responsive: true,
         maintainAspectRatio: false,
         animation: {
-        duration: 0,
-        easing: 'linear'
-      },
+          duration: 0,
+          easing: "linear",
+        },
         plugins: {
           legend: {
             labels: {

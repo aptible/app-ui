@@ -11,12 +11,12 @@ import {
 import { AppState } from "@app/types";
 
 import { Button, LoadResources } from "../shared";
+import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
   fetchContainersByReleaseId,
   selectContainersByReleaseIdByLayerType,
 } from "@app/deploy/container";
-import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { useState } from "react";
 
 export function AppDetailServicePage() {

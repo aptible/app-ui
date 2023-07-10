@@ -1,4 +1,5 @@
 import { Button, LoadResources } from "../shared";
+import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
   fetchContainersByReleaseId,
@@ -10,11 +11,10 @@ import {
   selectServiceById,
 } from "@app/deploy";
 import { AppState } from "@app/types";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
-import { ContainerMetricsChart } from "../shared/container-metrics-chart";
-import { useState } from "react";
 
 export function DatabaseMetricsPage() {
   const { id = "" } = useParams();
