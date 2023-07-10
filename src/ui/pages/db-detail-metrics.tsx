@@ -35,9 +35,10 @@ export function DatabaseMetricsPage() {
   );
 
   const dataToFetch = ["cpu_pct", "la", "memory_all", "iops", "fs"];
+
   return (
     <>
-      <div className="flex m-auto gap-2">
+      <div className="flex m-auto">
         <Button
           className={`rounded-r-none ${
             viewTab === "chart" ? "pointer-events-none bg-black-100" : ""

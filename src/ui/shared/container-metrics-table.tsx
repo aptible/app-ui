@@ -2,7 +2,7 @@ import { Loading } from "./loading";
 import { TableHead, Td } from "./table";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
 import { DeployContainer } from "@app/types";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useCache } from "saga-query/react";
 
 export const ContainerMetricsDataTable = ({
@@ -80,3 +80,7 @@ export const ContainerMetricsDataTable = ({
     </div>
   );
 };
+
+export const MemoizedContainerMetricsTable = React.memo(
+  ContainerMetricsDataTable,
+);
