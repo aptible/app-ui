@@ -38,7 +38,7 @@ const LineChartWrapper = ({
       }}
       options={{
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         animation: {
         duration: 0,
         easing: 'linear'
@@ -190,7 +190,7 @@ export const ContainerMetricsChart = ({
   return (
     <div>
       {chartsToCreate.map((chartToCreate) => (
-        <div className="bg-white p-5 my-4 shadow rounded-lg border border-black-100 relative w-full max-h-[400px]">
+        <div className="bg-white p-5 my-4 shadow rounded-lg border border-black-100 relative w-full min-h-[400px]">
           <LineChartWrapper chart={chartToCreate} />
         </div>
       ))}
