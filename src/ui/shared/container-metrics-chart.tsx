@@ -38,6 +38,7 @@ const LineChartWrapper = ({
       }}
       options={{
         responsive: true,
+        maintainAspectRatio: true,
         animation: {
         duration: 0,
         easing: 'linear'
