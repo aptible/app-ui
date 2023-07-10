@@ -1,29 +1,27 @@
-import { useQuery } from "@app/fx";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-
-import {
-  fetchEnvironmentServices,
-  fetchRelease,
-  selectAppById,
-  selectServiceById,
-} from "@app/deploy";
-import { AppState } from "@app/types";
-
 import { LoadResources } from "../shared";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
   fetchContainersByReleaseId,
+  fetchEnvironmentServices,
+  fetchRelease,
+  fetchService,
   selectContainersByReleaseIdByLayerType,
-} from "@app/deploy/container";
+  selectDatabaseById,
+  selectServiceById,
+} from "@app/deploy";
+import { AppState } from "@app/types";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router";
+import { useQuery } from "saga-query/react";
 
-export function AppDetailServicePage() {
-  const { id = "", serviceId = "" } = useParams();
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
-  const query = useQuery(fetchEnvironmentServices({ id: app.environmentId }));
+export function DatabaseMetricsPage() {
+  const { id = "" } = useParams();
+  const db = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const query = useQuery(fetchEnvironmentServices({ id: db.environmentId }));
   const service = useSelector((s: AppState) =>
-    selectServiceById(s, { id: serviceId }),
+    selectServiceById(s, { id: db.serviceId }),
   );
+  useQuery(fetchService({ id: db.serviceId }));
   useQuery(fetchRelease({ id: service.currentReleaseId }));
   useQuery(fetchContainersByReleaseId({ releaseId: service.currentReleaseId }));
   const containers = useSelector((s: AppState) =>
@@ -33,7 +31,7 @@ export function AppDetailServicePage() {
     }),
   );
 
-  const dataToFetch = ["cpu_pct", "la", "memory_all"];
+  const dataToFetch = ["cpu_pct", "la", "memory_all", "iops", "fs"];
   return (
     <LoadResources query={query} isEmpty={false}>
       {containers.map((container) => (

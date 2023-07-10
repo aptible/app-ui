@@ -1,6 +1,6 @@
 import { cacheTimer, metricTunnelApi } from "@app/api";
 
-export const fetchMetricTunnelForAppCpu = metricTunnelApi.get<
+export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
   { containerId: string; horizon: string; metric: string },
   any
 >(

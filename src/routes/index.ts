@@ -95,6 +95,9 @@ export const databaseBackupsUrl = (id: string) =>
 export const DATABASE_CLUSTER_PATH = `${DATABASE_DETAIL_PATH}/cluster`;
 export const databaseClusterUrl = (id: string) =>
   `${databaseDetailUrl(id)}/cluster`;
+export const DATABASE_METRICS_PATH = `${DATABASE_DETAIL_PATH}/metrics`;
+export const databaseMetricsUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/metrics`;
 export const DATABASE_SCALE_PATH = `${DATABASE_DETAIL_PATH}/scale`;
 export const databaseScaleUrl = (id: string) =>
   `${databaseDetailUrl(id)}/scale`;
