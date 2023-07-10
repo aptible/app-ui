@@ -10,16 +10,19 @@ import {
 } from "@app/deploy";
 import { AppState } from "@app/types";
 
-import { LoadResources } from "../shared";
+import { Button, LoadResources } from "../shared";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
   fetchContainersByReleaseId,
   selectContainersByReleaseIdByLayerType,
 } from "@app/deploy/container";
+import { ContainerMetricsChart } from "../shared/container-metrics-chart";
+import { useState } from "react";
 
 export function AppDetailServicePage() {
   const { id = "", serviceId = "" } = useParams();
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const [viewTab, setViewTab] = useState<"table" | "chart">("chart");
   const query = useQuery(fetchEnvironmentServices({ id: app.environmentId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),
@@ -35,16 +38,50 @@ export function AppDetailServicePage() {
 
   const dataToFetch = ["cpu_pct", "la", "memory_all"];
   return (
-    <LoadResources query={query} isEmpty={false}>
-      {containers.map((container) => (
-        <div className="my-4">
-          <ContainerMetricsDataTable
-            key={container.id}
-            container={container}
-            dataToFetch={dataToFetch}
-          />
-        </div>
-      ))}
-    </LoadResources>
+    <>
+      <div className="flex m-auto">
+        <Button
+          className={`rounded-r-none ${
+            viewTab === "chart" ? "pointer-events-none bg-black-100" : ""
+          }`}
+          variant="white"
+          size="xs"
+          disabled={viewTab === "chart"}
+          onClick={() => setViewTab("chart")}
+        >
+          Chart
+        </Button>
+        <Button
+          className={`rounded-l-none ${
+            viewTab === "table" ? "pointer-events-none bg-black-100" : ""
+          }`}
+          variant="white"
+          size="xs"
+          disabled={viewTab === "table"}
+          onClick={() => setViewTab("table")}
+        >
+          Table
+        </Button>
+      </div>
+      <LoadResources query={query} isEmpty={false}>
+        {containers.map((container) => (
+          <div className="my-4">
+            {viewTab === "chart" ? (
+              <ContainerMetricsChart
+                key={`${container.id}-chart`}
+                container={container}
+                dataToFetch={dataToFetch}
+              />
+            ) : (
+              <ContainerMetricsDataTable
+                key={container.id}
+                container={container}
+                dataToFetch={dataToFetch}
+              />
+            )}
+          </div>
+        ))}
+      </LoadResources>
+    </>
   );
 }

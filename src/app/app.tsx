@@ -9,6 +9,28 @@ import { ftuxRouter, router } from "./router";
 import { selectOrigin } from "@app/env";
 import { CookieNotice } from "@app/ui/shared/cookie-notice";
 import { RouterProvider } from "react-router";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  Colors,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  Colors,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 export const AppRouter = () => {
   const origin = useSelector(selectOrigin);
