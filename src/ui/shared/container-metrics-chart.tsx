@@ -47,6 +47,8 @@ const LineChartWrapper = ({
           legend: {
             labels: {
               usePointStyle: true,
+              boxHeight: 5,
+              boxWidth: 3,
             },
           },
           title: {
