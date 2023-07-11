@@ -62,6 +62,11 @@ const LineChartWrapper = ({
             text: title,
           },
         },
+        interaction: {
+        mode: 'nearest',
+        axis: 'xy',
+        intersect: false,
+        },
         scales: {
           x: {
             border: {
@@ -168,8 +173,8 @@ export const ContainerMetricsChart = ({
           } else if (!colName.includes("time_")) {
             const dataSeries: Dataset = {
               label: colName,
-              // pointRadius: 0,
-              // pointHoverRadius: 5,
+              pointRadius: 0,
+              pointHoverRadius: 5,
               data: [],
             };
             colDataSeries.forEach((elem: string | number, idx) => {
