@@ -49,11 +49,12 @@ const LineChartWrapper = ({
               usePointStyle: true,
               boxHeight: 5,
               boxWidth: 3,
+              padding: 20,
             },
           },
           title: {
             font: {
-              size: 20,
+              size: 16,
               weight: "normal",
             },
             color: "#595E63",
@@ -203,7 +204,7 @@ export const ContainerMetricsChart = ({
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
       {chartsToCreate.map((chartToCreate) => (
-        <div className="bg-white px-5 pt-2 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px]">
+        <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
           <LineChartWrapper chart={chartToCreate} />
         </div>
       ))}
