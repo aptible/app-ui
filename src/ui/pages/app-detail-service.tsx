@@ -10,7 +10,7 @@ import {
 } from "@app/deploy";
 import { AppState } from "@app/types";
 
-import { Button, LoadResources } from "../shared";
+import { Button, LoadResources, IconMetrics, IconHamburger } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
@@ -49,7 +49,7 @@ export function AppDetailServicePage() {
           disabled={viewTab === "chart"}
           onClick={() => setViewTab("chart")}
         >
-          Charts
+          <IconMetrics className="inline h-5 mr-1 mt-0" />
         </Button>
         <Button
           className={`rounded-l-none ${
@@ -60,7 +60,7 @@ export function AppDetailServicePage() {
           disabled={viewTab === "table"}
           onClick={() => setViewTab("table")}
         >
-          Table
+          <IconTable className="inline h-5 mr-1 mt-0" />
         </Button>
       </div>
       <LoadResources query={query} isEmpty={false}>
