@@ -66,6 +66,9 @@ const LineChartWrapper = ({
         mode: 'nearest',
         axis: 'xy',
         intersect: false,
+        yAlign: "bottom",
+        caretSize: 0,
+        caretPadding: 10,
         },
         scales: {
           x: {
