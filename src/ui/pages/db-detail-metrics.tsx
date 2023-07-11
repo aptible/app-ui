@@ -44,7 +44,7 @@ export function DatabaseMetricsPage() {
             viewTab === "chart" ? "pointer-events-none bg-black-100" : ""
           }`}
           variant="white"
-          size="xs"
+          size="md"
           disabled={viewTab === "chart"}
           onClick={() => setViewTab("chart")}
         >
@@ -55,7 +55,7 @@ export function DatabaseMetricsPage() {
             viewTab === "table" ? "pointer-events-none bg-black-100" : ""
           }`}
           variant="white"
-          size="xs"
+          size="md"
           disabled={viewTab === "table"}
           onClick={() => setViewTab("table")}
         >
