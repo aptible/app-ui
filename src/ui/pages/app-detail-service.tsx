@@ -49,7 +49,7 @@ export function AppDetailServicePage() {
           disabled={viewTab === "chart"}
           onClick={() => setViewTab("chart")}
         >
-          <IconMetrics className="inline h-5 mr-1 mt-0" />
+          <IconMetrics className="inline h-5 mr-1 mt-0" />Charts
         </Button>
         <Button
           className={`rounded-l-none ${
@@ -60,7 +60,7 @@ export function AppDetailServicePage() {
           disabled={viewTab === "table"}
           onClick={() => setViewTab("table")}
         >
-          <IconTable className="inline h-5 mr-1 mt-0" />
+          <IconTable className="inline h-5 mr-1 mt-0" />Table
         </Button>
       </div>
       <LoadResources query={query} isEmpty={false}>
