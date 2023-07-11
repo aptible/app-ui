@@ -63,9 +63,11 @@ export const ContainerMetricsDataTable = ({
   const tableRows = [];
   for (let i = 0; i < Object.values(resultantData)[0].length; i += 1) {
     tableRows.push(
-      <tr key={`${i}`}>
+      <tr className="hover:bg-gray-50" key={`${i}`}>
         {columnHeaders.map((columnHeader) => (
-          <Td key={`${i}-${columnHeader}`}>{resultantData[columnHeader][i]}</Td>
+          <Td className="text-gray-900" key={`${i}-${columnHeader}`}>
+            {resultantData[columnHeader][i]}
+          </Td>
         ))}
       </tr>,
     );
