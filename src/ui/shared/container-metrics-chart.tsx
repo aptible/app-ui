@@ -64,14 +64,14 @@ const LineChartWrapper = ({
           },
         },
         interaction: {
-        mode: 'nearest',
-        axis: 'xy',
-        intersect: false,
-        yAlign: "bottom",
-        caretSize: 0,
-        caretPadding: 10,
-        usePointStyle: true,
-        boxHeight: 7,
+          mode: "nearest",
+          axis: "xy",
+          intersect: false,
+          yAlign: "bottom",
+          caretSize: 0,
+          caretPadding: 10,
+          usePointStyle: true,
+          boxHeight: 7,
         },
         scales: {
           x: {
