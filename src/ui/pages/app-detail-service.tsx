@@ -37,7 +37,7 @@ export function AppDetailServicePage() {
   return (
     <LoadResources query={query} isEmpty={false}>
       {containers.map((container) => (
-        <div className="my-4">
+        <div className="my-2">
           <ContainerMetricsDataTable
             key={container.id}
             container={container}
