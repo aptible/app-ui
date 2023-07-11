@@ -69,7 +69,7 @@ export function DetailTitleBar({
           size="sm"
         >
           View Docs
-          <IconExternalLink className="inline ml-3 h-5 mt-0" />
+          <IconExternalLink className="inline ml-1 h-5 mt-0" />
         </ButtonLinkExternal>
       ) : null}
     </div>

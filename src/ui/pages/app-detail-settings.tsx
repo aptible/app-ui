@@ -89,7 +89,7 @@ export const AppSettingsPage = () => {
           size="sm"
         >
           View Docs
-          <IconExternalLink className="inline ml-3 h-5 mt-0" />
+          <IconExternalLink className="inline ml-1 h-5 mt-0" />
         </ButtonLinkExternal>
         <h1 className="text-lg text-gray-500">How To Deploy Changes</h1>
         <div className="mt-4">
