@@ -86,7 +86,7 @@ export const DatabaseSettingsPage = () => {
           size="sm"
         >
           View Docs
-          <IconExternalLink className="inline ml-3 h-5 mt-0" />
+          <IconExternalLink className="inline ml-1 h-5 mt-0" />
         </ButtonLinkExternal>
         <h1 className="text-lg text-gray-500">Database Settings</h1>
         <br />
