@@ -65,7 +65,9 @@ export const ContainerMetricsDataTable = ({
     tableRows.push(
       <tr className="hover:bg-gray-50" key={`${i}`}>
         {columnHeaders.map((columnHeader) => (
-          <Td className="text-gray-900" key={`${i}-${columnHeader}`}>{resultantData[columnHeader][i]}</Td>
+          <Td className="text-gray-900" key={`${i}-${columnHeader}`}>
+            {resultantData[columnHeader][i]}
+          </Td>
         ))}
       </tr>,
     );
