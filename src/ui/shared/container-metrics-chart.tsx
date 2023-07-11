@@ -69,6 +69,8 @@ const LineChartWrapper = ({
         yAlign: "bottom",
         caretSize: 0,
         caretPadding: 10,
+        usePointStyle: true,
+        boxHeight: 7,
         },
         scales: {
           x: {
