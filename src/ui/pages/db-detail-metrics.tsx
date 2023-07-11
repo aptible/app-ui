@@ -41,7 +41,7 @@ export function DatabaseMetricsPage() {
       <div className="flex m-auto">
         <Button
           className={`rounded-r-none ${
-            viewTab === "chart" ? "pointer-events-none bg-black-100" : ""
+            viewTab === "chart" ? "pointer-events-none !bg-black-100" : ""
           }`}
           variant="white"
           size="md"
@@ -52,7 +52,7 @@ export function DatabaseMetricsPage() {
         </Button>
         <Button
           className={`rounded-l-none ${
-            viewTab === "table" ? "pointer-events-none bg-black-100" : ""
+            viewTab === "table" ? "pointer-events-none !bg-black-100" : ""
           }`}
           variant="white"
           size="md"
