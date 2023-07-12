@@ -63,16 +63,18 @@ export const ContainerMetricsDataTable = ({
   const tableRows = [];
   for (let i = 0; i < Object.values(resultantData)[0].length; i += 1) {
     tableRows.push(
-      <tr key={`${i}`}>
+      <tr className="hover:bg-gray-50" key={`${i}`}>
         {columnHeaders.map((columnHeader) => (
-          <Td key={`${i}-${columnHeader}`}>{resultantData[columnHeader][i]}</Td>
+          <Td className="text-gray-900" key={`${i}-${columnHeader}`}>
+            {resultantData[columnHeader][i]}
+          </Td>
         ))}
       </tr>,
     );
   }
 
   return (
-    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg my-4 mx-4 sm:my-auto sm:mx-auto">
+    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg lg:w-full w-[calc(100vw-7.5rem)]">
       <table className="min-w-full divide-y divide-gray-300">
         <TableHead headers={columnHeaders} />
         <tbody className="divide-y divide-gray-200 bg-white">{tableRows}</tbody>

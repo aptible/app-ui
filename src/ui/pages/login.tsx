@@ -1,3 +1,4 @@
+import { selectLegacyDashboardUrl } from "@app/env";
 import { useLoaderSuccess } from "@app/fx";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +20,6 @@ import {
   acceptInvitationWithCodeUrl,
   forgotPassUrl,
   homeUrl,
-  signupUrl,
 } from "@app/routes";
 import { validEmail } from "@app/string-utils";
 
@@ -95,6 +95,7 @@ export const LoginPage = () => {
   }, [isOtpError]);
 
   const isOtpRequired = loader.message === "OtpTokenRequired";
+  const legacyUrl = useSelector(selectLegacyDashboardUrl);
   return (
     <HeroBgLayout width={500}>
       <h1 className={`${tokens.type.h1} text-center`}>Log In</h1>
@@ -102,7 +103,7 @@ export const LoginPage = () => {
         <div className="max-w-2xl">
           <p>
             Don't have an account?{" "}
-            <Link to={signupUrl()} className="font-medium">
+            <Link to={`${legacyUrl}/signup`} className="font-medium">
               Sign up
             </Link>
           </p>
