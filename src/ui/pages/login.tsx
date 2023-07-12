@@ -1,9 +1,9 @@
+import { selectLegacyDashboardUrl } from "@app/env";
 import { useLoaderSuccess } from "@app/fx";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { selectLegacyDashboardUrl } from "@app/env";
 
 import {
   login,
