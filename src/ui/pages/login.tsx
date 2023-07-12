@@ -19,7 +19,6 @@ import {
   acceptInvitationWithCodeUrl,
   forgotPassUrl,
   homeUrl,
-  signupUrl,
 } from "@app/routes";
 import { validEmail } from "@app/string-utils";
 
@@ -102,9 +101,9 @@ export const LoginPage = () => {
         <div className="max-w-2xl">
           <p>
             Don't have an account?{" "}
-            <Link to={signupUrl()} className="font-medium">
+            <a href={`https://dashboard.aptible.com/signup`} className="font-medium">
               Sign up
-            </Link>
+            </a>
           </p>
         </div>
       </div>
