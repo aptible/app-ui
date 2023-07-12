@@ -4,13 +4,7 @@ import { DeployContainer } from "@app/types";
 import React, { useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import { useCache } from "saga-query/react";
-
-type Dataset = {
-  label?: string;
-  pointRadius?: number;
-  pointHoverRadius?: number;
-  data: number[];
-};
+import { Dataset, processDataSeries } from "./container-metrics";
 
 type ChartToCreate = {
   title: string;
@@ -106,7 +100,12 @@ const LineChartWrapper = ({
 export const ContainerMetricsChart = ({
   container,
   dataToFetch,
-}: { container: DeployContainer; dataToFetch: string[] }) => {
+  viewHorizon,
+}: {
+  container: DeployContainer;
+  dataToFetch: string[];
+  viewHorizon: "1h" | "1d";
+}) => {
   const foundCharts: { [key: string]: boolean } = {
     CPU: false,
     "Load Average": false,
@@ -127,7 +126,7 @@ export const ContainerMetricsChart = ({
     return useCache(
       fetchMetricTunnelDataForContainer({
         containerId: container.id,
-        horizon: "1h",
+        horizon: viewHorizon,
         metric: datumToFetch,
       }),
     );
@@ -177,19 +176,7 @@ export const ContainerMetricsChart = ({
               labels.push(date);
             });
           } else if (!colName.includes("time_")) {
-            const dataSeries: Dataset = {
-              label: colName,
-              pointRadius: 0,
-              pointHoverRadius: 5,
-              data: [],
-            };
-            colDataSeries.forEach((elem: string | number, idx) => {
-              if (idx === 0 || typeof elem !== "number") {
-                return;
-              }
-              dataSeries.data.push(elem);
-            });
-            datasets.push(dataSeries);
+            datasets.push(processDataSeries({ colDataSeries, colName }));
           }
         },
       );

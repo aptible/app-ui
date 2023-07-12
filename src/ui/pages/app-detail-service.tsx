@@ -23,6 +23,7 @@ export function AppDetailServicePage() {
   const { id = "", serviceId = "" } = useParams();
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const [viewTab, setViewTab] = useState<"table" | "chart">("chart");
+  const [viewHorizon, setViewHorizon] = useState<"1h" | "1d">("1h");
   const query = useQuery(fetchEnvironmentServices({ id: app.environmentId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),
@@ -39,31 +40,57 @@ export function AppDetailServicePage() {
   const dataToFetch = ["cpu_pct", "la", "memory_all"];
   return (
     <>
-      <div className="flex m-auto">
-        <Button
-          className={`rounded-r-none ${
-            viewTab === "chart" ? "pointer-events-none bg-black-100" : ""
-          }`}
-          variant="white"
-          size="md"
-          disabled={viewTab === "chart"}
-          onClick={() => setViewTab("chart")}
-        >
-          <IconMetrics className="inline h-5 mr-1 mt-0" />
-          Charts
-        </Button>
-        <Button
-          className={`rounded-l-none ${
-            viewTab === "table" ? "pointer-events-none bg-black-100" : ""
-          }`}
-          variant="white"
-          size="md"
-          disabled={viewTab === "table"}
-          onClick={() => setViewTab("table")}
-        >
-          <IconHamburger className="inline h-5 mr-1 mt-0" />
-          Table
-        </Button>
+      <div className="flex gap-4 justify-start">
+        <div className="flex">
+          <Button
+            className={`rounded-r-none ${
+              viewTab === "chart" ? "pointer-events-none !bg-black-100" : ""
+            }`}
+            variant="white"
+            size="md"
+            disabled={viewTab === "chart"}
+            onClick={() => setViewTab("chart")}
+          >
+            <IconMetrics className="inline h-5 mr-1 mt-0" />
+            Charts
+          </Button>
+          <Button
+            className={`rounded-l-none ${
+              viewTab === "table" ? "pointer-events-none !bg-black-100" : ""
+            }`}
+            variant="white"
+            size="md"
+            disabled={viewTab === "table"}
+            onClick={() => setViewTab("table")}
+          >
+            <IconHamburger className="inline h-5 mr-1 mt-0" />
+            Table
+          </Button>
+        </div>
+        <div className="flex">
+          <Button
+            className={`rounded-r-none ${
+              viewHorizon === "1h" ? "pointer-events-none !bg-black-100" : ""
+            }`}
+            variant="white"
+            size="md"
+            disabled={viewHorizon === "1h"}
+            onClick={() => setViewHorizon("1h")}
+          >
+            1H
+          </Button>
+          <Button
+            className={`rounded-l-none ${
+              viewHorizon === "1d" ? "pointer-events-none !bg-black-100" : ""
+            }`}
+            variant="white"
+            size="md"
+            disabled={viewHorizon === "1d"}
+            onClick={() => setViewHorizon("1d")}
+          >
+            1D
+          </Button>
+        </div>
       </div>
       <LoadResources query={query} isEmpty={false}>
         {containers.map((container) => (
@@ -73,12 +100,14 @@ export function AppDetailServicePage() {
                 key={`${container.id}-chart`}
                 container={container}
                 dataToFetch={dataToFetch}
+                viewHorizon={viewHorizon}
               />
             ) : (
               <ContainerMetricsDataTable
                 key={container.id}
                 container={container}
                 dataToFetch={dataToFetch}
+                viewHorizon={viewHorizon}
               />
             )}
           </div>

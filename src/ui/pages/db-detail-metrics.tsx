@@ -20,6 +20,7 @@ export function DatabaseMetricsPage() {
   const { id = "" } = useParams();
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id }));
   const [viewTab, setViewTab] = useState<"table" | "chart">("chart");
+  const [viewHorizon, setViewHorizon] = useState<"1h" | "1d">("1h");
   const query = useQuery(fetchEnvironmentServices({ id: db.environmentId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: db.serviceId }),
@@ -38,31 +39,57 @@ export function DatabaseMetricsPage() {
 
   return (
     <>
-      <div className="flex m-auto">
-        <Button
-          className={`rounded-r-none ${
-            viewTab === "chart" ? "pointer-events-none !bg-black-100" : ""
-          }`}
-          variant="white"
-          size="md"
-          disabled={viewTab === "chart"}
-          onClick={() => setViewTab("chart")}
-        >
-          <IconMetrics className="inline h-5 mr-1 mt-0" />
-          Charts
-        </Button>
-        <Button
-          className={`rounded-l-none ${
-            viewTab === "table" ? "pointer-events-none !bg-black-100" : ""
-          }`}
-          variant="white"
-          size="md"
-          disabled={viewTab === "table"}
-          onClick={() => setViewTab("table")}
-        >
-          <IconHamburger className="inline h-5 mr-1 mt-0" />
-          Table
-        </Button>
+      <div className="flex gap-4 justify-start">
+        <div className="flex">
+          <Button
+            className={`rounded-r-none ${
+              viewTab === "chart" ? "pointer-events-none !bg-black-100" : ""
+            }`}
+            variant="white"
+            size="md"
+            disabled={viewTab === "chart"}
+            onClick={() => setViewTab("chart")}
+          >
+            <IconMetrics className="inline h-5 mr-1 mt-0" />
+            Charts
+          </Button>
+          <Button
+            className={`rounded-l-none ${
+              viewTab === "table" ? "pointer-events-none !bg-black-100" : ""
+            }`}
+            variant="white"
+            size="md"
+            disabled={viewTab === "table"}
+            onClick={() => setViewTab("table")}
+          >
+            <IconHamburger className="inline h-5 mr-1 mt-0" />
+            Table
+          </Button>
+        </div>
+        <div className="flex">
+          <Button
+            className={`rounded-r-none ${
+              viewHorizon === "1h" ? "pointer-events-none !bg-black-100" : ""
+            }`}
+            variant="white"
+            size="md"
+            disabled={viewHorizon === "1h"}
+            onClick={() => setViewHorizon("1h")}
+          >
+            1H
+          </Button>
+          <Button
+            className={`rounded-l-none ${
+              viewHorizon === "1d" ? "pointer-events-none !bg-black-100" : ""
+            }`}
+            variant="white"
+            size="md"
+            disabled={viewHorizon === "1d"}
+            onClick={() => setViewHorizon("1d")}
+          >
+            1D
+          </Button>
+        </div>
       </div>
       <LoadResources query={query} isEmpty={false}>
         {containers.map((container) => (
@@ -70,11 +97,13 @@ export function DatabaseMetricsPage() {
             {viewTab === "chart" ? (
               <ContainerMetricsChart
                 key={`${container.id}-chart`}
+                viewHorizon={viewHorizon}
                 container={container}
                 dataToFetch={dataToFetch}
               />
             ) : (
               <ContainerMetricsDataTable
+                viewHorizon={viewHorizon}
                 key={container.id}
                 container={container}
                 dataToFetch={dataToFetch}
