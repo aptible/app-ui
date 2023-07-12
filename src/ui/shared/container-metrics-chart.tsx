@@ -13,11 +13,11 @@ type ChartToCreate = {
 };
 
 const chartGroups = {
-  CPU: ["cpu_pct"],
-  "Load Average": ["la"],
   Memory: ["memory_all"],
+  CPU: ["cpu_pct"],
   "File System": ["fs"],
   IOPS: ["iops"],
+  "Load Average": ["la"],
 };
 
 const LineChartWrapper = ({
@@ -107,11 +107,11 @@ export const ContainerMetricsChart = ({
   viewHorizon: "1h" | "1d";
 }) => {
   const foundCharts: { [key: string]: boolean } = {
-    CPU: false,
-    "Load Average": false,
     Memory: false,
+    CPU: false,
     "File System": false,
     IOPS: false,
+    "Load Average": false,
   };
 
   // WARNING - this requires a better long term solution. We are doing this just to set up the
