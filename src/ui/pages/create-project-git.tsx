@@ -166,7 +166,7 @@ export const CreateProjectLayout = ({
 
   return (
     <>
-      <div className="p-6 flex justify-between relative shadow bg-white border-b border-black-50">
+      <div className="p-6 flex justify-between relative shadow bg-white border-b border-black-50 mb-8">
         <div className="flex">
           <Link to={homeUrl()}>
             <AptibleLogo />
