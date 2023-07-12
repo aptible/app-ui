@@ -8,7 +8,7 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
   { containerId: string; horizon: string; metric: string },
   any
 >(
-  `/proxy/:containerId?horizon=:horizon&ts=${getUtc()}&metric=:metric&requestedTicks=100`,
+  `/proxy/:containerId?horizon=:horizon&ts=${getUtc()}&metric=:metric&requestedTicks=600`,
   { saga: cacheTimer() },
   metricTunnelApi.cache(),
 );

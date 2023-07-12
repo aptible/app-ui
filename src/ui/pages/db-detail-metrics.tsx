@@ -20,7 +20,7 @@ export function DatabaseMetricsPage() {
   const { id = "" } = useParams();
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id }));
   const [viewTab, setViewTab] = useState<"table" | "chart">("chart");
-  const [viewHorizon, setViewHorizon] = useState<"1h" | "1d">("1h");
+  const [viewHorizon, setViewHorizon] = useState<"1h" | "1d" | "1w">("1h");
   const query = useQuery(fetchEnvironmentServices({ id: db.environmentId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: db.serviceId }),
@@ -88,6 +88,17 @@ export function DatabaseMetricsPage() {
             onClick={() => setViewHorizon("1d")}
           >
             1D
+          </Button>
+          <Button
+            className={`rounded-l-none ${
+              viewHorizon === "1w" ? "pointer-events-none !bg-black-100" : ""
+            }`}
+            variant="white"
+            size="md"
+            disabled={viewHorizon === "1w"}
+            onClick={() => setViewHorizon("1w")}
+          >
+            1W
           </Button>
         </div>
       </div>

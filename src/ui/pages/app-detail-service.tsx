@@ -23,13 +23,18 @@ export function AppDetailServicePage() {
   const { id = "", serviceId = "" } = useParams();
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const [viewTab, setViewTab] = useState<"table" | "chart">("chart");
-  const [viewHorizon, setViewHorizon] = useState<"1h" | "1d">("1h");
+  const [viewHorizon, setViewHorizon] = useState<"1h" | "1d" | "1w">("1h");
   const query = useQuery(fetchEnvironmentServices({ id: app.environmentId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),
   );
   useQuery(fetchRelease({ id: service.currentReleaseId }));
-  useQuery(fetchContainersByReleaseId({ releaseId: service.currentReleaseId }));
+  useQuery(
+    fetchContainersByReleaseId({
+      releaseId: service.currentReleaseId,
+      includeDeleted: true,
+    }),
+  );
   const containers = useSelector((s: AppState) =>
     selectContainersByReleaseIdByLayerType(s, {
       layers: ["app", "database"],
@@ -89,6 +94,17 @@ export function AppDetailServicePage() {
             onClick={() => setViewHorizon("1d")}
           >
             1D
+          </Button>
+          <Button
+            className={`rounded-l-none ${
+              viewHorizon === "1w" ? "pointer-events-none !bg-black-100" : ""
+            }`}
+            variant="white"
+            size="md"
+            disabled={viewHorizon === "1w"}
+            onClick={() => setViewHorizon("1w")}
+          >
+            1W
           </Button>
         </div>
       </div>
