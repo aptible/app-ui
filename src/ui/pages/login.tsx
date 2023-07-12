@@ -103,9 +103,9 @@ export const LoginPage = () => {
         <div className="max-w-2xl">
           <p>
             Don't have an account?{" "}
-            <ExternalLink href={`${legacyUrl}/signup`} className="font-medium">
+            <Link to={`${legacyUrl}/signup`} className="font-medium">
               Sign up
-            </ExternalLink>
+            </Link>
           </p>
         </div>
       </div>
