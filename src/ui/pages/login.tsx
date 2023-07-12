@@ -101,7 +101,10 @@ export const LoginPage = () => {
         <div className="max-w-2xl">
           <p>
             Don't have an account?{" "}
-            <a href={`https://dashboard.aptible.com/signup`} className="font-medium">
+            <a
+              href={"https://dashboard.aptible.com/signup"}
+              className="font-medium"
+            >
               Sign up
             </a>
           </p>
