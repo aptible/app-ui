@@ -2,9 +2,15 @@ import cn from "classnames";
 
 export const Tooltip = ({
   autoSizeWidth = false,
+  fluid,
   children,
   text,
-}: { autoSizeWidth?: boolean; children: React.ReactNode; text: string }) => {
+}: {
+  autoSizeWidth?: boolean;
+  fluid?: boolean;
+  children: React.ReactNode;
+  text: string;
+}) => {
   return (
     <div className="relative tooltip">
       <div className="cursor-pointer">{children}</div>
@@ -19,6 +25,7 @@ export const Tooltip = ({
           "px-3 py-2",
           "bg-black text-white",
           autoSizeWidth ? "w-96" : "",
+          fluid ? "w-[60vw] md:w-max" : "",
         ])}
       >
         {text}

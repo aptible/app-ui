@@ -33,12 +33,3 @@ html, body, #app {
   display: inline;
 }
 
-.tooltip-long-wrapper .tooltip-inner {
-  width: max-content;
-}
-
-@media (max-width: 720px) {
-  .tooltip-long-wrapper .tooltip-inner {
-    width: 60vw;
-  }
-}
