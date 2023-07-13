@@ -48,9 +48,7 @@ export function OpHeader({
         <DetailInfoItem title="Resource">
           {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
         </DetailInfoItem>
-        <DetailInfoItem title="User">
-          {op.userName}
-        </DetailInfoItem>
+        <DetailInfoItem title="User">{op.userName}</DetailInfoItem>
 
         <DetailInfoItem title="Note">{op.note || "N/A"}</DetailInfoItem>
       </DetailInfoGrid>
