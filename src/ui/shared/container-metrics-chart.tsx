@@ -38,6 +38,20 @@ const LineChartWrapper = ({
           easing: "linear",
         },
         plugins: {
+          zoom: {
+            zoom: {
+              drag: {
+                enabled: true,
+              },
+              wheel: {
+                enabled: true,
+              },
+              pinch: {
+                enabled: true,
+              },
+              mode: "xy",
+            },
+          },
           legend: {
             labels: {
               usePointStyle: true,

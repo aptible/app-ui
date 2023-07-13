@@ -19,6 +19,8 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+import zoomPlugin from "chartjs-plugin-zoom";
+
 import { RouterProvider } from "react-router";
 
 ChartJS.register(
@@ -30,6 +32,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  zoomPlugin,
 );
 
 export const AppRouter = () => {

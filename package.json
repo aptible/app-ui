@@ -38,6 +38,7 @@
     "@vitest/ui": "^0.31.0",
     "autoprefixer": "^10.4.14",
     "chart.js": "^4.3.0",
+    "chartjs-plugin-zoom": "^2.0.1",
     "classnames": "^2.3.2",
     "date-fns": "^2.30.0",
     "debug": "^4.3.4",
