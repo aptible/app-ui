@@ -10,7 +10,7 @@ import {
 import { useQuery } from "@app/fx";
 import { environmentAppsUrl } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
@@ -20,7 +20,6 @@ import { tokens } from "../tokens";
 import { prettyEnglishDate, timeAgo } from "@app/date";
 import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { capitalize } from "@app/string-utils";
-import { useState } from "react";
 import { useSelector } from "react-redux";
 
 interface EnvironmentCellProps {
@@ -120,10 +119,11 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
 
 export function EnvironmentList() {
   const query = useQuery(fetchAllEnvironments());
-
-  const [search, setSearch] = useState("");
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value });
+  };
 
   const environments = useSelector((s: AppState) =>
     selectEnvironmentsForTableSearch(s, { search }),

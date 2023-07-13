@@ -1,5 +1,4 @@
 import { useQuery } from "@app/fx";
-import { useState } from "react";
 import { useSelector } from "react-redux";
 
 import {
@@ -25,7 +24,7 @@ import {
 } from "../shared";
 import { stackDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 export function StacksPage() {
   return (
@@ -85,9 +84,11 @@ function StackListRow({ stack }: { stack: DeployStack }) {
 function StackList() {
   const query = useQuery(fetchAllStacks());
 
-  const [search, setSearch] = useState("");
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value });
+  };
 
   const stacks = useSelector((s: AppState) =>
     selectStacksForTableSearch(s, {

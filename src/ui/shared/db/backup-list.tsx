@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 
 import {
   InputSearch,
@@ -13,6 +13,7 @@ import { BackupResponse } from "@app/deploy";
 import { LoadingState } from "@app/fx";
 import { capitalize } from "@app/string-utils";
 import cn from "classnames";
+import { useSearchParams } from "react-router-dom";
 
 const BackupTypePill = ({ manual }: { manual: boolean }): ReactElement => {
   const className = cn(
@@ -82,9 +83,11 @@ export const DatabaseBackupsList = ({
   backups: BackupResponse[];
   query: LoadingState;
 }) => {
-  const [search, setSearch] = useState("");
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value });
+  };
 
   // const sortIconProps = {
   //   className: "inline",

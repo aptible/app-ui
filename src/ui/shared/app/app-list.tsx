@@ -1,9 +1,8 @@
 import { IconInfo } from "../icons";
 import { Tooltip } from "../tooltip";
 import { useLoader, useQuery } from "@app/fx";
-import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -217,13 +216,14 @@ export const AppListByOrg = () => {
   const query = useQuery(fetchAllApps());
   useQuery(fetchAllEnvironments());
 
-  const [search, setSearch] = useState("");
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value });
+  };
   const apps = useSelector((s: AppState) =>
     selectAppsForTableSearch(s, { search }),
   );
-
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
 
   return (
     <LoadResources
