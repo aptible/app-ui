@@ -4,7 +4,6 @@ import { ReactElement, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
 
-import { prettyDateRelative } from "@app/date";
 import {
   DeployActivityRow,
   cancelAppOpsPoll,

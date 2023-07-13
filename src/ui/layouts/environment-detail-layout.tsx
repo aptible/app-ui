@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
-import { timeAgo } from "@app/date";
 import {
   fetchAllApps,
   fetchEndpointsByEnvironmentId,
@@ -14,7 +13,6 @@ import {
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
 import { stackDetailEnvsUrl } from "@app/routes";
-import { capitalize } from "@app/string-utils";
 import {
   AppState,
   DeployEndpoint,
@@ -34,6 +32,7 @@ import {
 
 import { DateText } from "../shared/date-text";
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { capitalize } from "@app/string-utils";
 
 const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
   endpoint.type === "tcp" ? (
@@ -103,7 +102,8 @@ export function EnvHeader({
         <div />
 
         <DetailInfoItem title="Last Deployed">
-          <DateText format="time-ago" date={latestOperation.createdAt} />
+          <DateText format="time-ago" date={latestOperation.createdAt} /> by{" "}
+          {capitalize(userName)}
         </DetailInfoItem>
         <DetailInfoItem
           title={`${endpoints.length} Endpoint${
