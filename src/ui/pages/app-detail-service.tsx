@@ -74,7 +74,7 @@ export function AppDetailServicePage() {
         </div>
         <div className="flex">
           <Button
-            className={`rounded-r-none ${
+            className={`rounded-r-none hover:z-10 ${
               viewHorizon === "1h" ? "pointer-events-none !bg-black-100" : ""
             }`}
             variant="white"
@@ -85,7 +85,7 @@ export function AppDetailServicePage() {
             1H
           </Button>
           <Button
-            className={`rounded-l-none ${
+            className={`rounded-none -ml-[1px] -mr-[1px] hover:z-10 ${
               viewHorizon === "1d" ? "pointer-events-none !bg-black-100" : ""
             }`}
             variant="white"
@@ -96,7 +96,7 @@ export function AppDetailServicePage() {
             1D
           </Button>
           <Button
-            className={`rounded-l-none ${
+            className={`rounded-l-none hover:z-10 ${
               viewHorizon === "1w" ? "pointer-events-none !bg-black-100" : ""
             }`}
             variant="white"
