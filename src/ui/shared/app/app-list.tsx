@@ -189,7 +189,7 @@ const AppsResourceHeaderTitleBar = ({
                 <p className="flex text-gray-500 mt-4 text-base">
                   {apps.length} App{apps.length !== 1 && "s"}
                 </p>
-                <div className="mt-4">
+                <div className="mt-4 tooltip-long-wrapper">
                   <Tooltip text="Apps are how you deploy your code, scale services, and manage endpoints.">
                     <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
                   </Tooltip>

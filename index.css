@@ -27,9 +27,18 @@ html, body, #app {
 .tooltip-inner {
   display: none;
   transform: translate(0%, -110%);
-  width: max-content;
 }
 
 .tooltip:hover .tooltip-inner {
   display: inline;
+}
+
+.tooltip-long-wrapper .tooltip-inner {
+  width: max-content;
+}
+
+@media (max-width: 720px) {
+  .tooltip-long-wrapper .tooltip-inner {
+    width: 60vw;
+  }
 }

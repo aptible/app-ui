@@ -201,7 +201,7 @@ function ActivityTable({
               <p className="flex text-gray-500 mt-4 text-base">
                 {ops.length} Operation{ops.length !== 1 ? "s" : ""}
               </p>
-              <div className="mt-4">
+              <div className="mt-4 tooltip-long-wrapper">
                 <Tooltip text="Operations show real-time changes to resources, such as Apps and Databases.">
                   <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
                 </Tooltip>
