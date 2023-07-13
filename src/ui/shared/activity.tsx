@@ -30,6 +30,7 @@ import type { AppState, ResourceType } from "@app/types";
 
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
+import { DateText } from "./date-text";
 import { IconInfo, IconRefresh } from "./icons";
 import { InputSearch } from "./input";
 import { LoadResources } from "./load-resources";
@@ -38,7 +39,6 @@ import { ResourceHeader, ResourceListView } from "./resource-list-view";
 import { EnvStackCell } from "./resource-table";
 import { TableHead, Td } from "./table";
 import { tokens } from "./tokens";
-import { DateText } from "./date-text";
 
 interface OpCellProps {
   op: DeployActivityRow;

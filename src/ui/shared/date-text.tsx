@@ -1,4 +1,3 @@
-import { capitalize } from "@app/string-utils";
 import { Tooltip } from "./tooltip";
 import {
   formatDateToUTC,
@@ -6,6 +5,7 @@ import {
   prettyEnglishDate,
   timeAgo,
 } from "@app/date";
+import { capitalize } from "@app/string-utils";
 
 export const DateText = ({
   date,

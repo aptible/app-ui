@@ -32,8 +32,8 @@ import {
   TabItem,
 } from "../shared";
 
-import { MenuWrappedPage } from "./menu-wrapped-page";
 import { DateText } from "../shared/date-text";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 
 const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
   endpoint.type === "tcp" ? (
