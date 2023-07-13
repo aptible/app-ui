@@ -49,7 +49,7 @@ export function OpHeader({
           {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
         </DetailInfoItem>
         <DetailInfoItem title="User">
-          <a href={`mailto:${op.userEmail}`}>{op.userName}</a>
+          {op.userName}
         </DetailInfoItem>
 
         <DetailInfoItem title="Note">{op.note || "N/A"}</DetailInfoItem>
