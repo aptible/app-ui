@@ -12,7 +12,7 @@ export const ContainerMetricsDataTable = ({
 }: {
   container: DeployContainer;
   dataToFetch: string[];
-  viewHorizon: "1h" | "1d";
+  viewHorizon: "1h" | "1d" | "1w";
 }) => {
   // WARNING - this requires a better long term solution. We are doing this just to set up the
   // queries / transform data for viewing this in browser (as there are concurrent metrictunnel changes to this)

@@ -104,7 +104,7 @@ export const ContainerMetricsChart = ({
 }: {
   container: DeployContainer;
   dataToFetch: string[];
-  viewHorizon: "1h" | "1d";
+  viewHorizon: "1h" | "1d" | "1w";
 }) => {
   const foundCharts: { [key: string]: boolean } = {
     Memory: false,
