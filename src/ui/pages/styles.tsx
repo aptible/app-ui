@@ -65,6 +65,8 @@ import {
   pillStyles,
   tokens,
 } from "../shared";
+import { DateText } from "../shared/date-text";
+import { dateFromToday } from "@app/date";
 import {
   defaultDeployApp,
   defaultDeployDatabase,
@@ -667,6 +669,23 @@ const Secrets = () => {
   );
 };
 
+const Dates = () => {
+  return (
+    <div className="flex flex-col gap-3">
+      <h1 id="dates" className={tokens.type.h1}>
+        Dates
+      </h1>
+      <DateText date={new Date()} />
+      <DateText date={new Date()} format="pretty-english" />
+      <DateText date={new Date()} format="pretty-english-date-relative" />
+      <span className="flex">
+        <DateText date={dateFromToday(-10)} format="time-ago" />{" "}
+        <strong className="ml-2">(Hover the date)</strong>
+      </span>
+    </div>
+  );
+};
+
 export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
@@ -683,6 +702,7 @@ export const StylesPage = () => (
       <Info />
       <DetailBoxes />
       <Secrets />
+      <Dates />
     </StylesWrapper>
   </div>
 );

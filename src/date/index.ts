@@ -1,4 +1,5 @@
 import {
+  addMinutes,
   format,
   formatDistanceStrict,
   formatDistanceToNowStrict,
@@ -74,6 +75,10 @@ export const timeBetween = ({
       formatDistance,
     },
   });
+};
+
+export const formatDateToUTC = (dateStr = "") => {
+  return new Date(dateStr).toISOString();
 };
 
 export const prettyEnglishDate = (dateStr = "") => {
