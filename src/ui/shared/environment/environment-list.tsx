@@ -20,7 +20,6 @@ import { tokens } from "../tokens";
 import { prettyEnglishDate, timeAgo } from "@app/date";
 import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { capitalize } from "@app/string-utils";
-import { useState } from "react";
 import { useSelector } from "react-redux";
 
 interface EnvironmentCellProps {
