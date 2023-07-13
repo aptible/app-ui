@@ -1,5 +1,4 @@
 import { useQuery } from "@app/fx";
-import { useState } from "react";
 import { useSelector } from "react-redux";
 
 import {
