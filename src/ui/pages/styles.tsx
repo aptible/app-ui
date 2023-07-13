@@ -112,6 +112,7 @@ const StylesNavigation = () => (
       { name: "Info", to: "#info" },
       { name: "Detail Boxes", to: "#detail-boxes" },
       { name: "Secrets", to: "#secrets" },
+      { name: "Date Text", to: "#date-text" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
         <div className="flex items-center">
@@ -672,7 +673,7 @@ const Secrets = () => {
 const Dates = () => {
   return (
     <div className="flex flex-col gap-3">
-      <h1 id="dates" className={tokens.type.h1}>
+      <h1 id="date-text" className={tokens.type.h1}>
         Dates
       </h1>
       <DateText date={new Date()} />

@@ -38,6 +38,7 @@ import { ResourceHeader, ResourceListView } from "./resource-list-view";
 import { EnvStackCell } from "./resource-table";
 import { TableHead, Td } from "./table";
 import { tokens } from "./tokens";
+import { DateText } from "./date-text";
 
 interface OpCellProps {
   op: DeployActivityRow;
@@ -132,7 +133,11 @@ const OpActionsCell = ({ op }: OpCellProps) => {
 const OpLastUpdatedCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-      <div>{capitalize(prettyDateRelative(op.updatedAt))}</div>
+      <DateText
+        format="pretty-english-date-relative"
+        useUTCBefore24Hours
+        date={op.updatedAt}
+      />
     </Td>
   );
 };

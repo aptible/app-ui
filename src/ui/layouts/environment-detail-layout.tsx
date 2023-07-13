@@ -33,6 +33,7 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { DateText } from "../shared/date-text";
 
 const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
   endpoint.type === "tcp" ? (
@@ -102,7 +103,7 @@ export function EnvHeader({
         <div />
 
         <DetailInfoItem title="Last Deployed">
-          {timeAgo(latestOperation.createdAt)} by {capitalize(userName)}
+          <DateText format="time-ago" date={latestOperation.createdAt} />
         </DetailInfoItem>
         <DetailInfoItem
           title={`${endpoints.length} Endpoint${
