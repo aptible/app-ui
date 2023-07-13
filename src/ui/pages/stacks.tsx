@@ -113,7 +113,10 @@ function StackList() {
                     {stacks.length} Stack{stacks.length !== 1 && "s"}
                   </p>
                   <div className="mt-4">
-                    <Tooltip text="Stacks represent the virtualized infrastructure where resources are deployed.">
+                    <Tooltip
+                      fluid
+                      text="Stacks represent the virtualized infrastructure where resources are deployed."
+                    >
                       <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
                     </Tooltip>
                   </div>

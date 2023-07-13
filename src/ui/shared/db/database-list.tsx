@@ -115,7 +115,10 @@ const DbsResourceHeaderTitleBar = ({
                   {dbs.length} Database{dbs.length !== 1 && "s"}
                 </p>
                 <div className="mt-4">
-                  <Tooltip text="Databases provide data persistence and are automatically configured and managed.">
+                  <Tooltip
+                    fluid
+                    text="Databases provide data persistence and are automatically configured and managed."
+                  >
                     <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
                   </Tooltip>
                 </div>

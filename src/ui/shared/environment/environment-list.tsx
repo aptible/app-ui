@@ -152,7 +152,10 @@ export function EnvironmentList() {
                       {environments.length !== 1 ? "s" : ""}
                     </p>
                     <div className="mt-4">
-                      <Tooltip text="Environments are how you separate resources like staging and production.">
+                      <Tooltip
+                        fluid
+                        text="Environments are how you separate resources like staging and production."
+                      >
                         <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
                       </Tooltip>
                     </div>

@@ -76,6 +76,10 @@ export const timeBetween = ({
   });
 };
 
+export const formatDateToUTC = (dateStr = "") => {
+  return new Date(dateStr).toISOString();
+};
+
 export const prettyEnglishDate = (dateStr = "") => {
   return format(new Date(dateStr), "MMM dd, yyyy");
 };
