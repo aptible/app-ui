@@ -12,7 +12,7 @@ type ChartToCreate = {
   datasets?: Dataset[];
 };
 
-const chartGroups = {
+const chartGroups: { [key: string]: string[] } = {
   Memory: ["memory_all"],
   CPU: ["cpu_pct"],
   "File System": ["fs"],
@@ -21,11 +21,12 @@ const chartGroups = {
 };
 
 const LineChartWrapper = ({
+  keyId,
   chart: { labels, datasets, title },
-}: { chart: ChartToCreate }) =>
+}: { keyId: string; chart: ChartToCreate }) =>
   labels && datasets && title ? (
     <Line
-      datasetIdKey="id"
+      datasetIdKey={keyId}
       data={{
         labels,
         datasets,
@@ -44,7 +45,7 @@ const LineChartWrapper = ({
                 enabled: true,
               },
               wheel: {
-                enabled: true,
+                enabled: false,
               },
               pinch: {
                 enabled: true,
@@ -75,11 +76,6 @@ const LineChartWrapper = ({
           mode: "nearest",
           axis: "xy",
           intersect: false,
-          yAlign: "bottom",
-          caretSize: 0,
-          caretPadding: 10,
-          usePointStyle: true,
-          boxHeight: 7,
         },
         scales: {
           x: {
@@ -96,6 +92,10 @@ const LineChartWrapper = ({
               autoSkip: true,
               maxTicksLimit: 5,
             },
+            time: {
+              tooltipFormat: "dd ",
+            },
+            type: "time",
           },
           y: {
             min: 0,
@@ -166,7 +166,7 @@ export const ContainerMetricsChart = ({
   });
 
   // combine all the query data into a singular dataset
-  chartsToCreate.forEach((chartToCreate, idx) => {
+  chartsToCreate.forEach((chartToCreate: any, idx) => {
     const labels: string[] = [];
     const datasets: Dataset[] = [];
     constructQueries.forEach((query, queryIdx) => {
@@ -204,9 +204,9 @@ export const ContainerMetricsChart = ({
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-      {chartsToCreate.map((chartToCreate) => (
+      {chartsToCreate.map((chartToCreate, idx) => (
         <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
-          <LineChartWrapper chart={chartToCreate} />
+          <LineChartWrapper keyId={idx} chart={chartToCreate} />
         </div>
       ))}
     </div>

@@ -16,9 +16,11 @@ import {
   LineElement,
   LinearScale,
   PointElement,
+  TimeScale,
   Title,
   Tooltip,
 } from "chart.js";
+import "chartjs-adapter-date-fns";
 import zoomPlugin from "chartjs-plugin-zoom";
 
 import { RouterProvider } from "react-router";
@@ -29,6 +31,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  TimeScale,
   Title,
   Tooltip,
   Legend,

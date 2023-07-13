@@ -32,7 +32,7 @@ export function AppDetailServicePage() {
   useQuery(
     fetchContainersByReleaseId({
       releaseId: service.currentReleaseId,
-      includeDeleted: true,
+      // includeDeleted: true,
     }),
   );
   const containers = useSelector((s: AppState) =>
