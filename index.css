@@ -27,6 +27,7 @@ html, body, #app {
 .tooltip-inner {
   display: none;
   transform: translate(0%, -110%);
+  width: max-content;
 }
 
 .tooltip:hover .tooltip-inner {
