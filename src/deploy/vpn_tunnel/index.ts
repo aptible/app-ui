@@ -1,5 +1,5 @@
-import { api } from "@app/api";
 import { selectDeploy } from "../slice";
+import { api } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,

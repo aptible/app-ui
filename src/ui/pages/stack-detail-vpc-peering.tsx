@@ -18,8 +18,8 @@ import {
 } from "../shared";
 import { EmptyResourcesTable } from "../shared/empty-resources-table";
 import { fetchVpcPeersByStackId, selectVpcPeersByStackId } from "@app/deploy";
-import { useSelector } from "react-redux";
 import { capitalize } from "@app/string-utils";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const VPCPeerStatusPill = ({

@@ -6,7 +6,6 @@ import {
   selectDatabasesByEnvId,
   selectEnvironmentsByStackId,
   selectEnvironmentsForTableSearch,
-  selectEnvironmentsForTableSearchByStackId,
   selectStackById,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";

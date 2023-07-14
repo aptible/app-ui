@@ -1,12 +1,4 @@
 import {
-  fetchVpnTunnelsByStackId,
-  selectVpnTunnelByStackId,
-} from "@app/deploy";
-import { AppState } from "@app/types";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { useQuery } from "saga-query/react";
-import {
   Box,
   Button,
   ButtonLinkExternal,
@@ -17,8 +9,16 @@ import {
   Td,
   tokens,
 } from "../shared";
+import {
+  fetchVpnTunnelsByStackId,
+  selectVpnTunnelByStackId,
+} from "@app/deploy";
+import { AppState } from "@app/types";
 import classNames from "classnames";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 
 export const StackDetailVpnTunnelsPage = () => {
   const { id = "" } = useParams();

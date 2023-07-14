@@ -1,11 +1,11 @@
 import { selectDeploy } from "../slice";
+import { api } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import { api } from "@app/api";
 import { AppState, DeployVpcPeer, LinkResponse } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
