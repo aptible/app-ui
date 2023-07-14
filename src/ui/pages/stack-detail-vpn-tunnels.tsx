@@ -8,13 +8,17 @@ import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
 import {
   Box,
+  Button,
+  ButtonLinkExternal,
   EmptyResourcesTable,
+  IconExternalLink,
   LoadResources,
   TableHead,
   Td,
   tokens,
 } from "../shared";
 import classNames from "classnames";
+import { Link } from "react-router-dom";
 
 export const StackDetailVpnTunnelsPage = () => {
   const { id = "" } = useParams();
@@ -25,6 +29,26 @@ export const StackDetailVpnTunnelsPage = () => {
 
   return (
     <div className="mb-4">
+      <Box className="mb-4">
+        <ButtonLinkExternal
+          href="https://www.aptible.com/docs/network-integrations"
+          className="relative float-right"
+          variant="white"
+          size="sm"
+        >
+          View Docs
+          <IconExternalLink className="inline ml-1 h-5 mt-0" />
+        </ButtonLinkExternal>
+        <p className="flex mb-4 text-gray-500 text-md">
+          Contact support to edit or add new VPN Tunnels.
+        </p>
+        <Link
+          className="hover:no-underline"
+          to="https://www.aptible.com/docs/support"
+        >
+          <Button className="font-semibold">Contact Support</Button>
+        </Link>
+      </Box>
       <LoadResources
         empty={
           <EmptyResourcesTable

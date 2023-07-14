@@ -4,6 +4,10 @@ import { useParams } from "react-router";
 import type { AppState, DeployVpcPeer } from "@app/types";
 
 import {
+  Box,
+  Button,
+  ButtonLinkExternal,
+  IconExternalLink,
   LoadResources,
   Pill,
   ResourceListView,
@@ -16,6 +20,7 @@ import { EmptyResourcesTable } from "../shared/empty-resources-table";
 import { fetchVpcPeersByStackId, selectVpcPeersByStackId } from "@app/deploy";
 import { useSelector } from "react-redux";
 import { capitalize } from "@app/string-utils";
+import { Link } from "react-router-dom";
 
 const VPCPeerStatusPill = ({
   vpcPeer,
@@ -79,40 +84,62 @@ export const StackDetailVpcPeeringPage = () => {
   );
 
   return (
-    <LoadResources
-      empty={
-        <EmptyResourcesTable
-          headers={vpcPeersHeaders}
-          titleBar={
+    <div className="mb-4">
+      <Box className="mb-4">
+        <ButtonLinkExternal
+          href="https://www.aptible.com/docs/network-integrations"
+          className="relative float-right"
+          variant="white"
+          size="sm"
+        >
+          View Docs
+          <IconExternalLink className="inline ml-1 h-5 mt-0" />
+        </ButtonLinkExternal>
+        <p className="flex mb-4 text-gray-500 text-md">
+          Contact support to edit or add new VPC Peers.
+        </p>
+        <Link
+          className="hover:no-underline"
+          to="https://www.aptible.com/docs/support"
+        >
+          <Button className="font-semibold">Contact Support</Button>
+        </Link>
+      </Box>
+      <LoadResources
+        empty={
+          <EmptyResourcesTable
+            headers={vpcPeersHeaders}
+            titleBar={
+              <p className="flex text-gray-500 text-base mb-4">
+                {vpcPeers.length} VPC Peer
+                {vpcPeers.length !== 1 && "s"}
+              </p>
+            }
+          />
+        }
+        query={query}
+        isEmpty={vpcPeers.length === 0}
+      >
+        <ResourceListView
+          header={
             <p className="flex text-gray-500 text-base mb-4">
-              {vpcPeers.length} VPC Peer
-              {vpcPeers.length !== 1 && "s"}
+              {vpcPeers.length} VPC Peer{vpcPeers.length !== 1 && "s"}
             </p>
           }
+          tableHeader={<TableHead headers={vpcPeersHeaders} />}
+          tableBody={
+            <>
+              {vpcPeers.map((vpcPeer) => (
+                <tr key={vpcPeer.id}>
+                  <VpcPeerPrimaryCell vpcPeer={vpcPeer} />
+                  <VpcPeerHandle vpcPeer={vpcPeer} />
+                  <VpcPeerDescription vpcPeer={vpcPeer} />
+                </tr>
+              ))}
+            </>
+          }
         />
-      }
-      query={query}
-      isEmpty={vpcPeers.length === 0}
-    >
-      <ResourceListView
-        header={
-          <p className="flex text-gray-500 text-base mb-4">
-            {vpcPeers.length} VPC Peer{vpcPeers.length !== 1 && "s"}
-          </p>
-        }
-        tableHeader={<TableHead headers={vpcPeersHeaders} />}
-        tableBody={
-          <>
-            {vpcPeers.map((vpcPeer) => (
-              <tr key={vpcPeer.id}>
-                <VpcPeerPrimaryCell vpcPeer={vpcPeer} />
-                <VpcPeerHandle vpcPeer={vpcPeer} />
-                <VpcPeerDescription vpcPeer={vpcPeer} />
-              </tr>
-            ))}
-          </>
-        }
-      />
-    </LoadResources>
+      </LoadResources>
+    </div>
   );
 };
