@@ -422,3 +422,34 @@ export interface DeployContainer extends Timestamps {
   updatedAt: string;
   releaseId: string;
 }
+
+export interface DeployVpcPeer extends Timestamps {
+  id: string;
+  connectionId: string;
+  connectionStatus: string;
+  createdAt: string;
+  description: string;
+  peerAccountId: string;
+  peerVpcId: string;
+  stackId: string;
+  updatedAt: string;
+}
+
+export interface DeployVpnTunnel extends Timestamps {
+  id: string;
+  createdAt: string;
+  handle: string;
+  phase1Alg: string;
+  phase1DhGroup: string;
+  phase1Lifetime: string;
+  phase2Alg: string;
+  phase2DhGroup: string;
+  phase2Lifetime: string;
+  perfectForwardSecrecy: string;
+  ourGateway: string;
+  ourNetworks: string[];
+  peerGateway: string;
+  peerNetworks: string[];
+  stackId: string;
+  updatedAt: string;
+}

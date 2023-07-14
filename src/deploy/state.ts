@@ -27,6 +27,8 @@ import {
 import { releaseEntities, releaseReducers } from "./release";
 import { serviceEntities, serviceReducers } from "./service";
 import { stackEntities, stackReducers } from "./stack";
+import { vpcPeerEntities, vpcPeerReducers } from "./vpc_peer";
+import { vpnTunnelEntities, vpnTunnelReducers } from "./vpn_tunnel";
 
 const allReducers: any[] = [
   appReducers,
@@ -46,6 +48,8 @@ const allReducers: any[] = [
   permissionReducers,
   releaseReducers,
   containerReducers,
+  vpcPeerReducers,
+  vpnTunnelReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -76,4 +80,6 @@ export const entities = {
   ...permissionEntities,
   ...releaseEntities,
   ...containerEntities,
+  ...vpcPeerEntities,
+  ...vpnTunnelEntities,
 };
