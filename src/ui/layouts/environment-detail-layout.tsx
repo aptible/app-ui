@@ -79,11 +79,14 @@ export function EnvHeader({
         <DetailInfoItem title="ID">{environment.id}</DetailInfoItem>
         <DetailInfoItem
           title={`${environment.totalAppCount} App${
-            environment.totalAppCount > 0 && "s"
+            environment.totalAppCount > 1 || environment.totalAppCount === 0
+              ? "s"
+              : ""
           }`}
         >
           Using {environment.appContainerCount} container
-          {environment.appContainerCount > 0 && "s"}
+          {environment.appContainerCount > 1 ||
+            (environment.appContainerCount === 0 && "s")}
         </DetailInfoItem>
         <DetailInfoItem title="Backups">
           {environment.totalBackupSize} GB
@@ -92,12 +95,18 @@ export function EnvHeader({
         <DetailInfoItem title="Stack">{stack.name}</DetailInfoItem>
         <DetailInfoItem
           title={`${environment.totalDatabaseCount} Database${
-            environment.totalDatabaseCount > 0 && "s"
+            environment.totalDatabaseCount > 1 ||
+            environment.totalDatabaseCount === 0
+              ? "s"
+              : ""
           }`}
         >
           {environment.databaseContainerCount} container
-          {environment.databaseContainerCount > 0 && "s"} using{" "}
-          {environment.totalDiskSize} GB of disk
+          {environment.databaseContainerCount > 0 ||
+          environment.databaseContainerCount === 0
+            ? "s"
+            : ""}{" "}
+          using {environment.totalDiskSize} GB of disk
         </DetailInfoItem>
         <div />
 
@@ -106,7 +115,7 @@ export function EnvHeader({
         </DetailInfoItem>
         <DetailInfoItem
           title={`${endpoints.length} Endpoint${
-            environment.totalAppCount > 0 ? "s" : ""
+            endpoints.length > 1 || endpoints.length === 0 ? "s" : ""
           }`}
         >
           {endpoints.length <= 5
