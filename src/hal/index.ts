@@ -50,6 +50,10 @@ function transformResourceName(name: string | undefined | null): ResourceType {
       return "release";
     case "containers":
       return "container";
+    case "vpc_peers":
+      return "vpc_peer";
+    case "vpn_tunnels":
+      return "vpn_tunnel";
     default:
       return "unknown";
   }

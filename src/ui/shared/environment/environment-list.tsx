@@ -4,6 +4,7 @@ import {
   fetchAllEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
+  selectEnvironmentsByStackId,
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
@@ -117,6 +118,115 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
+type HeaderTypes =
+  | {
+      resourceHeaderType: "title-bar";
+      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+    }
+  | { resourceHeaderType: "simple-text"; onChange?: null };
+
+const EnvsResourceHeaderTitleBar = ({
+  envs,
+  resourceHeaderType = "title-bar",
+  search = "",
+  onChange,
+}: {
+  envs: DeployEnvironment[];
+  search?: string;
+} & HeaderTypes) => {
+  switch (resourceHeaderType) {
+    case "title-bar":
+      if (!onChange) {
+        return null;
+      }
+      return (
+        <ResourceHeader
+          title="Environments"
+          filterBar={
+            <div className="pt-1">
+              <InputSearch
+                placeholder="Search environments..."
+                search={search}
+                onChange={onChange}
+              />
+              <div className="flex">
+                <p className="flex text-gray-500 mt-4 text-base">
+                  {envs.length} Environment{envs.length !== 1 && "s"}
+                </p>
+                <div className="mt-4">
+                  <Tooltip
+                    fluid
+                    text="Environments are how you separate resources like staging and production."
+                  >
+                    <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
+                  </Tooltip>
+                </div>
+              </div>
+            </div>
+          }
+        />
+      );
+    case "simple-text":
+      return (
+        <p className="flex text-gray-500 text-base mb-4">
+          {envs.length} Environment{envs.length !== 1 && "s"}
+        </p>
+      );
+    default:
+      return null;
+  }
+};
+const environmentHeaders = [
+  "Environment",
+  "Stack",
+  "Last Deployed",
+  "Apps",
+  "Databases",
+];
+
+export function EnvironmentListByStack({ stackId }: { stackId: string }) {
+  const query = useQuery(fetchAllEnvironments());
+  const [params, _] = useSearchParams();
+  const search = params.get("search") || "";
+
+  const environments = useSelector((s: AppState) =>
+    selectEnvironmentsByStackId(s, { stackId }),
+  );
+
+  return (
+    <LoadResources
+      query={query}
+      isEmpty={environments.length === 0 && search === ""}
+    >
+      <ResourceListView
+        header={
+          <EnvsResourceHeaderTitleBar
+            envs={environments}
+            resourceHeaderType="simple-text"
+          />
+        }
+        tableHeader={
+          <TableHead
+            headers={environmentHeaders}
+            rightAlignedFinalCol
+            leftAlignedFirstCol
+            centerAlignedColIndices={[3, 4]}
+          />
+        }
+        tableBody={
+          <>
+            {environments.map((environment) => (
+              <EnvironmentListRow
+                environment={environment}
+                key={environment.id}
+              />
+            ))}
+          </>
+        }
+      />
+    </LoadResources>
+  );
+}
 export function EnvironmentList() {
   const query = useQuery(fetchAllEnvironments());
   const [params, setParams] = useSearchParams();
@@ -136,44 +246,16 @@ export function EnvironmentList() {
     >
       <ResourceListView
         header={
-          <ResourceHeader
-            title="Environments"
-            filterBar={
-              <div className="pt-1">
-                <>
-                  <InputSearch
-                    placeholder="Search environments..."
-                    search={search}
-                    onChange={onChange}
-                  />
-                  <div className="flex">
-                    <p className="flex text-gray-500 mt-4 text-base">
-                      {environments.length} Environment
-                      {environments.length !== 1 ? "s" : ""}
-                    </p>
-                    <div className="mt-4">
-                      <Tooltip
-                        fluid
-                        text="Environments are how you separate resources like staging and production."
-                      >
-                        <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
-                      </Tooltip>
-                    </div>
-                  </div>
-                </>
-              </div>
-            }
+          <EnvsResourceHeaderTitleBar
+            envs={environments}
+            resourceHeaderType="title-bar"
+            search={search}
+            onChange={onChange}
           />
         }
         tableHeader={
           <TableHead
-            headers={[
-              "Environment",
-              "Stack",
-              "Last Deployed",
-              "Apps",
-              "Databases",
-            ]}
+            headers={environmentHeaders}
             rightAlignedFinalCol
             leftAlignedFirstCol
             centerAlignedColIndices={[3, 4]}

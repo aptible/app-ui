@@ -67,7 +67,6 @@ import {
   SsoLoginPage,
   StackDetailEnvironmentsPage,
   StackDetailLayout,
-  StackDetailPage,
   StackDetailVpcPeeringPage,
   StackDetailVpnTunnelsPage,
   StacksPage,
@@ -287,9 +286,6 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <StackDetailPage />,
-              },
-              {
                 path: routes.STACK_DETAIL_ENVS_PATH,
                 element: <StackDetailEnvironmentsPage />,
               },

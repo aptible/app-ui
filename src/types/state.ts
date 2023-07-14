@@ -18,6 +18,8 @@ import type {
   DeployService,
   DeployServiceDefinition,
   DeployStack,
+  DeployVpcPeer,
+  DeployVpnTunnel,
   Permission,
   Timestamps,
 } from "./deploy";
@@ -124,6 +126,8 @@ export interface DeployState {
   permissions: MapEntity<Permission>;
   releases: MapEntity<DeployRelease>;
   containers: MapEntity<DeployContainer>;
+  vpc_peers: MapEntity<DeployVpcPeer>;
+  vpn_tunnels: MapEntity<DeployVpnTunnel>;
 }
 
 export interface AppState extends QueryState {

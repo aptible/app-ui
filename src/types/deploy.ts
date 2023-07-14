@@ -148,6 +148,8 @@ export type ResourceType =
   | "active_plan"
   | "release"
   | "container"
+  | "vpc_peer"
+  | "vpn_tunnel"
   | "unknown";
 
 // https://github.com/aptible/deploy-api/blob/3b197beaa5bcbbed991c1eac73d5c99a4fdf8f95/app/models/operation.rb#L54
@@ -421,4 +423,35 @@ export interface DeployContainer extends Timestamps {
   status: string;
   updatedAt: string;
   releaseId: string;
+}
+
+export interface DeployVpcPeer extends Timestamps {
+  id: string;
+  connectionId: string;
+  connectionStatus: string;
+  createdAt: string;
+  description: string;
+  peerAccountId: string;
+  peerVpcId: string;
+  stackId: string;
+  updatedAt: string;
+}
+
+export interface DeployVpnTunnel extends Timestamps {
+  id: string;
+  createdAt: string;
+  handle: string;
+  phase1Alg: string;
+  phase1DhGroup: string;
+  phase1Lifetime: string;
+  phase2Alg: string;
+  phase2DhGroup: string;
+  phase2Lifetime: string;
+  perfectForwardSecrecy: string;
+  ourGateway: string;
+  ourNetworks: string[];
+  peerGateway: string;
+  peerNetworks: string[];
+  stackId: string;
+  updatedAt: string;
 }
