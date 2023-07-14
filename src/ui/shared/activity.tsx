@@ -119,7 +119,7 @@ const OpActionsCell = ({ op }: OpCellProps) => {
   return (
     <Td>
       <div>
-        <Link to={operationDetailUrl(op.id)} className="hover:no-underline">
+        <Link to={operationDetailUrl(op.id)} className="hover:no-underline flex justify-end mr-4">
           <Button variant="white" color="white" size="sm" className="px-0">
             Logs
           </Button>
@@ -221,6 +221,7 @@ function ActivityTable({
       header={resourceHeaderTitleBar()}
       tableHeader={
         <TableHead
+          rightAlignedFinalCol
           headers={[
             "Resource",
             "Status",
