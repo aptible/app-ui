@@ -5,6 +5,7 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
+import { api } from "@app/api";
 import { AppState, DeployVpcPeer, LinkResponse } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
@@ -92,11 +93,22 @@ export const selectVpcPeersAsList = createSelector(
   selectors.selectTableAsList,
   (vpcPeers) => vpcPeers.sort((a, b) => a.id.localeCompare(b.id)),
 );
+export const selectVpcPeersByStackId = createSelector(
+  selectVpcPeersAsList,
+  (_: AppState, props: { stackId: string }) => props.stackId,
+  (vpcPeers, stackId) => {
+    return vpcPeers.filter((vpcPeer) => vpcPeer.stackId === stackId);
+  },
+);
+
+export const fetchVpcPeersByStackId = api.get<{ id: string }>(
+  "/stacks/:id/vpc_peers",
+);
 
 export const vpcPeerReducers = createReducerMap(slice);
 
 export const vpcPeerEntities = {
-  vpc_peers: defaultEntity({
+  vpc_peer: defaultEntity({
     id: "vpc_peer",
     deserialize: deserializeDeployVpcPeer,
     save: addDeployVpcPeer,

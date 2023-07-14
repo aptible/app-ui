@@ -124,7 +124,7 @@ export const selectVpnTunnelsAsList = createSelector(
 export const vpnTunnelReducers = createReducerMap(slice);
 
 export const vpnTunnelEntities = {
-  vpn_tunnels: defaultEntity({
+  vpn_tunnel: defaultEntity({
     id: "vpn_tunnel",
     deserialize: deserializeDeployVpnTunnel,
     save: addDeployVpnTunnel,

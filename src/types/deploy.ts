@@ -148,6 +148,8 @@ export type ResourceType =
   | "active_plan"
   | "release"
   | "container"
+  | "vpc_peer"
+  | "vpn_tunnel"
   | "unknown";
 
 // https://github.com/aptible/deploy-api/blob/3b197beaa5bcbbed991c1eac73d5c99a4fdf8f95/app/models/operation.rb#L54
