@@ -9,18 +9,10 @@ import { useDispatch } from "react-redux";
 
 const descriptionTextForPlan = (planName: PlanName): string =>
   ({
-    starter: "Begin the search for product-market fit",
-    growth: "Start growing your user base",
+    starter: "Deploy your first few resources",
+    growth: "Begin the search for product-market fit",
     scale: "Scale your product and business",
     enterprise: "Meet the highest requirements for security and reliability",
-  })[planName];
-
-const discountForPlan = (planName: PlanName): string =>
-  ({
-    starter: "",
-    growth: "15% Off included resources",
-    scale: "20% Off included resources",
-    enterprise: "",
   })[planName];
 
 const PlanButton = ({
@@ -73,7 +65,7 @@ const PlanCostBlock = ({
   precedingPlan?: DeployPlan;
 }): ReactElement => {
   return (
-    <div className="flex justify-between mb-4">
+    <div className="flex justify-between mb-2">
       <div>
         <p>Starts at</p>
         <h3 className={tokens.type.h4}>
@@ -116,17 +108,28 @@ const BulletListForPlan = ({
     return (
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
+        <div className="flex">
+          <div className="flex-1"></div>
+          <div className="flex-1 text-center font-semibold">Includes</div>
+          <div className="flex-1 text-center font-semibold">Available</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">Compute</div>
+          <div className="flex-1 text-center">-</div>
+          <div className="flex-1 text-center">3 GB</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">DB Storage</div>
+          <div className="flex-1 text-center">-</div>
+          <div className="flex-1 text-center">20 GB</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">Endpoints</div>
+          <div className="flex-1 text-center">-</div>
+          <div className="flex-1 text-center">1</div>
+        </div>
         <ul>
-          <IconLi>
-            Up to {plan.containerMemoryLimit / 1024}GB RAM for Compute (App &
-            Database Containers)
-          </IconLi>
-          <IconLi>Up to {plan.diskLimit}GB Database Storage</IconLi>
-          <IconLi>Up to {plan.vhostLimit} Endpoint (Load Balancer)</IconLi>
-          <IconLi>
-            Deploy on Shared stacks (Networking and Compute shared with other
-            Aptible customers)
-          </IconLi>
+          <IconLi>Deploy on Shared Stacks (Networking and Compute shared with other Aptible customers)</IconLi>
           <IconLi>Deploy in US East (N. Virginia)</IconLi>
         </ul>
       </>
@@ -135,26 +138,33 @@ const BulletListForPlan = ({
     return (
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
-        <p className="font-semibold text-sm">Everything in Starter, plus:</p>
+        <div className="flex">
+          <div className="flex-1"></div>
+          <div className="flex-1 text-center font-semibold">Includes</div>
+          <div className="flex-1 text-center font-semibold">Available</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">Compute</div>
+          <div className="flex-1 text-center">3 GB</div>
+          <div className="flex-1 text-center">11 GB</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">DB Storage</div>
+          <div className="flex-1 text-center">10 GB</div>
+          <div className="flex-1 text-center">60 GB</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">Endpoints</div>
+          <div className="flex-1 text-center">1</div>
+          <div className="flex-1 text-center">3</div>
+        </div>
         <ul>
-          <IconLi>{discountForPlan(plan.name)}</IconLi>
-          <IconLi>
-            Up to {plan.containerMemoryLimit / 1024}GB RAM for Compute (App &
-            Database Containers), {plan.includedContainerMb / 1024}GB included
-          </IconLi>
-          <IconLi>
-            Up to {plan.diskLimit}GB Database Storage, {plan.includedDiskGb}GB
-            included
-          </IconLi>
-          <IconLi>
-            Up to {plan.vhostLimit} Endpoints (Load Balancers),{" "}
-            {plan.includedVhosts} included
-          </IconLi>
-          <IconLi>
-            Up to {plan.ephemeralSessionLimit} concurrent SSH Sessions for
-            temporary container access
-          </IconLi>
-          <IconLi>3 business hour support response times available</IconLi>
+          <IconLi>15% discount on included resources</IconLi>
+          <IconLi>Up to 2 concurrent SSH Sessions for temporary container access</IconLi>
+          <IconLi>Deploy in 1 region (of your choice)</IconLi>
+          <IconLi>Support: Choose from Standard or Premium</IconLi>
+          <IconLi>Dedicated Stacks (Isolated Tenancy) Available</IconLi>
+          <IconLi>Available HIPAA BAA</IconLi>
         </ul>
       </>
     );
@@ -162,25 +172,30 @@ const BulletListForPlan = ({
     return (
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
-        <p className="font-semibold text-sm">Everything in Growth, plus:</p>
+        <div className="flex">
+          <div className="flex-1"></div>
+          <div className="flex-1 text-center font-semibold">Includes</div>
+          <div className="flex-1 text-center font-semibold">Available</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">Compute</div>
+          <div className="flex-1 text-center">10 GB</div>
+          <div className="flex-1 text-center">40 GB</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">DB Storage</div>
+          <div className="flex-1 text-center">100 GB</div>
+          <div className="flex-1 text-center">200 GB</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">Endpoints</div>
+          <div className="flex-1 text-center">4</div>
+          <div className="flex-1 text-center">20</div>
+        </div>
         <ul>
-          <IconLi>{discountForPlan(plan.name)}</IconLi>
-          <IconLi>
-            Up to {plan.containerMemoryLimit / 1024}GB RAM for Compute (App &
-            Database Containers), {plan.includedContainerMb / 1024}GB included
-          </IconLi>
-          <IconLi>
-            Up to {plan.diskLimit}GB Database Storage, {plan.includedDiskGb}GB
-            included
-          </IconLi>
-          <IconLi>
-            Up to {plan.vhostLimit} Endpoints (Load Balancers),{" "}
-            {plan.includedVhosts} included
-          </IconLi>
-          <IconLi>
-            Up to {plan.ephemeralSessionLimit} concurrent SSH Sessions for
-            temporary container access
-          </IconLi>
+          <IconLi>20% discount on included resources</IconLi>
+          <IconLi>Up to 3 concurrent SSH Sessions for temporary container access</IconLi>
+          <IconLi>Support: Choose from Standard or Premium</IconLi>
           <IconLi>Dedicated Stacks (Isolated Tenancy) Available</IconLi>
           <IconLi>Available HIPAA BAA</IconLi>
         </ul>
@@ -188,19 +203,38 @@ const BulletListForPlan = ({
     );
   } else {
     return (
+      <>
+        <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
+        <div className="flex">
+            <div className="flex-1"></div>
+            <div className="flex-1 text-center font-semibold">Includes</div>
+            <div className="flex-1 text-center font-semibold">Available</div>
+          </div>
+          <div className="flex">
+            <div className="flex-1">Compute</div>
+            <div className="flex-1 text-center">Custom</div>
+            <div className="flex-1 text-center">Unlimited</div>
+          </div>
+          <div className="flex">
+            <div className="flex-1">DB Storage</div>
+            <div className="flex-1 text-center">Custom</div>
+            <div className="flex-1 text-center">Unlimited</div>
+          </div>
+          <div className="flex">
+            <div className="flex-1">Endpoints</div>
+            <div className="flex-1 text-center">Custom</div>
+            <div className="flex-1 text-center">Unlimited</div>
+        </div>
       <ul>
+        <IconLi>No limits on available Compute, Database Storage, or Endpoints</IconLi>
         <IconLi>Deploy in 15+ Regions</IconLi>
-        <IconLi>99.95% Up-time SLA</IconLi>
-        <IconLi>
-          Advanced Networking Features such as IPsec VPNs and VPC Peering
-        </IconLi>
-        <IconLi>HITRUST Inheritance and Security & Compliance Dashboard</IconLi>
-        <IconLi>24/7 Support Response Times Available</IconLi>
-        <IconLi>
-          Custom pricing and payment options with annual commitments and
-          payments
-        </IconLi>
+        <IconLi>99.95% Uptime SLA</IconLi>
+        <IconLi>Advanced Networking Features such as IPsec VPNs and VPC Peering</IconLi>
+        <IconLi>Available HITRUST Inheritance and Security & Compliance Dashboard</IconLi>
+        <IconLi>Support: Choose from Standard, Premium, Enterprise (24/7 Support)</IconLi>
+        <IconLi>Custom pricing and payment options with annual commitments and payments</IconLi>
       </ul>
+      </>
     );
   }
 };
@@ -242,7 +276,7 @@ const PlanCard = ({
   // don't forget helper text on growth/scale/enterprise only (not on starter)
   return (
     <div
-      className={`w-full rounded-lg overflow-hidden bg-white pt-14 px-0 mx-0 border ${borderColor} relative sm:mt-4`}
+      className={`w-full rounded-lg overflow-hidden bg-white pt-14 px-0 mx-0 border ${borderColor} relative mt-4`}
     >
       <div className="mb-8 mx-4" style={{ height: 135, minWidth: 225 }}>
         <div style={{ height: 95 }}>
@@ -302,7 +336,7 @@ export const Plans = ({
   }
 
   return (
-    <div className="md:flex md:flex-row md:justify-between gap-4 mt-4">
+    <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 lg:mx-0 mx-10 mt-4">
       {plans.map((plan, idx) => (
         <PlanCard
           key={plan.id}
