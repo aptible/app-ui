@@ -69,7 +69,7 @@ export function DatabaseHeader({
         </DetailInfoItem>
 
         <DetailInfoItem title="Disk Size">
-          {database.disk?.size || 0} GB
+          {database.disk?.size ? database.disk?.size : 0} GB
         </DetailInfoItem>
         <DetailInfoItem title="Disk Type">
           {database.disk?.ebsVolumeType}
@@ -78,7 +78,7 @@ export function DatabaseHeader({
 
         <DetailInfoItem title="Container Size">N/A</DetailInfoItem>
         <DetailInfoItem title="Disk Encryption">
-          AES-{(database.disk?.keyBytes || 32) * 8}
+          AES-{(database.disk?.keyBytes ? database.disk?.keyBytes : 32) * 8}
         </DetailInfoItem>
         <DetailInfoItem title="Profile">
           {CONTAINER_PROFILES[service.instanceClass].name}
