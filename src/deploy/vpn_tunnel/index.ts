@@ -1,3 +1,4 @@
+import { api } from "@app/api";
 import { selectDeploy } from "../slice";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
@@ -119,6 +120,17 @@ export const { selectTable: selectVpnTunnel } = selectors;
 export const selectVpnTunnelsAsList = createSelector(
   selectors.selectTableAsList,
   (vpnTunnels) => vpnTunnels.sort((a, b) => a.handle.localeCompare(b.handle)),
+);
+export const selectVpnTunnelByStackId = createSelector(
+  selectVpnTunnelsAsList,
+  (_: AppState, props: { stackId: string }) => props.stackId,
+  (vpnTunnels, stackId) => {
+    return vpnTunnels.filter((vpnTunnel) => vpnTunnel.stackId === stackId);
+  },
+);
+
+export const fetchVpnTunnelsByStackId = api.get<{ id: string }>(
+  "/stacks/:id/vpn_tunnels",
 );
 
 export const vpnTunnelReducers = createReducerMap(slice);
