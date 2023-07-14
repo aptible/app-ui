@@ -79,6 +79,8 @@ describe("LogoutPage", () => {
         stacks: {},
         releases: {},
         containers: {},
+        vpc_peers: {},
+        vpn_tunnels: {},
       });
     });
   });
