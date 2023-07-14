@@ -22,7 +22,7 @@ import {
   Td,
   Tooltip,
 } from "../shared";
-import { stackDetailUrl } from "@app/routes";
+import { stackDetailEnvsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { Link, useSearchParams } from "react-router-dom";
 
@@ -60,7 +60,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
             className="w-8 h-8 mr-2"
           />
           <Link
-            to={stackDetailUrl(stack.id)}
+            to={stackDetailEnvsUrl(stack.id)}
             className="text-black hover:text-indigo"
           >
             {stack.name}

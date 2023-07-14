@@ -96,7 +96,7 @@ export const selectVpcPeersAsList = createSelector(
 export const vpcPeerReducers = createReducerMap(slice);
 
 export const vpcPeerEntities = {
-  stack: defaultEntity({
+  vpc_peers: defaultEntity({
     id: "vpc_peer",
     deserialize: deserializeDeployVpcPeer,
     save: addDeployVpcPeer,
