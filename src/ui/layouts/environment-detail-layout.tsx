@@ -146,7 +146,7 @@ function EnvironmentPageHeader(): React.ReactElement {
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByEnvironmentId(s, { envId: environment.id }),
   );
-  const crumbs = [{ name: stack.name, to: stackDetailEnvsUrl(id) }];
+  const crumbs = [{ name: stack.name, to: stackDetailEnvsUrl(stack.id) }];
 
   const tabs: TabItem[] = [
     { name: "Apps", href: `/environments/${id}/apps` },
