@@ -19,9 +19,9 @@ export interface DeployVpnTunnelResponse {
   phase_2_lifetime: string;
   perfect_forward_secrecy: string;
   our_gateway: string;
-  our_networks: string;
+  our_networks: string[];
   peer_gateway: string;
-  peer_networks: string;
+  peer_networks: string[];
   created_at: string;
   updated_at: string;
   _links: {
@@ -45,9 +45,9 @@ export const defaultVpnTunnelResponse = (
     phase_2_lifetime: "",
     perfect_forward_secrecy: "",
     our_gateway: "",
-    our_networks: "",
+    our_networks: [],
     peer_gateway: "",
-    peer_networks: "",
+    peer_networks: [],
     created_at: now,
     updated_at: now,
     _links: { stack: { href: "" } },
@@ -93,9 +93,9 @@ export const defaultDeployVpnTunnel = (
     phase2DhGroup: "",
     phase2Lifetime: "",
     ourGateway: "",
-    ourNetworks: "",
+    ourNetworks: [],
     peerGateway: "",
-    peerNetworks: "",
+    peerNetworks: [],
     perfectForwardSecrecy: "",
     createdAt: now,
     updatedAt: now,
