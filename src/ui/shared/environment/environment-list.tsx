@@ -9,7 +9,7 @@ import {
   selectStackById,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
-import { environmentAppsUrl } from "@app/routes";
+import { environmentAppsUrl, stackDetailEnvsUrl } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
 import { Link, useSearchParams } from "react-router-dom";
 
@@ -96,7 +96,14 @@ const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
       <div>
-        <div className="text-black">{stack.name}</div>
+        <div className="text-black">
+          <Link
+            to={stackDetailEnvsUrl(stack.id)}
+            className={tokens.type["table link"]}
+          >
+            {stack.name}
+          </Link>
+        </div>
         <div className={tokens.type["normal lighter"]}>
           {stack.organizationId ? "Dedicated Stack " : "Shared Stack "}(
           {stack.region})
