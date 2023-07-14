@@ -4,6 +4,7 @@ import {
   fetchAllEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
+  selectEnvironmentsByStackId,
   selectEnvironmentsForTableSearch,
   selectEnvironmentsForTableSearchByStackId,
   selectStackById,
@@ -186,14 +187,11 @@ const environmentHeaders = [
 
 export function EnvironmentListByStack({ stackId }: { stackId: string }) {
   const query = useQuery(fetchAllEnvironments());
-  const [params, setParams] = useSearchParams();
+  const [params, _] = useSearchParams();
   const search = params.get("search") || "";
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value });
-  };
 
   const environments = useSelector((s: AppState) =>
-    selectEnvironmentsForTableSearchByStackId(s, { stackId, search }),
+    selectEnvironmentsByStackId(s, { stackId }),
   );
 
   return (

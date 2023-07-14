@@ -39,9 +39,7 @@ const VpcPeerPrimaryCell = ({ vpcPeer }: { vpcPeer: DeployVpcPeer }) => {
   return (
     <Td className="flex-1">
       <div className="flex">
-        <p className="leading-4">
-          <VPCPeerStatusPill vpcPeer={vpcPeer} />
-        </p>
+        <VPCPeerStatusPill vpcPeer={vpcPeer} />
       </div>
     </Td>
   );
