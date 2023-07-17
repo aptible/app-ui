@@ -20,7 +20,7 @@ export const tokens = {
     "small normal lighter": "text-sm font-normal text-gray-500",
     "medium label": "font-medium text-gray-900",
     darker: "text-gray-900",
-    "normal lighter": "text-gray-500",
+    "normal lighter": "text-gray-500 text-sm",
     "normal blue lighter": "text-blue-500",
     "small lighter": "text-sm text-gray-500",
     textarea:
