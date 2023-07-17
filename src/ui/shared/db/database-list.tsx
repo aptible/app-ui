@@ -36,10 +36,10 @@ export const DatabaseItemView = ({
       <Link to={databaseEndpointsUrl(database.id)} className="flex">
         <img
           src={`/database-types/logo-${database.type}.png`}
-          className="w-8 h-8 mt-1 mr-2"
+          className="w-8 h-8 mr-2 mt-2 align-middle"
           aria-label={`${database.type} Database`}
         />
-        <p className="leading-4">
+        <p className="flex flex-col">
           <span className={tokens.type["table link"]}>{database.handle}</span>
           <br />
           <span className={tokens.type["normal lighter"]}>
