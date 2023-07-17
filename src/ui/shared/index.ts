@@ -46,3 +46,4 @@ export * from "./tooltip";
 export * from "./active-operation-notice";
 export * from "./breadcrumbs";
 export * from "./secret";
+export * from "./feedback";

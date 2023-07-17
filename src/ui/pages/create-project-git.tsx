@@ -53,6 +53,7 @@ import {
   ButtonLinkExternal,
   ErrorResources,
   ExternalLink,
+  FeedbackForm,
   FormGroup,
   IconArrowRight,
   IconChevronDown,
@@ -129,7 +130,6 @@ import {
   selectLatestSucceessScanOp,
 } from "@app/deploy/operation";
 import { selectEnv, selectLegacyDashboardUrl, selectOrigin } from "@app/env";
-import { selectFeedback, setFeedback } from "@app/feedback";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   DbSelectorProps,
@@ -1888,81 +1888,7 @@ const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
 
   return { ops };
 };
-
-const FeedbackForm = () => {
-  const dispatch = useDispatch();
-  const feedback = useSelector(selectFeedback);
-  const [freeformSurveyData, setFreeFormSurveyData] = useState<string>("");
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState<boolean>(false);
-
-  const handleFeedbackSubmission = (e: SyntheticEvent) => {
-    e.preventDefault();
-    setFeedbackSubmitted(true);
-    const w = window as any;
-    if (w.aptible?.event) {
-      if (freeformSurveyData) {
-        w.aptible.event(
-          "feedback.survey.post_deploy_feedback",
-          freeformSurveyData,
-        );
-      }
-    }
-    dispatch(setFeedback({ ...feedback, freeformFeedbackGiven: true }));
-  };
-
-  if (feedbackSubmitted) {
-    return (
-      <StatusBox>
-        <h4 className={`${tokens.type.h4} text-center py-4`}>
-          Thanks for your feedback!
-        </h4>
-      </StatusBox>
-    );
-  }
-
-  const submitButtonClass = freeformSurveyData
-    ? "mt-4"
-    : "mt-4 disabled pointer-events-none hover:bg-indigo-300 bg-indigo-300";
-  const maxFreeformSurveyDataLength = 300;
-
-  return (
-    <StatusBox>
-      <h4 className={tokens.type.h4} />
-      <FormGroup
-        label="Share Feedback"
-        htmlFor="feedback"
-        description="What would you like to change about this deployment experience?"
-      >
-        <textarea
-          maxLength={maxFreeformSurveyDataLength}
-          name="feedback"
-          className={tokens.type.textarea}
-          value={freeformSurveyData}
-          onChange={(e) => setFreeFormSurveyData(e.currentTarget.value)}
-        />
-      </FormGroup>
-      <div>
-        <div className="float-right mr-2">
-          <p className="text-right text-sm">
-            {freeformSurveyData.length} / {maxFreeformSurveyDataLength}
-          </p>
-        </div>
-        <div>
-          <Button
-            disabled={!freeformSurveyData}
-            type="submit"
-            variant="secondary"
-            className={submitButtonClass}
-            onClick={handleFeedbackSubmission}
-            isLoading={false}
-          >
-            Submit Feedback
-          </Button>
-        </div>
-      </div>
-    </StatusBox>
-  );
-};
+// "feedback.survey.post_deploy_feedback",
 
 const VhostRow = ({ vhost }: { vhost: DeployEndpoint }) => {
   const service = useSelector((s: AppState) =>
@@ -2225,7 +2151,10 @@ export const CreateProjectGitStatusPage = () => {
           Edit Configuration
         </ButtonLink>
       </StatusBox>
-      <FeedbackForm />
+      <FeedbackForm
+        feedbackEventName="feedback.survey.post_deploy_feedback"
+        description="What would you like to change about this deployment experience?"
+      />
     </div>
   );
 };

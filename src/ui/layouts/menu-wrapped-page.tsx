@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { selectNav } from "@app/nav";
 
 import { ApplicationSidebar } from "../shared";
+import { Footer } from "../shared/footer";
 
 type Props = {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ export function MenuWrappedPage({ children, header }: Props) {
           {header ? <div className="mb-4">{header}</div> : null}
 
           <main className="flex-1">{children}</main>
+          <Footer />
         </div>
       </div>
     </div>
