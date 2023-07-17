@@ -1,6 +1,7 @@
 import cn from "classnames";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { capitalize } from "@app/string-utils";
 
 import {
   AppItem,
@@ -35,7 +36,7 @@ const StackResource = ({ resource }: { resource: StackItem }) => {
   return (
     <ResourceView>
       <StackItemView stack={resource.data} />
-      <div className="text-black-300 text-sm">{resource.type}</div>
+      <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
     </ResourceView>
   );
 };
@@ -44,7 +45,7 @@ const EnvResource = ({ resource }: { resource: EnvItem }) => {
   return (
     <ResourceView>
       <EnvironmentItemView environment={resource.data} />
-      <div className="text-black-300 text-sm">{resource.type}</div>
+      <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
     </ResourceView>
   );
 };
@@ -53,7 +54,7 @@ const AppResource = ({ resource }: { resource: AppItem }) => {
   return (
     <ResourceView>
       <AppItemView app={resource.data} />
-      <div className="text-black-300 text-sm">{resource.type}</div>
+      <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
     </ResourceView>
   );
 };
@@ -62,7 +63,7 @@ const DbResource = ({ resource }: { resource: DbItem }) => {
   return (
     <ResourceView>
       <DatabaseItemView database={resource.data} />
-      <div className="text-black-300 text-sm">{resource.type}</div>
+      <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
     </ResourceView>
   );
 };
@@ -109,7 +110,7 @@ export const SearchPage = () => {
       <div className="mt-2">
         {search === "" ? null : (
           <div>
-            <div className="text-black-300 text-sm">{resultText}</div>
+            <div className="text-gray-500 mt-4 text-base">{resultText}</div>
             <div>
               {resources.slice(0, SEARCH_DISPLAY_LIMIT).map((resource) => {
                 return (
