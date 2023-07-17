@@ -27,7 +27,7 @@ export const InputSearch = ({
   search,
   onChange,
   placeholder = "Search...",
-  className = "w-1/3",
+  className = "w-[300px]",
   ...props
 }: InputSearchProps) => {
   return (
