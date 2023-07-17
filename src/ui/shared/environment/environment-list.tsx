@@ -27,21 +27,27 @@ interface EnvironmentCellProps {
   environment: DeployEnvironment;
 }
 
+export const EnvironmentItemView = ({
+  environment,
+}: { environment: DeployEnvironment }) => {
+  return (
+    <Link to={environmentAppsUrl(environment.id)} className="flex">
+      <img
+        src="/resource-types/logo-environment.png"
+        className="w-8 h-8 mt-1 mr-2"
+        aria-label="Environment"
+      />
+      <p className="leading-4 mt-2">
+        <span className={tokens.type["table link"]}>{environment.handle}</span>
+      </p>
+    </Link>
+  );
+};
+
 const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
   return (
     <Td>
-      <Link to={environmentAppsUrl(environment.id)} className="flex">
-        <img
-          src="/resource-types/logo-environment.png"
-          className="w-8 h-8 mt-1 mr-2"
-          aria-label="Environment"
-        />
-        <p className="leading-4 mt-2">
-          <span className={tokens.type["table link"]}>
-            {environment.handle}
-          </span>
-        </p>
-      </Link>
+      <EnvironmentItemView environment={environment} />
     </Td>
   );
 };

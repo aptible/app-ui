@@ -17,7 +17,7 @@ import {
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
 import { appServicesUrl, operationDetailUrl } from "@app/routes";
-import type { AppState } from "@app/types";
+import type { AppState, DeployApp } from "@app/types";
 
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
@@ -33,17 +33,23 @@ interface AppCellProps {
   app: DeployAppRow;
 }
 
+export const AppItemView = ({ app }: { app: DeployApp }) => {
+  return (
+    <Link to={appServicesUrl(app.id)} className="flex">
+      <img
+        src="/resource-types/logo-app.png"
+        className="w-8 h-8 mr-2 align-middle"
+        aria-label="App"
+      />
+      <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
+    </Link>
+  );
+};
+
 const AppPrimaryCell = ({ app }: AppCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={appServicesUrl(app.id)} className="flex">
-        <img
-          src="/resource-types/logo-app.png"
-          className="w-8 h-8 mr-2 align-middle"
-          aria-label="App"
-        />
-        <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
-      </Link>
+      <AppItemView app={app} />
     </Td>
   );
 };
