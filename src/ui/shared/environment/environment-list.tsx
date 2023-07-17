@@ -34,12 +34,10 @@ export const EnvironmentItemView = ({
     <Link to={environmentAppsUrl(environment.id)} className="flex">
       <img
         src="/resource-types/logo-environment.png"
-        className="w-8 h-8 mt-1 mr-2"
+        className="w-8 h-8 mr-2 align-middle"
         aria-label="Environment"
       />
-      <p className="leading-4 mt-2">
-        <span className={tokens.type["table link"]}>{environment.handle}</span>
-      </p>
+      <p className={`${tokens.type["table link"]} leading-8`}>{environment.handle}</p>
     </Link>
   );
 };
