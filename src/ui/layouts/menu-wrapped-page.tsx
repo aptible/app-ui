@@ -2,8 +2,7 @@ import { useSelector } from "react-redux";
 
 import { selectNav } from "@app/nav";
 
-import { ApplicationSidebar } from "../shared";
-import { Footer } from "../shared/footer";
+import { ApplicationSidebar, Footer } from "../shared";
 
 type Props = {
   children: React.ReactNode;
