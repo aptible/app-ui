@@ -119,7 +119,9 @@ export function EnvHeader({
           }`}
         >
           {endpoints.length <= 5
-            ? endpoints.map((endpoint) => <EndpointList endpoint={endpoint} />)
+            ? endpoints.map((endpoint) => (
+                <EndpointList key={endpoint.id} endpoint={endpoint} />
+              ))
             : null}
         </DetailInfoItem>
       </DetailInfoGrid>
