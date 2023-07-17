@@ -31,7 +31,7 @@ import {
 
 const ResourceView = ({ children }: { children: React.ReactNode }) => {
   const className = cn(
-    "my-2 p-2 flex items-center justify-between",
+    "my-2 px-3 flex items-center justify-between min-h-[48px]",
     "cursor-pointer",
     "border border-gray-200 rounded-lg",
     "bg-white hover:bg-black-50",
