@@ -108,7 +108,7 @@ export function EnvHeader({
             : ""}{" "}
           using {environment.totalDiskSize} GB of disk
         </DetailInfoItem>
-        <div />
+        <div className="hidden md:block" />
 
         <DetailInfoItem title="Last Deployed">
           {timeAgo(latestOperation.createdAt)} by {capitalize(userName)}

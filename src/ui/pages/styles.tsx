@@ -605,6 +605,7 @@ const DetailBoxes = () => {
   });
 
   const db = defaultDeployDatabase({
+    id: "222",
     type: "postgresql",
     disk: defaultDeployDisk({
       provisionedIops: 1000,
