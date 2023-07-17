@@ -5,8 +5,13 @@ import { Provider } from "react-redux";
 import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
 import { REHYDRATE } from "redux-persist";
 
-import { persistConfig, reducers, rootEntities, sagas } from "@app/app";
-import { ftuxRoutes } from "@app/app/router";
+import {
+  appRoutes,
+  persistConfig,
+  reducers,
+  rootEntities,
+  sagas,
+} from "@app/app";
 import { bootup } from "@app/bootup";
 import { testEnv } from "@app/mocks";
 import { resetReducer } from "@app/reset-store";
@@ -45,7 +50,7 @@ export const setupTestStore = (
  */
 export const setupAppIntegrationTest = (
   {
-    routes = ftuxRoutes,
+    routes = appRoutes,
     initState = {},
     initEntries = [],
   }: Partial<{
@@ -53,7 +58,7 @@ export const setupAppIntegrationTest = (
     initState: Partial<AppState>;
     initEntries: string[];
   }> = {
-    routes: ftuxRoutes,
+    routes: appRoutes,
     initState: {},
     initEntries: [],
   },

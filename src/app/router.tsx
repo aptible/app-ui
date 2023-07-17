@@ -1,4 +1,4 @@
-import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
+import { RouteObject, createBrowserRouter } from "react-router-dom";
 
 import { Tuna } from "./tuna";
 import * as routes from "@app/routes";
@@ -62,7 +62,6 @@ import {
   SearchPage,
   SecuritySettingsPage,
   SettingsPage,
-  SignupPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
@@ -96,7 +95,7 @@ const errorPatch = (appRoute: RouteObject) => ({
 const applyPatches = (appRoute: RouteObject) =>
   errorPatch(trackingPatch(appRoute));
 
-export const ftuxRoutes: RouteObject[] = [
+export const appRoutes: RouteObject[] = [
   {
     path: routes.HOME_PATH,
     element: <AuthRequired />,
@@ -108,163 +107,6 @@ export const ftuxRoutes: RouteObject[] = [
             <DeploymentsPage />
           </CreateProjectLayout>
         ),
-      },
-      {
-        path: routes.LOGOUT_PATH,
-        element: <LogoutPage />,
-      },
-      {
-        path: routes.ELEVATE_PATH,
-        element: <ElevatePage />,
-      },
-
-      // create project routes
-      {
-        path: routes.CREATE_PROJECT_ADD_KEY_PATH,
-        element: (
-          <ElevateRequired>
-            <CreateProjectLayout />
-          </ElevateRequired>
-        ),
-        children: [
-          {
-            index: true,
-            element: <CreateProjectAddKeyPage />,
-          },
-        ],
-      },
-      {
-        path: routes.CREATE_PROJECT_ADD_NAME_PATH,
-        element: <CreateProjectLayout />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectNamePage />,
-          },
-        ],
-      },
-      {
-        path: routes.CREATE_PROJECT_GIT_PATH,
-        element: <CreateProjectLayout />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectGitPage />,
-          },
-        ],
-      },
-      {
-        path: routes.CREATE_PROJECT_SETUP_PATH,
-        element: <CreateProjectLayout />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectFromAccountSetupPage />,
-          },
-        ],
-      },
-      {
-        path: routes.CREATE_PROJECT_GIT_APP_PATH,
-        element: <CreateProjectLayout />,
-        children: [
-          {
-            path: routes.CREATE_PROJECT_GIT_PUSH_PATH,
-            element: <CreateProjectGitPushPage />,
-          },
-          {
-            path: routes.CREATE_PROJECT_GIT_SETTINGS_PATH,
-            element: <CreateProjectGitSettingsPage />,
-          },
-          {
-            path: routes.CREATE_PROJECT_GIT_STATUS_PATH,
-            element: <CreateProjectGitStatusPage />,
-          },
-          {
-            path: routes.CREATE_PROJECT_APP_SETUP_PATH,
-            element: <CreateProjectFromAppSetupPage />,
-          },
-        ],
-      },
-    ],
-  },
-
-  {
-    path: routes.CREATE_PROJECT_PATH,
-    element: <CreateProjectPage />,
-  },
-
-  {
-    path: routes.LOGIN_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <LoginPage />,
-      },
-    ],
-  },
-
-  {
-    path: routes.FORGOT_PASS_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <ForgotPassPage />,
-      },
-    ],
-  },
-
-  {
-    path: routes.RESET_PASSWORD_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <ForgotPassVerifyPage />,
-      },
-    ],
-  },
-
-  {
-    path: routes.VERIFY_EMAIL_PATH,
-    element: <VerifyEmailPage />,
-  },
-
-  {
-    path: routes.VERIFY_EMAIL_REQUEST_PATH,
-    element: <VerifyEmailPage />,
-  },
-
-  {
-    path: routes.SIGNUP_PATH,
-    element: <SignupPage />,
-  },
-
-  {
-    path: routes.NOT_FOUND_PATH,
-    element: <NotFoundPage />,
-  },
-
-  {
-    path: routes.ERROR_PATH,
-    element: <ErrorPage />,
-  },
-
-  {
-    path: "*",
-    element: <NotFoundPage />,
-  },
-].map(applyPatches);
-
-export const appRoutes: RouteObject[] = [
-  {
-    path: routes.HOME_PATH,
-    element: <AuthRequired />,
-    children: [
-      {
-        index: true,
-        element: <Navigate to={routes.appsUrl()} />,
       },
 
       {
@@ -521,6 +363,16 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
+        path: routes.CREATE_PROJECT_SETUP_PATH,
+        element: <CreateProjectLayout />,
+        children: [
+          {
+            index: true,
+            element: <CreateProjectFromAccountSetupPage />,
+          },
+        ],
+      },
+      {
         path: routes.CREATE_PROJECT_ADD_KEY_PATH,
         element: (
           <ElevateRequired>
@@ -705,5 +557,4 @@ export const appRoutes: RouteObject[] = [
   },
 ].map(applyPatches);
 
-export const ftuxRouter = createBrowserRouter(ftuxRoutes);
 export const router = createBrowserRouter(appRoutes);

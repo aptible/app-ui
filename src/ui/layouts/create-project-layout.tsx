@@ -8,7 +8,6 @@ import { homeUrl, logoutUrl } from "@app/routes";
 
 import { AptibleLogo } from "../shared";
 import { HeroBgLayout } from "./hero-bg-layout";
-import { MenuWrappedPage } from "./menu-wrapped-page";
 
 export const CreateProjectLayout = ({
   children,
@@ -21,18 +20,6 @@ export const CreateProjectLayout = ({
 
   const orgSettingsUrl = `${legacyUrl}/organizations/${org.id}/members`;
   const sshSettingsUrl = `${legacyUrl}/settings/protected/ssh`;
-
-  if (origin === "nextgen") {
-    return (
-      <MenuWrappedPage>
-        <HeroBgLayout showLogo={false} width="100%">
-          <div className="min-h-screen -my-16 pt-16">
-            {children ? children : <Outlet />}
-          </div>
-        </HeroBgLayout>
-      </MenuWrappedPage>
-    );
-  }
 
   return (
     <>

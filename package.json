@@ -11,7 +11,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "fmt": "rome check . --apply-unsafe",
+    "fmt": "rome check . --apply-unsafe --verbose",
     "lint.types": "tsc --noEmit",
     "lint.check": "rome ci .",
     "lint.circular": "dpdm --no-tree --no-warning --exit-code circular:1 ./src/app/init.ts",

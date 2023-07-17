@@ -17,7 +17,7 @@ Aptible's PaaS automates the work of provisioning, managing, and scaling infrast
 ```bash
 VITE_AUTH_URL="https://auth.aptible.com"
 VITE_API_URL="https://api.aptible.com"
-VITE_ORIGIN="nextgen"
+VITE_ORIGIN="app"
 ```
 Environment variables point to which API/Auth to use. You can optionally swap them with `*sbx-main` URLs.
 <br>Here's an example:
@@ -29,7 +29,7 @@ VITE_BILLING_URL="http:localhost:4005"
 VITE_LEGACY_DASHBOARD_URL="http://localhost:4200"
 VITE_METRIC_TUNNEL_URL="http://localhost:4006"
 VITE_SENTRY_DSN=""
-VITE_ORIGIN="nextgen"
+VITE_ORIGIN="app"
 VITE_TUNA_ENABLED="false"
 ```
 
@@ -68,7 +68,7 @@ Then re-run `yarn start` and the site should load.
 
 ## Sites
 
-- `prod` https://nextgen.aptible.com
+- `prod` https://app.aptible.com
 - `staging` https://cloud-ui-main.aptible-staging.com
 
 ## Other Yarn Commands
@@ -87,11 +87,9 @@ Once merged to `main` we deploy to `staging`
 This will deploy two apps:
 
 * `app-sbx-main.aptible-sandbox.com` - our critical path for what is currently active on Aptible
-* `nextgen-sbx-main.aptible-sandbox.com` - our planned changes that include cut-over functionality from existing frontend apps
 
 ### Production
 
 1. Create a github release
 2. Deployment paths for above apps:
     * Deployments to `app.aptible.com` will only fire with a `v` semver prefix.
-    * Deployments to `nextgen.aptible.com` will fire on ANY release with a fixed tag.
