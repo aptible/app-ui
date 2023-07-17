@@ -11,7 +11,7 @@ export const Footer = () => {
   return (
     <div>
       <div className="flex border-t border-black-100 pt-4 mt-8">
-        <p className="grow text-gray-500 text-sm pb-4 uppercase">
+        <p className="grow text-gray-500 text-sm uppercase">
           Aptible, Inc. &copy; {new Date().getFullYear()}
         </p>
         <div className="flex md:flex-row flex-col">
@@ -47,7 +47,7 @@ export const Footer = () => {
           </a>
         </div>
       </div>
-      <div className="mb-4">
+      <div className="my-4">
         {showFeedback ? (
           <FeedbackForm
             feedbackEventName="feedback.survey.general_feedback"

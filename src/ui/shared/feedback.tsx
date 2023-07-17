@@ -31,7 +31,7 @@ export const FeedbackForm = ({
     return (
       <StatusBox>
         <h4 className={`${tokens.type.h4} text-center py-4`}>
-          🎉 Thanks for your feedback!
+          Thanks for your feedback!
         </h4>
       </StatusBox>
     );
