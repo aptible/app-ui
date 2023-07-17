@@ -14,6 +14,7 @@ import * as orgs from "@app/organizations";
 import * as redirectPath from "@app/redirect-path";
 import * as resetStore from "@app/reset-store";
 import * as roles from "@app/roles";
+import * as search from "@app/search";
 import * as signal from "@app/signal";
 import * as theme from "@app/theme";
 import * as token from "@app/token";
@@ -40,6 +41,7 @@ const corePackages: any[] = [
   roles,
   nav,
   signal,
+  search,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {

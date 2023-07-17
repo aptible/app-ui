@@ -1,41 +1,42 @@
+import { createSelector } from "@reduxjs/toolkit";
+import { put, select } from "saga-query";
+
+import { thunks } from "@app/api";
 import {
   selectAppsAsList,
   selectDatabasesAsList,
   selectEnvironmentsAsList,
   selectStacksAsList,
 } from "@app/deploy";
+import { createReducerMap, createTable } from "@app/slice-helpers";
 import {
+  AbstractResourceItem,
   AppState,
   DeployApp,
   DeployDatabase,
   DeployEnvironment,
   DeployStack,
+  RecentResourceItem,
 } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-
-interface AbstractResourceItem {
-  id: string;
-  handle: string;
-}
 
 export interface StackItem extends AbstractResourceItem {
   type: "stack";
-  data: DeployStack;
+  data?: DeployStack;
 }
 
 export interface EnvItem extends AbstractResourceItem {
   type: "environment";
-  data: DeployEnvironment;
+  data?: DeployEnvironment;
 }
 
 export interface AppItem extends AbstractResourceItem {
   type: "app";
-  data: DeployApp;
+  data?: DeployApp;
 }
 
 export interface DbItem extends AbstractResourceItem {
   type: "database";
-  data: DeployDatabase;
+  data?: DeployDatabase;
 }
 
 export type ResourceItem = StackItem | EnvItem | AppItem | DbItem;
@@ -51,7 +52,6 @@ export const selectResourcesAsList = createSelector(
       resources.push({
         type: "stack",
         id: stack.id,
-        handle: stack.name.toLocaleLowerCase(),
         data: stack,
       });
     });
@@ -60,7 +60,6 @@ export const selectResourcesAsList = createSelector(
       resources.push({
         type: "environment",
         id: env.id,
-        handle: env.handle.toLocaleLowerCase(),
         data: env,
       });
     });
@@ -69,7 +68,6 @@ export const selectResourcesAsList = createSelector(
       resources.push({
         type: "app",
         id: app.id,
-        handle: app.handle.toLocaleLowerCase(),
         data: app,
       });
     });
@@ -78,7 +76,6 @@ export const selectResourcesAsList = createSelector(
       resources.push({
         type: "database",
         id: db.id,
-        handle: db.handle.toLocaleLowerCase(),
         data: db,
       });
     });
@@ -97,7 +94,17 @@ export const selectResourcesForSearch = createSelector(
     }
 
     return resources.filter((resource) => {
-      const handleMatch = resource.handle.includes(searchLower);
+      let handleMatch = false;
+      if (resource.type === "stack") {
+        handleMatch = resource.data?.name.includes(searchLower) || false;
+      } else if (resource.type === "environment") {
+        handleMatch = resource.data?.handle.includes(searchLower) || false;
+      } else if (resource.type === "app") {
+        handleMatch = resource.data?.handle.includes(searchLower) || false;
+      } else if (resource.type === "database") {
+        handleMatch = resource.data?.handle.includes(searchLower) || false;
+      }
+
       const idMatch = resource.id.includes(searchLower);
       const typeMatch = resource.type.includes(searchLower);
 
@@ -105,3 +112,57 @@ export const selectResourcesForSearch = createSelector(
     });
   },
 );
+
+export const RECENT_RESOURCES_NAME = "recentResources";
+export const slice = createTable<RecentResourceItem>({
+  name: RECENT_RESOURCES_NAME,
+});
+export const { add: addRecentResources, patch: patchRecentResources } =
+  slice.actions;
+const selectors = slice.getSelectors((s: AppState) => s.recentResources);
+const {
+  selectTableAsList: selectRecentResourcesAsList,
+  selectById: selectRecentResourceById,
+} = selectors;
+export const reducers = createReducerMap(slice);
+
+export const selectRecentResourcesByPopularity = createSelector(
+  selectRecentResourcesAsList,
+  (resources) => {
+    return resources.sort((a, b) => {
+      const dateB = new Date(b.lastAccessed).getTime();
+      const dateA = new Date(a.lastAccessed).getTime();
+      if (dateB === dateA) {
+        return b.count - a.count;
+      }
+
+      return dateB - dateA;
+    });
+  },
+);
+
+export const setRecentResource = thunks.create<
+  Pick<RecentResourceItem, "id" | "type">
+>("add-recent-resource", function* (ctx, next) {
+  const recentResource = yield* select(selectRecentResourceById, {
+    id: ctx.payload.id,
+  });
+  const now = new Date().toISOString();
+  if (!recentResource) {
+    yield* put(
+      addRecentResources({
+        [ctx.payload.id]: { ...ctx.payload, count: 1, lastAccessed: now },
+      }),
+    );
+  } else {
+    yield* put(
+      patchRecentResources({
+        [ctx.payload.id]: {
+          count: recentResource.count + 1,
+          lastAccessed: now,
+        },
+      }),
+    );
+  }
+  yield* next();
+});

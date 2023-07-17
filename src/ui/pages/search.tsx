@@ -9,6 +9,7 @@ import {
   EnvItem,
   ResourceItem,
   StackItem,
+  selectRecentResourcesByPopularity,
   selectResourcesForSearch,
 } from "@app/search";
 import { AppState } from "@app/types";
@@ -21,6 +22,12 @@ import {
   InputSearch,
   StackItemView,
 } from "../shared";
+import {
+  selectAppById,
+  selectDatabaseById,
+  selectEnvironmentById,
+  selectStackById,
+} from "@app/deploy";
 
 const ResourceView = ({ children }: { children: React.ReactNode }) => {
   const className = cn(
@@ -33,36 +40,48 @@ const ResourceView = ({ children }: { children: React.ReactNode }) => {
 };
 
 const StackResource = ({ resource }: { resource: StackItem }) => {
+  const stack = useSelector((s: AppState) =>
+    selectStackById(s, { id: resource.id }),
+  );
   return (
     <ResourceView>
-      <StackItemView stack={resource.data} />
+      <StackItemView stack={stack} />
       <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
     </ResourceView>
   );
 };
 
 const EnvResource = ({ resource }: { resource: EnvItem }) => {
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: resource.id }),
+  );
   return (
     <ResourceView>
-      <EnvironmentItemView environment={resource.data} />
+      <EnvironmentItemView environment={env} />
       <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
     </ResourceView>
   );
 };
 
 const AppResource = ({ resource }: { resource: AppItem }) => {
+  const env = useSelector((s: AppState) =>
+    selectAppById(s, { id: resource.id }),
+  );
   return (
     <ResourceView>
-      <AppItemView app={resource.data} />
+      <AppItemView app={env} />
       <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
     </ResourceView>
   );
 };
 
 const DbResource = ({ resource }: { resource: DbItem }) => {
+  const db = useSelector((s: AppState) =>
+    selectDatabaseById(s, { id: resource.id }),
+  );
   return (
     <ResourceView>
-      <DatabaseItemView database={resource.data} />
+      <DatabaseItemView database={db} />
       <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
     </ResourceView>
   );
@@ -92,6 +111,7 @@ export const SearchPage = () => {
   const resources = useSelector((s: AppState) =>
     selectResourcesForSearch(s, { search }),
   );
+  const recentResources = useSelector(selectRecentResourcesByPopularity);
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value });
   const curLimit = Math.min(resources.length, SEARCH_DISPLAY_LIMIT);
@@ -101,14 +121,26 @@ export const SearchPage = () => {
     <MenuWrappedPage>
       <InputSearch search={search} onChange={onChange} className="w-full" />
 
-      {/*<div className="mt-2">
-        <div className="text-black-300">Recent Activity</div>
-      </div>
-
-      <hr className="text-black-300 mt-2" />*/}
-
       <div className="mt-2">
-        {search === "" ? null : (
+        {search === "" ? (
+          <div className="mt-2">
+            <div className="text-black-300">Recent Resources</div>
+            <div>
+              {recentResources.slice(0, 10).map((resource) => {
+                return (
+                  <ResourceItemView key={resource.id} resource={resource} />
+                );
+              })}
+            </div>
+
+            <hr className="text-black-300 my-4" />
+
+            <div className="text-black-300">
+              Search for Stacks, Environments, Apps, and Databases by Name or
+              ID.
+            </div>
+          </div>
+        ) : (
           <div>
             <div className="text-gray-500 mt-4 text-base">{resultText}</div>
             <div>

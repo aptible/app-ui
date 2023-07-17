@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
 import {
@@ -36,6 +36,7 @@ import {
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { setRecentResource } from "@app/search";
 
 export function DatabaseHeader({
   database,
@@ -90,6 +91,11 @@ export function DatabaseHeader({
 
 function DatabasePageHeader() {
   const { id = "" } = useParams();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setRecentResource({ id, type: "database" }));
+  }, []);
+
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
   const [_, setHeartbeat] = useState<Date>(new Date());
   const service = useSelector((s: AppState) =>

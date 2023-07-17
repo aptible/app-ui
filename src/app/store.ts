@@ -5,16 +5,17 @@ import debug from "debug";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
+import { FEEDBACK_NAME } from "@app/feedback";
+import { NAV_NAME } from "@app/nav";
 import { REDIRECT_NAME } from "@app/redirect-path";
 import { resetReducer } from "@app/reset-store";
+import { RECENT_RESOURCES_NAME } from "@app/search";
 import { THEME_NAME } from "@app/theme";
 import { ELEVATED_TOKEN_NAME, TOKEN_NAME } from "@app/token";
 import type { AppState } from "@app/types";
 
 import { reducers, sagas } from "./packages";
 import { sentryErrorReporter } from "./sentry";
-import { FEEDBACK_NAME } from "@app/feedback";
-import { NAV_NAME } from "@app/nav";
 
 interface Props {
   initState?: Partial<AppState>;
@@ -35,6 +36,7 @@ export const persistConfig = {
     NAV_NAME,
     REDIRECT_NAME,
     FEEDBACK_NAME,
+    RECENT_RESOURCES_NAME,
   ],
 };
 

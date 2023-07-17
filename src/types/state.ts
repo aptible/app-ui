@@ -107,6 +107,16 @@ export interface Nav {
   collapsed: boolean;
 }
 
+export interface AbstractResourceItem {
+  id: string;
+  type: "stack" | "environment" | "app" | "database";
+}
+
+export interface RecentResourceItem extends AbstractResourceItem {
+  count: number;
+  lastAccessed: string;
+}
+
 export interface DeployState {
   apps: MapEntity<DeployApp>;
   certificates: MapEntity<DeployCertificate>;
@@ -152,4 +162,5 @@ export interface AppState extends QueryState {
   roles: MapEntity<Role>;
   currentUserRoles: string[];
   signal: AbortController;
+  recentResources: MapEntity<RecentResourceItem>;
 }

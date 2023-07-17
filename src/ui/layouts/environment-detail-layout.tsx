@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
 import { timeAgo } from "@app/date";
@@ -33,6 +33,8 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { setRecentResource } from "@app/search";
+import { useEffect } from "react";
 
 const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
   endpoint.type === "tcp" ? (
@@ -131,6 +133,11 @@ export function EnvHeader({
 
 function EnvironmentPageHeader(): React.ReactElement {
   const { id = "" } = useParams();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setRecentResource({ id, type: "environment" }));
+  }, []);
+
   useQuery(fetchEnvironmentById({ id }));
   useQuery(fetchAllApps());
   useQuery(fetchEndpointsByEnvironmentId({ id }));
