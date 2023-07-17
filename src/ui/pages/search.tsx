@@ -46,7 +46,7 @@ const StackResource = ({ resource }: { resource: StackItem }) => {
   return (
     <ResourceView>
       <StackItemView stack={stack} />
-      <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
+      <div className="text-black-300 text-base">{capitalize(resource.type)} ID: {capitalize(resource.id)}</div>
     </ResourceView>
   );
 };
@@ -58,7 +58,7 @@ const EnvResource = ({ resource }: { resource: EnvItem }) => {
   return (
     <ResourceView>
       <EnvironmentItemView environment={env} />
-      <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
+      <div className="text-black-300 text-base">{capitalize(resource.type)} ID: {capitalize(resource.id)}</div>
     </ResourceView>
   );
 };
@@ -70,7 +70,7 @@ const AppResource = ({ resource }: { resource: AppItem }) => {
   return (
     <ResourceView>
       <AppItemView app={env} />
-      <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
+      <div className="text-black-300 text-base">{capitalize(resource.type)} ID: {capitalize(resource.id)}</div>
     </ResourceView>
   );
 };
@@ -82,7 +82,7 @@ const DbResource = ({ resource }: { resource: DbItem }) => {
   return (
     <ResourceView>
       <DatabaseItemView database={db} />
-      <div className="text-black-300 text-sm">{capitalize(resource.type)}</div>
+      <div className="text-black-300 text-base">{capitalize(resource.type)} ID: {capitalize(resource.id)}</div>
     </ResourceView>
   );
 };
@@ -123,7 +123,7 @@ export const SearchPage = () => {
 
       <div className="mt-2">
         {search === "" ? (
-          <div className="mt-2">
+          <div className="mt-4">
             <div className="text-black-300">Recent Resources</div>
             <div>
               {recentResources.slice(0, 10).map((resource) => {
@@ -135,7 +135,7 @@ export const SearchPage = () => {
 
             <hr className="text-black-300 my-4" />
 
-            <div className="text-black-300">
+            <div className="text-black-300 text-center">
               Search for Stacks, Environments, Apps, and Databases by Name or
               ID.
             </div>
