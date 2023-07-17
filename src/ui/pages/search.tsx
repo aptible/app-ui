@@ -93,6 +93,8 @@ export const SearchPage = () => {
   );
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value });
+  const curLimit = Math.min(resources.length, SEARCH_DISPLAY_LIMIT);
+  const resultText = `Displaying ${curLimit} of ${resources.length} results`;
 
   return (
     <MenuWrappedPage>
@@ -107,10 +109,7 @@ export const SearchPage = () => {
       <div className="mt-2">
         {search === "" ? null : (
           <div>
-            <div className="text-black-300 text-sm">
-              Displaying {Math.min(resources.length, SEARCH_DISPLAY_LIMIT)} of{" "}
-              {resources.length} results
-            </div>
+            <div className="text-black-300 text-sm">{resultText}</div>
             <div>
               {resources.slice(0, SEARCH_DISPLAY_LIMIT).map((resource) => {
                 return (
