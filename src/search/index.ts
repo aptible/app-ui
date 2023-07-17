@@ -96,14 +96,12 @@ export const selectResourcesForSearch = createSelector(
       return [];
     }
 
-    return resources
-      .filter((resource) => {
-        const handleMatch = resource.handle.includes(searchLower);
-        const idMatch = resource.id.includes(searchLower);
-        const typeMatch = resource.type.includes(searchLower);
+    return resources.filter((resource) => {
+      const handleMatch = resource.handle.includes(searchLower);
+      const idMatch = resource.id.includes(searchLower);
+      const typeMatch = resource.type.includes(searchLower);
 
-        return handleMatch || idMatch || typeMatch;
-      })
-      .slice(0, 15);
+      return handleMatch || idMatch || typeMatch;
+    });
   },
 );

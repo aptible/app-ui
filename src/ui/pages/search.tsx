@@ -83,6 +83,8 @@ const ResourceItemView = ({ resource }: { resource: ResourceItem }) => {
   return <DbResource resource={resource} />;
 };
 
+const SEARCH_DISPLAY_LIMIT = 15;
+
 export const SearchPage = () => {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -96,12 +98,28 @@ export const SearchPage = () => {
     <MenuWrappedPage>
       <InputSearch search={search} onChange={onChange} className="w-full" />
 
-      <div>
-        {search === ""
-          ? null
-          : resources.map((resource) => {
-              return <ResourceItemView key={resource.id} resource={resource} />;
-            })}
+      {/*<div className="mt-2">
+        <div className="text-black-300">Recent Activity</div>
+      </div>
+
+      <hr className="text-black-300 mt-2" />*/}
+
+      <div className="mt-2">
+        {search === "" ? null : (
+          <div>
+            <div className="text-black-300 text-sm">
+              Displaying {Math.min(resources.length, SEARCH_DISPLAY_LIMIT)} of{" "}
+              {resources.length} results
+            </div>
+            <div>
+              {resources.slice(0, SEARCH_DISPLAY_LIMIT).map((resource) => {
+                return (
+                  <ResourceItemView key={resource.id} resource={resource} />
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </MenuWrappedPage>
   );
