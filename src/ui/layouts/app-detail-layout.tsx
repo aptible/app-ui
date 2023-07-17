@@ -53,7 +53,9 @@ export function AppHeader({ app }: { app: DeployApp }) {
       />
 
       <DetailInfoGrid>
+        <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
         <DetailInfoItem title="Git Remote">{app.gitRepo}</DetailInfoItem>
+        <div className="hidden md:block" />
         <DetailInfoItem title="Last Deployed">
           {app.lastDeployOperation
             ? `${capitalize(
@@ -61,8 +63,6 @@ export function AppHeader({ app }: { app: DeployApp }) {
               )} on ${prettyEnglishDate(app.lastDeployOperation?.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
-        <div />
-
         <DetailInfoItem title="Docker Image">
           {app.currentImage?.dockerRepo}
         </DetailInfoItem>

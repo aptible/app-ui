@@ -605,6 +605,7 @@ const DetailBoxes = () => {
   });
 
   const db = defaultDeployDatabase({
+    id: "222",
     type: "postgresql",
     disk: defaultDeployDisk({
       provisionedIops: 1000,
@@ -618,6 +619,7 @@ const DetailBoxes = () => {
     containerMemoryLimitMb: 4096,
   });
   const stack = defaultDeployStack({
+    id: "222",
     name: "Primary stack",
     organizationId: "123",
     region: "us-east-1",

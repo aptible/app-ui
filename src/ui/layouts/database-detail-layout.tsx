@@ -60,7 +60,7 @@ export function DatabaseHeader({
       />
 
       <DetailInfoGrid>
-        <DetailInfoItem title="Type">{database.type}</DetailInfoItem>
+        <DetailInfoItem title="ID">{database.id}</DetailInfoItem>
         <DetailInfoItem title="Disk IOPS">
           {database.disk?.provisionedIops}
         </DetailInfoItem>
@@ -68,15 +68,15 @@ export function DatabaseHeader({
           {metrics.totalMemoryLimit / 1024} GB
         </DetailInfoItem>
 
-        <DetailInfoItem title="Disk Size">
-          {database.disk?.size ? database.disk?.size : 0} GB
-        </DetailInfoItem>
+        <DetailInfoItem title="Type">{database.type}</DetailInfoItem>
         <DetailInfoItem title="Disk Type">
           {database.disk?.ebsVolumeType}
         </DetailInfoItem>
         <DetailInfoItem title="CPU Share">{metrics.totalCPU}</DetailInfoItem>
 
-        <DetailInfoItem title="Container Size">N/A</DetailInfoItem>
+        <DetailInfoItem title="Disk Size">
+          {database.disk?.size ? database.disk?.size : 0} GB
+        </DetailInfoItem>
         <DetailInfoItem title="Disk Encryption">
           AES-{(database.disk?.keyBytes ? database.disk?.keyBytes : 32) * 8}
         </DetailInfoItem>
