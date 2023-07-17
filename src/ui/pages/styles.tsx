@@ -619,6 +619,7 @@ const DetailBoxes = () => {
     containerMemoryLimitMb: 4096,
   });
   const stack = defaultDeployStack({
+    id: "222",
     name: "Primary stack",
     organizationId: "123",
     region: "us-east-1",
