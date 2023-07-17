@@ -1888,7 +1888,6 @@ const useProjectOps = ({ appId, envId }: { appId: string; envId: string }) => {
 
   return { ops };
 };
-// "feedback.survey.post_deploy_feedback",
 
 const VhostRow = ({ vhost }: { vhost: DeployEndpoint }) => {
   const service = useSelector((s: AppState) =>
