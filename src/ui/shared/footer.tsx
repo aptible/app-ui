@@ -30,7 +30,7 @@ export const Footer = () => {
           <a
             href="https://www.aptible.com/changelog"
             target="_blank"
-            className="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase"
+            className="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase hidden md:block"
             rel="noreferrer"
           >
             View Changelog{" "}
@@ -39,7 +39,7 @@ export const Footer = () => {
           <a
             href="https://dashboard.aptible.com/login"
             target="_blank"
-            className="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase"
+            className="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase hidden md:block"
             rel="noreferrer"
           >
             View Legacy App{" "}
