@@ -1,4 +1,5 @@
 import { Loading } from "./loading";
+import { MetricHorizons } from "./metrics-controls";
 import { TableHead, Td } from "./table";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
 import { DeployContainer } from "@app/types";
@@ -8,7 +9,12 @@ import { useCache } from "saga-query/react";
 export const ContainerMetricsDataTable = ({
   container,
   dataToFetch,
-}: { container: DeployContainer; dataToFetch: string[] }) => {
+  viewHorizon,
+}: {
+  container: DeployContainer;
+  dataToFetch: string[];
+  viewHorizon: MetricHorizons;
+}) => {
   // WARNING - this requires a better long term solution. We are doing this just to set up the
   // queries / transform data for viewing this in browser (as there are concurrent metrictunnel changes to this)
   // We likely will want a cachable/datastore-based solution at some point. This is temporary
@@ -16,7 +22,7 @@ export const ContainerMetricsDataTable = ({
     useCache(
       fetchMetricTunnelDataForContainer({
         containerId: container.id,
-        horizon: "1h",
+        horizon: viewHorizon,
         metric: datumToFetch,
       }),
     ),
