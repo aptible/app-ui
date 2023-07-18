@@ -48,7 +48,7 @@ export const TableHead = ({
 }) => {
   return (
     <thead className="bg-gray-50">
-      <tr>
+      <tr className="group hover:bg-gray-50">
         {headers.map((header, i) => {
           let [className, label] =
             typeof header === "string"

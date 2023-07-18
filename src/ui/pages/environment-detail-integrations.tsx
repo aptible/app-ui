@@ -153,7 +153,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
         tableBody={
           <>
             {logDrains.map((logDrain) => (
-              <tr key={logDrain.id}>
+              <tr className="group hover:bg-gray-50" key={logDrain.id}>
                 <LogDrainPrimaryCell logDrain={logDrain} />
                 <LogDrainHandleCell logDrain={logDrain} />
                 <LogDrainSourcesCell logDrain={logDrain} />
@@ -252,7 +252,7 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
           tableBody={
             <>
               {metricDrains.map((metricDrain) => (
-                <tr key={metricDrain.id}>
+                <tr className="group hover:bg-gray-50" key={metricDrain.id}>
                   <MetricDrainPrimaryCell metricDrain={metricDrain} />
                   <MetricDrainHandleCell metricDrain={metricDrain} />
                   <MetricDrainLastUpdatedCell metricDrain={metricDrain} />

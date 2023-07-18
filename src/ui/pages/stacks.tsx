@@ -47,7 +47,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
   );
 
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <Td>
         <div className="flex items-center">
           <img
@@ -61,7 +61,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
           />
           <Link
             to={stackDetailEnvsUrl(stack.id)}
-            className="text-black hover:text-indigo"
+            className="text-black group-hover:text-indigo"
           >
             {stack.name}
           </Link>

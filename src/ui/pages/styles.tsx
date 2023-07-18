@@ -164,7 +164,7 @@ const Tables = () => (
           {Array(5)
             .fill(0)
             .map((_, rowIdx) => (
-              <tr key={rowIdx}>
+              <tr className="group hover:bg-gray-50" key={rowIdx}>
                 {Array(8)
                   .fill(0)
                   .map((_, colIdx) => (

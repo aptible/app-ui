@@ -198,7 +198,7 @@ export const EnvironmentCertificatesPage = () => {
         tableBody={
           <>
             {certificates.map((certificate) => (
-              <tr key={certificate.id}>
+              <tr className="group hover:bg-gray-50" key={certificate.id}>
                 <CertificatePrimaryCell certificate={certificate} />
                 <CertificateValidDateRangeCell certificate={certificate} />
                 <CertificateIssuerCell certificate={certificate} />
