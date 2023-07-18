@@ -102,7 +102,7 @@ export const selectResourcesForSearch = createSelector(
       }
 
       const idMatch = resource.id.includes(searchLower);
-      const typeMatch = resource.type.includes(searchLower);
+      const typeMatch = resource.type === searchLower;
 
       return handleMatch || idMatch || typeMatch;
     });
@@ -152,7 +152,9 @@ export const selectResourcesByMostVisited = createSelector(
   },
 );
 
-const getResourceStatId = (resource: Pick<ResourceStats, "id" | "type">) => {
+export const getResourceStatId = (
+  resource: Pick<ResourceStats, "id" | "type">,
+) => {
   return `${resource.type}-${resource.id}`;
 };
 

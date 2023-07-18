@@ -4,11 +4,18 @@ import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
 import {
+  selectAppById,
+  selectDatabaseById,
+  selectEnvironmentById,
+  selectStackById,
+} from "@app/deploy";
+import {
   AppItem,
   DbItem,
   EnvItem,
   ResourceItem,
   StackItem,
+  getResourceStatId,
   selectResourcesByLastAccessed,
   selectResourcesByMostVisited,
   selectResourcesForSearch,
@@ -23,12 +30,6 @@ import {
   InputSearch,
   StackItemView,
 } from "../shared";
-import {
-  selectAppById,
-  selectDatabaseById,
-  selectEnvironmentById,
-  selectStackById,
-} from "@app/deploy";
 
 const ResourceView = ({ children }: { children: React.ReactNode }) => {
   const className = cn(
@@ -156,6 +157,48 @@ export const SearchPage = () => {
   const curLimit = Math.min(resources.length, SEARCH_DISPLAY_LIMIT);
   const resultText = `Displaying ${curLimit} of ${resources.length} results`;
 
+  const isSearching = search === "";
+  const noResults = !isSearching && resources.length === 0;
+  const View = () => {
+    if (noResults) {
+      return (
+        <div className="mt-4 text-black-300">
+          No results found for this search query.
+        </div>
+      );
+    }
+
+    if (isSearching) {
+      return (
+        <div className="mt-4">
+          <div className="text-black-300 text-center">
+            Search for Stacks, Environments, Apps, and Databases by Name or ID.
+          </div>
+
+          <hr className="text-black-300 my-4" />
+
+          <EmptySearchView />
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <div className="text-gray-500 mt-4 text-base">{resultText}</div>
+        <div>
+          {resources.slice(0, SEARCH_DISPLAY_LIMIT).map((resource) => {
+            return (
+              <ResourceItemView
+                key={getResourceStatId(resource)}
+                resource={resource}
+              />
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <MenuWrappedPage>
       <InputSearch
@@ -166,29 +209,7 @@ export const SearchPage = () => {
       />
 
       <div className="mt-2">
-        {search === "" ? (
-          <div className="mt-4">
-            <div className="text-black-300 text-center">
-              Search for Stacks, Environments, Apps, and Databases by Name or
-              ID.
-            </div>
-
-            <hr className="text-black-300 my-4" />
-
-            <EmptySearchView />
-          </div>
-        ) : (
-          <div>
-            <div className="text-gray-500 mt-4 text-base">{resultText}</div>
-            <div>
-              {resources.slice(0, SEARCH_DISPLAY_LIMIT).map((resource) => {
-                return (
-                  <ResourceItemView key={resource.id} resource={resource} />
-                );
-              })}
-            </div>
-          </div>
-        )}
+        <View />
       </div>
     </MenuWrappedPage>
   );
