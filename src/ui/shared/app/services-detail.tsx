@@ -57,7 +57,7 @@ const serviceListRow = ({
           ${metrics.estimatedCostInDollars}
         </div>
       </Td>
-      <Td className="flex-1">
+      <Td className="flex justify-end mr-4 mt-4">
         <ButtonLink
           className="w-20"
           size="sm"
@@ -108,6 +108,7 @@ export function ServicesOverview({
         }
         tableHeader={
           <TableHead
+            rightAlignedFinalCol
             headers={[
               "Service",
               "Memory Limit",
