@@ -11,7 +11,7 @@ export const tokens = {
 
     link: "font-medium text-sm text-gray-500 hover:text-indigo",
     "table link":
-      "text-sm text-black group-hover:text-indigo hover:text-indigo",
+      "text-black group-hover:text-indigo hover:text-indigo",
 
     "active link": "font-medium text-sm text-gray-700",
     "subdued active link": "font-medium text-sm text-amber-600",

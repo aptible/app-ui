@@ -18,7 +18,7 @@ export const StackItemView = ({ stack }: { stack: DeployStack }) => {
       />
       <Link
         to={stackDetailEnvsUrl(stack.id)}
-        className="text-black group-hover:text-indigo"
+        className="text-black group hover:text-indigo"
       >
         {stack.name}
       </Link>
