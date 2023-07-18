@@ -126,7 +126,12 @@ const EmptySearchView = () => {
           <div className="text-black-300">Recently Viewed</div>
           <div>
             {recentResources.slice(0, 5).map((resource) => {
-              return <ResourceItemView key={resource.id} resource={resource} />;
+              return (
+                <ResourceItemView
+                  key={getResourceStatId(resource)}
+                  resource={resource}
+                />
+              );
             })}
           </div>
         </div>
@@ -137,7 +142,12 @@ const EmptySearchView = () => {
           <div className="text-black-300">Most Visited</div>
           <div>
             {popularResources.slice(0, 5).map((resource) => {
-              return <ResourceItemView key={resource.id} resource={resource} />;
+              return (
+                <ResourceItemView
+                  key={getResourceStatId(resource)}
+                  resource={resource}
+                />
+              );
             })}
           </div>
         </div>

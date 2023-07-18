@@ -125,7 +125,7 @@ export const reducers = createReducerMap(slice);
 export const selectResourcesByLastAccessed = createSelector(
   selectResourceStatsAsList,
   (resourceStats) => {
-    return resourceStats.sort((a, b) => {
+    return [...resourceStats].sort((a, b) => {
       const dateB = new Date(b.lastAccessed).getTime();
       const dateA = new Date(a.lastAccessed).getTime();
       if (dateB === dateA) {
@@ -140,7 +140,7 @@ export const selectResourcesByLastAccessed = createSelector(
 export const selectResourcesByMostVisited = createSelector(
   selectResourceStatsAsList,
   (resources) => {
-    return resources.sort((a, b) => {
+    return [...resources].sort((a, b) => {
       const dateB = new Date(b.lastAccessed).getTime();
       const dateA = new Date(a.lastAccessed).getTime();
       if (b.count === a.count) {
