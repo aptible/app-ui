@@ -59,6 +59,7 @@ import {
   PlansPage,
   ReactRouterErrorElement,
   SSHSettingsPage,
+  SearchPage,
   SecuritySettingsPage,
   SettingsPage,
   SignupPage,
@@ -266,6 +267,11 @@ export const appRoutes: RouteObject[] = [
       {
         index: true,
         element: <Navigate to={routes.appsUrl()} />,
+      },
+
+      {
+        path: routes.SEARCH_PATH,
+        element: <SearchPage />,
       },
 
       {

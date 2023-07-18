@@ -9,6 +9,7 @@ import {
   IconHeart,
   IconLayers,
   IconPlusCircle,
+  IconSearch,
 } from "./icons";
 import {
   activityUrl,
@@ -17,6 +18,7 @@ import {
   databaseUrl,
   deploymentsUrl,
   environmentsUrl,
+  searchUrl,
   stacksUrl,
 } from "@app/routes";
 
@@ -79,6 +81,22 @@ export const ApplicationSidebar = () => {
         {collapsed ? null : (
           <div className="mt-5 px-3">
             <OrgPicker />
+          </div>
+        )}
+
+        {collapsed ? null : (
+          <div className="mt-2 px-3">
+            <div
+              className="border border-gray-200 bg-white rounded-lg px-2 py-1 flex items-center justify-between h-[36px] cursor-pointer hover:bg-black-50"
+              onClick={() => navigate(searchUrl())}
+              onKeyUp={() => navigate(searchUrl())}
+            >
+              <div className="flex items-center">
+                <IconSearch color="#888C90" variant="sm" />{" "}
+                <div className="ml-2 text-black-300">Search...</div>
+              </div>
+              {/* <div className="text-black-300">&#8984; K</div> */}
+            </div>
           </div>
         )}
 

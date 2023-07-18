@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router";
 
 import { getStackType, selectStackById } from "@app/deploy";
@@ -20,7 +20,9 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
+import { useEffect } from "react";
 
 export function StackHeader({ stack }: { stack: DeployStack }) {
   const stackType = getStackType(stack);
@@ -65,6 +67,11 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
 
 function StackPageHeader() {
   const { id = "" } = useParams();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setResourceStats({ id, type: "stack" }));
+  }, []);
+
   const stack = useSelector((s: AppState) => selectStackById(s, { id }));
   const crumbs = [{ name: "Stacks", to: stacksUrl() }];
 
