@@ -25,7 +25,7 @@ const serviceListRow = ({
   const metrics = calcServiceMetrics(service);
 
   return [
-    <tr key={`${service.id}`}>
+    <tr className="group hover:bg-gray-50" key={`${service.id}`}>
       <Td className="flex-1 pl-4">
         <div className={tokens.type.darker}>{service.handle}</div>
         <div className={tokens.type["normal lighter"]}>ID: {service.id}</div>
@@ -69,7 +69,11 @@ const serviceListRow = ({
       </Td>
     </tr>,
     service.command ? (
-      <tr key={`${service.id}.${service.command}`} className="border-none">
+      <tr
+        className="group hover:bg-gray-50"
+        key={`${service.id}.${service.command}`}
+        className="border-none"
+      >
         <td colSpan={7} className="p-4">
           <span className="text-sm text-gray-500">Command</span>
           <div>

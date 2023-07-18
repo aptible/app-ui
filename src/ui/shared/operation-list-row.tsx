@@ -104,7 +104,7 @@ const DownloadLogsCell = ({ operation }: OperationCellProps) => {
 
 export const OperationListRow = ({ operation }: OperationCellProps) => {
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <OperationPrimaryCell operation={operation} />
       <OperationCell operation={operation} />
       <ViewLogsCell operation={operation} />

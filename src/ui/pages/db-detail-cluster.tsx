@@ -46,7 +46,7 @@ const clusterDatabaseRow = ({
   }
   const metrics = calcMetrics([service]);
   return (
-    <tr key={`${clusterDatabase.id}`}>
+    <tr className="group hover:bg-gray-50" key={`${clusterDatabase.id}`}>
       <Td className="flex-1 pl-4">
         <Link to={databaseEndpointsUrl(clusterDatabase.id)}>
           <div className={tokens.type.darker}>{clusterDatabase.handle}</div>

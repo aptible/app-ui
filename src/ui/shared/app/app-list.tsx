@@ -122,7 +122,7 @@ const AppLastOpCell = ({ app }: AppCellProps) => {
 
 const AppListRow = ({ app }: AppCellProps) => {
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <AppPrimaryCell app={app} />
       <EnvStackCell environmentId={app.environmentId} />
       <AppServicesCell app={app} />

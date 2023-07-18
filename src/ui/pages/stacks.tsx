@@ -47,7 +47,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
   );
 
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <Td>
         <StackItemView stack={stack} />
       </Td>
