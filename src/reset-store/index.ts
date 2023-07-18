@@ -9,6 +9,7 @@ import { SIGNAL_NAME, selectSignal, setSignal } from "@app/signal";
 import { createAction } from "@app/slice-helpers";
 import { resetToken } from "@app/token";
 import type { Action, AppState } from "@app/types";
+import { RESOURCE_STATS_NAME } from "@app/search";
 
 export const resetStore = createAction("RESET_STORE");
 
@@ -17,6 +18,7 @@ const ALLOW_LIST: (keyof AppState)[] = [
   ENTITIES_NAME,
   SIGNAL_NAME,
   ENV_NAME,
+  RESOURCE_STATS_NAME,
 ];
 
 const keepState = (
