@@ -5,7 +5,6 @@ import type { PersistConfig } from "redux-persist";
 import { ENV_NAME } from "@app/env";
 import { ENTITIES_NAME } from "@app/hal";
 import { REDIRECT_NAME } from "@app/redirect-path";
-import { RESOURCE_STATS_NAME } from "@app/search";
 import { SIGNAL_NAME, selectSignal, setSignal } from "@app/signal";
 import { createAction } from "@app/slice-helpers";
 import { resetToken } from "@app/token";
@@ -18,7 +17,6 @@ const ALLOW_LIST: (keyof AppState)[] = [
   ENTITIES_NAME,
   SIGNAL_NAME,
   ENV_NAME,
-  RESOURCE_STATS_NAME,
 ];
 
 const keepState = (
