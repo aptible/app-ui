@@ -69,11 +69,7 @@ const serviceListRow = ({
       </Td>
     </tr>,
     service.command ? (
-      <tr
-        className="group hover:bg-gray-50"
-        key={`${service.id}.${service.command}`}
-        className="border-none"
-      >
+      <tr key={`${service.id}.${service.command}`} className="border-none">
         <td colSpan={7} className="p-4">
           <span className="text-sm text-gray-500">Command</span>
           <div>
