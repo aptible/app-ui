@@ -11,8 +11,11 @@ import {
 import { AppState } from "@app/types";
 
 import { LoadResources } from "../shared";
+import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
+  MetricHorizons,
+  MetricTabTypes,
   MetricsHorizonControls,
   MetricsViewControls,
 } from "../shared/metrics-controls";
@@ -24,8 +27,8 @@ import { useState } from "react";
 
 export function AppDetailServicePage() {
   const { id = "", serviceId = "" } = useParams();
-  const [viewTab, setViewTab] = useState<"table" | "chart">("chart");
-  const [viewHorizon, setViewHorizon] = useState<"1h" | "1d" | "1w">("1h");
+  const [viewTab, setViewTab] = useState<MetricTabTypes>("chart");
+  const [viewHorizon, setViewHorizon] = useState<MetricHorizons>("1h");
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const query = useQuery(fetchEnvironmentServices({ id: app.environmentId }));
   const service = useSelector((s: AppState) =>
@@ -56,7 +59,13 @@ export function AppDetailServicePage() {
       <LoadResources query={query} isEmpty={false}>
         {containers.map((container) => (
           <div className="my-4" key={container.id}>
-            {viewTab === "chart" ? null : (
+            {viewTab === "chart" ? (
+              <ContainerMetricsChart
+                container={container}
+                dataToFetch={dataToFetch}
+                viewHorizon={viewHorizon}
+              />
+            ) : (
               <ContainerMetricsDataTable
                 container={container}
                 dataToFetch={dataToFetch}
@@ -69,3 +78,5 @@ export function AppDetailServicePage() {
     </>
   );
 }
+
+export const Component = AppDetailServicePage;
