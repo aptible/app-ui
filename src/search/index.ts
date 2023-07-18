@@ -101,8 +101,8 @@ export const selectResourcesForSearch = createSelector(
         handleMatch = resource.data?.handle.includes(searchLower) || false;
       }
 
-      const idMatch = resource.id.includes(searchLower);
-      const typeMatch = resource.type.includes(searchLower);
+      const idMatch = resource.id === searchLower;
+      const typeMatch = resource.type === searchLower;
 
       return handleMatch || idMatch || typeMatch;
     });
@@ -125,7 +125,7 @@ export const reducers = createReducerMap(slice);
 export const selectResourcesByLastAccessed = createSelector(
   selectResourceStatsAsList,
   (resourceStats) => {
-    return resourceStats.sort((a, b) => {
+    return [...resourceStats].sort((a, b) => {
       const dateB = new Date(b.lastAccessed).getTime();
       const dateA = new Date(a.lastAccessed).getTime();
       if (dateB === dateA) {
@@ -140,7 +140,7 @@ export const selectResourcesByLastAccessed = createSelector(
 export const selectResourcesByMostVisited = createSelector(
   selectResourceStatsAsList,
   (resources) => {
-    return resources.sort((a, b) => {
+    return [...resources].sort((a, b) => {
       const dateB = new Date(b.lastAccessed).getTime();
       const dateA = new Date(a.lastAccessed).getTime();
       if (b.count === a.count) {
@@ -152,7 +152,9 @@ export const selectResourcesByMostVisited = createSelector(
   },
 );
 
-const getResourceStatId = (resource: Pick<ResourceStats, "id" | "type">) => {
+export const getResourceStatId = (
+  resource: Pick<ResourceStats, "id" | "type">,
+) => {
   return `${resource.type}-${resource.id}`;
 };
 
