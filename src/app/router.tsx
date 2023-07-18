@@ -324,7 +324,7 @@ export const appRoutes: RouteObject[] = [
               },
               {
                 path: routes.APP_SERVICE_PATH,
-                lazy: () => import("../ui/pages/app-detail-service"),
+                lazy: () => import("@app/ui/pages/app-detail-service"),
               },
               {
                 path: routes.APP_SERVICES_PATH,
@@ -377,7 +377,7 @@ export const appRoutes: RouteObject[] = [
               },
               {
                 path: routes.DATABASE_METRICS_PATH,
-                lazy: () => import("../ui/pages/db-detail-metrics"),
+                lazy: () => import("@app/ui/pages/db-detail-metrics"),
               },
               {
                 path: routes.DATABASE_CLUSTER_PATH,
