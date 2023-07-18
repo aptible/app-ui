@@ -28,25 +28,32 @@ import { capitalize } from "@app/string-utils";
 
 type DatabaseCellProps = { database: DeployDatabase };
 
+export const DatabaseItemView = ({
+  database,
+}: { database: DeployDatabase }) => {
+  return (
+    <div className="flex">
+      <Link to={databaseEndpointsUrl(database.id)} className="flex">
+        <img
+          src={`/database-types/logo-${database.type}.png`}
+          className="w-8 h-8 mr-2 mt-2 align-middle"
+          aria-label={`${database.type} Database`}
+        />
+        <p className="flex flex-col">
+          <span className={tokens.type["table link"]}>{database.handle}</span>
+          <span className={tokens.type["normal lighter"]}>
+            {capitalize(database.type)}
+          </span>
+        </p>
+      </Link>
+    </div>
+  );
+};
+
 const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td className="flex-1">
-      <div className="flex">
-        <Link to={databaseEndpointsUrl(database.id)} className="flex">
-          <img
-            src={`/database-types/logo-${database.type}.png`}
-            className="w-8 h-8 mt-1 mr-2"
-            aria-label={`${database.type} Database`}
-          />
-          <p className="leading-4">
-            <span className={tokens.type["table link"]}>{database.handle}</span>
-            <br />
-            <span className={tokens.type["normal lighter"]}>
-              {capitalize(database.type)}
-            </span>
-          </p>
-        </Link>
-      </div>
+      <DatabaseItemView database={database} />
     </Td>
   );
 };

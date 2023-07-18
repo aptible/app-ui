@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
 import { prettyEnglishDate } from "@app/date";
@@ -35,6 +35,7 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { setResourceStats } from "@app/search";
 import { useQuery } from "saga-query/react";
 
 export function AppHeader({ app }: { app: DeployApp }) {
@@ -73,6 +74,11 @@ export function AppHeader({ app }: { app: DeployApp }) {
 
 function AppPageHeader() {
   const { id = "", serviceId = "" } = useParams();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setResourceStats({ id, type: "app" }));
+  }, []);
+
   useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const service = useSelector((s: AppState) =>
