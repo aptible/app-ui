@@ -36,7 +36,7 @@ import {
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
-import { setRecentResource } from "@app/search";
+import { setResourceStats } from "@app/search";
 
 export function DatabaseHeader({
   database,
@@ -93,7 +93,7 @@ function DatabasePageHeader() {
   const { id = "" } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(setRecentResource({ id, type: "database" }));
+    dispatch(setResourceStats({ id, type: "database" }));
   }, []);
 
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));

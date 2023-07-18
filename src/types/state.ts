@@ -112,7 +112,7 @@ export interface AbstractResourceItem {
   type: "stack" | "environment" | "app" | "database";
 }
 
-export interface RecentResourceItem extends AbstractResourceItem {
+export interface ResourceStats extends AbstractResourceItem {
   count: number;
   lastAccessed: string;
 }
@@ -162,5 +162,5 @@ export interface AppState extends QueryState {
   roles: MapEntity<Role>;
   currentUserRoles: string[];
   signal: AbortController;
-  recentResources: MapEntity<RecentResourceItem>;
+  resourceStats: MapEntity<ResourceStats>;
 }

@@ -35,7 +35,7 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
-import { setRecentResource } from "@app/search";
+import { setResourceStats } from "@app/search";
 import { useQuery } from "saga-query/react";
 
 export function AppHeader({ app }: { app: DeployApp }) {
@@ -76,7 +76,7 @@ function AppPageHeader() {
   const { id = "", serviceId = "" } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(setRecentResource({ id, type: "app" }));
+    dispatch(setResourceStats({ id, type: "app" }));
   }, []);
 
   useQuery(fetchApp({ id }));

@@ -9,7 +9,7 @@ import { FEEDBACK_NAME } from "@app/feedback";
 import { NAV_NAME } from "@app/nav";
 import { REDIRECT_NAME } from "@app/redirect-path";
 import { resetReducer } from "@app/reset-store";
-import { RECENT_RESOURCES_NAME } from "@app/search";
+import { RESOURCE_STATS_NAME } from "@app/search";
 import { THEME_NAME } from "@app/theme";
 import { ELEVATED_TOKEN_NAME, TOKEN_NAME } from "@app/token";
 import type { AppState } from "@app/types";
@@ -36,7 +36,7 @@ export const persistConfig = {
     NAV_NAME,
     REDIRECT_NAME,
     FEEDBACK_NAME,
-    RECENT_RESOURCES_NAME,
+    RESOURCE_STATS_NAME,
   ],
 };
 

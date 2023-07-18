@@ -20,7 +20,7 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
-import { setRecentResource } from "@app/search";
+import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
 import { useEffect } from "react";
 
@@ -69,7 +69,7 @@ function StackPageHeader() {
   const { id = "" } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(setRecentResource({ id, type: "stack" }));
+    dispatch(setResourceStats({ id, type: "stack" }));
   }, []);
 
   const stack = useSelector((s: AppState) => selectStackById(s, { id }));

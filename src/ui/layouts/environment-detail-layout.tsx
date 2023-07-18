@@ -33,7 +33,7 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
-import { setRecentResource } from "@app/search";
+import { setResourceStats } from "@app/search";
 import { useEffect } from "react";
 
 const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
@@ -135,7 +135,7 @@ function EnvironmentPageHeader(): React.ReactElement {
   const { id = "" } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(setRecentResource({ id, type: "environment" }));
+    dispatch(setResourceStats({ id, type: "environment" }));
   }, []);
 
   useQuery(fetchEnvironmentById({ id }));

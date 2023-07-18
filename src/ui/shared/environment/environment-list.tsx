@@ -37,7 +37,9 @@ export const EnvironmentItemView = ({
         className="w-8 h-8 mr-2 align-middle"
         aria-label="Environment"
       />
-      <p className={`${tokens.type["table link"]} leading-8`}>{environment.handle}</p>
+      <p className={`${tokens.type["table link"]} leading-8`}>
+        {environment.handle}
+      </p>
     </Link>
   );
 };

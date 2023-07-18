@@ -1,7 +1,7 @@
+import { capitalize } from "@app/string-utils";
 import cn from "classnames";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { capitalize } from "@app/string-utils";
 
 import {
   AppItem,
@@ -9,7 +9,8 @@ import {
   EnvItem,
   ResourceItem,
   StackItem,
-  selectRecentResourcesByPopularity,
+  selectResourcesByLastAccessed,
+  selectResourcesByMostVisited,
   selectResourcesForSearch,
 } from "@app/search";
 import { AppState } from "@app/types";
@@ -46,7 +47,9 @@ const StackResource = ({ resource }: { resource: StackItem }) => {
   return (
     <ResourceView>
       <StackItemView stack={stack} />
-      <div className="text-black-300 text-base">{capitalize(resource.type)} ID: {capitalize(resource.id)}</div>
+      <div className="text-black-300 text-base">
+        {capitalize(resource.type)} ID: {capitalize(resource.id)}
+      </div>
     </ResourceView>
   );
 };
@@ -58,7 +61,9 @@ const EnvResource = ({ resource }: { resource: EnvItem }) => {
   return (
     <ResourceView>
       <EnvironmentItemView environment={env} />
-      <div className="text-black-300 text-base">{capitalize(resource.type)} ID: {capitalize(resource.id)}</div>
+      <div className="text-black-300 text-base">
+        {capitalize(resource.type)} ID: {capitalize(resource.id)}
+      </div>
     </ResourceView>
   );
 };
@@ -70,7 +75,9 @@ const AppResource = ({ resource }: { resource: AppItem }) => {
   return (
     <ResourceView>
       <AppItemView app={env} />
-      <div className="text-black-300 text-base">{capitalize(resource.type)} ID: {capitalize(resource.id)}</div>
+      <div className="text-black-300 text-base">
+        {capitalize(resource.type)} ID: {capitalize(resource.id)}
+      </div>
     </ResourceView>
   );
 };
@@ -82,7 +89,9 @@ const DbResource = ({ resource }: { resource: DbItem }) => {
   return (
     <ResourceView>
       <DatabaseItemView database={db} />
-      <div className="text-black-300 text-base">{capitalize(resource.type)} ID: {capitalize(resource.id)}</div>
+      <div className="text-black-300 text-base">
+        {capitalize(resource.type)} ID: {capitalize(resource.id)}
+      </div>
     </ResourceView>
   );
 };
@@ -105,13 +114,43 @@ const ResourceItemView = ({ resource }: { resource: ResourceItem }) => {
 
 const SEARCH_DISPLAY_LIMIT = 15;
 
+const EmptySearchView = () => {
+  const recentResources = useSelector(selectResourcesByLastAccessed);
+  const popularResources = useSelector(selectResourcesByMostVisited);
+
+  return (
+    <div>
+      {recentResources.length > 0 ? (
+        <div className="p-2">
+          <div className="text-black-300">Recently Viewed</div>
+          <div>
+            {recentResources.slice(0, 5).map((resource) => {
+              return <ResourceItemView key={resource.id} resource={resource} />;
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      {popularResources.length > 0 ? (
+        <div className="p-2">
+          <div className="text-black-300">Most Visited</div>
+          <div>
+            {popularResources.slice(0, 5).map((resource) => {
+              return <ResourceItemView key={resource.id} resource={resource} />;
+            })}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
 export const SearchPage = () => {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const resources = useSelector((s: AppState) =>
     selectResourcesForSearch(s, { search }),
   );
-  const recentResources = useSelector(selectRecentResourcesByPopularity);
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value });
   const curLimit = Math.min(resources.length, SEARCH_DISPLAY_LIMIT);
@@ -124,21 +163,14 @@ export const SearchPage = () => {
       <div className="mt-2">
         {search === "" ? (
           <div className="mt-4">
-            <div className="text-black-300">Recent Resources</div>
-            <div>
-              {recentResources.slice(0, 10).map((resource) => {
-                return (
-                  <ResourceItemView key={resource.id} resource={resource} />
-                );
-              })}
-            </div>
-
-            <hr className="text-black-300 my-4" />
-
             <div className="text-black-300 text-center">
               Search for Stacks, Environments, Apps, and Databases by Name or
               ID.
             </div>
+
+            <hr className="text-black-300 my-4" />
+
+            <EmptySearchView />
           </div>
         ) : (
           <div>
