@@ -43,6 +43,9 @@ const LineChartWrapper = ({
             zoom: {
               drag: {
                 enabled: true,
+                backgroundColor: "#E7E8E8",
+                borderColor: "#595E63",
+                borderWidth: 1,
               },
               wheel: {
                 enabled: false,
