@@ -122,7 +122,7 @@ const EmptySearchView = () => {
     <div>
       {recentResources.length > 0 ? (
         <div className="py-2">
-          <div className="text-black-300">Recently Viewed</div>
+          <div className="text-black-500">Recently Viewed</div>
           <div>
             {recentResources.slice(0, 5).map((resource) => {
               return (
@@ -138,7 +138,7 @@ const EmptySearchView = () => {
 
       {popularResources.length > 0 ? (
         <div className="py-2">
-          <div className="text-black-300">Most Visited</div>
+          <div className="text-black-500">Most Visited</div>
           <div>
             {popularResources.slice(0, 5).map((resource) => {
               return (
@@ -171,7 +171,7 @@ export const SearchPage = () => {
   const View = () => {
     if (noResults) {
       return (
-        <div className="mt-4 text-black-300">
+        <div className="mt-4 text-black-500">
           No results found for this search query.
         </div>
       );
