@@ -118,7 +118,6 @@ const SEARCH_DISPLAY_LIMIT = 15;
 const EmptySearchView = () => {
   const recentResources = useSelector(selectResourcesByLastAccessed);
   const popularResources = useSelector(selectResourcesByMostVisited);
-
   return (
     <div>
       {recentResources.length > 0 ? (
