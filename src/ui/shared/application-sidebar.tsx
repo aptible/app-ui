@@ -95,7 +95,7 @@ export const ApplicationSidebar = () => {
                 <IconSearch color="#888C90" variant="sm" />{" "}
                 <div className="ml-2 text-black-300">Search...</div>
               </div>
-              <div className="text-black-300">&#8984; K</div>
+              {/* <div className="text-black-300">&#8984; K</div> */}
             </div>
           </div>
         )}
