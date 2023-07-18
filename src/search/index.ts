@@ -101,7 +101,7 @@ export const selectResourcesForSearch = createSelector(
         handleMatch = resource.data?.handle.includes(searchLower) || false;
       }
 
-      const idMatch = resource.id.includes(searchLower);
+      const idMatch = resource.id === searchLower;
       const typeMatch = resource.type === searchLower;
 
       return handleMatch || idMatch || typeMatch;
