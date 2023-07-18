@@ -75,6 +75,8 @@ import {
   UnauthRequired,
   VerifyEmailPage,
 } from "@app/ui";
+import { AppDetailServicePage } from "@app/ui/pages/app-detail-service";
+import { DatabaseMetricsPage } from "@app/ui/pages/db-detail-metrics";
 import { OpDetailPage } from "@app/ui/pages/op-detail";
 import { StylesPage } from "@app/ui/pages/styles";
 
@@ -324,7 +326,8 @@ export const appRoutes: RouteObject[] = [
               },
               {
                 path: routes.APP_SERVICE_PATH,
-                lazy: () => import("@app/ui/pages/app-detail-service"),
+                element: <AppDetailServicePage />,
+                // lazy: () => import("@app/ui/pages/app-detail-service"),
               },
               {
                 path: routes.APP_SERVICES_PATH,
@@ -377,7 +380,8 @@ export const appRoutes: RouteObject[] = [
               },
               {
                 path: routes.DATABASE_METRICS_PATH,
-                lazy: () => import("@app/ui/pages/db-detail-metrics"),
+                element: <DatabaseMetricsPage />,
+                // lazy: () => import("@app/ui/pages/db-detail-metrics"),
               },
               {
                 path: routes.DATABASE_CLUSTER_PATH,

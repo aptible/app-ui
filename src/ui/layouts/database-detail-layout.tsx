@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
@@ -24,7 +24,6 @@ import {
 import type { AppState, DeployDatabase, DeployService } from "@app/types";
 
 import { usePoller } from "../hooks";
-import { useInterval } from "../hooks/use-interval";
 import {
   DetailHeader,
   DetailInfoGrid,
@@ -89,6 +88,17 @@ export function DatabaseHeader({
   );
 }
 
+const DatabaseOperationNotice = ({ id }: { id: string }) => {
+  const poller = useMemo(() => pollDatabaseOperations({ id }), [id]);
+  const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);
+  usePoller({
+    action: poller,
+    cancel,
+  });
+
+  return <ActiveOperationNotice resourceId={id} resourceType="database" />;
+};
+
 function DatabasePageHeader() {
   const { id = "" } = useParams();
   const dispatch = useDispatch();
@@ -97,7 +107,6 @@ function DatabasePageHeader() {
   }, []);
 
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
-  const [_, setHeartbeat] = useState<Date>(new Date());
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
   );
@@ -107,14 +116,6 @@ function DatabasePageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentDatabasesUrl(environment.id) },
   ];
-
-  const poller = useMemo(() => pollDatabaseOperations({ id }), [id]);
-  const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);
-  useInterval(() => setHeartbeat(new Date()), 1000);
-  usePoller({
-    action: poller,
-    cancel,
-  });
 
   const tabs = [
     { name: "Endpoints", href: databaseEndpointsUrl(id) },
@@ -128,7 +129,7 @@ function DatabasePageHeader() {
 
   return (
     <>
-      <ActiveOperationNotice resourceId={id} resourceType="database" />
+      <DatabaseOperationNotice id={id} />
       <DetailPageHeaderView
         breadcrumbs={crumbs}
         title={database ? database.handle : "Loading..."}
