@@ -55,7 +55,7 @@ export function AppDetailServicePage() {
       </div>
       <LoadResources query={query} isEmpty={false}>
         {containers.map((container) => (
-          <div className="my-2" key={container.id}>
+          <div className="my-4" key={container.id}>
             {viewTab === "chart" ? null : (
               <ContainerMetricsDataTable
                 container={container}
