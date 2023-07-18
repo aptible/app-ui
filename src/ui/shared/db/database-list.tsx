@@ -41,7 +41,6 @@ export const DatabaseItemView = ({
         />
         <p className="flex flex-col">
           <span className={tokens.type["table link"]}>{database.handle}</span>
-          <br />
           <span className={tokens.type["normal lighter"]}>
             {capitalize(database.type)}
           </span>

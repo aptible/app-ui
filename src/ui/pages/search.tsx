@@ -158,7 +158,12 @@ export const SearchPage = () => {
 
   return (
     <MenuWrappedPage>
-      <InputSearch search={search} onChange={onChange} className="w-full" />
+      <InputSearch
+        search={search}
+        onChange={onChange}
+        className="w-full"
+        autoFocus
+      />
 
       <div className="mt-2">
         {search === "" ? (

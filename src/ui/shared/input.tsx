@@ -28,6 +28,7 @@ export const InputSearch = ({
   onChange,
   placeholder = "Search...",
   className = "w-[300px]",
+  autoFocus = false,
   ...props
 }: InputSearchProps) => {
   return (
@@ -42,6 +43,7 @@ export const InputSearch = ({
         type="text"
         value={search}
         onChange={onChange}
+        autoFocus={autoFocus}
         className="pl-8 w-full"
       />
     </div>
