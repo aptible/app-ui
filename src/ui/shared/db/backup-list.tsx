@@ -42,7 +42,7 @@ const backupListRow = ({
   backup: BackupResponse;
 }): ReactElement => {
   return (
-    <tr key={`${backup.id}`}>
+    <tr className="group hover:bg-gray-50" key={`${backup.id}`}>
       <Td className="flex-1 pl-4">
         <div className={tokens.type.darker}>
           {prettyEnglishDateWithTime(backup.created_at)}

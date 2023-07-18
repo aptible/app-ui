@@ -121,7 +121,7 @@ const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
 
 const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <EnvironmentPrimaryCell environment={environment} />
       <EnvironmentStackCell environment={environment} />
       <EnvironmentLastDeployedCell environment={environment} />

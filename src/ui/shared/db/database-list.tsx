@@ -192,7 +192,7 @@ export const DatabaseListByOrg = () => {
         tableBody={
           <>
             {dbs.map((db) => (
-              <tr key={db.id}>
+              <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <LastOpCell database={db} />
@@ -249,7 +249,7 @@ export const DatabaseListByEnvironment = ({
         tableBody={
           <>
             {dbs.map((db) => (
-              <tr key={db.id}>
+              <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <LastOpCell database={db} />

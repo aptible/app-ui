@@ -151,7 +151,7 @@ const OpUserCell = ({ op }: OpCellProps) => {
 
 const OpListRow = ({ op }: OpCellProps) => {
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <OpResourceCell op={op} />
       <OpStatusCell op={op} />
       <OpTypeCell op={op} />

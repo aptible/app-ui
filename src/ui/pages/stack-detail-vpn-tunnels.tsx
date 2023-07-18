@@ -77,11 +77,11 @@ export const StackDetailVpnTunnelsPage = () => {
               <table className="min-w-full divide-y divide-gray-300">
                 <TableHead headers={["Gateway", "IP Address"]} />
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  <tr>
+                  <tr className="group hover:bg-gray-50">
                     <Td>Deploy Gateway</Td>
                     <Td>{vpnTunnel.ourGateway}</Td>
                   </tr>
-                  <tr>
+                  <tr className="group hover:bg-gray-50">
                     <Td>Peer Gateway</Td>
                     <Td>{vpnTunnel.peerGateway}</Td>
                   </tr>
@@ -93,32 +93,32 @@ export const StackDetailVpnTunnelsPage = () => {
               <table className="min-w-full divide-y divide-gray-300">
                 <TableHead headers={["IKE Phase", "Parameter", "Value"]} />
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  <tr>
+                  <tr className="group hover:bg-gray-50">
                     <Td>Phase 1</Td>
                     <Td>Algorithm</Td>
                     <Td>{vpnTunnel.phase1Alg}</Td>
                   </tr>
-                  <tr>
+                  <tr className="group hover:bg-gray-50">
                     <Td>Phase 1</Td>
                     <Td>Lifetime</Td>
                     <Td>{vpnTunnel.phase1Lifetime}</Td>
                   </tr>
-                  <tr>
+                  <tr className="group hover:bg-gray-50">
                     <Td>Phase 1</Td>
                     <Td>DH Group</Td>
                     <Td>{vpnTunnel.phase1DhGroup}</Td>
                   </tr>
-                  <tr>
+                  <tr className="group hover:bg-gray-50">
                     <Td>Phase 2</Td>
                     <Td>Algorithm</Td>
                     <Td>{vpnTunnel.phase2Alg}</Td>
                   </tr>
-                  <tr>
+                  <tr className="group hover:bg-gray-50">
                     <Td>Phase 2</Td>
                     <Td>Lifetime</Td>
                     <Td>{vpnTunnel.phase2Lifetime}</Td>
                   </tr>
-                  <tr>
+                  <tr className="group hover:bg-gray-50">
                     <Td>Phase 2</Td>
                     <Td>DH Group</Td>
                     <Td>{vpnTunnel.phase2DhGroup}</Td>
@@ -137,7 +137,7 @@ export const StackDetailVpnTunnelsPage = () => {
                 />
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {vpnTunnel.ourNetworks.map((ourNetwork) => (
-                    <tr key={ourNetwork}>
+                    <tr className="group hover:bg-gray-50" key={ourNetwork}>
                       <Td>{ourNetwork?.[0] || "N/A"}</Td>
                       <Td>{ourNetwork?.[1] || "N/A"}</Td>
                     </tr>
@@ -156,7 +156,7 @@ export const StackDetailVpnTunnelsPage = () => {
                 />
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {vpnTunnel.peerNetworks.map((peerNetwork) => (
-                    <tr key={peerNetwork}>
+                    <tr className="group hover:bg-gray-50" key={peerNetwork}>
                       <Td>{peerNetwork?.[0] || "N/A"}</Td>
                       <Td>{peerNetwork?.[1] || "N/A"}</Td>
                     </tr>

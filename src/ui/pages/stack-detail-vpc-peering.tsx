@@ -130,7 +130,7 @@ export const StackDetailVpcPeeringPage = () => {
           tableBody={
             <>
               {vpcPeers.map((vpcPeer) => (
-                <tr key={vpcPeer.id}>
+                <tr className="group hover:bg-gray-50" key={vpcPeer.id}>
                   <VpcPeerPrimaryCell vpcPeer={vpcPeer} />
                   <VpcPeerHandle vpcPeer={vpcPeer} />
                   <VpcPeerDescription vpcPeer={vpcPeer} />

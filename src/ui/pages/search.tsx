@@ -121,7 +121,7 @@ const EmptySearchView = () => {
   return (
     <div>
       {recentResources.length > 0 ? (
-        <div className="p-2">
+        <div className="py-2">
           <div className="text-black-300">Recently Viewed</div>
           <div>
             {recentResources.slice(0, 5).map((resource) => {
@@ -132,7 +132,7 @@ const EmptySearchView = () => {
       ) : null}
 
       {popularResources.length > 0 ? (
-        <div className="p-2">
+        <div className="py-2">
           <div className="text-black-300">Most Visited</div>
           <div>
             {popularResources.slice(0, 5).map((resource) => {
