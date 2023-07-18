@@ -18,13 +18,13 @@ import {
   LoadResources,
   ResourceHeader,
   ResourceListView,
+  StackItemView,
   TableHead,
   Td,
   Tooltip,
 } from "../shared";
-import { stackDetailEnvsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 export function StacksPage() {
   return (
@@ -49,23 +49,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
   return (
     <tr>
       <Td>
-        <div className="flex items-center">
-          <img
-            src={
-              stackType === "dedicated"
-                ? "/resource-types/logo-dedicated-stack.png"
-                : "/resource-types/logo-stack.png"
-            }
-            alt="stack icon"
-            className="w-8 h-8 mr-2"
-          />
-          <Link
-            to={stackDetailEnvsUrl(stack.id)}
-            className="text-black hover:text-indigo"
-          >
-            {stack.name}
-          </Link>
-        </div>
+        <StackItemView stack={stack} />
       </Td>
       <Td>{stack.region}</Td>
       <Td>{capitalize(stackType)}</Td>

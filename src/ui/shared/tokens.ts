@@ -10,7 +10,7 @@ export const tokens = {
     h4: "text-md font-semibold text-gray-900",
 
     link: "font-medium text-sm text-gray-500 hover:text-indigo",
-    "table link": "text-sm text-black hover:text-indigo",
+    "table link": "text-black hover:text-indigo",
 
     "active link": "font-medium text-sm text-gray-700",
     "subdued active link": "font-medium text-sm text-amber-600",
@@ -20,7 +20,7 @@ export const tokens = {
     "small normal lighter": "text-sm font-normal text-gray-500",
     "medium label": "font-medium text-gray-900",
     darker: "text-gray-900",
-    "normal lighter": "text-gray-500",
+    "normal lighter": "text-gray-500 text-sm",
     "normal blue lighter": "text-blue-500",
     "small lighter": "text-sm text-gray-500",
     textarea:
