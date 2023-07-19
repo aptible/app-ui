@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useLocation, useParams } from "react-router-dom";
 
 import { prettyEnglishDate } from "@app/date";
 import {
@@ -34,6 +34,7 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { appServicePathUrl } from "@app/routes";
 import { setResourceStats } from "@app/search";
 import { useQuery } from "saga-query/react";
 
@@ -71,12 +72,18 @@ export function AppHeader({ app }: { app: DeployApp }) {
   );
 }
 
-const AppHeartbeatNotice = ({ id }: { id: string }) => {
+const AppHeartbeatNotice = ({
+  id,
+  serviceId,
+}: { id: string; serviceId: string }) => {
   const poller = useMemo(() => pollAppOperations({ id }), [id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
+  const { pathname } = useLocation();
+
   usePoller({
     action: poller,
     cancel,
+    skip: pathname === appServicePathUrl(id, serviceId), // TODO - revisitng when ready
   });
 
   return <ActiveOperationNotice resourceId={id} resourceType="app" />;
@@ -120,7 +127,7 @@ function AppPageHeader() {
 
   return (
     <>
-      <AppHeartbeatNotice id={id} />
+      <AppHeartbeatNotice id={id} serviceId={serviceId} />
       <DetailPageHeaderView
         breadcrumbs={crumbs}
         title={serviceId ? service.handle : app.handle}

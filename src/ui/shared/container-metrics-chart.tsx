@@ -1,6 +1,10 @@
-import { ChartToCreate } from "./metrics-controls";
 import { Line } from "react-chartjs-2";
 
+import {
+  ChartToCreate,
+  selectChartDataByMetricsToChartToCreate,
+} from "@app/metric-tunnel";
+import { AppState, MetricHorizons } from "@app/types";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -15,6 +19,7 @@ import {
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 import zoomPlugin from "chartjs-plugin-zoom";
+import { useSelector } from "react-redux";
 
 ChartJS.register(
   CategoryScale,
@@ -121,17 +126,30 @@ const LineChartWrapper = ({
   ) : null;
 
 export const ContainerMetricsChart = ({
-  keyId,
-  chartToCreate,
+  containerId,
+  metricNames,
+  metricHorizon,
 }: {
-  keyId: string;
-  chartToCreate: ChartToCreate;
+  containerId: string;
+  metricNames: string[];
+  metricHorizon: MetricHorizons;
 }) => {
+  const chartToCreate = useSelector((s: AppState) =>
+    selectChartDataByMetricsToChartToCreate(s, {
+      containerId,
+      metricNames,
+      metricHorizon,
+    }),
+  );
+  if (chartToCreate.title === "" || chartToCreate.datasets?.length === 0) {
+    return null;
+  }
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-      <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
-        <LineChartWrapper keyId={keyId} chart={chartToCreate} />
-      </div>
+    <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
+      <LineChartWrapper
+        keyId={`${containerId}-${metricNames.join("-")}-${metricHorizon}`}
+        chart={chartToCreate}
+      />
     </div>
   );
 };

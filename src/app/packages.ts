@@ -7,6 +7,7 @@ import * as feedback from "@app/feedback";
 import * as hal from "@app/hal";
 import * as initData from "@app/initial-data";
 import * as invitations from "@app/invitations";
+import * as metrics from "@app/metric-tunnel";
 import * as mfa from "@app/mfa";
 import * as modal from "@app/modal";
 import * as nav from "@app/nav";
@@ -42,6 +43,7 @@ const corePackages: any[] = [
   nav,
   signal,
   search,
+  metrics,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {

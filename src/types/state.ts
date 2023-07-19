@@ -141,13 +141,15 @@ export interface DeployState {
 }
 
 export type MetricHorizons = "1h" | "1d" | "1w";
+
 export interface ContainerMetrics {
   id: string; // composite of containerId-metricName-metricTimeRange
   serviceId: string;
   containerId: string;
   metricName: string;
+  metricLabel: string;
   metricTimeRange: MetricHorizons;
-  values: (number | null)[];
+  values: { date: string; value: number }[];
 }
 
 export interface AppState extends QueryState {

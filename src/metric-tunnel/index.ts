@@ -1,87 +1,209 @@
-import { cacheTimer, metricTunnelApi, thunks } from "@app/api";
-import { createTable } from "@app/slice-helpers";
-import { ApiGen, AppState, ContainerMetrics, DeployContainer, MetricHorizons } from "@app/types";
-import { ActionWithPayload, all, call } from "saga-query";
+import { metricTunnelApi } from "@app/api";
+import { createReducerMap, createTable } from "@app/slice-helpers";
+import {
+  AppState,
+  ContainerMetrics,
+  DeployContainer,
+  MetricHorizons,
+} from "@app/types";
+import { createSelector } from "@reduxjs/toolkit";
+import { put } from "saga-query";
 
 export interface MetricTunnelContainerResponse {
-  columns: ((string | null | number)[])[];
+  columns: (string | null | number)[][];
 }
+
+export type Dataset = {
+  label?: string;
+  pointRadius?: number;
+  pointHoverRadius?: number;
+  data: number[];
+};
+export type ChartToCreate = {
+  title: string;
+  labels?: string[];
+  datasets?: Dataset[];
+};
+const metricLabelForMemoryLabelsByContainer = (containerId: string) => [
+  `${containerId} (rss + buffers/cache)`,
+  `${containerId} (rss)`,
+];
+const chartTitles: { [key: string]: string[] } = {
+  Memory: ["memory_all"],
+  CPU: ["cpu_pct"],
+  "File System": ["fs"],
+  IOPS: ["iops"],
+  "Load Average": ["la"],
+};
 
 const getContainerMetricsId = ({
   containerId,
   metricName,
-  metricTimeRange,
+  metricLabel,
+  metricHorizon,
 }: {
   containerId: string;
   metricName: string;
-  metricTimeRange: MetricHorizons;
-}): string => `${containerId}-${metricName}-${metricTimeRange}`;
+  metricLabel: string;
+  metricHorizon: MetricHorizons;
+}): string => `${containerId}-${metricName}-${metricLabel}-${metricHorizon}`;
 
 // partial generator for ts object of containermetrics
 interface ContainerMetricPayload {
-  containerId: string,
-  metricName: string,
-  metricTimeRange: MetricHorizons,
-  payload: MetricTunnelContainerResponse,
-  serviceId: string,
+  containerId: string;
+  metricName: string;
+  metricHorizon: MetricHorizons;
+  payload: MetricTunnelContainerResponse;
+  serviceId: string;
 }
 export const deserializeContainerMetricsResponse = ({
   containerId,
   metricName,
-  metricTimeRange,
+  metricHorizon: metricTimeRange,
   payload,
   serviceId,
 }: ContainerMetricPayload): { [key: string]: ContainerMetrics } => {
   const result: { [key: string]: ContainerMetrics } = {};
   const dateColumn = payload.columns.find((column) => column?.[0] === "time_0");
   if (!dateColumn) {
-    return result
+    return result;
   }
 
   const dateData: string[] = dateColumn.slice(1) as string[];
-
   payload.columns.forEach((column) => {
-    const id = getContainerMetricsId({ containerId, metricName, metricTimeRange })
+    let id = "";
     const containerMetric: ContainerMetrics = {
       containerId,
       id,
       serviceId,
-      metricName: '',
+      metricName,
+      metricLabel: "",
       metricTimeRange,
-      values: []
-    }
+      values: [],
+    };
     column.forEach((row, rowNumber) => {
-      if (row === "time_0") {
-        // store the date values for reuse, pluck them on the way back in
-      } else {
-        if (rowNumber === 0 && typeof row === 'string') {
-          containerMetric.metricName = row;
-        } else if (row === null) {
+      if (row !== "time_0" && row !== "time_1") {
+        if (rowNumber === 0 && typeof row === "string") {
+          id = getContainerMetricsId({
+            containerId,
+            metricName,
+            metricLabel: row,
+            metricHorizon: metricTimeRange,
+          });
+          containerMetric.metricLabel = row;
+        } else if (row !== null && typeof row === "number") {
           containerMetric.values.push({
             date: dateData?.[rowNumber] || "",
-            value: 0,
-          })
-        } else if (typeof row === 'number') {
-          containerMetric.values.push({
-            date: dateData?.[rowNumber] || "",
-            value: row
-          })
+            value: row,
+          });
         }
       }
-    })
-    result[id] = containerMetric
-  })
+    });
+    containerMetric.id = id;
+    if (id === "") {
+      return;
+    }
+    result[id] = containerMetric;
+  });
   return result;
-}
+};
 
 const METRIC_TUNNEL_CONTAINER_METRICS = "containerMetrics";
-const slice = createTable<ContainerMetrics>({ name: METRIC_TUNNEL_CONTAINER_METRICS });
+const slice = createTable<ContainerMetrics>({
+  name: METRIC_TUNNEL_CONTAINER_METRICS,
+});
 export const { add: addContainerMetrics } = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => s[METRIC_TUNNEL_CONTAINER_METRICS],
 );
 // TODO - come back for must() if needed
-const { selectTableAsList } = selectors;
+const { selectTableAsList: selectContainerMetricsAsList } = selectors;
+export const selectMetricsByContainer = createSelector(
+  selectContainerMetricsAsList,
+  (_: AppState, p: { containerId: string }) => p.containerId,
+  (containerMetrics, containerId) =>
+    containerMetrics.find(
+      (containerMetric) => containerMetric.containerId === containerId,
+    ),
+);
+export const selectMetricsByMetricContainerHorizon = createSelector(
+  selectContainerMetricsAsList,
+  (_: AppState, p: { containerId: string }) => p.containerId,
+  (_: AppState, p: { metricName: string }) => p.metricName,
+  (_: AppState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
+  (containerMetrics, containerId, metricName, metricHorizon) =>
+    containerMetrics.find(
+      (containerMetric) =>
+        containerMetric.containerId === containerId &&
+        containerMetric.metricName === metricName &&
+        containerMetric.metricTimeRange === metricHorizon,
+    ),
+);
+export const selectChartDataByMetricsToChartToCreate = createSelector(
+  selectContainerMetricsAsList,
+  (_: AppState, p: { containerId: string }) => p.containerId,
+  (_: AppState, p: { metricNames: string[] }) => p.metricNames,
+  (_: AppState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
+  (
+    containerMetrics,
+    containerId,
+    metricNames,
+    metricHorizon,
+  ): ChartToCreate => {
+    let title = "";
+    for (const [chartTitle, chartTitleMetricNames] of Object.entries(
+      chartTitles,
+    )) {
+      if (
+        metricNames.filter((metricName) =>
+          chartTitleMetricNames.includes(metricName),
+        ).length > 0
+      ) {
+        title = chartTitle;
+        break;
+      }
+    }
+    if (title === "") {
+      return {
+        title,
+      };
+    }
+    const result: ChartToCreate = {
+      title,
+    };
+    const metrics = containerMetrics.filter(
+      (containerMetric) =>
+        containerMetric.containerId === containerId &&
+        metricNames.includes(containerMetric.metricName) &&
+        containerMetric.metricTimeRange === metricHorizon,
+    );
+    if (metrics.length === 0) {
+      return result;
+    }
+    // all metrics use the same exact time horizon and currently are sent by the backend
+    // with identical tick counts
+    const labels: string[] = [];
+    const datasets: Dataset[] = [];
+    metrics.forEach((metric, idx) => {
+      const dataset: Dataset = {
+        label: metric.metricLabel,
+        data: [],
+      };
+      metric.values.forEach((metricValue) => {
+        if (idx === 0) {
+          labels.push(metricValue.date);
+        }
+        dataset.data.push(metricValue.value);
+      });
+      datasets.push(dataset);
+    });
+    result.labels = labels;
+    result.datasets = datasets;
+    return result;
+  },
+);
+
+export const reducers = createReducerMap(slice);
 
 const getUtc = (): number => {
   return Date.now();
@@ -91,8 +213,8 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
   Omit<ContainerMetricPayload, "payload">,
   MetricTunnelContainerResponse
 >(
-  `/proxy/:containerId?horizon=:horizon&ts=${getUtc()}&metric=:metric&requestedTicks=600`,
-  function*(ctx, next) {
+  `/proxy/:containerId?horizon=:metricHorizon&ts=${getUtc()}&metric=:metricName&requestedTicks=600`,
+  function* (ctx, next) {
     yield* next();
 
     if (!ctx.json.ok) {
@@ -101,39 +223,9 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
 
     const containerMetrics = deserializeContainerMetricsResponse({
       payload: ctx.json.data,
-      ...ctx.payload
-    })
+      ...ctx.payload,
+    });
 
-    yield* put(addContainerMetrics(containerMetrics))
-  }
+    yield* put(addContainerMetrics(containerMetrics));
+  },
 );
-// export const gatherMetricsForContainers = thunks.create<{
-//   metrics: string[];
-//   ntainers: DeployContainer[ ] ;  
-//     Horizon: MetricHorizons;
-//      er-metric -for-containers", function* (ctx, next) {
-//   { metrics, containers, viewHorizon } = ctx.payload;
-//   iesToExecute = metrics.flatMap((metric) =>
-//     ainers.map((container) =>
-//     gatherMetricForContainer({ 
-//      container, 
-//     metric, 
-//   viewHorizon,
-//     }),
-//     
-//       
-//     t containerDataCtx: any[] = yield* all(queriesToExecute);
-//    (Array.isArray(containerDataCtx)) {
-//   const groupedData = containerDataCtx.map((data: any) => {
-//     if (data.json.ok) {
-//       return data.json.data;
-//     }
-//     });
-//   con sole.log("GROUPED DATA", groupedData);
-//     // process and store this in store some how?
-//     return groupedData;
-//   }
-//
-//   yield* next();
-// });
-

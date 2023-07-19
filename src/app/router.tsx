@@ -326,8 +326,7 @@ export const appRoutes: RouteObject[] = [
               },
               {
                 path: routes.APP_SERVICE_PATH,
-                element: <AppDetailServicePage />,
-                // lazy: () => import("@app/ui/pages/app-detail-service"),
+                lazy: () => import("@app/ui/pages/app-detail-service"),
               },
               {
                 path: routes.APP_SERVICES_PATH,
