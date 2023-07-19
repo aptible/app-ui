@@ -3,7 +3,7 @@ const flex = defaultTheme.flex;
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  purge: ["./src/**/*.{ts,tsx}", "./index.html"],
+  content: ["./src/**/*.{ts,tsx}", "./index.html"],
   darkMode: "class",
   theme: {
     extend: {
@@ -144,6 +144,5 @@ module.exports = {
   plugins: [
     require("@tailwindcss/typography"),
     require("@tailwindcss/forms"),
-    require("@tailwindcss/line-clamp"),
   ],
 };
