@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useLocation, useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 
 import { prettyEnglishDate } from "@app/date";
 import {
@@ -34,7 +34,6 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
-import { appServicePathUrl } from "@app/routes";
 import { setResourceStats } from "@app/search";
 import { useQuery } from "saga-query/react";
 
@@ -60,8 +59,8 @@ export function AppHeader({ app }: { app: DeployApp }) {
         <DetailInfoItem title="Last Deployed">
           {app.lastDeployOperation
             ? `${capitalize(
-                app.lastDeployOperation.type,
-              )} on ${prettyEnglishDate(app.lastDeployOperation?.createdAt)}`
+              app.lastDeployOperation.type,
+            )} on ${prettyEnglishDate(app.lastDeployOperation?.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
         <DetailInfoItem title="Docker Image">

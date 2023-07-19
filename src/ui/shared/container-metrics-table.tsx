@@ -1,5 +1,4 @@
 import { Loading } from "./loading";
-import { MetricHorizons } from "./metrics-controls";
 import { TableHead, Td } from "./table";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
 import { DeployContainer } from "@app/types";
@@ -45,7 +44,7 @@ export const ContainerMetricsDataTable = ({
     query.data.columns.forEach((colDataSeries: (string | number)[]) => {
       const colName =
         typeof colDataSeries[0] === "string" &&
-        colDataSeries[0].includes("time_")
+          colDataSeries[0].includes("time_")
           ? colDataSeries[0]
           : `${dataToFetch[queryIdx]} - ${colDataSeries[0]}`;
       resultantData[colName] = [];

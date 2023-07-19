@@ -3,7 +3,6 @@ import { createReducerMap, createTable } from "@app/slice-helpers";
 import {
   AppState,
   ContainerMetrics,
-  DeployContainer,
   MetricHorizons,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
@@ -24,10 +23,7 @@ export type ChartToCreate = {
   labels?: string[];
   datasets?: Dataset[];
 };
-const metricLabelForMemoryLabelsByContainer = (containerId: string) => [
-  `${containerId} (rss + buffers/cache)`,
-  `${containerId} (rss)`,
-];
+
 const chartTitles: { [key: string]: string[] } = {
   Memory: ["memory_all"],
   CPU: ["cpu_pct"],
@@ -216,7 +212,7 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
   MetricTunnelContainerResponse
 >(
   `/proxy/:containerId?horizon=:metricHorizon&ts=${getUtc()}&metric=:metricName&requestedTicks=600`,
-  function* (ctx, next) {
+  function*(ctx, next) {
     yield* next();
 
     if (!ctx.json.ok) {
