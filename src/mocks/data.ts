@@ -3,9 +3,11 @@ import {
   defaultAppResponse,
   defaultConfigurationResponse,
   defaultDatabaseImageResponse,
+  defaultDatabaseResponse,
   defaultEndpointResponse,
   defaultEnvResponse,
   defaultOperationResponse,
+  defaultPermissionResponse,
   defaultPlanResponse,
   defaultServiceResponse,
   defaultStackResponse,
@@ -89,17 +91,29 @@ export const testRole = defaultRoleResponse({
   },
 });
 
+const testAccountId = createId();
 export const testAccount = defaultEnvResponse({
-  id: createId(),
+  id: testAccountId,
   handle: createText("account"),
   organization_id: testOrg.id,
   _links: {
     stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
     environment: { href: "" },
   },
+  _embedded: {
+    permissions: [
+      defaultPermissionResponse({
+        scope: "deploy",
+        _links: {
+          account: defaultHalHref(
+            `${testEnv.apiUrl}/accounts/${testAccountId}`,
+          ),
+          role: defaultHalHref(`${testEnv.apiUrl}/roles/${testRole.id}`),
+        },
+      }),
+    ],
+  },
 });
-
-export const testDatabaseId = createId();
 
 export const testServiceRails = defaultServiceResponse({
   id: createId(),
@@ -112,12 +126,21 @@ export const testServiceSidekiq = defaultServiceResponse({
   command: "rake sidekiq",
 });
 
-export const testApp = defaultAppResponse({
+const testAppId = createId();
+export const testConfiguration = defaultConfigurationResponse({
   id: createId(),
+  env: { DATABASE_URL: "{{test-app-1-postgres}}" },
+  _links: {
+    resource: defaultHalHref(`${testEnv.apiUrl}/apps/${testAppId}`),
+  },
+});
+
+export const testApp = defaultAppResponse({
+  id: testAppId,
   handle: createText("app"),
   _links: {
     account: { href: `${testEnv.apiUrl}/accounts/${testAccount.id}` },
-    current_configuration: { href: "" },
+    current_configuration: defaultHalHref(),
   },
   _embedded: {
     current_image: null,
@@ -166,6 +189,24 @@ export const testRedisDatabaseImage = defaultDatabaseImageResponse({
   version: "5",
 });
 
+export const testDatabaseId = createId();
+export const testDatabasePostgres = defaultDatabaseResponse({
+  id: testDatabaseId,
+  handle: `${testApp.handle}-postgres`,
+  type: "postgres",
+  connection_url: "postgres://some:val@wow.com:5432",
+  _links: {
+    account: {
+      href: `${testEnv.apiUrl}/accounts/${testAccount.id}`,
+    },
+    initialize_from: { href: "" },
+    database_image: {
+      href: `${testEnv.apiUrl}/database_images/${testPostgresDatabaseImage.id}`,
+    },
+    service: { href: "" },
+  },
+});
+
 export const testDatabaseOp = defaultOperationResponse({
   id: createId(),
   type: "provision",
@@ -212,13 +253,6 @@ export const testActivePlan = defaultActivePlanResponse({
   },
 });
 
-export const testConfiguration = defaultConfigurationResponse({
-  id: createId(),
-  _links: {
-    resource: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
-  },
-});
-
 export const testEnvExpress = defaultEnvResponse({
   id: createId(),
   organization_id: testOrg.id,
@@ -230,6 +264,22 @@ export const testEnvExpress = defaultEnvResponse({
   },
 });
 export const testAppDeployedId = createId();
+const testAppDeployOperation = defaultOperationResponse({
+  id: createId(),
+  type: "deploy",
+  status: "succeeded",
+  updated_at: new Date("2023-04-08T14:00:00.0000").toISOString(),
+  _links: {
+    resource: defaultHalHref(`${testEnv.apiUrl}/apps/${testAppDeployedId}`),
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testEnvExpress.id}`),
+    code_scan_result: defaultHalHref(),
+    ephemeral_sessions: defaultHalHref(),
+    logs: defaultHalHref(),
+    ssh_portal_connections: defaultHalHref(),
+    self: defaultHalHref(),
+    user: defaultHalHref(),
+  },
+});
 export const testAppDeployed = defaultAppResponse({
   id: testAppDeployedId,
   handle: `${testEnvExpress.handle}-app`,
@@ -241,23 +291,12 @@ export const testAppDeployed = defaultAppResponse({
     services: [],
     current_image: null,
     last_operation: null,
-    last_deploy_operation: defaultOperationResponse({
-      id: createId(),
-      type: "deploy",
-      status: "succeeded",
-      updated_at: new Date("2023-04-08T14:00:00.0000").toISOString(),
-      _links: {
-        resource: defaultHalHref(`${testEnv.apiUrl}/apps/${testAppDeployedId}`),
-        account: defaultHalHref(
-          `${testEnv.apiUrl}/accounts/${testEnvExpress.id}`,
-        ),
-        code_scan_result: defaultHalHref(),
-        ephemeral_sessions: defaultHalHref(),
-        logs: defaultHalHref(),
-        ssh_portal_connections: defaultHalHref(),
-        self: defaultHalHref(),
-        user: defaultHalHref(),
-      },
-    }),
+    last_deploy_operation: testAppDeployOperation,
   },
 });
+
+export const testOperations = [
+  testScanOperation,
+  testDatabaseOp,
+  testAppDeployOperation,
+];

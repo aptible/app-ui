@@ -10,6 +10,7 @@ import {
   testEndpoint,
   testEnterprisePlan,
   testEnv,
+  testOperations,
   testOrg,
   testPlan,
   testPostgresDatabaseImage,
@@ -29,6 +30,7 @@ import {
   defaultDatabaseResponse,
   defaultOperationResponse,
 } from "@app/deploy";
+import { defaultHalHref } from "@app/hal";
 import { RestRequest, rest } from "msw";
 
 const isValidToken = (req: RestRequest) => {
@@ -199,6 +201,33 @@ const apiHandlers = [
       }),
     );
   }),
+  rest.get(`${testEnv.apiUrl}/operations/:id`, (req, res, ctx) => {
+    if (!isValidToken(req)) {
+      return res(ctx.status(401));
+    }
+    const op = testOperations.find((op) => `${op.id}` === req.params.id);
+    if (!op) {
+      return res(
+        ctx.json(
+          defaultOperationResponse({
+            id: parseInt(req.params.id as string),
+            status: "succeeded",
+            _links: {
+              resource: { href: `${testEnv.apiUrl}/apps/${req.params.id}` },
+              account: testApp._links.account,
+              code_scan_result: { href: "" },
+              self: { href: "" },
+              ssh_portal_connections: { href: "" },
+              ephemeral_sessions: { href: "" },
+              logs: { href: "" },
+              user: { href: "" },
+            },
+          }),
+        ),
+      );
+    }
+    return res(ctx.json(op));
+  }),
   rest.post(`${testEnv.apiUrl}/apps/:id/operations`, async (req, res, ctx) => {
     if (!isValidToken(req)) {
       return res(ctx.status(401));
@@ -318,7 +347,9 @@ const apiHandlers = [
         handle: data.handle,
         _links: {
           account: { href: `${testEnv.apiUrl}/accounts/${data.account_id}` },
-          current_configuration: { href: "" },
+          current_configuration: defaultHalHref(
+            `${testEnv.apiUrl}/configurations/${testConfiguration.id}`,
+          ),
         },
       }),
     );

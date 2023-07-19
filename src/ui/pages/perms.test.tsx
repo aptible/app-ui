@@ -187,7 +187,7 @@ describe("ButtonDestroy", () => {
         </TestProvider>,
       );
 
-      const createBtn = await screen.findByText(/Destroy/);
+      const createBtn = await screen.findByRole("button", { name: /Destroy/ });
       expect(createBtn).toBeDisabled();
     });
   });

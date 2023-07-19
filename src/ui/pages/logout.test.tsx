@@ -4,17 +4,10 @@ import { useDispatch } from "react-redux";
 
 import { fetchApp } from "@app/deploy";
 import { server, testApp, testEnv } from "@app/mocks";
-import { setupIntegrationTest, waitForToken } from "@app/test";
+import { setupIntegrationTest, sleep, waitForToken } from "@app/test";
 
 import { LogoutPage } from "./logout";
 import { LOGIN_PATH, LOGOUT_PATH, logoutUrl } from "@app/routes";
-
-const sleep = (n: number) =>
-  new Promise<void>((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, n);
-  });
 
 const TestInFlightLogout = () => {
   const dispatch = useDispatch();
@@ -64,6 +57,7 @@ describe("LogoutPage", () => {
       expect(store.getState().deploy).toEqual({
         active_plans: {},
         apps: {},
+        appConfigs: {},
         certificates: {},
         databaseImages: {},
         databases: {},

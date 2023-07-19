@@ -1,22 +1,25 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { rest } from "msw";
 
 import { defaultHalHref } from "@app/hal";
 import {
   server,
+  stacksWithResources,
   testAccount,
   testApp,
   testConfiguration,
+  testDatabasePostgres,
   testEnv,
   testUser,
 } from "@app/mocks";
 import { setupAppIntegrationTest, waitForToken } from "@app/test";
+import { rest } from "msw";
 
-describe("Create project flow", () => {
+describe("Create App flow", () => {
   describe("existing user with ssh keys", () => {
     it("should successfully provision resources within an environment", async () => {
       server.use(
+        ...stacksWithResources({ databases: [testDatabasePostgres] }),
         rest.get(`${testEnv.apiUrl}/apps/:id`, (_, res, ctx) => {
           return res(
             ctx.json({
@@ -43,29 +46,21 @@ describe("Create project flow", () => {
           },
         ),
       );
+
       const { App, store } = setupAppIntegrationTest({
-        initEntries: ["/create"],
+        initEntries: [`/create/name?environment_id=${testAccount.id}`],
       });
+
       render(<App />);
 
       await waitForToken(store);
 
-      // deploy code landing page
-      const el = screen.getByRole("link", {
-        name: /Deploy with Git Push/,
-      });
-      expect(el.textContent).toMatch(/Deploy with Git Push/);
-      // go to next page
-      fireEvent.click(el);
-
-      // create environment page
+      // create app page
       const nameInput = await screen.findByRole("textbox", { name: "name" });
-      await act(async () => {
-        await userEvent.type(nameInput, "test-project");
-      });
+      await act(() => userEvent.type(nameInput, "a-new-hope"));
 
       const btn = await screen.findByRole("button", {
-        name: /Create Environment/,
+        name: /Create App/,
       });
       // go to next page
       fireEvent.click(btn);
@@ -76,16 +71,17 @@ describe("Create project flow", () => {
       // settings page
       await screen.findByText(/Configure your App/);
 
-      const banner = await screen.findByRole("status");
-      expect(banner.textContent).toMatch(/Your code has a Dockerfile/);
-
       const dbBtn = await screen.findByRole("button", {
-        name: /New Database/,
+        name: /Connect Existing Database/,
       });
       fireEvent.click(dbBtn);
 
-      const dbSelector = await screen.findByRole("combobox");
-      userEvent.selectOptions(dbSelector, "postgres v14");
+      const dbSelector = await screen.findByRole("combobox", {
+        name: /existing-db/,
+      });
+      await act(() =>
+        userEvent.selectOptions(dbSelector, "test-app-1-postgres (postgres)"),
+      );
       const dbEnvVar = await screen.findByRole("textbox", { name: "envvar" });
       expect(dbEnvVar).toHaveDisplayValue("DATABASE_URL");
 
@@ -104,8 +100,8 @@ describe("Create project flow", () => {
       expect(status).toBeInTheDocument();
 
       await screen.findByText("Initial configuration");
-      await screen.findByText("Database provision test-app-1-postgres");
       await screen.findByText("App deployment");
+      await screen.findByText("Database provision test-app-1-postgres");
       let ops = await screen.findAllByText("DONE");
       expect(ops.length).toEqual(3);
 

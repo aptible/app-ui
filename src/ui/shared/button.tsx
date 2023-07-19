@@ -1,5 +1,7 @@
 import { tokens } from "./tokens";
+import { Tooltip } from "./tooltip";
 import { selectUserHasPerms } from "@app/deploy";
+import { capitalize } from "@app/string-utils";
 import { AppState, PermissionScope } from "@app/types";
 import cn from "classnames";
 import { ButtonHTMLAttributes, FC } from "react";
@@ -135,15 +137,20 @@ const ButtonPermission = ({
     selectUserHasPerms(s, { scope, envId }),
   );
 
-  let disabled = props.disabled;
-  if (!hasPerm) {
-    disabled = true;
+  if (hasPerm) {
+    return <Button {...props}>{children}</Button>;
   }
 
   return (
-    <Button {...props} disabled={disabled}>
-      {children}
-    </Button>
+    <Tooltip
+      text={`You do not have "${capitalize(
+        scope,
+      )}" permissions for this environment (id:${envId})`}
+    >
+      <Button {...props} disabled>
+        {children}
+      </Button>
+    </Tooltip>
   );
 };
 

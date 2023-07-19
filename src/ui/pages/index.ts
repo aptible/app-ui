@@ -51,3 +51,5 @@ export * from "./stack-detail-environments";
 export * from "./stack-detail-vpn-tunnels";
 export * from "./stack-detail-vpc-peering";
 export * from "./search";
+export * from "./create-project-name";
+export * from "./create-project-git-settings";

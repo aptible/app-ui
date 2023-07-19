@@ -1,9 +1,11 @@
 export const Loading = ({
   className = "",
   text = "loading...",
+  isLoading = true,
 }: {
   className?: string;
   text?: string;
+  isLoading?: boolean;
 }) => {
-  return <div className={className}>{text}</div>;
+  return isLoading ? <div className={className}>{text}</div> : null;
 };

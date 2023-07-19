@@ -128,7 +128,7 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
 
 export const DEPLOY_APP_NAME = "apps";
 const slice = createTable<DeployApp>({ name: DEPLOY_APP_NAME });
-const { add: addDeployApps } = slice.actions;
+export const { add: addDeployApps, patch: patchDeployApps } = slice.actions;
 export const hasDeployApp = (a: DeployApp) => a.id !== "";
 export const appReducers = createReducerMap(slice);
 
@@ -333,6 +333,12 @@ export const createDeployApp = api.post<CreateAppProps, DeployAppResponse>(
     });
 
     yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = { id: ctx.key, meta: { appId: ctx.json.data.id } };
   },
 );
 
