@@ -141,8 +141,5 @@ module.exports = {
     },
     opacity: ({ after }) => after(["disabled"]),
   },
-  plugins: [
-    require("@tailwindcss/typography"),
-    require("@tailwindcss/forms"),
-  ],
+  plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
 };
