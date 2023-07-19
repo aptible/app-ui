@@ -5,6 +5,26 @@ import { defineConfig } from "vitest/config";
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   return {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: [
+              "@reduxjs/toolkit",
+              "@sentry/react",
+              "react",
+              "react-dom",
+              "react-redux",
+              "react-router",
+              "react-router-dom",
+              "redux",
+              "redux-batched-actions",
+              "saga-query",
+            ],
+          },
+        },
+      },
+    },
     plugins: [react(), tsconfigPaths()],
     server: {
       port: 4200,
