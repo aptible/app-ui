@@ -140,6 +140,16 @@ export interface DeployState {
   vpn_tunnels: MapEntity<DeployVpnTunnel>;
 }
 
+export type MetricHorizons = "1h" | "1d" | "1w";
+export interface ContainerMetrics {
+  id: string; // composite of containerId-metricName-metricTimeRange
+  serviceId: string;
+  containerId: string;
+  metricName: string;
+  metricTimeRange: MetricHorizons;
+  values: (number | null)[];
+}
+
 export interface AppState extends QueryState {
   env: Env;
   feedback: Feedback;
@@ -163,4 +173,5 @@ export interface AppState extends QueryState {
   currentUserRoles: string[];
   signal: AbortController;
   resourceStats: MapEntity<ResourceStats>;
+  containerMetrics: MapEntity<ContainerMetrics>;
 }

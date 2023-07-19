@@ -1,13 +1,18 @@
 import { Button } from "./button";
 import { IconHamburger, IconMetrics } from "./icons";
+import { MetricHorizons } from "@app/deploy";
 
 export type MetricTabTypes = "table" | "chart";
-export type MetricHorizons = "1h" | "1d" | "1w";
 export type Dataset = {
   label?: string;
   pointRadius?: number;
   pointHoverRadius?: number;
   data: number[];
+};
+export type ChartToCreate = {
+  title: string;
+  labels?: string[];
+  datasets?: Dataset[];
 };
 
 export const processDataSeries = ({
