@@ -72,18 +72,13 @@ export function AppHeader({ app }: { app: DeployApp }) {
   );
 }
 
-const AppHeartbeatNotice = ({
-  id,
-  serviceId,
-}: { id: string; serviceId: string }) => {
+const AppHeartbeatNotice = ({ id }: { id: string; serviceId: string }) => {
   const poller = useMemo(() => pollAppOperations({ id }), [id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
-  const { pathname } = useLocation();
 
   usePoller({
     action: poller,
     cancel,
-    skip: pathname === appServicePathUrl(id, serviceId), // TODO - revisitng when ready
   });
 
   return <ActiveOperationNotice resourceId={id} resourceType="app" />;

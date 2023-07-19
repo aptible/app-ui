@@ -4,7 +4,7 @@ import {
   ChartToCreate,
   selectChartDataByMetricsToChartToCreate,
 } from "@app/metric-tunnel";
-import { AppState, MetricHorizons } from "@app/types";
+import { AppState, DeployContainer, MetricHorizons } from "@app/types";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -18,9 +18,9 @@ import {
   Tooltip,
 } from "chart.js";
 import "chartjs-adapter-date-fns";
-import zoomPlugin from "chartjs-plugin-zoom";
 import { useSelector } from "react-redux";
 
+console.log("HI");
 ChartJS.register(
   CategoryScale,
   Colors,
@@ -31,7 +31,6 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  zoomPlugin,
 );
 
 const LineChartWrapper = ({
@@ -53,19 +52,8 @@ const LineChartWrapper = ({
           easing: "linear",
         },
         plugins: {
-          zoom: {
-            zoom: {
-              drag: {
-                enabled: true,
-              },
-              wheel: {
-                enabled: false,
-              },
-              pinch: {
-                enabled: true,
-              },
-              mode: "xy",
-            },
+          colors: {
+            forceOverride: true, // needed to persist colors during repaint/refresh
           },
           legend: {
             labels: {
@@ -126,14 +114,16 @@ const LineChartWrapper = ({
   ) : null;
 
 export const ContainerMetricsChart = ({
-  containerId,
+  containers,
   metricNames,
   metricHorizon,
 }: {
-  containerId: string;
+  containers: DeployContainer[];
   metricNames: string[];
   metricHorizon: MetricHorizons;
 }) => {
+  // for now, we only use the FIRST container id pending cross-release
+  const containerId = containers?.[0]?.id;
   const chartToCreate = useSelector((s: AppState) =>
     selectChartDataByMetricsToChartToCreate(s, {
       containerId,

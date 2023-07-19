@@ -187,6 +187,8 @@ export const selectChartDataByMetricsToChartToCreate = createSelector(
     metrics.forEach((metric, idx) => {
       const dataset: Dataset = {
         label: metric.metricLabel,
+        pointRadius: 0,
+        pointHoverRadius: 5,
         data: [],
       };
       metric.values.forEach((metricValue) => {

@@ -2132,17 +2132,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chartjs-plugin-zoom@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "chartjs-plugin-zoom@npm:2.0.1"
-  dependencies:
-    hammerjs: ^2.0.8
-  peerDependencies:
-    chart.js: ">=3.2.0"
-  checksum: c0ca5ae475bc3c7263e471258a7f16bd3d92c3642ded1395aeb841c9710d5af83e80410aa5e34869c4a1a5cc3899a166aec06a59bf9ecfda85f564618528b286
-  languageName: node
-  linkType: hard
-
 "check-error@npm:^1.0.2":
   version: 1.0.2
   resolution: "check-error@npm:1.0.2"
@@ -2262,7 +2251,6 @@ __metadata:
     autoprefixer: ^10.4.14
     chart.js: ^4.3.0
     chartjs-adapter-date-fns: ^3.0.0
-    chartjs-plugin-zoom: ^2.0.1
     classnames: ^2.3.2
     date-fns: ^2.30.0
     debug: ^4.3.4
@@ -3303,13 +3291,6 @@ __metadata:
   version: 16.6.0
   resolution: "graphql@npm:16.6.0"
   checksum: bf1d9e3c1938ce3c1a81e909bd3ead1ae4707c577f91cff1ca2eca474bfbc7873d5d7b942e1e9777ff5a8304421dba57a4b76d7a29eb19de8711cb70e3c2415e
-  languageName: node
-  linkType: hard
-
-"hammerjs@npm:^2.0.8":
-  version: 2.0.8
-  resolution: "hammerjs@npm:2.0.8"
-  checksum: b092da7d1565a165d7edb53ef0ce212837a8b11f897aa3cf81a7818b66686b0ab3f4747fbce8fc8a41d1376594639ce3a054b0fd4889ca8b5b136a29ca500e27
   languageName: node
   linkType: hard
 

@@ -10,7 +10,7 @@ import {
 } from "@app/deploy";
 import { AppState, MetricHorizons } from "@app/types";
 
-import { LoadResources } from "../shared";
+import { LoadResources, Loading } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
@@ -68,6 +68,10 @@ export function AppDetailServicePage() {
     dispatch(batchActions(actions));
   }, [containers, metricHorizon]);
 
+  if (!containers) {
+    return <Loading />;
+  }
+
   return (
     <>
       <div className="flex gap-4 justify-start">
@@ -83,27 +87,21 @@ export function AppDetailServicePage() {
       <div className="my-4">
         <LoadResources query={query} isEmpty={false}>
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-            {containers.map((container) => (
-              <>
-                <ContainerMetricsChart
-                  containerId={container.id}
-                  key={`${container.id}-cpu`}
-                  metricNames={["cpu_pct"]}
-                  metricHorizon={metricHorizon}
-                />
-                <ContainerMetricsChart
-                  containerId={container.id}
-                  key={`${container.id}-memory`}
-                  metricNames={["la"]}
-                  metricHorizon={metricHorizon}
-                />
-                <ContainerMetricsChart
-                  containerId={container.id}
-                  metricNames={["memory_all"]}
-                  metricHorizon={metricHorizon}
-                />
-              </>
-            ))}
+            <ContainerMetricsChart
+              containers={containers}
+              metricNames={["cpu_pct"]}
+              metricHorizon={metricHorizon}
+            />
+            <ContainerMetricsChart
+              containers={containers}
+              metricNames={["la"]}
+              metricHorizon={metricHorizon}
+            />
+            <ContainerMetricsChart
+              containers={containers}
+              metricNames={["memory_all"]}
+              metricHorizon={metricHorizon}
+            />
           </div>
         </LoadResources>
       </div>
