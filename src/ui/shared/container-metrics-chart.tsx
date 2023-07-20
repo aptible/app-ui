@@ -14,6 +14,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+import { IconRefresh } from "../shared";
 import "chartjs-adapter-date-fns";
 import { useSelector } from "react-redux";
 
@@ -137,6 +138,9 @@ export const ContainerMetricsChart = ({
   }
   return (
     <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
+      <div className="relative">
+        <IconRefresh className="h-5 mt-0.5 opacity-50 hover:opacity-100 cursor-pointer absolute right-0 top-2.5" />
+      </div>
       <LineChartWrapper
         keyId={`${containerId}-${metricNames.join("-")}-${metricHorizon}`}
         chart={chartToCreate}
