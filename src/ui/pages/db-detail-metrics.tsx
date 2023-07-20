@@ -110,7 +110,12 @@ export function DatabaseMetricsPage() {
               metricHorizon={metricHorizon}
             />
           </div>
-        ) : null}
+        ) : (
+          <ContainerMetricsDataTable
+            containers={containers}
+            metricHorizon={metricHorizon}
+          />
+        )}
       </div>
     </LoadResources>
   );

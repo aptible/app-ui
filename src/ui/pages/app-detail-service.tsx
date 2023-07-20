@@ -86,23 +86,30 @@ export function AppDetailServicePage() {
       </div>
       <div className="my-4">
         <LoadResources query={query} isEmpty={false}>
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-            <ContainerMetricsChart
+          {viewTab === "chart" ? (
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+              <ContainerMetricsChart
+                containers={containers}
+                metricNames={["cpu_pct"]}
+                metricHorizon={metricHorizon}
+              />
+              <ContainerMetricsChart
+                containers={containers}
+                metricNames={["la"]}
+                metricHorizon={metricHorizon}
+              />
+              <ContainerMetricsChart
+                containers={containers}
+                metricNames={["memory_all"]}
+                metricHorizon={metricHorizon}
+              />
+            </div>
+          ) : (
+            <ContainerMetricsDataTable
               containers={containers}
-              metricNames={["cpu_pct"]}
               metricHorizon={metricHorizon}
             />
-            <ContainerMetricsChart
-              containers={containers}
-              metricNames={["la"]}
-              metricHorizon={metricHorizon}
-            />
-            <ContainerMetricsChart
-              containers={containers}
-              metricNames={["memory_all"]}
-              metricHorizon={metricHorizon}
-            />
-          </div>
+          )}
         </LoadResources>
       </div>
     </>

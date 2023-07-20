@@ -1,55 +1,40 @@
-import { Loading } from "./loading";
 import { TableHead, Td } from "./table";
-import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
-import { DeployContainer, MetricHorizons } from "@app/types";
-import { useEffect } from "react";
-import { useCache } from "saga-query/react";
+import { selectMetricDataAsFlatTableByContainer } from "@app/metric-tunnel";
+import { AppState, DeployContainer, MetricHorizons } from "@app/types";
+import { useSelector } from "react-redux";
 
 export const ContainerMetricsDataTable = ({
-  container,
-  dataToFetch,
-  viewHorizon,
+  containers,
+  metricHorizon,
 }: {
-  container: DeployContainer;
-  dataToFetch: string[];
-  viewHorizon: MetricHorizons;
+  containers: DeployContainer[];
+  metricHorizon: MetricHorizons;
 }) => {
-  // WARNING - this requires a better long term solution. We are doing this just to set up the
-  // queries / transform data for viewing this in browser (as there are concurrent metrictunnel changes to this)
-  // We likely will want a cachable/datastore-based solution at some point. This is temporary
+  // will support multiple containers next
+  const container = containers?.[0];
 
-  // combine all the query data into a singular dataset
-  const resultantData: { [columnName: string]: (string | number)[] } = {};
-  // timefield is always time_0, deltas are used sometimes with time_1 where available
-  query.data.columns.forEach((colDataSeries: (string | number)[]) => {
-    const colName =
-      typeof colDataSeries[0] === "string" && colDataSeries[0].includes("time_")
-        ? colDataSeries[0]
-        : `${dataToFetch[queryIdx]} - ${colDataSeries[0]}`;
-    resultantData[colName] = [];
-    colDataSeries.forEach((elem: string | number, idx) => {
-      if (idx === 0) {
-        return;
-      }
-      resultantData[colName].push(elem);
-    });
-  });
+  const metricTableData = useSelector((s: AppState) =>
+    selectMetricDataAsFlatTableByContainer(s, {
+      containerId: container.id,
+      metricHorizon,
+    }),
+  );
   // keep the date columns in front
-  const prefixedColumnHeaders = Object.keys(resultantData).filter((column) =>
-    column.includes("time_"),
+  const prefixedColumnHeaders = Object.keys(metricTableData).filter((column) =>
+    column.includes("time"),
   );
   const columnHeaders = prefixedColumnHeaders.concat(
-    Object.keys(resultantData)
+    Object.keys(metricTableData)
       .sort()
-      .filter((column) => !column.includes("time_")),
+      .filter((column) => !column.includes("time")),
   );
   const tableRows = [];
-  for (let i = 0; i < Object.values(resultantData)[0].length; i += 1) {
+  for (let i = 0; i < Object.values(metricTableData)[0].length; i += 1) {
     tableRows.push(
       <tr className="hover:bg-gray-50" key={`${i}`}>
         {columnHeaders.map((columnHeader) => (
           <Td className="text-gray-900" key={`${i}-${columnHeader}`}>
-            {resultantData[columnHeader][i]}
+            {metricTableData[columnHeader][i]}
           </Td>
         ))}
       </tr>,

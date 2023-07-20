@@ -19,6 +19,10 @@ export type ChartToCreate = {
   labels?: string[];
   datasets?: Dataset[];
 };
+export type FlatTableOfMetricsData = {
+  [metric: string]: (number | string)[];
+  time: string[];
+};
 
 const chartTitles: { [key: string]: string[] } = {
   Memory: ["memory_all"],
@@ -48,6 +52,7 @@ interface ContainerMetricPayload {
   payload: MetricTunnelContainerResponse;
   serviceId: string;
 }
+
 export const deserializeContainerMetricsResponse = ({
   containerId,
   metricName,
@@ -118,6 +123,7 @@ export const selectMetricsByContainer = createSelector(
       (containerMetric) => containerMetric.containerId === containerId,
     ),
 );
+
 export const selectMetricsByMetricContainerHorizon = createSelector(
   selectContainerMetricsAsList,
   (_: AppState, p: { containerId: string }) => p.containerId,
@@ -131,7 +137,34 @@ export const selectMetricsByMetricContainerHorizon = createSelector(
         containerMetric.metricTimeRange === metricHorizon,
     ),
 );
-export const selectChartDataByMetricsToChartToCreate = createSelector(
+
+export const selectMetricDataAsFlatTableByContainer = createSelector(
+  selectContainerMetricsAsList,
+  (_: AppState, p: { containerId: string }) => p.containerId,
+  (_: AppState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
+  (containerMetrics, containerId, metricHorizon): FlatTableOfMetricsData => {
+    const result: FlatTableOfMetricsData = {
+      time: [],
+    };
+    containerMetrics
+      .filter(
+        (containerMetric: ContainerMetrics) =>
+          containerMetric.containerId === containerId &&
+          containerMetric.metricTimeRange === metricHorizon,
+      )
+      .forEach((containerMetric: ContainerMetrics, idx) => {
+        if (idx === 0) {
+          result.time = containerMetric.values.map((elem) => elem.date);
+        }
+        result[containerMetric.metricLabel] = containerMetric.values.map(
+          (elem) => elem.value,
+        );
+      });
+    return result;
+  },
+);
+
+export const selectMetricDataByChart = createSelector(
   selectContainerMetricsAsList,
   (_: AppState, p: { containerId: string }) => p.containerId,
   (_: AppState, p: { metricNames: string[] }) => p.metricNames,

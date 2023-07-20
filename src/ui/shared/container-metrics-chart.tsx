@@ -1,9 +1,6 @@
 import { Line } from "react-chartjs-2";
 
-import {
-  ChartToCreate,
-  selectChartDataByMetricsToChartToCreate,
-} from "@app/metric-tunnel";
+import { ChartToCreate, selectMetricDataByChart } from "@app/metric-tunnel";
 import { AppState, DeployContainer, MetricHorizons } from "@app/types";
 import {
   CategoryScale,
@@ -124,7 +121,7 @@ export const ContainerMetricsChart = ({
   // for now, we only use the FIRST container id pending cross-release
   const containerId = containers?.[0]?.id;
   const chartToCreate = useSelector((s: AppState) =>
-    selectChartDataByMetricsToChartToCreate(s, {
+    selectMetricDataByChart(s, {
       containerId,
       metricNames,
       metricHorizon,
