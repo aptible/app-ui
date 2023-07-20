@@ -11,7 +11,7 @@ type Props = {
 
 export function MenuWrappedPage({ children, header }: Props) {
   const { collapsed } = useSelector(selectNav);
-  const collapsedOffset = collapsed ? 14 : 64;
+  const collapsedOffset = collapsed ? 15.2 : 64;
 
   return (
     <div className="flex h-full">
