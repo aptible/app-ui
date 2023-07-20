@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
@@ -23,7 +23,6 @@ import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
 
 import { usePoller } from "../hooks";
-import { useInterval } from "../hooks/use-interval";
 import {
   ActiveOperationNotice,
   DetailHeader,
@@ -72,6 +71,18 @@ export function AppHeader({ app }: { app: DeployApp }) {
   );
 }
 
+const AppHeartbeatNotice = ({ id }: { id: string; serviceId: string }) => {
+  const poller = useMemo(() => pollAppOperations({ id }), [id]);
+  const cancel = useMemo(() => cancelAppOpsPoll(), []);
+
+  usePoller({
+    action: poller,
+    cancel,
+  });
+
+  return <ActiveOperationNotice resourceId={id} resourceType="app" />;
+};
+
 function AppPageHeader() {
   const { id = "", serviceId = "" } = useParams();
   const dispatch = useDispatch();
@@ -87,7 +98,6 @@ function AppPageHeader() {
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
-  const [_, setHeartbeat] = useState<Date>(new Date());
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
@@ -97,14 +107,6 @@ function AppPageHeader() {
       to: appDetailUrl(app.id),
     });
   }
-
-  const poller = useMemo(() => pollAppOperations({ id }), [id]);
-  const cancel = useMemo(() => cancelAppOpsPoll(), []);
-  useInterval(() => setHeartbeat(new Date()), 1000);
-  usePoller({
-    action: poller,
-    cancel,
-  });
 
   // TODO - COME BACK TO THIS
   // Need to kick a user back out of the details page (or lock specific pages if it is deleted)
@@ -119,7 +121,7 @@ function AppPageHeader() {
 
   return (
     <>
-      <ActiveOperationNotice resourceId={app.id} resourceType="app" />
+      <AppHeartbeatNotice id={id} serviceId={serviceId} />
       <DetailPageHeaderView
         breadcrumbs={crumbs}
         title={serviceId ? service.handle : app.handle}
