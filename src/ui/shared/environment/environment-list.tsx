@@ -4,13 +4,14 @@ import {
   fetchAllEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
+  selectEnvironmentsByStackId,
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
-import { environmentAppsUrl } from "@app/routes";
+import { environmentAppsUrl, stackDetailEnvsUrl } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
@@ -20,28 +21,33 @@ import { tokens } from "../tokens";
 import { prettyEnglishDate, timeAgo } from "@app/date";
 import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { capitalize } from "@app/string-utils";
-import { useState } from "react";
 import { useSelector } from "react-redux";
 
 interface EnvironmentCellProps {
   environment: DeployEnvironment;
 }
 
+export const EnvironmentItemView = ({
+  environment,
+}: { environment: DeployEnvironment }) => {
+  return (
+    <Link to={environmentAppsUrl(environment.id)} className="flex">
+      <img
+        src="/resource-types/logo-environment.png"
+        className="w-8 h-8 mr-2 align-middle"
+        aria-label="Environment"
+      />
+      <p className={`${tokens.type["table link"]} leading-8`}>
+        {environment.handle}
+      </p>
+    </Link>
+  );
+};
+
 const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
   return (
     <Td>
-      <Link to={environmentAppsUrl(environment.id)} className="flex">
-        <img
-          src="/resource-types/logo-environment.png"
-          className="w-8 h-8 mt-1 mr-2"
-          aria-label="Environment"
-        />
-        <p className="leading-4 mt-2">
-          <span className={tokens.type["table link"]}>
-            {environment.handle}
-          </span>
-        </p>
-      </Link>
+      <EnvironmentItemView environment={environment} />
     </Td>
   );
 };
@@ -96,7 +102,14 @@ const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
       <div>
-        <div className="text-black">{stack.name}</div>
+        <div className="text-black">
+          <Link
+            to={stackDetailEnvsUrl(stack.id)}
+            className={tokens.type["table link"]}
+          >
+            {stack.name}
+          </Link>
+        </div>
         <div className={tokens.type["normal lighter"]}>
           {stack.organizationId ? "Dedicated Stack " : "Shared Stack "}(
           {stack.region})
@@ -108,7 +121,7 @@ const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
 
 const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <EnvironmentPrimaryCell environment={environment} />
       <EnvironmentStackCell environment={environment} />
       <EnvironmentLastDeployedCell environment={environment} />
@@ -118,12 +131,122 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
+type HeaderTypes =
+  | {
+      resourceHeaderType: "title-bar";
+      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+    }
+  | { resourceHeaderType: "simple-text"; onChange?: null };
+
+const EnvsResourceHeaderTitleBar = ({
+  envs,
+  resourceHeaderType = "title-bar",
+  search = "",
+  onChange,
+}: {
+  envs: DeployEnvironment[];
+  search?: string;
+} & HeaderTypes) => {
+  switch (resourceHeaderType) {
+    case "title-bar":
+      if (!onChange) {
+        return null;
+      }
+      return (
+        <ResourceHeader
+          title="Environments"
+          filterBar={
+            <div className="pt-1">
+              <InputSearch
+                placeholder="Search environments..."
+                search={search}
+                onChange={onChange}
+              />
+              <div className="flex">
+                <p className="flex text-gray-500 mt-4 text-base">
+                  {envs.length} Environment{envs.length !== 1 && "s"}
+                </p>
+                <div className="mt-4">
+                  <Tooltip
+                    fluid
+                    text="Environments are how you separate resources like staging and production."
+                  >
+                    <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
+                  </Tooltip>
+                </div>
+              </div>
+            </div>
+          }
+        />
+      );
+    case "simple-text":
+      return (
+        <p className="flex text-gray-500 text-base mb-4">
+          {envs.length} Environment{envs.length !== 1 && "s"}
+        </p>
+      );
+    default:
+      return null;
+  }
+};
+const environmentHeaders = [
+  "Environment",
+  "Stack",
+  "Last Deployed",
+  "Apps",
+  "Databases",
+];
+
+export function EnvironmentListByStack({ stackId }: { stackId: string }) {
+  const query = useQuery(fetchAllEnvironments());
+  const [params, _] = useSearchParams();
+  const search = params.get("search") || "";
+
+  const environments = useSelector((s: AppState) =>
+    selectEnvironmentsByStackId(s, { stackId }),
+  );
+
+  return (
+    <LoadResources
+      query={query}
+      isEmpty={environments.length === 0 && search === ""}
+    >
+      <ResourceListView
+        header={
+          <EnvsResourceHeaderTitleBar
+            envs={environments}
+            resourceHeaderType="simple-text"
+          />
+        }
+        tableHeader={
+          <TableHead
+            headers={environmentHeaders}
+            rightAlignedFinalCol
+            leftAlignedFirstCol
+            centerAlignedColIndices={[3, 4]}
+          />
+        }
+        tableBody={
+          <>
+            {environments.map((environment) => (
+              <EnvironmentListRow
+                environment={environment}
+                key={environment.id}
+              />
+            ))}
+          </>
+        }
+      />
+    </LoadResources>
+  );
+}
 export function EnvironmentList() {
   const query = useQuery(fetchAllEnvironments());
-
-  const [search, setSearch] = useState("");
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value });
+  };
 
   const environments = useSelector((s: AppState) =>
     selectEnvironmentsForTableSearch(s, { search }),
@@ -136,41 +259,16 @@ export function EnvironmentList() {
     >
       <ResourceListView
         header={
-          <ResourceHeader
-            title="Environments"
-            filterBar={
-              <div className="pt-1">
-                <>
-                  <InputSearch
-                    placeholder="Search environments..."
-                    search={search}
-                    onChange={onChange}
-                  />
-                  <div className="flex">
-                    <p className="flex text-gray-500 mt-4 text-base">
-                      {environments.length} Environment
-                      {environments.length !== 1 ? "s" : ""}
-                    </p>
-                    <div className="mt-4">
-                      <Tooltip text="Environments are how you separate resources like staging and production.">
-                        <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
-                      </Tooltip>
-                    </div>
-                  </div>
-                </>
-              </div>
-            }
+          <EnvsResourceHeaderTitleBar
+            envs={environments}
+            resourceHeaderType="title-bar"
+            search={search}
+            onChange={onChange}
           />
         }
         tableHeader={
           <TableHead
-            headers={[
-              "Environment",
-              "Stack",
-              "Last Deployed",
-              "Apps",
-              "Databases",
-            ]}
+            headers={environmentHeaders}
             rightAlignedFinalCol
             leftAlignedFirstCol
             centerAlignedColIndices={[3, 4]}

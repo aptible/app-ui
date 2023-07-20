@@ -18,6 +18,8 @@ import type {
   DeployService,
   DeployServiceDefinition,
   DeployStack,
+  DeployVpcPeer,
+  DeployVpnTunnel,
   Permission,
   Timestamps,
 } from "./deploy";
@@ -105,6 +107,16 @@ export interface Nav {
   collapsed: boolean;
 }
 
+export interface AbstractResourceItem {
+  id: string;
+  type: "stack" | "environment" | "app" | "database";
+}
+
+export interface ResourceStats extends AbstractResourceItem {
+  count: number;
+  lastAccessed: string;
+}
+
 export interface DeployState {
   apps: MapEntity<DeployApp>;
   certificates: MapEntity<DeployCertificate>;
@@ -124,6 +136,20 @@ export interface DeployState {
   permissions: MapEntity<Permission>;
   releases: MapEntity<DeployRelease>;
   containers: MapEntity<DeployContainer>;
+  vpc_peers: MapEntity<DeployVpcPeer>;
+  vpn_tunnels: MapEntity<DeployVpnTunnel>;
+}
+
+export type MetricHorizons = "1h" | "1d" | "1w";
+
+export interface ContainerMetrics {
+  id: string; // composite of containerId-metricName-metricTimeRange
+  serviceId: string;
+  containerId: string;
+  metricName: string;
+  metricLabel: string;
+  metricTimeRange: MetricHorizons;
+  values: { date: string; value: number }[];
 }
 
 export interface AppState extends QueryState {
@@ -148,4 +174,6 @@ export interface AppState extends QueryState {
   roles: MapEntity<Role>;
   currentUserRoles: string[];
   signal: AbortController;
+  resourceStats: MapEntity<ResourceStats>;
+  containerMetrics: MapEntity<ContainerMetrics>;
 }

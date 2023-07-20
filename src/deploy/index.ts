@@ -18,3 +18,5 @@ export * from "./activity";
 export * from "./permission";
 export * from "./release";
 export * from "./container";
+export * from "./vpc_peer";
+export * from "./vpn_tunnel";

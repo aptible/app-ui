@@ -27,7 +27,7 @@ export const EnvironmentOperationActivity = ({
   );
 
   return (
-    <tr key={operation.id}>
+    <tr className="group hover:bg-gray-50" key={operation.id}>
       <Td className="pl-4 py-0 pr-0">{IconForResource(operation.status)}</Td>
       <Td className="pl-0 2xl:flex-cell-md sm:flex-cell-sm">
         <span className="font-semibold text-black">

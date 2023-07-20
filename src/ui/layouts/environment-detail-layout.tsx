@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
 import { timeAgo } from "@app/date";
@@ -33,6 +33,8 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { setResourceStats } from "@app/search";
+import { useEffect } from "react";
 
 const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
   endpoint.type === "tcp" ? (
@@ -79,11 +81,14 @@ export function EnvHeader({
         <DetailInfoItem title="ID">{environment.id}</DetailInfoItem>
         <DetailInfoItem
           title={`${environment.totalAppCount} App${
-            environment.totalAppCount > 0 && "s"
+            environment.totalAppCount > 1 || environment.totalAppCount === 0
+              ? "s"
+              : ""
           }`}
         >
           Using {environment.appContainerCount} container
-          {environment.appContainerCount > 0 && "s"}
+          {environment.appContainerCount > 1 ||
+            (environment.appContainerCount === 0 && "s")}
         </DetailInfoItem>
         <DetailInfoItem title="Backups">
           {environment.totalBackupSize} GB
@@ -92,25 +97,33 @@ export function EnvHeader({
         <DetailInfoItem title="Stack">{stack.name}</DetailInfoItem>
         <DetailInfoItem
           title={`${environment.totalDatabaseCount} Database${
-            environment.totalDatabaseCount > 0 && "s"
+            environment.totalDatabaseCount > 1 ||
+            environment.totalDatabaseCount === 0
+              ? "s"
+              : ""
           }`}
         >
           {environment.databaseContainerCount} container
-          {environment.databaseContainerCount > 0 && "s"} using{" "}
-          {environment.totalDiskSize} GB of disk
+          {environment.databaseContainerCount > 0 ||
+          environment.databaseContainerCount === 0
+            ? "s"
+            : ""}{" "}
+          using {environment.totalDiskSize} GB of disk
         </DetailInfoItem>
-        <div />
+        <div className="hidden md:block" />
 
         <DetailInfoItem title="Last Deployed">
           {timeAgo(latestOperation.createdAt)} by {capitalize(userName)}
         </DetailInfoItem>
         <DetailInfoItem
           title={`${endpoints.length} Endpoint${
-            environment.totalAppCount > 0 ? "s" : ""
+            endpoints.length > 1 || endpoints.length === 0 ? "s" : ""
           }`}
         >
           {endpoints.length <= 5
-            ? endpoints.map((endpoint) => <EndpointList endpoint={endpoint} />)
+            ? endpoints.map((endpoint) => (
+                <EndpointList key={endpoint.id} endpoint={endpoint} />
+              ))
             : null}
         </DetailInfoItem>
       </DetailInfoGrid>
@@ -120,6 +133,11 @@ export function EnvHeader({
 
 function EnvironmentPageHeader(): React.ReactElement {
   const { id = "" } = useParams();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setResourceStats({ id, type: "environment" }));
+  }, []);
+
   useQuery(fetchEnvironmentById({ id }));
   useQuery(fetchAllApps());
   useQuery(fetchEndpointsByEnvironmentId({ id }));
@@ -137,7 +155,7 @@ function EnvironmentPageHeader(): React.ReactElement {
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByEnvironmentId(s, { envId: environment.id }),
   );
-  const crumbs = [{ name: stack.name, to: stackDetailEnvsUrl(id) }];
+  const crumbs = [{ name: stack.name, to: stackDetailEnvsUrl(stack.id) }];
 
   const tabs: TabItem[] = [
     { name: "Apps", href: `/environments/${id}/apps` },

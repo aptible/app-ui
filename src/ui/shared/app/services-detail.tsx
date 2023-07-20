@@ -25,7 +25,7 @@ const serviceListRow = ({
   const metrics = calcServiceMetrics(service);
 
   return [
-    <tr key={`${service.id}`}>
+    <tr className="group hover:bg-gray-50" key={`${service.id}`}>
       <Td className="flex-1 pl-4">
         <div className={tokens.type.darker}>{service.handle}</div>
         <div className={tokens.type["normal lighter"]}>ID: {service.id}</div>
@@ -57,7 +57,7 @@ const serviceListRow = ({
           ${metrics.estimatedCostInDollars}
         </div>
       </Td>
-      <Td className="flex-1">
+      <Td className="flex justify-end mr-4 mt-4">
         <ButtonLink
           className="w-20"
           size="sm"
@@ -108,6 +108,7 @@ export function ServicesOverview({
         }
         tableHeader={
           <TableHead
+            rightAlignedFinalCol
             headers={[
               "Service",
               "Memory Limit",

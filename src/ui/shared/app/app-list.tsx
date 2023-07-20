@@ -1,9 +1,8 @@
 import { IconInfo } from "../icons";
 import { Tooltip } from "../tooltip";
 import { useLoader, useQuery } from "@app/fx";
-import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -18,7 +17,7 @@ import {
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
 import { appServicesUrl, operationDetailUrl } from "@app/routes";
-import type { AppState } from "@app/types";
+import type { AppState, DeployApp } from "@app/types";
 
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
@@ -34,17 +33,23 @@ interface AppCellProps {
   app: DeployAppRow;
 }
 
+export const AppItemView = ({ app }: { app: DeployApp }) => {
+  return (
+    <Link to={appServicesUrl(app.id)} className="flex">
+      <img
+        src="/resource-types/logo-app.png"
+        className="w-8 h-8 mr-2 align-middle"
+        aria-label="App"
+      />
+      <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
+    </Link>
+  );
+};
+
 const AppPrimaryCell = ({ app }: AppCellProps) => {
   return (
     <Td className="flex-1">
-      <Link to={appServicesUrl(app.id)} className="flex">
-        <img
-          src="/resource-types/logo-app.png"
-          className="w-8 h-8 mr-2 align-middle"
-          aria-label="App"
-        />
-        <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
-      </Link>
+      <AppItemView app={app} />
     </Td>
   );
 };
@@ -117,7 +122,7 @@ const AppLastOpCell = ({ app }: AppCellProps) => {
 
 const AppListRow = ({ app }: AppCellProps) => {
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <AppPrimaryCell app={app} />
       <EnvStackCell environmentId={app.environmentId} />
       <AppServicesCell app={app} />
@@ -190,7 +195,10 @@ const AppsResourceHeaderTitleBar = ({
                   {apps.length} App{apps.length !== 1 && "s"}
                 </p>
                 <div className="mt-4">
-                  <Tooltip text="Apps are how you deploy your code, scale services, and manage endpoints.">
+                  <Tooltip
+                    fluid
+                    text="Apps are how you deploy your code, scale services, and manage endpoints."
+                  >
                     <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
                   </Tooltip>
                 </div>
@@ -214,13 +222,14 @@ export const AppListByOrg = () => {
   const query = useQuery(fetchAllApps());
   useQuery(fetchAllEnvironments());
 
-  const [search, setSearch] = useState("");
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value });
+  };
   const apps = useSelector((s: AppState) =>
     selectAppsForTableSearch(s, { search }),
   );
-
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
 
   return (
     <LoadResources

@@ -1,9 +1,8 @@
 import { IconInfo } from "../icons";
 import { Tooltip } from "../tooltip";
 import { useQuery } from "@app/fx";
-import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -29,25 +28,32 @@ import { capitalize } from "@app/string-utils";
 
 type DatabaseCellProps = { database: DeployDatabase };
 
+export const DatabaseItemView = ({
+  database,
+}: { database: DeployDatabase }) => {
+  return (
+    <div className="flex">
+      <Link to={databaseEndpointsUrl(database.id)} className="flex">
+        <img
+          src={`/database-types/logo-${database.type}.png`}
+          className="w-8 h-8 mr-2 mt-2 align-middle"
+          aria-label={`${database.type} Database`}
+        />
+        <p className="flex flex-col">
+          <span className={tokens.type["table link"]}>{database.handle}</span>
+          <span className={tokens.type["normal lighter"]}>
+            {capitalize(database.type)}
+          </span>
+        </p>
+      </Link>
+    </div>
+  );
+};
+
 const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td className="flex-1">
-      <div className="flex">
-        <Link to={databaseMetricsUrl(database.id)} className="flex">
-          <img
-            src={`/database-types/logo-${database.type}.png`}
-            className="w-8 h-8 mt-1 mr-2"
-            aria-label={`${database.type} Database`}
-          />
-          <p className="leading-4">
-            <span className={tokens.type["table link"]}>{database.handle}</span>
-            <br />
-            <span className={tokens.type["normal lighter"]}>
-              {capitalize(database.type)}
-            </span>
-          </p>
-        </Link>
-      </div>
+      <DatabaseItemView database={database} />
     </Td>
   );
 };
@@ -115,7 +121,10 @@ const DbsResourceHeaderTitleBar = ({
                   {dbs.length} Database{dbs.length !== 1 && "s"}
                 </p>
                 <div className="mt-4">
-                  <Tooltip text="Databases provide data persistence and are automatically configured and managed.">
+                  <Tooltip
+                    fluid
+                    text="Databases provide data persistence and are automatically configured and managed."
+                  >
                     <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
                   </Tooltip>
                 </div>
@@ -139,15 +148,16 @@ export const DatabaseListByOrg = () => {
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchAllEnvironments());
 
-  const [search, setSearch] = useState("");
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value });
+  };
   const dbs = useSelector((s: AppState) =>
     selectDatabasesForTableSearch(s, {
       search,
     }),
   );
-
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
 
   const headers = ["Handle", "Environment", "Last Operation"];
 
@@ -182,7 +192,7 @@ export const DatabaseListByOrg = () => {
         tableBody={
           <>
             {dbs.map((db) => (
-              <tr key={db.id}>
+              <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <LastOpCell database={db} />
@@ -239,7 +249,7 @@ export const DatabaseListByEnvironment = ({
         tableBody={
           <>
             {dbs.map((db) => (
-              <tr key={db.id}>
+              <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <LastOpCell database={db} />

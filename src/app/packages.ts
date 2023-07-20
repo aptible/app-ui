@@ -7,6 +7,7 @@ import * as feedback from "@app/feedback";
 import * as hal from "@app/hal";
 import * as initData from "@app/initial-data";
 import * as invitations from "@app/invitations";
+import * as metrics from "@app/metric-tunnel";
 import * as mfa from "@app/mfa";
 import * as modal from "@app/modal";
 import * as nav from "@app/nav";
@@ -14,6 +15,7 @@ import * as orgs from "@app/organizations";
 import * as redirectPath from "@app/redirect-path";
 import * as resetStore from "@app/reset-store";
 import * as roles from "@app/roles";
+import * as search from "@app/search";
 import * as signal from "@app/signal";
 import * as theme from "@app/theme";
 import * as token from "@app/token";
@@ -40,6 +42,8 @@ const corePackages: any[] = [
   roles,
   nav,
   signal,
+  search,
+  metrics,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {

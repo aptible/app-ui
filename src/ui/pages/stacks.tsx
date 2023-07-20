@@ -1,5 +1,4 @@
 import { useQuery } from "@app/fx";
-import { useState } from "react";
 import { useSelector } from "react-redux";
 
 import {
@@ -19,13 +18,13 @@ import {
   LoadResources,
   ResourceHeader,
   ResourceListView,
+  StackItemView,
   TableHead,
   Td,
   Tooltip,
 } from "../shared";
-import { stackDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 export function StacksPage() {
   return (
@@ -48,25 +47,9 @@ function StackListRow({ stack }: { stack: DeployStack }) {
   );
 
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <Td>
-        <div className="flex items-center">
-          <img
-            src={
-              stackType === "dedicated"
-                ? "/resource-types/logo-dedicated-stack.png"
-                : "/resource-types/logo-stack.png"
-            }
-            alt="stack icon"
-            className="w-8 h-8 mr-2"
-          />
-          <Link
-            to={stackDetailUrl(stack.id)}
-            className="text-black hover:text-indigo"
-          >
-            {stack.name}
-          </Link>
-        </div>
+        <StackItemView stack={stack} />
       </Td>
       <Td>{stack.region}</Td>
       <Td>{capitalize(stackType)}</Td>
@@ -85,9 +68,11 @@ function StackListRow({ stack }: { stack: DeployStack }) {
 function StackList() {
   const query = useQuery(fetchAllStacks());
 
-  const [search, setSearch] = useState("");
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(ev.currentTarget.value);
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value });
+  };
 
   const stacks = useSelector((s: AppState) =>
     selectStacksForTableSearch(s, {
@@ -113,7 +98,10 @@ function StackList() {
                     {stacks.length} Stack{stacks.length !== 1 && "s"}
                   </p>
                   <div className="mt-4">
-                    <Tooltip text="Stacks represent the virtualized infrastructure where resources are deployed.">
+                    <Tooltip
+                      fluid
+                      text="Stacks represent the virtualized infrastructure where resources are deployed."
+                    >
                       <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
                     </Tooltip>
                   </div>

@@ -8,7 +8,7 @@ import { tokens } from "../tokens";
 
 const UserListRow = ({ user }: { user: User }) => {
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <Td className="flex-1">
         <div className={tokens.type.darker}>{user.name}</div>
         <div className={tokens.type["normal lighter"]}>{user.email}</div>

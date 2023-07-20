@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
 import {
@@ -24,7 +24,6 @@ import {
 import type { AppState, DeployDatabase, DeployService } from "@app/types";
 
 import { usePoller } from "../hooks";
-import { useInterval } from "../hooks/use-interval";
 import {
   DetailHeader,
   DetailInfoGrid,
@@ -36,6 +35,7 @@ import {
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { setResourceStats } from "@app/search";
 
 export function DatabaseHeader({
   database,
@@ -60,7 +60,7 @@ export function DatabaseHeader({
       />
 
       <DetailInfoGrid>
-        <DetailInfoItem title="Type">{database.type}</DetailInfoItem>
+        <DetailInfoItem title="ID">{database.id}</DetailInfoItem>
         <DetailInfoItem title="Disk IOPS">
           {database.disk?.provisionedIops}
         </DetailInfoItem>
@@ -68,17 +68,17 @@ export function DatabaseHeader({
           {metrics.totalMemoryLimit / 1024} GB
         </DetailInfoItem>
 
-        <DetailInfoItem title="Disk Size">
-          {database.disk?.size || 0} GB
-        </DetailInfoItem>
+        <DetailInfoItem title="Type">{database.type}</DetailInfoItem>
         <DetailInfoItem title="Disk Type">
           {database.disk?.ebsVolumeType}
         </DetailInfoItem>
         <DetailInfoItem title="CPU Share">{metrics.totalCPU}</DetailInfoItem>
 
-        <DetailInfoItem title="Container Size">N/A</DetailInfoItem>
+        <DetailInfoItem title="Disk Size">
+          {database.disk?.size ? database.disk?.size : 0} GB
+        </DetailInfoItem>
         <DetailInfoItem title="Disk Encryption">
-          AES-{(database.disk?.keyBytes || 32) * 8}
+          AES-{(database.disk?.keyBytes ? database.disk?.keyBytes : 32) * 8}
         </DetailInfoItem>
         <DetailInfoItem title="Profile">
           {CONTAINER_PROFILES[service.instanceClass].name}
@@ -88,10 +88,25 @@ export function DatabaseHeader({
   );
 }
 
+const DatabaseOperationNotice = ({ id }: { id: string }) => {
+  const poller = useMemo(() => pollDatabaseOperations({ id }), [id]);
+  const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);
+  usePoller({
+    action: poller,
+    cancel,
+  });
+
+  return <ActiveOperationNotice resourceId={id} resourceType="database" />;
+};
+
 function DatabasePageHeader() {
   const { id = "" } = useParams();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setResourceStats({ id, type: "database" }));
+  }, []);
+
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
-  const [_, setHeartbeat] = useState<Date>(new Date());
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
   );
@@ -101,14 +116,6 @@ function DatabasePageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentDatabasesUrl(environment.id) },
   ];
-
-  const poller = useMemo(() => pollDatabaseOperations({ id }), [id]);
-  const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);
-  useInterval(() => setHeartbeat(new Date()), 1000);
-  usePoller({
-    action: poller,
-    cancel,
-  });
 
   const tabs = [
     { name: "Metrics", href: databaseMetricsUrl(id) },
@@ -122,7 +129,7 @@ function DatabasePageHeader() {
 
   return (
     <>
-      <ActiveOperationNotice resourceId={id} resourceType="database" />
+      <DatabaseOperationNotice id={id} />
       <DetailPageHeaderView
         breadcrumbs={crumbs}
         title={database ? database.handle : "Loading..."}
