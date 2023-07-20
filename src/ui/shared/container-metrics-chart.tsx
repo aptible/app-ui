@@ -91,7 +91,7 @@ const LineChartWrapper = ({
               maxTicksLimit: 5,
             },
             time: {
-              tooltipFormat: "dd ",
+              tooltipFormat: "yyyy-MM-dd HH:mm:ss",
             },
             type: "time",
           },
