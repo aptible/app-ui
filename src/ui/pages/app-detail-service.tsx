@@ -48,9 +48,9 @@ export function AppDetailServicePage() {
     }),
   );
 
-  const containerIds = [...containers]
-    .sort()
+  const containerIds = containers
     .map((container) => container.id)
+    .sort()
     .join("-");
 
   useEffect(() => {
