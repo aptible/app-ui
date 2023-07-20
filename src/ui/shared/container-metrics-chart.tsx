@@ -139,7 +139,7 @@ export const ContainerMetricsChart = ({
   return (
     <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
       <div className="relative">
-        <span className="text-sm text-gray-500 absolute right-[70px] top-2.5">Limit: 1000MB</span>
+        <span className="text-sm text-gray-500 absolute right-[70px] top-2.5">Limit: 1000 MB</span>
         <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100 cursor-pointer absolute right-10 top-2.5" />
         <IconRefresh className="h-5 mt-0.5 opacity-50 hover:opacity-100 cursor-pointer absolute right-0 top-2.5" />
       </div>
