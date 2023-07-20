@@ -120,6 +120,7 @@ export const ContainerMetricsChart = ({
 }) => {
   // for now, we only use the FIRST container id pending cross-release
   const containerIds = containers.map((container) => container.id);
+  const containerIdsKey = containerIds.join("-");
   const chartToCreate = useSelector((s: AppState) =>
     selectMetricDataByChart(s, {
       containerIds,
@@ -133,10 +134,8 @@ export const ContainerMetricsChart = ({
   return (
     <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
       <LineChartWrapper
-        key={containerIds.join("-")}
-        keyId={`${containerIds.join("-")}-${metricNames.join(
-          "-",
-        )}-${metricHorizon}`}
+        key={containerIdsKey}
+        keyId={`${containerIdsKey}-${metricNames.join("-")}-${metricHorizon}`}
         chart={chartToCreate}
       />
     </div>
