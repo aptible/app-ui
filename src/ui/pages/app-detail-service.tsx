@@ -66,7 +66,7 @@ export function AppDetailServicePage() {
       return;
     }
     dispatch(batchActions(actions));
-  }, [service.id, containers, metricHorizon]);
+  }, [service.id, containers.length, metricHorizon]);
 
   if (!containers) {
     return <Loading />;
