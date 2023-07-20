@@ -63,7 +63,7 @@ export function DatabaseMetricsPage() {
       return;
     }
     dispatch(batchActions(actions));
-  }, [service.id, containers.length, metricHorizon]);
+  }, [service.id, containers, metricHorizon]);
 
   if (!containers) {
     return <Loading />;
