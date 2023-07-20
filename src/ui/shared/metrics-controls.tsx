@@ -1,30 +1,8 @@
 import { Button } from "./button";
 import { IconHamburger, IconMetrics } from "./icons";
-import { Dataset } from "@app/metric-tunnel";
 import { MetricHorizons } from "@app/types";
 
 export type MetricTabTypes = "table" | "chart";
-
-export const processDataSeries = ({
-  colDataSeries,
-  colName,
-}: { colDataSeries: any; colName: string }) => {
-  const dataSeries: Dataset = {
-    label: colName,
-    pointRadius: 0,
-    pointHoverRadius: 5,
-    data: [],
-  };
-  colDataSeries.forEach(
-    (elem: string | number | undefined | null, idx: number) => {
-      if (idx === 0) return;
-      if (typeof elem !== "number") return;
-      dataSeries.data.push(elem);
-    },
-  );
-
-  return dataSeries;
-};
 
 export const MetricsViewControls = ({
   viewMetricTab,
