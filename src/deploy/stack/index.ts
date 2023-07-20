@@ -212,8 +212,9 @@ export const selectStacksForTableSearch = createSelector(
         const nameMatch = name.includes(searchLower);
         const regionMatch = region.includes(searchLower);
         const typeMatch = type.includes(searchLower);
+        const idMatch = searchLower === stack.id;
 
-        return nameMatch || regionMatch || typeMatch;
+        return nameMatch || regionMatch || typeMatch || idMatch;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   },

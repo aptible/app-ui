@@ -202,8 +202,11 @@ const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
   const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
   const opMatch = lastOpType !== "" && lastOpType.includes(search);
   const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
+  const idMatch = search === app.id;
 
-  return handleMatch || envMatch || opMatch || opStatusMatch || userMatch;
+  return (
+    handleMatch || envMatch || opMatch || opStatusMatch || userMatch || idMatch
+  );
 };
 
 export const selectAppsForTableSearchByEnvironmentId = createSelector(
