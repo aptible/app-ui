@@ -11,11 +11,11 @@ export const ContainerMetricsDataTable = ({
   metricHorizon: MetricHorizons;
 }) => {
   // will support multiple containers next, placeholder for this (and for debugging/verification)
-  const container = containers?.[0] || "";
+  const containerIds = containers.map((container) => container.id);
 
   const metricTableData = useSelector((s: AppState) =>
     selectMetricDataAsFlatTableByContainer(s, {
-      containerId: container.id,
+      containerIds,
       metricHorizon,
     }),
   );

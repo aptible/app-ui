@@ -91,7 +91,7 @@ const LineChartWrapper = ({
               maxTicksLimit: 5,
             },
             time: {
-              tooltipFormat: "dd ",
+              tooltipFormat: "yyyy-MM-dd HH:mm:ss",
             },
             type: "time",
           },
@@ -119,10 +119,11 @@ export const ContainerMetricsChart = ({
   metricHorizon: MetricHorizons;
 }) => {
   // for now, we only use the FIRST container id pending cross-release
-  const containerId = containers?.[0]?.id;
+  const containerIds = containers.map((container) => container.id);
+  const containerIdsKey = containerIds.join("-");
   const chartToCreate = useSelector((s: AppState) =>
     selectMetricDataByChart(s, {
-      containerId,
+      containerIds,
       metricNames,
       metricHorizon,
     }),
@@ -133,7 +134,8 @@ export const ContainerMetricsChart = ({
   return (
     <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
       <LineChartWrapper
-        keyId={`${containerId}-${metricNames.join("-")}-${metricHorizon}`}
+        key={containerIdsKey}
+        keyId={`${containerIdsKey}-${metricNames.join("-")}-${metricHorizon}`}
         chart={chartToCreate}
       />
     </div>

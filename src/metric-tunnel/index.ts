@@ -140,16 +140,16 @@ export const selectMetricsByMetricContainerHorizon = createSelector(
 
 export const selectMetricDataAsFlatTableByContainer = createSelector(
   selectContainerMetricsAsList,
-  (_: AppState, p: { containerId: string }) => p.containerId,
+  (_: AppState, p: { containerIds: string[] }) => p.containerIds,
   (_: AppState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
-  (containerMetrics, containerId, metricHorizon): FlatTableOfMetricsData => {
+  (containerMetrics, containerIds, metricHorizon): FlatTableOfMetricsData => {
     const result: FlatTableOfMetricsData = {
       time: [],
     };
     containerMetrics
       .filter(
         (containerMetric: ContainerMetrics) =>
-          containerMetric.containerId === containerId &&
+          containerIds.includes(containerMetric.containerId) &&
           containerMetric.metricTimeRange === metricHorizon,
       )
       .forEach((containerMetric: ContainerMetrics, idx) => {
@@ -166,12 +166,12 @@ export const selectMetricDataAsFlatTableByContainer = createSelector(
 
 export const selectMetricDataByChart = createSelector(
   selectContainerMetricsAsList,
-  (_: AppState, p: { containerId: string }) => p.containerId,
+  (_: AppState, p: { containerIds: string[] }) => p.containerIds,
   (_: AppState, p: { metricNames: string[] }) => p.metricNames,
   (_: AppState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
   (
     containerMetrics,
-    containerId,
+    containerIds,
     metricNames,
     metricHorizon,
   ): ChartToCreate => {
@@ -198,7 +198,7 @@ export const selectMetricDataByChart = createSelector(
     };
     const metrics = containerMetrics.filter(
       (containerMetric) =>
-        containerMetric.containerId === containerId &&
+        containerIds.includes(containerMetric.containerId) &&
         metricNames.includes(containerMetric.metricName) &&
         containerMetric.metricTimeRange === metricHorizon,
     );
