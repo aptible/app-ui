@@ -1,10 +1,6 @@
 import { metricTunnelApi } from "@app/api";
 import { createReducerMap, createTable } from "@app/slice-helpers";
-import {
-  AppState,
-  ContainerMetrics,
-  MetricHorizons,
-} from "@app/types";
+import { AppState, ContainerMetrics, MetricHorizons } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 import { put } from "saga-query";
 
@@ -212,7 +208,7 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
   MetricTunnelContainerResponse
 >(
   `/proxy/:containerId?horizon=:metricHorizon&ts=${getUtc()}&metric=:metricName&requestedTicks=600`,
-  function*(ctx, next) {
+  function* (ctx, next) {
     yield* next();
 
     if (!ctx.json.ok) {

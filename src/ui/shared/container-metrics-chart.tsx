@@ -20,7 +20,6 @@ import {
 import "chartjs-adapter-date-fns";
 import { useSelector } from "react-redux";
 
-console.log("HI");
 ChartJS.register(
   CategoryScale,
   Colors,

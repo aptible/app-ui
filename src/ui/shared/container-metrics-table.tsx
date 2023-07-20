@@ -1,7 +1,7 @@
 import { Loading } from "./loading";
 import { TableHead, Td } from "./table";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
-import { DeployContainer } from "@app/types";
+import { DeployContainer, MetricHorizons } from "@app/types";
 import { useEffect } from "react";
 import { useCache } from "saga-query/react";
 
@@ -17,43 +17,21 @@ export const ContainerMetricsDataTable = ({
   // WARNING - this requires a better long term solution. We are doing this just to set up the
   // queries / transform data for viewing this in browser (as there are concurrent metrictunnel changes to this)
   // We likely will want a cachable/datastore-based solution at some point. This is temporary
-  const constructQueries = dataToFetch.map((datumToFetch) =>
-    useCache(
-      fetchMetricTunnelDataForContainer({
-        containerId: container.id,
-        horizon: viewHorizon,
-        metric: datumToFetch,
-      }),
-    ),
-  );
-  useEffect(() => {
-    constructQueries.forEach((query) => query.trigger());
-  }, [constructQueries.length]);
-  if (
-    constructQueries
-      .map((query) => query.isLoading || query.isInitialLoading)
-      .some((queryStatus) => queryStatus)
-  ) {
-    return <Loading />;
-  }
 
   // combine all the query data into a singular dataset
   const resultantData: { [columnName: string]: (string | number)[] } = {};
-  constructQueries.forEach((query, queryIdx) => {
-    // timefield is always time_0, deltas are used sometimes with time_1 where available
-    query.data.columns.forEach((colDataSeries: (string | number)[]) => {
-      const colName =
-        typeof colDataSeries[0] === "string" &&
-          colDataSeries[0].includes("time_")
-          ? colDataSeries[0]
-          : `${dataToFetch[queryIdx]} - ${colDataSeries[0]}`;
-      resultantData[colName] = [];
-      colDataSeries.forEach((elem: string | number, idx) => {
-        if (idx === 0) {
-          return;
-        }
-        resultantData[colName].push(elem);
-      });
+  // timefield is always time_0, deltas are used sometimes with time_1 where available
+  query.data.columns.forEach((colDataSeries: (string | number)[]) => {
+    const colName =
+      typeof colDataSeries[0] === "string" && colDataSeries[0].includes("time_")
+        ? colDataSeries[0]
+        : `${dataToFetch[queryIdx]} - ${colDataSeries[0]}`;
+    resultantData[colName] = [];
+    colDataSeries.forEach((elem: string | number, idx) => {
+      if (idx === 0) {
+        return;
+      }
+      resultantData[colName].push(elem);
     });
   });
   // keep the date columns in front

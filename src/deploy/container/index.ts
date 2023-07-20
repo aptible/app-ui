@@ -120,7 +120,9 @@ export const selectContainersByReleaseId = createSelector(
   selectContainerAsList,
   (_: AppState, props: { releaseId: string }) => props.releaseId,
   (containers, releaseId) => {
-    return containers.filter((container) => container.releaseId === releaseId);
+    return containers
+      .filter((container) => container.releaseId === releaseId)
+      .sort((a, b) => a.id.localeCompare(b.id));
   },
 );
 
