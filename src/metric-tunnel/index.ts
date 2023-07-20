@@ -156,9 +156,9 @@ export const selectMetricDataAsFlatTableByContainer = createSelector(
         if (idx === 0) {
           result.time = containerMetric.values.map((elem) => elem.date);
         }
-        result[containerMetric.metricLabel] = containerMetric.values.map(
-          (elem) => elem.value,
-        );
+        result[
+          `${containerMetric.metricName} - ${containerMetric.metricLabel}`
+        ] = containerMetric.values.map((elem) => elem.value);
       });
     return result;
   },
@@ -211,7 +211,7 @@ export const selectMetricDataByChart = createSelector(
     const datasets: Dataset[] = [];
     metrics.forEach((metric, idx) => {
       const dataset: Dataset = {
-        label: metric.metricLabel,
+        label: `${metric.metricName} - ${metric.metricLabel}`,
         pointRadius: 0,
         pointHoverRadius: 5,
         data: [],
