@@ -133,6 +133,7 @@ export const ContainerMetricsChart = ({
   return (
     <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
       <LineChartWrapper
+        key={containerIds.join("-")}
         keyId={`${containerIds.join("-")}-${metricNames.join(
           "-",
         )}-${metricHorizon}`}
