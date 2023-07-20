@@ -48,6 +48,11 @@ export function AppDetailServicePage() {
     }),
   );
 
+  const containerIds = [...containers]
+    .sort()
+    .map((container) => container.id)
+    .join("-");
+
   useEffect(() => {
     const actions: AnyAction[] = [];
     containers.forEach((container) =>
@@ -66,7 +71,7 @@ export function AppDetailServicePage() {
       return;
     }
     dispatch(batchActions(actions));
-  }, [service.id, containers.length, metricHorizon]);
+  }, [service.id, containerIds, metricHorizon]);
 
   if (!containers) {
     return <Loading />;
