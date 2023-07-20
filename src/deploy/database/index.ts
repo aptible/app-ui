@@ -256,6 +256,7 @@ const computeSearchMatch = (db: DeployDatabaseRow, search: string): boolean => {
   const opMatch = lastOpType !== "" && lastOpType.includes(search);
   const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
   const dbTypeMatch = dbType.includes(search);
+  const idMatch = search === db.id;
 
   return (
     handleMatch ||
@@ -263,7 +264,8 @@ const computeSearchMatch = (db: DeployDatabaseRow, search: string): boolean => {
     envMatch ||
     opMatch ||
     opStatusMatch ||
-    userMatch
+    userMatch ||
+    idMatch
   );
 };
 

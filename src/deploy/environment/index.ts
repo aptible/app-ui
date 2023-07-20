@@ -230,7 +230,8 @@ export const selectEnvironmentsForTableSearch = createSelector(
     return envs
       .filter((env) => {
         const handleMatch = env.handle.toLocaleLowerCase().includes(search);
-        return handleMatch;
+        const idMatch = env.id === search;
+        return handleMatch || idMatch;
       })
       .sort((a, b) => a.handle.localeCompare(b.handle));
   },
@@ -257,10 +258,11 @@ export const selectEnvironmentsForTableSearchByStackId = createSelector(
 
     return envs
       .filter((env) => {
-        return (
-          env.handle.toLocaleLowerCase().includes(search) &&
-          env.stackId === stackId
-        );
+        if (env.stackId !== stackId) return false;
+        const handleMatch = env.handle.toLocaleLowerCase().includes(search);
+        const idMatch = env.id === search;
+
+        return handleMatch || idMatch;
       })
       .sort((a, b) => a.handle.localeCompare(b.handle));
   },
