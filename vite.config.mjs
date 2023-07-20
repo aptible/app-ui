@@ -9,6 +9,11 @@ export default defineConfig(() => {
       rollupOptions: {
         output: {
           manualChunks: {
+            chart: [
+              'react-chartjs-2',
+              'chart.js',
+              'chartjs-adapter-date-fns'
+            ],
             vendor: [
               "@reduxjs/toolkit",
               "@sentry/react",
