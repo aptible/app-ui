@@ -10,8 +10,8 @@ export const ContainerMetricsDataTable = ({
   containers: DeployContainer[];
   metricHorizon: MetricHorizons;
 }) => {
-  // will support multiple containers next
-  const container = containers?.[0];
+  // will support multiple containers next, placeholder for this (and for debugging/verification)
+  const container = containers?.[0] || "";
 
   const metricTableData = useSelector((s: AppState) =>
     selectMetricDataAsFlatTableByContainer(s, {
