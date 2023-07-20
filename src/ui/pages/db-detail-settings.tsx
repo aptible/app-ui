@@ -139,11 +139,11 @@ export const DatabaseSettingsPage = () => {
             <Secret secret={database.connectionUrl} />
           </div>
 
-          <hr />
+          <hr className="mt-6" />
 
           <div className="flex mt-4">
             <Button
-              className="w-40 mb-4 flex semibold"
+              className="w-40 flex semibold"
               type="submit"
               disabled={isUpdating || updatingDatabaseLoader.isLoading}
             >
