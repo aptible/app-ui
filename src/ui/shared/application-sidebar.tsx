@@ -120,8 +120,8 @@ export const ApplicationSidebar = () => {
                         width: 12,
                         height: 12,
                         marginRight: -8,
-                        marginLeft: -2,
-                        transform: "scale(2.5, 2.5)",
+                        marginLeft: -1,
+                        transform: "scale(1.8, 1.8)",
                       }
                     : {}
                 }
