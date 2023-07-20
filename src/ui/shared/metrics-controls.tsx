@@ -83,6 +83,7 @@ export const MetricsHorizonControls = ({
       >
         1W
       </Button>
+      <div className="flex-1 text-gray-500 text-base mt-2 ml-4">Last Updated: 2m ago</div>
     </div>
   );
 };
