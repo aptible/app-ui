@@ -166,11 +166,11 @@ export const CreateProjectFromAppSetupPage = () => {
     }
 
     if (hasDeployOperation(deployOp)) {
-      navigate(createProjectGitStatusUrl(app.id));
+      navigate(createProjectGitStatusUrl(app.id), { replace: true });
     } else if (hasDeployOperation(scanOp) && scanOp.status === "succeeded") {
-      navigate(createProjectGitSettingsUrl(app.id));
+      navigate(createProjectGitSettingsUrl(app.id), { replace: true });
     } else {
-      navigate(createProjectGitPushUrl(app.id));
+      navigate(createProjectGitPushUrl(app.id), { replace: true });
     }
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
