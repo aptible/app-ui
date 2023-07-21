@@ -40,8 +40,6 @@ export function DatabaseMetricsPage() {
   const dispatch = useDispatch();
   useQuery(fetchService({ id: db.serviceId }));
 
-  // we always go back exactly one week, though it might be a bit too far for some that way
-  // we do not have to refetch this if the component state changes as this is fairly expensive
   const releases = useSelector((s: AppState) =>
     selectReleasesByService(s, {
       serviceId: db.serviceId,

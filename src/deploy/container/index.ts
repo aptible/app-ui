@@ -122,7 +122,11 @@ export const selectContainersByReleaseId = createSelector(
   (containers, releaseId) => {
     return containers
       .filter((container) => container.releaseId === releaseId)
-      .sort((a, b) => a.id.localeCompare(b.id));
+      .sort((a, b) => {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
   },
 );
 
@@ -131,10 +135,16 @@ export const selectContainersByReleaseIdByLayerType = createSelector(
   (_: AppState, props: { releaseId: string }) => props.releaseId,
   (_: AppState, props: { layers: string[] }) => props.layers,
   (containers, releaseId, layers) => {
-    return containers.filter(
-      (container) =>
-        layers.includes(container.layer) && container.releaseId === releaseId,
-    );
+    return containers
+      .filter(
+        (container) =>
+          layers.includes(container.layer) && container.releaseId === releaseId,
+      )
+      .sort((a, b) => {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
   },
 );
 
@@ -143,11 +153,17 @@ export const selectContainersByReleaseIdsByLayerType = createSelector(
   (_: AppState, props: { releaseIds: string[] }) => props.releaseIds,
   (_: AppState, props: { layers: string[] }) => props.layers,
   (containers, releaseIds, layers) => {
-    return containers.filter(
-      (container) =>
-        layers.includes(container.layer) &&
-        releaseIds.includes(container.releaseId),
-    );
+    return containers
+      .filter(
+        (container) =>
+          layers.includes(container.layer) &&
+          releaseIds.includes(container.releaseId),
+      )
+      .sort((a, b) => {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
   },
 );
 
