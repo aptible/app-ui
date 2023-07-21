@@ -1,8 +1,8 @@
-import { IconInfo } from "../icons";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { Tooltip } from "../tooltip";
 import { useLoader, useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -16,9 +16,16 @@ import {
 } from "@app/deploy";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
-import { appServicesUrl, operationDetailUrl } from "@app/routes";
+import {
+  appServicesUrl,
+  environmentCreateAppUrl,
+  operationDetailUrl,
+} from "@app/routes";
+import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
 
+import { ActionList, ActionListView } from "../action-list-view";
+import { ButtonCreate } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
@@ -27,7 +34,6 @@ import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { Header, TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { capitalize } from "@app/string-utils";
 
 interface AppCellProps {
   app: DeployAppRow;
@@ -174,15 +180,18 @@ const AppsResourceHeaderTitleBar = ({
   search = "",
   resourceHeaderType,
   onChange,
+  actions = [],
 }: {
   apps: DeployAppRow[];
   search?: string;
+  actions?: ActionList;
 } & HeaderTypes) => {
   switch (resourceHeaderType) {
     case "title-bar":
       return (
         <ResourceHeader
           title="Apps"
+          actions={actions}
           filterBar={
             <div className="pt-1">
               <InputSearch
@@ -209,9 +218,14 @@ const AppsResourceHeaderTitleBar = ({
       );
     case "simple-text":
       return (
-        <p className="flex text-gray-500 text-base mb-4">
-          {apps.length} App{apps.length !== 1 && "s"}
-        </p>
+        <div className="flex justify-between items-center text-gray-500 text-base mb-4">
+          <div>
+            {apps.length} App{apps.length !== 1 && "s"}
+          </div>
+          <div>
+            {actions.length > 0 ? <ActionListView actions={actions} /> : null}
+          </div>
+        </div>
       );
     default:
       return null;
@@ -230,36 +244,22 @@ export const AppListByOrg = () => {
   const apps = useSelector((s: AppState) =>
     selectAppsForTableSearch(s, { search }),
   );
+  const titleBar = (
+    <AppsResourceHeaderTitleBar
+      apps={apps}
+      search={search}
+      resourceHeaderType="title-bar"
+      onChange={onChange}
+    />
+  );
 
   return (
     <LoadResources
-      empty={
-        <EmptyResourcesTable
-          headers={appHeaders}
-          titleBar={
-            <AppsResourceHeaderTitleBar
-              apps={apps}
-              search={search}
-              resourceHeaderType="title-bar"
-              onChange={onChange}
-            />
-          }
-        />
-      }
+      empty={<EmptyResourcesTable headers={appHeaders} titleBar={titleBar} />}
       query={query}
       isEmpty={apps.length === 0 && search === ""}
     >
-      <AppList
-        apps={apps}
-        headerTitleBar={
-          <AppsResourceHeaderTitleBar
-            apps={apps}
-            search={search}
-            resourceHeaderType="title-bar"
-            onChange={onChange}
-          />
-        }
-      />
+      <AppList apps={apps} headerTitleBar={titleBar} />
     </LoadResources>
   );
 };
@@ -269,6 +269,7 @@ export const AppListByEnvironment = ({
 }: {
   environmentId: string;
 }) => {
+  const navigate = useNavigate();
   const loader = useLoader(fetchAllApps());
   useQuery(fetchEnvironmentById({ id: environmentId }));
 
@@ -279,31 +280,29 @@ export const AppListByEnvironment = ({
     }),
   );
 
+  const onCreate = () => {
+    navigate(environmentCreateAppUrl(environmentId));
+  };
+
+  const titleBar = (
+    <AppsResourceHeaderTitleBar
+      apps={apps}
+      resourceHeaderType="simple-text"
+      actions={[
+        <ButtonCreate envId={environmentId} onClick={onCreate}>
+          <IconPlusCircle variant="sm" /> <div className="pl-2">New App</div>
+        </ButtonCreate>,
+      ]}
+    />
+  );
+
   return (
     <LoadResources
-      empty={
-        <EmptyResourcesTable
-          headers={appHeaders}
-          titleBar={
-            <AppsResourceHeaderTitleBar
-              apps={apps}
-              resourceHeaderType="simple-text"
-            />
-          }
-        />
-      }
+      empty={<EmptyResourcesTable headers={appHeaders} titleBar={titleBar} />}
       query={loader}
       isEmpty={apps.length === 0}
     >
-      <AppList
-        apps={apps}
-        headerTitleBar={
-          <AppsResourceHeaderTitleBar
-            apps={apps}
-            resourceHeaderType="simple-text"
-          />
-        }
-      />
+      <AppList apps={apps} headerTitleBar={titleBar} />
     </LoadResources>
   );
 };

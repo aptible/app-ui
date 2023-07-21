@@ -9,7 +9,7 @@ import {
 import { createProjectGitUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 
-import { HeroBgLayout } from "../layouts";
+import { CreateProjectLayout, HeroBgLayout } from "../layouts";
 import {
   Box,
   Button,
@@ -21,7 +21,6 @@ import {
   IconThumbsUp,
   tokens,
 } from "../shared";
-import { CreateProjectLayout } from "./create-project-git";
 
 export const FreeFormSurvey = () => {
   const dispatch = useDispatch();

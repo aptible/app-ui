@@ -6,6 +6,7 @@ import {
   serviceDefinitionReducers,
 } from "./app-service-definitions";
 import { certificateEntities, certificateReducers } from "./certificate";
+import { appConfigEntities, appConfigReducers } from "./configuration";
 import { containerEntities, containerReducers } from "./container";
 import { databaseEntities, databaseReducers } from "./database";
 import {
@@ -50,6 +51,7 @@ const allReducers: any[] = [
   containerReducers,
   vpcPeerReducers,
   vpnTunnelReducers,
+  appConfigReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -82,4 +84,5 @@ export const entities = {
   ...containerEntities,
   ...vpcPeerEntities,
   ...vpnTunnelEntities,
+  ...appConfigEntities,
 };

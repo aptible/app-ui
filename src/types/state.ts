@@ -117,8 +117,18 @@ export interface ResourceStats extends AbstractResourceItem {
   lastAccessed: string;
 }
 
+export interface DeployAppConfigEnv {
+  [key: string]: string | number | boolean;
+}
+export interface DeployAppConfig {
+  id: string;
+  env: DeployAppConfigEnv;
+  appId: string;
+}
+
 export interface DeployState {
   apps: MapEntity<DeployApp>;
+  appConfigs: MapEntity<DeployAppConfig>;
   certificates: MapEntity<DeployCertificate>;
   endpoints: MapEntity<DeployEndpoint>;
   environments: MapEntity<DeployEnvironment>;

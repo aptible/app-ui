@@ -7,11 +7,6 @@ export const EnvironmentAppsPage = () => {
   return (
     <div className="mb-4">
       <DetailPageSections>
-        {/* <div className="flex">
-          <div className="flex w-1/2">
-            <ButtonIcon icon={<IconPlusCircle />}>New App</ButtonIcon>
-          </div>
-        </div> */}
         <AppListByEnvironment environmentId={id} />
       </DetailPageSections>
     </div>

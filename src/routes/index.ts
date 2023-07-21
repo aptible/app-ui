@@ -135,6 +135,9 @@ export const environmentBackupsUrl = (id: string) =>
 export const ENVIRONMENT_SETTINGS_PATH = "/environments/:id/settings";
 export const environmentSettingsUrl = (id: string) =>
   `/environments/${id}/settings`;
+export const ENVIRONMENT_CREATE_APP_PATH = "/environments/:id/app";
+export const environmentCreateAppUrl = (id: string) =>
+  `/create/name?environment_id=${id}`;
 
 export const ERROR_PATH = "/error";
 

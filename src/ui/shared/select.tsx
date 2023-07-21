@@ -11,6 +11,7 @@ export interface SelectProps {
   value?: SelectOption;
   onSelect: (s: SelectOption) => void;
   className?: string;
+  ariaLabel?: string;
 }
 
 export function Select({
@@ -19,6 +20,7 @@ export function Select({
   onSelect,
   defaultValue,
   className = "",
+  ariaLabel = "combobox",
 }: SelectProps) {
   const finClassName = cn(
     "border-black-100 text-black",
@@ -30,7 +32,7 @@ export function Select({
   );
   return (
     <select
-      name="stack"
+      aria-label={ariaLabel}
       className={finClassName}
       value={value?.value}
       defaultValue={defaultValue?.value}

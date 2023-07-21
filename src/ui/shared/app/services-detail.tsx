@@ -7,12 +7,13 @@ import {
 } from "@app/deploy";
 import { AppState, DeployApp, DeployService } from "@app/types";
 
-import { ButtonLink } from "../button";
+import { ButtonCreate, ButtonLink } from "../button";
 import { PreCode, listToInvertedTextColor } from "../pre-code";
 import { ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { appServicePathUrl } from "@app/routes";
+import { appServicePathUrl, createProjectGitAppSetupUrl } from "@app/routes";
+import { useNavigate } from "react-router";
 
 const serviceListRow = ({
   app,
@@ -91,18 +92,25 @@ export function ServicesOverview({
   appId: string;
   serviceIds: string[];
 }) {
+  const navigate = useNavigate();
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const services = useSelector((s: AppState) =>
     selectServicesByIds(s, { ids: serviceIds }),
   );
+  const onDeploy = () => {
+    navigate(createProjectGitAppSetupUrl(app.id));
+  };
 
   return (
     <div className="mb-4">
       <ResourceListView
         header={
           <>
-            <div className="text-base text-gray-500 mb-4 select-none">
+            <div className="text-base text-gray-500 mb-4 select-none flex justify-between items-center">
               <span>{serviceIds.length} Services</span>
+              <ButtonCreate envId={app.environmentId} onClick={onDeploy}>
+                Deployment Monitor
+              </ButtonCreate>
             </div>
           </>
         }

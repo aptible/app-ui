@@ -10,3 +10,4 @@ export * from "./op-detail-layout";
 export * from "./perm-required";
 export * from "./menu-wrapped-page";
 export * from "./stack-detail-layout";
+export * from "./create-project-layout";

@@ -20,3 +20,4 @@ export * from "./release";
 export * from "./container";
 export * from "./vpc_peer";
 export * from "./vpn_tunnel";
+export * from "./code-scan-result";

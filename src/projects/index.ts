@@ -1,7 +1,6 @@
 import {
   all,
   call,
-  fork,
   put,
   select,
   setLoaderError,
@@ -16,6 +15,7 @@ import {
   createDeployApp,
   createDeployEnvironment,
   createServiceDefinition,
+  fetchApp,
   fetchConfiguration,
   fetchDatabase,
   fetchDatabasesByEnvId,
@@ -37,6 +37,11 @@ interface CreateProjectProps {
 }
 
 const log = createLog("project");
+
+export const DB_ENV_TEMPLATE_KEY = "_TMP";
+export const getDbEnvTemplateKey = (envKey: string) =>
+  `${envKey}${DB_ENV_TEMPLATE_KEY}`;
+export const getDbEnvTemplateValue = (dbHandle: string) => `{{${dbHandle}}}`;
 
 export const createProject = thunks.create<CreateProjectProps>(
   "create-project",
@@ -130,7 +135,7 @@ function* waitForDb(opId: string, dbId: string): Iterator<any, WaitDbProps> {
   };
 }
 
-export interface DbSelectorProps {
+export interface DbCreatorProps {
   id: string;
   imgId: string;
   name: string;
@@ -151,7 +156,7 @@ export interface TextVal<
 export interface CreateProjectSettingsProps {
   appId: string;
   envId: string;
-  dbs: DbSelectorProps[];
+  dbs: DbCreatorProps[];
   envs: TextVal[];
   curEnvs: { [key: string]: any };
   cmds: TextVal<{ id: string; http: boolean }>[];
@@ -215,21 +220,24 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     });
     // we want to also inject the db env vars with placeholders
     dbs.forEach((db) => {
-      env[`${db.env}_TMP`] = `{{${db.name}}}`;
+      env[`${db.env}${DB_ENV_TEMPLATE_KEY}`] = getDbEnvTemplateValue(db.name);
     });
 
     // Trigger configure operation now so we can store the env vars
     // immediately.
-    yield* fork(function* () {
-      yield* call(
-        createAppOperation.run,
-        createAppOperation({
-          type: "configure",
-          appId,
-          env,
-        }),
-      );
-    });
+    const configCtx = yield* call(
+      createAppOperation.run,
+      createAppOperation({
+        type: "configure",
+        appId,
+        env,
+      }),
+    );
+
+    if (!configCtx.json.ok) {
+      yield put(setLoaderError({ id, message: configCtx.json.data.message }));
+      return;
+    }
 
     const results = yield* all(
       dbs.map((db) => {
@@ -247,6 +255,13 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
         );
       }),
     );
+
+    // when creating a standalone app with no databases to provision
+    // we don't want to deploy an app until the config operation completes
+    yield* call(waitForOperation, { id: `${configCtx.json.data.id}` });
+
+    // fetch app to get latest configuration id
+    yield* call(fetchApp.run, fetchApp({ id: appId }));
 
     /**
      * now we hot-swap db env vars for the actual connection url
@@ -313,8 +328,8 @@ function* _updateEnvWithDbUrls({
   const nextEnv = { ...env };
   dbs.forEach((db) => {
     Object.keys(nextEnv).forEach((key) => {
-      if (nextEnv[key] !== `{{${db.handle}}}`) return;
-      nextEnv[key.replace("_TMP", "")] = db.connectionUrl;
+      if (nextEnv[key] !== getDbEnvTemplateValue(db.handle)) return;
+      nextEnv[key.replace(DB_ENV_TEMPLATE_KEY, "")] = db.connectionUrl;
       nextEnv[key] = "";
       swapped = true;
     });
