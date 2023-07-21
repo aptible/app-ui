@@ -1,3 +1,4 @@
+import { dateFromToday } from "@app/date";
 import { LoadResources, Loading } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
@@ -7,12 +8,16 @@ import {
   MetricsViewControls,
 } from "../shared/metrics-controls";
 import {
-  fetchContainersByReleaseId,
+  fetchContainersByReleaseIdWithDeleted,
   fetchEnvironmentServices,
-  fetchRelease,
+  fetchReleasesByServiceWithDeleted,
   fetchService,
-  selectContainersByReleaseIdByLayerType,
+  selectContainersByReleaseIdsByLayerType,
   selectDatabaseById,
+  selectReleaseById,
+  selectReleaseByIds,
+  selectReleasesByService,
+  selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
@@ -25,6 +30,8 @@ import { batchActions } from "saga-query";
 import { useQuery } from "saga-query/react";
 
 const metrics = ["cpu_pct", "la", "memory_all", "iops", "fs"];
+const layersToSearchForContainers = ["app", "database"];
+
 export function DatabaseMetricsPage() {
   const { id = "" } = useParams();
   const [viewTab, setViewTab] = useState<MetricTabTypes>("chart");
@@ -36,12 +43,21 @@ export function DatabaseMetricsPage() {
   );
   const dispatch = useDispatch();
   useQuery(fetchService({ id: db.serviceId }));
-  useQuery(fetchRelease({ id: service.currentReleaseId }));
-  useQuery(fetchContainersByReleaseId({ releaseId: service.currentReleaseId }));
+
+  // we always go back exactly one week, though it might be a bit too far for some that way 
+  // we do not have to refetch this if the component state changes as this is fairly expensive
+  const releases = useSelector((s: AppState) =>
+    selectReleasesByService(s, {
+      serviceId: db.serviceId,
+    }),
+  );
+  const releaseIds = releases.map((release) => release.id);
+
+  useQuery(fetchReleasesByServiceWithDeleted({ serviceId: service.id }));
   const containers = useSelector((s: AppState) =>
-    selectContainersByReleaseIdByLayerType(s, {
-      layers: ["database"],
-      releaseId: service.currentReleaseId,
+    selectContainersByReleaseIdsByLayerType(s, {
+      layers: layersToSearchForContainers,
+      releaseIds,
     }),
   );
 
@@ -49,6 +65,17 @@ export function DatabaseMetricsPage() {
     .map((container) => container.id)
     .sort()
     .join("-");
+
+  useEffect(() => {
+    const actions: AnyAction[] = [];
+    releaseIds.map((releaseId) => {
+      actions.push(fetchContainersByReleaseIdWithDeleted({ releaseId }));
+    });
+    if (actions.length === 0) {
+      return;
+    }
+    dispatch(batchActions(actions));
+  }, [releaseIds.join("-")]);
 
   useEffect(() => {
     const actions: AnyAction[] = [];

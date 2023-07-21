@@ -12,7 +12,7 @@ export type Dataset = {
   label?: string;
   pointRadius?: number;
   pointHoverRadius?: number;
-  data: number[];
+  data: (number | { x: string | number; y: number })[];
 };
 export type ChartToCreate = {
   title: string;
@@ -207,9 +207,8 @@ export const selectMetricDataByChart = createSelector(
     }
     // all metrics use the same exact time horizon and currently are sent by the backend
     // with identical tick counts
-    const labels: string[] = [];
     const datasets: Dataset[] = [];
-    metrics.forEach((metric, idx) => {
+    metrics.forEach((metric) => {
       const dataset: Dataset = {
         label: `${metric.metricName} - ${metric.metricLabel}`,
         pointRadius: 0,
@@ -217,14 +216,13 @@ export const selectMetricDataByChart = createSelector(
         data: [],
       };
       metric.values.forEach((metricValue) => {
-        if (idx === 0) {
-          labels.push(metricValue.date);
-        }
-        dataset.data.push(metricValue.value);
+        dataset.data.push({
+          x: metricValue.date,
+          y: metricValue.value,
+        });
       });
       datasets.push(dataset);
     });
-    result.labels = labels;
     result.datasets = datasets;
     return result;
   },

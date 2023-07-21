@@ -5,7 +5,10 @@ import { useParams } from "react-router-dom";
 import {
   fetchEnvironmentServices,
   fetchRelease,
+  fetchReleasesByServiceWithDeleted,
+  fetchReleasesWithDeleted,
   selectAppById,
+  selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
 import { AppState, MetricHorizons } from "@app/types";
@@ -18,9 +21,10 @@ import {
   MetricsHorizonControls,
   MetricsViewControls,
 } from "../shared/metrics-controls";
+import { dateFromToday } from "@app/date";
 import {
-  fetchContainersByReleaseId,
-  selectContainersByReleaseIdByLayerType,
+  fetchContainersByReleaseIdWithDeleted,
+  selectContainersByReleaseIdsByLayerType,
 } from "@app/deploy/container";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
 import { useEffect, useState } from "react";
@@ -39,12 +43,21 @@ export function AppDetailServicePage() {
     selectServiceById(s, { id: serviceId }),
   );
   const dispatch = useDispatch();
-  useQuery(fetchRelease({ id: service.currentReleaseId }));
-  useQuery(fetchContainersByReleaseId({ releaseId: service.currentReleaseId }));
+  useQuery(fetchReleasesByServiceWithDeleted({ serviceId: service.id }));
+
+  // we always go back exactly one week, though it might be a bit too far for some that way 
+  // we do not have to refetch this if the component state changes as this is fairly expensive
+  const releases = useSelector((s: AppState) =>
+    selectReleasesByServiceAfterDate(s, {
+      serviceId,
+      date: dateFromToday(-7).toISOString(),
+    }),
+  );
+  const releaseIds = releases.map((release) => release.id);
   const containers = useSelector((s: AppState) =>
-    selectContainersByReleaseIdByLayerType(s, {
+    selectContainersByReleaseIdsByLayerType(s, {
       layers: layersToSearchForContainers,
-      releaseId: service.currentReleaseId,
+      releaseIds,
     }),
   );
 
@@ -52,6 +65,17 @@ export function AppDetailServicePage() {
     .map((container) => container.id)
     .sort()
     .join("-");
+
+  useEffect(() => {
+    const actions: AnyAction[] = [];
+    releaseIds.map((releaseId) => {
+      actions.push(fetchContainersByReleaseIdWithDeleted({ releaseId }));
+    });
+    if (actions.length === 0) {
+      return;
+    }
+    dispatch(batchActions(actions));
+  }, [releaseIds.join("-")]);
 
   useEffect(() => {
     const actions: AnyAction[] = [];

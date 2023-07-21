@@ -33,7 +33,7 @@ const LineChartWrapper = ({
   keyId,
   chart: { labels, datasets, title },
 }: { keyId: string; chart: ChartToCreate }) =>
-  labels && datasets && title ? (
+  datasets && title ? (
     <Line
       datasetIdKey={keyId}
       data={{
@@ -118,9 +118,8 @@ export const ContainerMetricsChart = ({
   metricNames: string[];
   metricHorizon: MetricHorizons;
 }) => {
+  const containerIds = containers.map((container) => container.id).sort();
   // for now, we only use the FIRST container id pending cross-release
-  const containerIds = containers.map((container) => container.id);
-  const containerIdsKey = containerIds.join("-");
   const chartToCreate = useSelector((s: AppState) =>
     selectMetricDataByChart(s, {
       containerIds,
@@ -131,11 +130,13 @@ export const ContainerMetricsChart = ({
   if (chartToCreate.title === "" || chartToCreate.datasets?.length === 0) {
     return null;
   }
+
   return (
     <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
       <LineChartWrapper
-        key={containerIdsKey}
-        keyId={`${containerIdsKey}-${metricNames.join("-")}-${metricHorizon}`}
+        keyId={`${containerIds.join("-")}-${metricNames.join(
+          "-",
+        )}-${metricHorizon}`}
         chart={chartToCreate}
       />
     </div>

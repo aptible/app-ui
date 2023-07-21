@@ -138,10 +138,27 @@ export const selectContainersByReleaseIdByLayerType = createSelector(
   },
 );
 
+export const selectContainersByReleaseIdsByLayerType = createSelector(
+  selectContainerAsList,
+  (_: AppState, props: { releaseIds: string[] }) => props.releaseIds,
+  (_: AppState, props: { layers: string[] }) => props.layers,
+  (containers, releaseIds, layers) => {
+    return containers.filter(
+      (container) =>
+        layers.includes(container.layer) &&
+        releaseIds.includes(container.releaseId),
+    );
+  },
+);
+
 export const fetchContainersByReleaseId = api.get<
   { releaseId: string },
   HalEmbedded<{ containers: DeployContainerResponse[] }>
 >("/releases/:releaseId/containers");
+export const fetchContainersByReleaseIdWithDeleted = api.get<
+  { releaseId: string },
+  HalEmbedded<{ containers: DeployContainerResponse[] }>
+>("/releases/:releaseId/containers?with_deleted=true");
 
 export const containerEntities = {
   container: defaultEntity({
