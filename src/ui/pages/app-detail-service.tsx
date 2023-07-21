@@ -11,7 +11,7 @@ import {
 } from "@app/deploy";
 import { AppState, MetricHorizons } from "@app/types";
 
-import { LoadResources, Loading } from "../shared";
+import { Loading } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
@@ -36,7 +36,7 @@ export function AppDetailServicePage() {
   const [viewTab, setViewTab] = useState<MetricTabTypes>("chart");
   const [metricHorizon, setMetricHorizon] = useState<MetricHorizons>("1h");
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
-  const query = useQuery(fetchEnvironmentServices({ id: app.environmentId }));
+  useQuery(fetchEnvironmentServices({ id: app.environmentId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),
   );
@@ -113,32 +113,30 @@ export function AppDetailServicePage() {
         />
       </div>
       <div className="my-4">
-        <LoadResources query={query} isEmpty={false}>
-          {viewTab === "chart" ? (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-              <ContainerMetricsChart
-                containers={containers}
-                metricNames={["cpu_pct"]}
-                metricHorizon={metricHorizon}
-              />
-              <ContainerMetricsChart
-                containers={containers}
-                metricNames={["memory_all"]}
-                metricHorizon={metricHorizon}
-              />
-              <ContainerMetricsChart
-                containers={containers}
-                metricNames={["la"]}
-                metricHorizon={metricHorizon}
-              />
-            </div>
-          ) : (
-            <ContainerMetricsDataTable
+        {viewTab === "chart" ? (
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <ContainerMetricsChart
               containers={containers}
+              metricNames={["cpu_pct"]}
               metricHorizon={metricHorizon}
             />
-          )}
-        </LoadResources>
+            <ContainerMetricsChart
+              containers={containers}
+              metricNames={["memory_all"]}
+              metricHorizon={metricHorizon}
+            />
+            <ContainerMetricsChart
+              containers={containers}
+              metricNames={["la"]}
+              metricHorizon={metricHorizon}
+            />
+          </div>
+        ) : (
+          <ContainerMetricsDataTable
+            containers={containers}
+            metricHorizon={metricHorizon}
+          />
+        )}
       </div>
     </>
   );

@@ -15,6 +15,7 @@ import {
   Tooltip,
 } from "chart.js";
 import "chartjs-adapter-date-fns";
+import { memo } from "react";
 import { useSelector } from "react-redux";
 
 ChartJS.register(
@@ -142,3 +143,5 @@ export const ContainerMetricsChart = ({
     </div>
   );
 };
+
+export const MemoizedContainerMetricsChart = memo(ContainerMetricsChart);
