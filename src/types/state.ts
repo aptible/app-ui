@@ -38,7 +38,7 @@ export interface Env {
   metricTunnelUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
-  origin: "nextgen" | "app";
+  origin: "app";
 }
 
 export interface Feedback {

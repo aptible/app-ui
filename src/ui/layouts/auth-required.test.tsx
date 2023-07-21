@@ -73,7 +73,7 @@ describe("AuthRequired", () => {
       initState: {
         env: {
           ...testEnv,
-          origin: "nextgen",
+          origin: "app",
         },
       },
       additionalRoutes: [

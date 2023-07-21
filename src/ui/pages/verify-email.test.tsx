@@ -11,7 +11,7 @@ describe("Verify email page", () => {
       initState: {
         env: {
           ...testEnv,
-          origin: "nextgen",
+          origin: "app",
         },
       },
     });
@@ -27,7 +27,7 @@ describe("Verify email page", () => {
       initState: {
         env: {
           ...testEnv,
-          origin: "nextgen",
+          origin: "app",
         },
       },
     });
@@ -39,7 +39,7 @@ describe("Verify email page", () => {
     const el = await screen.findByRole("button", {
       name: /Resend Verification Email/,
     });
-    await fireEvent.click(el);
+    fireEvent.click(el);
   });
   it("the verify email page should properly fail", async () => {
     const { TestProvider } = setupIntegrationTest();
@@ -54,7 +54,7 @@ describe("Verify email page", () => {
       }),
     );
     await screen.findByRole("button", { name: /Resend Verification Email/ });
-    const errorText = await screen.queryByText("Failed to verify your email");
+    const errorText = screen.queryByText("Failed to verify your email");
     expect(errorText).toBeDefined;
   });
   it("the verify email page should render and raise error if resend verification errors", async () => {
@@ -62,7 +62,7 @@ describe("Verify email page", () => {
       initState: {
         env: {
           ...testEnv,
-          origin: "nextgen",
+          origin: "app",
         },
       },
     });
@@ -91,7 +91,7 @@ describe("Verify email page", () => {
     const el = await screen.findByRole("button", {
       name: /Resend Verification Email/,
     });
-    await fireEvent.click(el);
+    fireEvent.click(el);
     await screen.queryByText("mock error message");
   });
 });
