@@ -113,6 +113,22 @@ export const selectReleasesByServiceAfterDate = createSelector(
   },
 );
 
+export const selectReleasesByServiceAfterDateWithCurrentReleaseId =
+  createSelector(
+    selectReleasesByServiceAfterDate,
+    selectReleaseById,
+    (releases, currentRelease) => {
+      for (const release of releases) {
+        if (release.id === currentRelease.id) {
+          // current release already there, no need to supply it
+          return releases;
+        }
+      }
+      // if current release not in releases, affix it so it's available
+      return [...releases, currentRelease];
+    },
+  );
+
 export const fetchRelease = api.get<{ id: string }>("/releases/:id");
 export const fetchReleasesByServiceWithDeleted = api.get<{ serviceId: string }>(
   "/services/:serviceId/releases/?with_deleted=true",

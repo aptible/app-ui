@@ -6,6 +6,7 @@ import {
   MetricsHorizonControls,
   MetricsViewControls,
 } from "../shared/metrics-controls";
+import { dateFromToday } from "@app/date";
 import {
   fetchContainersByReleaseIdWithDeleted,
   fetchEnvironmentServices,
@@ -13,7 +14,7 @@ import {
   fetchService,
   selectContainersByReleaseIdsByLayerType,
   selectDatabaseById,
-  selectReleasesByService,
+  selectReleasesByServiceAfterDateWithCurrentReleaseId,
   selectServiceById,
 } from "@app/deploy";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
@@ -41,8 +42,10 @@ export function DatabaseMetricsPage() {
   useQuery(fetchService({ id: db.serviceId }));
 
   const releases = useSelector((s: AppState) =>
-    selectReleasesByService(s, {
-      serviceId: db.serviceId,
+    selectReleasesByServiceAfterDateWithCurrentReleaseId(s, {
+      id: service.currentReleaseId,
+      serviceId: service.id,
+      date: dateFromToday(-7).toISOString(),
     }),
   );
   const releaseIds = releases.map((release) => release.id);
