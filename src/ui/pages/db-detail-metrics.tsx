@@ -120,12 +120,12 @@ export function DatabaseMetricsPage() {
             />
             <ContainerMetricsChart
               containers={containers}
-              metricNames={["la"]}
+              metricNames={["memory_all"]}
               metricHorizon={metricHorizon}
             />
             <ContainerMetricsChart
               containers={containers}
-              metricNames={["memory_all"]}
+              metricNames={["fs"]}
               metricHorizon={metricHorizon}
             />
             <ContainerMetricsChart
@@ -135,7 +135,7 @@ export function DatabaseMetricsPage() {
             />
             <ContainerMetricsChart
               containers={containers}
-              metricNames={["fs"]}
+              metricNames={["la"]}
               metricHorizon={metricHorizon}
             />
           </div>

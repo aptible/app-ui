@@ -123,12 +123,12 @@ export function AppDetailServicePage() {
               />
               <ContainerMetricsChart
                 containers={containers}
-                metricNames={["la"]}
+                metricNames={["memory_all"]}
                 metricHorizon={metricHorizon}
               />
               <ContainerMetricsChart
                 containers={containers}
-                metricNames={["memory_all"]}
+                metricNames={["la"]}
                 metricHorizon={metricHorizon}
               />
             </div>
