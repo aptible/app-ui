@@ -1,4 +1,3 @@
-import { dateFromToday } from "@app/date";
 import { LoadResources, Loading } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
@@ -14,10 +13,7 @@ import {
   fetchService,
   selectContainersByReleaseIdsByLayerType,
   selectDatabaseById,
-  selectReleaseById,
-  selectReleaseByIds,
   selectReleasesByService,
-  selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
@@ -44,7 +40,7 @@ export function DatabaseMetricsPage() {
   const dispatch = useDispatch();
   useQuery(fetchService({ id: db.serviceId }));
 
-  // we always go back exactly one week, though it might be a bit too far for some that way 
+  // we always go back exactly one week, though it might be a bit too far for some that way
   // we do not have to refetch this if the component state changes as this is fairly expensive
   const releases = useSelector((s: AppState) =>
     selectReleasesByService(s, {

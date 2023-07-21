@@ -4,9 +4,7 @@ import { useParams } from "react-router-dom";
 
 import {
   fetchEnvironmentServices,
-  fetchRelease,
   fetchReleasesByServiceWithDeleted,
-  fetchReleasesWithDeleted,
   selectAppById,
   selectReleasesByServiceAfterDate,
   selectServiceById,
@@ -45,7 +43,7 @@ export function AppDetailServicePage() {
   const dispatch = useDispatch();
   useQuery(fetchReleasesByServiceWithDeleted({ serviceId: service.id }));
 
-  // we always go back exactly one week, though it might be a bit too far for some that way 
+  // we always go back exactly one week, though it might be a bit too far for some that way
   // we do not have to refetch this if the component state changes as this is fairly expensive
   const releases = useSelector((s: AppState) =>
     selectReleasesByServiceAfterDate(s, {
