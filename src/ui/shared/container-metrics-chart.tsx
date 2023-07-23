@@ -1,5 +1,5 @@
+import cn from "classnames";
 import { Line } from "react-chartjs-2";
-import cn from 'classnames';
 
 import { ChartToCreate, selectMetricDataByChart } from "@app/metric-tunnel";
 import { AppState, DeployContainer, MetricHorizons } from "@app/types";
@@ -30,28 +30,27 @@ ChartJS.register(
   Legend,
 );
 
-const isSameVal = (data: number[]) => {
-    let prev = -1;
-    for (let i = 0; i < data.length; i += 1) {
-      const d = data[i];
-      if (i === 0) {
-        prev = d;
-        continue;
-      };
-
-      if (d !== prev) {
-        return false;
-      }
+/* const isSameVal = (data: number[]) => {
+  let prev = -1;
+  for (let i = 0; i < data.length; i += 1) {
+    const d = data[i];
+    if (i === 0) {
+      prev = d;
+      continue;
     }
 
-    return true;
+    if (d !== prev) {
+      return false;
+    }
   }
+
+  return true;
+}; */
 
 const Plot = ({
   id,
   chart: { labels, datasets, title },
 }: { id: string; chart: ChartToCreate }) => {
-  console.log(datasets);
   const x = new Set<string>();
   labels.forEach((l) => {
     x.add(l);
@@ -63,32 +62,29 @@ const Plot = ({
   }
 
   const tickMax = 5;
-  const margin = { top: 0, bottom: 20, left: 30, right: 20 };
+  const margin = { top: 30, bottom: 30, left: 30, right: 30 };
 
   const strokeWidth = 2;
-  const h = 500;
-  const w = 673;
-  const width = w - margin.left - margin.right - (strokeWidth * 2);
+  const h = 400;
+  const w = 538;
+  const width = w - margin.left - margin.right - strokeWidth * 2;
   const height = h - margin.top - margin.bottom;
-  const minX = 0;
-  const maxX = width;
   const first = datasets[0];
   const ySort = [...first.data].sort();
   // const sameVal = isSameVal(first.data);
   const dataMaxY = ySort[ySort.length - 1];
 
-  // const dataMaxX = labels[labels.length - 1];
-  const tickIntervalY = dataMaxY / tickMax - 1;
+  const tickIntervalY = dataMaxY / (tickMax - 1);
   const yMax = tickIntervalY * tickMax;
 
   const plot = () => {
     if (dataMaxY === 0) {
-        return <path d={`M ${minX},${height} H ${maxX}`} stroke="red" strokeWidth={strokeWidth} strokeLinecap="square" />
+      return <path d={`M 0,${height - strokeWidth} H ${width}`} stroke="red" />;
     }
 
     /* if (sameVal) {
       const d = first.data[0];
-      return <path d={`M 0,${height - height * d / yMax} H ${width}`} stroke="red" strokeWidth={strokeWidth} strokeLinecap="square" />
+      return <path d={`M 0,${height - height * d / yMax} H ${width}`} />
     } */
 
     return first.data.map((d, i) => {
@@ -98,28 +94,28 @@ const Plot = ({
       const x = width * xpct;
 
       const ypct = d / yMax;
-      const y = Math.abs(height - height * ypct);
+      const y = Math.abs(height - (height * ypct)) - strokeWidth;
 
-      console.log("CIRCLE", x, y);
-      return <circle key={i} cx={x} cy={y} r={2} fill="red" />;
-    })
-  }
+      return <circle key={i} cx={x} cy={y} r={strokeWidth} fill="red" />;
+    });
+  };
 
   // preserveAspectRatio="xMinYMax meet"
   return (
-    <svg
-      id={id}
-      viewBox={`0 0 ${w} ${h}`}
-      className="w-full h-full"
-    >
-      <g transform={`translate(${margin.left}, 0)`}>
-        <g transform={`translate(${strokeWidth},-${margin.top + strokeWidth})`}>
-          {plot()}
+    <>
+      <div>{title}</div>
+      <svg id={id} viewBox={`0 0 ${w} ${h}`}>
+        <g transform={`translate(${margin.left}, ${margin.top})`}>
+          <g strokeWidth={strokeWidth} strokeLinecap="square">
+            {plot()}
+          </g>
+          <g stroke="black" strokeWidth={strokeWidth} strokeLinecap="square">
+            <path d={`M -${strokeWidth},${height} V 0`} />
+            <path d={`M 0,${height} H ${width}`} />
+          </g>
         </g>
-        <path d={`M ${minX},${height} V ${minX}`} stroke="black" strokeWidth={strokeWidth} strokeLinecap="square" />
-        <path d={`M ${minX},${height} H ${maxX}`} stroke="black" strokeWidth={strokeWidth} strokeLinecap="square" />
-     </g>
-    </svg>
+      </svg>
+    </>
   );
 };
 
@@ -226,9 +222,12 @@ export const ContainerMetricsChart = ({
     return null;
   }
   return (
-    <div className={cn(
-      "bg-white shadow rounded-lg border border-black-100 h-[400px]",
-      "w-full")}>
+    <div
+      className={cn(
+        "bg-white shadow rounded-lg border border-black-100 h-[400px]",
+        "w-full",
+      )}
+    >
       <Plot
         id={`${containerIdsKey}-${metricNames.join("-")}-${metricHorizon}`}
         chart={chartToCreate}
@@ -237,7 +236,7 @@ export const ContainerMetricsChart = ({
         key={containerIdsKey}
         keyId={`${containerIdsKey}-${metricNames.join("-")}-${metricHorizon}`}
         chart={chartToCreate}
-      /> */}
+      />*/}
     </div>
   );
 };
