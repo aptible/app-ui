@@ -16,8 +16,8 @@ export type Dataset = {
 };
 export type ChartToCreate = {
   title: string;
-  labels?: string[];
-  datasets?: Dataset[];
+  labels: string[];
+  datasets: Dataset[];
 };
 export type FlatTableOfMetricsData = {
   [metric: string]: (number | string)[];
@@ -191,10 +191,14 @@ export const selectMetricDataByChart = createSelector(
     if (title === "") {
       return {
         title,
+        datasets: [],
+        labels: [],
       };
     }
     const result: ChartToCreate = {
       title,
+      datasets: [],
+      labels: [],
     };
     const metrics = containerMetrics.filter(
       (containerMetric) =>
