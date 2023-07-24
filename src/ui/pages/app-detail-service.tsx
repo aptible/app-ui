@@ -99,7 +99,8 @@ export function AppDetailServicePage() {
     return <Loading />;
   }
 
-  const chartWrapperClassName = containers.length > 2 ? "grid-cols-1" : "grid-cols-1 xl:grid-cols-2";
+  const chartWrapperClassName =
+    containers.length > 2 ? "grid-cols-1" : "grid-cols-1 xl:grid-cols-2";
 
   return (
     <>
