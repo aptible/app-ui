@@ -106,7 +106,7 @@ export const selectReleasesByServiceAfterDate = createSelector(
     const filteredReleases = releases
       .filter((release) => release.serviceId === serviceId)
       .sort((a, b) => {
-        // sort the releases, so we can get all of them + 1 in reverse
+        // sort the releases, so we can get all of them + 1 in reverse and break early
         return (
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
@@ -120,7 +120,10 @@ export const selectReleasesByServiceAfterDate = createSelector(
         break;
       }
     }
-    return result;
+    // sort forwards to retain consistency
+    return result.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
   },
 );
 
