@@ -92,6 +92,10 @@ export const prettyDateTime = (dateStr = "") => {
   return format(new Date(dateStr), "yyyy-MM-dd hh:mm:ss aaa");
 };
 
+export const prettyChartDateTime = (dateStr = "") => {
+  return format(new Date(dateStr), "MM-dd hh:mm a");
+};
+
 export const prettyDate = (dateStr = "") => {
   return format(new Date(dateStr), "yyyy-MM-dd");
 };
