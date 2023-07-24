@@ -14,7 +14,7 @@ import {
   fetchService,
   selectContainersByReleaseIdsByLayerType,
   selectDatabaseById,
-  selectReleasesAfterDate,
+  selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
@@ -42,8 +42,7 @@ export function DatabaseMetricsPage() {
   useQuery(fetchService({ id: db.serviceId }));
 
   const releases = useSelector((s: AppState) =>
-    selectReleasesAfterDate(s, {
-      id: service.currentReleaseId,
+    selectReleasesByServiceAfterDate(s, {
       serviceId: service.id,
       date: dateFromToday(-7).toISOString(),
     }),

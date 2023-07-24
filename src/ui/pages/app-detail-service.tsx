@@ -6,7 +6,6 @@ import {
   fetchEnvironmentServices,
   fetchReleasesByServiceWithDeleted,
   selectAppById,
-  selectReleasesAfterDate,
   selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
