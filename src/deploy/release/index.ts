@@ -7,6 +7,7 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import { AppState, DeployRelease, LinkResponse } from "@app/types";
+import { createSelector } from "@reduxjs/toolkit";
 
 export interface DeployReleaseResponse {
   id: number;
@@ -83,8 +84,53 @@ export const selectReleaseById = must(selectors.selectById);
 export const selectReleaseByIds = selectors.selectByIds;
 export const { selectTableAsList: selectReleaseAsList } = selectors;
 export const releaseReducers = createReducerMap(slice);
+export const selectReleasesByService = createSelector(
+  selectReleaseAsList,
+  (_: AppState, p: { serviceId: string }) => p.serviceId,
+  (releases, serviceId) => {
+    return releases
+      .filter((release) => release.serviceId === serviceId)
+      .sort((a, b) => {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+  },
+);
+
+export const selectReleasesByServiceAfterDate = createSelector(
+  selectReleaseAsList,
+  (_: AppState, p: { date: string }) => p.date,
+  (_: AppState, p: { serviceId: string }) => p.serviceId,
+  (releases, date, serviceId) => {
+    const filteredReleases = releases
+      .filter((release) => release.serviceId === serviceId)
+      .sort((a, b) => {
+        // sort the releases, so we can get all of them + 1 in reverse and break early
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+    const result: DeployRelease[] = [];
+    for (const release of filteredReleases) {
+      if (release.createdAt > date) {
+        result.push(release);
+      } else if (release.createdAt <= date) {
+        result.push(release);
+        break;
+      }
+    }
+    // sort forwards to retain consistency
+    return result.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  },
+);
 
 export const fetchRelease = api.get<{ id: string }>("/releases/:id");
+export const fetchReleasesByServiceWithDeleted = api.get<{ serviceId: string }>(
+  "/services/:serviceId/releases/?with_deleted=true",
+);
 
 export const releaseEntities = {
   release: defaultEntity({

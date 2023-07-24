@@ -6,13 +6,15 @@ import {
   MetricsHorizonControls,
   MetricsViewControls,
 } from "../shared/metrics-controls";
+import { dateFromToday } from "@app/date";
 import {
-  fetchContainersByReleaseId,
+  fetchContainersByReleaseIdWithDeleted,
   fetchEnvironmentServices,
-  fetchRelease,
+  fetchReleasesByServiceWithDeleted,
   fetchService,
-  selectContainersByReleaseIdByLayerType,
+  selectContainersByReleaseIdsByLayerType,
   selectDatabaseById,
+  selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
 import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
@@ -25,6 +27,8 @@ import { batchActions } from "saga-query";
 import { useQuery } from "saga-query/react";
 
 const metrics = ["cpu_pct", "la", "memory_all", "iops", "fs"];
+const layersToSearchForContainers = ["app", "database"];
+
 export function DatabaseMetricsPage() {
   const { id = "" } = useParams();
   const [viewTab, setViewTab] = useState<MetricTabTypes>("chart");
@@ -36,12 +40,20 @@ export function DatabaseMetricsPage() {
   );
   const dispatch = useDispatch();
   useQuery(fetchService({ id: db.serviceId }));
-  useQuery(fetchRelease({ id: service.currentReleaseId }));
-  useQuery(fetchContainersByReleaseId({ releaseId: service.currentReleaseId }));
+
+  const releases = useSelector((s: AppState) =>
+    selectReleasesByServiceAfterDate(s, {
+      serviceId: service.id,
+      date: dateFromToday(-7).toISOString(),
+    }),
+  );
+  const releaseIds = releases.map((release) => release.id);
+
+  useQuery(fetchReleasesByServiceWithDeleted({ serviceId: service.id }));
   const containers = useSelector((s: AppState) =>
-    selectContainersByReleaseIdByLayerType(s, {
-      layers: ["database"],
-      releaseId: service.currentReleaseId,
+    selectContainersByReleaseIdsByLayerType(s, {
+      layers: layersToSearchForContainers,
+      releaseIds,
     }),
   );
 
@@ -49,6 +61,17 @@ export function DatabaseMetricsPage() {
     .map((container) => container.id)
     .sort()
     .join("-");
+
+  useEffect(() => {
+    const actions: AnyAction[] = [];
+    releaseIds.map((releaseId) => {
+      actions.push(fetchContainersByReleaseIdWithDeleted({ releaseId }));
+    });
+    if (actions.length === 0) {
+      return;
+    }
+    dispatch(batchActions(actions));
+  }, [releaseIds.join("-")]);
 
   useEffect(() => {
     const actions: AnyAction[] = [];
@@ -96,12 +119,12 @@ export function DatabaseMetricsPage() {
             />
             <ContainerMetricsChart
               containers={containers}
-              metricNames={["la"]}
+              metricNames={["memory_all"]}
               metricHorizon={metricHorizon}
             />
             <ContainerMetricsChart
               containers={containers}
-              metricNames={["memory_all"]}
+              metricNames={["fs"]}
               metricHorizon={metricHorizon}
             />
             <ContainerMetricsChart
@@ -111,7 +134,7 @@ export function DatabaseMetricsPage() {
             />
             <ContainerMetricsChart
               containers={containers}
-              metricNames={["fs"]}
+              metricNames={["la"]}
               metricHorizon={metricHorizon}
             />
           </div>
