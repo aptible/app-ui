@@ -30,9 +30,10 @@ ChartJS.register(
 );
 
 const LineChartWrapper = ({
+  showLegend = true,
   keyId,
   chart: { labels, datasets, title },
-}: { keyId: string; chart: ChartToCreate }) =>
+}: {showLegend?: boolean, keyId: string; chart: ChartToCreate }) =>
   datasets && title ? (
     <Line
       datasetIdKey={keyId}
@@ -52,6 +53,7 @@ const LineChartWrapper = ({
             forceOverride: true, // needed to persist colors during repaint/refresh
           },
           legend: {
+            display: showLegend,
             labels: {
               usePointStyle: true,
               boxHeight: 5,
@@ -130,10 +132,11 @@ export const ContainerMetricsChart = ({
   if (chartToCreate.title === "" || chartToCreate.datasets?.length === 0) {
     return null;
   }
-
+  
   return (
     <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
       <LineChartWrapper
+        showLegend={(chartToCreate.datasets?.length || 0) <= 4} 
         keyId={`${containerIds.join("-")}-${metricNames.join(
           "-",
         )}-${metricHorizon}`}

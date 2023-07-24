@@ -99,6 +99,8 @@ export function AppDetailServicePage() {
     return <Loading />;
   }
 
+  const chartWrapperClassName = containers.length > 2 ? "grid-cols-1" : "grid-cols-1 xl:grid-cols-2";
+
   return (
     <>
       <div className="flex gap-4 justify-start">
@@ -113,7 +115,7 @@ export function AppDetailServicePage() {
       </div>
       <div className="my-4">
         {viewTab === "chart" ? (
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <div className={`grid ${chartWrapperClassName} gap-4`}>
             <ContainerMetricsChart
               containers={containers}
               metricNames={["cpu_pct"]}
