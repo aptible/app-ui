@@ -32,6 +32,7 @@ jobs:
           build-args: |
             VITE_SENTRY_DSN=${{ secrets.PROD_SENTRY_DSN }}
             VITE_ORIGIN=app
+            VITE_METRIC_TUNNEL_URL=https://metrictunnel-nextgen.aptible.com
             VITE_TUNA_ENABLED=true
   deploy:
     runs-on: ubuntu-latest

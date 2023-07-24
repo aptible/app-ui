@@ -30,6 +30,7 @@ jobs:
             VITE_BILLING_URL=https://billing-sbx-main.aptible-sandbox.com
             VITE_API_URL=https://api-sbx-main.aptible-sandbox.com
             VITE_LEGACY_DASHBOARD_URL=https://dashboard-sbx-main.aptible-sandbox.com
+            VITE_METRIC_TUNNEL_URL=https://metrictunnel-sbx-main.aptible-sandbox.com
             VITE_SENTRY_DSN=${{ secrets.STAGING_SENTRY_DSN }}
             VITE_ORIGIN=app
             VITE_TUNA_ENABLED=true
