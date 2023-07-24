@@ -7,6 +7,7 @@ import {
   fetchReleasesByServiceWithDeleted,
   selectAppById,
   selectReleasesAfterDate,
+  selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
 import { AppState, MetricHorizons } from "@app/types";
@@ -46,8 +47,7 @@ export function AppDetailServicePage() {
   // we always go back exactly one week, though it might be a bit too far for some that way
   // we do not have to refetch this if the component state changes as this is fairly expensive
   const releases = useSelector((s: AppState) =>
-    selectReleasesAfterDate(s, {
-      id: service.currentReleaseId,
+    selectReleasesByServiceAfterDate(s, {
       serviceId,
       date: dateFromToday(-7).toISOString(),
     }),

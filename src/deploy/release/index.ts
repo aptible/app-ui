@@ -98,34 +98,29 @@ export const selectReleasesByService = createSelector(
   },
 );
 
-const selectReleasesByServiceAfterDate = createSelector(
+export const selectReleasesByServiceAfterDate = createSelector(
   selectReleaseAsList,
   (_: AppState, p: { date: string }) => p.date,
   (_: AppState, p: { serviceId: string }) => p.serviceId,
   (releases, date, serviceId) => {
-    return releases
+    const filteredReleases = releases
       .filter((release) => release.serviceId === serviceId)
-      .filter((release) => release.createdAt >= date) // we use iso1801 flavors of dates and so comparators like this should work
       .sort((a, b) => {
+        // sort the releases, so we can get all of them + 1 in reverse
         return (
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       });
-  },
-);
-
-export const selectReleasesAfterDate = createSelector(
-  selectReleasesByServiceAfterDate,
-  selectReleaseById,
-  (releases, currentRelease) => {
-    for (const release of releases) {
-      if (release.id === currentRelease.id) {
-        // current release already there, no need to supply it
-        return releases;
+    const result: DeployRelease[] = [];
+    for (const release of filteredReleases) {
+      if (release.createdAt > date) {
+        result.push(release);
+      } else if (release.createdAt <= date) {
+        result.push(release);
+        break;
       }
     }
-    // if current release not in releases, affix it so it's available
-    return [...releases, currentRelease];
+    return result;
   },
 );
 
