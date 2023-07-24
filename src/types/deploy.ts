@@ -25,6 +25,7 @@ export interface DeployImage extends Timestamps {
   dockerRepo: string;
   gitRef: string;
   gitRepo: string;
+  exposedPorts: number[];
 }
 
 export interface DeployApp extends Provisionable, Timestamps {
@@ -35,7 +36,7 @@ export interface DeployApp extends Provisionable, Timestamps {
   lastDeployOperation: DeployOperation | null;
   lastOperation: DeployOperation | null;
   environmentId: string;
-  currentImage: DeployImage | null;
+  currentImage: DeployImage;
   currentConfigurationId: string;
   serviceIds: string[];
 }
@@ -44,6 +45,9 @@ export type InstanceClass = "t3" | "m4" | "r4" | "r5" | "c4" | "c5";
 
 export interface DeployService extends Timestamps {
   id: string;
+  appId: string;
+  databaseId: string;
+  environmentId: string;
   handle: string;
   dockerRepo: string;
   dockerRef: string;
@@ -55,12 +59,25 @@ export interface DeployService extends Timestamps {
   instanceClass: InstanceClass;
 }
 
+export interface AcmeChallenge {
+  from: { name: string };
+  method: string;
+  to: { name: string; legacy: boolean }[];
+}
+
+export interface AcmeConfiguration {
+  challenges: AcmeChallenge[];
+  names: string[];
+}
+
+export type AcmeStatus = "pending" | "transitioning" | "ready";
+
 export interface DeployEndpoint extends Provisionable, Timestamps {
   id: string;
   acme: boolean;
-  acmeConfiguration: any;
+  acmeConfiguration: AcmeConfiguration | null;
   acmeDnsChallengeHost: string;
-  acmeStatus: string;
+  acmeStatus: AcmeStatus;
   containerExposedPorts: any;
   containerPort: string;
   containerPorts: string[];

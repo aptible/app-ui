@@ -15,7 +15,11 @@ import {
   extractIdFromLink,
   extractResourceNameFromLink,
 } from "@app/hal";
-import { appDetailUrl, databaseDetailUrl } from "@app/routes";
+import {
+  appDetailUrl,
+  databaseDetailUrl,
+  endpointDetailUrl,
+} from "@app/routes";
 import {
   createReducerMap,
   createTable,
@@ -417,6 +421,12 @@ export const fetchOperationById = api.get<
   DeployOperationResponse
 >("/operations/:id");
 
+export const cancelOpByIdPoll = createAction("cancel-op-by-id-poll");
+export const pollOperationById = api.get<
+  { id: string },
+  DeployOperationResponse
+>(["/operations/:id", "poll"], { saga: poll(3 * 1000, `${cancelOpByIdPoll}`) });
+
 type WaitResult = DeployOperation | undefined;
 
 export function* waitForOperation({
@@ -502,6 +512,8 @@ export const getResourceUrl = ({
       return appDetailUrl(resourceId);
     case "database":
       return databaseDetailUrl(resourceId);
+    case "vhost":
+      return endpointDetailUrl(resourceId);
     default:
       return "";
   }

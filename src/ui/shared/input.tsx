@@ -1,4 +1,5 @@
 import { IconSearch } from "./icons";
+import { tokens } from "./tokens";
 import cn from "classnames";
 import { forwardRef } from "react";
 import { InputHTMLAttributes } from "react";
@@ -49,3 +50,30 @@ export const InputSearch = ({
     </div>
   );
 };
+
+export const TextArea = ({
+  className,
+  ...props
+}: React.DetailedHTMLProps<
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  HTMLTextAreaElement
+>) => {
+  return (
+    <textarea className={`${tokens.type.textarea} ${className}`} {...props} />
+  );
+};
+
+export const CheckBox = ({
+  className,
+  label,
+  ...props
+}: InputProps & { label: string }) => (
+  <label className="flex">
+    <Input
+      type="checkbox"
+      className={`rounded-lg h-6 ${className}`}
+      {...props}
+    />
+    <span className="ml-1">{label}</span>
+  </label>
+);

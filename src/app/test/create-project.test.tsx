@@ -9,7 +9,7 @@ import {
   testApp,
   testConfiguration,
   testEnv,
-  testUser,
+  testUserVerified,
 } from "@app/mocks";
 import { setupAppIntegrationTest, waitForToken } from "@app/test";
 
@@ -37,7 +37,7 @@ describe("Create project flow", () => {
           (_, res, ctx) => {
             return res(
               ctx.json({
-                _embedded: { users: [{ ...testUser, verified: true }] },
+                _embedded: { users: [testUserVerified] },
               }),
             );
           },

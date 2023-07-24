@@ -69,6 +69,11 @@ export const testUser = defaultUserResponse({
   email: testEmail,
   verified: false,
 });
+export const testUserVerified = defaultUserResponse({
+  id: testUserId,
+  email: testEmail,
+  verified: true,
+});
 
 export const testSshKey = defaultSshKeyResponse({ id: `${createId()}` });
 
@@ -97,8 +102,8 @@ export const testAccount = defaultEnvResponse({
   handle: createText("account"),
   organization_id: testOrg.id,
   _links: {
-    stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
-    environment: { href: "" },
+    stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
+    environment: defaultHalHref(),
   },
   _embedded: {
     permissions: [
@@ -115,18 +120,29 @@ export const testAccount = defaultEnvResponse({
   },
 });
 
+const testAppId = createId();
+
 export const testServiceRails = defaultServiceResponse({
   id: createId(),
   handle: createText("web"),
   command: "rails s",
+  _links: {
+    current_release: defaultHalHref(),
+    app: defaultHalHref(`${testEnv.apiUrl}/apps/${testAppId}`),
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccountId}`),
+  },
 });
 export const testServiceSidekiq = defaultServiceResponse({
   id: createId(),
   handle: createText("background"),
   command: "rake sidekiq",
+  _links: {
+    current_release: defaultHalHref(),
+    app: defaultHalHref(`${testEnv.apiUrl}/apps/${testAppId}`),
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccountId}`),
+  },
 });
 
-const testAppId = createId();
 export const testConfiguration = defaultConfigurationResponse({
   id: createId(),
   env: { DATABASE_URL: "{{test-app-1-postgres}}" },
@@ -139,7 +155,7 @@ export const testApp = defaultAppResponse({
   id: testAppId,
   handle: createText("app"),
   _links: {
-    account: { href: `${testEnv.apiUrl}/accounts/${testAccount.id}` },
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
     current_configuration: defaultHalHref(),
   },
   _embedded: {
@@ -155,16 +171,16 @@ export const testScanOperation = defaultOperationResponse({
   type: "scan_code",
   status: "succeeded",
   _links: {
-    code_scan_result: {
-      href: `${testEnv.apiUrl}/code_scan_results/${createId()}`,
-    },
-    resource: { href: `${testEnv.apiUrl}/apps/${testApp.id}` },
-    ephemeral_sessions: { href: "" },
-    self: { href: "" },
+    code_scan_result: defaultHalHref(
+      `${testEnv.apiUrl}/code_scan_results/${createId()}`,
+    ),
+    resource: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
+    ephemeral_sessions: defaultHalHref(),
+    self: defaultHalHref(),
     account: testApp._links.account,
-    ssh_portal_connections: { href: "" },
-    user: { href: "" },
-    logs: { href: "" },
+    ssh_portal_connections: defaultHalHref(),
+    user: defaultHalHref(),
+    logs: defaultHalHref(),
   },
 });
 
@@ -172,8 +188,8 @@ export const testCodeScanResult = defaultCodeScanResponse({
   id: createId(),
   dockerfile_present: true,
   _links: {
-    app: { href: `${testEnv.apiUrl}/apps/${testApp.id}` },
-    operation: { href: "" },
+    app: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
+    operation: defaultHalHref(),
   },
 });
 
@@ -196,14 +212,12 @@ export const testDatabasePostgres = defaultDatabaseResponse({
   type: "postgres",
   connection_url: "postgres://some:val@wow.com:5432",
   _links: {
-    account: {
-      href: `${testEnv.apiUrl}/accounts/${testAccount.id}`,
-    },
-    initialize_from: { href: "" },
-    database_image: {
-      href: `${testEnv.apiUrl}/database_images/${testPostgresDatabaseImage.id}`,
-    },
-    service: { href: "" },
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
+    initialize_from: defaultHalHref(),
+    database_image: defaultHalHref(
+      `${testEnv.apiUrl}/database_images/${testPostgresDatabaseImage.id}`,
+    ),
+    service: defaultHalHref(),
   },
 });
 
@@ -212,24 +226,24 @@ export const testDatabaseOp = defaultOperationResponse({
   type: "provision",
   status: "succeeded",
   _links: {
-    resource: {
-      href: `${testEnv.apiUrl}/databases/${testDatabaseId}`,
-    },
-    account: { href: `${testEnv.apiUrl}/accounts/${testAccount.id}` },
-    code_scan_result: { href: "" },
-    self: { href: "" },
-    ssh_portal_connections: { href: "" },
-    ephemeral_sessions: { href: "" },
-    logs: { href: "" },
-    user: { href: "" },
+    resource: defaultHalHref(`${testEnv.apiUrl}/databases/${testDatabaseId}`),
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
+    code_scan_result: defaultHalHref(),
+    self: defaultHalHref(),
+    ssh_portal_connections: defaultHalHref(),
+    ephemeral_sessions: defaultHalHref(),
+    logs: defaultHalHref(),
+    user: defaultHalHref(),
   },
 });
 
 export const testEndpoint = defaultEndpointResponse({
   id: createId(),
   _links: {
-    service: { href: `${testEnv.apiUrl}/services/${testServiceRails.id}` },
-    certificate: { href: "" },
+    service: defaultHalHref(
+      `${testEnv.apiUrl}/services/${testServiceRails.id}`,
+    ),
+    certificate: defaultHalHref(),
   },
 });
 

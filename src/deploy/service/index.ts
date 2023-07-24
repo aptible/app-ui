@@ -1,5 +1,5 @@
 import { api } from "@app/api";
-import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
@@ -31,6 +31,9 @@ export interface DeployServiceResponse {
   instance_class: InstanceClass;
   _links: {
     current_release: LinkResponse;
+    app?: LinkResponse;
+    database?: LinkResponse;
+    account: LinkResponse;
   };
   _type: "service";
 }
@@ -52,7 +55,10 @@ export const defaultServiceResponse = (
     created_at: now,
     updated_at: now,
     _links: {
-      current_release: { href: "" },
+      current_release: defaultHalHref(),
+      app: defaultHalHref(),
+      database: defaultHalHref(),
+      account: defaultHalHref(),
       ...s._links,
     },
     _type: "service",
@@ -64,9 +70,15 @@ export const deserializeDeployService = (
   payload: DeployServiceResponse,
 ): DeployService => {
   const links = payload._links;
+  const appId = extractIdFromLink(links.app);
+  const databaseId = extractIdFromLink(links.database);
+  const environmentId = extractIdFromLink(links.account);
 
   return {
     id: `${payload.id}`,
+    appId,
+    databaseId,
+    environmentId,
     handle: payload.handle,
     dockerRepo: payload.docker_repo,
     dockerRef: payload.docker_ref,
@@ -87,6 +99,9 @@ export const defaultDeployService = (
   const now = new Date().toISOString();
   return {
     id: "",
+    appId: "",
+    databaseId: "",
+    environmentId: "",
     handle: "",
     dockerRef: "",
     dockerRepo: "",

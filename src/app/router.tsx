@@ -36,6 +36,11 @@ import {
   DeploymentsPageWithMenus,
   ElevatePage,
   ElevateRequired,
+  EndpointDetailActivityPage,
+  EndpointDetailLayout,
+  EndpointDetailPage,
+  EndpointDetailSettingsPage,
+  EndpointDetailSetupPage,
   EnvironmentActivityPage,
   EnvironmentAppsPage,
   EnvironmentBackupsPage,
@@ -74,6 +79,7 @@ import {
   UnauthRequired,
   VerifyEmailPage,
 } from "@app/ui";
+import { AppCreateEndpointPage } from "@app/ui/pages/app-create-endpoint";
 import { OpDetailPage } from "@app/ui/pages/op-detail";
 import { StylesPage } from "@app/ui/pages/styles";
 
@@ -181,6 +187,10 @@ export const appRoutes: RouteObject[] = [
                 element: <AppDetailEndpointsPage />,
               },
               {
+                path: routes.APP_ENDPOINT_CREATE_PATH,
+                element: <AppCreateEndpointPage />,
+              },
+              {
                 path: routes.APP_SETTINGS_PATH,
                 element: <AppSettingsPage />,
               },
@@ -234,6 +244,29 @@ export const appRoutes: RouteObject[] = [
                 element: <DatabaseSettingsPage />,
               },
             ],
+          },
+        ],
+      },
+
+      {
+        path: routes.ENDPOINT_DETAIL_PATH,
+        element: <EndpointDetailLayout />,
+        children: [
+          {
+            index: true,
+            element: <EndpointDetailPage />,
+          },
+          {
+            path: routes.ENDPOINT_DETAIL_ACTIVITY_PATH,
+            element: <EndpointDetailActivityPage />,
+          },
+          {
+            path: routes.ENDPOINT_DETAIL_SETUP_PATH,
+            element: <EndpointDetailSetupPage />,
+          },
+          {
+            path: routes.ENDPOINT_DETAIL_SETTINGS_PATH,
+            element: <EndpointDetailSettingsPage />,
           },
         ],
       },

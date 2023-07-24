@@ -126,13 +126,19 @@ export const setupIntegrationTest = (
   return { store, TestProvider };
 };
 
-export const waitForToken = (store: Store<AppState>) => {
-  return waitFor(() => {
-    if (store.getState().token.accessToken === "") {
-      throw new Error("no token");
+export const waitForData = (
+  store: Store<AppState>,
+  predicate: (s: AppState) => boolean,
+  msg = "",
+) =>
+  waitFor(() => {
+    if (!predicate(store.getState())) {
+      throw new Error(`no data found${msg ? ` (${msg})` : ""}`);
     }
   });
-};
+
+export const waitForToken = (store: Store<AppState>) =>
+  waitForData(store, (state) => state.token.accessToken !== "");
 
 export const sleep = (n: number) =>
   act(

@@ -64,7 +64,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
             : "Unknown"}
         </DetailInfoItem>
         <DetailInfoItem title="Docker Image">
-          {app.currentImage?.dockerRepo}
+          {app.currentImage.dockerRepo}
         </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>

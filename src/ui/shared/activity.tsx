@@ -9,6 +9,7 @@ import {
   DeployActivityRow,
   cancelAppOpsPoll,
   cancelDatabaseOpsPoll,
+  cancelEndpointOpsPoll,
   cancelEnvOperationsPoll,
   cancelOrgOperationsPoll,
   fetchApp,
@@ -17,6 +18,7 @@ import {
   getResourceUrl,
   pollAppOperations,
   pollDatabaseOperations,
+  pollEndpointOperations,
   pollEnvOperations,
   pollOrgOperations,
   prettyResourceType,
@@ -375,6 +377,40 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
     selectActivityForTableSearch(s, {
       search,
       resourceId: dbId,
+    }),
+  );
+
+  return (
+    <LoadResources query={loader} isEmpty={ops.length === 0 && search === ""}>
+      <ActivityTable
+        ops={ops}
+        onChange={onChange}
+        isLoading={loader.isLoading}
+        search={search}
+      />
+    </LoadResources>
+  );
+}
+
+export function ActivityByEndpoint({ enpId }: { enpId: string }) {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const loader = useLoader(pollEndpointOperations);
+
+  const poller = useMemo(() => pollEndpointOperations({ id: enpId }), [enpId]);
+  const cancel = useMemo(() => cancelEndpointOpsPoll(), []);
+  usePoller({
+    action: poller,
+    cancel,
+  });
+
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
+    setParams({ search: ev.currentTarget.value });
+
+  const ops = useSelector((s: AppState) =>
+    selectActivityForTableSearch(s, {
+      search,
+      resourceId: enpId,
     }),
   );
 

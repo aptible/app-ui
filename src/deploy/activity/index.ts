@@ -2,6 +2,7 @@ import { createSelector } from "@reduxjs/toolkit";
 
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
+import { findEndpointById, getEndpointUrl, selectEndpoints } from "../endpoint";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -121,7 +122,8 @@ export const selectResourceNameByOperationId = createSelector(
   selectOperationById,
   selectDatabases,
   selectApps,
-  (op, dbs, apps) => {
+  selectEndpoints,
+  (op, dbs, apps, enps) => {
     let resourceHandle = "";
     if (op.resourceType === "app") {
       const app = findAppById(apps, { id: op.resourceId });
@@ -129,6 +131,9 @@ export const selectResourceNameByOperationId = createSelector(
     } else if (op.resourceType === "database") {
       const db = findDatabaseById(dbs, { id: op.resourceId });
       resourceHandle = db.handle;
+    } else if (op.resourceType === "vhost") {
+      const enp = findEndpointById(enps, { id: op.resourceId });
+      resourceHandle = getEndpointUrl(enp);
     } else {
       resourceHandle = op.resourceId;
     }
