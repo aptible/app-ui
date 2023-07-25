@@ -1,12 +1,13 @@
-import { LoadResources, Loading } from "../shared";
+import { IconInfo, LoadResources, Loading, Tooltip } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
   MetricTabTypes,
   MetricsHorizonControls,
   MetricsViewControls,
+  metricHorizonAsSeconds,
 } from "../shared/metrics-controls";
-import { dateFromToday } from "@app/date";
+import { dateFromToday, secondsFromNow } from "@app/date";
 import {
   fetchContainersByReleaseIdWithDeleted,
   fetchEnvironmentServices,
@@ -26,6 +27,7 @@ import { AnyAction } from "redux";
 import { batchActions } from "saga-query";
 import { useQuery } from "saga-query/react";
 
+const maxDataSeries = 100;
 const metrics = ["cpu_pct", "la", "memory_all", "iops", "fs"];
 const layersToSearchForContainers = ["app", "database"];
 
@@ -74,25 +76,32 @@ export function DatabaseMetricsPage() {
   }, [releaseIds.join("-")]);
 
   useEffect(() => {
+    const horizonInSeconds = metricHorizonAsSeconds(metricHorizon);
     let requestsMade = 0;
     const actions: AnyAction[] = [];
     for (const container of containers) {
-      if (requestsMade >= 100) {
+      if (requestsMade >= maxDataSeries) {
         break;
       }
       for (const metricName of metrics) {
-        if (requestsMade >= 100) {
+        if (requestsMade >= maxDataSeries) {
           break;
         }
-        actions.push(
-          fetchMetricTunnelDataForContainer({
-            containerId: container.id,
-            metricName,
-            metricHorizon: metricHorizon,
-            serviceId: service.id,
-          }),
-        );
-        requestsMade += 1;
+        // either fetch the current release OR ensure that the container was last updated within the time horizon
+        if (
+          container.releaseId === service.currentReleaseId ||
+          container.updatedAt >= secondsFromNow(-horizonInSeconds).toISOString()
+        ) {
+          actions.push(
+            fetchMetricTunnelDataForContainer({
+              containerId: container.id,
+              metricName,
+              metricHorizon: metricHorizon,
+              serviceId: service.id,
+            }),
+          );
+          requestsMade += 1;
+        }
       }
     }
     if (actions.length === 0) {
@@ -116,6 +125,12 @@ export function DatabaseMetricsPage() {
           viewHorizon={metricHorizon}
           setViewHorizon={setMetricHorizon}
         />
+        <Tooltip
+          fluid
+          text={`Showing up to ${maxDataSeries} data series (one per line on a line graph) worth of metrics.`}
+        >
+          <IconInfo className="h-5 mt-2 opacity-50 hover:opacity-100" />
+        </Tooltip>
       </div>
       <div className="my-4">
         {viewTab === "chart" ? (
