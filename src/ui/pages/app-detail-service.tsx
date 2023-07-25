@@ -11,7 +11,7 @@ import {
 } from "@app/deploy";
 import { AppState, MetricHorizons } from "@app/types";
 
-import { Loading } from "../shared";
+import { IconInfo, Loading, Tooltip } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
@@ -29,6 +29,7 @@ import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
 import { useEffect, useState } from "react";
 import { AnyAction } from "redux";
 
+const maxDataSeries = 100;
 const metrics = ["cpu_pct", "la", "memory_all"];
 const layersToSearchForContainers = ["app", "database"];
 
@@ -81,11 +82,11 @@ export function AppDetailServicePage() {
     let requestsMade = 0;
     const actions: AnyAction[] = [];
     for (const container of containers) {
-      if (requestsMade >= 100) {
+      if (requestsMade >= maxDataSeries) {
         break;
       }
       for (const metricName of metrics) {
-        if (requestsMade >= 100) {
+        if (requestsMade >= maxDataSeries) {
           break;
         }
         // either fetch the current release OR ensure that the container was last updated within the time horizon
@@ -129,6 +130,12 @@ export function AppDetailServicePage() {
           viewHorizon={metricHorizon}
           setViewHorizon={setMetricHorizon}
         />
+        <Tooltip
+          fluid
+          text={`Showing up to ${maxDataSeries} data series (one per line on a line graph) worth of metrics.`}
+        >
+          <IconInfo className="h-5 mt-2 opacity-50 hover:opacity-100" />
+        </Tooltip>
       </div>
       <div className="my-4">
         {viewTab === "chart" ? (
