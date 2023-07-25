@@ -76,9 +76,14 @@ export function AppDetailServicePage() {
   }, [releaseIds.join("-")]);
 
   useEffect(() => {
+    let requestsMade = 0;
     const actions: AnyAction[] = [];
-    containers.forEach((container) =>
-      metrics.forEach((metricName) => {
+    for (const container of containers) {
+      for (const metricName of metrics) {
+        if (requestsMade >= 100) {
+          return;
+        }
+        requestsMade += 1;
         actions.push(
           fetchMetricTunnelDataForContainer({
             containerId: container.id,
@@ -87,8 +92,8 @@ export function AppDetailServicePage() {
             serviceId: service.id,
           }),
         );
-      }),
-    );
+      }
+    }
     if (actions.length === 0) {
       return;
     }
