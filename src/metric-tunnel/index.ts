@@ -1,4 +1,4 @@
-import { metricTunnelApi } from "@app/api";
+import { cacheTimer, metricTunnelApi } from "@app/api";
 import { createReducerMap, createTable } from "@app/slice-helpers";
 import { AppState, ContainerMetrics, MetricHorizons } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
@@ -239,6 +239,7 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
   MetricTunnelContainerResponse
 >(
   `/proxy/:containerId?horizon=:metricHorizon&ts=${getUtc()}&metric=:metricName&requestedTicks=600`,
+  { saga: cacheTimer() },
   function* (ctx, next) {
     yield* next();
 

@@ -74,9 +74,16 @@ export function DatabaseMetricsPage() {
   }, [releaseIds.join("-")]);
 
   useEffect(() => {
+    let requestsMade = 0;
     const actions: AnyAction[] = [];
-    containers.forEach((container) =>
-      metrics.forEach((metricName) => {
+    for (const container of containers) {
+      if (requestsMade >= 100) {
+        break;
+      }
+      for (const metricName of metrics) {
+        if (requestsMade >= 100) {
+          break;
+        }
         actions.push(
           fetchMetricTunnelDataForContainer({
             containerId: container.id,
@@ -85,8 +92,9 @@ export function DatabaseMetricsPage() {
             serviceId: service.id,
           }),
         );
-      }),
-    );
+        requestsMade += 1;
+      }
+    }
     if (actions.length === 0) {
       return;
     }
