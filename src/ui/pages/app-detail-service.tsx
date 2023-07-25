@@ -79,11 +79,13 @@ export function AppDetailServicePage() {
     let requestsMade = 0;
     const actions: AnyAction[] = [];
     for (const container of containers) {
+      if (requestsMade >= 100) {
+        break;
+      }
       for (const metricName of metrics) {
         if (requestsMade >= 100) {
-          return;
+          break;
         }
-        requestsMade += 1;
         actions.push(
           fetchMetricTunnelDataForContainer({
             containerId: container.id,
@@ -92,6 +94,7 @@ export function AppDetailServicePage() {
             serviceId: service.id,
           }),
         );
+        requestsMade += 1;
       }
     }
     if (actions.length === 0) {
