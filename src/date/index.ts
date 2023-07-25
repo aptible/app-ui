@@ -105,3 +105,8 @@ export const dateFromToday = (days: number) => {
   d.setDate(d.getDate() + days);
   return d;
 };
+
+export const secondsFromNow = (seconds: number) => {
+  const d = new Date();
+  return new Date(d.getTime() + seconds * 1000);
+};

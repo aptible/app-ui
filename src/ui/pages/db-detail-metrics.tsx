@@ -5,8 +5,9 @@ import {
   MetricTabTypes,
   MetricsHorizonControls,
   MetricsViewControls,
+  metricHorizonAsSeconds,
 } from "../shared/metrics-controls";
-import { dateFromToday } from "@app/date";
+import { dateFromToday, secondsFromNow } from "@app/date";
 import {
   fetchContainersByReleaseIdWithDeleted,
   fetchEnvironmentServices,
@@ -74,6 +75,7 @@ export function DatabaseMetricsPage() {
   }, [releaseIds.join("-")]);
 
   useEffect(() => {
+    const horizonInSeconds = metricHorizonAsSeconds(metricHorizon);
     let requestsMade = 0;
     const actions: AnyAction[] = [];
     for (const container of containers) {
@@ -84,15 +86,21 @@ export function DatabaseMetricsPage() {
         if (requestsMade >= 100) {
           break;
         }
-        actions.push(
-          fetchMetricTunnelDataForContainer({
-            containerId: container.id,
-            metricName,
-            metricHorizon: metricHorizon,
-            serviceId: service.id,
-          }),
-        );
-        requestsMade += 1;
+        // either fetch the current release OR ensure that the container was last updated within the time horizon
+        if (
+          container.releaseId === service.currentReleaseId ||
+          container.updatedAt >= secondsFromNow(-horizonInSeconds).toISOString()
+        ) {
+          actions.push(
+            fetchMetricTunnelDataForContainer({
+              containerId: container.id,
+              metricName,
+              metricHorizon: metricHorizon,
+              serviceId: service.id,
+            }),
+          );
+          requestsMade += 1;
+        }
       }
     }
     if (actions.length === 0) {
