@@ -11,6 +11,7 @@ import {
   LinearScale,
   PointElement,
   TimeScale,
+  TimeUnit,
   Title,
   Tooltip,
 } from "chart.js";
@@ -29,11 +30,24 @@ ChartJS.register(
   Legend,
 );
 
+const timeHorizonToChartJSUnit = (metricHorizon: MetricHorizons): TimeUnit =>
+  ({
+    "1h": "minute" as TimeUnit,
+    "1d": "minute" as TimeUnit,
+    "1w": "day" as TimeUnit,
+  })[metricHorizon];
+
 const LineChartWrapper = ({
   showLegend = true,
   keyId,
   chart: { labels, datasets, title },
-}: { showLegend?: boolean; keyId: string; chart: ChartToCreate }) =>
+  xAxisUnit,
+}: {
+  showLegend?: boolean;
+  keyId: string;
+  chart: ChartToCreate;
+  xAxisUnit: TimeUnit;
+}) =>
   datasets && title ? (
     <Line
       datasetIdKey={keyId}
@@ -94,6 +108,7 @@ const LineChartWrapper = ({
             },
             time: {
               tooltipFormat: "yyyy-MM-dd HH:mm:ss",
+              unit: xAxisUnit,
             },
             type: "time",
           },
@@ -140,6 +155,7 @@ export const ContainerMetricsChart = ({
         keyId={`${containerIds.join("-")}-${metricNames.join(
           "-",
         )}-${metricHorizon}`}
+        xAxisUnit={timeHorizonToChartJSUnit(metricHorizon)}
         chart={chartToCreate}
       />
     </div>
