@@ -216,9 +216,6 @@ export const selectMetricDataByChart = createSelector(
         data: [],
       };
       metric.values.forEach((metricValue) => {
-        if (!metricValue.date) {
-          console.log(metricValue);
-        }
         dataset.data.push({
           x: metricValue.date,
           y: metricValue.value,
