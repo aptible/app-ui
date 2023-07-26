@@ -1,4 +1,4 @@
-import { IconInfo, LoadResources, Loading, Tooltip } from "../shared";
+import { IconRefresh, LoadResources, Loading } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
@@ -7,108 +7,76 @@ import {
   MetricsViewControls,
   metricHorizonAsSeconds,
 } from "../shared/metrics-controls";
-import { dateFromToday, secondsFromNow } from "@app/date";
+import { dateFromToday } from "@app/date";
 import {
-  fetchContainersByReleaseIdWithDeleted,
+  fetchDatabase,
   fetchEnvironmentServices,
-  fetchReleasesByServiceWithDeleted,
   fetchService,
-  selectContainersByReleaseIdsByLayerType,
+  selectContainersByCurrentReleaseAndHorizon,
   selectDatabaseById,
   selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
-import { fetchMetricTunnelDataForContainer } from "@app/metric-tunnel";
+import {
+  fetchAllMetricsByServiceId,
+  selectMetricsLoaded,
+} from "@app/metric-tunnel";
 import { AppState, MetricHorizons } from "@app/types";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router";
-import { AnyAction } from "redux";
-import { batchActions } from "saga-query";
 import { useQuery } from "saga-query/react";
 
-const maxDataSeries = 100;
-const metrics = ["cpu_pct", "la", "memory_all", "iops", "fs"];
-const layersToSearchForContainers = ["app", "database"];
+const layersToSearchForContainers = ["database"];
 
 export function DatabaseMetricsPage() {
   const { id = "" } = useParams();
   const [viewTab, setViewTab] = useState<MetricTabTypes>("chart");
   const [metricHorizon, setMetricHorizon] = useState<MetricHorizons>("1h");
+  useQuery(fetchDatabase({ id }));
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id }));
   const query = useQuery(fetchEnvironmentServices({ id: db.environmentId }));
+  const serviceId = db.serviceId;
   const service = useSelector((s: AppState) =>
-    selectServiceById(s, { id: db.serviceId }),
+    selectServiceById(s, { id: serviceId }),
   );
-  const dispatch = useDispatch();
-  useQuery(fetchService({ id: db.serviceId }));
+  useQuery(fetchService({ id: serviceId }));
 
+  const metrics: any[] = ["cpu_pct", "la", "memory_all", "iops", "fs"];
+  const loader = useQuery(
+    fetchAllMetricsByServiceId({
+      serviceId,
+      metrics,
+      metricHorizon,
+    }),
+  );
+  const metricsLoaded = useSelector((s: AppState) =>
+    selectMetricsLoaded(s, {
+      serviceId,
+      metricHorizon,
+    }),
+  );
+
+  // we always go back exactly one week, though it might be a bit too far for some that way
+  // we do not have to refetch this if the component state changes as this is fairly expensive
   const releases = useSelector((s: AppState) =>
     selectReleasesByServiceAfterDate(s, {
-      serviceId: service.id,
+      serviceId,
       date: dateFromToday(-7).toISOString(),
     }),
   );
   const releaseIds = releases.map((release) => release.id);
-
-  useQuery(fetchReleasesByServiceWithDeleted({ serviceId: service.id }));
+  const horizonInSeconds = metricHorizonAsSeconds(metricHorizon);
   const containers = useSelector((s: AppState) =>
-    selectContainersByReleaseIdsByLayerType(s, {
+    selectContainersByCurrentReleaseAndHorizon(s, {
       layers: layersToSearchForContainers,
       releaseIds,
+      horizonInSeconds,
+      currentReleaseId: service.currentReleaseId,
     }),
   );
-
-  const containerIds = containers
-    .map((container) => container.id)
-    .sort()
-    .join("-");
-
-  useEffect(() => {
-    const actions: AnyAction[] = [];
-    releaseIds.map((releaseId) => {
-      actions.push(fetchContainersByReleaseIdWithDeleted({ releaseId }));
-    });
-    if (actions.length === 0) {
-      return;
-    }
-    dispatch(batchActions(actions));
-  }, [releaseIds.join("-")]);
-
-  useEffect(() => {
-    const horizonInSeconds = metricHorizonAsSeconds(metricHorizon);
-    let requestsMade = 0;
-    const actions: AnyAction[] = [];
-    for (const container of containers) {
-      if (requestsMade >= maxDataSeries) {
-        break;
-      }
-      for (const metricName of metrics) {
-        if (requestsMade >= maxDataSeries) {
-          break;
-        }
-        // either fetch the current release OR ensure that the container was last updated within the time horizon
-        if (
-          container.releaseId === service.currentReleaseId ||
-          container.updatedAt >= secondsFromNow(-horizonInSeconds).toISOString()
-        ) {
-          actions.push(
-            fetchMetricTunnelDataForContainer({
-              containerId: container.id,
-              metricName,
-              metricHorizon: metricHorizon,
-              serviceId: service.id,
-            }),
-          );
-          requestsMade += 1;
-        }
-      }
-    }
-    if (actions.length === 0) {
-      return;
-    }
-    dispatch(batchActions(actions));
-  }, [service.id, containerIds, metricHorizon]);
+  const totalRequests = containers.length * metrics.length;
+  const pct = ((metricsLoaded / totalRequests) * 100).toFixed(2);
 
   if (!containers) {
     return <Loading />;
@@ -116,21 +84,26 @@ export function DatabaseMetricsPage() {
 
   return (
     <LoadResources query={query} isEmpty={false}>
-      <div className="flex gap-4 justify-start">
-        <MetricsViewControls
-          viewMetricTab={viewTab}
-          setViewMetricTab={setViewTab}
-        />
-        <MetricsHorizonControls
-          viewHorizon={metricHorizon}
-          setViewHorizon={setMetricHorizon}
-        />
-        <Tooltip
-          fluid
-          text={`Showing up to ${maxDataSeries} data series (one per line on a line graph) worth of metrics.`}
-        >
-          <IconInfo className="h-5 mt-2 opacity-50 hover:opacity-100" />
-        </Tooltip>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <MetricsViewControls
+            viewMetricTab={viewTab}
+            setViewMetricTab={setViewTab}
+          />
+          <MetricsHorizonControls
+            viewHorizon={metricHorizon}
+            setViewHorizon={setMetricHorizon}
+          />
+        </div>
+
+        {loader.isLoading ? (
+          <div className="flex gap-2">
+            <span className="text-black-500">{pct}%</span>
+            <div className="animate-spin-slow 5s">
+              <IconRefresh color="#595E63" />
+            </div>
+          </div>
+        ) : null}
       </div>
       <div className="my-4">
         {viewTab === "chart" ? (

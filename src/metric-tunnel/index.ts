@@ -1,8 +1,28 @@
-import { cacheTimer, metricTunnelApi } from "@app/api";
+import { cacheTimer, metricTunnelApi, thunks } from "@app/api";
+import { dateFromToday } from "@app/date";
+import {
+  fetchContainersByReleaseIdWithDeleted,
+  fetchReleasesByServiceWithDeleted,
+  selectContainersByCurrentReleaseAndHorizon,
+  selectReleasesByServiceAfterDate,
+  selectServiceById,
+} from "@app/deploy";
 import { createReducerMap, createTable } from "@app/slice-helpers";
 import { AppState, ContainerMetrics, MetricHorizons } from "@app/types";
+import { metricHorizonAsSeconds } from "@app/ui/shared/metrics-controls";
 import { createSelector } from "@reduxjs/toolkit";
-import { put } from "saga-query";
+import {
+  all,
+  call,
+  delay,
+  put,
+  select,
+  selectLoaders,
+  setLoaderError,
+  setLoaderStart,
+  setLoaderSuccess,
+  takeLeading,
+} from "saga-query";
 
 export interface MetricTunnelContainerResponse {
   columns: (string | null | number)[][];
@@ -238,9 +258,16 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
   Omit<ContainerMetricPayload, "payload">,
   MetricTunnelContainerResponse
 >(
-  `/proxy/:containerId?horizon=:metricHorizon&ts=${getUtc()}&metric=:metricName&requestedTicks=600`,
+  `/proxy/:containerId?horizon=:metricHorizon&ts=${getUtc()}&metric=:metricName&requestedTicks=300`,
   { saga: cacheTimer() },
   function* (ctx, next) {
+    const key = metricsKey(ctx.payload.serviceId, ctx.payload.metricHorizon);
+    const id = `${ctx.key}-${ctx.payload.containerId}-${ctx.payload.metricName}-${key}`;
+    yield* put(
+      setLoaderStart({
+        id,
+      }),
+    );
     yield* next();
 
     if (!ctx.json.ok) {
@@ -253,5 +280,169 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
     });
 
     yield* put(addContainerMetrics(containerMetrics));
+    yield* put(
+      setLoaderSuccess({
+        id,
+      }),
+    );
+  },
+);
+
+export const fetchContainersByServiceId = thunks.create<{ serviceId: string }>(
+  "fetch-containers-by-service-id",
+  function* (ctx, next) {
+    const { serviceId } = ctx.payload;
+    yield* put(setLoaderStart({ id: ctx.key }));
+    const releaseCtx = yield* call(
+      fetchReleasesByServiceWithDeleted.run,
+      fetchReleasesByServiceWithDeleted({ serviceId: ctx.payload.serviceId }),
+    );
+    if (!releaseCtx.json.ok) {
+      yield* put(setLoaderError({ id: ctx.key }));
+      yield* next();
+      return releaseCtx;
+    }
+    const releases = yield* select(selectReleasesByServiceAfterDate, {
+      serviceId,
+      date: dateFromToday(-7).toISOString(),
+    });
+    const releaseIds = releases.map((release) => release.id);
+
+    const fx = releaseIds.map((releaseId) =>
+      call(
+        fetchContainersByReleaseIdWithDeleted.run,
+        fetchContainersByReleaseIdWithDeleted({ releaseId }),
+      ),
+    );
+    yield* all(fx);
+
+    yield* put(setLoaderSuccess({ id: ctx.key }));
+    yield* next();
+  },
+);
+
+type MetricName = "cpu_pct" | "la" | "memory_all" | "iops" | "fs";
+
+export const fetchMetricByServiceId = thunks.create<{
+  serviceId: string;
+  metricHorizon: MetricHorizons;
+  metricName: MetricName;
+}>("fetch-metric-by-service-id", function* (ctx, next) {
+  yield* put(setLoaderStart({ id: ctx.key }));
+  const { serviceId, metricHorizon, metricName } = ctx.payload;
+  const service = yield* select(selectServiceById, { id: serviceId });
+
+  // we always go back exactly one week, though it might be a bit too far for some that way
+  // we do not have to refetch this if the component state changes as this is fairly expensive
+  const releases = yield* select(selectReleasesByServiceAfterDate, {
+    serviceId,
+    date: dateFromToday(-7).toISOString(),
+  });
+  const releaseIds = releases.map((release) => release.id);
+
+  const layersToSearchForContainers = ["app", "database"];
+  const horizonInSeconds = metricHorizonAsSeconds(metricHorizon);
+  const containers = yield* select(selectContainersByCurrentReleaseAndHorizon, {
+    layers: layersToSearchForContainers,
+    releaseIds,
+    horizonInSeconds,
+    currentReleaseId: service.currentReleaseId,
+  });
+
+  const BATCH_REQUEST_LIMIT = 20;
+  const totalRequests = containers.length;
+  let curContainerIndex = 0;
+
+  while (curContainerIndex <= totalRequests - 1) {
+    const fx: any[] = [];
+    const loopMax = Math.min(
+      totalRequests - curContainerIndex,
+      BATCH_REQUEST_LIMIT,
+    );
+    for (let i = 0; i < loopMax; i += 1) {
+      const container = containers[curContainerIndex];
+      curContainerIndex += 1;
+      if (!container) {
+        continue;
+      }
+
+      fx.push(
+        call(
+          fetchMetricTunnelDataForContainer.run,
+          fetchMetricTunnelDataForContainer({
+            containerId: container.id,
+            metricName,
+            metricHorizon: metricHorizon,
+            serviceId: serviceId,
+          }),
+        ),
+      );
+    }
+
+    yield* all(fx);
+    yield* delay(250);
+  }
+
+  yield* put(setLoaderSuccess({ id: ctx.key }));
+  yield* next();
+});
+
+export const metricsKey = (serviceId: string, metricHorizon: string) => {
+  return `${serviceId}-${metricHorizon}`;
+};
+
+export const selectMetricsLoaded = createSelector(
+  selectLoaders,
+  (_: AppState, p: { serviceId: string }) => p.serviceId,
+  (_: AppState, p: { metricHorizon: string }) => p.metricHorizon,
+  (loaders, serviceId, metricHorizon) => {
+    const lds = Object.keys(loaders);
+    const loaded = lds.filter((key) => {
+      if (!key.includes(metricsKey(serviceId, metricHorizon))) {
+        return false;
+      }
+      const loader = loaders[key];
+      if (!loader) return false;
+      return loader.status === "success";
+    });
+    return loaded.length;
+  },
+);
+
+export const fetchAllMetricsByServiceId = thunks.create<{
+  serviceId: string;
+  metrics: MetricName[];
+  metricHorizon: MetricHorizons;
+}>(
+  "fetch-all-metrics-by-service-id",
+  {
+    saga: takeLeading,
+  },
+  function* (ctx, next) {
+    const { serviceId, metrics, metricHorizon } = ctx.payload;
+    yield* put(setLoaderStart({ id: ctx.key }));
+
+    yield* call(
+      fetchContainersByServiceId.run,
+      fetchContainersByServiceId({ serviceId }),
+    );
+
+    const fx: any[] = [];
+    metrics.forEach((metricName) => {
+      fx.push(
+        call(
+          fetchMetricByServiceId.run,
+          fetchMetricByServiceId({
+            serviceId,
+            metricName,
+            metricHorizon,
+          }),
+        ),
+      );
+    });
+    yield* all(fx);
+
+    yield* put(setLoaderSuccess({ id: ctx.key }));
+    yield* next();
   },
 );

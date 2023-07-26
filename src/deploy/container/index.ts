@@ -1,5 +1,6 @@
 import { selectDeploy } from "../slice";
 import { api } from "@app/api";
+import { secondsFromNow } from "@app/date";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -164,6 +165,20 @@ export const selectContainersByReleaseIdsByLayerType = createSelector(
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       });
+  },
+);
+
+export const selectContainersByCurrentReleaseAndHorizon = createSelector(
+  selectContainersByReleaseIdsByLayerType,
+  (_: AppState, p: { currentReleaseId: string }) => p.currentReleaseId,
+  (_: AppState, p: { horizonInSeconds: number }) => p.horizonInSeconds,
+  (containers, currentReleaseId, horizonInSeconds) => {
+    return containers.filter((container) => {
+      const isContainerInMetricHorizon =
+        container.releaseId === currentReleaseId ||
+        container.updatedAt >= secondsFromNow(-horizonInSeconds).toISOString();
+      return isContainerInMetricHorizon;
+    });
   },
 );
 
