@@ -1,4 +1,10 @@
-import { IconInfo, IconRefresh, LoadResources, Loading, Tooltip } from "../shared";
+import {
+  IconInfo,
+  IconRefresh,
+  LoadResources,
+  Loading,
+  Tooltip,
+} from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
@@ -9,7 +15,7 @@ import {
 } from "../shared/metrics-controls";
 import { dateFromToday } from "@app/date";
 import {
-    fetchDatabase,
+  fetchDatabase,
   fetchEnvironmentServices,
   fetchService,
   selectContainersByCurrentReleaseAndHorizon,
@@ -17,7 +23,10 @@ import {
   selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
-import { fetchAllMetricsByServiceId, selectMetricsLoaded } from "@app/metric-tunnel";
+import {
+  fetchAllMetricsByServiceId,
+  selectMetricsLoaded,
+} from "@app/metric-tunnel";
 import { AppState, MetricHorizons } from "@app/types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
