@@ -160,6 +160,7 @@ export const fetchService = api.get<{ id: string }>("/services/:id");
 export const fetchEnvironmentServices = api.get<{ id: string }>(
   "/accounts/:id/services",
 );
+export const fetchAppServices = api.get<{ id: string }>("/apps/:id/services");
 
 export const serviceEntities = {
   service: defaultEntity({

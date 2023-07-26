@@ -84,6 +84,12 @@ const LineChartWrapper = ({
             align: "start",
             display: true,
             text: title,
+            padding: showLegend
+              ? undefined
+              : {
+                  top: 10,
+                  bottom: 30,
+                },
           },
         },
         interaction: {
