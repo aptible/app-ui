@@ -353,7 +353,7 @@ export const fetchMetricByServiceId = thunks.create<{
   const totalRequests = containers.length;
   let curContainerIndex = 0;
 
-  while (curContainerIndex < totalRequests - 1) {
+  while (curContainerIndex <= totalRequests - 1) {
     const fx: any[] = [];
     const loopMax = Math.min(
       totalRequests - curContainerIndex,

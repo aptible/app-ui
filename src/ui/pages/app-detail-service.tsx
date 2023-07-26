@@ -27,7 +27,7 @@ import {
 import { useState } from "react";
 
 const maxDataSeries = 100;
-const layersToSearchForContainers = ["app", "database"];
+const layersToSearchForContainers = ["app"];
 
 export function AppDetailServicePage() {
   const { id = "", serviceId = "" } = useParams();
