@@ -1,10 +1,4 @@
-import {
-  IconInfo,
-  IconRefresh,
-  LoadResources,
-  Loading,
-  Tooltip,
-} from "../shared";
+import { IconRefresh, LoadResources, Loading } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
@@ -33,7 +27,6 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
 
-const maxDataSeries = 100;
 const layersToSearchForContainers = ["database"];
 
 export function DatabaseMetricsPage() {
@@ -101,13 +94,6 @@ export function DatabaseMetricsPage() {
             viewHorizon={metricHorizon}
             setViewHorizon={setMetricHorizon}
           />
-
-          <Tooltip
-            fluid
-            text={`Showing up to ${maxDataSeries} data series (one per line on a line graph) worth of metrics.`}
-          >
-            <IconInfo className="h-5 opacity-50 hover:opacity-100" />
-          </Tooltip>
         </div>
 
         {loader.isLoading ? (

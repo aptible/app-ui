@@ -9,7 +9,7 @@ import {
 import { useQuery } from "@app/fx";
 import { AppState, MetricHorizons } from "@app/types";
 
-import { IconInfo, IconRefresh, Loading, Tooltip } from "../shared";
+import { IconRefresh, Loading } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
@@ -26,7 +26,6 @@ import {
 } from "@app/metric-tunnel";
 import { useState } from "react";
 
-const maxDataSeries = 100;
 const layersToSearchForContainers = ["app"];
 
 export function AppDetailServicePage() {
@@ -92,13 +91,6 @@ export function AppDetailServicePage() {
             viewHorizon={metricHorizon}
             setViewHorizon={setMetricHorizon}
           />
-
-          <Tooltip
-            fluid
-            text={`Showing up to ${maxDataSeries} data series (one per line on a line graph) worth of metrics.`}
-          >
-            <IconInfo className="h-5 opacity-50 hover:opacity-100" />
-          </Tooltip>
         </div>
 
         {loader.isLoading ? (
