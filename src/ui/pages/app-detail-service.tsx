@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import {
+  calcMetrics,
   fetchApp,
   selectReleasesByServiceAfterDate,
   selectServiceById,
@@ -71,6 +72,7 @@ export function AppDetailServicePage() {
   );
   const totalRequests = containers.length * metrics.length;
   const pct = ((metricsLoaded / totalRequests) * 100).toFixed(2);
+  const { totalCPU } = calcMetrics([service]);
 
   if (!containers.length) {
     return <Loading />;
@@ -107,18 +109,28 @@ export function AppDetailServicePage() {
           <div className={`grid ${chartWrapperClassName} gap-4`}>
             <ContainerMetricsChart
               containers={containers}
+              limit={`${totalCPU * 100}% CPU`}
               metricNames={["cpu_pct"]}
               metricHorizon={metricHorizon}
+              helpText="Total amount of CPU your container has used from the host system."
+              yAxisLabel="CPU Usage (%)"
+              yAxisUnit="%"
             />
             <ContainerMetricsChart
               containers={containers}
               metricNames={["memory_all"]}
+              limit={`${service.containerMemoryLimitMb} MB`}
               metricHorizon={metricHorizon}
+              helpText="Total amount of memory your container has requested from the host system"
+              yAxisLabel="Memory Usage (MB)"
+              yAxisUnit=" MB"
             />
             <ContainerMetricsChart
               containers={containers}
               metricNames={["la"]}
               metricHorizon={metricHorizon}
+              helpText="Total runnable and blocked tasks (threads) in your container."
+              yAxisLabel="Load Average (#)"
             />
           </div>
         ) : (

@@ -1,5 +1,7 @@
 import { Line } from "react-chartjs-2";
 
+import { IconInfo } from "./icons";
+import { Tooltip } from "./tooltip";
 import { ChartToCreate, selectMetricDataByChart } from "@app/metric-tunnel";
 import { AppState, DeployContainer, MetricHorizons } from "@app/types";
 import {
@@ -13,7 +15,6 @@ import {
   TimeScale,
   TimeUnit,
   Title,
-  Tooltip,
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 import { useSelector } from "react-redux";
@@ -26,7 +27,6 @@ ChartJS.register(
   LineElement,
   TimeScale,
   Title,
-  Tooltip,
   Legend,
 );
 
@@ -42,11 +42,15 @@ const LineChartWrapper = ({
   keyId,
   chart: { labels, datasets, title },
   xAxisUnit,
+  yAxisLabel,
+  yAxisUnit,
 }: {
   showLegend?: boolean;
   keyId: string;
   chart: ChartToCreate;
   xAxisUnit: TimeUnit;
+  yAxisLabel?: string;
+  yAxisUnit?: string;
 }) =>
   datasets && title ? (
     <Line
@@ -123,7 +127,16 @@ const LineChartWrapper = ({
             border: {
               display: false,
             },
+            title: yAxisLabel
+              ? {
+                  display: true,
+                  text: yAxisLabel,
+                }
+              : undefined,
             ticks: {
+              callback: yAxisUnit
+                ? (value, idx, values) => `${value}${yAxisUnit}`
+                : undefined,
               color: "#111920",
             },
           },
@@ -134,12 +147,20 @@ const LineChartWrapper = ({
 
 export const ContainerMetricsChart = ({
   containers,
+  limit,
   metricNames,
   metricHorizon,
+  helpText,
+  yAxisLabel,
+  yAxisUnit,
 }: {
   containers: DeployContainer[];
+  limit?: string;
   metricNames: string[];
   metricHorizon: MetricHorizons;
+  helpText?: string;
+  yAxisLabel?: string;
+  yAxisUnit?: string;
 }) => {
   const containerIds = containers.map((container) => container.id).sort();
   // for now, we only use the FIRST container id pending cross-release
@@ -156,12 +177,32 @@ export const ContainerMetricsChart = ({
 
   return (
     <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
+      {helpText || limit ? (
+        <div className="relative w-full">
+          <div className="flex absolute right-0 top-2.5 gap-2">
+            {limit ? (
+              <span className="text-sm text-gray-500 top-2.5">
+                Limit: {limit}
+              </span>
+            ) : null}
+            {helpText ? (
+              <div className="right-5 top-2.5">
+                <Tooltip text={helpText} autoSizeWidth rightAnchored>
+                  <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100 cursor-pointer" />
+                </Tooltip>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
       <LineChartWrapper
         showLegend={(chartToCreate.datasets?.length || 0) <= 4}
         keyId={`${containerIds.join("-")}-${metricNames.join(
           "-",
         )}-${metricHorizon}`}
         xAxisUnit={timeHorizonToChartJSUnit(metricHorizon)}
+        yAxisLabel={yAxisLabel}
+        yAxisUnit={yAxisUnit}
         chart={chartToCreate}
       />
     </div>
