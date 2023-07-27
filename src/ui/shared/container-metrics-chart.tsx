@@ -1,6 +1,6 @@
 import { Line } from "react-chartjs-2";
 
-import { IconInfo, IconRefresh } from "./icons";
+import { IconInfo } from "./icons";
 import { Tooltip } from "./tooltip";
 import { ChartToCreate, selectMetricDataByChart } from "@app/metric-tunnel";
 import { AppState, DeployContainer, MetricHorizons } from "@app/types";
@@ -27,7 +27,6 @@ ChartJS.register(
   LineElement,
   TimeScale,
   Title,
-  Tooltip,
   Legend,
 );
 
