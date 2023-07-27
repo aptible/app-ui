@@ -179,18 +179,20 @@ export const ContainerMetricsChart = ({
     <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
       {helpText || limit ? (
         <div className="relative w-full">
-          {limit ? (
-            <span className="text-sm text-gray-500 absolute right-7 top-2.5">
-              Limit: {limit}
-            </span>
-          ) : null}
-          {helpText ? (
-            <div className="absolute right-5 top-2.5">
-              <Tooltip text={helpText} autoSizeWidth rightAnchored>
-                <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100 cursor-pointer absolute" />
-              </Tooltip>
-            </div>
-          ) : null}
+          <div className="flex absolute right-0 top-2.5 gap-2">
+            {limit ? (
+              <span className="text-sm text-gray-500 top-2.5">
+                Limit: {limit}
+              </span>
+            ) : null}
+            {helpText ? (
+              <div className="right-5 top-2.5">
+                <Tooltip text={helpText} autoSizeWidth rightAnchored>
+                  <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100 cursor-pointer" />
+                </Tooltip>
+              </div>
+            ) : null}
+          </div>
         </div>
       ) : null}
       <LineChartWrapper
