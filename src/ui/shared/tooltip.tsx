@@ -4,11 +4,13 @@ export const Tooltip = ({
   autoSizeWidth = false,
   fluid,
   children,
+  rightAnchored = false,
   text,
 }: {
   autoSizeWidth?: boolean;
   fluid?: boolean;
   children: React.ReactNode;
+  rightAnchored?: boolean;
   text: string;
 }) => {
   return (
@@ -18,7 +20,7 @@ export const Tooltip = ({
         className={cn([
           "tooltip-inner",
           "z-50",
-          "left-0 top-0",
+          rightAnchored ? "-right-3 top-0" : "left-0 top-0",
           "shadow",
           "absolute",
           "rounded-md",

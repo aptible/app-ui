@@ -109,16 +109,19 @@ export function AppDetailServicePage() {
               containers={containers}
               metricNames={["cpu_pct"]}
               metricHorizon={metricHorizon}
+              helpText="Total amount of CPU your container has used from the host system."
             />
             <ContainerMetricsChart
               containers={containers}
               metricNames={["memory_all"]}
               metricHorizon={metricHorizon}
+              helpText="Total amount of memory your container has requested from the host system"
             />
             <ContainerMetricsChart
               containers={containers}
               metricNames={["la"]}
               metricHorizon={metricHorizon}
+              helpText="Total runnable and blocked tasks (threads) in your container."
             />
           </div>
         ) : (

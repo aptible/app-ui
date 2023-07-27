@@ -1,5 +1,7 @@
 import { Line } from "react-chartjs-2";
 
+import { IconInfo, IconRefresh } from "./icons";
+import { Tooltip } from "./tooltip";
 import { ChartToCreate, selectMetricDataByChart } from "@app/metric-tunnel";
 import { AppState, DeployContainer, MetricHorizons } from "@app/types";
 import {
@@ -13,7 +15,6 @@ import {
   TimeScale,
   TimeUnit,
   Title,
-  Tooltip,
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 import { useSelector } from "react-redux";
@@ -134,12 +135,16 @@ const LineChartWrapper = ({
 
 export const ContainerMetricsChart = ({
   containers,
+  limit,
   metricNames,
   metricHorizon,
+  helpText,
 }: {
   containers: DeployContainer[];
+  limit?: string;
   metricNames: string[];
   metricHorizon: MetricHorizons;
+  helpText?: string;
 }) => {
   const containerIds = containers.map((container) => container.id).sort();
   // for now, we only use the FIRST container id pending cross-release
@@ -156,6 +161,22 @@ export const ContainerMetricsChart = ({
 
   return (
     <div className="bg-white px-5 pt-1 pb-5 shadow rounded-lg border border-black-100 relative min-h-[400px] bg-[url('/thead-bg.png')] bg-[length:100%_46px] bg-no-repeat">
+      {helpText || limit ? (
+        <div className="relative w-full">
+          {limit ? (
+            <span className="text-sm text-gray-500 absolute right-10 top-2.5">
+              Limit: 1000 MB
+            </span>
+          ) : null}
+          {helpText ? (
+            <div className="absolute right-5 top-2.5">
+              <Tooltip text={helpText} autoSizeWidth rightAnchored>
+                <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100 cursor-pointer absolute" />
+              </Tooltip>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       <LineChartWrapper
         showLegend={(chartToCreate.datasets?.length || 0) <= 4}
         keyId={`${containerIds.join("-")}-${metricNames.join(

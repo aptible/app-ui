@@ -112,26 +112,31 @@ export function DatabaseMetricsPage() {
               containers={containers}
               metricNames={["cpu_pct"]}
               metricHorizon={metricHorizon}
+              helpText="Total amount of CPU your container has used from the host system."
             />
             <ContainerMetricsChart
               containers={containers}
               metricNames={["memory_all"]}
               metricHorizon={metricHorizon}
+              helpText="Total amount of memory your container has requested from the host system"
             />
             <ContainerMetricsChart
               containers={containers}
               metricNames={["fs"]}
               metricHorizon={metricHorizon}
+              helpText="Total used disk space compared to total available space. A small amount is reserved for usage by the system."
             />
             <ContainerMetricsChart
               containers={containers}
               metricNames={["iops"]}
               metricHorizon={metricHorizon}
+              helpText="IO activity of your database, compared to the baseline performance of its underlying volume."
             />
             <ContainerMetricsChart
               containers={containers}
               metricNames={["la"]}
               metricHorizon={metricHorizon}
+              helpText="Total runnable and blocked tasks (threads) in your container."
             />
           </div>
         ) : (
