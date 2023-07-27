@@ -9,6 +9,7 @@ import {
 } from "../shared/metrics-controls";
 import { dateFromToday } from "@app/date";
 import {
+  calcMetrics,
   fetchDatabase,
   fetchEnvironmentServices,
   fetchService,
@@ -77,6 +78,7 @@ export function DatabaseMetricsPage() {
   );
   const totalRequests = containers.length * metrics.length;
   const pct = ((metricsLoaded / totalRequests) * 100).toFixed(2);
+  const { totalCPU } = calcMetrics([service]);
 
   if (!containers) {
     return <Loading />;
@@ -110,12 +112,14 @@ export function DatabaseMetricsPage() {
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
             <ContainerMetricsChart
               containers={containers}
+              limit={`${totalCPU * 100}% CPU`}
               metricNames={["cpu_pct"]}
               metricHorizon={metricHorizon}
               helpText="Total amount of CPU your container has used from the host system."
             />
             <ContainerMetricsChart
               containers={containers}
+              limit={`${service.containerMemoryLimitMb} MB`}
               metricNames={["memory_all"]}
               metricHorizon={metricHorizon}
               helpText="Total amount of memory your container has requested from the host system"

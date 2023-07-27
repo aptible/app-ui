@@ -164,8 +164,8 @@ export const ContainerMetricsChart = ({
       {helpText || limit ? (
         <div className="relative w-full">
           {limit ? (
-            <span className="text-sm text-gray-500 absolute right-10 top-2.5">
-              Limit: 1000 MB
+            <span className="text-sm text-gray-500 absolute right-7 top-2.5">
+              Limit: {limit}
             </span>
           ) : null}
           {helpText ? (
