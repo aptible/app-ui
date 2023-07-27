@@ -1,7 +1,7 @@
 import { Line } from "react-chartjs-2";
 
 import { IconInfo } from "./icons";
-import { Tooltip } from "./tooltip";
+import { Tooltip as AptibleTooltip } from "./tooltip";
 import { ChartToCreate, selectMetricDataByChart } from "@app/metric-tunnel";
 import { AppState, DeployContainer, MetricHorizons } from "@app/types";
 import {
@@ -15,6 +15,7 @@ import {
   TimeScale,
   TimeUnit,
   Title,
+  Tooltip,
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 import { useSelector } from "react-redux";
@@ -27,6 +28,7 @@ ChartJS.register(
   LineElement,
   TimeScale,
   Title,
+  Tooltip,
   Legend,
 );
 
@@ -187,9 +189,9 @@ export const ContainerMetricsChart = ({
             ) : null}
             {helpText ? (
               <div className="right-5 top-2.5">
-                <Tooltip text={helpText} autoSizeWidth rightAnchored>
+                <AptibleTooltip text={helpText} autoSizeWidth rightAnchored>
                   <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100 cursor-pointer" />
-                </Tooltip>
+                </AptibleTooltip>
               </div>
             ) : null}
           </div>
