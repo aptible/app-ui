@@ -42,11 +42,15 @@ const LineChartWrapper = ({
   keyId,
   chart: { labels, datasets, title },
   xAxisUnit,
+  yAxisLabel,
+  yAxisUnit,
 }: {
   showLegend?: boolean;
   keyId: string;
   chart: ChartToCreate;
   xAxisUnit: TimeUnit;
+  yAxisLabel?: string;
+  yAxisUnit?: string;
 }) =>
   datasets && title ? (
     <Line
@@ -123,7 +127,16 @@ const LineChartWrapper = ({
             border: {
               display: false,
             },
+            title: yAxisLabel
+              ? {
+                  display: true,
+                  text: yAxisLabel,
+                }
+              : undefined,
             ticks: {
+              callback: yAxisUnit
+                ? (value, idx, values) => `${value}${yAxisUnit}`
+                : undefined,
               color: "#111920",
             },
           },
@@ -138,12 +151,16 @@ export const ContainerMetricsChart = ({
   metricNames,
   metricHorizon,
   helpText,
+  yAxisLabel,
+  yAxisUnit,
 }: {
   containers: DeployContainer[];
   limit?: string;
   metricNames: string[];
   metricHorizon: MetricHorizons;
   helpText?: string;
+  yAxisLabel?: string;
+  yAxisUnit?: string;
 }) => {
   const containerIds = containers.map((container) => container.id).sort();
   // for now, we only use the FIRST container id pending cross-release
@@ -182,6 +199,8 @@ export const ContainerMetricsChart = ({
           "-",
         )}-${metricHorizon}`}
         xAxisUnit={timeHorizonToChartJSUnit(metricHorizon)}
+        yAxisLabel={yAxisLabel}
+        yAxisUnit={yAxisUnit}
         chart={chartToCreate}
       />
     </div>
