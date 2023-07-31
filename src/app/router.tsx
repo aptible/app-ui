@@ -6,6 +6,7 @@ import {
   ActivityPage,
   AddSecurityKeyPage,
   AppActivityPage,
+  AppCreateEndpointPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailServicesPage,
@@ -13,6 +14,7 @@ import {
   AppsPage,
   AuthRequired,
   BillingMethodPage,
+  CreateDatabasePage,
   CreateOrgPage,
   CreateProjectAddKeyPage,
   CreateProjectFromAccountSetupPage,
@@ -60,6 +62,7 @@ import {
   LogoutPage,
   NotFoundPage,
   OpDetailLayout,
+  OpDetailPage,
   OtpRecoveryCodesPage,
   OtpSetupPage,
   PlansPage,
@@ -76,13 +79,11 @@ import {
   StackDetailVpcPeeringPage,
   StackDetailVpnTunnelsPage,
   StacksPage,
+  StylesPage,
   TeamPage,
   UnauthRequired,
   VerifyEmailPage,
 } from "@app/ui";
-import { AppCreateEndpointPage } from "@app/ui/pages/app-create-endpoint";
-import { OpDetailPage } from "@app/ui/pages/op-detail";
-import { StylesPage } from "@app/ui/pages/styles";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -328,6 +329,11 @@ export const appRoutes: RouteObject[] = [
             ],
           },
         ],
+      },
+
+      {
+        path: routes.CREATE_DB_PATH,
+        element: <CreateDatabasePage />,
       },
 
       {

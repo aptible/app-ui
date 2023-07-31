@@ -6,6 +6,7 @@ import { selectLoaderById } from "saga-query";
 import { useQuery } from "saga-query/react";
 
 import {
+  DbCreatorProps,
   fetchAllDatabaseImages,
   fetchApp,
   fetchConfiguration,
@@ -18,9 +19,9 @@ import {
   selectServiceDefinitionsByAppId,
 } from "@app/deploy";
 import { DeployCodeScanResponse } from "@app/deploy";
+import { idCreator } from "@app/id";
 import {
   DB_ENV_TEMPLATE_KEY,
-  DbCreatorProps,
   TextVal,
   deployProject,
   getDbEnvTemplateValue,
@@ -29,25 +30,32 @@ import {
   createProjectGitPushUrl,
   createProjectGitStatusUrl,
 } from "@app/routes";
-import { AppState, DeployDatabaseImage } from "@app/types";
+import { AppState } from "@app/types";
 
 import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
 import {
   Banner,
   Box,
   Button,
+  DatabaseCreatorForm,
+  DatabaseEnvVarInput,
+  DbCreatorReducer,
+  DbFormProps,
+  DbSelectorAction,
+  DbValidatorError,
   ExternalLink,
   FormGroup,
   IconChevronDown,
   IconChevronUp,
   IconPlusCircle,
-  Input,
   Loading,
   PreCode,
   ProgressProject,
   Select,
   SelectOption,
+  dbSelectorReducer,
   tokens,
+  validateDbName,
 } from "../shared";
 
 const trim = (t: string) => t.trim();
@@ -79,21 +87,14 @@ interface ValidatorError {
   message: string;
 }
 
-interface DbValidatorError {
-  message: string;
-  item: DbCreatorProps;
-}
-
 const validateDbs = (items: DbCreatorProps[]): DbValidatorError[] => {
   const errors: DbValidatorError[] = [];
   const envVars = new Set();
 
   const validate = (item: DbCreatorProps) => {
-    if (!/^[0-9a-z._-]{1,64}$/.test(item.name)) {
-      errors.push({
-        item,
-        message: `[${item.name}] is not a valid handle: /\A[0-9a-z._-]{1,64}\z/`,
-      });
+    const name = validateDbName(item);
+    if (name) {
+      errors.push(name);
     }
 
     if (envVars.has(item.env)) {
@@ -134,47 +135,6 @@ const validateEnvs = (items: TextVal[]): ValidatorError[] => {
   return errors;
 };
 
-const DatabaseNameInput = ({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (s: string) => void;
-}) => {
-  const change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.currentTarget.value);
-  };
-  return (
-    <FormGroup label="Database Handle" htmlFor="dbname" className="flex-1">
-      <Input name="dbname" value={value} onChange={change} />
-    </FormGroup>
-  );
-};
-
-const DatabaseEnvVarInput = ({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (s: string) => void;
-}) => {
-  const change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.currentTarget.value);
-  };
-  return (
-    <FormGroup label="Environment Variable" htmlFor="envvar" className="flex-1">
-      <Input name="envvar" value={value} onChange={change} />
-    </FormGroup>
-  );
-};
-
-const idCreator = () => {
-  let id = 0;
-  return () => {
-    id += 1;
-    return id;
-  };
-};
 const createId = idCreator();
 
 const DbExistingSelector = ({
@@ -247,109 +207,6 @@ const DbExistingSelector = ({
   );
 };
 
-const DbCreatorSelector = ({
-  db,
-  images,
-  propChange,
-  onDelete,
-  namePrefix,
-}: {
-  db: DbCreatorProps;
-  images: DeployDatabaseImage[];
-  propChange: (d: DbCreatorProps) => void;
-  onDelete: () => void;
-  namePrefix: string;
-}) => {
-  const selectChange = (option: SelectOption) => {
-    const imgId = option.value;
-    const img = images.find((i) => i.id === imgId);
-    const name = `${namePrefix}-${img?.type || ""}`;
-    propChange({
-      ...db,
-      imgId,
-      name,
-      dbType: img?.type || "",
-    });
-  };
-
-  const sel = (
-    <div className="flex justify-between gap-3 mt-4">
-      <DatabaseNameInput
-        value={db.name}
-        onChange={(value) => propChange({ ...db, name: value })}
-      />
-      <DatabaseEnvVarInput
-        value={db.env}
-        onChange={(value) => propChange({ ...db, env: value })}
-      />
-    </div>
-  );
-
-  const imgOptions = [
-    { value: "", label: "Choose a Database" },
-    ...images.map((img) => ({
-      label: `${img.type} v${img.version}`,
-      value: img.id,
-    })),
-  ];
-  const selectedValue = imgOptions.find((img) => img.value === db.imgId);
-
-  return (
-    <div className="mb-4">
-      <h4 className={`${tokens.type.h4} mb-2`}>New Database</h4>
-      <p className="text-black-500 mb-2">
-        Choose a database type and handle. The environment variable here will be
-        injected into your app with the connection URL.
-      </p>
-      <div className="flex mb-2">
-        <Select
-          ariaLabel="new-db"
-          onSelect={selectChange}
-          value={selectedValue}
-          options={imgOptions}
-          className="flex-1 mr-2"
-        />
-        <Button variant="delete" onClick={onDelete}>
-          Delete
-        </Button>
-      </div>
-      {db.imgId ? sel : null}
-      <hr className="my-4" />
-    </div>
-  );
-};
-
-type DbSelectorAction<P extends { id: string }> =
-  | { type: "add"; payload: P }
-  | { type: "rm"; payload: string }
-  | { type: "reset" };
-
-function dbSelectorReducer<P extends { id: string }>(
-  state: { [key: string]: P },
-  action: DbSelectorAction<P>,
-) {
-  if (action.type === "add") {
-    return { ...state, [action.payload.id]: action.payload };
-  }
-
-  if (action.type === "reset") {
-    return {};
-  }
-
-  if (action.type === "rm") {
-    const nextState = { ...state };
-    delete nextState[action.payload];
-    return nextState;
-  }
-
-  return state;
-}
-
-type DbCreatorReducer = Reducer<
-  { [key: string]: DbCreatorProps },
-  DbSelectorAction<DbCreatorProps>
->;
-
 interface DbExistingProps {
   id: string;
   dbId: string;
@@ -361,11 +218,6 @@ type DbExistingReducer = Reducer<
   { [key: string]: DbExistingProps },
   DbSelectorAction<DbExistingProps>
 >;
-
-interface DbFormProps<P extends { id: string }> {
-  dbMap: { [key: string]: P };
-  dbDispatch: (p: DbSelectorAction<P>) => void;
-}
 
 const DatabaseExistingForm = ({
   envId,
@@ -409,89 +261,6 @@ const DatabaseExistingForm = ({
       >
         <IconPlusCircle className="mr-2" color="#fff" /> Connect Existing
         Database
-      </Button>
-    </div>
-  );
-};
-
-const DatabaseCreatorForm = ({
-  namePrefix,
-  dbImages,
-  dbMap,
-  dbDispatch,
-  isLoading,
-}: {
-  namePrefix: string;
-  dbImages: DeployDatabaseImage[];
-  isLoading: boolean;
-} & DbFormProps<DbCreatorProps>) => {
-  const [searchParams] = useSearchParams();
-  const queryDbsStr = searchParams.get("dbs") || "";
-  // prefill databases based on query params
-  useEffect(() => {
-    if (!queryDbsStr) return;
-    if (!namePrefix) return;
-    const qdbs = queryDbsStr.split(",");
-    if (qdbs.length === 0) return;
-
-    qdbs.forEach((db) => {
-      const [env, type, version] = db.split(":");
-      const img = dbImages.find(
-        (i) => i.type === type && i.version === version,
-      );
-      if (!img) return;
-      dbDispatch({
-        type: "add",
-        payload: {
-          env: env.toLocaleUpperCase(),
-          id: `${createId()}`,
-          imgId: img.id,
-          name: `${namePrefix}-${img.type || ""}`,
-          dbType: img.type || "",
-        },
-      });
-    });
-  }, [queryDbsStr, dbImages, namePrefix]);
-
-  const onClick = () => {
-    const payload: DbCreatorProps = {
-      id: `${createId()}`,
-      imgId: "",
-      name: namePrefix,
-      env: "DATABASE_URL",
-      dbType: "",
-    };
-    dbDispatch({
-      type: "add",
-      payload,
-    });
-  };
-
-  return (
-    <div>
-      {Object.values(dbMap)
-        .sort((a, b) => a.id.localeCompare(b.id))
-        .map((db) => {
-          return (
-            <DbCreatorSelector
-              key={db.id}
-              images={dbImages}
-              db={db}
-              propChange={(payload) => {
-                dbDispatch({ type: "add", payload });
-              }}
-              onDelete={() => dbDispatch({ type: "rm", payload: db.id })}
-              namePrefix={namePrefix}
-            />
-          );
-        })}
-      <Button
-        type="button"
-        onClick={onClick}
-        variant="secondary"
-        isLoading={isLoading}
-      >
-        <IconPlusCircle className="mr-2" color="#fff" /> New Database
       </Button>
     </div>
   );
@@ -870,6 +639,7 @@ export const CreateProjectGitSettingsPage = () => {
                 dbMap={dbCreatorMap}
                 dbDispatch={dbCreatorDispatch}
                 isLoading={imgLoader.isInitialLoading}
+                showEnv
               />
             </div>
           </FormGroup>
