@@ -2,9 +2,9 @@ import { useSelector } from "react-redux";
 import { Outlet } from "react-router";
 import { Link } from "react-router-dom";
 
-import { selectLegacyDashboardUrl, selectOrigin } from "@app/env";
+import { selectLegacyDashboardUrl } from "@app/env";
 import { selectOrganizationSelected } from "@app/organizations";
-import { homeUrl, logoutUrl } from "@app/routes";
+import { createProjectDeploymentsUrl, logoutUrl } from "@app/routes";
 
 import { AptibleLogo } from "../shared";
 import { HeroBgLayout } from "./hero-bg-layout";
@@ -14,7 +14,6 @@ export const CreateProjectLayout = ({
 }: {
   children?: React.ReactNode;
 }) => {
-  const origin = useSelector(selectOrigin);
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const org = useSelector(selectOrganizationSelected);
 
@@ -25,24 +24,19 @@ export const CreateProjectLayout = ({
     <>
       <div className="p-6 flex justify-between relative shadow bg-white border-b border-black-50 mb-8">
         <div className="flex">
-          <Link to={homeUrl()}>
+          <Link to={createProjectDeploymentsUrl()}>
             <AptibleLogo />
           </Link>
           <div className="ml-5">
-            {origin === "app" ? (
-              <a href={legacyUrl} rel="noreferrer" className="text-black-500">
-                Dashboard
-              </a>
-            ) : (
-              <Link to={homeUrl()} className="text-black-500">
-                Dashboard
-              </Link>
-            )}
-            {origin === "app" && (
-              <Link to={homeUrl()} className="text-black-500 ml-5">
-                Deployments
-              </Link>
-            )}
+            <a href={legacyUrl} rel="noreferrer" className="text-black-500">
+              Dashboard
+            </a>
+            <Link
+              to={createProjectDeploymentsUrl()}
+              className="text-black-500 ml-5"
+            >
+              Deployments
+            </Link>
           </div>
         </div>
 

@@ -54,6 +54,7 @@ import {
   ErrorPage,
   ForgotPassPage,
   ForgotPassVerifyPage,
+  HomePage,
   ImpersonatePage,
   LoginPage,
   LogoutPage,
@@ -108,11 +109,7 @@ export const appRoutes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: (
-          <CreateProjectLayout>
-            <DeploymentsPage />
-          </CreateProjectLayout>
-        ),
+        element: <HomePage />,
       },
 
       {
@@ -123,6 +120,15 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.DEPLOYMENTS_PATH,
         element: <DeploymentsPageWithMenus />,
+      },
+
+      {
+        path: routes.CREATE_PROJECT_DEPLOYMENTS_PATH,
+        element: (
+          <CreateProjectLayout>
+            <DeploymentsPage />
+          </CreateProjectLayout>
+        ),
       },
 
       {

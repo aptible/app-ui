@@ -167,6 +167,9 @@ export const CREATE_PROJECT_ADD_KEY_PATH = "/create/ssh";
 export const createProjectAddKeyUrl = () => CREATE_PROJECT_ADD_KEY_PATH;
 export const CREATE_PROJECT_ADD_NAME_PATH = "/create/name";
 export const createProjectAddNameUrl = () => CREATE_PROJECT_ADD_NAME_PATH;
+export const CREATE_PROJECT_DEPLOYMENTS_PATH = "/create/deployments";
+export const createProjectDeploymentsUrl = (params = "") =>
+  `${CREATE_PROJECT_DEPLOYMENTS_PATH}${params ? `?${params}` : ""}`;
 
 export const CREATE_PROJECT_GIT_PATH = "/create/git";
 export const createProjectGitUrl = () => CREATE_PROJECT_GIT_PATH;
