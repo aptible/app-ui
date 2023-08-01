@@ -6,7 +6,7 @@ import { homeUrl } from "@app/routes";
 import { selectCanImpersonate, selectCurrentUser } from "@app/users";
 
 import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
-import { BannerMessages, Button, FormGroup, Input } from "../shared";
+import { BannerMessages, Button, CheckBox, FormGroup, Input } from "../shared";
 import { ExchangeToken, exchangeToken } from "@app/auth";
 import { useLoader } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
@@ -125,8 +125,8 @@ export const ImpersonatePage = () => {
 
         {user.superuser ? (
           <FormGroup label="Write Access" htmlFor="write-access">
-            <Input
-              type="checkbox"
+            <CheckBox
+              label=""
               id="write-access"
               name="write-access"
               onChange={(e) => setWritePerm(e.currentTarget.checked)}
@@ -139,12 +139,11 @@ export const ImpersonatePage = () => {
           htmlFor="sso"
           description="To simulate an SSO login, check here and enter both fields. This is always read only."
         >
-          <Input
-            type="checkbox"
+          <CheckBox
+            label=""
             id="sso"
             name="sso"
             onChange={(e) => setSSO(e.currentTarget.checked)}
-            className="rounded-lg h-6"
           />
         </FormGroup>
 

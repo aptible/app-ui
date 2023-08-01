@@ -2,6 +2,16 @@ import { tokens } from "./tokens";
 import classNames from "classnames";
 import { LabelHTMLAttributes, PropsWithChildren } from "react";
 
+export function Form({
+  className,
+  ...props
+}: React.DetailedHTMLProps<
+  React.FormHTMLAttributes<HTMLFormElement>,
+  HTMLFormElement
+>) {
+  return <form className={`flex flex-col gap-4 ${className}`} {...props} />;
+}
+
 type LabelProps = LabelHTMLAttributes<HTMLLabelElement>;
 
 export function Label(props: LabelProps) {
@@ -11,10 +21,10 @@ export function Label(props: LabelProps) {
   return <label {...props} className={classes} />;
 }
 
-export type Feedback = {
+export interface Feedback {
   message: string;
   variant: Variant;
-};
+}
 
 export function FormGroupFeedback({ message, variant }: Feedback) {
   const classes = classNames("text-sm mt-1", {

@@ -1,8 +1,9 @@
 import cn from "classnames";
+import { Children, cloneElement } from "react";
 
-export interface SelectOption {
+export interface SelectOption<V = string> {
   label: string;
-  value: string;
+  value: V;
 }
 
 export interface SelectProps {
@@ -51,5 +52,59 @@ export function Select({
         );
       })}
     </select>
+  );
+}
+
+type InputValue = string | number | readonly string[] | undefined;
+
+interface RadioProps<V extends InputValue> {
+  name: string;
+  selected: V;
+  onSelect: (v: V) => void;
+}
+
+export function Radio<V extends InputValue = string>({
+  value,
+  children,
+  selected,
+  name = "",
+  onSelect = () => {},
+  disabled = false,
+  className = "",
+}: {
+  value: V;
+  children: React.ReactNode;
+  disabled?: boolean;
+  className?: string;
+} & Partial<RadioProps<V>>) {
+  return (
+    <label className="flex items-center">
+      <input
+        type="radio"
+        name={name}
+        value={value}
+        checked={selected === value}
+        onChange={() => onSelect(value)}
+        disabled={disabled}
+      />
+      <span className={`ml-1 ${className}`}>{children}</span>
+    </label>
+  );
+}
+
+export function RadioGroup<V extends InputValue>({
+  children,
+  className = "",
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & RadioProps<V>) {
+  return (
+    <div className={`flex flex-col gap-2 ${className}`}>
+      {Children.map(children, (child) =>
+        cloneElement(child as any, { ...props }),
+      )}
+    </div>
   );
 }

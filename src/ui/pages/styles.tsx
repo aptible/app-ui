@@ -16,6 +16,7 @@ import {
   Button,
   ButtonIcon,
   ButtonLink,
+  CheckBox,
   FormGroup,
   IconAlertTriangle,
   IconArrowLeft,
@@ -54,6 +55,8 @@ import {
   LogLine,
   OrgPicker,
   Pill,
+  Radio,
+  RadioGroup,
   Secret,
   Select,
   SelectOption,
@@ -61,6 +64,7 @@ import {
   TableHead,
   Tabs,
   Td,
+  TextArea,
   Tooltip,
   pillStyles,
   tokens,
@@ -241,20 +245,23 @@ const Forms = () => {
         options={options}
       />
       <p className="mt-4">
-        <input type="radio" key="service" value="radio" defaultChecked /> Radio
-        checked
+        <RadioGroup name="service" selected="cmd" onSelect={() => {}}>
+          <Radio value="unchecked">Radio unchecked</Radio>
+          <Radio value="cmd">
+            Docker <strong>CMD</strong>
+          </Radio>
+          <Radio value="disabled" disabled={true}>
+            Radio disabled
+          </Radio>
+        </RadioGroup>
       </p>
-      <p className="mt-4">
-        <input type="radio" key="service" value="radio" /> Radio unchecked
-      </p>
-      <p className="mt-4">
-        <input type="radio" key="service" value="radio" disabled /> Radio
-        disabled
-      </p>
-      <textarea
+
+      <TextArea
         className={`${tokens.type.textarea} mt-4`}
         defaultValue="Editable textarea"
       />
+
+      <CheckBox checked label="Some label" />
 
       <h3 className={tokens.type.h3}>Form Groups</h3>
 

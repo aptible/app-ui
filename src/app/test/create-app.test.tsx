@@ -10,7 +10,7 @@ import {
   testConfiguration,
   testDatabasePostgres,
   testEnv,
-  testUser,
+  testUserVerified,
 } from "@app/mocks";
 import { setupAppIntegrationTest, waitForToken } from "@app/test";
 import { rest } from "msw";
@@ -40,7 +40,7 @@ describe("Create App flow", () => {
           (_, res, ctx) => {
             return res(
               ctx.json({
-                _embedded: { users: [{ ...testUser, verified: true }] },
+                _embedded: { users: [testUserVerified] },
               }),
             );
           },

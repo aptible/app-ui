@@ -76,6 +76,9 @@ export const APP_ACTIVITY_PATH = `${APP_DETAIL_PATH}/activity`;
 export const appActivityUrl = (id: string) => `${appDetailUrl(id)}/activity`;
 export const APP_ENDPOINTS_PATH = `${APP_DETAIL_PATH}/endpoints`;
 export const appEndpointsUrl = (id: string) => `${appDetailUrl(id)}/endpoints`;
+export const APP_ENDPOINT_CREATE_PATH = `${APP_DETAIL_PATH}/endpoints/create`;
+export const appEndpointCreateUrl = (id: string) =>
+  `${appDetailUrl(id)}/endpoints/create`;
 export const APP_SETTINGS_PATH = `${APP_DETAIL_PATH}/settings`;
 export const appSettingsUrl = (id: string) => `${appDetailUrl(id)}/settings`;
 
@@ -104,6 +107,18 @@ export const databaseScaleUrl = (id: string) =>
 export const DATABASE_SETTINGS_PATH = `${DATABASE_DETAIL_PATH}/settings`;
 export const databaseSettingsUrl = (id: string) =>
   `${databaseDetailUrl(id)}/settings`;
+
+export const ENDPOINT_DETAIL_PATH = "/endpoints/:id";
+export const endpointDetailUrl = (id: string) => `/endpoints/${id}`;
+export const ENDPOINT_DETAIL_ACTIVITY_PATH = "/endpoints/:id/activity";
+export const endpointDetailActivityUrl = (id: string) =>
+  `${endpointDetailUrl(id)}/activity`;
+export const ENDPOINT_DETAIL_SETUP_PATH = "/endpoints/:id/setup";
+export const endpointDetailSetupUrl = (id: string) =>
+  `${endpointDetailUrl(id)}/setup`;
+export const ENDPOINT_DETAIL_SETTINGS_PATH = "/endpoints/:id/settings";
+export const endpointDetailSettingsUrl = (id: string) =>
+  `${endpointDetailUrl(id)}/settings`;
 
 export const DEPLOYMENTS_PATH = "/deployments";
 export const deploymentsUrl = () => DEPLOYMENTS_PATH;

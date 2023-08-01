@@ -17,10 +17,12 @@ import {
   testRedisDatabaseImage,
   testRole,
   testScanOperation,
+  testServiceRails,
   testSshKey,
   testStack,
   testToken,
   testUser,
+  testUserVerified,
 } from "./data";
 import {
   DeployAppResponse,
@@ -28,6 +30,7 @@ import {
   DeployEnvironmentResponse,
   DeployStackResponse,
   defaultDatabaseResponse,
+  defaultDeployCertificate,
   defaultOperationResponse,
 } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
@@ -56,7 +59,7 @@ const authHandlers = [
 
     return res(ctx.json(testUser));
   }),
-  rest.post(`${testEnv.authUrl}/users`, (req, res, ctx) => {
+  rest.post(`${testEnv.authUrl}/users`, (_, res, ctx) => {
     return res(ctx.json(testUser));
   }),
   rest.post(`${testEnv.authUrl}/organizations`, (req, res, ctx) => {
@@ -125,6 +128,21 @@ const authHandlers = [
     return res(ctx.status(204));
   }),
 ];
+
+export const verifiedUserHandlers = () => {
+  return [
+    rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (_, res, ctx) => {
+      return res(
+        ctx.json({
+          _embedded: [testUserVerified],
+        }),
+      );
+    }),
+    rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
+      return res(ctx.json(testUserVerified));
+    }),
+  ];
+};
 
 export const stacksWithResources = (
   {
@@ -438,6 +456,18 @@ const apiHandlers = [
 
     return res(ctx.json({ ...testPlan }));
   }),
+  rest.get(`${testEnv.apiUrl}/vhosts/:id`, (_, res, ctx) => {
+    return res(ctx.json(testEndpoint));
+  }),
+  rest.get(`${testEnv.apiUrl}/services/:id`, (_, res, ctx) => {
+    return res(ctx.json(testServiceRails));
+  }),
+  rest.post(
+    `${testEnv.apiUrl}/accounts/:id/certificates`,
+    async (_, res, ctx) => {
+      return res(ctx.json(defaultDeployCertificate({ id: `${createId()}` })));
+    },
+  ),
 ];
 
 export const handlers = [...authHandlers, ...apiHandlers];

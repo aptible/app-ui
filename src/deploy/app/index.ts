@@ -21,7 +21,7 @@ import {
   selectEnvironments,
   selectEnvironmentsByOrg,
 } from "../environment";
-import { deserializeImage } from "../image";
+import { defaultDeployImage, deserializeImage } from "../image";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { DeployServiceResponse } from "../service";
 import { selectDeploy } from "../slice";
@@ -119,7 +119,7 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
     status: "pending",
     environmentId: "",
     currentConfigurationId: "",
-    currentImage: null,
+    currentImage: defaultDeployImage(),
     lastDeployOperation: null,
     lastOperation: null,
     ...a,
@@ -244,6 +244,14 @@ export const selectAppsForTableSearch = createSelector(
     }
 
     return apps.filter((app) => computeSearchMatch(app, search));
+  },
+);
+
+export const selectAppByServiceId = createSelector(
+  selectAppsAsList,
+  (_: AppState, p: { serviceId: string }) => p.serviceId,
+  (apps, serviceId) => {
+    return apps.find((app) => app.serviceIds.includes(serviceId)) || initApp;
   },
 );
 

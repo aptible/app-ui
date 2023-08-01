@@ -1,5 +1,3 @@
-import { selectAppsByEnvId } from "../app";
-import { selectEndpointsByEnvironmentId } from "../endpoint";
 import { selectDeploy } from "../slice";
 import { api } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -137,6 +135,18 @@ export const fetchCertificatesByEnvironmentId = api.get<{ id: string }>(
   "/accounts/:id/certificates",
 );
 
+export const createCertificate = api.post<
+  { cert: string; privKey: string },
+  DeployCertificateResponse
+>("/accounts/:envId/certificates", function* (ctx, next) {
+  const body = JSON.stringify({
+    certificate_body: ctx.payload.cert,
+    private_key: ctx.payload.privKey,
+  });
+  ctx.request = ctx.req({ body });
+  yield* next();
+});
+
 export const certificateEntities = {
   certificate: defaultEntity({
     id: "certificate",
@@ -144,22 +154,3 @@ export const certificateEntities = {
     save: addDeployCertificates,
   }),
 };
-
-export const selectAppsByCertificateId = createSelector(
-  selectAppsByEnvId,
-  selectEndpointsByEnvironmentId,
-  (_: AppState, p: { certificateId: string }) => p.certificateId,
-  (apps, endpoints, certificateId) => {
-    const endpointsWithCertificates = endpoints.filter(
-      (endpoint) => endpoint.certificateId === certificateId,
-    );
-
-    return apps.filter((app) => {
-      return app.serviceIds.some((appServiceId) => {
-        return endpointsWithCertificates.find(
-          (endpoint) => endpoint.serviceId === appServiceId,
-        );
-      });
-    });
-  },
-);

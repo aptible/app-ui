@@ -53,3 +53,7 @@ export * from "./stack-detail-vpc-peering";
 export * from "./search";
 export * from "./create-project-name";
 export * from "./create-project-git-settings";
+export * from "./endpoint-detail";
+export * from "./endpoint-detail-setup";
+export * from "./endpoint-detail-activity";
+export * from "./endpoint-detail-settings";

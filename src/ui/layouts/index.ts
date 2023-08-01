@@ -11,3 +11,4 @@ export * from "./perm-required";
 export * from "./menu-wrapped-page";
 export * from "./stack-detail-layout";
 export * from "./create-project-layout";
+export * from "./endpoint-detail-layout";

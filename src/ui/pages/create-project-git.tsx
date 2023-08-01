@@ -24,7 +24,6 @@ import {
   selectEnvironmentById,
   selectFirstAppByEnvId,
   selectServiceById,
-  selectServicesByIds,
   serviceCommandText,
 } from "@app/deploy";
 import {
@@ -73,6 +72,7 @@ import {
   Button,
   ButtonLink,
   ButtonLinkExternal,
+  CreateAppEndpointSelector,
   ErrorResources,
   ExternalLink,
   FeedbackForm,
@@ -762,20 +762,19 @@ const Code = ({ children }: { children: React.ReactNode }) => {
 };
 
 const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
-  const services = useSelector((s: AppState) =>
-    selectServicesByIds(s, { ids: app.serviceIds }),
-  );
-  const vhosts = useSelector((s: AppState) =>
-    selectEndpointsByAppId(s, { id: app.id }),
-  );
   const dispatch = useDispatch();
   const [curServiceId, setServiceId] = useState("");
   const hasSelected = !!curServiceId;
-  const action = provisionEndpoint({ serviceId: curServiceId });
+  const vhosts = useSelector((s: AppState) =>
+    selectEndpointsByAppId(s, { id: app.id }),
+  );
+  const action = provisionEndpoint({
+    type: "default",
+    serviceId: curServiceId,
+    internal: false,
+    ipAllowlist: [],
+  });
   const loader = useLoader(action);
-  const onChange = (id: string) => {
-    setServiceId(id);
-  };
   const onClick = () => {
     dispatch(action);
   };
@@ -786,27 +785,14 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
 
   return (
     <div>
-      {services.map((service) => {
-        return (
-          <div key={service.id}>
-            <label>
-              <input
-                type="radio"
-                key="service"
-                value={service.id}
-                checked={curServiceId === service.id}
-                onChange={() => onChange(service.id)}
-                disabled={
-                  !!vhosts.find((vhost) => vhost.serviceId === service.id)
-                }
-              />
-              <span className="ml-1">
-                {service.processType} <Code>{serviceCommandText(service)}</Code>
-              </span>
-            </label>
-          </div>
-        );
-      })}
+      <CreateAppEndpointSelector
+        app={app}
+        selectedId={curServiceId}
+        onSelect={(id: string) => setServiceId(id)}
+        disabled={(service) =>
+          !!vhosts.find((vhost) => vhost.serviceId === service.id)
+        }
+      />
       <Button
         onClick={onClick}
         isLoading={loader.isLoading}
