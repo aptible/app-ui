@@ -57,3 +57,4 @@ export * from "./endpoint-detail";
 export * from "./endpoint-detail-setup";
 export * from "./endpoint-detail-activity";
 export * from "./endpoint-detail-settings";
+export * from "./home";
