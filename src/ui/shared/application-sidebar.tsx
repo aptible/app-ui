@@ -10,6 +10,7 @@ import {
   IconLayers,
   IconPlusCircle,
   IconSearch,
+  IconShield,
 } from "./icons";
 import {
   activityUrl,
@@ -20,6 +21,7 @@ import {
   environmentsUrl,
   searchUrl,
   stacksUrl,
+  securityDashboardUrl,
 } from "@app/routes";
 
 import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
@@ -44,6 +46,7 @@ export const ApplicationSidebar = () => {
     { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
+    { name: "Security & Compliance", to: securityDashboardUrl(), icon: <IconShield /> },
   ];
 
   useLayoutEffect(() => {

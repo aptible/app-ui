@@ -226,3 +226,6 @@ export const stackDetailVpcPeeringsUrl = (id: string) =>
 
 export const SEARCH_PATH = "/search";
 export const searchUrl = () => SEARCH_PATH;
+
+export const SECURITY_DASHBOARD_PATH = "/search";
+export const securityDashboardUrl = () => SECURITY_DASHBOARD_PATH;
