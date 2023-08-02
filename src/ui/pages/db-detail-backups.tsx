@@ -1,29 +1,18 @@
-import { useCache } from "@app/fx";
-import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 
-import type { HalEmbedded } from "@app/types";
+import { fetchDatabaseBackups, selectBackupsByDatabaseId } from "@app/deploy";
+import { useQuery } from "@app/fx";
+import { AppState } from "@app/types";
 
-import { EmptyResources, Loading } from "../shared";
-import { DatabaseBackupsList } from "../shared/db/backup-list";
-import { HalBackups, fetchDatabaseBackups } from "@app/deploy";
+import { DatabaseBackupsList } from "../shared";
 
 export const DatabaseBackupsPage = () => {
   const { id = "" } = useParams();
-  const query = useCache<HalEmbedded<HalBackups>>(fetchDatabaseBackups({ id }));
-  useEffect(() => {
-    query.trigger();
-  }, []);
+  useQuery(fetchDatabaseBackups({ id }));
+  const backups = useSelector((s: AppState) =>
+    selectBackupsByDatabaseId(s, { dbId: id }),
+  );
 
-  if (query.isInitialLoading) {
-    return <Loading />;
-  }
-
-  if (!query.data) {
-    return <EmptyResources />;
-  }
-
-  const { backups } = query.data._embedded;
-
-  return <DatabaseBackupsList query={query} backups={backups} />;
+  return <DatabaseBackupsList backups={backups} />;
 };

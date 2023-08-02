@@ -135,7 +135,7 @@ export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
     // resetStore will delete the token stored inside redux.
     ctx.actions.push(resetStore(), setLoaderSuccess({ id: AUTH_LOADER_ID }));
     yield* call(saveToken, ctx);
-    ctx.loader = { id: ctx.name, message: "Success" };
+    ctx.loader = { message: "Success" };
   },
 );
 

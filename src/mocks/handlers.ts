@@ -3,6 +3,7 @@ import {
   testAccount,
   testActivePlan,
   testApp,
+  testBackupRp,
   testCodeScanResult,
   testConfiguration,
   testDatabaseId,
@@ -466,6 +467,24 @@ const apiHandlers = [
     `${testEnv.apiUrl}/accounts/:id/certificates`,
     async (_, res, ctx) => {
       return res(ctx.json(defaultDeployCertificate({ id: `${createId()}` })));
+    },
+  ),
+  rest.get(`${testEnv.apiUrl}/accounts/:id/backups`, async (_, res, ctx) => {
+    return res(ctx.json({ backups: [] }));
+  }),
+  rest.get(
+    `${testEnv.apiUrl}/accounts/:id/backup_retention_policies`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json({ _embedded: { backup_retention_policies: [testBackupRp] } }),
+      );
+    },
+  ),
+  rest.post(
+    `${testEnv.apiUrl}/accounts/:id/backup_retention_policies`,
+    async (req, res, ctx) => {
+      const data = await req.json();
+      return res(ctx.json({ ...testBackupRp, ...data }));
     },
   ),
 ];

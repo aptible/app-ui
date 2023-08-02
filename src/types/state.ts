@@ -3,6 +3,8 @@ import type { QueryState } from "@app/fx";
 import type {
   DeployActivePlan,
   DeployApp,
+  DeployBackup,
+  DeployBackupRetentionPolicy,
   DeployCertificate,
   DeployContainer,
   DeployDatabase,
@@ -148,6 +150,8 @@ export interface DeployState {
   containers: MapEntity<DeployContainer>;
   vpc_peers: MapEntity<DeployVpcPeer>;
   vpn_tunnels: MapEntity<DeployVpnTunnel>;
+  backups: MapEntity<DeployBackup>;
+  backupRps: MapEntity<DeployBackupRetentionPolicy>;
 }
 
 export type MetricHorizons = "1h" | "1d" | "1w";

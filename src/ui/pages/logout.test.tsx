@@ -75,6 +75,8 @@ describe("LogoutPage", () => {
         containers: {},
         vpc_peers: {},
         vpn_tunnels: {},
+        backups: {},
+        backupRps: {},
       });
     });
   });

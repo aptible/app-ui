@@ -1,6 +1,7 @@
 import {
   defaultActivePlanResponse,
   defaultAppResponse,
+  defaultBackupRpResponse,
   defaultConfigurationResponse,
   defaultDatabaseImageResponse,
   defaultDatabaseResponse,
@@ -314,3 +315,14 @@ export const testOperations = [
   testDatabaseOp,
   testAppDeployOperation,
 ];
+
+export const testBackupRp = defaultBackupRpResponse({
+  id: createId(),
+  daily: 1,
+  monthly: 5,
+  keep_final: true,
+  make_copy: false,
+  _links: {
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccountId}`),
+  },
+});
