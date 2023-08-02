@@ -109,7 +109,7 @@ const BulletListForPlan = ({
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
         <div className="flex">
-          <div className="flex-1"></div>
+          <div className="flex-1" />
           <div className="flex-1 text-center font-semibold">Includes</div>
           <div className="flex-1 text-center font-semibold">Available</div>
         </div>
@@ -129,7 +129,10 @@ const BulletListForPlan = ({
           <div className="flex-1 text-center">1</div>
         </div>
         <ul>
-          <IconLi>Deploy on Shared Stacks (Networking and Compute shared with other Aptible customers)</IconLi>
+          <IconLi>
+            Deploy on Shared Stacks (Networking and Compute shared with other
+            Aptible customers)
+          </IconLi>
           <IconLi>Deploy in US East (N. Virginia)</IconLi>
         </ul>
       </>
@@ -139,7 +142,7 @@ const BulletListForPlan = ({
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
         <div className="flex">
-          <div className="flex-1"></div>
+          <div className="flex-1" />
           <div className="flex-1 text-center font-semibold">Includes</div>
           <div className="flex-1 text-center font-semibold">Available</div>
         </div>
@@ -160,7 +163,9 @@ const BulletListForPlan = ({
         </div>
         <ul>
           <IconLi>15% discount on included resources</IconLi>
-          <IconLi>Up to 2 concurrent SSH Sessions for temporary container access</IconLi>
+          <IconLi>
+            Up to 2 concurrent SSH Sessions for temporary container access
+          </IconLi>
           <IconLi>Deploy in 1 region (of your choice)</IconLi>
           <IconLi>Support: Choose from Standard or Premium</IconLi>
           <IconLi>Dedicated Stacks (Isolated Tenancy) Available</IconLi>
@@ -173,7 +178,7 @@ const BulletListForPlan = ({
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
         <div className="flex">
-          <div className="flex-1"></div>
+          <div className="flex-1" />
           <div className="flex-1 text-center font-semibold">Includes</div>
           <div className="flex-1 text-center font-semibold">Available</div>
         </div>
@@ -194,7 +199,9 @@ const BulletListForPlan = ({
         </div>
         <ul>
           <IconLi>20% discount on included resources</IconLi>
-          <IconLi>Up to 3 concurrent SSH Sessions for temporary container access</IconLi>
+          <IconLi>
+            Up to 3 concurrent SSH Sessions for temporary container access
+          </IconLi>
           <IconLi>Support: Choose from Standard or Premium</IconLi>
           <IconLi>Dedicated Stacks (Isolated Tenancy) Available</IconLi>
           <IconLi>Available HIPAA BAA</IconLi>
@@ -206,34 +213,45 @@ const BulletListForPlan = ({
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
         <div className="flex">
-            <div className="flex-1"></div>
-            <div className="flex-1 text-center font-semibold">Includes</div>
-            <div className="flex-1 text-center font-semibold">Available</div>
-          </div>
-          <div className="flex">
-            <div className="flex-1">Compute</div>
-            <div className="flex-1 text-center">Custom</div>
-            <div className="flex-1 text-center">Unlimited</div>
-          </div>
-          <div className="flex">
-            <div className="flex-1">DB Storage</div>
-            <div className="flex-1 text-center">Custom</div>
-            <div className="flex-1 text-center">Unlimited</div>
-          </div>
-          <div className="flex">
-            <div className="flex-1">Endpoints</div>
-            <div className="flex-1 text-center">Custom</div>
-            <div className="flex-1 text-center">Unlimited</div>
+          <div className="flex-1" />
+          <div className="flex-1 text-center font-semibold">Includes</div>
+          <div className="flex-1 text-center font-semibold">Available</div>
         </div>
-      <ul>
-        <IconLi>No limits on available Compute, Database Storage, or Endpoints</IconLi>
-        <IconLi>Deploy in 15+ Regions</IconLi>
-        <IconLi>99.95% Uptime SLA</IconLi>
-        <IconLi>Advanced Networking Features such as IPsec VPNs and VPC Peering</IconLi>
-        <IconLi>Available HITRUST Inheritance and Security & Compliance Dashboard</IconLi>
-        <IconLi>Support: Choose from Standard, Premium, Enterprise (24/7 Support)</IconLi>
-        <IconLi>Custom pricing and payment options with annual commitments and payments</IconLi>
-      </ul>
+        <div className="flex">
+          <div className="flex-1">Compute</div>
+          <div className="flex-1 text-center">Custom</div>
+          <div className="flex-1 text-center">Unlimited</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">DB Storage</div>
+          <div className="flex-1 text-center">Custom</div>
+          <div className="flex-1 text-center">Unlimited</div>
+        </div>
+        <div className="flex">
+          <div className="flex-1">Endpoints</div>
+          <div className="flex-1 text-center">Custom</div>
+          <div className="flex-1 text-center">Unlimited</div>
+        </div>
+        <ul>
+          <IconLi>
+            No limits on available Compute, Database Storage, or Endpoints
+          </IconLi>
+          <IconLi>Deploy in 15+ Regions</IconLi>
+          <IconLi>99.95% Uptime SLA</IconLi>
+          <IconLi>
+            Advanced Networking Features such as IPsec VPNs and VPC Peering
+          </IconLi>
+          <IconLi>
+            Available HITRUST Inheritance and Security & Compliance Dashboard
+          </IconLi>
+          <IconLi>
+            Support: Choose from Standard, Premium, Enterprise (24/7 Support)
+          </IconLi>
+          <IconLi>
+            Custom pricing and payment options with annual commitments and
+            payments
+          </IconLi>
+        </ul>
       </>
     );
   }
