@@ -2261,7 +2261,7 @@ __metadata:
     redux-batched-actions: ^0.5.0
     redux-persist: ^6.0.0
     rome: ^12.1.1
-    saga-query: ^7.2.1
+    saga-query: ^7.2.2
     tailwindcss: ^3.3.2
     typescript: ^5.0.4
     vite: ^4.3.9
@@ -5503,9 +5503,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"saga-query@npm:^7.2.1":
-  version: 7.2.1
-  resolution: "saga-query@npm:7.2.1"
+"saga-query@npm:^7.2.2":
+  version: 7.2.2
+  resolution: "saga-query@npm:7.2.2"
   dependencies:
     redux: ^4.1.2
     redux-batched-actions: ^0.5.0
@@ -5523,7 +5523,7 @@ __metadata:
       optional: true
     react-redux:
       optional: true
-  checksum: 6a5f423e1a7d3efd85bc84ae528e511c008e7a11e114e22507123d03c2619393ddee78a3f082c2c5c25361b8705756b95f83131c83b4d2f367fb766b4978f2b8
+  checksum: 5815fcfc4bfb5136d7b80c5ede26eba70f6bf6cab970f6b9ea9392e81a2018093e001f1c68fbeca8002be23beb8ac897361b4b8328a991666a096bb9533641fb
   languageName: node
   linkType: hard
 
