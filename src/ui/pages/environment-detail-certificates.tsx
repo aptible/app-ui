@@ -148,7 +148,7 @@ const CertificateStatusCell = ({
   return (
     <Td className="flex-1">
       <div className="flex">
-        <div className="leading-4 flex flex-col gap-2">
+        <div className="leading-4 flex flex-row">
           <CertificateTrustedPill certificate={certificate} />
           <ManagedHTTPSPill certificate={certificate} />
         </div>
