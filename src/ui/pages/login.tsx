@@ -111,7 +111,7 @@ export const LoginPage = () => {
       </div>
 
       <div className="mt-8">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-black-100">
+        <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
           <form className="space-y-4" onSubmit={onSubmit}>
             {isOtpRequired ? (
               <BannerMessages
