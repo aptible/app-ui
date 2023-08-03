@@ -20,7 +20,7 @@ function GenericErrorFallback({ error }: { error: Error | string }) {
   return (
     <HeroBgLayout>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md h-screen">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white py-8 px-10 shadow rounded-lg">
           <h1 className="text-lg font-semibold text-red mb-">
             <IconAlertTriangle
               className="inline -mt-1 mr-2"
