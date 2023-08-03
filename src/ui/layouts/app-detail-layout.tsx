@@ -19,6 +19,7 @@ import {
   appSettingsUrl,
   environmentAppsUrl,
 } from "@app/routes";
+import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
 
 import { usePoller } from "../hooks";
