@@ -58,9 +58,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
         <div className="hidden md:block" />
         <DetailInfoItem title="Last Deployed">
           {app.lastDeployOperation
-            ? `${capitalize(
-                app.lastDeployOperation.type,
-              )} on ${prettyEnglishDate(app.lastDeployOperation?.createdAt)}`
+            ? `${prettyEnglishDate(app.lastDeployOperation?.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
         <DetailInfoItem title="Docker Image">
