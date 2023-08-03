@@ -122,7 +122,7 @@ export const AppCreateEndpointPage = () => {
 
   return (
     <div className="bg-white py-10 px-10 shadow border border-black-100 rounded-lg">
-      <h1 class="text-lg text-black font-semibold">Create Endpoint</h1>
+      <h1 className="text-lg text-black font-semibold">Create Endpoint</h1>
       <div className="mt-2 mb-4 text-black-500">
         This Endpoint will accept HTTP and HTTPS traffic and route it to your
         app over HTTP.
