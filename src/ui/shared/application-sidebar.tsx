@@ -20,8 +20,8 @@ import {
   deploymentsUrl,
   environmentsUrl,
   searchUrl,
-  stacksUrl,
   securityDashboardUrl,
+  stacksUrl,
 } from "@app/routes";
 
 import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
@@ -46,7 +46,11 @@ export const ApplicationSidebar = () => {
     { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
-    { name: "Security & Compliance", to: securityDashboardUrl(), icon: <IconShield /> },
+    {
+      name: "Security & Compliance",
+      to: securityDashboardUrl(),
+      icon: <IconShield />,
+    },
   ];
 
   useLayoutEffect(() => {
