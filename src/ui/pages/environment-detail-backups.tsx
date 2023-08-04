@@ -1,27 +1,26 @@
-import { useCache } from "@app/fx";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 
-import type { HalEmbedded } from "@app/types";
+import {
+  fetchDatabaseBackupsByEnvironment,
+  selectBackupsByEnvId,
+} from "@app/deploy";
+import { useQuery } from "@app/fx";
+import type { AppState } from "@app/types";
 
-import { EmptyResources, Loading } from "../shared";
-import { DatabaseBackupsList } from "../shared/db/backup-list";
-import { HalBackups, fetchDatabaseBackupsByEnvironment } from "@app/deploy";
+import { BackupRpView, DatabaseBackupsList } from "../shared";
 
 export const EnvironmentBackupsPage = () => {
   const { id = "" } = useParams();
-  const query = useCache<HalEmbedded<HalBackups>>(
-    fetchDatabaseBackupsByEnvironment({ id }),
+  useQuery(fetchDatabaseBackupsByEnvironment({ id }));
+  const backups = useSelector((s: AppState) =>
+    selectBackupsByEnvId(s, { envId: id }),
   );
 
-  if (query.isInitialLoading) {
-    return <Loading />;
-  }
-
-  if (!query.data) {
-    return <EmptyResources />;
-  }
-
-  const { backups } = query.data._embedded;
-
-  return <DatabaseBackupsList query={query} backups={backups} />;
+  return (
+    <div className="flex flex-col gap-2">
+      <BackupRpView envId={id} />
+      <DatabaseBackupsList backups={backups} />
+    </div>
+  );
 };

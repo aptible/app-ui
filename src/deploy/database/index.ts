@@ -75,24 +75,6 @@ export interface DeployDatabaseResponse {
   _type: "database";
 }
 
-export interface BackupResponse {
-  id: number;
-  aws_region: string;
-  created_by_email: string;
-  manual: boolean;
-  size: number;
-  _embedded: {
-    copied_from?: {
-      id: number;
-    };
-  };
-  created_at: string;
-}
-
-export interface HalBackups {
-  backups: BackupResponse[];
-}
-
 export const defaultDatabaseResponse = (
   d: Partial<DeployDatabaseResponse> = {},
 ): DeployDatabaseResponse => {
@@ -507,17 +489,6 @@ export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
 export const pollDatabaseOperations = api.get<{ id: string }>(
   ["/databases/:id/operations", "poll"],
   { saga: poll(5 * 1000, `${cancelDatabaseOpsPoll}`) },
-  api.cache(),
-);
-
-export const fetchDatabaseBackups = api.get<{ id: string }>(
-  "/databases/:id/backups",
-  { saga: cacheTimer() },
-  api.cache(),
-);
-export const fetchDatabaseBackupsByEnvironment = api.get<{ id: string }>(
-  "/accounts/:id/backups",
-  { saga: cacheTimer() },
   api.cache(),
 );
 

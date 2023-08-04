@@ -472,3 +472,26 @@ export interface DeployVpnTunnel extends Timestamps {
   stackId: string;
   updatedAt: string;
 }
+
+export interface DeployBackup {
+  id: string;
+  awsRegion: string;
+  createdByEmail: string;
+  manual: boolean;
+  size: number;
+  createdAt: string;
+  copiedFromId: string;
+  environmentId: string;
+  databaseId: string;
+  createdFromOperationId: string;
+}
+
+export interface DeployBackupRetentionPolicy {
+  id: string;
+  daily: number;
+  monthly: number;
+  makeCopy: boolean;
+  keepFinal: boolean;
+  environmentId: string;
+  createdAt: string;
+}

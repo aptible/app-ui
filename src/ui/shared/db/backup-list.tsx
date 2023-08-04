@@ -1,19 +1,20 @@
-import { ReactElement } from "react";
-
-import {
-  InputSearch,
-  LoadResources,
-  ResourceListView,
-  TableHead,
-  Td,
-  tokens,
-} from "../";
-import { prettyEnglishDateWithTime } from "@app/date";
-import { BackupResponse } from "@app/deploy";
-import { LoadingState } from "@app/fx";
-import { capitalize } from "@app/string-utils";
 import cn from "classnames";
-import { useSearchParams } from "react-router-dom";
+import { ReactElement } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { useLoader } from "saga-query/react";
+
+import { prettyEnglishDateWithTime } from "@app/date";
+import { deleteBackup, selectDatabaseById } from "@app/deploy";
+import { databaseDetailUrl, operationDetailUrl } from "@app/routes";
+import { capitalize } from "@app/string-utils";
+import { AppState, DeployBackup } from "@app/types";
+
+import { BannerMessages } from "../banner";
+import { ButtonDestroy } from "../button";
+import { ResourceListView } from "../resource-list-view";
+import { TableHead, Td } from "../table";
+import { tokens } from "../tokens";
 
 const BackupTypePill = ({ manual }: { manual: boolean }): ReactElement => {
   const className = cn(
@@ -36,35 +37,45 @@ const BackupTypePill = ({ manual }: { manual: boolean }): ReactElement => {
   );
 };
 
-const backupListRow = ({
+const DeleteBackup = ({ envId, id }: { envId: string; id: string }) => {
+  const dispatch = useDispatch();
+  const action = deleteBackup({ id });
+  const loader = useLoader(action);
+  const onClick = () => {
+    dispatch(action);
+  };
+
+  return (
+    <ButtonDestroy
+      envId={envId}
+      variant="delete"
+      size="sm"
+      onClick={onClick}
+      isLoading={loader.isLoading}
+    >
+      Delete
+    </ButtonDestroy>
+  );
+};
+
+const BackupListRow = ({
   backup,
 }: {
-  backup: BackupResponse;
-}): ReactElement => {
+  backup: DeployBackup;
+}) => {
+  const db = useSelector((s: AppState) =>
+    selectDatabaseById(s, { id: backup.databaseId }),
+  );
+  const createdByOpId = backup.createdFromOperationId;
+
   return (
     <tr className="group hover:bg-gray-50" key={`${backup.id}`}>
-      <Td className="flex-1 pl-4">
-        <div className={tokens.type.darker}>
-          {prettyEnglishDateWithTime(backup.created_at)}
-        </div>
-        <div className={tokens.type["normal lighter"]}>ID: {backup.id}</div>
+      <Td>
+        <div className={tokens.type["normal lighter"]}>{backup.id}</div>
       </Td>
 
-      <Td className="flex-1">
-        <div className="text-gray-900">{backup.size} GB</div>
-      </Td>
-
-      <Td className="flex-1">
-        <div className="text-gray-900">{backup.created_by_email}</div>
-      </Td>
-
-      <Td className="flex-1">
-        <div className="text-gray-900">
-          {backup.aws_region
-            .split("-")
-            .map((s) => capitalize(s))
-            .join("-")}
-        </div>
+      <Td>
+        <Link to={databaseDetailUrl(backup.databaseId)}>{db.handle}</Link>
       </Td>
 
       <Td className="flex-1">
@@ -72,71 +83,80 @@ const backupListRow = ({
           <BackupTypePill manual={backup.manual} />
         </div>
       </Td>
+
+      <Td className="flex-1">
+        <div className="text-gray-900">{backup.size} GB</div>
+      </Td>
+
+      <Td className="flex-1">
+        <div className="text-gray-900">
+          {backup.awsRegion
+            .split("-")
+            .map((s) => capitalize(s))
+            .join("-")}
+        </div>
+      </Td>
+
+      <Td className="flex-1 pl-4">
+        <div className={tokens.type.darker}>
+          {prettyEnglishDateWithTime(backup.createdAt)}
+        </div>
+      </Td>
+
+      <Td className="flex-1">
+        <div className="text-gray-900">{backup.createdByEmail}</div>
+      </Td>
+
+      <Td className="flex-1">
+        <div className="text-gray-900">
+          <Link to={operationDetailUrl(createdByOpId)}>{createdByOpId}</Link>
+        </div>
+      </Td>
+
+      <Td>
+        <DeleteBackup id={backup.id} envId={backup.environmentId} />
+      </Td>
     </tr>
   );
 };
 
 export const DatabaseBackupsList = ({
   backups,
-  query,
 }: {
-  backups: BackupResponse[];
-  query: LoadingState;
+  backups: DeployBackup[];
 }) => {
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value });
-  };
-
-  // const sortIconProps = {
-  //   className: "inline",
-  //   color: "#6b7280",
-  //   style: { width: 14, height: 14 },
-  // };
+  const loader = useLoader(deleteBackup);
 
   return (
-    <LoadResources query={query} isEmpty={backups.length === 0}>
-      <div className="">
-        <div className="flex mt-2">
-          <InputSearch
-            className="mb-2"
-            placeholder="Search backups..."
-            search={search}
-            onChange={onChange}
+    <div className="my-4">
+      <div className="mb-4">
+        <BannerMessages {...loader} />
+      </div>
+
+      <ResourceListView
+        tableHeader={
+          <TableHead
+            headers={[
+              "ID",
+              "Database",
+              "Type",
+              "Size",
+              "Region",
+              "Created At",
+              "Creator",
+              "Created from Operation",
+              "Actions",
+            ]}
           />
-        </div>
-        {/* <div className="text-sm text-gray-500 mt-4 select-none">
-          <div className="ml-5 cursor-pointer inline">
-            Older than: <IconChevronDown {...sortIconProps} />
-          </div>
-          <div className="ml-5 cursor-pointer inline">
-            Size: All <IconChevronDown {...sortIconProps} />
-          </div>
-          <div className="ml-5 cursor-pointer inline">
-            Status: All <IconChevronDown {...sortIconProps} />
-          </div>
-          <div className="ml-5 cursor-pointer inline">
-            Region: All <IconChevronDown {...sortIconProps} />
-          </div>
-          <div className="ml-5 cursor-pointer inline">
-            Retention: Manual <IconChevronDown {...sortIconProps} />
-          </div>
-          <div className="ml-5 cursor-pointer inline">
-            Source: Originals <IconChevronDown {...sortIconProps} />
-          </div>
-        </div> */}
-      </div>
-      <div className="my-4">
-        <ResourceListView
-          tableHeader={
-            <TableHead
-              headers={["Time", "Size", "Creator", "Region", "Type"]}
-            />
-          }
-          tableBody={<>{backups.map((backup) => backupListRow({ backup }))}</>}
-        />
-      </div>
-    </LoadResources>
+        }
+        tableBody={
+          <>
+            {backups.map((backup) => (
+              <BackupListRow key={backup.id} backup={backup} />
+            ))}
+          </>
+        }
+      />
+    </div>
   );
 };

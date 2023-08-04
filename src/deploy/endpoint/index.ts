@@ -404,7 +404,7 @@ export const deprovisionEndpoint = api.post<
     return;
   }
 
-  ctx.loader = { id: ctx.key, meta: { opId: ctx.json.data.id } };
+  ctx.loader = { meta: { opId: ctx.json.data.id } };
 });
 
 export const provisionEndpoint = thunks.create<CreateEndpointProps>(
@@ -490,7 +490,7 @@ export const renewEndpoint = api.post<{ id: string }, DeployOperationResponse>(
       return;
     }
 
-    ctx.loader = { id: ctx.key, meta: { opId: ctx.json.data.id } };
+    ctx.loader = { meta: { opId: ctx.json.data.id } };
   },
 );
 

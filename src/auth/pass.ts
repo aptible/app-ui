@@ -23,7 +23,6 @@ export const forgotPass = authApi.post<{ email: string }>(
 
     if (!ctx.json.ok) {
       ctx.loader = {
-        id: ctx.name,
         message: `Error! Unable to submit request to reset your password: ${ctx.json.data.message}
         `,
       };
@@ -31,7 +30,6 @@ export const forgotPass = authApi.post<{ email: string }>(
     }
 
     ctx.loader = {
-      id: ctx.name,
       message: "Success! Check your email to change your password.",
     };
   },

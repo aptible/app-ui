@@ -346,7 +346,7 @@ export const createDeployApp = api.post<CreateAppProps, DeployAppResponse>(
       return;
     }
 
-    ctx.loader = { id: ctx.key, meta: { appId: ctx.json.data.id } };
+    ctx.loader = { meta: { appId: ctx.json.data.id } };
   },
 );
 
