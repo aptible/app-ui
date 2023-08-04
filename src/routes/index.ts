@@ -227,5 +227,4 @@ export const stackDetailVpcPeeringsUrl = (id: string) =>
 export const SEARCH_PATH = "/search";
 export const searchUrl = () => SEARCH_PATH;
 
-export const securityDashboardUrl = () =>
-  "https://dashboard.aptible.com/controls";
+export const securityDashboardUrl = (prefix: string) => `${prefix}/controls`;

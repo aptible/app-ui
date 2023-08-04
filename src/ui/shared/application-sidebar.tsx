@@ -1,4 +1,7 @@
+import { useLayoutEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 import {
   IconBox,
@@ -12,6 +15,8 @@ import {
   IconSearch,
   IconShield,
 } from "./icons";
+import { selectEnv } from "@app/env";
+import { selectNav, setCollapsed } from "@app/nav";
 import {
   activityUrl,
   appsUrl,
@@ -29,12 +34,9 @@ import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import { OrgPicker } from "./org-picker";
 import { UserMenu } from "./user-menu";
-import { selectNav, setCollapsed } from "@app/nav";
-import { useLayoutEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 
 export const ApplicationSidebar = () => {
+  const env = useSelector(selectEnv);
   const dispatch = useDispatch();
   const { collapsed } = useSelector(selectNav);
 
@@ -48,7 +50,7 @@ export const ApplicationSidebar = () => {
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
     {
       name: "Security & Compliance",
-      to: securityDashboardUrl(),
+      to: securityDashboardUrl(env.legacyDashboardUrl),
       icon: <IconShield />,
     },
   ];
