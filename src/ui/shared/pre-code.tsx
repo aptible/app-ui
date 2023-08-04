@@ -45,7 +45,7 @@ export const PreCode = ({
   return (
     <div className="relative">
       <code
-        className={`p-4 rounded-lg text-sm pr-14 overflow-x-auto block [overflow-wrap:anywhere] ${className}`}
+        className={`p-4 rounded-lg text-sm pr-14 overflow-x-auto block ${className}`}
       >
         {segments.map(({ text, className }, idx) => {
           return (
