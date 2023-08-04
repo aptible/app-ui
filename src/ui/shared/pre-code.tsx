@@ -44,8 +44,8 @@ export const PreCode = ({
 
   return (
     <div className="relative">
-      <pre
-        className={`p-4 rounded-lg text-sm pr-14 overflow-x-auto ${className}`}
+      <code
+        className={`p-4 rounded-lg text-sm pr-14 overflow-x-auto block ${className}`}
       >
         {segments.map(({ text, className }, idx) => {
           return (
@@ -55,7 +55,7 @@ export const PreCode = ({
             </span>
           );
         })}
-      </pre>
+      </code>
       {allowCopy ? (
         <div
           title="Copy to clipboard"
