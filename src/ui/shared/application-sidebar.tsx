@@ -1,4 +1,7 @@
+import { useLayoutEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 import {
   IconBox,
@@ -10,7 +13,10 @@ import {
   IconLayers,
   IconPlusCircle,
   IconSearch,
+  IconShield,
 } from "./icons";
+import { selectEnv } from "@app/env";
+import { selectNav, setCollapsed } from "@app/nav";
 import {
   activityUrl,
   appsUrl,
@@ -19,6 +25,7 @@ import {
   deploymentsUrl,
   environmentsUrl,
   searchUrl,
+  securityDashboardUrl,
   stacksUrl,
 } from "@app/routes";
 
@@ -27,12 +34,9 @@ import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import { OrgPicker } from "./org-picker";
 import { UserMenu } from "./user-menu";
-import { selectNav, setCollapsed } from "@app/nav";
-import { useLayoutEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 
 export const ApplicationSidebar = () => {
+  const env = useSelector(selectEnv);
   const dispatch = useDispatch();
   const { collapsed } = useSelector(selectNav);
 
@@ -44,6 +48,11 @@ export const ApplicationSidebar = () => {
     { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
+    {
+      name: "Security & Compliance",
+      to: securityDashboardUrl(env.legacyDashboardUrl),
+      icon: <IconShield />,
+    },
   ];
 
   useLayoutEffect(() => {

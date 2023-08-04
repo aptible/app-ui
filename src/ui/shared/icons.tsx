@@ -361,3 +361,11 @@ export const IconMetrics = (props: Props) => {
     </IconStrokeBase>
   );
 };
+
+export const IconShield = (props: Props) => {
+  return (
+    <IconStrokeBase {...props} title="Shield Icon">
+      <path d="M9 12.0013L11 14.0013L15 10.0013M20.618 5.98531C17.4561 6.15323 14.3567 5.05993 12 2.94531C9.64327 5.05993 6.5439 6.15323 3.382 5.98531C3.12754 6.97043 2.99918 7.98386 3 9.00131C3 14.5923 6.824 19.2913 12 20.6233C17.176 19.2913 21 14.5933 21 9.00131C21 7.95931 20.867 6.94931 20.618 5.98531Z" />
+    </IconStrokeBase>
+  );
+};
