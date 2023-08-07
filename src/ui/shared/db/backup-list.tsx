@@ -83,7 +83,12 @@ const BackupListRow = ({
       </Td>
 
       <Td>
-        <Link to={databaseDetailUrl(backup.databaseId)}>{db.handle}</Link>
+        <Link
+          className="text-black group-hover:text-indigo hover:text-indigo"
+          to={databaseDetailUrl(backup.databaseId)}
+        >
+          {db.handle}
+        </Link>
       </Td>
 
       <Td className="flex-1">
@@ -117,15 +122,20 @@ const BackupListRow = ({
 
       <Td className="flex-1">
         <div className="text-gray-900">
-          <Link to={operationDetailUrl(createdByOpId)}>{createdByOpId}</Link>
+          <Link
+            className="text-black group-hover:text-indigo hover:text-indigo"
+            to={operationDetailUrl(createdByOpId)}
+          >
+            {createdByOpId}
+          </Link>
         </div>
       </Td>
 
-      <Td className="flex gap-2">
-        <DeleteBackup id={backup.id} envId={backup.environmentId} />
+      <Td className="flex gap-2 justify-end mr-4">
         <ButtonCreate envId={backup.environmentId} onClick={onClone} size="sm">
           Clone
         </ButtonCreate>
+        <DeleteBackup id={backup.id} envId={backup.environmentId} />
       </Td>
     </tr>
   );
@@ -155,9 +165,10 @@ export const DatabaseBackupsList = ({
               "Region",
               "Created At",
               "Creator",
-              "Created from Operation",
+              "Operation ID",
               "Actions",
             ]}
+            rightAlignedFinalCol
           />
         }
         tableBody={

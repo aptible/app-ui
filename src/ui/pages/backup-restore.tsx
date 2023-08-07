@@ -94,34 +94,44 @@ export const BackupRestorePage = () => {
 
   return (
     <MenuWrappedPage>
-      <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <div>
-          <h2 className={tokens.type.h2}>Create Database from Backup</h2>
-
+      <div className="bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div>
-            <Link to={databaseBackupsUrl(db.id)}>
-              {db.handle} (backup from: {prettyDateTime(backup.createdAt)})
-            </Link>
+            <h2 className={tokens.type.h2}>Create Database from Backup</h2>
+
+            <div>
+              <Link to={databaseBackupsUrl(db.id)}>
+                {db.handle} (backup from: {prettyDateTime(backup.createdAt)})
+              </Link>
+            </div>
           </div>
-        </div>
 
-        <FormGroup label="Environment" htmlFor="env-selector">
-          <EnvironmentSelect onSelect={onSelect} defaultValue={defaultValue} />
-        </FormGroup>
+          <FormGroup label="Environment" htmlFor="env-selector">
+            <EnvironmentSelect
+              onSelect={onSelect}
+              defaultValue={defaultValue}
+            />
+          </FormGroup>
 
-        <DatabaseNameInput
-          value={name}
-          onChange={(n) => setName(n)}
-          feedbackMessage={errors.handle}
-          feedbackVariant={errors.handle ? "danger" : "info"}
-        />
+          <DatabaseNameInput
+            value={name}
+            onChange={(n) => setName(n)}
+            feedbackMessage={errors.handle}
+            feedbackVariant={errors.handle ? "danger" : "info"}
+          />
 
-        <BannerMessages {...loader} />
+          <BannerMessages {...loader} />
 
-        <ButtonCreate type="submit" envId={inpEnv} isLoading={loader.isLoading}>
-          Create Database
-        </ButtonCreate>
-      </form>
+          <ButtonCreate
+            className="w-[200px]"
+            type="submit"
+            envId={inpEnv}
+            isLoading={loader.isLoading}
+          >
+            Create Database
+          </ButtonCreate>
+        </form>
+      </div>
     </MenuWrappedPage>
   );
 };
