@@ -14,7 +14,7 @@ export const Td = ({ children, className }: CellProps) => {
   const classes = cn(
     tokens.type["small lighter"],
     "pl-4 py-3",
-    "whitespace-nowrap",
+    "break-words",
     className,
   );
   return <td className={classes}>{children}</td>;
