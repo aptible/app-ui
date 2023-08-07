@@ -10,7 +10,7 @@ import {
 import { useQuery } from "@app/fx";
 import { AppState, MetricHorizons } from "@app/types";
 
-import { IconRefresh, Loading } from "../shared";
+import { Loading, LoadingSpinner } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
@@ -98,9 +98,7 @@ export function AppDetailServicePage() {
         {loader.isLoading ? (
           <div className="flex gap-2">
             <span className="text-black-500">{pct}%</span>
-            <div className="animate-spin-slow 5s">
-              <IconRefresh color="#595E63" />
-            </div>
+            <LoadingSpinner color="#595E63" />
           </div>
         ) : null}
       </div>

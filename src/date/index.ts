@@ -92,6 +92,10 @@ export const prettyDateTime = (dateStr = "") => {
   return format(new Date(dateStr), "yyyy-MM-dd hh:mm:ss aaa");
 };
 
+export const prettyDateTimeForBackups = (dateStr = "") => {
+  return format(new Date(dateStr), "yyyy-MM-dd-hh-mm-ss");
+};
+
 export const prettyDate = (dateStr = "") => {
   return format(new Date(dateStr), "yyyy-MM-dd");
 };

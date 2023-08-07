@@ -1,4 +1,5 @@
-import { createSelector } from "@reduxjs/toolkit";
+import { createAction, createSelector } from "@reduxjs/toolkit";
+import { poll } from "saga-query";
 
 import { api } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -7,6 +8,7 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
+import { dateDescSort } from "@app/sort";
 import {
   AppState,
   DeployBackup,
@@ -79,7 +81,8 @@ export const deserializeDeployBackup = (b: BackupResponse): DeployBackup => {
 
 export const DEPLOY_BACKUP_NAME = "backups";
 const slice = createTable<DeployBackup>({ name: DEPLOY_BACKUP_NAME });
-export const { add: addDeployBackups } = slice.actions;
+export const { add: addDeployBackups, remove: removeDeployBackups } =
+  slice.actions;
 export const hasDeployBackup = (a: DeployBackup) => a.id !== "";
 export const backupReducers = createReducerMap(slice);
 
@@ -98,13 +101,15 @@ export const {
 export const selectBackupsByEnvId = createSelector(
   selectBackupsAsList,
   (_: AppState, p: { envId: string }) => p.envId,
-  (backups, envId) => backups.filter((bk) => bk.environmentId === envId),
+  (backups, envId) =>
+    backups.filter((bk) => bk.environmentId === envId).sort(dateDescSort),
 );
 
 export const selectBackupsByDatabaseId = createSelector(
   selectBackupsAsList,
   (_: AppState, p: { dbId: string }) => p.dbId,
-  (backups, envId) => backups.filter((bk) => bk.databaseId === envId),
+  (backups, envId) =>
+    backups.filter((bk) => bk.databaseId === envId).sort(dateDescSort),
 );
 
 export const backupEntities = {
@@ -118,11 +123,19 @@ export const backupEntities = {
 export const fetchDatabaseBackups = api.get<{ id: string }>(
   "/databases/:id/backups",
 );
+export const cancelPollDatabaseBackups = createAction("cancel-poll-db-backups");
+export const pollDatabaseBackups = api.get<{ id: string }>(
+  ["/databases/:id/backups", "poll"],
+  { saga: poll(5 * 1000, `${cancelPollDatabaseBackups}`) },
+);
+
+export const fetchBackup = api.get<{ id: string }>("/backups/:id");
+
 export const fetchDatabaseBackupsByEnvironment = api.get<{ id: string }>(
   "/accounts/:id/backups",
 );
 export const deleteBackup = api.post<{ id: string }, DeployOperationResponse>(
-  "/backups/:id/operations",
+  ["/backups/:id/operations", "delete"],
   function* (ctx, next) {
     const body = {
       type: "purge",
@@ -139,5 +152,40 @@ export const deleteBackup = api.post<{ id: string }, DeployOperationResponse>(
       message: `Backup operation queued (operation ID: ${opId})`,
       meta: { opId: `${opId}` },
     };
+    ctx.actions.push(removeDeployBackups([ctx.payload.id]));
   },
 );
+
+export interface RestoreBackupProps {
+  id: string;
+  handle: string;
+  destEnvId: string;
+  diskSize?: number;
+  containerSize?: number;
+}
+
+export const restoreBackup = api.post<
+  RestoreBackupProps,
+  DeployOperationResponse
+>(["/backups/:id/operations", "restore"], function* (ctx, next) {
+  const { handle, destEnvId, diskSize, containerSize } = ctx.payload;
+  const body = {
+    type: "restore",
+    handle,
+    destination_account_id: destEnvId,
+    disk_size: diskSize || 10,
+    containerSize: containerSize || 1024,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Restore from Backup operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});

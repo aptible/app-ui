@@ -32,9 +32,10 @@ import type { AppState, ResourceType } from "@app/types";
 
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
-import { IconInfo, IconRefresh } from "./icons";
+import { IconInfo } from "./icons";
 import { InputSearch } from "./input";
 import { LoadResources } from "./load-resources";
+import { LoadingSpinner } from "./loading";
 import { OpStatus } from "./op-status";
 import { ResourceHeader, ResourceListView } from "./resource-list-view";
 import { EnvStackCell } from "./resource-table";
@@ -193,14 +194,7 @@ function ActivityTable({
                 search={search}
                 onChange={onChange}
               />
-              {isLoading ? (
-                <div className="animate-spin-slow 5s">
-                  <IconRefresh
-                    color="#111920"
-                    style={{ width: 14, height: 14 }}
-                  />
-                </div>
-              ) : null}
+              {isLoading ? <LoadingSpinner /> : null}
             </div>
             <div className="flex">
               <p className="flex text-gray-500 mt-4 text-base">

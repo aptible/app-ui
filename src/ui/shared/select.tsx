@@ -33,6 +33,7 @@ export function Select({
   );
   return (
     <select
+      id="env-selector"
       aria-label={ariaLabel}
       className={finClassName}
       value={value?.value}

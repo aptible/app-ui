@@ -13,6 +13,7 @@ import {
   AppSettingsPage,
   AppsPage,
   AuthRequired,
+  BackupRestorePage,
   BillingMethodPage,
   CreateDatabasePage,
   CreateOrgPage,
@@ -204,6 +205,11 @@ export const appRoutes: RouteObject[] = [
             ],
           },
         ],
+      },
+
+      {
+        path: routes.BACKUP_RESTORE_PATH,
+        element: <BackupRestorePage />,
       },
 
       {

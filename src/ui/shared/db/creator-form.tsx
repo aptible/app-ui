@@ -4,9 +4,10 @@ import { useSearchParams } from "react-router-dom";
 import { DbCreatorProps } from "@app/deploy";
 import { idCreator } from "@app/id";
 import { DeployDatabaseImage } from "@app/types";
+import { dbNameValidator } from "@app/validator";
 
 import { Button } from "../button";
-import { FormGroup } from "../form-group";
+import { FeedbackVariant, FormGroup } from "../form-group";
 import { IconPlusCircle } from "../icons";
 import { Input } from "../input";
 import { Select, SelectOption } from "../select";
@@ -56,26 +57,37 @@ export function dbSelectorReducer<P extends { id: string }>(
 }
 
 export const validateDbName = (item: DbCreatorProps) => {
-  if (!/^[0-9a-z._-]{1,64}$/.test(item.name)) {
-    return {
-      item,
-      message: `[${item.name}] is not a valid handle: /\A[0-9a-z._-]{1,64}\z/`,
-    };
-  }
+  const message = dbNameValidator(item.name);
+  if (!message) return;
+
+  return {
+    item,
+    message,
+  };
 };
 
 export const DatabaseNameInput = ({
   value,
   onChange,
+  feedbackMessage,
+  feedbackVariant = "info",
 }: {
   value: string;
   onChange: (s: string) => void;
+  feedbackMessage?: string | null;
+  feedbackVariant?: FeedbackVariant;
 }) => {
   const change = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.currentTarget.value);
   };
   return (
-    <FormGroup label="Database Handle" htmlFor="dbname" className="flex-1">
+    <FormGroup
+      label="Database Handle"
+      htmlFor="dbname"
+      className="flex-1"
+      feedbackVariant={feedbackVariant}
+      feedbackMessage={feedbackMessage}
+    >
       <Input name="dbname" value={value} onChange={change} />
     </FormGroup>
   );

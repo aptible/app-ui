@@ -2,7 +2,8 @@ import classNames from "classnames";
 
 import { StatusVariant, variantToClassName } from "@app/status-variant";
 
-import { IconAlertTriangle, IconCheck, IconInfo, IconRefresh } from "./icons";
+import { IconAlertTriangle, IconCheck, IconInfo } from "./icons";
+import { LoadingSpinner } from "./loading";
 
 const VariantIcon = ({ variant = "info" }: { variant: StatusVariant }) => {
   if (variant === "error") {
@@ -22,11 +23,7 @@ const VariantIcon = ({ variant = "info" }: { variant: StatusVariant }) => {
   }
 
   if (variant === "progress") {
-    return (
-      <div className="animate-spin-slow 5s">
-        <IconRefresh color="#FFF" />
-      </div>
-    );
+    return <LoadingSpinner color="#fff" />;
   }
 
   return <IconInfo />;

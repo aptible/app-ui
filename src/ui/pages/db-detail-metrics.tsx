@@ -1,4 +1,4 @@
-import { IconRefresh, LoadResources, Loading } from "../shared";
+import { LoadResources, Loading, LoadingSpinner } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
@@ -101,9 +101,7 @@ export function DatabaseMetricsPage() {
         {loader.isLoading ? (
           <div className="flex gap-2">
             <span className="text-black-500">{pct}%</span>
-            <div className="animate-spin-slow 5s">
-              <IconRefresh color="#595E63" />
-            </div>
+            <LoadingSpinner color="#595E63" />
           </div>
         ) : null}
       </div>

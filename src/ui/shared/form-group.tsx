@@ -23,7 +23,7 @@ export function Label(props: LabelProps) {
 
 export interface Feedback {
   message: string;
-  variant: Variant;
+  variant: FeedbackVariant;
 }
 
 export function FormGroupFeedback({ message, variant }: Feedback) {
@@ -36,7 +36,7 @@ export function FormGroupFeedback({ message, variant }: Feedback) {
   return <div className={classes}>{message}</div>;
 }
 
-type Variant = "warn" | "danger" | "success" | "info";
+export type FeedbackVariant = "warn" | "danger" | "success" | "info";
 
 interface Props extends PropsWithChildren {
   label: string;
@@ -44,7 +44,7 @@ interface Props extends PropsWithChildren {
   htmlFor: string;
   description?: string | JSX.Element;
   feedbackMessage?: string | null;
-  feedbackVariant?: Variant;
+  feedbackVariant?: FeedbackVariant;
   splitWidthInputs?: boolean;
   className?: string;
 }
