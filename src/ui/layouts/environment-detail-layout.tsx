@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useParams, useSearchParams } from "react-router-dom";
 
 import { timeAgo } from "@app/date";
 import {
@@ -131,17 +131,16 @@ export function EnvHeader({
   );
 }
 
-function EnvironmentPageHeader(): React.ReactElement {
-  const { id = "" } = useParams();
+function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setResourceStats({ id, type: "environment" }));
   }, []);
 
-  useQuery(fetchEnvironmentById({ id }));
   useQuery(fetchAllApps());
   useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
+  useQuery(fetchEnvironmentById({ id }));
 
   const latestOperation = useSelector((s: AppState) =>
     selectLatestSuccessDeployOpByEnvId(s, { envId: id }),
@@ -184,12 +183,15 @@ function EnvironmentPageHeader(): React.ReactElement {
   );
 }
 
-export const EnvironmentDetailLayout = () => {
+export const EnvironmentDetailLayout = ({
+  children,
+}: { children?: React.ReactNode }) => {
+  const { id = "" } = useParams();
+  const [params] = useSearchParams();
+  const envId = id || params.get("environment_id") || "";
   return (
-    <>
-      <MenuWrappedPage header={<EnvironmentPageHeader />}>
-        <Outlet />
-      </MenuWrappedPage>
-    </>
+    <MenuWrappedPage header={<EnvironmentPageHeader id={envId} />}>
+      {children ? children : <Outlet />}
+    </MenuWrappedPage>
   );
 };

@@ -1,8 +1,8 @@
-import { IconInfo } from "../icons";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { Tooltip } from "../tooltip";
 import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -15,6 +15,8 @@ import {
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
+import { ActionListView } from "../action-list-view";
+import { ButtonCreate } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
@@ -23,7 +25,11 @@ import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { databaseEndpointsUrl, operationDetailUrl } from "@app/routes";
+import {
+  databaseEndpointsUrl,
+  environmentCreateDbUrl,
+  operationDetailUrl,
+} from "@app/routes";
 import { capitalize } from "@app/string-utils";
 
 type DatabaseCellProps = { database: DeployDatabase };
@@ -97,9 +103,11 @@ const DbsResourceHeaderTitleBar = ({
   resourceHeaderType = "title-bar",
   search = "",
   onChange,
+  actions = [],
 }: {
   dbs: DeployDatabaseRow[];
   search?: string;
+  actions?: JSX.Element[];
 } & HeaderTypes) => {
   switch (resourceHeaderType) {
     case "title-bar":
@@ -109,6 +117,7 @@ const DbsResourceHeaderTitleBar = ({
       return (
         <ResourceHeader
           title="Databases"
+          actions={actions}
           filterBar={
             <div className="pt-1">
               <InputSearch
@@ -135,9 +144,14 @@ const DbsResourceHeaderTitleBar = ({
       );
     case "simple-text":
       return (
-        <p className="flex text-gray-500 text-base mb-4">
-          {dbs.length} Database{dbs.length !== 1 && "s"}
-        </p>
+        <div className="flex justify-between items-center text-gray-500 text-base mb-4">
+          <div>
+            {dbs.length} Database{dbs.length !== 1 && "s"}
+          </div>
+          <div>
+            {actions.length > 0 ? <ActionListView actions={actions} /> : null}
+          </div>
+        </div>
       );
     default:
       return null;
@@ -210,8 +224,13 @@ export const DatabaseListByEnvironment = ({
 }: {
   environmentId: string;
 }) => {
+  const navigate = useNavigate();
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchEnvironmentById({ id: environmentId }));
+
+  const onCreate = () => {
+    navigate(environmentCreateDbUrl(environmentId));
+  };
 
   const dbs = useSelector((s: AppState) =>
     selectDatabasesForTableSearchByEnvironmentId(s, {
@@ -221,6 +240,12 @@ export const DatabaseListByEnvironment = ({
   );
 
   const headers = ["Handle", "Environment", "Last Operation"];
+  const actions = [
+    <ButtonCreate envId={environmentId} onClick={onCreate}>
+      <IconPlusCircle variant="sm" />
+      <div className="ml-2">New Database</div>
+    </ButtonCreate>,
+  ];
 
   return (
     <LoadResources
@@ -231,6 +256,7 @@ export const DatabaseListByEnvironment = ({
             <DbsResourceHeaderTitleBar
               dbs={dbs}
               resourceHeaderType="simple-text"
+              actions={actions}
             />
           }
         />
@@ -241,6 +267,7 @@ export const DatabaseListByEnvironment = ({
       <ResourceListView
         header={
           <DbsResourceHeaderTitleBar
+            actions={actions}
             dbs={dbs}
             resourceHeaderType="simple-text"
           />

@@ -11,6 +11,7 @@ import {
 import { ThunkCtx, thunks } from "@app/api";
 import { createLog } from "@app/debug";
 import {
+  DbCreatorProps,
   createAppOperation,
   createDeployApp,
   createDeployEnvironment,
@@ -21,6 +22,7 @@ import {
   fetchDatabasesByEnvId,
   hasDeployApp,
   hasDeployEnvironment,
+  mapCreatorToProvision,
   provisionDatabase,
   selectAppById,
   selectDatabasesByEnvId,
@@ -135,14 +137,6 @@ function* waitForDb(opId: string, dbId: string): Iterator<any, WaitDbProps> {
   };
 }
 
-export interface DbCreatorProps {
-  id: string;
-  imgId: string;
-  name: string;
-  env: string;
-  dbType: string;
-}
-
 export interface TextVal<
   M extends { [key: string]: unknown } = {
     [key: string]: unknown;
@@ -168,27 +162,27 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
   function* (ctx: ThunkCtx<CreateProjectSettingsProps>, next) {
     const { appId, envId, dbs, envs, cmds, gitRef, curEnvs } = ctx.payload;
     const id = ctx.name;
-    yield put(setLoaderStart({ id }));
+    yield* put(setLoaderStart({ id }));
 
     const app: DeployApp = yield select(selectAppById, { id: appId });
     if (!hasDeployApp(app)) {
       const message = `no app found with id ${appId}, cannot deploy project`;
       log(message);
-      yield put(setLoaderError({ id, message }));
+      yield* put(setLoaderError({ id, message }));
       return;
     }
 
     if (!envId) {
       const message = "envId cannot be empty, cannot deploy project";
       log(message);
-      yield put(setLoaderError({ id, message }));
+      yield* put(setLoaderError({ id, message }));
       return;
     }
 
     // optimistically mark `account.onboarding_state=completed`
     // this is not great but waiting for all ops to complete is riddled
     // with edge cases and weird scenarios (e.g. user closes app)
-    yield put(
+    yield* put(
       updateDeployEnvironmentStatus({ id: envId, status: "completed" }),
     );
 
@@ -235,23 +229,15 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     );
 
     if (!configCtx.json.ok) {
-      yield put(setLoaderError({ id, message: configCtx.json.data.message }));
+      yield* put(setLoaderError({ id, message: configCtx.json.data.message }));
       return;
     }
 
     const results = yield* all(
       dbs.map((db) => {
-        const handle = db.name.toLocaleLowerCase();
-        const dbType = db.dbType;
-
         return call(
           provisionDatabase.run,
-          provisionDatabase({
-            handle,
-            type: dbType,
-            envId,
-            databaseImageId: db.imgId,
-          }),
+          provisionDatabase(mapCreatorToProvision(envId, db)),
         );
       }),
     );
@@ -272,18 +258,25 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       const res = results[i];
       if (!res.json) continue;
 
+      if (res.json.error) {
+        yield* put(setLoaderError({ id, message: res.json.error }));
+        continue;
+      }
+
       const { opCtx, dbCtx, dbId } = res.json;
-      if (!opCtx.json.ok) {
-        yield put(setLoaderError({ id, message: opCtx.json.data.message }));
+      if (opCtx && !opCtx.json.ok) {
+        yield* put(setLoaderError({ id, message: opCtx.json.data.message }));
         continue;
       }
 
       if (dbCtx && !dbCtx.json.ok) {
-        yield put(setLoaderError({ id, message: dbCtx.json.data.message }));
+        yield* put(setLoaderError({ id, message: dbCtx.json.data.message }));
         continue;
       }
 
-      waiting.push(call(waitForDb, `${opCtx.json.data.id}`, dbId));
+      if (opCtx) {
+        waiting.push(call(waitForDb, `${opCtx.json.data.id}`, dbId));
+      }
     }
 
     yield* all(waiting);
@@ -304,12 +297,12 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     );
 
     if (!deployCtx.json.ok) {
-      yield put(setLoaderError({ id, message: deployCtx.json.data.message }));
+      yield* put(setLoaderError({ id, message: deployCtx.json.data.message }));
       return;
     }
 
     yield* next();
-    yield put(setLoaderSuccess({ id }));
+    yield* put(setLoaderSuccess({ id }));
   },
 );
 
