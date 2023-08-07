@@ -85,6 +85,7 @@ import {
   UnauthRequired,
   VerifyEmailPage,
 } from "@app/ui";
+import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -180,7 +181,17 @@ export const appRoutes: RouteObject[] = [
               },
               {
                 path: routes.APP_SERVICE_PATH,
-                lazy: () => import("@app/ui/pages/app-detail-service"),
+                children: [
+                  {
+                    path: routes.APP_SERVICE_METRICS_PATH,
+                    lazy: () =>
+                      import("@app/ui/pages/app-detail-service-metrics"),
+                  },
+                  {
+                    path: routes.APP_SERVICE_SCALE_PATH,
+                    element: <AppDetailServiceScalePage />,
+                  },
+                ],
               },
               {
                 path: routes.APP_SERVICES_PATH,

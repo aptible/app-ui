@@ -12,7 +12,11 @@ import type {
   LinkResponse,
 } from "@app/types";
 
-import { CONTAINER_PROFILES, GB } from "../app/utils";
+import {
+  CONTAINER_PROFILES,
+  GB,
+  computedCostsForContainer,
+} from "../app/utils";
 import { selectDeploy } from "../slice";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m4";
@@ -133,18 +137,12 @@ export const calcServiceMetrics = (service: DeployService) => {
 
   const containerSizeGB = service.containerMemoryLimitMb / GB;
   const cpuShare = service.containerMemoryLimitMb / containerProfile.cpuShare;
-
-  const estimatedCostInCents = () => {
-    const hoursPerMonth = 731;
-    const { costPerContainerHourInCents } = containerProfile;
-    return (
-      hoursPerMonth *
-      service.containerCount *
-      containerSizeGB *
-      costPerContainerHourInCents
+  const { estimatedCostInCents, estimatedCostInDollars } =
+    computedCostsForContainer(
+      service.containerCount,
+      containerProfile,
+      containerSizeGB,
     );
-  };
-  const estimatedCostInDollars = estimatedCostInCents() / 100;
 
   return {
     containerProfile,

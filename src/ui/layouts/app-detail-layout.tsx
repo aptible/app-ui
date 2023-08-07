@@ -13,8 +13,9 @@ import {
 } from "@app/deploy";
 import {
   appActivityUrl,
-  appDetailUrl,
   appEndpointsUrl,
+  appServicePathMetricsUrl,
+  appServiceScalePathUrl,
   appServicesUrl,
   appSettingsUrl,
   environmentAppsUrl,
@@ -101,7 +102,7 @@ function AppPageHeader() {
   if (serviceId) {
     crumbs.push({
       name: app.handle,
-      to: appDetailUrl(app.id),
+      to: appServicesUrl(app.id),
     });
   }
 
@@ -109,12 +110,17 @@ function AppPageHeader() {
   // Need to kick a user back out of the details page (or lock specific pages if it is deleted)
   // currently the network log will error with a 404 (as the record will be deleted)
 
-  const tabs: TabItem[] = [
-    { name: "Services", href: appServicesUrl(id) },
-    { name: "Endpoints", href: appEndpointsUrl(id) },
-    { name: "Activity", href: appActivityUrl(id) },
-    { name: "Settings", href: appSettingsUrl(id) },
-  ];
+  const tabs: TabItem[] = serviceId
+    ? [
+        { name: "Metrics", href: appServicePathMetricsUrl(id, serviceId) },
+        { name: "Scale", href: appServiceScalePathUrl(id, serviceId) },
+      ]
+    : [
+        { name: "Services", href: appServicesUrl(id) },
+        { name: "Endpoints", href: appEndpointsUrl(id) },
+        { name: "Activity", href: appActivityUrl(id) },
+        { name: "Settings", href: appSettingsUrl(id) },
+      ];
 
   return (
     <>
