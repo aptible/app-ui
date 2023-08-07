@@ -290,7 +290,7 @@ export const AppListByEnvironment = ({
       resourceHeaderType="simple-text"
       actions={[
         <ButtonCreate envId={environmentId} onClick={onCreate}>
-          <IconPlusCircle variant="sm" /> <div className="pl-2">New App</div>
+          <IconPlusCircle variant="sm" /> <div className="ml-2">New App</div>
         </ButtonCreate>,
       ]}
     />

@@ -171,6 +171,13 @@ export const stacksWithResources = (
       }
       return res(ctx.json({ _embedded: { accounts } }));
     }),
+    rest.get(`${testEnv.apiUrl}/accounts/:id`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+
+      return res(ctx.json(testAccount));
+    }),
     rest.get(`${testEnv.apiUrl}/apps`, (req, res, ctx) => {
       if (!isValidToken(req)) {
         return res(ctx.status(401));
@@ -279,6 +286,12 @@ const apiHandlers = [
     }
     return res(ctx.json({ _embedded: { vhosts: [] } }));
   }),
+  rest.get(`${testEnv.apiUrl}/accounts/:id/vhosts`, (req, res, ctx) => {
+    if (!isValidToken(req)) {
+      return res(ctx.status(401));
+    }
+    return res(ctx.json({ _embedded: { vhosts: [] } }));
+  }),
   rest.get(
     `${testEnv.apiUrl}/apps/:id/service_definitions`,
     (req, res, ctx) => {
@@ -289,13 +302,6 @@ const apiHandlers = [
     },
   ),
   rest.post(`${testEnv.apiUrl}/accounts`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
-    return res(ctx.json(testAccount));
-  }),
-  rest.get(`${testEnv.apiUrl}/accounts/:id`, (req, res, ctx) => {
     if (!isValidToken(req)) {
       return res(ctx.status(401));
     }
@@ -350,7 +356,7 @@ const apiHandlers = [
 
     return res(
       ctx.json({
-        _embedded: { databases: [testScanOperation, testDatabaseOp] },
+        _embedded: { operations: [testScanOperation, testDatabaseOp] },
       }),
     );
   }),

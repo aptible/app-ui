@@ -150,9 +150,13 @@ export const environmentBackupsUrl = (id: string) =>
 export const ENVIRONMENT_SETTINGS_PATH = "/environments/:id/settings";
 export const environmentSettingsUrl = (id: string) =>
   `/environments/${id}/settings`;
-export const ENVIRONMENT_CREATE_APP_PATH = "/environments/:id/app";
 export const environmentCreateAppUrl = (id: string) =>
   `/create/name?environment_id=${id}`;
+export const environmentCreateDbUrl = (id: string) =>
+  `/create/db?environment_id=${id}`;
+
+export const CREATE_DB_PATH = "/create/db";
+export const createDbUrl = () => `${CREATE_DB_PATH}`;
 
 export const ERROR_PATH = "/error";
 

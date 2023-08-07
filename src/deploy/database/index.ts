@@ -1,6 +1,7 @@
 import {
   FetchJson,
   Payload,
+  all,
   call,
   poll,
   put,
@@ -31,7 +32,6 @@ import type {
   DeployOperationResponse,
   HalEmbedded,
   LinkResponse,
-  OperationStatus,
   ProvisionableStatus,
 } from "@app/types";
 
@@ -73,6 +73,14 @@ export interface DeployDatabaseResponse {
     last_operation: any;
   };
   _type: "database";
+}
+
+export interface DbCreatorProps {
+  id: string;
+  imgId: string;
+  name: string;
+  env: string;
+  dbType: string;
 }
 
 export const defaultDatabaseResponse = (
@@ -358,16 +366,79 @@ export const createDatabase = api.post<
 });
 
 interface CreateDbResult {
+  error: string;
   dbCtx:
     | null
     | (Omit<DeployApiCtx<any, any>, "payload" | "json"> &
         Payload<CreateDatabaseProps> &
         FetchJson<DeployDatabaseResponse, any>);
   dbId: string;
-  opCtx: Omit<DeployApiCtx<any, any>, "payload" | "json"> &
-    Payload<CreateDatabaseOpProps | DeprovisionDatabaseOpProps> &
-    FetchJson<DeployOperationResponse, any>;
+  opCtx:
+    | null
+    | (Omit<DeployApiCtx<any, any>, "payload" | "json"> &
+        Payload<CreateDatabaseOpProps | DeprovisionDatabaseOpProps> &
+        FetchJson<DeployOperationResponse, any>);
 }
+
+export const mapCreatorToProvision = (
+  envId: string,
+  db: DbCreatorProps,
+): CreateDatabaseProps => {
+  const handle = db.name.toLocaleLowerCase();
+  const dbType = db.dbType;
+  return {
+    handle,
+    type: dbType,
+    envId,
+    databaseImageId: db.imgId,
+  };
+};
+
+export const provisionDatabaseList = thunks.create<{
+  envId: string;
+  dbs: DbCreatorProps[];
+}>("database-list-provision", function* (ctx, next) {
+  const { dbs, envId } = ctx.payload;
+  const id = ctx.key;
+  yield* put(setLoaderStart({ id }));
+  const results = yield* all(
+    dbs.map((db) => {
+      return call(
+        provisionDatabase.run,
+        provisionDatabase(mapCreatorToProvision(envId, db)),
+      );
+    }),
+  );
+
+  const errors = [];
+  for (let i = 0; i < results.length; i += 1) {
+    const res = results[i];
+    if (!res.json) continue;
+
+    if (res.json.error) {
+      errors.push(res.json.error);
+      continue;
+    }
+
+    const { opCtx, dbCtx } = res.json;
+    if (opCtx && !opCtx.json.ok) {
+      errors.push(opCtx.json.data.message);
+      continue;
+    }
+
+    if (dbCtx && !dbCtx.json.ok) {
+      errors.push(dbCtx.json.data.message);
+    }
+  }
+
+  if (errors.length > 0) {
+    yield* put(setLoaderError({ id, message: errors.join(", ") }));
+    return;
+  }
+
+  yield* put(setLoaderSuccess({ id: ctx.key }));
+  yield* next();
+});
 
 export const provisionDatabase = thunks.create<
   CreateDatabaseProps,
@@ -385,9 +456,14 @@ export const provisionDatabase = thunks.create<
     dbCtx = yield* call(createDatabase.run, createDatabase(ctx.payload));
 
     if (!dbCtx.json.ok) {
-      yield put(
-        setLoaderError({ id: ctx.key, message: dbCtx.json.data.message }),
-      );
+      const message = dbCtx.json.data.message;
+      yield put(setLoaderError({ id: ctx.key, message }));
+      ctx.json = {
+        error: message,
+        dbId,
+        dbCtx: null,
+        opCtx: null,
+      };
       return;
     }
 
@@ -399,6 +475,19 @@ export const provisionDatabase = thunks.create<
   const dbOps = yield* select(selectOperationsByDatabaseId, { dbId });
   const alreadyProvisioned = dbOps.find((op) => op.type === "provision");
   if (alreadyProvisioned) {
+    const message = `Database (${ctx.payload.handle}) already provisioned`;
+    yield* put(
+      setLoaderSuccess({
+        id: ctx.key,
+        message,
+      }),
+    );
+    ctx.json = {
+      error: message,
+      dbId,
+      dbCtx: null,
+      opCtx: null,
+    };
     return;
   }
 
@@ -408,7 +497,6 @@ export const provisionDatabase = thunks.create<
       dbId,
       containerSize: 1024,
       diskSize: 10,
-      status: "queued",
       type: "provision",
       envId: ctx.payload.envId,
     }),
@@ -418,6 +506,7 @@ export const provisionDatabase = thunks.create<
     dbCtx,
     opCtx,
     dbId,
+    error: "",
   };
 
   if (!opCtx.json.ok) {
@@ -441,7 +530,6 @@ interface CreateDatabaseOpProps {
   diskSize: number;
   type: "provision";
   envId: string;
-  status: OperationStatus;
 }
 
 interface DeprovisionDatabaseOpProps {
@@ -461,12 +549,11 @@ export const createDatabaseOperation = api.post<
       }
 
       case "provision": {
-        const { containerSize, diskSize, type, status } = ctx.payload;
+        const { containerSize, diskSize, type } = ctx.payload;
         return {
           container_size: containerSize,
           disk_size: diskSize,
           type,
-          status,
         };
       }
 
