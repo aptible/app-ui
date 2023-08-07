@@ -1,17 +1,21 @@
 import cn from "classnames";
 import { ReactElement } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLoader } from "saga-query/react";
 
 import { prettyEnglishDateWithTime } from "@app/date";
 import { deleteBackup, selectDatabaseById } from "@app/deploy";
-import { databaseDetailUrl, operationDetailUrl } from "@app/routes";
+import {
+  backupRestoreUrl,
+  databaseDetailUrl,
+  operationDetailUrl,
+} from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployBackup } from "@app/types";
 
 import { BannerMessages } from "../banner";
-import { ButtonDestroy } from "../button";
+import { ButtonCreate, ButtonDestroy } from "../button";
 import { ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
@@ -63,10 +67,14 @@ const BackupListRow = ({
 }: {
   backup: DeployBackup;
 }) => {
+  const navigate = useNavigate();
   const db = useSelector((s: AppState) =>
     selectDatabaseById(s, { id: backup.databaseId }),
   );
   const createdByOpId = backup.createdFromOperationId;
+  const onClone = () => {
+    navigate(backupRestoreUrl(backup.id));
+  };
 
   return (
     <tr className="group hover:bg-gray-50" key={`${backup.id}`}>
@@ -113,8 +121,11 @@ const BackupListRow = ({
         </div>
       </Td>
 
-      <Td>
+      <Td className="flex gap-2">
         <DeleteBackup id={backup.id} envId={backup.environmentId} />
+        <ButtonCreate envId={backup.environmentId} onClick={onClone} size="sm">
+          Clone
+        </ButtonCreate>
       </Td>
     </tr>
   );

@@ -376,7 +376,11 @@ interface CreateDbResult {
   opCtx:
     | null
     | (Omit<DeployApiCtx<any, any>, "payload" | "json"> &
-        Payload<CreateDatabaseOpProps | DeprovisionDatabaseOpProps> &
+        Payload<
+          | CreateDatabaseOpProps
+          | DeprovisionDatabaseOpProps
+          | BackupDatabaseOpProps
+        > &
         FetchJson<DeployOperationResponse, any>);
 }
 
@@ -537,14 +541,23 @@ interface DeprovisionDatabaseOpProps {
   type: "deprovision";
 }
 
+interface BackupDatabaseOpProps {
+  dbId: string;
+  type: "backup";
+}
+
 export const createDatabaseOperation = api.post<
-  CreateDatabaseOpProps | DeprovisionDatabaseOpProps,
+  CreateDatabaseOpProps | DeprovisionDatabaseOpProps | BackupDatabaseOpProps,
   DeployOperationResponse
 >("/databases/:dbId/operations", function* (ctx, next) {
   const { type } = ctx.payload;
   const getBody = () => {
     switch (type) {
       case "deprovision": {
+        return { type };
+      }
+
+      case "backup": {
         return { type };
       }
 
