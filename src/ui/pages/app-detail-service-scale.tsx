@@ -93,6 +93,27 @@ export const AppDetailServiceScalePage = () => {
     navigate(operationDetailUrl(loader.meta.opId));
   });
 
+  const currentPricePerHour = (
+    CONTAINER_PROFILES[service.instanceClass].costPerContainerHourInCents / 100
+  ).toFixed(2);
+  const currentPrice = (
+    computedCostsForContainer(
+      service.containerCount,
+      CONTAINER_PROFILES[service.instanceClass],
+      service.containerMemoryLimitMb,
+    ).estimatedCostInDollars / 1000
+  ).toFixed(2);
+  const estimatedPricePerHour = (
+    CONTAINER_PROFILES[containerProfileType].costPerContainerHourInCents / 100
+  ).toFixed(2);
+  const estimatedPrice = (
+    computedCostsForContainer(
+      containerCount || 1,
+      CONTAINER_PROFILES[containerProfileType],
+      containerSize,
+    ).estimatedCostInDollars / 1000
+  ).toFixed(2);
+
   return (
     <div>
       <BoxGroup>
@@ -218,11 +239,7 @@ export const AppDetailServiceScalePage = () => {
                     {service.containerCount} container
                     {service.containerCount > 1 ? "s" : ""} x{" "}
                     {service.containerMemoryLimitMb / 1024} GB x $
-                    {(
-                      CONTAINER_PROFILES[service.instanceClass]
-                        .costPerContainerHourInCents / 100
-                    ).toFixed(2)}{" "}
-                    per GB/hour
+                    {currentPricePerHour} per GB/hour
                   </p>
                 </div>
                 <div>
@@ -230,14 +247,7 @@ export const AppDetailServiceScalePage = () => {
                     Current Estimated Monthly Cost
                   </p>
                   <p className="text-right text-lg text-green-400">
-                    $
-                    {(
-                      computedCostsForContainer(
-                        service.containerCount,
-                        CONTAINER_PROFILES[service.instanceClass],
-                        service.containerMemoryLimitMb,
-                      ).estimatedCostInDollars / 1000
-                    ).toFixed(2)}
+                    ${currentPrice}
                   </p>
                 </div>
               </div>
@@ -279,25 +289,13 @@ export const AppDetailServiceScalePage = () => {
                   <p className="text-gray-500">
                     {containerCount || 1} container
                     {containerCount > 1 ? "s" : ""} x {containerSize / 1024} GB
-                    x $
-                    {(
-                      CONTAINER_PROFILES[containerProfileType]
-                        .costPerContainerHourInCents / 100
-                    ).toFixed(2)}{" "}
-                    per GB/hour
+                    x ${estimatedPricePerHour} per GB/hour
                   </p>
                 </div>
                 <div>
                   <p className="text-gray-500">New Estimated Monthly Cost</p>
                   <p className="text-right text-lg text-green-400">
-                    $
-                    {(
-                      computedCostsForContainer(
-                        containerCount || 1,
-                        CONTAINER_PROFILES[containerProfileType],
-                        containerSize,
-                      ).estimatedCostInDollars / 1000
-                    ).toFixed(2)}
+                    ${estimatedPrice}
                   </p>
                 </div>
               </div>

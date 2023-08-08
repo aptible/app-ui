@@ -95,6 +95,31 @@ export const DatabaseScalePage = () => {
     service.instanceClass !== containerProfileType ||
     database?.disk?.size !== diskValue;
 
+  const pricePerHour = (
+    CONTAINER_PROFILES[service.instanceClass].costPerContainerHourInCents / 100
+  ).toFixed(2);
+  const currentPrice = (
+    computedCostsForContainer(
+      1,
+      CONTAINER_PROFILES[containerProfileType],
+      containerSize,
+    ).estimatedCostInDollars /
+      1000 +
+    (database?.disk?.size || 0) * 0.2
+  ).toFixed(2);
+  const estimatedPricePerHour = (
+    CONTAINER_PROFILES[service.instanceClass].costPerContainerHourInCents / 100
+  ).toFixed(2);
+  const estimatedPrice = (
+    computedCostsForContainer(
+      1,
+      CONTAINER_PROFILES[containerProfileType],
+      containerSize,
+    ).estimatedCostInDollars /
+      1000 +
+    diskValue * 0.2
+  ).toFixed(2);
+
   return (
     <div>
       <BoxGroup>
@@ -218,11 +243,7 @@ export const DatabaseScalePage = () => {
                 <Label>Pricing</Label>
                 <p className="text-gray-500">
                   1 x {service.containerMemoryLimitMb / 1024} GB container x $
-                  {(
-                    CONTAINER_PROFILES[service.instanceClass]
-                      .costPerContainerHourInCents / 100
-                  ).toFixed(2)}{" "}
-                  per GB/hour
+                  {pricePerHour} per GB/hour
                 </p>
                 {database?.disk?.size ? (
                   <p className="text-gray-500">
@@ -233,16 +254,7 @@ export const DatabaseScalePage = () => {
               <div>
                 <p className="text-gray-500">Estimated Monthly Cost</p>
                 <p className="text-right text-lg text-green-400">
-                  $
-                  {(
-                    computedCostsForContainer(
-                      1,
-                      CONTAINER_PROFILES[containerProfileType],
-                      containerSize,
-                    ).estimatedCostInDollars /
-                      1000 +
-                    (database?.disk?.size || 0) * 0.2
-                  ).toFixed(2)}
+                  ${currentPrice}
                 </p>
               </div>
             </div>
@@ -282,26 +294,13 @@ export const DatabaseScalePage = () => {
                   <Label>Pricing</Label>
                   <p className="text-gray-500">
                     1 x {containerSize / 1024} GB container x $
-                    {(
-                      CONTAINER_PROFILES[service.instanceClass]
-                        .costPerContainerHourInCents / 100
-                    ).toFixed(2)}{" "}
-                    per GB/hour
+                    {estimatedPricePerHour} per GB/hour
                   </p>
                 </div>
                 <div>
                   <p className="text-gray-500">New Estimated Monthly Cost</p>
                   <p className="text-right text-lg text-green-400">
-                    $
-                    {(
-                      computedCostsForContainer(
-                        1,
-                        CONTAINER_PROFILES[containerProfileType],
-                        containerSize,
-                      ).estimatedCostInDollars /
-                        1000 +
-                      diskValue * 0.2
-                    ).toFixed(2)}
+                    ${estimatedPrice}
                   </p>
                 </div>
               </div>
