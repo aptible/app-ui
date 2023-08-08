@@ -9,6 +9,7 @@ import {
   selectEnvironmentsByOrg,
 } from "../environment";
 import { selectOperationById, selectOperationsAsList } from "../operation";
+import { findServiceById, selectServices } from "../service";
 import type { AppState, DeployOperation } from "@app/types";
 
 export interface DeployActivityRow extends DeployOperation {
@@ -21,7 +22,8 @@ const selectActivityForTable = createSelector(
   selectEnvironmentsByOrg,
   selectDatabases,
   selectApps,
-  (ops, envs, dbs, apps) =>
+  selectServices,
+  (ops, envs, dbs, apps, services) =>
     ops
       .filter((op) => {
         const env = findEnvById(envs, { id: op.environmentId });
@@ -35,7 +37,16 @@ const selectActivityForTable = createSelector(
           resourceHandle = app.handle;
         } else if (op.resourceType === "database") {
           const db = findDatabaseById(dbs, { id: op.resourceId });
-          resourceHandle = db.handle;
+          resourceHandle =
+            op.containerCount && op.containerSize
+              ? `${db.handle} (${op.containerCount} Container(s) - ${op.containerSize} GB)`
+              : db.handle;
+        } else if (op.resourceType === "service") {
+          const service = findServiceById(services, { id: op.resourceId });
+          resourceHandle =
+            op.containerCount && op.containerSize
+              ? `${service.handle} (${op.containerCount} Container(s) - ${op.containerSize} GB)`
+              : service.handle;
         } else {
           resourceHandle = op.resourceId;
         }

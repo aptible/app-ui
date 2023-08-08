@@ -69,7 +69,10 @@ export function AppHeader({ app }: { app: DeployApp }) {
   );
 }
 
-const AppHeartbeatNotice = ({ id }: { id: string; serviceId: string }) => {
+const AppHeartbeatNotice = ({
+  id,
+  serviceId,
+}: { id: string; serviceId: string }) => {
   const poller = useMemo(() => pollAppOperations({ id }), [id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
 
@@ -78,7 +81,12 @@ const AppHeartbeatNotice = ({ id }: { id: string; serviceId: string }) => {
     cancel,
   });
 
-  return <ActiveOperationNotice resourceId={id} resourceType="app" />;
+  return (
+    <>
+      <ActiveOperationNotice resourceId={id} resourceType="app" />
+      <ActiveOperationNotice resourceId={serviceId} resourceType="service" />
+    </>
+  );
 };
 
 function AppPageHeader() {

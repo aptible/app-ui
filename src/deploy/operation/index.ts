@@ -45,6 +45,7 @@ export interface DeployOperationResponse {
   git_ref: string;
   docker_ref: string;
   container_count: number;
+  container_size: number;
   encrypted_env_json_new: string;
   destination_region: string;
   automated: boolean;
@@ -85,6 +86,7 @@ export const defaultOperationResponse = (
     git_ref: "",
     docker_ref: "",
     container_count: 0,
+    container_size: 0,
     encrypted_env_json_new: "",
     destination_region: "",
     automated: false,
@@ -132,6 +134,7 @@ export const defaultDeployOperation = (
     gitRef: "",
     dockerRef: "",
     containerCount: 0,
+    containerSize: 0,
     encryptedEnvJsonNew: "",
     destinationRegion: "",
     cancelled: false,
@@ -178,6 +181,7 @@ export const deserializeDeployOperation = (
     gitRef: payload.git_ref || "",
     dockerRef: payload.docker_ref,
     containerCount: payload.container_count,
+    containerSize: payload.container_size,
     encryptedEnvJsonNew: payload.encrypted_env_json_new,
     destinationRegion: payload.destination_region,
     cancelled: payload.cancelled,

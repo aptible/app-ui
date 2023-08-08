@@ -37,7 +37,7 @@ export const ActiveOperationNotice = ({
   resourceType,
 }: {
   resourceId: string;
-  resourceType: Extract<ResourceType, "app" | "database">;
+  resourceType: Extract<ResourceType, "app" | "database" | "service">;
 }) => {
   const operation = useSelector((s: AppState) =>
     selectLatestOpByResourceId(s, { resourceId }),

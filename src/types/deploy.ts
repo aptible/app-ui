@@ -220,6 +220,7 @@ export interface DeployOperation extends Timestamps {
   gitRef: string;
   dockerRef: string;
   containerCount: number;
+  containerSize: number;
   encryptedEnvJsonNew: string;
   destinationRegion: string;
   cancelled: boolean;

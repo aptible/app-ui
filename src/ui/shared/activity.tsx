@@ -15,6 +15,7 @@ import {
   fetchApp,
   fetchDatabase,
   fetchEnvironmentById,
+  fetchServiceOperations,
   getResourceUrl,
   pollAppOperations,
   pollDatabaseOperations,
@@ -356,6 +357,7 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
   useQuery(fetchEnvironmentById({ id: db.environmentId }));
   useQuery(fetchDatabase({ id: dbId }));
+  useQuery(fetchServiceOperations({ id: db.serviceId }));
 
   const poller = useMemo(() => pollDatabaseOperations({ id: dbId }), [dbId]);
   const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);

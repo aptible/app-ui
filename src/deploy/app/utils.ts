@@ -149,7 +149,6 @@ export const computedCostsForContainer = (
     );
   };
   const estimatedCostInDollars = estimatedCostInCents() / 100;
-  console.log(estimatedCostInCents());
   return {
     estimatedCostInCents,
     estimatedCostInDollars,
