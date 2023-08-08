@@ -54,9 +54,9 @@ export const selectActivityForTableSearch = createSelector(
   selectActivityForTable,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: AppState, props: { envId?: string }) => props.envId || "",
-  (_: AppState, props: { resourceId?: string }) => props.resourceId || "",
-  (ops, search, envId, resourceId): DeployActivityRow[] => {
-    if (search === "" && envId === "" && resourceId === "") {
+  (_: AppState, props: { resourceIds?: string[] }) => props.resourceIds || "",
+  (ops, search, envId, resourceIds): DeployActivityRow[] => {
+    if (search === "" && envId === "" && resourceIds.length === 0) {
       return ops.slice(0, Math.min(ops.length, MAX_RESULTS));
     }
 
@@ -92,10 +92,11 @@ export const selectActivityForTableSearch = createSelector(
         resourceMatch ||
         resourceHandleMatch;
 
-      const resourceIdMatch = resourceId !== "" && op.resourceId === resourceId;
+      const resourceIdMatch =
+        resourceIds.length !== 0 && resourceIds.includes(op.resourceId);
       const envIdMatch = envId !== "" && op.environmentId === envId;
 
-      if (resourceId !== "") {
+      if (resourceIds.length !== 0) {
         if (search !== "") {
           return resourceIdMatch && searchMatch;
         }

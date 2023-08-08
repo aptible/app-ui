@@ -49,6 +49,8 @@ export const ActiveOperationNotice = ({
     deploy: ["failed", "running", "queued"],
     deprovision: ["failed", "running", "queued", "succeeded"],
     provision: ["failed", "running", "queued"],
+    restart: ["failed", "running", "queued"],
+    scale: ["failed", "running", "queued"],
   };
 
   if (!operation) {

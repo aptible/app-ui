@@ -75,7 +75,7 @@ const serviceListRow = ({
           className="w-15"
           size="sm"
           to={appServiceScalePathUrl(app.id, service.id)}
-          variant="white"
+          variant="primary"
         >
           Scale
         </ButtonLink>

@@ -116,7 +116,7 @@ describe("selectActivityForTableSearch", () => {
       it("should keep only operations within resource", () => {
         const actual = selectActivityForTableSearch(state as any, {
           search: "",
-          resourceId: app1.id,
+          resourceIds: [app1.id],
         });
         expect(actual).toEqual([op1Row]);
       });

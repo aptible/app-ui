@@ -333,7 +333,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceId: appId,
+      resourceIds: [appId, ...app.serviceIds],
     }),
   );
 
@@ -370,7 +370,7 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceId: dbId,
+      resourceIds: [dbId, db.serviceId],
     }),
   );
 
@@ -404,7 +404,7 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceId: enpId,
+      resourceIds: [enpId],
     }),
   );
 
