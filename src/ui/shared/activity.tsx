@@ -15,6 +15,7 @@ import {
   fetchApp,
   fetchDatabase,
   fetchEnvironmentById,
+  fetchService,
   fetchServiceOperations,
   getResourceUrl,
   pollAppOperations,
@@ -321,7 +322,10 @@ export function ActivityByApp({ appId }: { appId: string }) {
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
   useQuery(fetchApp({ id: appId }));
 
-  const poller = useMemo(() => pollAppOperations({ id: appId }), [appId]);
+  const poller = useMemo(
+    () => pollEnvOperations({ envId: app.environmentId }),
+    [app.environmentId],
+  );
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
   usePoller({
     action: poller,
