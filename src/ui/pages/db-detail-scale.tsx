@@ -1,5 +1,13 @@
 import { useValidator } from "../hooks";
-import { Box, BoxGroup, Button, FormGroup, Input, Label } from "../shared";
+import {
+  BannerMessages,
+  Box,
+  BoxGroup,
+  Button,
+  FormGroup,
+  Input,
+  Label,
+} from "../shared";
 import {
   CONTAINER_PROFILES,
   CONTAINER_PROFILE_TYPES,
@@ -12,7 +20,7 @@ import {
   selectDatabaseById,
   selectServiceById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { databaseActivityUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
@@ -53,18 +61,18 @@ export const DatabaseScalePage = () => {
     selectServiceById(s, { id: database.serviceId }),
   );
 
+  const action = scaleDatabase({
+    id,
+    diskSize: diskValue,
+    containerSize: containerSize,
+  });
+
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
     if (!validate({ diskSize: diskValue })) return;
-    dispatch(
-      scaleDatabase({
-        id,
-        diskSize: diskValue,
-        containerSize: containerSize,
-      }),
-    );
-    navigate(databaseActivityUrl(id));
+    dispatch(action);
   };
+  const loader = useLoader(action);
 
   useEffect(() => {
     if (service.containerMemoryLimitMb) {
@@ -77,6 +85,10 @@ export const DatabaseScalePage = () => {
       setDiskValue(database.disk.size);
     }
   }, [database]);
+
+  useLoaderSuccess(loader, () => {
+    navigate(databaseActivityUrl(id));
+  });
 
   const changesExist =
     service.containerMemoryLimitMb !== containerSize ||
@@ -294,6 +306,7 @@ export const DatabaseScalePage = () => {
                 </div>
               </div>
             ) : null}
+            <BannerMessages {...loader} />
             <div className="flex mt-4">
               <Button
                 className="w-40 mb-4 flex font-semibold"
