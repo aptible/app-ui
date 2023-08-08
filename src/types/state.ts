@@ -191,3 +191,9 @@ export interface AppState extends QueryState {
   resourceStats: MapEntity<ResourceStats>;
   containerMetrics: MapEntity<ContainerMetrics>;
 }
+
+export interface DeployActivityRow extends DeployOperation {
+  envHandle: string;
+  resourceHandle: string;
+  url?: string;
+}

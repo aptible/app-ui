@@ -11,13 +11,7 @@ import {
 import { selectOperationById, selectOperationsAsList } from "../operation";
 import { findServiceById, selectServices } from "../service";
 import { appDetailUrl, databaseDetailUrl } from "@app/routes";
-import type { AppState, DeployOperation } from "@app/types";
-
-export interface DeployActivityRow extends DeployOperation {
-  envHandle: string;
-  resourceHandle: string;
-  url?: string;
-}
+import type { AppState, DeployActivityRow } from "@app/types";
 
 const selectActivityForTable = createSelector(
   selectOperationsAsList,

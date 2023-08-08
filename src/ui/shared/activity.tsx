@@ -6,7 +6,6 @@ import { Link, useSearchParams } from "react-router-dom";
 
 import { prettyDateRelative } from "@app/date";
 import {
-  DeployActivityRow,
   cancelAppOpsPoll,
   cancelDatabaseOpsPoll,
   cancelEndpointOpsPoll,
@@ -29,7 +28,7 @@ import {
 } from "@app/deploy";
 import { operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import type { AppState, ResourceType } from "@app/types";
+import type { AppState, DeployActivityRow, ResourceType } from "@app/types";
 
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";

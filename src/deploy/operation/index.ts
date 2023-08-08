@@ -1,7 +1,6 @@
 import { call, delay, fetchRetry, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
-import { DeployActivityRow } from "../activity";
 import { selectDeploy } from "../slice";
 import {
   PaginateProps,
@@ -30,6 +29,7 @@ import { capitalize } from "@app/string-utils";
 import type {
   ApiGen,
   AppState,
+  DeployActivityRow,
   DeployOperation,
   LinkResponse,
   OperationStatus,
