@@ -1,6 +1,7 @@
 import { call, delay, fetchRetry, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
+import { DeployActivityRow } from "../activity";
 import { selectDeploy } from "../slice";
 import {
   PaginateProps,
@@ -510,7 +511,8 @@ export const createReadableStatus = (status: OperationStatus): string => {
 export const getResourceUrl = ({
   resourceId,
   resourceType,
-}: Pick<DeployOperation, "resourceId" | "resourceType">) => {
+  url,
+}: Pick<DeployActivityRow, "resourceId" | "resourceType" | "url">) => {
   switch (resourceType) {
     case "app":
       return appDetailUrl(resourceId);
@@ -518,6 +520,8 @@ export const getResourceUrl = ({
       return databaseDetailUrl(resourceId);
     case "vhost":
       return endpointDetailUrl(resourceId);
+    case "service":
+      return url;
     default:
       return "";
   }

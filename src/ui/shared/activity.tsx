@@ -15,7 +15,6 @@ import {
   fetchApp,
   fetchDatabase,
   fetchEnvironmentById,
-  fetchService,
   fetchServiceOperations,
   getResourceUrl,
   pollAppOperations,
@@ -338,7 +337,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds: [appId, ...app.serviceIds],
+      resourceIds: [appId],
     }),
   );
 

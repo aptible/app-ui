@@ -10,11 +10,13 @@ import {
 } from "../environment";
 import { selectOperationById, selectOperationsAsList } from "../operation";
 import { findServiceById, selectServices } from "../service";
+import { appDetailUrl, databaseDetailUrl } from "@app/routes";
 import type { AppState, DeployOperation } from "@app/types";
 
 export interface DeployActivityRow extends DeployOperation {
   envHandle: string;
   resourceHandle: string;
+  url?: string;
 }
 
 const selectActivityForTable = createSelector(
@@ -43,10 +45,18 @@ const selectActivityForTable = createSelector(
               : db.handle;
         } else if (op.resourceType === "service") {
           const service = findServiceById(services, { id: op.resourceId });
+          let url;
+          if (service.appId !== "") {
+            // TODO - temporary until we have a service detail page
+            url = appDetailUrl(service.appId);
+          } else if (service.databaseId !== "") {
+            url = databaseDetailUrl(service.databaseId);
+          }
           resourceHandle =
             op.containerCount && op.containerSize
               ? `${service.handle} (${op.containerCount} Container(s) - ${op.containerSize} GB)`
               : service.handle;
+          return { ...op, envHandle: env.handle, resourceHandle, url };
         } else {
           resourceHandle = op.resourceId;
         }
