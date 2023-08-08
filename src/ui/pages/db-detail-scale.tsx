@@ -10,12 +10,13 @@ import {
 } from "../shared";
 import {
   CONTAINER_PROFILES,
-  CONTAINER_PROFILE_TYPES,
   ContainerProfileTypes,
   EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE,
   computedCostsForContainer,
+  containerProfileKeys,
   fetchDatabase,
   fetchService,
+  getContainerProfileFromType,
   scaleDatabase,
   selectDatabaseById,
   selectServiceById,
@@ -146,12 +147,11 @@ export const DatabaseScalePage = () => {
                         );
                       }}
                     >
-                      {CONTAINER_PROFILE_TYPES.map((containerProfileType) => (
+                      {containerProfileKeys.map((containerProfileType) => (
                         <option value={containerProfileType}>
                           {
-                            CONTAINER_PROFILES[
-                              containerProfileType as ContainerProfileTypes
-                            ].name
+                            getContainerProfileFromType(containerProfileType)
+                              .name
                           }
                         </option>
                       ))}

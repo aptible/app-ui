@@ -33,6 +33,15 @@ export type ContainerProfileTypes =
   | "r5"
   | "c4"
   | "c5";
+export const containerProfileKeys: ContainerProfileTypes[] = [
+  "t3",
+  "m4",
+  "m5",
+  "r4",
+  "r5",
+  "c4",
+  "c5",
+];
 type ContainerProfileData = {
   name: string;
   costPerContainerHourInCents: number;
@@ -101,14 +110,15 @@ export const CONTAINER_PROFILES: {
     maximumContainerCount: 32,
   },
 };
-export const CONTAINER_PROFILE_TYPES: string[] =
-  Object.keys(CONTAINER_PROFILES);
 export const EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE = (
   profile: ContainerProfileTypes,
 ): number[] =>
   EXPONENTIAL_CONTAINER_SIZES.filter(
     (size) => size >= CONTAINER_PROFILES[profile].minimumContainerSize,
   );
+export const getContainerProfileFromType = (
+  containerProfile: ContainerProfileTypes,
+): ContainerProfileData => CONTAINER_PROFILES[containerProfile];
 
 export const calcMetrics = (services: DeployService[]) => {
   const totalMemoryLimit = () => {

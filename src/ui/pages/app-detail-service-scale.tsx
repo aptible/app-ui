@@ -10,12 +10,13 @@ import {
 } from "../shared";
 import {
   CONTAINER_PROFILES,
-  CONTAINER_PROFILE_TYPES,
   ContainerProfileTypes,
   EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE,
   computedCostsForContainer,
+  containerProfileKeys,
   fetchApp,
   fetchService,
+  getContainerProfileFromType,
   scaleService,
   selectAppById,
   selectServiceById,
@@ -135,20 +136,28 @@ export const AppDetailServiceScalePage = () => {
                       placeholder="select"
                       onChange={(e) => {
                         e.preventDefault();
+                        if (
+                          !containerProfileKeys.includes(
+                            e.target.value as ContainerProfileTypes,
+                          )
+                        ) {
+                          return;
+                        }
                         setContainerProfileType(
                           e.target.value as ContainerProfileTypes,
                         );
                       }}
                     >
-                      {CONTAINER_PROFILE_TYPES.map((containerProfileType) => (
-                        <option value={containerProfileType}>
-                          {
-                            CONTAINER_PROFILES[
-                              containerProfileType as ContainerProfileTypes
-                            ].name
-                          }
-                        </option>
-                      ))}
+                      {containerProfileKeys.map(
+                        (containerProfileType: ContainerProfileTypes) => (
+                          <option value={containerProfileType}>
+                            {
+                              getContainerProfileFromType(containerProfileType)
+                                .name
+                            }
+                          </option>
+                        ),
+                      )}
                     </select>
                   </div>
                 </FormGroup>
@@ -156,7 +165,9 @@ export const AppDetailServiceScalePage = () => {
               <div className="mb-4">
                 <FormGroup
                   splitWidthInputs
-                  description={`Horizontally scale this service by increasing the number of containers. A count of 2 or more will provide High Availability. 32 max count for ${CONTAINER_PROFILES[containerProfileType].name} profiles.`}
+                  description={`Horizontally scale this service by increasing the number of containers. A count of 2 or more will provide High Availability. 32 max count for ${
+                    getContainerProfileFromType(containerProfileType).name
+                  } profiles.`}
                   label="Number of Containers"
                   htmlFor="number-containers"
                   feedbackMessage={errors.containerCount}
