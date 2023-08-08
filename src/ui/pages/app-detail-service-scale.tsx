@@ -9,7 +9,6 @@ import {
   Label,
 } from "../shared";
 import {
-  CONTAINER_PROFILES,
   ContainerProfileTypes,
   EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE,
   computedCostsForContainer,
@@ -94,23 +93,28 @@ export const AppDetailServiceScalePage = () => {
     navigate(operationDetailUrl(loader.meta.opId));
   });
 
+  const currentContainerProfile = getContainerProfileFromType(
+    service.instanceClass,
+  );
+  const requestedContainerProfile =
+    getContainerProfileFromType(containerProfileType);
   const currentPricePerHour = (
-    CONTAINER_PROFILES[service.instanceClass].costPerContainerHourInCents / 100
+    currentContainerProfile.costPerContainerHourInCents / 100
   ).toFixed(2);
   const currentPrice = (
     computedCostsForContainer(
       service.containerCount,
-      CONTAINER_PROFILES[service.instanceClass],
+      currentContainerProfile,
       service.containerMemoryLimitMb,
     ).estimatedCostInDollars / 1000
   ).toFixed(2);
   const estimatedPricePerHour = (
-    CONTAINER_PROFILES[containerProfileType].costPerContainerHourInCents / 100
+    requestedContainerProfile.costPerContainerHourInCents / 100
   ).toFixed(2);
   const estimatedPrice = (
     computedCostsForContainer(
       containerCount || 1,
-      CONTAINER_PROFILES[containerProfileType],
+      requestedContainerProfile,
       containerSize,
     ).estimatedCostInDollars / 1000
   ).toFixed(2);
@@ -231,10 +235,7 @@ export const AppDetailServiceScalePage = () => {
                       name="number-containers"
                       type="text"
                       disabled
-                      value={
-                        CONTAINER_PROFILES[containerProfileType].cpuShare *
-                        containerSize
-                      }
+                      value={currentContainerProfile.cpuShare * containerSize}
                       data-testid="number-containers"
                       id="number-containers"
                     />
@@ -271,8 +272,8 @@ export const AppDetailServiceScalePage = () => {
               <div className="my-4">
                 <Label>Container Profile</Label>
                 <p className="text-gray-500">
-                  Changed from {CONTAINER_PROFILES[service.instanceClass].name}{" "}
-                  to {CONTAINER_PROFILES[containerProfileType].name}
+                  Changed from {currentContainerProfile.name} to{" "}
+                  {requestedContainerProfile.name}
                 </p>
               </div>
             ) : null}

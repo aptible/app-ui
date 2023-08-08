@@ -9,7 +9,6 @@ import {
   Label,
 } from "../shared";
 import {
-  CONTAINER_PROFILES,
   ContainerProfileTypes,
   EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE,
   computedCostsForContainer,
@@ -96,27 +95,26 @@ export const DatabaseScalePage = () => {
     service.instanceClass !== containerProfileType ||
     database?.disk?.size !== diskValue;
 
+  const currentContainerProfile = getContainerProfileFromType(
+    service.instanceClass,
+  );
+  const requestedContainerProfile =
+    getContainerProfileFromType(containerProfileType);
   const pricePerHour = (
-    CONTAINER_PROFILES[service.instanceClass].costPerContainerHourInCents / 100
+    currentContainerProfile.costPerContainerHourInCents / 100
   ).toFixed(2);
   const currentPrice = (
-    computedCostsForContainer(
-      1,
-      CONTAINER_PROFILES[containerProfileType],
-      containerSize,
-    ).estimatedCostInDollars /
+    computedCostsForContainer(1, currentContainerProfile, containerSize)
+      .estimatedCostInDollars /
       1000 +
     (database?.disk?.size || 0) * 0.2
   ).toFixed(2);
   const estimatedPricePerHour = (
-    CONTAINER_PROFILES[service.instanceClass].costPerContainerHourInCents / 100
+    requestedContainerProfile.costPerContainerHourInCents / 100
   ).toFixed(2);
   const estimatedPrice = (
-    computedCostsForContainer(
-      1,
-      CONTAINER_PROFILES[containerProfileType],
-      containerSize,
-    ).estimatedCostInDollars /
+    computedCostsForContainer(1, requestedContainerProfile, containerSize)
+      .estimatedCostInDollars /
       1000 +
     diskValue * 0.2
   ).toFixed(2);
@@ -142,6 +140,13 @@ export const DatabaseScalePage = () => {
                       placeholder="select"
                       onChange={(e) => {
                         e.preventDefault();
+                        if (
+                          !containerProfileKeys.includes(
+                            e.target.value as ContainerProfileTypes,
+                          )
+                        ) {
+                          return;
+                        }
                         setContainerProfileType(
                           e.target.value as ContainerProfileTypes,
                         );
@@ -227,10 +232,7 @@ export const DatabaseScalePage = () => {
                       name="number-containers"
                       type="text"
                       disabled
-                      value={
-                        CONTAINER_PROFILES[containerProfileType].cpuShare *
-                        containerSize
-                      }
+                      value={requestedContainerProfile.cpuShare * containerSize}
                       data-testid="number-containers"
                       id="number-containers"
                     />
@@ -266,8 +268,8 @@ export const DatabaseScalePage = () => {
               <div className="my-4">
                 <Label>Container Profile</Label>
                 <p className="text-gray-500">
-                  Changed from {CONTAINER_PROFILES[service.instanceClass].name}{" "}
-                  to {CONTAINER_PROFILES[containerProfileType].name}
+                  Changed from {currentContainerProfile.name} to{" "}
+                  {requestedContainerProfile.name}
                 </p>
               </div>
             ) : null}
