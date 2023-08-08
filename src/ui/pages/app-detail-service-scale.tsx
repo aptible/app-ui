@@ -1,5 +1,13 @@
 import { useValidator } from "../hooks";
-import { Box, BoxGroup, Button, FormGroup, Input, Label } from "../shared";
+import {
+  BannerMessages,
+  Box,
+  BoxGroup,
+  Button,
+  FormGroup,
+  Input,
+  Label,
+} from "../shared";
 import {
   CONTAINER_PROFILES,
   CONTAINER_PROFILE_TYPES,
@@ -12,7 +20,7 @@ import {
   selectAppById,
   selectServiceById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { appActivityUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
@@ -52,18 +60,17 @@ export const AppDetailServiceScalePage = () => {
     selectServiceById(s, { id: serviceId }),
   );
 
+  const action = scaleService({
+    id: serviceId,
+    containerCount,
+    containerSize,
+  });
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
     if (!validate({ containerCount })) return;
-    dispatch(
-      scaleService({
-        id: serviceId,
-        containerCount,
-        containerSize,
-      }),
-    );
-    navigate(appActivityUrl(id));
+    dispatch(action);
   };
+  const loader = useLoader(action);
 
   useEffect(() => {
     if (service.containerCount) {
@@ -81,6 +88,10 @@ export const AppDetailServiceScalePage = () => {
     service.containerCount !== containerCount ||
     service.instanceClass !== containerProfileType ||
     service.containerMemoryLimitMb !== containerSize;
+
+  useLoaderSuccess(loader, () => {
+    navigate(appActivityUrl(id));
+  });
 
   return (
     <div>
@@ -291,6 +302,7 @@ export const AppDetailServiceScalePage = () => {
                 </div>
               </div>
             ) : null}
+            <BannerMessages {...loader} />
             <div className="flex mt-4">
               <Button
                 className="w-40 mb-4 flex font-semibold"
