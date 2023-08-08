@@ -71,11 +71,13 @@ export function FormGroup({
           {label}
         </Label>
         {description ? (
-          <div className="text-black-500 mb-1">{description}</div>
+          <div className="text-black-500 mb-1 mr-2">{description}</div>
         ) : null}
       </div>
 
-      <div className={`flex ${splitWidthInputs ? "w-1/2" : "flex-col"}`}>
+      <div
+        className={`flex flex-col ${splitWidthInputs ? "w-1/2" : "flex-col"}`}
+      >
         {children}
         {feedbackMessage ? (
           <FormGroupFeedback

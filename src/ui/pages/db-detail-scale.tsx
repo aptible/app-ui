@@ -1,3 +1,4 @@
+import { useValidator } from "../hooks";
 import { Box, BoxGroup, Button, FormGroup, Input, Label } from "../shared";
 import {
   CONTAINER_PROFILES,
@@ -18,10 +19,29 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
+const validators = {
+  diskSize: (data: DatabaseScaleProps) => {
+    if (data.diskSize < 10) {
+      return "Disk size must be at least 10 GB";
+    }
+    if (data.diskSize > 16384) {
+      return "Disk size cannot exceed 16384 GB";
+    }
+  },
+};
+
+type DatabaseScaleProps = {
+  diskSize: number;
+};
+
 export const DatabaseScalePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id = "" } = useParams();
+  const [errors, validate] = useValidator<
+    DatabaseScaleProps,
+    typeof validators
+  >(validators);
   useQuery(fetchDatabase({ id }));
   const [containerSize, setContainerSize] = useState(512);
   const [containerProfileType, setContainerProfileType] =
@@ -35,6 +55,7 @@ export const DatabaseScalePage = () => {
 
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
+    if (!validate({ diskSize: diskValue })) return;
     dispatch(
       scaleDatabase({
         id,
@@ -107,6 +128,8 @@ export const DatabaseScalePage = () => {
                   description="Increase the maximum available disk space in GBs. Disk Size can be resized at most once a day, and can only be resized up (i.e. you cannot shrink your Database Disk)."
                   label="Disk Size"
                   htmlFor="disk-size"
+                  feedbackMessage={errors.diskSize}
+                  feedbackVariant={errors.diskSize ? "danger" : "info"}
                 >
                   <div className="flex justify-between items-center mb-4 w-full">
                     <Input

@@ -1,3 +1,4 @@
+import { useValidator } from "../hooks";
 import { Box, BoxGroup, Button, FormGroup, Input, Label } from "../shared";
 import {
   CONTAINER_PROFILES,
@@ -18,10 +19,28 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
+const validators = {
+  containerCount: (data: AppScaleProps) => {
+    if (data.containerCount < 1) {
+      return "Container count must be at least 1";
+    }
+    if (data.containerCount > 32) {
+      return "Container count cannot exceed 32";
+    }
+  },
+};
+
+type AppScaleProps = {
+  containerCount: number;
+};
+
 export const AppDetailServiceScalePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id = "", serviceId = "" } = useParams();
+  const [errors, validate] = useValidator<AppScaleProps, typeof validators>(
+    validators,
+  );
   useQuery(fetchApp({ id }));
   const [containerCount, setContainerCount] = useState(1);
   const [containerProfileType, setContainerProfileType] =
@@ -35,6 +54,7 @@ export const AppDetailServiceScalePage = () => {
 
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
+    if (!validate({ containerCount })) return;
     dispatch(
       scaleService({
         id: serviceId,
@@ -107,6 +127,8 @@ export const AppDetailServiceScalePage = () => {
                   description={`Horizontally scale this service by increasing the number of containers. A count of 2 or more will provide High Availability. 32 max count for ${CONTAINER_PROFILES[containerProfileType].name} profiles.`}
                   label="Number of Containers"
                   htmlFor="number-containers"
+                  feedbackMessage={errors.containerCount}
+                  feedbackVariant={errors.containerCount ? "danger" : "info"}
                 >
                   <div className="flex justify-between items-center mb-4 w-full">
                     <Input
