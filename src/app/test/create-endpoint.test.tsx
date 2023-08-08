@@ -65,7 +65,7 @@ describe("Create Endpoint flow", () => {
       });
 
       const addBtn = await screen.findByRole("button", {
-        name: /Add Endpoint/,
+        name: /New Endpoint/,
       });
       fireEvent.click(addBtn);
 

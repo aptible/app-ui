@@ -56,7 +56,7 @@ export const DatabaseBackupsPage = () => {
           onClick={onCreateBackup}
           isLoading={loader.isLoading}
         >
-          <IconPlusCircle variant="sm" className="mr-1" /> Create Backup
+          <IconPlusCircle variant="sm" className="mr-2" /> New Backup
         </ButtonCreate>
 
         <LoadingSpinner show={pollLoader.isLoading} />
