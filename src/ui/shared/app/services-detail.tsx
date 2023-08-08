@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 
 import {
+  calcMetrics,
   calcServiceMetrics,
   selectAppById,
   selectServicesByIds,
@@ -28,6 +29,7 @@ const serviceListRow = ({
 }): React.ReactNode[] => {
   if (!app || !service) return [];
   const metrics = calcServiceMetrics(service);
+  const { totalCPU } = calcMetrics([service]);
 
   return [
     <tr className="group hover:bg-gray-50" key={`${service.id}`}>
@@ -44,7 +46,7 @@ const serviceListRow = ({
       </Td>
 
       <Td className="flex-1">
-        <div className={tokens.type.darker}>{service.containerCount}</div>
+        <div className={tokens.type.darker}>{totalCPU}</div>
       </Td>
 
       <Td className="flex-1">
