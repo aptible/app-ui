@@ -83,7 +83,7 @@ const AppCostCell = ({ app }: AppCellProps) => {
   );
   const cost = services.reduce((acc, service) => {
     const mm = calcServiceMetrics(service);
-    return acc + mm.estimatedCostInDollars;
+    return acc + (mm.estimatedCostInDollars * 1024) / 1000;
   }, 0);
 
   return (
