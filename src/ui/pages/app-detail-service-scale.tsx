@@ -7,16 +7,20 @@ import {
   computedCostsForContainer,
   fetchApp,
   fetchService,
+  scaleService,
   selectAppById,
   selectServiceById,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
+import { appActivityUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
 
 export const AppDetailServiceScalePage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { id = "", serviceId = "" } = useParams();
   useQuery(fetchApp({ id }));
   const [containerCount, setContainerCount] = useState(1);
@@ -31,6 +35,14 @@ export const AppDetailServiceScalePage = () => {
 
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
+    dispatch(
+      scaleService({
+        id: serviceId,
+        containerCount,
+        containerSize,
+      }),
+    );
+    navigate(appActivityUrl(id));
   };
 
   useEffect(() => {
@@ -260,7 +272,8 @@ export const AppDetailServiceScalePage = () => {
             <div className="flex mt-4">
               <Button
                 className="w-40 mb-4 flex font-semibold"
-                onClick={() => {}}
+                type="submit"
+                onClick={(e) => onSubmitForm(e)}
                 disabled={!changesExist}
               >
                 Save Changes

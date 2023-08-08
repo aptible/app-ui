@@ -7,16 +7,20 @@ import {
   computedCostsForContainer,
   fetchDatabase,
   fetchService,
+  scaleDatabase,
   selectDatabaseById,
   selectServiceById,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
+import { databaseActivityUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
 
 export const DatabaseScalePage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { id = "" } = useParams();
   useQuery(fetchDatabase({ id }));
   const [containerSize, setContainerSize] = useState(512);
@@ -31,6 +35,14 @@ export const DatabaseScalePage = () => {
 
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
+    dispatch(
+      scaleDatabase({
+        id,
+        diskSize: diskValue,
+        containerSize: containerSize,
+      }),
+    );
+    navigate(databaseActivityUrl(id));
   };
 
   useEffect(() => {
@@ -262,8 +274,9 @@ export const DatabaseScalePage = () => {
             <div className="flex mt-4">
               <Button
                 className="w-40 mb-4 flex font-semibold"
-                onClick={() => {}}
                 disabled={!changesExist}
+                onClick={(e) => onSubmitForm(e)}
+                type="submit"
               >
                 Save Changes
               </Button>

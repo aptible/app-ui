@@ -59,7 +59,7 @@ const serviceListRow = ({
 
       <Td className="flex-1">
         <div className={tokens.type.darker}>
-          ${metrics.estimatedCostInDollars}
+          ${metrics.estimatedCostInDollars.toFixed(2)}
         </div>
       </Td>
       <Td className="flex justify-end gap-2 mr-4 mt-4">

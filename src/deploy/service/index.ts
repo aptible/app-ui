@@ -8,6 +8,7 @@ import {
 } from "@app/slice-helpers";
 import type {
   AppState,
+  DeployOperationResponse,
   DeployService,
   InstanceClass,
   LinkResponse,
@@ -199,3 +200,34 @@ export const serviceEntities = {
     save: addDeployServices,
   }),
 };
+
+export interface ServiceScaleProps {
+  id: string;
+  containerCount?: number;
+  containerSize?: number;
+}
+
+export const scaleService = api.post<
+  ServiceScaleProps,
+  DeployOperationResponse
+>(["/services/:id/operations", "scale"], function* (ctx, next) {
+  const { id, containerCount, containerSize } = ctx.payload;
+  const body = {
+    type: "scale",
+    id,
+    container_count: containerCount,
+    container_size: containerSize,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Scale service operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
