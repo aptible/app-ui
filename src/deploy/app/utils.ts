@@ -105,7 +105,7 @@ export const CONTAINER_PROFILE_TYPES: string[] =
   Object.keys(CONTAINER_PROFILES);
 export const EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE = (
   profile: ContainerProfileTypes,
-): number[] | undefined =>
+): number[] =>
   EXPONENTIAL_CONTAINER_SIZES.filter(
     (size) => size >= CONTAINER_PROFILES[profile].minimumContainerSize,
   );
