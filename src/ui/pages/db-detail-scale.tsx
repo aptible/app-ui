@@ -10,9 +10,9 @@ import {
 } from "../shared";
 import {
   ContainerProfileTypes,
-  exponentialContainerSizesByProfile,
   computedCostsForContainer,
   containerProfileKeys,
+  exponentialContainerSizesByProfile,
   fetchDatabase,
   fetchService,
   getContainerProfileFromType,
