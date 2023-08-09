@@ -119,18 +119,15 @@ export const AppDetailServiceScalePage = () => {
     ).estimatedCostInDollars / 1000
   ).toFixed(2);
 
-  const handleContainerProfileSelection = (e: SyntheticEvent) => {
+  const handleContainerProfileSelection = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
     e.preventDefault();
-    if (
-      !containerProfileKeys.includes(
-        (e.currentTarget as HTMLSelectElement).value as ContainerProfileTypes,
-      )
-    ) {
+    const value = e.currentTarget.value as ContainerProfileTypes;
+    if (!containerProfileKeys.includes(value)) {
       return;
     }
-    setContainerProfileType(
-      (e.currentTarget as HTMLSelectElement).value as ContainerProfileTypes,
-    );
+    setContainerProfileType(value);
   };
 
   return (
@@ -321,7 +318,6 @@ export const AppDetailServiceScalePage = () => {
               <Button
                 className="w-40 mb-4 flex font-semibold"
                 type="submit"
-                onClick={(e) => onSubmitForm(e)}
                 disabled={!changesExist}
               >
                 Save Changes

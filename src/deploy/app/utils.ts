@@ -118,7 +118,19 @@ export const exponentialContainerSizesByProfile = (
   );
 export const getContainerProfileFromType = (
   containerProfile: ContainerProfileTypes,
-): ContainerProfileData => CONTAINER_PROFILES[containerProfile];
+): ContainerProfileData => {
+  if (!CONTAINER_PROFILES[containerProfile]) {
+    return {
+      name: "",
+      costPerContainerHourInCents: 0,
+      cpuShare: 0,
+      minimumContainerSize: 0,
+      maximumContainerSize: 0,
+      maximumContainerCount: 0,
+    };
+  }
+  return CONTAINER_PROFILES[containerProfile];
+};
 
 export const calcMetrics = (services: DeployService[]) => {
   const totalMemoryLimit = () => {

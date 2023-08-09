@@ -23,7 +23,7 @@ import {
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { operationDetailUrl } from "@app/routes";
 import { AppState } from "@app/types";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
@@ -67,7 +67,7 @@ export const DatabaseScalePage = () => {
     containerSize: containerSize,
   });
 
-  const onSubmitForm = (e: SyntheticEvent) => {
+  const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate({ diskSize: diskValue })) return;
     dispatch(action);
@@ -119,18 +119,15 @@ export const DatabaseScalePage = () => {
     diskValue * 0.2
   ).toFixed(2);
 
-  const handleContainerProfileSelection = (e: SyntheticEvent) => {
+  const handleContainerProfileSelection = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
     e.preventDefault();
-    if (
-      !containerProfileKeys.includes(
-        (e.currentTarget as HTMLSelectElement).value as ContainerProfileTypes,
-      )
-    ) {
+    const value = e.currentTarget.value as ContainerProfileTypes;
+    if (!containerProfileKeys.includes(value)) {
       return;
     }
-    setContainerProfileType(
-      (e.currentTarget as HTMLSelectElement).value as ContainerProfileTypes,
-    );
+    setContainerProfileType(value);
   };
 
   return (
@@ -320,7 +317,6 @@ export const DatabaseScalePage = () => {
               <Button
                 className="w-40 mb-4 flex font-semibold"
                 disabled={!changesExist}
-                onClick={(e) => onSubmitForm(e)}
                 type="submit"
               >
                 Save Changes
