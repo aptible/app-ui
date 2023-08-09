@@ -74,7 +74,11 @@ export function EndpointUrl({ enp }: { enp: DeployEndpoint }) {
   }
 
   return (
-    <ExternalLink href={`https://${enp.virtualDomain}`} variant="default">
+    <ExternalLink
+      className="text-black group-hover:text-indigo hover:text-indigo"
+      href={`https://${enp.virtualDomain}`}
+      variant="default"
+    >
       https://{enp.virtualDomain}
     </ExternalLink>
   );
