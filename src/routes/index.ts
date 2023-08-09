@@ -72,6 +72,12 @@ export const appServicesUrl = (id: string) => `${appDetailUrl(id)}/services`;
 export const APP_SERVICE_PATH = `${APP_DETAIL_PATH}/services/:serviceId`;
 export const appServicePathUrl = (appId: string, serviceId: string) =>
   `${appDetailUrl(appId)}/services/${serviceId}`;
+export const APP_SERVICE_METRICS_PATH = `${APP_DETAIL_PATH}/services/:serviceId/metrics`;
+export const appServicePathMetricsUrl = (appId: string, serviceId: string) =>
+  `${appDetailUrl(appId)}/services/${serviceId}/metrics`;
+export const APP_SERVICE_SCALE_PATH = `${APP_DETAIL_PATH}/services/:serviceId/scale`;
+export const appServiceScalePathUrl = (appId: string, serviceId: string) =>
+  `${appDetailUrl(appId)}/services/${serviceId}/scale`;
 export const APP_ACTIVITY_PATH = `${APP_DETAIL_PATH}/activity`;
 export const appActivityUrl = (id: string) => `${appDetailUrl(id)}/activity`;
 export const APP_ENDPOINTS_PATH = `${APP_DETAIL_PATH}/endpoints`;

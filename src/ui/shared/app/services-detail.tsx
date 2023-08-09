@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 
 import {
+  calcMetrics,
   calcServiceMetrics,
   selectAppById,
   selectServicesByIds,
@@ -12,7 +13,11 @@ import { PreCode, listToInvertedTextColor } from "../pre-code";
 import { ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { appServicePathUrl, createProjectGitAppSetupUrl } from "@app/routes";
+import {
+  appServicePathMetricsUrl,
+  appServiceScalePathUrl,
+  createProjectGitAppSetupUrl,
+} from "@app/routes";
 import { useNavigate } from "react-router";
 
 const serviceListRow = ({
@@ -24,6 +29,7 @@ const serviceListRow = ({
 }): React.ReactNode[] => {
   if (!app || !service) return [];
   const metrics = calcServiceMetrics(service);
+  const { totalCPU } = calcMetrics([service]);
 
   return [
     <tr className="group hover:bg-gray-50" key={`${service.id}`}>
@@ -40,7 +46,7 @@ const serviceListRow = ({
       </Td>
 
       <Td className="flex-1">
-        <div className={tokens.type.darker}>{service.containerCount}</div>
+        <div className={tokens.type.darker}>{totalCPU}</div>
       </Td>
 
       <Td className="flex-1">
@@ -55,17 +61,25 @@ const serviceListRow = ({
 
       <Td className="flex-1">
         <div className={tokens.type.darker}>
-          ${metrics.estimatedCostInDollars}
+          ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
         </div>
       </Td>
-      <Td className="flex justify-end mr-4 mt-4">
+      <Td className="flex justify-end gap-2 mr-4 mt-4">
         <ButtonLink
-          className="w-20"
+          className="w-15"
           size="sm"
-          to={appServicePathUrl(app.id, service.id)}
+          to={appServicePathMetricsUrl(app.id, service.id)}
           variant="primary"
         >
           Metrics
+        </ButtonLink>
+        <ButtonLink
+          className="w-15"
+          size="sm"
+          to={appServiceScalePathUrl(app.id, service.id)}
+          variant="primary"
+        >
+          Scale
         </ButtonLink>
       </Td>
     </tr>,

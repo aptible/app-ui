@@ -29,6 +29,7 @@ import { capitalize } from "@app/string-utils";
 import type {
   ApiGen,
   AppState,
+  DeployActivityRow,
   DeployOperation,
   LinkResponse,
   OperationStatus,
@@ -45,6 +46,7 @@ export interface DeployOperationResponse {
   git_ref: string;
   docker_ref: string;
   container_count: number;
+  container_size: number;
   encrypted_env_json_new: string;
   destination_region: string;
   automated: boolean;
@@ -85,6 +87,7 @@ export const defaultOperationResponse = (
     git_ref: "",
     docker_ref: "",
     container_count: 0,
+    container_size: 0,
     encrypted_env_json_new: "",
     destination_region: "",
     automated: false,
@@ -132,6 +135,7 @@ export const defaultDeployOperation = (
     gitRef: "",
     dockerRef: "",
     containerCount: 0,
+    containerSize: 0,
     encryptedEnvJsonNew: "",
     destinationRegion: "",
     cancelled: false,
@@ -178,6 +182,7 @@ export const deserializeDeployOperation = (
     gitRef: payload.git_ref || "",
     dockerRef: payload.docker_ref,
     containerCount: payload.container_count,
+    containerSize: payload.container_size,
     encryptedEnvJsonNew: payload.encrypted_env_json_new,
     destinationRegion: payload.destination_region,
     cancelled: payload.cancelled,
@@ -506,7 +511,8 @@ export const createReadableStatus = (status: OperationStatus): string => {
 export const getResourceUrl = ({
   resourceId,
   resourceType,
-}: Pick<DeployOperation, "resourceId" | "resourceType">) => {
+  url,
+}: Pick<DeployActivityRow, "resourceId" | "resourceType" | "url">) => {
   switch (resourceType) {
     case "app":
       return appDetailUrl(resourceId);
@@ -514,6 +520,8 @@ export const getResourceUrl = ({
       return databaseDetailUrl(resourceId);
     case "vhost":
       return endpointDetailUrl(resourceId);
+    case "service":
+      return url;
     default:
       return "";
   }

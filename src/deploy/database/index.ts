@@ -649,3 +649,34 @@ export const updateDatabase = api.put<UpdateDatabase>(
     yield* next();
   },
 );
+
+export interface DatabaseScaleProps {
+  id: string;
+  diskSize?: number;
+  containerSize?: number;
+}
+
+export const scaleDatabase = api.post<
+  DatabaseScaleProps,
+  DeployOperationResponse
+>(["/databases/:id/operations", "restart"], function* (ctx, next) {
+  const { id, diskSize, containerSize } = ctx.payload;
+  const body = {
+    type: "restart",
+    id,
+    disk_size: diskSize,
+    container_size: containerSize,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Restart (and scale) database operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});

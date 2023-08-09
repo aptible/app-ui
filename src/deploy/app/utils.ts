@@ -24,7 +24,35 @@ export const EXPONENTIAL_CONTAINER_SIZES = [
   150 * GB,
   240 * GB,
 ];
-export const CONTAINER_PROFILES = {
+
+export type ContainerProfileTypes =
+  | "t3"
+  | "m4"
+  | "m5"
+  | "r4"
+  | "r5"
+  | "c4"
+  | "c5";
+export const containerProfileKeys: ContainerProfileTypes[] = [
+  "t3",
+  "m4",
+  "m5",
+  "r4",
+  "r5",
+  "c4",
+  "c5",
+];
+type ContainerProfileData = {
+  name: string;
+  costPerContainerHourInCents: number;
+  cpuShare: number;
+  minimumContainerSize: number;
+  maximumContainerSize: number;
+  maximumContainerCount: number;
+};
+export const CONTAINER_PROFILES: {
+  [profile in ContainerProfileTypes]: ContainerProfileData;
+} = {
   t3: {
     name: "Economy (T)",
     costPerContainerHourInCents: 3.5,
@@ -82,6 +110,27 @@ export const CONTAINER_PROFILES = {
     maximumContainerCount: 32,
   },
 };
+export const exponentialContainerSizesByProfile = (
+  profile: ContainerProfileTypes,
+): number[] =>
+  EXPONENTIAL_CONTAINER_SIZES.filter(
+    (size) => size >= CONTAINER_PROFILES[profile].minimumContainerSize,
+  );
+export const getContainerProfileFromType = (
+  containerProfile: ContainerProfileTypes,
+): ContainerProfileData => {
+  if (!CONTAINER_PROFILES[containerProfile]) {
+    return {
+      name: "",
+      costPerContainerHourInCents: 0,
+      cpuShare: 0,
+      minimumContainerSize: 0,
+      maximumContainerSize: 0,
+      maximumContainerCount: 0,
+    };
+  }
+  return CONTAINER_PROFILES[containerProfile];
+};
 
 export const calcMetrics = (services: DeployService[]) => {
   const totalMemoryLimit = () => {
@@ -103,5 +152,27 @@ export const calcMetrics = (services: DeployService[]) => {
   return {
     totalCPU: totalCPU(),
     totalMemoryLimit: totalMemoryLimit(),
+  };
+};
+
+export const hoursPerMonth = 731;
+export const computedCostsForContainer = (
+  containerCount: number,
+  containerProfile: ContainerProfileData,
+  containerSizeGB: number,
+) => {
+  const estimatedCostInCents = () => {
+    const { costPerContainerHourInCents } = containerProfile;
+    return (
+      hoursPerMonth *
+      containerCount *
+      ((containerSizeGB / 1024) * 1000) *
+      costPerContainerHourInCents
+    );
+  };
+  const estimatedCostInDollars = estimatedCostInCents() / 100;
+  return {
+    estimatedCostInCents,
+    estimatedCostInDollars,
   };
 };

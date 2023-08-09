@@ -1,19 +1,26 @@
 import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
+  createAction,
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
 import type {
   AppState,
+  DeployOperationResponse,
   DeployService,
   InstanceClass,
   LinkResponse,
 } from "@app/types";
 
-import { CONTAINER_PROFILES, GB } from "../app/utils";
+import {
+  CONTAINER_PROFILES,
+  GB,
+  computedCostsForContainer,
+} from "../app/utils";
 import { selectDeploy } from "../slice";
+import { poll } from "saga-query";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m4";
 
@@ -133,18 +140,12 @@ export const calcServiceMetrics = (service: DeployService) => {
 
   const containerSizeGB = service.containerMemoryLimitMb / GB;
   const cpuShare = service.containerMemoryLimitMb / containerProfile.cpuShare;
-
-  const estimatedCostInCents = () => {
-    const hoursPerMonth = 731;
-    const { costPerContainerHourInCents } = containerProfile;
-    return (
-      hoursPerMonth *
-      service.containerCount *
-      containerSizeGB *
-      costPerContainerHourInCents
+  const { estimatedCostInCents, estimatedCostInDollars } =
+    computedCostsForContainer(
+      service.containerCount,
+      containerProfile,
+      containerSizeGB,
     );
-  };
-  const estimatedCostInDollars = estimatedCostInCents() / 100;
 
   return {
     containerProfile,
@@ -167,15 +168,30 @@ const initService = defaultDeployService();
 const must = mustSelectEntity(initService);
 export const selectServiceById = must(selectors.selectById);
 export const selectServicesByIds = selectors.selectByIds;
-export const { selectTableAsList: selectServicesAsList } = selectors;
+export const {
+  selectTableAsList: selectServicesAsList,
+  selectTable: selectServices,
+} = selectors;
 export const hasDeployService = (a: DeployService) => a.id !== "";
 export const serviceReducers = createReducerMap(slice);
+export const findServiceById = must(selectors.findById);
 
 export const fetchService = api.get<{ id: string }>("/services/:id");
 export const fetchEnvironmentServices = api.get<{ id: string }>(
   "/accounts/:id/services",
 );
 export const fetchAppServices = api.get<{ id: string }>("/apps/:id/services");
+
+export const fetchServiceOperations = api.get<{ id: string }>(
+  "/services/:id/operations",
+  api.cache(),
+);
+export const cancelServicesOpsPoll = createAction("cancel-services-ops-poll");
+export const pollServiceOperations = api.get<{ id: string }>(
+  ["/services/:id/operations", "poll"],
+  { saga: poll(5 * 1000, `${cancelServicesOpsPoll}`) },
+  api.cache(),
+);
 
 export const serviceEntities = {
   service: defaultEntity({
@@ -184,3 +200,34 @@ export const serviceEntities = {
     save: addDeployServices,
   }),
 };
+
+export interface ServiceScaleProps {
+  id: string;
+  containerCount?: number;
+  containerSize?: number;
+}
+
+export const scaleService = api.post<
+  ServiceScaleProps,
+  DeployOperationResponse
+>(["/services/:id/operations", "scale"], function* (ctx, next) {
+  const { id, containerCount, containerSize } = ctx.payload;
+  const body = {
+    type: "scale",
+    id,
+    container_count: containerCount,
+    container_size: containerSize,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Scale service operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});

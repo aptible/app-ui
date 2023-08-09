@@ -6,7 +6,6 @@ import { Link, useSearchParams } from "react-router-dom";
 
 import { prettyDateRelative } from "@app/date";
 import {
-  DeployActivityRow,
   cancelAppOpsPoll,
   cancelDatabaseOpsPoll,
   cancelEndpointOpsPoll,
@@ -15,6 +14,7 @@ import {
   fetchApp,
   fetchDatabase,
   fetchEnvironmentById,
+  fetchServiceOperations,
   getResourceUrl,
   pollAppOperations,
   pollDatabaseOperations,
@@ -28,7 +28,7 @@ import {
 } from "@app/deploy";
 import { operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import type { AppState, ResourceType } from "@app/types";
+import type { AppState, DeployActivityRow, ResourceType } from "@app/types";
 
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
@@ -320,7 +320,10 @@ export function ActivityByApp({ appId }: { appId: string }) {
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
   useQuery(fetchApp({ id: appId }));
 
-  const poller = useMemo(() => pollAppOperations({ id: appId }), [appId]);
+  const poller = useMemo(
+    () => pollEnvOperations({ envId: app.environmentId }),
+    [app.environmentId],
+  );
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
   usePoller({
     action: poller,
@@ -333,7 +336,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceId: appId,
+      resourceIds: [appId],
     }),
   );
 
@@ -356,6 +359,7 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
   useQuery(fetchEnvironmentById({ id: db.environmentId }));
   useQuery(fetchDatabase({ id: dbId }));
+  useQuery(fetchServiceOperations({ id: db.serviceId }));
 
   const poller = useMemo(() => pollDatabaseOperations({ id: dbId }), [dbId]);
   const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);
@@ -370,7 +374,7 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceId: dbId,
+      resourceIds: [dbId, db.serviceId],
     }),
   );
 
@@ -404,7 +408,7 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceId: enpId,
+      resourceIds: [enpId],
     }),
   );
 

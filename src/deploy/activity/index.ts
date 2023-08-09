@@ -9,19 +9,17 @@ import {
   selectEnvironmentsByOrg,
 } from "../environment";
 import { selectOperationById, selectOperationsAsList } from "../operation";
-import type { AppState, DeployOperation } from "@app/types";
-
-export interface DeployActivityRow extends DeployOperation {
-  envHandle: string;
-  resourceHandle: string;
-}
+import { findServiceById, selectServices } from "../service";
+import { appDetailUrl, databaseDetailUrl } from "@app/routes";
+import type { AppState, DeployActivityRow } from "@app/types";
 
 const selectActivityForTable = createSelector(
   selectOperationsAsList,
   selectEnvironmentsByOrg,
   selectDatabases,
   selectApps,
-  (ops, envs, dbs, apps) =>
+  selectServices,
+  (ops, envs, dbs, apps, services) =>
     ops
       .filter((op) => {
         const env = findEnvById(envs, { id: op.environmentId });
@@ -35,7 +33,24 @@ const selectActivityForTable = createSelector(
           resourceHandle = app.handle;
         } else if (op.resourceType === "database") {
           const db = findDatabaseById(dbs, { id: op.resourceId });
-          resourceHandle = db.handle;
+          resourceHandle =
+            op.containerCount && op.containerSize
+              ? `${db.handle} (${op.containerCount} Container(s) - ${op.containerSize} GB)`
+              : db.handle;
+        } else if (op.resourceType === "service") {
+          const service = findServiceById(services, { id: op.resourceId });
+          let url;
+          if (service.appId !== "") {
+            // TODO - temporary until we have a service detail page
+            url = appDetailUrl(service.appId);
+          } else if (service.databaseId !== "") {
+            url = databaseDetailUrl(service.databaseId);
+          }
+          resourceHandle =
+            op.containerCount && op.containerSize
+              ? `${service.handle} (${op.containerCount} Container(s) - ${op.containerSize} GB)`
+              : service.handle;
+          return { ...op, envHandle: env.handle, resourceHandle, url };
         } else {
           resourceHandle = op.resourceId;
         }
@@ -54,9 +69,9 @@ export const selectActivityForTableSearch = createSelector(
   selectActivityForTable,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: AppState, props: { envId?: string }) => props.envId || "",
-  (_: AppState, props: { resourceId?: string }) => props.resourceId || "",
-  (ops, search, envId, resourceId): DeployActivityRow[] => {
-    if (search === "" && envId === "" && resourceId === "") {
+  (_: AppState, props: { resourceIds?: string[] }) => props.resourceIds || "",
+  (ops, search, envId, resourceIds): DeployActivityRow[] => {
+    if (search === "" && envId === "" && resourceIds.length === 0) {
       return ops.slice(0, Math.min(ops.length, MAX_RESULTS));
     }
 
@@ -92,10 +107,11 @@ export const selectActivityForTableSearch = createSelector(
         resourceMatch ||
         resourceHandleMatch;
 
-      const resourceIdMatch = resourceId !== "" && op.resourceId === resourceId;
+      const resourceIdMatch =
+        resourceIds.length !== 0 && resourceIds.includes(op.resourceId);
       const envIdMatch = envId !== "" && op.environmentId === envId;
 
-      if (resourceId !== "") {
+      if (resourceIds.length !== 0) {
         if (search !== "") {
           return resourceIdMatch && searchMatch;
         }

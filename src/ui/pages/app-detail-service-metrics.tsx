@@ -29,7 +29,7 @@ import { useState } from "react";
 
 const layersToSearchForContainers = ["app"];
 
-export function AppDetailServicePage() {
+export function AppDetailServiceMetricsPage() {
   const { id = "", serviceId = "" } = useParams();
   const [viewTab, setViewTab] = useState<MetricTabTypes>("chart");
   const [metricHorizon, setMetricHorizon] = useState<MetricHorizons>("1h");
@@ -142,4 +142,4 @@ export function AppDetailServicePage() {
   );
 }
 
-export const Component = AppDetailServicePage;
+export const Component = AppDetailServiceMetricsPage;
