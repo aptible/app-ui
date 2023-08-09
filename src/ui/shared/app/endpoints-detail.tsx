@@ -45,10 +45,7 @@ const EndpointRow = ({
         </Link>
       </Td>
       <Td>
-        <EndpointUrl
-          className="text-black group-hover:text-indigo hover:text-indigo"
-          enp={endpoint}
-        />
+        <EndpointUrl enp={endpoint} />
       </Td>
       <Td>
         <EndpointStatusPill status={endpoint.status} />

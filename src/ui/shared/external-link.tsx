@@ -13,14 +13,21 @@ export const ExternalLink = ({
   href,
   children,
   variant,
+  className = "",
 }: {
   href: string;
   children: React.ReactNode;
   variant: StatusVariant;
+  className?: string;
 }) => {
-  const className = variantToLinks(variant);
+  const linkClasses = variantToLinks(variant);
   return (
-    <a className={className} target="_blank" href={href} rel="noreferrer">
+    <a
+      className={`${linkClasses} ${className}`}
+      target="_blank"
+      href={href}
+      rel="noreferrer"
+    >
       {children}
     </a>
   );
