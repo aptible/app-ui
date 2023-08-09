@@ -81,7 +81,7 @@ export const DatabaseScalePage = () => {
     if (service.instanceClass) {
       setContainerProfileType(service.instanceClass);
     }
-    if (service.containerMemoryLimitMb && database?.disk?.size) {
+    if (service.containerMemoryLimitMb && database.disk?.size) {
       setDiskValue(database.disk.size);
     }
   }, [database]);
@@ -93,7 +93,7 @@ export const DatabaseScalePage = () => {
   const changesExist =
     service.containerMemoryLimitMb !== containerSize ||
     service.instanceClass !== containerProfileType ||
-    database?.disk?.size !== diskValue;
+    database.disk?.size !== diskValue;
 
   const currentContainerProfile = getContainerProfileFromType(
     service.instanceClass,
@@ -107,7 +107,7 @@ export const DatabaseScalePage = () => {
     computedCostsForContainer(1, currentContainerProfile, containerSize)
       .estimatedCostInDollars /
       1000 +
-    (database?.disk?.size || 0) * 0.2
+    (database.disk?.size || 0) * 0.2
   ).toFixed(2);
   const estimatedPricePerHour = (
     requestedContainerProfile.costPerContainerHourInCents / 100
@@ -255,7 +255,7 @@ export const DatabaseScalePage = () => {
                   1 x {service.containerMemoryLimitMb / 1024} GB container x $
                   {pricePerHour} per GB/hour
                 </p>
-                {database?.disk?.size ? (
+                {database.disk?.size ? (
                   <p className="text-gray-500">
                     {database.disk.size} GB disk x $0.20 per GB/month
                   </p>
@@ -290,11 +290,11 @@ export const DatabaseScalePage = () => {
                 </p>
               </div>
             ) : null}
-            {diskValue !== database?.disk?.size ? (
+            {diskValue !== database.disk?.size ? (
               <div className="my-4">
                 <Label>Disk Size</Label>
                 <p className="text-gray-500">
-                  Changed from {database?.disk?.size || 0} GB to {diskValue} GB
+                  Changed from {database.disk?.size || 0} GB to {diskValue} GB
                 </p>
               </div>
             ) : null}
