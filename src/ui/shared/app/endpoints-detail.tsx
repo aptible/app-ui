@@ -35,12 +35,16 @@ const EndpointRow = ({
   };
 
   return (
-    <tr>
+    <tr className="group hover:bg-gray-50">
       <Td>
-        <Link to={endpointDetailUrl(endpoint.id)}>{endpoint.id}</Link>
+        <Link
+        className="text-black group-hover:text-indigo hover:text-indigo"
+        to={endpointDetailUrl(endpoint.id)}>{endpoint.id}</Link>
       </Td>
       <Td>
-        <EndpointUrl enp={endpoint} />
+        <EndpointUrl
+        className="text-black group-hover:text-indigo hover:text-indigo"
+        enp={endpoint} />
       </Td>
       <Td>
         <EndpointStatusPill status={endpoint.status} />
