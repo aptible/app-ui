@@ -280,6 +280,9 @@ const apiHandlers = [
       ),
     );
   }),
+  rest.delete(`${testEnv.apiUrl}/accounts/:id`, async (_, res, ctx) => {
+    return res(ctx.status(204));
+  }),
   rest.get(`${testEnv.apiUrl}/apps/:id/vhosts`, (req, res, ctx) => {
     if (!isValidToken(req)) {
       return res(ctx.status(401));
@@ -478,6 +481,15 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/accounts/:id/backups`, async (_, res, ctx) => {
     return res(ctx.json({ backups: [] }));
   }),
+  rest.get(`${testEnv.apiUrl}/accounts/:id/log_drains`, async (_, res, ctx) => {
+    return res(ctx.json({ log_drains: [] }));
+  }),
+  rest.get(
+    `${testEnv.apiUrl}/accounts/:id/metric_drains`,
+    async (_, res, ctx) => {
+      return res(ctx.json({ metric_drains: [] }));
+    },
+  ),
   rest.get(
     `${testEnv.apiUrl}/accounts/:id/backup_retention_policies`,
     async (_, res, ctx) => {
