@@ -110,7 +110,7 @@ export const CONTAINER_PROFILES: {
     maximumContainerCount: 32,
   },
 };
-export const EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE = (
+export const exponentialContainerSizesByProfile = (
   profile: ContainerProfileTypes,
 ): number[] =>
   EXPONENTIAL_CONTAINER_SIZES.filter(

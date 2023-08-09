@@ -10,7 +10,7 @@ import {
 } from "../shared";
 import {
   ContainerProfileTypes,
-  EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE,
+  exponentialContainerSizesByProfile,
   computedCostsForContainer,
   containerProfileKeys,
   fetchDatabase,
@@ -119,6 +119,20 @@ export const DatabaseScalePage = () => {
     diskValue * 0.2
   ).toFixed(2);
 
+  const handleContainerProfileSelection = (e: SyntheticEvent) => {
+    e.preventDefault();
+    if (
+      !containerProfileKeys.includes(
+        (e.currentTarget as HTMLSelectElement).value as ContainerProfileTypes,
+      )
+    ) {
+      return;
+    }
+    setContainerProfileType(
+      (e.currentTarget as HTMLSelectElement).value as ContainerProfileTypes,
+    );
+  };
+
   return (
     <div>
       <BoxGroup>
@@ -138,22 +152,13 @@ export const DatabaseScalePage = () => {
                       value={containerProfileType}
                       className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                       placeholder="select"
-                      onChange={(e) => {
-                        e.preventDefault();
-                        if (
-                          !containerProfileKeys.includes(
-                            e.target.value as ContainerProfileTypes,
-                          )
-                        ) {
-                          return;
-                        }
-                        setContainerProfileType(
-                          e.target.value as ContainerProfileTypes,
-                        );
-                      }}
+                      onChange={handleContainerProfileSelection}
                     >
                       {containerProfileKeys.map((containerProfileType) => (
-                        <option value={containerProfileType}>
+                        <option
+                          key={containerProfileType}
+                          value={containerProfileType}
+                        >
                           {
                             getContainerProfileFromType(containerProfileType)
                               .name
@@ -208,13 +213,16 @@ export const DatabaseScalePage = () => {
                         setContainerSize(parseInt(e.target.value));
                       }}
                     >
-                      {EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE(
+                      {exponentialContainerSizesByProfile(
                         containerProfileType,
-                      )?.map((containerSizeOption) => (
-                        <option value={containerSizeOption}>
+                      ).map((containerSizeOption) => (
+                        <option
+                          key={containerSizeOption}
+                          value={containerSizeOption}
+                        >
                           {containerSizeOption / 1024} GB
                         </option>
-                      )) || null}
+                      ))}
                     </select>
                   </div>
                 </FormGroup>
@@ -317,7 +325,7 @@ export const DatabaseScalePage = () => {
               >
                 Save Changes
               </Button>
-              {service && changesExist ? (
+              {changesExist ? (
                 <Button
                   className="w-40 ml-2 mb-4 flex font-semibold"
                   onClick={() => {

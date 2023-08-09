@@ -10,7 +10,7 @@ import {
 } from "../shared";
 import {
   ContainerProfileTypes,
-  EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE,
+  exponentialContainerSizesByProfile,
   computedCostsForContainer,
   containerProfileKeys,
   fetchApp,
@@ -154,7 +154,10 @@ export const AppDetailServiceScalePage = () => {
                     >
                       {containerProfileKeys.map(
                         (containerProfileType: ContainerProfileTypes) => (
-                          <option value={containerProfileType}>
+                          <option
+                            key={containerProfileType}
+                            value={containerProfileType}
+                          >
                             {
                               getContainerProfileFromType(containerProfileType)
                                 .name
@@ -211,13 +214,16 @@ export const AppDetailServiceScalePage = () => {
                         setContainerSize(parseInt(e.target.value));
                       }}
                     >
-                      {EXPONENTIAL_CONTAINER_SIZES_BY_PROFILE(
+                      {exponentialContainerSizesByProfile(
                         containerProfileType,
-                      )?.map((containerSizeOption) => (
-                        <option value={containerSizeOption}>
+                      ).map((containerSizeOption) => (
+                        <option
+                          key={containerSizeOption}
+                          value={containerSizeOption}
+                        >
                           {containerSizeOption / 1024} GB
                         </option>
-                      )) || null}
+                      ))}
                     </select>
                   </div>
                 </FormGroup>
@@ -243,27 +249,23 @@ export const AppDetailServiceScalePage = () => {
                 </FormGroup>
               </div>
             </div>
-            {service ? (
-              <div className="my-4 flex justify-between">
-                <div>
-                  <Label>Pricing</Label>
-                  <p className="text-gray-500">
-                    {service.containerCount} container
-                    {service.containerCount > 1 ? "s" : ""} x{" "}
-                    {service.containerMemoryLimitMb / 1024} GB x $
-                    {currentPricePerHour} per GB/hour
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-500">
-                    Current Estimated Monthly Cost
-                  </p>
-                  <p className="text-right text-lg text-green-400">
-                    ${currentPrice}
-                  </p>
-                </div>
+            <div className="my-4 flex justify-between">
+              <div>
+                <Label>Pricing</Label>
+                <p className="text-gray-500">
+                  {service.containerCount} container
+                  {service.containerCount > 1 ? "s" : ""} x{" "}
+                  {service.containerMemoryLimitMb / 1024} GB x $
+                  {currentPricePerHour} per GB/hour
+                </p>
               </div>
-            ) : null}
+              <div>
+                <p className="text-gray-500">Current Estimated Monthly Cost</p>
+                <p className="text-right text-lg text-green-400">
+                  ${currentPrice}
+                </p>
+              </div>
+            </div>
             <hr />
             {changesExist ? (
               <p className="mt-4 font-normal text-gray-500">Pending Changes</p>
@@ -322,7 +324,7 @@ export const AppDetailServiceScalePage = () => {
               >
                 Save Changes
               </Button>
-              {service && changesExist ? (
+              {changesExist ? (
                 <Button
                   className="w-40 ml-2 mb-4 flex font-semibold"
                   onClick={() => {
