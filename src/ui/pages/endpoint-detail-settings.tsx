@@ -16,6 +16,7 @@ import { AppState } from "@app/types";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,
+  Box,
   ButtonCreate,
   EndpointDeprovision,
   FormGroup,
@@ -29,11 +30,12 @@ const validators = {
   ipAllowlist: (data: EndpointUpdateProps) => ipValidator(data.ipAllowlist),
 };
 
-export const EndpointDetailSettingsPage = () => {
+const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const navigate = useNavigate();
-  const { id = "" } = useParams();
   const dispatch = useDispatch();
-  const enp = useSelector((s: AppState) => selectEndpointById(s, { id }));
+  const enp = useSelector((s: AppState) =>
+    selectEndpointById(s, { id: endpointId }),
+  );
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: enp.serviceId }),
   );
@@ -46,7 +48,7 @@ export const EndpointDetailSettingsPage = () => {
     setPort(enp.containerPort);
   }, [enp.containerPort]);
   const data = {
-    id,
+    id: endpointId,
     ipAllowlist: parseIpStr(ipAllowlist),
     containerPort: port,
   };
@@ -56,18 +58,19 @@ export const EndpointDetailSettingsPage = () => {
     EndpointUpdateProps,
     typeof validators
   >(validators);
-  const onSave = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate(data)) return;
     dispatch(action);
   };
   useLoaderSuccess(loader, () => {
-    navigate(endpointDetailActivityUrl(id));
+    navigate(endpointDetailActivityUrl(endpointId));
   });
 
   return (
-    <div>
-      <form onSubmit={onSave} className="flex flex-col gap-4">
+    <Box>
+      <h1 className="text-lg text-gray-500 mb-4">Endpoint Settings</h1>
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <FormGroup
           label="Container Port"
           htmlFor="port"
@@ -97,25 +100,33 @@ export const EndpointDetailSettingsPage = () => {
           />
         </FormGroup>
 
+        <BannerMessages {...loader} />
+
         <ButtonCreate
           type="submit"
           envId={service.environmentId}
           isLoading={loader.isLoading}
+          className="w-40"
         >
-          Save
+          Save Changes
         </ButtonCreate>
-
-        <BannerMessages {...loader} />
       </form>
+    </Box>
+  );
+};
 
+export const EndpointDetailSettingsPage = () => {
+  const { id = "" } = useParams();
+  const enp = useSelector((s: AppState) => selectEndpointById(s, { id }));
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: enp.serviceId }),
+  );
+
+  return (
+    <div>
+      <EndpointSettings endpointId={id} />
       <hr className="my-4" />
-
-      <div>
-        <EndpointDeprovision
-          endpointId={enp.id}
-          envId={service.environmentId}
-        />
-      </div>
+      <EndpointDeprovision endpointId={id} envId={service.environmentId} />
     </div>
   );
 };

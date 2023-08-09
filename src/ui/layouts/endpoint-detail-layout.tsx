@@ -51,7 +51,17 @@ export function EndpointAppHeaderInfo({
   const txt = getEndpointText(enp, app.currentImage.exposedPorts);
   return (
     <DetailHeader>
-      <DetailTitleBar title="Endpoint Details" />
+      <DetailTitleBar
+        title="Endpoint Details"
+        icon={
+          <img
+            src={"/resource-types/logo-vhost.png"}
+            className="w-8 h-8 mr-3"
+            aria-label="App"
+          />
+        }
+        docsUrl="https://www.aptible.com/docs/endpoints"
+      />
 
       <DetailInfoGrid>
         <DetailInfoItem title="URL">

@@ -344,7 +344,7 @@ export type CreateEndpointProps =
 export const createEndpoint = api.post<
   CreateEndpointProps & { certId: string }
 >("/services/:serviceId/vhosts", function* (ctx, next) {
-  const data = {
+  const data: Record<string, any> = {
     platform: "alb",
     type: "http_proxy_protocol",
     acme: ctx.payload.type === "managed",
@@ -353,7 +353,6 @@ export const createEndpoint = api.post<
     ip_whitelist: ctx.payload.ipAllowlist,
     container_port: ctx.payload.containerPort,
     certificate_id: ctx.payload.certId,
-    user_domain: "",
   };
 
   if (ctx.payload.type === "managed") {
