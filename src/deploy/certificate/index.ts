@@ -131,8 +131,8 @@ export const selectCertificatesByEnvId = createSelector(
     return certs
       .filter((cert) => cert.environmentId === envId)
       .sort((a, b) => {
-        const dateA = new Date(a.notAfter).getTime();
-        const dateB = new Date(b.notAfter).getTime();
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
         return dateB - dateA;
       });
   },
