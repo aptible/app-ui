@@ -1,16 +1,30 @@
 import cn from "classnames";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { useLoader, useLoaderSuccess } from "saga-query/react";
 
-import { deprovisionEndpoint } from "@app/deploy";
+import {
+  deprovisionEndpoint,
+  getEndpointUrl,
+  selectEndpointById,
+} from "@app/deploy";
 import { operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { DeployEndpoint, ProvisionableStatus } from "@app/types";
+import { AppState, DeployEndpoint, ProvisionableStatus } from "@app/types";
 
+import { Box } from "../box";
 import { ButtonDestroy } from "../button";
 import { ExternalLink } from "../external-link";
-import { IconCheck, IconInfo, IconSettings, IconX } from "../icons";
+import {
+  IconAlertTriangle,
+  IconCheck,
+  IconInfo,
+  IconSettings,
+  IconTrash,
+  IconX,
+} from "../icons";
+import { Input } from "../input";
+import { useState } from "react";
 
 export const EndpointStatusPill = ({
   status,
@@ -92,21 +106,59 @@ export const EndpointDeprovision = ({
   const navigate = useNavigate();
   const action = deprovisionEndpoint({ id: endpointId });
   const loader = useLoader(action);
-  const onClick = () => {
-    dispatch(action);
-  };
+  const [confirm, setConfirm] = useState("");
   useLoaderSuccess(loader, () => {
     navigate(operationDetailUrl(loader.meta.opId));
   });
+  const enp = useSelector((s: AppState) =>
+    selectEndpointById(s, { id: endpointId }),
+  );
+  const url = getEndpointUrl(enp);
+  const invalid = confirm !== url;
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (invalid) return;
+    dispatch(action);
+  };
 
   return (
-    <ButtonDestroy
-      envId={envId}
-      variant="delete"
-      onClick={onClick}
-      isLoading={loader.isLoading}
-    >
-      Deprovision
-    </ButtonDestroy>
+    <Box className="mb-8">
+      <h1 className="text-lg text-red-500 font-semibold">
+        <IconAlertTriangle
+          className="inline pr-3 mb-1"
+          style={{ width: 32 }}
+          color="#AD1A1A"
+        />
+        Deprovision Endpoint
+      </h1>
+      <form className="mt-2" onSubmit={onSubmit}>
+        <p>
+          This will permanently deprovision <strong>{url}</strong> endpoint.
+          This action cannot be undone. If you want to proceed, type the{" "}
+          <strong>{url}</strong> below to continue.
+        </p>
+        <div className="flex mt-4">
+          <Input
+            className="flex-1"
+            type="text"
+            value={confirm}
+            onChange={(e) => setConfirm(e.currentTarget.value)}
+            id="delete-confirm"
+          />
+          <ButtonDestroy
+            type="submit"
+            envId={envId}
+            variant="delete"
+            isLoading={loader.isLoading}
+            disabled={invalid}
+            className="h-15 w-60 mb-0 ml-4 flex"
+          >
+            <IconTrash color="#FFF" className="mr-2" />
+            Deprovision Endpoint
+          </ButtonDestroy>
+        </div>
+      </form>
+    </Box>
   );
 };
