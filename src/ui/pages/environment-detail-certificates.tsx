@@ -1,9 +1,19 @@
-import { useQuery } from "@app/fx";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 
+import { prettyEnglishDate } from "@app/date";
+import {
+  fetchAllCertsByEnvId,
+  selectAppsByCertificateId,
+  selectCertificatesByEnvId,
+} from "@app/deploy";
+import { useQuery } from "@app/fx";
+import { appEndpointsUrl } from "@app/routes";
 import type { AppState, DeployCertificate } from "@app/types";
 
 import {
+  EmptyResourcesTable,
   LoadResources,
   Pill,
   ResourceListView,
@@ -12,16 +22,6 @@ import {
   pillStyles,
   tokens,
 } from "../shared";
-import { EmptyResourcesTable } from "../shared/empty-resources-table";
-import { prettyEnglishDate } from "@app/date";
-import {
-  fetchCertificatesByEnvironmentId,
-  selectAppsByCertificateId,
-  selectCertificatesByEnvId,
-} from "@app/deploy";
-import { appEndpointsUrl } from "@app/routes";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 
 const CertificateTrustedPill = ({
   certificate,
@@ -119,24 +119,20 @@ const CertificateServicesCell = ({
   return (
     <Td className="flex-1">
       <div className="flex">
-        <p className="leading-4">
-          <span className={tokens.type.darker}>
-            {appsForCertificate.length > 0
-              ? appsForCertificate.flat().map((appForCertificate, idx) => (
-                  <div>
-                    <span>
-                      <Link
-                        to={appEndpointsUrl(appForCertificate.id)}
-                        key={appForCertificate.id}
-                      >
-                        {appForCertificate.handle}
-                      </Link>
-                    </span>
-                  </div>
-                ))
-              : "No Apps Found"}
-          </span>
-        </p>
+        <div className={`${tokens.type.darker} leading-4`}>
+          {appsForCertificate.length > 0
+            ? appsForCertificate.flat().map((appForCertificate, idx) => (
+                <div key={`${appForCertificate.id}-${idx}`}>
+                  <Link
+                    to={appEndpointsUrl(appForCertificate.id)}
+                    key={appForCertificate.id}
+                  >
+                    {appForCertificate.handle}
+                  </Link>
+                </div>
+              ))
+            : "No Apps Found"}
+        </div>
       </div>
     </Td>
   );
@@ -167,7 +163,7 @@ const certificatesHeaders = [
 
 export const EnvironmentCertificatesPage = () => {
   const { id = "" } = useParams();
-  const query = useQuery(fetchCertificatesByEnvironmentId({ id }));
+  const query = useQuery(fetchAllCertsByEnvId({ id }));
   const certificates = useSelector((s: AppState) =>
     selectCertificatesByEnvId(s, { envId: id }),
   );

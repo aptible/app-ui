@@ -1,8 +1,9 @@
-import { latest, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
 import { PaginateProps, api, combinePages, thunks } from "@app/api";
+import { latest, poll, put, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   createReducerMap,
   createTable,
@@ -20,7 +21,6 @@ import {
 import { PermissionResponse } from "../permission";
 import { selectDeploy } from "../slice";
 import { selectStackById } from "../stack";
-import { selectOrganizationSelectedId } from "@app/organizations";
 
 export interface DeployEnvironmentResponse {
   id: number;
