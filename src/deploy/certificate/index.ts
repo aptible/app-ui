@@ -1,5 +1,7 @@
-import { selectDeploy } from "../slice";
-import { api } from "@app/api";
+import { createSelector } from "@reduxjs/toolkit";
+import { createThrottle } from "saga-query";
+
+import { PaginateProps, api, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -7,7 +9,8 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import { AppState, DeployCertificate, LinkResponse } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
+
+import { selectDeploy } from "../slice";
 
 interface DeployCertificateResponse {
   id: number;
@@ -125,14 +128,26 @@ export const selectCertificatesByEnvId = createSelector(
   selectCertificatesAsList,
   (_: AppState, props: { envId: string }) => props.envId,
   (certs, envId) => {
-    return certs.filter((cert) => cert.environmentId === envId);
+    return certs
+      .filter((cert) => cert.environmentId === envId)
+      .sort((a, b) => {
+        const dateA = new Date(a.notAfter).getTime();
+        const dateB = new Date(b.notAfter).getTime();
+        return dateB - dateA;
+      });
   },
 );
 
 export const certificateReducers = createReducerMap(slice);
 
-export const fetchCertificatesByEnvironmentId = api.get<{ id: string }>(
-  "/accounts/:id/certificates",
+export const fetchCertificatesByEnvironmentId = api.get<
+  PaginateProps & { id: string }
+>("/accounts/:id/certificates?page=:page");
+
+export const fetchAllCertsByEnvId = thunks.create<{ id: string }>(
+  "fetch-all-certs-by-env",
+  { saga: createThrottle(5 * 1000) },
+  combinePages(fetchCertificatesByEnvironmentId),
 );
 
 export const createCertificate = api.post<
