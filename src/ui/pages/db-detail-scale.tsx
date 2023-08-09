@@ -330,7 +330,7 @@ export const DatabaseScalePage = () => {
                   className="w-40 ml-2 mb-4 flex font-semibold"
                   onClick={() => {
                     setContainerSize(service.containerMemoryLimitMb);
-                    if (database?.disk?.size) setDiskValue(database.disk.size);
+                    if (database.disk?.size) setDiskValue(database.disk.size);
                   }}
                   variant="white"
                 >
