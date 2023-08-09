@@ -16,6 +16,7 @@ import { AppState } from "@app/types";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,
+  Box,
   ButtonCreate,
   EndpointDeprovision,
   FormGroup,
@@ -67,46 +68,50 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   });
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <FormGroup
-        label="Container Port"
-        htmlFor="port"
-        feedbackMessage={errors.port}
-        feedbackVariant={errors.port ? "danger" : "info"}
-      >
-        <Input
-          type="text"
-          id="port"
-          name="port"
-          value={port}
-          onChange={(e) => setPort(e.currentTarget.value)}
-        />
-      </FormGroup>
+    <Box>
+      <h1 className="text-lg text-gray-500 mb-4">Endpoint Settings</h1>
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        <FormGroup
+          label="Container Port"
+          htmlFor="port"
+          feedbackMessage={errors.port}
+          feedbackVariant={errors.port ? "danger" : "info"}
+        >
+          <Input
+            type="text"
+            id="port"
+            name="port"
+            value={port}
+            onChange={(e) => setPort(e.currentTarget.value)}
+          />
+        </FormGroup>
 
-      <FormGroup
-        label="IP Allowlist"
-        htmlFor="ip-allowlist"
-        feedbackMessage={errors.ipAllowlist}
-        feedbackVariant={errors.ipAllowlist ? "danger" : "info"}
-      >
-        <TextArea
-          id="ip-allowlist"
-          name="ip-allowlist"
-          value={ipAllowlist}
-          onChange={(e) => setIpAllowlist(e.currentTarget.value)}
-        />
-      </FormGroup>
+        <FormGroup
+          label="IP Allowlist"
+          htmlFor="ip-allowlist"
+          feedbackMessage={errors.ipAllowlist}
+          feedbackVariant={errors.ipAllowlist ? "danger" : "info"}
+        >
+          <TextArea
+            id="ip-allowlist"
+            name="ip-allowlist"
+            value={ipAllowlist}
+            onChange={(e) => setIpAllowlist(e.currentTarget.value)}
+          />
+        </FormGroup>
 
-      <BannerMessages {...loader} />
+        <BannerMessages {...loader} />
 
-      <ButtonCreate
-        type="submit"
-        envId={service.environmentId}
-        isLoading={loader.isLoading}
-      >
-        Save
-      </ButtonCreate>
-    </form>
+        <ButtonCreate
+          type="submit"
+          envId={service.environmentId}
+          isLoading={loader.isLoading}
+          className="w-40"
+        >
+          Save Changes
+        </ButtonCreate>
+      </form>
+    </Box>
   );
 };
 

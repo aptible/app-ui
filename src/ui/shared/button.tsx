@@ -65,7 +65,7 @@ export const ButtonLinkExternal = ({
     "hover:no-underline cursor-pointer",
   );
   return (
-    <a {...props} className={`${className} ${classes}`}>
+    <a {...props} target="_blank" className={`${className} ${classes}`}>
       {isLoading ? "Loading..." : children}
     </a>
   );
