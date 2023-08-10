@@ -154,6 +154,9 @@ export const DatabaseBackupsList = ({
         <BannerMessages {...loader} />
       </div>
 
+      <p className="text-gray-500 mb-4 text-base">
+        {backups.length} Backup{backups.length !== 1 && "s"}
+      </p>
       <ResourceListView
         tableHeader={
           <TableHead
