@@ -25,11 +25,11 @@ import { Td } from "../table";
 import { Link } from "react-router-dom";
 
 const EndpointRow = ({
-  app,
+  exposedPorts,
   endpoint,
-}: { app: DeployApp; endpoint: DeployEndpoint }) => {
+}: { exposedPorts: number[]; endpoint: DeployEndpoint }) => {
   const navigate = useNavigate();
-  const txt = getEndpointText(endpoint, app.currentImage.exposedPorts);
+  const txt = getEndpointText(endpoint, exposedPorts);
   const acmeSetup = () => {
     navigate(endpointDetailSetupUrl(endpoint.id));
   };
@@ -65,12 +65,12 @@ const EndpointRow = ({
   );
 };
 
-const EndpointsOverview = ({
-  app,
+export const EndpointList = ({
+  exposedPorts,
   endpoints,
   action,
 }: {
-  app: DeployApp;
+  exposedPorts: number[];
   endpoints: DeployEndpoint[];
   action?: JSX.Element;
 }) => {
@@ -93,7 +93,11 @@ const EndpointsOverview = ({
           />
           <tbody className="divide-y divide-gray-200 bg-white">
             {endpoints.map((endpoint) => (
-              <EndpointRow app={app} endpoint={endpoint} key={endpoint.id} />
+              <EndpointRow
+                exposedPorts={exposedPorts}
+                endpoint={endpoint}
+                key={endpoint.id}
+              />
             ))}
           </tbody>
         </table>
@@ -132,7 +136,11 @@ function EndpointsView({ app }: { app: DeployApp }) {
 
   return (
     <div className="mt-3">
-      <EndpointsOverview app={app} endpoints={endpoints} action={action} />
+      <EndpointList
+        exposedPorts={app.currentImage.exposedPorts}
+        endpoints={endpoints}
+        action={action}
+      />
     </div>
   );
 }

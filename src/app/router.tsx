@@ -15,6 +15,9 @@ import {
   AuthRequired,
   BackupRestorePage,
   BillingMethodPage,
+  CertDetailLayout,
+  CertDetailPage,
+  CertDetailSettingsPage,
   CreateDatabasePage,
   CreateOrgPage,
   CreateProjectAddKeyPage,
@@ -86,6 +89,8 @@ import {
   VerifyEmailPage,
 } from "@app/ui";
 import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
+import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
+import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -268,6 +273,29 @@ export const appRoutes: RouteObject[] = [
                 element: <DatabaseSettingsPage />,
               },
             ],
+          },
+        ],
+      },
+
+      {
+        path: routes.CERT_DETAIL_PATH,
+        element: <CertDetailLayout />,
+        children: [
+          {
+            index: true,
+            element: <CertDetailPage />,
+          },
+          {
+            path: routes.CERT_DETAIL_APPS_PATH,
+            element: <CertDetailAppsPage />,
+          },
+          {
+            path: routes.CERT_DETAIL_ENDPOINTS_PATH,
+            element: <CertDetailEndpointsPage />,
+          },
+          {
+            path: routes.CERT_DETAIL_SETTINGS_PATH,
+            element: <CertDetailSettingsPage />,
           },
         ],
       },
