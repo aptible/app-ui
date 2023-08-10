@@ -82,7 +82,7 @@ describe("EnvironmentSettingsPage", () => {
       ).not.toBeInTheDocument();
 
       const input = await screen.findByRole("textbox", {
-        name: /Confirm Name/,
+        name: /delete-confirm/,
       });
       await act(async () => {
         await userEvent.type(input, testDestroyAccount.handle);

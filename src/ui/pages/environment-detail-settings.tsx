@@ -204,8 +204,8 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
         )}
 
         <div className="flex items-center gap-2 mt-4">
-          <label htmlFor="delete-confirm">Confirm Name</label>
           <Input
+            name="delete-confirm"
             className="flex-1"
             type="text"
             value={confirm}
