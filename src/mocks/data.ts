@@ -121,6 +121,30 @@ export const testAccount = defaultEnvResponse({
   },
 });
 
+const testDestroyAccountId = createId();
+export const testDestroyAccount = defaultEnvResponse({
+  id: testDestroyAccountId,
+  handle: createText("account-destroy"),
+  organization_id: testOrg.id,
+  _links: {
+    stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
+    environment: defaultHalHref(),
+  },
+  _embedded: {
+    permissions: [
+      defaultPermissionResponse({
+        scope: "destroy",
+        _links: {
+          account: defaultHalHref(
+            `${testEnv.apiUrl}/accounts/${testDestroyAccountId}`,
+          ),
+          role: defaultHalHref(`${testEnv.apiUrl}/roles/${testRole.id}`),
+        },
+      }),
+    ],
+  },
+});
+
 const testAppId = createId();
 
 export const testServiceRails = defaultServiceResponse({

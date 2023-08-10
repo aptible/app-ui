@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { DbCreatorProps } from "@app/deploy";
 import { idCreator } from "@app/id";
 import { DeployDatabaseImage } from "@app/types";
-import { dbNameValidator } from "@app/validator";
+import { handleValidator } from "@app/validator";
 
 import { Button } from "../button";
 import { FeedbackVariant, FormGroup } from "../form-group";
@@ -57,7 +57,7 @@ export function dbSelectorReducer<P extends { id: string }>(
 }
 
 export const validateDbName = (item: DbCreatorProps) => {
-  const message = dbNameValidator(item.name);
+  const message = handleValidator(item.name);
   if (!message) return;
 
   return {

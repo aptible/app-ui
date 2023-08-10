@@ -139,8 +139,11 @@ export const DEPLOY_ENVIRONMENT_NAME = "environments";
 const slice = createTable<DeployEnvironment>({
   name: DEPLOY_ENVIRONMENT_NAME,
 });
-const { add: addDeployEnvironments, patch: patchDeployEnvironments } =
-  slice.actions;
+const {
+  add: addDeployEnvironments,
+  patch: patchDeployEnvironments,
+  remove: removeEnvironments,
+} = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_ENVIRONMENT_NAME],
 );
@@ -192,6 +195,25 @@ export const pollEnvs = thunks.create(
 export const fetchEnvironmentOperations = api.get<{ id: string }>(
   "/accounts/:id/operations",
   api.cache(),
+);
+
+export const deprovisionEnvironment = api.delete<{ id: string }>(
+  ["/accounts/:id"],
+  function* (ctx, next) {
+    yield* next();
+    ctx.actions.push(removeEnvironments([ctx.payload.id]));
+  },
+);
+
+export const updateEnvironmentName = api.patch<{ id: string; handle: string }>(
+  ["/accounts/:id", "update-name"],
+  function* (ctx, next) {
+    const body = {
+      handle: ctx.payload.handle,
+    };
+    ctx.request = ctx.req({ body: JSON.stringify(body) });
+    yield* next();
+  },
 );
 
 interface CreateEnvProps {

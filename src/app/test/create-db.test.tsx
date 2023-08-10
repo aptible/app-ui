@@ -2,7 +2,6 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 
-import { hasDeployEnvironment, selectEnvironmentById } from "@app/deploy";
 import {
   server,
   stacksWithResources,
@@ -11,7 +10,7 @@ import {
   testEnv,
   verifiedUserHandlers,
 } from "@app/mocks";
-import { setupAppIntegrationTest, waitForData, waitForToken } from "@app/test";
+import { setupAppIntegrationTest, waitForEnv, waitForToken } from "@app/test";
 
 describe("Create Database flow", () => {
   it("should successfully provision a database within an environment", async () => {
@@ -47,11 +46,7 @@ describe("Create Database flow", () => {
 
     await waitForToken(store);
     // we need to wait for accounts so we can do permission checks
-    await waitForData(store, (state) => {
-      return hasDeployEnvironment(
-        selectEnvironmentById(state, { id: `${testAccount.id}` }),
-      );
-    });
+    await waitForEnv(store, testAccount.id);
 
     await screen.findByText(testAccount.handle);
     await screen.findByRole("button", { name: /Save/ });

@@ -35,15 +35,15 @@ export function portValidator(port = "") {
   if (portNum >= 65535) return msg;
 }
 
-export const nameRegex = new RegExp(/^[0-9a-z._-]{1,64}$/);
-export function dbNameValidator(name = "") {
+export const handleRegex = new RegExp(/^[0-9a-z._-]{1,64}$/);
+export function handleValidator(handle = "") {
   const maxCharLength = 64;
-  if (name.length > maxCharLength) {
-    const delta = name.length - maxCharLength;
-    return `[${name}] is ${delta} characters too long (max: ${maxCharLength})`;
+  if (handle.length > maxCharLength) {
+    const delta = handle.length - maxCharLength;
+    return `[${handle}] is ${delta} characters too long (max: ${maxCharLength})`;
   }
 
-  if (!nameRegex.test(name)) {
-    return `[${name}] is not a valid database name ${nameRegex}`;
+  if (!handleRegex.test(handle)) {
+    return `[${handle}] is not a valid handle ${handleRegex}`;
   }
 }

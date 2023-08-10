@@ -13,6 +13,7 @@ import {
   sagas,
 } from "@app/app";
 import { bootup } from "@app/bootup";
+import { hasDeployEnvironment, selectEnvironmentById } from "@app/deploy";
 import { testEnv } from "@app/mocks";
 import { resetReducer } from "@app/reset-store";
 import type { AppState } from "@app/types";
@@ -139,6 +140,14 @@ export const waitForData = (
 
 export const waitForToken = (store: Store<AppState>) =>
   waitForData(store, (state) => state.token.accessToken !== "");
+
+// we need to wait for accounts so we can do permission checks
+export const waitForEnv = (store: Store<AppState>, envId: string | number) =>
+  waitForData(store, (state) => {
+    return hasDeployEnvironment(
+      selectEnvironmentById(state, { id: `${envId}` }),
+    );
+  });
 
 export const sleep = (n: number) =>
   act(
