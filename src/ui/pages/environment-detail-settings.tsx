@@ -189,7 +189,7 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
         <div>
           This will permanently deprovision <strong>{env.handle}</strong>{" "}
           environment. This action cannot be undone. If you want to proceed,
-          type the <strong>{env.handle}</strong> below to continue.
+          type <strong>{env.handle}</strong> below to continue.
         </div>
 
         {canDeprovision ? null : (
