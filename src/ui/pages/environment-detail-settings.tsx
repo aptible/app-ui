@@ -30,13 +30,10 @@ import {
   Input,
 } from "../shared";
 import { environmentsUrl } from "@app/routes";
+import { handleValidator } from "@app/validator";
 
 const validators = {
-  name: (name: string) => {
-    if (name.trim() === "") {
-      return "Environment cannot be empty";
-    }
-  },
+  handle: handleValidator,
 };
 
 const EnvChangeName = ({ envId }: { envId: string }) => {
@@ -67,13 +64,13 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <FormGroup
-        label="Environment Name"
-        htmlFor="env-name"
-        feedbackMessage={errors.name}
-        feedbackVariant={errors.name ? "danger" : "info"}
+        label="Environment Handle"
+        htmlFor="env-handle"
+        feedbackMessage={errors.handle}
+        feedbackVariant={errors.handle ? "danger" : "info"}
       >
         <Input
-          id="env-name"
+          id="env-handle"
           type="text"
           value={handle}
           onChange={(e) => setHandle(e.currentTarget.value)}

@@ -16,7 +16,7 @@ import {
 } from "@app/deploy";
 import { databaseBackupsUrl, environmentActivityUrl } from "@app/routes";
 import { AppState } from "@app/types";
-import { dbNameValidator } from "@app/validator";
+import { handleValidator } from "@app/validator";
 
 import { useValidator } from "../hooks";
 import { MenuWrappedPage } from "../layouts";
@@ -31,9 +31,7 @@ import {
 } from "../shared";
 
 const validators = {
-  handle: (props: RestoreBackupProps) => {
-    return dbNameValidator(props.handle);
-  },
+  handle: (props: RestoreBackupProps) => handleValidator(props.handle),
 };
 
 export const BackupRestorePage = () => {
