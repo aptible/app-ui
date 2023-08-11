@@ -12,3 +12,4 @@ export * from "./menu-wrapped-page";
 export * from "./stack-detail-layout";
 export * from "./create-project-layout";
 export * from "./endpoint-detail-layout";
+export * from "./cert-detail-layout";

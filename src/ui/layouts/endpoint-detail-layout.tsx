@@ -48,7 +48,7 @@ export function EndpointAppHeaderInfo({
   enp,
   app,
 }: { enp: DeployEndpoint; app: DeployApp }) {
-  const txt = getEndpointText(enp, app.currentImage.exposedPorts);
+  const txt = getEndpointText(enp);
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -68,9 +68,6 @@ export function EndpointAppHeaderInfo({
           <EndpointUrl enp={enp} />
         </DetailInfoItem>
         <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
-        <DetailInfoItem title="Container Port">
-          {txt.containerPort}
-        </DetailInfoItem>
 
         <DetailInfoItem title="Resource">
           <Link to={appEndpointsUrl(app.id)}>{app.handle}</Link>

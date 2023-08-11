@@ -248,23 +248,22 @@ export const selectEndpointByEnvironmentAndCertificateId = createSelector(
     endpoints.filter((endpoint) => endpoint.certificateId === certificateId),
 );
 
-export const selectAppsByCertificateId = createSelector(
-  selectAppsByEnvId,
+export const selectEndpointsByCertificateId = createSelector(
   selectEndpointsByEnvironmentId,
   (_: AppState, p: { certificateId: string }) => p.certificateId,
-  (apps, endpoints, certificateId) => {
-    const endpointsWithCertificates = endpoints.filter(
-      (endpoint) => endpoint.certificateId === certificateId,
-    );
+  (endpoints, certId) =>
+    endpoints.filter((endpoint) => endpoint.certificateId === certId),
+);
 
-    return apps.filter((app) => {
-      return app.serviceIds.some((appServiceId) => {
-        return endpointsWithCertificates.find(
-          (endpoint) => endpoint.serviceId === appServiceId,
-        );
-      });
-    });
-  },
+export const selectAppsByCertificateId = createSelector(
+  selectAppsByEnvId,
+  selectEndpointsByCertificateId,
+  (apps, endpoints) =>
+    apps.filter((app) =>
+      app.serviceIds.some((appServiceId) =>
+        endpoints.find((endpoint) => endpoint.serviceId === appServiceId),
+      ),
+    ),
 );
 
 export const fetchEndpointsByAppId = api.get<{ appId: string }>(
@@ -635,15 +634,11 @@ export const getEndpointUrl = (enp: DeployEndpoint) => {
   return `https://${enp.virtualDomain}`;
 };
 
-export const getEndpointText = (
-  enp: DeployEndpoint,
-  exposedPorts: number[],
-) => {
+export const getEndpointText = (enp: DeployEndpoint) => {
   return {
     url: getEndpointUrl(enp),
     placement: getPlacement(enp),
     ipAllowlist: getIpAllowlistText(enp),
-    containerPort: getContainerPort(enp, exposedPorts),
   };
 };
 

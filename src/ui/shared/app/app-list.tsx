@@ -6,7 +6,6 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { prettyDateRelative } from "@app/date";
 import {
-  DeployAppRow,
   calcServiceMetrics,
   fetchAllApps,
   fetchAllEnvironments,
@@ -36,7 +35,7 @@ import { Header, TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 
 interface AppCellProps {
-  app: DeployAppRow;
+  app: DeployApp;
 }
 
 export const AppItemView = ({ app }: { app: DeployApp }) => {
@@ -146,11 +145,11 @@ const appHeaders: Header[] = [
   "Last Operation",
 ];
 
-const AppList = ({
+export const AppList = ({
   apps,
   headerTitleBar,
 }: {
-  apps: DeployAppRow[];
+  apps: DeployApp[];
   headerTitleBar: React.ReactNode;
 }) => {
   return (
@@ -175,14 +174,14 @@ type HeaderTypes =
     }
   | { resourceHeaderType: "simple-text"; onChange?: null };
 
-const AppsResourceHeaderTitleBar = ({
+export const AppsResourceHeaderTitleBar = ({
   apps,
   search = "",
   resourceHeaderType,
   onChange,
   actions = [],
 }: {
-  apps: DeployAppRow[];
+  apps: DeployApp[];
   search?: string;
   actions?: ActionList;
 } & HeaderTypes) => {

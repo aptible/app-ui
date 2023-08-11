@@ -24,12 +24,9 @@ import { TableHead } from "../table";
 import { Td } from "../table";
 import { Link } from "react-router-dom";
 
-const EndpointRow = ({
-  app,
-  endpoint,
-}: { app: DeployApp; endpoint: DeployEndpoint }) => {
+const EndpointRow = ({ endpoint }: { endpoint: DeployEndpoint }) => {
   const navigate = useNavigate();
-  const txt = getEndpointText(endpoint, app.currentImage.exposedPorts);
+  const txt = getEndpointText(endpoint);
   const acmeSetup = () => {
     navigate(endpointDetailSetupUrl(endpoint.id));
   };
@@ -51,7 +48,6 @@ const EndpointRow = ({
         <EndpointStatusPill status={endpoint.status} />
       </Td>
       <Td>{txt.placement}</Td>
-      <Td>{txt.containerPort}</Td>
       <Td>{endpoint.platform.toLocaleUpperCase()}</Td>
       <Td>{txt.ipAllowlist}</Td>
       <Td>
@@ -65,12 +61,10 @@ const EndpointRow = ({
   );
 };
 
-const EndpointsOverview = ({
-  app,
+export const EndpointList = ({
   endpoints,
   action,
 }: {
-  app: DeployApp;
   endpoints: DeployEndpoint[];
   action?: JSX.Element;
 }) => {
@@ -85,7 +79,6 @@ const EndpointsOverview = ({
               "Hostname",
               "Status",
               "Placement",
-              "Container Port",
               "Platform",
               "IP Filtering",
               "ACME Status",
@@ -93,7 +86,7 @@ const EndpointsOverview = ({
           />
           <tbody className="divide-y divide-gray-200 bg-white">
             {endpoints.map((endpoint) => (
-              <EndpointRow app={app} endpoint={endpoint} key={endpoint.id} />
+              <EndpointRow endpoint={endpoint} key={endpoint.id} />
             ))}
           </tbody>
         </table>
@@ -132,7 +125,7 @@ function EndpointsView({ app }: { app: DeployApp }) {
 
   return (
     <div className="mt-3">
-      <EndpointsOverview app={app} endpoints={endpoints} action={action} />
+      <EndpointList endpoints={endpoints} action={action} />
     </div>
   );
 }
