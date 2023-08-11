@@ -11,7 +11,6 @@ import {
   databaseDetailUrl,
   operationDetailUrl,
 } from "@app/routes";
-import { capitalize } from "@app/string-utils";
 import { AppState, DeployBackup } from "@app/types";
 
 import { BannerMessages } from "../banner";
