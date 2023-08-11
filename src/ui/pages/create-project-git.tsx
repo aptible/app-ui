@@ -773,6 +773,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
     serviceId: curServiceId,
     internal: false,
     ipAllowlist: [],
+    envId: app.environmentId,
   });
   const loader = useLoader(action);
   const onClick = () => {

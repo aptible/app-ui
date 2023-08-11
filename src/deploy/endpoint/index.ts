@@ -312,6 +312,7 @@ export type EndpointType = "default" | "managed" | "custom";
 
 interface CreateEndpointBase {
   type: EndpointType;
+  envId: string;
   serviceId: string;
   internal: boolean;
   ipAllowlist: string[];
@@ -416,6 +417,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
         const certCtx = yield* call(
           createCertificate.run,
           createCertificate({
+            envId: ctx.payload.envId,
             cert: ctx.payload.cert,
             privKey: ctx.payload.privKey,
           }),

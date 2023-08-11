@@ -80,6 +80,7 @@ export const AppCreateEndpointPage = () => {
     if (enpType === "managed") {
       return {
         type: "managed",
+        envId: app.environmentId,
         cert,
         privKey,
         domain,
@@ -90,6 +91,7 @@ export const AppCreateEndpointPage = () => {
     if (enpType === "custom") {
       return {
         type: "custom",
+        envId: app.environmentId,
         cert,
         privKey,
         ...def,
@@ -98,6 +100,7 @@ export const AppCreateEndpointPage = () => {
 
     return {
       type: "default",
+      envId: app.environmentId,
       ...def,
     };
   };
