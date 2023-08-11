@@ -52,6 +52,7 @@ import {
   EnvironmentBackupsPage,
   EnvironmentCertificatesPage,
   EnvironmentDatabasesPage,
+  EnvironmentDetailCreateCertPage,
   EnvironmentDetailLayout,
   EnvironmentIntegrationsPage,
   EnvironmentSecurityPage,
@@ -354,6 +355,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.ENVIRONMENT_INTEGRATIONS_PATH,
                 element: <EnvironmentIntegrationsPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_CREATE_CERT_PATH,
+                element: <EnvironmentDetailCreateCertPage />,
               },
               {
                 path: routes.ENVIRONMENT_CERTIFICATES_PATH,

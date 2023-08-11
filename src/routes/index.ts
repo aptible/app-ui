@@ -158,6 +158,11 @@ export const environmentBackupsUrl = (id: string) =>
 export const ENVIRONMENT_SETTINGS_PATH = "/environments/:id/settings";
 export const environmentSettingsUrl = (id: string) =>
   `/environments/${id}/settings`;
+export const ENVIRONMENT_CREATE_CERT_PATH =
+  "/environments/:id/certificates/create";
+export const environmentCreateCertUrl = (id: string) =>
+  `/environments/${id}/certificates/create`;
+
 export const environmentCreateAppUrl = (id: string) =>
   `/create/name?environment_id=${id}`;
 export const environmentCreateDbUrl = (id: string) =>
