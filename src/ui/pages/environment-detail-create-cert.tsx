@@ -56,7 +56,9 @@ export const EnvironmentDetailCreateCertPage = () => {
 
   return (
     <Box>
-      <h1 className="text-lg text-black font-semibold mb-4">Create Certificate</h1>
+      <h1 className="text-lg text-black font-semibold mb-4">
+        Create Certificate
+      </h1>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <FormGroup
