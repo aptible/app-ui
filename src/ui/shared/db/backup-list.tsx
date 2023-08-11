@@ -11,7 +11,6 @@ import {
   databaseDetailUrl,
   operationDetailUrl,
 } from "@app/routes";
-import { capitalize } from "@app/string-utils";
 import { AppState, DeployBackup } from "@app/types";
 
 import { BannerMessages } from "../banner";
@@ -103,10 +102,7 @@ const BackupListRow = ({
 
       <Td className="flex-1">
         <div className="text-gray-900">
-          {backup.awsRegion
-            .split("-")
-            .map((s) => capitalize(s))
-            .join("-")}
+          {backup.awsRegion.split("-").join("-")}
         </div>
       </Td>
 
@@ -154,6 +150,9 @@ export const DatabaseBackupsList = ({
         <BannerMessages {...loader} />
       </div>
 
+      <p className="text-gray-500 mb-4 text-base">
+        {backups.length} Backup{backups.length !== 1 && "s"}
+      </p>
       <ResourceListView
         tableHeader={
           <TableHead
