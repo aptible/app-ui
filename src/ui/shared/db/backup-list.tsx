@@ -103,10 +103,7 @@ const BackupListRow = ({
 
       <Td className="flex-1">
         <div className="text-gray-900">
-          {backup.awsRegion
-            .split("-")
-            .map((s) => capitalize(s))
-            .join("-")}
+          {backup.awsRegion.split("-").join("-")}
         </div>
       </Td>
 
