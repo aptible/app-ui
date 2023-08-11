@@ -1,5 +1,5 @@
-import { createSelector } from "@reduxjs/toolkit";
-import { createThrottle } from "saga-query";
+import { createAction, createSelector } from "@reduxjs/toolkit";
+import { createThrottle, poll } from "saga-query";
 
 import { PaginateProps, api, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -49,12 +49,12 @@ export const deserializeCertificate = (
 
   return {
     id: payload.id.toString(),
-    commonName: payload.common_name,
+    commonName: payload.common_name || "Unknown",
     certificateBody: payload.certificate_body,
     notBefore: payload.not_before,
     notAfter: payload.not_after,
     issuerCountry: payload.issuer_country,
-    issuerOrganization: payload.issuer_organization,
+    issuerOrganization: payload.issuer_organization || "Unknown Issuer",
     issuerWebsite: payload.issuer_website,
     issuerCommonName: payload.issuer_common_name,
     subjectCountry: payload.subject_country,
@@ -114,7 +114,8 @@ export const DEPLOY_CERTIFICATE_NAME = "certificates";
 const slice = createTable<DeployCertificate>({
   name: DEPLOY_CERTIFICATE_NAME,
 });
-const { add: addDeployCertificates } = slice.actions;
+export const { add: addDeployCertificates, remove: removeDeployCertificates } =
+  slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_CERTIFICATE_NAME],
 );
@@ -139,6 +140,22 @@ export const selectCertificatesByEnvId = createSelector(
 );
 
 export const certificateReducers = createReducerMap(slice);
+
+export const fetchCert = api.get<{ id: string }>("/certificates/:id");
+export const cancelPollCert = createAction("cancel-poll-cert");
+export const pollCert = api.get<{ id: string }>(["/certificates/:id", "poll"], {
+  saga: poll(5 * 1000, `${cancelPollCert}`),
+});
+export const fetchAppsByCertId = api.get<{ certId: string }>(
+  "/certificates/:certId/apps",
+);
+export const fetchEndpointsByCertId = api.get<{ certId: string }>(
+  "/certificates/:certId/vhosts",
+);
+
+export const deleteCertificate = api.delete<{ certId: string }>(
+  "/certificates/:certId",
+);
 
 export const fetchCertificatesByEnvironmentId = api.get<
   PaginateProps & { id: string }

@@ -240,3 +240,14 @@ export const SEARCH_PATH = "/search";
 export const searchUrl = () => SEARCH_PATH;
 
 export const securityDashboardUrl = (prefix: string) => `${prefix}/controls`;
+
+export const CERT_DETAIL_PATH = "/certificates/:id";
+export const certDetailUrl = (id: string) => `/certificates/${id}`;
+export const CERT_DETAIL_APPS_PATH = "/certificates/:id/apps";
+export const certDetailAppsUrl = (id: string) => `/certificates/${id}/apps`;
+export const CERT_DETAIL_ENDPOINTS_PATH = "/certificates/:id/endpoints";
+export const certDetailEndpointsUrl = (id: string) =>
+  `/certificates/${id}/endpoints`;
+export const CERT_DETAIL_SETTINGS_PATH = "/certificates/:id/settings";
+export const certDetailSettingsUrl = (id: string) =>
+  `/certificates/${id}/settings`;

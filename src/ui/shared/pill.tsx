@@ -15,12 +15,12 @@ export const Pill = ({
   const defaultClassName = cn(
     "rounded-full border-2",
     "text-sm font-semibold text-black-500",
-    "ml-2 px-2 flex justify-between items-center w-fit",
+    "px-2 flex gap-2 justify-between items-center w-fit",
   );
   return (
     <div className={`${defaultClassName} ${className}`}>
       {icon}
-      <div className="ml-1">{children}</div>
+      <div>{children}</div>
     </div>
   );
 };

@@ -2,63 +2,54 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 
-import { prettyEnglishDate } from "@app/date";
 import {
   fetchAllCertsByEnvId,
   selectAppsByCertificateId,
   selectCertificatesByEnvId,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
-import { appEndpointsUrl } from "@app/routes";
+import { appEndpointsUrl, certDetailUrl } from "@app/routes";
 import type { AppState, DeployCertificate } from "@app/types";
 
 import {
+  CertIssuer,
+  CertManagedHTTPSPill,
+  CertTrustedPill,
+  CertValidDateRange,
   EmptyResourcesTable,
   LoadResources,
-  Pill,
   ResourceListView,
   TableHead,
   Td,
-  pillStyles,
   tokens,
 } from "../shared";
-
-const CertificateTrustedPill = ({
-  certificate,
-}: {
-  certificate: DeployCertificate;
-}) => {
-  return (
-    <Pill
-      className={certificate.trusted ? pillStyles.success : pillStyles.error}
-    >
-      {certificate.trusted ? "Trusted" : "Untrusted"}
-    </Pill>
-  );
-};
-
-const ManagedHTTPSPill = ({
-  certificate,
-}: {
-  certificate: DeployCertificate;
-}) => {
-  return certificate.acme ? (
-    <Pill className={pillStyles.success}>Managed HTTPS</Pill>
-  ) : null;
-};
 
 const CertificatePrimaryCell = ({
   certificate,
 }: { certificate: DeployCertificate }) => {
   return (
-    <Td className="flex-1">
-      <div className="flex">
-        <p className="leading-4">
-          <span className={tokens.type.darker}>
-            {certificate.commonName || "Unnamed"}
-          </span>
-        </p>
-      </div>
+    <Td>
+      <Link
+        to={certDetailUrl(certificate.id)}
+        className="text-black group-hover:text-indigo hover:text-indigo"
+      >
+        {certificate.id}
+      </Link>
+    </Td>
+  );
+};
+
+const CertificateName = ({
+  certificate,
+}: { certificate: DeployCertificate }) => {
+  return (
+    <Td>
+      <Link
+        to={certDetailUrl(certificate.id)}
+        className="text-black group-hover:text-indigo hover:text-indigo"
+      >
+        {certificate.commonName}
+      </Link>
     </Td>
   );
 };
@@ -67,21 +58,8 @@ const CertificateValidDateRangeCell = ({
   certificate,
 }: { certificate: DeployCertificate }) => {
   return (
-    <Td className="flex-1">
-      <div className="flex">
-        <p className="leading-4">
-          <span className={tokens.type.darker}>
-            {prettyEnglishDate(certificate.notBefore)} -{" "}
-            {prettyEnglishDate(certificate.notAfter)}
-          </span>
-          {new Date(certificate.notAfter) <= new Date() ? (
-            <>
-              <br />
-              <span className="text-sm text-red">Expired</span>
-            </>
-          ) : null}
-        </p>
-      </div>
+    <Td>
+      <CertValidDateRange cert={certificate} />
     </Td>
   );
 };
@@ -90,18 +68,8 @@ const CertificateIssuerCell = ({
   certificate,
 }: { certificate: DeployCertificate }) => {
   return (
-    <Td className="flex-1">
-      <div className="flex">
-        <p className="leading-4">
-          <span className={tokens.type.darker}>
-            {certificate.issuerOrganization || "Unknown Issuer"}
-          </span>
-          <br />
-          <span className={tokens.type["small lighter"]}>
-            Fingerprint: {certificate.sha256Fingerprint.slice(0, 8) || "N/A"}
-          </span>
-        </p>
-      </div>
+    <Td>
+      <CertIssuer cert={certificate} />
     </Td>
   );
 };
@@ -117,22 +85,20 @@ const CertificateServicesCell = ({
   );
 
   return (
-    <Td className="flex-1">
-      <div className="flex">
-        <div className={`${tokens.type.darker} leading-4`}>
-          {appsForCertificate.length > 0
-            ? appsForCertificate.flat().map((appForCertificate, idx) => (
-                <div key={`${appForCertificate.id}-${idx}`}>
-                  <Link
-                    to={appEndpointsUrl(appForCertificate.id)}
-                    key={appForCertificate.id}
-                  >
-                    {appForCertificate.handle}
-                  </Link>
-                </div>
-              ))
-            : "No Apps Found"}
-        </div>
+    <Td>
+      <div className={`${tokens.type.darker} leading-4`}>
+        {appsForCertificate.length > 0
+          ? appsForCertificate.flat().map((appForCertificate, idx) => (
+              <div key={`${appForCertificate.id}-${idx}`}>
+                <Link
+                  to={appEndpointsUrl(appForCertificate.id)}
+                  key={appForCertificate.id}
+                >
+                  {appForCertificate.handle}
+                </Link>
+              </div>
+            ))
+          : "No Apps Found"}
       </div>
     </Td>
   );
@@ -142,18 +108,17 @@ const CertificateStatusCell = ({
   certificate,
 }: { certificate: DeployCertificate }) => {
   return (
-    <Td className="flex-1">
-      <div className="flex">
-        <div className="leading-4 flex flex-row">
-          <CertificateTrustedPill certificate={certificate} />
-          <ManagedHTTPSPill certificate={certificate} />
-        </div>
+    <Td className="w-[225px]">
+      <div className="flex gap-2 items-center">
+        <CertTrustedPill cert={certificate} />
+        <CertManagedHTTPSPill cert={certificate} />
       </div>
     </Td>
   );
 };
 
 const certificatesHeaders = [
+  "ID",
   "Certificate",
   "Date Range",
   "Issuer",
@@ -196,6 +161,7 @@ export const EnvironmentCertificatesPage = () => {
             {certificates.map((certificate) => (
               <tr className="group hover:bg-gray-50" key={certificate.id}>
                 <CertificatePrimaryCell certificate={certificate} />
+                <CertificateName certificate={certificate} />
                 <CertificateValidDateRangeCell certificate={certificate} />
                 <CertificateIssuerCell certificate={certificate} />
                 <CertificateServicesCell certificate={certificate} />
