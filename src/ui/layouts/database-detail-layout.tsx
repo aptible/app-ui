@@ -36,6 +36,7 @@ import { ActiveOperationNotice } from "../shared/active-operation-notice";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
 import { setResourceStats } from "@app/search";
+import { capitalize } from "@app/string-utils";
 
 export function DatabaseHeader({
   database,
@@ -68,7 +69,7 @@ export function DatabaseHeader({
           {metrics.totalMemoryLimit / 1024} GB
         </DetailInfoItem>
 
-        <DetailInfoItem title="Type">{database.type}</DetailInfoItem>
+        <DetailInfoItem title="Type">{capitalize(database.type)}</DetailInfoItem>
         <DetailInfoItem title="Disk Type">
           {database.disk?.ebsVolumeType}
         </DetailInfoItem>
