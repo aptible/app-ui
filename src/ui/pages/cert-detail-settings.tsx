@@ -15,6 +15,7 @@ import { AppState } from "@app/types";
 
 import {
   Banner,
+  BannerMessages,
   Box,
   ButtonDestroy,
   IconAlertTriangle,
@@ -75,6 +76,8 @@ const CertDelete = ({ certId }: { certId: string }) => {
           certificate. This action cannot be undone. If you want to proceed,
           type <strong>{cert.commonName}</strong> below to continue.
         </p>
+
+        <BannerMessages {...loader} />
 
         <div className="flex">
           <Input

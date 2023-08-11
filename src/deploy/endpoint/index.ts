@@ -634,15 +634,11 @@ export const getEndpointUrl = (enp: DeployEndpoint) => {
   return `https://${enp.virtualDomain}`;
 };
 
-export const getEndpointText = (
-  enp: DeployEndpoint,
-  exposedPorts: number[],
-) => {
+export const getEndpointText = (enp: DeployEndpoint) => {
   return {
     url: getEndpointUrl(enp),
     placement: getPlacement(enp),
     ipAllowlist: getIpAllowlistText(enp),
-    containerPort: getContainerPort(enp, exposedPorts),
   };
 };
 

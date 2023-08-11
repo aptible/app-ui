@@ -24,12 +24,9 @@ import { TableHead } from "../table";
 import { Td } from "../table";
 import { Link } from "react-router-dom";
 
-const EndpointRow = ({
-  exposedPorts,
-  endpoint,
-}: { exposedPorts: number[]; endpoint: DeployEndpoint }) => {
+const EndpointRow = ({ endpoint }: { endpoint: DeployEndpoint }) => {
   const navigate = useNavigate();
-  const txt = getEndpointText(endpoint, exposedPorts);
+  const txt = getEndpointText(endpoint);
   const acmeSetup = () => {
     navigate(endpointDetailSetupUrl(endpoint.id));
   };
@@ -51,7 +48,6 @@ const EndpointRow = ({
         <EndpointStatusPill status={endpoint.status} />
       </Td>
       <Td>{txt.placement}</Td>
-      <Td>{txt.containerPort}</Td>
       <Td>{endpoint.platform.toLocaleUpperCase()}</Td>
       <Td>{txt.ipAllowlist}</Td>
       <Td>
@@ -66,11 +62,9 @@ const EndpointRow = ({
 };
 
 export const EndpointList = ({
-  exposedPorts,
   endpoints,
   action,
 }: {
-  exposedPorts: number[];
   endpoints: DeployEndpoint[];
   action?: JSX.Element;
 }) => {
@@ -85,7 +79,6 @@ export const EndpointList = ({
               "Hostname",
               "Status",
               "Placement",
-              "Container Port",
               "Platform",
               "IP Filtering",
               "ACME Status",
@@ -93,11 +86,7 @@ export const EndpointList = ({
           />
           <tbody className="divide-y divide-gray-200 bg-white">
             {endpoints.map((endpoint) => (
-              <EndpointRow
-                exposedPorts={exposedPorts}
-                endpoint={endpoint}
-                key={endpoint.id}
-              />
+              <EndpointRow endpoint={endpoint} key={endpoint.id} />
             ))}
           </tbody>
         </table>
@@ -136,11 +125,7 @@ function EndpointsView({ app }: { app: DeployApp }) {
 
   return (
     <div className="mt-3">
-      <EndpointList
-        exposedPorts={app.currentImage.exposedPorts}
-        endpoints={endpoints}
-        action={action}
-      />
+      <EndpointList endpoints={endpoints} action={action} />
     </div>
   );
 }

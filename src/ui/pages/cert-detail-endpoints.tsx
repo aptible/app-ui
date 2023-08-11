@@ -19,5 +19,5 @@ export const CertDetailEndpointsPage = () => {
       envId: cert.environmentId,
     }),
   );
-  return <EndpointList exposedPorts={[]} endpoints={endpoints} />;
+  return <EndpointList endpoints={endpoints} />;
 };

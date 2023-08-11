@@ -10,7 +10,7 @@ const EndpointListing = ({
   endpoint,
   parent,
 }: { endpoint: DeployEndpoint; parent: string }) => {
-  const txt = getEndpointText(endpoint, []);
+  const txt = getEndpointText(endpoint);
   return (
     <div className="mx-auto w-full py-2">
       <Box>
