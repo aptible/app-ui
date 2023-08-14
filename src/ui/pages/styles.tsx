@@ -32,7 +32,7 @@ import {
   IconCreditCard,
   IconCylinder,
   IconDownload,
-  IconEdit2,
+  IconEdit,
   IconEllipsis,
   IconExternalLink,
   IconGitBranch,
@@ -537,7 +537,7 @@ const Icons = () => (
       {[
         ["IconArrowRight", <IconArrowRight />],
         ["IconArrowLeft", <IconArrowLeft />],
-        ["IconEdit2", <IconEdit2 />],
+        ["IconEdit", <IconEdit />],
         ["IconChevronUp", <IconChevronUp />],
         ["IconChevronRight", <IconChevronRight />],
         ["IconChevronDown", <IconChevronDown />],

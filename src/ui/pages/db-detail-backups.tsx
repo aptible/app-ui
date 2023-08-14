@@ -9,14 +9,16 @@ import {
   selectDatabaseById,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess } from "@app/fx";
-import { databaseActivityUrl } from "@app/routes";
+import { databaseActivityUrl, environmentBackupsUrl } from "@app/routes";
 import { AppState } from "@app/types";
 
 import { usePoller } from "../hooks";
 import {
   BannerMessages,
   ButtonCreate,
+  ButtonLink,
   DatabaseBackupsList,
+  IconEdit,
   IconPlusCircle,
   LoadingSpinner,
 } from "../shared";
@@ -58,6 +60,13 @@ export const DatabaseBackupsPage = () => {
         >
           <IconPlusCircle variant="sm" className="mr-2" /> New Backup
         </ButtonCreate>
+
+        <ButtonLink
+          to={environmentBackupsUrl(db.environmentId)}
+          variant="white"
+        >
+          <IconEdit variant="sm" className="mr-2" /> Edit Backup Policy
+        </ButtonLink>
 
         <LoadingSpinner show={pollLoader.isLoading} />
       </div>
