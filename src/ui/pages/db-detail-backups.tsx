@@ -16,8 +16,10 @@ import { usePoller } from "../hooks";
 import {
   BannerMessages,
   ButtonCreate,
+  Button,
   DatabaseBackupsList,
   IconPlusCircle,
+  IconEdit2,
   LoadingSpinner,
 } from "../shared";
 import { useMemo } from "react";
@@ -59,7 +61,10 @@ export const DatabaseBackupsPage = () => {
           <IconPlusCircle variant="sm" className="mr-2" /> New Backup
         </ButtonCreate>
 
+        <Button variant="white"><IconEdit2 variant="sm" className="mr-2" /> Edit Backup Policy</Button>
+
         <LoadingSpinner show={pollLoader.isLoading} />
+
       </div>
 
       <BannerMessages className="my-4" {...loader} />
