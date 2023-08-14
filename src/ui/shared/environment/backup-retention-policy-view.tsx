@@ -99,7 +99,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
       </div>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-2 mt-4">
-        <div className="grid md:grid-cols-2 col-span-1 col-rows-1 gap-4">
+        <div className="grid md:grid-cols-2 col-span-1 gap-4">
           <FormGroup
             label="Daily backups retained"
             htmlFor="daily"
