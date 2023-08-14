@@ -119,7 +119,7 @@ export function AppDetailServiceMetricsPage() {
               metricNames={["memory_all"]}
               limit={`${service.containerMemoryLimitMb} MB`}
               metricHorizon={metricHorizon}
-              helpText="Total amount of memory your container has requested from the host system"
+              helpText="Total amount of memory your container has requested from the host system."
               yAxisLabel="Memory Usage (MB)"
               yAxisUnit=" MB"
             />
