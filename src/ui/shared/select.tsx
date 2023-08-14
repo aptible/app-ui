@@ -7,21 +7,25 @@ export interface SelectOption<V = string> {
 }
 
 export interface SelectProps {
+  id?: string;
   options: SelectOption[];
-  defaultValue?: SelectOption;
-  value?: SelectOption;
+  defaultValue?: string;
+  value?: string;
   onSelect: (s: SelectOption) => void;
   className?: string;
   ariaLabel?: string;
+  disabled?: boolean;
 }
 
 export function Select({
+  id,
   value,
   options,
   onSelect,
   defaultValue,
   className = "",
   ariaLabel = "combobox",
+  disabled = false,
 }: SelectProps) {
   const finClassName = cn(
     "border-black-100 text-black",
@@ -33,17 +37,18 @@ export function Select({
   );
   return (
     <select
-      id="env-selector"
+      id={id}
       aria-label={ariaLabel}
       className={finClassName}
-      value={value?.value}
-      defaultValue={defaultValue?.value}
+      value={value}
+      defaultValue={defaultValue}
       onChange={(e) => {
         const value = e.currentTarget.value;
         const option = options.find((o) => o.value === value);
         if (!option) return;
         onSelect(option);
       }}
+      disabled={disabled}
     >
       {options.map((option) => {
         return (

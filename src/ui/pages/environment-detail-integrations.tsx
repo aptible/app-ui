@@ -1,7 +1,9 @@
 import { useQuery } from "@app/fx";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 import {
+  ButtonCreate,
+  IconPlusCircle,
   LoadResources,
   Pill,
   ResourceListView,
@@ -18,6 +20,7 @@ import {
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
 } from "@app/deploy";
+import { createMetricDrainUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { useSelector } from "react-redux";
@@ -268,11 +271,26 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
 
 export const EnvironmentIntegrationsPage = () => {
   const { id = "" } = useParams();
+  const navigate = useNavigate();
+  const onCreateMetrics = () => {
+    navigate(createMetricDrainUrl(id));
+  };
+  const onCreateLogs = () => {
+    console.log("create logs");
+  };
 
   return (
-    <>
+    <div>
+      <div className="flex gap-2 mb-4">
+        <ButtonCreate envId={id} onClick={onCreateLogs}>
+          <IconPlusCircle variant="sm" className="mr-1" /> New Log Drain
+        </ButtonCreate>
+        <ButtonCreate envId={id} onClick={onCreateMetrics}>
+          <IconPlusCircle variant="sm" className="mr-1" /> New Metric Drain
+        </ButtonCreate>
+      </div>
       <LogDrainsSection id={id} />
       <MetricDrainsSection id={id} />
-    </>
+    </div>
   );
 };

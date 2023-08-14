@@ -174,7 +174,7 @@ export const DbCreatorSelector = ({
         <Select
           ariaLabel="new-db"
           onSelect={selectChange}
-          value={selectedValue}
+          value={selectedValue?.value}
           options={imgOptions}
           className="flex-1 mr-2"
         />

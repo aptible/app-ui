@@ -107,7 +107,7 @@ export const BackupRestorePage = () => {
           <FormGroup label="Environment" htmlFor="env-selector">
             <EnvironmentSelect
               onSelect={onSelect}
-              defaultValue={defaultValue}
+              defaultValue={defaultValue.value}
             />
           </FormGroup>
 

@@ -226,7 +226,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
             className="mb-4"
           >
             <StackSelect
-              value={stackValue}
+              value={stackValue.value}
               onSelect={(stack) => {
                 setStackValue(stack);
               }}
