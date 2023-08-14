@@ -221,6 +221,7 @@ export interface DeployOperation extends Timestamps {
   dockerRef: string;
   containerCount: number;
   containerSize: number;
+  diskSize: number;
   encryptedEnvJsonNew: string;
   destinationRegion: string;
   cancelled: boolean;
