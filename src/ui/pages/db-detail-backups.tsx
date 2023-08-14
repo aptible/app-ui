@@ -7,7 +7,6 @@ import {
   pollDatabaseBackups,
   selectBackupsByDatabaseId,
   selectDatabaseById,
-  selectEnvironmentById,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess } from "@app/fx";
 import { databaseActivityUrl, environmentBackupsUrl } from "@app/routes";
