@@ -93,6 +93,10 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
   return (
     <div className="bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
       <h3 className={tokens.type.h3}>Backup Retention Policy</h3>
+      <div className="mt-4">
+        Any changes made will impact <strong>all database backups</strong>{" "}
+        inside this Environment.
+      </div>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-2 mt-4">
         <FormGroup
@@ -157,7 +161,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
             envId={envId}
             isLoading={loader.isLoading}
           >
-            Save
+            Save Policy
           </ButtonCreate>
 
           <Button variant="white" onClick={onReset}>

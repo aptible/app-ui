@@ -77,11 +77,11 @@ describe("EnvironmentBackupsPage", () => {
     const monthly = await screen.findByLabelText(/Monthly backups retained/);
     await act(async () => await userEvent.type(monthly, "1"));
 
-    const btn = await screen.findByRole("button", { name: /Save/ });
+    const btn = await screen.findByRole("button", { name: /Save Policy/ });
     fireEvent.click(btn);
 
     await screen.findByRole("button", { name: /Loading/ });
-    await screen.findByRole("button", { name: /Save/ });
+    await screen.findByRole("button", { name: /Save Policy/ });
 
     const newDaily = await screen.findByLabelText(/Daily backups retained/);
     expect(newDaily).toHaveValue(15);
