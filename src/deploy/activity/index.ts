@@ -48,7 +48,7 @@ const selectActivityForTable = createSelector(
           }
           resourceHandle =
             op.containerCount && op.containerSize
-              ? `${service.handle} (${op.containerCount} Container(s) - ${op.containerSize} GB)`
+              ? `${service.handle} (${op.containerCount} Container(s) - ${op.containerSize} GB Memory)`
               : service.handle;
           return { ...op, envHandle: env.handle, resourceHandle, url };
         } else {
