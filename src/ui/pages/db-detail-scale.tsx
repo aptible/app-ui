@@ -104,8 +104,11 @@ export const DatabaseScalePage = () => {
     currentContainerProfile.costPerContainerHourInCents / 100
   ).toFixed(2);
   const currentPrice = (
-    computedCostsForContainer(1, currentContainerProfile, containerSize)
-      .estimatedCostInDollars /
+    computedCostsForContainer(
+      1,
+      currentContainerProfile,
+      service.containerMemoryLimitMb,
+    ).estimatedCostInDollars /
       1000 +
     (database.disk?.size || 0) * 0.2
   ).toFixed(2);
