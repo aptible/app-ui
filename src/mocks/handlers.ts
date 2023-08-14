@@ -32,6 +32,7 @@ import {
   DeployStackResponse,
   defaultDatabaseResponse,
   defaultDeployCertificate,
+  defaultMetricDrainResponse,
   defaultOperationResponse,
 } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
@@ -488,6 +489,37 @@ const apiHandlers = [
     `${testEnv.apiUrl}/accounts/:id/metric_drains`,
     async (_, res, ctx) => {
       return res(ctx.json({ metric_drains: [] }));
+    },
+  ),
+  rest.post(
+    `${testEnv.apiUrl}/accounts/:id/metric_drains`,
+    async (req, res, ctx) => {
+      const data = await req.json();
+      return res(
+        ctx.json(
+          defaultMetricDrainResponse({
+            id: `${createId()}`,
+            _links: {
+              account: defaultHalHref(
+                `${testEnv.apiUrl}/accounts/${req.params.id}`,
+              ),
+            },
+            ...data,
+          }),
+        ),
+      );
+    },
+  ),
+  rest.post(
+    `${testEnv.apiUrl}/metric_drains/:id/operations`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json(
+          defaultOperationResponse({
+            id: createId(),
+          }),
+        ),
+      );
     },
   ),
   rest.get(

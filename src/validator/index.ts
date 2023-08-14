@@ -35,8 +35,11 @@ export function portValidator(port = "") {
   if (portNum >= 65535) return msg;
 }
 
+const handleRegexExplainer =
+  "lowercase alphanumerics, periods, dashes, underscores, and less than 64 characters";
 export const handleRegex = new RegExp(/^[0-9a-z._-]{1,64}$/);
 export function handleValidator(handle = "") {
+  if (handle === "") return `Must provide a handle ${handleRegexExplainer}`;
   const maxCharLength = 64;
   if (handle.length > maxCharLength) {
     const delta = handle.length - maxCharLength;
@@ -44,6 +47,6 @@ export function handleValidator(handle = "") {
   }
 
   if (!handleRegex.test(handle)) {
-    return `[${handle}] is not a valid handle ${handleRegex}`;
+    return `[${handle}] is not a valid handle ${handleRegexExplainer}`;
   }
 }

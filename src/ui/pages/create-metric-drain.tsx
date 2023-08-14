@@ -1,5 +1,17 @@
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+import {
+  CreateMetricDrainProps,
+  MetricDrainType,
+  provisionMetricDrain,
+} from "@app/deploy";
+
+import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
+  ButtonCreate,
   DbSelector,
   EnvironmentSelect,
   ExternalLink,
@@ -10,47 +22,141 @@ import {
   Select,
   SelectOption,
 } from "../shared";
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { operationDetailUrl } from "@app/routes";
+import { handleValidator, portValidator } from "@app/validator";
+import { useLoader, useLoaderSuccess } from "saga-query/react";
 
-const options: SelectOption[] = [
-  { value: "influxdb-env", label: "InfluxDb (this environment)" },
-  { value: "influxdb-any", label: "InfluxDb (anywhere)" },
+const options: SelectOption<MetricDrainType>[] = [
+  { value: "influxdb_database", label: "InfluxDb (this environment)" },
+  { value: "influxdb", label: "InfluxDb (anywhere)" },
   { value: "datadog", label: "Datadog" },
 ];
 
+const validators = {
+  // all
+  handle: (p: CreateMetricDrainProps) => {
+    return handleValidator(p.handle);
+  },
+  // influxdb
+  hostname: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "influxdb") return;
+    if (p.hostname === "") return "Must provide hostname";
+    if (p.hostname.startsWith("http"))
+      return "Do not include the protocol (e.g. http(s)://)";
+  },
+  username: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "influxdb") return;
+    if (p.username === "") return "Must provide username";
+  },
+  password: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "influxdb") return;
+    if (p.password === "") return "Must provide password";
+  },
+  port: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "influxdb") return;
+    return portValidator(p.port);
+  },
+  database: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "influxdb") return;
+    if (p.database === "") return "Must provide a database name";
+  },
+  // influxdb_database
+  dbId: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "influxdb_database") return;
+    if (p.dbId === "") return "Must provide an Aptible database";
+  },
+  // datadog
+  apiKey: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "datadog") return;
+    if (p.apiKey === "") return "Must provide a Datadog API key";
+  },
+};
+
 export const CreateMetricDrainPage = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [params] = useSearchParams();
   const queryEnvId = params.get("environment_id") || "";
   const [envId, setEnvId] = useState(queryEnvId);
   const [dbId, setDbId] = useState("");
   const [handle, setHandle] = useState("");
   const [apiKey, setApiKey] = useState("");
-  const [protocol, setProtocol] = useState("https");
+  const [protocol, setProtocol] = useState<"http" | "https">("https");
   const [hostname, setHostname] = useState("");
   const [port, setPort] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [db, setDb] = useState("");
+  const [database, setDb] = useState("");
 
-  const [metricType, setMetricType] = useState(options[0].value);
+  const [drainType, setDrainType] = useState<MetricDrainType>(options[0].value);
 
-  const onTypeSelect = (opt: SelectOption) => {
-    setMetricType(opt.value);
+  const [errors, validate] = useValidator<
+    CreateMetricDrainProps,
+    typeof validators
+  >(validators);
+
+  const onTypeSelect = (opt: SelectOption<MetricDrainType>) => {
+    setDrainType(opt.value);
   };
   const onEnvSelect = (opt: SelectOption) => {
     setEnvId(opt.value);
   };
+  const createData = (): CreateMetricDrainProps => {
+    const def = {
+      envId,
+      handle,
+    };
+
+    if (drainType === "influxdb_database") {
+      return {
+        ...def,
+        drainType: "influxdb_database",
+        dbId,
+      };
+    }
+
+    if (drainType === "datadog") {
+      return {
+        ...def,
+        drainType: "datadog",
+        apiKey,
+      };
+    }
+
+    return {
+      ...def,
+      drainType: "influxdb",
+      protocol,
+      hostname,
+      port,
+      username,
+      password,
+      database,
+    };
+  };
+
+  const data = createData();
+  const action = provisionMetricDrain(data);
+  const loader = useLoader(action);
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!validate(data)) return;
+    dispatch(action);
   };
   const onDbSelect = (opt: SelectOption) => {
     setDbId(opt.value);
   };
+  useLoaderSuccess(loader, () => {
+    navigate(operationDetailUrl(loader.meta.opId));
+  });
 
   return (
     <EnvironmentDetailLayout>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+        <h1 className="text-lg text-black font-semibold">
+          Create Metric Drain
+        </h1>
+
         <div>
           Metric Drains let you collect metrics from apps and databases deployed
           in the sbx-main environment and route them to a metrics destination.
@@ -59,7 +165,12 @@ export const CreateMetricDrainPage = () => {
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <EnvironmentSelect onSelect={onEnvSelect} />
 
-          <FormGroup label="Handle" htmlFor="handle">
+          <FormGroup
+            label="Handle"
+            htmlFor="handle"
+            feedbackMessage={errors.handle}
+            feedbackVariant={errors.handle ? "danger" : "info"}
+          >
             <Input
               type="text"
               id="handle"
@@ -70,14 +181,15 @@ export const CreateMetricDrainPage = () => {
 
           <FormGroup label="Type" htmlFor="metric-type">
             <Select
+              ariaLabel="Type"
               id="metric-type"
               options={options}
               onSelect={onTypeSelect}
-              value={metricType}
+              value={drainType}
             />
           </FormGroup>
 
-          {metricType === "influxdb-env" ? (
+          {drainType === "influxdb_database" ? (
             <FormGroup
               label="InfluxDB"
               htmlFor="db-selector"
@@ -89,6 +201,8 @@ export const CreateMetricDrainPage = () => {
                   (anywhere)" option.
                 </p>
               }
+              feedbackMessage={errors.dbId}
+              feedbackVariant={errors.dbId ? "danger" : "info"}
             >
               <DbSelector
                 id="db-selector"
@@ -99,7 +213,7 @@ export const CreateMetricDrainPage = () => {
             </FormGroup>
           ) : null}
 
-          {metricType === "datadog" ? (
+          {drainType === "datadog" ? (
             <FormGroup
               label="API Key"
               htmlFor="api-key"
@@ -117,6 +231,8 @@ export const CreateMetricDrainPage = () => {
                   </p>
                 </div>
               }
+              feedbackMessage={errors.apiKey}
+              feedbackVariant={errors.apiKey ? "danger" : "info"}
             >
               <Input
                 type="text"
@@ -127,7 +243,7 @@ export const CreateMetricDrainPage = () => {
             </FormGroup>
           ) : null}
 
-          {metricType === "influxdb-any" ? (
+          {drainType === "influxdb" ? (
             <>
               <FormGroup label="Protocol" htmlFor="protocol">
                 <RadioGroup
@@ -140,7 +256,12 @@ export const CreateMetricDrainPage = () => {
                 </RadioGroup>
               </FormGroup>
 
-              <FormGroup label="Hostname" htmlFor="hostname">
+              <FormGroup
+                label="Hostname"
+                htmlFor="hostname"
+                feedbackMessage={errors.hostname}
+                feedbackVariant={errors.hostname ? "danger" : "info"}
+              >
                 <Input
                   type="text"
                   id="hostname"
@@ -149,7 +270,15 @@ export const CreateMetricDrainPage = () => {
                 />
               </FormGroup>
 
-              <FormGroup label="Port" htmlFor="port">
+              <FormGroup
+                label="Port"
+                htmlFor="port"
+                description={
+                  "Leave empty to use the default for the protocol (443 for HTTPS, 80 for HTTP)."
+                }
+                feedbackMessage={errors.port}
+                feedbackVariant={errors.port ? "danger" : "info"}
+              >
                 <Input
                   type="number"
                   id="port"
@@ -158,7 +287,12 @@ export const CreateMetricDrainPage = () => {
                 />
               </FormGroup>
 
-              <FormGroup label="Username" htmlFor="username">
+              <FormGroup
+                label="Username"
+                htmlFor="username"
+                feedbackMessage={errors.username}
+                feedbackVariant={errors.username ? "danger" : "info"}
+              >
                 <Input
                   type="text"
                   id="username"
@@ -167,7 +301,12 @@ export const CreateMetricDrainPage = () => {
                 />
               </FormGroup>
 
-              <FormGroup label="Password" htmlFor="password">
+              <FormGroup
+                label="Password"
+                htmlFor="password"
+                feedbackMessage={errors.password}
+                feedbackVariant={errors.password ? "danger" : "info"}
+              >
                 <Input
                   type="password"
                   id="password"
@@ -176,16 +315,29 @@ export const CreateMetricDrainPage = () => {
                 />
               </FormGroup>
 
-              <FormGroup label="Database" htmlFor="database">
+              <FormGroup
+                label="Database"
+                htmlFor="database"
+                feedbackMessage={errors.database}
+                feedbackVariant={errors.database ? "danger" : "info"}
+              >
                 <Input
                   type="text"
                   id="database"
-                  value={db}
+                  value={database}
                   onChange={(e) => setDb(e.currentTarget.value)}
                 />
               </FormGroup>
             </>
           ) : null}
+
+          <ButtonCreate
+            envId={envId}
+            type="submit"
+            isLoading={loader.isLoading}
+          >
+            Save Metric Drain
+          </ButtonCreate>
         </form>
       </div>
     </EnvironmentDetailLayout>

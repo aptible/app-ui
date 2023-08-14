@@ -1,15 +1,83 @@
-import { selectDeploy } from "../slice";
-import { api } from "@app/api";
-import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { createSelector } from "@reduxjs/toolkit";
+
+import { api, thunks } from "@app/api";
+import {
+  call,
+  put,
+  setLoaderError,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "@app/fx";
+import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import { AppState, DeployMetricDrain } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
+import {
+  AppState,
+  DeployMetricDrain,
+  DeployOperationResponse,
+  LinkResponse,
+  ProvisionableStatus,
+} from "@app/types";
 
-export const deserializeMetricDrain = (payload: any): DeployMetricDrain => {
+import { selectDeploy } from "../slice";
+
+export type MetricDrainType = "influxdb" | "influxdb_database" | "datadog";
+
+interface MetricDrainResponse {
+  id: string;
+  handle: string;
+  drain_type: MetricDrainType;
+  drain_configuration: Record<string, string>;
+  environmentId: string;
+  created_at: string;
+  updated_at: string;
+  status: ProvisionableStatus;
+  aggregator_ca_certificate: string;
+  aggregator_ca_private_key_blob: string;
+  aggregator_host: string;
+  aggregator_port_mapping: number[][];
+  aggregator_instance_id: string;
+  aggregator_docker_name: string;
+  aggregator_allocation: string[];
+  _links: {
+    account: LinkResponse;
+  };
+}
+
+export const defaultMetricDrainResponse = (
+  md: Partial<MetricDrainResponse> = {},
+): MetricDrainResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    handle: "",
+    drain_type: "datadog",
+    drain_configuration: {},
+    environmentId: "",
+    status: "pending",
+    aggregator_host: "",
+    aggregator_allocation: [],
+    aggregator_docker_name: "",
+    aggregator_instance_id: "",
+    aggregator_port_mapping: [],
+    aggregator_ca_certificate: "",
+    aggregator_ca_private_key_blob: "",
+    created_at: now,
+    updated_at: now,
+    _links: {
+      account: defaultHalHref(),
+      ...md._links,
+    },
+    ...md,
+  };
+};
+
+export const deserializeMetricDrain = (
+  payload: MetricDrainResponse,
+): DeployMetricDrain => {
   const links = payload._links;
 
   return {
@@ -85,6 +153,125 @@ export const metricDrainReducers = createReducerMap(slice);
 
 export const fetchMetricDrains = api.get<{ id: string }>(
   "/accounts/:id/metric_drains",
+);
+
+interface CreateMetricDrainBase {
+  envId: string;
+  handle: string;
+}
+
+interface CreateInfluxDbEnvMetricDrain extends CreateMetricDrainBase {
+  drainType: "influxdb_database";
+  dbId: string;
+}
+
+interface CreateInfluxDbMetricDrain extends CreateMetricDrainBase {
+  drainType: "influxdb";
+  protocol: "http" | "https";
+  hostname: string;
+  username: string;
+  password: string;
+  database: string;
+  port?: string;
+}
+
+interface CreateDatabaseMetricDrain extends CreateMetricDrainBase {
+  drainType: "datadog";
+  apiKey: string;
+}
+
+export type CreateMetricDrainProps =
+  | CreateInfluxDbEnvMetricDrain
+  | CreateInfluxDbMetricDrain
+  | CreateDatabaseMetricDrain;
+
+export const createMetricDrain = api.post<
+  CreateMetricDrainProps,
+  MetricDrainResponse
+>("/accounts/:envId/metric_drains", function* (ctx, next) {
+  const preBody: Record<string, string> = {
+    drain_type: ctx.payload.drainType,
+    handle: ctx.payload.handle,
+  };
+  let body = "";
+  if (ctx.payload.drainType === "influxdb_database") {
+    body = JSON.stringify({
+      ...preBody,
+      database_id: ctx.payload.dbId,
+    });
+  } else if (ctx.payload.drainType === "influxdb") {
+    const { protocol, hostname, username, password, database } = ctx.payload;
+    const protoPort = protocol === "http" ? 80 : 443;
+    const port = ctx.payload.port || protoPort;
+    const address = `${protocol}://${hostname}:${port}`;
+    body = JSON.stringify({
+      ...preBody,
+      drain_configuration: {
+        address,
+        username,
+        password,
+        database,
+      },
+    });
+  } else if (ctx.payload.drainType === "datadog") {
+    body = JSON.stringify({
+      ...preBody,
+      drain_configuration: { api_key: ctx.payload.apiKey },
+    });
+  }
+
+  ctx.request = ctx.req({ body });
+  yield* next();
+});
+
+export const createMetricDrainOperation = api.post<
+  { id: string },
+  DeployOperationResponse
+>("/metric_drains/:id/operations", function* (ctx, next) {
+  const body = JSON.stringify({
+    type: "provision",
+  });
+  ctx.request = ctx.req({ body });
+  yield* next();
+});
+
+export const provisionMetricDrain = thunks.create<CreateMetricDrainProps>(
+  "create-and-provision-metric-drain",
+  function* (ctx, next) {
+    yield* put(setLoaderStart({ id: ctx.key }));
+
+    const mdCtx = yield* call(
+      createMetricDrain.run,
+      createMetricDrain(ctx.payload),
+    );
+    if (!mdCtx.json.ok) {
+      yield* put(
+        setLoaderError({ id: ctx.key, message: mdCtx.json.data.message }),
+      );
+      return;
+    }
+
+    const metricDrainId = mdCtx.json.data.id;
+    const opCtx = yield* call(
+      createMetricDrainOperation.run,
+      createMetricDrainOperation({ id: metricDrainId }),
+    );
+    if (!opCtx.json.ok) {
+      yield* put(
+        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
+      );
+      return;
+    }
+
+    yield* next();
+
+    yield* put(
+      setLoaderSuccess({
+        id: ctx.key,
+        meta: { metricDrainId, opId: `${opCtx.json.data.id}` },
+      }),
+    );
+  },
 );
 
 export const metricDrainEntities = {
