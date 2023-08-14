@@ -316,7 +316,7 @@ export const AppDetailServiceScalePage = () => {
             <BannerMessages {...loader} />
             <div className="flex mt-4">
               <Button
-                className="w-40 mb-4 flex font-semibold"
+                className="w-40 flex font-semibold"
                 type="submit"
                 disabled={!changesExist}
               >
@@ -324,7 +324,7 @@ export const AppDetailServiceScalePage = () => {
               </Button>
               {changesExist ? (
                 <Button
-                  className="w-40 ml-2 mb-4 flex font-semibold"
+                  className="w-40 ml-2 flex font-semibold"
                   onClick={() => {
                     setContainerSize(service.containerMemoryLimitMb);
                     setContainerCount(service.containerCount);

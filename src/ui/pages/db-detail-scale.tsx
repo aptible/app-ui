@@ -318,7 +318,7 @@ export const DatabaseScalePage = () => {
             <BannerMessages {...loader} />
             <div className="flex mt-4">
               <Button
-                className="w-40 mb-4 flex font-semibold"
+                className="w-40 flex font-semibold"
                 disabled={!changesExist}
                 type="submit"
               >
@@ -326,7 +326,7 @@ export const DatabaseScalePage = () => {
               </Button>
               {changesExist ? (
                 <Button
-                  className="w-40 ml-2 mb-4 flex font-semibold"
+                  className="w-40 ml-2 flex font-semibold"
                   onClick={() => {
                     setContainerSize(service.containerMemoryLimitMb);
                     if (database.disk?.size) setDiskValue(database.disk.size);

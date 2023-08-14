@@ -66,7 +66,7 @@ export const ResourceGroupBox = ({
             </p>
           </div>
         </div>
-        <div className="flex items-center mt-1">
+        <div className="flex items-center mt-1 gap-1">
           {status}
 
           <Pill icon={<IconGlobe color="#595E63" variant="sm" />}>

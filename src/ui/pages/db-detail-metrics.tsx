@@ -122,7 +122,7 @@ export function DatabaseMetricsPage() {
               limit={`${service.containerMemoryLimitMb} MB`}
               metricNames={["memory_all"]}
               metricHorizon={metricHorizon}
-              helpText="Total amount of memory your container has requested from the host system"
+              helpText="Total amount of memory your container has requested from the host system."
               yAxisLabel="Memory Usage (MB)"
               yAxisUnit=" MB"
             />
