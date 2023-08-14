@@ -99,57 +99,59 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
       </div>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-2 mt-4">
-        <FormGroup
-          label="Daily backups retained"
-          htmlFor="daily"
-          feedbackMessage={errors.daily}
-          feedbackVariant={errors.daily ? "danger" : "info"}
-        >
-          <Input
-            id="daily"
-            type="number"
-            value={daily}
-            onChange={(e) => setDaily(parseInt(e.currentTarget.value))}
-          />
-        </FormGroup>
-
-        <FormGroup
-          label="Monthly backups retained"
-          htmlFor="monthly"
-          feedbackMessage={errors.monthly}
-          feedbackVariant={errors.monthly ? "danger" : "info"}
-        >
-          <Input
-            id="monthly"
-            type="number"
-            value={monthly}
-            onChange={(e) => {
-              setMonthly(parseInt(e.currentTarget.value));
-            }}
-          />
-        </FormGroup>
-
-        <FormGroup label="Copy backups to another region" htmlFor="make-copy">
-          <RadioGroup
-            name="make-copy"
-            selected={makeCopy}
-            onSelect={(inp) => setMakeCopy(inp)}
+        <div className="grid md:grid-cols-2 col-span-1 col-rows-1 gap-4">
+          <FormGroup
+            label="Daily backups retained"
+            htmlFor="daily"
+            feedbackMessage={errors.daily}
+            feedbackVariant={errors.daily ? "danger" : "info"}
           >
-            <Radio value="yes">Yes</Radio>
-            <Radio value="no">No</Radio>
-          </RadioGroup>
-        </FormGroup>
+            <Input
+              id="daily"
+              type="number"
+              value={daily}
+              onChange={(e) => setDaily(parseInt(e.currentTarget.value))}
+            />
+          </FormGroup>
 
-        <FormGroup label="Keep final backup" htmlFor="keep-final">
-          <RadioGroup
-            name="keep-final"
-            selected={keepFinal}
-            onSelect={(inp) => setKeepFinal(inp)}
+          <FormGroup
+            label="Monthly backups retained"
+            htmlFor="monthly"
+            feedbackMessage={errors.monthly}
+            feedbackVariant={errors.monthly ? "danger" : "info"}
           >
-            <Radio value="yes">Yes</Radio>
-            <Radio value="no">No</Radio>
-          </RadioGroup>
-        </FormGroup>
+            <Input
+              id="monthly"
+              type="number"
+              value={monthly}
+              onChange={(e) => {
+                setMonthly(parseInt(e.currentTarget.value));
+              }}
+            />
+          </FormGroup>
+
+          <FormGroup label="Copy backups to another region" htmlFor="make-copy">
+            <RadioGroup
+              name="make-copy"
+              selected={makeCopy}
+              onSelect={(inp) => setMakeCopy(inp)}
+            >
+              <Radio value="yes">Yes</Radio>
+              <Radio value="no">No</Radio>
+            </RadioGroup>
+          </FormGroup>
+
+          <FormGroup label="Keep final backup" htmlFor="keep-final">
+            <RadioGroup
+              name="keep-final"
+              selected={keepFinal}
+              onSelect={(inp) => setKeepFinal(inp)}
+            >
+              <Radio value="yes">Yes</Radio>
+              <Radio value="no">No</Radio>
+            </RadioGroup>
+          </FormGroup>
+        </div>
 
         <hr className="my-2" />
 
