@@ -144,7 +144,7 @@ export const calcMetrics = (services: DeployService[]) => {
   const totalCPU = () => {
     let total = 0;
     services.forEach((s) => {
-      total += (s.containerMemoryLimitMb / 1024) * 0.25;
+      total += s.containerMemoryLimitMb * getContainerProfileFromType(s.instanceClass).cpuShare;
     });
     return total;
   };
