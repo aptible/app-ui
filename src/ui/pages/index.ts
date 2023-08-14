@@ -67,3 +67,4 @@ export * from "./cert-detail";
 export * from "./cert-detail-apps";
 export * from "./cert-detail-endpoints";
 export * from "./cert-detail-settings";
+export * from "./environment-detail-create-cert";

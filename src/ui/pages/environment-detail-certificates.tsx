@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 
 import {
@@ -8,15 +8,21 @@ import {
   selectCertificatesByEnvId,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
-import { appEndpointsUrl, certDetailUrl } from "@app/routes";
+import {
+  appEndpointsUrl,
+  certDetailUrl,
+  environmentCreateCertUrl,
+} from "@app/routes";
 import type { AppState, DeployCertificate } from "@app/types";
 
 import {
+  ButtonCreate,
   CertIssuer,
   CertManagedHTTPSPill,
   CertTrustedPill,
   CertValidDateRange,
   EmptyResourcesTable,
+  IconPlusCircle,
   LoadResources,
   ResourceListView,
   TableHead,
@@ -128,10 +134,14 @@ const certificatesHeaders = [
 
 export const EnvironmentCertificatesPage = () => {
   const { id = "" } = useParams();
+  const navigate = useNavigate();
   const query = useQuery(fetchAllCertsByEnvId({ id }));
   const certificates = useSelector((s: AppState) =>
     selectCertificatesByEnvId(s, { envId: id }),
   );
+  const createCert = () => {
+    navigate(environmentCreateCertUrl(id));
+  };
 
   return (
     <LoadResources
@@ -151,9 +161,14 @@ export const EnvironmentCertificatesPage = () => {
     >
       <ResourceListView
         header={
-          <p className="flex text-gray-500 text-base mb-4">
-            {certificates.length} Certificate{certificates.length !== 1 && "s"}
-          </p>
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-gray-500">
+              {certificates.length} Certificate(s)
+            </div>
+            <ButtonCreate envId={id} onClick={createCert}>
+              <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
+            </ButtonCreate>
+          </div>
         }
         tableHeader={<TableHead headers={certificatesHeaders} />}
         tableBody={

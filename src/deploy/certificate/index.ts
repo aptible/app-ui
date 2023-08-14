@@ -167,8 +167,14 @@ export const fetchAllCertsByEnvId = thunks.create<{ id: string }>(
   combinePages(fetchCertificatesByEnvironmentId),
 );
 
+export interface CreateCertProps {
+  cert: string;
+  privKey: string;
+  envId: string;
+}
+
 export const createCertificate = api.post<
-  { cert: string; privKey: string },
+  CreateCertProps,
   DeployCertificateResponse
 >("/accounts/:envId/certificates", function* (ctx, next) {
   const body = JSON.stringify({
