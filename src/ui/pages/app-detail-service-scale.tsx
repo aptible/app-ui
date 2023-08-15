@@ -105,14 +105,12 @@ export const AppDetailServiceScalePage = () => {
   );
   const requestedContainerProfile =
     getContainerProfileFromType(containerProfileType);
-
   const { pricePerHour: currentPricePerHour, pricePerMonth: currentPrice } =
     hourlyAndMonthlyCostsForContainers(
       service.containerCount,
       currentContainerProfile,
       service.containerMemoryLimitMb,
     );
-
   const { pricePerHour: estimatedPricePerHour, pricePerMonth: estimatedPrice } =
     hourlyAndMonthlyCostsForContainers(
       containerCount,

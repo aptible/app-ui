@@ -114,7 +114,6 @@ export const DatabaseScalePage = () => {
       service.containerMemoryLimitMb,
       database.disk?.size || 0,
     );
-
   const { pricePerHour: estimatedPricePerHour, pricePerMonth: estimatedPrice } =
     hourlyAndMonthlyCostsForContainers(
       1,

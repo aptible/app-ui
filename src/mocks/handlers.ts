@@ -197,6 +197,16 @@ export const stacksWithResources = (
       }
       return res(ctx.json({ _embedded: { databases } }));
     }),
+    rest.get(`${testEnv.apiUrl}/databases/:id`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(
+        ctx.json(
+          databases.find((database) => `${database.id}` === req.params.id),
+        ),
+      );
+    }),
     rest.get(`${testEnv.apiUrl}/accounts/:envId/databases`, (req, res, ctx) => {
       if (!isValidToken(req)) {
         return res(ctx.status(401));
