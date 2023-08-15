@@ -5,12 +5,14 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   CreateMetricDrainProps,
   MetricDrainType,
+  fetchDatabasesByEnvId,
   provisionMetricDrain,
 } from "@app/deploy";
 
 import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
+  BannerMessages,
   ButtonCreate,
   DbSelector,
   EnvironmentSelect,
@@ -24,7 +26,7 @@ import {
 } from "../shared";
 import { operationDetailUrl } from "@app/routes";
 import { handleValidator, portValidator } from "@app/validator";
-import { useLoader, useLoaderSuccess } from "saga-query/react";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
 const options: SelectOption<MetricDrainType>[] = [
   { value: "influxdb_database", label: "InfluxDb (this environment)" },
@@ -78,6 +80,7 @@ export const CreateMetricDrainPage = () => {
   const [params] = useSearchParams();
   const queryEnvId = params.get("environment_id") || "";
   const [envId, setEnvId] = useState(queryEnvId);
+  useQuery(fetchDatabasesByEnvId({ envId }));
   const [dbId, setDbId] = useState("");
   const [handle, setHandle] = useState("");
   const [apiKey, setApiKey] = useState("");
@@ -330,6 +333,8 @@ export const CreateMetricDrainPage = () => {
               </FormGroup>
             </>
           ) : null}
+
+          <BannerMessages {...loader} />
 
           <ButtonCreate
             envId={envId}
