@@ -238,7 +238,9 @@ export const selectContainerProfilesForStack = createSelector(
     }
 
     if (stack.allowMInstanceProfile) {
-      // note - m4 is excluded as we do not allow users to go there
+      // TODO - do we want to show this? not sure if we just
+      //        direct new users to m5 somehow
+      containerProfiles.m4 = CONTAINER_PROFILES.m4;
       containerProfiles.m5 = CONTAINER_PROFILES.m5;
     }
 

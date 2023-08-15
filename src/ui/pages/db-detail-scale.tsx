@@ -10,16 +10,15 @@ import {
 } from "../shared";
 import {
   ContainerProfileTypes,
-  computedCostsForContainer,
   exponentialContainerSizesByProfile,
   fetchDatabase,
   fetchService,
   getContainerProfileFromType,
+  hourlyAndMonthlyCostsForContainers,
   scaleDatabase,
   selectContainerProfilesForStack,
   selectDatabaseById,
   selectEnvironmentById,
-  selectEnvironments,
   selectServiceById,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
@@ -108,27 +107,21 @@ export const DatabaseScalePage = () => {
   );
   const requestedContainerProfile =
     getContainerProfileFromType(containerProfileType);
-  const pricePerHour = (
-    currentContainerProfile.costPerContainerHourInCents / 100
-  ).toFixed(2);
-  const currentPrice = (
-    computedCostsForContainer(
-      1,
+  const { pricePerHour: currentPricePerHour, pricePerMonth: currentPrice } =
+    hourlyAndMonthlyCostsForContainers(
+      service.containerCount,
       currentContainerProfile,
       service.containerMemoryLimitMb,
-    ).estimatedCostInDollars /
-      1000 +
-    (database.disk?.size || 0) * 0.2
-  ).toFixed(2);
-  const estimatedPricePerHour = (
-    requestedContainerProfile.costPerContainerHourInCents / 100
-  ).toFixed(2);
-  const estimatedPrice = (
-    computedCostsForContainer(1, requestedContainerProfile, containerSize)
-      .estimatedCostInDollars /
-      1000 +
-    diskValue * 0.2
-  ).toFixed(2);
+      database.disk?.size || 0,
+    );
+
+  const { pricePerHour: estimatedPricePerHour, pricePerMonth: estimatedPrice } =
+    hourlyAndMonthlyCostsForContainers(
+      1,
+      requestedContainerProfile,
+      containerSize,
+      diskValue,
+    );
 
   const handleContainerProfileSelection = (
     e: React.ChangeEvent<HTMLSelectElement>,
@@ -266,7 +259,7 @@ export const DatabaseScalePage = () => {
                 <Label>Pricing</Label>
                 <p className="text-gray-500">
                   1 x {service.containerMemoryLimitMb / 1024} GB container x $
-                  {pricePerHour} per GB/hour
+                  {currentPricePerHour} per GB/hour
                 </p>
                 {database.disk?.size ? (
                   <p className="text-gray-500">

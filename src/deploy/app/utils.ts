@@ -178,3 +178,27 @@ export const computedCostsForContainer = (
     estimatedCostInDollars,
   };
 };
+
+export const hourlyAndMonthlyCostsForContainers = (
+  containerCount: number,
+  containerProfile: ContainerProfileData,
+  containerSize: number,
+  diskSize?: number,
+) => {
+  const pricePerHour = (
+    containerProfile.costPerContainerHourInCents / 100
+  ).toFixed(2);
+  let pricePerMonth =
+    computedCostsForContainer(
+      containerCount || 1,
+      containerProfile,
+      containerSize,
+    ).estimatedCostInDollars / 1000;
+  if (diskSize) {
+    pricePerMonth += diskSize * 0.2;
+  }
+  return {
+    pricePerHour,
+    pricePerMonth: pricePerMonth.toFixed(2),
+  };
+};

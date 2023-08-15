@@ -10,12 +10,11 @@ import {
 } from "../shared";
 import {
   ContainerProfileTypes,
-  computedCostsForContainer,
-  containerProfileKeys,
   exponentialContainerSizesByProfile,
   fetchApp,
   fetchService,
   getContainerProfileFromType,
+  hourlyAndMonthlyCostsForContainers,
   scaleService,
   selectAppById,
   selectContainerProfilesForStack,
@@ -106,26 +105,20 @@ export const AppDetailServiceScalePage = () => {
   );
   const requestedContainerProfile =
     getContainerProfileFromType(containerProfileType);
-  const currentPricePerHour = (
-    currentContainerProfile.costPerContainerHourInCents / 100
-  ).toFixed(2);
-  const currentPrice = (
-    computedCostsForContainer(
+
+  const { pricePerHour: currentPricePerHour, pricePerMonth: currentPrice } =
+    hourlyAndMonthlyCostsForContainers(
       service.containerCount,
       currentContainerProfile,
       service.containerMemoryLimitMb,
-    ).estimatedCostInDollars / 1000
-  ).toFixed(2);
-  const estimatedPricePerHour = (
-    requestedContainerProfile.costPerContainerHourInCents / 100
-  ).toFixed(2);
-  const estimatedPrice = (
-    computedCostsForContainer(
-      containerCount || 1,
+    );
+
+  const { pricePerHour: estimatedPricePerHour, pricePerMonth: estimatedPrice } =
+    hourlyAndMonthlyCostsForContainers(
+      containerCount,
       requestedContainerProfile,
       containerSize,
-    ).estimatedCostInDollars / 1000
-  ).toFixed(2);
+    );
 
   const handleContainerProfileSelection = (
     e: React.ChangeEvent<HTMLSelectElement>,
