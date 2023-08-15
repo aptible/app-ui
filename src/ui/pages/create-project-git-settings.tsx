@@ -41,6 +41,7 @@ import {
   DatabaseEnvVarInput,
   DbCreatorReducer,
   DbFormProps,
+  DbSelector,
   DbSelectorAction,
   DbValidatorError,
   ExternalLink,
@@ -51,7 +52,6 @@ import {
   Loading,
   PreCode,
   ProgressProject,
-  Select,
   SelectOption,
   dbSelectorReducer,
   tokens,
@@ -171,15 +171,6 @@ const DbExistingSelector = ({
     </div>
   );
 
-  const options = [
-    { value: "", label: "Choose a Database" },
-    ...dbs.map((d) => ({
-      label: `${d.handle} (${d.type})`,
-      value: d.id,
-    })),
-  ];
-  const selectedValue = options.find((d) => d.value === db.dbId);
-
   return (
     <div className="mb-4">
       <h4 className={`${tokens.type.h4} mb-2`}>Existing Database</h4>
@@ -188,11 +179,11 @@ const DbExistingSelector = ({
         be injected into your app with the connection URL.
       </p>
       <div className="flex mb-2">
-        <Select
+        <DbSelector
+          envId={envId}
           ariaLabel="existing-db"
           onSelect={selectChange}
-          value={selectedValue}
-          options={options}
+          value={db.dbId}
           className="flex-1 mr-2"
         />
         <Button variant="delete" onClick={onDelete}>

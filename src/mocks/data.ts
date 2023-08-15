@@ -246,6 +246,18 @@ export const testDatabasePostgres = defaultDatabaseResponse({
   },
 });
 
+export const testDatabaseInfluxdb = defaultDatabaseResponse({
+  id: testDatabaseId,
+  handle: "influxdb-example",
+  type: "influxdb",
+  _links: {
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
+    initialize_from: defaultHalHref(),
+    database_image: defaultHalHref(),
+    service: defaultHalHref(),
+  },
+});
+
 export const testDatabaseOp = defaultOperationResponse({
   id: createId(),
   type: "provision",

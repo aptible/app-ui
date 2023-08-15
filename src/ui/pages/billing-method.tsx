@@ -162,7 +162,7 @@ export const BillingMethodPage = () => {
                   <Select
                     className="w-full"
                     onSelect={selectState}
-                    value={selectedState}
+                    value={selectedState?.value}
                     options={stateOptions}
                   />
                 </div>
@@ -182,7 +182,7 @@ export const BillingMethodPage = () => {
                 <Select
                   className="w-full"
                   onSelect={selectCountry}
-                  value={selectedCountry}
+                  value={selectedCountry?.value}
                   options={countryOptions}
                 />
               </div>

@@ -256,3 +256,10 @@ export const certDetailEndpointsUrl = (id: string) =>
 export const CERT_DETAIL_SETTINGS_PATH = "/certificates/:id/settings";
 export const certDetailSettingsUrl = (id: string) =>
   `/certificates/${id}/settings`;
+
+export const CREATE_METRIC_DRAIN_PATH = "/metric-drains/create";
+export const createMetricDrainUrl = (envId = "") =>
+  `${CREATE_METRIC_DRAIN_PATH}${envId ? `?environment_id=${envId}` : ""}`;
+export const CREATE_LOG_DRAIN_PATH = "/log-drains/create";
+export const createLogDrainUrl = (envId = "") =>
+  `${CREATE_LOG_DRAIN_PATH}${envId ? `?environment_id=${envId}` : ""}`;

@@ -345,7 +345,7 @@ export const CreateProjectGitPushPage = () => {
           <div className="my-2">
             <Select
               options={starterTemplateOptions}
-              value={starter}
+              value={starter?.value}
               onSelect={(val) => {
                 setStarter(val as any);
               }}

@@ -19,6 +19,8 @@ import {
   CertDetailPage,
   CertDetailSettingsPage,
   CreateDatabasePage,
+  CreateLogDrainPage,
+  CreateMetricDrainPage,
   CreateOrgPage,
   CreateProjectAddKeyPage,
   CreateProjectFromAccountSetupPage,
@@ -322,6 +324,15 @@ export const appRoutes: RouteObject[] = [
             element: <EndpointDetailSettingsPage />,
           },
         ],
+      },
+
+      {
+        path: routes.CREATE_METRIC_DRAIN_PATH,
+        element: <CreateMetricDrainPage />,
+      },
+      {
+        path: routes.CREATE_LOG_DRAIN_PATH,
+        element: <CreateLogDrainPage />,
       },
 
       {
