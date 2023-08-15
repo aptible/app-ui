@@ -42,7 +42,7 @@ export const ContainerMetricsDataTable = ({
   }
 
   return (
-    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg w-[calc(100vw-7.5rem)]">
+    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg md:w-full w-[calc(100vw-7.5rem)]">
       <table className="overflow-x-auto min-w-full divide-y divide-gray-300">
         <TableHead headers={columnHeaders} />
         <tbody className="divide-y divide-gray-200 bg-white">{tableRows}</tbody>
