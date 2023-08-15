@@ -18,6 +18,8 @@ import {
   getContainerProfileFromType,
   scaleService,
   selectAppById,
+  selectContainerProfilesForStack,
+  selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
@@ -58,6 +60,12 @@ export const AppDetailServiceScalePage = () => {
   useQuery(fetchService({ id: serviceId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),
+  );
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const containerProfilesForStack = useSelector((s: AppState) =>
+    selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
 
   const action = scaleService({
@@ -124,7 +132,7 @@ export const AppDetailServiceScalePage = () => {
   ) => {
     e.preventDefault();
     const value = e.currentTarget.value as ContainerProfileTypes;
-    if (!containerProfileKeys.includes(value)) {
+    if (!Object.keys(containerProfilesForStack).includes(value)) {
       return;
     }
     setContainerProfileType(value);
@@ -145,21 +153,24 @@ export const AppDetailServiceScalePage = () => {
                 >
                   <div className="flex justify-between items-center mb-4 w-full">
                     <select
-                      disabled={!!service}
+                      disabled={
+                        Object.keys(containerProfilesForStack).length <= 1
+                      }
                       value={containerProfileType}
                       className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                       placeholder="select"
                       onChange={handleContainerProfileSelection}
                     >
-                      {containerProfileKeys.map(
-                        (containerProfileType: ContainerProfileTypes) => (
+                      {Object.keys(containerProfilesForStack).map(
+                        (containerProfileType) => (
                           <option
                             key={containerProfileType}
                             value={containerProfileType}
                           >
                             {
-                              getContainerProfileFromType(containerProfileType)
-                                .name
+                              getContainerProfileFromType(
+                                containerProfileType as ContainerProfileTypes,
+                              ).name
                             }
                           </option>
                         ),

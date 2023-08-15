@@ -42,7 +42,7 @@ export const containerProfileKeys: ContainerProfileTypes[] = [
   "c4",
   "c5",
 ];
-type ContainerProfileData = {
+export type ContainerProfileData = {
   name: string;
   costPerContainerHourInCents: number;
   cpuShare: number;

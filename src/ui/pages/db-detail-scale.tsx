@@ -11,13 +11,15 @@ import {
 import {
   ContainerProfileTypes,
   computedCostsForContainer,
-  containerProfileKeys,
   exponentialContainerSizesByProfile,
   fetchDatabase,
   fetchService,
   getContainerProfileFromType,
   scaleDatabase,
+  selectContainerProfilesForStack,
   selectDatabaseById,
+  selectEnvironmentById,
+  selectEnvironments,
   selectServiceById,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
@@ -59,6 +61,12 @@ export const DatabaseScalePage = () => {
   useQuery(fetchService({ id: database.serviceId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
+  );
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: database.environmentId }),
+  );
+  const containerProfilesForStack = useSelector((s: AppState) =>
+    selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
 
   const action = scaleDatabase({
@@ -127,7 +135,7 @@ export const DatabaseScalePage = () => {
   ) => {
     e.preventDefault();
     const value = e.currentTarget.value as ContainerProfileTypes;
-    if (!containerProfileKeys.includes(value)) {
+    if (!Object.keys(containerProfilesForStack).includes(value)) {
       return;
     }
     setContainerProfileType(value);
@@ -148,23 +156,28 @@ export const DatabaseScalePage = () => {
                 >
                   <div className="flex justify-between items-center mb-4 w-full">
                     <select
-                      disabled={!!service}
+                      disabled={
+                        Object.keys(containerProfilesForStack).length <= 1
+                      }
                       value={containerProfileType}
                       className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                       placeholder="select"
                       onChange={handleContainerProfileSelection}
                     >
-                      {containerProfileKeys.map((containerProfileType) => (
-                        <option
-                          key={containerProfileType}
-                          value={containerProfileType}
-                        >
-                          {
-                            getContainerProfileFromType(containerProfileType)
-                              .name
-                          }
-                        </option>
-                      ))}
+                      {Object.keys(containerProfilesForStack).map(
+                        (containerProfileType) => (
+                          <option
+                            key={containerProfileType}
+                            value={containerProfileType}
+                          >
+                            {
+                              getContainerProfileFromType(
+                                containerProfileType as ContainerProfileTypes,
+                              ).name
+                            }
+                          </option>
+                        ),
+                      )}
                     </select>
                   </div>
                 </FormGroup>

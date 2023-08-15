@@ -1,3 +1,8 @@
+import {
+  CONTAINER_PROFILES,
+  ContainerProfileData,
+  ContainerProfileTypes,
+} from "../app";
 import { selectDeploy } from "../slice";
 import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -217,6 +222,36 @@ export const selectStacksForTableSearch = createSelector(
         return nameMatch || regionMatch || typeMatch || idMatch;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
+  },
+);
+
+export const selectContainerProfilesForStack = createSelector(
+  selectStackById,
+  (stack) => {
+    const containerProfiles: {
+      [profile in ContainerProfileTypes]?: ContainerProfileData;
+    } = {};
+
+    if (stack.allowCInstanceProfile) {
+      containerProfiles.c4 = CONTAINER_PROFILES.c4;
+      containerProfiles.c5 = CONTAINER_PROFILES.c5;
+    }
+
+    if (stack.allowMInstanceProfile) {
+      // note - m4 is excluded as we do not allow users to go there
+      containerProfiles.m5 = CONTAINER_PROFILES.m5;
+    }
+
+    if (stack.allowRInstanceProfile) {
+      containerProfiles.r4 = CONTAINER_PROFILES.r4;
+      containerProfiles.r5 = CONTAINER_PROFILES.r5;
+    }
+
+    if (stack.allowTInstanceProfile) {
+      containerProfiles.t3 = CONTAINER_PROFILES.t3;
+    }
+
+    return containerProfiles;
   },
 );
 
