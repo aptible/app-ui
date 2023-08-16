@@ -17,8 +17,8 @@ import type { AppState, DeployDatabase } from "@app/types";
 
 import { ActionListView } from "../action-list-view";
 import { Button, ButtonCreate } from "../button";
-import { IconMetrics } from "../icons";
 import { EmptyResourcesTable } from "../empty-resources-table";
+import { IconMetrics } from "../icons";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
@@ -98,33 +98,30 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td className="flex flex-row justify-end">
       <div>
-        <Tooltip
-          fluid
-          text="Metrics"
-        >
+        <Tooltip fluid text="Metrics">
           <Link
             to={databaseMetricsUrl()}
             className="hover:no-underline flex justify-end mr-4"
           >
-          <Button variant="primary" size="sm" className="!px-2 h-[30px]">
-            <IconMetrics variant="sm" className="scale-[1.2]" />
-          </Button>
-        </Link>
+            <Button variant="primary" size="sm" className="!px-2 h-[30px]">
+              <IconMetrics variant="sm" className="scale-[1.2]" />
+            </Button>
+          </Link>
         </Tooltip>
       </div>
       <div>
-        <Tooltip
-          fluid
-          text="Scale"
-        >
-        <Link
-          to={databaseScaleUrl()}
-          className="hover:no-underline flex justify-end mr-4"
-        >
-          <Button variant="primary" size="sm" className="!px-2 h-[30px]">
-            <IconScale variant="sm" className="scale-[1.3] left-[2px] top-[1px] relative" />
-          </Button>
-        </Link>
+        <Tooltip fluid text="Scale">
+          <Link
+            to={databaseScaleUrl()}
+            className="hover:no-underline flex justify-end mr-4"
+          >
+            <Button variant="primary" size="sm" className="!px-2 h-[30px]">
+              <IconScale
+                variant="sm"
+                className="scale-[1.3] left-[2px] top-[1px] relative"
+              />
+            </Button>
+          </Link>
         </Tooltip>
       </div>
     </Td>
@@ -242,11 +239,7 @@ export const DatabaseListByOrg = () => {
             onChange={onChange}
           />
         }
-        tableHeader={
-          <TableHead
-          rightAlignedFinalCol
-          headers={headers}
-          />}
+        tableHeader={<TableHead rightAlignedFinalCol headers={headers} />}
         tableBody={
           <>
             {dbs.map((db) => (
