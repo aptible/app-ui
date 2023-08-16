@@ -101,9 +101,6 @@ export const CreateMetricDrainPage = () => {
   const onTypeSelect = (opt: SelectOption<MetricDrainType>) => {
     setDrainType(opt.value);
   };
-  const onEnvSelect = (opt: SelectOption) => {
-    setEnvId(opt.value);
-  };
   const createData = (): CreateMetricDrainProps => {
     const def = {
       envId,
@@ -166,7 +163,6 @@ export const CreateMetricDrainPage = () => {
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
-          <EnvironmentSelect onSelect={onEnvSelect} />
 
           <FormGroup
             label="Handle"
@@ -337,6 +333,7 @@ export const CreateMetricDrainPage = () => {
           <BannerMessages {...loader} />
 
           <ButtonCreate
+            className="w-[200px]"
             envId={envId}
             type="submit"
             isLoading={loader.isLoading}
