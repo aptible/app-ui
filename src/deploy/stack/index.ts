@@ -240,10 +240,9 @@ export const selectContainerProfilesForStack = createSelector(
     }
 
     if (stack.allowMInstanceProfile) {
-      // TODO - do we want to show this? not sure if we just
-      //        direct new users to m5 somehow
       containerProfiles.m4 = CONTAINER_PROFILES.m4;
-      containerProfiles.m5 = CONTAINER_PROFILES.m5;
+      // TODO - when ready on backends, uncomment this line
+      // containerProfiles.m5 = CONTAINER_PROFILES.m5;
     }
 
     if (stack.allowRInstanceProfile) {
