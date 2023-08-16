@@ -6,7 +6,6 @@ import {
   tokens,
 } from "../shared";
 import {
-  CONTAINER_PROFILES,
   calcMetrics,
   fetchAllDatabaseImages,
   fetchDatabase,
@@ -17,6 +16,7 @@ import {
   selectDatabaseImagesAsList,
   selectServicesAsList,
 } from "@app/deploy";
+import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
 import { useQuery } from "@app/fx";
 import { databaseEndpointsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";

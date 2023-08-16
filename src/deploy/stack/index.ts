@@ -1,8 +1,4 @@
-import {
-  CONTAINER_PROFILES,
-  ContainerProfileData,
-  ContainerProfileTypes,
-} from "../app";
+import { CONTAINER_PROFILES } from "../container/utils";
 import { selectDeploy } from "../slice";
 import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -11,7 +7,13 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type { AppState, DeployStack, LinkResponse } from "@app/types";
+import type {
+  AppState,
+  ContainerProfileData,
+  DeployStack,
+  InstanceClass,
+  LinkResponse,
+} from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 
 export interface DeployStackResponse {
@@ -229,7 +231,7 @@ export const selectContainerProfilesForStack = createSelector(
   selectStackById,
   (stack) => {
     const containerProfiles: {
-      [profile in ContainerProfileTypes]?: ContainerProfileData;
+      [profile in InstanceClass]?: ContainerProfileData;
     } = {};
 
     if (stack.allowCInstanceProfile) {

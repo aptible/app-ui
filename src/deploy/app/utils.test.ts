@@ -1,7 +1,5 @@
-import {
-  CONTAINER_PROFILES,
-  hourlyAndMonthlyCostsForContainers,
-} from "./utils";
+import { CONTAINER_PROFILES } from "../container/utils";
+import { hourlyAndMonthlyCostsForContainers } from "./utils";
 
 describe("hourlyAndMonthlyCostsForContainers", () => {
   it("should test for regular m series container profile", () => {

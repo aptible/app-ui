@@ -9,7 +9,6 @@ import {
   Label,
 } from "../shared";
 import {
-  ContainerProfileTypes,
   exponentialContainerSizesByProfile,
   fetchApp,
   fetchService,
@@ -23,7 +22,7 @@ import {
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { operationDetailUrl } from "@app/routes";
-import { AppState } from "@app/types";
+import { AppState, InstanceClass } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
@@ -53,7 +52,7 @@ export const AppDetailServiceScalePage = () => {
   useQuery(fetchApp({ id }));
   const [containerCount, setContainerCount] = useState(1);
   const [containerProfileType, setContainerProfileType] =
-    useState<ContainerProfileTypes>("m5");
+    useState<InstanceClass>("m4");
   const [containerSize, setContainerSize] = useState<number>(512);
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   useQuery(fetchService({ id: serviceId }));
@@ -120,7 +119,7 @@ export const AppDetailServiceScalePage = () => {
     e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     e.preventDefault();
-    const value = e.currentTarget.value as ContainerProfileTypes;
+    const value = e.currentTarget.value as InstanceClass;
     if (!Object.keys(containerProfilesForStack).includes(value)) {
       return;
     }
@@ -158,7 +157,7 @@ export const AppDetailServiceScalePage = () => {
                           >
                             {
                               getContainerProfileFromType(
-                                containerProfileType as ContainerProfileTypes,
+                                containerProfileType as InstanceClass,
                               ).name
                             }
                           </option>

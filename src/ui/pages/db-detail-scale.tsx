@@ -9,7 +9,6 @@ import {
   Label,
 } from "../shared";
 import {
-  ContainerProfileTypes,
   exponentialContainerSizesByProfile,
   fetchDatabase,
   fetchService,
@@ -23,7 +22,7 @@ import {
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { operationDetailUrl } from "@app/routes";
-import { AppState } from "@app/types";
+import { AppState, InstanceClass } from "@app/types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
@@ -53,7 +52,7 @@ export const DatabaseScalePage = () => {
   >(validators);
   const [containerSize, setContainerSize] = useState(512);
   const [containerProfileType, setContainerProfileType] =
-    useState<ContainerProfileTypes>("m5");
+    useState<InstanceClass>("m4");
   const [diskValue, setDiskValue] = useState<number>(10);
 
   useQuery(fetchDatabase({ id }));
@@ -127,7 +126,7 @@ export const DatabaseScalePage = () => {
     e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     e.preventDefault();
-    const value = e.currentTarget.value as ContainerProfileTypes;
+    const value = e.currentTarget.value as InstanceClass;
     if (!Object.keys(containerProfilesForStack).includes(value)) {
       return;
     }
@@ -165,7 +164,7 @@ export const DatabaseScalePage = () => {
                           >
                             {
                               getContainerProfileFromType(
-                                containerProfileType as ContainerProfileTypes,
+                                containerProfileType as InstanceClass,
                               ).name
                             }
                           </option>
