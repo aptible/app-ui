@@ -78,6 +78,7 @@ import {
   SearchPage,
   SecuritySettingsPage,
   SettingsPage,
+  SignupPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
@@ -585,6 +586,11 @@ export const appRoutes: RouteObject[] = [
         element: <LoginPage />,
       },
     ],
+  },
+
+  {
+    path: routes.SIGNUP_PATH,
+    element: <SignupPage />,
   },
 
   {
