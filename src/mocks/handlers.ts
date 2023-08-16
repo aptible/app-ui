@@ -18,7 +18,6 @@ import {
   testRedisDatabaseImage,
   testRole,
   testScanOperation,
-  testServiceRails,
   testSshKey,
   testStack,
   testToken,
