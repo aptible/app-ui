@@ -9,20 +9,20 @@ import {
   Label,
 } from "../shared";
 import {
-  ContainerProfileTypes,
-  computedCostsForContainer,
-  containerProfileKeys,
   exponentialContainerSizesByProfile,
   fetchApp,
   fetchService,
   getContainerProfileFromType,
+  hourlyAndMonthlyCostsForContainers,
   scaleService,
   selectAppById,
+  selectContainerProfilesForStack,
+  selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { operationDetailUrl } from "@app/routes";
-import { AppState } from "@app/types";
+import { AppState, InstanceClass } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
@@ -52,12 +52,18 @@ export const AppDetailServiceScalePage = () => {
   useQuery(fetchApp({ id }));
   const [containerCount, setContainerCount] = useState(1);
   const [containerProfileType, setContainerProfileType] =
-    useState<ContainerProfileTypes>("m5");
+    useState<InstanceClass>("m4");
   const [containerSize, setContainerSize] = useState<number>(512);
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   useQuery(fetchService({ id: serviceId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),
+  );
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const containerProfilesForStack = useSelector((s: AppState) =>
+    selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
 
   const action = scaleService({
@@ -73,9 +79,7 @@ export const AppDetailServiceScalePage = () => {
   const loader = useLoader(action);
 
   useEffect(() => {
-    if (service.containerCount) {
-      setContainerCount(service.containerCount);
-    }
+    setContainerCount(service.containerCount);
     if (service.instanceClass) {
       setContainerProfileType(service.instanceClass);
     }
@@ -98,33 +102,25 @@ export const AppDetailServiceScalePage = () => {
   );
   const requestedContainerProfile =
     getContainerProfileFromType(containerProfileType);
-  const currentPricePerHour = (
-    currentContainerProfile.costPerContainerHourInCents / 100
-  ).toFixed(2);
-  const currentPrice = (
-    computedCostsForContainer(
+  const { pricePerHour: currentPricePerHour, pricePerMonth: currentPrice } =
+    hourlyAndMonthlyCostsForContainers(
       service.containerCount,
       currentContainerProfile,
       service.containerMemoryLimitMb,
-    ).estimatedCostInDollars / 1000
-  ).toFixed(2);
-  const estimatedPricePerHour = (
-    requestedContainerProfile.costPerContainerHourInCents / 100
-  ).toFixed(2);
-  const estimatedPrice = (
-    computedCostsForContainer(
-      containerCount || 1,
+    );
+  const { pricePerHour: estimatedPricePerHour, pricePerMonth: estimatedPrice } =
+    hourlyAndMonthlyCostsForContainers(
+      containerCount,
       requestedContainerProfile,
       containerSize,
-    ).estimatedCostInDollars / 1000
-  ).toFixed(2);
+    );
 
   const handleContainerProfileSelection = (
     e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     e.preventDefault();
-    const value = e.currentTarget.value as ContainerProfileTypes;
-    if (!containerProfileKeys.includes(value)) {
+    const value = e.currentTarget.value as InstanceClass;
+    if (!Object.keys(containerProfilesForStack).includes(value)) {
       return;
     }
     setContainerProfileType(value);
@@ -145,21 +141,24 @@ export const AppDetailServiceScalePage = () => {
                 >
                   <div className="flex justify-between items-center mb-4 w-full">
                     <select
-                      disabled={!!service}
+                      disabled={
+                        Object.keys(containerProfilesForStack).length <= 1
+                      }
                       value={containerProfileType}
                       className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                       placeholder="select"
                       onChange={handleContainerProfileSelection}
                     >
-                      {containerProfileKeys.map(
-                        (containerProfileType: ContainerProfileTypes) => (
+                      {Object.keys(containerProfilesForStack).map(
+                        (containerProfileType) => (
                           <option
                             key={containerProfileType}
                             value={containerProfileType}
                           >
                             {
-                              getContainerProfileFromType(containerProfileType)
-                                .name
+                              getContainerProfileFromType(
+                                containerProfileType as InstanceClass,
+                              ).name
                             }
                           </option>
                         ),
@@ -185,10 +184,12 @@ export const AppDetailServiceScalePage = () => {
                       name="number-containers"
                       type="number"
                       value={containerCount}
-                      min="1"
+                      min="0"
                       max="32"
                       onChange={(e) =>
-                        setContainerCount(parseInt(e.currentTarget.value, 10))
+                        setContainerCount(
+                          parseInt(e.currentTarget.value || "0", 10),
+                        )
                       }
                       data-testid="number-containers"
                       id="number-containers"
@@ -206,12 +207,15 @@ export const AppDetailServiceScalePage = () => {
                   <div className="flex justify-between items-center mb-4 w-full">
                     <select
                       value={containerSize}
+                      name="memory-container"
                       className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                       placeholder="select"
                       onChange={(e) => {
                         e.preventDefault();
                         setContainerSize(parseInt(e.target.value));
                       }}
+                      data-testid="memory-container"
+                      id="memory-container"
                     >
                       {exponentialContainerSizesByProfile(
                         containerProfileType,

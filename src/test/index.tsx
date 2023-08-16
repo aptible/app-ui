@@ -47,7 +47,7 @@ export const setupTestStore = (
  * the browser.  All of redux, redux-saga, and redux-persist are loaded
  * and configured.
  *
- * We also dispatch the `booup()` saga which fetches a bunch of data.
+ * We also dispatch the `bootup()` saga which fetches a bunch of data.
  */
 export const setupAppIntegrationTest = (
   {

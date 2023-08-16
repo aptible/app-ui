@@ -14,11 +14,8 @@ import type {
   LinkResponse,
 } from "@app/types";
 
-import {
-  CONTAINER_PROFILES,
-  GB,
-  computedCostsForContainer,
-} from "../app/utils";
+import { computedCostsForContainer } from "../app/utils";
+import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { selectDeploy } from "../slice";
 import { poll } from "saga-query";
 

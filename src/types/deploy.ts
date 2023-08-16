@@ -41,7 +41,7 @@ export interface DeployApp extends Provisionable, Timestamps {
   serviceIds: string[];
 }
 
-export type InstanceClass = "t3" | "m4" | "r4" | "r5" | "c4" | "c5";
+export type InstanceClass = "t3" | "m4" | "m5" | "r4" | "r5" | "c4" | "c5";
 
 export interface DeployService extends Timestamps {
   id: string;
@@ -497,3 +497,21 @@ export interface DeployBackupRetentionPolicy {
   environmentId: string;
   createdAt: string;
 }
+
+export const containerProfileKeys: InstanceClass[] = [
+  "t3",
+  "m4",
+  "m5",
+  "r4",
+  "r5",
+  "c4",
+  "c5",
+];
+export type ContainerProfileData = {
+  name: string;
+  costPerContainerHourInCents: number;
+  cpuShare: number;
+  minimumContainerSize: number;
+  maximumContainerSize: number;
+  maximumContainerCount: number;
+};

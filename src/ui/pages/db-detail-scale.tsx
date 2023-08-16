@@ -9,20 +9,20 @@ import {
   Label,
 } from "../shared";
 import {
-  ContainerProfileTypes,
-  computedCostsForContainer,
-  containerProfileKeys,
   exponentialContainerSizesByProfile,
   fetchDatabase,
   fetchService,
   getContainerProfileFromType,
+  hourlyAndMonthlyCostsForContainers,
   scaleDatabase,
+  selectContainerProfilesForStack,
   selectDatabaseById,
+  selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { operationDetailUrl } from "@app/routes";
-import { AppState } from "@app/types";
+import { AppState, InstanceClass } from "@app/types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
@@ -50,15 +50,22 @@ export const DatabaseScalePage = () => {
     DatabaseScaleProps,
     typeof validators
   >(validators);
-  useQuery(fetchDatabase({ id }));
   const [containerSize, setContainerSize] = useState(512);
   const [containerProfileType, setContainerProfileType] =
-    useState<ContainerProfileTypes>("m5");
+    useState<InstanceClass>("m4");
   const [diskValue, setDiskValue] = useState<number>(10);
+
+  useQuery(fetchDatabase({ id }));
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
   useQuery(fetchService({ id: database.serviceId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
+  );
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: database.environmentId }),
+  );
+  const containerProfilesForStack = useSelector((s: AppState) =>
+    selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
 
   const action = scaleDatabase({
@@ -100,34 +107,27 @@ export const DatabaseScalePage = () => {
   );
   const requestedContainerProfile =
     getContainerProfileFromType(containerProfileType);
-  const pricePerHour = (
-    currentContainerProfile.costPerContainerHourInCents / 100
-  ).toFixed(2);
-  const currentPrice = (
-    computedCostsForContainer(
-      1,
+  const { pricePerHour: currentPricePerHour, pricePerMonth: currentPrice } =
+    hourlyAndMonthlyCostsForContainers(
+      service.containerCount,
       currentContainerProfile,
       service.containerMemoryLimitMb,
-    ).estimatedCostInDollars /
-      1000 +
-    (database.disk?.size || 0) * 0.2
-  ).toFixed(2);
-  const estimatedPricePerHour = (
-    requestedContainerProfile.costPerContainerHourInCents / 100
-  ).toFixed(2);
-  const estimatedPrice = (
-    computedCostsForContainer(1, requestedContainerProfile, containerSize)
-      .estimatedCostInDollars /
-      1000 +
-    diskValue * 0.2
-  ).toFixed(2);
+      database.disk?.size || 0,
+    );
+  const { pricePerHour: estimatedPricePerHour, pricePerMonth: estimatedPrice } =
+    hourlyAndMonthlyCostsForContainers(
+      1,
+      requestedContainerProfile,
+      containerSize,
+      diskValue,
+    );
 
   const handleContainerProfileSelection = (
     e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     e.preventDefault();
-    const value = e.currentTarget.value as ContainerProfileTypes;
-    if (!containerProfileKeys.includes(value)) {
+    const value = e.currentTarget.value as InstanceClass;
+    if (!Object.keys(containerProfilesForStack).includes(value)) {
       return;
     }
     setContainerProfileType(value);
@@ -148,23 +148,28 @@ export const DatabaseScalePage = () => {
                 >
                   <div className="flex justify-between items-center mb-4 w-full">
                     <select
-                      disabled={!!service}
+                      disabled={
+                        Object.keys(containerProfilesForStack).length <= 1
+                      }
                       value={containerProfileType}
                       className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                       placeholder="select"
                       onChange={handleContainerProfileSelection}
                     >
-                      {containerProfileKeys.map((containerProfileType) => (
-                        <option
-                          key={containerProfileType}
-                          value={containerProfileType}
-                        >
-                          {
-                            getContainerProfileFromType(containerProfileType)
-                              .name
-                          }
-                        </option>
-                      ))}
+                      {Object.keys(containerProfilesForStack).map(
+                        (containerProfileType) => (
+                          <option
+                            key={containerProfileType}
+                            value={containerProfileType}
+                          >
+                            {
+                              getContainerProfileFromType(
+                                containerProfileType as InstanceClass,
+                              ).name
+                            }
+                          </option>
+                        ),
+                      )}
                     </select>
                   </div>
                 </FormGroup>
@@ -206,6 +211,9 @@ export const DatabaseScalePage = () => {
                   <div className="flex justify-between items-center mb-4 w-full">
                     <select
                       value={containerSize}
+                      name="memory-container"
+                      id="memory-container"
+                      data-testid="memory-container"
                       className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                       placeholder="select"
                       onChange={(e) => {
@@ -253,7 +261,7 @@ export const DatabaseScalePage = () => {
                 <Label>Pricing</Label>
                 <p className="text-gray-500">
                   1 x {service.containerMemoryLimitMb / 1024} GB container x $
-                  {pricePerHour} per GB/hour
+                  {currentPricePerHour} per GB/hour
                 </p>
                 {database.disk?.size ? (
                   <p className="text-gray-500">

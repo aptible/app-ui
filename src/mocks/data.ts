@@ -151,6 +151,9 @@ export const testServiceRails = defaultServiceResponse({
   id: createId(),
   handle: createText("web"),
   command: "rails s",
+  container_count: 1,
+  container_memory_limit_mb: 512,
+  instance_class: "m5",
   _links: {
     current_release: defaultHalHref(),
     app: defaultHalHref(`${testEnv.apiUrl}/apps/${testAppId}`),
@@ -161,6 +164,9 @@ export const testServiceSidekiq = defaultServiceResponse({
   id: createId(),
   handle: createText("background"),
   command: "rake sidekiq",
+  container_count: 1,
+  container_memory_limit_mb: 512,
+  instance_class: "m5",
   _links: {
     current_release: defaultHalHref(),
     app: defaultHalHref(`${testEnv.apiUrl}/apps/${testAppId}`),
@@ -231,18 +237,43 @@ export const testRedisDatabaseImage = defaultDatabaseImageResponse({
 });
 
 export const testDatabaseId = createId();
+export const testDatabaseServiceId = createId();
+export const testDatabaseOp = defaultOperationResponse({
+  id: createId(),
+  type: "provision",
+  status: "succeeded",
+  _links: {
+    resource: defaultHalHref(`${testEnv.apiUrl}/databases/${testDatabaseId}`),
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
+    code_scan_result: defaultHalHref(),
+    self: defaultHalHref(),
+    ssh_portal_connections: defaultHalHref(),
+    ephemeral_sessions: defaultHalHref(),
+    logs: defaultHalHref(),
+    user: defaultHalHref(),
+  },
+});
+
 export const testDatabasePostgres = defaultDatabaseResponse({
   id: testDatabaseId,
   handle: `${testApp.handle}-postgres`,
   type: "postgres",
   connection_url: "postgres://some:val@wow.com:5432",
+  _embedded: {
+    disk: {
+      size: 10,
+    },
+    last_operation: testDatabaseOp,
+  },
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
     initialize_from: defaultHalHref(),
     database_image: defaultHalHref(
       `${testEnv.apiUrl}/database_images/${testPostgresDatabaseImage.id}`,
     ),
-    service: defaultHalHref(),
+    service: defaultHalHref(
+      `${testEnv.apiUrl}/services/${testDatabaseServiceId}`,
+    ),
   },
 });
 
@@ -258,19 +289,17 @@ export const testDatabaseInfluxdb = defaultDatabaseResponse({
   },
 });
 
-export const testDatabaseOp = defaultOperationResponse({
-  id: createId(),
-  type: "provision",
-  status: "succeeded",
+export const testServicePostgres = defaultServiceResponse({
+  id: testDatabaseServiceId,
+  handle: createText("postgres"),
+  command: undefined,
+  container_count: 1,
+  container_memory_limit_mb: 512,
+  process_type: "postgresql",
   _links: {
-    resource: defaultHalHref(`${testEnv.apiUrl}/databases/${testDatabaseId}`),
+    current_release: defaultHalHref(),
+    database: defaultHalHref(`${testEnv.apiUrl}/databases/${testDatabaseId}`),
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
-    code_scan_result: defaultHalHref(),
-    self: defaultHalHref(),
-    ssh_portal_connections: defaultHalHref(),
-    ephemeral_sessions: defaultHalHref(),
-    logs: defaultHalHref(),
-    user: defaultHalHref(),
   },
 });
 

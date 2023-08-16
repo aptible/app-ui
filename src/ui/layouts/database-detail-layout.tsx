@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 
 import {
-  CONTAINER_PROFILES,
   calcMetrics,
   cancelDatabaseOpsPoll,
   pollDatabaseOperations,
@@ -35,6 +34,7 @@ import {
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
 import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
 

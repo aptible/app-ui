@@ -1,6 +1,6 @@
-import { DeployService } from "@app/types";
+import { CONTAINER_PROFILES, GB } from "../container/utils";
+import { ContainerProfileData, DeployService, InstanceClass } from "@app/types";
 
-export const GB = 1024;
 const ABSOLUTE_MAX_CONTAINER_SIZE_IN_GB = 653;
 const getContainerSizes = () => {
   const containerSizes = [GB / 4, GB / 2]; // Container sizes start at 512?
@@ -25,99 +25,14 @@ export const EXPONENTIAL_CONTAINER_SIZES = [
   240 * GB,
 ];
 
-export type ContainerProfileTypes =
-  | "t3"
-  | "m4"
-  | "m5"
-  | "r4"
-  | "r5"
-  | "c4"
-  | "c5";
-export const containerProfileKeys: ContainerProfileTypes[] = [
-  "t3",
-  "m4",
-  "m5",
-  "r4",
-  "r5",
-  "c4",
-  "c5",
-];
-type ContainerProfileData = {
-  name: string;
-  costPerContainerHourInCents: number;
-  cpuShare: number;
-  minimumContainerSize: number;
-  maximumContainerSize: number;
-  maximumContainerCount: number;
-};
-export const CONTAINER_PROFILES: {
-  [profile in ContainerProfileTypes]: ContainerProfileData;
-} = {
-  t3: {
-    name: "Economy (T)",
-    costPerContainerHourInCents: 3.5,
-    cpuShare: 0.5 / GB,
-    minimumContainerSize: GB / 4,
-    maximumContainerSize: 27 * GB,
-    maximumContainerCount: 32,
-  },
-  m4: {
-    name: "General Purpose (M) - Legacy",
-    costPerContainerHourInCents: 8,
-    cpuShare: 0.25 / GB,
-    minimumContainerSize: GB / 2,
-    maximumContainerSize: 240 * GB,
-    maximumContainerCount: 32,
-  },
-  m5: {
-    name: "General Purpose (M)",
-    costPerContainerHourInCents: 8,
-    cpuShare: 0.25 / GB,
-    minimumContainerSize: GB / 2,
-    maximumContainerSize: 217 * GB,
-    maximumContainerCount: 32,
-  },
-  r4: {
-    name: "Memory Optimized (R) - Legacy",
-    costPerContainerHourInCents: 5,
-    cpuShare: 0.125 / GB,
-    minimumContainerSize: 4 * GB,
-    maximumContainerSize: 472 * GB,
-    maximumContainerCount: 32,
-  },
-  r5: {
-    name: "Memory Optimized (R)",
-    costPerContainerHourInCents: 5,
-    cpuShare: 0.125 / GB,
-    minimumContainerSize: 4 * GB,
-    maximumContainerSize: 653 * GB,
-    maximumContainerCount: 32,
-  },
-  c4: {
-    name: "Compute Optimized (C) - Legacy",
-    costPerContainerHourInCents: 10,
-    cpuShare: 0.5 / GB,
-    minimumContainerSize: 2 * GB,
-    maximumContainerSize: 58 * GB,
-    maximumContainerCount: 32,
-  },
-  c5: {
-    name: "Compute Optimized (C)",
-    costPerContainerHourInCents: 10,
-    cpuShare: 0.5 / GB,
-    minimumContainerSize: 2 * GB,
-    maximumContainerSize: 163 * GB,
-    maximumContainerCount: 32,
-  },
-};
 export const exponentialContainerSizesByProfile = (
-  profile: ContainerProfileTypes,
+  profile: InstanceClass,
 ): number[] =>
   EXPONENTIAL_CONTAINER_SIZES.filter(
     (size) => size >= CONTAINER_PROFILES[profile].minimumContainerSize,
   );
 export const getContainerProfileFromType = (
-  containerProfile: ContainerProfileTypes,
+  containerProfile: InstanceClass,
 ): ContainerProfileData => {
   if (!CONTAINER_PROFILES[containerProfile]) {
     return {
@@ -176,5 +91,29 @@ export const computedCostsForContainer = (
   return {
     estimatedCostInCents,
     estimatedCostInDollars,
+  };
+};
+
+export const hourlyAndMonthlyCostsForContainers = (
+  containerCount: number,
+  containerProfile: ContainerProfileData,
+  containerSize: number,
+  diskSize?: number,
+) => {
+  const pricePerHour = (
+    containerProfile.costPerContainerHourInCents / 100
+  ).toFixed(2);
+  let pricePerMonth =
+    computedCostsForContainer(
+      containerCount || 1,
+      containerProfile,
+      containerSize,
+    ).estimatedCostInDollars / 1000;
+  if (diskSize) {
+    pricePerMonth += diskSize * 0.2;
+  }
+  return {
+    pricePerHour,
+    pricePerMonth: pricePerMonth.toFixed(2),
   };
 };
