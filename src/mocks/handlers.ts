@@ -29,6 +29,7 @@ import {
   DeployAppResponse,
   DeployDatabaseResponse,
   DeployEnvironmentResponse,
+  DeployServiceResponse,
   DeployStackResponse,
   defaultDatabaseResponse,
   defaultDeployCertificate,
@@ -152,12 +153,20 @@ export const stacksWithResources = (
     accounts = [],
     apps = [],
     databases = [],
+    services = [],
   }: {
     stacks?: DeployStackResponse[];
     accounts?: DeployEnvironmentResponse[];
     apps?: DeployAppResponse[];
     databases?: DeployDatabaseResponse[];
-  } = { stacks: [testStack], accounts: [], apps: [], databases: [] },
+    services?: DeployServiceResponse[];
+  } = {
+    stacks: [testStack],
+    accounts: [],
+    apps: [],
+    databases: [],
+    services: [],
+  },
 ) => {
   return [
     rest.get(`${testEnv.apiUrl}/stacks`, (req, res, ctx) => {
@@ -213,6 +222,20 @@ export const stacksWithResources = (
       }
 
       return res(ctx.json({ _embedded: { databases } }));
+    }),
+    rest.get(`${testEnv.apiUrl}/services`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(ctx.json({ _embedded: { services } }));
+    }),
+    rest.get(`${testEnv.apiUrl}/services/:id`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(
+        ctx.json(services.find((service) => `${service.id}` === req.params.id)),
+      );
     }),
   ];
 };
@@ -291,6 +314,66 @@ const apiHandlers = [
       ),
     );
   }),
+  rest.post(
+    `${testEnv.apiUrl}/services/:id/operations`,
+    async (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      const data = await req.json();
+      return res(
+        ctx.json(
+          defaultOperationResponse({
+            id: createId(),
+            type: data.type,
+            env: data.env,
+            status: "succeeded",
+            _links: {
+              resource: { href: `${testEnv.apiUrl}/services/${req.params.id}` },
+              account: testApp._links.account,
+              code_scan_result: { href: "" },
+              self: { href: "" },
+              ssh_portal_connections: { href: "" },
+              ephemeral_sessions: { href: "" },
+              logs: { href: "" },
+              user: { href: "" },
+            },
+          }),
+        ),
+      );
+    },
+  ),
+  rest.post(
+    `${testEnv.apiUrl}/databases/:id/operations`,
+    async (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      const data = await req.json();
+      return res(
+        ctx.json(
+          defaultOperationResponse({
+            id: createId(),
+            type: data.type,
+            env: data.env,
+            status: "succeeded",
+            _links: {
+              resource: {
+                href: `${testEnv.apiUrl}/databases/${req.params.id}`,
+              },
+              account: testApp._links.account,
+              code_scan_result: { href: "" },
+              self: { href: "" },
+              ssh_portal_connections: { href: "" },
+              ephemeral_sessions: { href: "" },
+              logs: { href: "" },
+              user: { href: "" },
+            },
+          }),
+        ),
+      );
+    },
+  ),
   rest.delete(`${testEnv.apiUrl}/accounts/:id`, async (_, res, ctx) => {
     return res(ctx.status(204));
   }),

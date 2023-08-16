@@ -151,6 +151,9 @@ export const testServiceRails = defaultServiceResponse({
   id: createId(),
   handle: createText("web"),
   command: "rails s",
+  container_count: 1,
+  container_memory_limit_mb: 512,
+  instance_class: "m5",
   _links: {
     current_release: defaultHalHref(),
     app: defaultHalHref(`${testEnv.apiUrl}/apps/${testAppId}`),
@@ -161,6 +164,9 @@ export const testServiceSidekiq = defaultServiceResponse({
   id: createId(),
   handle: createText("background"),
   command: "rake sidekiq",
+  container_count: 1,
+  container_memory_limit_mb: 512,
+  instance_class: "m5",
   _links: {
     current_release: defaultHalHref(),
     app: defaultHalHref(`${testEnv.apiUrl}/apps/${testAppId}`),
@@ -231,6 +237,7 @@ export const testRedisDatabaseImage = defaultDatabaseImageResponse({
 });
 
 export const testDatabaseId = createId();
+export const testDatabaseServiceId = createId();
 export const testDatabasePostgres = defaultDatabaseResponse({
   id: testDatabaseId,
   handle: `${testApp.handle}-postgres`,
@@ -242,7 +249,9 @@ export const testDatabasePostgres = defaultDatabaseResponse({
     database_image: defaultHalHref(
       `${testEnv.apiUrl}/database_images/${testPostgresDatabaseImage.id}`,
     ),
-    service: defaultHalHref(),
+    service: defaultHalHref(
+      `${testEnv.apiUrl}/services/${testDatabaseServiceId}`,
+    ),
   },
 });
 
@@ -255,6 +264,20 @@ export const testDatabaseInfluxdb = defaultDatabaseResponse({
     initialize_from: defaultHalHref(),
     database_image: defaultHalHref(),
     service: defaultHalHref(),
+  },
+});
+
+export const testServicePostgres = defaultServiceResponse({
+  id: testDatabaseServiceId,
+  handle: createText("postgres"),
+  command: undefined,
+  container_count: 1,
+  container_memory_limit_mb: 512,
+  process_type: "postgresql",
+  _links: {
+    current_release: defaultHalHref(),
+    database: defaultHalHref(`${testEnv.apiUrl}/databases/${testDatabaseId}`),
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
   },
 });
 

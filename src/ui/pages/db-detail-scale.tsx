@@ -51,11 +51,12 @@ export const DatabaseScalePage = () => {
     DatabaseScaleProps,
     typeof validators
   >(validators);
-  useQuery(fetchDatabase({ id }));
   const [containerSize, setContainerSize] = useState(512);
   const [containerProfileType, setContainerProfileType] =
     useState<ContainerProfileTypes>("m5");
   const [diskValue, setDiskValue] = useState<number>(10);
+
+  useQuery(fetchDatabase({ id }));
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
   useQuery(fetchService({ id: database.serviceId }));
   const service = useSelector((s: AppState) =>

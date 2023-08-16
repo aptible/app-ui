@@ -80,9 +80,7 @@ export const AppDetailServiceScalePage = () => {
   const loader = useLoader(action);
 
   useEffect(() => {
-    if (service.containerCount) {
-      setContainerCount(service.containerCount);
-    }
+    setContainerCount(service.containerCount);
     if (service.instanceClass) {
       setContainerProfileType(service.instanceClass);
     }
@@ -187,10 +185,12 @@ export const AppDetailServiceScalePage = () => {
                       name="number-containers"
                       type="number"
                       value={containerCount}
-                      min="1"
+                      min="0"
                       max="32"
                       onChange={(e) =>
-                        setContainerCount(parseInt(e.currentTarget.value, 10))
+                        setContainerCount(
+                          parseInt(e.currentTarget.value || "0", 10),
+                        )
                       }
                       data-testid="number-containers"
                       id="number-containers"
@@ -208,12 +208,15 @@ export const AppDetailServiceScalePage = () => {
                   <div className="flex justify-between items-center mb-4 w-full">
                     <select
                       value={containerSize}
+                      name="memory-container"
                       className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
                       placeholder="select"
                       onChange={(e) => {
                         e.preventDefault();
                         setContainerSize(parseInt(e.target.value));
                       }}
+                      data-testid="memory-container"
+                      id="memory-container"
                     >
                       {exponentialContainerSizesByProfile(
                         containerProfileType,
