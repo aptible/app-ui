@@ -36,6 +36,9 @@ export function* onFetchInitData() {
       fetchAllEnvironments(),
       fetchAllApps(),
       fetchAllDatabases(),
+      // TODO - Below need to be updated on backend endpoints for proceeding
+      // fetchAllLogDrains(),
+      // fetchAllMetricDrains()
     ]),
   );
 }
