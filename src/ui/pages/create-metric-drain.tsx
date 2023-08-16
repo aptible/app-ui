@@ -163,7 +163,6 @@ export const CreateMetricDrainPage = () => {
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
-
           <FormGroup
             label="Handle"
             htmlFor="handle"
