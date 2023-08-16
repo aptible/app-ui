@@ -369,3 +369,11 @@ export const IconShield = (props: Props) => {
     </IconStrokeBase>
   );
 };
+
+export const IconScale = (props: Props) => {
+  return (
+    <IconStrokeBase {...props} title="Scale Icon">
+      <path d="M14.1667 16.6663L10.8333 13.333M5.83333 13.333V3.33301V13.333ZM5.83333 3.33301L2.5 6.66634L5.83333 3.33301ZM5.83333 3.33301L9.16667 6.66634L5.83333 3.33301ZM14.1667 6.66634V16.6663V6.66634ZM14.1667 16.6663L17.5 13.333L14.1667 16.6663Z" />
+    </IconStrokeBase>
+  );
+};

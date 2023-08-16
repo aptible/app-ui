@@ -1,4 +1,4 @@
-import { IconInfo, IconPlusCircle } from "../icons";
+import { IconInfo, IconPlusCircle, IconScale } from "../icons";
 import { Tooltip } from "../tooltip";
 import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
@@ -16,7 +16,8 @@ import {
 import type { AppState, DeployDatabase } from "@app/types";
 
 import { ActionListView } from "../action-list-view";
-import { ButtonCreate } from "../button";
+import { Button, ButtonCreate } from "../button";
+import { IconMetrics } from "../icons";
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
@@ -27,6 +28,8 @@ import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 import {
   databaseEndpointsUrl,
+  databaseMetricsUrl,
+  databaseScaleUrl,
   environmentCreateDbUrl,
   operationDetailUrl,
 } from "@app/routes";
@@ -87,6 +90,43 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
       ) : (
         <div className={tokens.type["normal lighter"]}>No activity</div>
       )}
+    </Td>
+  );
+};
+
+const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
+  return (
+    <Td className="flex flex-row justify-end">
+      <div>
+        <Tooltip
+          fluid
+          text="Metrics"
+        >
+          <Link
+            to={databaseMetricsUrl()}
+            className="hover:no-underline flex justify-end mr-4"
+          >
+          <Button variant="primary" size="sm" className="!px-2 h-[30px]">
+            <IconMetrics variant="sm" className="scale-[1.2]" />
+          </Button>
+        </Link>
+        </Tooltip>
+      </div>
+      <div>
+        <Tooltip
+          fluid
+          text="Scale"
+        >
+        <Link
+          to={databaseScaleUrl()}
+          className="hover:no-underline flex justify-end mr-4"
+        >
+          <Button variant="primary" size="sm" className="!px-2 h-[30px]">
+            <IconScale variant="sm" className="scale-[1.3] left-[2px] top-[1px] relative" />
+          </Button>
+        </Link>
+        </Tooltip>
+      </div>
     </Td>
   );
 };
@@ -173,7 +213,7 @@ export const DatabaseListByOrg = () => {
     }),
   );
 
-  const headers = ["Handle", "Environment", "Last Operation"];
+  const headers = ["Handle", "Environment", "Last Operation", "Actions"];
 
   return (
     <LoadResources
@@ -202,7 +242,11 @@ export const DatabaseListByOrg = () => {
             onChange={onChange}
           />
         }
-        tableHeader={<TableHead headers={headers} />}
+        tableHeader={
+          <TableHead
+          rightAlignedFinalCol
+          headers={headers}
+          />}
         tableBody={
           <>
             {dbs.map((db) => (
@@ -210,6 +254,7 @@ export const DatabaseListByOrg = () => {
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <LastOpCell database={db} />
+                <DatabaseActionsCell op={db} />
               </tr>
             ))}
           </>
