@@ -166,6 +166,7 @@ export const CreateMetricDrainPage = () => {
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
+          <div className="text-md font-semibold text-gray-900 block -mb-3">Environment</div>
           <EnvironmentSelect onSelect={onEnvSelect} />
 
           <FormGroup
@@ -337,6 +338,7 @@ export const CreateMetricDrainPage = () => {
           <BannerMessages {...loader} />
 
           <ButtonCreate
+            className="w-[200px]"
             envId={envId}
             type="submit"
             isLoading={loader.isLoading}
