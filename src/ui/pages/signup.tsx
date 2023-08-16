@@ -159,9 +159,9 @@ export const SignupPage = () => {
         <div className="text-lg text-gold font-bold pt-5 pb-1">Launch</div>
         <p>
           Give Aptible your code via{" "}
-          <code className="bg-black text-white pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]">
+          <span className="bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]">
             git push
-          </code>{" "}
+          </span>{" "}
           or point at a Docker registry and be up and running without any work
           or config.
         </p>
