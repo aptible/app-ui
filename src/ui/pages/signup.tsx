@@ -151,7 +151,7 @@ export const SignupPage = () => {
 
   return (
     <HeroBgLayout width={500} showLogo={false}>
-      <div className="fixed top-0 left-0 h-[100vh] max-w-[550px] w-[42vw] bg-white/80 shadow p-8 lg:block hidden">
+      <div className="fixed top-0 left-0 h-[100vh] max-w-[560px] w-[42vw] bg-white/80 shadow p-8 lg:block hidden">
         <div className="text-xl text-black font-bold">
           Launch, grow, and scale your app without stopping to work on
           infrastructure.
