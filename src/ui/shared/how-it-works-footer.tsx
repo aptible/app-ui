@@ -42,7 +42,7 @@ const HelpTextAccordion = ({
 export const CreateProjectFooter = () => {
   return (
     <div>
-      <h4 className={`${tokens.type.h4} py-4`}>How it works</h4>
+      <h4 className={`${tokens.type.h4} py-4`}>How It Works</h4>
       <hr className="my-1" />
 
       <div>
