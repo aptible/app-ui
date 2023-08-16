@@ -11,7 +11,12 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { databaseScaleUrl } from "@app/routes";
-import { setupAppIntegrationTest, waitForData, waitForToken } from "@app/test";
+import {
+  setupAppIntegrationTest,
+  waitForData,
+  waitForEnv,
+  waitForToken,
+} from "@app/test";
 
 import {
   hasDeployDatabase,
@@ -42,6 +47,8 @@ describe("DatabaseScalePage", () => {
     });
 
     await waitForToken(store);
+    await waitForEnv(store, testAccount.id);
+    render(<App />);
     await waitForData(store, (state) => {
       return hasDeployDatabase(
         selectDatabaseById(state, { id: `${testDatabasePostgres.id}` }),
@@ -53,8 +60,6 @@ describe("DatabaseScalePage", () => {
       );
     });
 
-    render(<App />);
-
     await screen.findByText(
       /Optimize container performance with a custom profile./,
     );
@@ -62,8 +67,7 @@ describe("DatabaseScalePage", () => {
     expect(btn).toBeDisabled();
 
     const diskSize = await screen.findByLabelText(/Disk Size/);
-    await act(async () => await userEvent.clear(diskSize));
-    await act(async () => await userEvent.type(diskSize, "2"));
+    fireEvent.change(diskSize, { target: { value: 20 } });
 
     const containerSize = await screen.findByLabelText(/Memory per Container/);
     await act(async () => await userEvent.selectOptions(containerSize, "2048"));

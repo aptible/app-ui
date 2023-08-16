@@ -237,6 +237,24 @@ export const stacksWithResources = (
         ctx.json(services.find((service) => `${service.id}` === req.params.id)),
       );
     }),
+    rest.get(`${testEnv.apiUrl}/databases/:id/operations`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(
+        ctx.json({
+          _embedded: { operations: testOperations },
+        }),
+      );
+    }),
+    rest.get(`${testEnv.apiUrl}/operations/:id/logs`, (_, res, ctx) => {
+      return res(ctx.text(`${testEnv.apiUrl}/mock`));
+    }),
+    rest.get(`${testEnv.apiUrl}/mock`, (_, res, ctx) => {
+      // this is to mimick any possible external calls (ex: s3)
+      // meant to be consumed by above call
+      return res(ctx.text("complete"));
+    }),
   ];
 };
 
@@ -563,9 +581,9 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/vhosts/:id`, (_, res, ctx) => {
     return res(ctx.json(testEndpoint));
   }),
-  rest.get(`${testEnv.apiUrl}/services/:id`, (_, res, ctx) => {
-    return res(ctx.json(testServiceRails));
-  }),
+  // rest.get(`${testEnv.apiUrl}/services/:id`, (_, res, ctx) => {
+  //   return res(ctx.json(testServiceRails));
+  // }),
   rest.post(
     `${testEnv.apiUrl}/accounts/:id/certificates`,
     async (_, res, ctx) => {

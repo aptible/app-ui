@@ -238,11 +238,33 @@ export const testRedisDatabaseImage = defaultDatabaseImageResponse({
 
 export const testDatabaseId = createId();
 export const testDatabaseServiceId = createId();
+export const testDatabaseOp = defaultOperationResponse({
+  id: createId(),
+  type: "provision",
+  status: "succeeded",
+  _links: {
+    resource: defaultHalHref(`${testEnv.apiUrl}/databases/${testDatabaseId}`),
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
+    code_scan_result: defaultHalHref(),
+    self: defaultHalHref(),
+    ssh_portal_connections: defaultHalHref(),
+    ephemeral_sessions: defaultHalHref(),
+    logs: defaultHalHref(),
+    user: defaultHalHref(),
+  },
+});
+
 export const testDatabasePostgres = defaultDatabaseResponse({
   id: testDatabaseId,
   handle: `${testApp.handle}-postgres`,
   type: "postgres",
   connection_url: "postgres://some:val@wow.com:5432",
+  _embedded: {
+    disk: {
+      size: 10,
+    },
+    last_operation: testDatabaseOp,
+  },
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
     initialize_from: defaultHalHref(),
@@ -278,22 +300,6 @@ export const testServicePostgres = defaultServiceResponse({
     current_release: defaultHalHref(),
     database: defaultHalHref(`${testEnv.apiUrl}/databases/${testDatabaseId}`),
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
-  },
-});
-
-export const testDatabaseOp = defaultOperationResponse({
-  id: createId(),
-  type: "provision",
-  status: "succeeded",
-  _links: {
-    resource: defaultHalHref(`${testEnv.apiUrl}/databases/${testDatabaseId}`),
-    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
-    code_scan_result: defaultHalHref(),
-    self: defaultHalHref(),
-    ssh_portal_connections: defaultHalHref(),
-    ephemeral_sessions: defaultHalHref(),
-    logs: defaultHalHref(),
-    user: defaultHalHref(),
   },
 });
 

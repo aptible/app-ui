@@ -39,10 +39,9 @@ describe("AppDetailServiceScalePage", () => {
       ],
     });
 
-    render(<App />);
-
     await waitForToken(store);
     await waitForEnv(store, testAccount.id);
+    render(<App />);
     await waitForData(store, (state) => {
       return hasDeployApp(selectAppById(state, { id: `${testApp.id}` }));
     });
