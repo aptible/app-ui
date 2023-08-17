@@ -103,7 +103,7 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
             to={databaseMetricsUrl()}
             className="hover:no-underline flex justify-end mr-4"
           >
-            <Button variant="primary" size="sm" className="">
+            <Button variant="primary" size="sm">
               <IconMetrics variant="sm" className="scale-[1.2]" />
             </Button>
           </Link>
@@ -115,7 +115,7 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
             to={databaseScaleUrl()}
             className="hover:no-underline flex justify-end mr-4"
           >
-            <Button variant="primary" size="sm" className="">
+            <Button variant="primary" size="sm">
               <IconScale
                 variant="sm"
                 className="scale-[1.3] left-[2px] top-[1px] relative"
