@@ -154,7 +154,7 @@ const EnvsResourceHeaderTitleBar = ({
     <ResourceHeader
       title={showTitle ? "Environments" : ""}
       filterBar={
-        <div>
+        <div className="pt-1">
           <div className="flex justify-between items-center">
             <InputSearch
               placeholder="Search environments..."
