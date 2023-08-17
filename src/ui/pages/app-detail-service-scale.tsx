@@ -67,6 +67,7 @@ export const AppDetailServiceScalePage = () => {
     id: serviceId,
     containerCount,
     containerSize,
+    containerProfile: containerProfileType,
   });
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();

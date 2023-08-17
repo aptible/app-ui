@@ -31,6 +31,7 @@ import type {
   DeployDatabase,
   DeployOperationResponse,
   HalEmbedded,
+  InstanceClass,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
@@ -654,18 +655,20 @@ export interface DatabaseScaleProps {
   id: string;
   diskSize?: number;
   containerSize?: number;
+  containerProfile?: InstanceClass;
 }
 
 export const scaleDatabase = api.post<
   DatabaseScaleProps,
   DeployOperationResponse
 >(["/databases/:id/operations", "restart"], function* (ctx, next) {
-  const { id, diskSize, containerSize } = ctx.payload;
+  const { id, diskSize, containerProfile, containerSize } = ctx.payload;
   const body = {
     type: "restart",
     id,
     disk_size: diskSize,
     container_size: containerSize,
+    instance_profile: containerProfile,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield* next();
