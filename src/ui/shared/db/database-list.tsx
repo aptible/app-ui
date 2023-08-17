@@ -98,29 +98,29 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td>
       <div className="flex flex-row gap-2 justify-end mr-4">
-        <Tooltip text="Metrics">
           <Link
             to={databaseMetricsUrl()}
             className="hover:no-underline"
           >
-            <Button variant="primary" size="sm">
-              <IconMetrics variant="sm" className="scale-[1.2]" />
-            </Button>
+            <Tooltip text="Metrics">
+              <Button variant="primary" size="sm">
+                <IconMetrics variant="sm" className="scale-[1.2]" />
+              </Button>
+            </Tooltip>
           </Link>
-        </Tooltip>
-        <Tooltip text="Scale">
           <Link
             to={databaseScaleUrl()}
             className="hover:no-underline"
           >
-            <Button variant="primary" size="sm">
-              <IconScale
-                variant="sm"
-                className="scale-[1.3] left-[2px] top-[1px] relative"
-              />
-            </Button>
+            <Tooltip text="Scale">
+              <Button variant="primary" size="sm">
+                <IconScale
+                  variant="sm"
+                  className="scale-[1.3] left-[2px] top-[1px] relative"
+                />
+              </Button>
+            </Tooltip>
           </Link>
-        </Tooltip>
       </div>
     </Td>
   );

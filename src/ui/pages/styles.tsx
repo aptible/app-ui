@@ -41,6 +41,7 @@ import {
   IconHeart,
   IconInfo,
   IconLayers,
+  IconLogs,
   IconLogout,
   IconPlusCircle,
   IconRefresh,
@@ -570,6 +571,7 @@ const Icons = () => (
         ["IconHeart", <IconHeart />],
         ["IconCloud", <IconCloud />],
         ["IconHamburger", <IconHamburger />],
+        ["IconLogs", <IconLogs />],
       ].map(([title, icon]) => (
         <div key={title as string}>
           <div className="inline-block -mb-1">{icon}</div>{" "}

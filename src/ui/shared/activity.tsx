@@ -32,7 +32,7 @@ import type { AppState, DeployActivityRow, ResourceType } from "@app/types";
 
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
-import { IconInfo } from "./icons";
+import { IconInfo, IconLogs } from "./icons";
 import { InputSearch } from "./input";
 import { LoadResources } from "./load-resources";
 import { LoadingSpinner } from "./loading";
@@ -121,16 +121,19 @@ const OpResourceCell = ({ op }: OpCellProps) => {
 const OpActionsCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-      <div>
-        <Link
-          to={operationDetailUrl(op.id)}
-          className="hover:no-underline flex justify-end mr-4"
-        >
-          <Button variant="primary" size="sm">
-            Logs
-          </Button>
-        </Link>
-      </div>
+          <Link
+            to={operationDetailUrl(op.id)}
+            className="hover:no-underline flex justify-end mr-4"
+          >
+          <Tooltip text="Logs">
+              <Button variant="primary" size="sm">
+                <IconLogs
+                    variant="sm"
+                    className="scale-[1.3] left-[1px] relative"
+                  />
+              </Button>
+            </Tooltip>
+          </Link>
     </Td>
   );
 };
