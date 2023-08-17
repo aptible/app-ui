@@ -202,17 +202,19 @@ export interface ServiceScaleProps {
   id: string;
   containerCount?: number;
   containerSize?: number;
+  containerProfile?: InstanceClass;
 }
 
 export const scaleService = api.post<
   ServiceScaleProps,
   DeployOperationResponse
 >(["/services/:id/operations", "scale"], function* (ctx, next) {
-  const { id, containerCount, containerSize } = ctx.payload;
+  const { id, containerCount, containerProfile, containerSize } = ctx.payload;
   const body = {
     type: "scale",
     id,
     container_count: containerCount,
+    instance_profile: containerProfile,
     container_size: containerSize,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
