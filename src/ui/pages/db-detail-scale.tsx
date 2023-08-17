@@ -72,6 +72,7 @@ export const DatabaseScalePage = () => {
     id,
     diskSize: diskValue,
     containerSize: containerSize,
+    containerProfile: containerProfileType,
   });
 
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
