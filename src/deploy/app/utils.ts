@@ -104,11 +104,8 @@ export const hourlyAndMonthlyCostsForContainers = (
     containerProfile.costPerContainerHourInCents / 100
   ).toFixed(2);
   let pricePerMonth =
-    computedCostsForContainer(
-      containerCount || 1,
-      containerProfile,
-      containerSize,
-    ).estimatedCostInDollars / 1000;
+    computedCostsForContainer(containerCount, containerProfile, containerSize)
+      .estimatedCostInDollars / 1000;
   if (diskSize) {
     pricePerMonth += diskSize * 0.2;
   }
