@@ -29,9 +29,6 @@ import { useNavigate, useParams } from "react-router";
 
 const validators = {
   containerCount: (data: AppScaleProps) => {
-    if (data.containerCount < 1) {
-      return "Container count must be at least 1";
-    }
     if (data.containerCount > 32) {
       return "Container count cannot exceed 32";
     }
@@ -70,6 +67,7 @@ export const AppDetailServiceScalePage = () => {
     id: serviceId,
     containerCount,
     containerSize,
+    containerProfile: containerProfileType,
   });
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -304,9 +302,10 @@ export const AppDetailServiceScalePage = () => {
                 <div>
                   <Label>Pricing</Label>
                   <p className="text-gray-500">
-                    {containerCount || 1} container
-                    {containerCount > 1 ? "s" : ""} x {containerSize / 1024} GB
-                    x ${estimatedPricePerHour} per GB/hour
+                    {containerCount} container
+                    {containerCount > 1 || containerCount === 0 ? "s" : ""} x{" "}
+                    {containerSize / 1024} GB x ${estimatedPricePerHour} per
+                    GB/hour
                   </p>
                 </div>
                 <div>
