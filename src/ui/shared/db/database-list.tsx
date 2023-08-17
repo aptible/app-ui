@@ -1,4 +1,4 @@
-import { IconInfo, IconPlusCircle, IconScale } from "../icons";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { Tooltip } from "../tooltip";
 import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
@@ -28,7 +28,6 @@ import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 import {
   databaseEndpointsUrl,
-  databaseMetricsUrl,
   databaseScaleUrl,
   environmentCreateDbUrl,
   operationDetailUrl,
@@ -97,31 +96,14 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
 const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td>
-      <div className="flex flex-row gap-2 justify-end mr-4">
-          <Link
-            to={databaseMetricsUrl(database.id)}
-            className="hover:no-underline"
-          >
-            <Tooltip text="Metrics">
-              <Button variant="primary" size="sm">
-                <IconMetrics variant="sm" className="scale-[1.2]" />
-              </Button>
-            </Tooltip>
-          </Link>
-          <Link
-            to={databaseScaleUrl(database.id)}
-            className="hover:no-underline"
-          >
-            <Tooltip text="Scale">
-              <Button variant="primary" size="sm">
-                <IconScale
-                  variant="sm"
-                  className="scale-[1.3] left-[2px] top-[1px] relative"
-                />
-              </Button>
-            </Tooltip>
-          </Link>
-      </div>
+      <Link
+        to={databaseScaleUrl(database.id)}
+        className="hover:no-underline flex justify-end mr-4"
+      >
+          <Button variant="primary" size="sm">
+            Scale
+          </Button>
+      </Link>
     </Td>
   );
 };
