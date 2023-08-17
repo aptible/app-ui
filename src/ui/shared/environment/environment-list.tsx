@@ -1,18 +1,22 @@
-import { IconInfo } from "../icons";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { Tooltip } from "../tooltip";
 import {
   fetchAllEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
-  selectEnvironmentsByStackId,
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
-import { environmentAppsUrl, stackDetailEnvsUrl } from "@app/routes";
+import {
+  createProjectGitUrl,
+  environmentAppsUrl,
+  stackDetailEnvsUrl,
+} from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
+import { ButtonIcon } from "../button";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
@@ -131,63 +135,56 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
-type HeaderTypes =
-  | {
-      resourceHeaderType: "title-bar";
-      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-    }
-  | { resourceHeaderType: "simple-text"; onChange?: null };
-
 const EnvsResourceHeaderTitleBar = ({
   envs,
-  resourceHeaderType = "title-bar",
   search = "",
   onChange,
+  showTitle = true,
 }: {
   envs: DeployEnvironment[];
   search?: string;
-} & HeaderTypes) => {
-  switch (resourceHeaderType) {
-    case "title-bar":
-      if (!onChange) {
-        return null;
+  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+  showTitle?: boolean;
+}) => {
+  const navigate = useNavigate();
+  const onCreate = () => {
+    navigate(createProjectGitUrl());
+  };
+  return (
+    <ResourceHeader
+      title={showTitle ? "Environments" : ""}
+      filterBar={
+        <div>
+          <div className="flex justify-between items-center">
+            <InputSearch
+              placeholder="Search environments..."
+              search={search}
+              onChange={onChange}
+            />
+
+            <ButtonIcon
+              icon={<IconPlusCircle variant="sm" />}
+              onClick={onCreate}
+            >
+              New Environment
+            </ButtonIcon>
+          </div>
+
+          <div className="flex items-center gap-1 text-gray-500 mt-4 text-base">
+            <span>
+              {envs.length} Environment{envs.length !== 1 && "s"}
+            </span>
+            <Tooltip
+              fluid
+              text="Environments are how you separate resources like staging and production."
+            >
+              <IconInfo className="opacity-50 hover:opacity-100" variant="sm" />
+            </Tooltip>
+          </div>
+        </div>
       }
-      return (
-        <ResourceHeader
-          title="Environments"
-          filterBar={
-            <div className="pt-1">
-              <InputSearch
-                placeholder="Search environments..."
-                search={search}
-                onChange={onChange}
-              />
-              <div className="flex">
-                <p className="flex text-gray-500 mt-4 text-base">
-                  {envs.length} Environment{envs.length !== 1 && "s"}
-                </p>
-                <div className="mt-4">
-                  <Tooltip
-                    fluid
-                    text="Environments are how you separate resources like staging and production."
-                  >
-                    <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
-                  </Tooltip>
-                </div>
-              </div>
-            </div>
-          }
-        />
-      );
-    case "simple-text":
-      return (
-        <p className="flex text-gray-500 text-base mb-4">
-          {envs.length} Environment{envs.length !== 1 && "s"}
-        </p>
-      );
-    default:
-      return null;
-  }
+    />
+  );
 };
 const environmentHeaders = [
   "Environment",
@@ -199,11 +196,14 @@ const environmentHeaders = [
 
 export function EnvironmentListByStack({ stackId }: { stackId: string }) {
   const query = useQuery(fetchAllEnvironments());
-  const [params, _] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value });
+  };
 
   const environments = useSelector((s: AppState) =>
-    selectEnvironmentsByStackId(s, { stackId }),
+    selectEnvironmentsForTableSearch(s, { search, stackId }),
   );
 
   return (
@@ -214,8 +214,10 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
       <ResourceListView
         header={
           <EnvsResourceHeaderTitleBar
+            search={search}
             envs={environments}
-            resourceHeaderType="simple-text"
+            onChange={onChange}
+            showTitle={false}
           />
         }
         tableHeader={
@@ -261,7 +263,6 @@ export function EnvironmentList() {
         header={
           <EnvsResourceHeaderTitleBar
             envs={environments}
-            resourceHeaderType="title-bar"
             search={search}
             onChange={onChange}
           />
