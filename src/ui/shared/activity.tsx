@@ -121,14 +121,14 @@ const OpResourceCell = ({ op }: OpCellProps) => {
 const OpActionsCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-          <Link
-            to={operationDetailUrl(op.id)}
-            className="hover:no-underline flex justify-end mr-4"
-          >
-              <Button variant="primary" size="sm">
-                Logs
-              </Button>
-          </Link>
+      <Link
+        to={operationDetailUrl(op.id)}
+        className="hover:no-underline flex justify-end mr-4"
+      >
+        <Button variant="primary" size="sm">
+          Logs
+        </Button>
+      </Link>
     </Td>
   );
 };

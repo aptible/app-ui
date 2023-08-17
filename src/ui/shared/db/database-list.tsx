@@ -18,7 +18,6 @@ import type { AppState, DeployDatabase } from "@app/types";
 import { ActionListView } from "../action-list-view";
 import { Button, ButtonCreate } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
-import { IconMetrics } from "../icons";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
@@ -100,9 +99,9 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
         to={databaseScaleUrl(database.id)}
         className="hover:no-underline flex justify-end mr-4"
       >
-          <Button variant="primary" size="sm">
-            Scale
-          </Button>
+        <Button variant="primary" size="sm">
+          Scale
+        </Button>
       </Link>
     </Td>
   );
