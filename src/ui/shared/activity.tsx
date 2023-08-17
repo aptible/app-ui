@@ -126,7 +126,7 @@ const OpActionsCell = ({ op }: OpCellProps) => {
           to={operationDetailUrl(op.id)}
           className="hover:no-underline flex justify-end mr-4"
         >
-          <Button variant="white" color="white" size="sm" className="px-0">
+          <Button variant="primary" size="sm">
             Logs
           </Button>
         </Link>

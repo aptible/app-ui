@@ -96,24 +96,22 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
 
 const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
   return (
-    <Td className="flex flex-row justify-end place-items-center pt-4">
-      <div>
+    <Td>
+      <div className="flex flex-row gap-2 justify-end mr-4">
         <Tooltip text="Metrics">
           <Link
             to={databaseMetricsUrl()}
-            className="hover:no-underline flex justify-end mr-4"
+            className="hover:no-underline"
           >
             <Button variant="primary" size="sm">
               <IconMetrics variant="sm" className="scale-[1.2]" />
             </Button>
           </Link>
         </Tooltip>
-      </div>
-      <div>
         <Tooltip text="Scale">
           <Link
             to={databaseScaleUrl()}
-            className="hover:no-underline flex justify-end mr-4"
+            className="hover:no-underline"
           >
             <Button variant="primary" size="sm">
               <IconScale
