@@ -16,7 +16,7 @@ import {
 import type { AppState, DeployDatabase } from "@app/types";
 
 import { ActionListView } from "../action-list-view";
-import { ButtonCreate } from "../button";
+import { Button, ButtonCreate } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
@@ -26,7 +26,8 @@ import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
 import {
-  databaseMetricsUrl,
+  databaseEndpointsUrl,
+  databaseScaleUrl,
   environmentCreateDbUrl,
   operationDetailUrl,
 } from "@app/routes";
@@ -39,7 +40,7 @@ export const DatabaseItemView = ({
 }: { database: DeployDatabase }) => {
   return (
     <div className="flex">
-      <Link to={databaseMetricsUrl(database.id)} className="flex">
+      <Link to={databaseEndpointsUrl(database.id)} className="flex">
         <img
           src={`/database-types/logo-${database.type}.png`}
           className="w-8 h-8 mr-2 mt-2 align-middle"
@@ -87,6 +88,21 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
       ) : (
         <div className={tokens.type["normal lighter"]}>No activity</div>
       )}
+    </Td>
+  );
+};
+
+const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
+  return (
+    <Td>
+      <Link
+        to={databaseScaleUrl(database.id)}
+        className="hover:no-underline flex justify-end mr-4"
+      >
+        <Button variant="primary" size="sm">
+          Scale
+        </Button>
+      </Link>
     </Td>
   );
 };
@@ -173,7 +189,7 @@ export const DatabaseListByOrg = () => {
     }),
   );
 
-  const headers = ["Handle", "Environment", "Last Operation"];
+  const headers = ["Handle", "Environment", "Last Operation", "Actions"];
 
   return (
     <LoadResources
@@ -202,7 +218,7 @@ export const DatabaseListByOrg = () => {
             onChange={onChange}
           />
         }
-        tableHeader={<TableHead headers={headers} />}
+        tableHeader={<TableHead rightAlignedFinalCol headers={headers} />}
         tableBody={
           <>
             {dbs.map((db) => (
@@ -210,6 +226,7 @@ export const DatabaseListByOrg = () => {
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <LastOpCell database={db} />
+                <DatabaseActionsCell database={db} />
               </tr>
             ))}
           </>
