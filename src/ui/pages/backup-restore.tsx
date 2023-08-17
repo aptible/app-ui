@@ -97,7 +97,8 @@ export const BackupRestorePage = () => {
           <div>
             <h2 className={tokens.type.h2}>Create Database from Backup</h2>
 
-            <div>
+            <div className="mt-4">
+              <div className="text-md font-semibold text-gray-900 block">Source Database</div>
               <Link to={databaseBackupsUrl(db.id)}>
                 {db.handle} (backup from: {prettyDateTime(backup.createdAt)})
               </Link>
