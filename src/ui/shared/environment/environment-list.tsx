@@ -195,6 +195,7 @@ const environmentHeaders = [
   "Last Deployed",
   "Apps",
   "Databases",
+  "Actions",
 ];
 
 export function EnvironmentListByStack({ stackId }: { stackId: string }) {

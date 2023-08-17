@@ -99,7 +99,7 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
     <Td>
       <div className="flex flex-row gap-2 justify-end mr-4">
           <Link
-            to={databaseMetricsUrl()}
+            to={databaseMetricsUrl(database.id)}
             className="hover:no-underline"
           >
             <Tooltip text="Metrics">
@@ -109,7 +109,7 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
             </Tooltip>
           </Link>
           <Link
-            to={databaseScaleUrl()}
+            to={databaseScaleUrl(database.id)}
             className="hover:no-underline"
           >
             <Tooltip text="Scale">
@@ -245,7 +245,7 @@ export const DatabaseListByOrg = () => {
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <LastOpCell database={db} />
-                <DatabaseActionsCell op={db} />
+                <DatabaseActionsCell database={db} />
               </tr>
             ))}
           </>
