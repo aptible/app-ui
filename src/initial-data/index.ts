@@ -16,7 +16,11 @@ import {
 import {
   fetchAllApps,
   fetchAllDatabases,
+  fetchAllEndpoints,
   fetchAllEnvironments,
+  fetchAllLogDrains,
+  fetchAllMetricDrains,
+  fetchAllServices,
   fetchAllStacks,
 } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
@@ -36,9 +40,10 @@ export function* onFetchInitData() {
       fetchAllEnvironments(),
       fetchAllApps(),
       fetchAllDatabases(),
-      // TODO - Below need to be updated on backend endpoints for proceeding
-      // fetchAllLogDrains(),
-      // fetchAllMetricDrains()
+      fetchAllLogDrains(),
+      fetchAllMetricDrains(),
+      fetchAllServices(),
+      fetchAllEndpoints(),
     ]),
   );
 }
