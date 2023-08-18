@@ -128,7 +128,11 @@ const BackupListRow = ({
       </Td>
 
       <Td className="flex gap-2 justify-end mr-4">
-        <ButtonCreate envId={backup.environmentId} onClick={onRestore} size="sm">
+        <ButtonCreate
+          envId={backup.environmentId}
+          onClick={onRestore}
+          size="sm"
+        >
           Restore
         </ButtonCreate>
         <DeleteBackup id={backup.id} envId={backup.environmentId} />
