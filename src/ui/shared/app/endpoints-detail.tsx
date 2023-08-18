@@ -108,7 +108,7 @@ function EndpointsView({ app }: { app: DeployApp }) {
         navigate(appEndpointCreateUrl(app.id));
       }}
     >
-      <IconPlusCircle className="mr-2" /> New Endpoint
+      <IconPlusCircle variant="sm" className="mr-2" /> New Endpoint
     </ButtonCreate>
   );
 

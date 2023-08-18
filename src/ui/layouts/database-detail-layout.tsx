@@ -121,9 +121,9 @@ function DatabasePageHeader() {
   ];
 
   const tabs = [
-    { name: "Endpoints", href: databaseEndpointsUrl(id) },
     { name: "Metrics", href: databaseMetricsUrl(id) },
     { name: "Scale", href: databaseScaleUrl(id) },
+    { name: "Endpoints", href: databaseEndpointsUrl(id) },
     { name: "Activity", href: databaseActivityUrl(id) },
     { name: "Backups", href: databaseBackupsUrl(id) },
     { name: "Cluster", href: databaseClusterUrl(id) },
