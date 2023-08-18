@@ -113,6 +113,10 @@ export const databaseScaleUrl = (id: string) =>
 export const DATABASE_SETTINGS_PATH = `${DATABASE_DETAIL_PATH}/settings`;
 export const databaseSettingsUrl = (id: string) =>
   `${databaseDetailUrl(id)}/settings`;
+export const DATABASE_ENDPOINT_CREATE_PATH = `${DATABASE_DETAIL_PATH}/endpoints/create`;
+export const databaseEndpointCreateUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/endpoints/create`;
+
 export const BACKUP_RESTORE_PATH = "/backups/:id/restore";
 export const backupRestoreUrl = (id: string) => `/backups/${id}/restore`;
 

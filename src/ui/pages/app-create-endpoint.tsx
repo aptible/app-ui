@@ -13,6 +13,7 @@ import {
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { endpointDetailUrl } from "@app/routes";
 import { AppState } from "@app/types";
+import { ipValidator, portValidator } from "@app/validator";
 
 import { useValidator } from "../hooks";
 import {
@@ -27,7 +28,6 @@ import {
   RadioGroup,
   TextArea,
 } from "../shared";
-import { ipValidator, portValidator } from "@app/validator";
 
 const validators = {
   port: (data: CreateEndpointProps) => portValidator(data.containerPort),

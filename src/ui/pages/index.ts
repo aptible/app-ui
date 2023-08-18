@@ -70,3 +70,4 @@ export * from "./cert-detail-settings";
 export * from "./environment-detail-create-cert";
 export * from "./create-metric-drain";
 export * from "./create-log-drain";
+export * from "./db-create-endpoint";
