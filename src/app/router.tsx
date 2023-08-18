@@ -616,6 +616,11 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.SIGNUP_PATH,
+    element: <SignupPage />,
+  },
+
+  {
     path: routes.SSO_ORG_FAILURE_PATH,
     element: <UnauthRequired />,
     children: [
