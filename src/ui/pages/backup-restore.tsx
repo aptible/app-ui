@@ -96,10 +96,13 @@ export const BackupRestorePage = () => {
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div>
             <h2 className={tokens.type.h2}>Create Database from Backup</h2>
-
+            <p className="mt-4">
+              This will create a new database.{" "}
+              <strong>It does not overwrite your existing database.</strong>
+            </p>
             <div className="mt-4">
               <div className="text-md font-semibold text-gray-900 block">
-                Source Database
+                Source Backup
               </div>
               <Link to={databaseBackupsUrl(db.id)}>
                 {db.handle} (backup from: {prettyDateTime(backup.createdAt)})

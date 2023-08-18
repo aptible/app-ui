@@ -51,7 +51,7 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
         <div className="hidden md:block" />
 
         <DetailInfoItem title="Tenancy">{capitalize(stackType)}</DetailInfoItem>
-        <DetailInfoItem title="CPU Limits">
+        <DetailInfoItem title="CPU Isolation">
           {stack.cpuLimits ? "Enabled" : "Disabled"}
         </DetailInfoItem>
         <div className="hidden md:block" />
