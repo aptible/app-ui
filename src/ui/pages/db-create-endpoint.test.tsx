@@ -94,7 +94,7 @@ describe("DatabaseCreateEndpointPage", () => {
       await waitForEnv(store, testAccount.id);
 
       await screen.findByText(
-        /Database Endpoints let you expose your Deploy databases on the public/,
+        /If you only need to access your database from apps/,
       );
 
       const ipStr = "192.168.1.1";
@@ -124,7 +124,7 @@ describe("DatabaseCreateEndpointPage", () => {
       await waitForEnv(store, testAccount.id);
 
       await screen.findByText(
-        /Database Endpoints let you expose your Deploy databases on the public/,
+        /If you only need to access your database from apps/,
       );
 
       const btn = await screen.findByRole("button", { name: /Save Endpoint/ });
