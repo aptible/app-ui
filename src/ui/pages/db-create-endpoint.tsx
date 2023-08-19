@@ -71,17 +71,11 @@ export const DatabaseCreateEndpointPage = () => {
     <Box className="flex flex-col gap-4">
       <h1 className="text-lg text-black font-semibold">Create Endpoint</h1>
 
-      <Banner variant="warning">
-        Database Endpoints let you expose your Deploy databases on the public
-        internet. They are useful if you need to grant third party access to
-        your database. If you only need to access your database from Deploy
-        apps, you do not need an Endpoint: simply use your database credentials
-        to connect.
-      </Banner>
-
-      <Banner variant="warning">
-        Before exposing this database to the internet, please consider the
-        connection security advice in our{" "}
+      <Banner variant="info">
+        If you only need to access your database from apps,{" "}
+        <strong>you do not need an Endpoint.</strong> View Settings to reveal
+        database credentials to connect. Before exposing this database to the
+        internet, please consider the connection security advice in our{" "}
         <ExternalLink
           variant="info"
           href="https://www.aptible.com/docs/database-endpoints"
