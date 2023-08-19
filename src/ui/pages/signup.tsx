@@ -302,7 +302,7 @@ export const SignupPage = () => {
             </div>
           </div>
         </div>
-        <div className="mt-6 lg:px-0 px-10 lg:hidden block">
+        <div className="mt-6 lg:px-0 px-10 lg:hidden block pb-10">
           <CreateProjectFooter />
         </div>
       </div>
