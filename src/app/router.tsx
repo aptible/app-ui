@@ -78,6 +78,7 @@ import {
   SearchPage,
   SecuritySettingsPage,
   SettingsPage,
+  SignupPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
@@ -588,6 +589,11 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.SIGNUP_PATH,
+    element: <SignupPage />,
+  },
+
+  {
     path: routes.FORGOT_PASS_PATH,
     element: <UnauthRequired />,
     children: [
@@ -607,6 +613,11 @@ export const appRoutes: RouteObject[] = [
         element: <ForgotPassVerifyPage />,
       },
     ],
+  },
+
+  {
+    path: routes.SIGNUP_PATH,
+    element: <SignupPage />,
   },
 
   {
