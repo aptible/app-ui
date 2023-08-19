@@ -65,7 +65,8 @@ export const DatabaseBackupsPage = () => {
           to={environmentBackupsUrl(db.environmentId)}
           variant="white"
         >
-          <IconEdit variant="sm" className="mr-2" /> Edit Backup Policy
+          <IconEdit variant="sm" className="mr-2" /> Edit Environment Backup
+          Policy
         </ButtonLink>
 
         <LoadingSpinner show={pollLoader.isLoading} />
