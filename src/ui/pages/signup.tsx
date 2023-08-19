@@ -185,7 +185,7 @@ export const SignupPage = () => {
           </div>
           <div className="flex text-center items-center justify-center">
             <div className="max-w-2xl">
-              <p className="lg:px-0 px-8">
+              <p className="lg:px-0 px-8 lg:min-w-[570px] min-w-full">
                 Our web app and API hosting platform automates the work of
                 provisioning, managing, and scaling infrastructure, so you can
                 focus on what actually matters: <strong>your product.</strong>
