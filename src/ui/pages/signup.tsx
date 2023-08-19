@@ -178,7 +178,7 @@ export const SignupPage = () => {
           <CreateProjectFooter />
         </div>
       </div>
-      <div className="absolute top-0 left-0  lg:w-[60vw] w-[100vw] lg:ml-[40vw] ml-auto lg:px-[5%] md:px-[32px] px-auto">
+      <div className="absolute lg:top-[30px] md:top-0 top-0 left-0  lg:w-[60vw] w-[100vw] lg:ml-[40vw] ml-auto lg:px-[5%] md:px-[32px] px-auto">
         <div className="flex flex-col justify-center items-center md:w-[500px] md:ml-[50%] md:left-[-250px] w-full ml-none left-0 relative">
           <div className="flex justify-center pt-10 pb-8">
             <AptibleLogo width={160} />
