@@ -1,4 +1,4 @@
-import { extractIdFromLink } from "@app/hal";
+import { defaultHalHref, extractIdFromLink } from "@app/hal";
 import type { User } from "@app/types";
 
 import type { UserResponse } from "./types";
@@ -14,6 +14,7 @@ export const defaultUser = (u: Partial<User> = {}): User => {
     username: "",
     verified: false,
     currentOtpId: "",
+    selectedOrganizationId: "",
     ...u,
   };
 };
@@ -28,6 +29,7 @@ export function deserializeUser(u: UserResponse): User {
     superuser: u.superuser,
     username: u.username,
     verified: u.verified,
+    selectedOrganizationId: extractIdFromLink(u._links.selected_organization),
     currentOtpId: extractIdFromLink(u._links.current_otp_configuration),
   };
 }
@@ -50,12 +52,13 @@ export function defaultUserResponse(
     public_key_fingerprint: null,
     ssh_public_key: null,
     _links: {
-      self: { href: "" },
-      roles: { href: "" },
-      email_verification_challenges: { href: "" },
-      current_otp_configuration: { href: "" },
-      ssh_keys: { href: "" },
-      u2f_devices: { href: "" },
+      self: defaultHalHref(),
+      roles: defaultHalHref(),
+      selected_organization: defaultHalHref(),
+      email_verification_challenges: defaultHalHref(),
+      current_otp_configuration: defaultHalHref(),
+      ssh_keys: defaultHalHref(),
+      u2f_devices: defaultHalHref(),
       ...u._links,
     },
     _type: "user",

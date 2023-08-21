@@ -139,8 +139,8 @@ const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_APP_NAME],
 );
 export const selectAppById = must(selectors.selectById);
-export const { selectTableAsList: selectAppsAsList, selectTable: selectApps } =
-  selectors;
+export const { selectTable: selectApps } = selectors;
+const selectAppsAsList = selectors.selectTableAsList;
 export const findAppById = must(selectors.findById);
 
 export interface DeployAppRow extends DeployApp {
@@ -257,7 +257,7 @@ export const selectAppByServiceId = createSelector(
 
 export const selectAppsByEnvOnboarding = createSelector(
   selectEnvironments,
-  selectAppsAsList,
+  selectAppsByOrgAsList,
   (envs, apps) => {
     return apps.filter((app) => {
       const env = findEnvById(envs, { id: app.environmentId });

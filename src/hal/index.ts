@@ -20,7 +20,7 @@ export const defaultHalHref = (href = ""): { href: string } => {
 
 export function extractIdFromLink(
   relation: { href: string } | null | undefined,
-) {
+): string {
   if (!relation?.href) {
     return "";
   }

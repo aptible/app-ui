@@ -53,6 +53,8 @@ export const billingMethodUrl = () => BILLING_METHOD_PAGE;
 
 export const CREATE_ORG_PATH = "/organizations/create";
 export const createOrgUrl = () => CREATE_ORG_PATH;
+export const ORG_PICKER_PATH = "/organizations/picker";
+export const orgPickerUrl = () => ORG_PICKER_PATH;
 
 export const ACCEPT_INVITATION_WITH_CODE_PATH =
   "/accept-invitation/:invitationId/:verificationCode";

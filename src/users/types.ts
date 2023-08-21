@@ -20,6 +20,7 @@ export interface UserResponse {
     self: LinkResponse;
     ssh_keys: LinkResponse;
     u2f_devices: LinkResponse;
+    selected_organization?: LinkResponse | null;
   };
   _type: "user";
 }

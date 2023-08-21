@@ -13,6 +13,7 @@ import {
   testEnv,
   testOperations,
   testOrg,
+  testOrgReauth,
   testPlan,
   testPostgresDatabaseImage,
   testRedisDatabaseImage,
@@ -36,6 +37,7 @@ import {
   defaultOperationResponse,
 } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
+import { UserResponse } from "@app/users";
 import { RestRequest, rest } from "msw";
 
 const isValidToken = (req: RestRequest) => {
@@ -53,12 +55,18 @@ const authHandlers = [
     }
     return res(ctx.json({ _embedded: { organizations: [testOrg] } }));
   }),
+  rest.get(`${testEnv.authUrl}/reauthenticate_organizations`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { organizations: [testOrgReauth] } }));
+  }),
 
   rest.get(`${testEnv.authUrl}/users/:userId`, (req, res, ctx) => {
     if (!isValidToken(req)) {
       return res(ctx.status(401));
     }
 
+    return res(ctx.json(testUser));
+  }),
+  rest.put(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
     return res(ctx.json(testUser));
   }),
   rest.post(`${testEnv.authUrl}/users`, (_, res, ctx) => {
@@ -131,17 +139,17 @@ const authHandlers = [
   }),
 ];
 
-export const verifiedUserHandlers = () => {
+export const verifiedUserHandlers = (user: UserResponse = testUserVerified) => {
   return [
     rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (_, res, ctx) => {
       return res(
         ctx.json({
-          _embedded: [testUserVerified],
+          _embedded: [user],
         }),
       );
     }),
     rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
-      return res(ctx.json(testUserVerified));
+      return res(ctx.json(user));
     }),
   ];
 };

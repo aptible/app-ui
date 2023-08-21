@@ -2,6 +2,7 @@ import { CONTAINER_PROFILES } from "../container/utils";
 import { selectDeploy } from "../slice";
 import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   createReducerMap,
   createTable,
@@ -132,11 +133,17 @@ const initStack = defaultDeployStack();
 const must = mustSelectEntity(initStack);
 export const selectStackById = must(selectors.selectById);
 export const { selectTable: selectStacks } = selectors;
-export const selectStacksAsList = createSelector(
+const selectStacksAsList = createSelector(
   selectors.selectTableAsList,
   (stacks) => {
     return stacks.sort((a, b) => a.name.localeCompare(b.name));
   },
+);
+export const selectStacksByOrgAsList = createSelector(
+  selectStacksAsList,
+  selectOrganizationSelectedId,
+  (stacks, orgId) =>
+    stacks.filter((s) => s.organizationId === orgId || s.organizationId === ""),
 );
 
 export const stackToOption = (
@@ -149,13 +156,13 @@ export const stackToOption = (
 };
 
 export const selectStacksAsOptions = createSelector(
-  selectStacksAsList,
+  selectStacksByOrgAsList,
   (stacks) =>
     stacks.map(stackToOption).sort((a, b) => a.label.localeCompare(b.label)),
 );
 
 export const selectStacksByOrgAsOptions = createSelector(
-  selectStacksAsList,
+  selectStacksByOrgAsList,
   (_: AppState, p: { orgId: string }) => p.orgId,
   (stacks, orgId) => {
     return stacks
@@ -184,7 +191,7 @@ export const getStackType = (stack: DeployStack): StackType => {
 };
 
 export const selectStackPublicDefault = createSelector(
-  selectStacksAsList,
+  selectStacksByOrgAsList,
   (stacks) => {
     if (stacks.length === 0) {
       return initStack;
@@ -201,7 +208,7 @@ export const selectStackPublicDefaultAsOption = createSelector(
 export const hasDeployStack = (s: DeployStack) => s.id !== "";
 
 export const selectStacksForTableSearch = createSelector(
-  selectStacksAsList,
+  selectStacksByOrgAsList,
   (_: AppState, p: { search: string }) => p.search,
   (stacks, search) => {
     if (search === "") {

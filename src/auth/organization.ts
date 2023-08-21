@@ -3,33 +3,52 @@ import { call, select } from "@app/fx";
 import { authApi, cacheTimer } from "@app/api";
 import {
   OrganizationResponse,
+  selectOrganizationSelectedId,
   setOrganizationSelected,
 } from "@app/organizations";
 import { selectToken } from "@app/token";
-import { ApiGen, AuthApiCtx, HalEmbedded } from "@app/types";
+import { ApiGen, HalEmbedded } from "@app/types";
 
 import { exchangeToken } from "./token";
 
-type FetchOrgCtx = AuthApiCtx<
-  {},
+export const fetchOrganizations = authApi.get<
+  never,
   HalEmbedded<{ organizations: OrganizationResponse[] }>
->;
-export const fetchOrganizations = authApi.get<FetchOrgCtx>(
+>(
   "/organizations",
-  { saga: cacheTimer() },
-  function* onFetchOrgs(ctx, next) {
+  {
+    saga: cacheTimer(),
+  },
+  function* (ctx, next) {
     yield* next();
-    if (!ctx.json.ok) {
-      return;
-    }
-
-    const orgs = ctx.json.data._embedded.organizations.sort(
+    if (!ctx.json.ok) return;
+    const orgSelected = yield* select(selectOrganizationSelectedId);
+    const orgs = [...ctx.json.data._embedded.organizations].sort(
       (a, b) =>
         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
     );
-    if (orgs.length > 0) {
+
+    const foundOrg = orgs.find((o) => o.id === orgSelected);
+    if (!foundOrg) {
       ctx.actions.push(setOrganizationSelected(orgs[0].id));
     }
+  },
+);
+export const fetchReauthOrganizations = authApi.get<
+  never,
+  HalEmbedded<{ organizations: OrganizationResponse[] }>
+>(
+  "/reauthenticate_organizations",
+  { saga: cacheTimer() },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) return;
+    const organizations = ctx.json.data._embedded.organizations.map((o) => {
+      return { ...o, reauth_required: true };
+    });
+    ctx.json.data._embedded = {
+      organizations,
+    };
   },
 );
 
