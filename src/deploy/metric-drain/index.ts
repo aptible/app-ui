@@ -24,7 +24,11 @@ import {
 
 import { selectDeploy } from "../slice";
 
-export type MetricDrainType = "influxdb" | "influxdb_database" | "datadog";
+export type MetricDrainType =
+  | "influxdb"
+  | "influxdb_database"
+  | "datadog"
+  | "influxdb2";
 
 export interface DeployMetricDrainResponse {
   id: string;
@@ -179,13 +183,23 @@ interface CreateInfluxDbEnvMetricDrain extends CreateMetricDrainBase {
   dbId: string;
 }
 
-interface CreateInfluxDbMetricDrain extends CreateMetricDrainBase {
+interface CreateInfluxDb1MetricDrain extends CreateMetricDrainBase {
   drainType: "influxdb";
   protocol: "http" | "https";
   hostname: string;
   username: string;
   password: string;
   database: string;
+  port?: string;
+}
+
+interface CreateInfluxDb2MetricDrain extends CreateMetricDrainBase {
+  drainType: "influxdb2";
+  protocol: "http" | "https";
+  hostname: string;
+  org: string;
+  authToken: string;
+  bucket: string;
   port?: string;
 }
 
@@ -196,7 +210,8 @@ interface CreateDatabaseMetricDrain extends CreateMetricDrainBase {
 
 export type CreateMetricDrainProps =
   | CreateInfluxDbEnvMetricDrain
-  | CreateInfluxDbMetricDrain
+  | CreateInfluxDb1MetricDrain
+  | CreateInfluxDb2MetricDrain
   | CreateDatabaseMetricDrain;
 
 export const createMetricDrain = api.post<
@@ -225,6 +240,20 @@ export const createMetricDrain = api.post<
         username,
         password,
         database,
+      },
+    });
+  } else if (ctx.payload.drainType === "influxdb2") {
+    const { protocol, hostname, org, authToken, bucket } = ctx.payload;
+    const protoPort = protocol === "http" ? 80 : 443;
+    const port = ctx.payload.port || protoPort;
+    const address = `${protocol}://${hostname}:${port}`;
+    body = JSON.stringify({
+      ...preBody,
+      drain_configuration: {
+        address,
+        org,
+        authToken,
+        bucket,
       },
     });
   } else if (ctx.payload.drainType === "datadog") {
