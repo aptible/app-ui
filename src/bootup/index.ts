@@ -16,8 +16,8 @@ import { ApiGen } from "@app/types";
 
 export const bootup = thunks.create(
   "bootup",
-  function* onBootup(_, next): ApiGen {
-    const id = "bootup";
+  function* onBootup(ctx, next): ApiGen {
+    const id = ctx.name;
     yield* put(setLoaderStart({ id }));
     // wait for redux-persist to rehydrate redux store
     yield* take(REHYDRATE);

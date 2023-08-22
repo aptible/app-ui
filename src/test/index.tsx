@@ -141,7 +141,7 @@ export const waitForData = (
 export const waitForBootup = (store: Store<AppState>) =>
   waitForData(
     store,
-    (state) => selectLoaderById(state, { id: "bootup" }).isSuccess,
+    (state) => selectLoaderById(state, { id: `${bootup}` }).isSuccess,
   );
 
 export const waitForToken = (store: Store<AppState>) =>
