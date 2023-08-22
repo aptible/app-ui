@@ -72,7 +72,6 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
       </Td>
       <Td>{txt.placement}</Td>
       <Td>{endpoint.platform.toLocaleUpperCase()}</Td>
-      <Td>{txt.ipAllowlist}</Td>
       <Td>
         {requiresAcmeSetup(endpoint) ? (
           <Button onClick={acmeSetup}>Setup</Button>
@@ -134,7 +133,6 @@ const headers = [
   "Status",
   "Placement",
   "Platform",
-  "IP Filtering",
   "ACME Status",
 ];
 
