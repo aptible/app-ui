@@ -1,4 +1,3 @@
-import { ExternalLink } from "./external-link";
 import { IconGitBranch, IconGlobe } from "./icons";
 import { Pill } from "./pill";
 import { StatusBox } from "./status-box";
@@ -10,7 +9,6 @@ import {
   selectFirstEndpointByAppId,
   selectLatestDeployOp,
 } from "@app/deploy";
-import { selectLegacyDashboardUrl } from "@app/env";
 import { environmentAppsUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
@@ -74,7 +72,7 @@ export const ResourceGroupBox = ({
           {status}
 
           <Pill icon={<IconGlobe color="#595E63" variant="sm" />}>
-            <Link to={environmentAppsUrl(environment.id)} variant="info">
+            <Link to={environmentAppsUrl(environment.id)}>
               {env.handle}
             </Link>
           </Pill>
