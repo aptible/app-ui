@@ -67,7 +67,7 @@ const validators = {
   // influxdb2
   org: (p: CreateMetricDrainProps) => {
     if (p.drainType !== "influxdb2") return;
-    if (p.org === "") return "Must provide an organization";
+    if (p.org === "") return "Must provide an organization name";
   },
   authToken: (p: CreateMetricDrainProps) => {
     if (p.drainType !== "influxdb2") return;
@@ -373,7 +373,7 @@ export const CreateMetricDrainPage = () => {
               {drainType === "influxdb2" ? (
                 <>
                   <FormGroup
-                    label="Organization"
+                    label="InfluxDB Organization Name"
                     htmlFor="org"
                     feedbackMessage={errors.org}
                     feedbackVariant={errors.org ? "danger" : "info"}
