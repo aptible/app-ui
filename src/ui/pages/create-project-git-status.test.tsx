@@ -21,7 +21,7 @@ import {
   CREATE_PROJECT_GIT_STATUS_PATH,
   createProjectGitStatusUrl,
 } from "@app/routes";
-import { setupIntegrationTest, waitForBootup, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 import {
   fireEvent,
   render,
@@ -45,7 +45,6 @@ describe("CreateProjectGitStatusPage", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -103,7 +102,6 @@ describe("CreateProjectGitStatusPage", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -181,7 +179,6 @@ describe("CreateProjectGitStatusPage", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>

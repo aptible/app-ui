@@ -10,7 +10,7 @@ import {
   testRole,
 } from "@app/mocks";
 import { HOME_PATH } from "@app/routes";
-import { setupIntegrationTest, waitForBootup, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 import { render, screen } from "@testing-library/react";
 
 const PermsPage = () => {
@@ -35,7 +35,6 @@ describe("PermRequired", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -72,7 +71,6 @@ describe("PermRequired", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -107,7 +105,6 @@ describe("PermissionGate", () => {
       const { TestProvider, store } = setupIntegrationTest();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -123,7 +120,6 @@ describe("PermissionGate", () => {
       const { TestProvider, store } = setupIntegrationTest();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -142,7 +138,6 @@ describe("ButtonCreate", () => {
       const { TestProvider, store } = setupIntegrationTest();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -173,7 +168,6 @@ describe("ButtonCreate", () => {
       const { TestProvider, store } = setupIntegrationTest();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -191,7 +185,7 @@ describe("ButtonDestroy", () => {
   describe("when user cannot destroy resources", () => {
     it("should disable button", async () => {
       const { TestProvider, store } = setupIntegrationTest();
-      await waitForToken(store);
+      await waitForBootup(store);
 
       render(
         <TestProvider>
@@ -222,7 +216,6 @@ describe("ButtonDestroy", () => {
       const { TestProvider, store } = setupIntegrationTest();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>

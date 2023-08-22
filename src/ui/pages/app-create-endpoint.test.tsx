@@ -6,9 +6,7 @@ import { useParams } from "react-router";
 import {
   defaultDeployCertificate,
   defaultEndpointResponse,
-  hasDeployEnvironment,
   selectEndpointById,
-  selectEnvironmentById,
 } from "@app/deploy";
 import {
   createId,
@@ -24,12 +22,7 @@ import {
   ENDPOINT_DETAIL_PATH,
   appEndpointsUrl,
 } from "@app/routes";
-import {
-  setupIntegrationTest,
-  waitForBootup,
-  waitForData,
-  waitForToken,
-} from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 import { AppState } from "@app/types";
 
 import { AppCreateEndpointPage } from "./app-create-endpoint";
@@ -109,7 +102,6 @@ describe("AppCreateEndpointPage", () => {
       const { store, TestProvider } = setupTests();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -117,12 +109,7 @@ describe("AppCreateEndpointPage", () => {
         </TestProvider>,
       );
 
-      // we need to wait for accounts so we can do permission checks
-      await waitForData(store, (state) => {
-        return hasDeployEnvironment(
-          selectEnvironmentById(state, { id: `${testAccount.id}` }),
-        );
-      });
+      await waitForBootup(store);
 
       await screen.findByText(
         /This Endpoint will accept HTTP and HTTPS traffic/,
@@ -147,7 +134,6 @@ describe("AppCreateEndpointPage", () => {
       const { store, TestProvider } = setupTests();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -155,12 +141,7 @@ describe("AppCreateEndpointPage", () => {
         </TestProvider>,
       );
 
-      // we need to wait for accounts so we can do permission checks
-      await waitForData(store, (state) => {
-        return hasDeployEnvironment(
-          selectEnvironmentById(state, { id: `${testAccount.id}` }),
-        );
-      });
+      await waitForBootup(store);
 
       await screen.findByText(
         /This Endpoint will accept HTTP and HTTPS traffic/,
@@ -202,7 +183,6 @@ describe("AppCreateEndpointPage", () => {
       const { store, TestProvider } = setupTests();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -210,12 +190,7 @@ describe("AppCreateEndpointPage", () => {
         </TestProvider>,
       );
 
-      // we need to wait for accounts so we can do permission checks
-      await waitForData(store, (state) => {
-        return hasDeployEnvironment(
-          selectEnvironmentById(state, { id: `${testAccount.id}` }),
-        );
-      });
+      await waitForBootup(store);
 
       await screen.findByText(
         /This Endpoint will accept HTTP and HTTPS traffic/,
@@ -247,7 +222,6 @@ describe("AppCreateEndpointPage", () => {
       const { store, TestProvider } = setupTests();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -255,13 +229,7 @@ describe("AppCreateEndpointPage", () => {
         </TestProvider>,
       );
 
-      await waitForToken(store);
-      // we need to wait for accounts so we can do permission checks
-      await waitForData(store, (state) => {
-        return hasDeployEnvironment(
-          selectEnvironmentById(state, { id: `${testAccount.id}` }),
-        );
-      });
+      await waitForBootup(store);
 
       await screen.findByText(
         /This Endpoint will accept HTTP and HTTPS traffic/,
@@ -296,7 +264,6 @@ describe("AppCreateEndpointPage", () => {
       const { store, TestProvider } = setupTests();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -304,13 +271,7 @@ describe("AppCreateEndpointPage", () => {
         </TestProvider>,
       );
 
-      await waitForToken(store);
-      // we need to wait for accounts so we can do permission checks
-      await waitForData(store, (state) => {
-        return hasDeployEnvironment(
-          selectEnvironmentById(state, { id: `${testAccount.id}` }),
-        );
-      });
+      await waitForBootup(store);
 
       await screen.findByText(
         /This Endpoint will accept HTTP and HTTPS traffic/,

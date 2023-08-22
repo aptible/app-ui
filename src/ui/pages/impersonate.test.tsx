@@ -16,7 +16,7 @@ import {
 } from "@app/mocks";
 import { defaultOrgResponse } from "@app/organizations";
 import { HOME_PATH, IMPERSONATE_PATH, impersonateUrl } from "@app/routes";
-import { setupIntegrationTest, waitForBootup, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 import { TokenSuccessResponse, defaultTokenResponse } from "@app/token";
 import { UserResponse, defaultUserResponse } from "@app/users";
 
@@ -41,7 +41,6 @@ describe("when no email or org supplied", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
@@ -63,7 +62,6 @@ describe("when user is not superuser or has no read impersonation perms", () => 
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
@@ -91,7 +89,6 @@ describe("when user.read_only_impersonate", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
@@ -121,7 +118,6 @@ describe("when user.superuser", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
@@ -151,7 +147,6 @@ describe("when there is an email but no org", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -189,7 +184,6 @@ describe("when there is an email but no org", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
@@ -228,7 +222,6 @@ describe("when there is an org href but no email", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -266,7 +259,6 @@ describe("when there is an org href but no email", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>

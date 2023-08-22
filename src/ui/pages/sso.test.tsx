@@ -8,7 +8,7 @@ import {
   ssoFailureUrl,
   ssoUrl,
 } from "@app/routes";
-import { setupIntegrationTest, waitForBootup, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 
 import { SsoFailurePage, SsoLoginPage } from "./sso";
 
@@ -26,7 +26,6 @@ describe("SsoLoginPage", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
@@ -55,7 +54,6 @@ describe("SsoFailurePage", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>

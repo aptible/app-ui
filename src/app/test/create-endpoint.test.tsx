@@ -16,12 +16,7 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { appEndpointsUrl } from "@app/routes";
-import {
-  setupAppIntegrationTest,
-  waitForBootup,
-  waitForData,
-  waitForToken,
-} from "@app/test";
+import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { rest } from "msw";
 
 describe("Create Endpoint flow", () => {
@@ -60,7 +55,6 @@ describe("Create Endpoint flow", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(<App />);
 

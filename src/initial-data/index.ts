@@ -1,11 +1,4 @@
-import {
-  batchActions,
-  call,
-  put,
-  select,
-  setLoaderSuccess,
-  takeEvery,
-} from "@app/fx";
+import { all, call, select, setLoaderSuccess, takeEvery } from "@app/fx";
 
 import {
   AUTH_LOADER_ID,
@@ -26,28 +19,24 @@ import {
 import { selectOrganizationSelected } from "@app/organizations";
 import { AnyAction } from "@app/types";
 import { fetchUsers, selectCurrentUserId } from "@app/users";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectLoadersByIds } from "saga-query";
 
 export function* onFetchInitData() {
   yield* call(fetchOrganizations.run, fetchOrganizations());
   const org = yield* select(selectOrganizationSelected);
   const userId = yield* select(selectCurrentUserId);
-  yield* put(
-    batchActions([
-      fetchUsers({ orgId: org.id }),
-      fetchRoles({ orgId: org.id }),
-      fetchCurrentUserRoles({ userId: userId }),
-      fetchAllStacks(),
-      fetchAllEnvironments(),
-      fetchAllApps(),
-      fetchAllDatabases(),
-      fetchAllLogDrains(),
-      fetchAllMetricDrains(),
-      fetchAllServices(),
-      fetchAllEndpoints(),
-    ]),
-  );
+  yield* all([
+    call(fetchUsers.run, fetchUsers({ orgId: org.id })),
+    call(fetchRoles.run, fetchRoles({ orgId: org.id })),
+    call(fetchCurrentUserRoles.run, fetchCurrentUserRoles({ userId: userId })),
+    call(fetchAllStacks.run, fetchAllStacks()),
+    call(fetchAllEnvironments.run, fetchAllEnvironments()),
+    call(fetchAllApps.run, fetchAllApps()),
+    call(fetchAllDatabases.run, fetchAllDatabases()),
+    call(fetchAllLogDrains.run, fetchAllLogDrains()),
+    call(fetchAllMetricDrains.run, fetchAllMetricDrains()),
+    call(fetchAllServices.run, fetchAllServices()),
+    call(fetchAllEndpoints.run, fetchAllServices()),
+  ]);
 }
 
 function* watchFetchInitData() {
@@ -61,10 +50,3 @@ function* watchFetchInitData() {
 }
 
 export const sagas = { watchFetchInitData };
-
-export const selectBootupLoaded = createSelector(
-  selectLoadersByIds,
-  (loaders) => {
-    return loaders.every((loader) => loader.isSuccess || loader.isError);
-  },
-);

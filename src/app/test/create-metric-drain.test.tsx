@@ -10,12 +10,7 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { createMetricDrainUrl } from "@app/routes";
-import {
-  setupAppIntegrationTest,
-  waitForBootup,
-  waitForData,
-  waitForToken,
-} from "@app/test";
+import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 
 describe("Create Metric Drain flow", () => {
   describe("creating a datadog metric drain", () => {
@@ -32,7 +27,6 @@ describe("Create Metric Drain flow", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(<App />);
 
@@ -79,7 +73,6 @@ describe("Create Metric Drain flow", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(<App />);
 
@@ -131,7 +124,6 @@ describe("Create Metric Drain flow", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(<App />);
 

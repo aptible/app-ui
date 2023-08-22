@@ -10,12 +10,7 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { environmentSettingsUrl } from "@app/routes";
-import {
-  setupAppIntegrationTest,
-  waitForBootup,
-  waitForEnv,
-  waitForToken,
-} from "@app/test";
+import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 
 describe("EnvironmentSettingsPage", () => {
   describe("when the environment still has resources", () => {
@@ -40,11 +35,8 @@ describe("EnvironmentSettingsPage", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(<App />);
-
-      await waitForEnv(store, testDestroyAccount.id);
 
       await screen.findByText(/You must first deprovision any existing/);
       expect(
@@ -77,11 +69,8 @@ describe("EnvironmentSettingsPage", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(<App />);
-
-      await waitForEnv(store, testDestroyAccount.id);
 
       expect(
         screen.queryByText(/You must first deprovision any existing/),
@@ -93,9 +82,7 @@ describe("EnvironmentSettingsPage", () => {
       const input = await screen.findByRole("textbox", {
         name: /delete-confirm/,
       });
-      await act(async () => {
-        await userEvent.type(input, testDestroyAccount.handle);
-      });
+      await act(() => userEvent.type(input, testDestroyAccount.handle));
 
       const btn = await screen.findByRole("button", {
         name: /Deprovision Environment/,

@@ -1,4 +1,4 @@
-import { prepareStore } from "@app/fx";
+import { prepareStore, selectLoaderById } from "@app/fx";
 import { Store, configureStore } from "@reduxjs/toolkit";
 import { act, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
@@ -14,7 +14,6 @@ import {
 } from "@app/app";
 import { bootup } from "@app/bootup";
 import { hasDeployEnvironment, selectEnvironmentById } from "@app/deploy";
-import { selectBootupLoaded } from "@app/initial-data";
 import { testEnv } from "@app/mocks";
 import { resetReducer } from "@app/reset-store";
 import type { AppState } from "@app/types";
@@ -140,19 +139,9 @@ export const waitForData = (
   });
 
 export const waitForBootup = (store: Store<AppState>) =>
-  waitForData(store, (state) =>
-    selectBootupLoaded(state, {
-      ids: [
-        "fetch-all-stacks",
-        "fetch-all-envs",
-        "fetch-all-apps",
-        "fetch-all-databases",
-        "fetch-all-log-drains",
-        "fetch-all-metric-drains",
-        "fetch-all-services",
-        "fetch-all-endpoints",
-      ],
-    }),
+  waitForData(
+    store,
+    (state) => selectLoaderById(state, { id: "bootup" }).isSuccess,
   );
 
 export const waitForToken = (store: Store<AppState>) =>

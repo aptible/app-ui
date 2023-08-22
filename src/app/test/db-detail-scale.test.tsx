@@ -16,7 +16,6 @@ import {
   waitForBootup,
   waitForData,
   waitForEnv,
-  waitForToken,
 } from "@app/test";
 
 import {
@@ -48,7 +47,6 @@ describe("DatabaseScalePage", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(<App />);
 

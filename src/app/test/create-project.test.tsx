@@ -11,11 +11,7 @@ import {
   testEnv,
   testUserVerified,
 } from "@app/mocks";
-import {
-  setupAppIntegrationTest,
-  waitForBootup,
-  waitForToken,
-} from "@app/test";
+import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 
 describe("Create project flow", () => {
   describe("existing user with ssh keys", () => {
@@ -52,7 +48,6 @@ describe("Create project flow", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(<App />);
 

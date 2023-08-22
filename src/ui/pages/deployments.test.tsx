@@ -14,7 +14,7 @@ import {
   testOrg,
   testStack,
 } from "@app/mocks";
-import { setupIntegrationTest, waitForBootup, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 
 describe("Deployments page", () => {
   it("should show last deployment status", async () => {
@@ -28,7 +28,6 @@ describe("Deployments page", () => {
     const { store, TestProvider } = setupIntegrationTest();
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
@@ -36,7 +35,7 @@ describe("Deployments page", () => {
       </TestProvider>,
     );
 
-    const btn = await screen.findByRole("link");
+    const btn = await screen.findByRole("link", { name: /Deploy/ });
     expect(btn).toBeInTheDocument();
     expect(await screen.findByText(testAppDeployed.handle)).toBeInTheDocument();
     const status = await screen.findByRole("status");
@@ -110,7 +109,6 @@ describe("Deployments page", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
@@ -216,7 +214,6 @@ describe("Deployments page", () => {
     const { store, TestProvider } = setupIntegrationTest();
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
@@ -224,7 +221,7 @@ describe("Deployments page", () => {
       </TestProvider>,
     );
 
-    const btn = await screen.findByRole("link");
+    const btn = await screen.findByRole("link", { name: /Deploy/ });
     expect(btn).toBeInTheDocument();
     expect(await screen.findByText(apps[0].handle)).toBeInTheDocument();
     expect(await screen.findByText(apps[1].handle)).toBeInTheDocument();

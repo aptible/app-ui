@@ -19,12 +19,7 @@ import {
   ENDPOINT_DETAIL_PATH,
   databaseEndpointCreateUrl,
 } from "@app/routes";
-import {
-  setupIntegrationTest,
-  waitForBootup,
-  waitForEnv,
-  waitForToken,
-} from "@app/test";
+import { setupIntegrationTest, waitForBootup, waitForEnv } from "@app/test";
 import { AppState } from "@app/types";
 
 import { DatabaseCreateEndpointPage } from "./db-create-endpoint";
@@ -90,7 +85,6 @@ describe("DatabaseCreateEndpointPage", () => {
       const { store, TestProvider } = setupTests();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>
@@ -122,7 +116,6 @@ describe("DatabaseCreateEndpointPage", () => {
       const { store, TestProvider } = setupTests();
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(
         <TestProvider>

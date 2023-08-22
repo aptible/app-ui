@@ -12,11 +12,7 @@ import {
   testEnv,
   testUserVerified,
 } from "@app/mocks";
-import {
-  setupAppIntegrationTest,
-  waitForBootup,
-  waitForToken,
-} from "@app/test";
+import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 import { rest } from "msw";
 
 describe("Create App flow", () => {
@@ -56,7 +52,6 @@ describe("Create App flow", () => {
       });
 
       await waitForBootup(store);
-      await waitForToken(store);
 
       render(<App />);
 

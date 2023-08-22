@@ -8,12 +8,7 @@ import {
   testBackupRp,
 } from "@app/mocks";
 import { ENVIRONMENT_BACKUPS_PATH, environmentBackupsUrl } from "@app/routes";
-import {
-  setupIntegrationTest,
-  waitForBootup,
-  waitForData,
-  waitForToken,
-} from "@app/test";
+import { setupIntegrationTest, waitForBootup, waitForData } from "@app/test";
 
 import { EnvironmentBackupsPage } from "./environment-detail-backups";
 import { hasDeployBackupRp, selectBackupRpById } from "@app/deploy";
@@ -27,7 +22,6 @@ describe("EnvironmentBackupsPage", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
@@ -63,7 +57,6 @@ describe("EnvironmentBackupsPage", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(
       <TestProvider>
