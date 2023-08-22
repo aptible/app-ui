@@ -6,9 +6,9 @@ import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import {
   deprovisionEnvironment,
   fetchDatabaseBackupsByEnvironment,
+  fetchEnvLogDrains,
+  fetchEnvMetricDrains,
   fetchEnvironmentById,
-  fetchLogDrains,
-  fetchMetricDrains,
   selectBackupsByEnvId,
   selectEnvironmentById,
   selectLogDrainsByEnvId,
@@ -120,8 +120,8 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
   const navigate = useNavigate();
   useQuery(fetchEnvironmentById({ id: envId }));
   useQuery(fetchDatabaseBackupsByEnvironment({ id: envId }));
-  useQuery(fetchLogDrains({ id: envId }));
-  useQuery(fetchMetricDrains({ id: envId }));
+  useQuery(fetchEnvLogDrains({ id: envId }));
+  useQuery(fetchEnvMetricDrains({ id: envId }));
 
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),

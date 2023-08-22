@@ -15,8 +15,8 @@ import {
 import { EmptyResourcesTable } from "../shared/empty-resources-table";
 import { prettyDateRelative } from "@app/date";
 import {
-  fetchLogDrains,
-  fetchMetricDrains,
+  fetchEnvLogDrains,
+  fetchEnvMetricDrains,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
 } from "@app/deploy";
@@ -123,7 +123,7 @@ const LogDrainLastUpdatedCell = ({
 const logDrainsHeaders = ["Status", "Handle", "Sources", "Last Updated"];
 
 const LogDrainsSection = ({ id }: { id: string }) => {
-  const query = useQuery(fetchLogDrains({ id }));
+  const query = useQuery(fetchEnvLogDrains({ id }));
 
   const logDrains = useSelector((s: AppState) =>
     selectLogDrainsByEnvId(s, { envId: id }),
@@ -221,7 +221,7 @@ const MetricDrainLastUpdatedCell = ({
 const metricDrainsHeaders = ["Status", "Handle", "Last Updated"];
 
 const MetricDrainsSection = ({ id }: { id: string }) => {
-  const query = useQuery(fetchMetricDrains({ id }));
+  const query = useQuery(fetchEnvMetricDrains({ id }));
 
   const metricDrains = useSelector((s: AppState) =>
     selectMetricDrainsByEnvId(s, { envId: id }),

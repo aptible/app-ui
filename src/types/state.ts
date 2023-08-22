@@ -58,6 +58,7 @@ export interface User {
   username: string;
   verified: boolean;
   currentOtpId: string;
+  selectedOrganizationId: string;
 }
 
 export interface Token {
@@ -85,6 +86,8 @@ export interface AuthApiError {
 export interface Organization {
   id: string;
   name: string;
+  updatedAt: string;
+  reauthRequired: boolean;
 }
 
 export interface U2fDevice {

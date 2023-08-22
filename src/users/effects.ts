@@ -1,19 +1,28 @@
-import { Next, select } from "@app/fx";
+import { Next, call, put, select } from "@app/fx";
 
 import { authApi, cacheTimer, elevetatedMdw } from "@app/api";
 import { selectOrigin } from "@app/env";
+import { setOrganizationSelected } from "@app/organizations";
 import type { ApiGen, AuthApiCtx } from "@app/types";
 
+import { deserializeUser } from "./serializers";
 import type { CreateUserForm, UserResponse } from "./types";
 
 interface UserBase {
   userId: string;
 }
 
-export const fetchUser = authApi.get<UserBase>(
+export const fetchUser = authApi.get<UserBase, UserResponse>(
   "/users/:userId",
   { saga: cacheTimer() },
-  elevetatedMdw,
+  function* (ctx, next) {
+    yield* call(elevetatedMdw, ctx, next);
+    if (!ctx.json.ok) return;
+    const user = deserializeUser(ctx.json.data);
+    if (user.selectedOrganizationId) {
+      ctx.actions.push(setOrganizationSelected(user.selectedOrganizationId));
+    }
+  },
 );
 export const fetchUsers = authApi.get<{ orgId: string }>(
   "/organizations/:orgId/users",
@@ -74,6 +83,17 @@ function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
 export const updateUser = authApi.patch<PatchUser>(
   "/users/:userId",
   elevatedUpdate,
+);
+
+export const updateUserOrg = authApi.put<{ userId: string; orgId: string }>(
+  ["/users/:userId", "org"],
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({ selected_organization: ctx.payload.orgId }),
+    });
+    yield* put(setOrganizationSelected(ctx.payload.orgId));
+    yield* next();
+  },
 );
 
 interface UpdateEmail {

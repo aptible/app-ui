@@ -3,10 +3,10 @@ import { put, select } from "saga-query";
 
 import { thunks } from "@app/api";
 import {
-  selectAppsAsList,
-  selectDatabasesAsList,
-  selectEnvironmentsAsList,
-  selectStacksAsList,
+  selectAppsByOrgAsList,
+  selectDatabasesByOrgAsList,
+  selectEnvironmentsByOrgAsList,
+  selectStacksByOrgAsList,
 } from "@app/deploy";
 import { createReducerMap, createTable } from "@app/slice-helpers";
 import {
@@ -42,10 +42,10 @@ export interface DbItem extends AbstractResourceItem {
 export type ResourceItem = StackItem | EnvItem | AppItem | DbItem;
 
 export const selectAllResourcesAsList = createSelector(
-  selectStacksAsList,
-  selectEnvironmentsAsList,
-  selectAppsAsList,
-  selectDatabasesAsList,
+  selectStacksByOrgAsList,
+  selectEnvironmentsByOrgAsList,
+  selectAppsByOrgAsList,
+  selectDatabasesByOrgAsList,
   (stacks, envs, apps, dbs): ResourceItem[] => {
     const resources: ResourceItem[] = [];
     stacks.forEach((stack) => {

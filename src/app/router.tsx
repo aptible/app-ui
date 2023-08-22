@@ -35,6 +35,7 @@ import {
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
+  DatabaseCreateEndpointPage,
   DatabaseDetailLayout,
   DatabaseEndpointsPage,
   DatabaseScalePage,
@@ -70,6 +71,7 @@ import {
   NotFoundPage,
   OpDetailLayout,
   OpDetailPage,
+  OrgPickerPage,
   OtpRecoveryCodesPage,
   OtpSetupPage,
   PlansPage,
@@ -127,6 +129,11 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.SEARCH_PATH,
         element: <SearchPage />,
+      },
+
+      {
+        path: routes.ORG_PICKER_PATH,
+        element: <OrgPickerPage />,
       },
 
       {
@@ -247,6 +254,10 @@ export const appRoutes: RouteObject[] = [
               {
                 index: true,
                 element: <DatabaseEndpointsPage />,
+              },
+              {
+                path: routes.DATABASE_ENDPOINT_CREATE_PATH,
+                element: <DatabaseCreateEndpointPage />,
               },
               {
                 path: routes.DATABASE_ENDPOINTS_PATH,

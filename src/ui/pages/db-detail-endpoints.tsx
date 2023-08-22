@@ -1,4 +1,3 @@
-import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -7,25 +6,11 @@ import {
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentServices,
   selectDatabaseById,
-  selectEndpointsByServiceIds,
 } from "@app/deploy";
-import { AppState, DeployDatabase } from "@app/types";
+import { useQuery } from "@app/fx";
+import { AppState } from "@app/types";
 
-import { DetailPageSections, EndpointsView, LoadResources } from "../shared";
-
-const DatabaseEndpointsPageContent = ({
-  database,
-}: { database: DeployDatabase }) => {
-  const endpoints = useSelector((s: AppState) =>
-    selectEndpointsByServiceIds(s, { ids: [database.serviceId] }),
-  );
-
-  return (
-    <DetailPageSections>
-      <EndpointsView endpoints={endpoints} parent="database" />
-    </DetailPageSections>
-  );
-};
+import { DatabaseEndpointsOverview, LoadResources } from "../shared";
 
 export function DatabaseEndpointsPage() {
   const { id = "" } = useParams();
@@ -38,7 +23,7 @@ export function DatabaseEndpointsPage() {
 
   return (
     <LoadResources query={query} isEmpty={false}>
-      <DatabaseEndpointsPageContent database={database} />
+      <DatabaseEndpointsOverview database={database} />
     </LoadResources>
   );
 }

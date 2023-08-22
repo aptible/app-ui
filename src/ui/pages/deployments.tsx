@@ -121,12 +121,10 @@ export const DeploymentsPage = ({
 
 export const DeploymentsPageWithMenus = () => (
   <MenuWrappedPage>
-    <div>
-      <DeploymentsPage
-        headerStyle={tokens.type.h2}
-        leftAlignTitle
-        showDeployButton={false}
-      />
-    </div>
+    <DeploymentsPage
+      headerStyle={tokens.type.h2}
+      leftAlignTitle
+      showDeployButton={false}
+    />
   </MenuWrappedPage>
 );

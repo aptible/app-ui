@@ -524,6 +524,8 @@ export const getResourceUrl = ({
       return databaseDetailUrl(resourceId);
     case "vhost":
       return endpointDetailUrl(resourceId);
+    case "metric_drain":
+    case "log_drain":
     case "service":
       return url;
     default:

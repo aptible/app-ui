@@ -6,7 +6,12 @@ import {
   createReducerMap,
   createTable,
 } from "@app/slice-helpers";
-import { AppState, LinkResponse, Organization } from "@app/types";
+import {
+  AppState,
+  LinkResponse,
+  Organization,
+  excludesFalse,
+} from "@app/types";
 
 export interface OrganizationResponse {
   address: string;
@@ -21,6 +26,7 @@ export interface OrganizationResponse {
   state: string;
   updated_at: string;
   zip: string;
+  reauth_required?: boolean;
   _links: {
     billing_detail: LinkResponse;
     invitations: LinkResponse;
@@ -80,8 +86,19 @@ export const { set: setOrganizationSelected } = organizationSelected.actions;
 
 export const reducers = createReducerMap(organizations, organizationSelected);
 
-const { selectTable: selectOrganizations } = organizations.getSelectors(
+const selectors = organizations.getSelectors(
   (s: AppState) => s[ORGANIZATIONS_NAME],
+);
+export const selectOrganizationsAsList = createSelector(
+  selectors.selectTable,
+  (orgMap) => {
+    return Object.values(orgMap)
+      .filter(excludesFalse)
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      );
+  },
 );
 
 export const selectOrganizationSelectedId = (s: AppState) =>
@@ -92,26 +109,30 @@ export const defaultOrganization = (
 ): Organization => ({
   id: "",
   name: "",
+  updatedAt: new Date().toISOString(),
+  reauthRequired: false,
   ...o,
 });
 export const hasOrganization = (o: Organization): boolean => !!o.id;
 
 const initOrg = defaultOrganization();
 export const selectOrganizationSelected = createSelector(
-  selectOrganizations,
+  selectOrganizationsAsList,
   selectOrganizationSelectedId,
   (orgs, id): Organization => {
-    const orgList = Object.values(orgs);
-    if (orgList.length === 0) {
+    if (orgs.length === 0) {
+      return initOrg;
+    }
+    if (!id) {
       return initOrg;
     }
 
-    const org = orgs[id];
+    const org = orgs.find((o) => o.id === id);
     if (org) {
       return org;
     }
 
-    return orgList[0] || initOrg;
+    return initOrg;
   },
 );
 
@@ -119,6 +140,8 @@ function deserializeOrganization(o: OrganizationResponse): Organization {
   return {
     id: o.id,
     name: o.name,
+    updatedAt: o.updated_at,
+    reauthRequired: o.reauth_required || false,
   };
 }
 

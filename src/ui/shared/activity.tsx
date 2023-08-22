@@ -57,6 +57,8 @@ const getImageForResourceType = (resourceType: ResourceType) => {
       "database",
       "ephemeral_session",
       "image",
+      "log_drain",
+      "metric_drain",
       "plan",
       "service",
       "unknown",

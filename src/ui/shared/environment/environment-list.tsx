@@ -17,6 +17,7 @@ import type { AppState, DeployEnvironment } from "@app/types";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { ButtonIcon } from "../button";
+import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
@@ -254,19 +255,24 @@ export function EnvironmentList() {
     selectEnvironmentsForTableSearch(s, { search }),
   );
 
+  const titleBar = (
+    <EnvsResourceHeaderTitleBar
+      envs={environments}
+      search={search}
+      onChange={onChange}
+    />
+  );
+
   return (
     <LoadResources
+      empty={
+        <EmptyResourcesTable headers={environmentHeaders} titleBar={titleBar} />
+      }
       query={query}
       isEmpty={environments.length === 0 && search === ""}
     >
       <ResourceListView
-        header={
-          <EnvsResourceHeaderTitleBar
-            envs={environments}
-            search={search}
-            onChange={onChange}
-          />
-        }
+        header={titleBar}
         tableHeader={
           <TableHead
             headers={environmentHeaders}

@@ -10,7 +10,7 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { createMetricDrainUrl } from "@app/routes";
-import { setupAppIntegrationTest, waitForData, waitForToken } from "@app/test";
+import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 
 describe("Create Metric Drain flow", () => {
   describe("creating a datadog metric drain", () => {
@@ -26,9 +26,10 @@ describe("Create Metric Drain flow", () => {
         initEntries: [createMetricDrainUrl(`${testAccount.id}`)],
       });
 
+      await waitForBootup(store);
+
       render(<App />);
 
-      await waitForToken(store);
       // we need to wait for accounts so we can do permission checks
       await waitForData(store, (state) => {
         return hasDeployEnvironment(
@@ -71,9 +72,10 @@ describe("Create Metric Drain flow", () => {
         initEntries: [createMetricDrainUrl(`${testAccount.id}`)],
       });
 
+      await waitForBootup(store);
+
       render(<App />);
 
-      await waitForToken(store);
       // we need to wait for accounts so we can do permission checks
       await waitForData(store, (state) => {
         return hasDeployEnvironment(
@@ -121,9 +123,10 @@ describe("Create Metric Drain flow", () => {
         initEntries: [createMetricDrainUrl(`${testAccount.id}`)],
       });
 
+      await waitForBootup(store);
+
       render(<App />);
 
-      await waitForToken(store);
       // we need to wait for accounts so we can do permission checks
       await waitForData(store, (state) => {
         return hasDeployEnvironment(

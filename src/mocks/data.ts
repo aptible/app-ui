@@ -82,6 +82,33 @@ export const testOrg = defaultOrgResponse({
   name: createText("org"),
   id: `${createId()}`,
 });
+export const testOrgSpecial = defaultOrgResponse({
+  id: `${createId()}`,
+  name: "Wow Org",
+  updated_at: new Date("2023-01-01").toISOString(),
+});
+export const testOrgReauth = defaultOrgResponse({
+  id: `${createId()}`,
+  name: "Reauth Org",
+  updated_at: new Date("2023-01-01").toISOString(),
+});
+export const testUserOrgSelected = defaultUserResponse({
+  id: createId(),
+  email: "special@aptible.com",
+  verified: true,
+  _links: {
+    current_otp_configuration: defaultHalHref(),
+    email_verification_challenges: defaultHalHref(),
+    roles: defaultHalHref(),
+    self: defaultHalHref(),
+    ssh_keys: defaultHalHref(),
+    u2f_devices: defaultHalHref(),
+    selected_organization: defaultHalHref(
+      `${testEnv.authUrl}/organizations/${testOrgSpecial.id}`,
+    ),
+  },
+});
+
 export const testStack = defaultStackResponse({
   id: createId(),
   name: createText("stack"),
@@ -109,6 +136,7 @@ export const testAccount = defaultEnvResponse({
   _embedded: {
     permissions: [
       defaultPermissionResponse({
+        id: `${createId()}`,
         scope: "deploy",
         _links: {
           account: defaultHalHref(
@@ -133,6 +161,7 @@ export const testDestroyAccount = defaultEnvResponse({
   _embedded: {
     permissions: [
       defaultPermissionResponse({
+        id: `${createId()}`,
         scope: "destroy",
         _links: {
           account: defaultHalHref(
