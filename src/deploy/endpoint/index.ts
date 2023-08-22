@@ -32,9 +32,20 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 
-import { selectAppById, selectAppsByEnvId } from "../app";
+import {
+  findAppById,
+  selectAppById,
+  selectApps,
+  selectAppsByEnvId,
+  selectAppsByOrgAsList,
+} from "../app";
 import { createCertificate } from "../certificate";
-import { selectDatabasesByEnvId } from "../database";
+import {
+  findDatabaseById,
+  selectDatabases,
+  selectDatabasesByOrgAsList,
+} from "../database";
+import { selectEnvironmentsByOrgAsList } from "../environment";
 import { selectDeploy } from "../slice";
 
 export interface DeployEndpointResponse {
@@ -227,32 +238,210 @@ export const selectFirstEndpointByAppId = createSelector(
   },
 );
 
+const selectEnvironmentToServiceMap = createSelector(
+  selectAppsByOrgAsList,
+  selectDatabasesByOrgAsList,
+  (apps, databases) => {
+    const envToServiceIds: Record<string, Set<string>> = {};
+    apps.forEach((app) => {
+      if (!Object.hasOwn(envToServiceIds, app.environmentId)) {
+        envToServiceIds[app.environmentId] = new Set<string>();
+      }
+      app.serviceIds.forEach((id) => {
+        envToServiceIds[app.environmentId].add(id);
+      });
+    });
+
+    databases.forEach((db) => {
+      if (!Object.hasOwn(envToServiceIds, db.environmentId)) {
+        envToServiceIds[db.environmentId] = new Set<string>();
+      }
+      envToServiceIds[db.environmentId].add(db.serviceId);
+    });
+
+    return envToServiceIds;
+  },
+);
+
+const selectServiceToAppMap = createSelector(selectAppsByOrgAsList, (apps) => {
+  const serviceToAppId: Record<string, string> = {};
+  apps.forEach((app) => {
+    app.serviceIds.forEach((serviceId) => {
+      serviceToAppId[serviceId] = app.id;
+    });
+  });
+
+  return serviceToAppId;
+});
+
+const selectServiceToDbMap = createSelector(
+  selectDatabasesByOrgAsList,
+  (dbs) => {
+    const serviceToDbId: Record<string, string> = {};
+    dbs.forEach((db) => {
+      serviceToDbId[db.serviceId] = db.id;
+    });
+
+    return serviceToDbId;
+  },
+);
+
 export const selectEndpointsByEnvironmentId = createSelector(
-  selectAppsByEnvId,
-  selectDatabasesByEnvId,
+  selectEnvironmentToServiceMap,
   selectEndpointsAsList,
   (_: AppState, p: { envId: string }) => p.envId,
-  (apps, databases, endpoints, envId) => {
-    const serviceIdsUsedInAppsAndDatabases: string[] = [
-      // one app can have multiple services, so pull those out
-      ...apps
-        .filter((app) => app.environmentId === envId)
-        .map((app) => app.serviceIds),
-      databases
-        .filter((database) => database.environmentId === envId)
-        .map((db) => db.serviceId),
-    ].reduce((acc, elem) => acc.concat(...elem));
-    return endpoints.filter((endpoint) =>
-      serviceIdsUsedInAppsAndDatabases.includes(endpoint.serviceId),
+  (envToServiceMap, enps, envId) =>
+    enps.filter((enp) => envToServiceMap[envId].has(enp.serviceId)),
+);
+
+export const selectEndpointsByOrgAsList = createSelector(
+  selectEnvironmentToServiceMap,
+  selectEndpointsAsList,
+  selectEnvironmentsByOrgAsList,
+  (envToServiceMap, enps, envs) => {
+    return enps.filter((enp) =>
+      envs.some((env) => envToServiceMap[env.id]?.has(enp.serviceId)),
     );
   },
 );
 
-export const selectEndpointByEnvironmentAndCertificateId = createSelector(
-  selectEndpointsByEnvironmentId,
-  (_: AppState, p: { certificateId: string }) => p.certificateId,
-  (endpoints, certificateId) =>
-    endpoints.filter((endpoint) => endpoint.certificateId === certificateId),
+export interface DeployEndpointRow extends DeployEndpoint {
+  resourceType: "database" | "app" | "unknown";
+  resourceId: string;
+  resourceHandle: string;
+}
+
+export const selectEndpointsForTable = createSelector(
+  selectEndpointsByOrgAsList,
+  selectServiceToAppMap,
+  selectServiceToDbMap,
+  selectApps,
+  selectDatabases,
+  (enps, serviceToAppMap, serviceToDbMap, apps, dbs) =>
+    enps
+      .map((enp): DeployEndpointRow => {
+        const appId = serviceToAppMap[enp.serviceId];
+        if (appId) {
+          const app = findAppById(apps, { id: appId });
+          return {
+            ...enp,
+            resourceType: "app",
+            resourceHandle: app.handle,
+            resourceId: app.id,
+          };
+        }
+
+        const dbId = serviceToDbMap[enp.serviceId];
+        if (dbId) {
+          const app = findDatabaseById(dbs, { id: dbId });
+          return {
+            ...enp,
+            resourceType: "database",
+            resourceHandle: app.handle,
+            resourceId: app.id,
+          };
+        }
+
+        return {
+          ...enp,
+          resourceType: "unknown",
+          resourceHandle: "",
+          resourceId: "",
+        };
+      })
+      .sort((a, b) => getEndpointUrl(a).localeCompare(getEndpointUrl(b))),
+);
+
+const computeSearchMatch = (
+  enp: DeployEndpointRow,
+  search: string,
+): boolean => {
+  if (search === "") {
+    return true;
+  }
+  const url = getEndpointUrl(enp);
+  const handle = enp.resourceHandle.toLocaleLowerCase();
+  const placement = enp.internal ? "private" : "public";
+  const placementAlt = enp.internal ? "internal" : "external";
+
+  const urlMatch = url.includes(search);
+  const handleMatch = handle.includes(search);
+  const placementMatch =
+    placement.includes(search) || placementAlt.includes(search);
+  const idMatch = search === enp.id;
+
+  return urlMatch || handleMatch || placementMatch || idMatch;
+};
+
+export const selectEndpointsForTableSearch = createSelector(
+  selectEndpointsForTable,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (enps, search): DeployEndpointRow[] => {
+    if (search === "") {
+      return enps;
+    }
+
+    return enps.filter((enp) => computeSearchMatch(enp, search));
+  },
+);
+
+export const selectEndpointsByEnvIdForTableSearch = createSelector(
+  selectEndpointsForTable,
+  selectEnvironmentToServiceMap,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: AppState, props: { envId: string }) => props.envId,
+  (enps, envToServiceMap, search, envId): DeployEndpointRow[] => {
+    return enps.filter((enp) => {
+      const serviceIds = envToServiceMap[envId];
+      const envIdMatch = serviceIds?.has(enp.serviceId);
+      if (!envIdMatch) return false;
+      const searchMatch = computeSearchMatch(enp, search);
+      return searchMatch;
+    });
+  },
+);
+
+export const selectEndpointsByAppIdForTableSearch = createSelector(
+  selectEndpointsForTable,
+  selectServiceToAppMap,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: AppState, props: { appId: string }) => props.appId,
+  (enps, serviceToAppMap, search, appId): DeployEndpointRow[] => {
+    return enps.filter((enp) => {
+      const foundAppId = serviceToAppMap[enp.serviceId];
+      if (foundAppId !== appId) return false;
+      const searchMatch = computeSearchMatch(enp, search);
+      return searchMatch;
+    });
+  },
+);
+
+export const selectEndpointsByDbIdForTableSearch = createSelector(
+  selectEndpointsForTable,
+  selectServiceToDbMap,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: AppState, props: { dbId: string }) => props.dbId,
+  (enps, serviceToDbMap, search, dbId): DeployEndpointRow[] => {
+    return enps.filter((enp) => {
+      const foundDbId = serviceToDbMap[enp.serviceId];
+      if (foundDbId !== dbId) return false;
+      const searchMatch = computeSearchMatch(enp, search);
+      return searchMatch;
+    });
+  },
+);
+
+export const selectEndpointsByCertIdForTableSearch = createSelector(
+  selectEndpointsForTable,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: AppState, props: { certId: string }) => props.certId,
+  (enps, search, certId): DeployEndpointRow[] => {
+    return enps.filter((enp) => {
+      if (certId !== enp.certificateId) return false;
+      const searchMatch = computeSearchMatch(enp, search);
+      return searchMatch;
+    });
+  },
 );
 
 export const selectEndpointsByCertificateId = createSelector(
