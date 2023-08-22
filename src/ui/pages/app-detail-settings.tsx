@@ -16,8 +16,8 @@ import {
 import {
   deprovisionApp,
   fetchApp,
-  fetchLogDrains,
-  fetchMetricDrains,
+  fetchEnvLogDrains,
+  fetchEnvMetricDrains,
   selectAppById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
@@ -49,8 +49,8 @@ export const AppSettingsPage = () => {
     selectMetricDrainsByEnvId(s, { envId: app.environmentId }),
   );
 
-  useQuery(fetchLogDrains({ id: app.environmentId }));
-  useQuery(fetchMetricDrains({ id: app.environmentId }));
+  useQuery(fetchEnvLogDrains({ id: app.environmentId }));
+  useQuery(fetchEnvMetricDrains({ id: app.environmentId }));
 
   const drains: (DeployLogDrain | DeployMetricDrain)[] =
     [...logDrains, ...metricDrains] || [];

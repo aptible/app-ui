@@ -36,6 +36,12 @@ export function* onFetchInitData() {
       fetchAllEnvironments(),
       fetchAllApps(),
       fetchAllDatabases(),
+      // TODO - currently commented because test suite can't handle
+      //        this many changes without races
+      // fetchAllLogDrains(),
+      // fetchAllMetricDrains(),
+      // fetchAllServices(),
+      // fetchAllEndpoints(),
     ]),
   );
 }

@@ -592,8 +592,14 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/accounts/:id/backups`, async (_, res, ctx) => {
     return res(ctx.json({ backups: [] }));
   }),
+  rest.get(`${testEnv.apiUrl}/log_drains`, async (_, res, ctx) => {
+    return res(ctx.json({ log_drains: [] }));
+  }),
   rest.get(`${testEnv.apiUrl}/accounts/:id/log_drains`, async (_, res, ctx) => {
     return res(ctx.json({ log_drains: [] }));
+  }),
+  rest.get(`${testEnv.apiUrl}/metric_drains`, async (_, res, ctx) => {
+    return res(ctx.json({ metric_drains: [] }));
   }),
   rest.get(
     `${testEnv.apiUrl}/accounts/:id/metric_drains`,
