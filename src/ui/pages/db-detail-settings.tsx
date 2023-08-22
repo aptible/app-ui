@@ -132,12 +132,6 @@ export const DatabaseSettingsPage = () => {
               </ul>
             </Banner>
           ) : null}
-          <div className="my-4">
-            <Label className="text-base font-semibold text-gray-900 block">
-              Credentials
-            </Label>
-            <Secret secret={database.connectionUrl} />
-          </div>
 
           <hr className="mt-6" />
 
