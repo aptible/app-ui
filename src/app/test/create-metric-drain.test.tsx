@@ -203,7 +203,9 @@ describe("Create Metric Drain flow", () => {
       const hostname = await screen.findByRole("textbox", { name: /Hostname/ });
       await act(() => userEvent.type(hostname, "some-url.com"));
 
-      const org = await screen.findByRole("textbox", { name: /Organization/ });
+      const org = await screen.findByRole("textbox", {
+        name: /InfluxDB Organization Name/,
+      });
       await act(() => userEvent.type(org, "niceguy"));
 
       const authToken = await screen.findByLabelText("API Token");
