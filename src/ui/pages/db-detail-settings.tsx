@@ -10,7 +10,6 @@ import {
   IconTrash,
   Input,
   Label,
-  Secret,
 } from "../shared";
 import {
   deprovisionDatabase,
