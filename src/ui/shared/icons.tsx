@@ -369,3 +369,14 @@ export const IconShield = (props: Props) => {
     </IconStrokeBase>
   );
 };
+
+export const IconEndpoint = (props: Props) => {
+  return (
+    <IconStrokeBase {...props} title="Endpoint Icon">
+      <path d="M21.1538 12.9231C21.1538 17.9786 17.0555 22.0769 12 22.0769C6.94447 22.0769 2.84615 17.9786 2.84615 12.9231C2.84615 7.86754 6.94447 3.76923 12 3.76923C17.0555 3.76923 21.1538 7.86754 21.1538 12.9231Z" />
+      <circle cx="12" cy="3.69231" r="2.69231" fill="white" />
+      <circle cx="20.3077" cy="17.5385" r="2.69231" fill="white" />
+      <circle cx="3.69231" cy="17.5385" r="2.69231" fill="white" />
+    </IconStrokeBase>
+  );
+};
