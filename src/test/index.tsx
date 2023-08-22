@@ -14,6 +14,7 @@ import {
 } from "@app/app";
 import { bootup } from "@app/bootup";
 import { hasDeployEnvironment, selectEnvironmentById } from "@app/deploy";
+import { selectBootupLoaded } from "@app/initial-data";
 import { testEnv } from "@app/mocks";
 import { resetReducer } from "@app/reset-store";
 import type { AppState } from "@app/types";
@@ -137,6 +138,22 @@ export const waitForData = (
       throw new Error(`no data found${msg ? ` (${msg})` : ""}`);
     }
   });
+
+export const waitForBootup = (store: Store<AppState>) =>
+  waitForData(store, (state) => 
+    selectBootupLoaded(state, {
+      ids: [
+        "fetch-all-stacks",
+        "fetch-all-envs",
+        "fetch-all-apps",
+        "fetch-all-databases",
+        "fetch-all-log-drains",
+        "fetch-all-metric-drains",
+        "fetch-all-services",
+        "fetch-all-endpoints",
+      ],
+    })
+  );
 
 export const waitForToken = (store: Store<AppState>) =>
   waitForData(store, (state) => state.token.accessToken !== "");

@@ -16,12 +16,18 @@ import {
 import {
   fetchAllApps,
   fetchAllDatabases,
+  fetchAllEndpoints,
   fetchAllEnvironments,
+  fetchAllLogDrains,
+  fetchAllMetricDrains,
+  fetchAllServices,
   fetchAllStacks,
 } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
 import { AnyAction } from "@app/types";
 import { fetchUsers, selectCurrentUserId } from "@app/users";
+import { createSelector } from "@reduxjs/toolkit";
+import { selectLoadersByIds } from "saga-query";
 
 export function* onFetchInitData() {
   yield* call(fetchOrganizations.run, fetchOrganizations());
@@ -36,12 +42,10 @@ export function* onFetchInitData() {
       fetchAllEnvironments(),
       fetchAllApps(),
       fetchAllDatabases(),
-      // TODO - currently commented because test suite can't handle
-      //        this many changes without races
-      // fetchAllLogDrains(),
-      // fetchAllMetricDrains(),
-      // fetchAllServices(),
-      // fetchAllEndpoints(),
+      fetchAllLogDrains(),
+      fetchAllMetricDrains(),
+      fetchAllServices(),
+      fetchAllEndpoints(),
     ]),
   );
 }
@@ -57,3 +61,10 @@ function* watchFetchInitData() {
 }
 
 export const sagas = { watchFetchInitData };
+
+export const selectBootupLoaded = createSelector(
+  selectLoadersByIds,
+  (loaders) => {
+    return loaders.every((loader) => loader.isSuccess || loader.isError);
+  },
+);
