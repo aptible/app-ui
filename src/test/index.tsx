@@ -140,7 +140,7 @@ export const waitForData = (
   });
 
 export const waitForBootup = (store: Store<AppState>) =>
-  waitForData(store, (state) => 
+  waitForData(store, (state) =>
     selectBootupLoaded(state, {
       ids: [
         "fetch-all-stacks",
@@ -152,7 +152,7 @@ export const waitForBootup = (store: Store<AppState>) =>
         "fetch-all-services",
         "fetch-all-endpoints",
       ],
-    })
+    }),
   );
 
 export const waitForToken = (store: Store<AppState>) =>

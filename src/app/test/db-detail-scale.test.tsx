@@ -13,6 +13,7 @@ import {
 import { databaseScaleUrl } from "@app/routes";
 import {
   setupAppIntegrationTest,
+  waitForBootup,
   waitForData,
   waitForEnv,
   waitForToken,
@@ -46,9 +47,12 @@ describe("DatabaseScalePage", () => {
       initEntries: [databaseScaleUrl(`${testDatabasePostgres.id}`)],
     });
 
+    await waitForBootup(store);
     await waitForToken(store);
-    await waitForEnv(store, testAccount.id);
+
     render(<App />);
+
+    await waitForEnv(store, testAccount.id);
     await waitForData(store, (state) => {
       return hasDeployDatabase(
         selectDatabaseById(state, { id: `${testDatabasePostgres.id}` }),

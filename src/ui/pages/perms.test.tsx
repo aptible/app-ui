@@ -10,7 +10,7 @@ import {
   testRole,
 } from "@app/mocks";
 import { HOME_PATH } from "@app/routes";
-import { setupIntegrationTest, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup, waitForToken } from "@app/test";
 import { render, screen } from "@testing-library/react";
 
 const PermsPage = () => {
@@ -33,6 +33,8 @@ describe("PermRequired", () => {
         initEntries: ["/private"],
         additionalRoutes: [{ path: HOME_PATH, element: <div>no access</div> }],
       });
+
+      await waitForBootup(store);
       await waitForToken(store);
 
       render(
@@ -68,6 +70,8 @@ describe("PermRequired", () => {
         initEntries: ["/private"],
         additionalRoutes: [{ path: HOME_PATH, element: <div>no access</div> }],
       });
+
+      await waitForBootup(store);
       await waitForToken(store);
 
       render(
@@ -101,6 +105,8 @@ describe("PermissionGate", () => {
       server.use(...handlers);
 
       const { TestProvider, store } = setupIntegrationTest();
+
+      await waitForBootup(store);
       await waitForToken(store);
 
       render(
@@ -115,6 +121,8 @@ describe("PermissionGate", () => {
 
     it("should hide the content", async () => {
       const { TestProvider, store } = setupIntegrationTest();
+
+      await waitForBootup(store);
       await waitForToken(store);
 
       render(
@@ -132,6 +140,8 @@ describe("ButtonCreate", () => {
   describe("when user cannot create resources", () => {
     it("should disable button", async () => {
       const { TestProvider, store } = setupIntegrationTest();
+
+      await waitForBootup(store);
       await waitForToken(store);
 
       render(
@@ -161,6 +171,8 @@ describe("ButtonCreate", () => {
       server.use(...handlers);
 
       const { TestProvider, store } = setupIntegrationTest();
+
+      await waitForBootup(store);
       await waitForToken(store);
 
       render(
@@ -208,6 +220,8 @@ describe("ButtonDestroy", () => {
       server.use(...handlers);
 
       const { TestProvider, store } = setupIntegrationTest();
+
+      await waitForBootup(store);
       await waitForToken(store);
 
       render(

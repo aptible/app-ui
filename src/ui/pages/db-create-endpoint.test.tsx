@@ -19,7 +19,12 @@ import {
   ENDPOINT_DETAIL_PATH,
   databaseEndpointCreateUrl,
 } from "@app/routes";
-import { setupIntegrationTest, waitForEnv, waitForToken } from "@app/test";
+import {
+  setupIntegrationTest,
+  waitForBootup,
+  waitForEnv,
+  waitForToken,
+} from "@app/test";
 import { AppState } from "@app/types";
 
 import { DatabaseCreateEndpointPage } from "./db-create-endpoint";
@@ -84,13 +89,15 @@ describe("DatabaseCreateEndpointPage", () => {
     it("should navigate to endpoint detail page", async () => {
       const { store, TestProvider } = setupTests();
 
+      await waitForBootup(store);
+      await waitForToken(store);
+
       render(
         <TestProvider>
           <DatabaseCreateEndpointPage />
         </TestProvider>,
       );
 
-      await waitForToken(store);
       await waitForEnv(store, testAccount.id);
 
       await screen.findByText(
@@ -114,13 +121,15 @@ describe("DatabaseCreateEndpointPage", () => {
     it("should navigate to endpoint detail page", async () => {
       const { store, TestProvider } = setupTests();
 
+      await waitForBootup(store);
+      await waitForToken(store);
+
       render(
         <TestProvider>
           <DatabaseCreateEndpointPage />
         </TestProvider>,
       );
 
-      await waitForToken(store);
       await waitForEnv(store, testAccount.id);
 
       await screen.findByText(

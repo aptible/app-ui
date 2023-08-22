@@ -15,6 +15,7 @@ import {
 import { appServiceScalePathUrl } from "@app/routes";
 import {
   setupAppIntegrationTest,
+  waitForBootup,
   waitForData,
   waitForEnv,
   waitForToken,
@@ -39,6 +40,7 @@ describe("AppDetailServiceScalePage", () => {
       ],
     });
 
+    await waitForBootup(store);
     await waitForToken(store);
     await waitForEnv(store, testAccount.id);
     render(<App />);

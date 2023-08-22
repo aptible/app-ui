@@ -10,7 +10,12 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { environmentSettingsUrl } from "@app/routes";
-import { setupAppIntegrationTest, waitForEnv, waitForToken } from "@app/test";
+import {
+  setupAppIntegrationTest,
+  waitForBootup,
+  waitForEnv,
+  waitForToken,
+} from "@app/test";
 
 describe("EnvironmentSettingsPage", () => {
   describe("when the environment still has resources", () => {
@@ -34,9 +39,11 @@ describe("EnvironmentSettingsPage", () => {
         initEntries: [environmentSettingsUrl(`${testDestroyAccount.id}`)],
       });
 
+      await waitForBootup(store);
+      await waitForToken(store);
+
       render(<App />);
 
-      await waitForToken(store);
       await waitForEnv(store, testDestroyAccount.id);
 
       await screen.findByText(/You must first deprovision any existing/);
@@ -69,9 +76,11 @@ describe("EnvironmentSettingsPage", () => {
         initEntries: [environmentSettingsUrl(`${testDestroyAccount.id}`)],
       });
 
+      await waitForBootup(store);
+      await waitForToken(store);
+
       render(<App />);
 
-      await waitForToken(store);
       await waitForEnv(store, testDestroyAccount.id);
 
       expect(

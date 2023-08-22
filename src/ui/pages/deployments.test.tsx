@@ -14,7 +14,7 @@ import {
   testOrg,
   testStack,
 } from "@app/mocks";
-import { setupIntegrationTest } from "@app/test";
+import { setupIntegrationTest, waitForBootup, waitForToken } from "@app/test";
 
 describe("Deployments page", () => {
   it("should show last deployment status", async () => {
@@ -25,7 +25,11 @@ describe("Deployments page", () => {
       }),
     );
 
-    const { TestProvider } = setupIntegrationTest();
+    const { store, TestProvider } = setupIntegrationTest();
+
+    await waitForBootup(store);
+    await waitForToken(store);
+
     render(
       <TestProvider>
         <DeploymentsPage />
@@ -101,9 +105,13 @@ describe("Deployments page", () => {
       }),
     );
 
-    const { TestProvider } = setupIntegrationTest({
+    const { store, TestProvider } = setupIntegrationTest({
       initEntries: [`/?accounts=${envExpress.id}`],
     });
+
+    await waitForBootup(store);
+    await waitForToken(store);
+
     render(
       <TestProvider>
         <DeploymentsPage />
@@ -205,7 +213,11 @@ describe("Deployments page", () => {
       }),
     );
 
-    const { TestProvider } = setupIntegrationTest();
+    const { store, TestProvider } = setupIntegrationTest();
+
+    await waitForBootup(store);
+    await waitForToken(store);
+
     render(
       <TestProvider>
         <DeploymentsPage />

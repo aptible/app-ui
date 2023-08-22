@@ -26,7 +26,7 @@ import { selectDeploy } from "../slice";
 
 export type MetricDrainType = "influxdb" | "influxdb_database" | "datadog";
 
-interface MetricDrainResponse {
+export interface DeployMetricDrainResponse {
   id: string;
   handle: string;
   drain_type: MetricDrainType;
@@ -48,8 +48,8 @@ interface MetricDrainResponse {
 }
 
 export const defaultMetricDrainResponse = (
-  md: Partial<MetricDrainResponse> = {},
-): MetricDrainResponse => {
+  md: Partial<DeployMetricDrainResponse> = {},
+): DeployMetricDrainResponse => {
   const now = new Date().toISOString();
   return {
     id: "",
@@ -76,7 +76,7 @@ export const defaultMetricDrainResponse = (
 };
 
 export const deserializeMetricDrain = (
-  payload: MetricDrainResponse,
+  payload: DeployMetricDrainResponse,
 ): DeployMetricDrain => {
   const links = payload._links;
 
@@ -201,7 +201,7 @@ export type CreateMetricDrainProps =
 
 export const createMetricDrain = api.post<
   CreateMetricDrainProps,
-  MetricDrainResponse
+  DeployMetricDrainResponse
 >("/accounts/:envId/metric_drains", function* (ctx, next) {
   const preBody: Record<string, string> = {
     drain_type: ctx.payload.drainType,

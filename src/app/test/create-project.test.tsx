@@ -11,7 +11,11 @@ import {
   testEnv,
   testUserVerified,
 } from "@app/mocks";
-import { setupAppIntegrationTest, waitForToken } from "@app/test";
+import {
+  setupAppIntegrationTest,
+  waitForBootup,
+  waitForToken,
+} from "@app/test";
 
 describe("Create project flow", () => {
   describe("existing user with ssh keys", () => {
@@ -46,9 +50,11 @@ describe("Create project flow", () => {
       const { App, store } = setupAppIntegrationTest({
         initEntries: ["/create"],
       });
-      render(<App />);
 
+      await waitForBootup(store);
       await waitForToken(store);
+
+      render(<App />);
 
       // deploy code landing page
       const el = screen.getByRole("link", {

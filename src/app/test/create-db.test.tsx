@@ -10,7 +10,12 @@ import {
   testEnv,
   verifiedUserHandlers,
 } from "@app/mocks";
-import { setupAppIntegrationTest, waitForEnv, waitForToken } from "@app/test";
+import {
+  setupAppIntegrationTest,
+  waitForBootup,
+  waitForEnv,
+  waitForToken,
+} from "@app/test";
 
 describe("Create Database flow", () => {
   it("should successfully provision a database within an environment", async () => {
@@ -42,9 +47,11 @@ describe("Create Database flow", () => {
       initEntries: [`/create/db?environment_id=${testAccount.id}`],
     });
 
+    await waitForBootup(store);
+    await waitForToken(store);
+
     render(<App />);
 
-    await waitForToken(store);
     // we need to wait for accounts so we can do permission checks
     await waitForEnv(store, testAccount.id);
 

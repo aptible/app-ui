@@ -16,7 +16,7 @@ import {
 } from "@app/mocks";
 import { defaultOrgResponse } from "@app/organizations";
 import { HOME_PATH, IMPERSONATE_PATH, impersonateUrl } from "@app/routes";
-import { setupIntegrationTest, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup, waitForToken } from "@app/test";
 import { TokenSuccessResponse, defaultTokenResponse } from "@app/token";
 import { UserResponse, defaultUserResponse } from "@app/users";
 
@@ -40,6 +40,7 @@ describe("when no email or org supplied", () => {
       initEntries: [impersonateUrl()],
     });
 
+    await waitForBootup(store);
     await waitForToken(store);
 
     render(
@@ -61,6 +62,7 @@ describe("when user is not superuser or has no read impersonation perms", () => 
       additionalRoutes: [{ path: HOME_PATH, element: <div>We are home</div> }],
     });
 
+    await waitForBootup(store);
     await waitForToken(store);
 
     render(
@@ -88,6 +90,7 @@ describe("when user.read_only_impersonate", () => {
       initEntries: [impersonateUrl()],
     });
 
+    await waitForBootup(store);
     await waitForToken(store);
 
     render(
@@ -117,6 +120,7 @@ describe("when user.superuser", () => {
       initEntries: [impersonateUrl()],
     });
 
+    await waitForBootup(store);
     await waitForToken(store);
 
     render(
@@ -146,6 +150,7 @@ describe("when there is an email but no org", () => {
         initEntries: [impersonateUrl()],
       });
 
+      await waitForBootup(store);
       await waitForToken(store);
 
       render(
@@ -183,6 +188,7 @@ describe("when there is an email but no org", () => {
       initEntries: [impersonateUrl()],
     });
 
+    await waitForBootup(store);
     await waitForToken(store);
 
     render(
@@ -221,6 +227,7 @@ describe("when there is an org href but no email", () => {
         initEntries: [impersonateUrl()],
       });
 
+      await waitForBootup(store);
       await waitForToken(store);
 
       render(
@@ -258,6 +265,7 @@ describe("when there is an org href but no email", () => {
       initEntries: [impersonateUrl()],
     });
 
+    await waitForBootup(store);
     await waitForToken(store);
 
     render(
