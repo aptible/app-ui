@@ -270,6 +270,10 @@ export const fetchEndpointsByAppId = api.get<{ appId: string }>(
   "/apps/:appId/vhosts",
   { saga: cacheShortTimer() },
 );
+export const fetchEndpointsByDatabaseId = api.get<{ dbId: string }>(
+  "/databases/:dbId/vhosts",
+  { saga: cacheShortTimer() },
+);
 export const fetchEndpointsByEnvironmentId = api.get<{ id: string }>(
   "/accounts/:id/vhosts",
   { saga: cacheShortTimer() },
@@ -365,6 +369,29 @@ export const createEndpoint = api.post<
   yield* next();
 });
 
+export interface CreateDbEndpointProps {
+  ipAllowlist: string[];
+  serviceId: string;
+  envId: string;
+}
+
+export const createDatabaseEndpoint = api.post<CreateDbEndpointProps>(
+  ["/services/:serviceId/vhosts", "db"],
+  function* (ctx, next) {
+    const data = {
+      type: "tcp",
+      platform: "elb",
+      ip_whitelist: ctx.payload.ipAllowlist,
+      acme: false,
+      default: false,
+      internal: false,
+    };
+    const body = JSON.stringify(data);
+    ctx.request = ctx.req({ body });
+    yield* next();
+  },
+);
+
 export const deleteEndpoint = api.delete<{ id: string }>(
   "/vhosts/:id",
   function* (ctx, next) {
@@ -436,6 +463,56 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
     const endpointCtx = yield* call(
       createEndpoint.run,
       createEndpoint({ ...ctx.payload, certId }),
+    );
+
+    if (!endpointCtx.json.ok) {
+      yield* put(
+        setLoaderError({ id: ctx.key, message: endpointCtx.json.data.message }),
+      );
+      return;
+    }
+
+    yield* next();
+
+    const opCtx = yield* call(
+      createEndpointOperation.run,
+      createEndpointOperation({
+        endpointId: `${endpointCtx.json.data.id}`,
+        type: "provision",
+      }),
+    );
+
+    if (!opCtx.json.ok) {
+      yield* put(
+        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
+      );
+      return;
+    }
+
+    ctx.json = {
+      endpointCtx,
+      opCtx,
+    };
+    yield* put(
+      setLoaderSuccess({
+        id: ctx.key,
+        meta: {
+          endpointId: endpointCtx.json.data.id,
+          opId: opCtx.json.data.id,
+        },
+      }),
+    );
+  },
+);
+
+export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
+  "provision-db-endpoint",
+  function* (ctx, next) {
+    yield put(setLoaderStart({ id: ctx.key }));
+
+    const endpointCtx = yield* call(
+      createDatabaseEndpoint.run,
+      createDatabaseEndpoint(ctx.payload),
     );
 
     if (!endpointCtx.json.ok) {

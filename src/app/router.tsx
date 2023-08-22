@@ -35,6 +35,7 @@ import {
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
+  DatabaseCreateEndpointPage,
   DatabaseDetailLayout,
   DatabaseEndpointsPage,
   DatabaseScalePage,
@@ -246,6 +247,10 @@ export const appRoutes: RouteObject[] = [
               {
                 index: true,
                 element: <DatabaseEndpointsPage />,
+              },
+              {
+                path: routes.DATABASE_ENDPOINT_CREATE_PATH,
+                element: <DatabaseCreateEndpointPage />,
               },
               {
                 path: routes.DATABASE_ENDPOINTS_PATH,
