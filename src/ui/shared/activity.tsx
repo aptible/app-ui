@@ -11,8 +11,6 @@ import {
   cancelEndpointOpsPoll,
   cancelEnvOperationsPoll,
   cancelOrgOperationsPoll,
-  fetchAllLogDrains,
-  fetchAllMetricDrains,
   fetchApp,
   fetchDatabase,
   fetchEnvironmentById,
