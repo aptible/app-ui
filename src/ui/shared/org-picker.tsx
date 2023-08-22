@@ -1,17 +1,24 @@
 import cn from "classnames";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+
+import { selectOrganizationSelected } from "@app/organizations";
+import { orgPickerUrl } from "@app/routes";
+import { selectCurrentUser } from "@app/users";
 
 import { IconWorkplace } from "./icons";
-import { selectOrganizationSelected } from "@app/organizations";
-import { selectCurrentUser } from "@app/users";
-import { useSelector } from "react-redux";
 
 export const OrgPicker = () => {
+  const navigate = useNavigate();
   const org = useSelector(selectOrganizationSelected);
   const user = useSelector(selectCurrentUser);
+
   return (
     <div
+      onClick={() => navigate(orgPickerUrl())}
+      onKeyUp={() => navigate(orgPickerUrl())}
       className={cn([
-        "border border-gray-200 bg-white rounded-lg",
+        "border border-gray-200 bg-white rounded-lg cursor-pointer",
         "px-2 py-1",
         "flex items-center",
       ])}

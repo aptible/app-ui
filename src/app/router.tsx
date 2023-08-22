@@ -71,6 +71,7 @@ import {
   NotFoundPage,
   OpDetailLayout,
   OpDetailPage,
+  OrgPickerPage,
   OtpRecoveryCodesPage,
   OtpSetupPage,
   PlansPage,
@@ -127,6 +128,11 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.SEARCH_PATH,
         element: <SearchPage />,
+      },
+
+      {
+        path: routes.ORG_PICKER_PATH,
+        element: <OrgPickerPage />,
       },
 
       {

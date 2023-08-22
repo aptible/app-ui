@@ -151,13 +151,31 @@ const initEnv = defaultDeployEnvironment();
 const must = mustSelectEntity(initEnv);
 export const selectEnvironmentById = must(selectors.selectById);
 export const selectEnvironmentByIds = selectors.selectByIds;
-export const {
-  selectTable: selectEnvironments,
-  selectTableAsList: selectEnvironmentsAsList,
-} = selectors;
+export const { selectTable: selectEnvironments } = selectors;
+const selectEnvironmentsAsList = selectors.selectTableAsList;
 export const findEnvById = must(selectors.findById);
-export const selectEnvironmentsAsOptions = createSelector(
+
+export const selectEnvironmentsByOrg = createSelector(
   selectEnvironmentsAsList,
+  selectOrganizationSelectedId,
+  (envs, orgId) => {
+    if (orgId === "") return {};
+    return envs
+      .filter((env) => env.organizationId === orgId)
+      .reduce<MapEntity<DeployEnvironment>>((acc, env) => {
+        acc[env.id] = env;
+        return acc;
+      }, {});
+  },
+);
+
+export const selectEnvironmentsByOrgAsList = createSelector(
+  selectEnvironmentsByOrg,
+  (envs) => Object.values(envs).filter(excludesFalse),
+);
+
+export const selectEnvironmentsAsOptions = createSelector(
+  selectEnvironmentsByOrgAsList,
   (envs) => {
     return envs.map((e) => {
       return {
@@ -221,25 +239,6 @@ export interface CreateEnvProps {
   stackId: string;
   orgId: string;
 }
-
-export const selectEnvironmentsByOrg = createSelector(
-  selectEnvironmentsAsList,
-  selectOrganizationSelectedId,
-  (envs, orgId) => {
-    if (orgId === "") return {};
-    return envs
-      .filter((env) => env.organizationId === orgId)
-      .reduce<MapEntity<DeployEnvironment>>((acc, env) => {
-        acc[env.id] = env;
-        return acc;
-      }, {});
-  },
-);
-
-export const selectEnvironmentsByOrgAsList = createSelector(
-  selectEnvironmentsByOrg,
-  (envs) => Object.values(envs).filter(excludesFalse),
-);
 
 const computeSearchMatch = (
   env: DeployEnvironment,
