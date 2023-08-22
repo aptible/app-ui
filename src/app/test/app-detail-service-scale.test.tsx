@@ -13,12 +13,7 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { appServiceScalePathUrl } from "@app/routes";
-import {
-  setupAppIntegrationTest,
-  waitForData,
-  waitForEnv,
-  waitForToken,
-} from "@app/test";
+import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { rest } from "msw";
 
 describe("AppDetailServiceScalePage", () => {
@@ -39,8 +34,8 @@ describe("AppDetailServiceScalePage", () => {
       ],
     });
 
-    await waitForToken(store);
-    await waitForEnv(store, testAccount.id);
+    await waitForBootup(store);
+
     render(<App />);
     await waitForData(store, (state) => {
       return hasDeployApp(selectAppById(state, { id: `${testApp.id}` }));

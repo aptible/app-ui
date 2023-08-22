@@ -15,7 +15,7 @@ import {
   CREATE_PROJECT_GIT_SETTINGS_PATH,
   createProjectGitSettingsUrl,
 } from "@app/routes";
-import { setupIntegrationTest, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 
 import { CreateProjectGitSettingsPage } from "./create-project-git-settings";
 
@@ -34,7 +34,7 @@ describe("CreateProjectGitSettingsPage", () => {
       ],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
@@ -56,7 +56,7 @@ describe("CreateProjectGitSettingsPage", () => {
       initEntries: [createProjectGitSettingsUrl(`${testApp.id}`)],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
@@ -87,7 +87,7 @@ describe("CreateProjectGitSettingsPage", () => {
       ],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
@@ -124,7 +124,7 @@ describe("CreateProjectGitSettingsPage", () => {
       ],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
@@ -162,7 +162,7 @@ describe("CreateProjectGitSettingsPage", () => {
       ],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
@@ -214,7 +214,7 @@ describe("CreateProjectGitSettingsPage", () => {
       initEntries: [createProjectGitSettingsUrl(`${testApp.id}`)],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>

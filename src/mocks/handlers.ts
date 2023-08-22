@@ -27,7 +27,9 @@ import {
 import {
   DeployAppResponse,
   DeployDatabaseResponse,
+  DeployEndpointResponse,
   DeployEnvironmentResponse,
+  DeployMetricDrainResponse,
   DeployServiceResponse,
   DeployStackResponse,
   defaultDatabaseResponse,
@@ -153,18 +155,27 @@ export const stacksWithResources = (
     apps = [],
     databases = [],
     services = [],
+    vhosts = [],
+    metric_drains = [],
+    log_drains = [],
   }: {
     stacks?: DeployStackResponse[];
     accounts?: DeployEnvironmentResponse[];
     apps?: DeployAppResponse[];
     databases?: DeployDatabaseResponse[];
     services?: DeployServiceResponse[];
+    vhosts?: DeployEndpointResponse[];
+    metric_drains?: DeployMetricDrainResponse[];
+    log_drains?: any[];
   } = {
     stacks: [testStack],
     accounts: [],
     apps: [],
     databases: [],
     services: [],
+    vhosts: [],
+    metric_drains: [],
+    log_drains: [],
   },
 ) => {
   return [
@@ -222,11 +233,20 @@ export const stacksWithResources = (
 
       return res(ctx.json({ _embedded: { databases } }));
     }),
+    rest.get(`${testEnv.apiUrl}/vhosts`, (_, res, ctx) => {
+      return res(ctx.json({ vhosts }));
+    }),
+    rest.get(`${testEnv.apiUrl}/metric_drains`, (_, res, ctx) => {
+      return res(ctx.json({ metric_drains }));
+    }),
+    rest.get(`${testEnv.apiUrl}/log_drains`, (_, res, ctx) => {
+      return res(ctx.json({ log_drains }));
+    }),
     rest.get(`${testEnv.apiUrl}/services`, (req, res, ctx) => {
       if (!isValidToken(req)) {
         return res(ctx.status(401));
       }
-      return res(ctx.json({ _embedded: { services } }));
+      return res(ctx.json({ services }));
     }),
     rest.get(`${testEnv.apiUrl}/services/:id`, (req, res, ctx) => {
       if (!isValidToken(req)) {
@@ -580,9 +600,12 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/vhosts/:id`, (_, res, ctx) => {
     return res(ctx.json(testEndpoint));
   }),
-  // rest.get(`${testEnv.apiUrl}/services/:id`, (_, res, ctx) => {
-  //   return res(ctx.json(testServiceRails));
-  // }),
+  rest.get(`${testEnv.apiUrl}/vhosts`, (_, res, ctx) => {
+    return res(ctx.json({ vhosts: [] }));
+  }),
+  rest.get(`${testEnv.apiUrl}/services`, (_, res, ctx) => {
+    return res(ctx.json({ services: [] }));
+  }),
   rest.post(
     `${testEnv.apiUrl}/accounts/:id/certificates`,
     async (_, res, ctx) => {

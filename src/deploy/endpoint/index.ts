@@ -37,7 +37,7 @@ import { createCertificate } from "../certificate";
 import { selectDatabasesByEnvId } from "../database";
 import { selectDeploy } from "../slice";
 
-interface DeployEndpointResponse {
+export interface DeployEndpointResponse {
   id: number;
   acme: boolean;
   acme_configuration: AcmeConfiguration | null;

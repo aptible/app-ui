@@ -16,7 +16,7 @@ import {
 } from "@app/mocks";
 import { defaultOrgResponse } from "@app/organizations";
 import { HOME_PATH, IMPERSONATE_PATH, impersonateUrl } from "@app/routes";
-import { setupIntegrationTest, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 import { TokenSuccessResponse, defaultTokenResponse } from "@app/token";
 import { UserResponse, defaultUserResponse } from "@app/users";
 
@@ -40,7 +40,7 @@ describe("when no email or org supplied", () => {
       initEntries: [impersonateUrl()],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
@@ -61,7 +61,7 @@ describe("when user is not superuser or has no read impersonation perms", () => 
       additionalRoutes: [{ path: HOME_PATH, element: <div>We are home</div> }],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
@@ -88,7 +88,7 @@ describe("when user.read_only_impersonate", () => {
       initEntries: [impersonateUrl()],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
@@ -117,7 +117,7 @@ describe("when user.superuser", () => {
       initEntries: [impersonateUrl()],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
@@ -146,7 +146,7 @@ describe("when there is an email but no org", () => {
         initEntries: [impersonateUrl()],
       });
 
-      await waitForToken(store);
+      await waitForBootup(store);
 
       render(
         <TestProvider>
@@ -183,7 +183,7 @@ describe("when there is an email but no org", () => {
       initEntries: [impersonateUrl()],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
@@ -221,7 +221,7 @@ describe("when there is an org href but no email", () => {
         initEntries: [impersonateUrl()],
       });
 
-      await waitForToken(store);
+      await waitForBootup(store);
 
       render(
         <TestProvider>
@@ -258,7 +258,7 @@ describe("when there is an org href but no email", () => {
       initEntries: [impersonateUrl()],
     });
 
-    await waitForToken(store);
+    await waitForBootup(store);
 
     render(
       <TestProvider>
