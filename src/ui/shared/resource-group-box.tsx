@@ -5,10 +5,10 @@ import {
   selectFirstEndpointByAppId,
   selectLatestDeployOp,
 } from "@app/deploy";
-import { selectLegacyDashboardUrl } from "@app/env";
+import { environmentAppsUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
-import { ExternalLink } from "./external-link";
+import { Link } from "react-router-dom";
 import { IconGitBranch, IconGlobe } from "./icons";
 import { Pill } from "./pill";
 import { StatusBox } from "./status-box";
@@ -32,8 +32,10 @@ export const ResourceGroupBox = ({
     selectLatestDeployOp(s, { appId }),
   );
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
 
@@ -70,12 +72,7 @@ export const ResourceGroupBox = ({
           {status}
 
           <Pill icon={<IconGlobe color="#595E63" variant="sm" />}>
-            <ExternalLink
-              href={`${legacyUrl}/accounts/${app.environmentId}`}
-              variant="info"
-            >
-              {env.handle}
-            </ExternalLink>
+            <Link to={environmentAppsUrl(environment.id)}>{env.handle}</Link>
           </Pill>
 
           <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
