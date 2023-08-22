@@ -249,8 +249,6 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const loader = useLoader(pollOrgOperations);
-  useQuery(fetchAllLogDrains());
-  useQuery(fetchAllMetricDrains());
 
   const poller = useMemo(() => pollOrgOperations({ orgId }), [orgId]);
   const cancel = useMemo(() => cancelOrgOperationsPoll(), []);
@@ -286,8 +284,6 @@ export function ActivityByEnv({ envId }: { envId: string }) {
   const search = params.get("search") || "";
   const loader = useLoader(pollEnvOperations);
   useQuery(fetchEnvironmentById({ id: envId }));
-  useQuery(fetchAllLogDrains());
-  useQuery(fetchAllMetricDrains());
 
   const poller = useMemo(() => pollEnvOperations({ envId }), [envId]);
   const cancel = useMemo(() => cancelEnvOperationsPoll(), []);
