@@ -16,7 +16,7 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { appEndpointsUrl } from "@app/routes";
-import { setupAppIntegrationTest, waitForData, waitForToken } from "@app/test";
+import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { rest } from "msw";
 
 describe("Create Endpoint flow", () => {
@@ -54,9 +54,10 @@ describe("Create Endpoint flow", () => {
         initEntries: [appEndpointsUrl(`${testApp.id}`)],
       });
 
+      await waitForBootup(store);
+
       render(<App />);
 
-      await waitForToken(store);
       // we need to wait for accounts so we can do permission checks
       await waitForData(store, (state) => {
         return hasDeployEnvironment(

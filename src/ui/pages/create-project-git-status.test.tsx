@@ -21,7 +21,7 @@ import {
   CREATE_PROJECT_GIT_STATUS_PATH,
   createProjectGitStatusUrl,
 } from "@app/routes";
-import { setupIntegrationTest, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 import {
   fireEvent,
   render,
@@ -39,10 +39,13 @@ describe("CreateProjectGitStatusPage", () => {
       });
       server.use(...handlers);
 
-      const { TestProvider } = setupIntegrationTest({
+      const { store, TestProvider } = setupIntegrationTest({
         path: CREATE_PROJECT_GIT_STATUS_PATH,
         initEntries: [createProjectGitStatusUrl(`${testApp.id}`)],
       });
+
+      await waitForBootup(store);
+
       render(
         <TestProvider>
           <CreateProjectGitStatusPage />
@@ -93,10 +96,13 @@ describe("CreateProjectGitStatusPage", () => {
         }),
       );
 
-      const { TestProvider } = setupIntegrationTest({
+      const { store, TestProvider } = setupIntegrationTest({
         path: CREATE_PROJECT_GIT_STATUS_PATH,
         initEntries: [createProjectGitStatusUrl(`${testApp.id}`)],
       });
+
+      await waitForBootup(store);
+
       render(
         <TestProvider>
           <CreateProjectGitStatusPage />
@@ -171,13 +177,14 @@ describe("CreateProjectGitStatusPage", () => {
           },
         },
       });
+
+      await waitForBootup(store);
+
       render(
         <TestProvider>
           <CreateProjectGitStatusPage />
         </TestProvider>,
       );
-
-      await waitForToken(store);
 
       await screen.findByText("Plan limit exceeded");
       const btn = await screen.findByRole("button", { name: "Redeploy" });

@@ -14,8 +14,8 @@ import {
 } from "../shared";
 import {
   deprovisionDatabase,
-  fetchLogDrains,
-  fetchMetricDrains,
+  fetchEnvLogDrains,
+  fetchEnvMetricDrains,
   selectDatabaseById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
@@ -46,8 +46,8 @@ export const DatabaseSettingsPage = () => {
   );
   const updatingDatabaseLoader = useLoader(updateDatabase);
 
-  useQuery(fetchLogDrains({ id: database.environmentId }));
-  useQuery(fetchMetricDrains({ id: database.environmentId }));
+  useQuery(fetchEnvLogDrains({ id: database.environmentId }));
+  useQuery(fetchEnvMetricDrains({ id: database.environmentId }));
 
   const drains: (DeployLogDrain | DeployMetricDrain)[] =
     [...logDrains, ...metricDrains] || [];

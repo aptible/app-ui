@@ -12,7 +12,7 @@ import {
   testEnv,
   testUserVerified,
 } from "@app/mocks";
-import { setupAppIntegrationTest, waitForToken } from "@app/test";
+import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 import { rest } from "msw";
 
 describe("Create App flow", () => {
@@ -51,9 +51,9 @@ describe("Create App flow", () => {
         initEntries: [`/create/name?environment_id=${testAccount.id}`],
       });
 
-      render(<App />);
+      await waitForBootup(store);
 
-      await waitForToken(store);
+      render(<App />);
 
       // create app page
       const nameInput = await screen.findByRole("textbox", { name: "name" });

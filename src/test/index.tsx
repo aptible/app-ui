@@ -1,4 +1,4 @@
-import { prepareStore } from "@app/fx";
+import { prepareStore, selectLoaderById } from "@app/fx";
 import { Store, configureStore } from "@reduxjs/toolkit";
 import { act, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
@@ -137,6 +137,12 @@ export const waitForData = (
       throw new Error(`no data found${msg ? ` (${msg})` : ""}`);
     }
   });
+
+export const waitForBootup = (store: Store<AppState>) =>
+  waitForData(
+    store,
+    (state) => selectLoaderById(state, { id: `${bootup}` }).isSuccess,
+  );
 
 export const waitForToken = (store: Store<AppState>) =>
   waitForData(store, (state) => state.token.accessToken !== "");

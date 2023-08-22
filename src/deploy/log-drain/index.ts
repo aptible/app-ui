@@ -1,5 +1,5 @@
 import { selectDeploy } from "../slice";
-import { api, cacheTimer } from "@app/api";
+import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -68,7 +68,11 @@ const selectors = slice.getSelectors(
 const initLogDrain = defaultDeployLogDrain();
 const must = mustSelectEntity(initLogDrain);
 export const selectLogDrainById = must(selectors.selectById);
-export const { selectTableAsList: selectLogDrainsAsList } = selectors;
+export const findLogDrainById = must(selectors.findById);
+export const {
+  selectTableAsList: selectLogDrainsAsList,
+  selectTable: selectLogDrains,
+} = selectors;
 export const selectLogDrainsByEnvId = createSelector(
   selectLogDrainsAsList,
   (_: AppState, props: { envId: string }) => props.envId,
@@ -85,7 +89,14 @@ export const selectLogDrainsByEnvId = createSelector(
 export const hasDeployLogDrain = (a: DeployLogDrain) => a.id !== "";
 export const logDrainReducers = createReducerMap(slice);
 
-export const fetchLogDrains = api.get<{ id: string }>(
+export const fetchLogDrains = api.get<PaginateProps>("/log_drains?page=:page", {
+  saga: cacheTimer(),
+});
+export const fetchAllLogDrains = thunks.create(
+  "fetch-all-log-drains",
+  combinePages(fetchLogDrains),
+);
+export const fetchEnvLogDrains = api.get<{ id: string }>(
   "/accounts/:id/log_drains",
   {
     saga: cacheTimer(),
