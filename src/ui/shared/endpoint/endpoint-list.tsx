@@ -5,6 +5,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   DeployEndpointRow,
   getEndpointText,
+  getEndpointUrl,
   requiresAcmeSetup,
   selectAppById,
   selectEndpointsByAppIdForTableSearch,
@@ -33,8 +34,29 @@ import {
   ResourceHeader,
   ResourceListView,
 } from "../resource-list-view";
+import { tokens } from "../tokens";
 import { Tooltip } from "../tooltip";
-import { EndpointStatusPill, EndpointUrl } from "./util";
+import { EndpointStatusPill } from "./util";
+
+export const EndpointItemView = ({
+  endpoint,
+}: { endpoint: DeployEndpoint }) => {
+  return (
+    <Link
+      className="flex items-center gap-1 text-black group-hover:text-indigo hover:text-indigo"
+      to={endpointDetailUrl(endpoint.id)}
+    >
+      <img
+        src="/resource-types/logo-vhost.png"
+        className="w-8 h-8 mr-2 align-middle"
+        aria-label="Endpoint"
+      />
+      <p className={`${tokens.type["table link"]} leading-8`}>
+        {getEndpointUrl(endpoint)}
+      </p>
+    </Link>
+  );
+};
 
 const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
   const navigate = useNavigate();
@@ -46,15 +68,7 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
   return (
     <tr className="group hover:bg-gray-50">
       <Td>
-        <Link
-          className="text-black group-hover:text-indigo hover:text-indigo"
-          to={endpointDetailUrl(endpoint.id)}
-        >
-          {endpoint.id}
-        </Link>
-      </Td>
-      <Td>
-        <EndpointUrl enp={endpoint} />
+        <EndpointItemView endpoint={endpoint} />
       </Td>
       <Td>
         {endpoint.resourceType === "app" ? (
@@ -127,7 +141,6 @@ const EndpointHeader = ({
 };
 
 const headers = [
-  "ID",
   "Hostname",
   "Resource",
   "Status",

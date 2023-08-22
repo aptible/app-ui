@@ -362,8 +362,8 @@ const computeSearchMatch = (
   const url = getEndpointUrl(enp);
   const handle = enp.resourceHandle.toLocaleLowerCase();
   const plc = getPlacement(enp);
-  const placement = plc === "Internal" ? "private" : "public";
-  const placementAlt = plc === "Internal" ? "internal" : "external";
+  const placement = plc === "Private" ? "private" : "public";
+  const placementAlt = plc === "Private" ? "internal" : "external";
 
   const urlMatch = url.includes(search);
   const handleMatch = handle.includes(search);
@@ -880,10 +880,10 @@ export const checkDns = thunks.create<{ from: string; to: string }>(
 
 export const getPlacement = (enp: DeployEndpoint) => {
   if (enp.externalHost) {
-    return "External (publicly accessible)";
+    return "Public";
   }
 
-  return "Internal";
+  return "Private";
 };
 
 export const getIpAllowlistText = (enp: DeployEndpoint) => {
@@ -902,7 +902,9 @@ export const getContainerPort = (
   return enp.containerPort || `Default (${port})`;
 };
 
-export const getEndpointUrl = (enp: DeployEndpoint) => {
+export const getEndpointUrl = (enp?: DeployEndpoint) => {
+  if (!enp) return "";
+
   if (!hasDeployEndpoint(enp)) {
     return enp.id;
   }
