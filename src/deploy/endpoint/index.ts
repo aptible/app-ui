@@ -361,8 +361,9 @@ const computeSearchMatch = (
   }
   const url = getEndpointUrl(enp);
   const handle = enp.resourceHandle.toLocaleLowerCase();
-  const placement = enp.internal ? "private" : "public";
-  const placementAlt = enp.internal ? "internal" : "external";
+  const plc = getPlacement(enp);
+  const placement = plc === "Internal" ? "private" : "public";
+  const placementAlt = plc === "Internal" ? "internal" : "external";
 
   const urlMatch = url.includes(search);
   const handleMatch = handle.includes(search);
