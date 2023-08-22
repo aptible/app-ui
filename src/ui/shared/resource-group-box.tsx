@@ -72,9 +72,7 @@ export const ResourceGroupBox = ({
           {status}
 
           <Pill icon={<IconGlobe color="#595E63" variant="sm" />}>
-            <Link to={environmentAppsUrl(environment.id)}>
-              {env.handle}
-            </Link>
+            <Link to={environmentAppsUrl(environment.id)}>{env.handle}</Link>
           </Pill>
 
           <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
