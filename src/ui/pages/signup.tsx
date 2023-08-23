@@ -1,10 +1,27 @@
-import { useLoader, useLoaderSuccess } from "@app/fx";
-import qs from "query-string";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router";
+import { Link, useSearchParams } from "react-router-dom";
 
+import { signup } from "@app/auth";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  fetchInvitation,
+  selectInvitationById,
+  selectInvitationRequest,
+} from "@app/invitations";
+import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
+import {
+  acceptInvitationWithCodeUrl,
+  homeUrl,
+  loginUrl,
+  verifyEmailRequestUrl,
+} from "@app/routes";
+import { AppState } from "@app/types";
+import { CreateUserForm } from "@app/users";
+import { emailValidator, existValidtor, passValidator } from "@app/validator";
+
+import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
   AptibleLogo,
@@ -15,126 +32,65 @@ import {
   Input,
   tokens,
 } from "../shared";
-import {
-  fetchCurrentToken,
-  selectAuthLoader,
-  signup,
-  validatePasswordComplexity,
-} from "@app/auth";
-import {
-  fetchInvitation,
-  selectInvitationRequest,
-  selectPendingInvitation,
-} from "@app/invitations";
-import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
-import {
-  acceptInvitationWithCodeUrl,
-  homeUrl,
-  loginUrl,
-  verifyEmailRequestUrl,
-} from "@app/routes";
-import { validEmail } from "@app/string-utils";
-import { selectIsUserAuthenticated } from "@app/token";
 
-const createQueryStringValue =
-  (queryString: string) => (key: string): string => {
-    const values = qs.parse(queryString);
-    const returnValue = values[key];
-
-    if (returnValue && Array.isArray(returnValue)) {
-      const [value] = returnValue;
-      return value || "";
-    }
-
-    return returnValue || "";
-  };
+const validators = {
+  name: (props: CreateUserForm) => existValidtor(props.name, "Name"),
+  company: (props: CreateUserForm) => existValidtor(props.company, "Company"),
+  email: (props: CreateUserForm) => emailValidator(props.email),
+  pass: (props: CreateUserForm) => passValidator(props.password),
+};
 
 export const SignupPage = () => {
-  const fetchTokenLoader = useLoader(fetchCurrentToken);
-  const fetchSignupLoader = useSelector(selectAuthLoader);
   const dispatch = useDispatch();
-  const location = useLocation();
   const navigate = useNavigate();
-  const getQueryStringValue = createQueryStringValue(location.search);
+  const [params] = useSearchParams();
+  const queryEmail = params.get("email") || "";
+  const challengeToken = params.get("token") || "";
+
   const redirectPath = useSelector(selectRedirectPath);
-  const isAuthenticated = useSelector(selectIsUserAuthenticated);
-  const { isLoading } = fetchSignupLoader;
 
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
-  const [email, setEmail] = useState(getQueryStringValue("email"));
+  const [email, setEmail] = useState(queryEmail);
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passError, setPassError] = useState("");
+  const [errors, validate] = useValidator<CreateUserForm, typeof validators>(
+    validators,
+  );
 
   const invitationRequest = useSelector(selectInvitationRequest);
-  const invitation = useSelector(selectPendingInvitation);
-
-  const [challengeToken] = useState<string>(getQueryStringValue("token"));
-
-  useEffect(() => {
-    if (fetchSignupLoader.isLoading) {
-      return;
-    }
-
-    if (isAuthenticated) {
-      navigate(homeUrl());
-    }
-  }, [fetchSignupLoader.isLoading, isAuthenticated]);
+  useQuery(fetchInvitation({ id: invitationRequest.invitationId }));
+  const invitation = useSelector((s: AppState) =>
+    selectInvitationById(s, { id: invitationRequest.invitationId }),
+  );
 
   useEffect(() => {
-    if (!invitation && invitationRequest.invitationId) {
-      dispatch(fetchInvitation({ id: invitationRequest.invitationId }));
-    }
-  }, [invitationRequest.invitationId]);
+    if (invitation.email === "") return;
+    setEmail(invitation.email);
+  }, [invitation.email]);
 
-  const currentEmail = invitation ? invitation.email : email;
-
-  const disableSave = name === "" || currentEmail === "" || password === "";
+  const data = {
+    company,
+    name,
+    email,
+    password,
+    challenge_token: challengeToken,
+  };
+  const action = signup(data);
+  const loader = useLoader(action);
 
   const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (disableSave) {
-      return;
-    }
-
-    if (!validEmail(email)) {
-      setEmailError("Not a valid email");
-      return;
-    } else {
-      setEmailError("");
-    }
-
-    const passwordErrors = validatePasswordComplexity(password);
-    const passwordErrorMessage =
-      password !== "" && passwordErrors.length > 0
-        ? `Password ${passwordErrors.join(", ")}`
-        : "";
-    if (passwordErrorMessage) {
-      setPassError(passwordErrorMessage);
-      return;
-    } else {
-      setPassError("");
-    }
-
-    dispatch(
-      signup({
-        company,
-        name,
-        email: invitation ? invitation.email : email,
-        password,
-        challenge_token: challengeToken,
-      }),
-    );
+    if (!validate(data)) return;
+    dispatch(action);
   };
 
-  useLoaderSuccess(fetchSignupLoader, () => {
+  useLoaderSuccess(loader, () => {
     if (invitationRequest.invitationId) {
       navigate(acceptInvitationWithCodeUrl(invitationRequest));
     } else {
       // if the api returns with a user.verified = true, skip email request page
       // this can happen in development when ENV['DISABLE_EMAIL_VERIFICATION']=1
-      if (fetchSignupLoader.meta.verified) {
+      if (loader.meta.verified) {
         navigate(redirectPath || homeUrl());
         dispatch(resetRedirectPath());
         return;
@@ -142,12 +98,6 @@ export const SignupPage = () => {
       navigate(verifyEmailRequestUrl());
     }
   });
-
-  // presentError - this value is set because in specific scenarios, we do not need the
-  // middleware error message presented - namely on Unauthorized checks, as we do a
-  // validation of the current token to see if a user is loaded. for all other
-  const presentError =
-    fetchTokenLoader.isError && fetchTokenLoader.message !== "Unauthorized";
 
   return (
     <HeroBgLayout width={500} showLogo={false}>
@@ -196,9 +146,14 @@ export const SignupPage = () => {
             </div>
           </div>
           <div className="mt-6">
-            <div className="bg-white py-8 px-8 lg:px-10 shadow rounded-lg border border-black-100">
+            <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
               <form className="space-y-4" onSubmit={onSubmitForm}>
-                <FormGroup label="Name" htmlFor="name">
+                <FormGroup
+                  label="Name"
+                  htmlFor="name"
+                  feedbackMessage={errors.name}
+                  feedbackVariant={errors.name ? "danger" : "info"}
+                >
                   <Input
                     id="name"
                     name="name"
@@ -207,13 +162,17 @@ export const SignupPage = () => {
                     autoFocus={true}
                     required={true}
                     value={name}
-                    disabled={isLoading}
                     className="w-full"
                     onChange={(e) => setName(e.target.value)}
                   />
                 </FormGroup>
 
-                <FormGroup label="Company" htmlFor="company">
+                <FormGroup
+                  label="Company"
+                  htmlFor="company"
+                  feedbackMessage={errors.company}
+                  feedbackVariant={errors.company ? "danger" : "info"}
+                >
                   <Input
                     id="company"
                     name="company"
@@ -221,7 +180,6 @@ export const SignupPage = () => {
                     autoComplete="company"
                     required={true}
                     value={company}
-                    disabled={isLoading}
                     className="w-full"
                     onChange={(e) => setCompany(e.target.value)}
                   />
@@ -230,8 +188,8 @@ export const SignupPage = () => {
                 <FormGroup
                   label="Email"
                   htmlFor="email"
-                  feedbackVariant={emailError ? "danger" : "info"}
-                  feedbackMessage={emailError}
+                  feedbackMessage={errors.email}
+                  feedbackVariant={errors.email ? "danger" : "info"}
                 >
                   <Input
                     id="email"
@@ -239,18 +197,17 @@ export const SignupPage = () => {
                     type="email"
                     autoComplete="email"
                     required={true}
-                    disabled={isLoading}
-                    value={invitation ? invitation.email : email}
-                    className="w-full"
+                    value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    className="w-full"
                   />
                 </FormGroup>
 
                 <FormGroup
                   label="Password"
                   htmlFor="password"
-                  feedbackVariant={passError ? "danger" : "info"}
-                  feedbackMessage={passError}
+                  feedbackMessage={errors.pass}
+                  feedbackVariant={errors.pass ? "danger" : "info"}
                 >
                   <Input
                     id="password"
@@ -260,50 +217,45 @@ export const SignupPage = () => {
                     required={true}
                     value={password}
                     className="w-full"
-                    disabled={isLoading}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </FormGroup>
 
-                {presentError ? <BannerMessages {...fetchTokenLoader} /> : null}
-                <BannerMessages {...fetchSignupLoader} />
+                <BannerMessages {...loader} />
+
                 <div>
                   <Button
                     type="submit"
-                    variant="primary"
                     layout="block"
                     size="lg"
-                    disabled={disableSave}
-                    isLoading={fetchTokenLoader.isLoading}
+                    isLoading={loader.isLoading}
                   >
                     Create Account
                   </Button>
                 </div>
                 <p className="mt-4 text-center text-sm text-gray-600">
-                  If you already have an account, you can{" "}
-                  <Link to={loginUrl()} className="font-medium">
-                    log in here
-                  </Link>
-                  .
-                </p>
-                <p className="mt-4 text-center text-sm text-gray-600">
-                  By submitting this form, I confirm that I have read and agree
-                  to Aptible's{" "}
-                  <a href="https://www.aptible.com/legal/terms-of-service">
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a href="https://www.aptible.com/legal/privacy">
-                    Privacy Policy
-                  </a>
-                  .
-                </p>
+              If you already have an account, you can{" "}
+              <Link to={loginUrl()} className="font-medium">
+                log in here
+              </Link>
+              .
+            </p>
+            <p className="mt-4 text-center text-sm text-gray-600">
+              By submitting this form, I confirm that I have read and agree to
+              Aptible's{" "}
+              <a href="https://www.aptible.com/legal/terms-of-service">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="https://www.aptible.com/legal/privacy">Privacy Policy</a>
+              .
+            </p>
               </form>
             </div>
           </div>
-        </div>
-        <div className="mt-6 lg:px-0 px-10 lg:hidden block pb-10">
-          <CreateProjectFooter />
+          <div className="mt-6 px-10 lg:hidden block pb-10 w-full">
+            <CreateProjectFooter />
+          </div>
         </div>
       </div>
     </HeroBgLayout>

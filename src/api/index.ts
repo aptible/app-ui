@@ -135,6 +135,20 @@ function* getUrl(ctx: AppCtx, endpoint: EndpointUrl): ApiGen<string> {
   return `${baseUrl}${url}`;
 }
 
+function* requestBilling(ctx: ApiCtx, next: Next): ApiGen {
+  const url = yield* call(getUrl, ctx, "billing" as const);
+  ctx.request = ctx.req({
+    url,
+    // https://github.com/github/fetch#sending-cookies
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/hal+json",
+    },
+  });
+
+  yield* next();
+}
+
 function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
   const url = yield* call(getUrl, ctx, "api" as const);
   ctx.request = ctx.req({
@@ -231,6 +245,18 @@ authApi.use(requestAuth);
 authApi.use(tokenMdw);
 authApi.use(elevatedTokenMdw);
 authApi.use(fetcher());
+
+export const billingApi = createApi<DeployApiCtx>();
+billingApi.use(debugMdw);
+billingApi.use(sentryErrorHandler);
+billingApi.use(expiredToken);
+billingApi.use(requestMonitor());
+billingApi.use(aborter);
+billingApi.use(halEntityParser);
+billingApi.use(billingApi.routes());
+billingApi.use(requestBilling);
+billingApi.use(tokenMdw);
+billingApi.use(fetcher());
 
 export const metricTunnelApi = createApi<MetricTunnelCtx>();
 metricTunnelApi.use(debugMdw);

@@ -1,28 +1,31 @@
-import { useLoaderSuccess } from "@app/fx";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 
 import {
+  CreateTokenPayload,
+  isOtpError,
   login,
   loginWebauthn,
-  selectAuthLoader,
-  selectIsOtpError,
 } from "@app/auth";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import {
   fetchInvitation,
+  selectInvitationById,
   selectInvitationRequest,
-  selectPendingInvitation,
 } from "@app/invitations";
+import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
   acceptInvitationWithCodeUrl,
   forgotPassUrl,
   homeUrl,
   signupUrl,
 } from "@app/routes";
-import { validEmail } from "@app/string-utils";
+import { AppState } from "@app/types";
+import { emailValidator, existValidtor } from "@app/validator";
 
+import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
   BannerMessages,
@@ -32,7 +35,12 @@ import {
   Input,
   tokens,
 } from "../shared";
-import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
+
+const validators = {
+  email: (props: CreateTokenPayload) => emailValidator(props.username),
+  pass: (props: CreateTokenPayload) =>
+    existValidtor(props.password, "Password"),
+};
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
@@ -42,17 +50,31 @@ export const LoginPage = () => {
   const [otpToken, setOtpToken] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [requireOtp, setRequireOtp] = useState<boolean>(false);
-  const loader = useSelector(selectAuthLoader);
   const redirectPath = useSelector(selectRedirectPath);
+  const [errors, validate] = useValidator<
+    CreateTokenPayload,
+    typeof validators
+  >(validators);
 
   const invitationRequest = useSelector(selectInvitationRequest);
-  const invitation = useSelector(selectPendingInvitation);
+  const invitation = useSelector((s: AppState) =>
+    selectInvitationById(s, { id: invitationRequest.invitationId }),
+  );
+  useQuery(fetchInvitation({ id: invitationRequest.invitationId }));
 
-  useEffect(() => {
-    if (!invitation && invitationRequest.invitationId) {
-      dispatch(fetchInvitation({ id: invitationRequest.invitationId }));
-    }
-  }, [invitationRequest.invitationId]);
+  const data = {
+    username: email,
+    password,
+    otpToken,
+    makeCurrent: true,
+  };
+  const action = login(data);
+  const loader = useLoader(action);
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!validate(data)) return;
+    dispatch(action);
+  };
 
   useLoaderSuccess(loader, () => {
     if (invitationRequest.invitationId) {
@@ -63,36 +85,25 @@ export const LoginPage = () => {
     }
   });
 
-  const currentEmail = invitation ? invitation.email : email;
-  const loginPayload = {
-    username: currentEmail,
-    password,
-    otpToken,
-    makeCurrent: true,
-  };
-
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    dispatch(login(loginPayload));
-  };
-
-  const emailErrorMessage =
-    currentEmail === "" || validEmail(currentEmail)
-      ? null
-      : "Not a valid email";
-
-  const isOtpError = useSelector(selectIsOtpError);
   useEffect(() => {
-    if (isOtpError) {
-      setRequireOtp(true);
-      dispatch(
-        loginWebauthn({
-          ...loginPayload,
-          webauthn: loader.meta.exception_context.u2f?.payload,
-        }),
-      );
+    if (invitation.email === "") return;
+    setEmail(invitation.email);
+  }, [invitation.email]);
+
+  const otpError = isOtpError(loader.meta.error);
+  useEffect(() => {
+    if (!otpError) {
+      return;
     }
-  }, [isOtpError]);
+
+    setRequireOtp(true);
+    dispatch(
+      loginWebauthn({
+        ...data,
+        webauthn: loader.meta.exception_context.u2f?.payload,
+      }),
+    );
+  }, [otpError]);
 
   const isOtpRequired = loader.message === "OtpTokenRequired";
   return (
@@ -127,8 +138,8 @@ export const LoginPage = () => {
             <FormGroup
               label="Email"
               htmlFor="email"
-              feedbackVariant={emailErrorMessage ? "danger" : "info"}
-              feedbackMessage={emailErrorMessage}
+              feedbackMessage={errors.email}
+              feedbackVariant={errors.email ? "danger" : "info"}
             >
               <Input
                 id="email"
@@ -137,14 +148,19 @@ export const LoginPage = () => {
                 autoComplete="email"
                 autoFocus={true}
                 required={true}
-                disabled={!!invitation}
-                value={invitation ? invitation.email : email}
+                disabled={invitation.id !== ""}
+                value={email}
                 className="w-full"
                 onChange={(e) => setEmail(e.target.value)}
               />
             </FormGroup>
 
-            <FormGroup label="Password" htmlFor="password">
+            <FormGroup
+              label="Password"
+              htmlFor="password"
+              feedbackMessage={errors.pass}
+              feedbackVariant={errors.pass ? "danger" : "info"}
+            >
               <Input
                 id="password"
                 name="password"
@@ -184,31 +200,38 @@ export const LoginPage = () => {
               </FormGroup>
             ) : null}
 
-            <div>
-              <Button
-                isLoading={loader.isLoading}
-                disabled={loader.isLoading || !(email && password)}
-                type="submit"
-                variant="primary"
-                layout="block"
-                size="lg"
-              >
-                Log In
-              </Button>
-            </div>
+            <Button
+              isLoading={loader.isLoading}
+              type="submit"
+              variant="primary"
+              layout="block"
+              size="lg"
+            >
+              Log In
+            </Button>
+
             <p className="text-center">
               <Link to={forgotPassUrl()} className="text-sm text-center">
                 Forgot your password?
               </Link>
             </p>
+
             <p className="mt-4 text-center text-sm text-gray-600">
               By submitting this form, I confirm that I have read and agree to
               Aptible's{" "}
-              <a href="https://www.aptible.com/legal/terms-of-service">
+              <ExternalLink
+                href="https://www.aptible.com/legal/terms-of-service"
+                variant="info"
+              >
                 Terms of Service
-              </a>{" "}
+              </ExternalLink>{" "}
               and{" "}
-              <a href="https://www.aptible.com/legal/privacy">Privacy Policy</a>
+              <ExternalLink
+                href="https://www.aptible.com/legal/privacy"
+                variant="info"
+              >
+                Privacy Policy
+              </ExternalLink>
               .
             </p>
           </form>
