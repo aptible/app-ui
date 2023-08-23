@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import {
   CreateTokenPayload,
+  defaultAuthLoaderMeta,
   isOtpError,
   login,
   loginWebauthn,
@@ -70,6 +71,8 @@ export const LoginPage = () => {
   };
   const action = login(data);
   const loader = useLoader(action);
+  const meta = defaultAuthLoaderMeta(loader.meta);
+
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validate(data)) return;
@@ -90,7 +93,7 @@ export const LoginPage = () => {
     setEmail(invitation.email);
   }, [invitation.email]);
 
-  const otpError = isOtpError(loader.meta.error);
+  const otpError = isOtpError(meta.error);
   useEffect(() => {
     if (!otpError) {
       return;
@@ -100,12 +103,13 @@ export const LoginPage = () => {
     dispatch(
       loginWebauthn({
         ...data,
-        webauthn: loader.meta.exception_context.u2f?.payload,
+        webauthn: meta.exception_context.u2f,
       }),
     );
   }, [otpError]);
 
-  const isOtpRequired = loader.message === "OtpTokenRequired";
+  const isOtpRequired = isOtpError(meta.error);
+
   return (
     <HeroBgLayout width={500}>
       <h1 className={`${tokens.type.h1} text-center`}>Log In</h1>
