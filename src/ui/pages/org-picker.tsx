@@ -54,7 +54,7 @@ export const OrgPickerPage = () => {
   return (
     <MenuWrappedPage>
       <div className="flex flex-col gap-2">
-        <h1 className={tokens.type.h1}>Choose Organization</h1>
+        <h2 className={tokens.type.h2}>Choose Organization</h2>
 
         <div>
           {orgList.map((o) => {

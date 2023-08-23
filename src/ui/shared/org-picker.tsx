@@ -21,6 +21,7 @@ export const OrgPicker = () => {
         "border border-gray-200 bg-white rounded-lg cursor-pointer",
         "px-2 py-1",
         "flex items-center",
+        "hover:bg-black-50",
       ])}
     >
       <IconWorkplace
