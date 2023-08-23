@@ -4,10 +4,13 @@ import { Link, useSearchParams } from "react-router-dom";
 
 import {
   DeployEndpointRow,
+  fetchAllCertsByEnvId,
+  fetchCertificateById,
   getEndpointText,
   getEndpointUrl,
   requiresAcmeSetup,
   selectAppById,
+  selectDatabaseById,
   selectEndpointsByAppIdForTableSearch,
   selectEndpointsByCertIdForTableSearch,
   selectEndpointsByDbIdForTableSearch,
@@ -37,6 +40,7 @@ import {
 import { tokens } from "../tokens";
 import { Tooltip } from "../tooltip";
 import { EndpointStatusPill } from "./util";
+import { useQuery } from "saga-query/react";
 
 export const EndpointItemView = ({
   endpoint,
@@ -223,6 +227,7 @@ export function EndpointsByEnv({ envId }: { envId: string }) {
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch });
   };
+  useQuery(fetchAllCertsByEnvId({ id: envId }));
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByEnvIdForTableSearch(s, { search, envId }),
   );
@@ -250,6 +255,7 @@ export function EndpointsByApp({ appId }: { appId: string }) {
     setParams({ search: nextSearch });
   };
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  useQuery(fetchAllCertsByEnvId({ id: app.environmentId }));
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByAppIdForTableSearch(s, { search, appId }),
   );
@@ -291,6 +297,8 @@ export function EndpointsByDatabase({ dbId }: { dbId: string }) {
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch });
   };
+  const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  useQuery(fetchAllCertsByEnvId({ id: db.environmentId }));
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByDbIdForTableSearch(s, { search, dbId }),
   );
@@ -316,6 +324,7 @@ export function EndpointsByCert({ certId }: { certId: string }) {
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch });
   };
+  useQuery(fetchCertificateById({ certId }));
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByCertIdForTableSearch(s, { search, certId }),
   );

@@ -157,6 +157,10 @@ export const deleteCertificate = api.delete<{ certId: string }>(
   "/certificates/:certId",
 );
 
+export const fetchCertificateById = api.get<{ certId: string }>(
+  "/certificates/:certId",
+);
+
 export const fetchCertificatesByEnvironmentId = api.get<
   PaginateProps & { id: string }
 >("/accounts/:id/certificates?page=:page");
