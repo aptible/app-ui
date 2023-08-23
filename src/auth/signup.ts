@@ -63,6 +63,9 @@ export const signup = thunks.create<CreateUserForm>(
       createOrganization({ name: orgName }),
     );
 
+    // hack because useLoaderSuccess expected loader.isLoader then loader.isSuccess
+    yield* put(setLoaderStart({ id }));
+
     log(orgCtx);
 
     if (!orgCtx.json.ok) {
@@ -100,8 +103,6 @@ export const signup = thunks.create<CreateUserForm>(
 
     log(elevateCtx);
 
-    yield* next();
-
     yield* put(
       batchActions([
         setLoaderSuccess({
@@ -116,5 +117,7 @@ export const signup = thunks.create<CreateUserForm>(
         }),
       ]),
     );
+
+    yield* next();
   },
 );
