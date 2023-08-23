@@ -30,9 +30,7 @@ export const OrgPicker = () => {
       />
       <div>
         <div className="text-black">{org.name.slice(0, 20)}</div>
-        <div className="text-gray-500 text-sm">
-          {user.name.slice(0, 20)}
-        </div>
+        <div className="text-gray-500 text-sm">{user.name.slice(0, 20)}</div>
       </div>
     </div>
   );
