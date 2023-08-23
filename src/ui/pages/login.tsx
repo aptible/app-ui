@@ -108,7 +108,7 @@ export const LoginPage = () => {
     );
   }, [otpError]);
 
-  const isOtpRequired = loader.message === "OtpTokenRequired";
+  const isOtpRequired = isOtpError(meta.error);
 
   return (
     <HeroBgLayout width={500}>
