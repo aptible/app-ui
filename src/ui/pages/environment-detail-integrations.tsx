@@ -20,7 +20,7 @@ import {
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
 } from "@app/deploy";
-import { createMetricDrainUrl } from "@app/routes";
+import { createLogDrainUrl, createMetricDrainUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { useSelector } from "react-redux";
@@ -276,7 +276,7 @@ export const EnvironmentIntegrationsPage = () => {
     navigate(createMetricDrainUrl(id));
   };
   const onCreateLogs = () => {
-    console.log("create logs");
+    navigate(createLogDrainUrl(id));
   };
 
   return (
