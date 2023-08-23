@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 
 import {
   CreateTokenPayload,
+  isOtpError,
   login,
   loginWebauthn,
-  selectIsOtpError,
 } from "@app/auth";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import {
@@ -90,18 +90,20 @@ export const LoginPage = () => {
     setEmail(invitation.email);
   }, [invitation.email]);
 
-  const isOtpError = useSelector(selectIsOtpError);
+  const otpError = isOtpError(loader.meta.error);
   useEffect(() => {
-    if (isOtpError) {
-      setRequireOtp(true);
-      dispatch(
-        loginWebauthn({
-          ...data,
-          webauthn: loader.meta.exception_context.u2f?.payload,
-        }),
-      );
+    if (!otpError) {
+      return;
     }
-  }, [isOtpError]);
+
+    setRequireOtp(true);
+    dispatch(
+      loginWebauthn({
+        ...data,
+        webauthn: loader.meta.exception_context.u2f?.payload,
+      }),
+    );
+  }, [otpError]);
 
   const isOtpRequired = loader.message === "OtpTokenRequired";
 
