@@ -242,13 +242,13 @@ const selectEnvironmentToServiceMap = createSelector(
   selectAppsByOrgAsList,
   selectDatabasesByOrgAsList,
   (apps, databases) => {
-    const envToServiceIds: Record<string, Set<string>> = {};
+    const envToServiceIds: Record<string, Set<string> | undefined> = {};
     apps.forEach((app) => {
       if (!Object.hasOwn(envToServiceIds, app.environmentId)) {
         envToServiceIds[app.environmentId] = new Set<string>();
       }
       app.serviceIds.forEach((id) => {
-        envToServiceIds[app.environmentId].add(id);
+        envToServiceIds[app.environmentId]?.add(id);
       });
     });
 
@@ -256,7 +256,7 @@ const selectEnvironmentToServiceMap = createSelector(
       if (!Object.hasOwn(envToServiceIds, db.environmentId)) {
         envToServiceIds[db.environmentId] = new Set<string>();
       }
-      envToServiceIds[db.environmentId].add(db.serviceId);
+      envToServiceIds[db.environmentId]?.add(db.serviceId);
     });
 
     return envToServiceIds;
@@ -264,7 +264,7 @@ const selectEnvironmentToServiceMap = createSelector(
 );
 
 const selectServiceToAppMap = createSelector(selectAppsByOrgAsList, (apps) => {
-  const serviceToAppId: Record<string, string> = {};
+  const serviceToAppId: Record<string, string | undefined> = {};
   apps.forEach((app) => {
     app.serviceIds.forEach((serviceId) => {
       serviceToAppId[serviceId] = app.id;
@@ -277,7 +277,7 @@ const selectServiceToAppMap = createSelector(selectAppsByOrgAsList, (apps) => {
 const selectServiceToDbMap = createSelector(
   selectDatabasesByOrgAsList,
   (dbs) => {
-    const serviceToDbId: Record<string, string> = {};
+    const serviceToDbId: Record<string, string | undefined> = {};
     dbs.forEach((db) => {
       serviceToDbId[db.serviceId] = db.id;
     });
@@ -291,7 +291,7 @@ export const selectEndpointsByEnvironmentId = createSelector(
   selectEndpointsAsList,
   (_: AppState, p: { envId: string }) => p.envId,
   (envToServiceMap, enps, envId) =>
-    enps.filter((enp) => envToServiceMap[envId].has(enp.serviceId)),
+    enps.filter((enp) => envToServiceMap[envId]?.has(enp.serviceId)),
 );
 
 export const selectEndpointsByOrgAsList = createSelector(
