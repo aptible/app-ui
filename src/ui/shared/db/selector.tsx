@@ -1,5 +1,8 @@
 import { Select, SelectOption } from "../select";
-import { selectDatabasesByEnvId } from "@app/deploy";
+import {
+  selectDatabasesByEnvId,
+  selectDatabasesByEnvIdAndType,
+} from "@app/deploy";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
 
@@ -10,6 +13,7 @@ export const DbSelector = ({
   id,
   ariaLabel = "db-selector",
   className = "",
+  dbTypeFilters = [],
 }: {
   envId: string;
   onSelect: (opt: SelectOption) => void;
@@ -17,9 +21,12 @@ export const DbSelector = ({
   ariaLabel?: string;
   id?: string;
   className?: string;
+  dbTypeFilters?: string[];
 }) => {
   const dbs = useSelector((s: AppState) =>
-    selectDatabasesByEnvId(s, { envId }),
+    dbTypeFilters.length > 0
+      ? selectDatabasesByEnvIdAndType(s, { envId, types: dbTypeFilters })
+      : selectDatabasesByEnvId(s, { envId }),
   );
   const options = [
     { value: "", label: "Choose a Database" },

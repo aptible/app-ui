@@ -26,6 +26,7 @@ const OrgItem = ({
     <div
       onClick={onClick}
       onKeyUp={onClick}
+      role="button"
       className="my-2 p-4 border border-gray-200 rounded-lg flex items-center justify-between cursor-pointer hover:bg-black-50"
     >
       <span>{org.name}</span>

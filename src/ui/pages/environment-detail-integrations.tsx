@@ -20,7 +20,7 @@ import {
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
 } from "@app/deploy";
-import { createMetricDrainUrl } from "@app/routes";
+import { createLogDrainUrl, createMetricDrainUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { useSelector } from "react-redux";
@@ -150,9 +150,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
             {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
           </p>
         }
-        tableHeader={
-          <TableHead headers={logDrainsHeaders} rightAlignedFinalCol />
-        }
+        tableHeader={<TableHead headers={logDrainsHeaders} />}
         tableBody={
           <>
             {logDrains.map((logDrain) => (
@@ -276,7 +274,7 @@ export const EnvironmentIntegrationsPage = () => {
     navigate(createMetricDrainUrl(id));
   };
   const onCreateLogs = () => {
-    console.log("create logs");
+    navigate(createLogDrainUrl(id));
   };
 
   return (
