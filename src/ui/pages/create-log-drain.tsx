@@ -180,7 +180,7 @@ export const CreateLogDrainPage = () => {
 
   return (
     <EnvironmentDetailLayout>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
         <h1 className="text-lg text-black font-semibold">Create Log Drain</h1>
 
         <div>
