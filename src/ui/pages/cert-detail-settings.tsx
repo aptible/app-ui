@@ -8,7 +8,7 @@ import {
   fetchEndpointsByCertId,
   removeDeployCertificates,
   selectCertificateById,
-  selectEndpointsByCertificateId,
+  selectEndpointsByCertId,
 } from "@app/deploy";
 import { environmentCertificatesUrl } from "@app/routes";
 import { AppState } from "@app/types";
@@ -31,8 +31,8 @@ const CertDelete = ({ certId }: { certId: string }) => {
     selectCertificateById(s, { id: certId }),
   );
   const endpoints = useSelector((s: AppState) =>
-    selectEndpointsByCertificateId(s, {
-      certificateId: certId,
+    selectEndpointsByCertId(s, {
+      certId: certId,
       envId: cert.environmentId,
     }),
   );

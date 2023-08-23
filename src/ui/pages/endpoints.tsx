@@ -1,10 +1,10 @@
 import { MenuWrappedPage } from "../layouts";
-import { AppListByOrg } from "../shared";
+import { EndpointsByOrg } from "../shared";
 
-export const AppsPage = () => {
+export const EndpointsPage = () => {
   return (
     <MenuWrappedPage>
-      <AppListByOrg />
+      <EndpointsByOrg />
     </MenuWrappedPage>
   );
 };

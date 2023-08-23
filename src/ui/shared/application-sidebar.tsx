@@ -7,6 +7,7 @@ import {
   IconBox,
   IconCloud,
   IconCylinder,
+  IconEndpoint,
   IconGlobe,
   IconHamburger,
   IconHeart,
@@ -23,6 +24,7 @@ import {
   createProjectGitUrl,
   databaseUrl,
   deploymentsUrl,
+  endpointsUrl,
   environmentsUrl,
   searchUrl,
   securityDashboardUrl,
@@ -46,6 +48,7 @@ export const ApplicationSidebar = () => {
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
     { name: "Apps", to: appsUrl(), icon: <IconBox /> },
     { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },
+    { name: "Endpoints", to: endpointsUrl(), icon: <IconEndpoint /> },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
     {

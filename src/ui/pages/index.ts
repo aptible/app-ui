@@ -72,3 +72,4 @@ export * from "./create-metric-drain";
 export * from "./create-log-drain";
 export * from "./db-create-endpoint";
 export * from "./org-picker";
+export * from "./endpoints";

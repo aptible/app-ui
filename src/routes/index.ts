@@ -133,6 +133,8 @@ export const endpointDetailSetupUrl = (id: string) =>
 export const ENDPOINT_DETAIL_SETTINGS_PATH = "/endpoints/:id/settings";
 export const endpointDetailSettingsUrl = (id: string) =>
   `${endpointDetailUrl(id)}/settings`;
+export const ENDPOINTS_PATH = "/endpoints";
+export const endpointsUrl = () => ENDPOINTS_PATH;
 
 export const DEPLOYMENTS_PATH = "/deployments";
 export const deploymentsUrl = () => DEPLOYMENTS_PATH;

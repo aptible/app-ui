@@ -49,21 +49,17 @@ export const ResourceHeader = ({
 }: ResourceHeaderProps) => {
   return (
     <div>
-      <div className="flex mb-2">
-        <div className="flex-1">
-          <h1 className={cn(tokens.type.h2)}>{title}</h1>
-          {description && (
-            <p className="mt-2 text-sm text-gray-700">{description}</p>
-          )}
-        </div>
-        {actions.length > 0 ? (
-          <div className="w-1/2 lg:w-1/3">
-            <ActionListView actions={actions} />
-          </div>
+      <div>
+        {title ? <h1 className={cn(tokens.type.h2)}>{title}</h1> : null}
+        {description ? (
+          <p className="mt-2 text-sm text-gray-700">{description}</p>
         ) : null}
       </div>
 
-      {filterBar ? <div className="mb-4">{filterBar}</div> : null}
+      <div className="flex justify-between mb-4">
+        {filterBar ? filterBar : null}
+        {actions.length > 0 ? <ActionListView actions={actions} /> : null}
+      </div>
     </div>
   );
 };
