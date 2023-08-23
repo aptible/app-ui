@@ -1,4 +1,3 @@
-import type { LoadingItemState } from "@app/fx";
 import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 
 export interface AuthLoaderMessage {
@@ -14,5 +13,3 @@ export interface AuthLoaderMessage {
   verified: boolean;
   id: string;
 }
-
-export type AuthLoader = LoadingItemState<AuthLoaderMessage>;
