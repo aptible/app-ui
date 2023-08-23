@@ -6,36 +6,58 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import { AppState, DeployLogDrain, DeployOperationResponse, LinkResponse, ProvisionableStatus } from "@app/types";
+import {
+  AppState,
+  DeployLogDrain,
+  DeployOperationResponse,
+  LinkResponse,
+  ProvisionableStatus,
+} from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import {
+  call,
+  put,
+  setLoaderError,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "saga-query";
 
-export type LogDrainType = "logdna" | "papertrail" | "tail" | "elasticsearch_database" | "sumologic" | "https_post" | "datadog" | "syslog_tls_tcp";
+export type LogDrainType =
+  | "logdna"
+  | "papertrail"
+  | "tail"
+  | "elasticsearch_database"
+  | "sumologic"
+  | "https_post"
+  | "datadog"
+  | "syslog_tls_tcp"
+  | "insightops";
 // there are two legacy types we DO NOT allow creating: elasticsearch / https
 
 export interface CreateLogDrainBase {
   envId: string;
   handle: string;
+  drainApps: boolean;
+  drainDatabases: boolean;
+  drainEphemeralSessions: boolean;
+  drainProxies: boolean;
 }
 
 export interface CreateLogDnaLogDrain extends CreateLogDrainBase {
   drainType: "logdna"; // formerly called mezmo
-  token: string;
-  drainHost?: string;
-  tags?: string;
+  url: string;
 }
 export interface CreatePapertrailLogDrain extends CreateLogDrainBase {
   drainType: "papertrail";
-  token: string;
-  drainHost?: string;
-  tags?: string;
+  drainHost: string;
+  drainPort: string;
 }
 export interface CreateDataDogLogDrain extends CreateLogDrainBase {
   drainType: "datadog";
-  token: string;
-  drainHost?: string;
-  tags?: string;
+  url: string;
 }
-export interface CreateElasticsearchDatabaseLogDrain extends CreateLogDrainBase {
+export interface CreateElasticsearchDatabaseLogDrain
+  extends CreateLogDrainBase {
   drainType: "elasticsearch_database";
   databaseId: string;
   pipeline?: string;
@@ -54,15 +76,20 @@ export interface CreateSyslogTlsTcpLogDrain extends CreateLogDrainBase {
   drainPort: string;
   loggingToken?: string;
 }
+export interface CreateInsightOpsLogDrain extends CreateLogDrainBase {
+  drainType: "insightops";
+  loggingToken?: string;
+}
 
-export type CreateLogDrainProps = 
+export type CreateLogDrainProps =
   | CreateLogDnaLogDrain
   | CreatePapertrailLogDrain
   | CreateDataDogLogDrain
   | CreateElasticsearchDatabaseLogDrain
   | CreateSumoLogicLogDrain
   | CreateHttpsPostLogDrain
-  | CreateSyslogTlsTcpLogDrain;
+  | CreateSyslogTlsTcpLogDrain
+  | CreateInsightOpsLogDrain;
 
 export interface DeployLogDrainResponse {
   id: number;
@@ -83,7 +110,7 @@ export interface DeployLogDrainResponse {
   status: ProvisionableStatus;
   _links: {
     account: LinkResponse;
-  }
+  };
 }
 
 export const deserializeLogDrain = (payload: any): DeployLogDrain => {
@@ -180,46 +207,67 @@ export const fetchEnvLogDrains = api.get<{ id: string }>(
   },
 );
 
-
 export const createLogDrain = api.post<
   CreateLogDrainProps,
   DeployLogDrainResponse
 >("/accounts/:envId/log_drains", function* (ctx, next) {
-  const preBody: Record<string, string> = {
+  const preBody: Record<string, boolean | string> = {
     drain_type: ctx.payload.drainType,
     handle: ctx.payload.handle,
+    drain_apps: ctx.payload.drainApps,
+    drain_databases: ctx.payload.drainDatabases,
+    drain_proxies: ctx.payload.drainProxies,
+    drain_ephemeral_sessions: ctx.payload.drainEphemeralSessions,
   };
   let body = "";
   if (ctx.payload.drainType === "elasticsearch_database") {
     body = JSON.stringify({
       ...preBody,
-      database_id: ctx.payload.dbId,
+      database_id: ctx.payload.databaseId,
     });
-  } else if (ctx.payload.drainType === "influxdb") {
-    const { protocol, hostname, username, password, database } = ctx.payload;
-    const protoPort = protocol === "http" ? 80 : 443;
-    const port = ctx.payload.port || protoPort;
-    const address = `${protocol}://${hostname}:${port}`;
+  } else if (ctx.payload.drainType === "papertrail") {
+    const { drainHost, drainPort } = ctx.payload;
     body = JSON.stringify({
       ...preBody,
-      drain_configuration: {
-        address,
-        username,
-        password,
-        database,
-      },
+      drain_type: "papertrail",
+      drain_host: drainHost,
+      drain_port: drainPort,
     });
-  } else if (ctx.payload.drainType === "datadog") {
+  } else if (
+    ctx.payload.drainType === "datadog" ||
+    ctx.payload.drainType === "logdna" ||
+    ctx.payload.drainType === "sumologic" ||
+    ctx.payload.drainType === "https_post"
+  ) {
+    const { url } = ctx.payload;
     body = JSON.stringify({
       ...preBody,
-      drain_configuration: { api_key: ctx.payload.apiKey },
+      drain_type: ctx.payload.drainType,
+      url,
+    });
+  } else if (ctx.payload.drainType === "insightops") {
+    const drainHost = "api.logentries.com";
+    const drainPort = 20000;
+    body = JSON.stringify({
+      ...preBody,
+      drain_type: "syslog_tls_tcp",
+      drain_host: drainHost,
+      drain_port: drainPort,
+    });
+  } else {
+    const { drainHost, drainPort, loggingToken } = ctx.payload;
+    body = JSON.stringify({
+      ...preBody,
+      drain_type: "syslog_tls_tcp",
+      drain_host: drainHost,
+      drain_port: drainPort,
+      logging_token: loggingToken,
     });
   }
 
   ctx.request = ctx.req({ body });
   yield* next();
 });
-
 
 export const createLogDrainOperation = api.post<
   { id: string },
@@ -237,10 +285,7 @@ export const provisionLogDrain = thunks.create<CreateLogDrainProps>(
   function* (ctx, next) {
     yield* put(setLoaderStart({ id: ctx.key }));
 
-    const mdCtx = yield* call(
-      createLogDrain.run,
-      createLogDrain(ctx.payload),
-    );
+    const mdCtx = yield* call(createLogDrain.run, createLogDrain(ctx.payload));
     if (!mdCtx.json.ok) {
       yield* put(
         setLoaderError({ id: ctx.key, message: mdCtx.json.data.message }),
@@ -251,7 +296,7 @@ export const provisionLogDrain = thunks.create<CreateLogDrainProps>(
     const logDrainId = mdCtx.json.data.id;
     const opCtx = yield* call(
       createLogDrainOperation.run,
-      createLogDrainOperation({ id: logDrainId }),
+      createLogDrainOperation({ id: `${logDrainId}` }),
     );
     if (!opCtx.json.ok) {
       yield* put(

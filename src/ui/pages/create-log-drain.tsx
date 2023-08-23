@@ -329,7 +329,7 @@ export const CreateLogDrainPage = () => {
                     <p>
                       For Datadog Site US1, this must be in the format of{" "}
                       <Code>
-                        "https://http-intake.logs.datadoghq.com/v1/input/DD_API_KEY"
+                        https://http-intake.logs.datadoghq.com/v1/input/DD_API_KEY
                       </Code>
                       . For other sites and more options, refer to{" "}
                       <ExternalLink
