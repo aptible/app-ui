@@ -141,7 +141,7 @@ describe("Create Metric Drain flow", () => {
         name: /Type/,
       });
       await act(() =>
-        userEvent.selectOptions(typeSelector, "InfluxDb (anywhere)"),
+        userEvent.selectOptions(typeSelector, "InfluxDb v1 (anywhere)"),
       );
 
       const hostname = await screen.findByRole("textbox", { name: /Hostname/ });
@@ -155,6 +155,64 @@ describe("Create Metric Drain flow", () => {
 
       const db = await screen.findByRole("textbox", { name: /Database/ });
       await act(() => userEvent.type(db, "leetdb"));
+
+      const btn = await screen.findByRole("button", {
+        name: /Save Metric Drain/,
+      });
+      fireEvent.click(btn);
+
+      await screen.findByText(/Operation:/);
+      expect(screen.queryByText(/Operation:/)).toBeInTheDocument();
+    });
+  });
+
+  describe("creating a influxdb2 metric drain", () => {
+    it("should provision successfully and navigate to operation detail page", async () => {
+      server.use(
+        ...stacksWithResources({
+          accounts: [testAccount],
+        }),
+        ...verifiedUserHandlers(),
+      );
+
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [createMetricDrainUrl(`${testAccount.id}`)],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      // we need to wait for accounts so we can do permission checks
+      await waitForData(store, (state) => {
+        return hasDeployEnvironment(
+          selectEnvironmentById(state, { id: `${testAccount.id}` }),
+        );
+      });
+
+      const handle = await screen.findByRole("textbox", { name: /Handle/ });
+      await act(() => userEvent.type(handle, "a-new-hope"));
+
+      const typeSelector = await screen.findByRole("combobox", {
+        name: /Type/,
+      });
+      await act(() =>
+        userEvent.selectOptions(typeSelector, "InfluxDb v2 (anywhere)"),
+      );
+
+      const hostname = await screen.findByRole("textbox", { name: /Hostname/ });
+      await act(() => userEvent.type(hostname, "some-url.com"));
+
+      const org = await screen.findByRole("textbox", {
+        name: /InfluxDB Organization Name/,
+      });
+      await act(() => userEvent.type(org, "niceguy"));
+
+      const authToken = await screen.findByLabelText("API Token");
+      await act(() => userEvent.type(authToken, "hunter1"));
+
+      const bucket = await screen.findByRole("textbox", { name: /Bucket/ });
+      await act(() => userEvent.type(bucket, "leetdb"));
 
       const btn = await screen.findByRole("button", {
         name: /Save Metric Drain/,
