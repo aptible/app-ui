@@ -17,6 +17,7 @@ export const OrgPicker = () => {
     <div
       onClick={() => navigate(orgPickerUrl())}
       onKeyUp={() => navigate(orgPickerUrl())}
+      role="button"
       className={cn([
         "border border-gray-200 bg-white rounded-lg cursor-pointer",
         "px-2 py-1",

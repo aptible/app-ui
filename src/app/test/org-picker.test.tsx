@@ -8,13 +8,19 @@ import {
   stacksWithResources,
   testEnv,
   testOrg,
+  testOrgReauth,
   testOrgSpecial,
   testStack,
   testUserOrgSelected,
   verifiedUserHandlers,
 } from "@app/mocks";
-import { appsUrl } from "@app/routes";
-import { setupAppIntegrationTest, waitForData, waitForToken } from "@app/test";
+import { orgPickerUrl } from "@app/routes";
+import {
+  setupAppIntegrationTest,
+  waitForBootup,
+  waitForData,
+  waitForToken,
+} from "@app/test";
 import { rest } from "msw";
 
 describe("Selecting an Organization", () => {
@@ -29,12 +35,14 @@ describe("Selecting an Organization", () => {
     );
 
     const { App, store } = setupAppIntegrationTest({
-      initEntries: [appsUrl()],
+      initEntries: [orgPickerUrl()],
     });
+
+    await waitForBootup(store);
+    await waitForToken(store);
 
     render(<App />);
 
-    await waitForToken(store);
     await waitForData(store, (state) => {
       return Object.values(state.organizations).length > 0;
     });
@@ -75,20 +83,21 @@ describe("Selecting an Organization", () => {
     );
 
     const { App, store } = setupAppIntegrationTest({
-      initEntries: [appsUrl()],
+      initEntries: [orgPickerUrl()],
     });
+
+    await waitForBootup(store);
 
     render(<App />);
 
-    await waitForToken(store);
     await waitForData(store, (state) => {
       return Object.values(state.organizations).length > 0;
     });
-    const btn = await screen.findByText(/test-org/);
+    const btn = await screen.findByRole("button", { name: /^test\-org\-1/i });
     fireEvent.click(btn);
 
     await screen.findByText(/Choose Organization/);
-    const next = await screen.findByText(/Wow Org/);
+    const next = await screen.findByRole("button", { name: /^wow org/i });
     fireEvent.click(next);
 
     const stacks = await screen.findByText(/Stacks/);
@@ -128,27 +137,29 @@ describe("Selecting an Organization", () => {
         rest.get(`${testEnv.authUrl}/organizations`, (_, res, ctx) => {
           return res(
             ctx.json({
-              _embedded: { organizations: [testOrg, testOrgSpecial] },
+              _embedded: {
+                organizations: [testOrg, testOrgSpecial, testOrgReauth],
+              },
             }),
           );
         }),
       );
 
       const { App, store } = setupAppIntegrationTest({
-        initEntries: [appsUrl()],
+        initEntries: [orgPickerUrl()],
       });
+      await waitForBootup(store);
 
       render(<App />);
 
-      await waitForToken(store);
       await waitForData(store, (state) => {
         return Object.values(state.organizations).length > 0;
       });
-      const btn = await screen.findByText(/test-org/);
+      const btn = await screen.findByRole("button", { name: /^test\-org\-1/i });
       fireEvent.click(btn);
 
       await screen.findByText(/Choose Organization/);
-      const next = await screen.findByText(/Reauth Org/);
+      const next = await screen.findByRole("button", { name: /^reauth org/i });
       fireEvent.click(next);
 
       // should redirect to login page
