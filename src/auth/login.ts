@@ -53,9 +53,7 @@ export const login = thunks.create<CreateTokenPayload>(
 export const loginWebauthn = thunks.create<
   CreateTokenPayload & {
     webauthn?: {
-      payload: CredentialRequestOptionsJSON["publicKey"] & {
-        challenge: string;
-      };
+      payload: CredentialRequestOptionsJSON["publicKey"];
     };
   }
 >("login-webauthn", function* (ctx, next) {

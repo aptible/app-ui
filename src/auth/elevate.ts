@@ -40,9 +40,7 @@ export const elevate = thunks.create<ElevateToken>(
 export const elevateWebauthn = thunks.create<
   ElevateToken & {
     webauthn?: {
-      payload: CredentialRequestOptionsJSON["publicKey"] & {
-        challenge: string;
-      };
+      payload: CredentialRequestOptionsJSON["publicKey"];
     };
   }
 >("elevate-webauthn", function* (ctx, next) {

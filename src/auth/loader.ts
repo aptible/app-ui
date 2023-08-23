@@ -15,9 +15,7 @@ export interface AuthLoaderMeta {
   code: number;
   exception_context: {
     u2f?: {
-      payload: CredentialRequestOptionsJSON["publicKey"] & {
-        challenge: string;
-      };
+      payload: CredentialRequestOptionsJSON["publicKey"];
     };
   };
   verified: boolean;

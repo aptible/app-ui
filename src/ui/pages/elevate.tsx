@@ -42,6 +42,11 @@ export const ElevatePage = () => {
   const action = elevate(data);
   const loader = useLoader(action);
   const meta = defaultAuthLoaderMeta(loader.meta);
+  const webauthnAction = elevateWebauthn({
+    ...data,
+    webauthn: meta.exception_context.u2f,
+  });
+  const webauthnLoader = useLoader(webauthnAction);
 
   useLoaderSuccess(loader, () => {
     navigate(redirect || homeUrl());
@@ -59,12 +64,7 @@ export const ElevatePage = () => {
     }
 
     setRequireOtp(true);
-    dispatch(
-      elevateWebauthn({
-        ...data,
-        webauthn: meta.exception_context.u2f,
-      }),
-    );
+    dispatch(webauthnAction);
   }, [isOtpRequired]);
 
   return (
@@ -135,17 +135,19 @@ export const ElevatePage = () => {
               </FormGroup>
             ) : null}
 
-            {isOtpRequired ? (
-              <BannerMessages
-                className="my-2"
-                isSuccess={false}
-                isError={false}
-                isWarning
-                message="You must enter your 2FA token to continue"
-              />
-            ) : (
-              <BannerMessages className="my-2" {...loader} />
-            )}
+            <div className="my-2 flex flex-col gap-2">
+              <BannerMessages {...webauthnLoader} />
+              {isOtpRequired ? (
+                <BannerMessages
+                  isSuccess={false}
+                  isError={false}
+                  isWarning
+                  message="You must enter your 2FA token to continue"
+                />
+              ) : (
+                <BannerMessages {...loader} />
+              )}
+            </div>
 
             <Button
               isLoading={loader.isLoading}
