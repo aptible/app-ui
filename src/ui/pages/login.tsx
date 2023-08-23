@@ -29,6 +29,7 @@ import { emailValidator, existValidtor } from "@app/validator";
 import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
+  Banner,
   BannerMessages,
   Button,
   ExternalLink,
@@ -36,6 +37,7 @@ import {
   Input,
   tokens,
 } from "../shared";
+import { selectIsUserAuthenticated } from "@app/token";
 
 const validators = {
   email: (props: CreateTokenPayload) => emailValidator(props.username),
@@ -62,6 +64,7 @@ export const LoginPage = () => {
     selectInvitationById(s, { id: invitationRequest.invitationId }),
   );
   useQuery(fetchInvitation({ id: invitationRequest.invitationId }));
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
 
   const data = {
     username: email,
@@ -127,6 +130,13 @@ export const LoginPage = () => {
       <div className="mt-8">
         <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
           <form className="space-y-4" onSubmit={onSubmit}>
+            {isAuthenticated ? (
+              <Banner variant="info">
+                You are already logged in.{" "}
+                <Link to={homeUrl()}>Click here to go to the dashboard.</Link>
+              </Banner>
+            ) : null}
+
             <FormGroup
               label="Email"
               htmlFor="email"
@@ -210,6 +220,7 @@ export const LoginPage = () => {
 
             <Button
               isLoading={loader.isLoading}
+              disabled={isAuthenticated}
               type="submit"
               variant="primary"
               layout="block"
