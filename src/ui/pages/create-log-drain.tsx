@@ -265,13 +265,14 @@ export const CreateLogDrainPage = () => {
                   )}
                 </>
               }
-              htmlFor=""
+              htmlFor="host"
               feedbackMessage={errors.drainHost}
               feedbackVariant={errors.drainHost ? "danger" : "info"}
             >
               <Input
                 type="text"
                 id="host"
+                name="host"
                 value={drainHost}
                 onChange={(e) => setDrainHost(e.currentTarget.value)}
               />

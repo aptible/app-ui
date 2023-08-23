@@ -1,6 +1,6 @@
 import { selectDeploy } from "../slice";
 import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
-import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
@@ -92,7 +92,7 @@ export type CreateLogDrainProps =
   | CreateInsightOpsLogDrain;
 
 export interface DeployLogDrainResponse {
-  id: number;
+  id: string;
   handle: string;
   drain_type: string;
   drain_host: string;
@@ -134,6 +134,34 @@ export const deserializeLogDrain = (payload: any): DeployLogDrain => {
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     status: payload.status,
+  };
+};
+
+export const defaultLogDrainResponse = (
+  md: Partial<DeployLogDrain> = {},
+): DeployLogDrainResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    handle: "",
+    drain_type: "datadog",
+    drain_host: "",
+    drain_port: "",
+    drain_username: "",
+    drain_password: "",
+    url: "",
+    logging_token: "",
+    drain_apps: false,
+    drain_databases: false,
+    drain_ephemeral_sessions: false,
+    drain_proxies: false,
+    status: "pending",
+    created_at: now,
+    updated_at: now,
+    _links: {
+      account: defaultHalHref(),
+    },
+    ...md,
   };
 };
 

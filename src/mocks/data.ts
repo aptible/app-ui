@@ -91,7 +91,7 @@ export const testOrgReauth = defaultOrgResponse({
   id: `${createId()}`,
   name: "Reauth Org",
   updated_at: new Date("2023-01-01").toISOString(),
-  reauth_required: true
+  reauth_required: true,
 });
 export const testUserOrgSelected = defaultUserResponse({
   id: createId(),
@@ -311,6 +311,18 @@ export const testDatabaseInfluxdb = defaultDatabaseResponse({
   id: testDatabaseId,
   handle: "influxdb-example",
   type: "influxdb",
+  _links: {
+    account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
+    initialize_from: defaultHalHref(),
+    database_image: defaultHalHref(),
+    service: defaultHalHref(),
+  },
+});
+
+export const testDatabaseElasticsearch = defaultDatabaseResponse({
+  id: testDatabaseId,
+  handle: "elasticsearch-example",
+  type: "elasticsearch",
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
     initialize_from: defaultHalHref(),
