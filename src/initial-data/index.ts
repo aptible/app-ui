@@ -35,7 +35,7 @@ export function* onFetchInitData() {
     call(fetchAllLogDrains.run, fetchAllLogDrains()),
     call(fetchAllMetricDrains.run, fetchAllMetricDrains()),
     call(fetchAllServices.run, fetchAllServices()),
-    call(fetchAllEndpoints.run, fetchAllServices()),
+    call(fetchAllEndpoints.run, fetchAllEndpoints()),
   ]);
 }
 

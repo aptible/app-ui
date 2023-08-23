@@ -154,22 +154,18 @@ const EnvsResourceHeaderTitleBar = ({
   return (
     <ResourceHeader
       title={showTitle ? "Environments" : ""}
+      actions={[
+        <ButtonIcon icon={<IconPlusCircle variant="sm" />} onClick={onCreate}>
+          New Environment
+        </ButtonIcon>,
+      ]}
       filterBar={
-        <div className="pt-1">
-          <div className="flex justify-between items-center">
-            <InputSearch
-              placeholder="Search environments..."
-              search={search}
-              onChange={onChange}
-            />
-
-            <ButtonIcon
-              icon={<IconPlusCircle variant="sm" />}
-              onClick={onCreate}
-            >
-              New Environment
-            </ButtonIcon>
-          </div>
+        <div>
+          <InputSearch
+            placeholder="Search environments..."
+            search={search}
+            onChange={onChange}
+          />
 
           <div className="flex items-center gap-1 text-gray-500 mt-4 text-base">
             <span>

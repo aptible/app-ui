@@ -1,27 +1,12 @@
-import { useQuery } from "@app/fx";
-import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-import { fetchApp, hasDeployApp, selectAppById } from "@app/deploy";
-import { AppState } from "@app/types";
+import { fetchEndpointsByAppId } from "@app/deploy";
+import { useQuery } from "@app/fx";
 
-import { AppEndpointsOverview, DetailPageSections } from "../shared";
+import { EndpointsByApp } from "../shared";
 
 export function AppDetailEndpointsPage() {
   const { id = "" } = useParams();
-  const { isInitialLoading, message } = useQuery(fetchApp({ id }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
-
-  if (hasDeployApp(app)) {
-    return (
-      <DetailPageSections>
-        <AppEndpointsOverview app={app} />
-      </DetailPageSections>
-    );
-  }
-
-  if (isInitialLoading) {
-    return <span>Loading...</span>;
-  }
-  return <span>{message || "Something went wrong"}</span>;
+  useQuery(fetchEndpointsByAppId({ appId: id }));
+  return <EndpointsByApp appId={id} />;
 }

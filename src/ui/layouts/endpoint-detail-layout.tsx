@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
 
@@ -42,7 +42,8 @@ import {
   TabItem,
 } from "../shared";
 import { MenuWrappedPage } from "./menu-wrapped-page";
-import { useMemo } from "react";
+import { setResourceStats } from "@app/search";
+import { useEffect, useMemo } from "react";
 
 export function EndpointAppHeaderInfo({
   enp,
@@ -133,10 +134,14 @@ function EndpointDatabaseHeader({
 
 function EndpointPageHeader() {
   const { id = "" } = useParams();
+  const dispatch = useDispatch();
   const action = useMemo(() => pollFetchEndpoint({ id }), [id]);
   const cancel = useMemo(() => cancelFetchEndpointPoll(), []);
   usePoller({ action, cancel });
   const enp = useSelector((s: AppState) => selectEndpointById(s, { id }));
+  useEffect(() => {
+    dispatch(setResourceStats({ id, type: "endpoint" }));
+  }, []);
   useQuery(fetchService({ id: enp.serviceId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: enp.serviceId }),
