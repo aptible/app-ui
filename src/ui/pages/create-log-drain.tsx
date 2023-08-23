@@ -1,24 +1,31 @@
 import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
+  Banner,
   BannerMessages,
   ButtonCreate,
+  CheckBox,
+  Code,
   DbSelector,
   EnvironmentSelect,
   ExternalLink,
   FormGroup,
   Input,
-  Radio,
-  RadioGroup,
+  Label,
   Select,
   SelectOption,
 } from "../shared";
-import { CreateLogDrainProps, LogDrainType, provisionLogDrain } from "@app/deploy";
-import { handleValidator } from "@app/validator";
+import {
+  CreateLogDrainProps,
+  LogDrainType,
+  provisionLogDrain,
+} from "@app/deploy";
+import { operationDetailUrl } from "@app/routes";
+import { handleValidator, portValidator } from "@app/validator";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useLoader } from "saga-query/react";
+import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 const validators = {
   // all
@@ -27,18 +34,50 @@ const validators = {
   },
   dbId: (p: CreateLogDrainProps) => {
     if (p.drainType !== "elasticsearch_database") return;
-    if (p.dbId === "") return "Must provide an Aptible database";
+    if (p.databaseId === "") return "Must provide an Aptible database";
+  },
+  // papertrail, syslog_tls_tcp
+  drainHost: (p: CreateLogDrainProps) => {
+    if (!(p.drainType === "syslog_tls_tcp" || p.drainType === "papertrail"))
+      return;
+    if (p.drainHost === "") return "Must provide a Drain Host";
+  },
+  drainPort: (p: CreateLogDrainProps) => {
+    if (!(p.drainType === "syslog_tls_tcp" || p.drainType === "papertrail"))
+      return;
+    return portValidator(p.drainPort);
+  },
+  // datadog, logdna, sumologic, https_post
+  url: (p: CreateLogDrainProps) => {
+    if (
+      !(
+        p.drainType === "datadog" ||
+        p.drainType === "sumologic" ||
+        p.drainType === "https_post" ||
+        p.drainType === "logdna"
+      )
+    )
+      return;
+    if (p.url === "") return "Must provide a URL for log drain";
+    if (!p.url.startsWith("https")) return "Must begin with https://";
+  },
+  // insightops / syslog_tls_tcp
+  loggingToken: (p: CreateLogDrainProps) => {
+    if (!(p.drainType === "insightops" || p.drainType === "syslog_tls_tcp"))
+      return;
+    if (p.loggingToken === "") return "Must provide a token for log drain.";
   },
 };
 
 const options: SelectOption<LogDrainType>[] = [
   { value: "datadog", label: "Datadog" },
-  { value: "logdna", label: "Log DNA"},
-  { value: "papertrail", label: "Papertrail"},
-  { value: "elasticsearch_database", label: "Self-hosted Elasticsearch"},
-  { value: "sumologic", label: "Sumo Logic"},
-  { value: "https_post", label: "Insight Ops"},
-  { value: "manual", label: "Manual Configuration"},
+  { value: "logdna", label: "Log DNA (formerly Mezmo)" },
+  { value: "papertrail", label: "Papertrail" },
+  { value: "sumologic", label: "Sumo Logic" },
+  { value: "insightops", label: "InsightOps" },
+  { value: "elasticsearch_database", label: "Self-hosted Elasticsearch" },
+  { value: "https_post", label: "HTTPS POST" },
+  { value: "syslog_tls_tcp", label: "Syslog TLS TCP" },
 ];
 export const CreateLogDrainPage = () => {
   const navigate = useNavigate();
@@ -48,6 +87,14 @@ export const CreateLogDrainPage = () => {
   const [dbId, setDbId] = useState("");
   const [envId, setEnvId] = useState(queryEnvId);
   const [handle, setHandle] = useState("");
+  const [drainApps, setDrainApps] = useState(true);
+  const [drainDatabases, setDrainDatabases] = useState(true);
+  const [drainEphemeralSessions, setDrainEphemeralSessions] = useState(true);
+  const [drainProxies, setDrainProxies] = useState(false);
+  const [drainHost, setDrainHost] = useState("");
+  const [drainPort, setDrainPort] = useState("");
+  const [loggingToken, setLoggingToken] = useState("");
+  const [url, setUrl] = useState("");
   const [drainType, setDrainType] = useState<LogDrainType>(options[0].value);
   const [errors, validate] = useValidator<
     CreateLogDrainProps,
@@ -57,10 +104,56 @@ export const CreateLogDrainPage = () => {
     const def = {
       envId,
       handle,
+      drainApps,
+      drainDatabases,
+      drainEphemeralSessions,
+      drainProxies,
     };
+
+    if (drainType === "elasticsearch_database") {
+      return {
+        ...def,
+        drainType,
+        databaseId: dbId,
+      };
+    }
+
+    if (drainType === "papertrail") {
+      return {
+        ...def,
+        drainType,
+        drainHost,
+        drainPort,
+      };
+    }
+
+    if (
+      drainType === "datadog" ||
+      drainType === "logdna" ||
+      drainType === "sumologic" ||
+      drainType === "https_post"
+    ) {
+      return {
+        ...def,
+        drainType,
+        url,
+      };
+    }
+
+    if (drainType === "insightops") {
+      return {
+        ...def,
+        drainType,
+        loggingToken,
+      };
+    }
 
     return {
       ...def,
+      drainType: "syslog_tls_tcp",
+      drainHost,
+      drainPort,
+      loggingToken,
     };
   };
 
@@ -81,6 +174,9 @@ export const CreateLogDrainPage = () => {
     if (!validate(data)) return;
     dispatch(action);
   };
+  useLoaderSuccess(loader, () => {
+    navigate(operationDetailUrl(loader.meta.opId));
+  });
 
   return (
     <EnvironmentDetailLayout>
@@ -123,38 +219,196 @@ export const CreateLogDrainPage = () => {
             />
           </FormGroup>
 
-          {drainType === "datadog" ? (<FormGroup label="Datadog" description={<p>Finish configuring your Datadog Log Drain.</p>}></FormGroup>) : null}
+          <Label>Sources</Label>
+          <p>Select which logs should be captured:</p>
+          <CheckBox
+            label="App Logs"
+            name="app-logs"
+            checked={drainApps}
+            onChange={(e) => setDrainApps(e.currentTarget.checked)}
+          />
+          <CheckBox
+            label="Database Logs"
+            name="db-logs"
+            checked={drainDatabases}
+            onChange={(e) => setDrainDatabases(e.currentTarget.checked)}
+          />
+          <CheckBox
+            label="SSH Session Logs"
+            name="ssh-logs"
+            checked={drainEphemeralSessions}
+            onChange={(e) => setDrainEphemeralSessions(e.currentTarget.checked)}
+          />
+          <CheckBox
+            label="Endpoint Logs"
+            name="endpoint-logs"
+            checked={drainProxies}
+            onChange={(e) => setDrainProxies(e.currentTarget.checked)}
+          />
 
-          {drainType === "logdna" ? (<FormGroup label="Datadog" description={<p>Finish configuring your Datadog Log Drain.</p>}></FormGroup>) : null}
+          {drainType === "papertrail" || drainType === "syslog_tls_tcp" ? (
+            <FormGroup
+              label="Host"
+              description={
+                <>
+                  {drainType === "papertrail" && (
+                    <p>
+                      Host Add a new Log Destination in Papertrail (make sure to
+                      accept TCP + TLS connections and logs from unrecognized
+                      senders), then copy the host from the Log Destination.
+                    </p>
+                  )}
+                </>
+              }
+              htmlFor=""
+              feedbackMessage={errors.drainHost}
+              feedbackVariant={errors.drainHost ? "danger" : "info"}
+            >
+              <Input
+                type="text"
+                id="host"
+                value={drainHost}
+                onChange={(e) => setDrainHost(e.currentTarget.value)}
+              />
+            </FormGroup>
+          ) : null}
 
-          {drainType === "papertrail" ? (<FormGroup label="Datadog" description={<p>Finish configuring your Datadog Log Drain.</p>}></FormGroup>) : null}
+          {drainType === "papertrail" || drainType === "syslog_tls_tcp" ? (
+            <FormGroup
+              label="Port"
+              description={
+                <p>Add the port from the Log Destination you added.</p>
+              }
+              htmlFor="port"
+              feedbackMessage={errors.drainPort}
+              feedbackVariant={errors.drainPort ? "danger" : "info"}
+            >
+              <Input
+                type="number"
+                id="port"
+                value={drainPort}
+                onChange={(e) => setDrainPort(e.currentTarget.value)}
+              />
+            </FormGroup>
+          ) : null}
 
           {drainType === "elasticsearch_database" ? (
             <FormGroup
               label="Elasticsearch Database"
               htmlFor="db-selector"
               description={
-                <p>
-                  Finish configuring your Elasticsearch Log Drain.
-                </p>
+                <p>Finish configuring your Elasticsearch Log Drain.</p>
               }
               feedbackMessage={errors.dbId}
               feedbackVariant={errors.dbId ? "danger" : "info"}
             >
+              <Banner className="mb-2" variant="warning">
+                Logs from this Elasticsearch database will <strong>not</strong>{" "}
+                be captured by the Log Drain to avoid creating a feedback loop.
+              </Banner>
               <DbSelector
                 id="db-selector"
                 envId={envId}
                 onSelect={onDbSelect}
+                dbTypeFilter="elasticsearch"
                 value={dbId}
               />
             </FormGroup>
           ) : null}
 
-          {drainType === "sumologic" ? (<FormGroup label="Datadog" description={<p>Finish configuring your Datadog Log Drain.</p>}></FormGroup>) : null}
+          {drainType === "sumologic" ||
+          drainType === "datadog" ||
+          drainType === "logdna" ||
+          drainType === "https_post" ? (
+            <FormGroup
+              label="URL"
+              description={
+                <>
+                  {drainType === "https_post" && <p>Must be a HTTPS URL.</p>}
+                  {drainType === "datadog" && (
+                    <p>
+                      For Datadog Site US1, this must be in the format of{" "}
+                      <Code>
+                        "https://http-intake.logs.datadoghq.com/v1/input/DD_API_KEY"
+                      </Code>
+                      . For other sites and more options, refer to{" "}
+                      <ExternalLink
+                        variant="success"
+                        href="https://docs.datadoghq.com/logs/"
+                      >
+                        https://docs.datadoghq.com/logs/log_collection
+                      </ExternalLink>
+                      .
+                    </p>
+                  )}
+                  {drainType === "logdna" && (
+                    <p>
+                      Must be in the format of{" "}
+                      <Code>
+                        https://logs.logdna.com/aptible/ingest/INGESTION KEY
+                      </Code>
+                      . Refer to{" "}
+                      <ExternalLink
+                        variant="success"
+                        href="https://docs.mezmo.com/docs/aptible-logs"
+                      >
+                        https://docs.mezmo.com/docs/aptible-logs
+                      </ExternalLink>
+                      .
+                    </p>
+                  )}
+                  {drainType === "sumologic" && (
+                    <p>
+                      Create a new Hosted Collector in Sumologic using a HTTP
+                      source, then copy the HTTP Source Address.
+                    </p>
+                  )}
+                </>
+              }
+              htmlFor="url"
+              feedbackMessage={errors.url}
+              feedbackVariant={errors.url ? "danger" : "info"}
+            >
+              <Input
+                type="text"
+                id="url"
+                value={url}
+                onChange={(e) => setUrl(e.currentTarget.value)}
+              />
+            </FormGroup>
+          ) : null}
 
-          {drainType === "https_post" ? (<FormGroup label="Datadog" description={<p>Finish configuring your Datadog Log Drain.</p>}></FormGroup>) : null}
-
-          {drainType === "manual" ? (<FormGroup label="Datadog" description={<p>Finish configuring your Datadog Log Drain.</p>}></FormGroup>) : null}
+          {drainType === "insightops" || drainType === "syslog_tls_tcp" ? (
+            <FormGroup
+              label="Token"
+              description={
+                <>
+                  {drainType === "insightops" && (
+                    <p>
+                      Add a new Token TCP Log in InsightOps, then copy the
+                      Logging Token provided by InsightOps.
+                    </p>
+                  )}
+                  {drainType === "syslog_tls_tcp" && (
+                    <p>
+                      All log lines sent through this Log Drain will be prefixed
+                      with this token
+                    </p>
+                  )}
+                </>
+              }
+              htmlFor="logging-token"
+              feedbackMessage={errors.loggingToken}
+              feedbackVariant={errors.loggingToken ? "danger" : "info"}
+            >
+              <Input
+                type="text"
+                id="logging-token"
+                value={loggingToken}
+                onChange={(e) => setLoggingToken(e.currentTarget.value)}
+              />
+            </FormGroup>
+          ) : null}
 
           <BannerMessages {...loader} />
 
@@ -164,7 +418,7 @@ export const CreateLogDrainPage = () => {
             type="submit"
             isLoading={loader.isLoading}
           >
-            Save LogDrain
+            Save Log Drain
           </ButtonCreate>
         </form>
       </div>

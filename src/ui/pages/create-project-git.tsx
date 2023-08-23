@@ -72,6 +72,7 @@ import {
   Button,
   ButtonLink,
   ButtonLinkExternal,
+  Code,
   CreateAppEndpointSelector,
   ErrorResources,
   ExternalLink,
@@ -755,10 +756,6 @@ const ProjectStatus = ({
       })}
     </div>
   );
-};
-
-const Code = ({ children }: { children: React.ReactNode }) => {
-  return <code className="bg-gray-200 text-black p-[2px]">{children}</code>;
 };
 
 const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
