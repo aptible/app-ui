@@ -242,7 +242,7 @@ export const createLogDrain = api.post<
     const { url } = ctx.payload;
     body = JSON.stringify({
       ...preBody,
-      drain_type: ctx.payload.drainType,
+      drain_type: "https_post",
       url,
     });
   } else if (ctx.payload.drainType === "insightops") {
