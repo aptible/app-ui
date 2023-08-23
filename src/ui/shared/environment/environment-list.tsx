@@ -160,7 +160,7 @@ const EnvsResourceHeaderTitleBar = ({
         </ButtonIcon>,
       ]}
       filterBar={
-        <div>
+        <div className="pt-1">
           <InputSearch
             placeholder="Search environments..."
             search={search}

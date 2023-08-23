@@ -117,7 +117,7 @@ const EndpointHeader = ({
       title={showTitle ? "Endpoints" : ""}
       actions={actions}
       filterBar={
-        <div>
+        <div className="pt-1">
           <InputSearch
             placeholder="Search endpoints..."
             search={search}
@@ -203,7 +203,7 @@ export function EndpointsByOrg() {
     return (
       <EmptyResultView
         title="No endpoints yet"
-        description="Expose this application to the public internet by adding an endpoint"
+        description="Expose an application to the public internet by adding an endpoint"
         className="p-6 w-100"
       />
     );
