@@ -127,18 +127,6 @@ export const LoginPage = () => {
       <div className="mt-8">
         <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
           <form className="space-y-4" onSubmit={onSubmit}>
-            {isOtpRequired ? (
-              <BannerMessages
-                className="my-2"
-                isSuccess={false}
-                isError={false}
-                isWarning
-                message="You must enter your 2FA token to continue"
-              />
-            ) : (
-              <BannerMessages className="my-2" {...loader} />
-            )}
-
             <FormGroup
               label="Email"
               htmlFor="email"
@@ -180,7 +168,7 @@ export const LoginPage = () => {
             {requireOtp ? (
               <FormGroup
                 label="Two-Factor Authentication Required"
-                htmlFor="input-2fa"
+                htmlFor="otp"
                 description={
                   <p>
                     Read our 2FA{" "}
@@ -195,6 +183,8 @@ export const LoginPage = () => {
                 }
               >
                 <Input
+                  id="otp"
+                  name="otp"
                   type="number"
                   value={otpToken}
                   onChange={(e) => setOtpToken(e.currentTarget.value)}
@@ -203,6 +193,18 @@ export const LoginPage = () => {
                 />
               </FormGroup>
             ) : null}
+
+            {isOtpRequired ? (
+              <BannerMessages
+                className="my-2"
+                isSuccess={false}
+                isError={false}
+                isWarning
+                message="You must enter your 2FA token to continue"
+              />
+            ) : (
+              <BannerMessages className="my-2" {...loader} />
+            )}
 
             <Button
               isLoading={loader.isLoading}

@@ -52,9 +52,9 @@ export const ElevatePage = () => {
     dispatch(elevate(data));
   };
 
-  const otpError = isOtpError(meta.error);
+  const isOtpRequired = isOtpError(meta.error);
   useEffect(() => {
-    if (!otpError) {
+    if (!isOtpRequired) {
       return;
     }
 
@@ -65,7 +65,7 @@ export const ElevatePage = () => {
         webauthn: meta.exception_context.u2f,
       }),
     );
-  }, [isOtpError]);
+  }, [isOtpRequired]);
 
   return (
     <HeroBgLayout>
@@ -81,16 +81,15 @@ export const ElevatePage = () => {
       <div className="mt-8">
         <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
           <form className="space-y-4" onSubmit={onSubmit}>
-            <FormGroup label="Email" htmlFor="input-email">
+            <FormGroup label="Email" htmlFor="email">
               <Input
+                id="email"
                 name="email"
                 type="email"
                 disabled={true}
                 value={user.email}
                 autoComplete="username"
                 autoFocus={true}
-                data-testid="input-email"
-                id="input-email"
               />
             </FormGroup>
 
@@ -110,7 +109,7 @@ export const ElevatePage = () => {
             {requireOtp ? (
               <FormGroup
                 label="Two-Factor Authentication Required"
-                htmlFor="input-2fa"
+                htmlFor="otp"
                 description={
                   <p>
                     Read our 2fa{" "}
@@ -125,6 +124,8 @@ export const ElevatePage = () => {
                 }
               >
                 <Input
+                  id="otp"
+                  name="otp"
                   type="number"
                   value={otpToken}
                   onChange={(e) => setOtpToken(e.currentTarget.value)}
@@ -134,7 +135,17 @@ export const ElevatePage = () => {
               </FormGroup>
             ) : null}
 
-            <BannerMessages className="my-2" {...loader} />
+            {isOtpRequired ? (
+              <BannerMessages
+                className="my-2"
+                isSuccess={false}
+                isError={false}
+                isWarning
+                message="You must enter your 2FA token to continue"
+              />
+            ) : (
+              <BannerMessages className="my-2" {...loader} />
+            )}
 
             <Button
               isLoading={loader.isLoading}
