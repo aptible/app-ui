@@ -234,22 +234,24 @@ export const SignupPage = () => {
                   </Button>
                 </div>
                 <p className="mt-4 text-center text-sm text-gray-600">
-              If you already have an account, you can{" "}
-              <Link to={loginUrl()} className="font-medium">
-                log in here
-              </Link>
-              .
-            </p>
-            <p className="mt-4 text-center text-sm text-gray-600">
-              By submitting this form, I confirm that I have read and agree to
-              Aptible's{" "}
-              <a href="https://www.aptible.com/legal/terms-of-service">
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a href="https://www.aptible.com/legal/privacy">Privacy Policy</a>
-              .
-            </p>
+                  If you already have an account, you can{" "}
+                  <Link to={loginUrl()} className="font-medium">
+                    log in here
+                  </Link>
+                  .
+                </p>
+                <p className="mt-4 text-center text-sm text-gray-600">
+                  By submitting this form, I confirm that I have read and agree
+                  to Aptible's{" "}
+                  <a href="https://www.aptible.com/legal/terms-of-service">
+                    Terms of Service
+                  </a>{" "}
+                  and{" "}
+                  <a href="https://www.aptible.com/legal/privacy">
+                    Privacy Policy
+                  </a>
+                  .
+                </p>
               </form>
             </div>
           </div>
