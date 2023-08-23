@@ -238,7 +238,7 @@ export const CreateMetricDrainPage = () => {
               htmlFor="db-selector"
               description={
                 <p>
-                  Only InfluxDB Databases in the sbx-main Environment are
+                  Only InfluxDB Databases in the {env.handle} Environment are
                   eligible. To use an InfluxDB Database located in another
                   Environment, or hosted with a third party, use the "InfluxDB
                   (anywhere)" option.
