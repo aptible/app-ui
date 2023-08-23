@@ -1,50 +1,24 @@
-import { selectLoaderById } from "@app/fx";
-import type { LoadingState } from "@app/fx";
+import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 
-import type { AppState, AuthLoader, AuthLoaderMessage } from "@app/types";
+export interface AuthLoaderMeta {
+  error: string;
+  code: number;
+  exception_context: {
+    u2f?: {
+      payload: CredentialRequestOptionsJSON["publicKey"] & {
+        challenge: string;
+      };
+    };
+  };
+  verified: boolean;
+  id: string;
+}
 
 export const AUTH_LOADER_ID = "auth";
 
-export const defaultAuthLoader = (l: Partial<AuthLoader> = {}): AuthLoader => ({
-  status: "idle",
-  message: "",
-  lastRun: 0,
-  lastSuccess: 0,
-  meta: {
-    error: "",
-    code: 0,
-    exception_context: {},
-    verified: false,
-    id: "",
-    ...l.meta,
-  },
-  ...l,
-});
+export const isOtpError = (error: string) => error === "otp_token_required";
 
-export const defaultLoader = (
-  l: Partial<AuthLoader> = {},
-): LoadingState<AuthLoaderMessage> => {
-  const loading = defaultAuthLoader(l);
-  return {
-    ...loading,
-    isIdle: loading.status === "idle",
-    isError: loading.status === "error",
-    isSuccess: loading.status === "success",
-    isLoading: loading.status === "loading",
-    isInitialLoading:
-      (loading.status === "idle" || loading.status === "loading") &&
-      loading.lastSuccess === 0,
-  };
-};
-
-export const selectAuthLoader = (state: AppState) =>
-  defaultLoader(selectLoaderById(state, { id: AUTH_LOADER_ID }) as any);
-
-export const selectIsOtpError = (state: AppState) =>
-  selectAuthLoader(state).meta.error === "otp_token_required";
-
-export const selectIsAuthenticationError = (state: AppState) => {
-  const { error } = selectAuthLoader(state).meta;
+export const isAuthenticationError = (error: string) => {
   return (
     error === "unprocessable_entity" ||
     error === "invalid_credentials" ||
@@ -55,8 +29,15 @@ export const selectIsAuthenticationError = (state: AppState) => {
   );
 };
 
-/* export const selectAuthLoaderMessage = (state: AppState) => {
-  const curLoader = selectAuthLoader(state);
-  const { message } = curLoader;
-  return message || { error: '', message: '', code: 0, exception_context: {} };
-}; */
+export const defaultAuthLoaderMeta = (
+  p: Partial<AuthLoaderMeta>,
+): AuthLoaderMeta => {
+  return {
+    error: "",
+    code: 0,
+    exception_context: { ...p.exception_context },
+    verified: false,
+    id: "",
+    ...p,
+  };
+};

@@ -3,7 +3,7 @@ import { isBefore } from "date-fns";
 
 import { authApi } from "@app/api";
 import { selectOrigin } from "@app/env";
-import { createTable } from "@app/slice-helpers";
+import { createTable, mustSelectEntity } from "@app/slice-helpers";
 import { selectToken } from "@app/token";
 import type {
   ApiGen,
@@ -58,21 +58,17 @@ export function deserializeInvitation(i: InvitationResponse): Invitation {
   };
 }
 
+const INVITATIONS_NAME = "invitations";
 export const invitations = createTable<Invitation>({
-  name: "invitations",
+  name: INVITATIONS_NAME,
 });
-
-export const {
-  add: addInvitations,
-  set: setInvitations,
-  remove: removeInvitations,
-  reset: resetInvitations,
-} = invitations.actions;
-
-export const defaultInvitationInstance = defaultInvitation();
-export const selectInvitations = (state: AppState) => state.invitations;
-export const selectInvitation = (state: AppState, { id }: { id: string }) =>
-  selectInvitations(state)[id] || defaultInvitationInstance;
+export const { add: addInvitations } = invitations.actions;
+const selectors = invitations.getSelectors(
+  (s: AppState) => s[INVITATIONS_NAME],
+);
+export const initInvitation = defaultInvitation();
+const must = mustSelectEntity(initInvitation);
+export const selectInvitationById = must(selectors.selectById);
 
 export const fetchInvitations = authApi.get<
   { orgId: string },

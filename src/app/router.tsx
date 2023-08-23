@@ -81,6 +81,7 @@ import {
   SearchPage,
   SecuritySettingsPage,
   SettingsPage,
+  SignupPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
@@ -595,13 +596,12 @@ export const appRoutes: RouteObject[] = [
 
   {
     path: routes.LOGIN_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <LoginPage />,
-      },
-    ],
+    element: <LoginPage />,
+  },
+
+  {
+    path: routes.SIGNUP_PATH,
+    element: <SignupPage />,
   },
 
   {

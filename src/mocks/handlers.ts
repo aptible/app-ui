@@ -724,4 +724,22 @@ const apiHandlers = [
   ),
 ];
 
-export const handlers = [...authHandlers, ...apiHandlers];
+const billingHandlers = [
+  rest.post(`${testEnv.billingUrl}/billing_details`, async (_, res, ctx) => {
+    return res(ctx.json({}));
+  }),
+  rest.post(
+    `${testEnv.billingUrl}/billing_details/:id/billing_cycles`,
+    async (_, res, ctx) => {
+      return res(ctx.json({}));
+    },
+  ),
+  rest.post(
+    `${testEnv.billingUrl}/billing_details/:id/billing_contacts`,
+    async (_, res, ctx) => {
+      return res(ctx.json({}));
+    },
+  ),
+];
+
+export const handlers = [...authHandlers, ...apiHandlers, ...billingHandlers];

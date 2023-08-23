@@ -311,16 +311,12 @@ interface AppIdProp {
 
 export const fetchApp = api.get<AppIdProp>("/apps/:id");
 
-export const fetchAppOperations = api.get<AppIdProp>(
-  "/apps/:id/operations",
-  api.cache(),
-);
+export const fetchAppOperations = api.get<AppIdProp>("/apps/:id/operations");
 
 export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
 export const pollAppOperations = api.get<AppIdProp>(
   ["/apps/:id/operations", "poll"],
   { saga: poll(5 * 1000, `${cancelAppOpsPoll}`) },
-  api.cache(),
 );
 
 interface CreateAppProps {
