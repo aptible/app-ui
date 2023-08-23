@@ -155,7 +155,9 @@ export const SignupPage = () => {
                 {isAuthenticated ? (
                   <Banner variant="info">
                     You are already logged in.{" "}
-                    <Link to={homeUrl()}>Click here to go to the dashboard.</Link>
+                    <Link to={homeUrl()}>
+                      Click here to go to the dashboard.
+                    </Link>
                   </Banner>
                 ) : null}
 
