@@ -14,6 +14,7 @@ import { CreateUserForm, createUser } from "@app/users";
 import { AUTH_LOADER_ID } from "./loader";
 import { createOrganization } from "./organization";
 import { createToken, elevateToken } from "./token";
+import { createSignupBillingRecords } from "@app/billing";
 
 const log = createLog("signup");
 
@@ -28,7 +29,8 @@ function* setAuthError(ctx: AuthApiCtx) {
 export const signup = thunks.create<CreateUserForm>(
   "signup",
   function* onSignup(ctx, next): ApiGen {
-    const { company, email, password } = ctx.payload;
+    const { company, name, email, password } = ctx.payload;
+    const orgName = company;
     yield* put(setLoaderStart({ id: AUTH_LOADER_ID }));
 
     const userCtx = yield* call(createUser.run, createUser(ctx.payload));
@@ -59,7 +61,7 @@ export const signup = thunks.create<CreateUserForm>(
 
     const orgCtx = yield* call(
       createOrganization.run,
-      createOrganization({ name: company }),
+      createOrganization({ name: orgName }),
     );
 
     log(orgCtx);
@@ -68,6 +70,24 @@ export const signup = thunks.create<CreateUserForm>(
       yield* call(setAuthError, orgCtx);
       return;
     }
+
+    const billsCtx = yield* call(
+      createSignupBillingRecords.run,
+      createSignupBillingRecords({
+        orgId: orgCtx.json.data.id,
+        orgName,
+        contactName: name,
+        contactEmail: email,
+      }),
+    );
+
+    if (!billsCtx.json.ok) {
+      const { message, ...meta } = billsCtx.json.data;
+      yield* put(setLoaderError({ id: AUTH_LOADER_ID, message, meta }));
+      return;
+    }
+
+    log(billsCtx);
 
     const elevateCtx = yield* call(
       elevateToken.run,
