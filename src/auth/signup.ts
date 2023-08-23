@@ -1,4 +1,5 @@
 import {
+  batchActions,
   call,
   put,
   setLoaderError,
@@ -7,38 +8,31 @@ import {
 } from "@app/fx";
 
 import { thunks } from "@app/api";
+import { createSignupBillingRecords } from "@app/billing";
 import { createLog } from "@app/debug";
-import { ApiGen, AuthApiCtx } from "@app/types";
+import { ApiGen } from "@app/types";
 import { CreateUserForm, createUser } from "@app/users";
 
 import { AUTH_LOADER_ID } from "./loader";
 import { createOrganization } from "./organization";
 import { createToken, elevateToken } from "./token";
-import { createSignupBillingRecords } from "@app/billing";
 
 const log = createLog("signup");
-
-function* setAuthError(ctx: AuthApiCtx) {
-  if (ctx.json.ok) {
-    return;
-  }
-  const { message, ...meta } = ctx.json.data;
-  yield put(setLoaderError({ id: AUTH_LOADER_ID, message, meta }));
-}
 
 export const signup = thunks.create<CreateUserForm>(
   "signup",
   function* onSignup(ctx, next): ApiGen {
-    const { company, name, email, password } = ctx.payload;
-    const orgName = company;
-    yield* put(setLoaderStart({ id: AUTH_LOADER_ID }));
+    const { company: orgName, name, email, password } = ctx.payload;
+    const id = ctx.key;
+    yield* put(setLoaderStart({ id }));
 
     const userCtx = yield* call(createUser.run, createUser(ctx.payload));
 
     log(userCtx);
 
     if (!userCtx.json.ok) {
-      yield* call(setAuthError, userCtx);
+      const { message, ...meta } = userCtx.json.data;
+      yield* put(setLoaderError({ id, message, meta }));
       return;
     }
 
@@ -55,7 +49,8 @@ export const signup = thunks.create<CreateUserForm>(
     log(tokenCtx);
 
     if (!tokenCtx.json.ok) {
-      yield* call(setAuthError, tokenCtx);
+      const { message, ...meta } = tokenCtx.json.data;
+      yield* put(setLoaderError({ id, message, meta }));
       return;
     }
 
@@ -67,7 +62,8 @@ export const signup = thunks.create<CreateUserForm>(
     log(orgCtx);
 
     if (!orgCtx.json.ok) {
-      yield* call(setAuthError, orgCtx);
+      const { message, ...meta } = orgCtx.json.data;
+      yield* put(setLoaderError({ id, message, meta }));
       return;
     }
 
@@ -83,7 +79,7 @@ export const signup = thunks.create<CreateUserForm>(
 
     if (!billsCtx.json.ok) {
       const { message, ...meta } = billsCtx.json.data;
-      yield* put(setLoaderError({ id: AUTH_LOADER_ID, message, meta }));
+      yield* put(setLoaderError({ id, message, meta }));
       return;
     }
 
@@ -96,15 +92,21 @@ export const signup = thunks.create<CreateUserForm>(
 
     log(elevateCtx);
 
-    yield* put(
-      setLoaderSuccess({
-        id: AUTH_LOADER_ID,
-        meta: {
-          id: userCtx.json.data.id,
-          verified: userCtx.json.data.verified,
-        },
-      }),
-    );
     yield* next();
+
+    yield* put(
+      batchActions([
+        setLoaderSuccess({
+          id,
+          meta: {
+            id: userCtx.json.data.id,
+            verified: userCtx.json.data.verified,
+          },
+        }),
+        setLoaderSuccess({
+          id: AUTH_LOADER_ID,
+        }),
+      ]),
+    );
   },
 );

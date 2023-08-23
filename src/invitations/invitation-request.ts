@@ -1,9 +1,5 @@
-import { createSelector } from "@reduxjs/toolkit";
-
 import { createAssign } from "@app/slice-helpers";
 import { AppState, InvitationRequest } from "@app/types";
-
-import { selectInvitations } from "./invitations";
 
 export const INVITATION_REQUEST_SLICE = "invitationRequest";
 
@@ -28,17 +24,11 @@ export const invitationRequest = createAssign<InvitationRequest>({
 export const { set: setInvitationRequest, reset: resetInvitationRequest } =
   invitationRequest.actions;
 
+const initInviteRequest = defaultInvitationRequest();
+
 export const selectInvitationRequest = (state: AppState) =>
-  state[INVITATION_REQUEST_SLICE];
+  state[INVITATION_REQUEST_SLICE] || initInviteRequest;
 
 export const selectIsInvitationPending = (state: AppState) => {
   return selectInvitationRequest(state).invitationId !== "";
 };
-
-export const selectPendingInvitation = createSelector(
-  selectInvitations,
-  selectInvitationRequest,
-  (invitations, inviteReq) => {
-    return invitations[inviteReq.invitationId];
-  },
-);

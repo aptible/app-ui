@@ -20,7 +20,6 @@ import {
   environmentDetailUrl,
   stackDetailUrl,
 } from "@app/routes";
-import { validHandle } from "@app/string-utils";
 import { AppState } from "@app/types";
 
 import {
@@ -34,6 +33,7 @@ import {
   StackSelect,
   tokens,
 } from "../shared";
+import { handleValidator } from "@app/validator";
 
 const CreateAppPage = ({ envId }: { envId: string }) => {
   useQuery(fetchEnvironmentById({ id: envId }));
@@ -49,11 +49,9 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!validHandle(name)) {
-      setNameError(
-        "Not a valid app name (letters, numbers, and following symbols (., -, _).",
-      );
-      return;
+    const errorMsg = handleValidator(name);
+    if (errorMsg) {
+      setNameError(errorMsg);
     } else {
       setNameError("");
     }
@@ -176,11 +174,9 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!validHandle(name)) {
-      setNameError(
-        "Not a valid environment name (letters, numbers, and following symbols (., -, _).",
-      );
-      return;
+    const errorMsg = handleValidator(name);
+    if (errorMsg) {
+      setNameError(errorMsg);
     } else {
       setNameError("");
     }

@@ -50,3 +50,41 @@ export function handleValidator(handle = "") {
     return `[${handle}] is not a valid handle ${handleRegexExplainer}`;
   }
 }
+
+const COMPLEXITY_RULES: [string, RegExp][] = [
+  ["must be at least 10 characters", /^.{0,9}$/],
+  ["must be shorter than 128 characters", /^.{128,}$/],
+  ["must contain at least one uppercase letter", /^[^A-Z]+$/],
+  ["must contain at least one lowercase letter", /^[^a-z]+$/],
+  [
+    "must contain at least one digit or special character",
+    /^[^0-9!@#$%^&*()]+$/,
+  ],
+];
+
+export function passValidator(password: string) {
+  const errors: string[] = [];
+
+  COMPLEXITY_RULES.forEach((rule) => {
+    const [message, regex] = rule;
+
+    if (password.match(regex)) {
+      errors.push(message);
+    }
+  });
+
+  return errors.join(", ");
+}
+
+const VALID_EMAIL_REGEX =
+  /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+
+export function emailValidator(email: string) {
+  if (email === "") return "Email must not be empty";
+  if (!email.toLowerCase().match(VALID_EMAIL_REGEX))
+    return "Must provide valid email";
+}
+
+export function existValidtor(val: string, name: string) {
+  if (val === "") return `${name} must not be empty`;
+}

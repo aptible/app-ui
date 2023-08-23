@@ -2,10 +2,11 @@ import { billingApi, thunks } from "@app/api";
 import { all, call } from "@app/fx";
 
 const createBillingDetail = billingApi.post<{ orgId: string; orgName: string }>(
-  "/billing_details/:orgId",
+  "/billing_details",
   function* (ctx, next) {
     ctx.request = ctx.req({
       body: JSON.stringify({
+        id: ctx.payload.orgId,
         organization_details_json: { name: ctx.payload.orgName },
       }),
     });
