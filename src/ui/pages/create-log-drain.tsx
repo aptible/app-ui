@@ -19,11 +19,13 @@ import {
   CreateLogDrainProps,
   LogDrainType,
   provisionLogDrain,
+  selectEnvironmentById,
 } from "@app/deploy";
 import { operationDetailUrl } from "@app/routes";
+import { AppState } from "@app/types";
 import { handleValidator, portValidator } from "@app/validator";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useLoader, useLoaderSuccess } from "saga-query/react";
 
@@ -86,6 +88,9 @@ export const CreateLogDrainPage = () => {
   const queryEnvId = params.get("environment_id") || "";
   const [dbId, setDbId] = useState("");
   const [envId, setEnvId] = useState(queryEnvId);
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: envId }),
+  );
   const [handle, setHandle] = useState("");
   const [drainApps, setDrainApps] = useState(true);
   const [drainDatabases, setDrainDatabases] = useState(true);
@@ -185,7 +190,7 @@ export const CreateLogDrainPage = () => {
 
         <div>
           Log Drains let you collect stdout and stderr logs from your apps and
-          databases deployed in the sbx-madhu environment and route them to a
+          databases deployed in the {env.handle} environment and route them to a
           log destination.
         </div>
 
@@ -310,7 +315,7 @@ export const CreateLogDrainPage = () => {
                 id="db-selector"
                 envId={envId}
                 onSelect={onDbSelect}
-                dbTypeFilter="elasticsearch"
+                dbTypeFilters={["elasticsearch"]}
                 value={dbId}
               />
             </FormGroup>

@@ -150,9 +150,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
             {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
           </p>
         }
-        tableHeader={
-          <TableHead headers={logDrainsHeaders} rightAlignedFinalCol />
-        }
+        tableHeader={<TableHead headers={logDrainsHeaders} />}
         tableBody={
           <>
             {logDrains.map((logDrain) => (

@@ -13,7 +13,7 @@ export const DbSelector = ({
   id,
   ariaLabel = "db-selector",
   className = "",
-  dbTypeFilter = "",
+  dbTypeFilters = [],
 }: {
   envId: string;
   onSelect: (opt: SelectOption) => void;
@@ -21,11 +21,11 @@ export const DbSelector = ({
   ariaLabel?: string;
   id?: string;
   className?: string;
-  dbTypeFilter?: string;
+  dbTypeFilters?: string[];
 }) => {
   const dbs = useSelector((s: AppState) =>
-    dbTypeFilter
-      ? selectDatabasesByEnvIdAndType(s, { envId, type: dbTypeFilter })
+    dbTypeFilters.length > 0
+      ? selectDatabasesByEnvIdAndType(s, { envId, types: dbTypeFilters })
       : selectDatabasesByEnvId(s, { envId }),
   );
   const options = [

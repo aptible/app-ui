@@ -311,11 +311,11 @@ export const selectDatabasesByEnvId = createSelector(
 export const selectDatabasesByEnvIdAndType = createSelector(
   selectDatabasesByEnvId,
   (_: AppState, props: { envId: string }) => props.envId,
-  (_: AppState, props: { type: string }) => props.type,
-  (dbs, envId, type) => {
+  (_: AppState, props: { types: string[] }) => props.types,
+  (dbs, envId, types) => {
     return dbs
       .filter((db) => db.environmentId === envId)
-      .filter((db) => db.type === type)
+      .filter((db) => types.includes(db.type))
       .sort((a, b) => a.id.localeCompare(b.id));
   },
 );

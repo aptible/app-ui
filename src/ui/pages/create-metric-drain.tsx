@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
@@ -7,6 +7,7 @@ import {
   MetricDrainType,
   fetchDatabasesByEnvId,
   provisionMetricDrain,
+  selectEnvironmentById,
 } from "@app/deploy";
 
 import { useValidator } from "../hooks";
@@ -25,6 +26,7 @@ import {
   SelectOption,
 } from "../shared";
 import { operationDetailUrl } from "@app/routes";
+import { AppState } from "@app/types";
 import { handleValidator, portValidator } from "@app/validator";
 import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
@@ -96,6 +98,9 @@ export const CreateMetricDrainPage = () => {
   const queryEnvId = params.get("environment_id") || "";
   const [envId, setEnvId] = useState(queryEnvId);
   useQuery(fetchDatabasesByEnvId({ envId }));
+  const env = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: envId }),
+  );
   const [dbId, setDbId] = useState("");
   const [handle, setHandle] = useState("");
   const [apiKey, setApiKey] = useState("");
@@ -193,7 +198,8 @@ export const CreateMetricDrainPage = () => {
 
         <div>
           Metric Drains let you collect metrics from apps and databases deployed
-          in the sbx-main environment and route them to a metrics destination.
+          in the {env.handle} environment and route them to a metrics
+          destination.
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -245,6 +251,7 @@ export const CreateMetricDrainPage = () => {
                 id="db-selector"
                 envId={envId}
                 onSelect={onDbSelect}
+                dbTypeFilters={["influxdb", "influxdb2"]}
                 value={dbId}
               />
             </FormGroup>
