@@ -445,16 +445,16 @@ export const selectEndpointsByCertIdForTableSearch = createSelector(
   },
 );
 
-export const selectEndpointsByCertificateId = createSelector(
+export const selectEndpointsByCertId = createSelector(
   selectEndpointsByEnvironmentId,
-  (_: AppState, p: { certificateId: string }) => p.certificateId,
+  (_: AppState, p: { certId: string }) => p.certId,
   (endpoints, certId) =>
     endpoints.filter((endpoint) => endpoint.certificateId === certId),
 );
 
-export const selectAppsByCertificateId = createSelector(
+export const selectAppsByCertId = createSelector(
   selectAppsByEnvId,
-  selectEndpointsByCertificateId,
+  selectEndpointsByCertId,
   (apps, endpoints) =>
     apps.filter((app) =>
       app.serviceIds.some((appServiceId) =>
