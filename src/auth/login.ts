@@ -11,7 +11,7 @@ import {
   setLoaderSuccess,
 } from "@app/fx";
 
-import { AUTH_LOADER_ID } from "./loader";
+import { AUTH_LOADER_ID, defaultAuthLoaderMeta } from "./loader";
 import { CreateTokenPayload, createToken, elevateToken } from "./token";
 import { webauthnGet } from "./webauthn";
 
@@ -30,7 +30,7 @@ export const login = thunks.create<CreateTokenPayload>(
         setLoaderError({
           id,
           message,
-          meta: { error, code, exception_context },
+          meta: defaultAuthLoaderMeta({ error, code, exception_context }),
         }),
       );
       return;
@@ -52,8 +52,10 @@ export const login = thunks.create<CreateTokenPayload>(
 
 export const loginWebauthn = thunks.create<
   CreateTokenPayload & {
-    webauthn?: CredentialRequestOptionsJSON["publicKey"] & {
-      challenge: string;
+    webauthn?: {
+      payload: CredentialRequestOptionsJSON["publicKey"] & {
+        challenge: string;
+      };
     };
   }
 >("login-webauthn", function* (ctx, next) {
@@ -64,7 +66,7 @@ export const loginWebauthn = thunks.create<
   }
 
   try {
-    const u2f = yield* call(webauthnGet, webauthn);
+    const u2f = yield* call(webauthnGet, webauthn.payload);
     yield* call(login.run, login({ ...props, u2f }));
     yield* next();
   } catch (err) {
@@ -73,7 +75,7 @@ export const loginWebauthn = thunks.create<
         id,
         message: (err as Error).message,
         // auth loader type sets this expectation
-        meta: { exception_context: { u2f: webauthn } },
+        meta: defaultAuthLoaderMeta({ exception_context: { u2f: webauthn } }),
       }),
     );
   }

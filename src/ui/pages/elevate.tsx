@@ -3,7 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 
-import { elevate, elevateWebauthn, isOtpError } from "@app/auth";
+import {
+  defaultAuthLoaderMeta,
+  elevate,
+  elevateWebauthn,
+  isOtpError,
+} from "@app/auth";
 import { useLoader, useLoaderSuccess } from "@app/fx";
 import { forgotPassUrl, homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
@@ -36,6 +41,7 @@ export const ElevatePage = () => {
   };
   const action = elevate(data);
   const loader = useLoader(action);
+  const meta = defaultAuthLoaderMeta(loader.meta);
 
   useLoaderSuccess(loader, () => {
     navigate(redirect || homeUrl());
@@ -46,7 +52,7 @@ export const ElevatePage = () => {
     dispatch(elevate(data));
   };
 
-  const otpError = isOtpError(loader.meta.error);
+  const otpError = isOtpError(meta.error);
   useEffect(() => {
     if (!otpError) {
       return;
@@ -56,7 +62,7 @@ export const ElevatePage = () => {
     dispatch(
       elevateWebauthn({
         ...data,
-        webauthn: loader.meta.exception_context.u2f?.payload,
+        webauthn: meta.exception_context.u2f,
       }),
     );
   }, [isOtpError]);
