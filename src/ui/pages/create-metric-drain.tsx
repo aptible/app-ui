@@ -30,7 +30,8 @@ import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
 const options: SelectOption<MetricDrainType>[] = [
   { value: "influxdb_database", label: "InfluxDb (this environment)" },
-  { value: "influxdb", label: "InfluxDb (anywhere)" },
+  { value: "influxdb", label: "InfluxDb v1 (anywhere)" },
+  { value: "influxdb2", label: "InfluxDb v2 (anywhere)" },
   { value: "datadog", label: "Datadog" },
 ];
 
@@ -39,13 +40,18 @@ const validators = {
   handle: (p: CreateMetricDrainProps) => {
     return handleValidator(p.handle);
   },
-  // influxdb
+  // influxdb && influxdb2
   hostname: (p: CreateMetricDrainProps) => {
-    if (p.drainType !== "influxdb") return;
+    if (p.drainType !== "influxdb" && p.drainType !== "influxdb2") return;
     if (p.hostname === "") return "Must provide hostname";
     if (p.hostname.startsWith("http"))
       return "Do not include the protocol (e.g. http(s)://)";
   },
+  port: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "influxdb" && p.drainType !== "influxdb2") return;
+    return portValidator(p.port);
+  },
+  // influxdb
   username: (p: CreateMetricDrainProps) => {
     if (p.drainType !== "influxdb") return;
     if (p.username === "") return "Must provide username";
@@ -54,13 +60,22 @@ const validators = {
     if (p.drainType !== "influxdb") return;
     if (p.password === "") return "Must provide password";
   },
-  port: (p: CreateMetricDrainProps) => {
-    if (p.drainType !== "influxdb") return;
-    return portValidator(p.port);
-  },
   database: (p: CreateMetricDrainProps) => {
     if (p.drainType !== "influxdb") return;
     if (p.database === "") return "Must provide a database name";
+  },
+  // influxdb2
+  org: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "influxdb2") return;
+    if (p.org === "") return "Must provide an organization name";
+  },
+  authToken: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "influxdb2") return;
+    if (p.authToken === "") return "Must provide an API token";
+  },
+  bucket: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "influxdb2") return;
+    if (p.bucket === "") return "Must provide a bucket name";
   },
   // influxdb_database
   dbId: (p: CreateMetricDrainProps) => {
@@ -90,6 +105,9 @@ export const CreateMetricDrainPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [database, setDb] = useState("");
+  const [org, setOrg] = useState("");
+  const [authToken, setAuthToken] = useState("");
+  const [bucket, setBucket] = useState("");
 
   const [drainType, setDrainType] = useState<MetricDrainType>(options[0].value);
 
@@ -123,6 +141,19 @@ export const CreateMetricDrainPage = () => {
         ...def,
         drainType: "datadog",
         apiKey,
+      };
+    }
+
+    if (drainType === "influxdb2") {
+      return {
+        ...def,
+        drainType: "influxdb2",
+        protocol,
+        hostname,
+        port,
+        org,
+        authToken,
+        bucket,
       };
     }
 
@@ -249,7 +280,7 @@ export const CreateMetricDrainPage = () => {
             </FormGroup>
           ) : null}
 
-          {drainType === "influxdb" ? (
+          {drainType === "influxdb" || drainType === "influxdb2" ? (
             <>
               <FormGroup label="Protocol" htmlFor="protocol">
                 <RadioGroup
@@ -293,47 +324,97 @@ export const CreateMetricDrainPage = () => {
                 />
               </FormGroup>
 
-              <FormGroup
-                label="Username"
-                htmlFor="username"
-                feedbackMessage={errors.username}
-                feedbackVariant={errors.username ? "danger" : "info"}
-              >
-                <Input
-                  type="text"
-                  id="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.currentTarget.value)}
-                />
-              </FormGroup>
+              {drainType === "influxdb" ? (
+                <>
+                  <FormGroup
+                    label="Username"
+                    htmlFor="username"
+                    feedbackMessage={errors.username}
+                    feedbackVariant={errors.username ? "danger" : "info"}
+                  >
+                    <Input
+                      type="text"
+                      id="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.currentTarget.value)}
+                    />
+                  </FormGroup>
 
-              <FormGroup
-                label="Password"
-                htmlFor="password"
-                feedbackMessage={errors.password}
-                feedbackVariant={errors.password ? "danger" : "info"}
-              >
-                <Input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.currentTarget.value)}
-                />
-              </FormGroup>
+                  <FormGroup
+                    label="Password"
+                    htmlFor="password"
+                    feedbackMessage={errors.password}
+                    feedbackVariant={errors.password ? "danger" : "info"}
+                  >
+                    <Input
+                      type="password"
+                      id="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.currentTarget.value)}
+                    />
+                  </FormGroup>
 
-              <FormGroup
-                label="Database"
-                htmlFor="database"
-                feedbackMessage={errors.database}
-                feedbackVariant={errors.database ? "danger" : "info"}
-              >
-                <Input
-                  type="text"
-                  id="database"
-                  value={database}
-                  onChange={(e) => setDb(e.currentTarget.value)}
-                />
-              </FormGroup>
+                  <FormGroup
+                    label="Database"
+                    htmlFor="database"
+                    feedbackMessage={errors.database}
+                    feedbackVariant={errors.database ? "danger" : "info"}
+                  >
+                    <Input
+                      type="text"
+                      id="database"
+                      value={database}
+                      onChange={(e) => setDb(e.currentTarget.value)}
+                    />
+                  </FormGroup>
+                </>
+              ) : null}
+
+              {drainType === "influxdb2" ? (
+                <>
+                  <FormGroup
+                    label="InfluxDB Organization Name"
+                    htmlFor="org"
+                    feedbackMessage={errors.org}
+                    feedbackVariant={errors.org ? "danger" : "info"}
+                  >
+                    <Input
+                      type="text"
+                      id="org"
+                      value={org}
+                      onChange={(e) => setOrg(e.currentTarget.value)}
+                    />
+                  </FormGroup>
+
+                  <FormGroup
+                    label="API Token"
+                    htmlFor="authToken"
+                    feedbackMessage={errors.authToken}
+                    feedbackVariant={errors.authToken ? "danger" : "info"}
+                  >
+                    <Input
+                      type="password"
+                      id="authToken"
+                      value={authToken}
+                      onChange={(e) => setAuthToken(e.currentTarget.value)}
+                    />
+                  </FormGroup>
+
+                  <FormGroup
+                    label="Bucket"
+                    htmlFor="bucket"
+                    feedbackMessage={errors.bucket}
+                    feedbackVariant={errors.bucket ? "danger" : "info"}
+                  >
+                    <Input
+                      type="text"
+                      id="bucket"
+                      value={bucket}
+                      onChange={(e) => setBucket(e.currentTarget.value)}
+                    />
+                  </FormGroup>
+                </>
+              ) : null}
             </>
           ) : null}
 

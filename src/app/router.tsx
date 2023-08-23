@@ -50,6 +50,7 @@ import {
   EndpointDetailPage,
   EndpointDetailSettingsPage,
   EndpointDetailSetupPage,
+  EndpointsPage,
   EnvironmentActivityPage,
   EnvironmentAppsPage,
   EnvironmentBackupsPage,
@@ -312,6 +313,11 @@ export const appRoutes: RouteObject[] = [
             element: <CertDetailSettingsPage />,
           },
         ],
+      },
+
+      {
+        path: routes.ENDPOINTS_PATH,
+        element: <EndpointsPage />,
       },
 
       {

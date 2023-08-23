@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import {
   fetchAllCertsByEnvId,
-  selectAppsByCertificateId,
+  selectAppsByCertId,
   selectCertificatesByEnvId,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
@@ -84,8 +84,8 @@ const CertificateServicesCell = ({
   certificate,
 }: { certificate: DeployCertificate }) => {
   const appsForCertificate = useSelector((s: AppState) =>
-    selectAppsByCertificateId(s, {
-      certificateId: certificate.id,
+    selectAppsByCertId(s, {
+      certId: certificate.id,
       envId: certificate.environmentId,
     }),
   );

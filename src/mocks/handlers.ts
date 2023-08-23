@@ -609,11 +609,17 @@ const apiHandlers = [
     return res(ctx.json(testEndpoint));
   }),
   rest.get(`${testEnv.apiUrl}/vhosts`, (_, res, ctx) => {
-    return res(ctx.json({ vhosts: [] }));
+    return res(ctx.json({ _embedded: { vhosts: [] } }));
   }),
   rest.get(`${testEnv.apiUrl}/services`, (_, res, ctx) => {
-    return res(ctx.json({ services: [] }));
+    return res(ctx.json({ _embedded: { services: [] } }));
   }),
+  rest.get(
+    `${testEnv.apiUrl}/accounts/:id/certificates`,
+    async (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { certificates: [] } }));
+    },
+  ),
   rest.post(
     `${testEnv.apiUrl}/accounts/:id/certificates`,
     async (_, res, ctx) => {
@@ -621,21 +627,21 @@ const apiHandlers = [
     },
   ),
   rest.get(`${testEnv.apiUrl}/accounts/:id/backups`, async (_, res, ctx) => {
-    return res(ctx.json({ backups: [] }));
+    return res(ctx.json({ _embedded: { backups: [] } }));
   }),
   rest.get(`${testEnv.apiUrl}/log_drains`, async (_, res, ctx) => {
-    return res(ctx.json({ log_drains: [] }));
+    return res(ctx.json({ _embedded: { log_drains: [] } }));
   }),
   rest.get(`${testEnv.apiUrl}/accounts/:id/log_drains`, async (_, res, ctx) => {
-    return res(ctx.json({ log_drains: [] }));
+    return res(ctx.json({ _embedded: { log_drains: [] } }));
   }),
   rest.get(`${testEnv.apiUrl}/metric_drains`, async (_, res, ctx) => {
-    return res(ctx.json({ metric_drains: [] }));
+    return res(ctx.json({ _embedded: { metric_drains: [] } }));
   }),
   rest.get(
     `${testEnv.apiUrl}/accounts/:id/metric_drains`,
     async (_, res, ctx) => {
-      return res(ctx.json({ metric_drains: [] }));
+      return res(ctx.json({ _embedded: { metric_drains: [] } }));
     },
   ),
   rest.post(
