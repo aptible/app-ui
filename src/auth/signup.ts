@@ -13,7 +13,7 @@ import { createLog } from "@app/debug";
 import { ApiGen } from "@app/types";
 import { CreateUserForm, createUser } from "@app/users";
 
-import { AUTH_LOADER_ID } from "./loader";
+import { AUTH_LOADER_ID, defaultAuthLoaderMeta } from "./loader";
 import { createOrganization } from "./organization";
 import { createToken, elevateToken } from "./token";
 
@@ -32,7 +32,9 @@ export const signup = thunks.create<CreateUserForm>(
 
     if (!userCtx.json.ok) {
       const { message, ...meta } = userCtx.json.data;
-      yield* put(setLoaderError({ id, message, meta }));
+      yield* put(
+        setLoaderError({ id, message, meta: defaultAuthLoaderMeta(meta) }),
+      );
       return;
     }
 
@@ -50,7 +52,9 @@ export const signup = thunks.create<CreateUserForm>(
 
     if (!tokenCtx.json.ok) {
       const { message, ...meta } = tokenCtx.json.data;
-      yield* put(setLoaderError({ id, message, meta }));
+      yield* put(
+        setLoaderError({ id, message, meta: defaultAuthLoaderMeta(meta) }),
+      );
       return;
     }
 
@@ -63,7 +67,9 @@ export const signup = thunks.create<CreateUserForm>(
 
     if (!orgCtx.json.ok) {
       const { message, ...meta } = orgCtx.json.data;
-      yield* put(setLoaderError({ id, message, meta }));
+      yield* put(
+        setLoaderError({ id, message, meta: defaultAuthLoaderMeta(meta) }),
+      );
       return;
     }
 
@@ -79,7 +85,9 @@ export const signup = thunks.create<CreateUserForm>(
 
     if (!billsCtx.json.ok) {
       const { message, ...meta } = billsCtx.json.data;
-      yield* put(setLoaderError({ id, message, meta }));
+      yield* put(
+        setLoaderError({ id, message, meta: defaultAuthLoaderMeta(meta) }),
+      );
       return;
     }
 
@@ -98,10 +106,10 @@ export const signup = thunks.create<CreateUserForm>(
       batchActions([
         setLoaderSuccess({
           id,
-          meta: {
-            id: userCtx.json.data.id,
+          meta: defaultAuthLoaderMeta({
+            id: `${userCtx.json.data.id}`,
             verified: userCtx.json.data.verified,
-          },
+          }),
         }),
         setLoaderSuccess({
           id: AUTH_LOADER_ID,

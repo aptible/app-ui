@@ -1,3 +1,6 @@
+import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
+
+import { ThunkCtx, thunks } from "@app/api";
 import {
   call,
   put,
@@ -6,11 +9,9 @@ import {
   setLoaderSuccess,
 } from "@app/fx";
 
-import { AUTH_LOADER_ID } from "./loader";
+import { defaultAuthLoaderMeta } from "./loader";
 import { ElevateToken, elevateToken } from "./token";
 import { webauthnGet } from "./webauthn";
-import { ThunkCtx, thunks } from "@app/api";
-import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 
 export const elevate = thunks.create<ElevateToken>(
   "elevate",
@@ -25,7 +26,7 @@ export const elevate = thunks.create<ElevateToken>(
         setLoaderError({
           id,
           message,
-          meta: { error, code, exception_context },
+          meta: defaultAuthLoaderMeta({ error, code, exception_context }),
         }),
       );
       return;
@@ -38,8 +39,10 @@ export const elevate = thunks.create<ElevateToken>(
 
 export const elevateWebauthn = thunks.create<
   ElevateToken & {
-    webauthn?: CredentialRequestOptionsJSON["publicKey"] & {
-      challenge: string;
+    webauthn?: {
+      payload: CredentialRequestOptionsJSON["publicKey"] & {
+        challenge: string;
+      };
     };
   }
 >("elevate-webauthn", function* (ctx, next) {
@@ -47,18 +50,21 @@ export const elevateWebauthn = thunks.create<
   if (!webauthn) {
     return;
   }
+  const id = ctx.key;
+  yield* put(setLoaderStart({ id }));
 
   try {
-    const u2f = yield* call(webauthnGet, webauthn);
+    const u2f = yield* call(webauthnGet, webauthn.payload);
     yield* call(elevate.run, elevate({ ...props, u2f }));
     yield* next();
+    yield* put(setLoaderSuccess({ id }));
   } catch (err) {
     yield put(
       setLoaderError({
-        id: AUTH_LOADER_ID,
+        id,
         message: (err as Error).message,
         // auth loader type sets this expectation
-        meta: { exception_context: { u2f: webauthn } },
+        meta: defaultAuthLoaderMeta({ exception_context: { u2f: webauthn } }),
       }),
     );
   }

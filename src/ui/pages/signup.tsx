@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 
-import { signup } from "@app/auth";
+import { defaultAuthLoaderMeta, signup } from "@app/auth";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import {
   fetchInvitation,
@@ -87,9 +87,10 @@ export const SignupPage = () => {
     if (invitationRequest.invitationId) {
       navigate(acceptInvitationWithCodeUrl(invitationRequest));
     } else {
+      const meta = defaultAuthLoaderMeta(loader.meta);
       // if the api returns with a user.verified = true, skip email request page
       // this can happen in development when ENV['DISABLE_EMAIL_VERIFICATION']=1
-      if (loader.meta.verified) {
+      if (meta.verified) {
         navigate(redirectPath || homeUrl());
         dispatch(resetRedirectPath());
         return;
