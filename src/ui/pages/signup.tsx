@@ -25,6 +25,7 @@ import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
   AptibleLogo,
+  Banner,
   BannerMessages,
   Button,
   CreateProjectFooter,
@@ -32,6 +33,7 @@ import {
   Input,
   tokens,
 } from "../shared";
+import { selectIsUserAuthenticated } from "@app/token";
 
 const validators = {
   name: (props: CreateUserForm) => existValidtor(props.name, "Name"),
@@ -48,6 +50,7 @@ export const SignupPage = () => {
   const challengeToken = params.get("token") || "";
 
   const redirectPath = useSelector(selectRedirectPath);
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
 
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -149,6 +152,13 @@ export const SignupPage = () => {
           <div className="mt-6">
             <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
               <form className="space-y-4" onSubmit={onSubmitForm}>
+                {isAuthenticated ? (
+                  <Banner variant="info">
+                    You are already logged in.{" "}
+                    <Link to={homeUrl()}>Click here to go to the dashboard.</Link>
+                  </Banner>
+                ) : null}
+
                 <FormGroup
                   label="Name"
                   htmlFor="name"
@@ -230,6 +240,7 @@ export const SignupPage = () => {
                     layout="block"
                     size="lg"
                     isLoading={loader.isLoading}
+                    disabled={isAuthenticated}
                   >
                     Create Account
                   </Button>
