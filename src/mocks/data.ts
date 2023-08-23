@@ -91,6 +91,7 @@ export const testOrgReauth = defaultOrgResponse({
   id: `${createId()}`,
   name: "Reauth Org",
   updated_at: new Date("2023-01-01").toISOString(),
+  reauth_required: true
 });
 export const testUserOrgSelected = defaultUserResponse({
   id: createId(),
