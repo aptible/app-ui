@@ -46,10 +46,7 @@ export function OpHeader({
         <DetailInfoItem title="User">{op.userName}</DetailInfoItem>
         <div className="hidden md:block" />
 
-        <DetailInfoItem>
-          <div className="text-base font-semibold text-gray-900">
-            {prettyResourceType(op.resourceType)}
-          </div>
+        <DetailInfoItem title={prettyResourceType(op.resourceType)}>
           {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
         </DetailInfoItem>
         <DetailInfoItem title="Note">{op.note || "N/A"}</DetailInfoItem>
