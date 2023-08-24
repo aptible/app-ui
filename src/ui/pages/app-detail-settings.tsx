@@ -174,10 +174,10 @@ export const AppSettingsPage = () => {
           <Button
             variant="white"
             disabled={restartLoader.isLoading}
-            className="h-15 w-30 mb-0 ml-0 mt-4 flex"
+            className="h-15 w-30 mb-0 ml-0 mt-1 flex"
             onClick={submitRestart}
           >
-            <IconRefresh className="mr-2" />
+            <IconRefresh className="mr-2" variant="sm" />
             {isDeprovisioning ? "Restarting App..." : "Restart App"}
           </Button>
 
