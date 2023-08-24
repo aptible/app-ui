@@ -286,6 +286,14 @@ export interface DeployDatabase extends Provisionable, Timestamps {
   initializeFrom: string;
 }
 
+export interface DeployDatabaseCredential {
+  id: string;
+  default: boolean;
+  connectionUrl: string;
+  databaseId: string;
+  type: string;
+}
+
 export interface DeployDatabaseImage extends Timestamps {
   id: string;
   default: boolean;
