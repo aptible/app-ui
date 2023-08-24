@@ -1,7 +1,6 @@
 import { IconInfo, IconPlusCircle } from "../icons";
 import { Tooltip } from "../tooltip";
 import { useQuery } from "@app/fx";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -76,13 +75,12 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   const currentContainerProfile = getContainerProfileFromType(
     service.instanceClass,
   );
-  const { pricePerHour: currentPricePerHour, pricePerMonth: currentPrice } =
-    hourlyAndMonthlyCostsForContainers(
-      service.containerCount,
-      currentContainerProfile,
-      service.containerMemoryLimitMb,
-      database.disk?.size || 0,
-    );
+  const { pricePerMonth: currentPrice } = hourlyAndMonthlyCostsForContainers(
+    service.containerCount,
+    currentContainerProfile,
+    service.containerMemoryLimitMb,
+    database.disk?.size || 0,
+  );
   return (
     <Td>
       <div className={tokens.type.darker}>${currentPrice}</div>
@@ -217,7 +215,7 @@ export const DatabaseListByOrg = () => {
   const headers = [
     "Handle",
     "Environment",
-    "Estimated Monthly Cost",
+    "Est. Monthly Cost",
     "Last Operation",
     "Actions",
   ];
@@ -291,7 +289,7 @@ export const DatabaseListByEnvironment = ({
   const headers = [
     "Handle",
     "Environment",
-    "Estimated Monthly Cost",
+    "Est. Monthly Cost",
     "Last Operation",
   ];
   const actions = [

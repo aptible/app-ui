@@ -141,7 +141,7 @@ const appHeaders: Header[] = [
   "Handle",
   "Environment",
   "Services",
-  "Estimated Monthly Cost",
+  "Est. Monthly Cost",
   "Last Operation",
 ];
 
