@@ -118,7 +118,7 @@ export const SignupPage = () => {
       <div className="mt-8">
         <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
           <form className="space-y-4" onSubmit={onSubmitForm}>
-            {isAuthenticated ? (
+            {isAuthenticated && !loader.isLoading ? (
               <Banner variant="info">
                 You are already logged in.{" "}
                 <Link to={homeUrl()}>Click here to go to the dashboard.</Link>
