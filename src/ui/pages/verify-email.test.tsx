@@ -90,7 +90,6 @@ describe("Verify email page", () => {
         (_, res, ctx) => {
           return res(
             ctx.status(401),
-            ctx.set("Content-Type", "application/json"),
             ctx.json({
               code: 401,
               exception_context: {},
