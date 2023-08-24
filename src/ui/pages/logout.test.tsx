@@ -60,6 +60,7 @@ describe("LogoutPage", () => {
         appConfigs: {},
         certificates: {},
         databaseImages: {},
+        databaseCredentials: {},
         databases: {},
         endpoints: {},
         environments: {},
