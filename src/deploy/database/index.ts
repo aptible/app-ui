@@ -670,6 +670,30 @@ export interface DatabaseScaleProps {
   containerProfile?: InstanceClass;
 }
 
+export const restartDatabase = api.post<
+  { id: string },
+  DeployOperationResponse
+>(["/databases/:id/operations", "restart"], function* (ctx, next) {
+  const { id } = ctx.payload;
+  const body = {
+    type: "restart",
+    id,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Restart database operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
+
 export const scaleDatabase = api.post<
   DatabaseScaleProps,
   DeployOperationResponse
