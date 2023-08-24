@@ -1,7 +1,8 @@
-import { useQuery } from "@app/fx";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { useNavigate, useParams } from "react-router";
 
 import {
+  Button,
   ButtonCreate,
   IconPlusCircle,
   LoadResources,
@@ -17,13 +18,20 @@ import { prettyDateRelative } from "@app/date";
 import {
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
+  restartLogDrain,
+  restartMetricDrain,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
 } from "@app/deploy";
-import { createLogDrainUrl, createMetricDrainUrl } from "@app/routes";
+import {
+  createLogDrainUrl,
+  createMetricDrainUrl,
+  operationDetailUrl,
+} from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
-import { useSelector } from "react-redux";
+import { SyntheticEvent } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const DrainStatusPill = ({
   drain,
@@ -120,7 +128,41 @@ const LogDrainLastUpdatedCell = ({
   );
 };
 
-const logDrainsHeaders = ["Status", "Handle", "Sources", "Last Updated"];
+const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const restartAction = restartLogDrain({ id: logDrain.id });
+  const restartLoader = useLoader(restartAction);
+  const submitRestart = (e: SyntheticEvent) => {
+    e.preventDefault();
+    dispatch(restartAction);
+  };
+  useLoaderSuccess(restartLoader, () => {
+    navigate(operationDetailUrl(restartLoader.meta.opId));
+  });
+
+  return (
+    <Td className="flex-1">
+      <div className="flex">
+        <Button
+          className="flex semibold"
+          onClick={submitRestart}
+          disabled={restartLoader.isLoading}
+        >
+          {restartLoader.isLoading ? "Restarting..." : "Restart"}
+        </Button>
+      </div>
+    </Td>
+  );
+};
+
+const logDrainsHeaders = [
+  "Status",
+  "Handle",
+  "Sources",
+  "Last Updated",
+  "Actions",
+];
 
 const LogDrainsSection = ({ id }: { id: string }) => {
   const query = useQuery(fetchEnvLogDrains({ id }));
@@ -159,6 +201,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
                 <LogDrainHandleCell logDrain={logDrain} />
                 <LogDrainSourcesCell logDrain={logDrain} />
                 <LogDrainLastUpdatedCell logDrain={logDrain} />
+                <LogDrainActions logDrain={logDrain} />
               </tr>
             ))}
           </>
@@ -216,7 +259,37 @@ const MetricDrainLastUpdatedCell = ({
   );
 };
 
-const metricDrainsHeaders = ["Status", "Handle", "Last Updated"];
+const MetricDrainActions = ({
+  metricDrain,
+}: { metricDrain: DeployMetricDrain }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const restartAction = restartMetricDrain({ id: metricDrain.id });
+  const restartLoader = useLoader(restartAction);
+  const submitRestart = (e: SyntheticEvent) => {
+    e.preventDefault();
+    dispatch(restartAction);
+  };
+  useLoaderSuccess(restartLoader, () => {
+    navigate(operationDetailUrl(restartLoader.meta.opId));
+  });
+
+  return (
+    <Td className="flex-1">
+      <div className="flex">
+        <Button
+          className="flex semibold"
+          onClick={submitRestart}
+          disabled={restartLoader.isLoading}
+        >
+          {restartLoader.isLoading ? "Restarting..." : "Restart"}
+        </Button>
+      </div>
+    </Td>
+  );
+};
+
+const metricDrainsHeaders = ["Status", "Handle", "Last Updated", "Actions"];
 
 const MetricDrainsSection = ({ id }: { id: string }) => {
   const query = useQuery(fetchEnvMetricDrains({ id }));
@@ -257,6 +330,7 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
                   <MetricDrainPrimaryCell metricDrain={metricDrain} />
                   <MetricDrainHandleCell metricDrain={metricDrain} />
                   <MetricDrainLastUpdatedCell metricDrain={metricDrain} />
+                  <MetricDrainActions metricDrain={metricDrain} />
                 </tr>
               ))}
             </>
