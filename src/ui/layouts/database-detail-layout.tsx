@@ -14,6 +14,7 @@ import {
   databaseActivityUrl,
   databaseBackupsUrl,
   databaseClusterUrl,
+  databaseCredentialsUrl,
   databaseEndpointsUrl,
   databaseMetricsUrl,
   databaseScaleUrl,
@@ -132,6 +133,7 @@ function DatabasePageHeader() {
     { name: "Activity", href: databaseActivityUrl(id) },
     { name: "Backups", href: databaseBackupsUrl(id) },
     { name: "Cluster", href: databaseClusterUrl(id) },
+    { name: "Credentials", href: databaseCredentialsUrl(id) },
     { name: "Settings", href: databaseSettingsUrl(id) },
   ] as TabItem[];
 

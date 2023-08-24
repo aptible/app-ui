@@ -11,6 +11,7 @@ import { certificateEntities, certificateReducers } from "./certificate";
 import { appConfigEntities, appConfigReducers } from "./configuration";
 import { containerEntities, containerReducers } from "./container";
 import { databaseEntities, databaseReducers } from "./database";
+import { credEntities, credReducers } from "./database-credential";
 import {
   databaseImageEntities,
   databaseImageReducers,
@@ -56,6 +57,7 @@ const allReducers: any[] = [
   appConfigReducers,
   backupReducers,
   backupRpReducers,
+  credReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -91,4 +93,5 @@ export const entities = {
   ...appConfigEntities,
   ...backupEntities,
   ...backupRpEntities,
+  ...credEntities,
 };
