@@ -178,7 +178,7 @@ export const AppSettingsPage = () => {
             onClick={submitRestart}
           >
             <IconRefresh className="mr-2" variant="sm" />
-            {isDeprovisioning ? "Restarting App..." : "Restart App"}
+            {isDeprovisioning ? "Restarting..." : "Restart"}
           </Button>
 
           <hr className="mt-6" />

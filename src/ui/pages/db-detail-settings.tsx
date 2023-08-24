@@ -152,7 +152,7 @@ export const DatabaseSettingsPage = () => {
             onClick={submitRestart}
           >
             <IconRefresh className="mr-2" variant="sm" />
-            {isDeprovisioning ? "Restarting Database..." : "Restart Database"}
+            {isDeprovisioning ? "Restarting..." : "Restart"}
           </Button>
 
           <hr className="mt-6" />
