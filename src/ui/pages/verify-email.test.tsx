@@ -1,76 +1,89 @@
 import { VerifyEmailPage } from "./verify-email";
+import { verifyEmailUrl } from "@app/routes";
 
-import { server, testEnv } from "@app/mocks";
-import { setupIntegrationTest } from "@app/test";
+import { server, testEnv, testUser, testUserVerified } from "@app/mocks";
+import { setupAppIntegrationTest, setupIntegrationTest } from "@app/test";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { rest } from "msw";
 
+describe("Verify email confirm", () => {
+  it("should redirect to dashboard", async () => {
+    let counterA = 0;
+    let counterB = 0;
+
+    server.use(
+      rest.get(
+        `${testEnv.authUrl}/organizations/:orgId/users`,
+        (_, res, ctx) => {
+          counterA += 1;
+          if (counterA === 1) {
+            return res(ctx.json({ _embedded: [testUser] }));
+          }
+          return res(ctx.json({ _embedded: [testUserVerified] }));
+        },
+      ),
+      rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
+        counterB += 1;
+        if (counterB === 1) {
+          return res(ctx.json(testUser));
+        }
+        return res(ctx.json(testUserVerified));
+      }),
+    );
+    const { App } = setupAppIntegrationTest({
+      initEntries: [verifyEmailUrl("111", "222")],
+    });
+    render(<App />);
+    await screen.findByText(/loading/);
+    await screen.findByRole("heading", { level: 1, name: /Deployments/ });
+  });
+});
+
 describe("Verify email page", () => {
   it("the verify email page should render", async () => {
-    const { TestProvider } = setupIntegrationTest({
-      initState: {
-        env: {
-          ...testEnv,
-          origin: "app",
-        },
-      },
-    });
-    render(
-      <TestProvider>
-        <VerifyEmailPage />
-      </TestProvider>,
-    );
-    await screen.findByRole("button", { name: /Resend Verification Email/ });
-  });
-  it("the verify email page should render and resend verification successfully", async () => {
-    const { TestProvider } = setupIntegrationTest({
-      initState: {
-        env: {
-          ...testEnv,
-          origin: "app",
-        },
-      },
-    });
-    render(
-      <TestProvider>
-        <VerifyEmailPage />
-      </TestProvider>,
-    );
-    const el = await screen.findByRole("button", {
-      name: /Resend Verification Email/,
-    });
-    fireEvent.click(el);
-  });
-  it("the verify email page should properly fail", async () => {
     const { TestProvider } = setupIntegrationTest();
     render(
       <TestProvider>
         <VerifyEmailPage />
       </TestProvider>,
     );
-    server.use(
-      rest.get(`${testEnv.authUrl}/verifications`, (_, res, ctx) => {
-        return res(ctx.status(401));
-      }),
-    );
     await screen.findByRole("button", { name: /Resend Verification Email/ });
-    const errorText = screen.queryByText("Failed to verify your email");
-    expect(errorText).toBeDefined;
   });
-  it("the verify email page should render and raise error if resend verification errors", async () => {
-    const { TestProvider } = setupIntegrationTest({
-      initState: {
-        env: {
-          ...testEnv,
-          origin: "app",
-        },
-      },
-    });
+
+  it("the verify email page should render and resend verification successfully", async () => {
+    const { TestProvider } = setupIntegrationTest();
+
     render(
       <TestProvider>
         <VerifyEmailPage />
       </TestProvider>,
     );
+
+    const el = await screen.findByRole("button", {
+      name: /Resend Verification Email/,
+    });
+    fireEvent.click(el);
+  });
+
+  it("the verify email page should properly fail", async () => {
+    server.use(
+      rest.get(`${testEnv.authUrl}/verifications`, (_, res, ctx) => {
+        return res(ctx.status(401));
+      }),
+    );
+    const { TestProvider } = setupIntegrationTest();
+    render(
+      <TestProvider>
+        <VerifyEmailPage />
+      </TestProvider>,
+    );
+
+    await screen.findByRole("button", { name: /Resend Verification Email/ });
+    const errorText = screen.queryByText("Failed to verify your email");
+    expect(errorText).toBeDefined;
+  });
+
+  it("the verify email page should render and raise error if resend verification errors", async () => {
     server.use(
       rest.post(
         `${testEnv.authUrl}/users/:userId/email_verification_challenges`,
@@ -88,10 +101,17 @@ describe("Verify email page", () => {
         },
       ),
     );
+    const { TestProvider } = setupIntegrationTest();
+    render(
+      <TestProvider>
+        <VerifyEmailPage />
+      </TestProvider>,
+    );
+
     const el = await screen.findByRole("button", {
       name: /Resend Verification Email/,
     });
     fireEvent.click(el);
-    await screen.queryByText("mock error message");
+    await screen.findByText("mock error message");
   });
 });
