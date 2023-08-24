@@ -10,10 +10,10 @@ import { useQuery } from "saga-query/react";
 
 const Credential = ({ cred }: { cred: DeployDatabaseCredential }) => {
   return (
-    <div className="flex flex-col gap-4 mb-4">
-      <h2 className={tokens.type.h2}>{cred.type}</h2>
+    <div className="flex flex-col gap-2 mb-4">
+      <h3 className={tokens.type.h3}>{cred.type}</h3>
       <div>
-        <h4 className={tokens.type.h4}>Connection URL</h4>
+        <p className="text-base font-semibold text-gray-900">Connection URL</p>
         <div className="mt-1">
           <Secret secret={cred.connectionUrl} />
         </div>
