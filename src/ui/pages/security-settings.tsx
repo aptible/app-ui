@@ -108,7 +108,7 @@ const ChangePassword = () => {
 const MultiFactor = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, user } = useCurrentUser();
+  const [user, loader] = useCurrentUser();
   const disable = () => {
     dispatch(updateUser({ type: "otp", userId: user.id, otp_enabled: false }));
   };
@@ -121,7 +121,7 @@ const MultiFactor = () => {
   ) : (
     <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
   );
-  const content = isLoading ? <Loading /> : btns;
+  const content = loader.isLoading ? <Loading /> : btns;
 
   return (
     <div>
@@ -192,10 +192,11 @@ const ChangeEmail = () => {
 };
 
 const SecurityKeys = () => {
-  const { isLoading, user } = useCurrentUser();
-  if (isLoading) {
+  const [user, loader] = useCurrentUser();
+  if (loader.isLoading) {
     return <Loading />;
   }
+
   return (
     <div>
       {user.otpEnabled ? (
