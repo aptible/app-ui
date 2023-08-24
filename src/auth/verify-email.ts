@@ -1,15 +1,21 @@
 import { authApi } from "@app/api";
+import { delay, leading, put, setLoaderSuccess } from "@app/fx";
 import { AuthApiCtx } from "@app/types";
+import { patchUsers } from "@app/users";
+
+import { AUTH_LOADER_ID } from "./loader";
 
 interface VerifyEmail {
+  userId: string;
   challengeId: string;
   verificationCode: string;
 }
 
 export const verifyEmail = authApi.post<VerifyEmail>(
   "/verifications",
+  { saga: leading },
   function* onVerifyEmail(ctx: AuthApiCtx<any, VerifyEmail>, next) {
-    const { challengeId, verificationCode } = ctx.payload;
+    const { challengeId, verificationCode, userId } = ctx.payload;
     ctx.request = ctx.req({
       body: JSON.stringify({
         type: "email_verification_challenge",
@@ -17,7 +23,16 @@ export const verifyEmail = authApi.post<VerifyEmail>(
         verification_code: verificationCode,
       }),
     });
+
     yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* put(patchUsers({ [userId]: { id: userId, verified: true } }));
+    yield* delay(250);
+    ctx.actions.push(setLoaderSuccess({ id: AUTH_LOADER_ID }));
   },
 );
 

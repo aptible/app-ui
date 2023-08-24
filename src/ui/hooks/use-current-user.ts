@@ -15,7 +15,7 @@ export function useCurrentUser(): CurrentUser {
   const loader = useLoader(fetchUser);
 
   useEffect(() => {
-    if (!userId || user.id) {
+    if (user.id !== "") {
       return;
     }
     dispatch(fetchUser({ userId }));

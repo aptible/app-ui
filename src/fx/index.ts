@@ -28,6 +28,7 @@ export {
   fetcher,
   dispatchActions,
   takeEvery,
+  leading,
 } from "saga-query";
 export type {
   LoadingState,

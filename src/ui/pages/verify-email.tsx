@@ -32,6 +32,7 @@ export const VerifyEmailPage = () => {
     if (params.verificationCode && params.verificationId && userId) {
       dispatch(
         verifyEmail({
+          userId,
           challengeId: params.verificationId,
           verificationCode: params.verificationCode,
         }),

@@ -1,6 +1,6 @@
 import { Next, call, put, select } from "@app/fx";
 
-import { authApi, cacheTimer, elevetatedMdw } from "@app/api";
+import { authApi, cacheShortTimer, cacheTimer, elevetatedMdw } from "@app/api";
 import { selectOrigin } from "@app/env";
 import { setOrganizationSelected } from "@app/organizations";
 import type { ApiGen, AuthApiCtx } from "@app/types";
@@ -14,7 +14,7 @@ interface UserBase {
 
 export const fetchUser = authApi.get<UserBase, UserResponse>(
   "/users/:userId",
-  { saga: cacheTimer() },
+  { saga: cacheShortTimer() },
   function* (ctx, next) {
     yield* call(elevetatedMdw, ctx, next);
     if (!ctx.json.ok) return;
