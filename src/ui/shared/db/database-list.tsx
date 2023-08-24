@@ -10,8 +10,11 @@ import {
   fetchAllDatabases,
   fetchAllEnvironments,
   fetchEnvironmentById,
+  getContainerProfileFromType,
+  hourlyAndMonthlyCostsForContainers,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
+  selectServiceById,
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
@@ -61,6 +64,26 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td className="flex-1">
       <DatabaseItemView database={database} />
+    </Td>
+  );
+};
+
+const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: database.serviceId }),
+  );
+  const currentContainerProfile = getContainerProfileFromType(
+    service.instanceClass,
+  );
+  const { pricePerMonth: currentPrice } = hourlyAndMonthlyCostsForContainers(
+    service.containerCount,
+    currentContainerProfile,
+    service.containerMemoryLimitMb,
+    database.disk?.size || 0,
+  );
+  return (
+    <Td>
+      <div className={tokens.type.darker}>${currentPrice}</div>
     </Td>
   );
 };
@@ -189,7 +212,13 @@ export const DatabaseListByOrg = () => {
     }),
   );
 
-  const headers = ["Handle", "Environment", "Last Operation", "Actions"];
+  const headers = [
+    "Handle",
+    "Environment",
+    "Est. Monthly Cost",
+    "Last Operation",
+    "Actions",
+  ];
 
   return (
     <LoadResources
@@ -225,6 +254,7 @@ export const DatabaseListByOrg = () => {
               <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
+                <DatabaseCostCell database={db} />
                 <LastOpCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
@@ -256,7 +286,12 @@ export const DatabaseListByEnvironment = ({
     }),
   );
 
-  const headers = ["Handle", "Environment", "Last Operation"];
+  const headers = [
+    "Handle",
+    "Environment",
+    "Est. Monthly Cost",
+    "Last Operation",
+  ];
   const actions = [
     <ButtonCreate envId={environmentId} onClick={onCreate}>
       <IconPlusCircle variant="sm" />
@@ -296,6 +331,7 @@ export const DatabaseListByEnvironment = ({
               <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
+                <DatabaseCostCell database={db} />
                 <LastOpCell database={db} />
               </tr>
             ))}
