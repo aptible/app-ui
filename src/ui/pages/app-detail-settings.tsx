@@ -170,7 +170,7 @@ export const AppSettingsPage = () => {
             ) : null}
           </FormGroup>
 
-          <Label className="mt-4">Restart App</Label>
+          <Label className="mt-4">Restart</Label>
           <Button
             variant="white"
             disabled={restartLoader.isLoading}
