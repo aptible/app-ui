@@ -176,6 +176,7 @@ describe("Selecting an Organization", () => {
         containers: {},
         databaseImages: {},
         databases: {},
+        databasesCredentials: {},
         endpoints: {},
         environments: {},
         logDrains: {},
