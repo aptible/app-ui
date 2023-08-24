@@ -38,13 +38,13 @@ export function OpHeader({
         <DetailInfoItem title="Last Updated">
           {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
         </DetailInfoItem>
-        <DetailInfoItem />
+        <div className="hidden md:block" />
 
         <DetailInfoItem title="Status">
           <OpStatus status={op.status} />
         </DetailInfoItem>
         <DetailInfoItem title="User">{op.userName}</DetailInfoItem>
-        <DetailInfoItem />
+        <div className="hidden md:block" />
 
         <DetailInfoItem>
           <div className="text-base font-semibold text-gray-900">
