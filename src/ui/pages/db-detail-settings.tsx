@@ -7,6 +7,7 @@ import {
   FormGroup,
   IconAlertTriangle,
   IconExternalLink,
+  IconRefresh,
   IconTrash,
   Input,
   Label,
@@ -15,13 +16,14 @@ import {
   deprovisionDatabase,
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
+  restartDatabase,
   selectDatabaseById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
   updateDatabase,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
-import { databaseActivityUrl } from "@app/routes";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import { databaseActivityUrl, operationDetailUrl } from "@app/routes";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -71,6 +73,16 @@ export const DatabaseSettingsPage = () => {
     dispatch(deprovisionDatabase({ dbId: database.id }));
     navigate(databaseActivityUrl(id));
   };
+
+  const restartAction = restartDatabase({ id });
+  const restartLoader = useLoader(restartAction);
+  const submitRestart = (e: SyntheticEvent) => {
+    e.preventDefault();
+    dispatch(restartAction);
+  };
+  useLoaderSuccess(restartLoader, () => {
+    navigate(operationDetailUrl(restartLoader.meta.opId));
+  });
 
   const disabledDeprovisioning =
     isDeprovisioning || database.handle !== deleteConfirm;
@@ -131,6 +143,17 @@ export const DatabaseSettingsPage = () => {
               </ul>
             </Banner>
           ) : null}
+
+          <Label className="mt-4">Restart Database</Label>
+          <Button
+            variant="white"
+            disabled={restartLoader.isLoading}
+            className="h-15 w-30 mb-0 ml-0 mt-4 flex"
+            onClick={submitRestart}
+          >
+            <IconRefresh className="mr-2" />
+            {isDeprovisioning ? "Restarting Database..." : "Restart Database"}
+          </Button>
 
           <hr className="mt-6" />
 

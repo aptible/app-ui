@@ -3,13 +3,16 @@ import {
   Box,
   BoxGroup,
   Button,
+  ButtonIcon,
   ButtonLinkExternal,
   ExternalLink,
   FormGroup,
   IconAlertTriangle,
   IconExternalLink,
+  IconRefresh,
   IconTrash,
   Input,
+  Label,
   PreCode,
   listToInvertedTextColor,
 } from "../shared";
@@ -18,13 +21,14 @@ import {
   fetchApp,
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
+  restartApp,
   selectAppById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
   updateApp,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
-import { appActivityUrl } from "@app/routes";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import { appActivityUrl, operationDetailUrl } from "@app/routes";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -75,6 +79,16 @@ export const AppSettingsPage = () => {
     dispatch(deprovisionApp({ appId: app.id }));
     navigate(appActivityUrl(id));
   };
+
+  const restartAction = restartApp({ id });
+  const restartLoader = useLoader(restartAction);
+  const submitRestart = (e: SyntheticEvent) => {
+    e.preventDefault();
+    dispatch(restartAction);
+  };
+  useLoaderSuccess(restartLoader, () => {
+    navigate(operationDetailUrl(restartLoader.meta.opId));
+  });
 
   const disabledDeprovisioning =
     isDeprovisioning || app.handle !== deleteConfirm;
@@ -157,15 +171,32 @@ export const AppSettingsPage = () => {
             ) : null}
           </FormGroup>
 
+          <Label className="mt-4">Restart App</Label>
+          <Button
+            variant="white"
+            disabled={restartLoader.isLoading}
+            className="h-15 w-30 mb-0 ml-0 mt-4 flex"
+            onClick={submitRestart}
+          >
+            <IconRefresh className="mr-2" />
+            {isDeprovisioning ? "Restarting App..." : "Restart App"}
+          </Button>
+
           <hr className="mt-6" />
 
           <div className="flex mt-4">
             <Button
               className="w-40 flex semibold"
               type="submit"
-              disabled={isUpdating || updatingAppLoader.isLoading}
+              disabled={
+                isUpdating ||
+                updatingAppLoader.isLoading ||
+                restartLoader.isLoading
+              }
             >
-              {isUpdating || updatingAppLoader.isLoading
+              {isUpdating ||
+              updatingAppLoader.isLoading ||
+              restartLoader.isLoading
                 ? "Loading..."
                 : "Save Changes"}
             </Button>
