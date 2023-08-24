@@ -14,9 +14,10 @@ const Credential = ({ cred }: { cred: DeployDatabaseCredential }) => {
       <h2 className={tokens.type.h2}>{cred.type}</h2>
       <div>
         <h4 className={tokens.type.h4}>Connection URL</h4>
-        <Secret secret={cred.connectionUrl} />
+        <div className="mt-1">
+          <Secret secret={cred.connectionUrl} />
+        </div>
       </div>
-      <hr />
     </div>
   );
 };
