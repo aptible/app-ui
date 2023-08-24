@@ -697,7 +697,7 @@ export const restartDatabase = api.post<
 export const scaleDatabase = api.post<
   DatabaseScaleProps,
   DeployOperationResponse
->(["/databases/:id/operations", "restart"], function* (ctx, next) {
+>(["/databases/:id/operations", "scale"], function* (ctx, next) {
   const { id, diskSize, containerProfile, containerSize } = ctx.payload;
   const body = {
     type: "restart",
