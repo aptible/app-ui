@@ -144,7 +144,7 @@ export const DatabaseSettingsPage = () => {
             </Banner>
           ) : null}
 
-          <Label className="mt-4">Restart</Label>
+          <Label className="mt-4">Restart Database</Label>
           <Button
             variant="white"
             disabled={restartLoader.isLoading}
