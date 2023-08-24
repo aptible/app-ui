@@ -14,6 +14,7 @@ import {
   databaseActivityUrl,
   databaseBackupsUrl,
   databaseClusterUrl,
+  databaseCredentialsUrl,
   databaseEndpointsUrl,
   databaseMetricsUrl,
   databaseScaleUrl,
@@ -29,7 +30,6 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
-  Secret,
   TabItem,
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
@@ -88,10 +88,6 @@ export function DatabaseHeader({
           {CONTAINER_PROFILES[service.instanceClass].name}
         </DetailInfoItem>
       </DetailInfoGrid>
-      <div className="text-base font-semibold text-gray-900 -mb-2">
-        Reveal Credentials
-      </div>
-      <Secret secret={database.connectionUrl} />
     </DetailHeader>
   );
 }
@@ -132,6 +128,7 @@ function DatabasePageHeader() {
     { name: "Activity", href: databaseActivityUrl(id) },
     { name: "Backups", href: databaseBackupsUrl(id) },
     { name: "Cluster", href: databaseClusterUrl(id) },
+    { name: "Credentials", href: databaseCredentialsUrl(id) },
     { name: "Settings", href: databaseSettingsUrl(id) },
   ] as TabItem[];
 

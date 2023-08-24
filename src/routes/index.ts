@@ -115,6 +115,9 @@ export const databaseScaleUrl = (id: string) =>
 export const DATABASE_SETTINGS_PATH = `${DATABASE_DETAIL_PATH}/settings`;
 export const databaseSettingsUrl = (id: string) =>
   `${databaseDetailUrl(id)}/settings`;
+export const DATABASE_CREDENTIALS_PATH = `${DATABASE_DETAIL_PATH}/credentials`;
+export const databaseCredentialsUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/credentials`;
 export const DATABASE_ENDPOINT_CREATE_PATH = `${DATABASE_DETAIL_PATH}/endpoints/create`;
 export const databaseEndpointCreateUrl = (id: string) =>
   `${databaseDetailUrl(id)}/endpoints/create`;

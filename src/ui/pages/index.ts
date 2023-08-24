@@ -24,6 +24,7 @@ export * from "./db-detail-endpoints";
 export * from "./db-detail-cluster";
 export * from "./db-detail-scale";
 export * from "./db-detail-settings";
+export * from "./db-detail-creds";
 export * from "./team";
 export * from "./settings";
 export * from "./verify-email";
