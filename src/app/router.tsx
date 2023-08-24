@@ -36,6 +36,7 @@ import {
   DatabaseBackupsPage,
   DatabaseClusterPage,
   DatabaseCreateEndpointPage,
+  DatabaseCredentialsPage,
   DatabaseDetailLayout,
   DatabaseEndpointsPage,
   DatabaseScalePage,
@@ -287,6 +288,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.DATABASE_SETTINGS_PATH,
                 element: <DatabaseSettingsPage />,
+              },
+              {
+                path: routes.DATABASE_CREDENTIALS_PATH,
+                element: <DatabaseCredentialsPage />,
               },
             ],
           },

@@ -8,6 +8,7 @@ import type {
   DeployCertificate,
   DeployContainer,
   DeployDatabase,
+  DeployDatabaseCredential,
   DeployDatabaseImage,
   DeployDisk,
   DeployEndpoint,
@@ -141,6 +142,7 @@ export interface DeployState {
   stacks: MapEntity<DeployStack>;
   disks: MapEntity<DeployDisk>;
   databases: MapEntity<DeployDatabase>;
+  databaseCredentials: MapEntity<DeployDatabaseCredential>;
   databaseImages: MapEntity<DeployDatabaseImage>;
   services: MapEntity<DeployService>;
   logDrains: MapEntity<DeployLogDrain>;
