@@ -30,7 +30,6 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
-  Secret,
   TabItem,
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
@@ -89,10 +88,6 @@ export function DatabaseHeader({
           {CONTAINER_PROFILES[service.instanceClass].name}
         </DetailInfoItem>
       </DetailInfoGrid>
-      <div className="text-base font-semibold text-gray-900 -mb-2">
-        Reveal Credentials
-      </div>
-      <Secret secret={database.connectionUrl} />
     </DetailHeader>
   );
 }
