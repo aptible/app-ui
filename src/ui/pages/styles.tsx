@@ -628,7 +628,7 @@ const DetailBoxes = () => {
     }),
   });
   const service = defaultDeployService({
-    instanceClass: "m4",
+    instanceClass: "m5",
     containerMemoryLimitMb: 4096,
   });
   const stack = defaultDeployStack({

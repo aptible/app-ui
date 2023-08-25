@@ -19,7 +19,7 @@ import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { selectDeploy } from "../slice";
 import { poll } from "saga-query";
 
-export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m4";
+export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
 
 export interface DeployServiceResponse {
   id: number;
@@ -55,7 +55,7 @@ export const defaultServiceResponse = (
     command: "",
     container_count: 0,
     container_memory_limit_mb: 0,
-    instance_class: "m4",
+    instance_class: "m5",
     created_at: now,
     updated_at: now,
     _links: {
