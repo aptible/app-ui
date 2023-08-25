@@ -1,5 +1,9 @@
 import { combineReducers } from "@reduxjs/toolkit";
 
+import {
+  activityReportEntities,
+  activityReportReducers,
+} from "./activity-report";
 import { appEntities, appReducers } from "./app";
 import {
   serviceDefinitionEntities,
@@ -58,6 +62,7 @@ const allReducers: any[] = [
   backupReducers,
   backupRpReducers,
   credReducers,
+  activityReportReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -94,4 +99,5 @@ export const entities = {
   ...backupEntities,
   ...backupRpEntities,
   ...credEntities,
+  ...activityReportEntities,
 };

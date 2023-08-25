@@ -99,6 +99,7 @@ import {
 import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
 import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
 import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
+import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -401,6 +402,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.ENVIRONMENT_ACTIVITY_PATH,
                 element: <EnvironmentActivityPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_ACTIVITY_REPORTS_PATH,
+                element: <EnvironmentActivityReportsPage />,
               },
               {
                 path: routes.ENVIRONMENT_BACKUPS_PATH,
