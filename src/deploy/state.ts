@@ -19,6 +19,10 @@ import {
 import { endpointEntities, endpointReducers } from "./endpoint";
 import { environmentEntities, environmentReducers } from "./environment";
 import { logDrainEntities, logDrainReducers } from "./log-drain";
+import {
+  maintenanceResourceEntities,
+  maintenanceResourceReducers,
+} from "./maintenance";
 import { metricDrainEntities, metricDrainReducers } from "./metric-drain";
 import { opEntities, opReducers } from "./operation";
 import { permissionEntities, permissionReducers } from "./permission";
@@ -58,6 +62,7 @@ const allReducers: any[] = [
   backupReducers,
   backupRpReducers,
   credReducers,
+  maintenanceResourceReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -94,4 +99,5 @@ export const entities = {
   ...backupEntities,
   ...backupRpEntities,
   ...credEntities,
+  ...maintenanceResourceEntities,
 };

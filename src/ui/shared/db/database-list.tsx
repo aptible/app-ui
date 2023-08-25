@@ -10,10 +10,12 @@ import {
   fetchAllDatabases,
   fetchAllEnvironments,
   fetchEnvironmentById,
+  fetchMaintenanceDatabases,
   getContainerProfileFromType,
   hourlyAndMonthlyCostsForContainers,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
+  selectMaintenanceResourceById,
   selectServiceById,
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
@@ -31,6 +33,7 @@ import { tokens } from "../tokens";
 import {
   databaseMetricsUrl,
   databaseScaleUrl,
+  databaseSettingsUrl,
   environmentCreateDbUrl,
   operationDetailUrl,
 } from "@app/routes";
@@ -41,6 +44,9 @@ type DatabaseCellProps = { database: DeployDatabase };
 export const DatabaseItemView = ({
   database,
 }: { database: DeployDatabase }) => {
+  const maintenanceExists = useSelector((s: AppState) =>
+    selectMaintenanceResourceById(s, { id: database.id }),
+  );
   return (
     <div className="flex">
       <Link to={databaseMetricsUrl(database.id)} className="flex">
@@ -56,6 +62,21 @@ export const DatabaseItemView = ({
           </span>
         </p>
       </Link>
+      {maintenanceExists.maintenanceDeadline?.length > 0 ? (
+        <p className="ml-2">
+          <Tooltip
+            autoSizeWidth
+            text={`This resource will restart between ${maintenanceExists.maintenanceDeadline[0]} and ${maintenanceExists.maintenanceDeadline[1]} or you can restart any time with the Aptible CLI or click this link to go to the settings page where you can also trigger a restart.`}
+          >
+            <Link
+              to={databaseSettingsUrl(database.id)}
+              className="text-orange-400"
+            >
+              Restart required
+            </Link>
+          </Tooltip>
+        </p>
+      ) : null}
     </div>
   );
 };
@@ -200,6 +221,7 @@ const DbsResourceHeaderTitleBar = ({
 export const DatabaseListByOrg = () => {
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchAllEnvironments());
+  useQuery(fetchMaintenanceDatabases());
 
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -274,6 +296,7 @@ export const DatabaseListByEnvironment = ({
   const navigate = useNavigate();
   const query = useQuery(fetchAllDatabases());
   useQuery(fetchEnvironmentById({ id: environmentId }));
+  useQuery(fetchMaintenanceDatabases());
 
   const onCreate = () => {
     navigate(environmentCreateDbUrl(environmentId));

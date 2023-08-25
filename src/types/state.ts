@@ -14,6 +14,7 @@ import type {
   DeployEndpoint,
   DeployEnvironment,
   DeployLogDrain,
+  DeployMaintenanceResource,
   DeployMetricDrain,
   DeployOperation,
   DeployPlan,
@@ -157,6 +158,7 @@ export interface DeployState {
   vpn_tunnels: MapEntity<DeployVpnTunnel>;
   backups: MapEntity<DeployBackup>;
   backupRps: MapEntity<DeployBackupRetentionPolicy>;
+  maintenanceResources: MapEntity<DeployMaintenanceResource>;
 }
 
 export type MetricHorizons = "1h" | "1d" | "1w";

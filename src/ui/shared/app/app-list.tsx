@@ -10,13 +10,16 @@ import {
   fetchAllApps,
   fetchAllEnvironments,
   fetchEnvironmentById,
+  fetchMaintenanceApps,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
+  selectMaintenanceResourceById,
 } from "@app/deploy";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
 import {
   appServicesUrl,
+  appSettingsUrl,
   environmentCreateAppUrl,
   operationDetailUrl,
 } from "@app/routes";
@@ -39,6 +42,9 @@ interface AppCellProps {
 }
 
 export const AppItemView = ({ app }: { app: DeployApp }) => {
+  const maintenanceExists = useSelector((s: AppState) =>
+    selectMaintenanceResourceById(s, { id: app.id }),
+  );
   return (
     <Link to={appServicesUrl(app.id)} className="flex">
       <img
@@ -47,6 +53,18 @@ export const AppItemView = ({ app }: { app: DeployApp }) => {
         aria-label="App"
       />
       <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
+      {maintenanceExists.maintenanceDeadline?.length > 0 ? (
+        <p className="mt-1 ml-2">
+          <Tooltip
+            autoSizeWidth
+            text={`This resource will restart between ${maintenanceExists.maintenanceDeadline[0]} and ${maintenanceExists.maintenanceDeadline[1]} or you can restart any time with the Aptible CLI or click this link to go to the settings page where you can also trigger a restart.`}
+          >
+            <Link to={appSettingsUrl(app.id)} className="text-orange-400">
+              Restart required
+            </Link>
+          </Tooltip>
+        </p>
+      ) : null}
     </Link>
   );
 };
@@ -234,6 +252,7 @@ export const AppsResourceHeaderTitleBar = ({
 export const AppListByOrg = () => {
   const query = useQuery(fetchAllApps());
   useQuery(fetchAllEnvironments());
+  useQuery(fetchMaintenanceApps());
 
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -270,6 +289,7 @@ export const AppListByEnvironment = ({
 }) => {
   const navigate = useNavigate();
   const loader = useLoader(fetchAllApps());
+  useQuery(fetchMaintenanceApps());
   useQuery(fetchEnvironmentById({ id: environmentId }));
 
   const apps = useSelector((s: AppState) =>

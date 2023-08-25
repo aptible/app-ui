@@ -1,3 +1,4 @@
+import { DEPLOY_MAINTENANCE_RESOURCE_NAME } from "@app/deploy";
 import { Next, select } from "@app/fx";
 
 import { createAssign, createReducerMap } from "@app/slice-helpers";
@@ -115,7 +116,27 @@ export function* halEntityParser(
         if (!store[identified.id]) {
           store[identified.id] = [];
         }
-        store[identified.id].push(identified.deserialize(entity));
+        // HACK BEGINS DO NOT MERGE THIS
+        if (Object.keys(entity).includes("maintenance_deadline")) {
+          let maintenanceEntity;
+          if (entity?._links.self.href.includes("apps")) {
+            maintenanceEntity = entityMap["maintenance_app"];
+          } else if (entity?._links.self.href.includes("databases")) {
+            maintenanceEntity = entityMap["maintenance_database"];
+          }
+
+          if (!maintenanceEntity) return;
+          if (!store[maintenanceEntity.id]) {
+            store[maintenanceEntity.id] = [];
+          }
+
+          store[maintenanceEntity.id].push(
+            maintenanceEntity.deserialize(entity),
+          );
+          // HACK ENDS DO NOT MERGE THIS
+        } else {
+          store[identified.id].push(identified.deserialize(entity));
+        }
       }
     }
 

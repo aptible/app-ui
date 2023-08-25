@@ -524,3 +524,10 @@ export type ContainerProfileData = {
   maximumContainerSize: number;
   maximumContainerCount: number;
 };
+
+export interface DeployMaintenanceResource extends Timestamps {
+  id: string;
+  handle: string;
+  maintenanceDeadline: string[];
+  environmentId: string;
+}
