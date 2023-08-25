@@ -523,3 +523,11 @@ export type ContainerProfileData = {
   maximumContainerSize: number;
   maximumContainerCount: number;
 };
+
+export interface DeployActivityReport extends Timestamps {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  filename: string;
+  environmentId: string;
+}
