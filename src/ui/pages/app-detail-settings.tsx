@@ -29,7 +29,7 @@ import {
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { appActivityUrl, operationDetailUrl } from "@app/routes";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { MouseEventHandler, SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
@@ -70,9 +70,7 @@ export const AppSettingsPage = () => {
     setIsUpdating(false);
   };
 
-  const requestDeprovisionApp = (e: SyntheticEvent) => {
-    e.preventDefault();
-
+  const requestDeprovisionApp: MouseEventHandler<HTMLButtonElement> = () => {
     setIsUpdating(true);
     setIsDeprovisioning(true);
     dispatch(deprovisionApp({ appId: app.id }));
@@ -81,8 +79,7 @@ export const AppSettingsPage = () => {
 
   const restartAction = restartApp({ id });
   const restartLoader = useLoader(restartAction);
-  const submitRestart = (e: SyntheticEvent) => {
-    e.preventDefault();
+  const submitRestart: MouseEventHandler<HTMLButtonElement> = () => {
     dispatch(restartAction);
   };
   useLoaderSuccess(restartLoader, () => {

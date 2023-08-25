@@ -25,7 +25,7 @@ import {
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { databaseActivityUrl, operationDetailUrl } from "@app/routes";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { MouseEventHandler, SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
@@ -65,19 +65,17 @@ export const DatabaseSettingsPage = () => {
     setIsUpdating(false);
   };
 
-  const requestDeprovisionDatabase = (e: SyntheticEvent) => {
-    e.preventDefault();
-
-    setIsUpdating(true);
-    setIsDeprovisioning(true);
-    dispatch(deprovisionDatabase({ dbId: database.id }));
-    navigate(databaseActivityUrl(id));
-  };
+  const requestDeprovisionDatabase: MouseEventHandler<HTMLButtonElement> =
+    () => {
+      setIsUpdating(true);
+      setIsDeprovisioning(true);
+      dispatch(deprovisionDatabase({ dbId: database.id }));
+      navigate(databaseActivityUrl(id));
+    };
 
   const restartAction = restartDatabase({ id });
   const restartLoader = useLoader(restartAction);
-  const submitRestart = (e: SyntheticEvent) => {
-    e.preventDefault();
+  const submitRestart: MouseEventHandler<HTMLButtonElement> = () => {
     dispatch(restartAction);
   };
   useLoaderSuccess(restartLoader, () => {
