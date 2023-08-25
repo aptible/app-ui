@@ -36,11 +36,10 @@ import { useNavigate, useParams } from "react-router";
 export const AppSettingsPage = () => {
   const [handle, setHandle] = useState<string>("");
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
-  const [isDeprovisioning, setIsDeprovisioning] = useState<boolean>(false);
-  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const updatingAppLoader = useLoader(updateApp);
+  const deprovisioningAppLoader = useLoader(deprovisionApp);
 
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
@@ -65,14 +64,10 @@ export const AppSettingsPage = () => {
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
 
-    setIsUpdating(true);
     dispatch(updateApp({ id, handle }));
-    setIsUpdating(false);
   };
 
   const requestDeprovisionApp: MouseEventHandler<HTMLButtonElement> = () => {
-    setIsUpdating(true);
-    setIsDeprovisioning(true);
     dispatch(deprovisionApp({ appId: app.id }));
     navigate(appActivityUrl(id));
   };
@@ -87,7 +82,7 @@ export const AppSettingsPage = () => {
   });
 
   const disabledDeprovisioning =
-    isDeprovisioning || app.handle !== deleteConfirm;
+    app.handle !== deleteConfirm || deprovisioningAppLoader.isLoading;
 
   return (
     <BoxGroup>
@@ -175,7 +170,9 @@ export const AppSettingsPage = () => {
             onClick={submitRestart}
           >
             <IconRefresh className="mr-2" variant="sm" />
-            {isDeprovisioning ? "Restarting..." : "Restart"}
+            {deprovisioningAppLoader.isLoading || restartLoader.isLoading
+              ? "Restarting..."
+              : "Restart"}
           </Button>
 
           <hr className="mt-6" />
@@ -184,15 +181,9 @@ export const AppSettingsPage = () => {
             <Button
               className="w-40 flex semibold"
               type="submit"
-              disabled={
-                isUpdating ||
-                updatingAppLoader.isLoading ||
-                restartLoader.isLoading
-              }
+              disabled={updatingAppLoader.isLoading || restartLoader.isLoading}
             >
-              {isUpdating ||
-              updatingAppLoader.isLoading ||
-              restartLoader.isLoading
+              {updatingAppLoader.isLoading || restartLoader.isLoading
                 ? "Loading..."
                 : "Save Changes"}
             </Button>
@@ -217,7 +208,7 @@ export const AppSettingsPage = () => {
           <div className="flex mt-4 wd-60">
             <Input
               className="flex"
-              disabled={isDeprovisioning}
+              disabled={deprovisioningAppLoader.isLoading}
               name="delete-confirm"
               type="text"
               value={deleteConfirm}
@@ -236,7 +227,9 @@ export const AppSettingsPage = () => {
               onClick={requestDeprovisionApp}
             >
               <IconTrash color="#FFF" className="mr-2" />
-              {isDeprovisioning ? "Deprovisioning..." : "Deprovision App"}
+              {deprovisioningAppLoader.isLoading
+                ? "Deprovisioning..."
+                : "Deprovision App"}
             </Button>
           </div>
         </div>
