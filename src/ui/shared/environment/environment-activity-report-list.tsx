@@ -18,7 +18,7 @@ const ActivityReportListRow = ({
       <Td>{prettyEnglishDateWithTime(report.createdAt)}</Td>
       <Td>{prettyEnglishDateWithTime(report.startsAt)}</Td>
       <Td>{prettyEnglishDateWithTime(report.endsAt)}</Td>
-      <Td>
+      <Td className="flex gap-2 justify-end mr-4">
         <ButtonIcon
           icon={<IconDownload className="-mr-2" variant="sm" />}
           onClick={() => {
@@ -29,7 +29,7 @@ const ActivityReportListRow = ({
               }),
             );
           }}
-          variant="white"
+          variant="primary"
         />
       </Td>
     </tr>
@@ -42,10 +42,16 @@ export const ActivityReportListByEnvironment = ({
     <div className="my-4">
       <p className="text-gray-500 mb-4 text-base">
         {reports.length} Activity Report{reports.length !== 1 && "s"}
+        <span className="pl-4">
+          Weekly CSV downloads that list all environment operations.
+        </span>
       </p>
       <ResourceListView
         tableHeader={
-          <TableHead headers={["Posted", "From Date", "To Date", "Download"]} />
+          <TableHead
+            rightAlignedFinalCol
+            headers={["Posted", "From Date", "To Date", "Download"]}
+          />
         }
         tableBody={
           <>
