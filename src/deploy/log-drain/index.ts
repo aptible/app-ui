@@ -108,6 +108,11 @@ export interface DeployLogDrainResponse {
   created_at: string;
   updated_at: string;
   status: ProvisionableStatus;
+  _embedded: {
+    backend: {
+      channel: string;
+    };
+  };
   _links: {
     account: LinkResponse;
   };
@@ -131,6 +136,7 @@ export const deserializeLogDrain = (payload: any): DeployLogDrain => {
     drainEphemeralSessions: payload.drain_ephemeral_sessions,
     drainProxies: payload.drain_proxies,
     environmentId: extractIdFromLink(links.account),
+    backendChannel: payload._embedded.backend.channel,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     status: payload.status,
@@ -158,6 +164,11 @@ export const defaultLogDrainResponse = (
     status: "pending",
     created_at: now,
     updated_at: now,
+    _embedded: {
+      backend: {
+        channel: "",
+      },
+    },
     _links: {
       account: defaultHalHref(),
     },
@@ -184,6 +195,7 @@ export const defaultDeployLogDrain = (
     drainEphemeralSessions: false,
     drainDatabases: false,
     environmentId: "",
+    backendChannel: "",
     createdAt: now,
     updatedAt: now,
     status: "pending",
