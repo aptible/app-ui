@@ -35,21 +35,23 @@ export function OpHeader({
 
       <DetailInfoGrid>
         <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
-        <DetailInfoItem title="Resource Type">
-          {prettyResourceType(op.resourceType)}
-        </DetailInfoItem>
-        <DetailInfoItem title="Status">
-          <OpStatus status={op.status} />
-        </DetailInfoItem>
-
         <DetailInfoItem title="Last Updated">
           {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
         </DetailInfoItem>
-        <DetailInfoItem title="Resource">
-          {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
+        <div className="hidden md:block" />
+
+        <DetailInfoItem title="Status">
+          <OpStatus status={op.status} />
         </DetailInfoItem>
         <DetailInfoItem title="User">{op.userName}</DetailInfoItem>
+        <div className="hidden md:block" />
 
+        <DetailInfoItem title="Resource">
+          {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
+          <div className="text-gray-500 text-sm">
+            {prettyResourceType(op.resourceType)}
+          </div>
+        </DetailInfoItem>
         <DetailInfoItem title="Note">{op.note || "N/A"}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
