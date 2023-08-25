@@ -10,6 +10,7 @@ import {
   isOtpError,
 } from "@app/auth";
 import { useLoader, useLoaderSuccess } from "@app/fx";
+import { resetRedirectPath } from "@app/redirect-path";
 import { forgotPassUrl, homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
@@ -50,6 +51,12 @@ export const ElevatePage = () => {
 
   useLoaderSuccess(loader, () => {
     navigate(redirect || homeUrl());
+    dispatch(resetRedirectPath());
+  });
+
+  useLoaderSuccess(webauthnLoader, () => {
+    navigate(redirect || homeUrl());
+    dispatch(resetRedirectPath());
   });
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
