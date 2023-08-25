@@ -53,7 +53,6 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
         log("ACTION", action);
       }
       next(action);
-      log("NEXT STATE", store.getState());
     };
     middleware.push(logger);
   }

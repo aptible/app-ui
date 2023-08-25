@@ -16,7 +16,7 @@ export const VerifyEmailPage = () => {
   const loader = useLoader(fetchCurrentToken);
   const dispatch = useDispatch();
   const { id: userId, email } = useSelector(selectJWTToken);
-  const { verified } = useSelector(selectCurrentUser);
+  const user = useSelector(selectCurrentUser);
   const params = useParams();
   const navigate = useNavigate();
   const verifyEmailLoader = useLoader(verifyEmail);
@@ -32,24 +32,25 @@ export const VerifyEmailPage = () => {
     if (params.verificationCode && params.verificationId && userId) {
       dispatch(
         verifyEmail({
+          userId,
           challengeId: params.verificationId,
           verificationCode: params.verificationCode,
         }),
       );
     }
-  }, [params.verificationId, params.verificationCode, userId, verified]);
+  }, [params.verificationId, params.verificationCode, userId, user.verified]);
 
   useEffect(() => {
     if (loader.isLoading) {
       return;
     }
 
-    if (verified) {
+    if (user.verified) {
       // if already verified dump them back at root, no need
       // to display this page at all
       navigate(homeUrl());
     }
-  }, [loader.isLoading, navigate, verified]);
+  }, [loader.isLoading, user.verified]);
 
   useLoaderSuccess(verifyEmailLoader, () => {
     navigate(redirectPath || homeUrl());

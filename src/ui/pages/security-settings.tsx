@@ -10,7 +10,6 @@ import {
   otpRecoveryCodesUrl,
   otpSetupUrl,
 } from "@app/routes";
-import { validEmail } from "@app/string-utils";
 import { selectCurrentUserId, updateEmail, updateUser } from "@app/users";
 
 import { useCurrentUser } from "../hooks";
@@ -22,6 +21,7 @@ import {
   Input,
   Loading,
 } from "../shared";
+import { emailValidator } from "@app/validator";
 
 interface SectionProps {
   children: React.ReactNode;
@@ -108,7 +108,7 @@ const ChangePassword = () => {
 const MultiFactor = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, user } = useCurrentUser();
+  const [user, loader] = useCurrentUser();
   const disable = () => {
     dispatch(updateUser({ type: "otp", userId: user.id, otp_enabled: false }));
   };
@@ -121,7 +121,7 @@ const MultiFactor = () => {
   ) : (
     <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
   );
-  const content = isLoading ? <Loading /> : btns;
+  const content = loader.isLoading ? <Loading /> : btns;
 
   return (
     <div>
@@ -145,7 +145,7 @@ const ChangeEmail = () => {
   const userId = useSelector(selectCurrentUserId);
   const [email, setEmail] = useState<string>("");
   const loader = useLoader(updateEmail);
-  const error = email === "" || validEmail(email) ? "" : "Not a valid email";
+  const error = emailValidator(email);
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!userId) {
@@ -192,10 +192,11 @@ const ChangeEmail = () => {
 };
 
 const SecurityKeys = () => {
-  const { isLoading, user } = useCurrentUser();
-  if (isLoading) {
+  const [user, loader] = useCurrentUser();
+  if (loader.isLoading) {
     return <Loading />;
   }
+
   return (
     <div>
       {user.otpEnabled ? (

@@ -18,11 +18,12 @@ export const selectCurrentUserId = createSelector(selectToken, (token) => {
   return token.userUrl.split("/").pop() || "";
 });
 
+const initUser = defaultUser();
 export const selectCurrentUser = createSelector(
   selectUsers,
   selectCurrentUserId,
   (curUsers, userId) => {
-    return curUsers[userId] || defaultUser();
+    return curUsers[userId] || initUser;
   },
 );
 
