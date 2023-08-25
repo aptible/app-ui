@@ -56,6 +56,7 @@ describe("LogoutPage", () => {
 
       expect(store.getState().deploy).toEqual({
         active_plans: {},
+        activityReports: {},
         apps: {},
         appConfigs: {},
         certificates: {},
