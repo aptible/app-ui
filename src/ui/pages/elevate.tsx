@@ -10,9 +10,9 @@ import {
   isOtpError,
 } from "@app/auth";
 import { useLoader, useLoaderSuccess } from "@app/fx";
+import { resetRedirectPath } from "@app/redirect-path";
 import { forgotPassUrl, homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
-import { resetRedirectPath } from "@app/redirect-path";
 
 import { HeroBgLayout } from "../layouts";
 import {
