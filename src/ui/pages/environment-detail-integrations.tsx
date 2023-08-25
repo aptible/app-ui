@@ -156,7 +156,10 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
         <Button
           className="flex semibold"
           onClick={submitRestart}
-          disabled={restartLoader.isLoading}
+          disabled={
+            restartLoader.isLoading ||
+            logDrain.backendChannel === "log_forwarder"
+          }
         >
           {restartLoader.isLoading ? "Restarting..." : "Restart"}
         </Button>
