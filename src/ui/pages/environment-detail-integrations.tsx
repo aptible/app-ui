@@ -169,6 +169,7 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
             backgroundColor: "#AD1A1A",
             color: "#FFF",
           }}
+          requireConfirm
         >
           {deprovisionLoader.isLoading ? "Deleting..." : "Delete"}
         </Button>
@@ -321,6 +322,7 @@ const MetricDrainActions = ({
             backgroundColor: "#AD1A1A",
             color: "#FFF",
           }}
+          requireConfirm
         >
           {deprovisionLoader.isLoading ? "Deleting..." : "Delete"}
         </Button>
