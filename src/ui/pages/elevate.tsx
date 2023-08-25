@@ -12,6 +12,7 @@ import {
 import { useLoader, useLoaderSuccess } from "@app/fx";
 import { forgotPassUrl, homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
+import { resetRedirectPath } from "@app/redirect-path";
 
 import { HeroBgLayout } from "../layouts";
 import {
@@ -50,6 +51,12 @@ export const ElevatePage = () => {
 
   useLoaderSuccess(loader, () => {
     navigate(redirect || homeUrl());
+    dispatch(resetRedirectPath());
+  });
+
+  useLoaderSuccess(webauthnLoader, () => {
+    navigate(redirect || homeUrl());
+    dispatch(resetRedirectPath());
   });
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
