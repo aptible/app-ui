@@ -43,16 +43,13 @@ export const testEnv = createEnv({
   metricTunnelUrl: "https://metrictunnel.aptible.com",
 });
 
+export const testUserId = createId();
 export const mockJwtHeaders = btoa(
   JSON.stringify({ alg: "HS256", typ: "JWT" }),
 );
-const mockJwtPayload = btoa(
-  JSON.stringify({ someBackendData: `${testEnv.authUrl}/data` }),
-);
+const mockJwtPayload = btoa(JSON.stringify({ id: `${testUserId}` }));
 export const mockJwt = (mixin: string, id: string | number = "1") =>
   `${mockJwtHeaders}.${mockJwtPayload}.not_real_${mixin}_${id}`;
-
-export const testUserId = createId();
 
 export const testToken = defaultTokenResponse({
   access_token: `${mockJwt(createId().toString())}`,

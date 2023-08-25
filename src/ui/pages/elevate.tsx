@@ -1,10 +1,15 @@
-import { useLoaderSuccess } from "@app/fx";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import { Link, useSearchParams } from "react-router-dom";
 
-import { elevate, elevateWebauthn } from "@app/auth";
-import { selectAuthLoader, selectIsOtpError } from "@app/auth";
+import {
+  defaultAuthLoaderMeta,
+  elevate,
+  elevateWebauthn,
+  isOtpError,
+} from "@app/auth";
+import { useLoader, useLoaderSuccess } from "@app/fx";
 import { forgotPassUrl, homeUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 
@@ -17,48 +22,50 @@ import {
   Input,
   tokens,
 } from "../shared";
-import { Link } from "react-router-dom";
 
 export const ElevatePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(selectJWTToken);
-  const location = useLocation();
+  const [params] = useSearchParams();
+  const redirect = params.get("redirect");
 
   const [otpToken, setOtpToken] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [requireOtp, setRequireOtp] = useState<boolean>(false);
-  const loader = useSelector(selectAuthLoader);
 
-  useLoaderSuccess(loader, () => {
-    const params = new URLSearchParams(location.search);
-    const redirect = params.get("redirect");
-    navigate(redirect || homeUrl());
-  });
-
-  const loginPayload = {
+  const data = {
     username: user.email,
     password,
     otpToken,
   };
+  const action = elevate(data);
+  const loader = useLoader(action);
+  const meta = defaultAuthLoaderMeta(loader.meta);
+  const webauthnAction = elevateWebauthn({
+    ...data,
+    webauthn: meta.exception_context.u2f,
+  });
+  const webauthnLoader = useLoader(webauthnAction);
+
+  useLoaderSuccess(loader, () => {
+    navigate(redirect || homeUrl());
+  });
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    dispatch(elevate(loginPayload));
+    dispatch(elevate(data));
   };
 
-  const isOtpError = useSelector(selectIsOtpError);
+  const isOtpRequired = isOtpError(meta.error);
   useEffect(() => {
-    if (isOtpError) {
-      setRequireOtp(true);
-      dispatch(
-        elevateWebauthn({
-          ...loginPayload,
-          webauthn: loader.meta.exception_context.u2f?.payload,
-        }),
-      );
+    if (!isOtpRequired) {
+      return;
     }
-  }, [isOtpError]);
+
+    setRequireOtp(true);
+    dispatch(webauthnAction);
+  }, [isOtpRequired]);
 
   return (
     <HeroBgLayout>
@@ -74,17 +81,15 @@ export const ElevatePage = () => {
       <div className="mt-8">
         <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
           <form className="space-y-4" onSubmit={onSubmit}>
-            <BannerMessages className="my-2" {...loader} />
-            <FormGroup label="Email" htmlFor="input-email">
+            <FormGroup label="Email" htmlFor="email">
               <Input
+                id="email"
                 name="email"
                 type="email"
                 disabled={true}
                 value={user.email}
                 autoComplete="username"
                 autoFocus={true}
-                data-testid="input-email"
-                id="input-email"
               />
             </FormGroup>
 
@@ -104,7 +109,7 @@ export const ElevatePage = () => {
             {requireOtp ? (
               <FormGroup
                 label="Two-Factor Authentication Required"
-                htmlFor="input-2fa"
+                htmlFor="otp"
                 description={
                   <p>
                     Read our 2fa{" "}
@@ -119,6 +124,8 @@ export const ElevatePage = () => {
                 }
               >
                 <Input
+                  id="otp"
+                  name="otp"
                   type="number"
                   value={otpToken}
                   onChange={(e) => setOtpToken(e.currentTarget.value)}
@@ -128,17 +135,29 @@ export const ElevatePage = () => {
               </FormGroup>
             ) : null}
 
-            <div>
-              <Button
-                isLoading={loader.isLoading}
-                disabled={loader.isLoading || !password}
-                type="submit"
-                layout="block"
-                size="lg"
-              >
-                Confirm
-              </Button>
+            <div className="my-2 flex flex-col gap-2">
+              <BannerMessages {...webauthnLoader} />
+              {isOtpRequired ? (
+                <BannerMessages
+                  isSuccess={false}
+                  isError={false}
+                  isWarning
+                  message="You must enter your 2FA token to continue"
+                />
+              ) : (
+                <BannerMessages {...loader} />
+              )}
             </div>
+
+            <Button
+              isLoading={loader.isLoading}
+              type="submit"
+              layout="block"
+              size="lg"
+            >
+              Confirm
+            </Button>
+
             <p className="text-center">
               <Link to={forgotPassUrl()} className="text-sm text-center">
                 Forgot your password?

@@ -1,30 +1,35 @@
-import { selectLegacyDashboardUrl } from "@app/env";
-import { useLoaderSuccess } from "@app/fx";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 
 import {
+  CreateTokenPayload,
+  defaultAuthLoaderMeta,
+  isOtpError,
   login,
   loginWebauthn,
-  selectAuthLoader,
-  selectIsOtpError,
 } from "@app/auth";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import {
   fetchInvitation,
+  selectInvitationById,
   selectInvitationRequest,
-  selectPendingInvitation,
 } from "@app/invitations";
+import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
   acceptInvitationWithCodeUrl,
   forgotPassUrl,
   homeUrl,
+  signupUrl,
 } from "@app/routes";
-import { validEmail } from "@app/string-utils";
+import { AppState } from "@app/types";
+import { emailValidator, existValidtor } from "@app/validator";
 
+import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
+  Banner,
   BannerMessages,
   Button,
   ExternalLink,
@@ -32,7 +37,13 @@ import {
   Input,
   tokens,
 } from "../shared";
-import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
+import { selectIsUserAuthenticated } from "@app/token";
+
+const validators = {
+  email: (props: CreateTokenPayload) => emailValidator(props.username),
+  pass: (props: CreateTokenPayload) =>
+    existValidtor(props.password, "Password"),
+};
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
@@ -42,17 +53,39 @@ export const LoginPage = () => {
   const [otpToken, setOtpToken] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [requireOtp, setRequireOtp] = useState<boolean>(false);
-  const loader = useSelector(selectAuthLoader);
   const redirectPath = useSelector(selectRedirectPath);
+  const [errors, validate] = useValidator<
+    CreateTokenPayload,
+    typeof validators
+  >(validators);
 
   const invitationRequest = useSelector(selectInvitationRequest);
-  const invitation = useSelector(selectPendingInvitation);
+  const invitation = useSelector((s: AppState) =>
+    selectInvitationById(s, { id: invitationRequest.invitationId }),
+  );
+  useQuery(fetchInvitation({ id: invitationRequest.invitationId }));
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
 
-  useEffect(() => {
-    if (!invitation && invitationRequest.invitationId) {
-      dispatch(fetchInvitation({ id: invitationRequest.invitationId }));
-    }
-  }, [invitationRequest.invitationId]);
+  const data = {
+    username: email,
+    password,
+    otpToken,
+    makeCurrent: true,
+  };
+  const action = login(data);
+  const loader = useLoader(action);
+  const meta = defaultAuthLoaderMeta(loader.meta);
+  const webauthnAction = loginWebauthn({
+    ...data,
+    webauthn: meta.exception_context.u2f,
+  });
+  const webauthnLoader = useLoader(webauthnAction);
+
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!validate(data)) return;
+    dispatch(action);
+  };
 
   useLoaderSuccess(loader, () => {
     if (invitationRequest.invitationId) {
@@ -63,39 +96,23 @@ export const LoginPage = () => {
     }
   });
 
-  const currentEmail = invitation ? invitation.email : email;
-  const loginPayload = {
-    username: currentEmail,
-    password,
-    otpToken,
-    makeCurrent: true,
-  };
-
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    dispatch(login(loginPayload));
-  };
-
-  const emailErrorMessage =
-    currentEmail === "" || validEmail(currentEmail)
-      ? null
-      : "Not a valid email";
-
-  const isOtpError = useSelector(selectIsOtpError);
   useEffect(() => {
-    if (isOtpError) {
-      setRequireOtp(true);
-      dispatch(
-        loginWebauthn({
-          ...loginPayload,
-          webauthn: loader.meta.exception_context.u2f?.payload,
-        }),
-      );
-    }
-  }, [isOtpError]);
+    if (invitation.email === "") return;
+    setEmail(invitation.email);
+  }, [invitation.email]);
 
-  const isOtpRequired = loader.message === "OtpTokenRequired";
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
+  const otpError = isOtpError(meta.error);
+  useEffect(() => {
+    if (!otpError) {
+      return;
+    }
+
+    setRequireOtp(true);
+    dispatch(webauthnAction);
+  }, [otpError]);
+
+  const isOtpRequired = isOtpError(meta.error);
+
   return (
     <HeroBgLayout width={500}>
       <h1 className={`${tokens.type.h1} text-center`}>Log In</h1>
@@ -103,7 +120,7 @@ export const LoginPage = () => {
         <div className="max-w-2xl">
           <p>
             Don't have an account?{" "}
-            <Link to={`${legacyUrl}/signup`} className="font-medium">
+            <Link to={signupUrl()} className="font-medium">
               Sign up
             </Link>
           </p>
@@ -113,23 +130,18 @@ export const LoginPage = () => {
       <div className="mt-8">
         <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
           <form className="space-y-4" onSubmit={onSubmit}>
-            {isOtpRequired ? (
-              <BannerMessages
-                className="my-2"
-                isSuccess={false}
-                isError={false}
-                isWarning
-                message="You must enter your 2FA token to continue"
-              />
-            ) : (
-              <BannerMessages className="my-2" {...loader} />
-            )}
+            {isAuthenticated ? (
+              <Banner variant="info">
+                You are already logged in.{" "}
+                <Link to={homeUrl()}>Click here to go to the dashboard.</Link>
+              </Banner>
+            ) : null}
 
             <FormGroup
               label="Email"
               htmlFor="email"
-              feedbackVariant={emailErrorMessage ? "danger" : "info"}
-              feedbackMessage={emailErrorMessage}
+              feedbackMessage={errors.email}
+              feedbackVariant={errors.email ? "danger" : "info"}
             >
               <Input
                 id="email"
@@ -138,14 +150,19 @@ export const LoginPage = () => {
                 autoComplete="email"
                 autoFocus={true}
                 required={true}
-                disabled={!!invitation}
-                value={invitation ? invitation.email : email}
+                disabled={invitation.id !== ""}
+                value={email}
                 className="w-full"
                 onChange={(e) => setEmail(e.target.value)}
               />
             </FormGroup>
 
-            <FormGroup label="Password" htmlFor="password">
+            <FormGroup
+              label="Password"
+              htmlFor="password"
+              feedbackMessage={errors.pass}
+              feedbackVariant={errors.pass ? "danger" : "info"}
+            >
               <Input
                 id="password"
                 name="password"
@@ -161,7 +178,7 @@ export const LoginPage = () => {
             {requireOtp ? (
               <FormGroup
                 label="Two-Factor Authentication Required"
-                htmlFor="input-2fa"
+                htmlFor="otp"
                 description={
                   <p>
                     Read our 2FA{" "}
@@ -176,6 +193,8 @@ export const LoginPage = () => {
                 }
               >
                 <Input
+                  id="otp"
+                  name="otp"
                   type="number"
                   value={otpToken}
                   onChange={(e) => setOtpToken(e.currentTarget.value)}
@@ -185,31 +204,53 @@ export const LoginPage = () => {
               </FormGroup>
             ) : null}
 
-            <div>
-              <Button
-                isLoading={loader.isLoading}
-                disabled={loader.isLoading || !(email && password)}
-                type="submit"
-                variant="primary"
-                layout="block"
-                size="lg"
-              >
-                Log In
-              </Button>
+            <div className="my-2 flex flex-col gap-2">
+              <BannerMessages {...webauthnLoader} />
+              {isOtpRequired ? (
+                <BannerMessages
+                  isSuccess={false}
+                  isError={false}
+                  isWarning
+                  message="You must enter your 2FA token to continue"
+                />
+              ) : (
+                <BannerMessages {...loader} />
+              )}
             </div>
+
+            <Button
+              isLoading={loader.isLoading}
+              disabled={isAuthenticated}
+              type="submit"
+              variant="primary"
+              layout="block"
+              size="lg"
+            >
+              Log In
+            </Button>
+
             <p className="text-center">
               <Link to={forgotPassUrl()} className="text-sm text-center">
                 Forgot your password?
               </Link>
             </p>
+
             <p className="mt-4 text-center text-sm text-gray-600">
               By submitting this form, I confirm that I have read and agree to
               Aptible's{" "}
-              <a href="https://www.aptible.com/legal/terms-of-service">
+              <ExternalLink
+                href="https://www.aptible.com/legal/terms-of-service"
+                variant="info"
+              >
                 Terms of Service
-              </a>{" "}
+              </ExternalLink>{" "}
               and{" "}
-              <a href="https://www.aptible.com/legal/privacy">Privacy Policy</a>
+              <ExternalLink
+                href="https://www.aptible.com/legal/privacy"
+                variant="info"
+              >
+                Privacy Policy
+              </ExternalLink>
               .
             </p>
           </form>
