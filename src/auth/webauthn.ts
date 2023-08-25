@@ -32,10 +32,14 @@ export function webauthnCreate(payload: CredentialCreationOptionsJSON) {
 }
 
 export function webauthnGet(
-  payload: CredentialRequestOptionsJSON["publicKey"] & { challenge: string },
+  payload: CredentialRequestOptionsJSON["publicKey"],
 ) {
   if (!hasWebAuthnSupport()) {
     throw new Error("webauthn not supported for browser");
+  }
+
+  if (!payload) {
+    throw new Error("payload cannot be undefined");
   }
 
   const publicKey: CredentialRequestOptionsJSON["publicKey"] = {

@@ -13,7 +13,7 @@ interface OtpCode {
 type OtpResponse = HalEmbedded<{ otp_recovery_codes: OtpCode[] }>;
 
 export const OtpRecoveryCodesPage = () => {
-  const { user } = useCurrentUser();
+  const [user] = useCurrentUser();
   const { data, isLoading } = useCache<OtpResponse>(
     fetchOtpCodes({ otpId: user.currentOtpId }),
   );

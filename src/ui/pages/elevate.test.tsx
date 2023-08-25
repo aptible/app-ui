@@ -4,68 +4,44 @@ import { rest } from "msw";
 
 import {
   server,
-  stacksWithResources,
-  testAppDeployed,
   testEmail,
   testEnv,
-  testEnvExpress,
   testToken,
   verifiedUserHandlers,
 } from "@app/mocks";
-import { loginUrl } from "@app/routes";
-import { setupAppIntegrationTest } from "@app/test";
+import { elevateUrl } from "@app/routes";
+import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 
-describe("Login page", () => {
-  describe("after successful login", () => {
-    it("should fetch initial data", async () => {
-      const { App } = setupAppIntegrationTest({ initEntries: [loginUrl()] });
-      render(<App />);
+describe("Elevate page", () => {
+  it("should naviate to redirect url", async () => {
+    const { App } = setupAppIntegrationTest({ initEntries: [elevateUrl()] });
+    render(<App />);
 
-      server.use(
-        ...stacksWithResources({
-          accounts: [testEnvExpress],
-          apps: [testAppDeployed],
-        }),
-        rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
-          return res(ctx.status(401));
-        }),
-        ...verifiedUserHandlers(),
-      );
+    server.use(...verifiedUserHandlers());
 
-      const email = await screen.findByRole("textbox", { name: "email" });
-      await act(() => userEvent.type(email, testEmail));
-      const pass = await screen.findByLabelText("Password");
-      await act(() => userEvent.type(pass, "1234"));
-      const btn = await screen.findByRole("button", { name: /Log In/ });
-      fireEvent.click(btn);
+    const email = await screen.findByRole("textbox", { name: "email" });
+    await act(() => userEvent.type(email, testEmail));
+    const pass = await screen.findByLabelText("Password");
+    await act(() => userEvent.type(pass, "1234"));
+    const btn = await screen.findByRole("button", { name: /Confirm/ });
+    fireEvent.click(btn);
 
-      await screen.findByRole("heading", {
-        level: 1,
-        name: "Deployments",
-      });
-      expect(
-        await screen.findByText(testAppDeployed.handle),
-      ).toBeInTheDocument();
+    await screen.findByRole("heading", {
+      level: 1,
+      name: "Deployments",
     });
   });
 
   describe("on failed login", () => {
     it("should error properly", async () => {
-      const { App } = setupAppIntegrationTest({ initEntries: [loginUrl()] });
-      render(<App />);
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [elevateUrl("/")],
+      });
 
       server.use(
-        ...stacksWithResources({
-          accounts: [testEnvExpress],
-          apps: [testAppDeployed],
-        }),
-        rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
-          return res(ctx.status(401));
-        }),
         rest.post(`${testEnv.authUrl}/tokens`, (_, res, ctx) => {
           return res(
             ctx.status(401),
-            ctx.set("Content-Type", "application/json"),
             ctx.json({
               code: 401,
               exception_context: {},
@@ -74,14 +50,19 @@ describe("Login page", () => {
             }),
           );
         }),
+        ...verifiedUserHandlers(),
       );
+
+      await waitForBootup(store);
+
+      render(<App />);
 
       const email = await screen.findByRole("textbox", { name: "email" });
       await act(() => userEvent.type(email, testEmail));
       const pass = await screen.findByLabelText("Password");
       await act(() => userEvent.type(pass, "1234"));
 
-      const btn = await screen.findByRole("button");
+      const btn = await screen.findByRole("button", { name: /Confirm/ });
       fireEvent.click(btn);
 
       expect(await screen.findByText("mock error message")).toBeInTheDocument();
@@ -90,17 +71,7 @@ describe("Login page", () => {
 
   describe("otp required", () => {
     it("should display otp input", async () => {
-      const { App } = setupAppIntegrationTest({ initEntries: [loginUrl()] });
-      render(<App />);
-
       server.use(
-        ...stacksWithResources({
-          accounts: [testEnvExpress],
-          apps: [testAppDeployed],
-        }),
-        rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
-          return res(ctx.status(401));
-        }),
         rest.post(`${testEnv.authUrl}/tokens`, async (req, res, ctx) => {
           const data = await req.json();
           if (data.otp_token === "111222") {
@@ -117,14 +88,23 @@ describe("Login page", () => {
             }),
           );
         }),
+        ...verifiedUserHandlers(),
       );
+
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [elevateUrl("/")],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
 
       const email = await screen.findByRole("textbox", { name: "email" });
       await act(() => userEvent.type(email, testEmail));
       const pass = await screen.findByLabelText("Password");
       await act(() => userEvent.type(pass, "1234"));
 
-      const btn = await screen.findByRole("button", { name: /Log In/ });
+      const btn = await screen.findByRole("button", { name: /Confirm/ });
       fireEvent.click(btn);
 
       await screen.findByText(/You must enter your 2FA token to continue/);
@@ -137,7 +117,7 @@ describe("Login page", () => {
       );
       await act(() => userEvent.type(otp, "111222"));
 
-      const fbtn = await screen.findByRole("button", { name: /Log In/ });
+      const fbtn = await screen.findByRole("button", { name: /Confirm/ });
       fireEvent.click(fbtn);
 
       await screen.findByRole("heading", {
