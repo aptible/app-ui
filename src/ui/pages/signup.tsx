@@ -160,89 +160,89 @@ export const SignupPage = () => {
                 ) : null}
 
                 <FormGroup
-              label="Name"
-              htmlFor="name"
-              feedbackMessage={errors.name}
-              feedbackVariant={errors.name ? "danger" : "info"}
-            >
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                autoComplete="name"
-                autoFocus={true}
-                required={true}
-                value={name}
-                className="w-full"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </FormGroup>
+                  label="Name"
+                  htmlFor="name"
+                  feedbackMessage={errors.name}
+                  feedbackVariant={errors.name ? "danger" : "info"}
+                >
+                  <Input
+                    id="name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    autoFocus={true}
+                    required={true}
+                    value={name}
+                    className="w-full"
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </FormGroup>
 
-            <FormGroup
-              label="Company"
-              htmlFor="company"
-              feedbackMessage={errors.company}
-              feedbackVariant={errors.company ? "danger" : "info"}
-            >
-              <Input
-                id="company"
-                name="company"
-                type="text"
-                autoComplete="company"
-                required={true}
-                value={company}
-                className="w-full"
-                onChange={(e) => setCompany(e.target.value)}
-              />
-            </FormGroup>
+                <FormGroup
+                  label="Company"
+                  htmlFor="company"
+                  feedbackMessage={errors.company}
+                  feedbackVariant={errors.company ? "danger" : "info"}
+                >
+                  <Input
+                    id="company"
+                    name="company"
+                    type="text"
+                    autoComplete="company"
+                    required={true}
+                    value={company}
+                    className="w-full"
+                    onChange={(e) => setCompany(e.target.value)}
+                  />
+                </FormGroup>
 
-            <FormGroup
-              label="Email"
-              htmlFor="email"
-              feedbackMessage={errors.email}
-              feedbackVariant={errors.email ? "danger" : "info"}
-            >
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required={true}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full"
-              />
-            </FormGroup>
+                <FormGroup
+                  label="Email"
+                  htmlFor="email"
+                  feedbackMessage={errors.email}
+                  feedbackVariant={errors.email ? "danger" : "info"}
+                >
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required={true}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full"
+                  />
+                </FormGroup>
 
-            <FormGroup
-              label="Password"
-              htmlFor="password"
-              feedbackMessage={errors.pass}
-              feedbackVariant={errors.pass ? "danger" : "info"}
-            >
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required={true}
-                value={password}
-                className="w-full"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </FormGroup>
+                <FormGroup
+                  label="Password"
+                  htmlFor="password"
+                  feedbackMessage={errors.pass}
+                  feedbackVariant={errors.pass ? "danger" : "info"}
+                >
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required={true}
+                    value={password}
+                    className="w-full"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </FormGroup>
 
-            <BannerMessages {...loader} />
+                <BannerMessages {...loader} />
 
-            <div>
-              <Button
-                type="submit"
-                layout="block"
-                size="lg"
-                isLoading={loader.isLoading}
-                disabled={isAuthenticated}
-              >
-                Create Account
+                <div>
+                  <Button
+                    type="submit"
+                    layout="block"
+                    size="lg"
+                    isLoading={loader.isLoading}
+                    disabled={isAuthenticated}
+                  >
+                    Create Account
                   </Button>
                 </div>
                 <p className="mt-4 text-center text-sm text-gray-600">
