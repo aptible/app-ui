@@ -1,16 +1,17 @@
+import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
+
+import { thunks } from "@app/api";
+import { createLog } from "@app/debug";
 import {
+  batchActions,
   call,
   put,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
 } from "@app/fx";
-import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 
-import { thunks } from "@app/api";
-import { createLog } from "@app/debug";
-
-import { AUTH_LOADER_ID } from "./loader";
+import { AUTH_LOADER_ID, defaultAuthLoaderMeta } from "./loader";
 import { CreateTokenPayload, createToken, elevateToken } from "./token";
 import { webauthnGet } from "./webauthn";
 
@@ -19,16 +20,17 @@ const log = createLog("login");
 export const login = thunks.create<CreateTokenPayload>(
   "login",
   function* onLogin(ctx, next) {
-    yield put(setLoaderStart({ id: AUTH_LOADER_ID }));
+    const id = ctx.key;
+    yield* put(setLoaderStart({ id }));
     const tokenCtx = yield* call(createToken.run, createToken(ctx.payload));
 
     if (!tokenCtx.json.ok) {
       const { error, code, exception_context, message } = tokenCtx.json.data;
-      yield put(
+      yield* put(
         setLoaderError({
-          id: AUTH_LOADER_ID,
+          id,
           message,
-          meta: { error, code, exception_context },
+          meta: defaultAuthLoaderMeta({ error, code, exception_context }),
         }),
       );
       return;
@@ -37,34 +39,41 @@ export const login = thunks.create<CreateTokenPayload>(
     const elevateCtx = yield* call(elevateToken.run, elevateToken(ctx.payload));
     log(elevateCtx);
 
-    yield put(setLoaderSuccess({ id: AUTH_LOADER_ID }));
     yield* next();
+
+    yield* put(
+      batchActions([
+        setLoaderSuccess({ id }),
+        setLoaderSuccess({ id: AUTH_LOADER_ID }),
+      ]),
+    );
   },
 );
 
 export const loginWebauthn = thunks.create<
   CreateTokenPayload & {
-    webauthn?: CredentialRequestOptionsJSON["publicKey"] & {
-      challenge: string;
+    webauthn?: {
+      payload: CredentialRequestOptionsJSON["publicKey"];
     };
   }
 >("login-webauthn", function* (ctx, next) {
+  const id = ctx.key;
   const { webauthn, ...props } = ctx.payload;
   if (!webauthn) {
     return;
   }
 
   try {
-    const u2f = yield* call(webauthnGet, webauthn);
+    const u2f = yield* call(webauthnGet, webauthn.payload);
     yield* call(login.run, login({ ...props, u2f }));
     yield* next();
   } catch (err) {
     yield put(
       setLoaderError({
-        id: AUTH_LOADER_ID,
+        id,
         message: (err as Error).message,
         // auth loader type sets this expectation
-        meta: { exception_context: { u2f: webauthn } },
+        meta: defaultAuthLoaderMeta({ exception_context: { u2f: webauthn } }),
       }),
     );
   }

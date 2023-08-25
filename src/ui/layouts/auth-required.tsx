@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { fetchCurrentToken } from "@app/auth";
-import { setRedirectPath } from "@app/redirect-path";
-import { loginUrl } from "@app/routes";
+import { resetRedirectPath, setRedirectPath } from "@app/redirect-path";
+import { loginUrl, logoutUrl, signupUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 
 import { useVerifiedRequired } from "../hooks";
 import { Loading } from "../shared";
+
+const denyList = [logoutUrl(), loginUrl(), signupUrl()];
 
 export const AuthRequired = () => {
   const loader = useLoader(fetchCurrentToken);
@@ -17,24 +19,22 @@ export const AuthRequired = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const authed = loader.isLoading || isAuthenticated;
   useVerifiedRequired();
-
-  useEffect(() => {
-    if (!authed) {
-      dispatch(setRedirectPath(location.pathname));
-    }
-  }, [authed]);
 
   useEffect(() => {
     if (loader.isLoading) {
       return;
     }
 
-    if (!authed) {
+    if (!isAuthenticated) {
+      if (denyList.includes(location.pathname)) {
+        dispatch(setRedirectPath(location.pathname));
+      }
       navigate(loginUrl());
+    } else {
+      dispatch(resetRedirectPath());
     }
-  }, [authed, loader]);
+  }, [isAuthenticated, loader.isLoading]);
 
   if (loader.isLoading) {
     return (

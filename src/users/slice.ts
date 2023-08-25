@@ -11,6 +11,7 @@ export const {
   add: addUsers,
   set: setUsers,
   reset: resetUsers,
+  patch: patchUsers,
 } = users.actions;
 
 export const reducers = createReducerMap(users);
