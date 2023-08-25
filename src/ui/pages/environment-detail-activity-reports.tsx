@@ -1,7 +1,6 @@
 import {
   ActivityReportListByEnvironment,
   DetailPageSections,
-  tokens,
 } from "../shared";
 import {
   fetchEnvActivityReports,
