@@ -30,7 +30,7 @@ import {
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
-import { SyntheticEvent } from "react";
+import { MouseEventHandler } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const DrainStatusPill = ({
@@ -133,8 +133,7 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   const dispatch = useDispatch();
   const restartAction = restartLogDrain({ id: logDrain.id });
   const restartLoader = useLoader(restartAction);
-  const submitRestart = (e: SyntheticEvent) => {
-    e.preventDefault();
+  const submitRestart: MouseEventHandler<HTMLButtonElement> = () => {
     dispatch(restartAction);
   };
   useLoaderSuccess(restartLoader, () => {
@@ -266,8 +265,7 @@ const MetricDrainActions = ({
   const dispatch = useDispatch();
   const restartAction = restartMetricDrain({ id: metricDrain.id });
   const restartLoader = useLoader(restartAction);
-  const submitRestart = (e: SyntheticEvent) => {
-    e.preventDefault();
+  const submitRestart: MouseEventHandler<HTMLButtonElement> = () => {
     dispatch(restartAction);
   };
   useLoaderSuccess(restartLoader, () => {
