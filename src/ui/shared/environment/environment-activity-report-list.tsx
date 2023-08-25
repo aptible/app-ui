@@ -15,9 +15,15 @@ const ActivityReportListRow = ({
   const dispatch = useDispatch();
   return (
     <tr className="group hover:bg-gray-50" key={`${report.id}`}>
-      <Td className="text-gray-900">{prettyEnglishDateWithTime(report.createdAt)}</Td>
-      <Td className="text-gray-900">{prettyEnglishDateWithTime(report.startsAt)}</Td>
-      <Td className="text-gray-900">{prettyEnglishDateWithTime(report.endsAt)}</Td>
+      <Td className="text-gray-900">
+        {prettyEnglishDateWithTime(report.createdAt)}
+      </Td>
+      <Td className="text-gray-900">
+        {prettyEnglishDateWithTime(report.startsAt)}
+      </Td>
+      <Td className="text-gray-900">
+        {prettyEnglishDateWithTime(report.endsAt)}
+      </Td>
       <Td className="flex gap-2 justify-end mr-4">
         <ButtonIcon
           icon={<IconDownload className="-mr-2" variant="sm" />}
