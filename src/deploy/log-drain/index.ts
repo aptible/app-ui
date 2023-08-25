@@ -344,6 +344,30 @@ export const provisionLogDrain = thunks.create<CreateLogDrainProps>(
   },
 );
 
+export const deprovisionLogDrain = api.post<
+  { id: string },
+  DeployOperationResponse
+>(["/log_drains/:id/operations", "deprovision"], function* (ctx, next) {
+  const { id } = ctx.payload;
+  const body = {
+    type: "deprovision",
+    id,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Deprovision log drain operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
+
 export const restartLogDrain = api.post<
   { id: string },
   DeployOperationResponse
