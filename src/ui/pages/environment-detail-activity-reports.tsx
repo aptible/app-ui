@@ -1,7 +1,4 @@
-import {
-  ActivityReportListByEnvironment,
-  DetailPageSections,
-} from "../shared";
+import { ActivityReportListByEnvironment, DetailPageSections } from "../shared";
 import {
   fetchEnvActivityReports,
   selectActivityReportsByEnvId,
