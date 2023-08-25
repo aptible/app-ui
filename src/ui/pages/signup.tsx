@@ -155,7 +155,7 @@ export const SignupPage = () => {
                 {isAuthenticated && !loader.isLoading ? (
                   <Banner variant="info">
                     You are already logged in.{" "}
-                    <Link to={homeUrl()}>Click here to go to the dashboard.</Link>
+                    <Link to={homeUrl()}>Go to the dashboard.</Link>
                   </Banner>
                 ) : null}
 
