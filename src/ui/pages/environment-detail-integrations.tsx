@@ -16,6 +16,8 @@ import {
 import { EmptyResourcesTable } from "../shared/empty-resources-table";
 import { prettyDateRelative } from "@app/date";
 import {
+  deprovisionLogDrain,
+  deprovisionMetricDrain,
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
   restartLogDrain,
@@ -139,6 +141,14 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   useLoaderSuccess(restartLoader, () => {
     navigate(operationDetailUrl(restartLoader.meta.opId));
   });
+  const deprovisionAction = deprovisionLogDrain({ id: logDrain.id });
+  const deprovisionLoader = useLoader(deprovisionAction);
+  const submitDeprovision: MouseEventHandler<HTMLButtonElement> = () => {
+    dispatch(deprovisionAction);
+  };
+  useLoaderSuccess(deprovisionLoader, () => {
+    navigate(operationDetailUrl(deprovisionLoader.meta.opId));
+  });
 
   return (
     <Td className="flex-1">
@@ -149,6 +159,18 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
           disabled={restartLoader.isLoading}
         >
           {restartLoader.isLoading ? "Restarting..." : "Restart"}
+        </Button>
+        <Button
+          className="flex semibold ml-4"
+          onClick={submitDeprovision}
+          disabled={deprovisionLoader.isLoading}
+          variant="secondary"
+          style={{
+            backgroundColor: "#AD1A1A",
+            color: "#FFF",
+          }}
+        >
+          {deprovisionLoader.isLoading ? "Deleting..." : "Delete"}
         </Button>
       </div>
     </Td>
@@ -271,6 +293,14 @@ const MetricDrainActions = ({
   useLoaderSuccess(restartLoader, () => {
     navigate(operationDetailUrl(restartLoader.meta.opId));
   });
+  const deprovisionAction = deprovisionMetricDrain({ id: metricDrain.id });
+  const deprovisionLoader = useLoader(deprovisionAction);
+  const submitDeprovision: MouseEventHandler<HTMLButtonElement> = () => {
+    dispatch(deprovisionAction);
+  };
+  useLoaderSuccess(deprovisionLoader, () => {
+    navigate(operationDetailUrl(deprovisionLoader.meta.opId));
+  });
 
   return (
     <Td className="flex-1">
@@ -281,6 +311,18 @@ const MetricDrainActions = ({
           disabled={restartLoader.isLoading}
         >
           {restartLoader.isLoading ? "Restarting..." : "Restart"}
+        </Button>
+        <Button
+          className="flex semibold ml-4"
+          onClick={submitDeprovision}
+          disabled={deprovisionLoader.isLoading}
+          variant="secondary"
+          style={{
+            backgroundColor: "#AD1A1A",
+            color: "#FFF",
+          }}
+        >
+          {deprovisionLoader.isLoading ? "Deleting..." : "Delete"}
         </Button>
       </div>
     </Td>

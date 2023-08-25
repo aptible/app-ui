@@ -317,6 +317,31 @@ export const provisionMetricDrain = thunks.create<CreateMetricDrainProps>(
   },
 );
 
+export const deprovisionMetricDrain = api.post<
+  { id: string },
+  DeployOperationResponse
+>(["/metric_drains/:id/operations", "deprovision"], function* (ctx, next) {
+  const { id } = ctx.payload;
+  // an empty provision triggers a restart for metric drains
+  const body = {
+    type: "deprovision",
+    id,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Deprovision log drain operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
+
 export const restartMetricDrain = api.post<
   { id: string },
   DeployOperationResponse
