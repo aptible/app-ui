@@ -16,7 +16,7 @@ import {
 import type { AppState, DeployCertificate } from "@app/types";
 
 import {
-  ButtonCreate,
+  ButtonSensitive,
   CertIssuer,
   CertManagedHTTPSPill,
   CertTrustedPill,
@@ -165,9 +165,9 @@ export const EnvironmentCertificatesPage = () => {
             <div className="text-gray-500">
               {certificates.length} Certificate(s)
             </div>
-            <ButtonCreate envId={id} onClick={createCert}>
+            <ButtonSensitive envId={id} onClick={createCert}>
               <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
-            </ButtonCreate>
+            </ButtonSensitive>
           </div>
         }
         tableHeader={<TableHead headers={certificatesHeaders} />}

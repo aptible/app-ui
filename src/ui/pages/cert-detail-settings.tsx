@@ -17,7 +17,7 @@ import {
   Banner,
   BannerMessages,
   Box,
-  ButtonDestroy,
+  ButtonSensitive,
   IconAlertTriangle,
   IconTrash,
   Input,
@@ -87,7 +87,7 @@ const CertDelete = ({ certId }: { certId: string }) => {
             onChange={(e) => setConfirm(e.currentTarget.value)}
             id="delete-confirm"
           />
-          <ButtonDestroy
+          <ButtonSensitive
             type="submit"
             envId={cert.environmentId}
             variant="delete"
@@ -97,7 +97,7 @@ const CertDelete = ({ certId }: { certId: string }) => {
           >
             <IconTrash color="#FFF" className="mr-2" />
             Delete Certificate
-          </ButtonDestroy>
+          </ButtonSensitive>
         </div>
       </form>
     </Box>
