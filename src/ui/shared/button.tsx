@@ -199,3 +199,4 @@ export const ButtonCreate = createButtonPermission("deploy");
 export const ButtonDestroy = createButtonPermission("destroy");
 export const ButtonOps = createButtonPermission("observability");
 export const ButtonSensitive = createButtonPermission("sensitive");
+export const ButtonAdmin = createButtonPermission("admin");

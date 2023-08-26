@@ -21,7 +21,7 @@ import { useValidator } from "../hooks";
 import {
   Banner,
   Box,
-  ButtonCreate,
+  ButtonAdmin,
   ButtonDestroy,
   CheckBox,
   FormGroup,
@@ -102,7 +102,7 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
 
         <hr />
 
-        <ButtonCreate
+        <ButtonAdmin
           envId={envId}
           type="submit"
           isLoading={loader.isLoading}
@@ -110,7 +110,7 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
           className="w-40"
         >
           Save Changes
-        </ButtonCreate>
+        </ButtonAdmin>
       </div>
     </form>
   );

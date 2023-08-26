@@ -12,7 +12,7 @@ import type { AppState } from "@app/types";
 
 import { useValidator } from "../../hooks";
 import { BannerMessages } from "../banner";
-import { Button, ButtonCreate } from "../button";
+import { Button, ButtonAdmin } from "../button";
 import { FormGroup } from "../form-group";
 import { Input } from "../input";
 import { Radio, RadioGroup } from "../select";
@@ -158,13 +158,9 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
         <BannerMessages {...loader} />
 
         <div className="flex gap-2">
-          <ButtonCreate
-            type="submit"
-            envId={envId}
-            isLoading={loader.isLoading}
-          >
+          <ButtonAdmin type="submit" envId={envId} isLoading={loader.isLoading}>
             Save Policy
-          </ButtonCreate>
+          </ButtonAdmin>
 
           <Button variant="white" onClick={onReset}>
             Cancel
