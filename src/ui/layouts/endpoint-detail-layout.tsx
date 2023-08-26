@@ -91,11 +91,13 @@ function EndpointAppHeader({
   service,
   isError,
   message,
+  meta,
 }: {
   enp: DeployEndpoint;
   service: DeployService;
   isError: boolean;
   message: string;
+  meta: Record<string, any>;
 }) {
   useQuery(fetchApp({ id: service.appId }));
   const app = useSelector((s: AppState) =>
@@ -114,6 +116,7 @@ function EndpointAppHeader({
     <DetailPageHeaderView
       isError={isError}
       message={message}
+      meta={meta}
       tabs={tabs}
       breadcrumbs={[{ name: app.handle, to: url }]}
       title={`Endpoint: ${enp.id}`}
@@ -127,11 +130,13 @@ function EndpointDatabaseHeader({
   service,
   isError,
   message,
+  meta,
 }: {
   enp: DeployEndpoint;
   service: DeployService;
   isError: boolean;
   message: string;
+  meta: Record<string, any>;
 }) {
   useQuery(fetchDatabase({ id: service.databaseId }));
   const db = useSelector((s: AppState) =>
@@ -143,6 +148,7 @@ function EndpointDatabaseHeader({
     <DetailPageHeaderView
       isError={isError}
       message={message}
+      meta={meta}
       breadcrumbs={[{ name: db.handle, to: url }]}
       title={`Endpoint: ${enp.id}`}
       detailsBox={<div>Not implemented yet.</div>}
