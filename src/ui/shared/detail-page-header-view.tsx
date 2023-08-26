@@ -15,14 +15,32 @@ interface HeaderProps {
   tabs?: TabItem[];
   isError: boolean;
   message: string;
+  meta: Record<string, any>;
 }
 
-const DetailErrorBox = ({ message }: { message: string }) => {
+const DetailErrorBox = ({
+  message,
+  meta = {},
+}: { message: string; meta: Record<string, any> }) => {
   return (
     <Box className="flex items-center justify-center">
-      <div>
-        <IconAlertTriangle />
+      <h1 className="text-lg text-red-500 font-semibold">
+        <IconAlertTriangle
+          className="inline pr-3 mb-1"
+          style={{ width: 32 }}
+          color="#AD1A1A"
+        />
         <span className="ml-2">{message}</span>
+      </h1>
+
+      <div>
+        {Object.keys(meta).map((key) => {
+          return (
+            <div key={key}>
+              {key}: {meta[key]}
+            </div>
+          );
+        })}
       </div>
     </Box>
   );
@@ -36,14 +54,11 @@ export const DetailPageHeaderView = ({
   tabs,
   isError,
   message,
+  meta,
 }: HeaderProps) => {
-  const box = () => {
-    if (isError) {
-      return <DetailErrorBox message={message} />;
-    }
-
-    return detailsBox ? detailsBox : null;
-  };
+  if (isError) {
+    return <DetailErrorBox message={message} meta={meta} />;
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -57,7 +72,7 @@ export const DetailPageHeaderView = ({
         {actions && <ActionListView actions={actions} />}
       </div>
 
-      <div>{box()}</div>
+      <div>{detailsBox ? detailsBox : null}</div>
 
       {tabs ? (
         <div className="pt-1">
