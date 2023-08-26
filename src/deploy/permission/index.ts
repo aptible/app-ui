@@ -124,6 +124,11 @@ export const selectUserHasPerms = createSelector(
         return true;
       }
 
+      // anything create op under `obserability` a `deploy` perm can do
+      if (perm.scope === "deploy" && scope === "observability") {
+        return true;
+      }
+
       if (perm.scope === scope) {
         return true;
       }
