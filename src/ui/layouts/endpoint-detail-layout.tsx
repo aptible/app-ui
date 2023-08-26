@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
-import { useQuery } from "saga-query/react";
+import { useLoader, useQuery } from "saga-query/react";
 
 import {
   cancelFetchEndpointPoll,
@@ -89,7 +89,14 @@ export function EndpointAppHeaderInfo({
 function EndpointAppHeader({
   enp,
   service,
-}: { enp: DeployEndpoint; service: DeployService }) {
+  isError,
+  message,
+}: {
+  enp: DeployEndpoint;
+  service: DeployService;
+  isError: boolean;
+  message: string;
+}) {
   useQuery(fetchApp({ id: service.appId }));
   const app = useSelector((s: AppState) =>
     selectAppById(s, { id: service.appId }),
@@ -105,6 +112,8 @@ function EndpointAppHeader({
 
   return (
     <DetailPageHeaderView
+      isError={isError}
+      message={message}
       tabs={tabs}
       breadcrumbs={[{ name: app.handle, to: url }]}
       title={`Endpoint: ${enp.id}`}
@@ -116,7 +125,14 @@ function EndpointAppHeader({
 function EndpointDatabaseHeader({
   enp,
   service,
-}: { enp: DeployEndpoint; service: DeployService }) {
+  isError,
+  message,
+}: {
+  enp: DeployEndpoint;
+  service: DeployService;
+  isError: boolean;
+  message: string;
+}) {
   useQuery(fetchDatabase({ id: service.databaseId }));
   const db = useSelector((s: AppState) =>
     selectDatabaseById(s, { id: service.databaseId }),
@@ -125,6 +141,8 @@ function EndpointDatabaseHeader({
 
   return (
     <DetailPageHeaderView
+      isError={isError}
+      message={message}
       breadcrumbs={[{ name: db.handle, to: url }]}
       title={`Endpoint: ${enp.id}`}
       detailsBox={<div>Not implemented yet.</div>}
@@ -137,6 +155,7 @@ function EndpointPageHeader() {
   const dispatch = useDispatch();
   const action = useMemo(() => pollFetchEndpoint({ id }), [id]);
   const cancel = useMemo(() => cancelFetchEndpointPoll(), []);
+  const loader = useLoader(action);
   usePoller({ action, cancel });
   const enp = useSelector((s: AppState) => selectEndpointById(s, { id }));
   useEffect(() => {
@@ -148,11 +167,11 @@ function EndpointPageHeader() {
   );
 
   if (service.appId) {
-    return <EndpointAppHeader enp={enp} service={service} />;
+    return <EndpointAppHeader {...loader} enp={enp} service={service} />;
   }
 
   if (service.databaseId) {
-    return <EndpointDatabaseHeader enp={enp} service={service} />;
+    return <EndpointDatabaseHeader {...loader} enp={enp} service={service} />;
   }
 
   return <Loading text="Loading endpoint information..." />;

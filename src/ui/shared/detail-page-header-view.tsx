@@ -4,7 +4,7 @@ import { ActionList, ActionListView } from "./action-list-view";
 import { Box } from "./box";
 import { Breadcrumbs, Crumb } from "./breadcrumbs";
 import { ButtonLinkExternal } from "./button";
-import { IconExternalLink } from "./icons";
+import { IconAlertTriangle, IconExternalLink } from "./icons";
 import { TabItem, Tabs } from "./tabs";
 
 interface HeaderProps {
@@ -13,7 +13,20 @@ interface HeaderProps {
   detailsBox?: React.ReactNode;
   title: string;
   tabs?: TabItem[];
+  isError: boolean;
+  message: string;
 }
+
+const DetailErrorBox = ({ message }: { message: string }) => {
+  return (
+    <Box className="flex items-center justify-center">
+      <div>
+        <IconAlertTriangle />
+        <span className="ml-2">{message}</span>
+      </div>
+    </Box>
+  );
+};
 
 export const DetailPageHeaderView = ({
   breadcrumbs,
@@ -21,7 +34,17 @@ export const DetailPageHeaderView = ({
   detailsBox,
   actions,
   tabs,
+  isError,
+  message,
 }: HeaderProps) => {
+  const box = () => {
+    if (isError) {
+      return <DetailErrorBox message={message} />;
+    }
+
+    return detailsBox ? detailsBox : null;
+  };
+
   return (
     <div className="flex flex-col gap-3">
       <div>
@@ -34,7 +57,7 @@ export const DetailPageHeaderView = ({
         {actions && <ActionListView actions={actions} />}
       </div>
 
-      <div>{detailsBox ? detailsBox : null}</div>
+      <div>{box()}</div>
 
       {tabs ? (
         <div className="pt-1">

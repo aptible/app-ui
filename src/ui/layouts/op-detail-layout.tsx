@@ -3,6 +3,7 @@ import { Link, Outlet, useParams } from "react-router-dom";
 
 import { prettyEnglishDateWithTime } from "@app/date";
 import {
+  fetchOperationById,
   getResourceUrl,
   prettyResourceType,
   selectOperationById,
@@ -22,6 +23,7 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { useQuery } from "saga-query/react";
 
 export function OpHeader({
   op,
@@ -64,9 +66,11 @@ function OpPageHeader() {
   const resourceHandle = useSelector((s: AppState) =>
     selectResourceNameByOperationId(s, { id: op.id }),
   );
+  const loader = useQuery(fetchOperationById({ id }));
 
   return (
     <DetailPageHeaderView
+      {...loader}
       breadcrumbs={[{ name: "Activity", to: activityUrl() }]}
       title={`Operation: ${op.id}`}
       detailsBox={<OpHeader op={op} resourceHandle={resourceHandle} />}
