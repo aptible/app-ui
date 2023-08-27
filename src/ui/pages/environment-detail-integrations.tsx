@@ -1,19 +1,7 @@
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
-import {
-  Button,
-  ButtonCreate,
-  IconPlusCircle,
-  LoadResources,
-  Pill,
-  ResourceListView,
-  TableHead,
-  Td,
-  pillStyles,
-  tokens,
-} from "../shared";
-import { EmptyResourcesTable } from "../shared/empty-resources-table";
 import { prettyDateRelative } from "@app/date";
 import {
   deprovisionLogDrain,
@@ -32,8 +20,22 @@ import {
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
-import { MouseEventHandler } from "react";
-import { useDispatch, useSelector } from "react-redux";
+
+import {
+  ButtonCreate,
+  ButtonDestroy,
+  ButtonOps,
+  EmptyResourcesTable,
+  Group,
+  IconPlusCircle,
+  LoadResources,
+  Pill,
+  ResourceListView,
+  TableHead,
+  Td,
+  pillStyles,
+  tokens,
+} from "../shared";
 
 const DrainStatusPill = ({
   drain,
@@ -86,6 +88,7 @@ const LogDrainHandleCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
     </Td>
   );
 };
+
 const LogDrainSourcesCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   const drainSources = [];
   if (logDrain.drainApps) {
@@ -133,17 +136,19 @@ const LogDrainLastUpdatedCell = ({
 const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const restartAction = restartLogDrain({ id: logDrain.id });
   const restartLoader = useLoader(restartAction);
-  const submitRestart: MouseEventHandler<HTMLButtonElement> = () => {
+  const submitRestart = () => {
     dispatch(restartAction);
   };
   useLoaderSuccess(restartLoader, () => {
     navigate(operationDetailUrl(restartLoader.meta.opId));
   });
+
   const deprovisionAction = deprovisionLogDrain({ id: logDrain.id });
   const deprovisionLoader = useLoader(deprovisionAction);
-  const submitDeprovision: MouseEventHandler<HTMLButtonElement> = () => {
+  const submitDeprovision = () => {
     dispatch(deprovisionAction);
   };
   useLoaderSuccess(deprovisionLoader, () => {
@@ -152,31 +157,30 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
 
   return (
     <Td className="flex-1">
-      <div className="flex">
-        <Button
-          className="flex semibold"
+      <Group variant="horizontal" size="sm">
+        <ButtonOps
+          size="sm"
+          envId={logDrain.environmentId}
+          className="semibold"
           onClick={submitRestart}
-          disabled={
-            restartLoader.isLoading ||
-            logDrain.backendChannel === "log_forwarder"
-          }
+          isLoading={restartLoader.isLoading}
+          disabled={logDrain.backendChannel === "log_forwarder"}
         >
-          {restartLoader.isLoading ? "Restarting..." : "Restart"}
-        </Button>
-        <Button
-          className="flex semibold ml-4"
+          Restart
+        </ButtonOps>
+
+        <ButtonDestroy
+          size="sm"
+          envId={logDrain.environmentId}
+          className="semibold"
           onClick={submitDeprovision}
-          disabled={deprovisionLoader.isLoading}
-          variant="secondary"
-          style={{
-            backgroundColor: "#AD1A1A",
-            color: "#FFF",
-          }}
+          isLoading={deprovisionLoader.isLoading}
+          variant="delete"
           requireConfirm
         >
-          {deprovisionLoader.isLoading ? "Deleting..." : "Delete"}
-        </Button>
-      </div>
+          Delete
+        </ButtonDestroy>
+      </Group>
     </Td>
   );
 };
@@ -289,17 +293,19 @@ const MetricDrainActions = ({
 }: { metricDrain: DeployMetricDrain }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const restartAction = restartMetricDrain({ id: metricDrain.id });
   const restartLoader = useLoader(restartAction);
-  const submitRestart: MouseEventHandler<HTMLButtonElement> = () => {
+  const submitRestart = () => {
     dispatch(restartAction);
   };
   useLoaderSuccess(restartLoader, () => {
     navigate(operationDetailUrl(restartLoader.meta.opId));
   });
+
   const deprovisionAction = deprovisionMetricDrain({ id: metricDrain.id });
   const deprovisionLoader = useLoader(deprovisionAction);
-  const submitDeprovision: MouseEventHandler<HTMLButtonElement> = () => {
+  const submitDeprovision = () => {
     dispatch(deprovisionAction);
   };
   useLoaderSuccess(deprovisionLoader, () => {
@@ -308,28 +314,29 @@ const MetricDrainActions = ({
 
   return (
     <Td className="flex-1">
-      <div className="flex">
-        <Button
-          className="flex semibold"
+      <Group variant="horizontal" size="sm">
+        <ButtonOps
+          size="sm"
+          envId={metricDrain.environmentId}
+          className="semibold"
           onClick={submitRestart}
-          disabled={restartLoader.isLoading}
+          isLoading={restartLoader.isLoading}
         >
-          {restartLoader.isLoading ? "Restarting..." : "Restart"}
-        </Button>
-        <Button
-          className="flex semibold ml-4"
+          Restart
+        </ButtonOps>
+
+        <ButtonDestroy
+          size="sm"
+          envId={metricDrain.environmentId}
+          className="semibold"
           onClick={submitDeprovision}
-          disabled={deprovisionLoader.isLoading}
-          variant="secondary"
-          style={{
-            backgroundColor: "#AD1A1A",
-            color: "#FFF",
-          }}
+          isLoading={deprovisionLoader.isLoading}
+          variant="delete"
           requireConfirm
         >
-          {deprovisionLoader.isLoading ? "Deleting..." : "Delete"}
-        </Button>
-      </div>
+          Delete
+        </ButtonDestroy>
+      </Group>
     </Td>
   );
 };
@@ -398,14 +405,15 @@ export const EnvironmentIntegrationsPage = () => {
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
+      <Group variant="horizontal" size="sm" className="mb-4">
         <ButtonCreate envId={id} onClick={onCreateLogs}>
           <IconPlusCircle variant="sm" className="mr-1" /> New Log Drain
         </ButtonCreate>
         <ButtonCreate envId={id} onClick={onCreateMetrics}>
           <IconPlusCircle variant="sm" className="mr-1" /> New Metric Drain
         </ButtonCreate>
-      </div>
+      </Group>
+
       <LogDrainsSection id={id} />
       <MetricDrainsSection id={id} />
     </div>
