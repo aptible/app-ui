@@ -4,7 +4,7 @@ import { ActionList, ActionListView } from "./action-list-view";
 import { Box } from "./box";
 import { Breadcrumbs, Crumb } from "./breadcrumbs";
 import { ButtonLinkExternal } from "./button";
-import { IconExternalLink } from "./icons";
+import { IconAlertTriangle, IconExternalLink } from "./icons";
 import { TabItem, Tabs } from "./tabs";
 
 interface HeaderProps {
@@ -13,7 +13,38 @@ interface HeaderProps {
   detailsBox?: React.ReactNode;
   title: string;
   tabs?: TabItem[];
+  isError: boolean;
+  message: string;
+  meta: Record<string, any>;
 }
+
+const DetailErrorBox = ({
+  message,
+  meta = {},
+}: { message: string; meta: Record<string, any> }) => {
+  return (
+    <Box className="flex items-center justify-center">
+      <h1 className="text-lg text-red-500 font-semibold">
+        <IconAlertTriangle
+          className="inline pr-3 mb-1"
+          style={{ width: 32 }}
+          color="#AD1A1A"
+        />
+        <span className="ml-2">{message}</span>
+      </h1>
+
+      <div>
+        {Object.keys(meta).map((key) => {
+          return (
+            <div key={key}>
+              {key}: {meta[key]}
+            </div>
+          );
+        })}
+      </div>
+    </Box>
+  );
+};
 
 export const DetailPageHeaderView = ({
   breadcrumbs,
@@ -21,7 +52,14 @@ export const DetailPageHeaderView = ({
   detailsBox,
   actions,
   tabs,
+  isError,
+  message,
+  meta,
 }: HeaderProps) => {
+  if (isError) {
+    return <DetailErrorBox message={message} meta={meta} />;
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <div>

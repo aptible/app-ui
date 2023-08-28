@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router";
 
-import { getStackType, selectStackById } from "@app/deploy";
+import { fetchStack, getStackType, selectStackById } from "@app/deploy";
 import {
   stackDetailEnvsUrl,
   stackDetailVpcPeeringsUrl,
@@ -23,6 +23,7 @@ import { MenuWrappedPage } from "./menu-wrapped-page";
 import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
 import { useEffect } from "react";
+import { useQuery } from "saga-query/react";
 
 export function StackHeader({ stack }: { stack: DeployStack }) {
   const stackType = getStackType(stack);
@@ -71,6 +72,7 @@ function StackPageHeader() {
   useEffect(() => {
     dispatch(setResourceStats({ id, type: "stack" }));
   }, []);
+  const loader = useQuery(fetchStack({ id }));
 
   const stack = useSelector((s: AppState) => selectStackById(s, { id }));
   const crumbs = [{ name: "Stacks", to: stacksUrl() }];
@@ -83,6 +85,7 @@ function StackPageHeader() {
 
   return (
     <DetailPageHeaderView
+      {...loader}
       breadcrumbs={crumbs}
       title={stack.name}
       detailsBox={<StackHeader stack={stack} />}

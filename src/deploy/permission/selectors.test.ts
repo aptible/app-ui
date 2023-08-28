@@ -60,6 +60,78 @@ describe("selectUserHasPerms", () => {
   });
 
   describe("when user is a `platform_user`", () => {
+    describe("when checking for `observability` scope", () => {
+      describe("when user has `deploy` scope", () => {
+        it("should return true", () => {
+          const role = defaultRole({
+            id: `${createId()}`,
+            name: "deployer",
+            type: "platform_user",
+          });
+          const envId = `${createId()}`;
+          const perm = defaultPermission({
+            id: `${createId()}`,
+            roleId: role.id,
+            environmentId: `${envId}`,
+            scope: "deploy",
+          });
+
+          const state: DeepPartial<AppState> = {
+            deploy: {
+              permissions: {
+                [perm.id]: perm,
+              },
+            },
+            roles: {
+              [role.id]: role,
+            },
+            currentUserRoles: [role.id],
+          };
+
+          const actual = selectUserHasPerms(state as any, {
+            envId,
+            scope: "observability",
+          });
+          expect(actual).toEqual(true);
+        });
+      });
+
+      describe("when user has `observability` scope", () => {
+        it("should return true", () => {
+          const role = defaultRole({
+            id: `${createId()}`,
+            name: "deployer",
+            type: "platform_user",
+          });
+          const envId = `${createId()}`;
+          const perm = defaultPermission({
+            id: `${createId()}`,
+            roleId: role.id,
+            environmentId: `${envId}`,
+            scope: "observability",
+          });
+
+          const state: DeepPartial<AppState> = {
+            deploy: {
+              permissions: {
+                [perm.id]: perm,
+              },
+            },
+            roles: {
+              [role.id]: role,
+            },
+            currentUserRoles: [role.id],
+          };
+
+          const actual = selectUserHasPerms(state as any, {
+            envId,
+            scope: "observability",
+          });
+          expect(actual).toEqual(true);
+        });
+      });
+    });
+
     describe("when checking for `deploy` scope", () => {
       describe("when user has `deploy` permission", () => {
         it("should return true", () => {

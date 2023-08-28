@@ -3,7 +3,7 @@ import { EnvironmentDetailLayout } from "../layouts";
 import {
   Banner,
   BannerMessages,
-  ButtonCreate,
+  ButtonOps,
   CheckBox,
   Code,
   DbSelector,
@@ -418,14 +418,14 @@ export const CreateLogDrainPage = () => {
 
           <BannerMessages {...loader} />
 
-          <ButtonCreate
+          <ButtonOps
             className="w-[200px]"
             envId={envId}
             type="submit"
             isLoading={loader.isLoading}
           >
             Save Log Drain
-          </ButtonCreate>
+          </ButtonOps>
         </form>
       </div>
     </EnvironmentDetailLayout>

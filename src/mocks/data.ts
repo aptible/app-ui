@@ -147,6 +147,30 @@ export const testAccount = defaultEnvResponse({
   },
 });
 
+export const testAccountAdmin = defaultEnvResponse({
+  id: testAccountId,
+  handle: createText("account"),
+  organization_id: testOrg.id,
+  _links: {
+    stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
+    environment: defaultHalHref(),
+  },
+  _embedded: {
+    permissions: [
+      defaultPermissionResponse({
+        id: `${createId()}`,
+        scope: "admin",
+        _links: {
+          account: defaultHalHref(
+            `${testEnv.apiUrl}/accounts/${testAccountId}`,
+          ),
+          role: defaultHalHref(`${testEnv.apiUrl}/roles/${testRole.id}`),
+        },
+      }),
+    ],
+  },
+});
+
 const testDestroyAccountId = createId();
 export const testDestroyAccount = defaultEnvResponse({
   id: testDestroyAccountId,

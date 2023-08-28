@@ -15,8 +15,8 @@ import { AppState } from "@app/types";
 import { usePoller } from "../hooks";
 import {
   BannerMessages,
-  ButtonCreate,
   ButtonLink,
+  ButtonOps,
   DatabaseBackupsList,
   IconEdit,
   IconPlusCircle,
@@ -53,13 +53,13 @@ export const DatabaseBackupsPage = () => {
   return (
     <div>
       <div className="flex gap-4 items-center">
-        <ButtonCreate
+        <ButtonOps
           envId={db.environmentId}
           onClick={onCreateBackup}
           isLoading={loader.isLoading}
         >
           <IconPlusCircle variant="sm" className="mr-2" /> New Backup
-        </ButtonCreate>
+        </ButtonOps>
 
         <ButtonLink
           to={environmentBackupsUrl(db.environmentId)}

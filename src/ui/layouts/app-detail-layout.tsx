@@ -88,7 +88,7 @@ function AppPageHeader() {
     dispatch(setResourceStats({ id, type: "app" }));
   }, []);
 
-  useQuery(fetchApp({ id }));
+  const loader = useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),
@@ -96,6 +96,7 @@ function AppPageHeader() {
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
+
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
@@ -126,6 +127,7 @@ function AppPageHeader() {
     <>
       <AppHeartbeatNotice id={id} serviceId={serviceId} />
       <DetailPageHeaderView
+        {...loader}
         breadcrumbs={crumbs}
         title={serviceId ? service.handle : app.handle}
         detailsBox={<AppHeader app={app} />}

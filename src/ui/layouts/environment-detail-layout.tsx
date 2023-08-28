@@ -140,7 +140,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
   useQuery(fetchAllApps());
   useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
-  useQuery(fetchEnvironmentById({ id }));
+  const loader = useQuery(fetchEnvironmentById({ id }));
 
   const latestOperation = useSelector((s: AppState) =>
     selectLatestSuccessDeployOpByEnvId(s, { envId: id }),
@@ -169,6 +169,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
 
   return (
     <DetailPageHeaderView
+      {...loader}
       breadcrumbs={crumbs}
       detailsBox={
         <EnvHeader

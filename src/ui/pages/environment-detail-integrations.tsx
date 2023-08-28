@@ -22,7 +22,6 @@ import { capitalize } from "@app/string-utils";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 
 import {
-  ButtonCreate,
   ButtonDestroy,
   ButtonOps,
   EmptyResourcesTable,
@@ -406,12 +405,12 @@ export const EnvironmentIntegrationsPage = () => {
   return (
     <div>
       <Group variant="horizontal" size="sm" className="mb-4">
-        <ButtonCreate envId={id} onClick={onCreateLogs}>
+        <ButtonOps envId={id} onClick={onCreateLogs}>
           <IconPlusCircle variant="sm" className="mr-1" /> New Log Drain
-        </ButtonCreate>
-        <ButtonCreate envId={id} onClick={onCreateMetrics}>
+        </ButtonOps>
+        <ButtonOps envId={id} onClick={onCreateMetrics}>
           <IconPlusCircle variant="sm" className="mr-1" /> New Metric Drain
-        </ButtonCreate>
+        </ButtonOps>
       </Group>
 
       <LogDrainsSection id={id} />

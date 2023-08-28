@@ -675,13 +675,16 @@ const DetailBoxes = () => {
 };
 
 const Secrets = () => {
+  const env = defaultDeployEnvironment({
+    id: "123",
+    stackId: "444",
+  });
   return (
     <div className="flex flex-col gap-3">
       <h1 id="secrets" className={tokens.type.h1}>
         Secrets
       </h1>
-      <Secret secret="secret-value-showing-by-default" showAsOpened />
-      <Secret secret="secret-value-hidden-by-default" />
+      <Secret secret="secret-value-hidden-by-default" envId={env.id} />
     </div>
   );
 };

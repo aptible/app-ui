@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
-import { useQuery } from "saga-query/react";
+import { useLoader, useQuery } from "saga-query/react";
 
 import {
   cancelPollCert,
@@ -80,6 +80,7 @@ function CertPageHeader() {
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: cert.environmentId }),
   );
+  const loader = useLoader(action);
 
   const crumbs = [
     { name: env.handle, to: environmentCertificatesUrl(cert.environmentId) },
@@ -91,6 +92,7 @@ function CertPageHeader() {
   ];
   return (
     <DetailPageHeaderView
+      {...loader}
       breadcrumbs={crumbs}
       title={cert.commonName}
       detailsBox={<CertHeader cert={cert} />}
