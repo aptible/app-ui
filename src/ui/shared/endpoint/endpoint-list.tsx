@@ -145,7 +145,7 @@ const EndpointHeader = ({
 };
 
 const headers = [
-  "Hostname",
+  "URL",
   "Resource",
   "Status",
   "Placement",
