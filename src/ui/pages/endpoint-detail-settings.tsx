@@ -123,12 +123,9 @@ export const EndpointDetailSettingsPage = () => {
   );
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <EndpointSettings endpointId={id} />
-      <EndpointDeprovision
-        className="mt-4"
-        endpointId={id}
-        envId={service.environmentId}
+      <EndpointDeprovision endpointId={id} envId={service.environmentId}
       />
     </div>
   );
