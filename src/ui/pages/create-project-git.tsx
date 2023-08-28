@@ -2,6 +2,7 @@ import cn from "classnames";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
 
 import { timeBetween } from "@app/date";
 import {
