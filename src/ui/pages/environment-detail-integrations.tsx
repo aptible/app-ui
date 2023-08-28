@@ -22,15 +22,10 @@ import { capitalize } from "@app/string-utils";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
 
 import {
-<<<<<<< HEAD
-  ButtonCreate,
   ButtonDestroy,
   ButtonOps,
   EmptyResourcesTable,
   Group,
-=======
-  ButtonOps,
->>>>>>> d5c1a29 (chore: observability scope for creating drains)
   IconPlusCircle,
   LoadResources,
   Pill,
@@ -409,25 +404,15 @@ export const EnvironmentIntegrationsPage = () => {
 
   return (
     <div>
-<<<<<<< HEAD
       <Group variant="horizontal" size="sm" className="mb-4">
-        <ButtonCreate envId={id} onClick={onCreateLogs}>
-=======
-      <div className="flex gap-2 mb-4">
         <ButtonOps envId={id} onClick={onCreateLogs}>
->>>>>>> d5c1a29 (chore: observability scope for creating drains)
           <IconPlusCircle variant="sm" className="mr-1" /> New Log Drain
         </ButtonOps>
         <ButtonOps envId={id} onClick={onCreateMetrics}>
           <IconPlusCircle variant="sm" className="mr-1" /> New Metric Drain
-<<<<<<< HEAD
-        </ButtonCreate>
+        </ButtonOps>
       </Group>
 
-=======
-        </ButtonOps>
-      </div>
->>>>>>> d5c1a29 (chore: observability scope for creating drains)
       <LogDrainsSection id={id} />
       <MetricDrainsSection id={id} />
     </div>
