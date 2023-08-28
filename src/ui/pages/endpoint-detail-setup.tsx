@@ -77,7 +77,7 @@ export const EndpointDetailSetupPage = () => {
   });
 
   return (
-    <div className="bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+    <Box>
       <div className="flex flex-col gap-2">
         <h3 className={tokens.type.h3}>Managed HTTPS Validation Records</h3>
 
@@ -123,6 +123,6 @@ export const EndpointDetailSetupPage = () => {
           I created the records
         </Button>
       </div>
-    </div>
+    </Box>
   );
 };
