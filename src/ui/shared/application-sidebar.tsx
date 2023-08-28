@@ -112,7 +112,7 @@ export const ApplicationSidebar = () => {
           </div>
         )}
 
-        <nav className="mt-2 flex-1 px-2 bg-white space-y-1">
+        <nav className="mt-2 flex-1 px-2 bg-white">
           {navigation.map((item) => (
             <LinkNav key={item.name} {...item} hideName={collapsed} />
           ))}
