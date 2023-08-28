@@ -40,7 +40,7 @@ export const InputSearch = ({
   return (
     <div {...props} className={`flex relative ${className}`}>
       <IconSearch
-        className="absolute top-[9px] left-[7px]"
+        className="absolute top-[11px] left-[10px]"
         color="#595E63"
         variant="sm"
       />
@@ -50,7 +50,7 @@ export const InputSearch = ({
         value={search}
         onChange={onChange}
         autoFocus={autoFocus}
-        className="pl-8 w-full"
+        className="pl-9 w-full"
       />
     </div>
   );
