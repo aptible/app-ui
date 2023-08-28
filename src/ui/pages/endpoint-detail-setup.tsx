@@ -6,7 +6,7 @@ import { checkDns, renewEndpoint, selectEndpointById } from "@app/deploy";
 import { endpointDetailActivityUrl } from "@app/routes";
 import { AcmeChallenge, AppState } from "@app/types";
 
-import { Button, IconCheck, IconX, Tooltip, tokens } from "../shared";
+import { Box, Button, IconCheck, IconX, Tooltip, tokens } from "../shared";
 
 const CnameItem = ({ from, to }: { from: string; to: string }) => {
   const loader = useQuery(checkDns({ from, to }));
