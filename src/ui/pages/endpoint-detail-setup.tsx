@@ -115,7 +115,11 @@ export const EndpointDetailSetupPage = () => {
           ) : null}
         </div>
 
-        <Button className="w-[200px]" isLoading={loader.isLoading} onClick={renew}>
+        <Button
+          className="w-[200px]"
+          isLoading={loader.isLoading}
+          onClick={renew}
+        >
           I created the records
         </Button>
       </div>
