@@ -50,6 +50,7 @@ import {
   createProjectGitPushUrl,
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
+  environmentAppsUrl,
 } from "@app/routes";
 import { fetchSSHKeys } from "@app/ssh-keys";
 import {
@@ -949,6 +950,10 @@ export const CreateProjectGitStatusPage = () => {
     );
   };
 
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+
   const viewProject = () => {
     return origin === "app" ? (
       <ButtonLinkExternal
@@ -959,7 +964,7 @@ export const CreateProjectGitStatusPage = () => {
         View Environment <IconArrowRight variant="sm" className="ml-2" />
       </ButtonLinkExternal>
     ) : (
-      <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
+      <ButtonLink to={environmentAppsUrl(environment.id)} className="mt-4 mb-2">
         View Environment <IconArrowRight variant="sm" className="ml-2" />
       </ButtonLink>
     );
