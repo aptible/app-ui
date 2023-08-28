@@ -1,47 +1,139 @@
-import {
-  Banner,
-  Box,
-  BoxGroup,
-  Button,
-  ButtonLinkExternal,
-  ExternalLink,
-  FormGroup,
-  IconAlertTriangle,
-  IconExternalLink,
-  IconTrash,
-  Input,
-  PreCode,
-  listToInvertedTextColor,
-} from "../shared";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+
 import {
   deprovisionApp,
   fetchApp,
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
+  restartApp,
   selectAppById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
   updateApp,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
-import { appActivityUrl } from "@app/routes";
-import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import { appActivityUrl, operationDetailUrl } from "@app/routes";
+import {
+  AppState,
+  DeployApp,
+  DeployLogDrain,
+  DeployMetricDrain,
+} from "@app/types";
 
-export const AppSettingsPage = () => {
-  const [handle, setHandle] = useState<string>("");
-  const [deleteConfirm, setDeleteConfirm] = useState<string>("");
-  const [isDeprovisioning, setIsDeprovisioning] = useState<boolean>(false);
-  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+import {
+  Banner,
+  Box,
+  BoxGroup,
+  Button,
+  ButtonCreate,
+  ButtonDestroy,
+  ButtonLinkExternal,
+  ButtonOps,
+  ExternalLink,
+  FormGroup,
+  Group,
+  IconAlertTriangle,
+  IconExternalLink,
+  IconRefresh,
+  IconTrash,
+  Input,
+  Label,
+  PreCode,
+  listToInvertedTextColor,
+} from "../shared";
+
+interface AppProps {
+  app: DeployApp;
+}
+
+const AppDeprovision = ({ app }: AppProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const updatingAppLoader = useLoader(updateApp);
+  const [deleteConfirm, setDeleteConfirm] = useState<string>("");
+  const action = deprovisionApp({ appId: app.id });
+  const loader = useLoader(action);
+  const onClick = (ev: React.FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+    dispatch(action);
+    navigate(appActivityUrl(app.id));
+  };
+  const isDisabled = app.handle !== deleteConfirm;
 
-  const { id = "" } = useParams();
-  useQuery(fetchApp({ id }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  return (
+    <form onSubmit={onClick}>
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2">
+        <IconAlertTriangle variant="sm" color="#AD1A1A" />
+        Deprovision App
+      </h1>
+
+      <Group>
+        <p>
+          This will permanently deprovision <strong>{app.handle}</strong> app.
+          This action cannot be undone. If you want to proceed, type the{" "}
+          <strong>{app.handle}</strong> below to continue.
+        </p>
+
+        <Group variant="horizontal" size="sm" className="items-center">
+          <Input
+            className="flex-1"
+            disabled={loader.isLoading}
+            name="delete-confirm"
+            type="text"
+            value={deleteConfirm}
+            onChange={(e) => setDeleteConfirm(e.currentTarget.value)}
+            id="delete-confirm"
+          />
+          <ButtonDestroy
+            envId={app.environmentId}
+            type="submit"
+            variant="delete"
+            className="w-70 flex"
+            disabled={isDisabled}
+            isLoading={loader.isLoading}
+          >
+            <IconTrash color="#FFF" className="mr-2" />
+            Deprovision App
+          </ButtonDestroy>
+        </Group>
+      </Group>
+    </form>
+  );
+};
+
+const AppRestart = ({ app }: AppProps) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const action = restartApp({ id: app.id });
+  const loader = useLoader(action);
+  const onClick = () => {
+    dispatch(action);
+  };
+  useLoaderSuccess(loader, () => {
+    navigate(operationDetailUrl(loader.meta.opId));
+  });
+
+  return (
+    <div>
+      <Label className="mt-4">Restart App</Label>
+      <ButtonOps
+        envId={app.environmentId}
+        variant="white"
+        className="flex"
+        onClick={onClick}
+        isLoading={loader.isLoading}
+      >
+        <IconRefresh className="mr-2" variant="sm" />
+        Restart
+      </ButtonOps>
+    </div>
+  );
+};
+
+const AppNameChange = ({ app }: AppProps) => {
+  const dispatch = useDispatch();
+  const [handle, setHandle] = useState<string>("");
   const logDrains = useSelector((s: AppState) =>
     selectLogDrainsByEnvId(s, { envId: app.environmentId }),
   );
@@ -55,29 +147,81 @@ export const AppSettingsPage = () => {
   const drains: (DeployLogDrain | DeployMetricDrain)[] =
     [...logDrains, ...metricDrains] || [];
 
+  const action = updateApp({ id: app.id, handle });
+  const loader = useLoader(action);
+  const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(action);
+  };
+
   useEffect(() => {
     setHandle(app.handle);
   }, [app.id]);
 
-  const onSubmitForm = (e: SyntheticEvent) => {
-    e.preventDefault();
+  return (
+    <form onSubmit={onSubmitForm}>
+      <FormGroup label="App Name" htmlFor="input-name">
+        <Input
+          name="app-handle"
+          type="text"
+          value={handle}
+          onChange={(e) => setHandle(e.currentTarget.value)}
+          autoComplete="name"
+          id="input-name"
+        />
 
-    setIsUpdating(true);
-    dispatch(updateApp({ id, handle }));
-    setIsUpdating(false);
-  };
+        {handle !== app.handle && drains.length ? (
+          <Banner variant="info" showIcon={false} className="mt-4">
+            <p>
+              You must <b>restart the app</b> for the new name to appear in the
+              following log and metric drains, view the docs (
+              <ExternalLink
+                variant="default"
+                href="https://www.aptible.com/docs/log-drains"
+              >
+                log drains
+              </ExternalLink>
+              ,{" "}
+              <ExternalLink
+                variant="default"
+                href="https://www.aptible.com/docs/metric-drains"
+              >
+                metric drains
+              </ExternalLink>
+              ) to learn more:
+            </p>
+            <ul className="list-disc ml-4 mt-2">
+              {drains.map((drain) => (
+                <li key={drain.id}>{drain.handle}</li>
+              ))}
+            </ul>
+          </Banner>
+        ) : null}
+      </FormGroup>
 
-  const requestDeprovisionApp = (e: SyntheticEvent) => {
-    e.preventDefault();
+      <Group variant="horizontal" size="sm" className="mt-4">
+        <ButtonCreate
+          envId={app.environmentId}
+          className="w-40 semibold"
+          type="submit"
+          disabled={handle === app.handle}
+          isLoading={loader.isLoading}
+        >
+          Save Changes
+        </ButtonCreate>
 
-    setIsUpdating(true);
-    setIsDeprovisioning(true);
-    dispatch(deprovisionApp({ appId: app.id }));
-    navigate(appActivityUrl(id));
-  };
+        <Button variant="white" onClick={() => setHandle(app.handle)}>
+          Cancel
+        </Button>
+      </Group>
+    </form>
+  );
+};
 
-  const disabledDeprovisioning =
-    isDeprovisioning || app.handle !== deleteConfirm;
+export const AppSettingsPage = () => {
+  const { id = "" } = useParams();
+  useQuery(fetchApp({ id }));
+  const app = useSelector((s: AppState) => selectAppById(s, { id }));
 
   return (
     <BoxGroup>
@@ -114,105 +258,16 @@ export const AppSettingsPage = () => {
           />
         </div>
       </Box>
+
       <Box>
         <h1 className="text-lg text-gray-500">App Settings</h1>
-        <br />
-        <form onSubmit={onSubmitForm}>
-          <FormGroup label="App Name" htmlFor="input-name">
-            <Input
-              name="app-handle"
-              type="text"
-              value={handle}
-              onChange={(e) => setHandle(e.currentTarget.value)}
-              autoComplete="name"
-              data-testid="input-name"
-              id="input-name"
-            />
-            {handle !== app.handle && drains.length ? (
-              <Banner variant="info" showIcon={false} className="mt-4">
-                <p>
-                  You must <b>restart the app</b> for the new name to appear in
-                  the following log and metric drains, view the docs (
-                  <ExternalLink
-                    variant="default"
-                    href="https://www.aptible.com/docs/log-drains"
-                  >
-                    log drains
-                  </ExternalLink>
-                  ,{" "}
-                  <ExternalLink
-                    variant="default"
-                    href="https://www.aptible.com/docs/metric-drains"
-                  >
-                    metric drains
-                  </ExternalLink>
-                  ) to learn more:
-                </p>
-                <ul className="list-disc ml-4 mt-2">
-                  {drains.map((drain) => (
-                    <li>{drain.handle}</li>
-                  ))}
-                </ul>
-              </Banner>
-            ) : null}
-          </FormGroup>
-
-          <hr className="mt-6" />
-
-          <div className="flex mt-4">
-            <Button
-              className="w-40 flex semibold"
-              type="submit"
-              disabled={isUpdating || updatingAppLoader.isLoading}
-            >
-              {isUpdating || updatingAppLoader.isLoading
-                ? "Loading..."
-                : "Save Changes"}
-            </Button>
-          </div>
-        </form>
+        <AppNameChange app={app} />
+        <hr className="mt-6" />
+        <AppRestart app={app} />
       </Box>
-      <Box className="mb-8">
-        <h1 className="text-lg text-red-500 font-semibold">
-          <IconAlertTriangle
-            className="inline pr-3 mb-1"
-            style={{ width: 32 }}
-            color="#AD1A1A"
-          />
-          Deprovision App
-        </h1>
-        <div className="mt-2">
-          <p>
-            This will permanently deprovision <strong>{app.handle}</strong> app.
-            This action cannot be undone. If you want to proceed, type the{" "}
-            <strong>{app.handle}</strong> below to continue.
-          </p>
-          <div className="flex mt-4 wd-60">
-            <Input
-              className="flex"
-              disabled={isDeprovisioning}
-              name="delete-confirm"
-              type="text"
-              value={deleteConfirm}
-              onChange={(e) => setDeleteConfirm(e.currentTarget.value)}
-              data-testid="delete-confirm"
-              id="delete-confirm"
-            />
-            <Button
-              variant="secondary"
-              style={{
-                backgroundColor: "#AD1A1A",
-                color: "#FFF",
-              }}
-              disabled={disabledDeprovisioning}
-              className="h-15 w-60 mb-0 ml-4 flex"
-              onClick={requestDeprovisionApp}
-            >
-              <IconTrash color="#FFF" className="mr-2" />
-              {isDeprovisioning ? "Deprovisioning..." : "Deprovision App"}
-            </Button>
-          </div>
-        </div>
+
+      <Box>
+        <AppDeprovision app={app} />
       </Box>
     </BoxGroup>
   );

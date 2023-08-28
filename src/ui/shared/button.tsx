@@ -4,7 +4,7 @@ import { selectUserHasPerms } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { AppState, PermissionScope } from "@app/types";
 import cn from "classnames";
-import { ButtonHTMLAttributes, FC } from "react";
+import { ButtonHTMLAttributes, FC, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, LinkProps } from "react-router-dom";
 
@@ -16,6 +16,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
   shape?: Shape;
   isLoading?: boolean;
+  requireConfirm?: boolean;
   children?: React.ReactNode;
 }
 
@@ -105,8 +106,10 @@ export const Button: FC<ButtonProps> = ({
   isLoading = false,
   type = "button",
   className = "",
+  requireConfirm = false,
   ...props
 }) => {
+  const [confirmPrompted, setConfirmPrompted] = useState(false);
   const classes = cn(
     "flex items-center justify-center",
     buttonLayout[layout],
@@ -115,6 +118,26 @@ export const Button: FC<ButtonProps> = ({
     buttonShapeStyle(size, shape),
     { "opacity-50": props.disabled },
   );
+  if (confirmPrompted) {
+    return (
+      <button
+        {...props}
+        type={type}
+        className={`${className} ${classes}`}
+        disabled={isLoading || props.disabled}
+      >
+        Confirm
+      </button>
+    );
+  }
+
+  if (requireConfirm) {
+    props = {
+      ...props,
+      onClick: () => setConfirmPrompted(true),
+    };
+  }
+
   return (
     <button
       {...props}
@@ -174,3 +197,4 @@ const createButtonPermission = (
 
 export const ButtonCreate = createButtonPermission("deploy");
 export const ButtonDestroy = createButtonPermission("destroy");
+export const ButtonOps = createButtonPermission("observability");

@@ -10,7 +10,12 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const classes = cn(
-    "appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 text-base disabled:cursor-not-allowed disabled:opacity-50",
+    "appearance-none outline-none",
+    "leading-none",
+    "p-3",
+    "border border-gray-300 placeholder-gray-400 rounded-md shadow-sm",
+    "focus:ring-inset focus:ring-gray-500 focus:border-gray-500",
+    "disabled:cursor-not-allowed disabled:opacity-50",
     props.className,
   );
   return (

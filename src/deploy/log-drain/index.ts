@@ -108,6 +108,11 @@ export interface DeployLogDrainResponse {
   created_at: string;
   updated_at: string;
   status: ProvisionableStatus;
+  _embedded: {
+    backend: {
+      channel: string;
+    };
+  };
   _links: {
     account: LinkResponse;
   };
@@ -131,6 +136,7 @@ export const deserializeLogDrain = (payload: any): DeployLogDrain => {
     drainEphemeralSessions: payload.drain_ephemeral_sessions,
     drainProxies: payload.drain_proxies,
     environmentId: extractIdFromLink(links.account),
+    backendChannel: payload._embedded.backend.channel,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     status: payload.status,
@@ -158,6 +164,11 @@ export const defaultLogDrainResponse = (
     status: "pending",
     created_at: now,
     updated_at: now,
+    _embedded: {
+      backend: {
+        channel: "",
+      },
+    },
     _links: {
       account: defaultHalHref(),
     },
@@ -184,6 +195,7 @@ export const defaultDeployLogDrain = (
     drainEphemeralSessions: false,
     drainDatabases: false,
     environmentId: "",
+    backendChannel: "",
     createdAt: now,
     updatedAt: now,
     status: "pending",
@@ -343,6 +355,55 @@ export const provisionLogDrain = thunks.create<CreateLogDrainProps>(
     );
   },
 );
+
+export const deprovisionLogDrain = api.post<
+  { id: string },
+  DeployOperationResponse
+>(["/log_drains/:id/operations", "deprovision"], function* (ctx, next) {
+  const { id } = ctx.payload;
+  const body = {
+    type: "deprovision",
+    id,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Deprovision log drain operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
+
+export const restartLogDrain = api.post<
+  { id: string },
+  DeployOperationResponse
+>(["/log_drains/:id/operations", "restart"], function* (ctx, next) {
+  const { id } = ctx.payload;
+  // an empty configure triggers a restart for log drains
+  const body = {
+    type: "configure",
+    id,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Restart log drain operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
 
 export const logDrainEntities = {
   log_drain: defaultEntity({

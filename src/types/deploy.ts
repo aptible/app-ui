@@ -329,6 +329,7 @@ export interface DeployLogDrain extends Provisionable, Timestamps {
   drainEphemeralSessions: boolean;
   drainProxies: boolean;
   environmentId: string;
+  backendChannel: string;
 }
 
 export interface DeployMetricDrain extends Provisionable, Timestamps {
