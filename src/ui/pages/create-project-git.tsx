@@ -50,6 +50,7 @@ import {
   createProjectGitPushUrl,
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
+  environmentAppsUrl,
 } from "@app/routes";
 import { fetchSSHKeys } from "@app/ssh-keys";
 import {
@@ -949,17 +950,17 @@ export const CreateProjectGitStatusPage = () => {
     );
   };
 
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+
   const viewProject = () => {
     return origin === "app" ? (
-      <ButtonLinkExternal
-        target="_blank"
-        href={`${legacyUrl}/accounts/${envId}/apps`}
-        className="mt-4"
-      >
+      <ButtonLink to={environmentAppsUrl(environment.id)} className="mt-4">
         View Environment <IconArrowRight variant="sm" className="ml-2" />
-      </ButtonLinkExternal>
+      </ButtonLink>
     ) : (
-      <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
+      <ButtonLink className="mt-4 mb-2">
         View Environment <IconArrowRight variant="sm" className="ml-2" />
       </ButtonLink>
     );
@@ -1010,12 +1011,9 @@ export const CreateProjectGitStatusPage = () => {
             <VhostRow key={vhost.id} vhost={vhost} />
           ))}
           <div className="flex gap-3">
-            <ExternalLink
-              href={`${legacyUrl}/apps/${app.id}/vhosts`}
-              variant="info"
-            >
+            <Link to={appDetailUrl(endpoint.resourceId)} variant="info">
               Manage Endpoints
-            </ExternalLink>
+            </Link>
             <ExternalLink
               href="https://www.aptible.com/docs/endpoints"
               variant="info"
