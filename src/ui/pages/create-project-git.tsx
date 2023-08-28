@@ -35,7 +35,6 @@ import {
   selectLatestProvisionOp,
   selectLatestScanOp,
 } from "@app/deploy";
-import { selectLegacyDashboardUrl, selectOrigin } from "@app/env";
 import { useCache, useLoader, useQuery } from "@app/fx";
 import { batchActions, resetLoaderById, selectLoaderById } from "@app/fx";
 import {
