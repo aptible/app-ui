@@ -72,7 +72,6 @@ import {
   Box,
   Button,
   ButtonLink,
-  ButtonLinkExternal,
   Code,
   CreateAppEndpointSelector,
   ErrorResources,
@@ -850,7 +849,6 @@ export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
   const origin = useSelector(selectOrigin);
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
