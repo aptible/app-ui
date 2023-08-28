@@ -44,7 +44,6 @@ import {
   redeployApp,
 } from "@app/projects";
 import {
-  appDetailUrl,
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
   createProjectGitPushUrl,
