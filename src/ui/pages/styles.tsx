@@ -12,12 +12,14 @@ import {
 import {
   AptibleLogo,
   Banner,
+  Box,
   Breadcrumbs,
   Button,
   ButtonIcon,
   ButtonLink,
   CheckBox,
   FormGroup,
+  Group,
   IconAlertTriangle,
   IconArrowLeft,
   IconArrowRight,
@@ -673,13 +675,16 @@ const DetailBoxes = () => {
 };
 
 const Secrets = () => {
+  const env = defaultDeployEnvironment({
+    id: "123",
+    stackId: "444",
+  });
   return (
     <div className="flex flex-col gap-3">
       <h1 id="secrets" className={tokens.type.h1}>
         Secrets
       </h1>
-      <Secret secret="secret-value-showing-by-default" showAsOpened />
-      <Secret secret="secret-value-hidden-by-default" />
+      <Secret secret="secret-value-hidden-by-default" envId={env.id} />
     </div>
   );
 };
@@ -701,6 +706,42 @@ const Dates = () => {
   );
 };
 
+const NegativeSpace = () => {
+  return (
+    <Group>
+      <div>
+        <h1 className={tokens.type.h1}>Grouping</h1>
+
+        <Box>A simple box</Box>
+      </div>
+
+      <div>
+        <h1 className={tokens.type.h1}>Grouping</h1>
+
+        <div>
+          <h2 className={tokens.type.h2}>Default</h2>
+
+          <Group>
+            <Box>One</Box>
+            <Box>Two</Box>
+            <Box>Three</Box>
+          </Group>
+        </div>
+
+        <div>
+          <h2 className={tokens.type.h2}>Horizontal</h2>
+
+          <Group variant="horizontal">
+            <Box>One</Box>
+            <Box>Two</Box>
+            <Box>Three</Box>
+          </Group>
+        </div>
+      </div>
+    </Group>
+  );
+};
+
 export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
@@ -718,6 +759,7 @@ export const StylesPage = () => (
       <DetailBoxes />
       <Secrets />
       <Dates />
+      <NegativeSpace />
     </StylesWrapper>
   </div>
 );

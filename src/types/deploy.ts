@@ -329,6 +329,7 @@ export interface DeployLogDrain extends Provisionable, Timestamps {
   drainEphemeralSessions: boolean;
   drainProxies: boolean;
   environmentId: string;
+  backendChannel: string;
 }
 
 export interface DeployMetricDrain extends Provisionable, Timestamps {
@@ -523,3 +524,11 @@ export type ContainerProfileData = {
   maximumContainerSize: number;
   maximumContainerCount: number;
 };
+
+export interface DeployActivityReport extends Timestamps {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  filename: string;
+  environmentId: string;
+}

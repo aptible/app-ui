@@ -160,6 +160,10 @@ export const environmentIntegrationsUrl = (id: string) =>
 export const ENVIRONMENT_CERTIFICATES_PATH = "/environments/:id/certificates";
 export const environmentCertificatesUrl = (id: string) =>
   `/environments/${id}/certificates`;
+export const ENVIRONMENT_ACTIVITY_REPORTS_PATH =
+  "/environments/:id/activity_reports";
+export const environmentActivityReportsUrl = (id: string) =>
+  `/environments/${id}/activity_reports`;
 export const ENVIRONMENT_ACTIVITY_PATH = "/environments/:id/activity";
 export const environmentActivityUrl = (id: string) =>
   `/environments/${id}/activity`;

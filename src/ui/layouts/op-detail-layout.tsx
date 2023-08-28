@@ -3,6 +3,7 @@ import { Link, Outlet, useParams } from "react-router-dom";
 
 import { prettyEnglishDateWithTime } from "@app/date";
 import {
+  fetchOperationById,
   getResourceUrl,
   prettyResourceType,
   selectOperationById,
@@ -22,6 +23,7 @@ import {
 } from "../shared";
 
 import { MenuWrappedPage } from "./menu-wrapped-page";
+import { useQuery } from "saga-query/react";
 
 export function OpHeader({
   op,
@@ -35,21 +37,23 @@ export function OpHeader({
 
       <DetailInfoGrid>
         <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
-        <DetailInfoItem title="Resource Type">
-          {prettyResourceType(op.resourceType)}
-        </DetailInfoItem>
-        <DetailInfoItem title="Status">
-          <OpStatus status={op.status} />
-        </DetailInfoItem>
-
         <DetailInfoItem title="Last Updated">
           {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
         </DetailInfoItem>
-        <DetailInfoItem title="Resource">
-          {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
+        <div className="hidden md:block" />
+
+        <DetailInfoItem title="Status">
+          <OpStatus status={op.status} />
         </DetailInfoItem>
         <DetailInfoItem title="User">{op.userName}</DetailInfoItem>
+        <div className="hidden md:block" />
 
+        <DetailInfoItem title="Resource">
+          {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
+          <div className="text-gray-500 text-sm">
+            {prettyResourceType(op.resourceType)}
+          </div>
+        </DetailInfoItem>
         <DetailInfoItem title="Note">{op.note || "N/A"}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
@@ -62,9 +66,11 @@ function OpPageHeader() {
   const resourceHandle = useSelector((s: AppState) =>
     selectResourceNameByOperationId(s, { id: op.id }),
   );
+  const loader = useQuery(fetchOperationById({ id }));
 
   return (
     <DetailPageHeaderView
+      {...loader}
       breadcrumbs={[{ name: "Activity", to: activityUrl() }]}
       title={`Operation: ${op.id}`}
       detailsBox={<OpHeader op={op} resourceHandle={resourceHandle} />}

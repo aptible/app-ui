@@ -168,6 +168,7 @@ describe("Selecting an Organization", () => {
       // it should wipe the store
       expect(store.getState().deploy).toEqual({
         active_plans: {},
+        activityReports: {},
         appConfigs: {},
         apps: {},
         backupRps: {},

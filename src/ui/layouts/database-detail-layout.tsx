@@ -5,6 +5,7 @@ import { Outlet, useParams } from "react-router-dom";
 import {
   calcMetrics,
   cancelDatabaseOpsPoll,
+  fetchDatabase,
   pollDatabaseOperations,
   selectDatabaseById,
   selectEnvironmentById,
@@ -38,6 +39,7 @@ import { MenuWrappedPage } from "./menu-wrapped-page";
 import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
 import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
+import { useQuery } from "saga-query/react";
 
 export function DatabaseHeader({
   database,
@@ -117,6 +119,8 @@ function DatabasePageHeader() {
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: database.environmentId }),
   );
+  const loader = useQuery(fetchDatabase({ id }));
+
   const crumbs = [
     { name: environment.handle, to: environmentDatabasesUrl(environment.id) },
   ];
@@ -136,6 +140,7 @@ function DatabasePageHeader() {
     <>
       <DatabaseOperationNotice id={id} />
       <DetailPageHeaderView
+        {...loader}
         breadcrumbs={crumbs}
         title={database ? database.handle : "Loading..."}
         detailsBox={<DatabaseHeader database={database} service={service} />}

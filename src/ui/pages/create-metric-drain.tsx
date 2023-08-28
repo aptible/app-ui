@@ -14,7 +14,7 @@ import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
   BannerMessages,
-  ButtonCreate,
+  ButtonOps,
   DbSelector,
   EnvironmentSelect,
   ExternalLink,
@@ -427,14 +427,14 @@ export const CreateMetricDrainPage = () => {
 
           <BannerMessages {...loader} />
 
-          <ButtonCreate
+          <ButtonOps
             className="w-[200px]"
             envId={envId}
             type="submit"
             isLoading={loader.isLoading}
           >
             Save Metric Drain
-          </ButtonCreate>
+          </ButtonOps>
         </form>
       </div>
     </EnvironmentDetailLayout>

@@ -90,7 +90,9 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
       <Td>{endpoint.platform.toLocaleUpperCase()}</Td>
       <Td>
         {requiresAcmeSetup(endpoint) ? (
-          <Button onClick={acmeSetup}>Setup</Button>
+          <Button variant="primary" size="sm" onClick={acmeSetup}>
+            Setup
+          </Button>
         ) : (
           "Completed"
         )}
@@ -143,7 +145,7 @@ const EndpointHeader = ({
 };
 
 const headers = [
-  "Hostname",
+  "URL",
   "Resource",
   "Status",
   "Placement",

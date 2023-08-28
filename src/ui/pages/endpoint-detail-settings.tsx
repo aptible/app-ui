@@ -20,6 +20,7 @@ import {
   ButtonCreate,
   EndpointDeprovision,
   FormGroup,
+  Group,
   Input,
   TextArea,
 } from "../shared";
@@ -123,10 +124,9 @@ export const EndpointDetailSettingsPage = () => {
   );
 
   return (
-    <div>
+    <Group variant="vertical" size="lg">
       <EndpointSettings endpointId={id} />
-      <hr className="my-4" />
       <EndpointDeprovision endpointId={id} envId={service.environmentId} />
-    </div>
+    </Group>
   );
 };

@@ -21,7 +21,7 @@ import { useValidator } from "../hooks";
 import {
   Banner,
   Box,
-  ButtonCreate,
+  ButtonAdmin,
   ButtonDestroy,
   CheckBox,
   FormGroup,
@@ -78,8 +78,8 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
       </FormGroup>
 
       <div className="flex flex-col gap-4">
-        <Banner variant="warning">
-          <div className="mb-1">
+        <Banner variant="info">
+          <div className="mb-1 font-semibold">
             In order for the new environment handle {handle} to appear in log
             drain and metric drain destinations, you must restart the apps and
             databases in this environment. Also be aware the following may need
@@ -102,7 +102,7 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
 
         <hr />
 
-        <ButtonCreate
+        <ButtonAdmin
           envId={envId}
           type="submit"
           isLoading={loader.isLoading}
@@ -110,7 +110,7 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
           className="w-40"
         >
           Save Changes
-        </ButtonCreate>
+        </ButtonAdmin>
       </div>
     </form>
   );
