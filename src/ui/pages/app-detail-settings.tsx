@@ -116,7 +116,7 @@ const AppRestart = ({ app }: AppProps) => {
 
   return (
     <div>
-      <Label className="mt-4">Restart App</Label>
+      <Label className="mt-4 pb-1">Restart App</Label>
       <ButtonOps
         envId={app.environmentId}
         variant="white"
@@ -260,7 +260,7 @@ export const AppSettingsPage = () => {
       </Box>
 
       <Box>
-        <h1 className="text-lg text-gray-500">App Settings</h1>
+        <h1 className="text-lg text-gray-500 mb-4">App Settings</h1>
         <AppNameChange app={app} />
         <hr className="mt-6" />
         <AppRestart app={app} />

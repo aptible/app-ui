@@ -195,7 +195,7 @@ const DatabaseRestart = ({ database }: DbProps) => {
   });
   return (
     <>
-      <Label className="mt-4">Restart Database</Label>
+      <Label className="mt-4 pb-1">Restart Database</Label>
       <ButtonOps
         envId={database.environmentId}
         variant="white"
@@ -228,7 +228,7 @@ export const DatabaseSettingsPage = () => {
           <IconExternalLink className="inline ml-1 h-5 mt-0" />
         </ButtonLinkExternal>
 
-        <h1 className="text-lg text-gray-500">Database Settings</h1>
+        <h1 className="text-lg text-gray-500 mb-4">Database Settings</h1>
         <DatabaseNameChange database={database} />
         <hr className="mt-6" />
         <DatabaseRestart database={database} />
