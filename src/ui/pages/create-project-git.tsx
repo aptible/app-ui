@@ -2,6 +2,7 @@ import cn from "classnames";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
 
 import { timeBetween } from "@app/date";
 import {
@@ -45,12 +46,13 @@ import {
   redeployApp,
 } from "@app/projects";
 import {
-  appDetailUrl,
+  appEndpointsUrl,
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
   createProjectGitPushUrl,
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
+  environmentAppsUrl,
 } from "@app/routes";
 import { fetchSSHKeys } from "@app/ssh-keys";
 import {
@@ -970,6 +972,10 @@ export const CreateProjectGitStatusPage = () => {
     );
   };
 
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+
   const viewProject = () => {
     return origin === "app" ? (
       <ButtonLinkExternal
@@ -980,7 +986,7 @@ export const CreateProjectGitStatusPage = () => {
         View Environment <IconArrowRight variant="sm" className="ml-2" />
       </ButtonLinkExternal>
     ) : (
-      <ButtonLink to={appDetailUrl(appId)} className="mt-4 mb-2">
+      <ButtonLink to={environmentAppsUrl(environment.id)} className="mt-4 mb-2">
         View Environment <IconArrowRight variant="sm" className="ml-2" />
       </ButtonLink>
     );
@@ -1031,12 +1037,7 @@ export const CreateProjectGitStatusPage = () => {
             <VhostRow key={vhost.id} vhost={vhost} />
           ))}
           <div className="flex gap-3">
-            <ExternalLink
-              href={`${legacyUrl}/apps/${app.id}/vhosts`}
-              variant="info"
-            >
-              Manage Endpoints
-            </ExternalLink>
+            <Link to={appEndpointsUrl(app.id)}>Manage Endpoints</Link>
             <ExternalLink
               href="https://www.aptible.com/docs/endpoints"
               variant="info"
