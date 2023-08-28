@@ -125,8 +125,7 @@ export const EndpointDetailSettingsPage = () => {
   return (
     <div>
       <EndpointSettings endpointId={id} />
-      <hr className="my-4" />
-      <EndpointDeprovision endpointId={id} envId={service.environmentId} />
+      <EndpointDeprovision className="mt-4" endpointId={id} envId={service.environmentId} />
     </div>
   );
 };

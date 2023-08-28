@@ -77,7 +77,7 @@ export const EndpointDetailSetupPage = () => {
   });
 
   return (
-    <div>
+    <div className="bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
       <div className="flex flex-col gap-2">
         <h3 className={tokens.type.h3}>Managed HTTPS Validation Records</h3>
 
@@ -115,7 +115,7 @@ export const EndpointDetailSetupPage = () => {
           ) : null}
         </div>
 
-        <Button isLoading={loader.isLoading} onClick={renew}>
+        <Button className="w-[200px]" isLoading={loader.isLoading} onClick={renew}>
           I created the records
         </Button>
       </div>
