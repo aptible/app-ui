@@ -45,13 +45,13 @@ import {
   redeployApp,
 } from "@app/projects";
 import {
+  appEndpointsUrl,
   createProjectAddKeyUrl,
   createProjectAddNameUrl,
   createProjectGitPushUrl,
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
   environmentAppsUrl,
-  appEndpointsUrl,
 } from "@app/routes";
 import { fetchSSHKeys } from "@app/ssh-keys";
 import {
@@ -1016,12 +1016,7 @@ export const CreateProjectGitStatusPage = () => {
             <VhostRow key={vhost.id} vhost={vhost} />
           ))}
           <div className="flex gap-3">
-            <Link
-              to={appEndpointsUrl(app.id)}
-              variant="info"
-            >
-              Manage Endpoints
-            </Link>
+            <Link to={appEndpointsUrl(app.id)}>Manage Endpoints</Link>
             <ExternalLink
               href="https://www.aptible.com/docs/endpoints"
               variant="info"
