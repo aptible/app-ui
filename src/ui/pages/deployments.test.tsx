@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import { DeploymentsPage } from "./deployments";
 import { defaultAppResponse, defaultEnvResponse } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import {
@@ -15,6 +14,7 @@ import {
   testStack,
 } from "@app/mocks";
 import { setupIntegrationTest, waitForBootup } from "@app/test";
+import { DeploymentsPage } from "./deployments";
 
 describe("Deployments page", () => {
   it("should show last deployment status", async () => {

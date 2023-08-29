@@ -2,7 +2,6 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
 
-import { AppList, AppsResourceHeaderTitleBar } from "../shared";
 import {
   fetchAppsByCertId,
   fetchEndpointsByCertId,
@@ -10,6 +9,7 @@ import {
   selectCertificateById,
 } from "@app/deploy";
 import { AppState } from "@app/types";
+import { AppList, AppsResourceHeaderTitleBar } from "../shared";
 
 export const CertDetailAppsPage = () => {
   const { id = "" } = useParams();

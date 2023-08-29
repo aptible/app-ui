@@ -17,6 +17,8 @@ import {
 } from "@app/deploy";
 import { AppState } from "@app/types";
 
+import { environmentsUrl } from "@app/routes";
+import { handleValidator } from "@app/validator";
 import { useValidator } from "../hooks";
 import {
   Banner,
@@ -29,8 +31,6 @@ import {
   IconTrash,
   Input,
 } from "../shared";
-import { environmentsUrl } from "@app/routes";
-import { handleValidator } from "@app/validator";
 
 const validators = {
   handle: handleValidator,

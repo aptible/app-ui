@@ -1,6 +1,6 @@
-import { BillingMethodPage } from "./billing-method";
 import { setupIntegrationTest } from "@app/test";
 import { render, screen } from "@testing-library/react";
+import { BillingMethodPage } from "./billing-method";
 
 describe("Billing Method page", () => {
   it("the billing method page should render", async () => {

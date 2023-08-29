@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { ButtonSensitive } from "./button";
 import { PreCode, listToInvertedTextColor } from "./pre-code";
-import { useState } from "react";
 
 export const Secret = ({
   envId,

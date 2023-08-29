@@ -1,7 +1,6 @@
 import { call, put, setLoaderSuccess } from "@app/fx";
 import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 
-import { AUTH_LOADER_ID } from "./loader";
 import { authApi } from "@app/api";
 import { resetStore } from "@app/reset-store";
 import {
@@ -12,6 +11,7 @@ import {
   setToken,
 } from "@app/token";
 import { AuthApiCtx } from "@app/types";
+import { AUTH_LOADER_ID } from "./loader";
 
 export interface CreateTokenPayload {
   username: string;

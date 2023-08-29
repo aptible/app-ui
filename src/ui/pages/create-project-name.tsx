@@ -22,6 +22,7 @@ import {
 } from "@app/routes";
 import { AppState } from "@app/types";
 
+import { handleValidator } from "@app/validator";
 import {
   BannerMessages,
   Box,
@@ -33,7 +34,6 @@ import {
   StackSelect,
   tokens,
 } from "../shared";
-import { handleValidator } from "@app/validator";
 
 const CreateAppPage = ({ envId }: { envId: string }) => {
   useQuery(fetchEnvironmentById({ id: envId }));

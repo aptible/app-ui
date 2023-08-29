@@ -15,6 +15,7 @@ import type {
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -25,7 +26,6 @@ import { defaultDeployImage, deserializeImage } from "../image";
 import { deserializeDeployOperation, waitForOperation } from "../operation";
 import { DeployServiceResponse } from "../service";
 import { selectDeploy } from "../slice";
-import { selectOrganizationSelectedId } from "@app/organizations";
 
 export * from "./utils";
 

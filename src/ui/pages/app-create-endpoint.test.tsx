@@ -25,9 +25,9 @@ import {
 import { setupIntegrationTest, waitForBootup } from "@app/test";
 import { AppState } from "@app/types";
 
-import { AppCreateEndpointPage } from "./app-create-endpoint";
 import { defaultHalHref } from "@app/hal";
 import { rest } from "msw";
+import { AppCreateEndpointPage } from "./app-create-endpoint";
 
 const TestDetailPage = () => {
   const { id = "" } = useParams();

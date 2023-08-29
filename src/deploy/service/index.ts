@@ -14,10 +14,10 @@ import type {
   LinkResponse,
 } from "@app/types";
 
+import { poll } from "saga-query";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { selectDeploy } from "../slice";
-import { poll } from "saga-query";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m4";
 

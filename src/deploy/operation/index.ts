@@ -1,7 +1,6 @@
 import { call, delay, fetchRetry, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
-import { selectDeploy } from "../slice";
 import {
   PaginateProps,
   Retryable,
@@ -36,6 +35,7 @@ import type {
   OperationType,
   ResourceType,
 } from "@app/types";
+import { selectDeploy } from "../slice";
 
 export interface DeployOperationResponse {
   id: number;

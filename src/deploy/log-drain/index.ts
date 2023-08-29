@@ -1,4 +1,3 @@
-import { selectDeploy } from "../slice";
 import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
@@ -21,6 +20,7 @@ import {
   setLoaderStart,
   setLoaderSuccess,
 } from "saga-query";
+import { selectDeploy } from "../slice";
 
 export type LogDrainType =
   | "logdna"

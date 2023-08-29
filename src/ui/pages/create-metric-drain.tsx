@@ -10,6 +10,10 @@ import {
   selectEnvironmentById,
 } from "@app/deploy";
 
+import { operationDetailUrl } from "@app/routes";
+import { AppState } from "@app/types";
+import { handleValidator, portValidator } from "@app/validator";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
@@ -25,10 +29,6 @@ import {
   Select,
   SelectOption,
 } from "../shared";
-import { operationDetailUrl } from "@app/routes";
-import { AppState } from "@app/types";
-import { handleValidator, portValidator } from "@app/validator";
-import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
 const options: SelectOption<MetricDrainType>[] = [
   { value: "influxdb_database", label: "InfluxDb (this environment)" },

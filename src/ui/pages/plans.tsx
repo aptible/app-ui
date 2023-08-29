@@ -1,5 +1,3 @@
-import { HeroBgLayout } from "../layouts";
-import { BannerMessages, Plans, tokens } from "../shared";
 import {
   fetchActivePlans,
   fetchPlans,
@@ -10,6 +8,8 @@ import {
 } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
 import { logoutUrl } from "@app/routes";
+import { HeroBgLayout } from "../layouts";
+import { BannerMessages, Plans, tokens } from "../shared";
 
 import { useLoader, useQuery } from "@app/fx";
 import { AppState } from "@app/types";

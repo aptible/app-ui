@@ -1,15 +1,3 @@
-import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
-import {
-  Button,
-  ButtonLink,
-  IconPlusCircle,
-  Loading,
-  resolveOperationStatuses,
-  tokens,
-} from "../shared";
-import { OnboardingLink } from "../shared/onboarding-link";
-import { StatusPill } from "../shared/pill";
-import { ResourceGroupBox } from "../shared/resource-group-box";
 import {
   fetchAllApps,
   fetchAllEnvironments,
@@ -22,6 +10,18 @@ import { createProjectGitUrl } from "@app/routes";
 import { AppState, DeployApp } from "@app/types";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
+import {
+  Button,
+  ButtonLink,
+  IconPlusCircle,
+  Loading,
+  resolveOperationStatuses,
+  tokens,
+} from "../shared";
+import { OnboardingLink } from "../shared/onboarding-link";
+import { StatusPill } from "../shared/pill";
+import { ResourceGroupBox } from "../shared/resource-group-box";
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   useQuery(fetchEndpointsByAppId({ appId: app.id }));

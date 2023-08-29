@@ -1,5 +1,5 @@
-import { VerifyEmailPage } from "./verify-email";
 import { verifyEmailUrl } from "@app/routes";
+import { VerifyEmailPage } from "./verify-email";
 
 import { server, testEnv, testUser, testUserVerified } from "@app/mocks";
 import { setupAppIntegrationTest, setupIntegrationTest } from "@app/test";

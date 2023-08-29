@@ -1,5 +1,5 @@
-import { AptibleLogo } from "../shared";
 import { Outlet } from "react-router";
+import { AptibleLogo } from "../shared";
 
 export const HeroBgLayout = ({
   showLogo = true,

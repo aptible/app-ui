@@ -35,11 +35,11 @@ import {
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 
-import { MenuWrappedPage } from "./menu-wrapped-page";
 import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
 import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
 import { useQuery } from "saga-query/react";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 
 export function DatabaseHeader({
   database,

@@ -2,6 +2,18 @@ import { useState } from "react";
 
 import { OperationStatus } from "@app/types";
 
+import { dateFromToday } from "@app/date";
+import {
+  defaultDeployApp,
+  defaultDeployDatabase,
+  defaultDeployEndpoint,
+  defaultDeployEnvironment,
+  defaultDeployOperation,
+  defaultDeployService,
+  defaultDeployStack,
+} from "@app/deploy";
+import { defaultDeployDisk } from "@app/deploy/disk";
+import { defaultDeployImage } from "@app/deploy/image";
 import {
   AppHeader,
   DatabaseHeader,
@@ -75,18 +87,6 @@ import {
   tokens,
 } from "../shared";
 import { DateText } from "../shared/date-text";
-import { dateFromToday } from "@app/date";
-import {
-  defaultDeployApp,
-  defaultDeployDatabase,
-  defaultDeployEndpoint,
-  defaultDeployEnvironment,
-  defaultDeployOperation,
-  defaultDeployService,
-  defaultDeployStack,
-} from "@app/deploy";
-import { defaultDeployDisk } from "@app/deploy/disk";
-import { defaultDeployImage } from "@app/deploy/image";
 
 const StylesWrapper = ({
   children,
@@ -173,11 +173,11 @@ const Tables = () => (
           {Array(5)
             .fill(0)
             .map((_, rowIdx) => (
-              <tr className="group hover:bg-gray-50" key={rowIdx}>
+              <tr className="group hover:bg-gray-50" key={`row-${rowIdx}`}>
                 {Array(8)
                   .fill(0)
                   .map((_, colIdx) => (
-                    <Td key={colIdx}>{`Cell - ${colIdx + 1} x ${
+                    <Td key={`arr-${colIdx}`}>{`Cell - ${colIdx + 1} x ${
                       rowIdx + 1
                     }`}</Td>
                   ))}

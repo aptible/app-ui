@@ -11,8 +11,8 @@ import {
 import { ENVIRONMENT_BACKUPS_PATH, environmentBackupsUrl } from "@app/routes";
 import { setupIntegrationTest, waitForBootup, waitForData } from "@app/test";
 
-import { EnvironmentBackupsPage } from "./environment-detail-backups";
 import { hasDeployBackupRp, selectBackupRpById } from "@app/deploy";
+import { EnvironmentBackupsPage } from "./environment-detail-backups";
 
 describe("EnvironmentBackupsPage", () => {
   it("should successfully show backup retention policy values", async () => {

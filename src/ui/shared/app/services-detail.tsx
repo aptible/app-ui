@@ -8,17 +8,17 @@ import {
 } from "@app/deploy";
 import { AppState, DeployApp, DeployService } from "@app/types";
 
-import { ButtonCreate, ButtonLink } from "../button";
-import { PreCode, listToInvertedTextColor } from "../pre-code";
-import { ResourceListView } from "../resource-list-view";
-import { TableHead, Td } from "../table";
-import { tokens } from "../tokens";
 import {
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
   createProjectGitAppSetupUrl,
 } from "@app/routes";
 import { useNavigate } from "react-router";
+import { ButtonCreate, ButtonLink } from "../button";
+import { PreCode, listToInvertedTextColor } from "../pre-code";
+import { ResourceListView } from "../resource-list-view";
+import { TableHead, Td } from "../table";
+import { tokens } from "../tokens";
 
 const serviceListRow = ({
   app,

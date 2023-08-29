@@ -32,9 +32,9 @@ import {
   TabItem,
 } from "../shared";
 
-import { MenuWrappedPage } from "./menu-wrapped-page";
 import { setResourceStats } from "@app/search";
 import { useEffect } from "react";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 
 const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
   endpoint.type === "tcp" ? (

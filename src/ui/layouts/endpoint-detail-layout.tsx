@@ -29,6 +29,8 @@ import type {
   DeployService,
 } from "@app/types";
 
+import { setResourceStats } from "@app/search";
+import { useEffect, useMemo } from "react";
 import { usePoller } from "../hooks";
 import {
   DetailHeader,
@@ -42,8 +44,6 @@ import {
   TabItem,
 } from "../shared";
 import { MenuWrappedPage } from "./menu-wrapped-page";
-import { setResourceStats } from "@app/search";
-import { useEffect, useMemo } from "react";
 
 export function EndpointAppHeaderInfo({
   enp,

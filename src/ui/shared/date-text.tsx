@@ -1,10 +1,10 @@
-import { Tooltip } from "./tooltip";
 import {
   formatDateToUTC,
   prettyDateRelative,
   prettyEnglishDate,
   timeAgo,
 } from "@app/date";
+import { Tooltip } from "./tooltip";
 
 export const DateText = ({
   date,

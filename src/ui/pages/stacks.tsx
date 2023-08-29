@@ -11,6 +11,8 @@ import {
 } from "@app/deploy";
 import { AppState, DeployStack } from "@app/types";
 
+import { capitalize } from "@app/string-utils";
+import { useSearchParams } from "react-router-dom";
 import { MenuWrappedPage } from "../layouts";
 import {
   IconInfo,
@@ -23,8 +25,6 @@ import {
   Td,
   Tooltip,
 } from "../shared";
-import { capitalize } from "@app/string-utils";
-import { useSearchParams } from "react-router-dom";
 
 export function StacksPage() {
   return (
