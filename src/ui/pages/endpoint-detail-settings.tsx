@@ -70,6 +70,8 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const ipsSame = origAllowlist === ipAllowlist;
   const portSame = enp.containerPort === port;
   const isDisabled = ipsSame && portSame;
+  const curPortText = getContainerPort(enp, exposedPorts);
+
   const action = updateEndpoint(data);
   const loader = useLoader(action);
   const [errors, validate] = useValidator<
@@ -91,23 +93,22 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     <Box>
       <h1 className="text-lg text-gray-500 mb-4">Endpoint Settings</h1>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <FormGroup
-          label={`Container Port (current: ${getContainerPort(
-            enp,
-            exposedPorts,
-          )})`}
-          htmlFor="port"
-          feedbackMessage={errors.port}
-          feedbackVariant={errors.port ? "danger" : "info"}
-        >
-          <Input
-            type="text"
-            id="port"
-            name="port"
-            value={port}
-            onChange={(e) => setPort(e.currentTarget.value)}
-          />
-        </FormGroup>
+        {service.appId ? (
+          <FormGroup
+            label={`Container Port (current: ${curPortText}`}
+            htmlFor="port"
+            feedbackMessage={errors.port}
+            feedbackVariant={errors.port ? "danger" : "info"}
+          >
+            <Input
+              type="text"
+              id="port"
+              name="port"
+              value={port}
+              onChange={(e) => setPort(e.currentTarget.value)}
+            />
+          </FormGroup>
+        ) : null}
 
         <FormGroup
           label="IP Allowlist"
