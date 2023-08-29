@@ -1,5 +1,4 @@
 import { authApi } from "@app/api";
-import { call } from "@app/fx";
 import { createLog } from "@app/debug";
 import type {
   CredentialCreationOptionsJSON,
@@ -24,16 +23,16 @@ export function hasWebAuthnSupport(): boolean {
   return typeof scope.PublicKeyCredential !== "undefined";
 }
 
-export function* webauthnCreate(payload: CredentialCreationOptionsJSON) {
+export function webauthnCreate(payload: CredentialCreationOptionsJSON) {
   if (!hasWebAuthnSupport()) {
     throw new Error("webauthn not supported for browser");
   }
 
-  const result = yield* call(create, payload);
+  const result = create(payload);
   return result;
 }
 
-export function* webauthnGet(
+export function webauthnGet(
   payload: CredentialRequestOptionsJSON["publicKey"],
 ) {
   if (!hasWebAuthnSupport()) {
@@ -52,8 +51,7 @@ export function* webauthnGet(
   };
   log("SECURITY KEY GET BLOB", publicKey);
 
-  const result = yield* call(get, { publicKey });
-  return result;
+  return get({ publicKey });
 }
 
 interface CreateWebauthnDeviceProps {

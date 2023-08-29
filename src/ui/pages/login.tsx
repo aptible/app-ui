@@ -72,8 +72,8 @@ export const LoginPage = () => {
     otpToken,
     makeCurrent: true,
   };
-  const action = login(data);
-  const loader = useLoader(action);
+  // use query.name not query.key (this is important for webauthn!)
+  const loader = useLoader(login);
   const meta = defaultAuthLoaderMeta(loader.meta);
   const webauthnAction = loginWebauthn({
     ...data,
@@ -84,7 +84,7 @@ export const LoginPage = () => {
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validate(data)) return;
-    dispatch(action);
+    dispatch(login(data));
   };
 
   useLoaderSuccess(loader, () => {
@@ -206,6 +206,7 @@ export const LoginPage = () => {
 
             <div className="my-2 flex flex-col gap-2">
               <BannerMessages {...webauthnLoader} />
+
               {isOtpRequired ? (
                 <BannerMessages
                   isSuccess={false}
