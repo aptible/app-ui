@@ -1,6 +1,6 @@
 import { securitySettingsUrl, teamUrl } from "@app/routes";
 import cn from "classnames";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export function SettingsSidebar() {
   const profileNav = [{ name: "Security Settings", to: securitySettingsUrl() }];
