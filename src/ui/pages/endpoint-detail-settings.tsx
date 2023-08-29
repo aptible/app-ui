@@ -5,7 +5,10 @@ import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 import {
   EndpointUpdateProps,
+  getContainerPort,
+  hasDeployApp,
   parseIpStr,
+  selectAppById,
   selectEndpointById,
   selectServiceById,
   updateEndpoint,
@@ -40,19 +43,33 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: enp.serviceId }),
   );
-  const [ipAllowlist, setIpAllowlist] = useState(enp.ipWhitelist.join("\n"));
+  const app = useSelector((s: AppState) =>
+    selectAppById(s, { id: service.appId }),
+  );
+  let exposedPorts: number[] = [];
+  if (hasDeployApp(app)) {
+    exposedPorts = app.currentImage.exposedPorts;
+  }
+
+  const origAllowlist = enp.ipWhitelist.join("\n");
+  const [ipAllowlist, setIpAllowlist] = useState(origAllowlist);
   const [port, setPort] = useState(enp.containerPort);
+
   useEffect(() => {
-    setIpAllowlist(enp.ipWhitelist.join("\n"));
-  }, [enp.ipWhitelist]);
+    setIpAllowlist(origAllowlist);
+  }, [origAllowlist]);
   useEffect(() => {
     setPort(enp.containerPort);
   }, [enp.containerPort]);
+
   const data = {
     id: endpointId,
     ipAllowlist: parseIpStr(ipAllowlist),
     containerPort: port,
   };
+  const ipsSame = origAllowlist === ipAllowlist;
+  const portSame = enp.containerPort === port;
+  const isDisabled = ipsSame && portSame;
   const action = updateEndpoint(data);
   const loader = useLoader(action);
   const [errors, validate] = useValidator<
@@ -61,9 +78,11 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   >(validators);
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isDisabled) return;
     if (!validate(data)) return;
     dispatch(action);
   };
+
   useLoaderSuccess(loader, () => {
     navigate(endpointDetailActivityUrl(endpointId));
   });
@@ -73,7 +92,10 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
       <h1 className="text-lg text-gray-500 mb-4">Endpoint Settings</h1>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <FormGroup
-          label="Container Port"
+          label={`Container Port (current: ${getContainerPort(
+            enp,
+            exposedPorts,
+          )})`}
           htmlFor="port"
           feedbackMessage={errors.port}
           feedbackVariant={errors.port ? "danger" : "info"}
@@ -108,6 +130,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
           envId={service.environmentId}
           isLoading={loader.isLoading}
           className="w-40"
+          disabled={isDisabled}
         >
           Save Changes
         </ButtonCreate>
