@@ -27,7 +27,7 @@ export const AuthRequired = () => {
     }
 
     if (!isAuthenticated) {
-      if (denyList.includes(location.pathname)) {
+      if (!denyList.includes(location.pathname)) {
         dispatch(setRedirectPath(location.pathname));
       }
       navigate(loginUrl());
