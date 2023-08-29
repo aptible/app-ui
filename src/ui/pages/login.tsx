@@ -96,11 +96,6 @@ export const LoginPage = () => {
     }
   });
 
-  useLoaderSuccess(webauthnLoader, () => {
-    navigate(redirectPath || homeUrl());
-    dispatch(resetRedirectPath());
-  });
-
   useEffect(() => {
     if (invitation.email === "") return;
     setEmail(invitation.email);

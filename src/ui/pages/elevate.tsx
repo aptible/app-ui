@@ -47,14 +47,8 @@ export const ElevatePage = () => {
     ...data,
     webauthn: meta.exception_context.u2f,
   });
-  const webauthnLoader = useLoader(webauthnAction);
 
   useLoaderSuccess(loader, () => {
-    navigate(redirect || homeUrl());
-    dispatch(resetRedirectPath());
-  });
-
-  useLoaderSuccess(webauthnLoader, () => {
     navigate(redirect || homeUrl());
     dispatch(resetRedirectPath());
   });
