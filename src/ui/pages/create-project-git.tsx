@@ -2,6 +2,7 @@ import cn from "classnames";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
 
 import { timeBetween } from "@app/date";
 import {
@@ -50,6 +51,7 @@ import {
   createProjectGitSettingsUrl,
   createProjectGitStatusUrl,
   environmentAppsUrl,
+  appEndpointsUrl,
 } from "@app/routes";
 import { fetchSSHKeys } from "@app/ssh-keys";
 import {
@@ -1014,12 +1016,12 @@ export const CreateProjectGitStatusPage = () => {
             <VhostRow key={vhost.id} vhost={vhost} />
           ))}
           <div className="flex gap-3">
-            <ExternalLink
-              href={`${legacyUrl}/apps/${app.id}/vhosts`}
+            <Link
+              to={appEndpointsUrl(app.id)}
               variant="info"
             >
               Manage Endpoints
-            </ExternalLink>
+            </Link>
             <ExternalLink
               href="https://www.aptible.com/docs/endpoints"
               variant="info"
