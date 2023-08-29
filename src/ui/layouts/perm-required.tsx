@@ -6,9 +6,9 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { fetchCurrentToken } from "@app/auth";
 import { homeUrl } from "@app/routes";
 
-import { Loading } from "../shared";
 import { selectUserHasPerms } from "@app/deploy";
 import { AppState, PermissionScope } from "@app/types";
+import { Loading } from "../shared";
 
 export const PermRequired = ({
   scope,

@@ -13,6 +13,7 @@ import {
 import { environmentActivityUrl, environmentDatabasesUrl } from "@app/routes";
 import { AppState } from "@app/types";
 
+import { generateHash } from "@app/id";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
   Banner,
@@ -25,7 +26,6 @@ import {
   dbSelectorReducer,
   validateDbName,
 } from "../shared";
-import { generateHash } from "@app/id";
 
 const validateDbs = (items: DbCreatorProps[]): DbValidatorError[] => {
   const errors: DbValidatorError[] = [];

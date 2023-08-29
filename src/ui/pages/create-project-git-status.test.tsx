@@ -1,4 +1,3 @@
-import { CreateProjectGitStatusPage } from "./create-project-git";
 import {
   defaultAppResponse,
   defaultEndpointResponse,
@@ -29,6 +28,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { rest } from "msw";
+import { CreateProjectGitStatusPage } from "./create-project-git";
 
 describe("CreateProjectGitStatusPage", () => {
   describe("when app deployed and no vhost provisioned yet", () => {

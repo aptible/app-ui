@@ -12,6 +12,7 @@ import { operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployEndpoint, ProvisionableStatus } from "@app/types";
 
+import { useState } from "react";
 import { Box } from "../box";
 import { ButtonDestroy } from "../button";
 import { ExternalLink } from "../external-link";
@@ -24,7 +25,6 @@ import {
   IconX,
 } from "../icons";
 import { Input } from "../input";
-import { useState } from "react";
 
 export const EndpointStatusPill = ({
   status,

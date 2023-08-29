@@ -1,4 +1,3 @@
-import { ActivityReportListByEnvironment, DetailPageSections } from "../shared";
 import {
   fetchEnvActivityReports,
   selectActivityReportsByEnvId,
@@ -7,6 +6,7 @@ import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
+import { ActivityReportListByEnvironment, DetailPageSections } from "../shared";
 
 export const EnvironmentActivityReportsPage = () => {
   const { id = "" } = useParams();

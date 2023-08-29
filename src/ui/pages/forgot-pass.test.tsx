@@ -1,10 +1,10 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { ForgotPassPage, ForgotPassVerifyPage } from "./forgot-pass";
 import { testEmail } from "@app/mocks";
 import { RESET_PASSWORD_PATH, resetPassVerifyUrl } from "@app/routes";
 import { setupIntegrationTest } from "@app/test";
+import { ForgotPassPage, ForgotPassVerifyPage } from "./forgot-pass";
 
 describe("ForgotPassPage", () => {
   it("should allow user to request a password reset", async () => {

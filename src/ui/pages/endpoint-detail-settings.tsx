@@ -13,6 +13,7 @@ import {
 import { endpointDetailActivityUrl } from "@app/routes";
 import { AppState } from "@app/types";
 
+import { ipValidator, portValidator } from "@app/validator";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,
@@ -24,7 +25,6 @@ import {
   Input,
   TextArea,
 } from "../shared";
-import { ipValidator, portValidator } from "@app/validator";
 
 const validators = {
   port: (data: EndpointUpdateProps) => portValidator(data.containerPort),

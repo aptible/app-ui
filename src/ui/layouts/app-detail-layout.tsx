@@ -33,9 +33,9 @@ import {
   TabItem,
 } from "../shared";
 
-import { MenuWrappedPage } from "./menu-wrapped-page";
 import { setResourceStats } from "@app/search";
 import { useQuery } from "saga-query/react";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 
 export function AppHeader({ app }: { app: DeployApp }) {
   return (

@@ -1,4 +1,3 @@
-import { selectDeploy } from "../slice";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { selectCurrentUserRoles } from "@app/roles";
 import { createReducerMap, createTable } from "@app/slice-helpers";
@@ -9,6 +8,7 @@ import {
   PermissionScope,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import { selectDeploy } from "../slice";
 
 export interface PermissionResponse {
   id: string;

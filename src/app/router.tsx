@@ -1,6 +1,5 @@
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
-import { Tuna } from "./tuna";
 import * as routes from "@app/routes";
 import {
   ActivityPage,
@@ -100,6 +99,7 @@ import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scal
 import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
 import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
 import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
+import { Tuna } from "./tuna";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,

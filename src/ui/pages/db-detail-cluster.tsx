@@ -1,11 +1,4 @@
 import {
-  LoadResources,
-  ResourceListView,
-  TableHead,
-  Td,
-  tokens,
-} from "../shared";
-import {
   calcMetrics,
   fetchAllDatabaseImages,
   fetchDatabase,
@@ -30,6 +23,13 @@ import { ReactElement } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
+import {
+  LoadResources,
+  ResourceListView,
+  TableHead,
+  Td,
+  tokens,
+} from "../shared";
 
 const clusterDatabaseRow = ({
   clusterDatabase,

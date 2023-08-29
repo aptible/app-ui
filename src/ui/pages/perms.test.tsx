@@ -1,5 +1,3 @@
-import { PermRequired } from "../layouts";
-import { ButtonCreate, ButtonDestroy, PermissionGate } from "../shared";
 import { defaultPermissionResponse } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import {
@@ -12,6 +10,8 @@ import {
 import { HOME_PATH } from "@app/routes";
 import { setupIntegrationTest, waitForBootup } from "@app/test";
 import { render, screen } from "@testing-library/react";
+import { PermRequired } from "../layouts";
+import { ButtonCreate, ButtonDestroy, PermissionGate } from "../shared";
 
 const PermsPage = () => {
   return (

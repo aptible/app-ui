@@ -36,6 +36,8 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { createAction, createSelector } from "@reduxjs/toolkit";
 import { deserializeDisk } from "../disk";
 import {
   findEnvById,
@@ -49,8 +51,6 @@ import {
   waitForOperation,
 } from "../operation";
 import { selectDeploy } from "../slice";
-import { selectOrganizationSelectedId } from "@app/organizations";
-import { createAction, createSelector } from "@reduxjs/toolkit";
 
 export interface DeployDatabaseResponse {
   id: number;

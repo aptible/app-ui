@@ -1,13 +1,3 @@
-import { useValidator } from "../hooks";
-import {
-  BannerMessages,
-  Box,
-  BoxGroup,
-  Button,
-  FormGroup,
-  Input,
-  Label,
-} from "../shared";
 import {
   exponentialContainerSizesByProfile,
   fetchDatabase,
@@ -26,6 +16,16 @@ import { AppState, InstanceClass } from "@app/types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
+import { useValidator } from "../hooks";
+import {
+  BannerMessages,
+  Box,
+  BoxGroup,
+  Button,
+  FormGroup,
+  Input,
+  Label,
+} from "../shared";
 
 const validators = {
   diskSize: (data: DatabaseScaleProps) => {

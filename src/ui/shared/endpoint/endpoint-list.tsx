@@ -28,6 +28,7 @@ import { Button, ButtonCreate } from "../button";
 import { TableHead } from "../table";
 import { Td } from "../table";
 
+import { useQuery } from "saga-query/react";
 import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import {
@@ -38,7 +39,6 @@ import {
 import { tokens } from "../tokens";
 import { Tooltip } from "../tooltip";
 import { EndpointStatusPill } from "./util";
-import { useQuery } from "saga-query/react";
 
 export const EndpointItemView = ({
   endpoint,

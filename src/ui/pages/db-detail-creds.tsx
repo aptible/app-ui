@@ -1,4 +1,3 @@
-import { Box, IconAlertTriangle, Secret, tokens } from "../shared";
 import {
   fetchCredentialsByDatabaseId,
   selectCredentialsByDatabaseId,
@@ -8,6 +7,7 @@ import { AppState, DeployDatabaseCredential } from "@app/types";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
+import { Box, IconAlertTriangle, Secret, tokens } from "../shared";
 
 const Credential = ({
   cred,

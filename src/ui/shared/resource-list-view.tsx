@@ -1,6 +1,6 @@
+import cn from "classnames";
 import { ActionList, ActionListView } from "./action-list-view";
 import { tokens } from "./tokens";
-import cn from "classnames";
 
 type Element = React.ReactNode | JSX.Element;
 

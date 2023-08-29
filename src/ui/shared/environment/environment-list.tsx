@@ -1,5 +1,3 @@
-import { IconInfo, IconPlusCircle } from "../icons";
-import { Tooltip } from "../tooltip";
 import {
   fetchAllEnvironments,
   selectAppsByEnvId,
@@ -15,7 +13,13 @@ import {
 } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { IconInfo, IconPlusCircle } from "../icons";
+import { Tooltip } from "../tooltip";
 
+import { prettyEnglishDate, timeAgo } from "@app/date";
+import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
+import { capitalize } from "@app/string-utils";
+import { useSelector } from "react-redux";
 import { ButtonIcon } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { InputSearch } from "../input";
@@ -23,10 +27,6 @@ import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { prettyEnglishDate, timeAgo } from "@app/date";
-import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
-import { capitalize } from "@app/string-utils";
-import { useSelector } from "react-redux";
 
 interface EnvironmentCellProps {
   environment: DeployEnvironment;

@@ -26,6 +26,7 @@ import {
 import { AppState } from "@app/types";
 import { emailValidator, existValidtor } from "@app/validator";
 
+import { selectIsUserAuthenticated } from "@app/token";
 import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
@@ -37,7 +38,6 @@ import {
   Input,
   tokens,
 } from "../shared";
-import { selectIsUserAuthenticated } from "@app/token";
 
 const validators = {
   email: (props: CreateTokenPayload) => emailValidator(props.username),

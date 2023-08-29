@@ -1,8 +1,8 @@
-import { IconInfo, IconPlusCircle } from "../icons";
-import { Tooltip } from "../tooltip";
 import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { IconInfo, IconPlusCircle } from "../icons";
+import { Tooltip } from "../tooltip";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -18,6 +18,13 @@ import {
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
+import {
+  databaseMetricsUrl,
+  databaseScaleUrl,
+  environmentCreateDbUrl,
+  operationDetailUrl,
+} from "@app/routes";
+import { capitalize } from "@app/string-utils";
 import { ActionListView } from "../action-list-view";
 import { Button, ButtonCreate } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
@@ -28,13 +35,6 @@ import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import {
-  databaseMetricsUrl,
-  databaseScaleUrl,
-  environmentCreateDbUrl,
-  operationDetailUrl,
-} from "@app/routes";
-import { capitalize } from "@app/string-utils";
 
 type DatabaseCellProps = { database: DeployDatabase };
 

@@ -1,11 +1,11 @@
-import { Button, ButtonLinkExternal } from "./button";
-import { IconCheckCircle } from "./icons";
-import { tokens } from "./tokens";
 import { updateAndRefreshActivePlans } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { DeployActivePlan, DeployPlan, PlanName } from "@app/types";
 import { ReactElement, SyntheticEvent } from "react";
 import { useDispatch } from "react-redux";
+import { Button, ButtonLinkExternal } from "./button";
+import { IconCheckCircle } from "./icons";
+import { tokens } from "./tokens";
 
 const descriptionTextForPlan = (planName: PlanName): string =>
   ({

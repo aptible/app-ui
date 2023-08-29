@@ -10,6 +10,13 @@ import {
 import { useQuery } from "@app/fx";
 import { AppState, MetricHorizons } from "@app/types";
 
+import { dateFromToday } from "@app/date";
+import { selectContainersByCurrentReleaseAndHorizon } from "@app/deploy/container";
+import {
+  fetchAllMetricsByServiceId,
+  selectMetricsLoaded,
+} from "@app/metric-tunnel";
+import { useState } from "react";
 import { Loading, LoadingSpinner } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
@@ -19,13 +26,6 @@ import {
   MetricsViewControls,
   metricHorizonAsSeconds,
 } from "../shared/metrics-controls";
-import { dateFromToday } from "@app/date";
-import { selectContainersByCurrentReleaseAndHorizon } from "@app/deploy/container";
-import {
-  fetchAllMetricsByServiceId,
-  selectMetricsLoaded,
-} from "@app/metric-tunnel";
-import { useState } from "react";
 
 const layersToSearchForContainers = ["app"];
 

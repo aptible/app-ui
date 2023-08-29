@@ -3,8 +3,8 @@ import { createSelector } from "@reduxjs/toolkit";
 import { createAssign, createReducerMap } from "@app/slice-helpers";
 import { AppState, LinkResponse, Token } from "@app/types";
 
-import { parseJwt } from "./jwt-parser";
 import { defaultHalHref } from "@app/hal";
+import { parseJwt } from "./jwt-parser";
 
 export * from "./jwt-parser";
 

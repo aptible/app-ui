@@ -12,6 +12,7 @@ import { useLoader, useLoaderSuccess } from "@app/fx";
 import { databaseActivityUrl, environmentBackupsUrl } from "@app/routes";
 import { AppState } from "@app/types";
 
+import { useMemo } from "react";
 import { usePoller } from "../hooks";
 import {
   BannerMessages,
@@ -22,7 +23,6 @@ import {
   IconPlusCircle,
   LoadingSpinner,
 } from "../shared";
-import { useMemo } from "react";
 
 export const DatabaseBackupsPage = () => {
   const dispatch = useDispatch();

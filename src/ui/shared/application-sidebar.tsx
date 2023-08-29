@@ -3,19 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 
-import {
-  IconBox,
-  IconCloud,
-  IconCylinder,
-  IconEndpoint,
-  IconGlobe,
-  IconHamburger,
-  IconHeart,
-  IconLayers,
-  IconPlusCircle,
-  IconSearch,
-  IconShield,
-} from "./icons";
 import { selectEnv } from "@app/env";
 import { selectNav, setCollapsed } from "@app/nav";
 import {
@@ -30,6 +17,19 @@ import {
   securityDashboardUrl,
   stacksUrl,
 } from "@app/routes";
+import {
+  IconBox,
+  IconCloud,
+  IconCylinder,
+  IconEndpoint,
+  IconGlobe,
+  IconHamburger,
+  IconHeart,
+  IconLayers,
+  IconPlusCircle,
+  IconSearch,
+  IconShield,
+} from "./icons";
 
 import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
 import { ButtonIcon } from "./button";

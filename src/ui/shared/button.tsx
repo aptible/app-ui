@@ -1,5 +1,3 @@
-import { tokens } from "./tokens";
-import { Tooltip } from "./tooltip";
 import { selectUserHasPerms } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { AppState, PermissionScope } from "@app/types";
@@ -7,6 +5,8 @@ import cn from "classnames";
 import { ButtonHTMLAttributes, FC, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, LinkProps } from "react-router-dom";
+import { tokens } from "./tokens";
+import { Tooltip } from "./tooltip";
 
 export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 type Shape = "button" | "pill";

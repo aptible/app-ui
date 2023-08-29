@@ -3,6 +3,10 @@ import { useParams } from "react-router";
 
 import type { AppState, DeployVpcPeer } from "@app/types";
 
+import { fetchVpcPeersByStackId, selectVpcPeersByStackId } from "@app/deploy";
+import { capitalize } from "@app/string-utils";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   Box,
   Button,
@@ -17,10 +21,6 @@ import {
   tokens,
 } from "../shared";
 import { EmptyResourcesTable } from "../shared/empty-resources-table";
-import { fetchVpcPeersByStackId, selectVpcPeersByStackId } from "@app/deploy";
-import { capitalize } from "@app/string-utils";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 
 const VPCPeerStatusPill = ({
   vpcPeer,
