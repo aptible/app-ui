@@ -16,7 +16,8 @@ import { webauthnGet } from "./webauthn";
 export const elevate = thunks.create<ElevateToken>(
   "elevate",
   function* onElevate(ctx: ThunkCtx<ElevateToken>, next) {
-    const id = ctx.key;
+    // use ctx.name not ctx.key (this is important for webauthn!)
+    const id = ctx.name;
     yield* put(setLoaderStart({ id }));
     const tokenCtx = yield* call(elevateToken.run, elevateToken(ctx.payload));
 

@@ -20,7 +20,8 @@ const log = createLog("login");
 export const login = thunks.create<CreateTokenPayload>(
   "login",
   function* onLogin(ctx, next) {
-    const id = ctx.key;
+    // use ctx.name not ctx.key (this is important for webauthn!)
+    const id = ctx.name;
     yield* put(setLoaderStart({ id }));
     const tokenCtx = yield* call(createToken.run, createToken(ctx.payload));
 

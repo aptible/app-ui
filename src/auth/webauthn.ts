@@ -28,7 +28,8 @@ export function webauthnCreate(payload: CredentialCreationOptionsJSON) {
     throw new Error("webauthn not supported for browser");
   }
 
-  return create(payload);
+  const result = create(payload);
+  return result;
 }
 
 export function webauthnGet(

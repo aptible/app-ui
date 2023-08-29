@@ -40,8 +40,8 @@ export const ElevatePage = () => {
     password,
     otpToken,
   };
-  const action = elevate(data);
-  const loader = useLoader(action);
+  // use query.name not query.key (this is important for webauthn!)
+  const loader = useLoader(elevate);
   const meta = defaultAuthLoaderMeta(loader.meta);
   const webauthnAction = elevateWebauthn({
     ...data,
@@ -50,11 +50,6 @@ export const ElevatePage = () => {
   const webauthnLoader = useLoader(webauthnAction);
 
   useLoaderSuccess(loader, () => {
-    navigate(redirect || homeUrl());
-    dispatch(resetRedirectPath());
-  });
-
-  useLoaderSuccess(webauthnLoader, () => {
     navigate(redirect || homeUrl());
     dispatch(resetRedirectPath());
   });
@@ -144,6 +139,7 @@ export const ElevatePage = () => {
 
             <div className="my-2 flex flex-col gap-2">
               <BannerMessages {...webauthnLoader} />
+
               {isOtpRequired ? (
                 <BannerMessages
                   isSuccess={false}
