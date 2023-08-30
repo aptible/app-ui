@@ -1,3 +1,4 @@
+import { prettyEnglishDate, timeAgo } from "@app/date";
 import {
   fetchAllEnvironments,
   selectAppsByEnvId,
@@ -5,28 +6,26 @@ import {
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
+import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { useQuery } from "@app/fx";
 import {
   createProjectGitUrl,
   environmentAppsUrl,
   stackDetailEnvsUrl,
 } from "@app/routes";
-import type { AppState, DeployEnvironment } from "@app/types";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { IconInfo, IconPlusCircle } from "../icons";
-import { Tooltip } from "../tooltip";
-
-import { prettyEnglishDate, timeAgo } from "@app/date";
-import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { capitalize } from "@app/string-utils";
+import type { AppState, DeployEnvironment } from "@app/types";
 import { useSelector } from "react-redux";
-import { ButtonIcon } from "../button";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { ButtonOwner } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
 interface EnvironmentCellProps {
   environment: DeployEnvironment;
@@ -155,9 +154,10 @@ const EnvsResourceHeaderTitleBar = ({
     <ResourceHeader
       title={showTitle ? "Environments" : ""}
       actions={[
-        <ButtonIcon icon={<IconPlusCircle variant="sm" />} onClick={onCreate}>
+        <ButtonOwner onClick={onCreate}>
+          <IconPlusCircle variant="sm" className="mr-2" />
           New Environment
-        </ButtonIcon>,
+        </ButtonOwner>,
       ]}
       filterBar={
         <div className="pt-1">

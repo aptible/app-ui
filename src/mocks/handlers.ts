@@ -13,6 +13,7 @@ import {
   defaultOperationResponse,
 } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
+import { RoleResponse } from "@app/roles";
 import { UserResponse } from "@app/users";
 import { RestRequest, rest } from "msw";
 import {
@@ -138,17 +139,27 @@ const authHandlers = [
   }),
 ];
 
-export const verifiedUserHandlers = (user: UserResponse = testUserVerified) => {
+export const verifiedUserHandlers = (
+  {
+    user = testUserVerified,
+    role = testRole,
+  }: { user?: UserResponse; role?: RoleResponse } = {
+    user: testUserVerified,
+    role: testRole,
+  },
+) => {
   return [
     rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (_, res, ctx) => {
-      return res(
-        ctx.json({
-          _embedded: [user],
-        }),
-      );
+      return res(ctx.json({ _embedded: [user] }));
     }),
     rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
       return res(ctx.json(user));
+    }),
+    rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { roles: [role] } }));
+    }),
+    rest.get(`${testEnv.authUrl}/users/:userId/roles`, (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { roles: [role] } }));
     }),
   ];
 };
