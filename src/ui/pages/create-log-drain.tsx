@@ -73,7 +73,7 @@ const validators = {
 
 const options: SelectOption<LogDrainType>[] = [
   { value: "datadog", label: "Datadog" },
-  { value: "logdna", label: "Log DNA (formerly Mezmo)" },
+  { value: "logdna", label: "Mezmo (formerly LogDNA)" },
   { value: "papertrail", label: "Papertrail" },
   { value: "sumologic", label: "Sumo Logic" },
   { value: "insightops", label: "InsightOps" },
@@ -224,8 +224,12 @@ export const CreateLogDrainPage = () => {
             />
           </FormGroup>
 
-          <Label>Sources</Label>
-          <p>Select which logs should be captured:</p>
+          <div className="flex flex-col">
+            <Label>Sources</Label>
+            <p className="text-gray-500">
+              Select which logs should be captured:
+            </p>
+          </div>
           <CheckBox
             label="App Logs"
             name="app-logs"
@@ -351,7 +355,7 @@ export const CreateLogDrainPage = () => {
                     <p>
                       Must be in the format of{" "}
                       <Code>
-                        https://logs.logdna.com/aptible/ingest/INGESTION KEY
+                        https://logs.mezmo.com/aptible/ingest/INGESTION KEY
                       </Code>
                       . Refer to{" "}
                       <ExternalLink
