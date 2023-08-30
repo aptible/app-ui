@@ -9,6 +9,7 @@ import {
   getEndpointUrl,
   requiresAcmeSetup,
   selectAppById,
+  selectDatabaseById,
   selectEndpointsByAppIdForTableSearch,
   selectEndpointsByCertIdForTableSearch,
   selectEndpointsByDbIdForTableSearch,
@@ -19,6 +20,7 @@ import {
   appDetailUrl,
   appEndpointCreateUrl,
   databaseDetailUrl,
+  databaseEndpointCreateUrl,
   endpointDetailSetupUrl,
   endpointDetailUrl,
 } from "@app/routes";
@@ -298,10 +300,21 @@ export function EndpointsByDatabase({ dbId }: { dbId: string }) {
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByDbIdForTableSearch(s, { search, dbId }),
   );
+  const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  const navigate = useNavigate();
+  const action = (
+    <ButtonCreate
+      envId={db.environmentId}
+      onClick={() => navigate(databaseEndpointCreateUrl(dbId))}
+    >
+      <IconPlusCircle variant="sm" className="mr-2" /> New Endpoint
+    </ButtonCreate>
+  );
 
   if (endpoints.length === 0 && search === "") {
     return (
       <EmptyResultView
+        action={action}
         title="No endpoints yet"
         description="Expose this application to the public internet by adding an endpoint"
         className="p-6 w-100"
@@ -310,7 +323,12 @@ export function EndpointsByDatabase({ dbId }: { dbId: string }) {
   }
 
   return (
-    <EndpointList endpoints={endpoints} search={search} onChange={onChange} />
+    <EndpointList
+      endpoints={endpoints}
+      search={search}
+      onChange={onChange}
+      actions={[action]}
+    />
   );
 }
 
