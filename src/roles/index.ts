@@ -94,6 +94,13 @@ export const selectCurrentUserRoles = createSelector(
   (roles, roleIds) => roleIds.map((id) => roles[id]).filter(excludesFalse),
 );
 
+export const selectIsUserAnyOwner = createSelector(
+  selectCurrentUserRoles,
+  (roles) => {
+    return roles.some((r) => r.type === "owner" || r.type === "platform_owner");
+  },
+);
+
 export const entities = {
   role: defaultEntity({
     id: "role",

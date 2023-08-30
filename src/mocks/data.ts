@@ -122,6 +122,15 @@ export const testRole = defaultRoleResponse({
   },
 });
 
+export const testRoleOwner = defaultRoleResponse({
+  id: `${createId()}`,
+  name: "Deploy Owner",
+  type: "platform_owner",
+  _links: {
+    organization: defaultHalHref(testOrg.id),
+  },
+});
+
 const testAccountId = createId();
 export const testAccount = defaultEnvResponse({
   id: testAccountId,
