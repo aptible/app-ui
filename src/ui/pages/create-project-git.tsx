@@ -421,9 +421,12 @@ export const CreateProjectGitPushPage = () => {
         <hr className="my-4" />
 
         {hasDeployOperation(deployOp) ? (
-          <div>
+          <div className="text-black-900 mb-4">
             We detected an app deployment, did you push to the{" "}
-            <code>aptible-scan</code> branch?
+            <span className="bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]">
+              aptible-scan
+            </span>{" "}
+            branch?
           </div>
         ) : null}
 
@@ -1051,7 +1054,9 @@ export const CreateProjectGitStatusPage = () => {
               <CreateEndpointForm app={app} />
             </div>
           ) : (
-            <p>Your services will appear here shortly...</p>
+            <p className="text-black-500">
+              Your services will appear here shortly...
+            </p>
           )}
         </StatusBox>
       )}
@@ -1059,14 +1064,13 @@ export const CreateProjectGitStatusPage = () => {
       {deployOp.status === "failed" || redeployLoader.isLoading ? (
         <StatusBox>
           <h4 className={tokens.type.h4}>Deployment Failed</h4>
-          <p className="text-black-500 my-4">
-            View the error logs, make code changes, and then push your code
-            again to redeploy or click Redeploy to try again without making
-            changes.
+          <p className="text-black-500">
+            • Check the error logs and make changes, then push your code to
+            redeploy.
           </p>
-          <p className="text-black-500 my-4">
-            You can also try to trigger a redeploy now if you think it was a
-            transient error that caused the deployment to fail.
+          <p className="text-black-500 mb-4">
+            • Or, you can click Redeploy to try again without making any
+            changes.
           </p>
 
           <Button
