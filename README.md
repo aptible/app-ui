@@ -65,6 +65,14 @@ unset VITE_BILLING URL
 ```
 Then re-run `yarn start` and the site should load.
 
+**Why does my pull request keep failing tests?**
+
+Run Biomejs to lint your code and apply changes, by running this command:
+
+```bash
+yarn biome check --apply your-file-path-goes-here
+```
+
 ## Sites
 
 - `prod` https://app.aptible.com
@@ -72,9 +80,9 @@ Then re-run `yarn start` and the site should load.
 
 ## Other Yarn Commands
 
-### Test
+### Run Biomejs formatter and apply changes
 ```bash
-yarn test
+yarn biome format --write your-file-path-goes-here
 ```
 
 ## Continuous Deployment
