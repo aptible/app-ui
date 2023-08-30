@@ -51,6 +51,14 @@ yarn start
 
 ## Troubleshooting
 
+**Yarn commands are not working**
+
+Re-run the yarn command to add dependencies
+
+```bash
+yarn
+```
+
 **After running `yarn start`, I'm stuck on a blank page that says loading...**
 
 Unset your environment variables in terminal, by running the following commands:
