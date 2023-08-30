@@ -223,8 +223,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
         tableHeader={
           <TableHead
             rightAlignedFinalCol
-            headers={
-              logDrainsHeaders}
+            headers={logDrainsHeaders}
           />
         }
         tableBody={
@@ -382,8 +381,7 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
           tableHeader={
             <TableHead
               rightAlignedFinalCol
-              headers={
-                metricDrainsHeaders}
+              headers={metricDrainsHeaders}
             />
           }
           tableBody={
