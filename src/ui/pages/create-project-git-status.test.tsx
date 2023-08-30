@@ -191,7 +191,7 @@ describe("CreateProjectGitStatusPage", () => {
       fireEvent.click(btn);
 
       await waitForElementToBeRemoved(() =>
-        screen.queryByText(/• Check the error logs and make changes/),
+        screen.queryByText(/Check the error logs and make changes/),
       );
       await screen.findByText(/App deployment/);
       await screen.findAllByText(/DONE/);
