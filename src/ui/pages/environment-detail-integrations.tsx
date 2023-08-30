@@ -221,7 +221,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
           </p>
         }
         tableHeader={
-          <TableHead headers={logDrainsHeaders} rightAlignedFinalCol />}
+          <TableHead rightAlignedFinalCol headers={logDrainsHeaders} />}
         tableBody={
           <>
             {logDrains.map((logDrain) => (
@@ -374,7 +374,7 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
               {metricDrains.length !== 1 && "s"}
             </p>
           }
-          tableHeader={<TableHead headers={metricDrainsHeaders} rightAlignedFinalCol />}
+          tableHeader={<TableHead rightAlignedFinalCol headers={metricDrainsHeaders} />}
           tableBody={
             <>
               {metricDrains.map((metricDrain) => (
