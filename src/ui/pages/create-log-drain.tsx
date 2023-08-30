@@ -224,8 +224,12 @@ export const CreateLogDrainPage = () => {
             />
           </FormGroup>
 
-          <Label>Sources</Label>
-          <p>Select which logs should be captured:</p>
+          <div className="flex flex-col">
+            <Label>Sources</Label>
+            <p className="text-gray-500">
+              Select which logs should be captured:
+            </p>
+          </div>
           <CheckBox
             label="App Logs"
             name="app-logs"
