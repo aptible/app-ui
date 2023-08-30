@@ -355,7 +355,7 @@ export const CreateLogDrainPage = () => {
                     <p>
                       Must be in the format of{" "}
                       <Code>
-                        https://logs.logdna.com/aptible/ingest/INGESTION KEY
+                        https://logs.mezmo.com/aptible/ingest/INGESTION KEY
                       </Code>
                       . Refer to{" "}
                       <ExternalLink
