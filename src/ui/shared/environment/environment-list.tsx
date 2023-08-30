@@ -140,15 +140,17 @@ const EnvsResourceHeaderTitleBar = ({
   search = "",
   onChange,
   showTitle = true,
+  stackId = "",
 }: {
   envs: DeployEnvironment[];
   search?: string;
   onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
   showTitle?: boolean;
+  stackId?: string;
 }) => {
   const navigate = useNavigate();
   const onCreate = () => {
-    navigate(createProjectGitUrl());
+    navigate(createProjectGitUrl(stackId ? `stack_id=${stackId}` : ""));
   };
   return (
     <ResourceHeader
@@ -211,6 +213,7 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
       <ResourceListView
         header={
           <EnvsResourceHeaderTitleBar
+            stackId={stackId}
             search={search}
             envs={environments}
             onChange={onChange}
