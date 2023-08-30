@@ -26,7 +26,7 @@ import { rest } from "msw";
 describe("Selecting an Organization", () => {
   it("should set the organization to the current user's `selected_organization` property if available", async () => {
     server.use(
-      ...verifiedUserHandlers(testUserOrgSelected),
+      ...verifiedUserHandlers({ user: testUserOrgSelected }),
       rest.get(`${testEnv.authUrl}/organizations`, (_, res, ctx) => {
         return res(
           ctx.json({ _embedded: { organizations: [testOrg, testOrgSpecial] } }),
