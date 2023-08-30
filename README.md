@@ -67,7 +67,13 @@ Then re-run `yarn start` and the site should load.
 
 **Why does my pull request keep failing tests?**
 
-Run Biomejs to lint your code and apply changes, by running this command:
+Run Biomejs to lint all your code and apply changes, by running this command:
+
+```bash
+yarn biome check --apply ./src
+```
+
+Or just lint a single file and apply changes, by running this command:
 
 ```bash
 yarn biome check --apply your-file-path-goes-here
@@ -80,9 +86,9 @@ yarn biome check --apply your-file-path-goes-here
 
 ## Other Yarn Commands
 
-### Run Biomejs formatter and apply changes
+### View all Biomejs commands
 ```bash
-yarn biome format --write your-file-path-goes-here
+yarn biome --help
 ```
 
 ## Continuous Deployment
