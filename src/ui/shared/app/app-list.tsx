@@ -16,7 +16,7 @@ import {
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
 import {
-  appServicesUrl,
+  appDetailUrl,
   environmentCreateAppUrl,
   operationDetailUrl,
 } from "@app/routes";
@@ -40,7 +40,7 @@ interface AppCellProps {
 
 export const AppItemView = ({ app }: { app: DeployApp }) => {
   return (
-    <Link to={appServicesUrl(app.id)} className="flex">
+    <Link to={appDetailUrl(app.id)} className="flex">
       <img
         src="/resource-types/logo-app.png"
         className="w-8 h-8 mr-2 align-middle"
