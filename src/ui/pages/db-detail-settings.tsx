@@ -83,6 +83,7 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
             disabled={isDisabled}
             isLoading={loader.isLoading}
             className="w-70"
+            type="submit"
           >
             <IconTrash color="#FFF" className="mr-2" />
             Deprovision Database
