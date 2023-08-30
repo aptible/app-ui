@@ -73,7 +73,7 @@ const validators = {
 
 const options: SelectOption<LogDrainType>[] = [
   { value: "datadog", label: "Datadog" },
-  { value: "logdna", label: "Log DNA (formerly Mezmo)" },
+  { value: "logdna", label: "Mezmo (formerly LogDNA)" },
   { value: "papertrail", label: "Papertrail" },
   { value: "sumologic", label: "Sumo Logic" },
   { value: "insightops", label: "InsightOps" },
