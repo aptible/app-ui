@@ -220,12 +220,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
             {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
           </p>
         }
-        tableHeader={
-          <TableHead
-            rightAlignedFinalCol
-            headers={logDrainsHeaders}
-          />
-        }
+        tableHeader={<TableHead rightAlignedFinalCol headers={logDrainsHeaders} />}
         tableBody={
           <>
             {logDrains.map((logDrain) => (
@@ -378,12 +373,7 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
               {metricDrains.length !== 1 && "s"}
             </p>
           }
-          tableHeader={
-            <TableHead
-              rightAlignedFinalCol
-              headers={metricDrainsHeaders}
-            />
-          }
+          tableHeader={<TableHead rightAlignedFinalCol headers={metricDrainsHeaders} />}
           tableBody={
             <>
               {metricDrains.map((metricDrain) => (
