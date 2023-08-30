@@ -197,8 +197,7 @@ export const selectStackPublicDefault = createSelector(
       return initStack;
     }
 
-    // find first public stack
-    return stacks.find((s) => s.public) || initStack;
+    return stacks.find((s) => s.default) || initStack;
   },
 );
 export const selectStackPublicDefaultAsOption = createSelector(

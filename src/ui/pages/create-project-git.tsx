@@ -63,6 +63,7 @@ import {
 } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 
+import { useSearchParams } from "react-router-dom";
 import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
 import {
   AddSSHKeyForm,
@@ -179,6 +180,10 @@ export const CreateProjectFromAppSetupPage = () => {
 };
 
 export const CreateProjectGitPage = () => {
+  const [params] = useSearchParams();
+  const stackId = params.get("stack_id") || "";
+  const envId = params.get("environment_id") || "";
+  const queryParam = `stack_id=${stackId}&environment_id=${envId}`;
   const user = useSelector(selectCurrentUser);
   const query = useCache<HalEmbedded<{ ssh_keys: any[] }>>(
     fetchSSHKeys({ userId: user.id }),
@@ -189,15 +194,20 @@ export const CreateProjectGitPage = () => {
   if (!query.data) return <div>Could not fetch SSH keys</div>;
 
   if (query.data._embedded.ssh_keys.length === 0) {
-    return <Navigate to={createProjectAddKeyUrl()} replace />;
+    return <Navigate to={createProjectAddKeyUrl(queryParam)} replace />;
   }
 
-  return <Navigate to={createProjectAddNameUrl()} replace />;
+  return <Navigate to={createProjectAddNameUrl(queryParam)} replace />;
 };
 
 export const CreateProjectAddKeyPage = () => {
   const navigate = useNavigate();
-  const onSuccess = () => navigate(createProjectAddNameUrl());
+  const [params] = useSearchParams();
+  const stackId = params.get("stack_id") || "";
+  const envId = params.get("environment_id") || "";
+  const queryParam = `stack_id=${stackId}&environment_id=${envId}`;
+  const url = createProjectAddNameUrl(queryParam);
+  const onSuccess = () => navigate(url);
 
   return (
     <div>
@@ -208,7 +218,7 @@ export const CreateProjectAddKeyPage = () => {
         </p>
       </div>
 
-      <ProgressProject cur={-1} next={createProjectAddNameUrl()} />
+      <ProgressProject cur={-1} next={url} />
 
       <Box>
         <AddSSHKeyForm onSuccess={onSuccess} />
