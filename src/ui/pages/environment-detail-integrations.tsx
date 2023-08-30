@@ -155,7 +155,7 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   });
 
   return (
-    <Td className="flex-1">
+    <Td className="flex justify-end gap-2 mr-4">
       <Group variant="horizontal" size="sm">
         <ButtonOps
           size="sm"
@@ -220,7 +220,9 @@ const LogDrainsSection = ({ id }: { id: string }) => {
             {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
           </p>
         }
-        tableHeader={<TableHead headers={logDrainsHeaders} />}
+        tableHeader={
+          <TableHead rightAlignedFinalCol headers={logDrainsHeaders} />
+        }
         tableBody={
           <>
             {logDrains.map((logDrain) => (
@@ -312,7 +314,7 @@ const MetricDrainActions = ({
   });
 
   return (
-    <Td className="flex-1">
+    <Td className="flex justify-end gap-2 mr-4">
       <Group variant="horizontal" size="sm">
         <ButtonOps
           size="sm"
@@ -373,7 +375,9 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
               {metricDrains.length !== 1 && "s"}
             </p>
           }
-          tableHeader={<TableHead headers={metricDrainsHeaders} />}
+          tableHeader={
+            <TableHead rightAlignedFinalCol headers={metricDrainsHeaders} />
+          }
           tableBody={
             <>
               {metricDrains.map((metricDrain) => (
