@@ -45,7 +45,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
   );
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
-  const thunk = useApi(createDeployApp({ name, envId }));
+  const thunk = useApi(createDeployApp({ name, envId: env.id }));
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
