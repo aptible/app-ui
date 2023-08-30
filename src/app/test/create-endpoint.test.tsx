@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import {
   defaultOperationResponse,
@@ -77,10 +78,10 @@ describe("Create Endpoint flow", () => {
       const cmdRadio = await screen.findByRole("radio", { name: /rails s/ });
       fireEvent.click(cmdRadio);
 
-      const typeRadio = await screen.findByRole("radio", {
-        name: /default endpoint/,
+      const enpType = await screen.findByRole("combobox", {
+        name: /Endpoint Type/,
       });
-      fireEvent.click(typeRadio);
+      await act(() => userEvent.selectOptions(enpType, "default"));
 
       const btn = await screen.findByRole("button", { name: /Save Endpoint/ });
       fireEvent.click(btn);

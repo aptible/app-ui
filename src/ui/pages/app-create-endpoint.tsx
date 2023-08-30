@@ -388,7 +388,7 @@ export const AppCreateEndpointPage = () => {
 
         <FormGroup label="Endpoint Type" htmlFor="endpoint-type">
           <Select
-            ariaLabel="Type"
+            ariaLabel="Endpoint Type"
             id="endpoint-type"
             options={options}
             onSelect={(opt) => setEnpType(opt.value as EndpointType)}
