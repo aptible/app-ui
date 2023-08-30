@@ -1,4 +1,5 @@
 import { selectUserHasPerms } from "@app/deploy";
+import { selectIsUserAnyOwner } from "@app/roles";
 import { capitalize } from "@app/string-utils";
 import { AppState, PermissionScope } from "@app/types";
 import cn from "classnames";
@@ -193,6 +194,22 @@ const createButtonPermission = (
       </ButtonPermission>
     );
   };
+};
+
+export const ButtonOwner = ({ children, ...props }: ButtonProps) => {
+  const isUserOwner = useSelector(selectIsUserAnyOwner);
+
+  if (isUserOwner) {
+    return <Button {...props}>{children}</Button>;
+  }
+
+  return (
+    <Tooltip text="You do not have a valid role type (platform_owner, owner) to access this resource">
+      <Button {...props} disabled>
+        {children}
+      </Button>
+    </Tooltip>
+  );
 };
 
 export const ButtonCreate = createButtonPermission("deploy");

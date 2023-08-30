@@ -26,8 +26,8 @@ import { handleValidator } from "@app/validator";
 import {
   BannerMessages,
   Box,
-  Button,
   ButtonCreate,
+  ButtonOwner,
   FormGroup,
   Input,
   ProgressProject,
@@ -246,14 +246,14 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
           <BannerMessages {...thunk} className="my-2" />
 
-          <Button
+          <ButtonOwner
             className="mt-4 w-full"
             type="submit"
             isLoading={thunk.isLoading}
             disabled={name === ""}
           >
             Create Environment
-          </Button>
+          </ButtonOwner>
         </form>
       </Box>
     </div>
