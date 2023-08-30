@@ -605,7 +605,7 @@ const Op = ({
             <div>{createReadableResourceName(op, resource.handle)}</div>
           </div>
           <div className="flex items-center ml-2">
-            <div className="mr-2 text-xs text-black-300">id: {op.id}</div>
+            <div className="mr-2 text-xs text-black-300">ID: {op.id}</div>
             <div title={`aptible operation:logs ${op.id}`}>
               <IconCopy
                 variant="sm"
