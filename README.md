@@ -67,29 +67,22 @@ Then re-run `yarn start` and the site should load.
 
 **Why does my pull request keep failing tests?**
 
-Run Biomejs to lint all your code and apply changes, by running this command:
+Lint codebase
 
 ```bash
-yarn biome check --apply ./src
+yarn lint
 ```
 
-Or just lint a single file and apply changes, by running this command:
+Automatically fix issues
 
 ```bash
-yarn biome check --apply your-file-path-goes-here
+yarn fmt
 ```
 
 ## Sites
 
 - `prod` https://app.aptible.com
 - `staging` https://cloud-ui-main.aptible-staging.com
-
-## Other Yarn Commands
-
-### View all Biomejs commands
-```bash
-yarn biome --help
-```
 
 ## Continuous Deployment
 
