@@ -7,12 +7,14 @@ import {
   EndpointType,
   fetchAllCertsByEnvId,
   fetchApp,
+  fetchImageById,
   getCertLabel,
   getContainerPort,
   parseIpStr,
   provisionEndpoint,
   selectAppById,
   selectCertificatesByEnvId,
+  selectImageById,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { endpointDetailUrl } from "@app/routes";
@@ -100,6 +102,8 @@ export const AppCreateEndpointPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const image = useSelector((s: AppState) => selectImageById(s, { id }));
+  useQuery(fetchImageById({ id: app.currentImageId }));
 
   const [serviceId, setServiceId] = useState("");
   const [port, setPort] = useState("");
@@ -113,7 +117,7 @@ export const AppCreateEndpointPage = () => {
   const [privKey, setPrivKey] = useState("");
   const portText = getContainerPort(
     { containerPort: port },
-    app.currentImage.exposedPorts,
+    image.exposedPorts,
   );
   const [usingNewCert, setUsingNewCert] = useState(false);
 
