@@ -19,7 +19,7 @@ import {
 import type { AppState, DeployDatabase } from "@app/types";
 
 import {
-  databaseMetricsUrl,
+  databaseDetailUrl,
   databaseScaleUrl,
   environmentCreateDbUrl,
   operationDetailUrl,
@@ -43,7 +43,7 @@ export const DatabaseItemView = ({
 }: { database: DeployDatabase }) => {
   return (
     <div className="flex">
-      <Link to={databaseMetricsUrl(database.id)} className="flex">
+      <Link to={databaseDetailUrl(database.id)} className="flex">
         <img
           src={`/database-types/logo-${database.type}.png`}
           className="w-8 h-8 mr-2 mt-2 align-middle"

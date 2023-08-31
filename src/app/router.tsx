@@ -8,6 +8,7 @@ import {
   AppCreateEndpointPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
+  AppDetailPage,
   AppDetailServicesPage,
   AppSettingsPage,
   AppsPage,
@@ -37,6 +38,7 @@ import {
   DatabaseCreateEndpointPage,
   DatabaseCredentialsPage,
   DatabaseDetailLayout,
+  DatabaseDetailPage,
   DatabaseEndpointsPage,
   DatabaseScalePage,
   DatabaseSettingsPage,
@@ -196,7 +198,7 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <AppDetailServicesPage />,
+                element: <AppDetailPage />,
               },
               {
                 path: routes.APP_SERVICE_PATH,
@@ -256,7 +258,7 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <DatabaseEndpointsPage />,
+                element: <DatabaseDetailPage />,
               },
               {
                 path: routes.DATABASE_ENDPOINT_CREATE_PATH,
