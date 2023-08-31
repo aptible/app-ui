@@ -628,7 +628,7 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.FORGOT_PASS_PATH,
+    path: routes.RESET_PASSWORD_PATH,
     element: <UnauthRequired />,
     children: [
       {
