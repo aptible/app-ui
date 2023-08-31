@@ -265,7 +265,7 @@ interface StarterOption extends SelectOption {
 const starterTemplateOptions: StarterOption[] = [
   { label: "Custom Code", value: "none", query: {}, repo: "" },
   {
-    label: "Ruby on Rails v7",
+    label: "Ruby on Rails v7 Template",
     value: "git@github.com:aptible/template-rails.git",
     repo: "template-rails",
     query: {
@@ -274,19 +274,19 @@ const starterTemplateOptions: StarterOption[] = [
     },
   },
   {
-    label: "Django v4",
+    label: "Django v4 Template",
     value: "git@github.com:aptible/template-django.git",
     repo: "template-django",
     query: { dbs: ["database_url:postgresql:14"], envs: ["secret_key"] },
   },
   {
-    label: "Express v4",
+    label: "Express v4 Template",
     value: "git@github.com:aptible/template-express.git",
     repo: "template-express",
     query: { dbs: ["database_url:postgresql:14"] },
   },
   {
-    label: "Laravel v10",
+    label: "Laravel v10 Template",
     value: "git@github.com:aptible/template-laravel.git",
     repo: "template-laravel",
     query: {
@@ -295,7 +295,7 @@ const starterTemplateOptions: StarterOption[] = [
     },
   },
   {
-    label: "Deploy Demo App",
+    label: "Deploy Demo App Template",
     value: "git@github.com:aptible/deploy-demo-app.git",
     repo: "deploy-demo-app",
     query: {
@@ -353,6 +353,10 @@ export const CreateProjectGitPushPage = () => {
           <h4 className={tokens.type.h4}>
             Deploy Custom Code or Starter Template
           </h4>
+          <div class="text-black-500 mb-1 mr-2">
+            Launch your existing app with Custom Code, or learn how Aptible
+            works with a Starter Template.
+          </div>
           <div className="my-2">
             <Select
               options={starterTemplateOptions}
