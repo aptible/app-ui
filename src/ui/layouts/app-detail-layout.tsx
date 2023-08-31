@@ -6,8 +6,8 @@ import { prettyEnglishDate } from "@app/date";
 import {
   cancelAppOpsPoll,
   fetchApp,
-  fetchAppServices,
   fetchImageById,
+  fetchServicesByAppId,
   pollAppOperations,
   selectAppById,
   selectEnvironmentById,
@@ -99,7 +99,7 @@ function AppPageHeader() {
   }, []);
 
   const loader = useQuery(fetchApp({ id }));
-  useQuery(fetchAppServices({ id: id }));
+  useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),
@@ -117,10 +117,6 @@ function AppPageHeader() {
       to: appServicesUrl(app.id),
     });
   }
-
-  // TODO - COME BACK TO THIS
-  // Need to kick a user back out of the details page (or lock specific pages if it is deleted)
-  // currently the network log will error with a 404 (as the record will be deleted)
 
   const tabs: TabItem[] = serviceId
     ? [

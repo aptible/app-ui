@@ -26,7 +26,7 @@ export const ResourceGroupBox = ({
   handle: string;
 }) => {
   const vhost = useSelector((s: AppState) =>
-    selectFirstEndpointByAppId(s, { id: appId }),
+    selectFirstEndpointByAppId(s, { appId }),
   );
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId }),

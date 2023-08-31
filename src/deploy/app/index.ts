@@ -30,7 +30,7 @@ import {
   selectOperationsAsList,
   waitForOperation,
 } from "../operation";
-import { DeployServiceResponse } from "../service";
+import { DeployServiceResponse, selectServiceById } from "../service";
 import { selectDeploy } from "../slice";
 
 export * from "./utils";
@@ -89,13 +89,10 @@ export const defaultAppResponse = (
 };
 
 export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
-  const services = payload._embedded.services || [];
-  const serviceIds: string[] = services.map((s) => `${s.id}`);
   const links = payload._links;
 
   return {
     id: `${payload.id}`,
-    serviceIds,
     handle: payload.handle,
     gitRepo: payload.git_repo,
     createdAt: payload.created_at,
@@ -112,7 +109,6 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
   const now = new Date().toISOString();
   return {
     id: "",
-    serviceIds: [],
     handle: "",
     gitRepo: "",
     createdAt: now,
@@ -255,10 +251,10 @@ export const selectAppsForTableSearch = createSelector(
 );
 
 export const selectAppByServiceId = createSelector(
-  selectAppsAsList,
-  (_: AppState, p: { serviceId: string }) => p.serviceId,
-  (apps, serviceId) => {
-    return apps.find((app) => app.serviceIds.includes(serviceId)) || initApp;
+  selectServiceById,
+  selectApps,
+  (service, apps) => {
+    return apps[service.appId] || initApp;
   },
 );
 

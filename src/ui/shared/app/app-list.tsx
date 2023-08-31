@@ -1,9 +1,3 @@
-import { useLoader, useQuery } from "@app/fx";
-import { useSelector } from "react-redux";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { IconInfo, IconPlusCircle } from "../icons";
-import { Tooltip } from "../tooltip";
-
 import { prettyDateRelative } from "@app/date";
 import {
   calcServiceMetrics,
@@ -13,9 +7,10 @@ import {
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
   selectLatestOpByAppId,
+  selectServicesByAppId,
 } from "@app/deploy";
-import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
+import { useLoader, useQuery } from "@app/fx";
 import {
   appDetailUrl,
   environmentCreateAppUrl,
@@ -23,9 +18,12 @@ import {
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
+import { useSelector } from "react-redux";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ActionList, ActionListView } from "../action-list-view";
 import { ButtonCreate } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
@@ -33,6 +31,7 @@ import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { Header, TableHead, Td } from "../table";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
 interface AppCellProps {
   app: DeployApp;
@@ -61,14 +60,12 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
 
 const AppServicesCell = ({ app }: AppCellProps) => {
   const services = useSelector((s: AppState) =>
-    selectServicesByIds(s, { ids: app.serviceIds }),
+    selectServicesByAppId(s, { appId: app.id }),
   );
   const metrics = calcMetrics(services);
   return (
     <Td>
-      <div
-        className={tokens.type.darker}
-      >{`${app.serviceIds.length} Services`}</div>
+      <div className={tokens.type.darker}>{`${services.length} Services`}</div>
       <div className={tokens.type["normal lighter"]}>
         {metrics.totalMemoryLimit / 1024} GB &middot; {metrics.totalCPU} CPU
       </div>
@@ -78,7 +75,7 @@ const AppServicesCell = ({ app }: AppCellProps) => {
 
 const AppCostCell = ({ app }: AppCellProps) => {
   const services = useSelector((s: AppState) =>
-    selectServicesByIds(s, { ids: app.serviceIds }),
+    selectServicesByAppId(s, { appId: app.id }),
   );
   const cost = services.reduce((acc, service) => {
     const mm = calcServiceMetrics(service);

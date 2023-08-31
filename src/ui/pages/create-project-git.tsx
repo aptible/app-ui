@@ -24,6 +24,7 @@ import {
   selectEnvironmentById,
   selectFirstAppByEnvId,
   selectServiceById,
+  selectServicesByAppId,
   serviceCommandText,
 } from "@app/deploy";
 import {
@@ -780,7 +781,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
   const [curServiceId, setServiceId] = useState("");
   const hasSelected = !!curServiceId;
   const vhosts = useSelector((s: AppState) =>
-    selectEndpointsByAppId(s, { id: app.id }),
+    selectEndpointsByAppId(s, { appId: app.id }),
   );
   const action = provisionEndpoint({
     type: "default",
@@ -871,6 +872,9 @@ export const CreateProjectGitStatusPage = () => {
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
   const configId = app.currentConfigurationId;
+  const services = useSelector((s: AppState) =>
+    selectServicesByAppId(s, { appId }),
+  );
 
   const dbs = useDbsInAppConfig({
     envId,
@@ -887,7 +891,7 @@ export const CreateProjectGitStatusPage = () => {
   );
   const endpointQuery = useQuery(fetchEndpointsByAppId({ appId }));
   const vhosts = useSelector((s: AppState) =>
-    selectEndpointsByAppId(s, { id: appId }),
+    selectEndpointsByAppId(s, { appId }),
   );
   useEnvOpsPoller({ envId, appId });
   const { ops } = useProjectOps({
@@ -1020,7 +1024,7 @@ export const CreateProjectGitStatusPage = () => {
         </StatusBox>
       ) : null}
 
-      {app.serviceIds.length > 0 && vhosts.length > 0 ? (
+      {services.length > 0 && vhosts.length > 0 ? (
         <StatusBox>
           <h4 className={tokens.type.h4}>Current Endpoints</h4>
           {vhosts.map((vhost) => (
@@ -1053,7 +1057,7 @@ export const CreateProjectGitStatusPage = () => {
             </ExternalLink>
             ?
           </h4>
-          {app.serviceIds.length ? (
+          {services.length ? (
             <div className="mt-2">
               <CreateEndpointForm app={app} />
             </div>
