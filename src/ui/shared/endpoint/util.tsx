@@ -80,7 +80,7 @@ export const EndpointStatusPill = ({
 
 export function EndpointUrl({ enp }: { enp: DeployEndpoint }) {
   if (enp.status === "provisioning") {
-    return <p className="text-gray-500 italic">Provisioning</p>;
+    return <p className="text-gray-500">Pending</p>;
   }
 
   if (enp.type === "tcp") {
