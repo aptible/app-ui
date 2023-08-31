@@ -12,6 +12,7 @@ import {
   fetchEnvironmentById,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
+  selectLatestOpByAppId,
 } from "@app/deploy";
 import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
@@ -22,7 +23,6 @@ import {
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
-
 import { ActionList, ActionListView } from "../action-list-view";
 import { ButtonCreate } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
@@ -99,23 +99,26 @@ const AppCostCell = ({ app }: AppCellProps) => {
 };
 
 const AppLastOpCell = ({ app }: AppCellProps) => {
+  const lastOperation = useSelector((s: AppState) =>
+    selectLatestOpByAppId(s, { appId: app.id }),
+  );
+
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      {app.lastOperation ? (
+      {lastOperation ? (
         <>
           <div className={tokens.type.darker}>
             <Link
-              to={operationDetailUrl(app.lastOperation.id)}
+              to={operationDetailUrl(lastOperation.id)}
               className={tokens.type["table link"]}
             >
-              {capitalize(app.lastOperation.type)} by{" "}
-              {app.lastOperation.userName}
+              {capitalize(lastOperation.type)} by {lastOperation.userName}
             </Link>
           </div>
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
-            <OpStatus status={app.lastOperation.status} />{" "}
-            {prettyDateRelative(app.lastOperation.createdAt)}
+            <OpStatus status={lastOperation.status} />{" "}
+            {prettyDateRelative(lastOperation.createdAt)}
           </div>
         </>
       ) : (

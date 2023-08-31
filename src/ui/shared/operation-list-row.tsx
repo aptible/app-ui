@@ -1,6 +1,7 @@
 import { prettyEnglishDateWithTime, timeBetween } from "@app/date";
+import { DeployOperationResponse } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
-import { DeployOperationResponse, OperationStatus } from "@app/types";
+import { OperationStatus } from "@app/types";
 import { SyntheticEvent } from "react";
 import { ButtonIcon } from "./button";
 import {

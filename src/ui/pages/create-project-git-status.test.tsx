@@ -133,6 +133,7 @@ describe("CreateProjectGitStatusPage", () => {
           current_configuration: defaultHalHref(
             `${testEnv.apiUrl}/configurations/${testConfiguration.id}`,
           ),
+          current_image: defaultHalHref(),
         },
         _embedded: {
           services: [testServiceRails],

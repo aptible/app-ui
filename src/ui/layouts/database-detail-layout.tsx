@@ -8,6 +8,7 @@ import {
   fetchDatabase,
   pollDatabaseOperations,
   selectDatabaseById,
+  selectDiskById,
   selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
@@ -49,6 +50,9 @@ export function DatabaseHeader({
   service: DeployService;
 }) {
   const metrics = calcMetrics([service]);
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: database.diskId }),
+  );
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -66,7 +70,7 @@ export function DatabaseHeader({
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{database.id}</DetailInfoItem>
         <DetailInfoItem title="Disk IOPS">
-          {database.disk?.provisionedIops}
+          {disk.provisionedIops}
         </DetailInfoItem>
         <DetailInfoItem title="Memory Limit">
           {metrics.totalMemoryLimit / 1024} GB
@@ -75,16 +79,12 @@ export function DatabaseHeader({
         <DetailInfoItem title="Type">
           {capitalize(database.type)}
         </DetailInfoItem>
-        <DetailInfoItem title="Disk Type">
-          {database.disk?.ebsVolumeType}
-        </DetailInfoItem>
+        <DetailInfoItem title="Disk Type">{disk.ebsVolumeType}</DetailInfoItem>
         <DetailInfoItem title="CPU Share">{metrics.totalCPU}</DetailInfoItem>
 
-        <DetailInfoItem title="Disk Size">
-          {database.disk?.size ? database.disk?.size : 0} GB
-        </DetailInfoItem>
+        <DetailInfoItem title="Disk Size">{disk.size} GB</DetailInfoItem>
         <DetailInfoItem title="Disk Encryption">
-          AES-{(database.disk?.keyBytes ? database.disk?.keyBytes : 32) * 8}
+          AES-{disk.keyBytes * 8}
         </DetailInfoItem>
         <DetailInfoItem title="Profile">
           {CONTAINER_PROFILES[service.instanceClass].name}

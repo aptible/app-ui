@@ -5,6 +5,7 @@ import {
   defaultConfigurationResponse,
   defaultDatabaseImageResponse,
   defaultDatabaseResponse,
+  defaultDeployDiskResponse,
   defaultEndpointResponse,
   defaultEnvResponse,
   defaultOperationResponse,
@@ -248,6 +249,7 @@ export const testApp = defaultAppResponse({
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
     current_configuration: defaultHalHref(),
+    current_image: defaultHalHref(),
   },
   _embedded: {
     current_image: null,
@@ -314,15 +316,18 @@ export const testDatabaseOp = defaultOperationResponse({
   },
 });
 
+export const testDisk = defaultDeployDiskResponse({
+  id: `${createId()}`,
+  size: 10,
+});
+
 export const testDatabasePostgres = defaultDatabaseResponse({
   id: testDatabaseId,
   handle: `${testApp.handle}-postgres`,
   type: "postgres",
   connection_url: "postgres://some:val@wow.com:5432",
   _embedded: {
-    disk: {
-      size: 10,
-    },
+    disk: testDisk,
     last_operation: testDatabaseOp,
   },
   _links: {
@@ -334,6 +339,7 @@ export const testDatabasePostgres = defaultDatabaseResponse({
     service: defaultHalHref(
       `${testEnv.apiUrl}/services/${testDatabaseServiceId}`,
     ),
+    disk: defaultHalHref(`${testEnv.apiUrl}/disks/${testDisk.id}`),
   },
 });
 
@@ -346,6 +352,7 @@ export const testDatabaseInfluxdb = defaultDatabaseResponse({
     initialize_from: defaultHalHref(),
     database_image: defaultHalHref(),
     service: defaultHalHref(),
+    disk: defaultHalHref(`${testEnv.apiUrl}/disks/${testDisk.id}`),
   },
 });
 
@@ -358,6 +365,7 @@ export const testDatabaseElasticsearch = defaultDatabaseResponse({
     initialize_from: defaultHalHref(),
     database_image: defaultHalHref(),
     service: defaultHalHref(),
+    disk: defaultHalHref(`${testEnv.apiUrl}/disks/${testDisk.id}`),
   },
 });
 
@@ -438,6 +446,7 @@ export const testAppDeployed = defaultAppResponse({
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testEnvExpress.id}`),
     current_configuration: defaultHalHref(),
+    current_image: defaultHalHref(),
   },
   _embedded: {
     services: [],

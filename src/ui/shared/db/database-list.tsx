@@ -14,6 +14,8 @@ import {
   hourlyAndMonthlyCostsForContainers,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
+  selectDiskById,
+  selectLatestOpByDatabaseId,
   selectServiceById,
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
@@ -72,6 +74,9 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
   );
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: database.id }),
+  );
   const currentContainerProfile = getContainerProfileFromType(
     service.instanceClass,
   );
@@ -79,7 +84,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
     service.containerCount,
     currentContainerProfile,
     service.containerMemoryLimitMb,
-    database.disk?.size || 0,
+    disk.size,
   );
   return (
     <Td>
@@ -89,23 +94,25 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
 };
 
 const LastOpCell = ({ database }: DatabaseCellProps) => {
+  const lastOperation = useSelector((s: AppState) =>
+    selectLatestOpByDatabaseId(s, { dbId: database.id }),
+  );
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      {database.lastOperation ? (
+      {lastOperation ? (
         <>
           <div className={tokens.type.darker}>
             <Link
-              to={operationDetailUrl(database.lastOperation.id)}
+              to={operationDetailUrl(lastOperation.id)}
               className={tokens.type["table link"]}
             >
-              {capitalize(database.lastOperation.type)} by{" "}
-              {database.lastOperation.userName}
+              {capitalize(lastOperation.type)} by {lastOperation.userName}
             </Link>
           </div>
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
-            <OpStatus status={database.lastOperation.status} />{" "}
-            {prettyDateRelative(database.lastOperation.createdAt)}
+            <OpStatus status={lastOperation.status} />{" "}
+            {prettyDateRelative(lastOperation.createdAt)}
           </div>
         </>
       ) : (

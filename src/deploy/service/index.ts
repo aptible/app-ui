@@ -8,7 +8,6 @@ import {
 } from "@app/slice-helpers";
 import type {
   AppState,
-  DeployOperationResponse,
   DeployService,
   InstanceClass,
   LinkResponse,
@@ -17,6 +16,7 @@ import type {
 import { poll } from "saga-query";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
+import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m4";

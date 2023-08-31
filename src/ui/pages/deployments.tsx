@@ -1,11 +1,10 @@
 import {
   fetchAllApps,
   fetchAllEnvironments,
-  fetchEndpointsByAppId,
   selectAppsByEnvOnboarding,
   selectLatestDeployOp,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
+import { useLoader } from "@app/fx";
 import { createProjectGitUrl } from "@app/routes";
 import { AppState, DeployApp } from "@app/types";
 import { useSelector } from "react-redux";
@@ -24,7 +23,6 @@ import { StatusPill } from "../shared/pill";
 import { ResourceGroupBox } from "../shared/resource-group-box";
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
-  useQuery(fetchEndpointsByAppId({ appId: app.id }));
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );

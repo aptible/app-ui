@@ -73,6 +73,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -83,6 +84,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -93,6 +95,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envLaravel.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
     ];
@@ -172,6 +175,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -182,6 +186,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -192,6 +197,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envLaravel.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -200,6 +206,7 @@ describe("Deployments page", () => {
         _links: {
           account: defaultHalHref(`${testEnv.apiUrl}/accounts/${envLegacy.id}`),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
     ];

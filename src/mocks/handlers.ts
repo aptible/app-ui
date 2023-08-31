@@ -26,6 +26,7 @@ import {
   testConfiguration,
   testDatabaseId,
   testDatabaseOp,
+  testDisk,
   testEndpoint,
   testEnterprisePlan,
   testEnv,
@@ -493,6 +494,7 @@ const apiHandlers = [
                 href: `${testEnv.apiUrl}/database_images/${data.database_image_id}`,
               },
               service: { href: "" },
+              disk: { href: "" },
             },
           }),
         ),
@@ -729,6 +731,9 @@ const apiHandlers = [
       return res(ctx.json({ ...testBackupRp, ...data }));
     },
   ),
+  rest.get(`${testEnv.apiUrl}/disks/:id`, async (_, res, ctx) => {
+    return res(ctx.json(testDisk));
+  }),
 ];
 
 const billingHandlers = [
