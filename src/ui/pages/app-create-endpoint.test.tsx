@@ -118,10 +118,10 @@ describe("AppCreateEndpointPage", () => {
       const cmdRadio = await screen.findByRole("radio", { name: /rails s/ });
       fireEvent.click(cmdRadio);
 
-      const typeRadio = await screen.findByRole("radio", {
-        name: /Managed HTTPS/,
+      const enpType = await screen.findByRole("combobox", {
+        name: /Endpoint Type/,
       });
-      fireEvent.click(typeRadio);
+      await act(() => userEvent.selectOptions(enpType, "managed"));
 
       const btn = await screen.findByRole("button", { name: /Save Endpoint/ });
       fireEvent.click(btn);
@@ -150,10 +150,10 @@ describe("AppCreateEndpointPage", () => {
       const cmdRadio = await screen.findByRole("radio", { name: /rails s/ });
       fireEvent.click(cmdRadio);
 
-      const typeRadio = await screen.findByRole("radio", {
-        name: /Managed HTTPS/,
+      const enpType = await screen.findByRole("combobox", {
+        name: /Endpoint Type/,
       });
-      fireEvent.click(typeRadio);
+      await act(() => userEvent.selectOptions(enpType, "managed"));
 
       const domainStr = "test.aptible.com";
       const domain = await screen.findByRole("textbox", { name: /domain/ });
@@ -199,17 +199,20 @@ describe("AppCreateEndpointPage", () => {
       const cmdRadio = await screen.findByRole("radio", { name: /rails s/ });
       fireEvent.click(cmdRadio);
 
-      const typeRadio = await screen.findByRole("radio", {
-        name: /with a custom certificate/,
+      const enpType = await screen.findByRole("combobox", {
+        name: /Endpoint Type/,
       });
-      fireEvent.click(typeRadio);
+      await act(() => userEvent.selectOptions(enpType, "custom"));
+
+      const newCert = await screen.findByLabelText(/Create a New Certificate/);
+      fireEvent.click(newCert);
 
       const btn = await screen.findByRole("button", { name: /Save Endpoint/ });
       fireEvent.click(btn);
 
-      await screen.findByText(/A certificate is required/);
+      await screen.findAllByText(/A certificate is required/);
       expect(
-        screen.queryByText(/A certificate is required/),
+        screen.queryAllByText(/A certificate is required/)[0],
       ).toBeInTheDocument();
 
       await screen.findByText(/A private key is required/);
@@ -238,10 +241,13 @@ describe("AppCreateEndpointPage", () => {
       const cmdRadio = await screen.findByRole("radio", { name: /rails s/ });
       fireEvent.click(cmdRadio);
 
-      const typeRadio = await screen.findByRole("radio", {
-        name: /with a custom certificate/,
+      const enpType = await screen.findByRole("combobox", {
+        name: /Endpoint Type/,
       });
-      fireEvent.click(typeRadio);
+      await act(() => userEvent.selectOptions(enpType, "custom"));
+
+      const newCert = await screen.findByLabelText(/Create a New Certificate/);
+      fireEvent.click(newCert);
 
       const certStr = "wow";
       const port = await screen.findByRole("textbox", { name: /cert/ });
@@ -280,10 +286,13 @@ describe("AppCreateEndpointPage", () => {
       const cmdRadio = await screen.findByRole("radio", { name: /rails s/ });
       fireEvent.click(cmdRadio);
 
-      const typeRadio = await screen.findByRole("radio", {
-        name: /with a custom certificate/,
+      const enpType = await screen.findByRole("combobox", {
+        name: /Endpoint Type/,
       });
-      fireEvent.click(typeRadio);
+      await act(() => userEvent.selectOptions(enpType, "custom"));
+
+      const newCert = await screen.findByLabelText(/Create a New Certificate/);
+      fireEvent.click(newCert);
 
       const certStr = "wow";
       const cert = await screen.findByRole("textbox", { name: /cert/ });

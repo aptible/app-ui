@@ -535,12 +535,14 @@ interface CreateDefaultEndpoint extends CreateEndpointBase {
 interface CreateManagedEndpoint extends CreateEndpointBase {
   type: "managed";
   domain: string;
+  certId: string;
   cert?: string;
   privKey?: string;
 }
 
 interface CreateCustomEndpoint extends CreateEndpointBase {
   type: "custom";
+  certId: string;
   cert: string;
   privKey: string;
 }
@@ -645,7 +647,9 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
 
     let certId = "";
     if (ctx.payload.type === "managed" || ctx.payload.type === "custom") {
-      if (ctx.payload.cert && ctx.payload.privKey) {
+      certId = ctx.payload.certId;
+
+      if (!certId && ctx.payload.cert && ctx.payload.privKey) {
         const certCtx = yield* call(
           createCertificate.run,
           createCertificate({
@@ -891,12 +895,13 @@ export const getIpAllowlistText = (enp: DeployEndpoint) => {
 };
 
 export const getContainerPort = (
-  enp: DeployEndpoint,
+  enp: Pick<DeployEndpoint, "containerPort">,
   exposedPorts: number[],
 ) => {
   let port = "Unknown";
   if (exposedPorts.length > 0) {
-    const ports = exposedPorts.sort();
+    console.log(exposedPorts);
+    const ports = [...exposedPorts].sort();
     port = `${ports[0]}`;
   }
   return enp.containerPort || `Default (${port})`;
