@@ -265,6 +265,12 @@ export const stacksWithResources = (
       }
       return res(ctx.json({ services }));
     }),
+    rest.get(`${testEnv.apiUrl}/apps/:id/services`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(ctx.json({ services }));
+    }),
     rest.get(`${testEnv.apiUrl}/services/:id`, (req, res, ctx) => {
       if (!isValidToken(req)) {
         return res(ctx.status(401));

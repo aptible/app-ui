@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { useLoader, useLoaderSuccess } from "saga-query/react";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
 import {
   EndpointUpdateProps,
+  fetchImageById,
   getContainerPort,
   parseIpStr,
   selectAppById,
@@ -46,6 +47,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const app = useSelector((s: AppState) =>
     selectAppById(s, { id: service.appId }),
   );
+  useQuery(fetchImageById({ id: app.currentImageId }));
   const image = useSelector((s: AppState) =>
     selectImageById(s, { id: app.currentImageId }),
   );

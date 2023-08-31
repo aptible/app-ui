@@ -6,6 +6,8 @@ import { prettyEnglishDate } from "@app/date";
 import {
   cancelAppOpsPoll,
   fetchApp,
+  fetchAppServices,
+  fetchImageById,
   pollAppOperations,
   selectAppById,
   selectEnvironmentById,
@@ -43,6 +45,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
   const lastDeployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
+  useQuery(fetchImageById({ id: app.currentImageId }));
   const image = useSelector((s: AppState) =>
     selectImageById(s, { id: app.currentImageId }),
   );
@@ -96,6 +99,7 @@ function AppPageHeader() {
   }, []);
 
   const loader = useQuery(fetchApp({ id }));
+  useQuery(fetchAppServices({ id: id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),

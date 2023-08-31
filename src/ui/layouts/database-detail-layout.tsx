@@ -6,6 +6,8 @@ import {
   calcMetrics,
   cancelDatabaseOpsPoll,
   fetchDatabase,
+  fetchDiskById,
+  fetchService,
   pollDatabaseOperations,
   selectDatabaseById,
   selectDiskById,
@@ -50,6 +52,7 @@ export function DatabaseHeader({
   service: DeployService;
 }) {
   const metrics = calcMetrics([service]);
+  useQuery(fetchDiskById({ id: database.diskId }));
   const disk = useSelector((s: AppState) =>
     selectDiskById(s, { id: database.diskId }),
   );
@@ -113,6 +116,7 @@ function DatabasePageHeader() {
   }, []);
 
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  useQuery(fetchService({ id: database.serviceId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
   );
