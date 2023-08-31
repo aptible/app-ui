@@ -353,7 +353,7 @@ export const CreateProjectGitPushPage = () => {
           <h4 className={tokens.type.h4}>
             Deploy Custom Code or Starter Template
           </h4>
-          <div class="text-black-500 mb-1 mr-2">
+          <div className="text-black-500 mb-1 mr-2">
             Launch your existing app with Custom Code, or learn how Aptible
             works with a Starter Template.
           </div>
