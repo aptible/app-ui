@@ -63,8 +63,8 @@ const AppDeprovision = ({ app }: AppProps) => {
 
   return (
     <form onSubmit={onClick}>
-      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2">
-        <IconAlertTriangle variant="sm" color="#AD1A1A" />
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2 mb-4">
+        <IconAlertTriangle color="#AD1A1A" />
         Deprovision App
       </h1>
 

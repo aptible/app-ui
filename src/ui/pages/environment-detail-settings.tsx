@@ -174,16 +174,10 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
 
   return (
     <Box>
-      <div className="mb-4">
-        <h1 className="text-lg text-red-500 font-semibold">
-          <IconAlertTriangle
-            className="inline pr-3 mb-1"
-            style={{ width: 32 }}
-            color="#AD1A1A"
-          />
-          Deprovision Environment
-        </h1>
-      </div>
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2 mb-4">
+        <IconAlertTriangle color="#AD1A1A" />
+        Deprovision Environment
+      </h1>
 
       <form onSubmit={onSubmit}>
         <div>

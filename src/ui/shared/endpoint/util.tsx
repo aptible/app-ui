@@ -80,7 +80,7 @@ export const EndpointStatusPill = ({
 
 export function EndpointUrl({ enp }: { enp: DeployEndpoint }) {
   if (enp.status === "provisioning") {
-    return <p className="text-gray-500 italic">Provisioning</p>;
+    return <p className="text-gray-500">Pending</p>;
   }
 
   if (enp.type === "tcp") {
@@ -124,15 +124,11 @@ export const EndpointDeprovision = ({
 
   return (
     <Box className="mb-8">
-      <h1 className="text-lg text-red-500 font-semibold">
-        <IconAlertTriangle
-          className="inline pr-3 mb-1"
-          style={{ width: 32 }}
-          color="#AD1A1A"
-        />
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2 mb-4">
+        <IconAlertTriangle color="#AD1A1A" />
         Deprovision Endpoint
       </h1>
-      <form className="mt-2" onSubmit={onSubmit}>
+      <form onSubmit={onSubmit}>
         <p>
           This will permanently deprovision <strong>{url}</strong> endpoint.
           This action cannot be undone. If you want to proceed, type the{" "}
