@@ -59,8 +59,8 @@ export const resetReducer =
 
 function* watchResetToken() {
   while (true) {
-    yield take(`${resetToken}`);
-    yield put(resetStore());
+    yield* take(`${resetToken}`);
+    yield* put(resetStore());
   }
 }
 

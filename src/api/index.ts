@@ -44,7 +44,7 @@ import type {
 
 type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel";
 
-const log = createLog("@app/fx");
+const log = createLog("fx");
 
 export function* elevetatedMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   ctx.elevated = true;

@@ -1,5 +1,3 @@
-import { LinkResponse } from "./hal";
-
 export type ProvisionableStatus =
   | "pending"
   | "provisioning"
@@ -33,11 +31,9 @@ export interface DeployApp extends Provisionable, Timestamps {
   handle: string;
   gitRepo: string;
   deploymentMethod: string;
-  lastDeployOperation: DeployOperation | null;
-  lastOperation: DeployOperation | null;
   environmentId: string;
-  currentImage: DeployImage;
   currentConfigurationId: string;
+  currentImageId: string;
   serviceIds: string[];
 }
 
@@ -238,20 +234,6 @@ export interface DeployOperation extends Timestamps {
   note: string;
 }
 
-export interface DeployOperationResponse {
-  id: number;
-  type: string;
-  status: OperationStatus;
-  user_name: string;
-  created_at: string;
-  updated_at: string;
-  _links: {
-    account: LinkResponse;
-    resource: LinkResponse;
-    code_scan_result: LinkResponse;
-  };
-}
-
 export interface DeployDisk extends Timestamps {
   attached: boolean;
   availabilityZone: string;
@@ -276,11 +258,10 @@ export interface DeployDatabase extends Provisionable, Timestamps {
   dockerRepo: string;
   handle: string;
   id: string;
-  lastOperation: DeployOperation | null;
   environmentId: string;
   provisioned: boolean;
   type: string;
-  disk: DeployDisk | null;
+  diskId: string;
   serviceId: string;
   databaseImageId: string;
   initializeFrom: string;

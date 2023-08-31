@@ -8,7 +8,6 @@ import {
 import {
   AppState,
   DeployLogDrain,
-  DeployOperationResponse,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
@@ -20,6 +19,7 @@ import {
   setLoaderStart,
   setLoaderSuccess,
 } from "saga-query";
+import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
 export type LogDrainType =

@@ -26,6 +26,7 @@ import {
   testConfiguration,
   testDatabaseId,
   testDatabaseOp,
+  testDisk,
   testEndpoint,
   testEnterprisePlan,
   testEnv,
@@ -264,6 +265,12 @@ export const stacksWithResources = (
       }
       return res(ctx.json({ services }));
     }),
+    rest.get(`${testEnv.apiUrl}/apps/:id/services`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(ctx.json({ services }));
+    }),
     rest.get(`${testEnv.apiUrl}/services/:id`, (req, res, ctx) => {
       if (!isValidToken(req)) {
         return res(ctx.status(401));
@@ -493,6 +500,7 @@ const apiHandlers = [
                 href: `${testEnv.apiUrl}/database_images/${data.database_image_id}`,
               },
               service: { href: "" },
+              disk: { href: "" },
             },
           }),
         ),
@@ -729,6 +737,9 @@ const apiHandlers = [
       return res(ctx.json({ ...testBackupRp, ...data }));
     },
   ),
+  rest.get(`${testEnv.apiUrl}/disks/:id`, async (_, res, ctx) => {
+    return res(ctx.json(testDisk));
+  }),
 ];
 
 const billingHandlers = [

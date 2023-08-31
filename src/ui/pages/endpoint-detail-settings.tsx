@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { useLoader, useLoaderSuccess } from "saga-query/react";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
 import {
   EndpointUpdateProps,
+  fetchImageById,
   getContainerPort,
-  hasDeployApp,
   parseIpStr,
   selectAppById,
   selectEndpointById,
+  selectImageById,
   selectServiceById,
   updateEndpoint,
 } from "@app/deploy";
@@ -46,10 +47,11 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const app = useSelector((s: AppState) =>
     selectAppById(s, { id: service.appId }),
   );
-  let exposedPorts: number[] = [];
-  if (hasDeployApp(app)) {
-    exposedPorts = app.currentImage.exposedPorts;
-  }
+  useQuery(fetchImageById({ id: app.currentImageId }));
+  const image = useSelector((s: AppState) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+  const exposedPorts = image.exposedPorts;
 
   const origAllowlist = enp.ipWhitelist.join("\n");
   const [ipAllowlist, setIpAllowlist] = useState(origAllowlist);

@@ -6,9 +6,13 @@ import { prettyEnglishDate } from "@app/date";
 import {
   cancelAppOpsPoll,
   fetchApp,
+  fetchAppServices,
+  fetchImageById,
   pollAppOperations,
   selectAppById,
   selectEnvironmentById,
+  selectImageById,
+  selectLatestDeployOp,
   selectServiceById,
 } from "@app/deploy";
 import {
@@ -38,6 +42,14 @@ import { useQuery } from "saga-query/react";
 import { MenuWrappedPage } from "./menu-wrapped-page";
 
 export function AppHeader({ app }: { app: DeployApp }) {
+  const lastDeployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
+  );
+  useQuery(fetchImageById({ id: app.currentImageId }));
+  const image = useSelector((s: AppState) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -57,13 +69,11 @@ export function AppHeader({ app }: { app: DeployApp }) {
         <DetailInfoItem title="Git Remote">{app.gitRepo}</DetailInfoItem>
         <div className="hidden md:block" />
         <DetailInfoItem title="Last Deployed">
-          {app.lastDeployOperation
-            ? `${prettyEnglishDate(app.lastDeployOperation?.createdAt)}`
+          {lastDeployOp
+            ? `${prettyEnglishDate(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
-        <DetailInfoItem title="Docker Image">
-          {app.currentImage.dockerRepo}
-        </DetailInfoItem>
+        <DetailInfoItem title="Docker Image">{image.dockerRepo}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -89,6 +99,7 @@ function AppPageHeader() {
   }, []);
 
   const loader = useQuery(fetchApp({ id }));
+  useQuery(fetchAppServices({ id: id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),

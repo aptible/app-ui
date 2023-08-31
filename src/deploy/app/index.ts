@@ -9,7 +9,7 @@ import {
 import type {
   AppState,
   DeployApp,
-  DeployOperationResponse,
+  DeployOperation,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
@@ -22,8 +22,14 @@ import {
   selectEnvironments,
   selectEnvironmentsByOrg,
 } from "../environment";
-import { defaultDeployImage, deserializeImage } from "../image";
-import { deserializeDeployOperation, waitForOperation } from "../operation";
+import { DeployImageResponse } from "../image";
+import {
+  DeployOperationResponse,
+  defaultDeployOperation,
+  findOperationsByAppId,
+  selectOperationsAsList,
+  waitForOperation,
+} from "../operation";
 import { DeployServiceResponse } from "../service";
 import { selectDeploy } from "../slice";
 
@@ -40,13 +46,14 @@ export interface DeployAppResponse {
   _links: {
     account: LinkResponse;
     current_configuration: LinkResponse;
+    current_image: LinkResponse;
   };
   _embedded: {
     // TODO: fill in
-    services: DeployServiceResponse[];
-    current_image: any;
-    last_deploy_operation: any;
-    last_operation: any;
+    services: DeployServiceResponse[] | null;
+    current_image: DeployImageResponse | null;
+    last_deploy_operation: DeployOperationResponse | null;
+    last_operation: DeployOperationResponse | null;
   };
   _type: "app";
 }
@@ -66,6 +73,7 @@ export const defaultAppResponse = (
     _links: {
       account: { href: "" },
       current_configuration: { href: "" },
+      current_image: { href: "" },
       ...p._links,
     },
     _embedded: {
@@ -81,9 +89,9 @@ export const defaultAppResponse = (
 };
 
 export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
-  const serviceIds: string[] = payload._embedded.services.map((s) => `${s.id}`);
+  const services = payload._embedded.services || [];
+  const serviceIds: string[] = services.map((s) => `${s.id}`);
   const links = payload._links;
-  const embedded = payload._embedded;
 
   return {
     id: `${payload.id}`,
@@ -96,13 +104,7 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
     status: payload.status,
     environmentId: extractIdFromLink(links.account),
     currentConfigurationId: extractIdFromLink(links.current_configuration),
-    currentImage: deserializeImage(embedded.current_image),
-    lastDeployOperation: embedded.last_deploy_operation
-      ? deserializeDeployOperation(embedded.last_deploy_operation)
-      : null,
-    lastOperation: embedded.last_operation
-      ? deserializeDeployOperation(embedded.last_operation)
-      : null,
+    currentImageId: extractIdFromLink(links.current_image),
   };
 };
 
@@ -119,9 +121,7 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
     status: "pending",
     environmentId: "",
     currentConfigurationId: "",
-    currentImage: defaultDeployImage(),
-    lastDeployOperation: null,
-    lastOperation: null,
+    currentImageId: "",
     ...a,
   };
 };
@@ -145,6 +145,7 @@ export const findAppById = must(selectors.findById);
 
 export interface DeployAppRow extends DeployApp {
   envHandle: string;
+  lastOperation: DeployOperation;
 }
 
 export const selectAppsByEnvId = createSelector(
@@ -175,11 +176,17 @@ export const selectAppsByOrgAsList = createSelector(
 export const selectAppsForTable = createSelector(
   selectAppsByOrgAsList,
   selectEnvironments,
-  (apps, envs) =>
+  selectOperationsAsList,
+  (apps, envs, ops) =>
     apps
       .map((app): DeployAppRow => {
         const env = findEnvById(envs, { id: app.environmentId });
-        return { ...app, envHandle: env.handle };
+        const appOps = findOperationsByAppId(ops, app.id);
+        let lastOperation = defaultDeployOperation();
+        if (appOps.length > 0) {
+          lastOperation = appOps[0];
+        }
+        return { ...app, envHandle: env.handle, lastOperation };
       })
       .sort((a, b) => a.handle.localeCompare(b.handle)),
 );

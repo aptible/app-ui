@@ -12,8 +12,6 @@ import {
   defaultDeployService,
   defaultDeployStack,
 } from "@app/deploy";
-import { defaultDeployDisk } from "@app/deploy/disk";
-import { defaultDeployImage } from "@app/deploy/image";
 import {
   AppHeader,
   DatabaseHeader,
@@ -615,19 +613,11 @@ const DetailBoxes = () => {
     id: appId,
     handle: "My App",
     gitRepo: "some.git@repo.com",
-    lastDeployOperation: op,
-    currentImage: defaultDeployImage({ dockerRepo: "some.docker.repo" }),
   });
 
   const db = defaultDeployDatabase({
     id: "222",
     type: "postgresql",
-    disk: defaultDeployDisk({
-      provisionedIops: 1000,
-      size: 100,
-      ebsVolumeType: "idk",
-      keyBytes: 32,
-    }),
   });
   const service = defaultDeployService({
     instanceClass: "m4",

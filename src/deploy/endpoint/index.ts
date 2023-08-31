@@ -27,7 +27,6 @@ import type {
   AcmeStatus,
   AppState,
   DeployEndpoint,
-  DeployOperationResponse,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
@@ -46,6 +45,7 @@ import {
   selectDatabasesByOrgAsList,
 } from "../database";
 import { selectEnvironmentsByOrgAsList } from "../environment";
+import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
 export interface DeployEndpointResponse {

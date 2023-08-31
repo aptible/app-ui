@@ -260,11 +260,16 @@ export const selectOperationsByEnvId = createSelector(
   (ops, envId) => ops.filter((op) => op.environmentId === envId),
 );
 
+export const findOperationsByAppId = (ops: DeployOperation[], appId: string) =>
+  ops.filter((op) => op.resourceType === "app" && op.resourceId === appId);
+
+export const findOperationsByDbId = (ops: DeployOperation[], dbId: string) =>
+  ops.filter((op) => op.resourceType === "database" && op.resourceId === dbId);
+
 export const selectOperationsByAppId = createSelector(
   selectOperationsAsList,
   (_: AppState, p: { appId: string }) => p.appId,
-  (ops, appId) =>
-    ops.filter((op) => op.resourceType === "app" && op.resourceId === appId),
+  findOperationsByAppId,
 );
 
 export const findLatestSuccessProvisionDbOp = (ops: DeployOperation[]) =>
@@ -273,10 +278,7 @@ export const findLatestSuccessProvisionDbOp = (ops: DeployOperation[]) =>
 export const selectOperationsByDatabaseId = createSelector(
   selectOperationsAsList,
   (_: AppState, p: { dbId: string }) => p.dbId,
-  (ops, dbId) =>
-    ops.filter(
-      (op) => op.resourceType === "database" && op.resourceId === dbId,
-    ),
+  findOperationsByDbId,
 );
 
 export const selectLatestOpByEnvId = createSelector(
