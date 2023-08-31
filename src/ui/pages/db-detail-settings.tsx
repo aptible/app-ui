@@ -157,7 +157,7 @@ const DatabaseNameChange = ({ database }: DbProps) => {
             </p>
             <ul className="list-disc ml-4 mt-2">
               {drains.map((drain) => (
-                <li>{drain.handle}</li>
+                <li key={drain.id}>{drain.handle}</li>
               ))}
             </ul>
           </Banner>
