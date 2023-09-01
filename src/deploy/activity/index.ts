@@ -56,8 +56,8 @@ const selectActivityForTable = createSelector(
           }
           resourceHandle =
             op.containerCount && op.containerSize
-              ? `${service.handle} (${op.containerCount} Container(s) - ${op.containerSize} GB Memory)`
-              : service.handle;
+              ? `${service.processType} (${op.containerCount} Container(s) - ${op.containerSize} GB Memory)`
+              : service.processType;
           return { ...op, envHandle: env.handle, resourceHandle, url };
         } else if (op.resourceType === "log_drain") {
           const logDrain = findLogDrainById(logDrains, { id: op.resourceId });
