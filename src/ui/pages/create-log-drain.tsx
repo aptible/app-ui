@@ -16,6 +16,7 @@ import { EnvironmentDetailLayout } from "../layouts";
 import {
   Banner,
   BannerMessages,
+  Box,
   ButtonOps,
   CheckBox,
   Code,
@@ -185,13 +186,13 @@ export const CreateLogDrainPage = () => {
 
   return (
     <EnvironmentDetailLayout>
-      <div className="flex flex-col gap-4 bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+      <Box>
         <h1 className="text-lg text-black font-semibold">Create Log Drain</h1>
 
-        <div>
+        <div className="py-4">
           Log Drains let you collect stdout and stderr logs from your apps and
-          databases deployed in the {env.handle} environment and route them to a
-          log destination.
+          databases deployed in the <strong>{env.handle}</strong> environment
+          and route them to a log destination.
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -431,7 +432,7 @@ export const CreateLogDrainPage = () => {
             Save Log Drain
           </ButtonOps>
         </form>
-      </div>
+      </Box>
     </EnvironmentDetailLayout>
   );
 };

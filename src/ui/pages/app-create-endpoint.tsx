@@ -24,6 +24,7 @@ import { existValidtor, ipValidator, portValidator } from "@app/validator";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,
+  Box,
   ButtonCreate,
   CheckBox,
   CreateAppEndpointSelector,
@@ -349,7 +350,7 @@ export const AppCreateEndpointPage = () => {
   };
 
   return (
-    <div className="bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+    <Box>
       <h1 className="text-lg text-black font-semibold">Create Endpoint</h1>
       <div className="mt-2 mb-4 text-black-500">
         This Endpoint will accept HTTP and HTTPS traffic and route it to your
@@ -413,6 +414,6 @@ export const AppCreateEndpointPage = () => {
           Save Endpoint
         </ButtonCreate>
       </Form>
-    </div>
+    </Box>
   );
 };

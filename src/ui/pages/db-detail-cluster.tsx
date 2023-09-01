@@ -89,7 +89,7 @@ export const DatabaseClusterPage = () => {
 
   return (
     <LoadResources query={dependentsQuery} isEmpty={false}>
-      <div className="text-sm text-gray-500 mt-4 select-none">
+      <div className="text-sm text-gray-500 select-none">
         <div className="text-base inline">
           {clusterDatabases.length ? clusterDatabases.length : 0} Cluster
           Members. Replicas can only be added via the Aptible CLI,{" "}

@@ -18,6 +18,7 @@ import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
   BannerMessages,
+  Box,
   ButtonOps,
   DbSelector,
   EnvironmentSelect,
@@ -191,15 +192,15 @@ export const CreateMetricDrainPage = () => {
 
   return (
     <EnvironmentDetailLayout>
-      <div className="flex flex-col gap-4 bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+      <Box>
         <h1 className="text-lg text-black font-semibold">
           Create Metric Drain
         </h1>
 
-        <div>
+        <div className="py-4">
           Metric Drains let you collect metrics from apps and databases deployed
-          in the {env.handle} environment and route them to a metrics
-          destination.
+          in the <strong>{env.handle}</strong> environment and route them to a
+          metrics destination.
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -436,7 +437,7 @@ export const CreateMetricDrainPage = () => {
             Save Metric Drain
           </ButtonOps>
         </form>
-      </div>
+      </Box>
     </EnvironmentDetailLayout>
   );
 };

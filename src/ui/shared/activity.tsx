@@ -187,7 +187,7 @@ function ActivityTable({
         title={title}
         description={description}
         filterBar={
-          <div className="pt-1">
+          <div>
             <div className="flex items-center gap-3">
               <InputSearch
                 placeholder="Search operations..."
