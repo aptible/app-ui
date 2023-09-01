@@ -1,6 +1,62 @@
-import type { DeployDisk } from "@app/types";
+import { api } from "@app/api";
+import { defaultEntity } from "@app/hal";
+import {
+  createReducerMap,
+  createTable,
+  mustSelectEntity,
+} from "@app/slice-helpers";
+import type { AppState, DeployDisk } from "@app/types";
+import { selectDeploy } from "../slice";
 
-export const deserializeDisk = (payload: any): DeployDisk => {
+interface DeployDiskResponse {
+  attached: boolean;
+  availability_zone: string;
+  baseline_iops: number;
+  provisioned_iops: number;
+  created_at: string;
+  updated_at: string;
+  current_kms_arn: string;
+  device: string;
+  ebs_volume_id: string;
+  ebs_volume_type: string;
+  instance_id: string;
+  filesystem: string;
+  handle: string;
+  host: string;
+  id: string;
+  size: number;
+  key_bytes: number;
+  _type: "disk";
+}
+
+export const defaultDeployDiskResponse = (
+  d: Partial<DeployDiskResponse> = {},
+): DeployDiskResponse => {
+  const now = new Date().toISOString();
+  return {
+    attached: true,
+    availability_zone: "",
+    baseline_iops: 0,
+    provisioned_iops: 0,
+    created_at: now,
+    updated_at: now,
+    current_kms_arn: "",
+    device: "",
+    ebs_volume_id: "",
+    ebs_volume_type: "",
+    instance_id: "",
+    filesystem: "",
+    handle: "",
+    host: "",
+    id: "",
+    size: 0,
+    key_bytes: 32,
+    _type: "disk",
+    ...d,
+  };
+};
+
+export const deserializeDisk = (payload: DeployDiskResponse): DeployDisk => {
   return {
     attached: payload.attached,
     availabilityZone: payload.availability_zone,
@@ -41,7 +97,28 @@ export const defaultDeployDisk = (d: Partial<DeployDisk> = {}): DeployDisk => {
     handle: "",
     host: "",
     size: 0,
-    keyBytes: 0,
+    keyBytes: 32,
     ...d,
   };
+};
+
+export const fetchDiskById = api.get<{ id: string }>("/disks/:id");
+
+export const DISK_NAME = "disks";
+const slice = createTable<DeployDisk>({ name: DISK_NAME });
+const { add: addDeployDisks } = slice.actions;
+const selectors = slice.getSelectors(
+  (s: AppState) => selectDeploy(s)[DISK_NAME] || {},
+);
+const initImage = defaultDeployDisk();
+const must = mustSelectEntity(initImage);
+export const selectDiskById = must(selectors.selectById);
+
+export const diskReducers = createReducerMap(slice);
+export const diskEntities = {
+  disk: defaultEntity({
+    id: "disk",
+    save: addDeployDisks,
+    deserialize: deserializeDisk,
+  }),
 };

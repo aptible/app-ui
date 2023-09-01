@@ -1,8 +1,8 @@
-import { Tooltip } from "./tooltip";
 import { useLoader, useQuery } from "@app/fx";
 import { ReactElement, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
+import { Tooltip } from "./tooltip";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -187,7 +187,7 @@ function ActivityTable({
         title={title}
         description={description}
         filterBar={
-          <div className="pt-1">
+          <div>
             <div className="flex items-center gap-3">
               <InputSearch
                 placeholder="Search operations..."

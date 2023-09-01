@@ -1,8 +1,3 @@
-import { ExternalLink } from "./external-link";
-import { IconGitBranch, IconGlobe } from "./icons";
-import { Pill } from "./pill";
-import { StatusBox } from "./status-box";
-import { tokens } from "./tokens";
 import {
   hasDeployEndpoint,
   selectAppById,
@@ -13,6 +8,11 @@ import {
 import { selectLegacyDashboardUrl } from "@app/env";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
+import { ExternalLink } from "./external-link";
+import { IconGitBranch, IconGlobe } from "./icons";
+import { Pill } from "./pill";
+import { StatusBox } from "./status-box";
+import { tokens } from "./tokens";
 
 export const ResourceGroupBox = ({
   appId,
@@ -26,7 +26,7 @@ export const ResourceGroupBox = ({
   handle: string;
 }) => {
   const vhost = useSelector((s: AppState) =>
-    selectFirstEndpointByAppId(s, { id: appId }),
+    selectFirstEndpointByAppId(s, { appId }),
   );
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId }),

@@ -1,9 +1,9 @@
-import { selectDeploy } from "../slice";
 import { api } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { createReducerMap, createTable } from "@app/slice-helpers";
 import { AppState, DeployDatabaseCredential, LinkResponse } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import { selectDeploy } from "../slice";
 
 interface DatabaseCredentialResponse {
   _type: "database_credential";

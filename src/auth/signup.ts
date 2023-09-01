@@ -86,14 +86,7 @@ export const signup = thunks.create<CreateUserForm>(
       }),
     );
 
-    if (!billsCtx.json.ok) {
-      const { message, ...meta } = billsCtx.json.data;
-      yield* put(
-        setLoaderError({ id, message, meta: defaultAuthLoaderMeta(meta) }),
-      );
-      return;
-    }
-
+    // ignore billing errors because we could be in development
     log(billsCtx);
 
     const elevateCtx = yield* call(

@@ -22,18 +22,18 @@ import {
 } from "@app/routes";
 import { AppState } from "@app/types";
 
+import { handleValidator } from "@app/validator";
 import {
   BannerMessages,
   Box,
-  Button,
   ButtonCreate,
+  ButtonOwner,
   FormGroup,
   Input,
   ProgressProject,
   StackSelect,
   tokens,
 } from "../shared";
-import { handleValidator } from "@app/validator";
 
 const CreateAppPage = ({ envId }: { envId: string }) => {
   useQuery(fetchEnvironmentById({ id: envId }));
@@ -45,7 +45,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
   );
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
-  const thunk = useApi(createDeployApp({ name, envId }));
+  const thunk = useApi(createDeployApp({ name, envId: env.id }));
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -246,14 +246,14 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
           <BannerMessages {...thunk} className="my-2" />
 
-          <Button
+          <ButtonOwner
             className="mt-4 w-full"
             type="submit"
             isLoading={thunk.isLoading}
             disabled={name === ""}
           >
             Create Environment
-          </Button>
+          </ButtonOwner>
         </form>
       </Box>
     </div>

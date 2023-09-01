@@ -61,8 +61,8 @@ export const DetailPageHeaderView = ({
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div>
+    <div className="flex flex-col">
+      <div className="pb-[11px]">
         {breadcrumbs && (
           <Breadcrumbs crumbs={[...breadcrumbs, { to: null, name: title }]} />
         )}
@@ -75,7 +75,7 @@ export const DetailPageHeaderView = ({
       <div>{detailsBox ? detailsBox : null}</div>
 
       {tabs ? (
-        <div className="pt-1">
+        <div className="pt-4">
           <Tabs tabs={tabs} />
         </div>
       ) : null}
@@ -93,7 +93,7 @@ export function DetailTitleBar({
   docsUrl = "",
 }: { title: string; icon?: JSX.Element; docsUrl?: string }) {
   return (
-    <div className="flex justify-between items-center h-10">
+    <div className="flex justify-between items-center">
       <div className="flex items-center">
         {icon ? <div className="w-8 h-8 mr-3">{icon}</div> : null}
         <h1 className="text-lg text-gray-500">{title}</h1>
@@ -116,7 +116,7 @@ export function DetailTitleBar({
 
 export function DetailInfoGrid({ children }: { children: ReactNode }) {
   return (
-    <div className="grid md:grid-cols-3 col-span-1 col-rows-1 gap-5">
+    <div className="grid md:grid-cols-3 col-span-1 col-rows-1 gap-4">
       {children}
     </div>
   );

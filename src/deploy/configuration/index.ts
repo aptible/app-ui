@@ -1,4 +1,3 @@
-import { selectDeploy } from "../slice";
 import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
@@ -7,6 +6,7 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import { AppState, DeployAppConfig, LinkResponse } from "@app/types";
+import { selectDeploy } from "../slice";
 
 export interface DeployConfigurationResponse {
   id: number;

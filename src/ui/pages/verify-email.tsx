@@ -3,14 +3,14 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
-import { Box, Button, Loading, ResendVerificationEmail } from "../shared";
 import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import { homeUrl, loginUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
+import { Box, Button, Loading, ResendVerificationEmail } from "../shared";
 
-import { HeroBgLayout } from "../layouts";
 import { selectCurrentUser } from "@app/users";
+import { HeroBgLayout } from "../layouts";
 
 export const VerifyEmailPage = () => {
   const loader = useLoader(fetchCurrentToken);

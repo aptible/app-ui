@@ -25,6 +25,7 @@ import {
   selectEnvironmentById,
   selectFirstAppByEnvId,
   selectServiceById,
+  selectServicesByAppId,
   serviceCommandText,
 } from "@app/deploy";
 import {
@@ -65,6 +66,7 @@ import {
 } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 
+import { useSearchParams } from "react-router-dom";
 import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
 import {
   AddSSHKeyForm,
@@ -181,6 +183,10 @@ export const CreateProjectFromAppSetupPage = () => {
 };
 
 export const CreateProjectGitPage = () => {
+  const [params] = useSearchParams();
+  const stackId = params.get("stack_id") || "";
+  const envId = params.get("environment_id") || "";
+  const queryParam = `stack_id=${stackId}&environment_id=${envId}`;
   const user = useSelector(selectCurrentUser);
   const query = useCache<HalEmbedded<{ ssh_keys: any[] }>>(
     fetchSSHKeys({ userId: user.id }),
@@ -191,15 +197,20 @@ export const CreateProjectGitPage = () => {
   if (!query.data) return <div>Could not fetch SSH keys</div>;
 
   if (query.data._embedded.ssh_keys.length === 0) {
-    return <Navigate to={createProjectAddKeyUrl()} replace />;
+    return <Navigate to={createProjectAddKeyUrl(queryParam)} replace />;
   }
 
-  return <Navigate to={createProjectAddNameUrl()} replace />;
+  return <Navigate to={createProjectAddNameUrl(queryParam)} replace />;
 };
 
 export const CreateProjectAddKeyPage = () => {
   const navigate = useNavigate();
-  const onSuccess = () => navigate(createProjectAddNameUrl());
+  const [params] = useSearchParams();
+  const stackId = params.get("stack_id") || "";
+  const envId = params.get("environment_id") || "";
+  const queryParam = `stack_id=${stackId}&environment_id=${envId}`;
+  const url = createProjectAddNameUrl(queryParam);
+  const onSuccess = () => navigate(url);
 
   return (
     <div>
@@ -210,7 +221,7 @@ export const CreateProjectAddKeyPage = () => {
         </p>
       </div>
 
-      <ProgressProject cur={-1} next={createProjectAddNameUrl()} />
+      <ProgressProject cur={-1} next={url} />
 
       <Box>
         <AddSSHKeyForm onSuccess={onSuccess} />
@@ -257,7 +268,7 @@ interface StarterOption extends SelectOption {
 const starterTemplateOptions: StarterOption[] = [
   { label: "Custom Code", value: "none", query: {}, repo: "" },
   {
-    label: "Ruby on Rails v7",
+    label: "Ruby on Rails v7 Template",
     value: "git@github.com:aptible/template-rails.git",
     repo: "template-rails",
     query: {
@@ -266,19 +277,19 @@ const starterTemplateOptions: StarterOption[] = [
     },
   },
   {
-    label: "Django v4",
+    label: "Django v4 Template",
     value: "git@github.com:aptible/template-django.git",
     repo: "template-django",
     query: { dbs: ["database_url:postgresql:14"], envs: ["secret_key"] },
   },
   {
-    label: "Express v4",
+    label: "Express v4 Template",
     value: "git@github.com:aptible/template-express.git",
     repo: "template-express",
     query: { dbs: ["database_url:postgresql:14"] },
   },
   {
-    label: "Laravel v10",
+    label: "Laravel v10 Template",
     value: "git@github.com:aptible/template-laravel.git",
     repo: "template-laravel",
     query: {
@@ -287,7 +298,7 @@ const starterTemplateOptions: StarterOption[] = [
     },
   },
   {
-    label: "Deploy Demo App",
+    label: "Deploy Demo App Template",
     value: "git@github.com:aptible/deploy-demo-app.git",
     repo: "deploy-demo-app",
     query: {
@@ -345,6 +356,10 @@ export const CreateProjectGitPushPage = () => {
           <h4 className={tokens.type.h4}>
             Deploy Custom Code or Starter Template
           </h4>
+          <div className="text-black-500 mb-1 mr-2">
+            Launch your existing app with Custom Code, or learn how Aptible
+            works with a Starter Template.
+          </div>
           <div className="my-2">
             <Select
               options={starterTemplateOptions}
@@ -413,9 +428,12 @@ export const CreateProjectGitPushPage = () => {
         <hr className="my-4" />
 
         {hasDeployOperation(deployOp) ? (
-          <div>
+          <div className="text-black-900 mb-4">
             We detected an app deployment, did you push to the{" "}
-            <code>aptible-scan</code> branch?
+            <span className="bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]">
+              aptible-scan
+            </span>{" "}
+            branch?
           </div>
         ) : null}
 
@@ -597,7 +615,7 @@ const Op = ({
             <div>{createReadableResourceName(op, resource.handle)}</div>
           </div>
           <div className="flex items-center ml-2">
-            <div className="mr-2 text-xs text-black-300">id: {op.id}</div>
+            <div className="mr-2 text-xs text-black-300">ID: {op.id}</div>
             <div title={`aptible operation:logs ${op.id}`}>
               <IconCopy
                 variant="sm"
@@ -765,7 +783,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
   const [curServiceId, setServiceId] = useState("");
   const hasSelected = !!curServiceId;
   const vhosts = useSelector((s: AppState) =>
-    selectEndpointsByAppId(s, { id: app.id }),
+    selectEndpointsByAppId(s, { appId: app.id }),
   );
   const action = provisionEndpoint({
     type: "default",
@@ -856,6 +874,9 @@ export const CreateProjectGitStatusPage = () => {
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
   const configId = app.currentConfigurationId;
+  const services = useSelector((s: AppState) =>
+    selectServicesByAppId(s, { appId }),
+  );
 
   const dbs = useDbsInAppConfig({
     envId,
@@ -872,7 +893,7 @@ export const CreateProjectGitStatusPage = () => {
   );
   const endpointQuery = useQuery(fetchEndpointsByAppId({ appId }));
   const vhosts = useSelector((s: AppState) =>
-    selectEndpointsByAppId(s, { id: appId }),
+    selectEndpointsByAppId(s, { appId }),
   );
   useEnvOpsPoller({ envId, appId });
   const { ops } = useProjectOps({
@@ -1009,7 +1030,7 @@ export const CreateProjectGitStatusPage = () => {
         </StatusBox>
       ) : null}
 
-      {app.serviceIds.length > 0 && vhosts.length > 0 ? (
+      {services.length > 0 && vhosts.length > 0 ? (
         <StatusBox>
           <h4 className={tokens.type.h4}>Current Endpoints</h4>
           {vhosts.map((vhost) => (
@@ -1037,12 +1058,14 @@ export const CreateProjectGitStatusPage = () => {
             </ExternalLink>
             ?
           </h4>
-          {app.serviceIds.length ? (
+          {services.length ? (
             <div className="mt-2">
               <CreateEndpointForm app={app} />
             </div>
           ) : (
-            <p>Your services will appear here shortly...</p>
+            <p className="text-black-500">
+              Your services will appear here shortly...
+            </p>
           )}
         </StatusBox>
       )}
@@ -1050,14 +1073,13 @@ export const CreateProjectGitStatusPage = () => {
       {deployOp.status === "failed" || redeployLoader.isLoading ? (
         <StatusBox>
           <h4 className={tokens.type.h4}>Deployment Failed</h4>
-          <p className="text-black-500 my-4">
-            View the error logs, make code changes, and then push your code
-            again to redeploy or click Redeploy to try again without making
-            changes.
+          <p className="text-black-500">
+            • Check the error logs and make changes, then push your code to
+            redeploy.
           </p>
-          <p className="text-black-500 my-4">
-            You can also try to trigger a redeploy now if you think it was a
-            transient error that caused the deployment to fail.
+          <p className="text-black-500 mb-4">
+            • Or, you can click Redeploy to try again without making any
+            changes.
           </p>
 
           <Button

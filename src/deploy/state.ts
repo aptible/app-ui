@@ -20,8 +20,10 @@ import {
   databaseImageEntities,
   databaseImageReducers,
 } from "./database-images";
+import { diskEntities, diskReducers } from "./disk";
 import { endpointEntities, endpointReducers } from "./endpoint";
 import { environmentEntities, environmentReducers } from "./environment";
+import { imageEntities, imageReducers } from "./image";
 import { logDrainEntities, logDrainReducers } from "./log-drain";
 import { metricDrainEntities, metricDrainReducers } from "./metric-drain";
 import { opEntities, opReducers } from "./operation";
@@ -63,6 +65,8 @@ const allReducers: any[] = [
   backupRpReducers,
   credReducers,
   activityReportReducers,
+  imageReducers,
+  diskReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -100,4 +104,6 @@ export const entities = {
   ...backupRpEntities,
   ...credEntities,
   ...activityReportEntities,
+  ...imageEntities,
+  ...diskEntities,
 };

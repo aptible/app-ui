@@ -29,14 +29,15 @@ import type {
   AppState,
   DeployApiCtx,
   DeployDatabase,
-  DeployOperationResponse,
+  DeployOperation,
   HalEmbedded,
   InstanceClass,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
 
-import { deserializeDisk } from "../disk";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { createAction, createSelector } from "@reduxjs/toolkit";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -44,13 +45,14 @@ import {
   selectEnvironmentsByOrg,
 } from "../environment";
 import {
-  deserializeDeployOperation,
+  DeployOperationResponse,
+  defaultDeployOperation,
+  findOperationsByDbId,
+  selectOperationsAsList,
   selectOperationsByDatabaseId,
   waitForOperation,
 } from "../operation";
 import { selectDeploy } from "../slice";
-import { selectOrganizationSelectedId } from "@app/organizations";
-import { createAction, createSelector } from "@reduxjs/toolkit";
 
 export interface DeployDatabaseResponse {
   id: number;
@@ -68,6 +70,7 @@ export interface DeployDatabaseResponse {
     service: LinkResponse;
     database_image: LinkResponse;
     initialize_from: LinkResponse;
+    disk: LinkResponse;
   };
   _embedded: {
     disk: any;
@@ -104,6 +107,7 @@ export const defaultDatabaseResponse = (
       service: { href: "" },
       database_image: { href: "" },
       initialize_from: { href: "" },
+      disk: { href: "" },
       ...d._links,
     },
     _embedded: {
@@ -119,7 +123,6 @@ export const defaultDatabaseResponse = (
 export const deserializeDeployDatabase = (
   payload: DeployDatabaseResponse,
 ): DeployDatabase => {
-  const embedded = payload._embedded;
   const links = payload._links;
 
   return {
@@ -136,11 +139,8 @@ export const deserializeDeployDatabase = (
     databaseImageId: extractIdFromLink(links.database_image),
     environmentId: extractIdFromLink(links.account),
     serviceId: extractIdFromLink(links.service),
-    disk: embedded.disk ? deserializeDisk(embedded.disk) : null,
+    diskId: extractIdFromLink(links.disk),
     initializeFrom: extractIdFromLink(links.initialize_from),
-    lastOperation: embedded.last_operation
-      ? deserializeDeployOperation(embedded.last_operation)
-      : null,
   };
 };
 
@@ -162,15 +162,15 @@ export const defaultDeployDatabase = (
     type: "",
     environmentId: "",
     serviceId: "",
-    disk: null,
+    diskId: "",
     initializeFrom: "",
-    lastOperation: null,
     ...d,
   };
 };
 
 export interface DeployDatabaseRow extends DeployDatabase {
   envHandle: string;
+  lastOperation: DeployOperation;
 }
 
 export const DEPLOY_DATABASE_NAME = "databases";
@@ -215,11 +215,17 @@ export const selectDatabasesByOrgAsList = createSelector(
 export const selectDatabasesForTable = createSelector(
   selectDatabasesByOrgAsList,
   selectEnvironments,
-  (dbs, envs) =>
+  selectOperationsAsList,
+  (dbs, envs, ops) =>
     dbs
       .map((db): DeployDatabaseRow => {
         const env = findEnvById(envs, { id: db.environmentId });
-        return { ...db, envHandle: env.handle };
+        const dbOps = findOperationsByDbId(ops, db.id);
+        let lastOperation = defaultDeployOperation();
+        if (dbOps.length > 0) {
+          lastOperation = dbOps[0];
+        }
+        return { ...db, envHandle: env.handle, lastOperation };
       })
       .sort((a, b) => a.handle.localeCompare(b.handle)),
 );

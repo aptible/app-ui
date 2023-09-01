@@ -1,8 +1,8 @@
-import { defaultDeployRelease, selectReleasesByServiceAfterDate } from ".";
-import { defaultDeployService } from "../service";
 import { createId, testServiceRails } from "@app/mocks";
 import { AppState, DeployService } from "@app/types";
 import { DeepPartial } from "redux";
+import { defaultDeployRelease, selectReleasesByServiceAfterDate } from ".";
+import { defaultDeployService } from "../service";
 
 const createdAtByHours = ({ hours }: { hours: number }) => {
   const createdAt = new Date();

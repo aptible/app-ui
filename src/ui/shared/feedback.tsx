@@ -1,10 +1,10 @@
+import { selectFeedback, setFeedback } from "@app/feedback";
+import { SyntheticEvent, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./button";
 import { FormGroup } from "./form-group";
 import { StatusBox } from "./status-box";
 import { tokens } from "./tokens";
-import { selectFeedback, setFeedback } from "@app/feedback";
-import { SyntheticEvent, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 export const FeedbackForm = ({
   description,

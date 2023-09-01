@@ -1,4 +1,3 @@
-import { CreateProjectGitStatusPage } from "./create-project-git";
 import {
   defaultAppResponse,
   defaultEndpointResponse,
@@ -29,6 +28,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { rest } from "msw";
+import { CreateProjectGitStatusPage } from "./create-project-git";
 
 describe("CreateProjectGitStatusPage", () => {
   describe("when app deployed and no vhost provisioned yet", () => {
@@ -133,6 +133,7 @@ describe("CreateProjectGitStatusPage", () => {
           current_configuration: defaultHalHref(
             `${testEnv.apiUrl}/configurations/${testConfiguration.id}`,
           ),
+          current_image: defaultHalHref(),
         },
         _embedded: {
           services: [testServiceRails],
@@ -191,7 +192,7 @@ describe("CreateProjectGitStatusPage", () => {
       fireEvent.click(btn);
 
       await waitForElementToBeRemoved(() =>
-        screen.queryByText(/View the error logs, make code changes/),
+        screen.queryByText(/Check the error logs and make changes/),
       );
       await screen.findByText(/App deployment/);
       await screen.findAllByText(/DONE/);

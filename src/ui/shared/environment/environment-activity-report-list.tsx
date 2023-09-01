@@ -1,11 +1,11 @@
-import { ButtonIcon } from "../button";
-import { IconDownload } from "../icons";
-import { ResourceListView } from "../resource-list-view";
-import { TableHead, Td } from "../table";
 import { prettyEnglishDateWithTime } from "@app/date";
 import { downloadActivityReports } from "@app/deploy";
 import { DeployActivityReport } from "@app/types";
 import { useDispatch } from "react-redux";
+import { ButtonIcon } from "../button";
+import { IconDownload } from "../icons";
+import { ResourceListView } from "../resource-list-view";
+import { TableHead, Td } from "../table";
 
 const ActivityReportListRow = ({
   report,

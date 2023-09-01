@@ -5,9 +5,9 @@ import { Provider } from "react-redux";
 import type { AppState } from "@app/types";
 import { ModalPortal, StandaloneErrorBoundary } from "@app/ui";
 
-import { router } from "./router";
 import { CookieNotice } from "@app/ui/shared/cookie-notice";
 import { RouterProvider } from "react-router";
+import { router } from "./router";
 
 export const AppRouter = () => {
   return (

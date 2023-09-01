@@ -250,8 +250,8 @@ const DatabaseExistingForm = ({
         variant="secondary"
         isLoading={isLoading}
       >
-        <IconPlusCircle className="mr-2" color="#fff" /> Connect Existing
-        Database
+        <IconPlusCircle className="mr-2" color="#fff" variant="sm" /> Connect
+        Existing Database
       </Button>
     </div>
   );
@@ -696,7 +696,7 @@ export const CreateProjectGitSettingsPage = () => {
               variant="secondary"
               disabled={codeScan.data?.procfile_present}
             >
-              <IconPlusCircle color="#fff" className="mr-2" />
+              <IconPlusCircle color="#fff" className="mr-2" variant="sm" />
               Configure
             </Button>
           )}

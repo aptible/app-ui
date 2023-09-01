@@ -6,8 +6,8 @@ import { fetchCurrentToken } from "@app/auth";
 import { homeUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 
-import { Loading } from "../shared";
 import { useEffect } from "react";
+import { Loading } from "../shared";
 
 export const UnauthRequired = ({
   children,
