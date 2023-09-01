@@ -142,7 +142,7 @@ const DatabaseNameChange = ({ database }: DbProps) => {
         {handle !== database.handle && drains.length ? (
           <Banner variant="info" showIcon={true} className="mt-4">
             <p>
-              You must <b>reload the database</b> for the new name to appear in
+              You must <b>restart the database</b> for the new name to appear in
               the following
               <ExternalLink
                 variant="default"
