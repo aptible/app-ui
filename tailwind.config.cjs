@@ -24,7 +24,7 @@ module.exports = {
         base: ["14px", "20px"],
         md: ["15px", "24px"],
         lg: ["18px", "24px"],
-        xl: ["22px", "32px"],
+        xl: ["24px", "32px"],
       },
 
       fontFamily: {
