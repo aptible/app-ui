@@ -217,7 +217,7 @@ export const AppsResourceHeaderTitleBar = ({
       );
     case "simple-text":
       return (
-        <div className="flex justify-between items-center text-gray-500 text-base mb-4">
+        <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
           <div>
             {apps.length} App{apps.length !== 1 && "s"}
           </div>
