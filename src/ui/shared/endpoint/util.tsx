@@ -8,7 +8,7 @@ import {
   getEndpointUrl,
   selectEndpointById,
 } from "@app/deploy";
-import { endpointsUrl, operationDetailUrl } from "@app/routes";
+import { endpointsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployEndpoint, ProvisionableStatus } from "@app/types";
 
