@@ -9,12 +9,13 @@ import {
   fetchEnvMetricDrains,
   restartDatabase,
   selectDatabaseById,
+  selectEnvironmentById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
   updateDatabase,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { databaseActivityUrl, operationDetailUrl } from "@app/routes";
+import { environmentDatabasesUrl, operationDetailUrl } from "@app/routes";
 import {
   AppState,
   DeployDatabase,
@@ -43,6 +44,9 @@ import {
 } from "../shared";
 
 const DatabaseDeprovision = ({ database }: DbProps) => {
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: database.environmentId }),
+  );
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
@@ -50,7 +54,7 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
   const loader = useLoader(action);
   const onSubmit = () => {
     dispatch(action);
-    navigate(databaseActivityUrl(database.id));
+    navigate(environmentDatabasesUrl(environment.id));
   };
   const isDisabled = database.handle !== deleteConfirm;
 
