@@ -235,7 +235,7 @@ export const SearchPage = () => {
       <InputSearch
         search={search}
         onChange={onChange}
-        className="w-full h-[36px] mt-2"
+        className="w-full h-[36px] mt-4"
         autoFocus
       />
 

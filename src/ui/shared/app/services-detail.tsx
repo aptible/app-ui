@@ -122,9 +122,13 @@ export function ServicesOverview({
       <ResourceListView
         header={
           <>
-            <div className="text-base text-gray-500 mb-4 select-none flex justify-between items-center">
+            <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
               <span>{services.length} Services</span>
-              <ButtonCreate envId={app.environmentId} onClick={onDeploy}>
+              <ButtonCreate
+                className="w-fit"
+                envId={app.environmentId}
+                onClick={onDeploy}
+              >
                 Deployment Monitor
               </ButtonCreate>
             </div>

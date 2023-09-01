@@ -24,7 +24,7 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
       "border-orange-400": isActive,
     },
     "focus:text-black",
-    "whitespace-nowrap pb-4 px-1 border-b-3",
+    "whitespace-nowrap pb-3 px-1 border-b-3",
     "hover:no-underline",
   );
 
