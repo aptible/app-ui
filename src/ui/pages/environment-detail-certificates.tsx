@@ -163,7 +163,8 @@ export const EnvironmentCertificatesPage = () => {
         header={
           <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
             <div className="text-gray-500">
-              {certificates.length} Certificate{certificates.length !== 1 && "s"}
+              {certificates.length} Certificate
+              {certificates.length !== 1 && "s"}
             </div>
             <ButtonSensitive className="w-fit" envId={id} onClick={createCert}>
               <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
