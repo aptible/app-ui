@@ -21,6 +21,7 @@ import { AppState } from "@app/types";
 import { CreateUserForm } from "@app/users";
 import { emailValidator, existValidtor, passValidator } from "@app/validator";
 
+import { selectIsUserAuthenticated } from "@app/token";
 import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
@@ -33,7 +34,6 @@ import {
   Input,
   tokens,
 } from "../shared";
-import { selectIsUserAuthenticated } from "@app/token";
 
 const validators = {
   name: (props: CreateUserForm) => existValidtor(props.name, "Name"),

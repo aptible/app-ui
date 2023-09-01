@@ -23,7 +23,7 @@ export const useProjectOps = ({
   );
 
   const vhost = useSelector((s: AppState) =>
-    selectFirstEndpointByAppId(s, { id: appId }),
+    selectFirstEndpointByAppId(s, { appId }),
   );
   const dbs = useSelector((s: AppState) =>
     selectDatabasesByEnvId(s, { envId }),

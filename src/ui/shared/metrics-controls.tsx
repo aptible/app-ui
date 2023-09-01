@@ -1,6 +1,6 @@
+import { MetricHorizons } from "@app/types";
 import { Button } from "./button";
 import { IconHamburger, IconMetrics } from "./icons";
-import { MetricHorizons } from "@app/types";
 
 export type MetricTabTypes = "table" | "chart";
 

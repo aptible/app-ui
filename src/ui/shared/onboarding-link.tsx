@@ -8,8 +8,8 @@ import {
 import { createProjectGitAppSetupUrl } from "@app/routes";
 import { AppState, DeployApp } from "@app/types";
 
-import { IconArrowRight } from "./icons";
 import { useSelector } from "react-redux";
+import { IconArrowRight } from "./icons";
 
 export const OnboardingLink = ({ app }: { app: DeployApp }) => {
   const deployOp = useSelector((s: AppState) =>

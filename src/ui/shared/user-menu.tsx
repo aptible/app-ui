@@ -5,12 +5,12 @@ import { selectCanImpersonate } from "@app/users";
 
 import { useCurrentUser } from "../hooks";
 
+import { selectLegacyDashboardUrl } from "@app/env";
+import { selectOrganizationSelected } from "@app/organizations";
 import { IconLogout, IconUserCircle } from "./icons";
 import { IconAlertCircle } from "./icons";
 import { LinkNav } from "./link";
 import { Loading } from "./loading";
-import { selectLegacyDashboardUrl } from "@app/env";
-import { selectOrganizationSelected } from "@app/organizations";
 
 export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
   const [user, loader] = useCurrentUser();

@@ -1,10 +1,10 @@
-import { selectDeploy } from "../slice";
 import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity } from "@app/hal";
 import { createTable } from "@app/slice-helpers";
 import { AppState, DeployDatabaseImage } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 import { createReducerMap, mustSelectEntity } from "robodux";
+import { selectDeploy } from "../slice";
 
 export interface DeployDatabaseImageResponse {
   id: number;

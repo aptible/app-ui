@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { resendVerification } from "@app/auth";
 import { selectOrigin } from "@app/env";
 
+import { selectCurrentUserId } from "@app/users";
 import { BannerMessages } from "../banner";
 import { Button } from "../button";
 import { Loading } from "../loading";
-import { selectCurrentUserId } from "@app/users";
 
 export const ResendVerificationEmail = () => {
   const dispatch = useDispatch();

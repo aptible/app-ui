@@ -17,11 +17,11 @@ import {
 import {
   AppState,
   DeployMetricDrain,
-  DeployOperationResponse,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
 
+import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
 export type MetricDrainType =

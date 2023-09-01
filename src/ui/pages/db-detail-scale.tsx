@@ -1,3 +1,23 @@
+import {
+  exponentialContainerSizesByProfile,
+  fetchDatabase,
+  fetchDiskById,
+  fetchService,
+  getContainerProfileFromType,
+  hourlyAndMonthlyCostsForContainers,
+  scaleDatabase,
+  selectContainerProfilesForStack,
+  selectDatabaseById,
+  selectDiskById,
+  selectEnvironmentById,
+  selectServiceById,
+} from "@app/deploy";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import { operationDetailUrl } from "@app/routes";
+import { AppState, InstanceClass } from "@app/types";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,
@@ -8,24 +28,6 @@ import {
   Input,
   Label,
 } from "../shared";
-import {
-  exponentialContainerSizesByProfile,
-  fetchDatabase,
-  fetchService,
-  getContainerProfileFromType,
-  hourlyAndMonthlyCostsForContainers,
-  scaleDatabase,
-  selectContainerProfilesForStack,
-  selectDatabaseById,
-  selectEnvironmentById,
-  selectServiceById,
-} from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { operationDetailUrl } from "@app/routes";
-import { AppState, InstanceClass } from "@app/types";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
 
 const validators = {
   diskSize: (data: DatabaseScaleProps) => {
@@ -58,6 +60,10 @@ export const DatabaseScalePage = () => {
   useQuery(fetchDatabase({ id }));
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
   useQuery(fetchService({ id: database.serviceId }));
+  useQuery(fetchDiskById({ id: database.diskId }));
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: database.diskId }),
+  );
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
   );
@@ -89,8 +95,8 @@ export const DatabaseScalePage = () => {
     if (service.instanceClass) {
       setContainerProfileType(service.instanceClass);
     }
-    if (service.containerMemoryLimitMb && database.disk?.size) {
-      setDiskValue(database.disk.size);
+    if (service.containerMemoryLimitMb && disk.size) {
+      setDiskValue(disk.size);
     }
   }, [database]);
 
@@ -101,7 +107,7 @@ export const DatabaseScalePage = () => {
   const changesExist =
     service.containerMemoryLimitMb !== containerSize ||
     service.instanceClass !== containerProfileType ||
-    database.disk?.size !== diskValue;
+    disk.size !== diskValue;
 
   const currentContainerProfile = getContainerProfileFromType(
     service.instanceClass,
@@ -113,7 +119,7 @@ export const DatabaseScalePage = () => {
       service.containerCount,
       currentContainerProfile,
       service.containerMemoryLimitMb,
-      database.disk?.size || 0,
+      disk.size,
     );
   const { pricePerHour: estimatedPricePerHour, pricePerMonth: estimatedPrice } =
     hourlyAndMonthlyCostsForContainers(
@@ -264,11 +270,9 @@ export const DatabaseScalePage = () => {
                   1 x {service.containerMemoryLimitMb / 1024} GB container x $
                   {currentPricePerHour} per GB/hour
                 </p>
-                {database.disk?.size ? (
-                  <p className="text-gray-500">
-                    {database.disk.size} GB disk x $0.20 per GB/month
-                  </p>
-                ) : null}
+                <p className="text-gray-500">
+                  {disk.size} GB disk x $0.20 per GB/month
+                </p>
               </div>
               <div>
                 <p className="text-gray-500">Estimated Monthly Cost</p>
@@ -299,11 +303,11 @@ export const DatabaseScalePage = () => {
                 </p>
               </div>
             ) : null}
-            {diskValue !== database.disk?.size ? (
+            {diskValue !== disk.size ? (
               <div className="my-4">
                 <Label>Disk Size</Label>
                 <p className="text-gray-500">
-                  Changed from {database.disk?.size || 0} GB to {diskValue} GB
+                  Changed from {disk.size} GB to {diskValue} GB
                 </p>
               </div>
             ) : null}
@@ -338,7 +342,9 @@ export const DatabaseScalePage = () => {
                   className="w-40 ml-2 flex font-semibold"
                   onClick={() => {
                     setContainerSize(service.containerMemoryLimitMb);
-                    if (database.disk?.size) setDiskValue(database.disk.size);
+                    if (disk.size > 0) {
+                      setDiskValue(disk.size);
+                    }
                   }}
                   variant="white"
                 >

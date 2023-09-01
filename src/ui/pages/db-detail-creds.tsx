@@ -1,4 +1,3 @@
-import { Box, IconAlertTriangle, Secret, tokens } from "../shared";
 import {
   fetchCredentialsByDatabaseId,
   selectCredentialsByDatabaseId,
@@ -8,6 +7,7 @@ import { AppState, DeployDatabaseCredential } from "@app/types";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
+import { Box, IconAlertTriangle, Secret, tokens } from "../shared";
 
 const Credential = ({
   cred,
@@ -36,12 +36,8 @@ export const DatabaseCredentialsPage = () => {
 
   return (
     <Box>
-      <h1 className="text-lg text-red-500 font-semibold mb-4">
-        <IconAlertTriangle
-          className="inline pr-3 mb-1"
-          style={{ width: 32 }}
-          color="#AD1A1A"
-        />
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2 mb-4">
+        <IconAlertTriangle color="#AD1A1A" />
         Credentials - This information is sensitive: keep it safe!
       </h1>
       {creds.map((c) => (

@@ -1,4 +1,22 @@
 import {
+  DeployAppResponse,
+  DeployDatabaseResponse,
+  DeployEndpointResponse,
+  DeployEnvironmentResponse,
+  DeployMetricDrainResponse,
+  DeployServiceResponse,
+  DeployStackResponse,
+  defaultDatabaseResponse,
+  defaultDeployCertificate,
+  defaultLogDrainResponse,
+  defaultMetricDrainResponse,
+  defaultOperationResponse,
+} from "@app/deploy";
+import { defaultHalHref } from "@app/hal";
+import { RoleResponse } from "@app/roles";
+import { UserResponse } from "@app/users";
+import { RestRequest, rest } from "msw";
+import {
   createId,
   testAccount,
   testActivePlan,
@@ -8,6 +26,7 @@ import {
   testConfiguration,
   testDatabaseId,
   testDatabaseOp,
+  testDisk,
   testEndpoint,
   testEnterprisePlan,
   testEnv,
@@ -25,23 +44,6 @@ import {
   testUser,
   testUserVerified,
 } from "./data";
-import {
-  DeployAppResponse,
-  DeployDatabaseResponse,
-  DeployEndpointResponse,
-  DeployEnvironmentResponse,
-  DeployMetricDrainResponse,
-  DeployServiceResponse,
-  DeployStackResponse,
-  defaultDatabaseResponse,
-  defaultDeployCertificate,
-  defaultLogDrainResponse,
-  defaultMetricDrainResponse,
-  defaultOperationResponse,
-} from "@app/deploy";
-import { defaultHalHref } from "@app/hal";
-import { UserResponse } from "@app/users";
-import { RestRequest, rest } from "msw";
 
 const isValidToken = (req: RestRequest) => {
   const authorization = req.headers.get("authorization");
@@ -138,17 +140,27 @@ const authHandlers = [
   }),
 ];
 
-export const verifiedUserHandlers = (user: UserResponse = testUserVerified) => {
+export const verifiedUserHandlers = (
+  {
+    user = testUserVerified,
+    role = testRole,
+  }: { user?: UserResponse; role?: RoleResponse } = {
+    user: testUserVerified,
+    role: testRole,
+  },
+) => {
   return [
     rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (_, res, ctx) => {
-      return res(
-        ctx.json({
-          _embedded: [user],
-        }),
-      );
+      return res(ctx.json({ _embedded: [user] }));
     }),
     rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
       return res(ctx.json(user));
+    }),
+    rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { roles: [role] } }));
+    }),
+    rest.get(`${testEnv.authUrl}/users/:userId/roles`, (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { roles: [role] } }));
     }),
   ];
 };
@@ -248,6 +260,12 @@ export const stacksWithResources = (
       return res(ctx.json({ log_drains }));
     }),
     rest.get(`${testEnv.apiUrl}/services`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(ctx.json({ services }));
+    }),
+    rest.get(`${testEnv.apiUrl}/apps/:id/services`, (req, res, ctx) => {
       if (!isValidToken(req)) {
         return res(ctx.status(401));
       }
@@ -482,6 +500,7 @@ const apiHandlers = [
                 href: `${testEnv.apiUrl}/database_images/${data.database_image_id}`,
               },
               service: { href: "" },
+              disk: { href: "" },
             },
           }),
         ),
@@ -718,6 +737,9 @@ const apiHandlers = [
       return res(ctx.json({ ...testBackupRp, ...data }));
     },
   ),
+  rest.get(`${testEnv.apiUrl}/disks/:id`, async (_, res, ctx) => {
+    return res(ctx.json(testDisk));
+  }),
 ];
 
 const billingHandlers = [

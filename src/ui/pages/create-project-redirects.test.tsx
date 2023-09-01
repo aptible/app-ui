@@ -24,6 +24,7 @@ describe("CreateProjectFromAppSetupPage", () => {
             `${testEnv.apiUrl}/accounts/${testAccount.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       });
 
@@ -55,6 +56,7 @@ describe("CreateProjectFromAppSetupPage", () => {
             `${testEnv.apiUrl}/accounts/${testAccount.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       });
       const scanOp = defaultOperationResponse({
@@ -114,6 +116,7 @@ describe("CreateProjectFromAppSetupPage", () => {
             `${testEnv.apiUrl}/accounts/${testAccount.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       });
       const op = defaultOperationResponse({

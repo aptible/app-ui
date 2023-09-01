@@ -22,8 +22,8 @@ import {
   OpStatus,
 } from "../shared";
 
-import { MenuWrappedPage } from "./menu-wrapped-page";
 import { useQuery } from "saga-query/react";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 
 export function OpHeader({
   op,

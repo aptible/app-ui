@@ -1,5 +1,4 @@
-import { IconInfo, IconPlusCircle } from "../icons";
-import { Tooltip } from "../tooltip";
+import { prettyEnglishDate, timeAgo } from "@app/date";
 import {
   fetchAllEnvironments,
   selectAppsByEnvId,
@@ -7,26 +6,26 @@ import {
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
+import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { useQuery } from "@app/fx";
 import {
   createProjectGitUrl,
   environmentAppsUrl,
   stackDetailEnvsUrl,
 } from "@app/routes";
+import { capitalize } from "@app/string-utils";
 import type { AppState, DeployEnvironment } from "@app/types";
+import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-
-import { ButtonIcon } from "../button";
+import { ButtonOwner } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { prettyEnglishDate, timeAgo } from "@app/date";
-import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
-import { capitalize } from "@app/string-utils";
-import { useSelector } from "react-redux";
+import { Tooltip } from "../tooltip";
 
 interface EnvironmentCellProps {
   environment: DeployEnvironment;
@@ -141,26 +140,29 @@ const EnvsResourceHeaderTitleBar = ({
   search = "",
   onChange,
   showTitle = true,
+  stackId = "",
 }: {
   envs: DeployEnvironment[];
   search?: string;
   onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
   showTitle?: boolean;
+  stackId?: string;
 }) => {
   const navigate = useNavigate();
   const onCreate = () => {
-    navigate(createProjectGitUrl());
+    navigate(createProjectGitUrl(stackId ? `stack_id=${stackId}` : ""));
   };
   return (
     <ResourceHeader
       title={showTitle ? "Environments" : ""}
       actions={[
-        <ButtonIcon icon={<IconPlusCircle variant="sm" />} onClick={onCreate}>
+        <ButtonOwner onClick={onCreate}>
+          <IconPlusCircle variant="sm" className="mr-2" />
           New Environment
-        </ButtonIcon>,
+        </ButtonOwner>,
       ]}
       filterBar={
-        <div className="pt-1">
+        <div>
           <InputSearch
             placeholder="Search environments..."
             search={search}
@@ -211,6 +213,7 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
       <ResourceListView
         header={
           <EnvsResourceHeaderTitleBar
+            stackId={stackId}
             search={search}
             envs={environments}
             onChange={onChange}

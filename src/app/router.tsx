@@ -1,6 +1,5 @@
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
-import { Tuna } from "./tuna";
 import * as routes from "@app/routes";
 import {
   ActivityPage,
@@ -9,6 +8,7 @@ import {
   AppCreateEndpointPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
+  AppDetailPage,
   AppDetailServicesPage,
   AppSettingsPage,
   AppsPage,
@@ -38,6 +38,7 @@ import {
   DatabaseCreateEndpointPage,
   DatabaseCredentialsPage,
   DatabaseDetailLayout,
+  DatabaseDetailPage,
   DatabaseEndpointsPage,
   DatabaseScalePage,
   DatabaseSettingsPage,
@@ -100,6 +101,7 @@ import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scal
 import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
 import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
 import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
+import { Tuna } from "./tuna";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -196,7 +198,7 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <AppDetailServicesPage />,
+                element: <AppDetailPage />,
               },
               {
                 path: routes.APP_SERVICE_PATH,
@@ -256,7 +258,7 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <DatabaseEndpointsPage />,
+                element: <DatabaseDetailPage />,
               },
               {
                 path: routes.DATABASE_ENDPOINT_CREATE_PATH,
@@ -626,7 +628,7 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.FORGOT_PASS_PATH,
+    path: routes.RESET_PASSWORD_PATH,
     element: <UnauthRequired />,
     children: [
       {

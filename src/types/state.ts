@@ -14,6 +14,7 @@ import type {
   DeployDisk,
   DeployEndpoint,
   DeployEnvironment,
+  DeployImage,
   DeployLogDrain,
   DeployMetricDrain,
   DeployOperation,
@@ -159,6 +160,7 @@ export interface DeployState {
   backups: MapEntity<DeployBackup>;
   backupRps: MapEntity<DeployBackupRetentionPolicy>;
   activityReports: MapEntity<DeployActivityReport>;
+  images: MapEntity<DeployImage>;
 }
 
 export type MetricHorizons = "1h" | "1d" | "1w";

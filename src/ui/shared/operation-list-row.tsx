@@ -1,3 +1,8 @@
+import { prettyEnglishDateWithTime, timeBetween } from "@app/date";
+import { DeployOperationResponse } from "@app/deploy";
+import { capitalize } from "@app/string-utils";
+import { OperationStatus } from "@app/types";
+import { SyntheticEvent } from "react";
 import { ButtonIcon } from "./button";
 import {
   IconCheckCircle,
@@ -7,10 +12,6 @@ import {
   IconX,
 } from "./icons";
 import { Td } from "./table";
-import { prettyEnglishDateWithTime, timeBetween } from "@app/date";
-import { capitalize } from "@app/string-utils";
-import { DeployOperationResponse, OperationStatus } from "@app/types";
-import { SyntheticEvent } from "react";
 
 interface OperationCellProps {
   operation: DeployOperationResponse;

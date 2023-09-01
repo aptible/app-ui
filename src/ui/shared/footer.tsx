@@ -1,6 +1,6 @@
+import { SyntheticEvent, useState } from "react";
 import { FeedbackForm } from "./feedback";
 import { IconChevronDown, IconChevronUp, IconExternalLink } from "./icons";
-import { SyntheticEvent, useState } from "react";
 
 export const Footer = () => {
   const [showFeedback, setShowFeedback] = useState<boolean>(false);

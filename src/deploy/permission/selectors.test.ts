@@ -1,8 +1,8 @@
-// @vitest-environment node
-import { defaultPermission, selectUserHasPerms } from "./index";
 import { createId } from "@app/mocks";
 import { defaultRole } from "@app/roles";
 import { AppState, DeepPartial, PermissionScope } from "@app/types";
+// @vitest-environment node
+import { defaultPermission, selectUserHasPerms } from "./index";
 
 describe("selectUserHasPerms", () => {
   describe("when user is an `owner`", () => {

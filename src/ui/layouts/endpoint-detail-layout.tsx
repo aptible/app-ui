@@ -17,7 +17,7 @@ import {
 } from "@app/deploy";
 import {
   appEndpointsUrl,
-  databaseDetailUrl,
+  databaseEndpointsUrl,
   endpointDetailActivityUrl,
   endpointDetailSettingsUrl,
   endpointDetailSetupUrl,
@@ -25,10 +25,13 @@ import {
 import type {
   AppState,
   DeployApp,
+  DeployDatabase,
   DeployEndpoint,
   DeployService,
 } from "@app/types";
 
+import { setResourceStats } from "@app/search";
+import { useEffect, useMemo } from "react";
 import { usePoller } from "../hooks";
 import {
   DetailHeader,
@@ -42,8 +45,6 @@ import {
   TabItem,
 } from "../shared";
 import { MenuWrappedPage } from "./menu-wrapped-page";
-import { setResourceStats } from "@app/search";
-import { useEffect, useMemo } from "react";
 
 export function EndpointAppHeaderInfo({
   enp,
@@ -77,6 +78,42 @@ export function EndpointAppHeaderInfo({
         <DetailInfoItem title="">
           <div />
         </DetailInfoItem>
+
+        <DetailInfoItem title="Status">
+          <EndpointStatusPill status={enp.status} />
+        </DetailInfoItem>
+      </DetailInfoGrid>
+    </DetailHeader>
+  );
+}
+
+export function EndpointDatabaseHeaderInfo({
+  enp,
+  db,
+}: { enp: DeployEndpoint; db: DeployDatabase }) {
+  const txt = getEndpointText(enp);
+  return (
+    <DetailHeader>
+      <DetailTitleBar
+        title="Endpoint Details"
+        icon={
+          <img
+            src={"/resource-types/logo-vhost.png"}
+            className="w-8 h-8 mr-3"
+            aria-label="App"
+          />
+        }
+        docsUrl="https://www.aptible.com/docs/endpoints"
+      />
+
+      <DetailInfoGrid>
+        <DetailInfoItem title="URL">
+          <EndpointUrl enp={enp} />
+        </DetailInfoItem>
+        <DetailInfoItem title="Resource">
+          <Link to={databaseEndpointsUrl(db.id)}>{db.handle}</Link>
+        </DetailInfoItem>
+        <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
 
         <DetailInfoItem title="Status">
           <EndpointStatusPill status={enp.status} />
@@ -142,16 +179,21 @@ function EndpointDatabaseHeader({
   const db = useSelector((s: AppState) =>
     selectDatabaseById(s, { id: service.databaseId }),
   );
-  const url = databaseDetailUrl(db.id);
+  const url = databaseEndpointsUrl(db.id);
+  const tabs: TabItem[] = [
+    { name: "Activity", href: endpointDetailActivityUrl(enp.id) },
+    { name: "Settings", href: endpointDetailSettingsUrl(enp.id) },
+  ];
 
   return (
     <DetailPageHeaderView
       isError={isError}
       message={message}
       meta={meta}
+      tabs={tabs}
       breadcrumbs={[{ name: db.handle, to: url }]}
       title={`Endpoint: ${enp.id}`}
-      detailsBox={<div>Not implemented yet.</div>}
+      detailsBox={<EndpointDatabaseHeaderInfo enp={enp} db={db} />}
     />
   );
 }

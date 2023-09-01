@@ -74,3 +74,5 @@ export * from "./create-log-drain";
 export * from "./db-create-endpoint";
 export * from "./org-picker";
 export * from "./endpoints";
+export * from "./db-detail";
+export * from "./app-detail";

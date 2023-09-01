@@ -13,8 +13,8 @@ import {
   LinkResponse,
 } from "@app/types";
 
-import { selectDeploy } from "../slice";
 import { createSelector } from "@reduxjs/toolkit";
+import { selectDeploy } from "../slice";
 
 export interface BackupRpResponse {
   id: number;

@@ -14,7 +14,7 @@ export function createReducerMap<
 };
 export function createReducerMap(...args: any[]): any {
   return args.reduce((acc, slice) => {
-    if (acc.hasOwnProperty(slice.name)) {
+    if (Object.hasOwn(acc, slice.name)) {
       console.warn(`Reducer collision detected: ${slice.name} already exists`);
     }
     acc[slice.name] = slice.reducer;

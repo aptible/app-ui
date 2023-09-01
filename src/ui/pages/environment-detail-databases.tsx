@@ -1,5 +1,5 @@
-import { DatabaseListByEnvironment, DetailPageSections } from "../shared";
 import { useParams } from "react-router";
+import { DatabaseListByEnvironment, DetailPageSections } from "../shared";
 
 export const EnvironmentDatabasesPage = () => {
   const { id = "" } = useParams();

@@ -29,7 +29,7 @@ export function Select<V = string>({
 }: SelectProps<V>) {
   const finClassName = cn(
     "border-black-100 text-black",
-    "hover:border-black hover:text-black-300",
+    "hover:border-black",
     "active:border-black-100 active:text-black",
     "disabled:bg-black-50 disabled:border-black-100 disabled:text-black",
     "rounded-md shadow-sm",

@@ -18,8 +18,8 @@ import {
 } from "@app/mocks";
 import { setupIntegrationTest } from "@app/test";
 
-import { PlansPage } from "./plans";
 import { defaultHalHref } from "@app/hal";
+import { PlansPage } from "./plans";
 
 const commonFail = async (
   req: RestRequest,

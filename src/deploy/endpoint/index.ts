@@ -27,18 +27,11 @@ import type {
   AcmeStatus,
   AppState,
   DeployEndpoint,
-  DeployOperationResponse,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
 
-import {
-  findAppById,
-  selectAppById,
-  selectApps,
-  selectAppsByEnvId,
-  selectAppsByOrgAsList,
-} from "../app";
+import { findAppById, selectApps, selectAppsByEnvId } from "../app";
 import { createCertificate } from "../certificate";
 import {
   findDatabaseById,
@@ -46,6 +39,14 @@ import {
   selectDatabasesByOrgAsList,
 } from "../database";
 import { selectEnvironmentsByOrgAsList } from "../environment";
+import { DeployOperationResponse } from "../operation";
+import {
+  findServiceById,
+  selectAppToServicesMap,
+  selectEnvToServicesMap,
+  selectServices,
+  selectServicesByAppId,
+} from "../service";
 import { selectDeploy } from "../slice";
 
 export interface DeployEndpointResponse {
@@ -221,9 +222,11 @@ export const selectEndpointsByServiceIds = createSelector(
 
 export const selectEndpointsByAppId = createSelector(
   selectEndpointsAsList,
-  selectAppById,
-  (endpoints, app) => {
-    return endpoints.filter((end) => app.serviceIds.includes(end.serviceId));
+  selectServicesByAppId,
+  (endpoints, services) => {
+    return endpoints.filter((end) =>
+      services.map((service) => service.id).includes(end.serviceId),
+    );
   },
 );
 
@@ -238,42 +241,6 @@ export const selectFirstEndpointByAppId = createSelector(
   },
 );
 
-const selectEnvironmentToServiceMap = createSelector(
-  selectAppsByOrgAsList,
-  selectDatabasesByOrgAsList,
-  (apps, databases) => {
-    const envToServiceIds: Record<string, Set<string> | undefined> = {};
-    apps.forEach((app) => {
-      if (!Object.hasOwn(envToServiceIds, app.environmentId)) {
-        envToServiceIds[app.environmentId] = new Set<string>();
-      }
-      app.serviceIds.forEach((id) => {
-        envToServiceIds[app.environmentId]?.add(id);
-      });
-    });
-
-    databases.forEach((db) => {
-      if (!Object.hasOwn(envToServiceIds, db.environmentId)) {
-        envToServiceIds[db.environmentId] = new Set<string>();
-      }
-      envToServiceIds[db.environmentId]?.add(db.serviceId);
-    });
-
-    return envToServiceIds;
-  },
-);
-
-const selectServiceToAppMap = createSelector(selectAppsByOrgAsList, (apps) => {
-  const serviceToAppId: Record<string, string | undefined> = {};
-  apps.forEach((app) => {
-    app.serviceIds.forEach((serviceId) => {
-      serviceToAppId[serviceId] = app.id;
-    });
-  });
-
-  return serviceToAppId;
-});
-
 const selectServiceToDbMap = createSelector(
   selectDatabasesByOrgAsList,
   (dbs) => {
@@ -287,7 +254,7 @@ const selectServiceToDbMap = createSelector(
 );
 
 export const selectEndpointsByEnvironmentId = createSelector(
-  selectEnvironmentToServiceMap,
+  selectEnvToServicesMap,
   selectEndpointsAsList,
   (_: AppState, p: { envId: string }) => p.envId,
   (envToServiceMap, enps, envId) =>
@@ -295,7 +262,7 @@ export const selectEndpointsByEnvironmentId = createSelector(
 );
 
 export const selectEndpointsByOrgAsList = createSelector(
-  selectEnvironmentToServiceMap,
+  selectEnvToServicesMap,
   selectEndpointsAsList,
   selectEnvironmentsByOrgAsList,
   (envToServiceMap, enps, envs) => {
@@ -313,16 +280,16 @@ export interface DeployEndpointRow extends DeployEndpoint {
 
 export const selectEndpointsForTable = createSelector(
   selectEndpointsByOrgAsList,
-  selectServiceToAppMap,
-  selectServiceToDbMap,
+  selectServices,
   selectApps,
   selectDatabases,
-  (enps, serviceToAppMap, serviceToDbMap, apps, dbs) =>
+  (enps, servicesMap, apps, dbs) =>
     enps
       .map((enp): DeployEndpointRow => {
-        const appId = serviceToAppMap[enp.serviceId];
-        if (appId) {
-          const app = findAppById(apps, { id: appId });
+        const service = findServiceById(servicesMap, { id: enp.serviceId });
+
+        if (service.appId) {
+          const app = findAppById(apps, { id: service.appId });
           return {
             ...enp,
             resourceType: "app",
@@ -331,9 +298,8 @@ export const selectEndpointsForTable = createSelector(
           };
         }
 
-        const dbId = serviceToDbMap[enp.serviceId];
-        if (dbId) {
-          const app = findDatabaseById(dbs, { id: dbId });
+        if (service.databaseId) {
+          const app = findDatabaseById(dbs, { id: service.databaseId });
           return {
             ...enp,
             resourceType: "database",
@@ -388,7 +354,7 @@ export const selectEndpointsForTableSearch = createSelector(
 
 export const selectEndpointsByEnvIdForTableSearch = createSelector(
   selectEndpointsForTable,
-  selectEnvironmentToServiceMap,
+  selectEnvToServicesMap,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: AppState, props: { envId: string }) => props.envId,
   (enps, envToServiceMap, search, envId): DeployEndpointRow[] => {
@@ -404,13 +370,13 @@ export const selectEndpointsByEnvIdForTableSearch = createSelector(
 
 export const selectEndpointsByAppIdForTableSearch = createSelector(
   selectEndpointsForTable,
-  selectServiceToAppMap,
+  selectServices,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: AppState, props: { appId: string }) => props.appId,
-  (enps, serviceToAppMap, search, appId): DeployEndpointRow[] => {
+  (enps, servicesMap, search, appId): DeployEndpointRow[] => {
     return enps.filter((enp) => {
-      const foundAppId = serviceToAppMap[enp.serviceId];
-      if (foundAppId !== appId) return false;
+      const service = findServiceById(servicesMap, { id: enp.serviceId });
+      if (service.appId !== appId) return false;
       const searchMatch = computeSearchMatch(enp, search);
       return searchMatch;
     });
@@ -454,13 +420,16 @@ export const selectEndpointsByCertId = createSelector(
 
 export const selectAppsByCertId = createSelector(
   selectAppsByEnvId,
+  selectAppToServicesMap,
   selectEndpointsByCertId,
-  (apps, endpoints) =>
-    apps.filter((app) =>
-      app.serviceIds.some((appServiceId) =>
+  (apps, appToServicesMap, endpoints) => {
+    return apps.filter((app) => {
+      const serviceIds = appToServicesMap[app.id] || [];
+      return serviceIds.some((appServiceId) =>
         endpoints.find((endpoint) => endpoint.serviceId === appServiceId),
-      ),
-    ),
+      );
+    });
+  },
 );
 
 export const fetchEndpointsByAppId = api.get<{ appId: string }>(
@@ -535,12 +504,14 @@ interface CreateDefaultEndpoint extends CreateEndpointBase {
 interface CreateManagedEndpoint extends CreateEndpointBase {
   type: "managed";
   domain: string;
+  certId: string;
   cert?: string;
   privKey?: string;
 }
 
 interface CreateCustomEndpoint extends CreateEndpointBase {
   type: "custom";
+  certId: string;
   cert: string;
   privKey: string;
 }
@@ -645,7 +616,9 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
 
     let certId = "";
     if (ctx.payload.type === "managed" || ctx.payload.type === "custom") {
-      if (ctx.payload.cert && ctx.payload.privKey) {
+      certId = ctx.payload.certId;
+
+      if (!certId && ctx.payload.cert && ctx.payload.privKey) {
         const certCtx = yield* call(
           createCertificate.run,
           createCertificate({
@@ -891,12 +864,13 @@ export const getIpAllowlistText = (enp: DeployEndpoint) => {
 };
 
 export const getContainerPort = (
-  enp: DeployEndpoint,
+  enp: Pick<DeployEndpoint, "containerPort">,
   exposedPorts: number[],
 ) => {
   let port = "Unknown";
   if (exposedPorts.length > 0) {
-    const ports = exposedPorts.sort();
+    console.log(exposedPorts);
+    const ports = [...exposedPorts].sort();
     port = `${ports[0]}`;
   }
   return enp.containerPort || `Default (${port})`;

@@ -1,4 +1,3 @@
-import { Banner } from "./banner";
 import { timeAgo } from "@app/date";
 import { selectLatestOpByResourceId } from "@app/deploy";
 import { operationDetailUrl } from "@app/routes";
@@ -12,6 +11,7 @@ import {
 } from "@app/types";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { Banner } from "./banner";
 
 const BannerWrapper = ({
   children,

@@ -1,5 +1,11 @@
 import { createSelector } from "@reduxjs/toolkit";
 
+import {
+  appDetailUrl,
+  databaseDetailUrl,
+  environmentIntegrationsUrl,
+} from "@app/routes";
+import type { AppState, DeployActivityRow } from "@app/types";
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
 import { findEndpointById, getEndpointUrl, selectEndpoints } from "../endpoint";
@@ -12,12 +18,6 @@ import { findLogDrainById, selectLogDrains } from "../log-drain";
 import { findMetricDrainById, selectMetricDrains } from "../metric-drain";
 import { selectOperationById, selectOperationsAsList } from "../operation";
 import { findServiceById, selectServices } from "../service";
-import {
-  appDetailUrl,
-  databaseDetailUrl,
-  environmentIntegrationsUrl,
-} from "@app/routes";
-import type { AppState, DeployActivityRow } from "@app/types";
 
 const selectActivityForTable = createSelector(
   selectOperationsAsList,

@@ -9,12 +9,13 @@ import {
   fetchEnvMetricDrains,
   restartDatabase,
   selectDatabaseById,
+  selectEnvironmentById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
   updateDatabase,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { databaseActivityUrl, operationDetailUrl } from "@app/routes";
+import { environmentDatabasesUrl, operationDetailUrl } from "@app/routes";
 import {
   AppState,
   DeployDatabase,
@@ -43,6 +44,9 @@ import {
 } from "../shared";
 
 const DatabaseDeprovision = ({ database }: DbProps) => {
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: database.environmentId }),
+  );
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
@@ -50,14 +54,14 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
   const loader = useLoader(action);
   const onSubmit = () => {
     dispatch(action);
-    navigate(databaseActivityUrl(database.id));
+    navigate(environmentDatabasesUrl(environment.id));
   };
   const isDisabled = database.handle !== deleteConfirm;
 
   return (
     <form onSubmit={onSubmit}>
-      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2">
-        <IconAlertTriangle variant="sm" color="#AD1A1A" />
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2 mb-4">
+        <IconAlertTriangle color="#AD1A1A" />
         Deprovision Database
       </h1>
 
@@ -83,6 +87,7 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
             disabled={isDisabled}
             isLoading={loader.isLoading}
             className="w-70"
+            type="submit"
           >
             <IconTrash color="#FFF" className="mr-2" />
             Deprovision Database
@@ -135,28 +140,30 @@ const DatabaseNameChange = ({ database }: DbProps) => {
         />
 
         {handle !== database.handle && drains.length ? (
-          <Banner variant="info" showIcon={false} className="mt-4">
+          <Banner variant="info" showIcon={true} className="mt-4">
             <p>
               You must <b>reload the database</b> for the new name to appear in
-              the following log and metric drains, view the docs (
+              the following
               <ExternalLink
                 variant="default"
                 href="https://www.aptible.com/docs/log-drains"
               >
+                {" "}
                 log drains
-              </ExternalLink>
-              ,{" "}
+              </ExternalLink>{" "}
+              and{" "}
               <ExternalLink
                 variant="default"
                 href="https://www.aptible.com/docs/metric-drains"
               >
+                {" "}
                 metric drains
               </ExternalLink>
-              ) to learn more:
+              :
             </p>
-            <ul className="list-disc ml-4 mt-2">
+            <ul className="list-disc ml-4">
               {drains.map((drain) => (
-                <li>{drain.handle}</li>
+                <li key={drain.id}>{drain.handle}</li>
               ))}
             </ul>
           </Banner>
