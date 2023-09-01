@@ -161,11 +161,11 @@ export const EnvironmentCertificatesPage = () => {
     >
       <ResourceListView
         header={
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
             <div className="text-gray-500">
-              {certificates.length} Certificate(s)
+              {certificates.length} Certificate{certificates.length !== 1 && "s"}
             </div>
-            <ButtonSensitive envId={id} onClick={createCert}>
+            <ButtonSensitive className="w-fit" envId={id} onClick={createCert}>
               <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
             </ButtonSensitive>
           </div>
