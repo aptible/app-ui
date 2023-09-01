@@ -8,7 +8,7 @@ import {
   getEndpointUrl,
   selectEndpointById,
 } from "@app/deploy";
-import { operationDetailUrl } from "@app/routes";
+import { endpointsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployEndpoint, ProvisionableStatus } from "@app/types";
 
@@ -108,7 +108,7 @@ export const EndpointDeprovision = ({
   const loader = useLoader(action);
   const [confirm, setConfirm] = useState("");
   useLoaderSuccess(loader, () => {
-    navigate(operationDetailUrl(loader.meta.opId));
+    navigate(endpointsUrl());
   });
   const enp = useSelector((s: AppState) =>
     selectEndpointById(s, { id: endpointId }),

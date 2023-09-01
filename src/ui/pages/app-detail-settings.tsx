@@ -9,12 +9,13 @@ import {
   fetchEnvMetricDrains,
   restartApp,
   selectAppById,
+  selectEnvironmentById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
   updateApp,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { appActivityUrl, operationDetailUrl } from "@app/routes";
+import { environmentAppsUrl, operationDetailUrl } from "@app/routes";
 import {
   AppState,
   DeployApp,
@@ -49,6 +50,9 @@ interface AppProps {
 }
 
 const AppDeprovision = ({ app }: AppProps) => {
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
@@ -57,7 +61,7 @@ const AppDeprovision = ({ app }: AppProps) => {
   const onClick = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     dispatch(action);
-    navigate(appActivityUrl(app.id));
+    navigate(environmentAppsUrl(environment.id));
   };
   const isDisabled = app.handle !== deleteConfirm;
 
