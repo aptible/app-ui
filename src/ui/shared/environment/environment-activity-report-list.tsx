@@ -36,6 +36,7 @@ const ActivityReportListRow = ({
             );
           }}
           variant="primary"
+          size="sm"
         />
       </Td>
     </tr>
