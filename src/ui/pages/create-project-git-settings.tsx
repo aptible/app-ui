@@ -14,7 +14,7 @@ import {
   fetchServiceDefinitionsByAppId,
   selectAppById,
   selectAppConfigById,
-  selectDatabaseImagesAsList,
+  selectDatabaseImagesVisible,
   selectDatabasesByEnvId,
   selectServiceDefinitionsByAppId,
 } from "@app/deploy";
@@ -412,7 +412,7 @@ export const CreateProjectGitSettingsPage = () => {
   );
 
   const imgLoader = useQuery(fetchAllDatabaseImages());
-  const dbImages = useSelector(selectDatabaseImagesAsList);
+  const dbImages = useSelector(selectDatabaseImagesVisible);
 
   useQuery(fetchServiceDefinitionsByAppId({ appId }));
   const serviceDefinitions = useSelector((s: AppState) =>
