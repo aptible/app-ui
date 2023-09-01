@@ -163,7 +163,7 @@ export const DbCreatorSelector = ({
 
   return (
     <div className="mb-4">
-      <h4 className={`${tokens.type.h4} mb-2`}>New Database</h4>
+      <h4 className={`${tokens.type.h4}`}>New Database</h4>
       <p className="text-black-500 mb-2">
         Choose a database type and handle.{" "}
         {showEnv
