@@ -126,7 +126,7 @@ export const CreateDatabasePage = () => {
               type="submit"
               isLoading={loader.isLoading}
             >
-              Save
+              Save Changes
             </ButtonCreate>
 
             <Button
