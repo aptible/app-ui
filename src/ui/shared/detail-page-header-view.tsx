@@ -116,7 +116,7 @@ export function DetailTitleBar({
 
 export function DetailInfoGrid({ children }: { children: ReactNode }) {
   return (
-    <div className="grid md:grid-cols-3 col-span-1 col-rows-1 gap-5">
+    <div className="grid md:grid-cols-3 col-span-1 col-rows-1 gap-4">
       {children}
     </div>
   );
