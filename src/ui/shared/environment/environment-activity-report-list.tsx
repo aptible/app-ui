@@ -46,7 +46,7 @@ export const ActivityReportListByEnvironment = ({
   reports,
 }: { reports: DeployActivityReport[] }) => {
   return (
-    <div className="my-4">
+    <div className="mt-2">
       <p className="text-gray-500 mb-4 text-base">
         {reports.length} Activity Report{reports.length !== 1 && "s"}
         <span className="pl-4">
