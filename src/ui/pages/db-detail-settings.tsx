@@ -136,26 +136,28 @@ const DatabaseNameChange = ({ database }: DbProps) => {
         />
 
         {handle !== database.handle && drains.length ? (
-          <Banner variant="info" showIcon={false} className="mt-4">
+          <Banner variant="info" showIcon={true} className="mt-4">
             <p>
               You must <b>reload the database</b> for the new name to appear in
-              the following log and metric drains, view the docs (
+              the following
               <ExternalLink
                 variant="default"
                 href="https://www.aptible.com/docs/log-drains"
               >
+                {" "}
                 log drains
-              </ExternalLink>
-              ,{" "}
+              </ExternalLink>{" "}
+              and{" "}
               <ExternalLink
                 variant="default"
                 href="https://www.aptible.com/docs/metric-drains"
               >
+                {" "}
                 metric drains
               </ExternalLink>
-              ) to learn more:
+              :
             </p>
-            <ul className="list-disc ml-4 mt-2">
+            <ul className="list-disc ml-4">
               {drains.map((drain) => (
                 <li key={drain.id}>{drain.handle}</li>
               ))}
