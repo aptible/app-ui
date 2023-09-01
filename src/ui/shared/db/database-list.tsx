@@ -165,7 +165,7 @@ const DbsResourceHeaderTitleBar = ({
           title="Databases"
           actions={actions}
           filterBar={
-            <div className="pt-1">
+            <div>
               <InputSearch
                 placeholder="Search databases..."
                 search={search}

@@ -162,7 +162,7 @@ const EnvsResourceHeaderTitleBar = ({
         </ButtonOwner>,
       ]}
       filterBar={
-        <div className="pt-1">
+        <div>
           <InputSearch
             placeholder="Search environments..."
             search={search}

@@ -22,7 +22,7 @@ export function MenuWrappedPage({ children, header }: Props) {
         <ApplicationSidebar />
       </div>
       <div
-        className="flex w-full py-6 px-8"
+        className="flex w-full pt-4 pb-6 px-8"
         style={{ marginLeft: collapsedOffset * 3.5 }}
       >
         <div className="flex flex-col flex-1">

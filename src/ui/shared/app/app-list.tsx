@@ -192,7 +192,7 @@ export const AppsResourceHeaderTitleBar = ({
           title="Apps"
           actions={actions}
           filterBar={
-            <div className="pt-1">
+            <div>
               <InputSearch
                 placeholder="Search apps..."
                 search={search}

@@ -61,8 +61,8 @@ export const DetailPageHeaderView = ({
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div>
+    <div className="flex flex-col">
+      <div className="pb-[11px]">
         {breadcrumbs && (
           <Breadcrumbs crumbs={[...breadcrumbs, { to: null, name: title }]} />
         )}
@@ -75,7 +75,7 @@ export const DetailPageHeaderView = ({
       <div>{detailsBox ? detailsBox : null}</div>
 
       {tabs ? (
-        <div className="pt-1">
+        <div className="pt-4">
           <Tabs tabs={tabs} />
         </div>
       ) : null}
