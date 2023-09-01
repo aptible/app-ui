@@ -136,7 +136,7 @@ function AppPageHeader() {
       <DetailPageHeaderView
         {...loader}
         breadcrumbs={crumbs}
-        title={serviceId ? service.handle : app.handle}
+        title={serviceId ? service.process_type : app.handle}
         detailsBox={<AppHeader app={app} />}
         tabs={tabs}
       />

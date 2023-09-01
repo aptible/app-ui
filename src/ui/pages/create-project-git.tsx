@@ -832,7 +832,7 @@ const VhostRow = ({ vhost }: { vhost: DeployEndpoint }) => {
     <div>
       <div className="gap-1 py-2">
         <p className="font-semibold">{vhost.virtualDomain}</p>
-        <p className="text-gray-500">Service: {service.handle}</p>
+        <p className="text-gray-500">Service: {service.process_type}</p>
         <p className="text-gray-500">
           Command: <Code>{cmd}</Code>
         </p>
