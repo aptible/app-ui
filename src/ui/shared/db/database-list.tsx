@@ -298,6 +298,7 @@ export const DatabaseListByEnvironment = ({
     "Environment",
     "Est. Monthly Cost",
     "Last Operation",
+    "Actions",
   ];
   const actions = [
     <ButtonCreate envId={environmentId} onClick={onCreate}>
@@ -331,7 +332,7 @@ export const DatabaseListByEnvironment = ({
             resourceHeaderType="simple-text"
           />
         }
-        tableHeader={<TableHead headers={headers} />}
+        tableHeader={<TableHead rightAlignedFinalCol headers={headers} />}
         tableBody={
           <>
             {dbs.map((db) => (
@@ -340,6 +341,7 @@ export const DatabaseListByEnvironment = ({
                 <EnvStackCell environmentId={db.environmentId} />
                 <DatabaseCostCell database={db} />
                 <LastOpCell database={db} />
+                <DatabaseActionsCell database={db} />
               </tr>
             ))}
           </>
