@@ -93,7 +93,7 @@ export function DetailTitleBar({
   docsUrl = "",
 }: { title: string; icon?: JSX.Element; docsUrl?: string }) {
   return (
-    <div className="flex justify-between items-center h-10">
+    <div className="flex justify-between items-center">
       <div className="flex items-center">
         {icon ? <div className="w-8 h-8 mr-3">{icon}</div> : null}
         <h1 className="text-lg text-gray-500">{title}</h1>
