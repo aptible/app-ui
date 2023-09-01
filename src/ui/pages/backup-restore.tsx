@@ -94,7 +94,7 @@ export const BackupRestorePage = () => {
   return (
     <MenuWrappedPage>
       <h2 className={tokens.type.h2}>Restore Database from Backup</h2>
-      <Box className="mt-6">
+      <Box className="mt-3">
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div>
             <p>
