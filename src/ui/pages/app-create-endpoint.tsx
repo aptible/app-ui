@@ -384,7 +384,7 @@ export const AppCreateEndpointPage = () => {
             value={port}
             onChange={(e) => setPort(e.currentTarget.value)}
           />
-          <div className="text-sm">
+          <div className="text-base text-black-500 pt-2">
             Choose any port number between 1 and 65535. Your app must be
             listening for HTTP traffic on this port, and it must be exposed by
             your Docker image.
