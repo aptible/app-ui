@@ -51,7 +51,7 @@ export const ResourceGroupBox = ({
           </div>
           <div>
             <h4 className={`break-words ${tokens.type.h4}`}>{handle}</h4>
-            <p className="text-black-500 text-sm">
+            <p className="text-black-500 text-sm pb-1">
               {hasDeployEndpoint(vhost) && vhost.status === "provisioned" ? (
                 <a
                   href={`https://${vhost.virtualDomain}`}
