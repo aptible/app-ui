@@ -18,7 +18,7 @@ import { createProject } from "@app/projects";
 import {
   createProjectGitPushUrl,
   environmentDetailUrl,
-  stackDetailUrl,
+  stackDetailEnvsUrl,
 } from "@app/routes";
 import { AppState } from "@app/types";
 
@@ -93,7 +93,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
             className="mb-4"
           >
             <div id="stack">
-              <Link to={stackDetailUrl(stack.id)} target="_blank">
+              <Link to={stackDetailEnvsUrl(stack.id)} target="_blank">
                 {stack.name}
               </Link>
             </div>
