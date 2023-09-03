@@ -33,7 +33,7 @@ export const EmptyResultView = ({
   return (
     <div className={cn("text-center", className)}>
       <h3 className={cn(tokens.type.h3, "mt-2")}>{title}</h3>
-      <p className={cn(tokens.type["small lighter"], "mt-1")}>{description}</p>
+      <p className={cn(tokens.type["small light"], "mt-1 text-gray-500")}>{description}</p>
       {action && (
         <div className="mt-6 flex justify-center w-full">{action}</div>
       )}
