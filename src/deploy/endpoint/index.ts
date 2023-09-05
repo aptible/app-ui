@@ -771,13 +771,12 @@ const patchEndpoint = api.patch<EndpointUpdateProps>(
 export const updateEndpoint = thunks.create<EndpointUpdateProps>(
   "update-endpoint",
   function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
+    const id = ctx.name;
+    yield* put(setLoaderStart({ id }));
 
     const patchCtx = yield* call(patchEndpoint.run, patchEndpoint(ctx.payload));
     if (!patchCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: patchCtx.json.data.message }),
-      );
+      yield* put(setLoaderError({ id, message: patchCtx.json.data.message }));
       return;
     }
 
@@ -790,13 +789,11 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
     );
 
     if (!opCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
-      );
+      yield* put(setLoaderError({ id, message: opCtx.json.data.message }));
       return;
     }
 
-    ctx.loader = { id: ctx.key, meta: { opId: opCtx.json.data.id } };
+    yield* put(setLoaderSuccess({ id, meta: { opId: opCtx.json.data.id } }));
     yield* next();
   },
 );
@@ -869,7 +866,6 @@ export const getContainerPort = (
 ) => {
   let port = "Unknown";
   if (exposedPorts.length > 0) {
-    console.log(exposedPorts);
     const ports = [...exposedPorts].sort();
     port = `${ports[0]}`;
   }
