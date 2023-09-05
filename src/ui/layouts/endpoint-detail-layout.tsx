@@ -34,6 +34,7 @@ import { setResourceStats } from "@app/search";
 import { useEffect, useMemo } from "react";
 import { usePoller } from "../hooks";
 import {
+  Banner,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -150,15 +151,28 @@ function EndpointAppHeader({
   }
 
   return (
-    <DetailPageHeaderView
-      isError={isError}
-      message={message}
-      meta={meta}
-      tabs={tabs}
-      breadcrumbs={[{ name: app.handle, to: url }]}
-      title={`Endpoint: ${enp.id}`}
-      detailsBox={<EndpointAppHeaderInfo enp={enp} app={app} />}
-    />
+    <>
+      {requiresAcmeSetup(enp) ? (
+        <Banner variant="warning" className="mb-4">
+          Further steps required to setup custom domain!{" "}
+          <Link
+            to={endpointDetailSetupUrl(enp.id)}
+            className="text-white underline"
+          >
+            Finish setup
+          </Link>
+        </Banner>
+      ) : null}
+      <DetailPageHeaderView
+        isError={isError}
+        message={message}
+        meta={meta}
+        tabs={tabs}
+        breadcrumbs={[{ name: app.handle, to: url }]}
+        title={`Endpoint: ${enp.id}`}
+        detailsBox={<EndpointAppHeaderInfo enp={enp} app={app} />}
+      />
+    </>
   );
 }
 

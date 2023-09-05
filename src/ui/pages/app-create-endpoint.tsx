@@ -103,7 +103,9 @@ export const AppCreateEndpointPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
-  const image = useSelector((s: AppState) => selectImageById(s, { id }));
+  const image = useSelector((s: AppState) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
   useQuery(fetchImageById({ id: app.currentImageId }));
 
   const [serviceId, setServiceId] = useState("");
