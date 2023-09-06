@@ -1,4 +1,5 @@
 import {
+  DEFAULT_INSTANCE_CLASS,
   exponentialContainerSizesByProfile,
   fetchApp,
   fetchService,
@@ -20,11 +21,12 @@ import { useValidator } from "../hooks";
 import {
   BannerMessages,
   Box,
-  BoxGroup,
   Button,
   FormGroup,
   Input,
   Label,
+  Select,
+  SelectOption,
 } from "../shared";
 
 const validators = {
@@ -49,7 +51,7 @@ export const AppDetailServiceScalePage = () => {
   useQuery(fetchApp({ id }));
   const [containerCount, setContainerCount] = useState(1);
   const [containerProfileType, setContainerProfileType] =
-    useState<InstanceClass>("m4");
+    useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
   const [containerSize, setContainerSize] = useState<number>(512);
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   useQuery(fetchService({ id: serviceId }));
@@ -78,13 +80,17 @@ export const AppDetailServiceScalePage = () => {
 
   useEffect(() => {
     setContainerCount(service.containerCount);
-    if (service.instanceClass) {
-      setContainerProfileType(service.instanceClass);
-    }
+  }, [service.containerCount]);
+
+  useEffect(() => {
+    setContainerProfileType(service.instanceClass);
+  }, [service.instanceClass]);
+
+  useEffect(() => {
     if (service.containerMemoryLimitMb) {
       setContainerSize(service.containerMemoryLimitMb);
     }
-  }, [app, service]);
+  }, [service.containerMemoryLimitMb]);
 
   const changesExist =
     service.containerCount !== containerCount ||
@@ -113,234 +119,201 @@ export const AppDetailServiceScalePage = () => {
       containerSize,
     );
 
-  const handleContainerProfileSelection = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    e.preventDefault();
-    const value = e.currentTarget.value as InstanceClass;
-    if (!Object.keys(containerProfilesForStack).includes(value)) {
+  const profileOptions = Object.keys(containerProfilesForStack).map(
+    (profileType) => {
+      const profile = getContainerProfileFromType(profileType as InstanceClass);
+      return {
+        label: profile.name,
+        value: profileType,
+      };
+    },
+  );
+
+  const memoryContainerOptions = exponentialContainerSizesByProfile(
+    containerProfileType,
+  ).map((containerSizeOption) => {
+    return {
+      label: `${containerSizeOption / 1024} GB`,
+      value: `${containerSizeOption}`,
+    };
+  });
+
+  const changeContainerProfile = (opt: SelectOption) => {
+    const instClass = opt.value as InstanceClass;
+    const profile = containerProfilesForStack[instClass];
+    if (!profile) {
       return;
     }
-    setContainerProfileType(value);
+
+    if (containerSize < profile.minimumContainerSize) {
+      setContainerSize(profile.minimumContainerSize);
+    }
+    setContainerProfileType(instClass);
   };
 
   return (
-    <div>
-      <BoxGroup>
-        <Box>
-          <form onSubmit={onSubmitForm}>
-            <div className="mb-4">
-              <div className="mb-4">
-                <FormGroup
-                  splitWidthInputs
-                  description="Optimize container performance with a custom profile."
-                  label="Container Profile"
-                  htmlFor="container-profile"
-                >
-                  <div className="flex justify-between items-center mb-4 w-full">
-                    <select
-                      disabled={
-                        Object.keys(containerProfilesForStack).length <= 1
-                      }
-                      value={containerProfileType}
-                      className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                      placeholder="select"
-                      onChange={handleContainerProfileSelection}
-                    >
-                      {Object.keys(containerProfilesForStack).map(
-                        (containerProfileType) => (
-                          <option
-                            key={containerProfileType}
-                            value={containerProfileType}
-                          >
-                            {
-                              getContainerProfileFromType(
-                                containerProfileType as InstanceClass,
-                              ).name
-                            }
-                          </option>
-                        ),
-                      )}
-                    </select>
-                  </div>
-                </FormGroup>
-              </div>
-              <div className="mb-4">
-                <FormGroup
-                  splitWidthInputs
-                  description={`Horizontally scale this service by increasing the number of containers. A count of 2 or more will provide High Availability. 32 max count for ${
-                    getContainerProfileFromType(containerProfileType).name
-                  } profiles.`}
-                  label="Number of Containers"
-                  htmlFor="number-containers"
-                  feedbackMessage={errors.containerCount}
-                  feedbackVariant={errors.containerCount ? "danger" : "info"}
-                >
-                  <div className="flex justify-between items-center mb-4 w-full">
-                    <Input
-                      className="flex w-full"
-                      name="number-containers"
-                      type="number"
-                      value={containerCount}
-                      min="0"
-                      max="32"
-                      onChange={(e) =>
-                        setContainerCount(
-                          parseInt(e.currentTarget.value || "0", 10),
-                        )
-                      }
-                      data-testid="number-containers"
-                      id="number-containers"
-                    />
-                  </div>
-                </FormGroup>
-              </div>
-              <div className="mb-4">
-                <FormGroup
-                  splitWidthInputs
-                  description="Specify the memory you wish to allow per container."
-                  label="Memory per Container"
-                  htmlFor="memory-container"
-                >
-                  <div className="flex justify-between items-center mb-4 w-full">
-                    <select
-                      value={containerSize}
-                      name="memory-container"
-                      className="mb-2 w-full appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                      placeholder="select"
-                      onChange={(e) => {
-                        e.preventDefault();
-                        setContainerSize(parseInt(e.target.value));
-                      }}
-                      data-testid="memory-container"
-                      id="memory-container"
-                    >
-                      {exponentialContainerSizesByProfile(
-                        containerProfileType,
-                      ).map((containerSizeOption) => (
-                        <option
-                          key={containerSizeOption}
-                          value={containerSizeOption}
-                        >
-                          {containerSizeOption / 1024} GB
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </FormGroup>
-              </div>
-              <div className="mb-4">
-                <FormGroup
-                  splitWidthInputs
-                  description="CPU Share is determined by the selected Memory Limit and Container Profile."
-                  label="CPU Share per Container"
-                  htmlFor="cpu-share"
-                >
-                  <div className="flex justify-between items-center mb-4 w-full">
-                    <Input
-                      className="flex disabled w-full"
-                      name="number-containers"
-                      type="text"
-                      disabled
-                      value={currentContainerProfile.cpuShare * containerSize}
-                      data-testid="number-containers"
-                      id="number-containers"
-                    />
-                  </div>
-                </FormGroup>
-              </div>
+    <Box>
+      <form onSubmit={onSubmitForm}>
+        <div className="mb-4">
+          <FormGroup
+            splitWidthInputs
+            description="Optimize container performance with a custom profile."
+            label="Container Profile"
+            htmlFor="container-profile"
+          >
+            <Select
+              id="container-profile"
+              ariaLabel="container-profile"
+              disabled={Object.keys(containerProfilesForStack).length <= 1}
+              value={containerProfileType}
+              onSelect={changeContainerProfile}
+              options={profileOptions}
+            />
+          </FormGroup>
+          <FormGroup
+            splitWidthInputs
+            description={`Horizontally scale this service by increasing the number of containers. A count of 2 or more will provide High Availability. 32 max count for ${
+              getContainerProfileFromType(containerProfileType).name
+            } profiles.`}
+            label="Number of Containers"
+            htmlFor="number-containers"
+            feedbackMessage={errors.containerCount}
+            feedbackVariant={errors.containerCount ? "danger" : "info"}
+          >
+            <Input
+              id="number-containers"
+              name="number-containers"
+              type="number"
+              value={containerCount}
+              min="0"
+              max="32"
+              onChange={(e) =>
+                setContainerCount(parseInt(e.currentTarget.value || "0", 10))
+              }
+            />
+          </FormGroup>
+          <FormGroup
+            splitWidthInputs
+            description="Specify the memory you wish to allow per container."
+            label="Memory per Container"
+            htmlFor="memory-container"
+          >
+            <Select
+              id="memory-container"
+              value={containerSize.toString()}
+              onSelect={(opt) => setContainerSize(parseInt(opt.value))}
+              options={memoryContainerOptions}
+            />
+          </FormGroup>
+          <FormGroup
+            splitWidthInputs
+            description="CPU Share is determined by the selected Memory Limit and Container Profile."
+            label="CPU Share per Container"
+            htmlFor="cpu-share"
+          >
+            <Input
+              id="number-containers"
+              name="number-containers"
+              className="disabled"
+              type="text"
+              disabled
+              value={requestedContainerProfile.cpuShare * containerSize}
+            />
+          </FormGroup>
+        </div>
+
+        <div className="my-4 flex justify-between">
+          <div>
+            <Label>Pricing</Label>
+            <p className="text-gray-500">
+              {service.containerCount} container
+              {service.containerCount > 1 ? "s" : ""} x{" "}
+              {service.containerMemoryLimitMb / 1024} GB x $
+              {currentPricePerHour} per GB/hour
+            </p>
+          </div>
+          <div>
+            <p className="text-gray-500">Current Estimated Monthly Cost</p>
+            <p className="text-right text-lg text-green-400">${currentPrice}</p>
+          </div>
+        </div>
+
+        <hr />
+
+        {changesExist ? (
+          <p className="mt-4 font-normal text-gray-500">Pending Changes</p>
+        ) : null}
+        {containerProfileType !== service.instanceClass ? (
+          <div className="my-4">
+            <div>Container Profile</div>
+            <p className="text-gray-500">
+              Changed from {currentContainerProfile.name} to{" "}
+              {requestedContainerProfile.name}
+            </p>
+          </div>
+        ) : null}
+        {containerCount !== service.containerCount ? (
+          <div className="my-4">
+            <div>Container Count</div>
+            <p className="text-gray-500">
+              Changed from {service.containerCount} to {containerCount}
+            </p>
+          </div>
+        ) : null}
+        {containerSize !== service.containerMemoryLimitMb ? (
+          <div className="my-4">
+            <div>Container Size</div>
+            <p className="text-gray-500" id="container-size-txt">
+              Changed from {service.containerMemoryLimitMb / 1024} GB to{" "}
+              {containerSize / 1024} GB
+            </p>
+          </div>
+        ) : null}
+        {changesExist ? (
+          <div className="my-4 flex justify-between">
+            <div>
+              <div>Pricing</div>
+              <p className="text-gray-500">
+                {containerCount} container
+                {containerCount > 1 || containerCount === 0 ? "s" : ""} x{" "}
+                {containerSize / 1024} GB x ${estimatedPricePerHour} per GB/hour
+              </p>
             </div>
-            <div className="my-4 flex justify-between">
-              <div>
-                <Label>Pricing</Label>
-                <p className="text-gray-500">
-                  {service.containerCount} container
-                  {service.containerCount > 1 ? "s" : ""} x{" "}
-                  {service.containerMemoryLimitMb / 1024} GB x $
-                  {currentPricePerHour} per GB/hour
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-500">Current Estimated Monthly Cost</p>
-                <p className="text-right text-lg text-green-400">
-                  ${currentPrice}
-                </p>
-              </div>
+            <div>
+              <p className="text-gray-500">New Estimated Monthly Cost</p>
+              <p className="text-right text-lg text-green-400">
+                ${estimatedPrice}
+              </p>
             </div>
-            <hr />
-            {changesExist ? (
-              <p className="mt-4 font-normal text-gray-500">Pending Changes</p>
-            ) : null}
-            {containerProfileType !== service.instanceClass ? (
-              <div className="my-4">
-                <Label>Container Profile</Label>
-                <p className="text-gray-500">
-                  Changed from {currentContainerProfile.name} to{" "}
-                  {requestedContainerProfile.name}
-                </p>
-              </div>
-            ) : null}
-            {containerCount !== service.containerCount ? (
-              <div className="my-4">
-                <Label>Container Count</Label>
-                <p className="text-gray-500">
-                  Changed from {service.containerCount} to {containerCount}
-                </p>
-              </div>
-            ) : null}
-            {containerSize !== service.containerMemoryLimitMb ? (
-              <div className="my-4">
-                <Label>Container Size</Label>
-                <p className="text-gray-500">
-                  Changed from {service.containerMemoryLimitMb / 1024} GB to{" "}
-                  {containerSize / 1024} GB
-                </p>
-              </div>
-            ) : null}
-            {changesExist ? (
-              <div className="my-4 flex justify-between">
-                <div>
-                  <Label>Pricing</Label>
-                  <p className="text-gray-500">
-                    {containerCount} container
-                    {containerCount > 1 || containerCount === 0 ? "s" : ""} x{" "}
-                    {containerSize / 1024} GB x ${estimatedPricePerHour} per
-                    GB/hour
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-500">New Estimated Monthly Cost</p>
-                  <p className="text-right text-lg text-green-400">
-                    ${estimatedPrice}
-                  </p>
-                </div>
-              </div>
-            ) : null}
-            <BannerMessages {...loader} />
-            <div className="flex mt-4">
-              <Button
-                className="w-40 flex font-semibold"
-                type="submit"
-                disabled={!changesExist}
-              >
-                Save Changes
-              </Button>
-              {changesExist ? (
-                <Button
-                  className="w-40 ml-2 flex font-semibold"
-                  onClick={() => {
-                    setContainerSize(service.containerMemoryLimitMb);
-                    setContainerCount(service.containerCount);
-                  }}
-                  variant="white"
-                >
-                  Cancel
-                </Button>
-              ) : null}
-            </div>
-          </form>
-        </Box>
-      </BoxGroup>
-    </div>
+          </div>
+        ) : null}
+
+        <BannerMessages {...loader} />
+
+        <div className="flex mt-4">
+          <Button
+            className="w-40 flex font-semibold"
+            type="submit"
+            disabled={!changesExist}
+          >
+            Save Changes
+          </Button>
+
+          {changesExist ? (
+            <Button
+              className="w-40 ml-2 flex font-semibold"
+              onClick={() => {
+                setContainerProfileType(service.instanceClass);
+                setContainerSize(service.containerMemoryLimitMb);
+                setContainerCount(service.containerCount);
+              }}
+              variant="white"
+            >
+              Cancel
+            </Button>
+          ) : null}
+        </div>
+      </form>
+    </Box>
   );
 };
