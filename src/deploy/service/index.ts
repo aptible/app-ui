@@ -63,7 +63,7 @@ export const defaultServiceResponse = (
     command: "",
     container_count: 0,
     container_memory_limit_mb: 0,
-    instance_class: "m4",
+    instance_class: DEFAULT_INSTANCE_CLASS,
     created_at: now,
     updated_at: now,
     _links: {
