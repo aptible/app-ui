@@ -5,12 +5,10 @@ import {
   selectFirstEndpointByAppId,
   selectLatestDeployOp,
 } from "@app/deploy";
-import { selectLegacyDashboardUrl } from "@app/env";
 import { environmentAppsUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { ExternalLink } from "./external-link";
 import { IconGitBranch, IconGlobe } from "./icons";
 import { Pill } from "./pill";
 import { StatusBox } from "./status-box";
