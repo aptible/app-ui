@@ -2,7 +2,6 @@ import {
   PaginateProps,
   api,
   cacheShortTimer,
-  cacheTimer,
   combinePages,
   thunks,
 } from "@app/api";
@@ -21,7 +20,7 @@ import type {
 } from "@app/types";
 
 import { createSelector } from "@reduxjs/toolkit";
-import { poll } from "saga-query";
+import { leading, poll } from "saga-query";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { DeployOperationResponse } from "../operation";
@@ -241,11 +240,10 @@ export const selectAppToServicesMap = createSelector(
 
 export const fetchService = api.get<{ id: string }>("/services/:id");
 
-export const fetchServices = api.get<PaginateProps>("/services?page=:page", {
-  saga: cacheTimer(),
-});
+export const fetchServices = api.get<PaginateProps>("/services?page=:page&per_page=5000");
 export const fetchAllServices = thunks.create(
   "fetch-all-services",
+  { saga: leading },
   combinePages(fetchServices),
 );
 export const fetchEnvironmentServices = api.get<{ id: string }>(

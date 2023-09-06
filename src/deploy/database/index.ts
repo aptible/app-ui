@@ -3,6 +3,7 @@ import {
   Payload,
   all,
   call,
+  leading,
   poll,
   put,
   select,
@@ -343,11 +344,10 @@ export const selectDatabasesCountByStack = createSelector(
   (dbs) => dbs.length,
 );
 
-export const fetchDatabases = api.get<PaginateProps>("/databases?page=:page", {
-  saga: cacheTimer(),
-});
+export const fetchDatabases = api.get<PaginateProps>("/databases?page=:page&per_page=5000&no_embed=true");
 export const fetchAllDatabases = thunks.create(
   "fetch-all-databases",
+  { saga: leading },
   combinePages(fetchDatabases),
 );
 export const fetchDatabase = api.get<{ id: string }, DeployDatabaseResponse>(

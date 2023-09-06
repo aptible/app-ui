@@ -10,6 +10,7 @@ import {
 } from "@app/api";
 import {
   call,
+  createThrottle,
   poll,
   put,
   setLoaderError,
@@ -455,11 +456,10 @@ export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
   saga: cacheShortTimer(),
 });
 
-export const fetchEndpoints = api.get<PaginateProps>("/vhosts?page=:page", {
-  saga: cacheTimer(),
-});
+export const fetchEndpoints = api.get<PaginateProps>("/vhosts?page=:page&per_page=5000");
 export const fetchAllEndpoints = thunks.create(
   "fetch-all-endpoints",
+  { saga: createThrottle(5 * 1000) },
   combinePages(fetchEndpoints),
 );
 
