@@ -270,20 +270,20 @@ export const DatabaseScalePage = () => {
             </p>
           </div>
         ) : null}
+        {diskValue !== disk.size ? (
+          <div className="my-3">
+            <div className="text-md text-gray-900">Disk Size</div>
+            <p className="text-black-500">
+              Changed from {disk.size} GB to {diskValue} GB
+            </p>
+          </div>
+        ) : null}
         {containerSize !== service.containerMemoryLimitMb ? (
           <div className="my-3">
             <div className="text-md text-gray-900">Container Size</div>
             <p className="text-black-500">
               Changed from {service.containerMemoryLimitMb / 1024} GB to{" "}
               {containerSize / 1024} GB
-            </p>
-          </div>
-        ) : null}
-        {diskValue !== disk.size ? (
-          <div className="my-3">
-            <div className="text-md text-gray-900">Disk Size</div>
-            <p className="text-black-500">
-              Changed from {disk.size} GB to {diskValue} GB
             </p>
           </div>
         ) : null}
