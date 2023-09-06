@@ -246,7 +246,7 @@ export const AppDetailServiceScalePage = () => {
           </div>
         ) : null}
         {containerProfileType !== service.instanceClass ? (
-          <div className="my-4">
+          <div className="my-3">
             <div className="text-md text-gray-900">Container Profile</div>
             <p className="text-black-500">
               Changed from {currentContainerProfile.name} to{" "}
@@ -255,7 +255,7 @@ export const AppDetailServiceScalePage = () => {
           </div>
         ) : null}
         {containerCount !== service.containerCount ? (
-          <div className="my-4">
+          <div className="my-3">
             <div className="text-md text-gray-900">Container Count</div>
             <p className="text-black-500">
               Changed from {service.containerCount} to {containerCount}
@@ -263,7 +263,7 @@ export const AppDetailServiceScalePage = () => {
           </div>
         ) : null}
         {containerSize !== service.containerMemoryLimitMb ? (
-          <div className="my-4">
+          <div className="my-3">
             <div className="text-md text-gray-900">Container Size</div>
             <p className="text-black-500" id="container-size-txt">
               Changed from {service.containerMemoryLimitMb / 1024} GB to{" "}
@@ -272,7 +272,7 @@ export const AppDetailServiceScalePage = () => {
           </div>
         ) : null}
         {changesExist ? (
-          <div className="my-4 flex justify-between">
+          <div className="my-3 flex justify-between">
             <div>
               <div className="text-md text-gray-900">Pricing</div>
               <p className="text-black-500">

@@ -262,7 +262,7 @@ export const DatabaseScalePage = () => {
           </div>
         ) : null}
         {containerProfileType !== service.instanceClass ? (
-          <div className="my-4">
+          <div className="my-3">
             <div className="text-md text-gray-900">Container Profile</div>
             <p className="text-black-500">
               Changed from {currentContainerProfile.name} to{" "}
@@ -271,7 +271,7 @@ export const DatabaseScalePage = () => {
           </div>
         ) : null}
         {containerSize !== service.containerMemoryLimitMb ? (
-          <div className="my-4">
+          <div className="my-3">
             <div className="text-md text-gray-900">Container Size</div>
             <p className="text-black-500">
               Changed from {service.containerMemoryLimitMb / 1024} GB to{" "}
@@ -280,7 +280,7 @@ export const DatabaseScalePage = () => {
           </div>
         ) : null}
         {diskValue !== disk.size ? (
-          <div className="my-4">
+          <div className="my-3">
             <div className="text-md text-gray-900">Disk Size</div>
             <p className="text-black-500">
               Changed from {disk.size} GB to {diskValue} GB
@@ -288,7 +288,7 @@ export const DatabaseScalePage = () => {
           </div>
         ) : null}
         {changesExist ? (
-          <div className="my-4 flex justify-between">
+          <div className="my-3 flex justify-between">
             <div>
               <div className="text-md text-gray-900">Pricing</div>
               <p className="text-black-500">
