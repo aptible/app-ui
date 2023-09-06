@@ -155,7 +155,7 @@ export const DbCreatorSelector = ({
   const imgOptions = [
     { value: "", label: "Choose a Database" },
     ...images.map((img) => ({
-      label: `${img.type} v${img.version}`,
+      label: img.description,
       value: img.id,
     })),
   ];

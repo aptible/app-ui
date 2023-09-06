@@ -95,11 +95,9 @@ export const selectDatabaseImagesAsList = createSelector(
   selectors.selectTableAsList,
   (imgs) =>
     imgs.sort((a, b) => {
-      const type = a.type.localeCompare(b.type);
-      if (type !== 0) {
-        return type;
-      }
-      return a.version.localeCompare(b.version);
+      return b.description.localeCompare(a.description, "en", {
+        numeric: true,
+      });
     }),
 );
 export const selectDatabaseImagesVisible = createSelector(
