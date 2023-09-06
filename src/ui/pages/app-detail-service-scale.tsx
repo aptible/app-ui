@@ -241,7 +241,9 @@ export const AppDetailServiceScalePage = () => {
         <hr />
 
         {changesExist ? (
-          <p className="text-md font-semibold text-gray-900 mt-4">Pending Changes</p>
+          <div className="text-md font-semibold text-gray-900 mt-4">
+            Pending Changes
+          </div>
         ) : null}
         {containerProfileType !== service.instanceClass ? (
           <div className="my-4">

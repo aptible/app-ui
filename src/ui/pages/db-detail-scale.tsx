@@ -257,7 +257,9 @@ export const DatabaseScalePage = () => {
         <hr />
 
         {changesExist ? (
-          <div className="text-md font-semibold text-gray-900 mt-4">Pending Changes</div>
+          <div className="text-md font-semibold text-gray-900 mt-4">
+            Pending Changes
+          </div>
         ) : null}
         {containerProfileType !== service.instanceClass ? (
           <div className="my-4">
