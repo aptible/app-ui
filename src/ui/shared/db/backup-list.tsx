@@ -55,6 +55,7 @@ const DeleteBackup = ({ envId, id }: { envId: string; id: string }) => {
       size="sm"
       onClick={onClick}
       isLoading={loader.isLoading}
+      requireConfirm
     >
       Delete
     </ButtonDestroy>
