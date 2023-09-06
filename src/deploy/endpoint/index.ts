@@ -849,11 +849,11 @@ export const checkDns = thunks.create<{ from: string; to: string }>(
 );
 
 export const getPlacement = (enp: DeployEndpoint) => {
-  if (enp.externalHost) {
-    return "Public";
+  if (enp.internal) {
+    return "Private";
   }
 
-  return "Private";
+  return "Public";
 };
 
 export const getIpAllowlistText = (enp: DeployEndpoint) => {
