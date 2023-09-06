@@ -103,7 +103,9 @@ export const AppCreateEndpointPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
-  const image = useSelector((s: AppState) => selectImageById(s, { id }));
+  const image = useSelector((s: AppState) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
   useQuery(fetchImageById({ id: app.currentImageId }));
 
   const [serviceId, setServiceId] = useState("");
@@ -352,7 +354,7 @@ export const AppCreateEndpointPage = () => {
   return (
     <Box>
       <h1 className="text-lg text-black font-semibold">Create Endpoint</h1>
-      <div className="mt-2 mb-4 text-black-500">
+      <div className="mt-2 mb-4 text-black-900">
         This Endpoint will accept HTTP and HTTPS traffic and route it to your
         app over HTTP.
       </div>
@@ -384,7 +386,7 @@ export const AppCreateEndpointPage = () => {
             value={port}
             onChange={(e) => setPort(e.currentTarget.value)}
           />
-          <div className="text-sm">
+          <div className="text-base text-black-500 pt-2">
             Choose any port number between 1 and 65535. Your app must be
             listening for HTTP traffic on this port, and it must be exposed by
             your Docker image.

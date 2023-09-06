@@ -44,18 +44,18 @@ export const ResourceGroupBox = ({
   return (
     <StatusBox>
       <div className="border-b border-black-100 pb-4 ">
-        <div className="flex items-center">
+        <div className="flex items-start">
           <div>
             <img
               alt="default project logo"
               src="/resource-types/logo-app.png"
               style={{ width: 32, height: 32 }}
-              className="mr-3"
+              className="mr-3 max-w-none mt-2"
             />
           </div>
           <div>
-            <h4 className={tokens.type.h4}>{handle}</h4>
-            <p className="text-black-500 text-sm">
+            <h4 className={`break-words ${tokens.type.h4}`}>{handle}</h4>
+            <p className="text-black-500 text-sm pb-1">
               {hasDeployEndpoint(vhost) && vhost.status === "provisioned" ? (
                 <a
                   href={`https://${vhost.virtualDomain}`}

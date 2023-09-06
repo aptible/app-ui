@@ -69,7 +69,7 @@ export const defaultDeployDatabaseImage = (
     dockerRepo: "",
     type: "",
     version: "",
-    visible: false,
+    visible: true,
     createdAt: now,
     updatedAt: now,
     ...db,
@@ -95,12 +95,14 @@ export const selectDatabaseImagesAsList = createSelector(
   selectors.selectTableAsList,
   (imgs) =>
     imgs.sort((a, b) => {
-      const type = a.type.localeCompare(b.type);
-      if (type !== 0) {
-        return type;
-      }
-      return a.version.localeCompare(b.version);
+      return b.description.localeCompare(a.description, "en", {
+        numeric: true,
+      });
     }),
+);
+export const selectDatabaseImagesVisible = createSelector(
+  selectDatabaseImagesAsList,
+  (images) => images.filter((img) => img.visible),
 );
 
 export const fetchDatabaseImages = api.get<PaginateProps>(

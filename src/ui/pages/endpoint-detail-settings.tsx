@@ -74,8 +74,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const isDisabled = ipsSame && portSame;
   const curPortText = getContainerPort(enp, exposedPorts);
 
-  const action = updateEndpoint(data);
-  const loader = useLoader(action);
+  const loader = useLoader(updateEndpoint);
   const [errors, validate] = useValidator<
     EndpointUpdateProps,
     typeof validators
@@ -84,7 +83,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     e.preventDefault();
     if (isDisabled) return;
     if (!validate(data)) return;
-    dispatch(action);
+    dispatch(updateEndpoint(data));
   };
 
   useLoaderSuccess(loader, () => {

@@ -290,12 +290,14 @@ export const testPostgresDatabaseImage = defaultDatabaseImageResponse({
   id: createId(),
   type: "postgres",
   version: "14",
+  description: "postgres v14",
 });
 
 export const testRedisDatabaseImage = defaultDatabaseImageResponse({
   id: createId(),
   type: "redis",
   version: "5",
+  description: "redis v5",
 });
 
 export const testDatabaseId = createId();

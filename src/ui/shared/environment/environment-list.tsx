@@ -11,6 +11,7 @@ import { useQuery } from "@app/fx";
 import {
   createProjectGitUrl,
   environmentAppsUrl,
+  environmentDatabasesUrl,
   stackDetailEnvsUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
@@ -62,7 +63,11 @@ const EnvironmentDatabasesCell = ({ environment }: EnvironmentCellProps) => {
   );
   return (
     <Td className="center items-center justify-center">
-      <div className="text-center">{dbs.length}</div>
+      <Link to={environmentDatabasesUrl(environment.id)}>
+        <div className={`${tokens.type["table link"]} text-center`}>
+          {dbs.length}
+        </div>
+      </Link>
     </Td>
   );
 };
@@ -73,7 +78,11 @@ const EnvironmentAppsCell = ({ environment }: EnvironmentCellProps) => {
   );
   return (
     <Td className="center items-center justify-center">
-      <div className="text-center">{apps.length}</div>
+      <Link to={environmentAppsUrl(environment.id)}>
+        <div className={`${tokens.type["table link"]} text-center`}>
+          {apps.length}
+        </div>
+      </Link>
     </Td>
   );
 };

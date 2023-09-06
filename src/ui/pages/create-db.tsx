@@ -7,7 +7,7 @@ import {
   DbCreatorProps,
   fetchAllDatabaseImages,
   provisionDatabaseList,
-  selectDatabaseImagesAsList,
+  selectDatabaseImagesVisible,
   selectEnvironmentById,
 } from "@app/deploy";
 import { environmentActivityUrl, environmentDatabasesUrl } from "@app/routes";
@@ -56,7 +56,7 @@ export const CreateDatabasePage = () => {
     a.id.localeCompare(b.id),
   );
   const imgLoader = useQuery(fetchAllDatabaseImages());
-  const dbImages = useSelector(selectDatabaseImagesAsList);
+  const dbImages = useSelector(selectDatabaseImagesVisible);
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
@@ -126,7 +126,7 @@ export const CreateDatabasePage = () => {
               type="submit"
               isLoading={loader.isLoading}
             >
-              Save
+              Save Changes
             </ButtonCreate>
 
             <Button

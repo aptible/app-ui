@@ -241,21 +241,21 @@ export const AppSettingsPage = () => {
         </ButtonLinkExternal>
         <h1 className="text-lg text-gray-500">How To Deploy Changes</h1>
         <div className="mt-4">
-          <h3 className="text-base font-semibold">Clone project code</h3>
+          <h3 className="text-md font-semibold">Clone project code</h3>
           <PreCode
             allowCopy
             segments={listToInvertedTextColor(["git", "clone", app.gitRepo])}
           />
         </div>
         <div className="mt-4">
-          <h3 className="text-base font-semibold">Find project code</h3>
+          <h3 className="text-md font-semibold">Find project code</h3>
           <PreCode
             allowCopy
             segments={listToInvertedTextColor(["cd", app.handle])}
           />
         </div>
         <div className="mt-4">
-          <h3 className="text-base font-semibold">Deploy code changes</h3>
+          <h3 className="text-md font-semibold">Deploy code changes</h3>
           <PreCode
             allowCopy
             segments={listToInvertedTextColor(["git", "push", app.gitRepo])}
