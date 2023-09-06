@@ -101,8 +101,9 @@ export const AppDetailServiceScalePage = () => {
     navigate(operationDetailUrl(loader.meta.opId));
   });
 
-  const currentContainerProfile =
-    getContainerProfileFromType(containerProfileType);
+  const currentContainerProfile = getContainerProfileFromType(
+    service.instanceClass,
+  );
   const requestedContainerProfile =
     getContainerProfileFromType(containerProfileType);
   const { pricePerHour: currentPricePerHour, pricePerMonth: currentPrice } =
@@ -216,7 +217,7 @@ export const AppDetailServiceScalePage = () => {
               className="disabled"
               type="text"
               disabled
-              value={currentContainerProfile.cpuShare * containerSize}
+              value={requestedContainerProfile.cpuShare * containerSize}
             />
           </FormGroup>
         </div>
