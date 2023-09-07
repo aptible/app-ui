@@ -12,6 +12,7 @@ import {
   call,
   poll,
   put,
+  select,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
@@ -31,6 +32,7 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 
+import { selectEnv } from "@app/env";
 import { findAppById, selectApps, selectAppsByEnvId } from "../app";
 import { createCertificate } from "../certificate";
 import {
@@ -524,6 +526,7 @@ export type CreateEndpointProps =
 export const createEndpoint = api.post<
   CreateEndpointProps & { certId: string }
 >("/services/:serviceId/vhosts", function* (ctx, next) {
+  const env = yield* select(selectEnv);
   const data: Record<string, any> = {
     platform: "alb",
     type: "http_proxy_protocol",
@@ -532,7 +535,9 @@ export const createEndpoint = api.post<
     internal: ctx.payload.internal,
     ip_whitelist: ctx.payload.ipAllowlist,
     container_port: ctx.payload.containerPort,
-    certificate_id: ctx.payload.certId,
+    certificate: ctx.payload.certId
+      ? `${env.apiUrl}/certificates/${ctx.payload.certId}`
+      : "",
   };
 
   if (ctx.payload.type === "managed") {
