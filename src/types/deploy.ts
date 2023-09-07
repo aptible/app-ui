@@ -259,6 +259,7 @@ export interface DeployDatabase extends Provisionable, Timestamps {
   id: string;
   environmentId: string;
   provisioned: boolean;
+  enableBackups: boolean;
   type: string;
   diskId: string;
   serviceId: string;

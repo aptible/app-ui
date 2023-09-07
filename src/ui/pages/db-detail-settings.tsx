@@ -104,11 +104,13 @@ interface DbProps {
 
 const DatabaseNameChange = ({ database }: DbProps) => {
   const dispatch = useDispatch();
+  const [enableBackups, setEnableBackups] = useState<boolean>(true);
   const [handle, setHandle] = useState<string>("");
   useEffect(() => {
     setHandle(database.handle);
+    setEnableBackups(database.enableBackups);
   }, [database.id]);
-  const action = updateDatabase({ id: database.id, handle });
+  const action = updateDatabase({ id: database.id, handle, enable_backups: enableBackups });
   const loader = useLoader(action);
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -170,13 +172,27 @@ const DatabaseNameChange = ({ database }: DbProps) => {
         ) : null}
       </FormGroup>
 
+      <FormGroup label="Database Backups" htmlFor="input-backup">
+        <select
+          name="database-backup"
+          value={enableBackups.toString()}
+          onChange={(e) => setEnableBackups(e.currentTarget.value === 'true')}
+          id="input-backup"
+        >
+          <option value="true">Enable Backups (default): This database will be backed up according to the
+            Environment's Backup Retention Policy</option>
+          <option value="false">Disable Backups: No new backups will be made for this database, overriding
+            the Environment's Backup Retention Policy</option>
+        </select>
+      </FormGroup>
+
       <Group variant="horizontal" size="sm" className="mt-4">
         <ButtonCreate
           envId={database.environmentId}
           className="w-40 semibold"
           type="submit"
           isLoading={loader.isLoading}
-          disabled={handle === database.handle}
+          disabled={handle === database.handle && enableBackups === database.enableBackups}
         >
           Save Changes
         </ButtonCreate>
