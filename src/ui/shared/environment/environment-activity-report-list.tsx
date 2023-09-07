@@ -26,7 +26,7 @@ const ActivityReportListRow = ({
       </Td>
       <Td className="flex gap-2 justify-end mr-4">
         <ButtonIcon
-          icon={<IconDownload className="-mr-2" variant="sm" />}
+          icon={<IconDownload className="-mr-1" variant="sm" />}
           onClick={() => {
             dispatch(
               downloadActivityReports({
@@ -37,7 +37,9 @@ const ActivityReportListRow = ({
           }}
           variant="primary"
           size="sm"
-        />
+        >
+          CSV
+        </ButtonIcon>
       </Td>
     </tr>
   );
