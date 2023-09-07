@@ -110,7 +110,11 @@ const DatabaseNameChange = ({ database }: DbProps) => {
     setHandle(database.handle);
     setEnableBackups(database.enableBackups);
   }, [database.id]);
-  const action = updateDatabase({ id: database.id, handle, enable_backups: enableBackups });
+  const action = updateDatabase({
+    id: database.id,
+    handle,
+    enable_backups: enableBackups,
+  });
   const loader = useLoader(action);
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -176,13 +180,17 @@ const DatabaseNameChange = ({ database }: DbProps) => {
         <select
           name="database-backup"
           value={enableBackups.toString()}
-          onChange={(e) => setEnableBackups(e.currentTarget.value === 'true')}
+          onChange={(e) => setEnableBackups(e.currentTarget.value === "true")}
           id="input-backup"
         >
-          <option value="true">Enable Backups (default): This database will be backed up according to the
-            Environment's Backup Retention Policy</option>
-          <option value="false">Disable Backups: No new backups will be made for this database, overriding
-            the Environment's Backup Retention Policy</option>
+          <option value="true">
+            Enable Backups (default): This database will be backed up according
+            to the Environment's Backup Retention Policy
+          </option>
+          <option value="false">
+            Disable Backups: No new backups will be made for this database,
+            overriding the Environment's Backup Retention Policy
+          </option>
         </select>
       </FormGroup>
 
@@ -192,7 +200,10 @@ const DatabaseNameChange = ({ database }: DbProps) => {
           className="w-40 semibold"
           type="submit"
           isLoading={loader.isLoading}
-          disabled={handle === database.handle && enableBackups === database.enableBackups}
+          disabled={
+            handle === database.handle &&
+            enableBackups === database.enableBackups
+          }
         >
           Save Changes
         </ButtonCreate>

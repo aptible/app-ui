@@ -224,6 +224,7 @@ export const DatabaseCreatorForm = ({
           imgId: img.id,
           name: `${namePrefix}-${img.type || ""}`,
           dbType: img.type || "",
+          enableBackups: true,
         },
       });
     });
@@ -236,6 +237,7 @@ export const DatabaseCreatorForm = ({
       name: namePrefix,
       env: "DATABASE_URL",
       dbType: "",
+      enableBackups: true,
     };
     dbDispatch({
       type: "add",

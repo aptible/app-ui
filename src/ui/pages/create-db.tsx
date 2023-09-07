@@ -74,6 +74,7 @@ export const CreateDatabasePage = () => {
       name: env.handle,
       env: "DATABASE_URL",
       dbType: "",
+      enableBackups: true,
     };
     dbCreatorDispatch({ type: "add", payload });
   }, [env.handle]);
