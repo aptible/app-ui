@@ -154,7 +154,7 @@ export const AppDetailServiceScalePage = () => {
   return (
     <Box>
       <form onSubmit={onSubmitForm}>
-        <div className="mb-4">
+        <div className="flex flex-col gap-2">
           <FormGroup
             splitWidthInputs
             description="Optimize container performance with a custom profile."
@@ -222,10 +222,10 @@ export const AppDetailServiceScalePage = () => {
           </FormGroup>
         </div>
 
-        <div className="my-4 flex justify-between">
+        <div className="mt-2 mb-4 flex justify-between">
           <div>
             <Label>Pricing</Label>
-            <p className="text-gray-500">
+            <p className="text-black-500">
               {service.containerCount} container
               {service.containerCount > 1 ? "s" : ""} x{" "}
               {service.containerMemoryLimitMb / 1024} GB x $
@@ -233,7 +233,7 @@ export const AppDetailServiceScalePage = () => {
             </p>
           </div>
           <div>
-            <p className="text-gray-500">Current Estimated Monthly Cost</p>
+            <p className="text-black-500">Current Estimated Monthly Cost</p>
             <p className="text-right text-lg text-green-400">${currentPrice}</p>
           </div>
         </div>
@@ -241,46 +241,48 @@ export const AppDetailServiceScalePage = () => {
         <hr />
 
         {changesExist ? (
-          <p className="mt-4 font-normal text-gray-500">Pending Changes</p>
+          <div className="text-md font-semibold text-gray-900 mt-4">
+            Pending Changes
+          </div>
         ) : null}
         {containerProfileType !== service.instanceClass ? (
-          <div className="my-4">
-            <div>Container Profile</div>
-            <p className="text-gray-500">
+          <div className="my-3">
+            <div className="text-md text-gray-900">Container Profile</div>
+            <p className="text-black-500">
               Changed from {currentContainerProfile.name} to{" "}
               {requestedContainerProfile.name}
             </p>
           </div>
         ) : null}
         {containerCount !== service.containerCount ? (
-          <div className="my-4">
-            <div>Container Count</div>
-            <p className="text-gray-500">
+          <div className="my-3">
+            <div className="text-md text-gray-900">Container Count</div>
+            <p className="text-black-500">
               Changed from {service.containerCount} to {containerCount}
             </p>
           </div>
         ) : null}
         {containerSize !== service.containerMemoryLimitMb ? (
-          <div className="my-4">
-            <div>Container Size</div>
-            <p className="text-gray-500" id="container-size-txt">
+          <div className="my-3">
+            <div className="text-md text-gray-900">Container Size</div>
+            <p className="text-black-500" id="container-size-txt">
               Changed from {service.containerMemoryLimitMb / 1024} GB to{" "}
               {containerSize / 1024} GB
             </p>
           </div>
         ) : null}
         {changesExist ? (
-          <div className="my-4 flex justify-between">
+          <div className="my-3 flex justify-between">
             <div>
-              <div>Pricing</div>
-              <p className="text-gray-500">
+              <div className="text-md text-gray-900">Pricing</div>
+              <p className="text-black-500">
                 {containerCount} container
                 {containerCount > 1 || containerCount === 0 ? "s" : ""} x{" "}
                 {containerSize / 1024} GB x ${estimatedPricePerHour} per GB/hour
               </p>
             </div>
             <div>
-              <p className="text-gray-500">New Estimated Monthly Cost</p>
+              <p className="text-black-500">New Estimated Monthly Cost</p>
               <p className="text-right text-lg text-green-400">
                 ${estimatedPrice}
               </p>

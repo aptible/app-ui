@@ -166,7 +166,7 @@ export const DatabaseScalePage = () => {
   return (
     <Box>
       <form onSubmit={onSubmitForm}>
-        <div className="mb-4">
+        <div className="flex flex-col gap-2">
           <FormGroup
             splitWidthInputs
             description="Optimize container performance with a custom profile."
@@ -184,7 +184,7 @@ export const DatabaseScalePage = () => {
           </FormGroup>
           <FormGroup
             splitWidthInputs
-            description="Increase the maximum available disk space in GBs. Disk Size can be resized at most once a day, and can only be resized up (i.e. you cannot shrink your Database Disk)."
+            description="Increase max disk space in GBs.  Space can only be increased once a day."
             label="Disk Size"
             htmlFor="disk-size"
             feedbackMessage={errors.diskSize}
@@ -236,20 +236,20 @@ export const DatabaseScalePage = () => {
           </FormGroup>
         </div>
 
-        <div className="my-4 flex justify-between">
+        <div className="mt-2 mb-4 flex justify-between">
           <div>
             <Label>Pricing</Label>
-            <p className="text-gray-500">
+            <p className="text-black-500">
               1 x {service.containerMemoryLimitMb / 1024} GB container x $
               {currentPricePerHour} per GB/hour
             </p>
-            <p className="text-gray-500">
+            <p className="text-black-500">
               {disk.size} GB disk x $0.20 per GB/month
             </p>
           </div>
 
           <div>
-            <p className="text-gray-500">Estimated Monthly Cost</p>
+            <p className="text-black-500">Estimated Monthly Cost</p>
             <p className="text-right text-lg text-green-400">${currentPrice}</p>
           </div>
         </div>
@@ -257,45 +257,47 @@ export const DatabaseScalePage = () => {
         <hr />
 
         {changesExist ? (
-          <p className="mt-4 font-normal text-gray-500">Pending Changes</p>
+          <div className="text-md font-semibold text-gray-900 mt-4">
+            Pending Changes
+          </div>
         ) : null}
         {containerProfileType !== service.instanceClass ? (
-          <div className="my-4">
-            <div>Container Profile</div>
-            <p className="text-gray-500">
+          <div className="my-3">
+            <div className="text-md text-gray-900">Container Profile</div>
+            <p className="text-black-500">
               Changed from {currentContainerProfile.name} to{" "}
               {requestedContainerProfile.name}
             </p>
           </div>
         ) : null}
+        {diskValue !== disk.size ? (
+          <div className="my-3">
+            <div className="text-md text-gray-900">Disk Size</div>
+            <p className="text-black-500">
+              Changed from {disk.size} GB to {diskValue} GB
+            </p>
+          </div>
+        ) : null}
         {containerSize !== service.containerMemoryLimitMb ? (
-          <div className="my-4">
-            <div>Container Size</div>
-            <p className="text-gray-500">
+          <div className="my-3">
+            <div className="text-md text-gray-900">Container Size</div>
+            <p className="text-black-500">
               Changed from {service.containerMemoryLimitMb / 1024} GB to{" "}
               {containerSize / 1024} GB
             </p>
           </div>
         ) : null}
-        {diskValue !== disk.size ? (
-          <div className="my-4">
-            <div>Disk Size</div>
-            <p className="text-gray-500">
-              Changed from {disk.size} GB to {diskValue} GB
-            </p>
-          </div>
-        ) : null}
         {changesExist ? (
-          <div className="my-4 flex justify-between">
+          <div className="my-3 flex justify-between">
             <div>
-              <div>Pricing</div>
-              <p className="text-gray-500">
+              <div className="text-md text-gray-900">Pricing</div>
+              <p className="text-black-500">
                 1 x {containerSize / 1024} GB container x $
                 {estimatedPricePerHour} per GB/hour
               </p>
             </div>
             <div>
-              <p className="text-gray-500">New Estimated Monthly Cost</p>
+              <p className="text-black-500">New Estimated Monthly Cost</p>
               <p className="text-right text-lg text-green-400">
                 ${estimatedPrice}
               </p>
