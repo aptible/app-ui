@@ -187,9 +187,7 @@ const DatabaseNameChange = ({ database }: DbProps) => {
           <option value="true">
             Enabled (Allow backups according to environment retention policy)
           </option>
-          <option value="false">
-            Disabled (No new backups allowed)
-          </option>
+          <option value="false">Disabled (No new backups allowed)</option>
         </select>
       </FormGroup>
 
