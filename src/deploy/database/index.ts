@@ -664,16 +664,16 @@ export const deprovisionDatabase = thunks.create<{
 interface UpdateDatabase {
   id: string;
   handle: string;
-  enable_backups: boolean;
+  enableBackups: boolean;
 }
 
 export const updateDatabase = api.put<UpdateDatabase>(
   "/databases/:id",
   function* (ctx, next) {
-    const { handle, enable_backups } = ctx.payload;
+    const { handle, enableBackups } = ctx.payload;
     const body = {
       handle,
-      enable_backups,
+      enable_backups: enableBackups,
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield* next();

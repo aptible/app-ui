@@ -115,7 +115,7 @@ const DatabaseNameChange = ({ database }: DbProps) => {
   const action = updateDatabase({
     id: database.id,
     handle,
-    enable_backups: enableBackups,
+    enableBackups,
   });
   const loader = useLoader(action);
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
