@@ -535,10 +535,11 @@ export const createEndpoint = api.post<
     internal: ctx.payload.internal,
     ip_whitelist: ctx.payload.ipAllowlist,
     container_port: ctx.payload.containerPort,
-    certificate: ctx.payload.certId
-      ? `${env.apiUrl}/certificates/${ctx.payload.certId}`
-      : "",
   };
+
+  if (ctx.payload.certId) {
+    data.certificate = `${env.apiUrl}/certificates/${ctx.payload.certId}`;
+  }
 
   if (ctx.payload.type === "managed") {
     data.user_domain = ctx.payload.domain;
