@@ -143,7 +143,7 @@ const DatabaseNameChange = ({ database }: DbProps) => {
       value: "true",
     },
     {
-      label: "Disabled (No new backups allowed)",
+      label: "Disabled: No new backups allowed",
       value: "false",
     },
   ];
