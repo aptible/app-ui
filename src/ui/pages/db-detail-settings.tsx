@@ -215,7 +215,13 @@ const DatabaseNameChange = ({ database }: DbProps) => {
           Save Changes
         </ButtonCreate>
 
-        <Button variant="white" onClick={() => setHandle(database.handle)}>
+        <Button
+          variant="white"
+          onClick={() => {
+            setHandle(database.handle);
+            setEnableBackups(database.enableBackups);
+          }}
+        >
           Cancel
         </Button>
       </Group>
