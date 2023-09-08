@@ -41,6 +41,8 @@ import {
   IconTrash,
   Input,
   Label,
+  Select,
+  SelectOption,
 } from "../shared";
 
 const DatabaseDeprovision = ({ database }: DbProps) => {
@@ -133,6 +135,19 @@ const DatabaseNameChange = ({ database }: DbProps) => {
   const drains: (DeployLogDrain | DeployMetricDrain)[] =
     [...logDrains, ...metricDrains] || [];
 
+  const options: SelectOption[] = [
+    {
+      label:
+        "Enabled: Allow backups according to environment " +
+        "backup retention policy",
+      value: "true",
+    },
+    {
+      label: "Disabled (No new backups allowed)",
+      value: "false",
+    },
+  ];
+
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <FormGroup label="Database Name" htmlFor="input-name">
@@ -177,18 +192,13 @@ const DatabaseNameChange = ({ database }: DbProps) => {
       </FormGroup>
 
       <FormGroup label="Database Backups" htmlFor="input-backup">
-        <select
-          className="border-black-100 text-black hover:border-black active:border-black-100 active:text-black disabled:bg-black-50 disabled:border-black-100 disabled:text-black rounded-md shadow-sm"
-          name="database-backup"
-          value={enableBackups.toString()}
-          onChange={(e) => setEnableBackups(e.currentTarget.value === "true")}
+        <Select
+          ariaLabel="Database Backups"
           id="input-backup"
-        >
-          <option value="true">
-            Enabled (Allow backups according to environment retention policy)
-          </option>
-          <option value="false">Disabled (No new backups allowed)</option>
-        </select>
+          options={options}
+          onSelect={(opt) => setEnableBackups(opt.value === "true")}
+          value={enableBackups.toString()}
+        />
       </FormGroup>
 
       <Group variant="horizontal" size="sm">
