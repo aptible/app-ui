@@ -185,12 +185,10 @@ const DatabaseNameChange = ({ database }: DbProps) => {
           id="input-backup"
         >
           <option value="true">
-            Enable Backups (default): This database will be backed up according
-            to the Environment's Backup Retention Policy
+            Enabled (Allow backups according to environment retention policy)
           </option>
           <option value="false">
-            Disable Backups: No new backups will be made for this database,
-            overriding the Environment's Backup Retention Policy
+            Disabled (No new backups allowed)
           </option>
         </select>
       </FormGroup>
