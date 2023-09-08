@@ -65,6 +65,7 @@ export interface DeployDatabaseResponse {
   connection_url: string;
   created_at: string;
   updated_at: string;
+  enable_backups: boolean;
   _links: {
     account: LinkResponse;
     service: LinkResponse;
@@ -85,6 +86,7 @@ export interface DbCreatorProps {
   name: string;
   env: string;
   dbType: string;
+  enableBackups: boolean;
 }
 
 export const defaultDatabaseResponse = (
@@ -102,6 +104,7 @@ export const defaultDatabaseResponse = (
     connection_url: "",
     created_at: now,
     updated_at: now,
+    enable_backups: true,
     _links: {
       account: { href: "" },
       service: { href: "" },
@@ -134,6 +137,7 @@ export const deserializeDeployDatabase = (
     handle: payload.handle,
     id: `${payload.id}`,
     provisioned: payload.provisioned,
+    enableBackups: payload.enable_backups,
     type: payload.type,
     status: payload.status,
     databaseImageId: extractIdFromLink(links.database_image),
@@ -159,6 +163,7 @@ export const defaultDeployDatabase = (
     currentKmsArn: "",
     dockerRepo: "",
     provisioned: false,
+    enableBackups: true,
     type: "",
     environmentId: "",
     serviceId: "",
@@ -363,6 +368,7 @@ interface CreateDatabaseProps {
   type: string;
   envId: string;
   databaseImageId: string;
+  enableBackups: boolean;
 }
 /**
  * This will only create a database record, it will not trigger it to actually be provisioned.
@@ -372,12 +378,13 @@ export const createDatabase = api.post<
   CreateDatabaseProps,
   DeployDatabaseResponse
 >("/accounts/:envId/databases", function* (ctx, next) {
-  const { handle, type, envId, databaseImageId } = ctx.payload;
+  const { handle, type, envId, databaseImageId, enableBackups } = ctx.payload;
   const body = {
     handle,
     type,
     account_id: envId,
     database_image_id: databaseImageId,
+    enable_backups: enableBackups,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
 
@@ -409,11 +416,13 @@ export const mapCreatorToProvision = (
 ): CreateDatabaseProps => {
   const handle = db.name.toLocaleLowerCase();
   const dbType = db.dbType;
+  const enableBackups = db.enableBackups;
   return {
     handle,
     type: dbType,
     envId,
     databaseImageId: db.imgId,
+    enableBackups,
   };
 };
 
@@ -655,14 +664,16 @@ export const deprovisionDatabase = thunks.create<{
 interface UpdateDatabase {
   id: string;
   handle: string;
+  enableBackups: boolean;
 }
 
 export const updateDatabase = api.put<UpdateDatabase>(
   "/databases/:id",
   function* (ctx, next) {
-    const { handle } = ctx.payload;
+    const { handle, enableBackups } = ctx.payload;
     const body = {
       handle,
+      enable_backups: enableBackups,
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield* next();

@@ -41,6 +41,8 @@ import {
   IconTrash,
   Input,
   Label,
+  Select,
+  SelectOption,
 } from "../shared";
 
 const DatabaseDeprovision = ({ database }: DbProps) => {
@@ -104,11 +106,17 @@ interface DbProps {
 
 const DatabaseNameChange = ({ database }: DbProps) => {
   const dispatch = useDispatch();
+  const [enableBackups, setEnableBackups] = useState<boolean>(true);
   const [handle, setHandle] = useState<string>("");
   useEffect(() => {
     setHandle(database.handle);
+    setEnableBackups(database.enableBackups);
   }, [database.id]);
-  const action = updateDatabase({ id: database.id, handle });
+  const action = updateDatabase({
+    id: database.id,
+    handle,
+    enableBackups,
+  });
   const loader = useLoader(action);
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -127,8 +135,21 @@ const DatabaseNameChange = ({ database }: DbProps) => {
   const drains: (DeployLogDrain | DeployMetricDrain)[] =
     [...logDrains, ...metricDrains] || [];
 
+  const options: SelectOption[] = [
+    {
+      label:
+        "Enabled: Allow backups according to environment " +
+        "backup retention policy",
+      value: "true",
+    },
+    {
+      label: "Disabled: No new backups allowed",
+      value: "false",
+    },
+  ];
+
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <FormGroup label="Database Name" htmlFor="input-name">
         <Input
           name="app-handle"
@@ -170,18 +191,37 @@ const DatabaseNameChange = ({ database }: DbProps) => {
         ) : null}
       </FormGroup>
 
-      <Group variant="horizontal" size="sm" className="mt-4">
+      <FormGroup label="Database Backups" htmlFor="input-backup">
+        <Select
+          ariaLabel="Database Backups"
+          id="input-backup"
+          options={options}
+          onSelect={(opt) => setEnableBackups(opt.value === "true")}
+          value={enableBackups.toString()}
+        />
+      </FormGroup>
+
+      <Group variant="horizontal" size="sm">
         <ButtonCreate
           envId={database.environmentId}
           className="w-40 semibold"
           type="submit"
           isLoading={loader.isLoading}
-          disabled={handle === database.handle}
+          disabled={
+            handle === database.handle &&
+            enableBackups === database.enableBackups
+          }
         >
           Save Changes
         </ButtonCreate>
 
-        <Button variant="white" onClick={() => setHandle(database.handle)}>
+        <Button
+          variant="white"
+          onClick={() => {
+            setHandle(database.handle);
+            setEnableBackups(database.enableBackups);
+          }}
+        >
           Cancel
         </Button>
       </Group>

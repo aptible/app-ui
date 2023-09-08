@@ -483,6 +483,7 @@ export const CreateProjectGitSettingsPage = () => {
             imgId: img.id,
             name: db.handle,
             dbType: img.type || "",
+            enableBackups: db.enableBackups,
           },
         });
       });
@@ -524,6 +525,7 @@ export const CreateProjectGitSettingsPage = () => {
         name: edb.env.toLocaleLowerCase(),
         dbType: "",
         imgId: "",
+        enableBackups: true,
       });
     });
     const dberr = validateDbs(allDbs);
