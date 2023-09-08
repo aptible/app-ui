@@ -134,7 +134,7 @@ const DatabaseNameChange = ({ database }: DbProps) => {
     [...logDrains, ...metricDrains] || [];
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <FormGroup label="Database Name" htmlFor="input-name">
         <Input
           name="app-handle"
@@ -178,6 +178,7 @@ const DatabaseNameChange = ({ database }: DbProps) => {
 
       <FormGroup label="Database Backups" htmlFor="input-backup">
         <select
+          className="border-black-100 text-black hover:border-black active:border-black-100 active:text-black disabled:bg-black-50 disabled:border-black-100 disabled:text-black rounded-md shadow-sm"
           name="database-backup"
           value={enableBackups.toString()}
           onChange={(e) => setEnableBackups(e.currentTarget.value === "true")}
@@ -194,7 +195,7 @@ const DatabaseNameChange = ({ database }: DbProps) => {
         </select>
       </FormGroup>
 
-      <Group variant="horizontal" size="sm" className="mt-4">
+      <Group variant="horizontal" size="sm">
         <ButtonCreate
           envId={database.environmentId}
           className="w-40 semibold"
