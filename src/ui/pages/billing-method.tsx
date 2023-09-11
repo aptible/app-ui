@@ -60,18 +60,24 @@ export const BillingMethodPage = () => {
       <div className="absolute lg:top-[30px] md:top-0 top-0 left-0  lg:w-[60vw] w-[100vw] lg:ml-[40vw] ml-auto lg:px-[5%] md:px-[32px] px-auto">
         <div className="flex flex-col justify-center items-center md:w-[500px] md:ml-[50%] md:left-[-250px] w-full ml-none left-0 relative">
           <div className="flex justify-center pt-10 pb-8">
-              <AptibleLogo width={160} />
-            </div>
-          <div className="text-center">
-            <h1 className={tokens.type.h1}>Add Payment Information</h1>
-            <p className="my-6 text-gray-600">
-              You must enter a credit card to continue using Aptible. <br />
-              Your card will be charged at the end of your monthly billing cycle.
-            </p>
+            <AptibleLogo width={160} />
           </div>
-            <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
-              <form className="space-y-4" onSubmit={onSubmitForm}>
-              <FormGroup label="Credit Card Number" htmlFor="credit-card-number">
+          <div className="text-center">
+            <p className="text-gray-900">
+              You must enter a credit card to continue using Aptible. <br />
+              Your card will be charged at the end of your monthly billing
+              cycle.
+            </p>
+            <h1 className="text-gray-900 text-3xl font-semibold text-center pt-8">
+              Add Payment Information
+            </h1>
+          </div>
+          <div className="mt-6 bg-white py-8 px-10 shadow rounded-lg border border-black-100 w-full">
+            <form className="space-y-4" onSubmit={onSubmitForm}>
+              <FormGroup
+                label="Credit Card Number"
+                htmlFor="credit-card-number"
+              >
                 <Input
                   name="credit-card-number"
                   value={creditCardNumber}
@@ -121,26 +127,26 @@ export const BillingMethodPage = () => {
               </FormGroup>
 
               <FormGroup label="Zipcode" htmlFor="zipcode" className="flex-1">
-                  <Input
-                    name="zipcode"
-                    value={zipcode}
-                    onChange={(e) => setZipcode(e.target.value)}
-                    required
-                  />
-                </FormGroup>
+                <Input
+                  name="zipcode"
+                  value={zipcode}
+                  onChange={(e) => setZipcode(e.target.value)}
+                  required
+                />
+              </FormGroup>
 
               <Button type="submit" className="mt-4 font-semibold w-full">
                 Save & Finish
               </Button>
             </form>
-              <div className="text-center text-sm mt-4">
-                <p>
-                  Prefer to speak to someone first?{" "}
-                  <a href="https://www.aptible.com/contact">Schedule a demo</a> or
-                  go to <Link to={logoutUrl()}>Logout</Link>
-                </p>
-              </div>
+            <div className="text-center text-sm mt-4">
+              <p>
+                Prefer to speak to someone first?{" "}
+                <a href="https://www.aptible.com/contact">Schedule a demo</a> or
+                go to <Link to={logoutUrl()}>Logout</Link>
+              </p>
             </div>
+          </div>
         </div>
       </div>
     </HeroBgLayout>
