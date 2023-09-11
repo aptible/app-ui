@@ -1,18 +1,12 @@
 import { HeroBgLayout } from "../layouts";
 import {
   AptibleLogo,
-  Box,
-  BoxGroup,
   Button,
   CreateProjectFooter,
   FormGroup,
   Input,
-  Select,
-  SelectOption,
-  tokens,
 } from "../shared";
 
-import { countries, states } from "@app/geography";
 import { logoutUrl } from "@app/routes";
 import { useState } from "react";
 import { Link } from "react-router-dom";
