@@ -65,7 +65,7 @@ export const BillingMethodPage = () => {
       </div>
       <BoxGroup>
         <Box>
-          <form className="space-y-6" onSubmit={onSubmitForm}>
+          <form className="space-y-3" onSubmit={onSubmitForm}>
             <FormGroup label="Credit Card Number" htmlFor="credit-card-number">
               <Input
                 name="credit-card-number"
