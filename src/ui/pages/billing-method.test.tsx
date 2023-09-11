@@ -11,6 +11,6 @@ describe("Billing Method page", () => {
       </TestProvider>,
     );
     const el = await screen.findByRole("button");
-    expect(el.textContent).toEqual("Save & Finish");
+    expect(el.textContent).toEqual("Save Payment");
   });
 });
