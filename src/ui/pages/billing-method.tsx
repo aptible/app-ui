@@ -79,11 +79,11 @@ export const BillingMethodPage = () => {
                   required
                 />
               </FormGroup>
-              <div className="flex justify-between gap-4 mt-4">
+              <div className="flex justify-between gap-4">
                 <FormGroup
                   label="Expiration Date"
                   htmlFor="credit-card-number"
-                  className="w-1/2"
+                  className="w-1/2 min-w-0"
                 >
                   <Input
                     name="credit-card-number"
@@ -96,7 +96,7 @@ export const BillingMethodPage = () => {
                 <FormGroup
                   label="Security Code"
                   htmlFor="credit-card-number"
-                  className="w-1/2"
+                  className="w-1/2 min-w-0"
                 >
                   <Input
                     name="credit-card-number"
@@ -114,7 +114,6 @@ export const BillingMethodPage = () => {
                   type="text"
                   autoComplete="name-on-card"
                   required
-                  className="w-full"
                   value={nameOnCard}
                   onChange={(e) => setNameOnCard(e.target.value)}
                 />
@@ -129,8 +128,8 @@ export const BillingMethodPage = () => {
                 />
               </FormGroup>
 
-              <Button type="submit" className="mt-4 font-semibold w-full">
-                Save & Finish
+              <Button type="submit" className="font-semibold w-full">
+                Save Payment
               </Button>
             </form>
             <div className="text-center text-sm mt-4">
