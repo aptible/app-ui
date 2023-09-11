@@ -22,35 +22,7 @@ export const BillingMethodPage = () => {
   const [expiration, setExpiration] = useState<string>("");
   const [securityCode, setSecurityCode] = useState<string>("");
   const [nameOnCard, setNameOnCard] = useState<string>("");
-  const [streetAddress, setStreetAddress] = useState<string>("");
-  const [aptSuiteEtc, setAptSuiteEtc] = useState<string>("");
-  const [city, setCity] = useState<string>("");
-  const [state, setState] = useState<string>("");
   const [zipcode, setZipcode] = useState<string>("");
-  const [country, setCountry] = useState<string>("");
-
-  const stateOptions = states.map(({ shortCode, label }) => ({
-    value: shortCode,
-    label,
-  }));
-  const countryOptions = countries.map(({ shortCode, label }) => ({
-    value: shortCode,
-    label,
-  }));
-
-  const selectCountry = (option: SelectOption) => {
-    setCountry(option.value);
-  };
-  const selectState = (option: SelectOption) => {
-    setState(option.value);
-  };
-
-  const selectedState = stateOptions.find(
-    (stateOption) => stateOption.value === state,
-  );
-  const selectedCountry = countryOptions.find(
-    (countryOption) => countryOption.value === country,
-  );
 
   const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -98,7 +70,7 @@ export const BillingMethodPage = () => {
             </p>
           </div>
             <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
-              <form className="space-y-3" onSubmit={onSubmitForm}>
+              <form className="space-y-4" onSubmit={onSubmitForm}>
               <FormGroup label="Credit Card Number" htmlFor="credit-card-number">
                 <Input
                   name="credit-card-number"
@@ -148,59 +120,7 @@ export const BillingMethodPage = () => {
                 />
               </FormGroup>
 
-              <FormGroup label="Street Address" htmlFor="street-address">
-                <Input
-                  id="street-address"
-                  name="street-address"
-                  type="text"
-                  autoComplete="street-address"
-                  required
-                  className="w-full"
-                  placeholder="Street and number, P.O. box, c/o."
-                  value={streetAddress}
-                  onChange={(e) => setStreetAddress(e.target.value)}
-                />
-              </FormGroup>
-
-              <FormGroup label="Apt, Suite, Etc. " htmlFor="apt-suite-etc">
-                <Input
-                  id="apt-suite-etc"
-                  name="apt-suite-etc"
-                  type="text"
-                  autoComplete="apt-suite-etc"
-                  placeholder="Optional"
-                  required={false}
-                  className="w-full"
-                  value={aptSuiteEtc}
-                  onChange={(e) => setAptSuiteEtc(e.target.value)}
-                />
-              </FormGroup>
-
-              <FormGroup label="City " htmlFor="city">
-                <Input
-                  id="city"
-                  name="city"
-                  type="text"
-                  autoComplete="city"
-                  required
-                  className="w-full"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-              </FormGroup>
-              <div className="flex justify-between gap-4 mt-4">
-                <div>
-                  <h4 className={"text-md font-semibold mb-2"}>State</h4>
-                  <div className="flex">
-                    <Select
-                      className="w-full"
-                      onSelect={selectState}
-                      value={selectedState?.value}
-                      options={stateOptions}
-                    />
-                  </div>
-                </div>
-                <FormGroup label="Zipcode" htmlFor="zipcode" className="flex-1">
+              <FormGroup label="Zipcode" htmlFor="zipcode" className="flex-1">
                   <Input
                     name="zipcode"
                     value={zipcode}
@@ -208,18 +128,7 @@ export const BillingMethodPage = () => {
                     required
                   />
                 </FormGroup>
-              </div>
-              <div className="mb-4">
-                <h4 className={"text-md font-semibold mb-2"}>Country</h4>
-                <div className="flex mb-2">
-                  <Select
-                    className="w-full"
-                    onSelect={selectCountry}
-                    value={selectedCountry?.value}
-                    options={countryOptions}
-                  />
-                </div>
-              </div>
+
               <Button type="submit" className="mt-4 font-semibold w-full">
                 Save & Finish
               </Button>
