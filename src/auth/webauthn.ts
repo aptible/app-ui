@@ -48,6 +48,7 @@ export function webauthnGet(
     rpId: payload.rpId,
     allowCredentials: payload.allowCredentials,
     timeout: payload.timeout,
+    extensions: payload.extensions,
   };
   log("SECURITY KEY GET BLOB", publicKey);
 
