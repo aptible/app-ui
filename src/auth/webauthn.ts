@@ -49,7 +49,7 @@ export function webauthnGet(
     allowCredentials: payload.allowCredentials,
     timeout: payload.timeout,
     extensions: payload.extensions,
-    userVerification: 'discouraged',
+    userVerification: "discouraged",
   };
   log("SECURITY KEY GET BLOB", publicKey);
 
