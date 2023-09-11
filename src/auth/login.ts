@@ -69,6 +69,7 @@ export const loginWebauthn = thunks.create<
     yield* call(login.run, login({ ...props, u2f }));
     yield* next();
   } catch (err) {
+    console.error(err);
     yield put(
       setLoaderError({
         id,
