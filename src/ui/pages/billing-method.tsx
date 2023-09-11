@@ -13,7 +13,8 @@ import { Link } from "react-router-dom";
 
 export const BillingMethodPage = () => {
   const [creditCardNumber, setCreditCardNumber] = useState<string>("");
-  const [expiration, setExpiration] = useState<string>("");
+  const [expirationMonth, setExpirationMonth] = useState<string>("");
+  const [expirationYear, setExpirationYear] = useState<string>("");
   const [securityCode, setSecurityCode] = useState<string>("");
   const [nameOnCard, setNameOnCard] = useState<string>("");
   const [zipcode, setZipcode] = useState<string>("");
@@ -85,13 +86,24 @@ export const BillingMethodPage = () => {
                   htmlFor="credit-card-number"
                   className="w-1/2 min-w-0"
                 >
-                  <Input
-                    name="credit-card-number"
-                    value={expiration}
-                    placeholder="MM / YY"
-                    onChange={(e) => setExpiration(e.target.value)}
-                    required
-                  />
+                  <div className="flex flex-row gap-2">
+                    <Input
+                      name="credit-card-number"
+                      value={expirationMonth}
+                      placeholder="MM"
+                      onChange={(e) => setExpirationMonth(e.target.value)}
+                      required
+                      className="w-1/2"
+                    />
+                    <Input
+                      name="credit-card-number"
+                      value={expirationYear}
+                      placeholder="YY"
+                      onChange={(e) => setExpirationYear(e.target.value)}
+                      required
+                      className="w-1/2"
+                    />
+                  </div>
                 </FormGroup>
                 <FormGroup
                   label="Security Code"
