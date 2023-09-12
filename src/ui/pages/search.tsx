@@ -24,7 +24,7 @@ import {
 } from "@app/search";
 import { AppState } from "@app/types";
 
-import { MenuWrappedPage } from "../layouts";
+import { AppSidebarLayout } from "../layouts";
 import {
   AppItemView,
   DatabaseItemView,
@@ -231,7 +231,7 @@ export const SearchPage = () => {
   };
 
   return (
-    <MenuWrappedPage>
+    <AppSidebarLayout>
       <InputSearch
         search={search}
         onChange={onChange}
@@ -242,6 +242,6 @@ export const SearchPage = () => {
       <div className="mt-2">
         <View />
       </div>
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

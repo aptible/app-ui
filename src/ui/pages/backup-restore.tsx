@@ -19,7 +19,7 @@ import { AppState } from "@app/types";
 import { handleValidator } from "@app/validator";
 
 import { useValidator } from "../hooks";
-import { MenuWrappedPage } from "../layouts";
+import { AppSidebarLayout } from "../layouts";
 import {
   BannerMessages,
   Box,
@@ -92,7 +92,7 @@ export const BackupRestorePage = () => {
   });
 
   return (
-    <MenuWrappedPage>
+    <AppSidebarLayout>
       <h2 className={tokens.type.h2}>Restore Database from Backup</h2>
       <Box className="mt-3">
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -137,6 +137,6 @@ export const BackupRestorePage = () => {
           </ButtonCreate>
         </form>
       </Box>
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

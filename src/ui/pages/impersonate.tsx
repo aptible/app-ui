@@ -9,7 +9,7 @@ import { ExchangeToken, exchangeToken } from "@app/auth";
 import { useLoader } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { selectAccessToken, selectIsImpersonated } from "@app/token";
-import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
+import { AppSidebarLayout } from "../layouts";
 import { BannerMessages, Button, CheckBox, FormGroup, Input } from "../shared";
 
 function prepSubject(
@@ -98,7 +98,7 @@ export const ImpersonatePage = () => {
   };
 
   return (
-    <MenuWrappedPage>
+    <AppSidebarLayout>
       <form className="flex flex-col gap-4" onSubmit={onSubmit}>
         <BannerMessages {...loader} />
 
@@ -163,6 +163,6 @@ export const ImpersonatePage = () => {
           <div className="text-black-500">{curOrg.id}</div>
         </div>
       </form>
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

@@ -1,12 +1,10 @@
-import { useLoader } from "@app/fx";
-import { useSelector } from "react-redux";
-import { Outlet, useNavigate } from "react-router-dom";
-
 import { fetchCurrentToken } from "@app/auth";
+import { useLoader } from "@app/fx";
 import { homeUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
-
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Loading } from "../shared";
 
 export const UnauthRequired = ({

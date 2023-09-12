@@ -13,7 +13,7 @@ import { AppState, DeployStack } from "@app/types";
 
 import { capitalize } from "@app/string-utils";
 import { useSearchParams } from "react-router-dom";
-import { MenuWrappedPage } from "../layouts";
+import { AppSidebarLayout } from "../layouts";
 import {
   IconInfo,
   InputSearch,
@@ -28,9 +28,9 @@ import {
 
 export function StacksPage() {
   return (
-    <MenuWrappedPage>
+    <AppSidebarLayout>
       <StackList />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 }
 

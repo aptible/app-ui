@@ -37,7 +37,6 @@ import {
   selectLatestProvisionOp,
   selectLatestScanOp,
 } from "@app/deploy";
-import { selectLegacyDashboardUrl, selectOrigin } from "@app/env";
 import { useCache, useLoader, useQuery } from "@app/fx";
 import { batchActions, resetLoaderById, selectLoaderById } from "@app/fx";
 import {
@@ -75,7 +74,6 @@ import {
   Box,
   Button,
   ButtonLink,
-  ButtonLinkExternal,
   Code,
   CreateAppEndpointSelector,
   ErrorResources,
@@ -868,8 +866,6 @@ const useDbsInAppConfig = ({
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
-  const origin = useSelector(selectOrigin);
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
@@ -977,15 +973,7 @@ export const CreateProjectGitStatusPage = () => {
   );
 
   const viewProject = () => {
-    return origin === "app" ? (
-      <ButtonLinkExternal
-        target="_blank"
-        href={`${legacyUrl}/accounts/${envId}/apps`}
-        className="mt-4"
-      >
-        View Environment <IconArrowRight variant="sm" className="ml-2" />
-      </ButtonLinkExternal>
-    ) : (
+    return (
       <ButtonLink to={environmentAppsUrl(environment.id)} className="mt-4 mb-2">
         View Environment <IconArrowRight variant="sm" className="ml-2" />
       </ButtonLink>

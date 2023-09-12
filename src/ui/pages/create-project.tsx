@@ -9,7 +9,7 @@ import {
 import { createProjectGitUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 
-import { CreateProjectLayout, HeroBgLayout } from "../layouts";
+import { AppSidebarLayout, HeroBgLayout } from "../layouts";
 import {
   Box,
   Button,
@@ -143,7 +143,7 @@ export const FreeFormSurvey = () => {
 export const CreateProjectPage = () => {
   const preDeploySurveyAnswered = useSelector(selectPreDeploySurveyAnswered);
   const isUserAuthenticated = useSelector(selectIsUserAuthenticated);
-  const Wrapper = isUserAuthenticated ? CreateProjectLayout : HeroBgLayout;
+  const Wrapper = isUserAuthenticated ? AppSidebarLayout : HeroBgLayout;
 
   return (
     <Wrapper>

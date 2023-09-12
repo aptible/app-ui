@@ -1,7 +1,3 @@
-import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useParams } from "react-router-dom";
-
 import { prettyEnglishDate } from "@app/date";
 import {
   cancelAppOpsPoll,
@@ -24,8 +20,12 @@ import {
   appSettingsUrl,
   environmentAppsUrl,
 } from "@app/routes";
+import { setResourceStats } from "@app/search";
 import type { AppState, DeployApp } from "@app/types";
-
+import { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useParams } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
@@ -36,10 +36,7 @@ import {
   DetailTitleBar,
   TabItem,
 } from "../shared";
-
-import { setResourceStats } from "@app/search";
-import { useQuery } from "saga-query/react";
-import { MenuWrappedPage } from "./menu-wrapped-page";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function AppHeader({ app }: { app: DeployApp }) {
   const lastDeployOp = useSelector((s: AppState) =>
@@ -146,8 +143,8 @@ function AppPageHeader() {
 
 export const AppDetailLayout = () => {
   return (
-    <MenuWrappedPage header={<AppPageHeader />}>
+    <AppSidebarLayout header={<AppPageHeader />}>
       <Outlet />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

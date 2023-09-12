@@ -1,15 +1,14 @@
-import { useSelector } from "react-redux";
-
 import { selectNav } from "@app/nav";
-
+import { useSelector } from "react-redux";
+import { Outlet } from "react-router";
 import { ApplicationSidebar, Footer } from "../shared";
 
 type Props = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   header?: React.ReactNode;
 };
 
-export function MenuWrappedPage({ children, header }: Props) {
+export function AppSidebarLayout({ children, header }: Props) {
   const { collapsed } = useSelector(selectNav);
   const collapsedOffset = collapsed ? 15.2 : 64;
 
@@ -28,7 +27,7 @@ export function MenuWrappedPage({ children, header }: Props) {
         <div className="flex flex-col flex-1">
           {header ? <div className="mb-4">{header}</div> : null}
 
-          <main className="flex-1">{children}</main>
+          <main className="flex-1">{children ? children : <Outlet />}</main>
           <Footer />
         </div>
       </div>
