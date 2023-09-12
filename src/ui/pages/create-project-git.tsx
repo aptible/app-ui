@@ -1111,10 +1111,6 @@ export const CreateProjectGitStatusPage = () => {
             Edit Configuration
           </ButtonLink>
         </StatusBox>
-        <FeedbackForm
-          feedbackEventName="feedback.survey.post_deploy_feedback"
-          description="What would you like to change about this deployment experience?"
-        />
       </div>
     </AppSidebarLayout>
   );
