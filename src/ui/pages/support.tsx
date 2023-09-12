@@ -4,12 +4,9 @@ import {
   uploadAttachment,
 } from "@app/deploy/support";
 import { useLoader, useQuery } from "@app/fx";
-import { loginUrl } from "@app/routes";
-import { selectIsUserAuthenticated } from "@app/token";
 import { selectCurrentUser } from "@app/users";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
 import {
   BannerMessages,
@@ -37,14 +34,6 @@ interface AttachmentObject {
 }
 
 export const SupportPage = () => {
-  const navigate = useNavigate();
-  const isAuthenticated = useSelector(selectIsUserAuthenticated);
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(loginUrl());
-    }
-  }, [isAuthenticated]);
-
   // required for dispatching actions
   const dispatch = useDispatch();
   // fetching current user
@@ -229,8 +218,13 @@ export const SupportPage = () => {
               </FormGroup>
 
               {algoliaLoader?.meta?.hits?.length ? (
-                <div style={{ backgroundColor: "#FDF8F0" }} className="mt-5 rounded-lg">
-                  <div className="pl-5 pt-3 font-semibold">Related Articles</div>
+                <div
+                  style={{ backgroundColor: "#FDF8F0" }}
+                  className="mt-5 rounded-lg"
+                >
+                  <div className="pl-5 pt-3 font-semibold">
+                    Related Articles
+                  </div>
                   <ul className="pl-5 pt-2 pb-3">
                     {algoliaLoader.meta.hits.map((hit: any, key: number) => {
                       return (

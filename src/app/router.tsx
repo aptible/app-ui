@@ -565,6 +565,10 @@ export const appRoutes: RouteObject[] = [
           },
         ],
       },
+      {
+        path: routes.SUPPORT_URL,
+        element: <SupportPage />,
+      },
     ],
   },
 
@@ -686,7 +690,6 @@ export const appRoutes: RouteObject[] = [
     path: routes.STYLES_PATH,
     element: <StylesPage />,
   },
-
   {
     path: routes.SUPPORT_URL,
     element: <SupportPage />,
