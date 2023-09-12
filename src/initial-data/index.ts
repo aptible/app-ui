@@ -6,6 +6,7 @@ import {
   fetchOrganizations,
   fetchRoles,
 } from "@app/auth";
+import { fetchBillingInfo } from "@app/billing";
 import {
   fetchApps,
   fetchDatabases,
@@ -38,6 +39,7 @@ export function* onFetchInitData() {
     call(fetchServices.run, fetchServices()),
     call(fetchEndpoints.run, fetchEndpoints()),
     call(fetchOrgOperations.run, fetchOrgOperations({ orgId: org.id })),
+    call(fetchBillingInfo.run, fetchBillingInfo({ id: org.billingDetailId })),
   ]);
 }
 

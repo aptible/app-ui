@@ -1,5 +1,111 @@
 import { billingApi, thunks } from "@app/api";
-import { all, call } from "@app/fx";
+import {
+  all,
+  call,
+  put,
+  setLoaderError,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "@app/fx";
+import { defaultHalHref } from "@app/hal";
+import { createAssign, createReducerMap } from "@app/slice-helpers";
+import { AppState, BillingDetail, LinkResponse } from "@app/types";
+import { createSelector } from "@reduxjs/toolkit";
+
+export const defaultBillingDetailResponse = (
+  bt: Partial<BillingDetailResponse> = {},
+): BillingDetailResponse => {
+  return {
+    id: "",
+    _links: { payment_method: defaultHalHref() },
+    ...bt,
+  };
+};
+
+const defaultBillingDetail = (
+  bt: Partial<BillingDetail> = {},
+): BillingDetail => {
+  return {
+    id: "",
+    paymentMethodUrl: "",
+    ...bt,
+  };
+};
+
+interface BillingDetailResponse {
+  id: string;
+  _links: {
+    payment_method: LinkResponse;
+  };
+}
+
+const deserializeBillingDetail = (bt: BillingDetailResponse): BillingDetail => {
+  return {
+    id: bt.id,
+    paymentMethodUrl: bt._links.payment_method
+      ? bt._links.payment_method.href
+      : "",
+  };
+};
+
+export const BILLING_DETAIL_NAME = "billingDetail";
+const billingDetail = createAssign<BillingDetail>({
+  name: BILLING_DETAIL_NAME,
+  initialState: defaultBillingDetail(),
+});
+
+const { set: setBillingDetail } = billingDetail.actions;
+export const reducers = createReducerMap(billingDetail);
+export const selectBillingDetail = (state: AppState) =>
+  state[BILLING_DETAIL_NAME];
+export const selectHasPaymentMethod = createSelector(
+  selectBillingDetail,
+  (bt) => bt.paymentMethodUrl !== "",
+);
+
+export const fetchBillingDetail = billingApi.get<
+  { id: string },
+  BillingDetailResponse
+>("/billing_details/:id", function* (ctx, next) {
+  yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  ctx.actions.push(setBillingDetail(deserializeBillingDetail(ctx.json.data)));
+});
+// TODO: for trial expiration banner
+/* const fetchStripeSources = billingApi.get<{ id: string }>('/billing_details/:id/stripe_sources');
+const fetchTrials = billingApi.get<{ id: string }>('/billing_details/:id/trials');
+const fetchExternalPaymentSources = billingApi.get<{ id: string }>('/billing_details/:id/external_payment_sources');
+*/
+
+export const fetchBillingInfo = thunks.create<{ id: string }>(
+  "fetch-billing-info",
+  function* (ctx, next) {
+    yield* put(setLoaderStart({ id: ctx.name }));
+
+    const bdCtx = yield* call(
+      fetchBillingDetail.run,
+      fetchBillingDetail(ctx.payload),
+    );
+    if (!bdCtx.json.ok) {
+      yield* put(
+        setLoaderError({ id: ctx.name, message: ctx.json.data.message }),
+      );
+      return;
+    }
+
+    /* yield* all([
+    call(fetchStripeSources.run, fetchStripeSources(ctx.payload)),
+    call(fetchTrials.run, fetchTrials(ctx.payload)),
+    call(fetchExternalPaymentSources.run, fetchExternalPaymentSources(ctx.payload)),
+  ]), */
+
+    yield* put(setLoaderSuccess({ id: ctx.name }));
+    yield* next();
+  },
+);
 
 const createBillingDetail = billingApi.post<{ orgId: string; orgName: string }>(
   "/billing_details",

@@ -6,15 +6,14 @@ import {
   selectPlansAsList,
   updateAndRefreshActivePlans,
 } from "@app/deploy";
+import { useLoader, useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { logoutUrl } from "@app/routes";
-import { HeroBgLayout } from "../layouts";
-import { BannerMessages, Plans, tokens } from "../shared";
-
-import { useLoader, useQuery } from "@app/fx";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { HeroBgLayout } from "../layouts";
+import { BannerMessages, Plans, tokens } from "../shared";
 
 export const PlansPage = () => {
   const org = useSelector(selectOrganizationSelected);

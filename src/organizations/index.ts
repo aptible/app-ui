@@ -1,6 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
 
-import { defaultEntity } from "@app/hal";
+import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createAssign,
   createReducerMap,
@@ -109,6 +109,7 @@ export const defaultOrganization = (
 ): Organization => ({
   id: "",
   name: "",
+  billingDetailId: "",
   updatedAt: new Date().toISOString(),
   reauthRequired: false,
   ...o,
@@ -141,6 +142,7 @@ function deserializeOrganization(o: OrganizationResponse): Organization {
     id: o.id,
     name: o.name,
     updatedAt: o.updated_at,
+    billingDetailId: extractIdFromLink(o._links.billing_detail),
     reauthRequired: o.reauth_required || false,
   };
 }
