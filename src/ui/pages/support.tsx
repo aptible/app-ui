@@ -76,6 +76,8 @@ export const SupportPage = () => {
     queryAlgoliaApi({ query: formState.subject, debounce: subjectTyping }),
   );
 
+  const attachmentLoader = useLoader(uploadAttachment)
+
   // useEffect hook for supplying the user information [email, name] to local state once it loads
   useEffect(() => {
     if (user.email) {
@@ -115,14 +117,16 @@ export const SupportPage = () => {
     });
     setAttachedFiles([])
   };
+
+  const assignAttachment = (attachment: AttachmentObject) => {
+    setAttachedFiles([...attachedFiles, {token: attachment.token, filename: attachment.filename}]);
+  }
+
   // function for calling api to attach file to zendesk then returns a token to to local state
   const onAttachmentUpload = async (attachments: Array<any>) => {
-    let formattedAttachments = [];
     for (const attachment of attachments) {
-      const response = await uploadAttachment(attachment);
-      formattedAttachments.push(response);
+      dispatch(uploadAttachment({attachment, callback: assignAttachment}))
     }
-    setAttachedFiles([...attachedFiles, ...formattedAttachments]);
   };
 
   return (
