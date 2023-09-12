@@ -174,7 +174,7 @@ const DbExistingSelector = ({
 
   return (
     <div className="mb-4">
-      <h4 className={`${tokens.type.h4} mb-2`}>Existing Database</h4>
+      <h4 className={`${tokens.type.h4}`}>Existing Database</h4>
       <p className="text-black-500 mb-2">
         Choose an already existing database. The environment variable here will
         be injected into your app with the connection URL.
