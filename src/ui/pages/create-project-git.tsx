@@ -67,6 +67,7 @@ import { selectCurrentUser } from "@app/users";
 
 import { useSearchParams } from "react-router-dom";
 import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
+import { AppSidebarLayout } from "../layouts";
 import {
   AddSSHKeyForm,
   Banner,
@@ -136,7 +137,11 @@ export const CreateProjectFromAccountSetupPage = () => {
     }
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
-  return <Loading text={`Detecting app ${app.handle} status...`} />;
+  return (
+    <AppSidebarLayout>
+      <Loading text={`Detecting app ${app.handle} status...`} />
+    </AppSidebarLayout>
+  );
 };
 
 export const CreateProjectFromAppSetupPage = () => {
@@ -177,7 +182,11 @@ export const CreateProjectFromAppSetupPage = () => {
     }
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
-  return <Loading text={`Detecting app ${app.handle} status...`} />;
+  return (
+    <AppSidebarLayout>
+      <Loading text={`Detecting app ${app.handle} status...`} />
+    </AppSidebarLayout>
+  );
 };
 
 export const CreateProjectGitPage = () => {
@@ -211,7 +220,7 @@ export const CreateProjectAddKeyPage = () => {
   const onSuccess = () => navigate(url);
 
   return (
-    <div>
+    <AppSidebarLayout>
       <div className="text-center">
         <h1 className={tokens.type.h1}>Add your SSH Key</h1>
         <p className="my-4 text-gray-600">
@@ -224,7 +233,7 @@ export const CreateProjectAddKeyPage = () => {
       <Box>
         <AddSSHKeyForm onSuccess={onSuccess} />
       </Box>
-    </div>
+    </AppSidebarLayout>
   );
 };
 
@@ -334,7 +343,7 @@ export const CreateProjectGitPushPage = () => {
   }, [scanOp]);
 
   return (
-    <div>
+    <AppSidebarLayout>
       <div className="text-center">
         <h1 className={tokens.type.h1}>Push your code to Aptible</h1>
         <p className="my-4 text-gray-600">
@@ -443,7 +452,7 @@ export const CreateProjectGitPushPage = () => {
           </Banner>
         )}
       </Box>
-    </div>
+    </AppSidebarLayout>
   );
 };
 
@@ -981,7 +990,7 @@ export const CreateProjectGitStatusPage = () => {
   };
 
   return (
-    <div className="mb-8">
+    <AppSidebarLayout className="mb-8">
       {header()}
 
       <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />
@@ -1105,6 +1114,6 @@ export const CreateProjectGitStatusPage = () => {
         feedbackEventName="feedback.survey.post_deploy_feedback"
         description="What would you like to change about this deployment experience?"
       />
-    </div>
+    </AppSidebarLayout>
   );
 };

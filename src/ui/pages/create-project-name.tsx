@@ -23,6 +23,7 @@ import {
 import { AppState } from "@app/types";
 
 import { handleValidator } from "@app/validator";
+import { AppSidebarLayout } from "../layouts";
 import {
   BannerMessages,
   Box,
@@ -270,8 +271,16 @@ export const CreateProjectNamePage = () => {
   useQuery(fetchAllStacks());
 
   if (queryEnvId === "") {
-    return <CreateEnvironmentPage stackId={stackId} />;
+    return (
+      <AppSidebarLayout>
+        <CreateEnvironmentPage stackId={stackId} />
+      </AppSidebarLayout>
+    );
   }
 
-  return <CreateAppPage envId={queryEnvId} />;
+  return (
+    <AppSidebarLayout>
+      <CreateAppPage envId={queryEnvId} />
+    </AppSidebarLayout>
+  );
 };

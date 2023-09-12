@@ -518,11 +518,16 @@ export const appRoutes: RouteObject[] = [
       },
       {
         path: routes.CREATE_PROJECT_GIT_PATH,
-        element: <CreateProjectGitPage />,
+        element: <AppSidebarLayout />,
+        children: [
+          {
+            index: true,
+            element: <CreateProjectGitPage />,
+          },
+        ],
       },
       {
         path: routes.CREATE_PROJECT_GIT_APP_PATH,
-        element: <AppSidebarLayout />,
         children: [
           {
             path: routes.CREATE_PROJECT_GIT_PUSH_PATH,

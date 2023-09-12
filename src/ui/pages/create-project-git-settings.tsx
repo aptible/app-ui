@@ -33,6 +33,7 @@ import {
 import { AppState } from "@app/types";
 
 import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
+import { AppSidebarLayout } from "../layouts";
 import {
   Banner,
   Box,
@@ -577,7 +578,7 @@ export const CreateProjectGitSettingsPage = () => {
   });
 
   return (
-    <div className="mb-8">
+    <AppSidebarLayout className="mb-8">
       <div className="text-center">
         <h1 className={tokens.type.h1}>Configure your App</h1>
         <p className="my-4 text-gray-600">
@@ -714,6 +715,6 @@ export const CreateProjectGitSettingsPage = () => {
           </Button>
         </form>
       </Box>
-    </div>
+    </AppSidebarLayout>
   );
 };
