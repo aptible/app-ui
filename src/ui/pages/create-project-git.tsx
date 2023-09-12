@@ -232,7 +232,7 @@ export const CreateProjectAddKeyPage = () => {
       <Box className="w-full max-w-[700px] mx-auto">
         <AddSSHKeyForm onSuccess={onSuccess} />
       </Box>
-      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover absolute w-full h-full top-0 left-0 z-[-999]" />
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </AppSidebarLayout>
   );
 };
@@ -452,7 +452,7 @@ export const CreateProjectGitPushPage = () => {
           </Banner>
         )}
       </Box>
-      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover absolute w-full h-full top-0 left-0 z-[-999]" />
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </AppSidebarLayout>
   );
 };
@@ -1113,7 +1113,7 @@ export const CreateProjectGitStatusPage = () => {
           </ButtonLink>
         </StatusBox>
       </div>
-      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover absolute w-full h-full top-0 left-0 z-[-999]" />
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </AppSidebarLayout>
   );
 };

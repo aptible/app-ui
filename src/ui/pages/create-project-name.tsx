@@ -153,7 +153,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
           </ButtonCreate>
         </form>
       </Box>
-      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover absolute w-full h-full top-0 left-0 z-[-999]" />
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </div>
   );
 };
@@ -258,7 +258,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
           </ButtonOwner>
         </form>
       </Box>
-      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover absolute w-full h-full top-0 left-0 z-[-999]" />
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </div>
   );
 };
