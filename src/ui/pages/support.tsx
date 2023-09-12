@@ -227,7 +227,7 @@ export const SupportPage = () => {
                             <a href={hit.url}>{hit.title}</a>
                             {/* {hit.content} */}
                             {/* {hit.url} */}
-                          </div>
+                          </div>rounded-lg
                         </li>
                       );
                     })}
@@ -285,7 +285,7 @@ export const SupportPage = () => {
                 </div>
                 <label
                   htmlFor="attachments"
-                  className="flex w-full h-full justify-center items-center cursor-pointer"
+                  className="flex w-full h-full justify-center items-center cursor-pointer rounded-lg"
                   style={{
                     backgroundColor: "#FAFAFA",
                     border: "2px dashed #E7E8E8",
@@ -385,7 +385,7 @@ export const SupportPage = () => {
               </FormGroup>
             </div>
             <Button className="w-40 flex font-semibold" type="submit">
-              Save Changes
+              Submit Request
             </Button>
           </form>
         </Box>
