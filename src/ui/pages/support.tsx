@@ -368,7 +368,7 @@ export const SupportPage = () => {
                       <p>
                         High
                         <span className="text-sm text-slate-500 ml-2">
-                          (Important functions of your application are impaired
+                          (Important functions of your production application are impaired
                           or degraded.)
                         </span>
                       </p>
@@ -380,7 +380,7 @@ export const SupportPage = () => {
                         Urgent
                         <span className="text-sm text-slate-500 ml-2">
                           (Your business is significantly impacted. Important
-                          functions of your application are unavailable.)
+                          functions of your production application are unavailable.)
                         </span>
                       </p>
                     </div>
