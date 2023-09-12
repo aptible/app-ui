@@ -62,7 +62,7 @@ export const FreeFormSurvey = () => {
 
   return (
     <>
-      <h4 className={`${tokens.type.h4} text-center py-4`}>
+      <h4 className={`${tokens.type.h4} text-center pb-4`}>
         Choose what Aptible should build next
       </h4>
       <div className="grid grid-cols-1 gap-4">
@@ -163,7 +163,7 @@ export const CreateProjectPage = () => {
         </ButtonLink>
         {!preDeploySurveyAnswered && (
           <>
-            <hr className="h-px mt-8 mb-4 bg-gray-200 border-0 dark:bg-gray-700" />
+            <hr className="h-px mt-6 mb-4 bg-gray-200 border-0 dark:bg-gray-700" />
             <FreeFormSurvey />
           </>
         )}
@@ -172,6 +172,7 @@ export const CreateProjectPage = () => {
       <div className="mt-6 w-full max-w-[700px] mx-auto">
         <CreateProjectFooter />
       </div>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover absolute w-full h-full top-0 left-0 z-[-999]" />
     </Wrapper>
   );
 };

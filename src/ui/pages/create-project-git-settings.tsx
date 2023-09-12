@@ -715,6 +715,7 @@ export const CreateProjectGitSettingsPage = () => {
           </Button>
         </form>
       </Box>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover absolute w-full h-full top-0 left-0 z-[-999]" />
     </AppSidebarLayout>
   );
 };
