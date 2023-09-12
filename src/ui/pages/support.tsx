@@ -227,7 +227,7 @@ export const SupportPage = () => {
                             <a href={hit.url}>{hit.title}</a>
                             {/* {hit.content} */}
                             {/* {hit.url} */}
-                          </div>rounded-lg
+                          </div>
                         </li>
                       );
                     })}
