@@ -689,7 +689,7 @@ export const appRoutes: RouteObject[] = [
 
   {
     path: routes.SUPPORT_URL,
-    element: <SupportPage />
+    element: <SupportPage />,
   },
 
   {

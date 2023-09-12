@@ -1,24 +1,27 @@
+import {
+  createSupportTicket,
+  queryAlgoliaApi,
+  uploadAttachment,
+} from "@app/deploy/support";
+import { useLoader, useQuery } from "@app/fx";
+import { loginUrl } from "@app/routes";
+import { selectIsUserAuthenticated } from "@app/token";
+import { selectCurrentUser } from "@app/users";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
 import {
+  BannerMessages,
   Box,
   Button,
   FormGroup,
   Input,
-  RadioGroup,
   Radio,
-  BannerMessages,
-  TextArea,
+  RadioGroup,
   ResourceHeader,
+  TextArea,
 } from "../shared";
-import React, { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { selectCurrentUser } from "@app/users";
-import {
-  createSupportTicket,
-  uploadAttachment,
-  queryAlgoliaApi,
-} from "@app/deploy/support";
-import { useLoader, useQuery } from "@app/fx";
 
 interface SupportForm {
   email: string;
@@ -34,6 +37,14 @@ interface AttachmentObject {
 }
 
 export const SupportPage = () => {
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate(loginUrl());
+    }
+  }, [isAuthenticated]);
+
   // required for dispatching actions
   const dispatch = useDispatch();
   // fetching current user
@@ -63,7 +74,7 @@ export const SupportPage = () => {
 
     const { files } = e.dataTransfer;
 
-    if (files && files.length) {
+    if (files?.length) {
       onAttachmentUpload(files);
     }
   };
@@ -76,7 +87,7 @@ export const SupportPage = () => {
     queryAlgoliaApi({ query: formState.subject, debounce: subjectTyping }),
   );
 
-  const attachmentLoader = useLoader(uploadAttachment)
+  const attachmentLoader = useLoader(uploadAttachment);
 
   // useEffect hook for supplying the user information [email, name] to local state once it loads
   useEffect(() => {
@@ -105,7 +116,7 @@ export const SupportPage = () => {
   // fucntion for final submission of form
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let attachments = attachedFiles.map((file) => file.token);
+    const attachments = attachedFiles.map((file) => file.token);
     dispatch(createSupportTicket({ ...formState, attachments: attachments }));
     setFormState({
       email: user.email || "",
@@ -115,17 +126,20 @@ export const SupportPage = () => {
       attachments: [],
       priority: "",
     });
-    setAttachedFiles([])
+    setAttachedFiles([]);
   };
 
   const assignAttachment = (attachment: AttachmentObject) => {
-    setAttachedFiles([...attachedFiles, {token: attachment.token, filename: attachment.filename}]);
-  }
+    setAttachedFiles([
+      ...attachedFiles,
+      { token: attachment.token, filename: attachment.filename },
+    ]);
+  };
 
   // function for calling api to attach file to zendesk then returns a token to to local state
   const onAttachmentUpload = async (attachments: Array<any>) => {
     for (const attachment of attachments) {
-      dispatch(uploadAttachment({attachment, callback: assignAttachment}))
+      dispatch(uploadAttachment({ attachment, callback: assignAttachment }));
     }
   };
 
@@ -222,11 +236,9 @@ export const SupportPage = () => {
                   <ul className="pl-5 pt-2 pb-3">
                     {algoliaLoader.meta.hits.map((hit: any, key: number) => {
                       return (
-                        <li key={key}>
+                        <li key={key + 1}>
                           <div>
                             <a href={hit.url}>{hit.title}</a>
-                            {/* {hit.content} */}
-                            {/* {hit.url} */}
                           </div>
                         </li>
                       );
@@ -270,8 +282,8 @@ export const SupportPage = () => {
                         <span
                           className="ml-1 cursor-pointer"
                           style={{ color: "#AD1A1A" }}
-                          onClick={() => {
-                            let newFiles = attachedFiles.filter(
+                          onKeyUp={() => {
+                            const newFiles = attachedFiles.filter(
                               (f) => file.token !== f.token,
                             );
                             setAttachedFiles(newFiles);

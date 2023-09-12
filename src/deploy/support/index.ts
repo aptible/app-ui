@@ -17,7 +17,7 @@ export const createSupportTicket = api.post<SupportTicketProps>(
     const { subject, description, email, name, priority, attachments } =
       ctx.payload;
 
-    let data = {
+    const data = {
       subject: subject || "",
       description: description || "",
       email: email || "",
@@ -56,7 +56,7 @@ export const queryAlgoliaApi = thunks.create<{
   yield* put(setLoaderStart({ id: ctx.key }));
   const resp = yield* call(
     fetch,
-    `https://6C0QTHJH2V-dsn.algolia.net/1/indexes/docs/query?x-algolia-api-key=b14dbd7f78ae21d0a844c64cecc52cf5&x-algolia-application-id=6C0QTHJH2V`,
+    "https://6C0QTHJH2V-dsn.algolia.net/1/indexes/docs/query?x-algolia-api-key=b14dbd7f78ae21d0a844c64cecc52cf5&x-algolia-application-id=6C0QTHJH2V",
     {
       method: "POST",
       headers: {
@@ -68,7 +68,7 @@ export const queryAlgoliaApi = thunks.create<{
       }),
     },
   );
-  let data = yield* call([resp, "json"]);
+  const data = yield* call([resp, "json"]);
   yield* put(setLoaderSuccess({ id: ctx.key, meta: { hits: data.hits } }));
 });
 

@@ -16,7 +16,7 @@ import {
   searchUrl,
   securityDashboardUrl,
   stacksUrl,
-  supportUrl
+  supportUrl,
 } from "@app/routes";
 import {
   IconBox,
@@ -161,7 +161,10 @@ export const ApplicationSidebar = () => {
             >
               SUPPORT
             </a> */}
-            <Link to={supportUrl()} className="text-gray-500 hover:text-indigo px-3">
+            <Link
+              to={supportUrl()}
+              className="text-gray-500 hover:text-indigo px-3"
+            >
               SUPPORT
             </Link>
             <a
