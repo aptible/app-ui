@@ -153,7 +153,7 @@ export const ApplicationSidebar = () => {
             </a>
             <a
               className="text-gray-500 hover:text-indigo px-3"
-              href="https://aptible.com/support"
+              href="/support"
             >
               SUPPORT
             </a>

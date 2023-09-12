@@ -87,6 +87,7 @@ import {
   StackDetailVpnTunnelsPage,
   StacksPage,
   StylesPage,
+  SupportPage,
   TeamPage,
   UnauthRequired,
   VerifyEmailPage,
@@ -655,6 +656,11 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.STYLES_PATH,
     element: <StylesPage />,
+  },
+
+  {
+    path: routes.SUPPORT_URL,
+    element: <SupportPage />
   },
 
   {
