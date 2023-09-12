@@ -67,13 +67,13 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
 
   return (
     <div>
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Name your App</h1>
       </div>
 
       <ProgressProject cur={1} />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <form onSubmit={onSubmit}>
           <FormGroup
             label="Stack"
@@ -192,7 +192,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
   return (
     <div>
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Name your Environment</h1>
         <p className="mt-4 mb-2 text-gray-600">
           An Aptible environment contains your app along with any required
@@ -202,7 +202,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
       <ProgressProject cur={1} />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <form onSubmit={onSubmit}>
           <FormGroup
             label="Stack"

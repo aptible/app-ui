@@ -579,7 +579,7 @@ export const CreateProjectGitSettingsPage = () => {
 
   return (
     <AppSidebarLayout className="mb-8">
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Configure your App</h1>
         <p className="my-4 text-gray-600">
           Add required Databases and review settings to finish.
@@ -592,7 +592,7 @@ export const CreateProjectGitSettingsPage = () => {
         next={createProjectGitStatusUrl(appId)}
       />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <div className="mb-4">
           {codeScan.isInitialLoading ? (
             <Loading text="Loading code scan results..." />

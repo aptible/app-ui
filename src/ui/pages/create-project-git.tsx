@@ -221,7 +221,7 @@ export const CreateProjectAddKeyPage = () => {
 
   return (
     <AppSidebarLayout>
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Add your SSH Key</h1>
         <p className="my-4 text-gray-600">
           Add your SSH key to push code into Aptible.
@@ -230,7 +230,7 @@ export const CreateProjectAddKeyPage = () => {
 
       <ProgressProject cur={-1} next={url} />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <AddSSHKeyForm onSuccess={onSuccess} />
       </Box>
     </AppSidebarLayout>
@@ -344,7 +344,7 @@ export const CreateProjectGitPushPage = () => {
 
   return (
     <AppSidebarLayout>
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Push your code to Aptible</h1>
         <p className="my-4 text-gray-600">
           We will look for a Dockerfile or generate one for you to deploy your
@@ -358,7 +358,7 @@ export const CreateProjectGitPushPage = () => {
         next={createProjectGitSettingsUrl(appId, query)}
       />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <div>
           <h4 className={tokens.type.h4}>
             Deploy Custom Code or Starter Template
@@ -948,7 +948,7 @@ export const CreateProjectGitStatusPage = () => {
   const header = () => {
     if (status === "succeeded") {
       return (
-        <div className="text-center">
+        <div className="text-center mt-10">
           <h1 className={tokens.type.h1}>Deployed your Code</h1>
           <p className="my-4 text-gray-600">
             All done! Deployment completed successfully.
@@ -959,7 +959,7 @@ export const CreateProjectGitStatusPage = () => {
 
     if (status === "failed") {
       return (
-        <div className="text-center">
+        <div className="text-center mt-10">
           <h1 className={tokens.type.h1}>Deployment Failed</h1>
           <p className="my-4 text-gray-600">
             Don't worry! Edit your project settings and click Redeploy when
@@ -970,7 +970,7 @@ export const CreateProjectGitStatusPage = () => {
     }
 
     return (
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Deploying your Code</h1>
         <p className="my-4 text-gray-600">Deployment is in progress...</p>
       </div>
@@ -995,125 +995,127 @@ export const CreateProjectGitStatusPage = () => {
 
       <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />
 
-      <ResourceGroupBox
-        handle={app.handle}
-        appId={appId}
-        status={<StatusPill status={status} from={dateStr} />}
-      >
-        {isInitialLoading ? (
-          <Loading text="Loading resources..." />
-        ) : (
-          <ProjectStatus
-            status={status}
-            app={app}
-            dbs={dbs}
-            endpoints={vhosts}
-            gitRef={gitRef}
-          />
-        )}
-      </ResourceGroupBox>
-
-      {deployProjectLoader.isError ? (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>Error!</h4>
-          <BannerMessages {...deployProjectLoader} />
-        </StatusBox>
-      ) : null}
-
-      {redeployLoader.isError ? (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>Error!</h4>
-          <BannerMessages {...redeployLoader} />
-        </StatusBox>
-      ) : null}
-
-      {services.length > 0 && vhosts.length > 0 ? (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>Current Endpoints</h4>
-          {vhosts.map((vhost) => (
-            <VhostRow key={vhost.id} vhost={vhost} />
-          ))}
-          <div className="flex gap-3">
-            <Link to={appEndpointsUrl(app.id)}>Manage Endpoints</Link>
-            <ExternalLink
-              href="https://www.aptible.com/docs/endpoints"
-              variant="info"
-            >
-              View Docs
-            </ExternalLink>
-          </div>
-        </StatusBox>
-      ) : (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>
-            Which service needs an{" "}
-            <ExternalLink
-              href="https://www.aptible.com/docs/endpoints"
-              variant="info"
-            >
-              Endpoint
-            </ExternalLink>
-            ?
-          </h4>
-          {services.length ? (
-            <div className="mt-2">
-              <CreateEndpointForm app={app} />
-            </div>
-          ) : (
-            <p className="text-black-500">
-              Your services will appear here shortly...
-            </p>
-          )}
-        </StatusBox>
-      )}
-
-      {deployOp.status === "failed" || redeployLoader.isLoading ? (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>Deployment Failed</h4>
-          <p className="text-black-500">
-            • Check the error logs and make changes, then push your code to
-            redeploy.
-          </p>
-          <p className="text-black-500 mb-4">
-            • Or, you can click Redeploy to try again without making any
-            changes.
-          </p>
-
-          <Button
-            onClick={() => redeploy(true)}
-            isLoading={redeployLoader.isLoading}
-          >
-            Redeploy
-          </Button>
-        </StatusBox>
-      ) : null}
-
-      <StatusBox>
-        <h4 className={tokens.type.h4}>How to deploy changes</h4>
-        <p className="mb-2 text-black-500">
-          Commit changes to your local git repo and push to the Aptible git
-          server.
-        </p>
-        <PreCode
-          segments={listToInvertedTextColor(["git push aptible", "main"])}
-          allowCopy
-        />
-        <hr />
-
-        {viewProject()}
-
-        <ButtonLink
-          to={createProjectGitSettingsUrl(appId)}
-          variant="white"
-          className="mt-2"
+      <div className="w-full max-w-[700px] mx-auto">
+        <ResourceGroupBox
+          handle={app.handle}
+          appId={appId}
+          status={<StatusPill status={status} from={dateStr} />}
         >
-          Edit Configuration
-        </ButtonLink>
-      </StatusBox>
-      <FeedbackForm
-        feedbackEventName="feedback.survey.post_deploy_feedback"
-        description="What would you like to change about this deployment experience?"
-      />
+          {isInitialLoading ? (
+            <Loading text="Loading resources..." />
+          ) : (
+            <ProjectStatus
+              status={status}
+              app={app}
+              dbs={dbs}
+              endpoints={vhosts}
+              gitRef={gitRef}
+            />
+          )}
+        </ResourceGroupBox>
+
+        {deployProjectLoader.isError ? (
+          <StatusBox>
+            <h4 className={tokens.type.h4}>Error!</h4>
+            <BannerMessages {...deployProjectLoader} />
+          </StatusBox>
+        ) : null}
+
+        {redeployLoader.isError ? (
+          <StatusBox>
+            <h4 className={tokens.type.h4}>Error!</h4>
+            <BannerMessages {...redeployLoader} />
+          </StatusBox>
+        ) : null}
+
+        {services.length > 0 && vhosts.length > 0 ? (
+          <StatusBox>
+            <h4 className={tokens.type.h4}>Current Endpoints</h4>
+            {vhosts.map((vhost) => (
+              <VhostRow key={vhost.id} vhost={vhost} />
+            ))}
+            <div className="flex gap-3">
+              <Link to={appEndpointsUrl(app.id)}>Manage Endpoints</Link>
+              <ExternalLink
+                href="https://www.aptible.com/docs/endpoints"
+                variant="info"
+              >
+                View Docs
+              </ExternalLink>
+            </div>
+          </StatusBox>
+        ) : (
+          <StatusBox>
+            <h4 className={tokens.type.h4}>
+              Which service needs an{" "}
+              <ExternalLink
+                href="https://www.aptible.com/docs/endpoints"
+                variant="info"
+              >
+                Endpoint
+              </ExternalLink>
+              ?
+            </h4>
+            {services.length ? (
+              <div className="mt-2">
+                <CreateEndpointForm app={app} />
+              </div>
+            ) : (
+              <p className="text-black-500">
+                Your services will appear here shortly...
+              </p>
+            )}
+          </StatusBox>
+        )}
+
+        {deployOp.status === "failed" || redeployLoader.isLoading ? (
+          <StatusBox>
+            <h4 className={tokens.type.h4}>Deployment Failed</h4>
+            <p className="text-black-500">
+              • Check the error logs and make changes, then push your code to
+              redeploy.
+            </p>
+            <p className="text-black-500 mb-4">
+              • Or, you can click Redeploy to try again without making any
+              changes.
+            </p>
+
+            <Button
+              onClick={() => redeploy(true)}
+              isLoading={redeployLoader.isLoading}
+            >
+              Redeploy
+            </Button>
+          </StatusBox>
+        ) : null}
+
+        <StatusBox>
+          <h4 className={tokens.type.h4}>How to deploy changes</h4>
+          <p className="mb-2 text-black-500">
+            Commit changes to your local git repo and push to the Aptible git
+            server.
+          </p>
+          <PreCode
+            segments={listToInvertedTextColor(["git push aptible", "main"])}
+            allowCopy
+          />
+          <hr />
+
+          {viewProject()}
+
+          <ButtonLink
+            to={createProjectGitSettingsUrl(appId)}
+            variant="white"
+            className="mt-2"
+          >
+            Edit Configuration
+          </ButtonLink>
+        </StatusBox>
+        <FeedbackForm
+          feedbackEventName="feedback.survey.post_deploy_feedback"
+          description="What would you like to change about this deployment experience?"
+        />
+      </div>
     </AppSidebarLayout>
   );
 };
