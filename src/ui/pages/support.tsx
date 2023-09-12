@@ -138,10 +138,8 @@ export const SupportPage = () => {
             Please enter the details of your request. A member of our support
             staff will respond as soon as possible. Be sure to include relevant
             information such as app handles or timestamps, and{" "}
-            <i>
-              <b>omit </b>
-            </i>
-            sensitive information like passwords.
+            <b>omit sensitive information </b>
+            like passwords.
           </div>
           <BannerMessages className="my-2" {...loader} />
           <form onSubmit={onSubmitForm}>
