@@ -152,10 +152,8 @@ export const SupportPage = () => {
             Please enter the details of your request. A member of our support
             staff will respond as soon as possible. Be sure to include relevant
             information such as app handles or timestamps, and{" "}
-            <i>
-              <b>omit </b>
-            </i>
-            sensitive information like passwords.
+            <b>omit sensitive information </b>
+            like passwords.
           </div>
           <BannerMessages className="my-2" {...loader} />
           <form onSubmit={onSubmitForm}>
@@ -231,8 +229,8 @@ export const SupportPage = () => {
               </FormGroup>
 
               {algoliaLoader?.meta?.hits?.length ? (
-                <div style={{ backgroundColor: "#FDF8F0" }} className="mt-5">
-                  <div className="pl-5 pt-3">Related Articles</div>
+                <div style={{ backgroundColor: "#FDF8F0" }} className="mt-5 rounded-lg">
+                  <div className="pl-5 pt-3 font-semibold">Related Articles</div>
                   <ul className="pl-5 pt-2 pb-3">
                     {algoliaLoader.meta.hits.map((hit: any, key: number) => {
                       return (
