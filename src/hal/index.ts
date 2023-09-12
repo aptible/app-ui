@@ -20,7 +20,7 @@ export const defaultHalHref = (href = ""): { href: string } => {
 
 export function extractIdFromLink(
   relation: { href: string } | null | undefined,
-) {
+): string {
   if (!relation?.href) {
     return "";
   }
@@ -54,6 +54,10 @@ function transformResourceName(name: string | undefined | null): ResourceType {
       return "vpc_peer";
     case "vpn_tunnels":
       return "vpn_tunnel";
+    case "log_drains":
+      return "log_drain";
+    case "metric_drains":
+      return "metric_drain";
     default:
       return "unknown";
   }

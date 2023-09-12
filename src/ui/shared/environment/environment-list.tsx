@@ -1,27 +1,32 @@
-import { IconInfo } from "../icons";
-import { Tooltip } from "../tooltip";
+import { prettyEnglishDate, timeAgo } from "@app/date";
 import {
   fetchAllEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
-  selectEnvironmentsByStackId,
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
+import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { useQuery } from "@app/fx";
-import { environmentAppsUrl, stackDetailEnvsUrl } from "@app/routes";
+import {
+  createProjectGitUrl,
+  environmentAppsUrl,
+  environmentDatabasesUrl,
+  stackDetailEnvsUrl,
+} from "@app/routes";
+import { capitalize } from "@app/string-utils";
 import type { AppState, DeployEnvironment } from "@app/types";
-import { Link, useSearchParams } from "react-router-dom";
-
+import { useSelector } from "react-redux";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { ButtonOwner } from "../button";
+import { EmptyResourcesTable } from "../empty-resources-table";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { prettyEnglishDate, timeAgo } from "@app/date";
-import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
-import { capitalize } from "@app/string-utils";
-import { useSelector } from "react-redux";
+import { Tooltip } from "../tooltip";
 
 interface EnvironmentCellProps {
   environment: DeployEnvironment;
@@ -58,7 +63,11 @@ const EnvironmentDatabasesCell = ({ environment }: EnvironmentCellProps) => {
   );
   return (
     <Td className="center items-center justify-center">
-      <div className="text-center">{dbs.length}</div>
+      <Link to={environmentDatabasesUrl(environment.id)}>
+        <div className={`${tokens.type["table link"]} text-center`}>
+          {dbs.length}
+        </div>
+      </Link>
     </Td>
   );
 };
@@ -69,7 +78,11 @@ const EnvironmentAppsCell = ({ environment }: EnvironmentCellProps) => {
   );
   return (
     <Td className="center items-center justify-center">
-      <div className="text-center">{apps.length}</div>
+      <Link to={environmentAppsUrl(environment.id)}>
+        <div className={`${tokens.type["table link"]} text-center`}>
+          {apps.length}
+        </div>
+      </Link>
     </Td>
   );
 };
@@ -131,63 +144,55 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
-type HeaderTypes =
-  | {
-      resourceHeaderType: "title-bar";
-      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-    }
-  | { resourceHeaderType: "simple-text"; onChange?: null };
-
 const EnvsResourceHeaderTitleBar = ({
   envs,
-  resourceHeaderType = "title-bar",
   search = "",
   onChange,
+  showTitle = true,
+  stackId = "",
 }: {
   envs: DeployEnvironment[];
   search?: string;
-} & HeaderTypes) => {
-  switch (resourceHeaderType) {
-    case "title-bar":
-      if (!onChange) {
-        return null;
+  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+  showTitle?: boolean;
+  stackId?: string;
+}) => {
+  const navigate = useNavigate();
+  const onCreate = () => {
+    navigate(createProjectGitUrl(stackId ? `stack_id=${stackId}` : ""));
+  };
+  return (
+    <ResourceHeader
+      title={showTitle ? "Environments" : ""}
+      actions={[
+        <ButtonOwner onClick={onCreate}>
+          <IconPlusCircle variant="sm" className="mr-2" />
+          New Environment
+        </ButtonOwner>,
+      ]}
+      filterBar={
+        <div>
+          <InputSearch
+            placeholder="Search environments..."
+            search={search}
+            onChange={onChange}
+          />
+
+          <div className="flex items-center gap-1 text-gray-500 mt-4 text-base">
+            <span>
+              {envs.length} Environment{envs.length !== 1 && "s"}
+            </span>
+            <Tooltip
+              fluid
+              text="Environments are how you separate resources like staging and production."
+            >
+              <IconInfo className="opacity-50 hover:opacity-100" variant="sm" />
+            </Tooltip>
+          </div>
+        </div>
       }
-      return (
-        <ResourceHeader
-          title="Environments"
-          filterBar={
-            <div className="pt-1">
-              <InputSearch
-                placeholder="Search environments..."
-                search={search}
-                onChange={onChange}
-              />
-              <div className="flex">
-                <p className="flex text-gray-500 mt-4 text-base">
-                  {envs.length} Environment{envs.length !== 1 && "s"}
-                </p>
-                <div className="mt-4">
-                  <Tooltip
-                    fluid
-                    text="Environments are how you separate resources like staging and production."
-                  >
-                    <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
-                  </Tooltip>
-                </div>
-              </div>
-            </div>
-          }
-        />
-      );
-    case "simple-text":
-      return (
-        <p className="flex text-gray-500 text-base mb-4">
-          {envs.length} Environment{envs.length !== 1 && "s"}
-        </p>
-      );
-    default:
-      return null;
-  }
+    />
+  );
 };
 const environmentHeaders = [
   "Environment",
@@ -199,11 +204,14 @@ const environmentHeaders = [
 
 export function EnvironmentListByStack({ stackId }: { stackId: string }) {
   const query = useQuery(fetchAllEnvironments());
-  const [params, _] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value });
+  };
 
   const environments = useSelector((s: AppState) =>
-    selectEnvironmentsByStackId(s, { stackId }),
+    selectEnvironmentsForTableSearch(s, { search, stackId }),
   );
 
   return (
@@ -214,8 +222,11 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
       <ResourceListView
         header={
           <EnvsResourceHeaderTitleBar
+            stackId={stackId}
+            search={search}
             envs={environments}
-            resourceHeaderType="simple-text"
+            onChange={onChange}
+            showTitle={false}
           />
         }
         tableHeader={
@@ -252,20 +263,24 @@ export function EnvironmentList() {
     selectEnvironmentsForTableSearch(s, { search }),
   );
 
+  const titleBar = (
+    <EnvsResourceHeaderTitleBar
+      envs={environments}
+      search={search}
+      onChange={onChange}
+    />
+  );
+
   return (
     <LoadResources
+      empty={
+        <EmptyResourcesTable headers={environmentHeaders} titleBar={titleBar} />
+      }
       query={query}
       isEmpty={environments.length === 0 && search === ""}
     >
       <ResourceListView
-        header={
-          <EnvsResourceHeaderTitleBar
-            envs={environments}
-            resourceHeaderType="title-bar"
-            search={search}
-            onChange={onChange}
-          />
-        }
+        header={titleBar}
         tableHeader={
           <TableHead
             headers={environmentHeaders}

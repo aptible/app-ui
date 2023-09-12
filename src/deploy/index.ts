@@ -23,3 +23,7 @@ export * from "./vpn_tunnel";
 export * from "./code-scan-result";
 export * from "./backup";
 export * from "./backup-retention-policy";
+export * from "./database-credential";
+export * from "./activity-report";
+export * from "./image";
+export * from "./disk";

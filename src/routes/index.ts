@@ -53,6 +53,8 @@ export const billingMethodUrl = () => BILLING_METHOD_PAGE;
 
 export const CREATE_ORG_PATH = "/organizations/create";
 export const createOrgUrl = () => CREATE_ORG_PATH;
+export const ORG_PICKER_PATH = "/organizations/picker";
+export const orgPickerUrl = () => ORG_PICKER_PATH;
 
 export const ACCEPT_INVITATION_WITH_CODE_PATH =
   "/accept-invitation/:invitationId/:verificationCode";
@@ -113,6 +115,13 @@ export const databaseScaleUrl = (id: string) =>
 export const DATABASE_SETTINGS_PATH = `${DATABASE_DETAIL_PATH}/settings`;
 export const databaseSettingsUrl = (id: string) =>
   `${databaseDetailUrl(id)}/settings`;
+export const DATABASE_CREDENTIALS_PATH = `${DATABASE_DETAIL_PATH}/credentials`;
+export const databaseCredentialsUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/credentials`;
+export const DATABASE_ENDPOINT_CREATE_PATH = `${DATABASE_DETAIL_PATH}/endpoints/create`;
+export const databaseEndpointCreateUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/endpoints/create`;
+
 export const BACKUP_RESTORE_PATH = "/backups/:id/restore";
 export const backupRestoreUrl = (id: string) => `/backups/${id}/restore`;
 
@@ -127,6 +136,8 @@ export const endpointDetailSetupUrl = (id: string) =>
 export const ENDPOINT_DETAIL_SETTINGS_PATH = "/endpoints/:id/settings";
 export const endpointDetailSettingsUrl = (id: string) =>
   `${endpointDetailUrl(id)}/settings`;
+export const ENDPOINTS_PATH = "/endpoints";
+export const endpointsUrl = () => ENDPOINTS_PATH;
 
 export const DEPLOYMENTS_PATH = "/deployments";
 export const deploymentsUrl = () => DEPLOYMENTS_PATH;
@@ -149,6 +160,10 @@ export const environmentIntegrationsUrl = (id: string) =>
 export const ENVIRONMENT_CERTIFICATES_PATH = "/environments/:id/certificates";
 export const environmentCertificatesUrl = (id: string) =>
   `/environments/${id}/certificates`;
+export const ENVIRONMENT_ACTIVITY_REPORTS_PATH =
+  "/environments/:id/activity_reports";
+export const environmentActivityReportsUrl = (id: string) =>
+  `/environments/${id}/activity_reports`;
 export const ENVIRONMENT_ACTIVITY_PATH = "/environments/:id/activity";
 export const environmentActivityUrl = (id: string) =>
   `/environments/${id}/activity`;
@@ -181,15 +196,20 @@ export const teamUrl = () => TEAM_PATH;
 export const CREATE_PROJECT_PATH = "/create";
 export const createProjectUrl = () => CREATE_PROJECT_PATH;
 export const CREATE_PROJECT_ADD_KEY_PATH = "/create/ssh";
-export const createProjectAddKeyUrl = () => CREATE_PROJECT_ADD_KEY_PATH;
+export const createProjectAddKeyUrl = (params = "") => {
+  return `${CREATE_PROJECT_ADD_KEY_PATH}${params ? `?${params}` : ""}`;
+};
 export const CREATE_PROJECT_ADD_NAME_PATH = "/create/name";
-export const createProjectAddNameUrl = () => CREATE_PROJECT_ADD_NAME_PATH;
+export const createProjectAddNameUrl = (params = "") => {
+  return `${CREATE_PROJECT_ADD_NAME_PATH}${params ? `?${params}` : ""}`;
+};
 export const CREATE_PROJECT_DEPLOYMENTS_PATH = "/create/deployments";
 export const createProjectDeploymentsUrl = (params = "") =>
   `${CREATE_PROJECT_DEPLOYMENTS_PATH}${params ? `?${params}` : ""}`;
 
 export const CREATE_PROJECT_GIT_PATH = "/create/git";
-export const createProjectGitUrl = () => CREATE_PROJECT_GIT_PATH;
+export const createProjectGitUrl = (params = "") =>
+  `${CREATE_PROJECT_GIT_PATH}${params ? `?${params}` : ""}`;
 
 export const CREATE_PROJECT_SETUP_PATH = "/accounts/:envId/setup";
 export const createProjectSetupUrl = (envId: string) =>

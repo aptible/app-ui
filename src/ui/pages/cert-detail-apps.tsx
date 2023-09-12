@@ -2,14 +2,14 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
 
-import { AppList, AppsResourceHeaderTitleBar } from "../shared";
 import {
   fetchAppsByCertId,
   fetchEndpointsByCertId,
-  selectAppsByCertificateId,
+  selectAppsByCertId,
   selectCertificateById,
 } from "@app/deploy";
 import { AppState } from "@app/types";
+import { AppList, AppsResourceHeaderTitleBar } from "../shared";
 
 export const CertDetailAppsPage = () => {
   const { id = "" } = useParams();
@@ -18,8 +18,8 @@ export const CertDetailAppsPage = () => {
 
   const cert = useSelector((s: AppState) => selectCertificateById(s, { id }));
   const apps = useSelector((s: AppState) =>
-    selectAppsByCertificateId(s, {
-      certificateId: id,
+    selectAppsByCertId(s, {
+      certId: id,
       envId: cert.environmentId,
     }),
   );

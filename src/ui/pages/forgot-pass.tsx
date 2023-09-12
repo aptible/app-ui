@@ -1,3 +1,9 @@
+import { forgotPass, resetPass } from "@app/auth/pass";
+import { useLoader } from "@app/fx";
+import { loginUrl } from "@app/routes";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link, useParams } from "react-router-dom";
 import { HeroBgLayout } from "../layouts";
 import {
   Banner,
@@ -8,12 +14,6 @@ import {
   Input,
   tokens,
 } from "../shared";
-import { forgotPass, resetPass } from "@app/auth/pass";
-import { useLoader } from "@app/fx";
-import { loginUrl } from "@app/routes";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link, useParams } from "react-router-dom";
 
 export const ForgotPassPage = () => {
   const dispatch = useDispatch();

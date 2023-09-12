@@ -6,7 +6,7 @@ import { checkDns, renewEndpoint, selectEndpointById } from "@app/deploy";
 import { endpointDetailActivityUrl } from "@app/routes";
 import { AcmeChallenge, AppState } from "@app/types";
 
-import { Button, IconCheck, IconX, Tooltip, tokens } from "../shared";
+import { Box, Button, IconCheck, IconX, Tooltip, tokens } from "../shared";
 
 const CnameItem = ({ from, to }: { from: string; to: string }) => {
   const loader = useQuery(checkDns({ from, to }));
@@ -77,7 +77,7 @@ export const EndpointDetailSetupPage = () => {
   });
 
   return (
-    <div>
+    <Box>
       <div className="flex flex-col gap-2">
         <h3 className={tokens.type.h3}>Managed HTTPS Validation Records</h3>
 
@@ -115,10 +115,14 @@ export const EndpointDetailSetupPage = () => {
           ) : null}
         </div>
 
-        <Button isLoading={loader.isLoading} onClick={renew}>
+        <Button
+          className="w-[200px]"
+          isLoading={loader.isLoading}
+          onClick={renew}
+        >
           I created the records
         </Button>
       </div>
-    </div>
+    </Box>
   );
 };

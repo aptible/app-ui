@@ -1,4 +1,11 @@
-import { api } from "@app/api";
+import {
+  PaginateProps,
+  api,
+  cacheShortTimer,
+  cacheTimer,
+  combinePages,
+  thunks,
+} from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createAction,
@@ -8,16 +15,17 @@ import {
 } from "@app/slice-helpers";
 import type {
   AppState,
-  DeployOperationResponse,
   DeployService,
   InstanceClass,
   LinkResponse,
 } from "@app/types";
 
+import { createSelector } from "@reduxjs/toolkit";
+import { poll } from "saga-query";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
+import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
-import { poll } from "saga-query";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m4";
 
@@ -55,7 +63,7 @@ export const defaultServiceResponse = (
     command: "",
     container_count: 0,
     container_memory_limit_mb: 0,
-    instance_class: "m4",
+    instance_class: DEFAULT_INSTANCE_CLASS,
     created_at: now,
     updated_at: now,
     _links: {
@@ -173,11 +181,80 @@ export const hasDeployService = (a: DeployService) => a.id !== "";
 export const serviceReducers = createReducerMap(slice);
 export const findServiceById = must(selectors.findById);
 
+export const selectServicesByAppId = createSelector(
+  selectServicesAsList,
+  (_: AppState, p: { appId: string }) => p.appId,
+  (services, appId) => {
+    return services.filter((service) => service.appId === appId);
+  },
+);
+
+export const selectEnvToServicesMap = createSelector(
+  selectServicesAsList,
+  (services) => {
+    const envToServiceMap: Record<string, Set<string> | undefined> = {};
+
+    services.forEach((service) => {
+      if (!service.appId) {
+        return;
+      }
+
+      if (!Object.hasOwn(envToServiceMap, service.environmentId)) {
+        envToServiceMap[service.environmentId] = new Set<string>();
+      }
+
+      envToServiceMap[service.environmentId]?.add(service.id);
+    });
+
+    return envToServiceMap;
+  },
+);
+
+export const selectServicesByEnvId = createSelector(
+  selectEnvToServicesMap,
+  (_: AppState, p: { envId: string }) => p.envId,
+  (envToServicesMap, envId) => {
+    return envToServicesMap[envId] || new Set<string>();
+  },
+);
+
+export const selectAppToServicesMap = createSelector(
+  selectServicesAsList,
+  (services) => {
+    const appToServiceMap: Record<string, string[] | undefined> = {};
+
+    services.forEach((service) => {
+      if (!service.appId) {
+        return;
+      }
+
+      if (!Object.hasOwn(appToServiceMap, service.appId)) {
+        appToServiceMap[service.appId] = [];
+      }
+
+      appToServiceMap[service.appId]?.push(service.id);
+    });
+
+    return appToServiceMap;
+  },
+);
+
 export const fetchService = api.get<{ id: string }>("/services/:id");
+
+export const fetchServices = api.get<PaginateProps>("/services?page=:page", {
+  saga: cacheTimer(),
+});
+export const fetchAllServices = thunks.create(
+  "fetch-all-services",
+  combinePages(fetchServices),
+);
 export const fetchEnvironmentServices = api.get<{ id: string }>(
   "/accounts/:id/services",
 );
-export const fetchAppServices = api.get<{ id: string }>("/apps/:id/services");
+export const fetchServicesByAppId = api.get<{ id: string }>(
+  "/apps/:id/services",
+  { saga: cacheShortTimer() },
+);
 
 export const fetchServiceOperations = api.get<{ id: string }>(
   "/services/:id/operations",
@@ -202,17 +279,19 @@ export interface ServiceScaleProps {
   id: string;
   containerCount?: number;
   containerSize?: number;
+  containerProfile?: InstanceClass;
 }
 
 export const scaleService = api.post<
   ServiceScaleProps,
   DeployOperationResponse
 >(["/services/:id/operations", "scale"], function* (ctx, next) {
-  const { id, containerCount, containerSize } = ctx.payload;
+  const { id, containerCount, containerProfile, containerSize } = ctx.payload;
   const body = {
     type: "scale",
     id,
     container_count: containerCount,
+    instance_profile: containerProfile,
     container_size: containerSize,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });

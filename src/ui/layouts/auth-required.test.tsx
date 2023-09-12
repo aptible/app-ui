@@ -16,14 +16,6 @@ const LoginMock = () => {
 const VerifyMock = () => {
   return <div>Simulated verify</div>;
 };
-const mockUnverifiedUser = {
-  users: [
-    {
-      ...testUser,
-      verified: false,
-    },
-  ],
-};
 
 describe("AuthRequired", () => {
   it("should allow child to render without a redirect when current token active", async () => {
@@ -86,22 +78,24 @@ describe("AuthRequired", () => {
     server.use(
       rest.get(
         `${testEnv.authUrl}/organizations/:orgId/users`,
-        (req, res, ctx) => {
+        (_, res, ctx) => {
           return res(
             ctx.json({
-              _embedded: mockUnverifiedUser,
+              _embedded: { users: [testUser] },
             }),
           );
         },
       ),
-      rest.get(`${testEnv.authUrl}/users/:userId`, (req, res, ctx) => {
-        return res(ctx.json(mockUnverifiedUser));
+      rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
+        return res(ctx.json(testUser));
       }),
     );
     render(
       <TestProvider>
-        <AuthRequired />
-        <h1>Test element</h1>
+        <div>
+          <AuthRequired />
+          <h1>Test element</h1>
+        </div>
       </TestProvider>,
     );
     await screen.findByText("Simulated verify");

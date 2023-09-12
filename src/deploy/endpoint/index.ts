@@ -1,10 +1,18 @@
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
-import { api, cacheShortTimer, thunks } from "@app/api";
+import {
+  PaginateProps,
+  api,
+  cacheShortTimer,
+  cacheTimer,
+  combinePages,
+  thunks,
+} from "@app/api";
 import {
   call,
   poll,
   put,
+  select,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
@@ -20,17 +28,30 @@ import type {
   AcmeStatus,
   AppState,
   DeployEndpoint,
-  DeployOperationResponse,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
 
-import { selectAppById, selectAppsByEnvId } from "../app";
+import { selectEnv } from "@app/env";
+import { findAppById, selectApps, selectAppsByEnvId } from "../app";
 import { createCertificate } from "../certificate";
-import { selectDatabasesByEnvId } from "../database";
+import {
+  findDatabaseById,
+  selectDatabases,
+  selectDatabasesByOrgAsList,
+} from "../database";
+import { selectEnvironmentsByOrgAsList } from "../environment";
+import { DeployOperationResponse } from "../operation";
+import {
+  findServiceById,
+  selectAppToServicesMap,
+  selectEnvToServicesMap,
+  selectServices,
+  selectServicesByAppId,
+} from "../service";
 import { selectDeploy } from "../slice";
 
-interface DeployEndpointResponse {
+export interface DeployEndpointResponse {
   id: number;
   acme: boolean;
   acme_configuration: AcmeConfiguration | null;
@@ -203,9 +224,11 @@ export const selectEndpointsByServiceIds = createSelector(
 
 export const selectEndpointsByAppId = createSelector(
   selectEndpointsAsList,
-  selectAppById,
-  (endpoints, app) => {
-    return endpoints.filter((end) => app.serviceIds.includes(end.serviceId));
+  selectServicesByAppId,
+  (endpoints, services) => {
+    return endpoints.filter((end) =>
+      services.map((service) => service.id).includes(end.serviceId),
+    );
   },
 );
 
@@ -220,54 +243,203 @@ export const selectFirstEndpointByAppId = createSelector(
   },
 );
 
+const selectServiceToDbMap = createSelector(
+  selectDatabasesByOrgAsList,
+  (dbs) => {
+    const serviceToDbId: Record<string, string | undefined> = {};
+    dbs.forEach((db) => {
+      serviceToDbId[db.serviceId] = db.id;
+    });
+
+    return serviceToDbId;
+  },
+);
+
 export const selectEndpointsByEnvironmentId = createSelector(
-  selectAppsByEnvId,
-  selectDatabasesByEnvId,
+  selectEnvToServicesMap,
   selectEndpointsAsList,
   (_: AppState, p: { envId: string }) => p.envId,
-  (apps, databases, endpoints, envId) => {
-    const serviceIdsUsedInAppsAndDatabases: string[] = [
-      // one app can have multiple services, so pull those out
-      ...apps
-        .filter((app) => app.environmentId === envId)
-        .map((app) => app.serviceIds),
-      databases
-        .filter((database) => database.environmentId === envId)
-        .map((db) => db.serviceId),
-    ].reduce((acc, elem) => acc.concat(...elem));
-    return endpoints.filter((endpoint) =>
-      serviceIdsUsedInAppsAndDatabases.includes(endpoint.serviceId),
+  (envToServiceMap, enps, envId) =>
+    enps.filter((enp) => envToServiceMap[envId]?.has(enp.serviceId)),
+);
+
+export const selectEndpointsByOrgAsList = createSelector(
+  selectEnvToServicesMap,
+  selectEndpointsAsList,
+  selectEnvironmentsByOrgAsList,
+  (envToServiceMap, enps, envs) => {
+    return enps.filter((enp) =>
+      envs.some((env) => envToServiceMap[env.id]?.has(enp.serviceId)),
     );
   },
 );
 
-export const selectEndpointByEnvironmentAndCertificateId = createSelector(
-  selectEndpointsByEnvironmentId,
-  (_: AppState, p: { certificateId: string }) => p.certificateId,
-  (endpoints, certificateId) =>
-    endpoints.filter((endpoint) => endpoint.certificateId === certificateId),
+export interface DeployEndpointRow extends DeployEndpoint {
+  resourceType: "database" | "app" | "unknown";
+  resourceId: string;
+  resourceHandle: string;
+}
+
+export const selectEndpointsForTable = createSelector(
+  selectEndpointsByOrgAsList,
+  selectServices,
+  selectApps,
+  selectDatabases,
+  (enps, servicesMap, apps, dbs) =>
+    enps
+      .map((enp): DeployEndpointRow => {
+        const service = findServiceById(servicesMap, { id: enp.serviceId });
+
+        if (service.appId) {
+          const app = findAppById(apps, { id: service.appId });
+          return {
+            ...enp,
+            resourceType: "app",
+            resourceHandle: app.handle,
+            resourceId: app.id,
+          };
+        }
+
+        if (service.databaseId) {
+          const app = findDatabaseById(dbs, { id: service.databaseId });
+          return {
+            ...enp,
+            resourceType: "database",
+            resourceHandle: app.handle,
+            resourceId: app.id,
+          };
+        }
+
+        return {
+          ...enp,
+          resourceType: "unknown",
+          resourceHandle: "",
+          resourceId: "",
+        };
+      })
+      .sort((a, b) => getEndpointUrl(a).localeCompare(getEndpointUrl(b))),
 );
 
-export const selectEndpointsByCertificateId = createSelector(
+const computeSearchMatch = (
+  enp: DeployEndpointRow,
+  search: string,
+): boolean => {
+  if (search === "") {
+    return true;
+  }
+  const url = getEndpointUrl(enp);
+  const handle = enp.resourceHandle.toLocaleLowerCase();
+  const plc = getPlacement(enp);
+  const placement = plc === "Private" ? "private" : "public";
+  const placementAlt = plc === "Private" ? "internal" : "external";
+
+  const urlMatch = url.includes(search);
+  const handleMatch = handle.includes(search);
+  const placementMatch =
+    placement.includes(search) || placementAlt.includes(search);
+  const idMatch = search === enp.id;
+
+  return urlMatch || handleMatch || placementMatch || idMatch;
+};
+
+export const selectEndpointsForTableSearch = createSelector(
+  selectEndpointsForTable,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (enps, search): DeployEndpointRow[] => {
+    if (search === "") {
+      return enps;
+    }
+
+    return enps.filter((enp) => computeSearchMatch(enp, search));
+  },
+);
+
+export const selectEndpointsByEnvIdForTableSearch = createSelector(
+  selectEndpointsForTable,
+  selectEnvToServicesMap,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: AppState, props: { envId: string }) => props.envId,
+  (enps, envToServiceMap, search, envId): DeployEndpointRow[] => {
+    return enps.filter((enp) => {
+      const serviceIds = envToServiceMap[envId];
+      const envIdMatch = serviceIds?.has(enp.serviceId);
+      if (!envIdMatch) return false;
+      const searchMatch = computeSearchMatch(enp, search);
+      return searchMatch;
+    });
+  },
+);
+
+export const selectEndpointsByAppIdForTableSearch = createSelector(
+  selectEndpointsForTable,
+  selectServices,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: AppState, props: { appId: string }) => props.appId,
+  (enps, servicesMap, search, appId): DeployEndpointRow[] => {
+    return enps.filter((enp) => {
+      const service = findServiceById(servicesMap, { id: enp.serviceId });
+      if (service.appId !== appId) return false;
+      const searchMatch = computeSearchMatch(enp, search);
+      return searchMatch;
+    });
+  },
+);
+
+export const selectEndpointsByDbIdForTableSearch = createSelector(
+  selectEndpointsForTable,
+  selectServiceToDbMap,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: AppState, props: { dbId: string }) => props.dbId,
+  (enps, serviceToDbMap, search, dbId): DeployEndpointRow[] => {
+    return enps.filter((enp) => {
+      const foundDbId = serviceToDbMap[enp.serviceId];
+      if (foundDbId !== dbId) return false;
+      const searchMatch = computeSearchMatch(enp, search);
+      return searchMatch;
+    });
+  },
+);
+
+export const selectEndpointsByCertIdForTableSearch = createSelector(
+  selectEndpointsForTable,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: AppState, props: { certId: string }) => props.certId,
+  (enps, search, certId): DeployEndpointRow[] => {
+    return enps.filter((enp) => {
+      if (certId !== enp.certificateId) return false;
+      const searchMatch = computeSearchMatch(enp, search);
+      return searchMatch;
+    });
+  },
+);
+
+export const selectEndpointsByCertId = createSelector(
   selectEndpointsByEnvironmentId,
-  (_: AppState, p: { certificateId: string }) => p.certificateId,
+  (_: AppState, p: { certId: string }) => p.certId,
   (endpoints, certId) =>
     endpoints.filter((endpoint) => endpoint.certificateId === certId),
 );
 
-export const selectAppsByCertificateId = createSelector(
+export const selectAppsByCertId = createSelector(
   selectAppsByEnvId,
-  selectEndpointsByCertificateId,
-  (apps, endpoints) =>
-    apps.filter((app) =>
-      app.serviceIds.some((appServiceId) =>
+  selectAppToServicesMap,
+  selectEndpointsByCertId,
+  (apps, appToServicesMap, endpoints) => {
+    return apps.filter((app) => {
+      const serviceIds = appToServicesMap[app.id] || [];
+      return serviceIds.some((appServiceId) =>
         endpoints.find((endpoint) => endpoint.serviceId === appServiceId),
-      ),
-    ),
+      );
+    });
+  },
 );
 
 export const fetchEndpointsByAppId = api.get<{ appId: string }>(
   "/apps/:appId/vhosts",
+  { saga: cacheShortTimer() },
+);
+export const fetchEndpointsByDatabaseId = api.get<{ dbId: string }>(
+  "/databases/:dbId/vhosts",
   { saga: cacheShortTimer() },
 );
 export const fetchEndpointsByEnvironmentId = api.get<{ id: string }>(
@@ -284,6 +456,14 @@ export const fetchEndpointsByServiceId = api.get<{ id: string }>(
 export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
   saga: cacheShortTimer(),
 });
+
+export const fetchEndpoints = api.get<PaginateProps>("/vhosts?page=:page", {
+  saga: cacheTimer(),
+});
+export const fetchAllEndpoints = thunks.create(
+  "fetch-all-endpoints",
+  combinePages(fetchEndpoints),
+);
 
 export const cancelFetchEndpointPoll = createAction(
   "cancel-fetch-endpoint-poll",
@@ -326,12 +506,14 @@ interface CreateDefaultEndpoint extends CreateEndpointBase {
 interface CreateManagedEndpoint extends CreateEndpointBase {
   type: "managed";
   domain: string;
+  certId: string;
   cert?: string;
   privKey?: string;
 }
 
 interface CreateCustomEndpoint extends CreateEndpointBase {
   type: "custom";
+  certId: string;
   cert: string;
   privKey: string;
 }
@@ -344,6 +526,7 @@ export type CreateEndpointProps =
 export const createEndpoint = api.post<
   CreateEndpointProps & { certId: string }
 >("/services/:serviceId/vhosts", function* (ctx, next) {
+  const env = yield* select(selectEnv);
   const data: Record<string, any> = {
     platform: "alb",
     type: "http_proxy_protocol",
@@ -352,8 +535,11 @@ export const createEndpoint = api.post<
     internal: ctx.payload.internal,
     ip_whitelist: ctx.payload.ipAllowlist,
     container_port: ctx.payload.containerPort,
-    certificate_id: ctx.payload.certId,
   };
+
+  if (ctx.payload.certId) {
+    data.certificate = `${env.apiUrl}/certificates/${ctx.payload.certId}`;
+  }
 
   if (ctx.payload.type === "managed") {
     data.user_domain = ctx.payload.domain;
@@ -364,6 +550,29 @@ export const createEndpoint = api.post<
 
   yield* next();
 });
+
+export interface CreateDbEndpointProps {
+  ipAllowlist: string[];
+  serviceId: string;
+  envId: string;
+}
+
+export const createDatabaseEndpoint = api.post<CreateDbEndpointProps>(
+  ["/services/:serviceId/vhosts", "db"],
+  function* (ctx, next) {
+    const data = {
+      type: "tcp",
+      platform: "elb",
+      ip_whitelist: ctx.payload.ipAllowlist,
+      acme: false,
+      default: false,
+      internal: false,
+    };
+    const body = JSON.stringify(data);
+    ctx.request = ctx.req({ body });
+    yield* next();
+  },
+);
 
 export const deleteEndpoint = api.delete<{ id: string }>(
   "/vhosts/:id",
@@ -413,7 +622,9 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
 
     let certId = "";
     if (ctx.payload.type === "managed" || ctx.payload.type === "custom") {
-      if (ctx.payload.cert && ctx.payload.privKey) {
+      certId = ctx.payload.certId;
+
+      if (!certId && ctx.payload.cert && ctx.payload.privKey) {
         const certCtx = yield* call(
           createCertificate.run,
           createCertificate({
@@ -436,6 +647,56 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
     const endpointCtx = yield* call(
       createEndpoint.run,
       createEndpoint({ ...ctx.payload, certId }),
+    );
+
+    if (!endpointCtx.json.ok) {
+      yield* put(
+        setLoaderError({ id: ctx.key, message: endpointCtx.json.data.message }),
+      );
+      return;
+    }
+
+    yield* next();
+
+    const opCtx = yield* call(
+      createEndpointOperation.run,
+      createEndpointOperation({
+        endpointId: `${endpointCtx.json.data.id}`,
+        type: "provision",
+      }),
+    );
+
+    if (!opCtx.json.ok) {
+      yield* put(
+        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
+      );
+      return;
+    }
+
+    ctx.json = {
+      endpointCtx,
+      opCtx,
+    };
+    yield* put(
+      setLoaderSuccess({
+        id: ctx.key,
+        meta: {
+          endpointId: endpointCtx.json.data.id,
+          opId: opCtx.json.data.id,
+        },
+      }),
+    );
+  },
+);
+
+export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
+  "provision-db-endpoint",
+  function* (ctx, next) {
+    yield put(setLoaderStart({ id: ctx.key }));
+
+    const endpointCtx = yield* call(
+      createDatabaseEndpoint.run,
+      createDatabaseEndpoint(ctx.payload),
     );
 
     if (!endpointCtx.json.ok) {
@@ -516,13 +777,12 @@ const patchEndpoint = api.patch<EndpointUpdateProps>(
 export const updateEndpoint = thunks.create<EndpointUpdateProps>(
   "update-endpoint",
   function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
+    const id = ctx.name;
+    yield* put(setLoaderStart({ id }));
 
     const patchCtx = yield* call(patchEndpoint.run, patchEndpoint(ctx.payload));
     if (!patchCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: patchCtx.json.data.message }),
-      );
+      yield* put(setLoaderError({ id, message: patchCtx.json.data.message }));
       return;
     }
 
@@ -535,13 +795,11 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
     );
 
     if (!opCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
-      );
+      yield* put(setLoaderError({ id, message: opCtx.json.data.message }));
       return;
     }
 
-    ctx.loader = { id: ctx.key, meta: { opId: opCtx.json.data.id } };
+    yield* put(setLoaderSuccess({ id, meta: { opId: opCtx.json.data.id } }));
     yield* next();
   },
 );
@@ -597,11 +855,11 @@ export const checkDns = thunks.create<{ from: string; to: string }>(
 );
 
 export const getPlacement = (enp: DeployEndpoint) => {
-  if (enp.externalHost) {
-    return "External (publicly accessible)";
+  if (enp.internal) {
+    return "Private";
   }
 
-  return "Internal";
+  return "Public";
 };
 
 export const getIpAllowlistText = (enp: DeployEndpoint) => {
@@ -609,18 +867,20 @@ export const getIpAllowlistText = (enp: DeployEndpoint) => {
 };
 
 export const getContainerPort = (
-  enp: DeployEndpoint,
+  enp: Pick<DeployEndpoint, "containerPort">,
   exposedPorts: number[],
 ) => {
   let port = "Unknown";
   if (exposedPorts.length > 0) {
-    const ports = exposedPorts.sort();
+    const ports = [...exposedPorts].sort();
     port = `${ports[0]}`;
   }
   return enp.containerPort || `Default (${port})`;
 };
 
-export const getEndpointUrl = (enp: DeployEndpoint) => {
+export const getEndpointUrl = (enp?: DeployEndpoint) => {
+  if (!enp) return "";
+
   if (!hasDeployEndpoint(enp)) {
     return enp.id;
   }

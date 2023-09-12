@@ -1,8 +1,8 @@
-import { IconSearch } from "./icons";
-import { tokens } from "./tokens";
 import cn from "classnames";
 import { forwardRef } from "react";
 import { InputHTMLAttributes } from "react";
+import { IconSearch } from "./icons";
+import { tokens } from "./tokens";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
@@ -10,7 +10,12 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const classes = cn(
-    "appearance-none block px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 text-base disabled:cursor-not-allowed disabled:opacity-50",
+    "appearance-none outline-none",
+    "leading-none",
+    "p-3",
+    "border border-gray-300 placeholder-gray-400 rounded-md shadow-sm",
+    "focus:ring-inset focus:ring-gray-500 focus:border-gray-500",
+    "disabled:cursor-not-allowed disabled:opacity-50",
     props.className,
   );
   return (
@@ -28,14 +33,14 @@ export const InputSearch = ({
   search,
   onChange,
   placeholder = "Search...",
-  className = "w-[300px]",
+  className = "w-[300px] h-[36px]",
   autoFocus = false,
   ...props
 }: InputSearchProps) => {
   return (
     <div {...props} className={`flex relative ${className}`}>
       <IconSearch
-        className="absolute top-[9px] left-[7px]"
+        className="absolute top-[10px] left-[10px]"
         color="#595E63"
         variant="sm"
       />
@@ -45,7 +50,7 @@ export const InputSearch = ({
         value={search}
         onChange={onChange}
         autoFocus={autoFocus}
-        className="pl-8 w-full"
+        className="pl-9 w-full"
       />
     </div>
   );

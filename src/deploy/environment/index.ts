@@ -20,7 +20,7 @@ import {
 
 import { PermissionResponse } from "../permission";
 import { selectDeploy } from "../slice";
-import { selectStackById } from "../stack";
+import { hasDeployStack, selectStackById } from "../stack";
 
 export interface DeployEnvironmentResponse {
   id: number;
@@ -151,13 +151,31 @@ const initEnv = defaultDeployEnvironment();
 const must = mustSelectEntity(initEnv);
 export const selectEnvironmentById = must(selectors.selectById);
 export const selectEnvironmentByIds = selectors.selectByIds;
-export const {
-  selectTable: selectEnvironments,
-  selectTableAsList: selectEnvironmentsAsList,
-} = selectors;
+export const { selectTable: selectEnvironments } = selectors;
+const selectEnvironmentsAsList = selectors.selectTableAsList;
 export const findEnvById = must(selectors.findById);
-export const selectEnvironmentsAsOptions = createSelector(
+
+export const selectEnvironmentsByOrg = createSelector(
   selectEnvironmentsAsList,
+  selectOrganizationSelectedId,
+  (envs, orgId) => {
+    if (orgId === "") return {};
+    return envs
+      .filter((env) => env.organizationId === orgId)
+      .reduce<MapEntity<DeployEnvironment>>((acc, env) => {
+        acc[env.id] = env;
+        return acc;
+      }, {});
+  },
+);
+
+export const selectEnvironmentsByOrgAsList = createSelector(
+  selectEnvironmentsByOrg,
+  (envs) => Object.values(envs).filter(excludesFalse),
+);
+
+export const selectEnvironmentsAsOptions = createSelector(
+  selectEnvironmentsByOrgAsList,
   (envs) => {
     return envs.map((e) => {
       return {
@@ -216,44 +234,41 @@ export const updateEnvironmentName = api.patch<{ id: string; handle: string }>(
   },
 );
 
-interface CreateEnvProps {
+export interface CreateEnvProps {
   name: string;
   stackId: string;
   orgId: string;
 }
 
-export const selectEnvironmentsByOrg = createSelector(
-  selectEnvironmentsAsList,
-  selectOrganizationSelectedId,
-  (envs, orgId) => {
-    if (orgId === "") return {};
-    return envs
-      .filter((env) => env.organizationId === orgId)
-      .reduce<MapEntity<DeployEnvironment>>((acc, env) => {
-        acc[env.id] = env;
-        return acc;
-      }, {});
-  },
-);
-
-export const selectEnvironmentsByOrgAsList = createSelector(
-  selectEnvironmentsByOrg,
-  (envs) => Object.values(envs).filter(excludesFalse),
-);
+const computeSearchMatch = (
+  env: DeployEnvironment,
+  search: string,
+): boolean => {
+  const handleMatch = env.handle.toLocaleLowerCase().includes(search);
+  const idMatch = env.id === search;
+  return handleMatch || idMatch;
+};
 
 export const selectEnvironmentsForTableSearch = createSelector(
   selectEnvironmentsByOrgAsList,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (envs, search): DeployEnvironment[] => {
-    if (search === "") {
+  (_: AppState, props: { stackId?: string }) => props.stackId || "",
+  (envs, search, stackId): DeployEnvironment[] => {
+    if (search === "" && stackId === "") {
       return envs;
     }
 
     return envs
       .filter((env) => {
-        const handleMatch = env.handle.toLocaleLowerCase().includes(search);
-        const idMatch = env.id === search;
-        return handleMatch || idMatch;
+        const searchMatch = computeSearchMatch(env, search);
+        const stackIdMatch = stackId !== "" && env.stackId === stackId;
+        if (stackId !== "") {
+          if (search !== "") {
+            return stackIdMatch && searchMatch;
+          }
+          return stackIdMatch;
+        }
+        return searchMatch;
       })
       .sort((a, b) => a.handle.localeCompare(b.handle));
   },
@@ -340,18 +355,25 @@ export const createDeployEnvironment = api.post<
 >("/accounts", function* (ctx, next) {
   const { name, stackId, orgId } = ctx.payload;
   const stack = yield* select(selectStackById, { id: stackId });
-  const body = {
+  const body: Record<string, string> = {
     handle: name,
-    stack_id: stackId,
     organization_id: orgId,
     type: stack.organizationId ? "production" : "development",
     onboarding_status: "initiated",
   };
+
+  if (hasDeployStack(stack)) {
+    body.stack_id = stackId;
+  }
+
   ctx.request = ctx.req({
     body: JSON.stringify(body),
   });
 
   yield* next();
+  if (!ctx.json.ok) return;
+
+  ctx.loader = { meta: { id: ctx.json.data.id } };
 });
 
 export const environmentEntities = {

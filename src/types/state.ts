@@ -2,16 +2,19 @@ import type { QueryState } from "@app/fx";
 
 import type {
   DeployActivePlan,
+  DeployActivityReport,
   DeployApp,
   DeployBackup,
   DeployBackupRetentionPolicy,
   DeployCertificate,
   DeployContainer,
   DeployDatabase,
+  DeployDatabaseCredential,
   DeployDatabaseImage,
   DeployDisk,
   DeployEndpoint,
   DeployEnvironment,
+  DeployImage,
   DeployLogDrain,
   DeployMetricDrain,
   DeployOperation,
@@ -58,6 +61,7 @@ export interface User {
   username: string;
   verified: boolean;
   currentOtpId: string;
+  selectedOrganizationId: string;
 }
 
 export interface Token {
@@ -85,6 +89,8 @@ export interface AuthApiError {
 export interface Organization {
   id: string;
   name: string;
+  updatedAt: string;
+  reauthRequired: boolean;
 }
 
 export interface U2fDevice {
@@ -111,7 +117,7 @@ export interface Nav {
 
 export interface AbstractResourceItem {
   id: string;
-  type: "stack" | "environment" | "app" | "database";
+  type: "stack" | "environment" | "app" | "database" | "endpoint";
 }
 
 export interface ResourceStats extends AbstractResourceItem {
@@ -138,6 +144,7 @@ export interface DeployState {
   stacks: MapEntity<DeployStack>;
   disks: MapEntity<DeployDisk>;
   databases: MapEntity<DeployDatabase>;
+  databaseCredentials: MapEntity<DeployDatabaseCredential>;
   databaseImages: MapEntity<DeployDatabaseImage>;
   services: MapEntity<DeployService>;
   logDrains: MapEntity<DeployLogDrain>;
@@ -152,6 +159,8 @@ export interface DeployState {
   vpn_tunnels: MapEntity<DeployVpnTunnel>;
   backups: MapEntity<DeployBackup>;
   backupRps: MapEntity<DeployBackupRetentionPolicy>;
+  activityReports: MapEntity<DeployActivityReport>;
+  images: MapEntity<DeployImage>;
 }
 
 export type MetricHorizons = "1h" | "1d" | "1w";

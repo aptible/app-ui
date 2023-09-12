@@ -1,6 +1,5 @@
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
-import { Tuna } from "./tuna";
 import * as routes from "@app/routes";
 import {
   ActivityPage,
@@ -9,6 +8,7 @@ import {
   AppCreateEndpointPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
+  AppDetailPage,
   AppDetailServicesPage,
   AppSettingsPage,
   AppsPage,
@@ -35,7 +35,10 @@ import {
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
+  DatabaseCreateEndpointPage,
+  DatabaseCredentialsPage,
   DatabaseDetailLayout,
+  DatabaseDetailPage,
   DatabaseEndpointsPage,
   DatabaseScalePage,
   DatabaseSettingsPage,
@@ -49,6 +52,7 @@ import {
   EndpointDetailPage,
   EndpointDetailSettingsPage,
   EndpointDetailSetupPage,
+  EndpointsPage,
   EnvironmentActivityPage,
   EnvironmentAppsPage,
   EnvironmentBackupsPage,
@@ -70,6 +74,7 @@ import {
   NotFoundPage,
   OpDetailLayout,
   OpDetailPage,
+  OrgPickerPage,
   OtpRecoveryCodesPage,
   OtpSetupPage,
   PlansPage,
@@ -78,6 +83,7 @@ import {
   SearchPage,
   SecuritySettingsPage,
   SettingsPage,
+  SignupPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
@@ -95,6 +101,8 @@ import {
 import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
 import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
 import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
+import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
+import { Tuna } from "./tuna";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -127,6 +135,11 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.SEARCH_PATH,
         element: <SearchPage />,
+      },
+
+      {
+        path: routes.ORG_PICKER_PATH,
+        element: <OrgPickerPage />,
       },
 
       {
@@ -186,7 +199,7 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <AppDetailServicesPage />,
+                element: <AppDetailPage />,
               },
               {
                 path: routes.APP_SERVICE_PATH,
@@ -246,7 +259,11 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <DatabaseEndpointsPage />,
+                element: <DatabaseDetailPage />,
+              },
+              {
+                path: routes.DATABASE_ENDPOINT_CREATE_PATH,
+                element: <DatabaseCreateEndpointPage />,
               },
               {
                 path: routes.DATABASE_ENDPOINTS_PATH,
@@ -276,6 +293,10 @@ export const appRoutes: RouteObject[] = [
                 path: routes.DATABASE_SETTINGS_PATH,
                 element: <DatabaseSettingsPage />,
               },
+              {
+                path: routes.DATABASE_CREDENTIALS_PATH,
+                element: <DatabaseCredentialsPage />,
+              },
             ],
           },
         ],
@@ -302,6 +323,11 @@ export const appRoutes: RouteObject[] = [
             element: <CertDetailSettingsPage />,
           },
         ],
+      },
+
+      {
+        path: routes.ENDPOINTS_PATH,
+        element: <EndpointsPage />,
       },
 
       {
@@ -379,6 +405,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.ENVIRONMENT_ACTIVITY_PATH,
                 element: <EnvironmentActivityPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_ACTIVITY_REPORTS_PATH,
+                element: <EnvironmentActivityReportsPage />,
               },
               {
                 path: routes.ENVIRONMENT_BACKUPS_PATH,
@@ -579,13 +609,12 @@ export const appRoutes: RouteObject[] = [
 
   {
     path: routes.LOGIN_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <LoginPage />,
-      },
-    ],
+    element: <LoginPage />,
+  },
+
+  {
+    path: routes.SIGNUP_PATH,
+    element: <SignupPage />,
   },
 
   {
@@ -600,7 +629,7 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.FORGOT_PASS_PATH,
+    path: routes.RESET_PASSWORD_PATH,
     element: <UnauthRequired />,
     children: [
       {

@@ -10,6 +10,7 @@ import {
 } from "@app/slice-helpers";
 import { AppState, DeployCertificate, LinkResponse } from "@app/types";
 
+import { prettyDateTime } from "@app/date";
 import { selectDeploy } from "../slice";
 
 interface DeployCertificateResponse {
@@ -157,6 +158,10 @@ export const deleteCertificate = api.delete<{ certId: string }>(
   "/certificates/:certId",
 );
 
+export const fetchCertificateById = api.get<{ certId: string }>(
+  "/certificates/:certId",
+);
+
 export const fetchCertificatesByEnvironmentId = api.get<
   PaginateProps & { id: string }
 >("/accounts/:id/certificates?page=:page");
@@ -191,4 +196,35 @@ export const certificateEntities = {
     deserialize: deserializeCertificate,
     save: addDeployCertificates,
   }),
+};
+
+export const getCertIssuerName = (cert: DeployCertificate) => {
+  return cert.issuerOrganization || cert.issuerCommonName;
+};
+
+export const getCertFingerprint = (cert: DeployCertificate) => {
+  return cert.sha256Fingerprint.slice(0, 7);
+};
+
+export const getCertLabel = (cert: DeployCertificate) => {
+  const bits = [cert.commonName];
+  const notBefore = cert.notBefore;
+  const notAfter = cert.notAfter;
+  if (notBefore && notAfter) {
+    bits.push(
+      `Valid: ${prettyDateTime(notBefore)} - ${prettyDateTime(notAfter)}`,
+    );
+  }
+
+  const issuerName = getCertIssuerName(cert);
+  if (issuerName) {
+    bits.push(issuerName);
+  }
+
+  const fingerprint = getCertFingerprint(cert);
+  if (fingerprint) {
+    bits.push(fingerprint);
+  }
+
+  return bits.join(" - ");
 };

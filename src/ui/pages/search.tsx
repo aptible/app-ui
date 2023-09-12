@@ -6,12 +6,14 @@ import { useSearchParams } from "react-router-dom";
 import {
   selectAppById,
   selectDatabaseById,
+  selectEndpointById,
   selectEnvironmentById,
   selectStackById,
 } from "@app/deploy";
 import {
   AppItem,
   DbItem,
+  EndpointItem,
   EnvItem,
   ResourceItem,
   StackItem,
@@ -26,6 +28,7 @@ import { MenuWrappedPage } from "../layouts";
 import {
   AppItemView,
   DatabaseItemView,
+  EndpointItemView,
   EnvironmentItemView,
   InputSearch,
   StackItemView,
@@ -97,6 +100,20 @@ const DbResource = ({ resource }: { resource: DbItem }) => {
   );
 };
 
+const EndpointResource = ({ resource }: { resource: EndpointItem }) => {
+  const enp = useSelector((s: AppState) =>
+    selectEndpointById(s, { id: resource.id }),
+  );
+  return (
+    <ResourceView>
+      <EndpointItemView endpoint={enp} />
+      <div className="text-black-300 text-base">
+        {capitalize(resource.type)} ID: {capitalize(resource.id)}
+      </div>
+    </ResourceView>
+  );
+};
+
 const ResourceItemView = ({ resource }: { resource: ResourceItem }) => {
   if (resource.type === "stack") {
     return <StackResource resource={resource} />;
@@ -108,6 +125,10 @@ const ResourceItemView = ({ resource }: { resource: ResourceItem }) => {
 
   if (resource.type === "app") {
     return <AppResource resource={resource} />;
+  }
+
+  if (resource.type === "endpoint") {
+    return <EndpointResource resource={resource} />;
   }
 
   return <DbResource resource={resource} />;
@@ -214,7 +235,7 @@ export const SearchPage = () => {
       <InputSearch
         search={search}
         onChange={onChange}
-        className="w-full"
+        className="w-full h-[36px] mt-4"
         autoFocus
       />
 

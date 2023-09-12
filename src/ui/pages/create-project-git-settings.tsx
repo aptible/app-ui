@@ -14,7 +14,7 @@ import {
   fetchServiceDefinitionsByAppId,
   selectAppById,
   selectAppConfigById,
-  selectDatabaseImagesAsList,
+  selectDatabaseImagesVisible,
   selectDatabasesByEnvId,
   selectServiceDefinitionsByAppId,
 } from "@app/deploy";
@@ -250,8 +250,8 @@ const DatabaseExistingForm = ({
         variant="secondary"
         isLoading={isLoading}
       >
-        <IconPlusCircle className="mr-2" color="#fff" /> Connect Existing
-        Database
+        <IconPlusCircle className="mr-2" color="#fff" variant="sm" /> Connect
+        Existing Database
       </Button>
     </div>
   );
@@ -412,7 +412,7 @@ export const CreateProjectGitSettingsPage = () => {
   );
 
   const imgLoader = useQuery(fetchAllDatabaseImages());
-  const dbImages = useSelector(selectDatabaseImagesAsList);
+  const dbImages = useSelector(selectDatabaseImagesVisible);
 
   useQuery(fetchServiceDefinitionsByAppId({ appId }));
   const serviceDefinitions = useSelector((s: AppState) =>
@@ -483,6 +483,7 @@ export const CreateProjectGitSettingsPage = () => {
             imgId: img.id,
             name: db.handle,
             dbType: img.type || "",
+            enableBackups: db.enableBackups,
           },
         });
       });
@@ -524,6 +525,7 @@ export const CreateProjectGitSettingsPage = () => {
         name: edb.env.toLocaleLowerCase(),
         dbType: "",
         imgId: "",
+        enableBackups: true,
       });
     });
     const dberr = validateDbs(allDbs);
@@ -696,7 +698,7 @@ export const CreateProjectGitSettingsPage = () => {
               variant="secondary"
               disabled={codeScan.data?.procfile_present}
             >
-              <IconPlusCircle color="#fff" className="mr-2" />
+              <IconPlusCircle color="#fff" className="mr-2" variant="sm" />
               Configure
             </Button>
           )}

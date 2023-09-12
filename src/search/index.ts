@@ -3,10 +3,12 @@ import { put, select } from "saga-query";
 
 import { thunks } from "@app/api";
 import {
-  selectAppsAsList,
-  selectDatabasesAsList,
-  selectEnvironmentsAsList,
-  selectStacksAsList,
+  getEndpointUrl,
+  selectAppsByOrgAsList,
+  selectDatabasesByOrgAsList,
+  selectEndpointsByOrgAsList,
+  selectEnvironmentsByOrgAsList,
+  selectStacksByOrgAsList,
 } from "@app/deploy";
 import { createReducerMap, createTable } from "@app/slice-helpers";
 import {
@@ -14,6 +16,7 @@ import {
   AppState,
   DeployApp,
   DeployDatabase,
+  DeployEndpoint,
   DeployEnvironment,
   DeployStack,
   ResourceStats,
@@ -39,14 +42,25 @@ export interface DbItem extends AbstractResourceItem {
   data?: DeployDatabase;
 }
 
-export type ResourceItem = StackItem | EnvItem | AppItem | DbItem;
+export interface EndpointItem extends AbstractResourceItem {
+  type: "endpoint";
+  data?: DeployEndpoint;
+}
+
+export type ResourceItem =
+  | StackItem
+  | EnvItem
+  | AppItem
+  | DbItem
+  | EndpointItem;
 
 export const selectAllResourcesAsList = createSelector(
-  selectStacksAsList,
-  selectEnvironmentsAsList,
-  selectAppsAsList,
-  selectDatabasesAsList,
-  (stacks, envs, apps, dbs): ResourceItem[] => {
+  selectStacksByOrgAsList,
+  selectEnvironmentsByOrgAsList,
+  selectAppsByOrgAsList,
+  selectDatabasesByOrgAsList,
+  selectEndpointsByOrgAsList,
+  (stacks, envs, apps, dbs, enps): ResourceItem[] => {
     const resources: ResourceItem[] = [];
     stacks.forEach((stack) => {
       resources.push({
@@ -80,6 +94,14 @@ export const selectAllResourcesAsList = createSelector(
       });
     });
 
+    enps.forEach((enp) => {
+      resources.push({
+        type: "endpoint",
+        id: enp.id,
+        data: enp,
+      });
+    });
+
     return resources;
   },
 );
@@ -97,6 +119,9 @@ export const selectResourcesForSearch = createSelector(
       let handleMatch = false;
       if (resource.type === "stack") {
         handleMatch = resource.data?.name.includes(searchLower) || false;
+      } else if (resource.type === "endpoint") {
+        const url = getEndpointUrl(resource.data);
+        handleMatch = url ? url.includes(searchLower) : false;
       } else {
         handleMatch = resource.data?.handle.includes(searchLower) || false;
       }

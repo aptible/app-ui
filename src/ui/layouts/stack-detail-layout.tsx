@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router";
 
-import { getStackType, selectStackById } from "@app/deploy";
+import { fetchStack, getStackType, selectStackById } from "@app/deploy";
 import {
   stackDetailEnvsUrl,
   stackDetailVpcPeeringsUrl,
@@ -19,10 +19,11 @@ import {
   TabItem,
 } from "../shared";
 
-import { MenuWrappedPage } from "./menu-wrapped-page";
 import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
 import { useEffect } from "react";
+import { useQuery } from "saga-query/react";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 
 export function StackHeader({ stack }: { stack: DeployStack }) {
   const stackType = getStackType(stack);
@@ -51,7 +52,7 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
         <div className="hidden md:block" />
 
         <DetailInfoItem title="Tenancy">{capitalize(stackType)}</DetailInfoItem>
-        <DetailInfoItem title="CPU Limits">
+        <DetailInfoItem title="CPU Isolation">
           {stack.cpuLimits ? "Enabled" : "Disabled"}
         </DetailInfoItem>
         <div className="hidden md:block" />
@@ -71,6 +72,7 @@ function StackPageHeader() {
   useEffect(() => {
     dispatch(setResourceStats({ id, type: "stack" }));
   }, []);
+  const loader = useQuery(fetchStack({ id }));
 
   const stack = useSelector((s: AppState) => selectStackById(s, { id }));
   const crumbs = [{ name: "Stacks", to: stacksUrl() }];
@@ -83,6 +85,7 @@ function StackPageHeader() {
 
   return (
     <DetailPageHeaderView
+      {...loader}
       breadcrumbs={crumbs}
       title={stack.name}
       detailsBox={<StackHeader stack={stack} />}

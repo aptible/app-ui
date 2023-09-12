@@ -1,4 +1,3 @@
-import { selectDeploy } from "../slice";
 import { api, thunks } from "@app/api";
 import {
   call,
@@ -22,6 +21,7 @@ import {
   PlanName,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import { selectDeploy } from "../slice";
 
 export interface DeployPlanResponse {
   id: number;

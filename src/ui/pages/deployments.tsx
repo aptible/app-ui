@@ -1,3 +1,14 @@
+import {
+  fetchAllApps,
+  fetchAllEnvironments,
+  selectAppsByEnvOnboarding,
+  selectLatestDeployOp,
+} from "@app/deploy";
+import { useLoader } from "@app/fx";
+import { createProjectGitUrl } from "@app/routes";
+import { AppState, DeployApp } from "@app/types";
+import { useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
 import {
   Button,
@@ -10,21 +21,8 @@ import {
 import { OnboardingLink } from "../shared/onboarding-link";
 import { StatusPill } from "../shared/pill";
 import { ResourceGroupBox } from "../shared/resource-group-box";
-import {
-  fetchAllApps,
-  fetchAllEnvironments,
-  fetchEndpointsByAppId,
-  selectAppsByEnvOnboarding,
-  selectLatestDeployOp,
-} from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
-import { createProjectGitUrl } from "@app/routes";
-import { AppState, DeployApp } from "@app/types";
-import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
-  useQuery(fetchEndpointsByAppId({ appId: app.id }));
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
@@ -121,12 +119,10 @@ export const DeploymentsPage = ({
 
 export const DeploymentsPageWithMenus = () => (
   <MenuWrappedPage>
-    <div>
-      <DeploymentsPage
-        headerStyle={tokens.type.h2}
-        leftAlignTitle
-        showDeployButton={false}
-      />
-    </div>
+    <DeploymentsPage
+      headerStyle={tokens.type.h2}
+      leftAlignTitle
+      showDeployButton={false}
+    />
   </MenuWrappedPage>
 );

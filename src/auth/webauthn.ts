@@ -28,14 +28,19 @@ export function webauthnCreate(payload: CredentialCreationOptionsJSON) {
     throw new Error("webauthn not supported for browser");
   }
 
-  return create(payload);
+  const result = create(payload);
+  return result;
 }
 
 export function webauthnGet(
-  payload: CredentialRequestOptionsJSON["publicKey"] & { challenge: string },
+  payload: CredentialRequestOptionsJSON["publicKey"],
 ) {
   if (!hasWebAuthnSupport()) {
     throw new Error("webauthn not supported for browser");
+  }
+
+  if (!payload) {
+    throw new Error("payload cannot be undefined");
   }
 
   const publicKey: CredentialRequestOptionsJSON["publicKey"] = {
@@ -43,6 +48,8 @@ export function webauthnGet(
     rpId: payload.rpId,
     allowCredentials: payload.allowCredentials,
     timeout: payload.timeout,
+    extensions: payload.extensions,
+    userVerification: "discouraged",
   };
   log("SECURITY KEY GET BLOB", publicKey);
 

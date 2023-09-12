@@ -22,6 +22,7 @@ import { useValidator } from "../hooks";
 import { MenuWrappedPage } from "../layouts";
 import {
   BannerMessages,
+  Box,
   ButtonCreate,
   DatabaseNameInput,
   EnvironmentSelect,
@@ -92,12 +93,18 @@ export const BackupRestorePage = () => {
 
   return (
     <MenuWrappedPage>
-      <div className="bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+      <h2 className={tokens.type.h2}>Restore Database from Backup</h2>
+      <Box className="mt-3">
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div>
-            <h2 className={tokens.type.h2}>Create Database from Backup</h2>
-
-            <div>
+            <p>
+              This will create a new database.{" "}
+              <strong>It does not overwrite your existing database.</strong>
+            </p>
+            <div className="mt-4">
+              <div className="text-md font-semibold text-gray-900 block">
+                Source Backup
+              </div>
               <Link to={databaseBackupsUrl(db.id)}>
                 {db.handle} (backup from: {prettyDateTime(backup.createdAt)})
               </Link>
@@ -126,10 +133,10 @@ export const BackupRestorePage = () => {
             envId={inpEnv}
             isLoading={loader.isLoading}
           >
-            Create Database
+            Restore Database
           </ButtonCreate>
         </form>
-      </div>
+      </Box>
     </MenuWrappedPage>
   );
 };
