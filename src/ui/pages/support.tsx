@@ -136,7 +136,7 @@ export const SupportPage = () => {
     <MenuWrappedPage>
       <ResourceHeader title="Submit Support Request" />
       <div className="flex flex-row gap-10">
-        <Box className="-mt-4">
+        <Box className="-mt-4 w-full">
           <div className="mb-4">
             Please enter the details of your request. A member of our support
             staff will respond as soon as possible. Be sure to include relevant
@@ -307,7 +307,7 @@ export const SupportPage = () => {
                     >
                       Add Files
                     </span>{" "}
-                    or Drop Files.
+                    or Drop Files
                   </div>
                 </label>
                 <Input
