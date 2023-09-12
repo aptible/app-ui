@@ -27,8 +27,8 @@ describe("Elevate page", () => {
     fireEvent.click(btn);
 
     await screen.findByRole("heading", {
-      level: 1,
-      name: "Deployments",
+      level: 2,
+      name: "Environments",
     });
   });
 
@@ -121,8 +121,8 @@ describe("Elevate page", () => {
       fireEvent.click(fbtn);
 
       await screen.findByRole("heading", {
-        level: 1,
-        name: "Deployments",
+        level: 2,
+        name: "Environments",
       });
     });
   });

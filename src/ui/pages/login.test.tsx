@@ -40,11 +40,11 @@ describe("Login page", () => {
       fireEvent.click(btn);
 
       await screen.findByRole("heading", {
-        level: 1,
-        name: "Deployments",
+        level: 2,
+        name: "Environments",
       });
       expect(
-        await screen.findByText(testAppDeployed.handle),
+        await screen.findByText(testEnvExpress.handle),
       ).toBeInTheDocument();
     });
   });
@@ -141,8 +141,8 @@ describe("Login page", () => {
       fireEvent.click(fbtn);
 
       await screen.findByRole("heading", {
-        level: 1,
-        name: "Deployments",
+        level: 2,
+        name: "Environments",
       });
     });
   });
