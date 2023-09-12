@@ -133,7 +133,7 @@ export const SupportPage = () => {
     <MenuWrappedPage>
       <ResourceHeader title="Submit Support Request" />
       <div className="flex flex-row gap-10">
-        <Box>
+        <Box className="-mt-4">
           <div className="mb-4">
             Please enter the details of your request. A member of our support
             staff will respond as soon as possible. Be sure to include relevant

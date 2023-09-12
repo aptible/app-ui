@@ -16,6 +16,7 @@ import {
   searchUrl,
   securityDashboardUrl,
   stacksUrl,
+  supportUrl
 } from "@app/routes";
 import {
   IconBox,
@@ -154,12 +155,15 @@ export const ApplicationSidebar = () => {
             >
               DOCS
             </a>
-            <a
+            {/* <a
               className="text-gray-500 hover:text-indigo px-3"
               href="/support"
             >
               SUPPORT
-            </a>
+            </a> */}
+            <Link to={supportUrl()} className="text-gray-500 hover:text-indigo px-3">
+              SUPPORT
+            </Link>
             <a
               className="text-gray-500 hover:text-indigo px-3"
               href="https://www.aptible.com/docs/cli"
