@@ -1,5 +1,11 @@
 import { createSelector } from "@reduxjs/toolkit";
 
+import {
+  appDetailUrl,
+  databaseDetailUrl,
+  environmentIntegrationsUrl,
+} from "@app/routes";
+import type { AppState, DeployActivityRow } from "@app/types";
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
 import { findEndpointById, getEndpointUrl, selectEndpoints } from "../endpoint";
@@ -8,10 +14,10 @@ import {
   hasDeployEnvironment,
   selectEnvironmentsByOrg,
 } from "../environment";
+import { findLogDrainById, selectLogDrains } from "../log-drain";
+import { findMetricDrainById, selectMetricDrains } from "../metric-drain";
 import { selectOperationById, selectOperationsAsList } from "../operation";
 import { findServiceById, selectServices } from "../service";
-import { appDetailUrl, databaseDetailUrl } from "@app/routes";
-import type { AppState, DeployActivityRow } from "@app/types";
 
 const selectActivityForTable = createSelector(
   selectOperationsAsList,
@@ -19,7 +25,9 @@ const selectActivityForTable = createSelector(
   selectDatabases,
   selectApps,
   selectServices,
-  (ops, envs, dbs, apps, services) =>
+  selectLogDrains,
+  selectMetricDrains,
+  (ops, envs, dbs, apps, services, logDrains, metricDrains) =>
     ops
       .filter((op) => {
         const env = findEnvById(envs, { id: op.environmentId });
@@ -48,8 +56,20 @@ const selectActivityForTable = createSelector(
           }
           resourceHandle =
             op.containerCount && op.containerSize
-              ? `${service.handle} (${op.containerCount} Container(s) - ${op.containerSize} GB Memory)`
-              : service.handle;
+              ? `${service.processType} (${op.containerCount} Container(s) - ${op.containerSize} GB Memory)`
+              : service.processType;
+          return { ...op, envHandle: env.handle, resourceHandle, url };
+        } else if (op.resourceType === "log_drain") {
+          const logDrain = findLogDrainById(logDrains, { id: op.resourceId });
+          resourceHandle = logDrain.handle;
+          const url = environmentIntegrationsUrl(logDrain.environmentId);
+          return { ...op, envHandle: env.handle, resourceHandle, url };
+        } else if (op.resourceType === "metric_drain") {
+          const metricDrain = findMetricDrainById(metricDrains, {
+            id: op.resourceId,
+          });
+          resourceHandle = metricDrain.handle;
+          const url = environmentIntegrationsUrl(metricDrain.environmentId);
           return { ...op, envHandle: env.handle, resourceHandle, url };
         } else {
           resourceHandle = op.resourceId;

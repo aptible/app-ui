@@ -9,13 +9,9 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import { dateDescSort } from "@app/sort";
-import {
-  AppState,
-  DeployBackup,
-  DeployOperationResponse,
-  LinkResponse,
-} from "@app/types";
+import { AppState, DeployBackup, LinkResponse } from "@app/types";
 
+import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
 export interface BackupResponse {

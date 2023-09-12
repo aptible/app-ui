@@ -18,16 +18,16 @@ import { createProject } from "@app/projects";
 import {
   createProjectGitPushUrl,
   environmentDetailUrl,
-  stackDetailUrl,
+  stackDetailEnvsUrl,
 } from "@app/routes";
-import { validHandle } from "@app/string-utils";
 import { AppState } from "@app/types";
 
+import { handleValidator } from "@app/validator";
 import {
   BannerMessages,
   Box,
-  Button,
   ButtonCreate,
+  ButtonOwner,
   FormGroup,
   Input,
   ProgressProject,
@@ -45,15 +45,13 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
   );
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
-  const thunk = useApi(createDeployApp({ name, envId }));
+  const thunk = useApi(createDeployApp({ name, envId: env.id }));
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!validHandle(name)) {
-      setNameError(
-        "Not a valid app name (letters, numbers, and following symbols (., -, _).",
-      );
-      return;
+    const errorMsg = handleValidator(name);
+    if (errorMsg) {
+      setNameError(errorMsg);
     } else {
       setNameError("");
     }
@@ -95,7 +93,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
             className="mb-4"
           >
             <div id="stack">
-              <Link to={stackDetailUrl(stack.id)} target="_blank">
+              <Link to={stackDetailEnvsUrl(stack.id)} target="_blank">
                 {stack.name}
               </Link>
             </div>
@@ -176,11 +174,9 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!validHandle(name)) {
-      setNameError(
-        "Not a valid environment name (letters, numbers, and following symbols (., -, _).",
-      );
-      return;
+    const errorMsg = handleValidator(name);
+    if (errorMsg) {
+      setNameError(errorMsg);
     } else {
       setNameError("");
     }
@@ -250,14 +246,14 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
           <BannerMessages {...thunk} className="my-2" />
 
-          <Button
+          <ButtonOwner
             className="mt-4 w-full"
             type="submit"
             isLoading={thunk.isLoading}
             disabled={name === ""}
           >
             Create Environment
-          </Button>
+          </ButtonOwner>
         </form>
       </Box>
     </div>

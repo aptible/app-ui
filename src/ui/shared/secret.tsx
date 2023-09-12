@@ -1,26 +1,27 @@
-import { Button } from "./button";
-import { PreCode, listToInvertedTextColor } from "./pre-code";
 import { useState } from "react";
+import { ButtonSensitive } from "./button";
+import { PreCode, listToInvertedTextColor } from "./pre-code";
 
 export const Secret = ({
+  envId,
   secret,
-  showAsOpened = false,
-}: { secret: string; showAsOpened?: boolean }) => {
-  const [isShowing, setIsShowing] = useState<boolean>(showAsOpened);
+}: { secret: string; envId: string }) => {
+  const [isShowing, setIsShowing] = useState<boolean>(false);
   return (
     <div className="flex gap-4">
       {isShowing ? (
         <PreCode segments={listToInvertedTextColor([secret])} allowCopy />
       ) : null}
       <div>
-        <Button
+        <ButtonSensitive
+          envId={envId}
           className={isShowing ? "mt-2 px-0" : "px-0"}
           size="sm"
           variant="white"
           onClick={() => setIsShowing(!isShowing)}
         >
           {isShowing ? "Hide" : "Show"}
-        </Button>
+        </ButtonSensitive>
       </div>
     </div>
   );

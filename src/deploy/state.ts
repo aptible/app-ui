@@ -1,5 +1,9 @@
 import { combineReducers } from "@reduxjs/toolkit";
 
+import {
+  activityReportEntities,
+  activityReportReducers,
+} from "./activity-report";
 import { appEntities, appReducers } from "./app";
 import {
   serviceDefinitionEntities,
@@ -11,12 +15,15 @@ import { certificateEntities, certificateReducers } from "./certificate";
 import { appConfigEntities, appConfigReducers } from "./configuration";
 import { containerEntities, containerReducers } from "./container";
 import { databaseEntities, databaseReducers } from "./database";
+import { credEntities, credReducers } from "./database-credential";
 import {
   databaseImageEntities,
   databaseImageReducers,
 } from "./database-images";
+import { diskEntities, diskReducers } from "./disk";
 import { endpointEntities, endpointReducers } from "./endpoint";
 import { environmentEntities, environmentReducers } from "./environment";
+import { imageEntities, imageReducers } from "./image";
 import { logDrainEntities, logDrainReducers } from "./log-drain";
 import { metricDrainEntities, metricDrainReducers } from "./metric-drain";
 import { opEntities, opReducers } from "./operation";
@@ -56,6 +63,10 @@ const allReducers: any[] = [
   appConfigReducers,
   backupReducers,
   backupRpReducers,
+  credReducers,
+  activityReportReducers,
+  imageReducers,
+  diskReducers,
 ];
 
 const rootReducer = combineReducers(
@@ -91,4 +102,8 @@ export const entities = {
   ...appConfigEntities,
   ...backupEntities,
   ...backupRpEntities,
+  ...credEntities,
+  ...activityReportEntities,
+  ...imageEntities,
+  ...diskEntities,
 };

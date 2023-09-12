@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import { DeploymentsPage } from "./deployments";
 import { defaultAppResponse, defaultEnvResponse } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import {
@@ -14,7 +13,8 @@ import {
   testOrg,
   testStack,
 } from "@app/mocks";
-import { setupIntegrationTest } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
+import { DeploymentsPage } from "./deployments";
 
 describe("Deployments page", () => {
   it("should show last deployment status", async () => {
@@ -25,14 +25,17 @@ describe("Deployments page", () => {
       }),
     );
 
-    const { TestProvider } = setupIntegrationTest();
+    const { store, TestProvider } = setupIntegrationTest();
+
+    await waitForBootup(store);
+
     render(
       <TestProvider>
         <DeploymentsPage />
       </TestProvider>,
     );
 
-    const btn = await screen.findByRole("link");
+    const btn = await screen.findByRole("link", { name: /Deploy/ });
     expect(btn).toBeInTheDocument();
     expect(await screen.findByText(testAppDeployed.handle)).toBeInTheDocument();
     const status = await screen.findByRole("status");
@@ -70,6 +73,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -80,6 +84,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -90,6 +95,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envLaravel.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
     ];
@@ -101,9 +107,12 @@ describe("Deployments page", () => {
       }),
     );
 
-    const { TestProvider } = setupIntegrationTest({
+    const { store, TestProvider } = setupIntegrationTest({
       initEntries: [`/?accounts=${envExpress.id}`],
     });
+
+    await waitForBootup(store);
+
     render(
       <TestProvider>
         <DeploymentsPage />
@@ -166,6 +175,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -176,6 +186,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -186,6 +197,7 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envLaravel.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -194,6 +206,7 @@ describe("Deployments page", () => {
         _links: {
           account: defaultHalHref(`${testEnv.apiUrl}/accounts/${envLegacy.id}`),
           current_configuration: defaultHalHref(),
+          current_image: defaultHalHref(),
         },
       }),
     ];
@@ -205,14 +218,17 @@ describe("Deployments page", () => {
       }),
     );
 
-    const { TestProvider } = setupIntegrationTest();
+    const { store, TestProvider } = setupIntegrationTest();
+
+    await waitForBootup(store);
+
     render(
       <TestProvider>
         <DeploymentsPage />
       </TestProvider>,
     );
 
-    const btn = await screen.findByRole("link");
+    const btn = await screen.findByRole("link", { name: /Deploy/ });
     expect(btn).toBeInTheDocument();
     expect(await screen.findByText(apps[0].handle)).toBeInTheDocument();
     expect(await screen.findByText(apps[1].handle)).toBeInTheDocument();

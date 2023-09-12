@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import {
   defaultOperationResponse,
@@ -16,7 +17,7 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { appEndpointsUrl } from "@app/routes";
-import { setupAppIntegrationTest, waitForData, waitForToken } from "@app/test";
+import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { rest } from "msw";
 
 describe("Create Endpoint flow", () => {
@@ -54,9 +55,10 @@ describe("Create Endpoint flow", () => {
         initEntries: [appEndpointsUrl(`${testApp.id}`)],
       });
 
+      await waitForBootup(store);
+
       render(<App />);
 
-      await waitForToken(store);
       // we need to wait for accounts so we can do permission checks
       await waitForData(store, (state) => {
         return hasDeployEnvironment(
@@ -76,10 +78,10 @@ describe("Create Endpoint flow", () => {
       const cmdRadio = await screen.findByRole("radio", { name: /rails s/ });
       fireEvent.click(cmdRadio);
 
-      const typeRadio = await screen.findByRole("radio", {
-        name: /default endpoint/,
+      const enpType = await screen.findByRole("combobox", {
+        name: /Endpoint Type/,
       });
-      fireEvent.click(typeRadio);
+      await act(() => userEvent.selectOptions(enpType, "default"));
 
       const btn = await screen.findByRole("button", { name: /Save Endpoint/ });
       fireEvent.click(btn);

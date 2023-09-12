@@ -6,8 +6,8 @@ import { fetchApp } from "@app/deploy";
 import { server, testApp, testEnv } from "@app/mocks";
 import { setupIntegrationTest, sleep, waitForToken } from "@app/test";
 
-import { LogoutPage } from "./logout";
 import { LOGIN_PATH, LOGOUT_PATH, logoutUrl } from "@app/routes";
+import { LogoutPage } from "./logout";
 
 const TestInFlightLogout = () => {
   const dispatch = useDispatch();
@@ -56,13 +56,17 @@ describe("LogoutPage", () => {
 
       expect(store.getState().deploy).toEqual({
         active_plans: {},
+        activityReports: {},
         apps: {},
         appConfigs: {},
         certificates: {},
         databaseImages: {},
+        databaseCredentials: {},
         databases: {},
+        disks: {},
         endpoints: {},
         environments: {},
+        images: {},
         logDrains: {},
         metricDrains: {},
         operations: {},

@@ -4,7 +4,7 @@ import { ActionList, ActionListView } from "./action-list-view";
 import { Box } from "./box";
 import { Breadcrumbs, Crumb } from "./breadcrumbs";
 import { ButtonLinkExternal } from "./button";
-import { IconExternalLink } from "./icons";
+import { IconAlertTriangle, IconExternalLink } from "./icons";
 import { TabItem, Tabs } from "./tabs";
 
 interface HeaderProps {
@@ -13,7 +13,38 @@ interface HeaderProps {
   detailsBox?: React.ReactNode;
   title: string;
   tabs?: TabItem[];
+  isError: boolean;
+  message: string;
+  meta: Record<string, any>;
 }
+
+const DetailErrorBox = ({
+  message,
+  meta = {},
+}: { message: string; meta: Record<string, any> }) => {
+  return (
+    <Box className="flex items-center justify-center">
+      <h1 className="text-lg text-red-500 font-semibold">
+        <IconAlertTriangle
+          className="inline pr-3 mb-1"
+          style={{ width: 32 }}
+          color="#AD1A1A"
+        />
+        <span className="ml-2">{message}</span>
+      </h1>
+
+      <div>
+        {Object.keys(meta).map((key) => {
+          return (
+            <div key={key}>
+              {key}: {meta[key]}
+            </div>
+          );
+        })}
+      </div>
+    </Box>
+  );
+};
 
 export const DetailPageHeaderView = ({
   breadcrumbs,
@@ -21,10 +52,17 @@ export const DetailPageHeaderView = ({
   detailsBox,
   actions,
   tabs,
+  isError,
+  message,
+  meta,
 }: HeaderProps) => {
+  if (isError) {
+    return <DetailErrorBox message={message} meta={meta} />;
+  }
+
   return (
-    <div className="flex flex-col gap-3">
-      <div>
+    <div className="flex flex-col">
+      <div className="pb-[11px]">
         {breadcrumbs && (
           <Breadcrumbs crumbs={[...breadcrumbs, { to: null, name: title }]} />
         )}
@@ -37,7 +75,7 @@ export const DetailPageHeaderView = ({
       <div>{detailsBox ? detailsBox : null}</div>
 
       {tabs ? (
-        <div className="pt-1">
+        <div className="pt-4">
           <Tabs tabs={tabs} />
         </div>
       ) : null}
@@ -55,7 +93,7 @@ export function DetailTitleBar({
   docsUrl = "",
 }: { title: string; icon?: JSX.Element; docsUrl?: string }) {
   return (
-    <div className="flex justify-between items-center h-10">
+    <div className="flex justify-between items-center">
       <div className="flex items-center">
         {icon ? <div className="w-8 h-8 mr-3">{icon}</div> : null}
         <h1 className="text-lg text-gray-500">{title}</h1>
@@ -78,7 +116,7 @@ export function DetailTitleBar({
 
 export function DetailInfoGrid({ children }: { children: ReactNode }) {
   return (
-    <div className="grid md:grid-cols-3 col-span-1 col-rows-1 gap-5">
+    <div className="grid md:grid-cols-3 col-span-1 col-rows-1 gap-4">
       {children}
     </div>
   );

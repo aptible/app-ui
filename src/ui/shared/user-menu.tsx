@@ -5,21 +5,21 @@ import { selectCanImpersonate } from "@app/users";
 
 import { useCurrentUser } from "../hooks";
 
+import { selectLegacyDashboardUrl } from "@app/env";
+import { selectOrganizationSelected } from "@app/organizations";
 import { IconLogout, IconUserCircle } from "./icons";
 import { IconAlertCircle } from "./icons";
 import { LinkNav } from "./link";
 import { Loading } from "./loading";
-import { selectLegacyDashboardUrl } from "@app/env";
-import { selectOrganizationSelected } from "@app/organizations";
 
 export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
-  const { user, isLoading } = useCurrentUser();
+  const [user, loader] = useCurrentUser();
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const { id: organizationId } = useSelector(selectOrganizationSelected);
 
   const canImpersonate = useSelector(selectCanImpersonate);
 
-  if (isLoading || !user) {
+  if (loader.isLoading || !user) {
     return <Loading />;
   }
 

@@ -11,14 +11,15 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "fmt": "rome check . --apply-unsafe --verbose",
+    "fmt": "biome check . --apply-unsafe --verbose",
     "lint.types": "tsc --noEmit",
-    "lint.check": "rome ci .",
+    "lint.check": "biome ci .",
     "lint.circular": "dpdm --no-tree --no-warning --exit-code circular:1 ./src/app/init.ts",
     "lint": "yarn lint.types && yarn lint.check && yarn lint.circular",
     "test": "yarn lint && vitest run"
   },
   "dependencies": {
+    "@biomejs/biome": "^1.0.0",
     "@github/webauthn-json": "^2.1.1",
     "@reduxjs/toolkit": "^1.9.5",
     "@remix-run/web-fetch": "^4.3.4",

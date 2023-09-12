@@ -1,5 +1,5 @@
-import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { ContainerProfileData, DeployService, InstanceClass } from "@app/types";
+import { CONTAINER_PROFILES, GB } from "../container/utils";
 
 const ABSOLUTE_MAX_CONTAINER_SIZE_IN_GB = 653;
 const getContainerSizes = () => {
@@ -104,11 +104,8 @@ export const hourlyAndMonthlyCostsForContainers = (
     containerProfile.costPerContainerHourInCents / 100
   ).toFixed(2);
   let pricePerMonth =
-    computedCostsForContainer(
-      containerCount || 1,
-      containerProfile,
-      containerSize,
-    ).estimatedCostInDollars / 1000;
+    computedCostsForContainer(containerCount, containerProfile, containerSize)
+      .estimatedCostInDollars / 1000;
   if (diskSize) {
     pricePerMonth += diskSize * 0.2;
   }

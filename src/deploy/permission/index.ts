@@ -1,4 +1,3 @@
-import { selectDeploy } from "../slice";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { selectCurrentUserRoles } from "@app/roles";
 import { createReducerMap, createTable } from "@app/slice-helpers";
@@ -9,6 +8,7 @@ import {
   PermissionScope,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import { selectDeploy } from "../slice";
 
 export interface PermissionResponse {
   id: string;
@@ -121,6 +121,11 @@ export const selectUserHasPerms = createSelector(
       const perm = userPerms[i];
       // admins can do everything on an account
       if (perm.scope === "admin") {
+        return true;
+      }
+
+      // anything create op under `obserability` a `deploy` perm can do
+      if (perm.scope === "deploy" && scope === "observability") {
         return true;
       }
 

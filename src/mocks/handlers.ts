@@ -1,4 +1,22 @@
 import {
+  DeployAppResponse,
+  DeployDatabaseResponse,
+  DeployEndpointResponse,
+  DeployEnvironmentResponse,
+  DeployMetricDrainResponse,
+  DeployServiceResponse,
+  DeployStackResponse,
+  defaultDatabaseResponse,
+  defaultDeployCertificate,
+  defaultLogDrainResponse,
+  defaultMetricDrainResponse,
+  defaultOperationResponse,
+} from "@app/deploy";
+import { defaultHalHref } from "@app/hal";
+import { RoleResponse } from "@app/roles";
+import { UserResponse } from "@app/users";
+import { RestRequest, rest } from "msw";
+import {
   createId,
   testAccount,
   testActivePlan,
@@ -8,11 +26,13 @@ import {
   testConfiguration,
   testDatabaseId,
   testDatabaseOp,
+  testDisk,
   testEndpoint,
   testEnterprisePlan,
   testEnv,
   testOperations,
   testOrg,
+  testOrgReauth,
   testPlan,
   testPostgresDatabaseImage,
   testRedisDatabaseImage,
@@ -24,19 +44,6 @@ import {
   testUser,
   testUserVerified,
 } from "./data";
-import {
-  DeployAppResponse,
-  DeployDatabaseResponse,
-  DeployEnvironmentResponse,
-  DeployServiceResponse,
-  DeployStackResponse,
-  defaultDatabaseResponse,
-  defaultDeployCertificate,
-  defaultMetricDrainResponse,
-  defaultOperationResponse,
-} from "@app/deploy";
-import { defaultHalHref } from "@app/hal";
-import { RestRequest, rest } from "msw";
 
 const isValidToken = (req: RestRequest) => {
   const authorization = req.headers.get("authorization");
@@ -53,12 +60,18 @@ const authHandlers = [
     }
     return res(ctx.json({ _embedded: { organizations: [testOrg] } }));
   }),
+  rest.get(`${testEnv.authUrl}/reauthenticate_organizations`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { organizations: [testOrgReauth] } }));
+  }),
 
   rest.get(`${testEnv.authUrl}/users/:userId`, (req, res, ctx) => {
     if (!isValidToken(req)) {
       return res(ctx.status(401));
     }
 
+    return res(ctx.json(testUser));
+  }),
+  rest.put(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
     return res(ctx.json(testUser));
   }),
   rest.post(`${testEnv.authUrl}/users`, (_, res, ctx) => {
@@ -116,12 +129,8 @@ const authHandlers = [
 
     return res(ctx.status(204));
   }),
-  rest.post(`${testEnv.authUrl}/verifications`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
-    return res(ctx.status(200));
+  rest.post(`${testEnv.authUrl}/verifications`, (_, res, ctx) => {
+    return res(ctx.status(204));
   }),
   rest.post(`${testEnv.authUrl}/tokens`, (_, res, ctx) => {
     return res(ctx.json(testToken));
@@ -131,17 +140,27 @@ const authHandlers = [
   }),
 ];
 
-export const verifiedUserHandlers = () => {
+export const verifiedUserHandlers = (
+  {
+    user = testUserVerified,
+    role = testRole,
+  }: { user?: UserResponse; role?: RoleResponse } = {
+    user: testUserVerified,
+    role: testRole,
+  },
+) => {
   return [
     rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (_, res, ctx) => {
-      return res(
-        ctx.json({
-          _embedded: [testUserVerified],
-        }),
-      );
+      return res(ctx.json({ _embedded: [user] }));
     }),
     rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
-      return res(ctx.json(testUserVerified));
+      return res(ctx.json(user));
+    }),
+    rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { roles: [role] } }));
+    }),
+    rest.get(`${testEnv.authUrl}/users/:userId/roles`, (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { roles: [role] } }));
     }),
   ];
 };
@@ -153,18 +172,27 @@ export const stacksWithResources = (
     apps = [],
     databases = [],
     services = [],
+    vhosts = [],
+    metric_drains = [],
+    log_drains = [],
   }: {
     stacks?: DeployStackResponse[];
     accounts?: DeployEnvironmentResponse[];
     apps?: DeployAppResponse[];
     databases?: DeployDatabaseResponse[];
     services?: DeployServiceResponse[];
+    vhosts?: DeployEndpointResponse[];
+    metric_drains?: DeployMetricDrainResponse[];
+    log_drains?: any[];
   } = {
     stacks: [testStack],
     accounts: [],
     apps: [],
     databases: [],
     services: [],
+    vhosts: [],
+    metric_drains: [],
+    log_drains: [],
   },
 ) => {
   return [
@@ -222,11 +250,26 @@ export const stacksWithResources = (
 
       return res(ctx.json({ _embedded: { databases } }));
     }),
+    rest.get(`${testEnv.apiUrl}/vhosts`, (_, res, ctx) => {
+      return res(ctx.json({ vhosts }));
+    }),
+    rest.get(`${testEnv.apiUrl}/metric_drains`, (_, res, ctx) => {
+      return res(ctx.json({ metric_drains }));
+    }),
+    rest.get(`${testEnv.apiUrl}/log_drains`, (_, res, ctx) => {
+      return res(ctx.json({ log_drains }));
+    }),
     rest.get(`${testEnv.apiUrl}/services`, (req, res, ctx) => {
       if (!isValidToken(req)) {
         return res(ctx.status(401));
       }
-      return res(ctx.json({ _embedded: { services } }));
+      return res(ctx.json({ services }));
+    }),
+    rest.get(`${testEnv.apiUrl}/apps/:id/services`, (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(ctx.json({ services }));
     }),
     rest.get(`${testEnv.apiUrl}/services/:id`, (req, res, ctx) => {
       if (!isValidToken(req)) {
@@ -457,6 +500,7 @@ const apiHandlers = [
                 href: `${testEnv.apiUrl}/database_images/${data.database_image_id}`,
               },
               service: { href: "" },
+              disk: { href: "" },
             },
           }),
         ),
@@ -580,9 +624,18 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/vhosts/:id`, (_, res, ctx) => {
     return res(ctx.json(testEndpoint));
   }),
-  // rest.get(`${testEnv.apiUrl}/services/:id`, (_, res, ctx) => {
-  //   return res(ctx.json(testServiceRails));
-  // }),
+  rest.get(`${testEnv.apiUrl}/vhosts`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { vhosts: [] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/services`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { services: [] } }));
+  }),
+  rest.get(
+    `${testEnv.apiUrl}/accounts/:id/certificates`,
+    async (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { certificates: [] } }));
+    },
+  ),
   rest.post(
     `${testEnv.apiUrl}/accounts/:id/certificates`,
     async (_, res, ctx) => {
@@ -590,15 +643,21 @@ const apiHandlers = [
     },
   ),
   rest.get(`${testEnv.apiUrl}/accounts/:id/backups`, async (_, res, ctx) => {
-    return res(ctx.json({ backups: [] }));
+    return res(ctx.json({ _embedded: { backups: [] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/log_drains`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { log_drains: [] } }));
   }),
   rest.get(`${testEnv.apiUrl}/accounts/:id/log_drains`, async (_, res, ctx) => {
-    return res(ctx.json({ log_drains: [] }));
+    return res(ctx.json({ _embedded: { log_drains: [] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/metric_drains`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { metric_drains: [] } }));
   }),
   rest.get(
     `${testEnv.apiUrl}/accounts/:id/metric_drains`,
     async (_, res, ctx) => {
-      return res(ctx.json({ metric_drains: [] }));
+      return res(ctx.json({ _embedded: { metric_drains: [] } }));
     },
   ),
   rest.post(
@@ -632,6 +691,37 @@ const apiHandlers = [
       );
     },
   ),
+  rest.post(
+    `${testEnv.apiUrl}/accounts/:id/log_drains`,
+    async (req, res, ctx) => {
+      const data = await req.json();
+      return res(
+        ctx.json(
+          defaultLogDrainResponse({
+            id: `${createId()}`,
+            _links: {
+              account: defaultHalHref(
+                `${testEnv.apiUrl}/accounts/${req.params.id}`,
+              ),
+            },
+            ...data,
+          }),
+        ),
+      );
+    },
+  ),
+  rest.post(
+    `${testEnv.apiUrl}/log_drains/:id/operations`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json(
+          defaultOperationResponse({
+            id: createId(),
+          }),
+        ),
+      );
+    },
+  ),
   rest.get(
     `${testEnv.apiUrl}/accounts/:id/backup_retention_policies`,
     async (_, res, ctx) => {
@@ -647,6 +737,27 @@ const apiHandlers = [
       return res(ctx.json({ ...testBackupRp, ...data }));
     },
   ),
+  rest.get(`${testEnv.apiUrl}/disks/:id`, async (_, res, ctx) => {
+    return res(ctx.json(testDisk));
+  }),
 ];
 
-export const handlers = [...authHandlers, ...apiHandlers];
+const billingHandlers = [
+  rest.post(`${testEnv.billingUrl}/billing_details`, async (_, res, ctx) => {
+    return res(ctx.json({}));
+  }),
+  rest.post(
+    `${testEnv.billingUrl}/billing_details/:id/billing_cycles`,
+    async (_, res, ctx) => {
+      return res(ctx.json({}));
+    },
+  ),
+  rest.post(
+    `${testEnv.billingUrl}/billing_details/:id/billing_contacts`,
+    async (_, res, ctx) => {
+      return res(ctx.json({}));
+    },
+  ),
+];
+
+export const handlers = [...authHandlers, ...apiHandlers, ...billingHandlers];

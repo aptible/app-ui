@@ -1,5 +1,3 @@
-import { PermRequired } from "../layouts";
-import { ButtonCreate, ButtonDestroy, PermissionGate } from "../shared";
 import { defaultPermissionResponse } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import {
@@ -10,8 +8,10 @@ import {
   testRole,
 } from "@app/mocks";
 import { HOME_PATH } from "@app/routes";
-import { setupIntegrationTest, waitForToken } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 import { render, screen } from "@testing-library/react";
+import { PermRequired } from "../layouts";
+import { ButtonCreate, ButtonDestroy, PermissionGate } from "../shared";
 
 const PermsPage = () => {
   return (
@@ -33,7 +33,8 @@ describe("PermRequired", () => {
         initEntries: ["/private"],
         additionalRoutes: [{ path: HOME_PATH, element: <div>no access</div> }],
       });
-      await waitForToken(store);
+
+      await waitForBootup(store);
 
       render(
         <TestProvider>
@@ -68,7 +69,8 @@ describe("PermRequired", () => {
         initEntries: ["/private"],
         additionalRoutes: [{ path: HOME_PATH, element: <div>no access</div> }],
       });
-      await waitForToken(store);
+
+      await waitForBootup(store);
 
       render(
         <TestProvider>
@@ -101,7 +103,8 @@ describe("PermissionGate", () => {
       server.use(...handlers);
 
       const { TestProvider, store } = setupIntegrationTest();
-      await waitForToken(store);
+
+      await waitForBootup(store);
 
       render(
         <TestProvider>
@@ -115,7 +118,8 @@ describe("PermissionGate", () => {
 
     it("should hide the content", async () => {
       const { TestProvider, store } = setupIntegrationTest();
-      await waitForToken(store);
+
+      await waitForBootup(store);
 
       render(
         <TestProvider>
@@ -132,7 +136,8 @@ describe("ButtonCreate", () => {
   describe("when user cannot create resources", () => {
     it("should disable button", async () => {
       const { TestProvider, store } = setupIntegrationTest();
-      await waitForToken(store);
+
+      await waitForBootup(store);
 
       render(
         <TestProvider>
@@ -161,7 +166,8 @@ describe("ButtonCreate", () => {
       server.use(...handlers);
 
       const { TestProvider, store } = setupIntegrationTest();
-      await waitForToken(store);
+
+      await waitForBootup(store);
 
       render(
         <TestProvider>
@@ -179,7 +185,7 @@ describe("ButtonDestroy", () => {
   describe("when user cannot destroy resources", () => {
     it("should disable button", async () => {
       const { TestProvider, store } = setupIntegrationTest();
-      await waitForToken(store);
+      await waitForBootup(store);
 
       render(
         <TestProvider>
@@ -208,7 +214,8 @@ describe("ButtonDestroy", () => {
       server.use(...handlers);
 
       const { TestProvider, store } = setupIntegrationTest();
-      await waitForToken(store);
+
+      await waitForBootup(store);
 
       render(
         <TestProvider>

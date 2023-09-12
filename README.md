@@ -17,7 +17,7 @@ Aptible's PaaS automates the work of provisioning, managing, and scaling infrast
 ```bash
 VITE_AUTH_URL="https://auth.aptible.com"
 VITE_API_URL="https://api.aptible.com"
-VITE_ORIGIN="app"
+VITE_BILLING_URL="https://goldenboy.aptible.com"
 ```
 Environment variables point to which API/Auth to use. You can optionally swap them with `*sbx-main` URLs.
 <br>Here's an example:
@@ -29,7 +29,6 @@ VITE_BILLING_URL="http:localhost:4005"
 VITE_LEGACY_DASHBOARD_URL="http://localhost:4200"
 VITE_METRIC_TUNNEL_URL="http://localhost:4006"
 VITE_SENTRY_DSN=""
-VITE_ORIGIN="app"
 VITE_TUNA_ENABLED="false"
 ```
 
@@ -52,6 +51,14 @@ yarn start
 
 ## Troubleshooting
 
+**Yarn commands are not working**
+
+Re-run the yarn command to add dependencies
+
+```bash
+yarn
+```
+
 **After running `yarn start`, I'm stuck on a blank page that says loading...**
 
 Unset your environment variables in terminal, by running the following commands:
@@ -66,17 +73,24 @@ unset VITE_BILLING URL
 ```
 Then re-run `yarn start` and the site should load.
 
+**Why does my pull request keep failing tests?**
+
+Lint codebase
+
+```bash
+yarn lint
+```
+
+Automatically fix issues
+
+```bash
+yarn fmt
+```
+
 ## Sites
 
 - `prod` https://app.aptible.com
 - `staging` https://cloud-ui-main.aptible-staging.com
-
-## Other Yarn Commands
-
-### Test
-```bash
-yarn test
-```
 
 ## Continuous Deployment
 

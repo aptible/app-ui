@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import {
   fetchAllCertsByEnvId,
-  selectAppsByCertificateId,
+  selectAppsByCertId,
   selectCertificatesByEnvId,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
@@ -16,7 +16,7 @@ import {
 import type { AppState, DeployCertificate } from "@app/types";
 
 import {
-  ButtonCreate,
+  ButtonSensitive,
   CertIssuer,
   CertManagedHTTPSPill,
   CertTrustedPill,
@@ -84,8 +84,8 @@ const CertificateServicesCell = ({
   certificate,
 }: { certificate: DeployCertificate }) => {
   const appsForCertificate = useSelector((s: AppState) =>
-    selectAppsByCertificateId(s, {
-      certificateId: certificate.id,
+    selectAppsByCertId(s, {
+      certId: certificate.id,
       envId: certificate.environmentId,
     }),
   );
@@ -161,13 +161,14 @@ export const EnvironmentCertificatesPage = () => {
     >
       <ResourceListView
         header={
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
             <div className="text-gray-500">
-              {certificates.length} Certificate(s)
+              {certificates.length} Certificate
+              {certificates.length !== 1 && "s"}
             </div>
-            <ButtonCreate envId={id} onClick={createCert}>
+            <ButtonSensitive className="w-fit" envId={id} onClick={createCert}>
               <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
-            </ButtonCreate>
+            </ButtonSensitive>
           </div>
         }
         tableHeader={<TableHead headers={certificatesHeaders} />}

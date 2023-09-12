@@ -25,7 +25,7 @@ export const CONTAINER_PROFILES: {
     costPerContainerHourInCents: 8,
     cpuShare: 0.25 / GB,
     minimumContainerSize: GB / 2,
-    maximumContainerSize: 217 * GB,
+    maximumContainerSize: 368 * GB,
     maximumContainerCount: 32,
   },
   r4: {

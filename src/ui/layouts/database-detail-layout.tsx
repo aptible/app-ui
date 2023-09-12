@@ -5,8 +5,12 @@ import { Outlet, useParams } from "react-router-dom";
 import {
   calcMetrics,
   cancelDatabaseOpsPoll,
+  fetchDatabase,
+  fetchDiskById,
+  fetchService,
   pollDatabaseOperations,
   selectDatabaseById,
+  selectDiskById,
   selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
@@ -14,6 +18,7 @@ import {
   databaseActivityUrl,
   databaseBackupsUrl,
   databaseClusterUrl,
+  databaseCredentialsUrl,
   databaseEndpointsUrl,
   databaseMetricsUrl,
   databaseScaleUrl,
@@ -33,10 +38,11 @@ import {
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 
-import { MenuWrappedPage } from "./menu-wrapped-page";
 import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
 import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
+import { useQuery } from "saga-query/react";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 
 export function DatabaseHeader({
   database,
@@ -46,6 +52,10 @@ export function DatabaseHeader({
   service: DeployService;
 }) {
   const metrics = calcMetrics([service]);
+  useQuery(fetchDiskById({ id: database.diskId }));
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: database.diskId }),
+  );
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -63,7 +73,7 @@ export function DatabaseHeader({
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{database.id}</DetailInfoItem>
         <DetailInfoItem title="Disk IOPS">
-          {database.disk?.provisionedIops}
+          {disk.provisionedIops}
         </DetailInfoItem>
         <DetailInfoItem title="Memory Limit">
           {metrics.totalMemoryLimit / 1024} GB
@@ -72,16 +82,12 @@ export function DatabaseHeader({
         <DetailInfoItem title="Type">
           {capitalize(database.type)}
         </DetailInfoItem>
-        <DetailInfoItem title="Disk Type">
-          {database.disk?.ebsVolumeType}
-        </DetailInfoItem>
+        <DetailInfoItem title="Disk Type">{disk.ebsVolumeType}</DetailInfoItem>
         <DetailInfoItem title="CPU Share">{metrics.totalCPU}</DetailInfoItem>
 
-        <DetailInfoItem title="Disk Size">
-          {database.disk?.size ? database.disk?.size : 0} GB
-        </DetailInfoItem>
+        <DetailInfoItem title="Disk Size">{disk.size} GB</DetailInfoItem>
         <DetailInfoItem title="Disk Encryption">
-          AES-{(database.disk?.keyBytes ? database.disk?.keyBytes : 32) * 8}
+          AES-{disk.keyBytes * 8}
         </DetailInfoItem>
         <DetailInfoItem title="Profile">
           {CONTAINER_PROFILES[service.instanceClass].name}
@@ -110,23 +116,27 @@ function DatabasePageHeader() {
   }, []);
 
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  useQuery(fetchService({ id: database.serviceId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
   );
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: database.environmentId }),
   );
+  const loader = useQuery(fetchDatabase({ id }));
+
   const crumbs = [
     { name: environment.handle, to: environmentDatabasesUrl(environment.id) },
   ];
 
   const tabs = [
-    { name: "Endpoints", href: databaseEndpointsUrl(id) },
     { name: "Metrics", href: databaseMetricsUrl(id) },
     { name: "Scale", href: databaseScaleUrl(id) },
+    { name: "Endpoints", href: databaseEndpointsUrl(id) },
     { name: "Activity", href: databaseActivityUrl(id) },
     { name: "Backups", href: databaseBackupsUrl(id) },
     { name: "Cluster", href: databaseClusterUrl(id) },
+    { name: "Credentials", href: databaseCredentialsUrl(id) },
     { name: "Settings", href: databaseSettingsUrl(id) },
   ] as TabItem[];
 
@@ -134,6 +144,7 @@ function DatabasePageHeader() {
     <>
       <DatabaseOperationNotice id={id} />
       <DetailPageHeaderView
+        {...loader}
         breadcrumbs={crumbs}
         title={database ? database.handle : "Loading..."}
         detailsBox={<DatabaseHeader database={database} service={service} />}

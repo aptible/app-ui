@@ -1,10 +1,10 @@
-import { selectDeploy } from "../slice";
 import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import { defaultEntity } from "@app/hal";
 import { createTable } from "@app/slice-helpers";
 import { AppState, DeployDatabaseImage } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 import { createReducerMap, mustSelectEntity } from "robodux";
+import { selectDeploy } from "../slice";
 
 export interface DeployDatabaseImageResponse {
   id: number;
@@ -69,7 +69,7 @@ export const defaultDeployDatabaseImage = (
     dockerRepo: "",
     type: "",
     version: "",
-    visible: false,
+    visible: true,
     createdAt: now,
     updatedAt: now,
     ...db,
@@ -95,12 +95,14 @@ export const selectDatabaseImagesAsList = createSelector(
   selectors.selectTableAsList,
   (imgs) =>
     imgs.sort((a, b) => {
-      const type = a.type.localeCompare(b.type);
-      if (type !== 0) {
-        return type;
-      }
-      return a.version.localeCompare(b.version);
+      return b.description.localeCompare(a.description, "en", {
+        numeric: true,
+      });
     }),
+);
+export const selectDatabaseImagesVisible = createSelector(
+  selectDatabaseImagesAsList,
+  (images) => images.filter((img) => img.visible),
 );
 
 export const fetchDatabaseImages = api.get<PaginateProps>(

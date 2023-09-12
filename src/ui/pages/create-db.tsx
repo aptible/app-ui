@@ -7,16 +7,18 @@ import {
   DbCreatorProps,
   fetchAllDatabaseImages,
   provisionDatabaseList,
-  selectDatabaseImagesAsList,
+  selectDatabaseImagesVisible,
   selectEnvironmentById,
 } from "@app/deploy";
 import { environmentActivityUrl, environmentDatabasesUrl } from "@app/routes";
 import { AppState } from "@app/types";
 
+import { generateHash } from "@app/id";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
   Banner,
   BannerMessages,
+  Box,
   Button,
   ButtonCreate,
   DatabaseCreatorForm,
@@ -25,7 +27,6 @@ import {
   dbSelectorReducer,
   validateDbName,
 } from "../shared";
-import { generateHash } from "@app/id";
 
 const validateDbs = (items: DbCreatorProps[]): DbValidatorError[] => {
   const errors: DbValidatorError[] = [];
@@ -55,7 +56,7 @@ export const CreateDatabasePage = () => {
     a.id.localeCompare(b.id),
   );
   const imgLoader = useQuery(fetchAllDatabaseImages());
-  const dbImages = useSelector(selectDatabaseImagesAsList);
+  const dbImages = useSelector(selectDatabaseImagesVisible);
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
   );
@@ -73,6 +74,7 @@ export const CreateDatabasePage = () => {
       name: env.handle,
       env: "DATABASE_URL",
       dbType: "",
+      enableBackups: true,
     };
     dbCreatorDispatch({ type: "add", payload });
   }, [env.handle]);
@@ -92,52 +94,51 @@ export const CreateDatabasePage = () => {
 
   return (
     <EnvironmentDetailLayout>
-      <form
-        onSubmit={onSubmit}
-        className="bg-white py-8 px-8 shadow border border-black-100 rounded-lg"
-      >
-        <div className="flex flex-col gap-4">
-          <DatabaseCreatorForm
-            dbImages={dbImages}
-            namePrefix={`${env.handle}-${generateHash(5)}`}
-            dbMap={dbCreatorMap}
-            dbDispatch={dbCreatorDispatch}
-            isLoading={imgLoader.isInitialLoading}
-            showEnv={false}
-          />
-        </div>
+      <Box>
+        <form onSubmit={onSubmit}>
+          <div className="flex flex-col gap-4">
+            <DatabaseCreatorForm
+              dbImages={dbImages}
+              namePrefix={`${env.handle}-${generateHash(5)}`}
+              dbMap={dbCreatorMap}
+              dbDispatch={dbCreatorDispatch}
+              isLoading={imgLoader.isInitialLoading}
+              showEnv={false}
+            />
+          </div>
 
-        <hr className="my-4" />
+          <hr className="my-4" />
 
-        <div className="mb-4 flex flex-col gap-2">
-          {dbErrors.map((err) => {
-            return (
-              <Banner key={err.item.id} variant="error">
-                {err.message} ({err.item.name})
-              </Banner>
-            );
-          })}
-        </div>
+          <div className="mb-4 flex flex-col gap-2">
+            {dbErrors.map((err) => {
+              return (
+                <Banner key={err.item.id} variant="error">
+                  {err.message} ({err.item.name})
+                </Banner>
+              );
+            })}
+          </div>
 
-        <BannerMessages className="mb-4" {...loader} />
+          <BannerMessages className="mb-4" {...loader} />
 
-        <div className="flex gap-2">
-          <ButtonCreate
-            envId={envId}
-            type="submit"
-            isLoading={loader.isLoading}
-          >
-            Save
-          </ButtonCreate>
+          <div className="flex gap-2">
+            <ButtonCreate
+              envId={envId}
+              type="submit"
+              isLoading={loader.isLoading}
+            >
+              Save Changes
+            </ButtonCreate>
 
-          <Button
-            variant="white"
-            onClick={() => navigate(environmentDatabasesUrl(envId))}
-          >
-            Cancel
-          </Button>
-        </div>
-      </form>
+            <Button
+              variant="white"
+              onClick={() => navigate(environmentDatabasesUrl(envId))}
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </Box>
     </EnvironmentDetailLayout>
   );
 };

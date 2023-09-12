@@ -15,6 +15,7 @@ export interface SelectProps<V = string> {
   className?: string;
   ariaLabel?: string;
   disabled?: boolean;
+  placeholder?: string;
 }
 
 export function Select<V = string>({
@@ -26,10 +27,11 @@ export function Select<V = string>({
   className = "",
   ariaLabel = "combobox",
   disabled = false,
+  placeholder = "Select",
 }: SelectProps<V>) {
   const finClassName = cn(
     "border-black-100 text-black",
-    "hover:border-black hover:text-black-300",
+    "hover:border-black",
     "active:border-black-100 active:text-black",
     "disabled:bg-black-50 disabled:border-black-100 disabled:text-black",
     "rounded-md shadow-sm",
@@ -42,6 +44,7 @@ export function Select<V = string>({
       className={finClassName}
       value={value}
       defaultValue={defaultValue}
+      placeholder={placeholder}
       onChange={(e) => {
         const value = e.currentTarget.value;
         const option = options.find((o) => o.value === value);

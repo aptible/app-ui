@@ -2,6 +2,16 @@ import { useState } from "react";
 
 import { OperationStatus } from "@app/types";
 
+import { dateFromToday } from "@app/date";
+import {
+  defaultDeployApp,
+  defaultDeployDatabase,
+  defaultDeployEndpoint,
+  defaultDeployEnvironment,
+  defaultDeployOperation,
+  defaultDeployService,
+  defaultDeployStack,
+} from "@app/deploy";
 import {
   AppHeader,
   DatabaseHeader,
@@ -12,12 +22,14 @@ import {
 import {
   AptibleLogo,
   Banner,
+  Box,
   Breadcrumbs,
   Button,
   ButtonIcon,
   ButtonLink,
   CheckBox,
   FormGroup,
+  Group,
   IconAlertTriangle,
   IconArrowLeft,
   IconArrowRight,
@@ -34,6 +46,7 @@ import {
   IconDownload,
   IconEdit,
   IconEllipsis,
+  IconEndpoint,
   IconExternalLink,
   IconGitBranch,
   IconGlobe,
@@ -45,6 +58,7 @@ import {
   IconPlusCircle,
   IconRefresh,
   IconSearch,
+  IconService,
   IconSettings,
   IconShield,
   IconThumbsUp,
@@ -71,18 +85,6 @@ import {
   tokens,
 } from "../shared";
 import { DateText } from "../shared/date-text";
-import { dateFromToday } from "@app/date";
-import {
-  defaultDeployApp,
-  defaultDeployDatabase,
-  defaultDeployEndpoint,
-  defaultDeployEnvironment,
-  defaultDeployOperation,
-  defaultDeployService,
-  defaultDeployStack,
-} from "@app/deploy";
-import { defaultDeployDisk } from "@app/deploy/disk";
-import { defaultDeployImage } from "@app/deploy/image";
 
 const StylesWrapper = ({
   children,
@@ -169,11 +171,11 @@ const Tables = () => (
           {Array(5)
             .fill(0)
             .map((_, rowIdx) => (
-              <tr className="group hover:bg-gray-50" key={rowIdx}>
+              <tr className="group hover:bg-gray-50" key={`row-${rowIdx}`}>
                 {Array(8)
                   .fill(0)
                   .map((_, colIdx) => (
-                    <Td key={colIdx}>{`Cell - ${colIdx + 1} x ${
+                    <Td key={`arr-${colIdx}`}>{`Cell - ${colIdx + 1} x ${
                       rowIdx + 1
                     }`}</Td>
                   ))}
@@ -544,6 +546,8 @@ const Icons = () => (
         ["IconCylinder", <IconCylinder />],
         ["IconTrash", <IconTrash />],
         ["IconBox", <IconBox />],
+        ["IconEndpoint", <IconEndpoint />],
+        ["IconService", <IconService />],
         ["IconSettings", <IconSettings />],
         ["IconSearch", <IconSearch />],
         ["IconShield", <IconShield />],
@@ -609,19 +613,11 @@ const DetailBoxes = () => {
     id: appId,
     handle: "My App",
     gitRepo: "some.git@repo.com",
-    lastDeployOperation: op,
-    currentImage: defaultDeployImage({ dockerRepo: "some.docker.repo" }),
   });
 
   const db = defaultDeployDatabase({
     id: "222",
     type: "postgresql",
-    disk: defaultDeployDisk({
-      provisionedIops: 1000,
-      size: 100,
-      ebsVolumeType: "idk",
-      keyBytes: 32,
-    }),
   });
   const service = defaultDeployService({
     instanceClass: "m4",
@@ -669,13 +665,16 @@ const DetailBoxes = () => {
 };
 
 const Secrets = () => {
+  const env = defaultDeployEnvironment({
+    id: "123",
+    stackId: "444",
+  });
   return (
     <div className="flex flex-col gap-3">
       <h1 id="secrets" className={tokens.type.h1}>
         Secrets
       </h1>
-      <Secret secret="secret-value-showing-by-default" showAsOpened />
-      <Secret secret="secret-value-hidden-by-default" />
+      <Secret secret="secret-value-hidden-by-default" envId={env.id} />
     </div>
   );
 };
@@ -697,6 +696,42 @@ const Dates = () => {
   );
 };
 
+const NegativeSpace = () => {
+  return (
+    <Group>
+      <div>
+        <h1 className={tokens.type.h1}>Grouping</h1>
+
+        <Box>A simple box</Box>
+      </div>
+
+      <div>
+        <h1 className={tokens.type.h1}>Grouping</h1>
+
+        <div>
+          <h2 className={tokens.type.h2}>Default</h2>
+
+          <Group>
+            <Box>One</Box>
+            <Box>Two</Box>
+            <Box>Three</Box>
+          </Group>
+        </div>
+
+        <div>
+          <h2 className={tokens.type.h2}>Horizontal</h2>
+
+          <Group variant="horizontal">
+            <Box>One</Box>
+            <Box>Two</Box>
+            <Box>Three</Box>
+          </Group>
+        </div>
+      </div>
+    </Group>
+  );
+};
+
 export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
@@ -714,6 +749,7 @@ export const StylesPage = () => (
       <DetailBoxes />
       <Secrets />
       <Dates />
+      <NegativeSpace />
     </StylesWrapper>
   </div>
 );

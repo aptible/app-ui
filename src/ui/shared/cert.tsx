@@ -1,8 +1,8 @@
 import { DeployCertificate } from "@app/types";
 
+import { prettyEnglishDate } from "@app/date";
 import { Pill, pillStyles } from "./pill";
 import { tokens } from "./tokens";
-import { prettyEnglishDate } from "@app/date";
 
 interface CertProp {
   cert: DeployCertificate;

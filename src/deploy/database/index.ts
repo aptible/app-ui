@@ -29,13 +29,15 @@ import type {
   AppState,
   DeployApiCtx,
   DeployDatabase,
-  DeployOperationResponse,
+  DeployOperation,
   HalEmbedded,
+  InstanceClass,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
 
-import { deserializeDisk } from "../disk";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { createAction, createSelector } from "@reduxjs/toolkit";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -43,13 +45,14 @@ import {
   selectEnvironmentsByOrg,
 } from "../environment";
 import {
-  deserializeDeployOperation,
+  DeployOperationResponse,
+  defaultDeployOperation,
+  findOperationsByDbId,
+  selectOperationsAsList,
   selectOperationsByDatabaseId,
   waitForOperation,
 } from "../operation";
 import { selectDeploy } from "../slice";
-import { selectOrganizationSelectedId } from "@app/organizations";
-import { createAction, createSelector } from "@reduxjs/toolkit";
 
 export interface DeployDatabaseResponse {
   id: number;
@@ -62,11 +65,13 @@ export interface DeployDatabaseResponse {
   connection_url: string;
   created_at: string;
   updated_at: string;
+  enable_backups: boolean;
   _links: {
     account: LinkResponse;
     service: LinkResponse;
     database_image: LinkResponse;
     initialize_from: LinkResponse;
+    disk: LinkResponse;
   };
   _embedded: {
     disk: any;
@@ -81,6 +86,7 @@ export interface DbCreatorProps {
   name: string;
   env: string;
   dbType: string;
+  enableBackups: boolean;
 }
 
 export const defaultDatabaseResponse = (
@@ -98,11 +104,13 @@ export const defaultDatabaseResponse = (
     connection_url: "",
     created_at: now,
     updated_at: now,
+    enable_backups: true,
     _links: {
       account: { href: "" },
       service: { href: "" },
       database_image: { href: "" },
       initialize_from: { href: "" },
+      disk: { href: "" },
       ...d._links,
     },
     _embedded: {
@@ -118,7 +126,6 @@ export const defaultDatabaseResponse = (
 export const deserializeDeployDatabase = (
   payload: DeployDatabaseResponse,
 ): DeployDatabase => {
-  const embedded = payload._embedded;
   const links = payload._links;
 
   return {
@@ -130,16 +137,14 @@ export const deserializeDeployDatabase = (
     handle: payload.handle,
     id: `${payload.id}`,
     provisioned: payload.provisioned,
+    enableBackups: payload.enable_backups,
     type: payload.type,
     status: payload.status,
     databaseImageId: extractIdFromLink(links.database_image),
     environmentId: extractIdFromLink(links.account),
     serviceId: extractIdFromLink(links.service),
-    disk: embedded.disk ? deserializeDisk(embedded.disk) : null,
+    diskId: extractIdFromLink(links.disk),
     initializeFrom: extractIdFromLink(links.initialize_from),
-    lastOperation: embedded.last_operation
-      ? deserializeDeployOperation(embedded.last_operation)
-      : null,
   };
 };
 
@@ -158,18 +163,19 @@ export const defaultDeployDatabase = (
     currentKmsArn: "",
     dockerRepo: "",
     provisioned: false,
+    enableBackups: true,
     type: "",
     environmentId: "",
     serviceId: "",
-    disk: null,
+    diskId: "",
     initializeFrom: "",
-    lastOperation: null,
     ...d,
   };
 };
 
 export interface DeployDatabaseRow extends DeployDatabase {
   envHandle: string;
+  lastOperation: DeployOperation;
 }
 
 export const DEPLOY_DATABASE_NAME = "databases";
@@ -214,11 +220,17 @@ export const selectDatabasesByOrgAsList = createSelector(
 export const selectDatabasesForTable = createSelector(
   selectDatabasesByOrgAsList,
   selectEnvironments,
-  (dbs, envs) =>
+  selectOperationsAsList,
+  (dbs, envs, ops) =>
     dbs
       .map((db): DeployDatabaseRow => {
         const env = findEnvById(envs, { id: db.environmentId });
-        return { ...db, envHandle: env.handle };
+        const dbOps = findOperationsByDbId(ops, db.id);
+        let lastOperation = defaultDeployOperation();
+        if (dbOps.length > 0) {
+          lastOperation = dbOps[0];
+        }
+        return { ...db, envHandle: env.handle, lastOperation };
       })
       .sort((a, b) => a.handle.localeCompare(b.handle)),
 );
@@ -307,6 +319,18 @@ export const selectDatabasesByEnvId = createSelector(
   },
 );
 
+export const selectDatabasesByEnvIdAndType = createSelector(
+  selectDatabasesByEnvId,
+  (_: AppState, props: { envId: string }) => props.envId,
+  (_: AppState, props: { types: string[] }) => props.types,
+  (dbs, envId, types) => {
+    return dbs
+      .filter((db) => db.environmentId === envId)
+      .filter((db) => types.includes(db.type))
+      .sort((a, b) => a.id.localeCompare(b.id));
+  },
+);
+
 export const selectDatabasesByStack = createSelector(
   selectDatabasesAsList,
   selectEnvironments,
@@ -344,6 +368,7 @@ interface CreateDatabaseProps {
   type: string;
   envId: string;
   databaseImageId: string;
+  enableBackups: boolean;
 }
 /**
  * This will only create a database record, it will not trigger it to actually be provisioned.
@@ -353,12 +378,13 @@ export const createDatabase = api.post<
   CreateDatabaseProps,
   DeployDatabaseResponse
 >("/accounts/:envId/databases", function* (ctx, next) {
-  const { handle, type, envId, databaseImageId } = ctx.payload;
+  const { handle, type, envId, databaseImageId, enableBackups } = ctx.payload;
   const body = {
     handle,
     type,
     account_id: envId,
     database_image_id: databaseImageId,
+    enable_backups: enableBackups,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
 
@@ -390,11 +416,13 @@ export const mapCreatorToProvision = (
 ): CreateDatabaseProps => {
   const handle = db.name.toLocaleLowerCase();
   const dbType = db.dbType;
+  const enableBackups = db.enableBackups;
   return {
     handle,
     type: dbType,
     envId,
     databaseImageId: db.imgId,
+    enableBackups,
   };
 };
 
@@ -636,14 +664,16 @@ export const deprovisionDatabase = thunks.create<{
 interface UpdateDatabase {
   id: string;
   handle: string;
+  enableBackups: boolean;
 }
 
 export const updateDatabase = api.put<UpdateDatabase>(
   "/databases/:id",
   function* (ctx, next) {
-    const { handle } = ctx.payload;
+    const { handle, enableBackups } = ctx.payload;
     const body = {
       handle,
+      enable_backups: enableBackups,
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield* next();
@@ -654,18 +684,44 @@ export interface DatabaseScaleProps {
   id: string;
   diskSize?: number;
   containerSize?: number;
+  containerProfile?: InstanceClass;
 }
+
+export const restartDatabase = api.post<
+  { id: string },
+  DeployOperationResponse
+>(["/databases/:id/operations", "restart"], function* (ctx, next) {
+  const { id } = ctx.payload;
+  const body = {
+    type: "restart",
+    id,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Restart database operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
 
 export const scaleDatabase = api.post<
   DatabaseScaleProps,
   DeployOperationResponse
->(["/databases/:id/operations", "restart"], function* (ctx, next) {
-  const { id, diskSize, containerSize } = ctx.payload;
+>(["/databases/:id/operations", "scale"], function* (ctx, next) {
+  const { id, diskSize, containerProfile, containerSize } = ctx.payload;
   const body = {
     type: "restart",
     id,
     disk_size: diskSize,
     container_size: containerSize,
+    instance_profile: containerProfile,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield* next();

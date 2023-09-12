@@ -6,9 +6,13 @@ import { prettyEnglishDate } from "@app/date";
 import {
   cancelAppOpsPoll,
   fetchApp,
+  fetchImageById,
+  fetchServicesByAppId,
   pollAppOperations,
   selectAppById,
   selectEnvironmentById,
+  selectImageById,
+  selectLatestDeployOp,
   selectServiceById,
 } from "@app/deploy";
 import {
@@ -33,11 +37,19 @@ import {
   TabItem,
 } from "../shared";
 
-import { MenuWrappedPage } from "./menu-wrapped-page";
 import { setResourceStats } from "@app/search";
 import { useQuery } from "saga-query/react";
+import { MenuWrappedPage } from "./menu-wrapped-page";
 
 export function AppHeader({ app }: { app: DeployApp }) {
+  const lastDeployOp = useSelector((s: AppState) =>
+    selectLatestDeployOp(s, { appId: app.id }),
+  );
+  useQuery(fetchImageById({ id: app.currentImageId }));
+  const image = useSelector((s: AppState) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -57,13 +69,11 @@ export function AppHeader({ app }: { app: DeployApp }) {
         <DetailInfoItem title="Git Remote">{app.gitRepo}</DetailInfoItem>
         <div className="hidden md:block" />
         <DetailInfoItem title="Last Deployed">
-          {app.lastDeployOperation
-            ? `${prettyEnglishDate(app.lastDeployOperation?.createdAt)}`
+          {lastDeployOp
+            ? `${prettyEnglishDate(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
-        <DetailInfoItem title="Docker Image">
-          {app.currentImage.dockerRepo}
-        </DetailInfoItem>
+        <DetailInfoItem title="Docker Image">{image.dockerRepo}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -88,7 +98,8 @@ function AppPageHeader() {
     dispatch(setResourceStats({ id, type: "app" }));
   }, []);
 
-  useQuery(fetchApp({ id }));
+  const loader = useQuery(fetchApp({ id }));
+  useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),
@@ -96,6 +107,7 @@ function AppPageHeader() {
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
+
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
@@ -105,10 +117,6 @@ function AppPageHeader() {
       to: appServicesUrl(app.id),
     });
   }
-
-  // TODO - COME BACK TO THIS
-  // Need to kick a user back out of the details page (or lock specific pages if it is deleted)
-  // currently the network log will error with a 404 (as the record will be deleted)
 
   const tabs: TabItem[] = serviceId
     ? [
@@ -126,8 +134,9 @@ function AppPageHeader() {
     <>
       <AppHeartbeatNotice id={id} serviceId={serviceId} />
       <DetailPageHeaderView
+        {...loader}
         breadcrumbs={crumbs}
-        title={serviceId ? service.handle : app.handle}
+        title={serviceId ? service.processType : app.handle}
         detailsBox={<AppHeader app={app} />}
         tabs={tabs}
       />

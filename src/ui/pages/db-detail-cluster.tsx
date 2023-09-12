@@ -1,11 +1,4 @@
 import {
-  LoadResources,
-  ResourceListView,
-  TableHead,
-  Td,
-  tokens,
-} from "../shared";
-import {
   calcMetrics,
   fetchAllDatabaseImages,
   fetchDatabase,
@@ -13,60 +6,59 @@ import {
   fetchEnvironmentServices,
   selectDatabaseById,
   selectDatabaseDependents,
-  selectDatabaseImagesAsList,
-  selectServicesAsList,
+  selectDatabaseImageById,
+  selectDiskById,
+  selectServiceById,
 } from "@app/deploy";
 import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
 import { useQuery } from "@app/fx";
 import { databaseEndpointsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import {
-  AppState,
-  DeployDatabase,
-  DeployDatabaseImage,
-  DeployService,
-} from "@app/types";
-import { ReactElement } from "react";
+import { AppState, DeployDatabase } from "@app/types";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
+import {
+  LoadResources,
+  ResourceListView,
+  TableHead,
+  Td,
+  tokens,
+} from "../shared";
 
-const clusterDatabaseRow = ({
-  clusterDatabase,
-  service,
-  databaseImage,
+const ClusterDatabaseRow = ({
+  db,
 }: {
-  clusterDatabase: DeployDatabase;
-  service?: DeployService;
-  databaseImage?: DeployDatabaseImage;
-}): ReactElement | null => {
-  if (!service) {
-    // without the service populated we do not have enough data to hydrate this yet!
-    return null;
-  }
+  db: DeployDatabase;
+}) => {
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: db.serviceId }),
+  );
+  const image = useSelector((s: AppState) =>
+    selectDatabaseImageById(s, { id: db.databaseImageId }),
+  );
   const metrics = calcMetrics([service]);
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: db.diskId }),
+  );
   return (
-    <tr className="group hover:bg-gray-50" key={`${clusterDatabase.id}`}>
+    <tr className="group hover:bg-gray-50" key={`${db.id}`}>
       <Td className="flex-1 pl-4">
-        <Link to={databaseEndpointsUrl(clusterDatabase.id)}>
-          <div className={tokens.type.darker}>{clusterDatabase.handle}</div>
-          <div className={tokens.type["normal lighter"]}>
-            ID: {clusterDatabase.id}
-          </div>
+        <Link to={databaseEndpointsUrl(db.id)}>
+          <div className={tokens.type.darker}>{db.handle}</div>
+          <div className={tokens.type["normal lighter"]}>ID: {db.id}</div>
         </Link>
       </Td>
 
       <Td className="flex-1">
-        <div className="text-gray-900">{capitalize(clusterDatabase.type)}</div>
+        <div className="text-gray-900">{capitalize(db.type)}</div>
         <div className={tokens.type["normal lighter"]}>
-          {!!databaseImage && `Version ${databaseImage.version}`}
+          Version {image.version}
         </div>
       </Td>
 
       <Td className="flex-1">
-        <div className={tokens.type.darker}>
-          {clusterDatabase.disk ? `${clusterDatabase.disk?.size} GB` : "N/A"}
-        </div>
+        <div className={tokens.type.darker}>{disk.size} GB</div>
       </Td>
 
       <Td className="flex-1">
@@ -94,14 +86,10 @@ export const DatabaseClusterPage = () => {
   const dependentsQuery = useQuery(fetchDatabaseDependents({ id }));
   useQuery(fetchAllDatabaseImages());
   useQuery(fetchEnvironmentServices({ id: database.environmentId }));
-  const services = useSelector(selectServicesAsList);
-  const databaseImages = useSelector((s: AppState) =>
-    selectDatabaseImagesAsList(s),
-  );
 
   return (
     <LoadResources query={dependentsQuery} isEmpty={false}>
-      <div className="text-sm text-gray-500 mt-4 select-none">
+      <div className="text-sm text-gray-500 select-none">
         <div className="text-base inline">
           {clusterDatabases.length ? clusterDatabases.length : 0} Cluster
           Members. Replicas can only be added via the Aptible CLI,{" "}
@@ -130,19 +118,9 @@ export const DatabaseClusterPage = () => {
             }
             tableBody={
               <>
-                {clusterDatabases
-                  .map((clusterDatabase) =>
-                    clusterDatabaseRow({
-                      clusterDatabase,
-                      service: services.find(
-                        (s) => s.id === clusterDatabase.serviceId,
-                      ),
-                      databaseImage: databaseImages.find(
-                        (d) => d.id === clusterDatabase.databaseImageId,
-                      ),
-                    }),
-                  )
-                  .filter((reactElement) => !!reactElement)}
+                {clusterDatabases.map((db) => (
+                  <ClusterDatabaseRow key={db.id} db={db} />
+                ))}
               </>
             }
           />

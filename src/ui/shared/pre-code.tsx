@@ -1,5 +1,5 @@
-import { IconCopy } from "./icons";
 import { SyntheticEvent } from "react";
+import { IconCopy } from "./icons";
 
 interface TextSegment {
   text: string;

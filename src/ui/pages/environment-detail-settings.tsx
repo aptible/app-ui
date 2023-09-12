@@ -6,9 +6,9 @@ import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import {
   deprovisionEnvironment,
   fetchDatabaseBackupsByEnvironment,
+  fetchEnvLogDrains,
+  fetchEnvMetricDrains,
   fetchEnvironmentById,
-  fetchLogDrains,
-  fetchMetricDrains,
   selectBackupsByEnvId,
   selectEnvironmentById,
   selectLogDrainsByEnvId,
@@ -17,11 +17,13 @@ import {
 } from "@app/deploy";
 import { AppState } from "@app/types";
 
+import { environmentsUrl } from "@app/routes";
+import { handleValidator } from "@app/validator";
 import { useValidator } from "../hooks";
 import {
   Banner,
   Box,
-  ButtonCreate,
+  ButtonAdmin,
   ButtonDestroy,
   CheckBox,
   FormGroup,
@@ -29,8 +31,6 @@ import {
   IconTrash,
   Input,
 } from "../shared";
-import { environmentsUrl } from "@app/routes";
-import { handleValidator } from "@app/validator";
 
 const validators = {
   handle: handleValidator,
@@ -78,8 +78,8 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
       </FormGroup>
 
       <div className="flex flex-col gap-4">
-        <Banner variant="warning">
-          <div className="mb-1">
+        <Banner variant="info">
+          <div className="mb-1 font-semibold">
             In order for the new environment handle {handle} to appear in log
             drain and metric drain destinations, you must restart the apps and
             databases in this environment. Also be aware the following may need
@@ -102,7 +102,7 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
 
         <hr />
 
-        <ButtonCreate
+        <ButtonAdmin
           envId={envId}
           type="submit"
           isLoading={loader.isLoading}
@@ -110,7 +110,7 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
           className="w-40"
         >
           Save Changes
-        </ButtonCreate>
+        </ButtonAdmin>
       </div>
     </form>
   );
@@ -120,8 +120,8 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
   const navigate = useNavigate();
   useQuery(fetchEnvironmentById({ id: envId }));
   useQuery(fetchDatabaseBackupsByEnvironment({ id: envId }));
-  useQuery(fetchLogDrains({ id: envId }));
-  useQuery(fetchMetricDrains({ id: envId }));
+  useQuery(fetchEnvLogDrains({ id: envId }));
+  useQuery(fetchEnvMetricDrains({ id: envId }));
 
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
@@ -174,16 +174,10 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
 
   return (
     <Box>
-      <div className="mb-4">
-        <h1 className="text-lg text-red-500 font-semibold">
-          <IconAlertTriangle
-            className="inline pr-3 mb-1"
-            style={{ width: 32 }}
-            color="#AD1A1A"
-          />
-          Deprovision Environment
-        </h1>
-      </div>
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2 mb-4">
+        <IconAlertTriangle color="#AD1A1A" />
+        Deprovision Environment
+      </h1>
 
       <form onSubmit={onSubmit}>
         <div>

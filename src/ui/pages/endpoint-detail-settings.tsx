@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { useLoader, useLoaderSuccess } from "saga-query/react";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
 import {
   EndpointUpdateProps,
+  fetchImageById,
+  getContainerPort,
   parseIpStr,
+  selectAppById,
   selectEndpointById,
+  selectImageById,
   selectServiceById,
   updateEndpoint,
 } from "@app/deploy";
 import { endpointDetailActivityUrl } from "@app/routes";
 import { AppState } from "@app/types";
 
+import { ipValidator, portValidator } from "@app/validator";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,
@@ -20,10 +25,10 @@ import {
   ButtonCreate,
   EndpointDeprovision,
   FormGroup,
+  Group,
   Input,
   TextArea,
 } from "../shared";
-import { ipValidator, portValidator } from "@app/validator";
 
 const validators = {
   port: (data: EndpointUpdateProps) => portValidator(data.containerPort),
@@ -39,30 +44,48 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: enp.serviceId }),
   );
-  const [ipAllowlist, setIpAllowlist] = useState(enp.ipWhitelist.join("\n"));
+  const app = useSelector((s: AppState) =>
+    selectAppById(s, { id: service.appId }),
+  );
+  useQuery(fetchImageById({ id: app.currentImageId }));
+  const image = useSelector((s: AppState) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+  const exposedPorts = image.exposedPorts;
+
+  const origAllowlist = enp.ipWhitelist.join("\n");
+  const [ipAllowlist, setIpAllowlist] = useState(origAllowlist);
   const [port, setPort] = useState(enp.containerPort);
+
   useEffect(() => {
-    setIpAllowlist(enp.ipWhitelist.join("\n"));
-  }, [enp.ipWhitelist]);
+    setIpAllowlist(origAllowlist);
+  }, [origAllowlist]);
   useEffect(() => {
     setPort(enp.containerPort);
   }, [enp.containerPort]);
+
   const data = {
     id: endpointId,
     ipAllowlist: parseIpStr(ipAllowlist),
     containerPort: port,
   };
-  const action = updateEndpoint(data);
-  const loader = useLoader(action);
+  const ipsSame = origAllowlist === ipAllowlist;
+  const portSame = enp.containerPort === port;
+  const isDisabled = ipsSame && portSame;
+  const curPortText = getContainerPort(enp, exposedPorts);
+
+  const loader = useLoader(updateEndpoint);
   const [errors, validate] = useValidator<
     EndpointUpdateProps,
     typeof validators
   >(validators);
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isDisabled) return;
     if (!validate(data)) return;
-    dispatch(action);
+    dispatch(updateEndpoint(data));
   };
+
   useLoaderSuccess(loader, () => {
     navigate(endpointDetailActivityUrl(endpointId));
   });
@@ -71,20 +94,22 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     <Box>
       <h1 className="text-lg text-gray-500 mb-4">Endpoint Settings</h1>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <FormGroup
-          label="Container Port"
-          htmlFor="port"
-          feedbackMessage={errors.port}
-          feedbackVariant={errors.port ? "danger" : "info"}
-        >
-          <Input
-            type="text"
-            id="port"
-            name="port"
-            value={port}
-            onChange={(e) => setPort(e.currentTarget.value)}
-          />
-        </FormGroup>
+        {service.appId ? (
+          <FormGroup
+            label={`Container Port (current: ${curPortText}`}
+            htmlFor="port"
+            feedbackMessage={errors.port}
+            feedbackVariant={errors.port ? "danger" : "info"}
+          >
+            <Input
+              type="text"
+              id="port"
+              name="port"
+              value={port}
+              onChange={(e) => setPort(e.currentTarget.value)}
+            />
+          </FormGroup>
+        ) : null}
 
         <FormGroup
           label="IP Allowlist"
@@ -107,6 +132,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
           envId={service.environmentId}
           isLoading={loader.isLoading}
           className="w-40"
+          disabled={isDisabled}
         >
           Save Changes
         </ButtonCreate>
@@ -123,10 +149,9 @@ export const EndpointDetailSettingsPage = () => {
   );
 
   return (
-    <div>
+    <Group variant="vertical" size="lg">
       <EndpointSettings endpointId={id} />
-      <hr className="my-4" />
       <EndpointDeprovision endpointId={id} envId={service.environmentId} />
-    </div>
+    </Group>
   );
 };

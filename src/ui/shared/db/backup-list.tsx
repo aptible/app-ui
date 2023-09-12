@@ -55,6 +55,7 @@ const DeleteBackup = ({ envId, id }: { envId: string; id: string }) => {
       size="sm"
       onClick={onClick}
       isLoading={loader.isLoading}
+      requireConfirm
     >
       Delete
     </ButtonDestroy>
@@ -71,7 +72,7 @@ const BackupListRow = ({
     selectDatabaseById(s, { id: backup.databaseId }),
   );
   const createdByOpId = backup.createdFromOperationId;
-  const onClone = () => {
+  const onRestore = () => {
     navigate(backupRestoreUrl(backup.id));
   };
 
@@ -128,8 +129,12 @@ const BackupListRow = ({
       </Td>
 
       <Td className="flex gap-2 justify-end mr-4">
-        <ButtonCreate envId={backup.environmentId} onClick={onClone} size="sm">
-          Clone
+        <ButtonCreate
+          envId={backup.environmentId}
+          onClick={onRestore}
+          size="sm"
+        >
+          Restore
         </ButtonCreate>
         <DeleteBackup id={backup.id} envId={backup.environmentId} />
       </Td>

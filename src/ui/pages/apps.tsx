@@ -1,4 +1,4 @@
-import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
+import { MenuWrappedPage } from "../layouts";
 import { AppListByOrg } from "../shared";
 
 export const AppsPage = () => {

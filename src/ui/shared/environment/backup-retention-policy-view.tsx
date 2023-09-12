@@ -12,7 +12,8 @@ import type { AppState } from "@app/types";
 
 import { useValidator } from "../../hooks";
 import { BannerMessages } from "../banner";
-import { Button, ButtonCreate } from "../button";
+import { Box } from "../box";
+import { Button, ButtonAdmin } from "../button";
 import { FormGroup } from "../form-group";
 import { Input } from "../input";
 import { Radio, RadioGroup } from "../select";
@@ -91,7 +92,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
   }, [backupRp]);
 
   return (
-    <div className="bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+    <Box>
       <h3 className={tokens.type.h3}>Backup Retention Policy</h3>
       <div className="mt-4">
         Any changes made will impact <strong>all database backups</strong>{" "}
@@ -158,19 +159,15 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
         <BannerMessages {...loader} />
 
         <div className="flex gap-2">
-          <ButtonCreate
-            type="submit"
-            envId={envId}
-            isLoading={loader.isLoading}
-          >
+          <ButtonAdmin type="submit" envId={envId} isLoading={loader.isLoading}>
             Save Policy
-          </ButtonCreate>
+          </ButtonAdmin>
 
           <Button variant="white" onClick={onReset}>
             Cancel
           </Button>
         </div>
       </form>
-    </div>
+    </Box>
   );
 };

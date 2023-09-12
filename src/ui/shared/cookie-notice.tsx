@@ -1,7 +1,7 @@
 import debug from "debug";
 
-import { Button } from "./button";
 import { useEffect, useState } from "react";
+import { Button } from "./button";
 
 const COOKIE_NAME = "cookieConsent";
 

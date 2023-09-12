@@ -1,5 +1,5 @@
-import { DetailPageSections, EnvironmentListByStack } from "../shared";
 import { useParams } from "react-router";
+import { DetailPageSections, EnvironmentListByStack } from "../shared";
 
 export const StackDetailEnvironmentsPage = () => {
   const { id = "" } = useParams();

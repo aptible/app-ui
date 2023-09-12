@@ -1,6 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
 
-import { api, thunks } from "@app/api";
+import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
 import {
   call,
   put,
@@ -17,16 +17,20 @@ import {
 import {
   AppState,
   DeployMetricDrain,
-  DeployOperationResponse,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
 
+import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
-export type MetricDrainType = "influxdb" | "influxdb_database" | "datadog";
+export type MetricDrainType =
+  | "influxdb"
+  | "influxdb_database"
+  | "datadog"
+  | "influxdb2";
 
-interface MetricDrainResponse {
+export interface DeployMetricDrainResponse {
   id: string;
   handle: string;
   drain_type: MetricDrainType;
@@ -48,8 +52,8 @@ interface MetricDrainResponse {
 }
 
 export const defaultMetricDrainResponse = (
-  md: Partial<MetricDrainResponse> = {},
-): MetricDrainResponse => {
+  md: Partial<DeployMetricDrainResponse> = {},
+): DeployMetricDrainResponse => {
   const now = new Date().toISOString();
   return {
     id: "",
@@ -76,7 +80,7 @@ export const defaultMetricDrainResponse = (
 };
 
 export const deserializeMetricDrain = (
-  payload: MetricDrainResponse,
+  payload: DeployMetricDrainResponse,
 ): DeployMetricDrain => {
   const links = payload._links;
 
@@ -134,7 +138,11 @@ const selectors = slice.getSelectors(
 const initMetricDrain = defaultDeployMetricDrain();
 const must = mustSelectEntity(initMetricDrain);
 export const selectMetricDrainById = must(selectors.selectById);
-export const { selectTableAsList: selectMetricDrainsAsList } = selectors;
+export const findMetricDrainById = must(selectors.findById);
+export const {
+  selectTableAsList: selectMetricDrainsAsList,
+  selectTable: selectMetricDrains,
+} = selectors;
 export const selectMetricDrainsByEnvId = createSelector(
   selectMetricDrainsAsList,
   (_: AppState, props: { envId: string }) => props.envId,
@@ -151,10 +159,20 @@ export const selectMetricDrainsByEnvId = createSelector(
 export const hasDeployMetricDrain = (a: DeployMetricDrain) => a.id !== "";
 export const metricDrainReducers = createReducerMap(slice);
 
-export const fetchMetricDrains = api.get<{ id: string }>(
+export const fetchEnvMetricDrains = api.get<{ id: string }>(
   "/accounts/:id/metric_drains",
 );
 
+export const fetchMetricDrains = api.get<PaginateProps>(
+  "/metric_drains?page=:page",
+  {
+    saga: cacheTimer(),
+  },
+);
+export const fetchAllMetricDrains = thunks.create(
+  "fetch-all-metric-drains",
+  combinePages(fetchMetricDrains),
+);
 interface CreateMetricDrainBase {
   envId: string;
   handle: string;
@@ -165,13 +183,23 @@ interface CreateInfluxDbEnvMetricDrain extends CreateMetricDrainBase {
   dbId: string;
 }
 
-interface CreateInfluxDbMetricDrain extends CreateMetricDrainBase {
+interface CreateInfluxDb1MetricDrain extends CreateMetricDrainBase {
   drainType: "influxdb";
   protocol: "http" | "https";
   hostname: string;
   username: string;
   password: string;
   database: string;
+  port?: string;
+}
+
+interface CreateInfluxDb2MetricDrain extends CreateMetricDrainBase {
+  drainType: "influxdb2";
+  protocol: "http" | "https";
+  hostname: string;
+  org: string;
+  authToken: string;
+  bucket: string;
   port?: string;
 }
 
@@ -182,12 +210,13 @@ interface CreateDatabaseMetricDrain extends CreateMetricDrainBase {
 
 export type CreateMetricDrainProps =
   | CreateInfluxDbEnvMetricDrain
-  | CreateInfluxDbMetricDrain
+  | CreateInfluxDb1MetricDrain
+  | CreateInfluxDb2MetricDrain
   | CreateDatabaseMetricDrain;
 
 export const createMetricDrain = api.post<
   CreateMetricDrainProps,
-  MetricDrainResponse
+  DeployMetricDrainResponse
 >("/accounts/:envId/metric_drains", function* (ctx, next) {
   const preBody: Record<string, string> = {
     drain_type: ctx.payload.drainType,
@@ -211,6 +240,20 @@ export const createMetricDrain = api.post<
         username,
         password,
         database,
+      },
+    });
+  } else if (ctx.payload.drainType === "influxdb2") {
+    const { protocol, hostname, org, authToken, bucket } = ctx.payload;
+    const protoPort = protocol === "http" ? 80 : 443;
+    const port = ctx.payload.port || protoPort;
+    const address = `${protocol}://${hostname}:${port}`;
+    body = JSON.stringify({
+      ...preBody,
+      drain_configuration: {
+        address,
+        org,
+        authToken,
+        bucket,
       },
     });
   } else if (ctx.payload.drainType === "datadog") {
@@ -273,6 +316,56 @@ export const provisionMetricDrain = thunks.create<CreateMetricDrainProps>(
     );
   },
 );
+
+export const deprovisionMetricDrain = api.post<
+  { id: string },
+  DeployOperationResponse
+>(["/metric_drains/:id/operations", "deprovision"], function* (ctx, next) {
+  const { id } = ctx.payload;
+  // an empty provision triggers a restart for metric drains
+  const body = {
+    type: "deprovision",
+    id,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Deprovision log drain operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
+
+export const restartMetricDrain = api.post<
+  { id: string },
+  DeployOperationResponse
+>(["/metric_drains/:id/operations", "restart"], function* (ctx, next) {
+  const { id } = ctx.payload;
+  // an empty provision triggers a restart for metric drains
+  const body = {
+    type: "provision",
+    id,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Restart log drain operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
 
 export const metricDrainEntities = {
   metric_drain: defaultEntity({

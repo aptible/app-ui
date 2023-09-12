@@ -44,7 +44,7 @@ import type {
 
 type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel";
 
-const log = createLog("@app/fx");
+const log = createLog("fx");
 
 export function* elevetatedMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   ctx.elevated = true;
@@ -63,7 +63,6 @@ function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
     Sentry.captureException(err, {
       contexts: { saga: JSON.stringify(ctx) as any },
     });
-    throw err;
   }
 }
 
@@ -133,6 +132,20 @@ function* getUrl(ctx: AppCtx, endpoint: EndpointUrl): ApiGen<string> {
 
   const baseUrl = yield* call(getApiBaseUrl, endpoint);
   return `${baseUrl}${url}`;
+}
+
+function* requestBilling(ctx: ApiCtx, next: Next): ApiGen {
+  const url = yield* call(getUrl, ctx, "billing" as const);
+  ctx.request = ctx.req({
+    url,
+    // https://github.com/github/fetch#sending-cookies
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/hal+json",
+    },
+  });
+
+  yield* next();
 }
 
 function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
@@ -225,12 +238,24 @@ authApi.use(sentryErrorHandler);
 authApi.use(expiredToken);
 authApi.use(requestMonitor());
 authApi.use(aborter);
-authApi.use(authApi.routes());
 authApi.use(halEntityParser);
+authApi.use(authApi.routes());
 authApi.use(requestAuth);
 authApi.use(tokenMdw);
 authApi.use(elevatedTokenMdw);
 authApi.use(fetcher());
+
+export const billingApi = createApi<DeployApiCtx>();
+billingApi.use(debugMdw);
+billingApi.use(sentryErrorHandler);
+billingApi.use(expiredToken);
+billingApi.use(requestMonitor());
+billingApi.use(aborter);
+billingApi.use(halEntityParser);
+billingApi.use(billingApi.routes());
+billingApi.use(requestBilling);
+billingApi.use(tokenMdw);
+billingApi.use(fetcher());
 
 export const metricTunnelApi = createApi<MetricTunnelCtx>();
 metricTunnelApi.use(debugMdw);

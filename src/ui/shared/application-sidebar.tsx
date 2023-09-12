@@ -3,18 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 
-import {
-  IconBox,
-  IconCloud,
-  IconCylinder,
-  IconGlobe,
-  IconHamburger,
-  IconHeart,
-  IconLayers,
-  IconPlusCircle,
-  IconSearch,
-  IconShield,
-} from "./icons";
 import { selectEnv } from "@app/env";
 import { selectNav, setCollapsed } from "@app/nav";
 import {
@@ -23,11 +11,25 @@ import {
   createProjectGitUrl,
   databaseUrl,
   deploymentsUrl,
+  endpointsUrl,
   environmentsUrl,
   searchUrl,
   securityDashboardUrl,
   stacksUrl,
 } from "@app/routes";
+import {
+  IconBox,
+  IconCloud,
+  IconCylinder,
+  IconEndpoint,
+  IconGlobe,
+  IconHamburger,
+  IconHeart,
+  IconLayers,
+  IconPlusCircle,
+  IconSearch,
+  IconShield,
+} from "./icons";
 
 import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
 import { ButtonIcon } from "./button";
@@ -46,6 +48,7 @@ export const ApplicationSidebar = () => {
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
     { name: "Apps", to: appsUrl(), icon: <IconBox /> },
     { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },
+    { name: "Endpoints", to: endpointsUrl(), icon: <IconEndpoint /> },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
     {
@@ -109,7 +112,7 @@ export const ApplicationSidebar = () => {
           </div>
         )}
 
-        <nav className="mt-3 flex-1 px-2 bg-white space-y-1">
+        <nav className="mt-2 flex-1 px-2 bg-white">
           {navigation.map((item) => (
             <LinkNav key={item.name} {...item} hideName={collapsed} />
           ))}

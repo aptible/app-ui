@@ -1,8 +1,8 @@
-import { Tooltip } from "./tooltip";
 import { useLoader, useQuery } from "@app/fx";
 import { ReactElement, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
+import { Tooltip } from "./tooltip";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -57,6 +57,8 @@ const getImageForResourceType = (resourceType: ResourceType) => {
       "database",
       "ephemeral_session",
       "image",
+      "log_drain",
+      "metric_drain",
       "plan",
       "service",
       "unknown",
@@ -121,16 +123,14 @@ const OpResourceCell = ({ op }: OpCellProps) => {
 const OpActionsCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-      <div>
-        <Link
-          to={operationDetailUrl(op.id)}
-          className="hover:no-underline flex justify-end mr-4"
-        >
-          <Button variant="white" color="white" size="sm" className="px-0">
-            Logs
-          </Button>
-        </Link>
-      </div>
+      <Link
+        to={operationDetailUrl(op.id)}
+        className="hover:no-underline flex justify-end mr-4"
+      >
+        <Button variant="primary" size="sm">
+          Logs
+        </Button>
+      </Link>
     </Td>
   );
 };
@@ -187,7 +187,7 @@ function ActivityTable({
         title={title}
         description={description}
         filterBar={
-          <div className="pt-1">
+          <div>
             <div className="flex items-center gap-3">
               <InputSearch
                 placeholder="Search operations..."
