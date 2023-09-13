@@ -23,6 +23,7 @@ import {
 import { AppState } from "@app/types";
 
 import { handleValidator } from "@app/validator";
+import { AppSidebarLayout } from "../layouts";
 import {
   BannerMessages,
   Box,
@@ -66,13 +67,13 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
 
   return (
     <div>
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Name your App</h1>
       </div>
 
       <ProgressProject cur={1} />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <form onSubmit={onSubmit}>
           <FormGroup
             label="Stack"
@@ -152,6 +153,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
           </ButtonCreate>
         </form>
       </Box>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </div>
   );
 };
@@ -191,7 +193,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
   return (
     <div>
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Name your Environment</h1>
         <p className="mt-4 mb-2 text-gray-600">
           An Aptible environment contains your app along with any required
@@ -201,7 +203,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
       <ProgressProject cur={1} />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <form onSubmit={onSubmit}>
           <FormGroup
             label="Stack"
@@ -256,6 +258,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
           </ButtonOwner>
         </form>
       </Box>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </div>
   );
 };
@@ -270,8 +273,16 @@ export const CreateProjectNamePage = () => {
   useQuery(fetchAllStacks());
 
   if (queryEnvId === "") {
-    return <CreateEnvironmentPage stackId={stackId} />;
+    return (
+      <AppSidebarLayout>
+        <CreateEnvironmentPage stackId={stackId} />
+      </AppSidebarLayout>
+    );
   }
 
-  return <CreateAppPage envId={queryEnvId} />;
+  return (
+    <AppSidebarLayout>
+      <CreateAppPage envId={queryEnvId} />
+    </AppSidebarLayout>
+  );
 };

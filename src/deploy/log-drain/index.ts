@@ -233,9 +233,12 @@ export const selectLogDrainsByEnvId = createSelector(
 export const hasDeployLogDrain = (a: DeployLogDrain) => a.id !== "";
 export const logDrainReducers = createReducerMap(slice);
 
-export const fetchLogDrains = api.get<PaginateProps>("/log_drains?page=:page", {
-  saga: cacheTimer(),
-});
+export const fetchLogDrains = api.get<PaginateProps>(
+  "/log_drains?page=:page&per_page=5000",
+  {
+    saga: cacheTimer(),
+  },
+);
 export const fetchAllLogDrains = thunks.create(
   "fetch-all-log-drains",
   combinePages(fetchLogDrains),

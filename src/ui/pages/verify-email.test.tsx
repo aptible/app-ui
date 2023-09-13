@@ -35,7 +35,10 @@ describe("Verify email confirm", () => {
     });
     render(<App />);
     await screen.findByText(/loading/);
-    await screen.findByRole("heading", { level: 1, name: /Deployments/ });
+    await screen.findByRole("heading", {
+      level: 2,
+      name: "Environments",
+    });
   });
 });
 

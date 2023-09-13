@@ -1,6 +1,3 @@
-import { useSelector } from "react-redux";
-import { Link, Outlet, useParams } from "react-router-dom";
-
 import { prettyEnglishDateWithTime } from "@app/date";
 import {
   fetchOperationById,
@@ -12,7 +9,9 @@ import {
 import { activityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployOperation } from "@app/types";
-
+import { useSelector } from "react-redux";
+import { Link, Outlet, useParams } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 import {
   DetailHeader,
   DetailInfoGrid,
@@ -21,9 +20,7 @@ import {
   DetailTitleBar,
   OpStatus,
 } from "../shared";
-
-import { useQuery } from "saga-query/react";
-import { MenuWrappedPage } from "./menu-wrapped-page";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function OpHeader({
   op,
@@ -80,8 +77,8 @@ function OpPageHeader() {
 
 export const OpDetailLayout = () => {
   return (
-    <MenuWrappedPage header={<OpPageHeader />}>
+    <AppSidebarLayout header={<OpPageHeader />}>
       <Outlet />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

@@ -9,6 +9,7 @@ import {
   cancelAppOpsPoll,
   createEndpointOperation,
   fetchAllApps,
+  fetchAllEnvOps,
   fetchApp,
   fetchConfiguration,
   fetchDatabasesByEnvId,
@@ -17,6 +18,7 @@ import {
   hasDeployApp,
   hasDeployEnvironment,
   pollAppOperations,
+  pollEnvOperations,
   provisionEndpoint,
   selectAppById,
   selectAppConfigById,
@@ -31,13 +33,11 @@ import {
 import {
   createReadableStatus,
   hasDeployOperation,
-  pollEnvAllOperations,
   selectLatestConfigureOp,
   selectLatestDeployOp,
   selectLatestProvisionOp,
   selectLatestScanOp,
 } from "@app/deploy";
-import { selectLegacyDashboardUrl, selectOrigin } from "@app/env";
 import { useCache, useLoader, useQuery } from "@app/fx";
 import { batchActions, resetLoaderById, selectLoaderById } from "@app/fx";
 import {
@@ -68,6 +68,7 @@ import { selectCurrentUser } from "@app/users";
 
 import { useSearchParams } from "react-router-dom";
 import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
+import { AppSidebarLayout } from "../layouts";
 import {
   AddSSHKeyForm,
   Banner,
@@ -75,12 +76,10 @@ import {
   Box,
   Button,
   ButtonLink,
-  ButtonLinkExternal,
   Code,
   CreateAppEndpointSelector,
   ErrorResources,
   ExternalLink,
-  FeedbackForm,
   IconArrowRight,
   IconChevronDown,
   IconChevronUp,
@@ -138,7 +137,11 @@ export const CreateProjectFromAccountSetupPage = () => {
     }
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
-  return <Loading text={`Detecting app ${app.handle} status...`} />;
+  return (
+    <AppSidebarLayout>
+      <Loading text={`Detecting app ${app.handle} status...`} />
+    </AppSidebarLayout>
+  );
 };
 
 export const CreateProjectFromAppSetupPage = () => {
@@ -179,7 +182,11 @@ export const CreateProjectFromAppSetupPage = () => {
     }
   }, [env.id, app.id, appOps, deployOp, scanOp]);
 
-  return <Loading text={`Detecting app ${app.handle} status...`} />;
+  return (
+    <AppSidebarLayout>
+      <Loading text={`Detecting app ${app.handle} status...`} />
+    </AppSidebarLayout>
+  );
 };
 
 export const CreateProjectGitPage = () => {
@@ -213,8 +220,8 @@ export const CreateProjectAddKeyPage = () => {
   const onSuccess = () => navigate(url);
 
   return (
-    <div>
-      <div className="text-center">
+    <AppSidebarLayout>
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Add your SSH Key</h1>
         <p className="my-4 text-gray-600">
           Add your SSH key to push code into Aptible.
@@ -223,10 +230,11 @@ export const CreateProjectAddKeyPage = () => {
 
       <ProgressProject cur={-1} next={url} />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <AddSSHKeyForm onSuccess={onSuccess} />
       </Box>
-    </div>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
+    </AppSidebarLayout>
   );
 };
 
@@ -336,8 +344,8 @@ export const CreateProjectGitPushPage = () => {
   }, [scanOp]);
 
   return (
-    <div>
-      <div className="text-center">
+    <AppSidebarLayout>
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Push your code to Aptible</h1>
         <p className="my-4 text-gray-600">
           We will look for a Dockerfile or generate one for you to deploy your
@@ -351,7 +359,7 @@ export const CreateProjectGitPushPage = () => {
         next={createProjectGitSettingsUrl(appId, query)}
       />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <div>
           <h4 className={tokens.type.h4}>
             Deploy Custom Code or Starter Template
@@ -445,7 +453,8 @@ export const CreateProjectGitPushPage = () => {
           </Banner>
         )}
       </Box>
-    </div>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
+    </AppSidebarLayout>
   );
 };
 
@@ -868,8 +877,6 @@ const useDbsInAppConfig = ({
 export const CreateProjectGitStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
-  const origin = useSelector(selectOrigin);
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const appQuery = useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
@@ -902,7 +909,9 @@ export const CreateProjectGitStatusPage = () => {
   });
 
   const [status, dateStr] = resolveOperationStatuses(ops);
-  const { isInitialLoading } = useQuery(pollEnvAllOperations({ envId }));
+  useQuery(fetchAllEnvOps({ envId }));
+  // we only need to poll for the latest operations
+  const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
   const { scanOp } = useLatestCodeResults(appId);
 
@@ -943,7 +952,7 @@ export const CreateProjectGitStatusPage = () => {
   const header = () => {
     if (status === "succeeded") {
       return (
-        <div className="text-center">
+        <div className="text-center mt-10">
           <h1 className={tokens.type.h1}>Deployed your Code</h1>
           <p className="my-4 text-gray-600">
             All done! Deployment completed successfully.
@@ -954,7 +963,7 @@ export const CreateProjectGitStatusPage = () => {
 
     if (status === "failed") {
       return (
-        <div className="text-center">
+        <div className="text-center mt-10">
           <h1 className={tokens.type.h1}>Deployment Failed</h1>
           <p className="my-4 text-gray-600">
             Don't worry! Edit your project settings and click Redeploy when
@@ -965,7 +974,7 @@ export const CreateProjectGitStatusPage = () => {
     }
 
     return (
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Deploying your Code</h1>
         <p className="my-4 text-gray-600">Deployment is in progress...</p>
       </div>
@@ -977,15 +986,7 @@ export const CreateProjectGitStatusPage = () => {
   );
 
   const viewProject = () => {
-    return origin === "app" ? (
-      <ButtonLinkExternal
-        target="_blank"
-        href={`${legacyUrl}/accounts/${envId}/apps`}
-        className="mt-4"
-      >
-        View Environment <IconArrowRight variant="sm" className="ml-2" />
-      </ButtonLinkExternal>
-    ) : (
+    return (
       <ButtonLink to={environmentAppsUrl(environment.id)} className="mt-4 mb-2">
         View Environment <IconArrowRight variant="sm" className="ml-2" />
       </ButtonLink>
@@ -993,130 +994,129 @@ export const CreateProjectGitStatusPage = () => {
   };
 
   return (
-    <div className="mb-8">
+    <AppSidebarLayout className="mb-8">
       {header()}
 
       <ProgressProject cur={4} prev={createProjectGitSettingsUrl(appId)} />
 
-      <ResourceGroupBox
-        handle={app.handle}
-        appId={appId}
-        status={<StatusPill status={status} from={dateStr} />}
-      >
-        {isInitialLoading ? (
-          <Loading text="Loading resources..." />
-        ) : (
-          <ProjectStatus
-            status={status}
-            app={app}
-            dbs={dbs}
-            endpoints={vhosts}
-            gitRef={gitRef}
-          />
-        )}
-      </ResourceGroupBox>
-
-      {deployProjectLoader.isError ? (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>Error!</h4>
-          <BannerMessages {...deployProjectLoader} />
-        </StatusBox>
-      ) : null}
-
-      {redeployLoader.isError ? (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>Error!</h4>
-          <BannerMessages {...redeployLoader} />
-        </StatusBox>
-      ) : null}
-
-      {services.length > 0 && vhosts.length > 0 ? (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>Current Endpoints</h4>
-          {vhosts.map((vhost) => (
-            <VhostRow key={vhost.id} vhost={vhost} />
-          ))}
-          <div className="flex gap-3">
-            <Link to={appEndpointsUrl(app.id)}>Manage Endpoints</Link>
-            <ExternalLink
-              href="https://www.aptible.com/docs/endpoints"
-              variant="info"
-            >
-              View Docs
-            </ExternalLink>
-          </div>
-        </StatusBox>
-      ) : (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>
-            Which service needs an{" "}
-            <ExternalLink
-              href="https://www.aptible.com/docs/endpoints"
-              variant="info"
-            >
-              Endpoint
-            </ExternalLink>
-            ?
-          </h4>
-          {services.length ? (
-            <div className="mt-2">
-              <CreateEndpointForm app={app} />
-            </div>
-          ) : (
-            <p className="text-black-500">
-              Your services will appear here shortly...
-            </p>
-          )}
-        </StatusBox>
-      )}
-
-      {deployOp.status === "failed" || redeployLoader.isLoading ? (
-        <StatusBox>
-          <h4 className={tokens.type.h4}>Deployment Failed</h4>
-          <p className="text-black-500">
-            • Check the error logs and make changes, then push your code to
-            redeploy.
-          </p>
-          <p className="text-black-500 mb-4">
-            • Or, you can click Redeploy to try again without making any
-            changes.
-          </p>
-
-          <Button
-            onClick={() => redeploy(true)}
-            isLoading={redeployLoader.isLoading}
-          >
-            Redeploy
-          </Button>
-        </StatusBox>
-      ) : null}
-
-      <StatusBox>
-        <h4 className={tokens.type.h4}>How to deploy changes</h4>
-        <p className="mb-2 text-black-500">
-          Commit changes to your local git repo and push to the Aptible git
-          server.
-        </p>
-        <PreCode
-          segments={listToInvertedTextColor(["git push aptible", "main"])}
-          allowCopy
-        />
-        <hr />
-
-        {viewProject()}
-
-        <ButtonLink
-          to={createProjectGitSettingsUrl(appId)}
-          variant="white"
-          className="mt-2"
+      <div className="w-full max-w-[700px] mx-auto">
+        <ResourceGroupBox
+          handle={app.handle}
+          appId={appId}
+          status={<StatusPill status={status} from={dateStr} />}
         >
-          Edit Configuration
-        </ButtonLink>
-      </StatusBox>
-      <FeedbackForm
-        feedbackEventName="feedback.survey.post_deploy_feedback"
-        description="What would you like to change about this deployment experience?"
-      />
-    </div>
+          {isInitialLoading ? (
+            <Loading text="Loading resources..." />
+          ) : (
+            <ProjectStatus
+              status={status}
+              app={app}
+              dbs={dbs}
+              endpoints={vhosts}
+              gitRef={gitRef}
+            />
+          )}
+        </ResourceGroupBox>
+
+        {deployProjectLoader.isError ? (
+          <StatusBox>
+            <h4 className={tokens.type.h4}>Error!</h4>
+            <BannerMessages {...deployProjectLoader} />
+          </StatusBox>
+        ) : null}
+
+        {redeployLoader.isError ? (
+          <StatusBox>
+            <h4 className={tokens.type.h4}>Error!</h4>
+            <BannerMessages {...redeployLoader} />
+          </StatusBox>
+        ) : null}
+
+        {services.length > 0 && vhosts.length > 0 ? (
+          <StatusBox>
+            <h4 className={tokens.type.h4}>Current Endpoints</h4>
+            {vhosts.map((vhost) => (
+              <VhostRow key={vhost.id} vhost={vhost} />
+            ))}
+            <div className="flex gap-3">
+              <Link to={appEndpointsUrl(app.id)}>Manage Endpoints</Link>
+              <ExternalLink
+                href="https://www.aptible.com/docs/endpoints"
+                variant="info"
+              >
+                View Docs
+              </ExternalLink>
+            </div>
+          </StatusBox>
+        ) : (
+          <StatusBox>
+            <h4 className={tokens.type.h4}>
+              Which service needs an{" "}
+              <ExternalLink
+                href="https://www.aptible.com/docs/endpoints"
+                variant="info"
+              >
+                Endpoint
+              </ExternalLink>
+              ?
+            </h4>
+            {services.length ? (
+              <div className="mt-2">
+                <CreateEndpointForm app={app} />
+              </div>
+            ) : (
+              <p className="text-black-500">
+                Your services will appear here shortly...
+              </p>
+            )}
+          </StatusBox>
+        )}
+
+        {deployOp.status === "failed" || redeployLoader.isLoading ? (
+          <StatusBox>
+            <h4 className={tokens.type.h4}>Deployment Failed</h4>
+            <p className="text-black-500">
+              • Check the error logs and make changes, then push your code to
+              redeploy.
+            </p>
+            <p className="text-black-500 mb-4">
+              • Or, you can click Redeploy to try again without making any
+              changes.
+            </p>
+
+            <Button
+              onClick={() => redeploy(true)}
+              isLoading={redeployLoader.isLoading}
+            >
+              Redeploy
+            </Button>
+          </StatusBox>
+        ) : null}
+
+        <StatusBox>
+          <h4 className={tokens.type.h4}>How to deploy changes</h4>
+          <p className="mb-2 text-black-500">
+            Commit changes to your local git repo and push to the Aptible git
+            server.
+          </p>
+          <PreCode
+            segments={listToInvertedTextColor(["git push aptible", "main"])}
+            allowCopy
+          />
+          <hr />
+
+          {viewProject()}
+
+          <ButtonLink
+            to={createProjectGitSettingsUrl(appId)}
+            variant="white"
+            className="mt-2"
+          >
+            Edit Configuration
+          </ButtonLink>
+        </StatusBox>
+      </div>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
+    </AppSidebarLayout>
   );
 };

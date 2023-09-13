@@ -1,6 +1,3 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useParams, useSearchParams } from "react-router-dom";
-
 import { timeAgo } from "@app/date";
 import {
   fetchAllApps,
@@ -22,7 +19,11 @@ import {
   DeployOperation,
   DeployStack,
 } from "@app/types";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useParams, useSearchParams } from "react-router-dom";
 
+import { setResourceStats } from "@app/search";
+import { useEffect } from "react";
 import {
   DetailHeader,
   DetailInfoGrid,
@@ -31,10 +32,7 @@ import {
   DetailTitleBar,
   TabItem,
 } from "../shared";
-
-import { setResourceStats } from "@app/search";
-import { useEffect } from "react";
-import { MenuWrappedPage } from "./menu-wrapped-page";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
   endpoint.type === "tcp" ? (
@@ -192,8 +190,8 @@ export const EnvironmentDetailLayout = ({
   const [params] = useSearchParams();
   const envId = id || params.get("environment_id") || "";
   return (
-    <MenuWrappedPage header={<EnvironmentPageHeader id={envId} />}>
+    <AppSidebarLayout header={<EnvironmentPageHeader id={envId} />}>
       {children ? children : <Outlet />}
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

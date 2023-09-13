@@ -1,16 +1,14 @@
-import { useLoader } from "@app/fx";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router";
-import { Outlet } from "react-router-dom";
-
 import { fetchCurrentToken } from "@app/auth";
+import { useLoader } from "@app/fx";
 import { elevateUrl, loginUrl } from "@app/routes";
 import {
   selectIsElevatedTokenValid,
   selectIsUserAuthenticated,
 } from "@app/token";
-
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router";
+import { Outlet } from "react-router-dom";
 import { Loading } from "../shared";
 
 export const ElevateRequired = ({

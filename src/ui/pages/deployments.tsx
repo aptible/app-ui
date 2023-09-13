@@ -9,7 +9,7 @@ import { createProjectGitUrl } from "@app/routes";
 import { AppState, DeployApp } from "@app/types";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
+import { AppSidebarLayout } from "../layouts";
 import {
   Button,
   ButtonLink,
@@ -118,11 +118,11 @@ export const DeploymentsPage = ({
 };
 
 export const DeploymentsPageWithMenus = () => (
-  <MenuWrappedPage>
+  <AppSidebarLayout>
     <DeploymentsPage
       headerStyle={tokens.type.h2}
       leftAlignTitle
       showDeployButton={false}
     />
-  </MenuWrappedPage>
+  </AppSidebarLayout>
 );

@@ -7,7 +7,7 @@ import { useLoader, useQuery } from "@app/fx";
 import { selectCurrentUser } from "@app/users";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
+import { AppSidebarLayout } from "../layouts";
 import {
   BannerMessages,
   Box,
@@ -133,7 +133,7 @@ export const SupportPage = () => {
   };
 
   return (
-    <MenuWrappedPage>
+    <AppSidebarLayout>
       <ResourceHeader title="Submit Support Request" />
       <div className="flex flex-row gap-10">
         <Box className="-mt-4 w-full">
@@ -394,6 +394,6 @@ export const SupportPage = () => {
           </form>
         </Box>
       </div>
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

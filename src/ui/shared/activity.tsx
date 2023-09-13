@@ -14,6 +14,7 @@ import {
   fetchApp,
   fetchDatabase,
   fetchEnvironmentById,
+  fetchOrgOperations,
   fetchServiceOperations,
   getResourceUrl,
   pollAppOperations,
@@ -247,6 +248,7 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const loader = useLoader(pollOrgOperations);
+  useQuery(fetchOrgOperations({ orgId }));
 
   const poller = useMemo(() => pollOrgOperations({ orgId }), [orgId]);
   const cancel = useMemo(() => cancelOrgOperationsPoll(), []);
@@ -320,10 +322,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
   useQuery(fetchApp({ id: appId }));
 
-  const poller = useMemo(
-    () => pollEnvOperations({ envId: app.environmentId }),
-    [app.environmentId],
-  );
+  const poller = useMemo(() => pollAppOperations({ id: app.id }), [app.id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
   usePoller({
     action: poller,

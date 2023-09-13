@@ -93,31 +93,25 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
-const LastOpCell = ({ database }: DatabaseCellProps) => {
+export const LastOpCell = ({ database }: DatabaseCellProps) => {
   const lastOperation = useSelector((s: AppState) =>
     selectLatestOpByDatabaseId(s, { dbId: database.id }),
   );
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      {lastOperation ? (
-        <>
-          <div className={tokens.type.darker}>
-            <Link
-              to={operationDetailUrl(lastOperation.id)}
-              className={tokens.type["table link"]}
-            >
-              {capitalize(lastOperation.type)} by {lastOperation.userName}
-            </Link>
-          </div>
-          <div className={tokens.type.darker} />
-          <div className={tokens.type["normal lighter"]}>
-            <OpStatus status={lastOperation.status} />{" "}
-            {prettyDateRelative(lastOperation.createdAt)}
-          </div>
-        </>
-      ) : (
-        <div className={tokens.type["normal lighter"]}>No activity</div>
-      )}
+      <div className={tokens.type.darker}>
+        <Link
+          to={operationDetailUrl(lastOperation.id)}
+          className={tokens.type["table link"]}
+        >
+          {capitalize(lastOperation.type)} by {lastOperation.userName}
+        </Link>
+      </div>
+      <div className={tokens.type.darker} />
+      <div className={tokens.type["normal lighter"]}>
+        <OpStatus status={lastOperation.status} />{" "}
+        {prettyDateRelative(lastOperation.createdAt)}
+      </div>
     </Td>
   );
 };
@@ -219,13 +213,7 @@ export const DatabaseListByOrg = () => {
     }),
   );
 
-  const headers = [
-    "Handle",
-    "Environment",
-    "Est. Monthly Cost",
-    "Last Operation",
-    "Actions",
-  ];
+  const headers = ["Handle", "Environment", "Est. Monthly Cost", "Actions"];
 
   return (
     <LoadResources
@@ -262,7 +250,6 @@ export const DatabaseListByOrg = () => {
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <DatabaseCostCell database={db} />
-                <LastOpCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
             ))}
@@ -293,13 +280,7 @@ export const DatabaseListByEnvironment = ({
     }),
   );
 
-  const headers = [
-    "Handle",
-    "Environment",
-    "Est. Monthly Cost",
-    "Last Operation",
-    "Actions",
-  ];
+  const headers = ["Handle", "Environment", "Est. Monthly Cost", "Actions"];
   const actions = [
     <ButtonCreate envId={environmentId} onClick={onCreate}>
       <IconPlusCircle variant="sm" />
@@ -340,7 +321,6 @@ export const DatabaseListByEnvironment = ({
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <DatabaseCostCell database={db} />
-                <LastOpCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
             ))}

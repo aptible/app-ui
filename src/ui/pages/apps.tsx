@@ -1,10 +1,10 @@
-import { MenuWrappedPage } from "../layouts";
+import { AppSidebarLayout } from "../layouts";
 import { AppListByOrg } from "../shared";
 
 export const AppsPage = () => {
   return (
-    <MenuWrappedPage>
+    <AppSidebarLayout>
       <AppListByOrg />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

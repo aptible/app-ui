@@ -1,6 +1,3 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useParams } from "react-router";
-
 import { fetchStack, getStackType, selectStackById } from "@app/deploy";
 import {
   stackDetailEnvsUrl,
@@ -8,8 +5,13 @@ import {
   stackDetailVpnTunnelsUrl,
   stacksUrl,
 } from "@app/routes";
+import { setResourceStats } from "@app/search";
+import { capitalize } from "@app/string-utils";
 import { AppState, DeployStack } from "@app/types";
-
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useParams } from "react-router";
+import { useQuery } from "saga-query/react";
 import {
   DetailHeader,
   DetailInfoGrid,
@@ -18,12 +20,7 @@ import {
   DetailTitleBar,
   TabItem,
 } from "../shared";
-
-import { setResourceStats } from "@app/search";
-import { capitalize } from "@app/string-utils";
-import { useEffect } from "react";
-import { useQuery } from "saga-query/react";
-import { MenuWrappedPage } from "./menu-wrapped-page";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function StackHeader({ stack }: { stack: DeployStack }) {
   const stackType = getStackType(stack);
@@ -96,8 +93,8 @@ function StackPageHeader() {
 
 export const StackDetailLayout = () => {
   return (
-    <MenuWrappedPage header={<StackPageHeader />}>
+    <AppSidebarLayout header={<StackPageHeader />}>
       <Outlet />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

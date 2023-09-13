@@ -33,6 +33,7 @@ import {
 import { AppState } from "@app/types";
 
 import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
+import { AppSidebarLayout } from "../layouts";
 import {
   Banner,
   Box,
@@ -173,7 +174,7 @@ const DbExistingSelector = ({
 
   return (
     <div className="mb-4">
-      <h4 className={`${tokens.type.h4} mb-2`}>Existing Database</h4>
+      <h4 className={`${tokens.type.h4}`}>Existing Database</h4>
       <p className="text-black-500 mb-2">
         Choose an already existing database. The environment variable here will
         be injected into your app with the connection URL.
@@ -577,8 +578,8 @@ export const CreateProjectGitSettingsPage = () => {
   });
 
   return (
-    <div className="mb-8">
-      <div className="text-center">
+    <AppSidebarLayout className="mb-8">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Configure your App</h1>
         <p className="my-4 text-gray-600">
           Add required Databases and review settings to finish.
@@ -591,7 +592,7 @@ export const CreateProjectGitSettingsPage = () => {
         next={createProjectGitStatusUrl(appId)}
       />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <div className="mb-4">
           {codeScan.isInitialLoading ? (
             <Loading text="Loading code scan results..." />
@@ -714,6 +715,7 @@ export const CreateProjectGitSettingsPage = () => {
           </Button>
         </form>
       </Box>
-    </div>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
+    </AppSidebarLayout>
   );
 };
