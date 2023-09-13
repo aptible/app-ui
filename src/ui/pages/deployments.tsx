@@ -1,6 +1,6 @@
 import {
-  fetchAllApps,
-  fetchAllEnvironments,
+  fetchApps,
+  fetchEnvironments,
   selectAppsByEnvOnboarding,
   selectLatestDeployOp,
 } from "@app/deploy";
@@ -56,8 +56,8 @@ export const DeploymentsPage = ({
   const accountIds =
     searchParams.get("accounts")?.split(",").filter(Boolean) || [];
   const apps = useSelector(selectAppsByEnvOnboarding);
-  const envsLoader = useLoader(fetchAllEnvironments());
-  const appsLoader = useLoader(fetchAllApps());
+  const envsLoader = useLoader(fetchEnvironments());
+  const appsLoader = useLoader(fetchApps());
   const filteredApps = apps.filter((app) => {
     if (accountIds.length === 0) return true;
     return accountIds.includes(app.environmentId);

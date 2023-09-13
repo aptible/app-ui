@@ -1,7 +1,7 @@
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
-import { PaginateProps, api, combinePages, thunks } from "@app/api";
-import { latest, leading, poll, put, select } from "@app/fx";
+import { api, cacheShortTimer, thunks } from "@app/api";
+import { call, latest, poll, put, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
@@ -197,21 +197,18 @@ export const selectEnvironmentByName = createSelector(
 
 export const fetchEnvironmentById = api.get<{ id: string }>("/accounts/:id");
 
-export const fetchEnvironments = api.get<PaginateProps>(
-  "/accounts?page=:page&per_page=5000",
-  { saga: leading },
-);
-export const fetchAllEnvironments = thunks.create(
-  "fetch-all-envs",
-  { saga: leading },
-  combinePages(fetchEnvironments),
-);
+export const fetchEnvironments = api.get("/accounts?per_page=5000", {
+  saga: cacheShortTimer(),
+});
 
 export const cancelEnvPoll = createAction("cancel-env-poll");
 export const pollEnvs = thunks.create(
   "poll-envs",
   { saga: poll(60 * 1000, `${cancelEnvPoll}`) },
-  combinePages(fetchEnvironments),
+  function* (_, next) {
+    yield* call(fetchEnvironments.run, fetchEnvironments());
+    yield* next();
+  },
 );
 
 export const fetchEnvironmentOperations = api.get<{ id: string }>(

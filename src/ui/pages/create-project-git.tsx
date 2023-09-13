@@ -8,9 +8,9 @@ import { timeBetween } from "@app/date";
 import {
   cancelAppOpsPoll,
   createEndpointOperation,
-  fetchAllApps,
   fetchAllEnvOps,
   fetchApp,
+  fetchApps,
   fetchConfiguration,
   fetchDatabasesByEnvId,
   fetchEndpointsByAppId,
@@ -113,7 +113,7 @@ export const CreateProjectFromAccountSetupPage = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchAllApps());
+    dispatch(fetchApps());
   }, []);
 
   useEffect(() => {

@@ -11,14 +11,7 @@ import {
   setLoaderSuccess,
 } from "@app/fx";
 
-import {
-  PaginateProps,
-  ThunkCtx,
-  api,
-  cacheTimer,
-  combinePages,
-  thunks,
-} from "@app/api";
+import { ThunkCtx, api, cacheShortTimer, cacheTimer, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -348,16 +341,13 @@ export const selectDatabasesCountByStack = createSelector(
   (dbs) => dbs.length,
 );
 
-export const fetchDatabases = api.get<PaginateProps>(
-  "/databases?page=:page&per_page=5000&no_embed=true",
+export const fetchDatabases = api.get(
+  "/databases?per_page=5000&no_embed=true",
   {
-    saga: cacheTimer(),
+    saga: cacheShortTimer(),
   },
 );
-export const fetchAllDatabases = thunks.create(
-  "fetch-all-databases",
-  combinePages(fetchDatabases),
-);
+
 export const fetchDatabase = api.get<{ id: string }, DeployDatabaseResponse>(
   "/databases/:id",
 );

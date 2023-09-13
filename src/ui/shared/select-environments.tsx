@@ -1,7 +1,7 @@
 import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
 
-import { fetchAllEnvironments, selectEnvironmentsAsOptions } from "@app/deploy";
+import { fetchEnvironments, selectEnvironmentsAsOptions } from "@app/deploy";
 
 import { EmptyResources, ErrorResources } from "./load-resources";
 import { Loading } from "./loading";
@@ -13,9 +13,7 @@ export const EnvironmentSelect = ({
 }: {
   onSelect: (s: SelectOption) => void;
 } & Omit<SelectProps, "options" | "onSelect">) => {
-  const { isInitialLoading, isError, message } = useQuery(
-    fetchAllEnvironments(),
-  );
+  const { isInitialLoading, isError, message } = useQuery(fetchEnvironments());
   const options = useSelector(selectEnvironmentsAsOptions);
 
   if (isInitialLoading) {

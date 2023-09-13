@@ -1,6 +1,6 @@
 import { timeAgo } from "@app/date";
 import {
-  fetchAllApps,
+  fetchApps,
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchEnvironmentOperations,
@@ -135,7 +135,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     dispatch(setResourceStats({ id, type: "environment" }));
   }, []);
 
-  useQuery(fetchAllApps());
+  useQuery(fetchApps());
   useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
   const loader = useQuery(fetchEnvironmentById({ id }));
