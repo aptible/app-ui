@@ -297,11 +297,6 @@ export const fetchApps = api.get("/apps?per_page=5000&no_embed=true", {
   saga: cacheMinTimer(),
 });
 
-export const cancelAppsPoll = createAction("cancel-apps-poll");
-export const pollApps = api.get(["/apps?per_page=5000&no_embed=true", "poll"], {
-  saga: poll(60 * 1000, `${cancelAppsPoll}`),
-});
-
 interface AppIdProp {
   id: string;
 }
