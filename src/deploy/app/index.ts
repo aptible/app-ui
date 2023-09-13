@@ -293,7 +293,9 @@ export const selectAppsCountByStack = createSelector(
   (apps) => apps.length,
 );
 
-export const fetchApps = api.get<PaginateProps>("/apps?page=:page");
+export const fetchApps = api.get<PaginateProps>(
+  "/apps?page=:page&per_page=5000&no_embed=true",
+);
 
 export const fetchAllApps = thunks.create(
   "fetch-all-apps",

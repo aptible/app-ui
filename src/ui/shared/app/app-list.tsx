@@ -95,7 +95,7 @@ const AppCostCell = ({ app }: AppCellProps) => {
   );
 };
 
-const AppLastOpCell = ({ app }: AppCellProps) => {
+export const AppLastOpCell = ({ app }: AppCellProps) => {
   const lastOperation = useSelector((s: AppState) =>
     selectLatestOpByAppId(s, { appId: app.id }),
   );
@@ -132,7 +132,6 @@ const AppListRow = ({ app }: AppCellProps) => {
       <EnvStackCell environmentId={app.environmentId} />
       <AppServicesCell app={app} />
       <AppCostCell app={app} />
-      <AppLastOpCell app={app} />
     </tr>
   );
 };
@@ -142,7 +141,6 @@ const appHeaders: Header[] = [
   "Environment",
   "Services",
   "Est. Monthly Cost",
-  "Last Operation",
 ];
 
 export const AppList = ({
