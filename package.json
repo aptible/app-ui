@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "type": "module",
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@3.6.3",
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
