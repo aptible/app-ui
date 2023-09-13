@@ -7,14 +7,14 @@ import {
   fetchRoles,
 } from "@app/auth";
 import {
-  fetchAllEndpoints,
-  fetchAllLogDrains,
-  fetchAllMetricDrains,
-  fetchAllServices,
-  fetchAllStacks,
   fetchApps,
   fetchDatabases,
+  fetchEndpoints,
   fetchEnvironments,
+  fetchLogDrains,
+  fetchMetricDrains,
+  fetchServices,
+  fetchStacks,
 } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
 import { AnyAction } from "@app/types";
@@ -28,14 +28,14 @@ export function* onFetchInitData() {
     call(fetchUsers.run, fetchUsers({ orgId: org.id })),
     call(fetchRoles.run, fetchRoles({ orgId: org.id })),
     call(fetchCurrentUserRoles.run, fetchCurrentUserRoles({ userId: userId })),
-    call(fetchAllStacks.run, fetchAllStacks()),
+    call(fetchStacks.run, fetchStacks()),
     call(fetchEnvironments.run, fetchEnvironments()),
     call(fetchApps.run, fetchApps()),
     call(fetchDatabases.run, fetchDatabases()),
-    call(fetchAllLogDrains.run, fetchAllLogDrains()),
-    call(fetchAllMetricDrains.run, fetchAllMetricDrains()),
-    call(fetchAllServices.run, fetchAllServices()),
-    call(fetchAllEndpoints.run, fetchAllEndpoints()),
+    call(fetchLogDrains.run, fetchLogDrains()),
+    call(fetchMetricDrains.run, fetchMetricDrains()),
+    call(fetchServices.run, fetchServices()),
+    call(fetchEndpoints.run, fetchEndpoints()),
   ]);
 }
 

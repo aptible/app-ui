@@ -1,6 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
 
-import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
+import { api, cacheTimer, thunks } from "@app/api";
 import {
   call,
   put,
@@ -163,16 +163,10 @@ export const fetchEnvMetricDrains = api.get<{ id: string }>(
   "/accounts/:id/metric_drains",
 );
 
-export const fetchMetricDrains = api.get<PaginateProps>(
-  "/metric_drains?page=:page&per_page=5000",
-  {
-    saga: cacheTimer(),
-  },
-);
-export const fetchAllMetricDrains = thunks.create(
-  "fetch-all-metric-drains",
-  combinePages(fetchMetricDrains),
-);
+export const fetchMetricDrains = api.get("/metric_drains?per_page=5000", {
+  saga: cacheTimer(),
+});
+
 interface CreateMetricDrainBase {
   envId: string;
   handle: string;

@@ -2,7 +2,7 @@ import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
 
 import {
-  fetchAllStacks,
+  fetchStacks,
   getStackType,
   selectAppsCountByStack,
   selectDatabasesCountByStack,
@@ -66,7 +66,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
 }
 
 function StackList() {
-  const query = useQuery(fetchAllStacks());
+  const query = useQuery(fetchStacks());
 
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";

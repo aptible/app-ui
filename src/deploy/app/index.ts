@@ -1,4 +1,4 @@
-import { api, cacheShortTimer, thunks } from "@app/api";
+import { api, cacheMinTimer, thunks } from "@app/api";
 import { call, poll, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
@@ -294,18 +294,13 @@ export const selectAppsCountByStack = createSelector(
 );
 
 export const fetchApps = api.get("/apps?per_page=5000&no_embed=true", {
-  saga: cacheShortTimer(),
+  saga: cacheMinTimer(),
 });
 
 export const cancelAppsPoll = createAction("cancel-apps-poll");
-export const pollApps = thunks.create(
-  "poll-apps",
-  { saga: poll(60 * 1000, `${cancelAppsPoll}`) },
-  function* (_, next) {
-    yield* call(fetchApps.run, fetchApps());
-    yield* next();
-  },
-);
+export const pollApps = api.get(["/apps?per_page=5000&no_embed=true", "poll"], {
+  saga: poll(60 * 1000, `${cancelAppsPoll}`),
+});
 
 interface AppIdProp {
   id: string;

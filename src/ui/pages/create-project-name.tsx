@@ -6,8 +6,8 @@ import { useApi, useLoaderSuccess, useQuery } from "saga-query/react";
 
 import {
   createDeployApp,
-  fetchAllStacks,
   fetchEnvironmentById,
+  fetchStacks,
   selectEnvironmentById,
   selectStackById,
   selectStackPublicDefault,
@@ -270,7 +270,7 @@ export const CreateProjectNamePage = () => {
   const defaultStack = useSelector(selectStackPublicDefault);
   const stackId = queryStackId || defaultStack.id;
 
-  useQuery(fetchAllStacks());
+  useQuery(fetchStacks());
 
   if (queryEnvId === "") {
     return (

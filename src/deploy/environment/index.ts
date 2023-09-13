@@ -1,7 +1,7 @@
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
-import { api, cacheShortTimer, thunks } from "@app/api";
-import { call, latest, poll, put, select } from "@app/fx";
+import { api, cacheMinTimer } from "@app/api";
+import { latest, poll, put, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
@@ -198,18 +198,13 @@ export const selectEnvironmentByName = createSelector(
 export const fetchEnvironmentById = api.get<{ id: string }>("/accounts/:id");
 
 export const fetchEnvironments = api.get("/accounts?per_page=5000", {
-  saga: cacheShortTimer(),
+  saga: cacheMinTimer(),
 });
 
 export const cancelEnvPoll = createAction("cancel-env-poll");
-export const pollEnvs = thunks.create(
-  "poll-envs",
-  { saga: poll(60 * 1000, `${cancelEnvPoll}`) },
-  function* (_, next) {
-    yield* call(fetchEnvironments.run, fetchEnvironments());
-    yield* next();
-  },
-);
+export const pollEnvs = api.get(["/accounts?per_page=5000", "poll-envs"], {
+  saga: poll(60 * 1000, `${cancelEnvPoll}`),
+});
 
 export const fetchEnvironmentOperations = api.get<{ id: string }>(
   "/accounts/:id/operations",

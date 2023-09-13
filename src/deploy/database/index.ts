@@ -11,7 +11,7 @@ import {
   setLoaderSuccess,
 } from "@app/fx";
 
-import { ThunkCtx, api, cacheShortTimer, cacheTimer, thunks } from "@app/api";
+import { ThunkCtx, api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -344,7 +344,7 @@ export const selectDatabasesCountByStack = createSelector(
 export const fetchDatabases = api.get(
   "/databases?per_page=5000&no_embed=true",
   {
-    saga: cacheShortTimer(),
+    saga: cacheMinTimer(),
   },
 );
 

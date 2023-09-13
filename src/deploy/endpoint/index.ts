@@ -1,13 +1,6 @@
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
-import {
-  PaginateProps,
-  api,
-  cacheShortTimer,
-  cacheTimer,
-  combinePages,
-  thunks,
-} from "@app/api";
+import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
 import {
   call,
   poll,
@@ -457,16 +450,9 @@ export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
   saga: cacheShortTimer(),
 });
 
-export const fetchEndpoints = api.get<PaginateProps>(
-  "/vhosts?page=:page&per_page=5000",
-  {
-    saga: cacheTimer(),
-  },
-);
-export const fetchAllEndpoints = thunks.create(
-  "fetch-all-endpoints",
-  combinePages(fetchEndpoints),
-);
+export const fetchEndpoints = api.get("/vhosts?per_page=5000", {
+  saga: cacheMinTimer(),
+});
 
 export const cancelFetchEndpointPoll = createAction(
   "cancel-fetch-endpoint-poll",

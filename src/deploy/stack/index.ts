@@ -1,4 +1,4 @@
-import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
+import { api, cacheMinTimer } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
@@ -266,12 +266,9 @@ export const selectContainerProfilesForStack = createSelector(
 
 export const stackReducers = createReducerMap(slice);
 
-export const fetchStacks = api.get<PaginateProps>("/stacks?page=:page");
-export const fetchAllStacks = thunks.create(
-  "fetch-all-stacks",
-  { saga: cacheTimer() },
-  combinePages(fetchStacks),
-);
+export const fetchStacks = api.get("/stacks?per_page=5000", {
+  saga: cacheMinTimer(),
+});
 
 export const fetchStack = api.get<{ id: string }>("/stacks/:id");
 
