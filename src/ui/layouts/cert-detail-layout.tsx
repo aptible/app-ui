@@ -1,8 +1,3 @@
-import { useMemo } from "react";
-import { useSelector } from "react-redux";
-import { Outlet, useParams } from "react-router-dom";
-import { useLoader, useQuery } from "saga-query/react";
-
 import {
   cancelPollCert,
   fetchEnvironmentById,
@@ -17,7 +12,10 @@ import {
   environmentCertificatesUrl,
 } from "@app/routes";
 import type { AppState, DeployCertificate } from "@app/types";
-
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
+import { Outlet, useParams } from "react-router-dom";
+import { useLoader, useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   CertIssuer,
@@ -31,8 +29,7 @@ import {
   DetailTitleBar,
   TabItem,
 } from "../shared";
-
-import { MenuWrappedPage } from "./menu-wrapped-page";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 function CertHeader({ cert }: { cert: DeployCertificate }) {
   return (
@@ -103,8 +100,8 @@ function CertPageHeader() {
 
 export const CertDetailLayout = () => {
   return (
-    <MenuWrappedPage header={<CertPageHeader />}>
+    <AppSidebarLayout header={<CertPageHeader />}>
       <Outlet />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

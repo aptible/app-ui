@@ -1,4 +1,4 @@
-import { call, delay, fetchRetry, poll, put, select } from "@app/fx";
+import { call, delay, fetchRetry, leading, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
 import {
@@ -281,19 +281,9 @@ export const selectOperationsByDatabaseId = createSelector(
   findOperationsByDbId,
 );
 
-export const selectLatestOpByEnvId = createSelector(
-  selectOperationsByEnvId,
-  (ops) =>
-    ops.find((op) => ["configure", "provision", "deploy"].includes(op.type)) ||
-    initOp,
-);
-
 export const selectLatestOpByDatabaseId = createSelector(
   selectOperationsByDatabaseId,
-  (ops) =>
-    ops.find((op) =>
-      ["configure", "provision", "deploy", "deprovision"].includes(op.type),
-    ) || initOp,
+  (ops) => (ops.length > 0 ? ops[0] : initOp),
 );
 
 export const selectLatestOpByAppId = createSelector(
@@ -368,30 +358,30 @@ interface EnvIdProps {
 interface EnvOpProps extends PaginateProps, EnvIdProps {}
 
 export const fetchEnvOperations = api.get<EnvOpProps>(
-  "/accounts/:envId/operations?page=:page",
+  "/accounts/:envId/operations?page=:page&per_page=250",
+  { saga: leading },
 );
 
 export const fetchAllEnvOps = thunks.create<EnvIdProps>(
   "fetch-all-env-ops",
   { saga: cacheShortTimer() },
-  combinePages(fetchEnvOperations, { max: 10 }),
+  combinePages(fetchEnvOperations, { max: 2 }),
 );
 
 export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
-export const pollEnvAllOperations = thunks.create<EnvIdProps>(
-  "poll-env-operations",
-  { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
-  combinePages(fetchEnvOperations),
-);
-
 export const pollEnvOperations = api.get<EnvIdProps>(
   ["/accounts/:envId/operations", "poll"],
   { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
 );
 
+export const fetchOrgOperations = api.get<{ orgId: string }>(
+  "/organizations/:orgId/operations?per_page=250",
+  { saga: leading },
+);
+
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
 export const pollOrgOperations = api.get<{ orgId: string }>(
-  "/organizations/:orgId/operations?per_page=250",
+  "/organizations/:orgId/operations",
   { saga: poll(5 * 1000, `${cancelOrgOperationsPoll}`) },
 );
 

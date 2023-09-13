@@ -11,6 +11,7 @@ import {
   AppDetailPage,
   AppDetailServicesPage,
   AppSettingsPage,
+  AppSidebarLayout,
   AppsPage,
   AuthRequired,
   BackupRestorePage,
@@ -29,7 +30,6 @@ import {
   CreateProjectGitPushPage,
   CreateProjectGitSettingsPage,
   CreateProjectGitStatusPage,
-  CreateProjectLayout,
   CreateProjectNamePage,
   CreateProjectPage,
   DatabaseActivityPage,
@@ -149,9 +149,9 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.CREATE_PROJECT_DEPLOYMENTS_PATH,
         element: (
-          <CreateProjectLayout>
+          <AppSidebarLayout>
             <DeploymentsPage />
-          </CreateProjectLayout>
+          </AppSidebarLayout>
         ),
       },
 
@@ -500,21 +500,11 @@ export const appRoutes: RouteObject[] = [
 
       {
         path: routes.CREATE_PROJECT_SETUP_PATH,
-        element: <CreateProjectLayout />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectFromAccountSetupPage />,
-          },
-        ],
+        element: <CreateProjectFromAccountSetupPage />,
       },
       {
         path: routes.CREATE_PROJECT_ADD_KEY_PATH,
-        element: (
-          <ElevateRequired>
-            <CreateProjectLayout />
-          </ElevateRequired>
-        ),
+        element: <ElevateRequired />,
         children: [
           {
             index: true,
@@ -524,17 +514,11 @@ export const appRoutes: RouteObject[] = [
       },
       {
         path: routes.CREATE_PROJECT_ADD_NAME_PATH,
-        element: <CreateProjectLayout />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectNamePage />,
-          },
-        ],
+        element: <CreateProjectNamePage />,
       },
       {
         path: routes.CREATE_PROJECT_GIT_PATH,
-        element: <CreateProjectLayout />,
+        element: <AppSidebarLayout />,
         children: [
           {
             index: true,
@@ -544,7 +528,6 @@ export const appRoutes: RouteObject[] = [
       },
       {
         path: routes.CREATE_PROJECT_GIT_APP_PATH,
-        element: <CreateProjectLayout />,
         children: [
           {
             path: routes.CREATE_PROJECT_GIT_PUSH_PATH,

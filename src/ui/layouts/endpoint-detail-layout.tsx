@@ -1,7 +1,3 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Link, Outlet, useParams } from "react-router-dom";
-import { useLoader, useQuery } from "saga-query/react";
-
 import {
   cancelFetchEndpointPoll,
   fetchApp,
@@ -22,6 +18,7 @@ import {
   endpointDetailSettingsUrl,
   endpointDetailSetupUrl,
 } from "@app/routes";
+import { setResourceStats } from "@app/search";
 import type {
   AppState,
   DeployApp,
@@ -29,9 +26,10 @@ import type {
   DeployEndpoint,
   DeployService,
 } from "@app/types";
-
-import { setResourceStats } from "@app/search";
 import { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, Outlet, useParams } from "react-router-dom";
+import { useLoader, useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   Banner,
@@ -45,7 +43,7 @@ import {
   Loading,
   TabItem,
 } from "../shared";
-import { MenuWrappedPage } from "./menu-wrapped-page";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function EndpointAppHeaderInfo({
   enp,
@@ -241,8 +239,8 @@ function EndpointPageHeader() {
 
 export const EndpointDetailLayout = () => {
   return (
-    <MenuWrappedPage header={<EndpointPageHeader />}>
+    <AppSidebarLayout header={<EndpointPageHeader />}>
       <Outlet />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

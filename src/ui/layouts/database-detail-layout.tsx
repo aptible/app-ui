@@ -1,7 +1,3 @@
-import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useParams } from "react-router-dom";
-
 import {
   calcMetrics,
   cancelDatabaseOpsPoll,
@@ -14,6 +10,7 @@ import {
   selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
+import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
 import {
   databaseActivityUrl,
   databaseBackupsUrl,
@@ -25,8 +22,13 @@ import {
   databaseSettingsUrl,
   environmentDatabasesUrl,
 } from "@app/routes";
+import { setResourceStats } from "@app/search";
+import { capitalize } from "@app/string-utils";
 import type { AppState, DeployDatabase, DeployService } from "@app/types";
-
+import { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useParams } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   DetailHeader,
@@ -37,12 +39,7 @@ import {
   TabItem,
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
-
-import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
-import { setResourceStats } from "@app/search";
-import { capitalize } from "@app/string-utils";
-import { useQuery } from "saga-query/react";
-import { MenuWrappedPage } from "./menu-wrapped-page";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function DatabaseHeader({
   database,
@@ -156,8 +153,8 @@ function DatabasePageHeader() {
 
 export const DatabaseDetailLayout = () => {
   return (
-    <MenuWrappedPage header={<DatabasePageHeader />}>
+    <AppSidebarLayout header={<DatabasePageHeader />}>
       <Outlet />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

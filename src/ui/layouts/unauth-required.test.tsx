@@ -1,10 +1,9 @@
-import { UnauthRequired } from "./unauth-required";
-
 import { server, testEnv } from "@app/mocks";
 import { homeUrl } from "@app/routes";
 import { setupIntegrationTest, waitForToken } from "@app/test";
 import { render, screen } from "@testing-library/react";
 import { rest } from "msw";
+import { UnauthRequired } from "./unauth-required";
 
 const HomeMock = () => {
   return <div>Simulated home</div>;

@@ -10,9 +10,7 @@ import {
 } from "@sentry/react";
 import { ReactElement } from "react";
 import { useRouteError } from "react-router";
-
 import { Button, IconAlertTriangle } from "../shared";
-
 import { HeroBgLayout } from "./hero-bg-layout";
 
 function GenericErrorFallback({ error }: { error: Error | string }) {

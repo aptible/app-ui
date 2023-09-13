@@ -164,7 +164,7 @@ export const fetchEnvMetricDrains = api.get<{ id: string }>(
 );
 
 export const fetchMetricDrains = api.get<PaginateProps>(
-  "/metric_drains?page=:page",
+  "/metric_drains?page=:page&per_page=5000",
   {
     saga: cacheTimer(),
   },

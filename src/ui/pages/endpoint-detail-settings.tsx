@@ -96,7 +96,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         {service.appId ? (
           <FormGroup
-            label={`Container Port (current: ${curPortText}`}
+            label={`Container Port (current: ${curPortText})`}
             htmlFor="port"
             feedbackMessage={errors.port}
             feedbackVariant={errors.port ? "danger" : "info"}
