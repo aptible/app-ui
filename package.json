@@ -58,7 +58,6 @@
     "redux": "^4.2.1",
     "redux-batched-actions": "^0.5.0",
     "redux-persist": "^6.0.0",
-    "rome": "^12.1.1",
     "saga-query": "^9.0.0",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.0.4",

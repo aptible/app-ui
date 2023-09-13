@@ -155,12 +155,6 @@ export const ApplicationSidebar = () => {
             >
               DOCS
             </a>
-            {/* <a
-              className="text-gray-500 hover:text-indigo px-3"
-              href="/support"
-            >
-              SUPPORT
-            </a> */}
             <Link
               to={supportUrl()}
               className="text-gray-500 hover:text-indigo px-3"
