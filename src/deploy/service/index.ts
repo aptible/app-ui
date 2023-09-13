@@ -241,9 +241,12 @@ export const selectAppToServicesMap = createSelector(
 
 export const fetchService = api.get<{ id: string }>("/services/:id");
 
-export const fetchServices = api.get<PaginateProps>("/services?page=:page", {
-  saga: cacheTimer(),
-});
+export const fetchServices = api.get<PaginateProps>(
+  "/services?page=:page&per_page=5000",
+  {
+    saga: cacheTimer(),
+  },
+);
 export const fetchAllServices = thunks.create(
   "fetch-all-services",
   combinePages(fetchServices),

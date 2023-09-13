@@ -378,12 +378,6 @@ export const fetchAllEnvOps = thunks.create<EnvIdProps>(
 );
 
 export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
-export const pollEnvAllOperations = thunks.create<EnvIdProps>(
-  "poll-env-operations",
-  { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
-  combinePages(fetchEnvOperations),
-);
-
 export const pollEnvOperations = api.get<EnvIdProps>(
   ["/accounts/:envId/operations", "poll"],
   { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },

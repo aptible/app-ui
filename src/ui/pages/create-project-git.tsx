@@ -9,6 +9,7 @@ import {
   cancelAppOpsPoll,
   createEndpointOperation,
   fetchAllApps,
+  fetchAllEnvOps,
   fetchApp,
   fetchConfiguration,
   fetchDatabasesByEnvId,
@@ -17,6 +18,7 @@ import {
   hasDeployApp,
   hasDeployEnvironment,
   pollAppOperations,
+  pollEnvOperations,
   provisionEndpoint,
   selectAppById,
   selectAppConfigById,
@@ -31,7 +33,6 @@ import {
 import {
   createReadableStatus,
   hasDeployOperation,
-  pollEnvAllOperations,
   selectLatestConfigureOp,
   selectLatestDeployOp,
   selectLatestProvisionOp,
@@ -908,7 +909,9 @@ export const CreateProjectGitStatusPage = () => {
   });
 
   const [status, dateStr] = resolveOperationStatuses(ops);
-  const { isInitialLoading } = useQuery(pollEnvAllOperations({ envId }));
+  useQuery(fetchAllEnvOps({ envId }));
+  // we only need to poll for the latest operations
+  const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
 
   const { scanOp } = useLatestCodeResults(appId);
 

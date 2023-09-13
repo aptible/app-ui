@@ -457,9 +457,12 @@ export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
   saga: cacheShortTimer(),
 });
 
-export const fetchEndpoints = api.get<PaginateProps>("/vhosts?page=:page", {
-  saga: cacheTimer(),
-});
+export const fetchEndpoints = api.get<PaginateProps>(
+  "/vhosts?page=:page&per_page=5000",
+  {
+    saga: cacheTimer(),
+  },
+);
 export const fetchAllEndpoints = thunks.create(
   "fetch-all-endpoints",
   combinePages(fetchEndpoints),

@@ -197,7 +197,9 @@ export const selectEnvironmentByName = createSelector(
 
 export const fetchEnvironmentById = api.get<{ id: string }>("/accounts/:id");
 
-export const fetchEnvironments = api.get<PaginateProps>("/accounts?page=:page");
+export const fetchEnvironments = api.get<PaginateProps>(
+  "/accounts?page=:page&per_page=5000",
+);
 export const fetchAllEnvironments = thunks.create(
   "fetch-all-envs",
   combinePages(fetchEnvironments),
