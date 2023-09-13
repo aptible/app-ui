@@ -218,6 +218,7 @@ const SECONDS = 1 * MS;
 const MINUTES = 60 * SECONDS;
 
 export const cacheTimer = () => timer(5 * MINUTES);
+export const cacheMinTimer = () => timer(60 * SECONDS);
 export const cacheShortTimer = () => timer(5 * SECONDS);
 
 export const api = createApi<DeployApiCtx>();

@@ -1,4 +1,4 @@
-import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
+import { api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -233,16 +233,10 @@ export const selectLogDrainsByEnvId = createSelector(
 export const hasDeployLogDrain = (a: DeployLogDrain) => a.id !== "";
 export const logDrainReducers = createReducerMap(slice);
 
-export const fetchLogDrains = api.get<PaginateProps>(
-  "/log_drains?page=:page&per_page=5000",
-  {
-    saga: cacheTimer(),
-  },
-);
-export const fetchAllLogDrains = thunks.create(
-  "fetch-all-log-drains",
-  combinePages(fetchLogDrains),
-);
+export const fetchLogDrains = api.get("/log_drains?per_page=5000", {
+  saga: cacheMinTimer(),
+});
+
 export const fetchEnvLogDrains = api.get<{ id: string }>(
   "/accounts/:id/log_drains",
   {

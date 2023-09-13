@@ -1,9 +1,9 @@
 import { prettyDateRelative } from "@app/date";
 import {
   calcServiceMetrics,
-  fetchAllApps,
-  fetchAllEnvironments,
+  fetchApps,
   fetchEnvironmentById,
+  fetchEnvironments,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
   selectLatestOpByAppId,
@@ -230,8 +230,8 @@ export const AppsResourceHeaderTitleBar = ({
 };
 
 export const AppListByOrg = () => {
-  const query = useQuery(fetchAllApps());
-  useQuery(fetchAllEnvironments());
+  const query = useQuery(fetchApps());
+  useQuery(fetchEnvironments());
 
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -267,7 +267,7 @@ export const AppListByEnvironment = ({
   environmentId: string;
 }) => {
   const navigate = useNavigate();
-  const loader = useLoader(fetchAllApps());
+  const loader = useLoader(fetchApps());
   useQuery(fetchEnvironmentById({ id: environmentId }));
 
   const apps = useSelector((s: AppState) =>

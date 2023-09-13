@@ -5,6 +5,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   DeployEndpointRow,
   fetchCertificateById,
+  fetchEndpoints,
   getEndpointText,
   getEndpointUrl,
   requiresAcmeSetup,
@@ -196,6 +197,7 @@ export const EndpointList = ({
 export function EndpointsByOrg() {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
+  useQuery(fetchEndpoints());
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch });
   };

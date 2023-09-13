@@ -7,9 +7,9 @@ import { Tooltip } from "../tooltip";
 import { prettyDateRelative } from "@app/date";
 import {
   DeployDatabaseRow,
-  fetchAllDatabases,
-  fetchAllEnvironments,
+  fetchDatabases,
   fetchEnvironmentById,
+  fetchEnvironments,
   getContainerProfileFromType,
   hourlyAndMonthlyCostsForContainers,
   selectDatabasesForTableSearch,
@@ -199,8 +199,8 @@ const DbsResourceHeaderTitleBar = ({
 };
 
 export const DatabaseListByOrg = () => {
-  const query = useQuery(fetchAllDatabases());
-  useQuery(fetchAllEnvironments());
+  const query = useQuery(fetchDatabases());
+  useQuery(fetchEnvironments());
 
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -266,7 +266,7 @@ export const DatabaseListByEnvironment = ({
   environmentId: string;
 }) => {
   const navigate = useNavigate();
-  const query = useQuery(fetchAllDatabases());
+  const query = useQuery(fetchDatabases());
   useQuery(fetchEnvironmentById({ id: environmentId }));
 
   const onCreate = () => {

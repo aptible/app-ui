@@ -1,5 +1,5 @@
-import { PaginateProps, api, combinePages, thunks } from "@app/api";
-import { call, createThrottle, poll, select } from "@app/fx";
+import { api, cacheMinTimer, thunks } from "@app/api";
+import { call, poll, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -293,22 +293,9 @@ export const selectAppsCountByStack = createSelector(
   (apps) => apps.length,
 );
 
-export const fetchApps = api.get<PaginateProps>(
-  "/apps?page=:page&per_page=5000&no_embed=true",
-);
-
-export const fetchAllApps = thunks.create(
-  "fetch-all-apps",
-  { saga: createThrottle(5 * 1000) },
-  combinePages(fetchApps),
-);
-
-export const cancelAppsPoll = createAction("cancel-apps-poll");
-export const pollApps = thunks.create(
-  "poll-apps",
-  { saga: poll(60 * 1000, `${cancelAppsPoll}`) },
-  combinePages(fetchApps),
-);
+export const fetchApps = api.get("/apps?per_page=5000&no_embed=true", {
+  saga: cacheMinTimer(),
+});
 
 interface AppIdProp {
   id: string;
