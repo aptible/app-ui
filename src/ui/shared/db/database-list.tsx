@@ -93,7 +93,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
-const LastOpCell = ({ database }: DatabaseCellProps) => {
+export const LastOpCell = ({ database }: DatabaseCellProps) => {
   const lastOperation = useSelector((s: AppState) =>
     selectLatestOpByDatabaseId(s, { dbId: database.id }),
   );
@@ -213,13 +213,7 @@ export const DatabaseListByOrg = () => {
     }),
   );
 
-  const headers = [
-    "Handle",
-    "Environment",
-    "Est. Monthly Cost",
-    "Last Operation",
-    "Actions",
-  ];
+  const headers = ["Handle", "Environment", "Est. Monthly Cost", "Actions"];
 
   return (
     <LoadResources
@@ -256,7 +250,6 @@ export const DatabaseListByOrg = () => {
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <DatabaseCostCell database={db} />
-                <LastOpCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
             ))}
@@ -287,13 +280,7 @@ export const DatabaseListByEnvironment = ({
     }),
   );
 
-  const headers = [
-    "Handle",
-    "Environment",
-    "Est. Monthly Cost",
-    "Last Operation",
-    "Actions",
-  ];
+  const headers = ["Handle", "Environment", "Est. Monthly Cost", "Actions"];
   const actions = [
     <ButtonCreate envId={environmentId} onClick={onCreate}>
       <IconPlusCircle variant="sm" />
@@ -334,7 +321,6 @@ export const DatabaseListByEnvironment = ({
                 <DatabasePrimaryCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <DatabaseCostCell database={db} />
-                <LastOpCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
             ))}

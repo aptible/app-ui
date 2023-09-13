@@ -348,9 +348,12 @@ export const selectDatabasesCountByStack = createSelector(
   (dbs) => dbs.length,
 );
 
-export const fetchDatabases = api.get<PaginateProps>("/databases?page=:page", {
-  saga: cacheTimer(),
-});
+export const fetchDatabases = api.get<PaginateProps>(
+  "/databases?page=:page&per_page=5000&no_embed=true",
+  {
+    saga: cacheTimer(),
+  },
+);
 export const fetchAllDatabases = thunks.create(
   "fetch-all-databases",
   combinePages(fetchDatabases),
