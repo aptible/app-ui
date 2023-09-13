@@ -76,8 +76,6 @@ export const SupportPage = () => {
     queryAlgoliaApi({ query: formState.subject, debounce: subjectTyping }),
   );
 
-  const attachmentLoader = useLoader(uploadAttachment);
-
   // useEffect hook for supplying the user information [email, name] to local state once it loads
   useEffect(() => {
     if (user.email) {
