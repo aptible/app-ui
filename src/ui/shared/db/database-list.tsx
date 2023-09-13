@@ -99,25 +99,19 @@ const LastOpCell = ({ database }: DatabaseCellProps) => {
   );
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      {lastOperation ? (
-        <>
-          <div className={tokens.type.darker}>
-            <Link
-              to={operationDetailUrl(lastOperation.id)}
-              className={tokens.type["table link"]}
-            >
-              {capitalize(lastOperation.type)} by {lastOperation.userName}
-            </Link>
-          </div>
-          <div className={tokens.type.darker} />
-          <div className={tokens.type["normal lighter"]}>
-            <OpStatus status={lastOperation.status} />{" "}
-            {prettyDateRelative(lastOperation.createdAt)}
-          </div>
-        </>
-      ) : (
-        <div className={tokens.type["normal lighter"]}>No activity</div>
-      )}
+      <div className={tokens.type.darker}>
+        <Link
+          to={operationDetailUrl(lastOperation.id)}
+          className={tokens.type["table link"]}
+        >
+          {capitalize(lastOperation.type)} by {lastOperation.userName}
+        </Link>
+      </div>
+      <div className={tokens.type.darker} />
+      <div className={tokens.type["normal lighter"]}>
+        <OpStatus status={lastOperation.status} />{" "}
+        {prettyDateRelative(lastOperation.createdAt)}
+      </div>
     </Td>
   );
 };
