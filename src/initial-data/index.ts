@@ -13,6 +13,7 @@ import {
   fetchEnvironments,
   fetchLogDrains,
   fetchMetricDrains,
+  fetchOrgOperations,
   fetchServices,
   fetchStacks,
 } from "@app/deploy";
@@ -36,6 +37,7 @@ export function* onFetchInitData() {
     call(fetchMetricDrains.run, fetchMetricDrains()),
     call(fetchServices.run, fetchServices()),
     call(fetchEndpoints.run, fetchEndpoints()),
+    call(fetchOrgOperations.run, fetchOrgOperations({ orgId: org.id })),
   ]);
 }
 
