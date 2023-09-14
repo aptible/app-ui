@@ -69,6 +69,8 @@ export const AddSSHKeyForm = ({
             feedbackVariant="info"
           >
             <textarea
+              id="public-key"
+              name="public-key"
               className={tokens.type.textarea}
               value={key}
               onChange={(e) => setKey(e.currentTarget.value)}

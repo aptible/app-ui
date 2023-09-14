@@ -48,12 +48,24 @@ export const testUserId = createId();
 export const mockJwtHeaders = btoa(
   JSON.stringify({ alg: "HS256", typ: "JWT" }),
 );
-const mockJwtPayload = btoa(JSON.stringify({ id: `${testUserId}` }));
-export const mockJwt = (mixin: string, id: string | number = "1") =>
-  `${mockJwtHeaders}.${mockJwtPayload}.not_real_${mixin}_${id}`;
+const mockJwtPayload = (scope: string) =>
+  btoa(JSON.stringify({ id: `${testUserId}`, scope }));
+export const mockJwt = (mixin: string, scope: string) =>
+  `${mockJwtHeaders}.${mockJwtPayload(scope)}.not_real_${mixin}`;
 
 export const testToken = defaultTokenResponse({
-  access_token: `${mockJwt(createId().toString())}`,
+  access_token: `${mockJwt(createId().toString(), "manage")}`,
+  id: `${createId()}`,
+  _links: {
+    self: defaultHalHref(),
+    user: defaultHalHref(`${testEnv.authUrl}/users/${testUserId}`),
+    actor: defaultHalHref(`${testEnv.authUrl}/users/${testUserId}`),
+  },
+});
+
+export const testElevatedToken = defaultTokenResponse({
+  access_token: `${mockJwt(createId().toString(), "elevated")}`,
+  scope: "elevated",
   id: `${createId()}`,
   _links: {
     self: defaultHalHref(),

@@ -204,7 +204,7 @@ export const CreateProjectAddKeyPage = () => {
   const stackId = params.get("stack_id") || "";
   const envId = params.get("environment_id") || "";
   const queryParam = `stack_id=${stackId}&environment_id=${envId}`;
-  const url = createProjectAddNameUrl(queryParam);
+  const url = createProjectGitPushUrl(queryParam);
   const onSuccess = () => navigate(url);
 
   return (

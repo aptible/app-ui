@@ -2,9 +2,10 @@ import { createProjectAddKeyUrl } from "@app/routes";
 import { fetchSSHKeys } from "@app/ssh-keys";
 import { HalEmbedded } from "@app/types";
 import { selectCurrentUser } from "@app/users";
+import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useCache, useLoaderSuccess } from "saga-query/react";
+import { useCache } from "saga-query/react";
 
 export function useSshKeyRequired() {
   const navigate = useNavigate();
@@ -17,10 +18,15 @@ export function useSshKeyRequired() {
     fetchSSHKeys({ userId: user.id }),
   );
 
-  useLoaderSuccess(query, () => {
-    if (!query.data) return;
-    if (query.data._embedded.ssh_keys.length === 0) {
-      navigate(createProjectAddKeyUrl(queryParam), { replace: true });
+  const prev = useRef(query);
+  useEffect(() => {
+    const curSuccess = !query.isLoading && query.isSuccess;
+    if (prev.current.isLoading && curSuccess) {
+      if (!query.data) return;
+      if (query.data._embedded.ssh_keys.length === 0) {
+        navigate(createProjectAddKeyUrl(queryParam), { replace: true });
+      }
     }
-  });
+    prev.current = query;
+  }, [query.isSuccess, query.isLoading]);
 }
