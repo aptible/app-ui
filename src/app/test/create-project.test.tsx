@@ -19,7 +19,7 @@ import { deserializeToken } from "@app/token";
 
 describe("Create project flow", () => {
   describe("existing user *without* ssh keys", () => {
-    it.only("should ask user to add SSH keys before proceeding", async () => {
+    it("should ask user to add SSH keys before proceeding", async () => {
       server.use(
         ...verifiedUserHandlers({ role: testRoleOwner }),
         rest.get(`${testEnv.apiUrl}/apps/:id`, (_, res, ctx) => {
