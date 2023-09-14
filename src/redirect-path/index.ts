@@ -1,4 +1,3 @@
-import { HOME_PATH } from "@app/routes";
 import { createAssign, createReducerMap } from "@app/slice-helpers";
 import { AppState } from "@app/types";
 
@@ -6,7 +5,7 @@ export const REDIRECT_NAME = "redirectPath";
 
 const redirectPath = createAssign({
   name: REDIRECT_NAME,
-  initialState: HOME_PATH,
+  initialState: "",
 });
 
 export const { set: setRedirectPath, reset: resetRedirectPath } =

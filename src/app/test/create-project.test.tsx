@@ -8,13 +8,97 @@ import {
   testAccount,
   testApp,
   testConfiguration,
+  testElevatedToken,
   testEnv,
   testRoleOwner,
+  testSshKey,
   verifiedUserHandlers,
 } from "@app/mocks";
 import { setupAppIntegrationTest, waitForBootup } from "@app/test";
+import { deserializeToken } from "@app/token";
 
 describe("Create project flow", () => {
+  describe("existing user *without* ssh keys", () => {
+    it("should ask user to add SSH keys before proceeding", async () => {
+      server.use(
+        ...verifiedUserHandlers({ role: testRoleOwner }),
+        rest.get(`${testEnv.apiUrl}/apps/:id`, (_, res, ctx) => {
+          return res(
+            ctx.json({
+              ...testApp,
+              _links: {
+                account: defaultHalHref(
+                  `${testEnv.apiUrl}/accounts/${testAccount.id}`,
+                ),
+                current_configuration: defaultHalHref(
+                  `${testEnv.apiUrl}/configurations/${testConfiguration.id}`,
+                ),
+              },
+            }),
+          );
+        }),
+        rest.get(`${testEnv.authUrl}/users/:userId/ssh_keys`, (_, res, ctx) => {
+          return res(ctx.json({ _embedded: { ssh_keys: [] } }));
+        }),
+        rest.post(
+          `${testEnv.authUrl}/users/:userId/ssh_keys`,
+          (_, res, ctx) => {
+            return res(ctx.json({ _embedded: { ssh_keys: [testSshKey] } }));
+          },
+        ),
+        rest.get(`${testEnv.apiUrl}/apps/:id/operations`, (_, res, ctx) => {
+          return res(
+            ctx.json({
+              _embedded: { operations: [] },
+            }),
+          );
+        }),
+      );
+      const { App, store } = setupAppIntegrationTest({
+        initState: {
+          elevatedToken: deserializeToken(testElevatedToken),
+        },
+        initEntries: ["/create"],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      // deploy code landing page
+      const el = screen.getByRole("link", {
+        name: /Deploy with Git Push/,
+      });
+      expect(el.textContent).toMatch(/Deploy with Git Push/);
+      // go to next page
+      fireEvent.click(el);
+
+      // create environment page
+      const nameInput = await screen.findByRole("textbox", { name: "name" });
+      await act(async () => {
+        await userEvent.type(nameInput, "test-project");
+      });
+
+      const btn = await screen.findByRole("button", {
+        name: /Create Environment/,
+      });
+      // go to next page
+      fireEvent.click(btn);
+
+      await screen.findByText(/Paste Public SSH Key/);
+      const keyTextArea = await screen.findByLabelText(
+        "Step 2. Paste Public SSH Key",
+      );
+      await act(() => userEvent.type(keyTextArea, "here is a public key"));
+
+      const keyBtn = await screen.findByRole("button", { name: /Save Key/ });
+      fireEvent.click(keyBtn);
+
+      // push your code page
+      await screen.findByText(/Push your code to Aptible/);
+    });
+  });
+
   describe("existing user with ssh keys", () => {
     it("should successfully provision resources within an environment", async () => {
       server.use(
