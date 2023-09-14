@@ -194,6 +194,7 @@ function* expiredToken(ctx: ApiCtx, next: Next) {
   yield* next();
   if (!ctx.response) return;
   if (ctx.response.status === 401) {
+    yield* put(resetToken());
     ctx.actions.push(resetToken());
   }
 }
