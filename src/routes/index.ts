@@ -195,10 +195,7 @@ export const teamUrl = () => TEAM_PATH;
 
 export const CREATE_PROJECT_PATH = "/create";
 export const createProjectUrl = () => CREATE_PROJECT_PATH;
-export const CREATE_PROJECT_ADD_KEY_PATH = "/create/ssh";
-export const createProjectAddKeyUrl = (params = "") => {
-  return `${CREATE_PROJECT_ADD_KEY_PATH}${params ? `?${params}` : ""}`;
-};
+
 export const CREATE_PROJECT_ADD_NAME_PATH = "/create/name";
 export const createProjectAddNameUrl = (params = "") => {
   return `${CREATE_PROJECT_ADD_NAME_PATH}${params ? `?${params}` : ""}`;
@@ -220,6 +217,10 @@ export const createProjectGitAppSetupUrl = (appId: string) =>
 
 export const CREATE_PROJECT_GIT_APP_PATH = "/apps/:appId/git";
 export const createProjectGitAppUrl = (appId: string) => `/apps/${appId}/git`;
+export const CREATE_PROJECT_ADD_KEY_PATH = "/apps/:appId/git/ssh";
+export const createProjectAddKeyUrl = (appId: string) => {
+  return `/apps/${appId}/git/ssh`;
+};
 export const CREATE_PROJECT_GIT_PUSH_PATH = "/apps/:appId/git/push";
 export const createProjectGitPushUrl = (appId: string) =>
   `/apps/${appId}/git/push`;

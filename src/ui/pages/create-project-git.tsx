@@ -194,17 +194,17 @@ export const CreateProjectGitPage = () => {
   const [params] = useSearchParams();
   const stackId = params.get("stack_id") || "";
   const envId = params.get("environment_id") || "";
-  const queryParam = `stack_id=${stackId}&environment_id=${envId}`;
+  const queryParam =
+    stackId === "" && envId === ""
+      ? ""
+      : `stack_id=${stackId}&environment_id=${envId}`;
   return <Navigate to={createProjectAddNameUrl(queryParam)} replace />;
 };
 
 export const CreateProjectAddKeyPage = () => {
+  const { appId = "" } = useParams();
   const navigate = useNavigate();
-  const [params] = useSearchParams();
-  const stackId = params.get("stack_id") || "";
-  const envId = params.get("environment_id") || "";
-  const queryParam = `stack_id=${stackId}&environment_id=${envId}`;
-  const url = createProjectGitPushUrl(queryParam);
+  const url = createProjectGitPushUrl(appId);
   const onSuccess = () => navigate(url);
 
   return (
@@ -216,7 +216,7 @@ export const CreateProjectAddKeyPage = () => {
         </p>
       </div>
 
-      <ProgressProject cur={-1} next={url} />
+      <ProgressProject cur={2} prev={createProjectAddNameUrl()} next={url} />
 
       <Box className="w-full max-w-[700px] mx-auto">
         <AddSSHKeyForm onSuccess={onSuccess} />
@@ -304,9 +304,9 @@ const starterTemplateOptions: StarterOption[] = [
 ];
 
 export const CreateProjectGitPushPage = () => {
-  useSshKeyRequired();
   const navigate = useNavigate();
   const { appId = "" } = useParams();
+  useSshKeyRequired(createProjectAddKeyUrl(appId));
 
   const [starter, setStarter] = useState<StarterOption>();
   useQuery(fetchApp({ id: appId }));
@@ -344,7 +344,7 @@ export const CreateProjectGitPushPage = () => {
 
       <ProgressProject
         cur={2}
-        prev={createProjectAddKeyUrl()}
+        prev={createProjectAddKeyUrl(appId)}
         next={createProjectGitSettingsUrl(appId, query)}
       />
 
