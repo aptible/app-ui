@@ -30,7 +30,7 @@ export interface DbFormProps<P extends { id: string }> {
 
 export interface DbValidatorError {
   message: string;
-  item: DbCreatorProps;
+  item: { id: string; name: string };
 }
 
 const createId = idCreator();

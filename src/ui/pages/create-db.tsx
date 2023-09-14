@@ -52,9 +52,10 @@ export const CreateDatabasePage = () => {
     dbSelectorReducer,
     {},
   );
-  const dbCreatorList = Object.values(dbCreatorMap).sort((a, b) =>
-    a.id.localeCompare(b.id),
-  );
+  const dbCreatorList = Object.values(dbCreatorMap)
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .filter((db) => db.imgId !== "");
+  const isDisabled = dbCreatorList.length === 0;
   const imgLoader = useQuery(fetchAllDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesVisible);
   const env = useSelector((s: AppState) =>
@@ -126,6 +127,7 @@ export const CreateDatabasePage = () => {
               envId={envId}
               type="submit"
               isLoading={loader.isLoading}
+              disabled={isDisabled}
             >
               Save Changes
             </ButtonCreate>
