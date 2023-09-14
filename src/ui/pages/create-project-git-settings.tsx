@@ -88,9 +88,11 @@ interface ValidatorError {
   message: string;
 }
 
-const validateDbs = (items: DbCreatorProps[]): DbValidatorError[] => {
+const validateNewDbs = (
+  items: DbCreatorProps[],
+  envVars: Set<string>,
+): DbValidatorError[] => {
   const errors: DbValidatorError[] = [];
-  const envVars = new Set();
 
   const validate = (item: DbCreatorProps) => {
     const name = validateDbName(item);
@@ -98,6 +100,34 @@ const validateDbs = (items: DbCreatorProps[]): DbValidatorError[] => {
       errors.push(name);
     }
 
+    if (item.imgId === "") {
+      errors.push({
+        item,
+        message: "Must pick a database or delete the selector from the menu",
+      });
+    }
+
+    if (envVars.has(item.env)) {
+      errors.push({
+        item,
+        message: `${item.env} has already been used, each database env var must be unique`,
+      });
+    } else {
+      envVars.add(item.env);
+    }
+  };
+
+  items.forEach(validate);
+  return errors;
+};
+
+const validateExistingDbs = (
+  items: DbExistingProps[],
+  envVars: Set<string>,
+): DbValidatorError[] => {
+  const errors: DbValidatorError[] = [];
+
+  const validate = (item: DbExistingProps) => {
     if (envVars.has(item.env)) {
       errors.push({
         item,
@@ -201,6 +231,7 @@ const DbExistingSelector = ({
 
 interface DbExistingProps {
   id: string;
+  name: string;
   dbId: string;
   env: string;
   connectionUrl: string;
@@ -220,6 +251,7 @@ const DatabaseExistingForm = ({
   const onClick = () => {
     const payload: DbExistingProps = {
       id: `${createId()}`,
+      name: "",
       env: "DATABASE_URL",
       dbId: "",
       connectionUrl: "",
@@ -511,25 +543,15 @@ export const CreateProjectGitSettingsPage = () => {
     const dbCreatorList = Object.values(dbCreatorMap).sort((a, b) =>
       a.id.localeCompare(b.id),
     );
-    const dbExistingList = Object.values(dbExistingMap).sort((a, b) =>
-      a.id.localeCompare(b.id),
-    );
+    const dbExistingList = Object.values(dbExistingMap)
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .filter((db) => db.dbId !== "");
     let cancel = false;
 
-    const allDbs = [...dbCreatorList];
-    // also check with existing db list
-    dbExistingList.forEach((edb) => {
-      allDbs.push({
-        id: edb.id,
-        env: edb.env,
-        // hack to get around name validation
-        name: edb.env.toLocaleLowerCase(),
-        dbType: "",
-        imgId: "",
-        enableBackups: true,
-      });
-    });
-    const dberr = validateDbs(allDbs);
+    const envVars = new Set<string>();
+    const newDbErr = validateNewDbs(dbCreatorList, envVars);
+    const existingDbErr = validateExistingDbs(dbExistingList, envVars);
+    const dberr = [...newDbErr, ...existingDbErr];
 
     if (dberr.length > 0) {
       cancel = true;

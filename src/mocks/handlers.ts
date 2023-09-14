@@ -321,6 +321,19 @@ const apiHandlers = [
       }),
     );
   }),
+  rest.get(
+    `${testEnv.apiUrl}/organizations/:id/operations`,
+    (req, res, ctx) => {
+      if (!isValidToken(req)) {
+        return res(ctx.status(401));
+      }
+      return res(
+        ctx.json({
+          _embedded: { operations: [] },
+        }),
+      );
+    },
+  ),
   rest.get(`${testEnv.apiUrl}/operations/:id`, (req, res, ctx) => {
     if (!isValidToken(req)) {
       return res(ctx.status(401));
