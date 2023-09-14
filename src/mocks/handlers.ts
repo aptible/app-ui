@@ -15,7 +15,7 @@ import {
 import { defaultHalHref } from "@app/hal";
 import { RoleResponse } from "@app/roles";
 import { UserResponse } from "@app/users";
-import { RestRequest, rest } from "msw";
+import { rest } from "msw";
 import {
   createId,
   testAccount,
@@ -45,30 +45,18 @@ import {
   testUserVerified,
 } from "./data";
 
-const isValidToken = (req: RestRequest) => {
-  const authorization = req.headers.get("authorization");
-  return `Bearer ${testToken.access_token}` === authorization;
-};
-
 const authHandlers = [
   rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
     return res(ctx.json(testToken));
   }),
-  rest.get(`${testEnv.authUrl}/organizations`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
+  rest.get(`${testEnv.authUrl}/organizations`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { organizations: [testOrg] } }));
   }),
   rest.get(`${testEnv.authUrl}/reauthenticate_organizations`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { organizations: [testOrgReauth] } }));
   }),
 
-  rest.get(`${testEnv.authUrl}/users/:userId`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
     return res(ctx.json(testUser));
   }),
   rest.put(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
@@ -77,56 +65,28 @@ const authHandlers = [
   rest.post(`${testEnv.authUrl}/users`, (_, res, ctx) => {
     return res(ctx.json(testUser));
   }),
-  rest.post(`${testEnv.authUrl}/organizations`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.post(`${testEnv.authUrl}/organizations`, (_, res, ctx) => {
     return res(ctx.json(testOrg));
   }),
-  rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { users: [testUser] } }));
   }),
-  rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { roles: [testRole] } }));
   }),
-  rest.get(`${testEnv.authUrl}/users/:userId/roles`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.get(`${testEnv.authUrl}/users/:userId/roles`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { roles: [testRole] } }));
   }),
-  rest.get(`${testEnv.authUrl}/users/:userId/ssh_keys`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.get(`${testEnv.authUrl}/users/:userId/ssh_keys`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { ssh_keys: [testSshKey] } }));
   }),
   rest.post(
     `${testEnv.authUrl}/users/:userId/email_verification_challenges`,
-    (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
-
+    (_, res, ctx) => {
       return res(ctx.status(204));
     },
   ),
-  rest.post(`${testEnv.authUrl}/password/resets/new`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.post(`${testEnv.authUrl}/password/resets/new`, (_, res, ctx) => {
     return res(ctx.status(204));
   }),
   rest.post(`${testEnv.authUrl}/verifications`, (_, res, ctx) => {
@@ -196,58 +156,32 @@ export const stacksWithResources = (
   },
 ) => {
   return [
-    rest.get(`${testEnv.apiUrl}/stacks`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
+    rest.get(`${testEnv.apiUrl}/stacks`, (_, res, ctx) => {
       return res(ctx.json({ _embedded: { stacks } }));
     }),
-    rest.get(`${testEnv.apiUrl}/accounts`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
+    rest.get(`${testEnv.apiUrl}/accounts`, (_, res, ctx) => {
       return res(ctx.json({ _embedded: { accounts } }));
     }),
-    rest.get(`${testEnv.apiUrl}/accounts/:id`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
-
+    rest.get(`${testEnv.apiUrl}/accounts/:id`, (_, res, ctx) => {
       return res(ctx.json(testAccount));
     }),
-    rest.get(`${testEnv.apiUrl}/apps`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
+    rest.get(`${testEnv.apiUrl}/apps`, (_, res, ctx) => {
       return res(ctx.json({ _embedded: { apps } }));
     }),
     rest.get(`${testEnv.apiUrl}/apps/:id`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
       return res(ctx.json(apps.find((app) => `${app.id}` === req.params.id)));
     }),
-    rest.get(`${testEnv.apiUrl}/databases`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
+    rest.get(`${testEnv.apiUrl}/databases`, (_, res, ctx) => {
       return res(ctx.json({ _embedded: { databases } }));
     }),
     rest.get(`${testEnv.apiUrl}/databases/:id`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
       return res(
         ctx.json(
           databases.find((database) => `${database.id}` === req.params.id),
         ),
       );
     }),
-    rest.get(`${testEnv.apiUrl}/accounts/:envId/databases`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
-
+    rest.get(`${testEnv.apiUrl}/accounts/:envId/databases`, (_, res, ctx) => {
       return res(ctx.json({ _embedded: { databases } }));
     }),
     rest.get(`${testEnv.apiUrl}/vhosts`, (_, res, ctx) => {
@@ -259,30 +193,18 @@ export const stacksWithResources = (
     rest.get(`${testEnv.apiUrl}/log_drains`, (_, res, ctx) => {
       return res(ctx.json({ log_drains }));
     }),
-    rest.get(`${testEnv.apiUrl}/services`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
+    rest.get(`${testEnv.apiUrl}/services`, (_, res, ctx) => {
       return res(ctx.json({ services }));
     }),
-    rest.get(`${testEnv.apiUrl}/apps/:id/services`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
+    rest.get(`${testEnv.apiUrl}/apps/:id/services`, (_, res, ctx) => {
       return res(ctx.json({ services }));
     }),
     rest.get(`${testEnv.apiUrl}/services/:id`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
       return res(
         ctx.json(services.find((service) => `${service.id}` === req.params.id)),
       );
     }),
-    rest.get(`${testEnv.apiUrl}/databases/:id/operations`, (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
+    rest.get(`${testEnv.apiUrl}/databases/:id/operations`, (_, res, ctx) => {
       return res(
         ctx.json({
           _embedded: { operations: testOperations },
@@ -304,17 +226,11 @@ const apiHandlers = [
   ...stacksWithResources(),
   rest.post(
     `${testEnv.apiUrl}/databases/:id/operations`,
-    async (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
+    async (_, res, ctx) => {
       return res(ctx.json(testDatabaseOp));
     },
   ),
-  rest.get(`${testEnv.apiUrl}/apps/:id/operations`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
+  rest.get(`${testEnv.apiUrl}/apps/:id/operations`, (_, res, ctx) => {
     return res(
       ctx.json({
         _embedded: { operations: [testScanOperation] },
@@ -335,9 +251,6 @@ const apiHandlers = [
     },
   ),
   rest.get(`${testEnv.apiUrl}/operations/:id`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
     const op = testOperations.find((op) => `${op.id}` === req.params.id);
     if (!op) {
       return res(
@@ -362,9 +275,6 @@ const apiHandlers = [
     return res(ctx.json(op));
   }),
   rest.post(`${testEnv.apiUrl}/apps/:id/operations`, async (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
     const data = await req.json();
     return res(
       ctx.json(
@@ -390,9 +300,6 @@ const apiHandlers = [
   rest.post(
     `${testEnv.apiUrl}/services/:id/operations`,
     async (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
       const data = await req.json();
       return res(
         ctx.json(
@@ -419,9 +326,6 @@ const apiHandlers = [
   rest.post(
     `${testEnv.apiUrl}/databases/:id/operations`,
     async (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
       const data = await req.json();
       return res(
         ctx.json(
@@ -450,39 +354,19 @@ const apiHandlers = [
   rest.delete(`${testEnv.apiUrl}/accounts/:id`, async (_, res, ctx) => {
     return res(ctx.status(204));
   }),
-  rest.get(`${testEnv.apiUrl}/apps/:id/vhosts`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
+  rest.get(`${testEnv.apiUrl}/apps/:id/vhosts`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { vhosts: [] } }));
   }),
-  rest.get(`${testEnv.apiUrl}/accounts/:id/vhosts`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
+  rest.get(`${testEnv.apiUrl}/accounts/:id/vhosts`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { vhosts: [] } }));
   }),
-  rest.get(
-    `${testEnv.apiUrl}/apps/:id/service_definitions`,
-    (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
-      return res(ctx.json({ _embedded: { service_definitions: [] } }));
-    },
-  ),
-  rest.post(`${testEnv.apiUrl}/accounts`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.get(`${testEnv.apiUrl}/apps/:id/service_definitions`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { service_definitions: [] } }));
+  }),
+  rest.post(`${testEnv.apiUrl}/accounts`, (_, res, ctx) => {
     return res(ctx.json(testAccount));
   }),
   rest.patch(`${testEnv.apiUrl}/accounts/:id`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
     return res(
       ctx.json({
         ...testAccount,
@@ -493,10 +377,6 @@ const apiHandlers = [
   rest.post(
     `${testEnv.apiUrl}/accounts/:envId/databases`,
     async (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
-
       const data = await req.json();
       return res(
         ctx.json(
@@ -520,11 +400,7 @@ const apiHandlers = [
       );
     },
   ),
-  rest.get(`${testEnv.apiUrl}/accounts/:envId/operations`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.get(`${testEnv.apiUrl}/accounts/:envId/operations`, (_, res, ctx) => {
     return res(
       ctx.json({
         _embedded: { operations: [testScanOperation, testDatabaseOp] },
@@ -532,10 +408,6 @@ const apiHandlers = [
     );
   }),
   rest.post(`${testEnv.apiUrl}/accounts/:envId/apps`, async (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
     const data = await req.json();
     return res(
       ctx.json({
@@ -553,16 +425,10 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/configurations/:id`, (_, res, ctx) => {
     return res(ctx.json(testConfiguration));
   }),
-  rest.get(`${testEnv.apiUrl}/code_scan_results/:id`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
+  rest.get(`${testEnv.apiUrl}/code_scan_results/:id`, (_, res, ctx) => {
     return res(ctx.json(testCodeScanResult));
   }),
-  rest.get(`${testEnv.apiUrl}/database_images`, (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
+  rest.get(`${testEnv.apiUrl}/database_images`, (_, res, ctx) => {
     return res(
       ctx.json({
         _embedded: {
@@ -571,67 +437,42 @@ const apiHandlers = [
       }),
     );
   }),
-  rest.post(`${testEnv.apiUrl}/services/:id/vhosts`, async (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.post(`${testEnv.apiUrl}/services/:id/vhosts`, async (_, res, ctx) => {
     return res(ctx.json(testEndpoint));
   }),
-  rest.post(
-    `${testEnv.apiUrl}/vhosts/:id/operations`,
-    async (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
-
-      return res(
-        ctx.json(
-          defaultOperationResponse({
-            id: createId(),
-            type: "provision",
-            status: "succeeded",
-            _links: {
-              resource: { href: `${testEnv.apiUrl}/vhosts/${testEndpoint.id}` },
-              account: testApp._links.account,
-              code_scan_result: { href: "" },
-              self: { href: "" },
-              ssh_portal_connections: { href: "" },
-              ephemeral_sessions: { href: "" },
-              logs: { href: "" },
-              user: { href: "" },
-            },
-          }),
-        ),
-      );
-    },
-  ),
-  rest.get(`${testEnv.apiUrl}/active_plans`, async (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
+  rest.post(`${testEnv.apiUrl}/vhosts/:id/operations`, async (_, res, ctx) => {
+    return res(
+      ctx.json(
+        defaultOperationResponse({
+          id: createId(),
+          type: "provision",
+          status: "succeeded",
+          _links: {
+            resource: { href: `${testEnv.apiUrl}/vhosts/${testEndpoint.id}` },
+            account: testApp._links.account,
+            code_scan_result: { href: "" },
+            self: { href: "" },
+            ssh_portal_connections: { href: "" },
+            ephemeral_sessions: { href: "" },
+            logs: { href: "" },
+            user: { href: "" },
+          },
+        }),
+      ),
+    );
+  }),
+  rest.get(`${testEnv.apiUrl}/active_plans`, async (_, res, ctx) => {
     return res(ctx.json({ _embedded: { active_plans: [testActivePlan] } }));
   }),
-  rest.put(`${testEnv.apiUrl}/active_plans/:id`, async (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
+  rest.put(`${testEnv.apiUrl}/active_plans/:id`, async (_, res, ctx) => {
     return res(ctx.json({ _embedded: { active_plan: testActivePlan } }));
   }),
-  rest.get(`${testEnv.apiUrl}/plans*`, async (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.get(`${testEnv.apiUrl}/plans*`, async (_, res, ctx) => {
     return res(
       ctx.json({ _embedded: { plans: [testPlan, testEnterprisePlan] } }),
     );
   }),
-  rest.get(`${testEnv.apiUrl}/plans/:id`, async (req, res, ctx) => {
-    if (!isValidToken(req)) {
-      return res(ctx.status(401));
-    }
-
+  rest.get(`${testEnv.apiUrl}/plans/:id`, async (_, res, ctx) => {
     return res(ctx.json({ ...testPlan }));
   }),
   rest.get(`${testEnv.apiUrl}/vhosts/:id`, (_, res, ctx) => {
