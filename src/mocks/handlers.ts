@@ -237,19 +237,13 @@ const apiHandlers = [
       }),
     );
   }),
-  rest.get(
-    `${testEnv.apiUrl}/organizations/:id/operations`,
-    (req, res, ctx) => {
-      if (!isValidToken(req)) {
-        return res(ctx.status(401));
-      }
-      return res(
-        ctx.json({
-          _embedded: { operations: [] },
-        }),
-      );
-    },
-  ),
+  rest.get(`${testEnv.apiUrl}/organizations/:id/operations`, (_, res, ctx) => {
+    return res(
+      ctx.json({
+        _embedded: { operations: [] },
+      }),
+    );
+  }),
   rest.get(`${testEnv.apiUrl}/operations/:id`, (req, res, ctx) => {
     const op = testOperations.find((op) => `${op.id}` === req.params.id);
     if (!op) {

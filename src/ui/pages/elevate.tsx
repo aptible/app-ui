@@ -12,7 +12,7 @@ import {
 import { useLoader, useLoaderSuccess } from "@app/fx";
 import { resetRedirectPath } from "@app/redirect-path";
 import { forgotPassUrl, homeUrl } from "@app/routes";
-import { selectJWTToken } from "@app/token";
+import { selectCurrentUser } from "@app/users";
 
 import { HeroBgLayout } from "../layouts";
 import {
@@ -27,7 +27,7 @@ import {
 export const ElevatePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector(selectJWTToken);
+  const user = useSelector(selectCurrentUser);
   const [params] = useSearchParams();
   const redirect = params.get("redirect");
 
