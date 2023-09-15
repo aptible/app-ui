@@ -267,10 +267,10 @@ export const SupportPage = () => {
                 <div>
                   {attachedFiles?.map((file) => {
                     return (
-                      <div key={file.token}>
+                      <div className="last:pb-2" key={file.token}>
                         {file.filename}
                         <span
-                          className="ml-1 cursor-pointer"
+                          className="ml-1 cursor-pointer hover:underline"
                           style={{ color: "#AD1A1A" }}
                           onClick={() => {
                             const newFiles = attachedFiles.filter(
@@ -348,7 +348,7 @@ export const SupportPage = () => {
                     <div className="ml-2">
                       <p>
                         Low
-                        <span className="text-sm text-slate-500 ml-2">
+                        <span className="text-base text-gray-500 ml-2">
                           (You have a general development question, or want to
                           request a feature.)
                         </span>
@@ -359,7 +359,7 @@ export const SupportPage = () => {
                     <div className="ml-2">
                       <p>
                         Normal
-                        <span className="text-sm text-slate-500 ml-2">
+                        <span className="text-base text-gray-500 ml-2">
                           (Non-critical functions of your application are
                           behaving abnormally, or you have a time-sensitive
                           development question.)
@@ -371,7 +371,7 @@ export const SupportPage = () => {
                     <div className="ml-2">
                       <p>
                         High
-                        <span className="text-sm text-slate-500 ml-2">
+                        <span className="text-base text-gray-500 ml-2">
                           (Important functions of your production application
                           are impaired or degraded.)
                         </span>
@@ -382,7 +382,7 @@ export const SupportPage = () => {
                     <div className="ml-2">
                       <p>
                         Urgent
-                        <span className="text-sm text-slate-500 ml-2">
+                        <span className="text-base text-gray-500 ml-2">
                           (Your business is significantly impacted. Important
                           functions of your production application are
                           unavailable.)
