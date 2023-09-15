@@ -284,3 +284,6 @@ export const createMetricDrainUrl = (envId = "") =>
 export const CREATE_LOG_DRAIN_PATH = "/log-drains/create";
 export const createLogDrainUrl = (envId = "") =>
   `${CREATE_LOG_DRAIN_PATH}${envId ? `?environment_id=${envId}` : ""}`;
+
+export const SUPPORT_URL = "/support";
+export const supportUrl = () => SUPPORT_URL;

@@ -228,9 +228,9 @@ api.use(sentryErrorHandler);
 api.use(expiredToken);
 api.use(requestMonitor());
 api.use(aborter);
-api.use(halEntityParser);
-api.use(api.routes());
 api.use(requestApi);
+api.use(api.routes());
+api.use(halEntityParser);
 api.use(tokenMdw);
 api.use(fetcher());
 
