@@ -272,7 +272,7 @@ export const SupportPage = () => {
                         <span
                           className="ml-1 cursor-pointer"
                           style={{ color: "#AD1A1A" }}
-                          onKeyUp={() => {
+                          onClick={() => {
                             const newFiles = attachedFiles.filter(
                               (f) => file.token !== f.token,
                             );
