@@ -239,7 +239,7 @@ const planSelectors = planSlice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_PLAN_NAME],
 );
 
-const initPlan = defaultPlan;
+const initPlan = defaultPlan();
 const mustPlan = mustSelectEntity(initPlan);
 
 export const selectPlanById = mustPlan(planSelectors.selectById);
