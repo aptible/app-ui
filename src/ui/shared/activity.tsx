@@ -332,10 +332,11 @@ export function ActivityByApp({ appId }: { appId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value });
 
+  const resourceIds = useMemo(() => [appId], [appId]);
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds: [appId],
+      resourceIds,
     }),
   );
 
@@ -370,10 +371,14 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value });
 
+  const resourceIds = useMemo(
+    () => [dbId, db.serviceId].filter(Boolean),
+    [dbId, db.serviceId],
+  );
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds: [dbId, db.serviceId],
+      resourceIds,
     }),
   );
 
@@ -404,10 +409,11 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value });
 
+  const resourceIds = useMemo(() => [enpId], [enpId]);
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds: [enpId],
+      resourceIds,
     }),
   );
 

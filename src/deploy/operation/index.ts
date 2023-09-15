@@ -221,8 +221,8 @@ export const selectOperationById = must(selectors.selectById);
 const { selectTableAsList } = selectors;
 export const selectOperationsAsList = createSelector(
   selectTableAsList,
-  (_: AppState, props: { limit?: number }) => props,
-  (ops, { limit }) =>
+  (_: AppState, props: { limit?: number }) => props.limit,
+  (ops, limit) =>
     ops
       .sort((a, b) => {
         return (
