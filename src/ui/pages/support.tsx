@@ -278,6 +278,12 @@ export const SupportPage = () => {
                             );
                             setAttachedFiles(newFiles);
                           }}
+                          onKeyUp={() => {
+                            const newFiles = attachedFiles.filter(
+                              (f) => file.token !== f.token,
+                            );
+                            setAttachedFiles(newFiles);
+                          }}
                         >
                           Remove
                         </span>
