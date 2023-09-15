@@ -8,9 +8,9 @@ import { timeBetween } from "@app/date";
 import {
   cancelAppOpsPoll,
   createEndpointOperation,
-  fetchAllApps,
   fetchAllEnvOps,
   fetchApp,
+  fetchApps,
   fetchConfiguration,
   fetchDatabasesByEnvId,
   fetchEndpointsByAppId,
@@ -38,7 +38,7 @@ import {
   selectLatestProvisionOp,
   selectLatestScanOp,
 } from "@app/deploy";
-import { useCache, useLoader, useQuery } from "@app/fx";
+import { useLoader, useQuery } from "@app/fx";
 import { batchActions, resetLoaderById, selectLoaderById } from "@app/fx";
 import {
   deployProject,
@@ -54,20 +54,22 @@ import {
   createProjectGitStatusUrl,
   environmentAppsUrl,
 } from "@app/routes";
-import { fetchSSHKeys } from "@app/ssh-keys";
 import {
   AppState,
   DeployApp,
   DeployDatabase,
   DeployEndpoint,
   DeployOperation,
-  HalEmbedded,
   OperationStatus,
 } from "@app/types";
-import { selectCurrentUser } from "@app/users";
 
 import { useSearchParams } from "react-router-dom";
-import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
+import {
+  useEnvOpsPoller,
+  useLatestCodeResults,
+  useProjectOps,
+  useSshKeyRequired,
+} from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
   AddSSHKeyForm,
@@ -78,7 +80,6 @@ import {
   ButtonLink,
   Code,
   CreateAppEndpointSelector,
-  ErrorResources,
   ExternalLink,
   IconArrowRight,
   IconChevronDown,
@@ -113,7 +114,7 @@ export const CreateProjectFromAccountSetupPage = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchAllApps());
+    dispatch(fetchApps());
   }, []);
 
   useEffect(() => {
@@ -193,30 +194,17 @@ export const CreateProjectGitPage = () => {
   const [params] = useSearchParams();
   const stackId = params.get("stack_id") || "";
   const envId = params.get("environment_id") || "";
-  const queryParam = `stack_id=${stackId}&environment_id=${envId}`;
-  const user = useSelector(selectCurrentUser);
-  const query = useCache<HalEmbedded<{ ssh_keys: any[] }>>(
-    fetchSSHKeys({ userId: user.id }),
-  );
-
-  if (query.isInitialLoading) return <Loading />;
-  if (query.isError) return <ErrorResources message={query.message} />;
-  if (!query.data) return <div>Could not fetch SSH keys</div>;
-
-  if (query.data._embedded.ssh_keys.length === 0) {
-    return <Navigate to={createProjectAddKeyUrl(queryParam)} replace />;
-  }
-
+  const queryParam =
+    stackId === "" && envId === ""
+      ? ""
+      : `stack_id=${stackId}&environment_id=${envId}`;
   return <Navigate to={createProjectAddNameUrl(queryParam)} replace />;
 };
 
 export const CreateProjectAddKeyPage = () => {
+  const { appId = "" } = useParams();
   const navigate = useNavigate();
-  const [params] = useSearchParams();
-  const stackId = params.get("stack_id") || "";
-  const envId = params.get("environment_id") || "";
-  const queryParam = `stack_id=${stackId}&environment_id=${envId}`;
-  const url = createProjectAddNameUrl(queryParam);
+  const url = createProjectGitPushUrl(appId);
   const onSuccess = () => navigate(url);
 
   return (
@@ -228,7 +216,7 @@ export const CreateProjectAddKeyPage = () => {
         </p>
       </div>
 
-      <ProgressProject cur={-1} next={url} />
+      <ProgressProject cur={2} prev={createProjectAddNameUrl()} next={url} />
 
       <Box className="w-full max-w-[700px] mx-auto">
         <AddSSHKeyForm onSuccess={onSuccess} />
@@ -318,6 +306,7 @@ const starterTemplateOptions: StarterOption[] = [
 export const CreateProjectGitPushPage = () => {
   const navigate = useNavigate();
   const { appId = "" } = useParams();
+  useSshKeyRequired(createProjectAddKeyUrl(appId));
 
   const [starter, setStarter] = useState<StarterOption>();
   useQuery(fetchApp({ id: appId }));
@@ -355,7 +344,7 @@ export const CreateProjectGitPushPage = () => {
 
       <ProgressProject
         cur={2}
-        prev={createProjectAddKeyUrl()}
+        prev={createProjectAddKeyUrl(appId)}
         next={createProjectGitSettingsUrl(appId, query)}
       />
 

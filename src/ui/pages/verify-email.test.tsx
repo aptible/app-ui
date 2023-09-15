@@ -92,9 +92,9 @@ describe("Verify email page", () => {
         `${testEnv.authUrl}/users/:userId/email_verification_challenges`,
         (_, res, ctx) => {
           return res(
-            ctx.status(401),
+            ctx.status(400),
             ctx.json({
-              code: 401,
+              code: 400,
               exception_context: {},
               error: "invalid_credentials",
               message: "mock error message",

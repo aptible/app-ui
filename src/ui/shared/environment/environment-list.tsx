@@ -1,6 +1,6 @@
 import { prettyEnglishDate, timeAgo } from "@app/date";
 import {
-  fetchAllEnvironments,
+  fetchEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
   selectEnvironmentsForTableSearch,
@@ -203,7 +203,7 @@ const environmentHeaders = [
 ];
 
 export function EnvironmentListByStack({ stackId }: { stackId: string }) {
-  const query = useQuery(fetchAllEnvironments());
+  const query = useQuery(fetchEnvironments());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -252,7 +252,7 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
   );
 }
 export function EnvironmentList() {
-  const query = useQuery(fetchAllEnvironments());
+  const query = useQuery(fetchEnvironments());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {

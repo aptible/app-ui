@@ -1,11 +1,4 @@
-import {
-  PaginateProps,
-  api,
-  cacheShortTimer,
-  cacheTimer,
-  combinePages,
-  thunks,
-} from "@app/api";
+import { api, cacheMinTimer, cacheShortTimer } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createAction,
@@ -241,16 +234,10 @@ export const selectAppToServicesMap = createSelector(
 
 export const fetchService = api.get<{ id: string }>("/services/:id");
 
-export const fetchServices = api.get<PaginateProps>(
-  "/services?page=:page&per_page=5000",
-  {
-    saga: cacheTimer(),
-  },
-);
-export const fetchAllServices = thunks.create(
-  "fetch-all-services",
-  combinePages(fetchServices),
-);
+export const fetchServices = api.get("/services?per_page=5000", {
+  saga: cacheMinTimer(),
+});
+
 export const fetchEnvironmentServices = api.get<{ id: string }>(
   "/accounts/:id/services",
 );

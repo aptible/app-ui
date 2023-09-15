@@ -37,8 +37,14 @@ export const login = thunks.create<CreateTokenPayload>(
       return;
     }
 
-    const elevateCtx = yield* call(elevateToken.run, elevateToken(ctx.payload));
-    log(elevateCtx);
+    // only elevate token if it's a normal password login, otp/u2f won't work
+    if (!ctx.payload.u2f && ctx.payload.otpToken === "") {
+      const elevateCtx = yield* call(
+        elevateToken.run,
+        elevateToken(ctx.payload),
+      );
+      log(elevateCtx);
+    }
 
     yield* next();
 
