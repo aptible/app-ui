@@ -22,6 +22,7 @@ import { handleValidator } from "@app/validator";
 import { useValidator } from "../hooks";
 import {
   Banner,
+  BannerMessages,
   Box,
   ButtonAdmin,
   ButtonDestroy,
@@ -99,6 +100,8 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
           checked={confirm}
           onChange={(e) => setConfirm(e.currentTarget.checked)}
         />
+
+        <BannerMessages {...loader} />
 
         <hr />
 
