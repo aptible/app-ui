@@ -30,6 +30,42 @@ import {
   SelectOption,
 } from "../shared";
 
+const DrainTypeNotice = ({
+  drainType,
+  allowPhi,
+  envHandle,
+}: { drainType: LogDrainType; allowPhi: boolean; envHandle: string }) => {
+  if (drainType === "logdna") {
+    return <Banner variant="info">Signs BAAs</Banner>;
+  }
+
+  if (drainType === "papertrail") {
+    return <Banner variant="info">Signs BAAs</Banner>;
+  }
+
+  if (drainType === "sumologic") {
+    return <Banner variant="info">Signs BAAs</Banner>;
+  }
+
+  if (drainType === "insightops") {
+    return <Banner variant="info">Signs BAAs</Banner>;
+  }
+
+  if (drainType === "datadog") {
+    return <Banner variant="info">Signs BAAs</Banner>;
+  }
+
+  if (drainType === "elasticsearch_database") {
+    if (allowPhi) {
+      return <Banner variant="info">{envHandle} is safe for PHI</Banner>;
+    } else {
+      return <Banner variant="warning">{envHandle} is not safe for PHI</Banner>;
+    }
+  }
+
+  return null;
+};
+
 const validators = {
   // all
   handle: (p: CreateLogDrainProps) => {
@@ -224,6 +260,12 @@ export const CreateLogDrainPage = () => {
               value={drainType}
             />
           </FormGroup>
+
+          <DrainTypeNotice
+            drainType={drainType}
+            allowPhi={env.type === "production"}
+            envHandle={env.handle}
+          />
 
           <div className="flex flex-col">
             <Label>Sources</Label>
