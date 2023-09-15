@@ -65,8 +65,8 @@ function tableSelectors<Entity extends AnyState = AnyState, S = any>(
   );
   const selectByIds: any = createSelector(
     selectTable,
-    (_: S, p: PropIds) => p,
-    findByIds,
+    (_: S, p: PropIds) => p.ids,
+    (tbl, ids) => findByIds(tbl, { ids }),
   );
 
   return {

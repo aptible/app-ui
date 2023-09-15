@@ -28,7 +28,7 @@ export const PlansPage = () => {
   );
 
   const selectedPlan = useSelector((s: AppState) =>
-    selectPlanById(s, { id: activePlan?.planId ?? "" }),
+    selectPlanById(s, { id: activePlan.planId }),
   );
 
   return (
