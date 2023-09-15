@@ -25,6 +25,7 @@ import {
 
 import {
   Banner,
+  BannerMessages,
   Box,
   BoxGroup,
   Button,
@@ -164,6 +165,7 @@ const AppNameChange = ({ app }: AppProps) => {
 
   return (
     <form onSubmit={onSubmitForm}>
+      <BannerMessages className="my-2" {...loader}/>
       <FormGroup label="App Name" htmlFor="input-name">
         <Input
           name="app-handle"
@@ -173,7 +175,7 @@ const AppNameChange = ({ app }: AppProps) => {
           autoComplete="name"
           id="input-name"
         />
-
+          
         {handle !== app.handle && drains.length ? (
           <Banner variant="info" showIcon={false} className="mt-4">
             <p>

@@ -462,4 +462,8 @@ export const updateApp = api.put<UpdateApp>("/apps/:id", function* (ctx, next) {
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield* next();
+
+  ctx.loader = {
+    message: 'Saved changes successfully!'
+  }
 });
