@@ -90,7 +90,7 @@ yarn fmt
 ## Sites
 
 - `prod` https://app.aptible.com
-- `staging` https://cloud-ui-main.aptible-staging.com
+- `staging` https://app-sbx-main.aptible-sandbox.com
 
 ## Continuous Deployment
 
