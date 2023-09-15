@@ -1,4 +1,11 @@
 import { api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
+import {
+  call,
+  put,
+  setLoaderError,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -12,13 +19,6 @@ import {
   ProvisionableStatus,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
-import {
-  call,
-  put,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "saga-query";
 import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
@@ -236,7 +236,7 @@ export const logDrainReducers = createReducerMap(slice);
 export const fetchLogDrains = api.get(
   "/log_drains?per_page=5000",
   {
-    saga: cacheMinTimer(),
+    supervisor: cacheMinTimer(),
   },
   function* (ctx, next) {
     yield* next();
@@ -250,7 +250,7 @@ export const fetchLogDrains = api.get(
 export const fetchEnvLogDrains = api.get<{ id: string }>(
   "/accounts/:id/log_drains",
   {
-    saga: cacheTimer(),
+    supervisor: cacheTimer(),
   },
 );
 
@@ -332,23 +332,24 @@ export const provisionLogDrain = thunks.create<CreateLogDrainProps>(
   function* (ctx, next) {
     yield* put(setLoaderStart({ id: ctx.key }));
 
-    const mdCtx = yield* call(createLogDrain.run, createLogDrain(ctx.payload));
+    const mdCtx = yield* call(() =>
+      createLogDrain.run(createLogDrain(ctx.payload)),
+    );
     if (!mdCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: mdCtx.json.data.message }),
-      );
+      const data = mdCtx.json.data as any;
+      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
       return;
     }
 
     const logDrainId = mdCtx.json.data.id;
-    const opCtx = yield* call(
-      createLogDrainOperation.run,
-      createLogDrainOperation({ id: `${logDrainId}` }),
+    const opCtx = yield* call(() =>
+      createLogDrainOperation.run(
+        createLogDrainOperation({ id: `${logDrainId}` }),
+      ),
     );
     if (!opCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
-      );
+      const data = opCtx.json.data as any;
+      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
       return;
     }
 

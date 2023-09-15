@@ -2,12 +2,12 @@ import {
   fetchVpnTunnelsByStackId,
   selectVpnTunnelByStackId,
 } from "@app/deploy";
+import { useQuery } from "@app/fx";
 import { AppState } from "@app/types";
 import classNames from "classnames";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { useQuery } from "saga-query/react";
 import {
   Box,
   Button,

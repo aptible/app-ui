@@ -1,7 +1,7 @@
 import { api, cacheMinTimer, thunks } from "@app/api";
 import {
-  all,
   call,
+  parallel,
   poll,
   put,
   select,
@@ -312,7 +312,7 @@ export const selectAppsCountByStack = createSelector(
 export const fetchApps = api.get(
   "/apps?per_page=5000&no_embed=true",
   {
-    saga: cacheMinTimer(),
+    supervisor: cacheMinTimer(),
   },
   function* (ctx, next) {
     yield* next();
@@ -335,29 +335,30 @@ export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
 export const pollAppOperations = api.get<AppIdProp>(
   ["/apps/:id/operations", "poll"],
   {
-    saga: poll(10 * 1000, `${cancelAppOpsPoll}`),
+    supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`),
   },
 );
 
 export const pollAppAndServiceOperations = thunks.create<AppIdProp>(
   "app-service-op-poll",
-  { saga: poll(10 * 1000, `${cancelAppOpsPoll}`) },
+  { supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`) },
   function* (ctx, next) {
     yield* put(setLoaderStart({ id: ctx.key }));
 
-    const services = yield* select(selectServicesByAppId, {
-      appId: ctx.payload.id,
-    });
-    const serviceOps = services.map((service) =>
-      call(
-        fetchServiceOperations.run,
-        fetchServiceOperations({ id: service.id }),
-      ),
+    const services = yield* select((s: AppState) =>
+      selectServicesByAppId(s, {
+        appId: ctx.payload.id,
+      }),
     );
-    yield* all([
-      call(fetchAppOperations.run, fetchAppOperations(ctx.payload)),
+    const serviceOps = services.map(
+      (service) => () =>
+        fetchServiceOperations.run(fetchServiceOperations({ id: service.id })),
+    );
+    const group = yield* parallel([
+      () => fetchAppOperations.run(fetchAppOperations(ctx.payload)),
       ...serviceOps,
     ]);
+    yield* group;
 
     yield* next();
     yield* put(setLoaderSuccess({ id: ctx.key }));
@@ -488,18 +489,22 @@ export const deprovisionApp = thunks.create<{
   appId: string;
 }>("deprovision-app", function* (ctx, next) {
   const { appId } = ctx.payload;
-  yield* select(selectAppById, { id: appId });
+  yield* select((s: AppState) => selectAppById(s, { id: appId }));
 
-  const deprovisionCtx = yield* call(
-    createAppOperation.run,
-    createAppOperation({
-      type: "deprovision",
-      appId,
-    }),
+  const deprovisionCtx = yield* call(() =>
+    createAppOperation.run(
+      createAppOperation({
+        type: "deprovision",
+        appId,
+      }),
+    ),
   );
 
-  if (!deprovisionCtx.json.ok) return;
-  yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
+  if (!deprovisionCtx.json.ok) {
+    return;
+  }
+  const id = `${deprovisionCtx.json.data.id}`;
+  yield* call(() => waitForOperation({ id }));
   yield* next();
 });
 

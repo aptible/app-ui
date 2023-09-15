@@ -197,7 +197,7 @@ export const fetchEnvironmentById = api.get<{ id: string }>("/accounts/:id");
 export const fetchEnvironments = api.get(
   "/accounts?per_page=5000&no_embed=true&metrics[]=app_count&metrics[]=database_count",
   {
-    saga: cacheMinTimer(),
+    supervisor: cacheMinTimer(),
   },
   function* (ctx, next) {
     yield* next();
@@ -323,10 +323,12 @@ interface EnvPatch {
 
 export const updateDeployEnvironmentStatus = api.patch<EnvPatch>(
   "/accounts/:id",
-  { saga: latest },
+  { supervisor: latest },
   function* (ctx, next) {
     const { id, status } = ctx.payload;
-    const env = yield* select(selectEnvironmentById, { id });
+    const env = yield* select((s: AppState) =>
+      selectEnvironmentById(s, { id }),
+    );
     if (env.onboardingStatus === status) {
       return;
     }
@@ -352,7 +354,9 @@ export const createDeployEnvironment = api.post<
   DeployEnvironmentResponse
 >("/accounts", function* (ctx, next) {
   const { name, stackId, orgId } = ctx.payload;
-  const stack = yield* select(selectStackById, { id: stackId });
+  const stack = yield* select((s: AppState) =>
+    selectStackById(s, { id: stackId }),
+  );
   const body: Record<string, string> = {
     handle: name,
     organization_id: orgId,

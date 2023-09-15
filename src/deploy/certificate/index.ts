@@ -1,5 +1,5 @@
+import { leading, poll } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { createThrottle, poll } from "saga-query";
 
 import { PaginateProps, api, combinePages, thunks } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
@@ -182,7 +182,7 @@ export const certificateReducers = createReducerMap(slice);
 
 export const cancelPollCert = createAction("cancel-poll-cert");
 export const pollCert = api.get<{ id: string }>(["/certificates/:id", "poll"], {
-  saga: poll(5 * 1000, `${cancelPollCert}`),
+  supervisor: poll(5 * 1000, `${cancelPollCert}`),
 });
 export const fetchAppsByCertId = api.get<{ certId: string }>(
   "/certificates/:certId/apps",
@@ -205,7 +205,7 @@ export const fetchCertificatesByEnvironmentId = api.get<
 
 export const fetchAllCertsByEnvId = thunks.create<{ id: string }>(
   "fetch-all-certs-by-env",
-  { saga: createThrottle(5 * 1000) },
+  { supervisor: leading },
   combinePages(fetchCertificatesByEnvironmentId),
 );
 
@@ -217,7 +217,9 @@ export interface CreateCertProps {
 
 export const createCertificate = api.post<
   CreateCertProps,
-  DeployCertificateResponse
+  DeployCertificateResponse,
+  // TODO: shouldn't need to provide this
+  { message: string }
 >("/accounts/:envId/certificates", function* (ctx, next) {
   const body = JSON.stringify({
     certificate_body: ctx.payload.cert,

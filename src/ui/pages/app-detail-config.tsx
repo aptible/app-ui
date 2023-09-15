@@ -9,13 +9,13 @@ import {
   selectAppById,
   selectAppConfigById,
 } from "@app/deploy";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { appActivityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployApp } from "@app/types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import { useEnvEditor, useLatestCodeResults } from "../hooks";
 import {
   AppConfigView,

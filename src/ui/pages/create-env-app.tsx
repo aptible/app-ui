@@ -6,6 +6,7 @@ import {
   selectEnvironmentById,
   selectStackById,
 } from "@app/deploy";
+import { useApi, useLoaderSuccess, useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import {
   appDeployGetStartedUrl,
@@ -21,7 +22,6 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
-import { useApi, useLoaderSuccess, useQuery } from "saga-query/react";
 import { AppSidebarLayout } from "../layouts";
 import {
   BannerMessages,

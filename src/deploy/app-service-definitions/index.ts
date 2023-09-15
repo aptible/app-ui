@@ -78,7 +78,7 @@ export const selectServiceDefinitionsByAppId = createSelector(
 
 export const fetchServiceDefinitionsByAppId = api.get<{ appId: string }>(
   "/apps/:appId/service_definitions",
-  { saga: cacheTimer() },
+  { supervisor: cacheTimer() },
 );
 
 export const deleteServiceDefinition = api.delete<{

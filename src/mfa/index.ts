@@ -7,14 +7,7 @@ import {
   createReducerMap,
   createTable,
 } from "@app/slice-helpers";
-import {
-  ApiGen,
-  AppState,
-  AuthApiCtx,
-  LinkResponse,
-  Otp,
-  U2fDevice,
-} from "@app/types";
+import { AppState, AuthApiCtx, LinkResponse, Otp, U2fDevice } from "@app/types";
 
 const defaultOtp = (o: Partial<Otp> = {}): Otp => {
   return {
@@ -129,7 +122,7 @@ export const fetchOtpCodes = authApi.get<{ otpId: string }>(
 
 export const setupOtp = authApi.post<SetupOtp, OtpResponse>(
   "/users/:userId/otp_configurations",
-  function* onOtp(ctx, next): ApiGen {
+  function* onOtp(ctx, next) {
     const curOtp = yield* select(selectOtp);
     if (curOtp.id) {
       return;

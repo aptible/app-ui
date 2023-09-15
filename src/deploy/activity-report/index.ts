@@ -87,7 +87,7 @@ export const selectActivityReportsByEnvId = createSelector(
 export const fetchEnvActivityReports = api.get<{ id: string }>(
   "/accounts/:id/activity_reports",
   {
-    saga: cacheTimer(),
+    supervisor: cacheTimer(),
   },
 );
 export const downloadActivityReports = api.get<

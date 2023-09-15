@@ -10,13 +10,13 @@ import {
   selectServiceById,
   updateEndpoint,
 } from "@app/deploy";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { endpointDetailActivityUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { ipValidator, portValidator } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,

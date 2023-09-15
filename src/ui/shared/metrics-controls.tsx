@@ -4,13 +4,6 @@ import { IconHamburger, IconMetrics } from "./icons";
 
 export type MetricTabTypes = "table" | "chart";
 
-export const metricHorizonAsSeconds = (metricHorizon: MetricHorizons) =>
-  ({
-    "1h": 60 * 60,
-    "1d": 60 * 60 * 24,
-    "1w": 60 * 60 * 24 * 7,
-  })[metricHorizon];
-
 export const MetricsViewControls = ({
   viewMetricTab,
   setViewMetricTab,

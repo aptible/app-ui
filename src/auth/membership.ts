@@ -1,8 +1,8 @@
 import { authApi, thunks } from "@app/api";
 import { selectEnv } from "@app/env";
 import {
-  all,
   call,
+  parallel,
   put,
   select,
   setLoaderError,
@@ -10,7 +10,7 @@ import {
   setLoaderSuccess,
 } from "@app/fx";
 import { extractIdFromLink } from "@app/hal";
-import { HalEmbedded } from "@app/types";
+import { AuthApiError, HalEmbedded } from "@app/types";
 
 export const createMembership = authApi.post<{ id: string; userUrl: string }>(
   "/roles/:id/memberships",
@@ -26,7 +26,8 @@ export const deleteMembership = authApi.delete<{ id: string }>(
 );
 const fetchMembershipsByRole = authApi.get<
   { roleId: string },
-  HalEmbedded<{ memberships: any[] }>
+  HalEmbedded<{ memberships: any[] }>,
+  AuthApiError
 >("/roles/:roleId/memberships", authApi.cache());
 
 export const updateUserMemberships = thunks.create<{
@@ -42,7 +43,7 @@ export const updateUserMemberships = thunks.create<{
   const userUrl = `${env.authUrl}/users/${userId}`;
 
   const addReqs = add.map((roleId) =>
-    call(createMembership.run, createMembership({ userUrl, id: roleId })),
+    call(() => createMembership.run(createMembership({ userUrl, id: roleId }))),
   );
 
   // We have the role but in order to remove a role associated with a user
@@ -53,9 +54,8 @@ export const updateUserMemberships = thunks.create<{
   // memberships for a role and then filter by the user.
   const rmReqs: any[] = [];
   for (let i = 0; i < remove.length; i += 1) {
-    const memberships = yield* call(
-      fetchMembershipsByRole.run,
-      fetchMembershipsByRole({ roleId: remove[i] }),
+    const memberships = yield* call(() =>
+      fetchMembershipsByRole.run(fetchMembershipsByRole({ roleId: remove[i] })),
     );
     if (!memberships.json.ok) {
       continue;
@@ -64,14 +64,14 @@ export const updateUserMemberships = thunks.create<{
     const membership = memberships.json.data._embedded.memberships.find(
       (m) => userId === extractIdFromLink(m._links.user),
     );
-    const cl = call(
-      deleteMembership.run,
-      deleteMembership({ id: membership.id }),
+    const cl = call(() =>
+      deleteMembership.run(deleteMembership({ id: membership.id })),
     );
     rmReqs.push(cl);
   }
 
-  const results: any[] = yield* all([...addReqs, ...rmReqs]);
+  const group = yield* parallel([...addReqs, ...rmReqs]);
+  const results: any[] = yield* group;
 
   yield* next();
 

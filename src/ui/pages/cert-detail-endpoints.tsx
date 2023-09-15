@@ -1,6 +1,6 @@
 import { fetchEndpointsByCertId } from "@app/deploy";
+import { useQuery } from "@app/fx";
 import { useParams } from "react-router";
-import { useQuery } from "saga-query/react";
 import { EndpointsByCert } from "../shared";
 
 export const CertDetailEndpointsPage = () => {

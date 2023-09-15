@@ -1,3 +1,4 @@
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import {
   fetchInvitations,
   resetInvitation,
@@ -7,7 +8,6 @@ import {
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { AppState } from "@app/types";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import {
   BannerMessages,
   Button,

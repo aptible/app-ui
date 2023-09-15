@@ -10,6 +10,7 @@ import {
   selectPlanByActiveId,
 } from "@app/deploy";
 import { selectEnv } from "@app/env";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { homeUrl, logoutUrl, plansUrl } from "@app/routes";
 import { AppState } from "@app/types";
@@ -25,7 +26,6 @@ import {
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import { useValidator } from "../hooks";
 import { HeroBgView } from "../layouts";
 import {

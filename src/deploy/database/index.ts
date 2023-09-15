@@ -2,8 +2,8 @@ import { ThunkCtx, api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import {
   FetchJson,
   Payload,
-  all,
   call,
+  parallel,
   poll,
   put,
   select,
@@ -356,7 +356,7 @@ export const selectDatabasesCountByStack = createSelector(
 export const fetchDatabases = api.get(
   "/databases?per_page=5000&no_embed=true",
   {
-    saga: cacheMinTimer(),
+    supervisor: cacheMinTimer(),
   },
   function* (ctx, next) {
     yield* next();
@@ -445,26 +445,26 @@ export const provisionDatabaseList = thunks.create<{
   const { dbs, envId } = ctx.payload;
   const id = ctx.key;
   yield* put(setLoaderStart({ id }));
-  const results = yield* all(
+  const group = yield* parallel(
     dbs.map((db) => {
-      return call(
-        provisionDatabase.run,
-        provisionDatabase(mapCreatorToProvision(envId, db)),
-      );
+      return () => provisionDatabase.run(provisionDatabase(mapCreatorToProvision(envId, db)));
     }),
   );
+  const results = yield* group;
 
   const errors = [];
   for (let i = 0; i < results.length; i += 1) {
     const res = results[i];
-    if (!res.json) continue;
+    if (!res.ok) continue;
+    const json = res.value.json;
+    if (!json) continue;
 
-    if (res.json.error) {
-      errors.push(res.json.error);
+    if (json.error) {
+      errors.push(json.error);
       continue;
     }
 
-    const { opCtx, dbCtx } = res.json;
+    const { opCtx, dbCtx } = json;
     if (opCtx && !opCtx.json.ok) {
       errors.push(opCtx.json.data.message);
       continue;
@@ -488,21 +488,24 @@ export const provisionDatabase = thunks.create<
   CreateDatabaseProps,
   ThunkCtx<CreateDatabaseProps, CreateDbResult>
 >("database-provision", function* (ctx, next) {
-  yield put(setLoaderStart({ id: ctx.key }));
+  yield* put(setLoaderStart({ id: ctx.key }));
 
-  const dbAlreadyExists = yield* select(selectDatabaseByHandle, {
-    handle: ctx.payload.handle,
-    envId: ctx.payload.envId,
-  });
+  const dbAlreadyExists = yield* select((s: AppState) =>
+    selectDatabaseByHandle(s, {
+      handle: ctx.payload.handle,
+      envId: ctx.payload.envId,
+    }),
+  );
 
   let dbId = dbAlreadyExists.id;
   let dbCtx = null;
   if (!hasDeployDatabase(dbAlreadyExists)) {
-    dbCtx = yield* call(createDatabase.run, createDatabase(ctx.payload));
+    dbCtx = yield* call(() => createDatabase.run(createDatabase(ctx.payload)));
 
     if (!dbCtx.json.ok) {
-      const message = dbCtx.json.data.message;
-      yield put(setLoaderError({ id: ctx.key, message }));
+      const data = dbCtx.json.data as any;
+      const message = data.message;
+      yield* put(setLoaderError({ id: ctx.key, message }));
       ctx.json = {
         error: message,
         dbId,
@@ -517,7 +520,9 @@ export const provisionDatabase = thunks.create<
 
   yield* next();
 
-  const dbOps = yield* select(selectOperationsByDatabaseId, { dbId });
+  const dbOps = yield* select((s: AppState) =>
+    selectOperationsByDatabaseId(s, { dbId }),
+  );
   const alreadyProvisioned = dbOps.find((op) => op.type === "provision");
   if (alreadyProvisioned) {
     const message = `Database (${ctx.payload.handle}) already provisioned`;
@@ -536,15 +541,16 @@ export const provisionDatabase = thunks.create<
     return;
   }
 
-  const opCtx = yield* call(
-    createDatabaseOperation.run,
-    createDatabaseOperation({
-      dbId,
-      containerSize: 1024,
-      diskSize: 10,
-      type: "provision",
-      envId: ctx.payload.envId,
-    }),
+  const opCtx = yield* call(() =>
+    createDatabaseOperation.run(
+      createDatabaseOperation({
+        dbId,
+        containerSize: 1024,
+        diskSize: 10,
+        type: "provision",
+        envId: ctx.payload.envId,
+      }),
+    ),
   );
 
   ctx.json = {
@@ -555,13 +561,12 @@ export const provisionDatabase = thunks.create<
   };
 
   if (!opCtx.json.ok) {
-    yield put(
-      setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
-    );
+    const data = opCtx.json.data as any;
+    yield* put(setLoaderError({ id: ctx.key, message: data.message }));
     return;
   }
 
-  yield put(
+  yield* put(
     setLoaderSuccess({
       id: ctx.key,
       meta: { dbId, opId: opCtx.json.data.id },
@@ -622,29 +627,32 @@ export const createDatabaseOperation = api.post<
 
 export const fetchDatabaseOperations = api.get<{ id: string }>(
   "/databases/:id/operations",
-  { saga: cacheTimer() },
+  { supervisor: cacheTimer() },
   api.cache(),
 );
 
 export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
 export const pollDatabaseOperations = api.get<{ id: string }>(
   ["/databases/:id/operations", "poll"],
-  { saga: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
+  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
 );
 export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
   "db-service-op-poll",
-  { saga: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
+  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
   function* (ctx, next) {
     yield* put(setLoaderStart({ id: ctx.key }));
-    const db = yield* select(selectDatabaseById, ctx.payload);
+    const db = yield* select((s: AppState) =>
+      selectDatabaseById(s, ctx.payload),
+    );
 
-    yield* all([
-      call(fetchDatabaseOperations.run, fetchDatabaseOperations(ctx.payload)),
-      call(
-        fetchServiceOperations.run,
-        fetchServiceOperations({ id: db.serviceId }),
-      ),
+    const group = yield* parallel([
+      () => fetchDatabaseOperations.run(fetchDatabaseOperations(ctx.payload)),
+      () =>
+        fetchServiceOperations.run(
+          fetchServiceOperations({ id: db.serviceId }),
+        ),
     ]);
+    yield* group;
 
     yield* next();
     yield* put(setLoaderSuccess({ id: ctx.key }));
@@ -677,18 +685,20 @@ export const deprovisionDatabase = thunks.create<{
   dbId: string;
 }>("deprovision-database", function* (ctx, next) {
   const { dbId } = ctx.payload;
-  yield* select(selectDatabaseById, { id: dbId });
+  yield* select((s: AppState) => selectDatabaseById(s, { id: dbId }));
 
-  const deprovisionCtx = yield* call(
-    createDatabaseOperation.run,
-    createDatabaseOperation({
-      type: "deprovision",
-      dbId,
-    }),
+  const deprovisionCtx = yield* call(() =>
+    createDatabaseOperation.run(
+      createDatabaseOperation({
+        type: "deprovision",
+        dbId,
+      }),
+    ),
   );
 
   if (!deprovisionCtx.json.ok) return;
-  yield* call(waitForOperation, { id: `${deprovisionCtx.json.data.id}` });
+  const data = deprovisionCtx.json.data;
+  yield* call(() => waitForOperation({ id: `${data.id}` }));
   yield* next();
 });
 
