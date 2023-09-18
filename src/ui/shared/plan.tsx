@@ -1,7 +1,6 @@
 import { updateAndRefreshActivePlans } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { DeployActivePlan, DeployPlan, PlanName } from "@app/types";
-import { ReactElement, SyntheticEvent } from "react";
 import { useDispatch } from "react-redux";
 import { Button, ButtonLinkExternal } from "./button";
 import { IconCheckCircle } from "./icons";
@@ -23,7 +22,7 @@ const PlanButton = ({
 }: {
   available: boolean;
   contactUs: boolean;
-  onClick: (e: SyntheticEvent) => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   selected: boolean;
 }) => {
   if (contactUs) {
@@ -63,7 +62,7 @@ const PlanCostBlock = ({
 }: {
   plan: DeployPlan;
   precedingPlan?: DeployPlan;
-}): ReactElement => {
+}) => {
   return (
     <div className="flex justify-between mb-2">
       <div>
@@ -84,7 +83,7 @@ const IconLi = ({
   children,
 }: {
   children?: React.ReactNode;
-}): ReactElement => {
+}) => {
   return (
     <li>
       <div className="flex my-1 pt-2">
@@ -103,7 +102,7 @@ const BulletListForPlan = ({
 }: {
   plan: DeployPlan;
   precedingPlan?: DeployPlan;
-}): ReactElement => {
+}) => {
   if (plan.name === "starter") {
     return (
       <>
@@ -115,18 +114,18 @@ const BulletListForPlan = ({
         </div>
         <div className="flex">
           <div className="flex-1">Compute</div>
-          <div className="flex-1 text-center">-</div>
-          <div className="flex-1 text-center">3 GB</div>
+          <div className="text-center">-</div>
+          <div className="text-center">3 GB</div>
         </div>
         <div className="flex">
           <div className="flex-1">DB Storage</div>
-          <div className="flex-1 text-center">-</div>
-          <div className="flex-1 text-center">20 GB</div>
+          <div className="text-center">-</div>
+          <div className="text-center">20 GB</div>
         </div>
         <div className="flex">
           <div className="flex-1">Endpoints</div>
-          <div className="flex-1 text-center">-</div>
-          <div className="flex-1 text-center">1</div>
+          <div className="text-center">-</div>
+          <div className="text-center">1</div>
         </div>
         <ul>
           <IconLi>
@@ -143,23 +142,23 @@ const BulletListForPlan = ({
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
         <div className="flex">
           <div className="flex-1" />
-          <div className="flex-1 text-center font-semibold">Includes</div>
-          <div className="flex-1 text-center font-semibold">Available</div>
+          <div className="text-center font-semibold">Includes</div>
+          <div className="text-center font-semibold">Available</div>
         </div>
         <div className="flex">
           <div className="flex-1">Compute</div>
-          <div className="flex-1 text-center">3 GB</div>
-          <div className="flex-1 text-center">11 GB</div>
+          <div className="text-center">3 GB</div>
+          <div className="text-center">11 GB</div>
         </div>
         <div className="flex">
           <div className="flex-1">DB Storage</div>
-          <div className="flex-1 text-center">10 GB</div>
-          <div className="flex-1 text-center">60 GB</div>
+          <div className="text-center">10 GB</div>
+          <div className="text-center">60 GB</div>
         </div>
         <div className="flex">
           <div className="flex-1">Endpoints</div>
-          <div className="flex-1 text-center">1</div>
-          <div className="flex-1 text-center">3</div>
+          <div className="text-center">1</div>
+          <div className="text-center">3</div>
         </div>
         <ul>
           <IconLi>15% discount on included resources</IconLi>
@@ -179,23 +178,23 @@ const BulletListForPlan = ({
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
         <div className="flex">
           <div className="flex-1" />
-          <div className="flex-1 text-center font-semibold">Includes</div>
-          <div className="flex-1 text-center font-semibold">Available</div>
+          <div className="text-center font-semibold">Includes</div>
+          <div className="text-center font-semibold">Available</div>
         </div>
         <div className="flex">
           <div className="flex-1">Compute</div>
-          <div className="flex-1 text-center">10 GB</div>
-          <div className="flex-1 text-center">40 GB</div>
+          <div className="text-center">10 GB</div>
+          <div className="text-center">40 GB</div>
         </div>
         <div className="flex">
           <div className="flex-1">DB Storage</div>
-          <div className="flex-1 text-center">100 GB</div>
-          <div className="flex-1 text-center">200 GB</div>
+          <div className="text-center">100 GB</div>
+          <div className="text-center">200 GB</div>
         </div>
         <div className="flex">
           <div className="flex-1">Endpoints</div>
-          <div className="flex-1 text-center">4</div>
-          <div className="flex-1 text-center">20</div>
+          <div className="text-center">4</div>
+          <div className="text-center">20</div>
         </div>
         <ul>
           <IconLi>20% discount on included resources</IconLi>
@@ -215,22 +214,22 @@ const BulletListForPlan = ({
         <div className="flex">
           <div className="flex-1" />
           <div className="flex-1 text-center font-semibold">Includes</div>
-          <div className="flex-1 text-center font-semibold">Available</div>
+          <div className="text-center font-semibold">Available</div>
         </div>
         <div className="flex">
           <div className="flex-1">Compute</div>
-          <div className="flex-1 text-center">Custom</div>
-          <div className="flex-1 text-center">Unlimited</div>
+          <div className="text-center">Custom</div>
+          <div className="text-center">Unlimited</div>
         </div>
         <div className="flex">
           <div className="flex-1">DB Storage</div>
-          <div className="flex-1 text-center">Custom</div>
-          <div className="flex-1 text-center">Unlimited</div>
+          <div className="text-center">Custom</div>
+          <div className="text-center">Unlimited</div>
         </div>
         <div className="flex">
           <div className="flex-1">Endpoints</div>
-          <div className="flex-1 text-center">Custom</div>
-          <div className="flex-1 text-center">Unlimited</div>
+          <div className="text-center">Custom</div>
+          <div className="text-center">Unlimited</div>
         </div>
         <ul>
           <IconLi>
@@ -269,7 +268,7 @@ const PlanCard = ({
   available: boolean;
   selected: boolean;
   precedingPlan?: DeployPlan;
-}): ReactElement => {
+}) => {
   const dispatch = useDispatch();
 
   const borderColor = selected ? "border-orange-200" : "border-black-100";
@@ -277,7 +276,7 @@ const PlanCard = ({
     ? "bg-orange-100 border-orange-200"
     : "bg-gray-100 border-gray-200";
 
-  const handlePlanChange = (e: SyntheticEvent) => {
+  const handlePlanChange = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     dispatch(
       updateAndRefreshActivePlans({
