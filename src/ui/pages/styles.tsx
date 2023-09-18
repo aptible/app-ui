@@ -68,7 +68,6 @@ import {
   Input,
   InputSearch,
   LogLine,
-  OrgPicker,
   Pill,
   Radio,
   RadioGroup,
@@ -90,10 +89,12 @@ const StylesWrapper = ({
   children,
   navigation,
 }: { children: React.ReactNode; navigation: React.ReactNode }) => (
-  <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
+  <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white -mt-4 -ml-4 -mr-4">
     <div className="flex">
-      <div className="pb-4 fixed">{navigation}</div>
-      <div className="ml-40 pb-4 overflow-y-auto w-full mr-2 flex flex-col gap-6">
+      <div className="w-[200px] py-6 px-6 fixed border-r border-black-100 h-full bg-off-white">
+        {navigation}
+      </div>
+      <div className="ml-[200px] py-6 px-8 overflow-y-auto w-full mr-2 flex flex-col gap-6">
         {children}
       </div>
     </div>
@@ -101,10 +102,13 @@ const StylesWrapper = ({
 );
 
 const StylesNavigation = () => (
-  <nav className="mt-2 flex-1 px-2 bg-white space-y-1">
+  <nav className="mt-2 flex-1 px-2 space-y-1">
     <div className="mb-4">
       <AptibleLogo />
     </div>
+    <p>
+      <b>STYLES</b>
+    </p>
     {[
       { name: "Colors", to: "#colors" },
       { name: "Typography", to: "#typography" },
@@ -116,9 +120,11 @@ const StylesNavigation = () => (
       { name: "Pills", to: "#pills" },
       { name: "Navigation", to: "#navigation" },
       { name: "Icons", to: "#icons" },
-      { name: "Info", to: "#info" },
+      { name: "Tooltips", to: "#tooltips" },
       { name: "Detail Boxes", to: "#detail-boxes" },
       { name: "Secrets", to: "#secrets" },
+      { name: "Dates", to: "#dates" },
+      { name: "Boxes", to: "#boxes" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
         <div className="flex items-center">
@@ -130,7 +136,7 @@ const StylesNavigation = () => (
 );
 
 const Banners = () => (
-  <div className="pt-16 space-y-4">
+  <div className="pt-8 space-y-4">
     <h1 id="banners" className={tokens.type.h1}>
       Banners
     </h1>
@@ -156,7 +162,7 @@ const Banners = () => (
 );
 
 const Tables = () => (
-  <div className="pt-16 space-y-4">
+  <div className="pt-8 space-y-4">
     <h1 id="tables" className={tokens.type.h1}>
       Tables
     </h1>
@@ -208,7 +214,7 @@ const Forms = () => {
   );
 
   return (
-    <div className="pt-16 space-y-4">
+    <div className="pt-8 space-y-4">
       <h1 id="forms" className={tokens.type.h1}>
         Forms
       </h1>
@@ -285,7 +291,7 @@ const Forms = () => {
 };
 
 const Colors = () => (
-  <div className="pt-12 space-y-4">
+  <div className="space-y-4">
     <h1 id="colors" className={tokens.type.h1}>
       Colors
     </h1>
@@ -305,7 +311,7 @@ const Colors = () => (
     </div>
     <div className="flex my-2">
       <div className="rounded-full bg-yellow w-8 h-8 block mr-2" />
-      <p className="leading-8">Yellow (Sunset)</p>
+      <p className="leading-8">Yellow</p>
     </div>
     <div className="flex my-2">
       <div className="rounded-full bg-gold w-8 h-8 block mr-2" />
@@ -348,7 +354,7 @@ const Colors = () => (
 );
 
 const Typography = () => (
-  <div className="pt-16 space-y-4">
+  <div className="pt-8 space-y-4">
     <h1 id="typography" className={tokens.type.h1}>
       Typography
     </h1>
@@ -383,7 +389,7 @@ const Typography = () => (
 );
 
 const Buttons = () => (
-  <div className="pt-16 space-y-4">
+  <div className="pt-8 space-y-4">
     <h1 id="buttons" className={tokens.type.h1}>
       Buttons
     </h1>
@@ -436,7 +442,7 @@ const Buttons = () => (
 );
 
 const Logs = () => (
-  <div className="pt-16 space-y-4">
+  <div className="pt-8 space-y-4">
     <h1 id="logs" className={tokens.type.h1}>
       Logs
     </h1>
@@ -458,7 +464,7 @@ const operationStatuses: OperationStatus[] = [
   "unknown",
 ];
 const Pills = () => (
-  <div className="pt-16 space-y-4">
+  <div className="pt-8 space-y-4">
     <h1 id="pills" className={tokens.type.h1}>
       Pills
     </h1>
@@ -494,7 +500,7 @@ const Pills = () => (
 );
 
 const Navigation = () => (
-  <div className="pt-16 space-y-4">
+  <div className="pt-8 space-y-4">
     <h1 id="navigation" className={tokens.type.h1}>
       Navigation
     </h1>
@@ -531,7 +537,7 @@ const Navigation = () => (
 );
 
 const Icons = () => (
-  <div className="pt-16 space-y-4">
+  <div className="pt-8 space-y-4">
     <h1 id="icons" className={tokens.type.h1}>
       Icons
     </h1>
@@ -585,11 +591,10 @@ const Icons = () => (
 );
 
 const Info = () => (
-  <div className="pt-16 space-y-4">
-    <h1 id="info" className={tokens.type.h1}>
-      Info
+  <div className="pt-8 space-y-4">
+    <h1 id="tooltips" className={tokens.type.h1}>
+      Tooltips
     </h1>
-    <OrgPicker />
     <Tooltip text="Here is some help text!">
       <div>Here is a tooltip hover top</div>
     </Tooltip>
@@ -645,7 +650,7 @@ const DetailBoxes = () => {
   });
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 pt-8">
       <h1 id="detail-boxes" className={tokens.type.h1}>
         Detail Boxes
       </h1>
@@ -670,7 +675,7 @@ const Secrets = () => {
     stackId: "444",
   });
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 pt-8">
       <h1 id="secrets" className={tokens.type.h1}>
         Secrets
       </h1>
@@ -681,7 +686,7 @@ const Secrets = () => {
 
 const Dates = () => {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 pt-8">
       <h1 id="dates" className={tokens.type.h1}>
         Dates
       </h1>
@@ -699,18 +704,16 @@ const Dates = () => {
 const NegativeSpace = () => {
   return (
     <Group>
-      <div>
-        <h1 className={tokens.type.h1}>Grouping</h1>
-
+      <div className="pt-8">
+        <h1 id="boxes" className={tokens.type.h1}>
+          Box
+        </h1>
         <Box>A simple box</Box>
       </div>
 
-      <div>
-        <h1 className={tokens.type.h1}>Grouping</h1>
-
+      <div className="pt-8">
+        <h1 className={tokens.type.h1}>Box Group</h1>
         <div>
-          <h2 className={tokens.type.h2}>Default</h2>
-
           <Group>
             <Box>One</Box>
             <Box>Two</Box>
@@ -718,9 +721,8 @@ const NegativeSpace = () => {
           </Group>
         </div>
 
-        <div>
-          <h2 className={tokens.type.h2}>Horizontal</h2>
-
+        <div className="pt-8">
+          <h2 className={tokens.type.h2}>Box Group Horizontal</h2>
           <Group variant="horizontal">
             <Box>One</Box>
             <Box>Two</Box>
