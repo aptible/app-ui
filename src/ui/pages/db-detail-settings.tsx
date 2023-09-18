@@ -25,6 +25,7 @@ import {
 
 import {
   Banner,
+  BannerMessages,
   Box,
   BoxGroup,
   Button,
@@ -200,6 +201,8 @@ const DatabaseNameChange = ({ database }: DbProps) => {
           value={enableBackups.toString()}
         />
       </FormGroup>
+
+      <BannerMessages {...loader} />
 
       <Group variant="horizontal" size="sm">
         <ButtonCreate

@@ -25,6 +25,7 @@ import {
 
 import {
   Banner,
+  BannerMessages,
   Box,
   BoxGroup,
   Button,
@@ -163,7 +164,7 @@ const AppNameChange = ({ app }: AppProps) => {
   }, [app.id]);
 
   return (
-    <form onSubmit={onSubmitForm}>
+    <form onSubmit={onSubmitForm} className="flex flex-col gap-4">
       <FormGroup label="App Name" htmlFor="input-name">
         <Input
           name="app-handle"
@@ -203,7 +204,9 @@ const AppNameChange = ({ app }: AppProps) => {
         ) : null}
       </FormGroup>
 
-      <Group variant="horizontal" size="sm" className="mt-4">
+      <BannerMessages {...loader} />
+
+      <Group variant="horizontal" size="sm">
         <ButtonCreate
           envId={app.environmentId}
           className="w-40 semibold"

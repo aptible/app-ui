@@ -670,6 +670,10 @@ export const updateDatabase = api.put<UpdateDatabase>(
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield* next();
+
+    ctx.loader = {
+      message: "Saved changes successfully!",
+    };
   },
 );
 
