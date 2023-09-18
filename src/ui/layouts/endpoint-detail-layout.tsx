@@ -40,10 +40,17 @@ import {
   DetailTitleBar,
   EndpointStatusPill,
   EndpointUrl,
+  IconCopy,
   Loading,
   TabItem,
+  Tooltip,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
+
+const handleCopy = (e: SyntheticEvent) => {
+  e.preventDefault();
+  navigator.clipboard.writeText(segments.map((t) => t.text).join(" "));
+};
 
 export function EndpointAppHeaderInfo({
   enp,
@@ -66,7 +73,16 @@ export function EndpointAppHeaderInfo({
 
       <DetailInfoGrid>
         <DetailInfoItem title="URL">
-          <EndpointUrl enp={enp} />
+          <div className="flex flex-row">
+            <EndpointUrl enp={enp} />
+            <Tooltip text="Copy">
+              <IconCopy
+                className="h-4 mt-1"
+                color="#888C90"
+                onClick={handleCopy}
+              />
+            </Tooltip>
+          </div>
         </DetailInfoItem>
         <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
 
@@ -107,7 +123,16 @@ export function EndpointDatabaseHeaderInfo({
 
       <DetailInfoGrid>
         <DetailInfoItem title="URL">
-          <EndpointUrl enp={enp} />
+          <div className="flex flex-row">
+            <EndpointUrl enp={enp} />
+            <Tooltip text="Copy">
+              <IconCopy
+                className="h-4 mt-1"
+                color="#888C90"
+                onClick={handleCopy}
+              />
+            </Tooltip>
+          </div>
         </DetailInfoItem>
         <DetailInfoItem title="Resource">
           <Link to={databaseEndpointsUrl(db.id)}>{db.handle}</Link>

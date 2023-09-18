@@ -32,7 +32,7 @@ import { TableHead } from "../table";
 import { Td } from "../table";
 
 import { useQuery } from "saga-query/react";
-import { IconInfo, IconPlusCircle } from "../icons";
+import { IconCopy, IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import {
   EmptyResultView,
@@ -73,7 +73,16 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
   return (
     <tr className="group hover:bg-gray-50">
       <Td>
-        <EndpointItemView endpoint={endpoint} />
+        <div className="flex flex-row">
+          <EndpointItemView endpoint={endpoint} />
+          <Tooltip text="Copy">
+            <IconCopy
+              className="h-4 mt-1"
+              color="#888C90"
+              onClick={handleCopy}
+            />
+          </Tooltip>
+        </div>
       </Td>
       <Td>
         {endpoint.resourceType === "app" ? (
