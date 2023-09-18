@@ -22,6 +22,7 @@ import {
   forgotPassUrl,
   homeUrl,
   signupUrl,
+  ssoUrl,
 } from "@app/routes";
 import { AppState } from "@app/types";
 import { emailValidator, existValidtor } from "@app/validator";
@@ -233,6 +234,11 @@ export const LoginPage = () => {
             <p className="text-center">
               <Link to={forgotPassUrl()} className="text-sm text-center">
                 Forgot your password?
+              </Link>
+            </p>
+            <p className="text-center">
+              <Link to={ssoUrl()} className="text-sm text-center">
+                Log in with SSO
               </Link>
             </p>
 
