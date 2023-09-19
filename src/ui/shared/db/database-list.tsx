@@ -1,4 +1,5 @@
 import { useQuery } from "@app/fx";
+import { SyntheticEvent } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { IconCopy, IconInfo, IconPlusCircle } from "../icons";
@@ -66,6 +67,29 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td className="flex-1">
       <DatabaseItemView database={database} />
+    </Td>
+  );
+};
+
+const DatabaseIdCell = ({ database }: DatabaseCellProps) => {
+  const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
+  return (
+    <Td className="flex-1">
+      <div className="flex flex-row items-center">
+        {database.id}
+        <Tooltip text="Copy">
+          <IconCopy
+            variant="sm"
+            className="ml-2"
+            color="#888C90"
+            onClick={(e) => handleCopy(e, `${database.id}`)}
+          />
+        </Tooltip>
+      </div>
     </Td>
   );
 };
@@ -213,7 +237,13 @@ export const DatabaseListByOrg = () => {
     }),
   );
 
-  const headers = ["Handle", "Environment", "Est. Monthly Cost", "Actions"];
+  const headers = [
+    "Handle",
+    "ID",
+    "Environment",
+    "Est. Monthly Cost",
+    "Actions",
+  ];
 
   return (
     <LoadResources
@@ -248,6 +278,7 @@ export const DatabaseListByOrg = () => {
             {dbs.map((db) => (
               <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
+                <DatabaseIdCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <DatabaseCostCell database={db} />
                 <DatabaseActionsCell database={db} />
@@ -319,6 +350,7 @@ export const DatabaseListByEnvironment = ({
             {dbs.map((db) => (
               <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
+                <DatabaseIdCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <DatabaseCostCell database={db} />
                 <DatabaseActionsCell database={db} />

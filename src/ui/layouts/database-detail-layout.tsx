@@ -25,7 +25,7 @@ import {
 import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployDatabase, DeployService } from "@app/types";
-import { useEffect, useMemo } from "react";
+import { SyntheticEvent, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
@@ -36,7 +36,9 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  IconCopy,
   TabItem,
+  Tooltip,
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { AppSidebarLayout } from "./app-sidebar-layout";
@@ -48,6 +50,11 @@ export function DatabaseHeader({
   database: DeployDatabase;
   service: DeployService;
 }) {
+  const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
   const metrics = calcMetrics([service]);
   useQuery(fetchDiskById({ id: database.diskId }));
   const disk = useSelector((s: AppState) =>
@@ -68,7 +75,19 @@ export function DatabaseHeader({
       />
 
       <DetailInfoGrid>
-        <DetailInfoItem title="ID">{database.id}</DetailInfoItem>
+        <DetailInfoItem title="ID">
+          <div className="flex flex-row items-center">
+            {database.id}
+            <Tooltip text="Copy">
+              <IconCopy
+                variant="sm"
+                className="ml-2"
+                color="#888C90"
+                onClick={(e) => handleCopy(e, `${database.id}`)}
+              />
+            </Tooltip>
+          </div>
+        </DetailInfoItem>
         <DetailInfoItem title="Disk IOPS">
           {disk.provisionedIops}
         </DetailInfoItem>
