@@ -16,11 +16,13 @@ import {
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployEnvironment } from "@app/types";
+import { SyntheticEvent } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonOwner } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { IconInfo, IconPlusCircle } from "../icons";
+import { IconCopy } from "../icons";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
@@ -132,10 +134,34 @@ const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
+const EnvironmentIdCell = ({ environment }: EnvironmentCellProps) => {
+  const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
+  return (
+    <Td>
+      <div className="flex flex-row items-center">
+        {environment.id}
+        <Tooltip text="Copy">
+          <IconCopy
+            variant="sm"
+            className="ml-2"
+            color="#888C90"
+            onClick={(e) => handleCopy(e, `${environment.id}`)}
+          />
+        </Tooltip>
+      </div>
+    </Td>
+  );
+};
+
 const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   return (
     <tr className="group hover:bg-gray-50">
       <EnvironmentPrimaryCell environment={environment} />
+      <EnvironmentIdCell environment={environment} />
       <EnvironmentStackCell environment={environment} />
       <EnvironmentLastDeployedCell environment={environment} />
       <EnvironmentAppsCell environment={environment} />
@@ -196,6 +222,7 @@ const EnvsResourceHeaderTitleBar = ({
 };
 const environmentHeaders = [
   "Environment",
+  "ID",
   "Stack",
   "Last Deployed",
   "Apps",

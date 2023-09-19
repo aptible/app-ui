@@ -25,13 +25,12 @@ import {
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
-const handleCopy = (e: SyntheticEvent, text: string) => {
-  e.preventDefault();
-  e.stopPropagation();
-  navigator.clipboard.writeText(text);
-};
-
 export function StackHeader({ stack }: { stack: DeployStack }) {
+  const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
   const stackType = getStackType(stack);
   return (
     <DetailHeader>

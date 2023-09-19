@@ -19,6 +19,7 @@ import {
   DeployOperation,
   DeployStack,
 } from "@app/types";
+import { SyntheticEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams, useSearchParams } from "react-router-dom";
 
@@ -30,7 +31,9 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  IconCopy,
   TabItem,
+  Tooltip,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
@@ -60,6 +63,11 @@ export function EnvHeader({
   stack: DeployStack;
   endpoints: DeployEndpoint[];
 }) {
+  const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
   const userName = latestOperation.userName.slice(0, 15);
   return (
     <DetailHeader>
@@ -76,7 +84,19 @@ export function EnvHeader({
       />
 
       <DetailInfoGrid>
-        <DetailInfoItem title="ID">{environment.id}</DetailInfoItem>
+        <DetailInfoItem title="ID">
+          <div className="flex flex-row items-center">
+            {environment.id}
+            <Tooltip text="Copy">
+              <IconCopy
+                variant="sm"
+                className="ml-2"
+                color="#888C90"
+                onClick={(e) => handleCopy(e, `${environment.id}`)}
+              />
+            </Tooltip>
+          </div>
+        </DetailInfoItem>
         <DetailInfoItem
           title={`${environment.totalAppCount} App${
             environment.totalAppCount > 1 || environment.totalAppCount === 0

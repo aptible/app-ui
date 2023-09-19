@@ -28,12 +28,6 @@ import {
   Tooltip,
 } from "../shared";
 
-const handleCopy = (e: SyntheticEvent, text: string) => {
-  e.preventDefault();
-  e.stopPropagation();
-  navigator.clipboard.writeText(text);
-};
-
 export function StacksPage() {
   return (
     <AppSidebarLayout>
@@ -43,6 +37,11 @@ export function StacksPage() {
 }
 
 function StackListRow({ stack }: { stack: DeployStack }) {
+  const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
   const stackType = getStackType(stack);
   const envCount = useSelector((s: AppState) =>
     selectEnvironmentsCountByStack(s, { stackId: stack.id }),
