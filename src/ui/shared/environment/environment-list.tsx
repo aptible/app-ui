@@ -313,7 +313,7 @@ export function EnvironmentList() {
             headers={environmentHeaders}
             rightAlignedFinalCol
             leftAlignedFirstCol
-            centerAlignedColIndices={[3, 4]}
+            centerAlignedColIndices={[4, 5]}
           />
         }
         tableBody={
