@@ -59,11 +59,7 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
 };
 
 const AppIdCell = ({ app }: AppCellProps) => {
-  return (
-    <Td className="flex-1">
-      {app.id}
-    </Td>
-  );
+  return <Td className="flex-1">{app.id}</Td>;
 };
 
 const AppServicesCell = ({ app }: AppCellProps) => {

@@ -58,11 +58,7 @@ const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
 };
 
 const EnvironmentIdCell = ({ environment }: EnvironmentCellProps) => {
-  return (
-    <Td>
-      {environment.id}
-    </Td>
-  );
+  return <Td>{environment.id}</Td>;
 };
 
 const EnvironmentDatabasesCell = ({ environment }: EnvironmentCellProps) => {

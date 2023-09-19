@@ -92,9 +92,7 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
           </Tooltip>
         </div>
       </Td>
-      <Td>
-        {endpoint.id}
-      </Td>
+      <Td>{endpoint.id}</Td>
       <Td>
         {endpoint.resourceType === "app" ? (
           <Link to={appDetailUrl(endpoint.resourceId)}>
