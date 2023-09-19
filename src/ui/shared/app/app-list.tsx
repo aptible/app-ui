@@ -58,6 +58,10 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
   );
 };
 
+const AppIdCell = ({ app }: AppCellProps) => {
+  return <Td className="flex-1">{app.id}</Td>;
+};
+
 const AppServicesCell = ({ app }: AppCellProps) => {
   const services = useSelector((s: AppState) =>
     selectServicesByAppId(s, { appId: app.id }),
@@ -129,6 +133,7 @@ const AppListRow = ({ app }: AppCellProps) => {
   return (
     <tr className="group hover:bg-gray-50">
       <AppPrimaryCell app={app} />
+      <AppIdCell app={app} />
       <EnvStackCell environmentId={app.environmentId} />
       <AppServicesCell app={app} />
       <AppCostCell app={app} />
@@ -138,6 +143,7 @@ const AppListRow = ({ app }: AppCellProps) => {
 
 const appHeaders: Header[] = [
   "Handle",
+  "ID",
   "Environment",
   "Services",
   "Est. Monthly Cost",

@@ -51,6 +51,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
       <Td>
         <StackItemView stack={stack} />
       </Td>
+      <Td>{stack.id}</Td>
       <Td>{stack.region}</Td>
       <Td>{capitalize(stackType)}</Td>
       <Td>
@@ -114,6 +115,7 @@ function StackList() {
           <TableHead
             headers={[
               "Name",
+              "ID",
               "Region",
               "Type",
               "Enabled Limits",
@@ -121,7 +123,7 @@ function StackList() {
               "Apps",
               "Databases",
             ]}
-            centerAlignedColIndices={[4, 5, 6]}
+            centerAlignedColIndices={[5, 6, 7]}
           />
         }
         tableBody={

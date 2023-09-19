@@ -57,6 +57,10 @@ const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
+const EnvironmentIdCell = ({ environment }: EnvironmentCellProps) => {
+  return <Td>{environment.id}</Td>;
+};
+
 const EnvironmentDatabasesCell = ({ environment }: EnvironmentCellProps) => {
   const dbs = useSelector((s: AppState) =>
     selectDatabasesByEnvId(s, { envId: environment.id }),
@@ -136,6 +140,7 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   return (
     <tr className="group hover:bg-gray-50">
       <EnvironmentPrimaryCell environment={environment} />
+      <EnvironmentIdCell environment={environment} />
       <EnvironmentStackCell environment={environment} />
       <EnvironmentLastDeployedCell environment={environment} />
       <EnvironmentAppsCell environment={environment} />
@@ -196,6 +201,7 @@ const EnvsResourceHeaderTitleBar = ({
 };
 const environmentHeaders = [
   "Environment",
+  "ID",
   "Stack",
   "Last Deployed",
   "Apps",
@@ -234,7 +240,7 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
             headers={environmentHeaders}
             rightAlignedFinalCol
             leftAlignedFirstCol
-            centerAlignedColIndices={[3, 4]}
+            centerAlignedColIndices={[4, 5]}
           />
         }
         tableBody={
@@ -286,7 +292,7 @@ export function EnvironmentList() {
             headers={environmentHeaders}
             rightAlignedFinalCol
             leftAlignedFirstCol
-            centerAlignedColIndices={[3, 4]}
+            centerAlignedColIndices={[4, 5]}
           />
         }
         tableBody={

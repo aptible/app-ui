@@ -70,6 +70,10 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
+const DatabaseIdCell = ({ database }: DatabaseCellProps) => {
+  return <Td className="flex-1">{database.id}</Td>;
+};
+
 const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
@@ -213,7 +217,13 @@ export const DatabaseListByOrg = () => {
     }),
   );
 
-  const headers = ["Handle", "Environment", "Est. Monthly Cost", "Actions"];
+  const headers = [
+    "Handle",
+    "ID",
+    "Environment",
+    "Est. Monthly Cost",
+    "Actions",
+  ];
 
   return (
     <LoadResources
@@ -248,6 +258,7 @@ export const DatabaseListByOrg = () => {
             {dbs.map((db) => (
               <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
+                <DatabaseIdCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <DatabaseCostCell database={db} />
                 <DatabaseActionsCell database={db} />
@@ -280,7 +291,13 @@ export const DatabaseListByEnvironment = ({
     }),
   );
 
-  const headers = ["Handle", "Environment", "Est. Monthly Cost", "Actions"];
+  const headers = [
+    "Handle",
+    "ID",
+    "Environment",
+    "Est. Monthly Cost",
+    "Actions",
+  ];
   const actions = [
     <ButtonCreate envId={environmentId} onClick={onCreate}>
       <IconPlusCircle variant="sm" />
@@ -319,6 +336,7 @@ export const DatabaseListByEnvironment = ({
             {dbs.map((db) => (
               <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
+                <DatabaseIdCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
                 <DatabaseCostCell database={db} />
                 <DatabaseActionsCell database={db} />
