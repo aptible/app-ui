@@ -93,6 +93,19 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
         </div>
       </Td>
       <Td>
+        <div className="flex flex-row items-center">
+          {endpoint.id}
+          <Tooltip text="Copy">
+            <IconCopy
+              variant="sm"
+              className="ml-2"
+              color="#888C90"
+              onClick={(e) => handleCopy(e, `${endpoint.id}`)}
+            />
+          </Tooltip>
+        </div>
+      </Td>
+      <Td>
         {endpoint.resourceType === "app" ? (
           <Link to={appDetailUrl(endpoint.resourceId)}>
             {endpoint.resourceHandle}
@@ -166,6 +179,7 @@ const EndpointHeader = ({
 
 const headers = [
   "URL",
+  "ID",
   "Resource",
   "Status",
   "Placement",
