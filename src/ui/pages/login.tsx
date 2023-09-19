@@ -22,6 +22,7 @@ import {
   forgotPassUrl,
   homeUrl,
   signupUrl,
+  ssoUrl,
 } from "@app/routes";
 import { AppState } from "@app/types";
 import { emailValidator, existValidtor } from "@app/validator";
@@ -33,6 +34,7 @@ import {
   Banner,
   BannerMessages,
   Button,
+  ButtonLink,
   ExternalLink,
   FormGroup,
   Input,
@@ -229,6 +231,14 @@ export const LoginPage = () => {
             >
               Log In
             </Button>
+
+            <div className="py-2">
+              <hr />
+            </div>
+
+            <ButtonLink to={ssoUrl()} variant="white" layout="block" size="lg">
+              Log In with SSO
+            </ButtonLink>
 
             <p className="text-center">
               <Link to={forgotPassUrl()} className="text-sm text-center">
