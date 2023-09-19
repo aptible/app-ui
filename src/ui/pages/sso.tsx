@@ -30,7 +30,7 @@ export const SsoLoginPage = () => {
   return (
     <HeroBgLayout>
       <div className="text-center mt-16">
-        <h1 className={`${tokens.type.h1} text-center`}>Single Sign On</h1>
+        <h1 className={`${tokens.type.h1} text-center`}>Single Sign-On</h1>
         <p className="my-6 text-gray-600">
           Use your organization's single sign-on provider to authenticate.
         </p>
