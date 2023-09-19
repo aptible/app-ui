@@ -85,7 +85,7 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
             <IconCopy
               className="h-4 mt-1"
               color="#888C90"
-              onClick={(e) => handleCopy(e, `${getEndpointUrl(enp)}`)}
+              onClick={(e) => handleCopy(e, `${getEndpointUrl(endpoint)}`)}
             />
           </Tooltip>
         </div>
