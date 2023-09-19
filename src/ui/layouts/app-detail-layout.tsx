@@ -23,7 +23,7 @@ import {
 import { setResourceStats } from "@app/search";
 import type { AppState, DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { SyntheticEvent, useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
@@ -34,11 +34,18 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  IconCopy,
   TabItem,
+  Tooltip,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function AppHeader({ app }: { app: DeployApp }) {
+  const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
   const lastDeployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
@@ -62,7 +69,19 @@ export function AppHeader({ app }: { app: DeployApp }) {
       />
 
       <DetailInfoGrid>
-        <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
+        <DetailInfoItem title="ID">
+          <div className="flex flex-row items-center">
+            {app.id}
+            <Tooltip text="Copy">
+              <IconCopy
+                variant="sm"
+                className="ml-2"
+                color="#888C90"
+                onClick={(e) => handleCopy(e, `${app.id}`)}
+              />
+            </Tooltip>
+          </div>
+        </DetailInfoItem>
         <div className="col-span-2">
           <DetailInfoItem title="Git Remote">{app.gitRepo}</DetailInfoItem>
         </div>

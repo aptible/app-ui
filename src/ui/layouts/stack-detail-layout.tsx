@@ -8,8 +8,7 @@ import {
 import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployStack } from "@app/types";
-import { SyntheticEvent } from "react";
-import { useEffect } from "react";
+import { SyntheticEvent, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router";
 import { useQuery } from "saga-query/react";

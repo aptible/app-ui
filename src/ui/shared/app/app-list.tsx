@@ -18,12 +18,14 @@ import {
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
+import { SyntheticEvent } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ActionList, ActionListView } from "../action-list-view";
 import { ButtonCreate } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { IconInfo, IconPlusCircle } from "../icons";
+import { IconCopy } from "../icons";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
@@ -54,6 +56,29 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
   return (
     <Td className="flex-1">
       <AppItemView app={app} />
+    </Td>
+  );
+};
+
+const AppIdCell = ({ app }: AppCellProps) => {
+  const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
+  return (
+    <Td className="flex-1">
+      <div className="flex flex-row items-center">
+        {app.id}
+        <Tooltip text="Copy">
+          <IconCopy
+            variant="sm"
+            className="ml-2"
+            color="#888C90"
+            onClick={(e) => handleCopy(e, `${app.id}`)}
+          />
+        </Tooltip>
+      </div>
     </Td>
   );
 };
@@ -129,6 +154,7 @@ const AppListRow = ({ app }: AppCellProps) => {
   return (
     <tr className="group hover:bg-gray-50">
       <AppPrimaryCell app={app} />
+      <AppIdCell app={app} />
       <EnvStackCell environmentId={app.environmentId} />
       <AppServicesCell app={app} />
       <AppCostCell app={app} />
@@ -138,6 +164,7 @@ const AppListRow = ({ app }: AppCellProps) => {
 
 const appHeaders: Header[] = [
   "Handle",
+  "ID",
   "Environment",
   "Services",
   "Est. Monthly Cost",
