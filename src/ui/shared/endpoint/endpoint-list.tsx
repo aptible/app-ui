@@ -80,11 +80,12 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
   return (
     <tr className="group hover:bg-gray-50">
       <Td>
-        <div className="flex flex-row">
+        <div className="flex flex-row items-center">
           <EndpointItemView endpoint={endpoint} />
           <Tooltip text="Copy">
             <IconCopy
-              className="h-4 mt-1"
+              variant="sm"
+              className="ml-2"
               color="#888C90"
               onClick={(e) => handleCopy(e, `${getEndpointUrl(endpoint)}`)}
             />
