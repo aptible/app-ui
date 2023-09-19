@@ -19,12 +19,11 @@ import {
   DeployOperation,
   DeployStack,
 } from "@app/types";
-import { SyntheticEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams, useSearchParams } from "react-router-dom";
 
 import { setResourceStats } from "@app/search";
-import { useEffect } from "react";
+import { SyntheticEvent, useEffect } from "react";
 import {
   DetailHeader,
   DetailInfoGrid,
