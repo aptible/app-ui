@@ -228,7 +228,9 @@ export const SupportPage = () => {
                       return (
                         <li key={key + 1}>
                           <div>
-                            <a href={hit.url}>{hit.title}</a>
+                            <a target="_blank" href={hit.url} rel="noreferrer">
+                              {hit.title}
+                            </a>
                           </div>
                         </li>
                       );
