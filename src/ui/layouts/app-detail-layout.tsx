@@ -22,8 +22,8 @@ import {
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
 import type { AppState, DeployApp } from "@app/types";
-import { useEffect, useMemo } from "react";
-import { SyntheticEvent, useDispatch, useSelector } from "react-redux";
+import { SyntheticEvent, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
