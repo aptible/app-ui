@@ -1,3 +1,4 @@
+import { SyntheticEvent } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
@@ -32,7 +33,7 @@ import { TableHead } from "../table";
 import { Td } from "../table";
 
 import { useQuery } from "saga-query/react";
-import { IconInfo, IconPlusCircle } from "../icons";
+import { IconCopy, IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import {
   EmptyResultView,
@@ -42,6 +43,12 @@ import {
 import { tokens } from "../tokens";
 import { Tooltip } from "../tooltip";
 import { EndpointStatusPill } from "./util";
+
+const handleCopy = (e: SyntheticEvent, text: string) => {
+  e.preventDefault();
+  e.stopPropagation();
+  navigator.clipboard.writeText(text);
+};
 
 export const EndpointItemView = ({
   endpoint,
@@ -73,7 +80,17 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
   return (
     <tr className="group hover:bg-gray-50">
       <Td>
-        <EndpointItemView endpoint={endpoint} />
+        <div className="flex flex-row items-center">
+          <EndpointItemView endpoint={endpoint} />
+          <Tooltip text="Copy">
+            <IconCopy
+              variant="sm"
+              className="ml-2"
+              color="#888C90"
+              onClick={(e) => handleCopy(e, `${getEndpointUrl(endpoint)}`)}
+            />
+          </Tooltip>
+        </div>
       </Td>
       <Td>
         {endpoint.resourceType === "app" ? (
