@@ -1,4 +1,5 @@
 import { useQuery } from "@app/fx";
+import { SyntheticEvent } from "react";
 import { useSelector } from "react-redux";
 
 import {
@@ -15,6 +16,7 @@ import { capitalize } from "@app/string-utils";
 import { useSearchParams } from "react-router-dom";
 import { AppSidebarLayout } from "../layouts";
 import {
+  IconCopy,
   IconInfo,
   InputSearch,
   LoadResources,
@@ -25,6 +27,12 @@ import {
   Td,
   Tooltip,
 } from "../shared";
+
+const handleCopy = (e: SyntheticEvent, text: string) => {
+  e.preventDefault();
+  e.stopPropagation();
+  navigator.clipboard.writeText(text);
+};
 
 export function StacksPage() {
   return (
@@ -50,6 +58,19 @@ function StackListRow({ stack }: { stack: DeployStack }) {
     <tr className="group hover:bg-gray-50">
       <Td>
         <StackItemView stack={stack} />
+      </Td>
+      <Td>
+        <div className="flex flex-row items-center">
+          {stack.id}
+          <Tooltip text="Copy">
+            <IconCopy
+              variant="sm"
+              className="ml-2"
+              color="#888C90"
+              onClick={(e) => handleCopy(e, `${stack.id}`)}
+            />
+          </Tooltip>
+        </div>
       </Td>
       <Td>{stack.region}</Td>
       <Td>{capitalize(stackType)}</Td>
@@ -114,6 +135,7 @@ function StackList() {
           <TableHead
             headers={[
               "Name",
+              "ID",
               "Region",
               "Type",
               "Enabled Limits",
@@ -121,7 +143,7 @@ function StackList() {
               "Apps",
               "Databases",
             ]}
-            centerAlignedColIndices={[4, 5, 6]}
+            centerAlignedColIndices={[5, 6, 7]}
           />
         }
         tableBody={

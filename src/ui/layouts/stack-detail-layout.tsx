@@ -1,3 +1,4 @@
+import { SyntheticEvent } from "react";
 import { fetchStack, getStackType, selectStackById } from "@app/deploy";
 import {
   stackDetailEnvsUrl,
@@ -19,8 +20,16 @@ import {
   DetailPageHeaderView,
   DetailTitleBar,
   TabItem,
+  Tooltip,
+  IconCopy,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
+
+const handleCopy = (e: SyntheticEvent, text: string) => {
+  e.preventDefault();
+  e.stopPropagation();
+  navigator.clipboard.writeText(text);
+};
 
 export function StackHeader({ stack }: { stack: DeployStack }) {
   const stackType = getStackType(stack);
@@ -42,7 +51,19 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
       />
 
       <DetailInfoGrid>
-        <DetailInfoItem title="ID">{stack.id}</DetailInfoItem>
+        <DetailInfoItem title="ID">
+          <div className="flex flex-row items-center">
+            {stack.id}
+            <Tooltip text="Copy">
+            <IconCopy
+              variant="sm"
+              className="ml-2"
+              color="#888C90"
+              onClick={(e) => handleCopy(e, `${stack.id}`)}
+            />
+          </Tooltip>
+          </div>
+        </DetailInfoItem>
         <div className="col-span-2">
           <DetailInfoItem title="Memory Management">
             {stack.memoryLimits ? "Enabled" : "Disabled"}
