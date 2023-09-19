@@ -43,6 +43,7 @@ export interface Env {
   metricTunnelUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
+  stripePublishableKey: string;
   origin: "app";
 }
 

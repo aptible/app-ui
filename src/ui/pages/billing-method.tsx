@@ -1,159 +1,123 @@
-import { HeroBgLayout } from "../layouts";
+import { getStripe } from "@app/billing";
+import {
+  fetchActivePlans,
+  selectFirstActivePlan,
+  selectPlanById,
+} from "@app/deploy";
+import { selectEnv } from "@app/env";
+import { selectOrganizationSelected } from "@app/organizations";
+import { logoutUrl, plansUrl } from "@app/routes";
+import { AppState } from "@app/types";
+import { CardElement, Elements } from "@stripe/react-stripe-js";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { useQuery } from "saga-query/react";
+import { HeroBgView } from "../layouts";
 import {
   AptibleLogo,
+  Banner,
   Button,
   CreateProjectFooter,
-  FormGroup,
-  Input,
+  Group,
+  IconArrowRight,
 } from "../shared";
 
-import { logoutUrl } from "@app/routes";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+const StripeProvider = ({ children }: { children: React.ReactNode }) => {
+  const env = useSelector(selectEnv);
+  return (
+    <Elements stripe={getStripe(env.stripePublishableKey)}>{children}</Elements>
+  );
+};
 
 export const BillingMethodPage = () => {
-  const [creditCardNumber, setCreditCardNumber] = useState<string>("");
-  const [expirationMonth, setExpirationMonth] = useState<string>("");
-  const [expirationYear, setExpirationYear] = useState<string>("");
-  const [securityCode, setSecurityCode] = useState<string>("");
-  const [nameOnCard, setNameOnCard] = useState<string>("");
-  const [zipcode, setZipcode] = useState<string>("");
+  const org = useSelector(selectOrganizationSelected);
+  useQuery(fetchActivePlans({ organization_id: org.id }));
+  const activePlan = useSelector(selectFirstActivePlan);
+  const plan = useSelector((s: AppState) =>
+    selectPlanById(s, { id: activePlan.planId }),
+  );
 
   const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   };
 
   return (
-    <HeroBgLayout width={500} showLogo={false}>
-      <div className="absolute top-0 left-0 h-auto min-h-[100vh] bg-white/90 shadow p-16 lg:block hidden w-[40vw] lg:px-[5%] px-[32px]">
-        <div className="text-xl text-black font-bold">
-          Launch, grow, and scale your app without worrying about infrastructure
-        </div>
-        <div className="text-lg text-gold font-bold pt-5 pb-1">Launch</div>
-        <p>Get up and running without any work or config.</p>
-        <hr className="mt-5 mb-4" />
-        <div className="text-lg text-gold font-bold pb-1">Grow</div>
-        <p>Aptible handles all the infrastructure operations.</p>
-        <hr className="mt-5 mb-4" />
-        <div className="text-lg text-gold font-bold pb-1">Scale</div>
-        <p>
-          Enterprise requirements such as performance, security, and reliability
-          are baked in from day one.
-        </p>
-        <p className="text-md text-black pt-8 pb-4 text-center font-semibold">
-          Companies that have scaled with Aptible
-        </p>
-        <img
-          src="/customer-logo-cloud.png"
-          className="text-center scale-90"
-          aria-label="Customer Logos"
-        />
-        <div className="pt-8 lg:px-0 px-10">
-          <CreateProjectFooter />
-        </div>
-      </div>
-      <div className="absolute lg:top-[30px] md:top-0 top-0 left-0  lg:w-[60vw] w-[100vw] lg:ml-[40vw] ml-auto lg:px-[5%] md:px-[32px] px-auto">
-        <div className="flex flex-col justify-center items-center md:w-[500px] md:ml-[50%] md:left-[-250px] w-full ml-none left-0 relative">
-          <div className="flex justify-center pt-10 pb-8">
-            <AptibleLogo width={160} />
+    <StripeProvider>
+      <HeroBgView className="flex gap-6">
+        <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] lg:h-screen">
+          <div className="text-xl text-black font-bold">
+            Launch, grow, and scale your app without worrying about
+            infrastructure
           </div>
-          <div className="text-center">
-            <p className="text-gray-900">
-              You must enter a credit card to continue using Aptible. <br />
-              Your card will be charged at the end of your monthly billing
-              cycle.
-            </p>
-            <h1 className="text-gray-900 text-3xl font-semibold text-center pt-8">
-              Add Payment Information
-            </h1>
+          <div className="text-lg text-gold font-bold pt-5 pb-1">Launch</div>
+          <p>Get up and running without any work or config.</p>
+          <hr className="mt-5 mb-4" />
+          <div className="text-lg text-gold font-bold pb-1">Grow</div>
+          <p>Aptible handles all the infrastructure operations.</p>
+          <hr className="mt-5 mb-4" />
+          <div className="text-lg text-gold font-bold pb-1">Scale</div>
+          <p>
+            Enterprise requirements such as performance, security, and
+            reliability are baked in from day one.
+          </p>
+          <p className="text-md text-black pt-8 pb-4 text-center font-semibold">
+            Companies that have scaled with Aptible
+          </p>
+          <img
+            src="/customer-logo-cloud.png"
+            className="text-center scale-90"
+            aria-label="Customer Logos"
+          />
+          <div className="pt-8 lg:px-0 px-10">
+            <CreateProjectFooter />
           </div>
-          <div className="mt-6 bg-white py-8 px-10 shadow rounded-lg border border-black-100 w-full">
-            <form className="space-y-4" onSubmit={onSubmitForm}>
-              <FormGroup
-                label="Credit Card Number"
-                htmlFor="credit-card-number"
-              >
-                <Input
-                  name="credit-card-number"
-                  value={creditCardNumber}
-                  onChange={(e) => setCreditCardNumber(e.target.value)}
-                  required
-                />
-              </FormGroup>
-              <div className="flex justify-between gap-4">
-                <FormGroup
-                  label="Expiration Date"
-                  htmlFor="credit-card-number"
-                  className="w-1/2 min-w-0"
-                >
-                  <div className="flex flex-row gap-2">
-                    <Input
-                      name="credit-card-number"
-                      value={expirationMonth}
-                      placeholder="MM"
-                      onChange={(e) => setExpirationMonth(e.target.value)}
-                      required
-                      className="w-1/2"
-                    />
-                    <Input
-                      name="credit-card-number"
-                      value={expirationYear}
-                      placeholder="YY"
-                      onChange={(e) => setExpirationYear(e.target.value)}
-                      required
-                      className="w-1/2"
-                    />
-                  </div>
-                </FormGroup>
-                <FormGroup
-                  label="Security Code"
-                  htmlFor="credit-card-number"
-                  className="w-1/2 min-w-0"
-                >
-                  <Input
-                    name="credit-card-number"
-                    value={securityCode}
-                    onChange={(e) => setSecurityCode(e.target.value)}
-                    required
-                  />
-                </FormGroup>
-              </div>
+        </div>
 
-              <FormGroup label="Name on Card" htmlFor="name-on-card">
-                <Input
-                  id="name-on-card"
-                  name="name-on-card"
-                  type="text"
-                  autoComplete="name-on-card"
-                  required
-                  value={nameOnCard}
-                  onChange={(e) => setNameOnCard(e.target.value)}
-                />
-              </FormGroup>
-
-              <FormGroup label="Zipcode" htmlFor="zipcode" className="flex-1">
-                <Input
-                  name="zipcode"
-                  value={zipcode}
-                  onChange={(e) => setZipcode(e.target.value)}
-                  required
-                />
-              </FormGroup>
-
-              <Button type="submit" className="font-semibold w-full">
-                Save Payment
-              </Button>
-            </form>
-            <div className="text-center text-sm mt-4">
-              <p>
-                Prefer to speak to someone first?{" "}
-                <a href="https://www.aptible.com/contact">Schedule a demo</a> or
-                go to <Link to={logoutUrl()}>Logout</Link>
-              </p>
+        <div className="flex-1 lg:p-16 p-8">
+          <Group>
+            <div className="flex justify-center">
+              <AptibleLogo width={160} />
             </div>
-          </div>
+
+            <div className="text-center">
+              <p className="text-gray-900">
+                You must enter a credit card to continue using Aptible. <br />
+                Your card will be charged at the end of your monthly billing
+                cycle.
+              </p>
+              <h1 className="text-gray-900 text-3xl font-semibold text-center pt-8">
+                Add Payment Information
+              </h1>
+            </div>
+
+            <Banner variant="info" className="w-full">
+              <div className="flex items-center gap-2">
+                Current plan: {plan.name}{" "}
+                <Link to={plansUrl()} className="flex items-center gap-1">
+                  Change plan <IconArrowRight variant="sm" color="#4361FF" />
+                </Link>
+              </div>
+            </Banner>
+
+            <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100 w-full">
+              <form className="space-y-4" onSubmit={onSubmitForm}>
+                <CardElement />
+                <Button type="submit" className="font-semibold w-full">
+                  Save Payment
+                </Button>
+              </form>
+
+              <div className="text-center text-sm">
+                <p>
+                  Prefer to speak to someone first?{" "}
+                  <a href="https://www.aptible.com/contact">Schedule a demo</a>{" "}
+                  or go to <Link to={logoutUrl()}>Logout</Link>
+                </p>
+              </div>
+            </div>
+          </Group>
         </div>
-      </div>
-    </HeroBgLayout>
+      </HeroBgView>
+    </StripeProvider>
   );
 };

@@ -1,6 +1,14 @@
 import { Outlet } from "react-router";
 import { AptibleLogo } from "../shared";
 
+export const HeroBgView = ({
+  children,
+  className = "",
+}: { children: React.ReactNode; className?: string }) => {
+  const cls = `h-full bg-no-repeat bg-center bg-cover hero-bg ${className}`;
+  return <div className={cls}>{children}</div>;
+};
+
 export const HeroBgLayout = ({
   showLogo = true,
   children,
@@ -11,12 +19,7 @@ export const HeroBgLayout = ({
   width?: number | string;
 }) => {
   return (
-    <div
-      className="flex flex-col flex-1 h-full bg-no-repeat bg-center bg-cover -ml-8 -mr-8 -mt-8"
-      style={{
-        backgroundImage: "url(/background-pattern-v2.png)",
-      }}
-    >
+    <HeroBgView>
       <main className="flex-1">
         <div className={showLogo ? "py-16" : "py-10"}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
@@ -37,6 +40,6 @@ export const HeroBgLayout = ({
           </div>
         </div>
       </main>
-    </div>
+    </HeroBgView>
   );
 };

@@ -1,8 +1,10 @@
 import { billingApi, thunks } from "@app/api";
+import { selectEnv } from "@app/env";
 import {
   all,
   call,
   put,
+  select,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
@@ -11,6 +13,8 @@ import { defaultHalHref } from "@app/hal";
 import { createAssign, createReducerMap } from "@app/slice-helpers";
 import { AppState, BillingDetail, LinkResponse } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import { CreateTokenCardData } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js/pure";
 
 export const defaultBillingDetailResponse = (
   bt: Partial<BillingDetailResponse> = {},
@@ -74,6 +78,22 @@ export const fetchBillingDetail = billingApi.get<
 
   ctx.actions.push(setBillingDetail(deserializeBillingDetail(ctx.json.data)));
 });
+
+export async function getStripe(stripePublishableKey: string) {
+  loadStripe.setLoadParameters({ advancedFraudSignals: false });
+  return loadStripe(stripePublishableKey);
+}
+
+export const createStripeSource = billingApi.post(
+  "/billing_details/:id/stripe_sources",
+  function* (ctx, next) {
+    const stripePayload: CreateTokenCardData = {};
+
+    const token = yield* call(stripe.createToken, stripePayload);
+    yield* next();
+  },
+);
+
 // TODO: for trial expiration banner
 /* const fetchStripeSources = billingApi.get<{ id: string }>('/billing_details/:id/stripe_sources');
 const fetchTrials = billingApi.get<{ id: string }>('/billing_details/:id/trials');

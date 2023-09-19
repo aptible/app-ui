@@ -13,7 +13,14 @@ import { AppState } from "@app/types";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { HeroBgLayout } from "../layouts";
-import { BannerMessages, Plans, tokens } from "../shared";
+import {
+  Banner,
+  BannerMessages,
+  Group,
+  IconArrowRight,
+  Plans,
+  tokens,
+} from "../shared";
 
 export const PlansPage = () => {
   const dispatch = useDispatch();
@@ -59,9 +66,19 @@ export const PlansPage = () => {
         </div>
       </div>
 
-      <BannerMessages {...updatePlanLoader} />
-      <BannerMessages {...planLoader} />
-      <BannerMessages {...activePlanLoader} />
+      <Group>
+        <BannerMessages {...updatePlanLoader} />
+        <BannerMessages {...planLoader} />
+        <BannerMessages {...activePlanLoader} />
+        {activePlan ? (
+          <Banner>
+            <Link to={billingMethodUrl()} className="flex items-center gap-1">
+              Continue to billing{" "}
+              <IconArrowRight variant="sm" color="#4361FF" />
+            </Link>
+          </Banner>
+        ) : null}
+      </Group>
 
       <Plans
         plans={plans}
