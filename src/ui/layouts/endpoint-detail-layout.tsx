@@ -47,10 +47,11 @@ import {
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
-const handleCopy = (text: string) => {
-  e.preventDefault();
-  navigator.clipboard.writeText(text);
-};
+const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
 
 export function EndpointAppHeaderInfo({
   enp,
@@ -74,9 +75,15 @@ export function EndpointAppHeaderInfo({
       <DetailInfoGrid>
         <DetailInfoItem title="URL">
           <div className="flex flex-row">
-            <EndpointUrl enp={enp} onClick={() => handleCopy()} />
+            <EndpointUrl enp={enp} />
             <Tooltip text="Copy">
-              <IconCopy className="h-4 mt-1" color="#888C90" />
+              <IconCopy
+                className="h-4 mt-1"
+                color="#888C90"
+                onClick={(e) =>
+                  handleCopy(e, `${enp}`)
+                }
+              />
             </Tooltip>
           </div>
         </DetailInfoItem>
@@ -120,9 +127,15 @@ export function EndpointDatabaseHeaderInfo({
       <DetailInfoGrid>
         <DetailInfoItem title="URL">
           <div className="flex flex-row">
-            <EndpointUrl enp={enp} onClick={() => handleCopy()} />
+            <EndpointUrl enp={enp} />
             <Tooltip text="Copy">
-              <IconCopy className="h-4 mt-1" color="#888C90" />
+              <IconCopy
+                className="h-4 mt-1"
+                color="#888C90"
+                onClick={(e) =>
+                  handleCopy(e, `${enp}`)
+                }
+              />
             </Tooltip>
           </div>
         </DetailInfoItem>
