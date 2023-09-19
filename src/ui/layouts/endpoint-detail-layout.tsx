@@ -4,6 +4,7 @@ import {
   fetchDatabase,
   fetchService,
   getEndpointText,
+  getEndpointUrl,
   pollFetchEndpoint,
   requiresAcmeSetup,
   selectAppById,
@@ -48,10 +49,10 @@ import {
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 const handleCopy = (e: SyntheticEvent, text: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    navigator.clipboard.writeText(text);
-  };
+  e.preventDefault();
+  e.stopPropagation();
+  navigator.clipboard.writeText(text);
+};
 
 export function EndpointAppHeaderInfo({
   enp,
@@ -80,9 +81,7 @@ export function EndpointAppHeaderInfo({
               <IconCopy
                 className="h-4 mt-1"
                 color="#888C90"
-                onClick={(e) =>
-                  handleCopy(e, `${enp}`)
-                }
+                onClick={(e) => handleCopy(e, `${getEndpointUrl(enp)}`)}
               />
             </Tooltip>
           </div>
@@ -132,9 +131,7 @@ export function EndpointDatabaseHeaderInfo({
               <IconCopy
                 className="h-4 mt-1"
                 color="#888C90"
-                onClick={(e) =>
-                  handleCopy(e, `${enp}`)
-                }
+                onClick={(e) => handleCopy(e, `${getEndpointUrl(enp)}`)}
               />
             </Tooltip>
           </div>

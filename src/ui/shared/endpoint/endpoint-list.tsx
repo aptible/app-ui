@@ -43,6 +43,12 @@ import { tokens } from "../tokens";
 import { Tooltip } from "../tooltip";
 import { EndpointStatusPill } from "./util";
 
+const handleCopy = (e: SyntheticEvent, text: string) => {
+  e.preventDefault();
+  e.stopPropagation();
+  navigator.clipboard.writeText(text);
+};
+
 export const EndpointItemView = ({
   endpoint,
 }: { endpoint: DeployEndpoint }) => {
@@ -79,9 +85,7 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
             <IconCopy
               className="h-4 mt-1"
               color="#888C90"
-              onClick={(e) =>
-                  handleCopy(e, `${enp}`)
-                }
+              onClick={(e) => handleCopy(e, `${getEndpointUrl(enp)}`)}
             />
           </Tooltip>
         </div>
