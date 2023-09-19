@@ -260,7 +260,7 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
             headers={environmentHeaders}
             rightAlignedFinalCol
             leftAlignedFirstCol
-            centerAlignedColIndices={[3, 4]}
+            centerAlignedColIndices={[4, 5]}
           />
         }
         tableBody={
