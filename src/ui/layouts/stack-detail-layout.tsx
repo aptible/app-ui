@@ -1,4 +1,3 @@
-import { SyntheticEvent } from "react";
 import { fetchStack, getStackType, selectStackById } from "@app/deploy";
 import {
   stackDetailEnvsUrl,
@@ -9,6 +8,7 @@ import {
 import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployStack } from "@app/types";
+import { SyntheticEvent } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router";
@@ -19,9 +19,9 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  IconCopy,
   TabItem,
   Tooltip,
-  IconCopy,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
@@ -55,13 +55,13 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
           <div className="flex flex-row items-center">
             {stack.id}
             <Tooltip text="Copy">
-            <IconCopy
-              variant="sm"
-              className="ml-2"
-              color="#888C90"
-              onClick={(e) => handleCopy(e, `${stack.id}`)}
-            />
-          </Tooltip>
+              <IconCopy
+                variant="sm"
+                className="ml-2"
+                color="#888C90"
+                onClick={(e) => handleCopy(e, `${stack.id}`)}
+              />
+            </Tooltip>
           </div>
         </DetailInfoItem>
         <div className="col-span-2">
