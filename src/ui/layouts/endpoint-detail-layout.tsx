@@ -27,7 +27,7 @@ import type {
   DeployEndpoint,
   DeployService,
 } from "@app/types";
-import { useEffect, useMemo } from "react";
+import { SyntheticEvent, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
 import { useLoader, useQuery } from "saga-query/react";
