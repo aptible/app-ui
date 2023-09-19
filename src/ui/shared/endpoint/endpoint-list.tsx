@@ -93,6 +93,9 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
         </div>
       </Td>
       <Td>
+        {endpoint.id}
+      </Td>
+      <Td>
         {endpoint.resourceType === "app" ? (
           <Link to={appDetailUrl(endpoint.resourceId)}>
             {endpoint.resourceHandle}
@@ -166,6 +169,7 @@ const EndpointHeader = ({
 
 const headers = [
   "URL",
+  "ID",
   "Resource",
   "Status",
   "Placement",
