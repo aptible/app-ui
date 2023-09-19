@@ -311,7 +311,13 @@ export const DatabaseListByEnvironment = ({
     }),
   );
 
-  const headers = ["Handle", "ID", "Environment", "Est. Monthly Cost", "Actions"];
+  const headers = [
+    "Handle",
+    "ID",
+    "Environment",
+    "Est. Monthly Cost",
+    "Actions",
+  ];
   const actions = [
     <ButtonCreate envId={environmentId} onClick={onCreate}>
       <IconPlusCircle variant="sm" />
