@@ -111,18 +111,30 @@ const CreditCardForm = () => {
       <form className="space-y-4" onSubmit={onSubmitForm}>
         <Label>
           <span>Credit Card Number</span>
-          <CardNumberElement />
+          <div className="p-3 border border-gray-300 rounded-md shadow-sm">
+            <CardNumberElement />
+          </div>
         </Label>
 
-        <Label>
-          <span>Expiration Date</span>
-          <CardExpiryElement />
-        </Label>
+        <div className="flex flex-row gap-4">
+          <div className="w-1/2">
+            <Label>
+              <span>Expiration Date</span>
+              <div className="p-3 border border-gray-300 rounded-md shadow-sm">
+                <CardExpiryElement />
+              </div>
+            </Label>
+          </div>
 
-        <Label>
-          <span>CVC</span>
-          <CardCvcElement />
-        </Label>
+          <div className="w-1/2">
+            <Label>
+              <span>CVC</span>
+              <div className="p-3 border border-gray-300 rounded-md shadow-sm">
+                <CardCvcElement />
+              </div>
+            </Label>
+          </div>
+        </div>
 
         <FormGroup label="Name on Card" htmlFor="name-on-card">
           <Input
@@ -197,9 +209,9 @@ export const BillingMethodPage = () => {
           </div>
         </div>
 
-        <div className="flex-1 lg:p-16 p-8">
+        <div className="flex-1 mx-auto max-w-[500px]">
           <Group>
-            <div className="flex justify-center">
+            <div className="flex justify-center pt-[65px] pb-4">
               <AptibleLogo width={160} />
             </div>
 
@@ -226,7 +238,7 @@ export const BillingMethodPage = () => {
             <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100 w-full">
               <CreditCardForm />
 
-              <div className="text-center text-sm">
+              <div className="text-center text-sm mt-4">
                 <p>
                   Prefer to speak to someone first?{" "}
                   <a href="https://www.aptible.com/contact">Schedule a demo</a>{" "}
