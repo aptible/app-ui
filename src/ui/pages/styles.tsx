@@ -69,6 +69,7 @@ import {
   InputSearch,
   LogLine,
   Pill,
+  PreCode,
   Radio,
   RadioGroup,
   Secret,
@@ -80,6 +81,7 @@ import {
   Td,
   TextArea,
   Tooltip,
+  listToTextColor,
   pillStyles,
   tokens,
 } from "../shared";
@@ -384,7 +386,10 @@ const Typography = () => (
 
     <p className={tokens.type.textarea}>Textarea format</p>
 
-    <p className={tokens.type.pre}>Preformatted code</p>
+    <PreCode
+      segments={listToTextColor(["git", "push", "origin", "main"])}
+      allowCopy
+    />
   </div>
 );
 

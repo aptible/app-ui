@@ -1,5 +1,4 @@
-import { SyntheticEvent } from "react";
-import { IconCopy } from "./icons";
+import { CopyTextButton } from "./copy";
 
 interface TextSegment {
   text: string;
@@ -37,11 +36,6 @@ export const PreCode = ({
     return null;
   }
 
-  const handleCopy = (e: SyntheticEvent) => {
-    e.preventDefault();
-    navigator.clipboard.writeText(segments.map((t) => t.text).join(" "));
-  };
-
   return (
     <div className="relative">
       <code
@@ -57,13 +51,12 @@ export const PreCode = ({
         })}
       </code>
       {allowCopy ? (
-        <div
-          title="Copy to clipboard"
-          className="absolute cursor-pointer bg-black px-2"
-          style={{ right: 0, top: 12 }}
-        >
-          <IconCopy color="#888C90" onClick={handleCopy} />
-        </div>
+        <CopyTextButton
+          variant="left"
+          relative={false}
+          text={segments.map((t) => t.text).join(" ")}
+          className="absolute right-2 top-4"
+        />
       ) : null}
     </div>
   );

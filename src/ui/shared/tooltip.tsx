@@ -1,24 +1,32 @@
 import cn from "classnames";
 
+export interface TooltipProps {
+  text: string;
+  children: React.ReactNode;
+  autoSizeWidth?: boolean;
+  fluid?: boolean;
+  rightAnchored?: boolean;
+  className?: string;
+  relative?: boolean;
+  variant?: "top" | "left";
+}
+
 export const Tooltip = ({
   autoSizeWidth = false,
   fluid,
   children,
   rightAnchored = false,
   text,
-}: {
-  autoSizeWidth?: boolean;
-  fluid?: boolean;
-  children: React.ReactNode;
-  rightAnchored?: boolean;
-  text: string;
-}) => {
+  className = "",
+  relative = true,
+  variant = "top",
+}: TooltipProps) => {
   return (
-    <div className="relative tooltip">
+    <div className={`tooltip ${relative ? "relative" : ""} ${className}`}>
       <div className="cursor-pointer">{children}</div>
       <div
         className={cn([
-          "tooltip-inner",
+          `tooltip-${variant}`,
           "z-50",
           rightAnchored ? "-right-3 top-0" : "left-0 top-0",
           "shadow",

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IconCopy } from "./icons";
-import { Tooltip } from "./tooltip";
+import { Tooltip, TooltipProps } from "./tooltip";
 
 const copy = async (text: string) => {
   if (typeof navigator === "undefined") return;
@@ -9,6 +9,22 @@ const copy = async (text: string) => {
 };
 
 export const CopyText = ({ text }: { text: string }) => {
+  return (
+    <div className="flex items-center gap-2">
+      <div>{text}</div>
+      <CopyTextButton text={text} />
+    </div>
+  );
+};
+
+export const CopyTextButton = ({
+  text,
+  color = "#888C90",
+  ...tooltipProps
+}: {
+  text: string;
+  color?: string;
+} & Omit<TooltipProps, "children" | "text">) => {
   const [success, setSuccess] = useState(false);
   const onClick = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     e.preventDefault();
@@ -30,16 +46,13 @@ export const CopyText = ({ text }: { text: string }) => {
   }, [success]);
 
   return (
-    <div className="flex items-center gap-2">
-      <div>{text}</div>
-      <Tooltip text={success ? "Copied!" : "Copy"}>
-        <IconCopy
-          variant="sm"
-          className="active:opacity-50"
-          color="#888C90"
-          onClick={(e) => onClick(e)}
-        />
-      </Tooltip>
-    </div>
+    <Tooltip text={success ? "Copied!" : "Copy"} {...tooltipProps} fluid>
+      <IconCopy
+        variant="sm"
+        className={"active:opacity-50"}
+        color={color}
+        onClick={(e) => onClick(e)}
+      />
+    </Tooltip>
   );
 };
