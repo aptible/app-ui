@@ -30,7 +30,16 @@ export function OpHeader({
 
   return (
     <DetailHeader>
-      <DetailTitleBar title="Operation Details" />
+      <DetailTitleBar
+        title="Operation Details"
+        icon={
+          <img
+            src={"/resource-types/logo-activity.png"}
+            className="w-8 h-8 mr-3"
+            aria-label="Operation"
+          />
+        }
+      />
 
       <DetailInfoGrid>
         <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
