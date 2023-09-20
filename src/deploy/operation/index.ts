@@ -167,7 +167,7 @@ const transformOperationType = (
 
 export const prettyResourceType = (rType: ResourceType): string => {
   if (rType === "vhost") {
-    return "Endpoint"
+    return "Endpoint";
   }
   return capitalize(rType.replace("_", " "));
 };
