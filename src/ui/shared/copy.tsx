@@ -35,7 +35,7 @@ export const CopyText = ({ text }: { text: string }) => {
       <Tooltip text={success ? "Copied!" : "Copy"}>
         <IconCopy
           variant="sm"
-          className="ml-2 active:opacity-50"
+          className="active:opacity-50"
           color="#888C90"
           onClick={(e) => onClick(e)}
         />
