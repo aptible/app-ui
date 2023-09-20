@@ -197,9 +197,9 @@ export const BillingMethodPage = () => {
           </div>
         </div>
 
-        <div className="flex-1 lg:p-16 p-8">
+        <div className="flex-1 mx-auto max-w-[500px]">
           <Group>
-            <div className="flex justify-center">
+            <div className="flex justify-center pt-[65px] pb-4">
               <AptibleLogo width={160} />
             </div>
 
@@ -226,7 +226,7 @@ export const BillingMethodPage = () => {
             <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100 w-full">
               <CreditCardForm />
 
-              <div className="text-center text-sm">
+              <div className="text-center text-sm mt-4">
                 <p>
                   Prefer to speak to someone first?{" "}
                   <a href="https://www.aptible.com/contact">Schedule a demo</a>{" "}
