@@ -27,13 +27,14 @@ import type {
   DeployEndpoint,
   DeployService,
 } from "@app/types";
-import { SyntheticEvent, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
 import { useLoader, useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   Banner,
+  CopyTextButton,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -41,18 +42,10 @@ import {
   DetailTitleBar,
   EndpointStatusPill,
   EndpointUrl,
-  IconCopy,
   Loading,
   TabItem,
-  Tooltip,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
-
-const handleCopy = (e: SyntheticEvent, text: string) => {
-  e.preventDefault();
-  e.stopPropagation();
-  navigator.clipboard.writeText(text);
-};
 
 export function EndpointAppHeaderInfo({
   enp,
@@ -75,16 +68,9 @@ export function EndpointAppHeaderInfo({
 
       <DetailInfoGrid>
         <DetailInfoItem title="URL">
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center gap-2">
             <EndpointUrl enp={enp} />
-            <Tooltip text="Copy">
-              <IconCopy
-                variant="sm"
-                className="ml-2"
-                color="#888C90"
-                onClick={(e) => handleCopy(e, `${getEndpointUrl(enp)}`)}
-              />
-            </Tooltip>
+            <CopyTextButton text={getEndpointUrl(enp)} />
           </div>
         </DetailInfoItem>
         <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
@@ -126,16 +112,9 @@ export function EndpointDatabaseHeaderInfo({
 
       <DetailInfoGrid>
         <DetailInfoItem title="URL">
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center gap-2">
             <EndpointUrl enp={enp} />
-            <Tooltip text="Copy">
-              <IconCopy
-                variant="sm"
-                className="ml-2"
-                color="#888C90"
-                onClick={(e) => handleCopy(e, `${getEndpointUrl(enp)}`)}
-              />
-            </Tooltip>
+            <CopyTextButton text={getEndpointUrl(enp)} />
           </div>
         </DetailInfoItem>
         <DetailInfoItem title="Resource">

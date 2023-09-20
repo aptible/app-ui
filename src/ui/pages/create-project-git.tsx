@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
@@ -79,12 +79,12 @@ import {
   Button,
   ButtonLink,
   Code,
+  CopyTextButton,
   CreateAppEndpointSelector,
   ExternalLink,
   IconArrowRight,
   IconChevronDown,
   IconChevronUp,
-  IconCopy,
   Loading,
   LogViewer,
   PreCode,
@@ -519,12 +519,6 @@ const Op = ({
     return null;
   }
 
-  const handleCopy = (e: SyntheticEvent, text: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    navigator.clipboard.writeText(text);
-  };
-
   const extra = "border-b border-black-100";
   const statusView = () => {
     const cns = "font-semibold flex justify-center items-center";
@@ -615,14 +609,7 @@ const Op = ({
           <div className="flex items-center ml-2">
             <div className="mr-2 text-xs text-black-300">ID: {op.id}</div>
             <div title={`aptible operation:logs ${op.id}`}>
-              <IconCopy
-                variant="sm"
-                color="#888C90"
-                className="cursor-pointer"
-                onClick={(e) =>
-                  handleCopy(e, `aptible operation:logs ${op.id}`)
-                }
-              />
+              <CopyTextButton text={`aptible operation:logs ${op.id}`} />
             </div>
           </div>
         </div>
