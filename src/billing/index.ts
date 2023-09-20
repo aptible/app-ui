@@ -1,10 +1,8 @@
 import { billingApi, thunks } from "@app/api";
-import { selectEnv } from "@app/env";
 import {
   all,
   call,
   put,
-  select,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
@@ -13,7 +11,6 @@ import { defaultHalHref } from "@app/hal";
 import { createAssign, createReducerMap } from "@app/slice-helpers";
 import { AppState, BillingDetail, LinkResponse } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
-import { CreateTokenCardData } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure";
 
 export const defaultBillingDetailResponse = (
@@ -84,13 +81,26 @@ export async function getStripe(stripePublishableKey: string) {
   return loadStripe(stripePublishableKey);
 }
 
-export const createStripeSource = billingApi.post(
+interface StripeSourceProps {
+  id: string;
+  stripeTokenId: string;
+}
+
+export const createStripeSource = billingApi.post<StripeSourceProps>(
   "/billing_details/:id/stripe_sources",
   function* (ctx, next) {
-    const stripePayload: CreateTokenCardData = {};
-
-    const token = yield* call(stripe.createToken, stripePayload);
+    const body = {
+      stripe_token_id: ctx.payload.stripeTokenId,
+    };
+    ctx.request = ctx.req({
+      body: JSON.stringify(body),
+    });
     yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = { message: "Successfully added stripe payment method!" };
   },
 );
 

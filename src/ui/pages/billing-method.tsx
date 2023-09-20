@@ -1,4 +1,8 @@
-import { getStripe } from "@app/billing";
+import {
+  createStripeSource,
+  getStripe,
+  selectBillingDetail,
+} from "@app/billing";
 import {
   fetchActivePlans,
   selectFirstActivePlan,
@@ -6,26 +10,150 @@ import {
 } from "@app/deploy";
 import { selectEnv } from "@app/env";
 import { selectOrganizationSelected } from "@app/organizations";
-import { logoutUrl, plansUrl } from "@app/routes";
+import { homeUrl, logoutUrl, plansUrl } from "@app/routes";
 import { AppState } from "@app/types";
-import { CardElement, Elements } from "@stripe/react-stripe-js";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { useQuery } from "saga-query/react";
+import {
+  CardCvcElement,
+  CardExpiryElement,
+  CardNumberElement,
+  Elements,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
+import { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import { HeroBgView } from "../layouts";
 import {
   AptibleLogo,
   Banner,
+  BannerMessages,
   Button,
   CreateProjectFooter,
+  FormGroup,
   Group,
   IconArrowRight,
+  Input,
+  Label,
 } from "../shared";
 
 const StripeProvider = ({ children }: { children: React.ReactNode }) => {
   const env = useSelector(selectEnv);
+  const stripe = useMemo(() => {
+    return getStripe(env.stripePublishableKey);
+  }, [env.stripePublishableKey]);
+  return <Elements stripe={stripe}>{children}</Elements>;
+};
+
+const CreditCardForm = () => {
+  const billingDetail = useSelector(selectBillingDetail);
+  const navigate = useNavigate();
+  const elements = useElements();
+  const stripe = useStripe();
+  const dispatch = useDispatch();
+  const [nameOnCard, setNameOnCard] = useState("");
+  const [zipcode, setZipcode] = useState("");
+  const [error, setError] = useState("");
+  const loader = useLoader(createStripeSource);
+  const [loading, setLoading] = useState(false);
+
+  useLoaderSuccess(loader, () => {
+    navigate(homeUrl());
+  });
+
+  async function submit() {
+    if (!stripe || !elements) {
+      setError("stripe not found");
+      throw new Error("stripe not found");
+    }
+
+    const result = await elements.submit();
+    if (result.error) {
+      throw new Error(result.error.message || "unknown");
+    }
+
+    const element = elements.getElement(CardNumberElement);
+    if (!element) {
+      throw new Error("stripe card number element not found");
+    }
+
+    const token = await stripe.createToken(element, {
+      name: nameOnCard,
+      address_zip: zipcode,
+    });
+    if (token.error) {
+      throw new Error(token.error.message || "unknown");
+    }
+
+    const stripeTokenId = token.token?.id || "";
+    dispatch(createStripeSource({ id: billingDetail.id, stripeTokenId }));
+    return stripeTokenId;
+  }
+
+  const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoading(true);
+    submit()
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
-    <Elements stripe={getStripe(env.stripePublishableKey)}>{children}</Elements>
+    <Group>
+      {error ? <Banner variant="error">{error}</Banner> : null}
+      <BannerMessages {...loader} />
+
+      <form className="space-y-4" onSubmit={onSubmitForm}>
+        <Label>
+          <span>Credit Card Number</span>
+          <CardNumberElement />
+        </Label>
+
+        <Label>
+          <span>Expiration Date</span>
+          <CardExpiryElement />
+        </Label>
+
+        <Label>
+          <span>CVC</span>
+          <CardCvcElement />
+        </Label>
+
+        <FormGroup label="Name on Card" htmlFor="name-on-card">
+          <Input
+            id="name-on-card"
+            name="name-on-card"
+            type="text"
+            autoComplete="name-on-card"
+            required
+            value={nameOnCard}
+            onChange={(e) => setNameOnCard(e.target.value)}
+          />
+        </FormGroup>
+
+        <FormGroup label="Zipcode" htmlFor="zipcode" className="flex-1">
+          <Input
+            name="zipcode"
+            value={zipcode}
+            onChange={(e) => setZipcode(e.target.value)}
+            required
+          />
+        </FormGroup>
+
+        <Button
+          type="submit"
+          className="font-semibold w-full"
+          isLoading={loader.isLoading || loading}
+        >
+          Save Payment
+        </Button>
+      </form>
+    </Group>
   );
 };
 
@@ -36,10 +164,6 @@ export const BillingMethodPage = () => {
   const plan = useSelector((s: AppState) =>
     selectPlanById(s, { id: activePlan.planId }),
   );
-
-  const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  };
 
   return (
     <StripeProvider>
@@ -100,12 +224,7 @@ export const BillingMethodPage = () => {
             </Banner>
 
             <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100 w-full">
-              <form className="space-y-4" onSubmit={onSubmitForm}>
-                <CardElement />
-                <Button type="submit" className="font-semibold w-full">
-                  Save Payment
-                </Button>
-              </form>
+              <CreditCardForm />
 
               <div className="text-center text-sm">
                 <p>

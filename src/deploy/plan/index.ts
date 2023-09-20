@@ -297,6 +297,10 @@ export const updateActivePlan = api.put<UpdateActivePlan>(
 
     yield* next();
 
+    if (!ctx.json.ok) {
+      return;
+    }
+
     ctx.actions.push(removeActivePlans([ctx.payload.id]));
     const name = capitalize(ctx.payload.name);
     ctx.loader = {
