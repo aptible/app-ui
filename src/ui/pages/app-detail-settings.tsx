@@ -43,6 +43,7 @@ import {
   Input,
   Label,
   PreCode,
+  TextArea,
   listToInvertedTextColor,
 } from "../shared";
 
@@ -202,6 +203,14 @@ const AppNameChange = ({ app }: AppProps) => {
             </ul>
           </Banner>
         ) : null}
+      </FormGroup>
+      <FormGroup label="App Notes" htmlFor="input-notes">
+        <TextArea
+          name="input-notes"
+          type="text"
+          autoComplete="name"
+          id="input-notes"
+        />
       </FormGroup>
 
       <BannerMessages {...loader} />

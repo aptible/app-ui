@@ -75,6 +75,9 @@ export function AppHeader({ app }: { app: DeployApp }) {
         </DetailInfoItem>
         <DetailInfoItem title="Docker Image">{image.dockerRepo}</DetailInfoItem>
       </DetailInfoGrid>
+      <DetailInfoItem title="App Notes">
+        <div>can be deprovisioned after 2023-12-01, confirm with Joe</div>
+      </DetailInfoItem>
     </DetailHeader>
   );
 }
