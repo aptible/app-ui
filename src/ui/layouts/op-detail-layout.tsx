@@ -56,14 +56,14 @@ export function OpHeader({
 
         <DetailInfoItem title="Resource">
           {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
-          <div className="text-gray-500 text-sm">
+          <div className="text-gray-500">
             {prettyResourceType(op.resourceType)}
           </div>
         </DetailInfoItem>
-        <DetailInfoItem title="User">{op.userName}</DetailInfoItem>
-
-        <DetailInfoItem title=""> </DetailInfoItem>
-        <DetailInfoItem title="Note">{op.note || "N/A"}</DetailInfoItem>
+        <DetailInfoItem title="User">
+          {op.userName}
+          <div className="text-gray-500">Note: {op.note || "N/A"}</div>
+        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
