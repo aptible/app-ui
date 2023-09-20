@@ -64,21 +64,16 @@ export function AppHeader({ app }: { app: DeployApp }) {
 
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
-        <div className="col-span-2">
-          <DetailInfoItem title="Git Remote">
-            <CopyText text={app.gitRepo} />
-          </DetailInfoItem>
-        </div>
+        <DetailInfoItem title="Git Remote">
+          <CopyText text={app.gitRepo} />
+        </DetailInfoItem>
+
         <DetailInfoItem title="Last Deployed">
           {lastDeployOp
             ? `${prettyEnglishDate(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
-        <div className="col-span-2">
-          <DetailInfoItem title="Docker Image">
-            {image.dockerRepo}
-          </DetailInfoItem>
-        </div>
+        <DetailInfoItem title="Docker Image">{image.dockerRepo}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
