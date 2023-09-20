@@ -43,23 +43,19 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
 
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{stack.id}</DetailInfoItem>
-        <div className="col-span-2">
-          <DetailInfoItem title="Memory Management">
-            {stack.memoryLimits ? "Enabled" : "Disabled"}
-          </DetailInfoItem>
-        </div>
+        <DetailInfoItem title="Memory Management">
+          {stack.memoryLimits ? "Enabled" : "Disabled"}
+        </DetailInfoItem>
+
         <DetailInfoItem title="Tenancy">{capitalize(stackType)}</DetailInfoItem>
-        <div className="col-span-2">
-          <DetailInfoItem title="CPU Isolation">
-            {stack.cpuLimits ? "Enabled" : "Disabled"}
-          </DetailInfoItem>
-        </div>
+        <DetailInfoItem title="CPU Isolation">
+          {stack.cpuLimits ? "Enabled" : "Disabled"}
+        </DetailInfoItem>
+
         <DetailInfoItem title="Region">{stack.region}</DetailInfoItem>
-        <div className="col-span-2">
-          <DetailInfoItem title="Outbound IP Addresses">
-            {stack.outboundIpAddresses.join(", ")}
-          </DetailInfoItem>
-        </div>
+        <DetailInfoItem title="Outbound IP Addresses">
+          {stack.outboundIpAddresses.join(", ")}
+        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );

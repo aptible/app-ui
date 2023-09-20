@@ -75,7 +75,7 @@ export function EnvHeader({
         docsUrl="https://www.aptible.com/docs/environments"
       />
 
-      <DetailInfoGrid>
+      <DetailInfoGrid columns={3}>
         <DetailInfoItem title="ID">{environment.id}</DetailInfoItem>
         <DetailInfoItem
           title={`${environment.totalAppCount} App${
