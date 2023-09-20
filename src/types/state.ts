@@ -43,6 +43,7 @@ export interface Env {
   metricTunnelUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
+  stripePublishableKey: string;
   origin: "app";
 }
 
@@ -91,6 +92,7 @@ export interface Organization {
   name: string;
   updatedAt: string;
   reauthRequired: boolean;
+  billingDetailId: string;
 }
 
 export interface U2fDevice {
@@ -175,6 +177,11 @@ export interface ContainerMetrics {
   values: { date: string; value: number }[];
 }
 
+export interface BillingDetail {
+  id: string;
+  paymentMethodUrl: string;
+}
+
 export interface AppState extends QueryState {
   env: Env;
   feedback: Feedback;
@@ -199,6 +206,7 @@ export interface AppState extends QueryState {
   signal: AbortController;
   resourceStats: MapEntity<ResourceStats>;
   containerMetrics: MapEntity<ContainerMetrics>;
+  billingDetail: BillingDetail;
 }
 
 export interface DeployActivityRow extends DeployOperation {

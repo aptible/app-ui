@@ -22,7 +22,7 @@ import { defaultHalHref } from "@app/hal";
 import { PlansPage } from "./plans";
 
 const commonFail = async (
-  req: RestRequest,
+  _: RestRequest,
   res: ResponseComposition,
   ctx: RestContext,
 ) => {
@@ -37,10 +37,11 @@ const commonFail = async (
     }),
   );
 };
+
 const setupActionablePlanResponses = (extra: RestHandler[] = []) => {
   const fixedIdForTests = createId();
   server.use(
-    rest.get(`${testEnv.apiUrl}/active_plans`, async (req, res, ctx) => {
+    rest.get(`${testEnv.apiUrl}/active_plans`, async (_, res, ctx) => {
       return res(
         ctx.json({
           _embedded: {
@@ -55,7 +56,7 @@ const setupActionablePlanResponses = (extra: RestHandler[] = []) => {
         }),
       );
     }),
-    rest.get(`${testEnv.apiUrl}/plans`, async (req, res, ctx) => {
+    rest.get(`${testEnv.apiUrl}/plans`, async (_, res, ctx) => {
       return res(
         ctx.json({
           _embedded: {
@@ -87,11 +88,12 @@ describe("Plans page", () => {
     setupActionablePlanResponses();
     await screen.findByText("Choose a Plan");
     await screen.findByText("Starter");
-    const errText = await screen.queryByText(
+    const errText = screen.queryByText(
       "Unable to load plan data to allow for selection.",
     );
     expect(errText).not.toBeInTheDocument();
   });
+
   it("the plans page is visible and renders with plans found and user selects plan", async () => {
     const { TestProvider } = setupIntegrationTest();
     render(
@@ -103,7 +105,7 @@ describe("Plans page", () => {
     await screen.findByText("Choose a Plan");
     await screen.findByText("Growth");
 
-    const errText = await screen.queryByText(
+    const errText = screen.queryByText(
       "Unable to load plan data to allow for selection.",
     );
     expect(errText).not.toBeInTheDocument();
@@ -112,19 +114,21 @@ describe("Plans page", () => {
       name: /Select Plan/,
     });
 
-    await fireEvent.click(el);
+    fireEvent.click(el);
     await screen.findByText(/Successfully updated plan to Growth/);
   });
+
   it("the plans page is visible, renders with plans found, but errors when user selects", async () => {
+    setupActionablePlanResponses([
+      rest.put(`${testEnv.apiUrl}/active_plans*`, commonFail),
+    ]);
     const { TestProvider } = setupIntegrationTest();
     render(
       <TestProvider>
         <PlansPage />
       </TestProvider>,
     );
-    setupActionablePlanResponses([
-      rest.put(`${testEnv.apiUrl}/active_plans*`, commonFail),
-    ]);
+
     await screen.findByText("Choose a Plan");
     await screen.findByText("Growth");
 
@@ -132,9 +136,10 @@ describe("Plans page", () => {
       name: /Select Plan/,
     });
 
-    await fireEvent.click(el);
+    fireEvent.click(el);
     await screen.findByText(/mock error message/);
   });
+
   it("errors on active plan load failure", async () => {
     const { TestProvider } = setupIntegrationTest();
     render(
@@ -145,6 +150,7 @@ describe("Plans page", () => {
     server.use(rest.get(`${testEnv.apiUrl}/active_plans*`, commonFail));
     await screen.findByText(/mock error message/);
   });
+
   it("errors on plans list load failure", async () => {
     const { TestProvider } = setupIntegrationTest();
     render(

@@ -1,8 +1,5 @@
-import { updateAndRefreshActivePlans } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { DeployActivePlan, DeployPlan, PlanName } from "@app/types";
-import { ReactElement, SyntheticEvent } from "react";
-import { useDispatch } from "react-redux";
 import { Button, ButtonLinkExternal } from "./button";
 import { IconCheckCircle } from "./icons";
 import { tokens } from "./tokens";
@@ -15,6 +12,25 @@ const descriptionTextForPlan = (planName: PlanName): string =>
     enterprise: "Meet the highest requirements for security and reliability",
   })[planName];
 
+const Section = ({
+  children,
+  title = "",
+}: { children: React.ReactNode; title?: string }) => {
+  return (
+    <div className="flex justify-between">
+      <div className="w-1/3">{title}</div>
+      {children}
+    </div>
+  );
+};
+
+const SectionItem = ({
+  children,
+  className = "",
+}: { children: React.ReactNode; className?: string }) => {
+  return <div className={`text-center w-1/3 ${className}`}>{children}</div>;
+};
+
 const PlanButton = ({
   available,
   contactUs,
@@ -23,7 +39,7 @@ const PlanButton = ({
 }: {
   available: boolean;
   contactUs: boolean;
-  onClick: (e: SyntheticEvent) => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   selected: boolean;
 }) => {
   if (contactUs) {
@@ -63,7 +79,7 @@ const PlanCostBlock = ({
 }: {
   plan: DeployPlan;
   precedingPlan?: DeployPlan;
-}): ReactElement => {
+}) => {
   return (
     <div className="flex justify-between mb-2">
       <div>
@@ -84,7 +100,7 @@ const IconLi = ({
   children,
 }: {
   children?: React.ReactNode;
-}): ReactElement => {
+}) => {
   return (
     <li>
       <div className="flex my-1 pt-2">
@@ -103,31 +119,32 @@ const BulletListForPlan = ({
 }: {
   plan: DeployPlan;
   precedingPlan?: DeployPlan;
-}): ReactElement => {
+}) => {
   if (plan.name === "starter") {
     return (
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
-        <div className="flex">
-          <div className="flex-1" />
-          <div className="flex-1 text-center font-semibold">Includes</div>
-          <div className="flex-1 text-center font-semibold">Available</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">Compute</div>
-          <div className="flex-1 text-center">-</div>
-          <div className="flex-1 text-center">3 GB</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">DB Storage</div>
-          <div className="flex-1 text-center">-</div>
-          <div className="flex-1 text-center">20 GB</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">Endpoints</div>
-          <div className="flex-1 text-center">-</div>
-          <div className="flex-1 text-center">1</div>
-        </div>
+
+        <Section>
+          <SectionItem className="font-semibold">Includes</SectionItem>
+          <SectionItem className="font-semibold">Available</SectionItem>
+        </Section>
+
+        <Section title="Compute">
+          <SectionItem>-</SectionItem>
+          <SectionItem>3 GB</SectionItem>
+        </Section>
+
+        <Section title="DB Storage">
+          <SectionItem>-</SectionItem>
+          <SectionItem>20 GB</SectionItem>
+        </Section>
+
+        <Section title="Endpoints">
+          <SectionItem>-</SectionItem>
+          <SectionItem>1</SectionItem>
+        </Section>
+
         <ul>
           <IconLi>
             Deploy on Shared Stacks (Networking and Compute shared with other
@@ -141,26 +158,27 @@ const BulletListForPlan = ({
     return (
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
-        <div className="flex">
-          <div className="flex-1" />
-          <div className="flex-1 text-center font-semibold">Includes</div>
-          <div className="flex-1 text-center font-semibold">Available</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">Compute</div>
-          <div className="flex-1 text-center">3 GB</div>
-          <div className="flex-1 text-center">11 GB</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">DB Storage</div>
-          <div className="flex-1 text-center">10 GB</div>
-          <div className="flex-1 text-center">60 GB</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">Endpoints</div>
-          <div className="flex-1 text-center">1</div>
-          <div className="flex-1 text-center">3</div>
-        </div>
+
+        <Section>
+          <SectionItem className="font-semibold">Includes</SectionItem>
+          <SectionItem className="font-semibold">Available</SectionItem>
+        </Section>
+
+        <Section title="Compute">
+          <SectionItem>3 GB</SectionItem>
+          <SectionItem>11 GB</SectionItem>
+        </Section>
+
+        <Section title="DB Storage">
+          <SectionItem>10 GB</SectionItem>
+          <SectionItem>60 GB</SectionItem>
+        </Section>
+
+        <Section title="Endpoints">
+          <SectionItem>1</SectionItem>
+          <SectionItem>3</SectionItem>
+        </Section>
+
         <ul>
           <IconLi>15% discount on included resources</IconLi>
           <IconLi>
@@ -177,26 +195,27 @@ const BulletListForPlan = ({
     return (
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
-        <div className="flex">
-          <div className="flex-1" />
-          <div className="flex-1 text-center font-semibold">Includes</div>
-          <div className="flex-1 text-center font-semibold">Available</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">Compute</div>
-          <div className="flex-1 text-center">10 GB</div>
-          <div className="flex-1 text-center">40 GB</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">DB Storage</div>
-          <div className="flex-1 text-center">100 GB</div>
-          <div className="flex-1 text-center">200 GB</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">Endpoints</div>
-          <div className="flex-1 text-center">4</div>
-          <div className="flex-1 text-center">20</div>
-        </div>
+
+        <Section>
+          <SectionItem className="font-semibold">Includes</SectionItem>
+          <SectionItem className="font-semibold">Available</SectionItem>
+        </Section>
+
+        <Section title="Compute">
+          <SectionItem>10 GB</SectionItem>
+          <SectionItem>40 GB</SectionItem>
+        </Section>
+
+        <Section title="DB Storage">
+          <SectionItem>100 GB</SectionItem>
+          <SectionItem>200 GB</SectionItem>
+        </Section>
+
+        <Section title="Endpoints">
+          <SectionItem>4</SectionItem>
+          <SectionItem>20</SectionItem>
+        </Section>
+
         <ul>
           <IconLi>20% discount on included resources</IconLi>
           <IconLi>
@@ -212,26 +231,27 @@ const BulletListForPlan = ({
     return (
       <>
         <PlanCostBlock plan={plan} precedingPlan={precedingPlan} />
-        <div className="flex">
-          <div className="flex-1" />
-          <div className="flex-1 text-center font-semibold">Includes</div>
-          <div className="flex-1 text-center font-semibold">Available</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">Compute</div>
-          <div className="flex-1 text-center">Custom</div>
-          <div className="flex-1 text-center">Unlimited</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">DB Storage</div>
-          <div className="flex-1 text-center">Custom</div>
-          <div className="flex-1 text-center">Unlimited</div>
-        </div>
-        <div className="flex">
-          <div className="flex-1">Endpoints</div>
-          <div className="flex-1 text-center">Custom</div>
-          <div className="flex-1 text-center">Unlimited</div>
-        </div>
+
+        <Section>
+          <SectionItem className="font-semibold">Includes</SectionItem>
+          <SectionItem className="font-semibold">Available</SectionItem>
+        </Section>
+
+        <Section title="Compute">
+          <SectionItem>Custom</SectionItem>
+          <SectionItem>Unlimited</SectionItem>
+        </Section>
+
+        <Section title="DB Storage">
+          <SectionItem>Custom</SectionItem>
+          <SectionItem>Unlimited</SectionItem>
+        </Section>
+
+        <Section title="Endpoints">
+          <SectionItem>Custom</SectionItem>
+          <SectionItem>Unlimited</SectionItem>
+        </Section>
+
         <ul>
           <IconLi>
             No limits on available Compute, Database Storage, or Endpoints
@@ -258,35 +278,22 @@ const BulletListForPlan = ({
 };
 
 const PlanCard = ({
-  activePlan,
   plan,
   available,
   selected,
   precedingPlan,
+  onSelectPlan,
 }: {
-  activePlan: DeployActivePlan;
   plan: DeployPlan;
   available: boolean;
   selected: boolean;
   precedingPlan?: DeployPlan;
-}): ReactElement => {
-  const dispatch = useDispatch();
-
+  onSelectPlan: () => void;
+}) => {
   const borderColor = selected ? "border-orange-200" : "border-black-100";
   const bottomSectionBgColor = selected
     ? "bg-orange-100 border-orange-200"
     : "bg-gray-100 border-gray-200";
-
-  const handlePlanChange = (e: SyntheticEvent) => {
-    e.preventDefault();
-    dispatch(
-      updateAndRefreshActivePlans({
-        id: activePlan.id,
-        planId: plan.id,
-        name: plan.name,
-      }),
-    );
-  };
 
   // on responsive stack em (4/2/1 if possible or just stack)
   // hover color change only on button
@@ -310,7 +317,7 @@ const PlanCard = ({
             available={available}
             contactUs={plan.name === "enterprise"}
             selected={selected}
-            onClick={handlePlanChange}
+            onClick={onSelectPlan}
           />
         </div>
       </div>
@@ -327,12 +334,14 @@ export const Plans = ({
   plans,
   activePlan,
   selectedPlan,
+  onSelectPlan,
 }: {
   plans: DeployPlan[];
-  activePlan?: DeployActivePlan;
+  activePlan: DeployActivePlan;
   selectedPlan: DeployPlan;
+  onSelectPlan: (p: { planId: string; name: string }) => void;
 }) => {
-  if (!activePlan) {
+  if (activePlan.id === "") {
     return <div className="mt-4">No active plan found to proceed.</div>;
   }
 
@@ -359,10 +368,12 @@ export const Plans = ({
         <PlanCard
           key={plan.id}
           plan={plan}
-          activePlan={activePlan}
           available={activePlan.availablePlans.includes(plan.name)}
           precedingPlan={idx > 0 ? plans[idx - 1] : undefined}
           selected={plan.name === selectedPlan.name}
+          onSelectPlan={() =>
+            onSelectPlan({ planId: plan.id, name: plan.name })
+          }
         />
       ))}
     </div>

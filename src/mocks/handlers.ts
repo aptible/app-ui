@@ -22,6 +22,7 @@ import {
   testActivePlan,
   testApp,
   testBackupRp,
+  testBillingDetail,
   testCodeScanResult,
   testConfiguration,
   testDatabaseId,
@@ -591,6 +592,9 @@ const apiHandlers = [
 ];
 
 const billingHandlers = [
+  rest.get(`${testEnv.billingUrl}/billing_details/:id`, async (_, res, ctx) => {
+    return res(ctx.json(testBillingDetail));
+  }),
   rest.post(`${testEnv.billingUrl}/billing_details`, async (_, res, ctx) => {
     return res(ctx.json({}));
   }),

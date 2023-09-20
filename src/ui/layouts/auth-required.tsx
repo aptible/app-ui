@@ -6,7 +6,7 @@ import { selectIsUserAuthenticated } from "@app/token";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useVerifiedRequired } from "../hooks";
+import { usePaymentRequired, useVerifiedRequired } from "../hooks";
 import { Loading } from "../shared";
 
 const denyList = [logoutUrl(), loginUrl(), signupUrl(), homeUrl()];
@@ -18,6 +18,7 @@ export const AuthRequired = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useVerifiedRequired();
+  usePaymentRequired();
 
   useEffect(() => {
     if (loader.isLoading) {

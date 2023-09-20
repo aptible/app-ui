@@ -15,6 +15,9 @@ export const createEnv = (e: Partial<Env> = {}): Env => {
     legacyDashboardUrl:
       import.meta.env.VITE_LEGACY_DASHBOARD_URL ||
       "https://dashboard.aptible.com",
+    stripePublishableKey:
+      import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
+      "pk_test_eiw5HXHTAgTwyNnV9I5ruCrA",
     ...e,
   };
 };
