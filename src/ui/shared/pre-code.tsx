@@ -62,7 +62,11 @@ export const PreCode = ({
           className="absolute cursor-pointer bg-black px-2"
           style={{ right: 0, top: 12 }}
         >
-          <IconCopy color="#888C90" onClick={handleCopy} />
+          <IconCopy
+            color="#888C90"
+            className="active:opacity-50"
+            onClick={handleCopy}
+          />
         </div>
       ) : null}
     </div>

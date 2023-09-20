@@ -618,7 +618,7 @@ const Op = ({
               <IconCopy
                 variant="sm"
                 color="#888C90"
-                className="cursor-pointer"
+                className="cursor-pointer active:opacity-50"
                 onClick={(e) =>
                   handleCopy(e, `aptible operation:logs ${op.id}`)
                 }

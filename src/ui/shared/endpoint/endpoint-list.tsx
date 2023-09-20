@@ -85,7 +85,7 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
           <Tooltip text="Copy">
             <IconCopy
               variant="sm"
-              className="ml-2"
+              className="ml-2 active:opacity-50"
               color="#888C90"
               onClick={(e) => handleCopy(e, `${getEndpointUrl(endpoint)}`)}
             />
