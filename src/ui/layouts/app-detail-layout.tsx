@@ -29,6 +29,7 @@ import { useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
+  CopyText,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -64,7 +65,9 @@ export function AppHeader({ app }: { app: DeployApp }) {
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
         <div className="col-span-2">
-          <DetailInfoItem title="Git Remote">{app.gitRepo}</DetailInfoItem>
+          <DetailInfoItem title="Git Remote">
+            <CopyText text={app.gitRepo} />
+          </DetailInfoItem>
         </div>
         <DetailInfoItem title="Last Deployed">
           {lastDeployOp
