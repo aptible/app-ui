@@ -1,32 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconCopy } from "./icons";
 import { Tooltip } from "./tooltip";
 
+const copy = async (text: string) => {
+  if (typeof navigator === "undefined") return;
+  if (typeof navigator.clipboard === "undefined") return;
+  await navigator.clipboard.writeText(text);
+};
+
 export const CopyText = ({ text }: { text: string }) => {
   const [success, setSuccess] = useState(false);
-  const copy = async () => {
-    if (typeof navigator === "undefined") {
-      return;
-    }
-
-    if (typeof navigator.clipboard === "undefined") {
-      return;
-    }
-
-    await navigator.clipboard.writeText(text);
-  };
-
   const onClick = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    copy().then(() => {
+    copy(text).then(() => {
       setSuccess(true);
-      setTimeout(() => {
-        setSuccess(false);
-      }, 1500);
     });
   };
+
+  useEffect(() => {
+    if (!success) return;
+
+    const timer = setTimeout(() => {
+      setSuccess(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [success]);
 
   return (
     <div className="flex items-center gap-2">
