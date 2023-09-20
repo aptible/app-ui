@@ -4,13 +4,14 @@ import {
   fetchApps,
   fetchEnvironmentById,
   fetchEnvironments,
+  restartApp,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
   selectLatestOpByAppId,
   selectServicesByAppId,
 } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import {
   appDetailUrl,
   environmentCreateAppUrl,
@@ -18,10 +19,10 @@ import {
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ActionList, ActionListView } from "../action-list-view";
-import { ButtonCreate } from "../button";
+import { Button, ButtonCreate, ButtonOps } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -99,6 +100,35 @@ const AppCostCell = ({ app }: AppCellProps) => {
   );
 };
 
+const AppActionsCell = ({ app }: AppCellProps) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const action = restartApp({ id: app.id });
+  const loader = useLoader(action);
+  const onClick = () => {
+    dispatch(action);
+  };
+  useLoaderSuccess(loader, () => {
+    navigate(operationDetailUrl(loader.meta.opId));
+  });
+  return (
+    <Td>
+      <div className="flex justify-end mr-4">
+        <ButtonOps
+          envId={app.environmentId}
+          variant="primary"
+          size="sm"
+          onClick={onClick}
+          isLoading={loader.isLoading}
+          requireConfirm
+        >
+          Restart
+        </ButtonOps>
+      </div>
+    </Td>
+  );
+};
+
 export const AppLastOpCell = ({ app }: AppCellProps) => {
   const lastOperation = useSelector((s: AppState) =>
     selectLatestOpByAppId(s, { appId: app.id }),
@@ -137,6 +167,7 @@ const AppListRow = ({ app }: AppCellProps) => {
       <EnvStackCell environmentId={app.environmentId} />
       <AppServicesCell app={app} />
       <AppCostCell app={app} />
+      <AppActionsCell app={app} />
     </tr>
   );
 };
@@ -147,6 +178,7 @@ const appHeaders: Header[] = [
   "Environment",
   "Services",
   "Est. Monthly Cost",
+  "Actions",
 ];
 
 export const AppList = ({
@@ -159,7 +191,7 @@ export const AppList = ({
   return (
     <ResourceListView
       header={headerTitleBar}
-      tableHeader={<TableHead headers={appHeaders} />}
+      tableHeader={<TableHead rightAlignedFinalCol headers={appHeaders} />}
       tableBody={
         <>
           {apps.map((app) => (
