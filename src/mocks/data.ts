@@ -1,3 +1,4 @@
+import { defaultBillingDetailResponse } from "@app/billing";
 import {
   defaultActivePlanResponse,
   defaultAppResponse,
@@ -484,5 +485,14 @@ export const testBackupRp = defaultBackupRpResponse({
   make_copy: false,
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccountId}`),
+  },
+});
+
+export const testBillingDetail = defaultBillingDetailResponse({
+  id: `${createId()}`,
+  _links: {
+    payment_method: defaultHalHref(
+      `${testEnv.billingUrl}/external_payment_sources/404`,
+    ),
   },
 });

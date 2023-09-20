@@ -33,3 +33,6 @@ html, body, #app {
   display: inline;
 }
 
+.hero-bg {
+  background-image: url(/background-pattern-v2.png);
+}
