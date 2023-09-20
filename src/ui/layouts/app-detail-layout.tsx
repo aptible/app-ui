@@ -22,7 +22,7 @@ import {
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
 import type { AppState, DeployApp } from "@app/types";
-import { useEffect, useMemo } from "react";
+import { SyntheticEvent, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
@@ -34,11 +34,18 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  IconCopy,
   TabItem,
+  Tooltip,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function AppHeader({ app }: { app: DeployApp }) {
+  const handleCopy = (e: SyntheticEvent, text: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+  };
   const lastDeployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
@@ -64,7 +71,19 @@ export function AppHeader({ app }: { app: DeployApp }) {
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
         <div className="col-span-2">
-          <DetailInfoItem title="Git Remote">{app.gitRepo}</DetailInfoItem>
+          <DetailInfoItem title="Git Remote">
+            <div className="flex flex-row items-center">
+              {app.gitRepo}
+              <Tooltip text="Copy">
+                <IconCopy
+                  variant="sm"
+                  className="ml-2 active:opacity-50"
+                  color="#888C90"
+                  onClick={(e) => handleCopy(e, `${app.gitRepo}`)}
+                />
+              </Tooltip>
+            </div>
+          </DetailInfoItem>
         </div>
         <DetailInfoItem title="Last Deployed">
           {lastDeployOp
