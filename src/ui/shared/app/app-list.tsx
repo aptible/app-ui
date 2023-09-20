@@ -22,7 +22,7 @@ import type { AppState, DeployApp } from "@app/types";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ActionList, ActionListView } from "../action-list-view";
-import { Button, ButtonCreate, ButtonOps } from "../button";
+import { ButtonCreate, ButtonOps } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
 import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
