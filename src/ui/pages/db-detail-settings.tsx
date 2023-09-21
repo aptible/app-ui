@@ -39,6 +39,7 @@ import {
   ButtonDestroy,
   ButtonLinkExternal,
   ButtonOps,
+  CheckBox,
   ExternalLink,
   FormGroup,
   Group,
@@ -117,16 +118,16 @@ const DatabaseRestartRecreate = ({ database }: DbProps) => {
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [restartRecreateConfirm, setRestartRecreateConfirm] = useState<string>("");
   const [containerProfileType, setContainerProfileType] =
     useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
+  const [confirm, setConfirm] = useState(false);
   const action = restartRecreateDatabase({ id: database.id, containerProfile: containerProfileType });
   const loader = useLoader(action);
   const onSubmit = () => {
     dispatch(action);
     navigate(databaseActivityUrl(database.id))
   };
-  const isDisabled = database.handle !== restartRecreateConfirm;
+  const invalid = !confirm;
 
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
@@ -172,12 +173,12 @@ const DatabaseRestartRecreate = ({ database }: DbProps) => {
         </p>
         <Group>
           <FormGroup
-            splitWidthInputs
             label="Container Profile"
             htmlFor="container-profile"
           >
             <Select
               id="container-profile"
+              className="w-1/2"
               ariaLabel="container-profile"
               disabled={Object.keys(containerProfilesForStack).length <= 1}
               value={containerProfileType}
@@ -185,25 +186,19 @@ const DatabaseRestartRecreate = ({ database }: DbProps) => {
               options={profileOptions}
             />
           </FormGroup>
-        </Group>
-        <Group variant="horizontal" size="sm" className="items-center">
-          <Input
-            className="flex-1"
-            name="restart-recreate-confirm"
-            type="text"
-            value={restartRecreateConfirm}
-            onChange={(e) => setRestartRecreateConfirm(e.currentTarget.value)}
-            id="restart-recreate-confirm"
+          <CheckBox
+            label="I understand the warning above"
+            checked={confirm}
+            onChange={(e) => setConfirm(e.currentTarget.checked)}
           />
           <ButtonDestroy
             envId={database.environmentId}
-            variant="delete"
-            disabled={isDisabled}
+            variant="primary"
+            disabled={invalid}
             isLoading={loader.isLoading}
-            className="w-70"
             type="submit"
+            className="w-fit"
           >
-            <IconAlertTriangle color="#FFF" className="mr-2" />
             Restart Database with Disk Backup and Restore
           </ButtonDestroy>
         </Group>
