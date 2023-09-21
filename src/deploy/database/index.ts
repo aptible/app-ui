@@ -708,6 +708,31 @@ export const restartDatabase = api.post<
   };
 });
 
+export const restartRecreateDatabase = api.post<
+  { id: string, containerProfile: InstanceClass },
+  DeployOperationResponse
+>(["/databases/:id/operations", "restart_recreate"], function* (ctx, next) {
+  const { id, containerProfile } = ctx.payload;
+  const body = {
+    type: "restart_recreate",
+    id,
+    instance_profile: containerProfile,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Restart database with disk move operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
+
 export const scaleDatabase = api.post<
   DatabaseScaleProps,
   DeployOperationResponse
