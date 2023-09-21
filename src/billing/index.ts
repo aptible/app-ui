@@ -1,13 +1,5 @@
-import { billingApi, thunks } from "@app/api";
-import {
-  all,
-  batchActions,
-  call,
-  put,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
+import { billingApi, cacheTimer, thunks } from "@app/api";
+import { all, call } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
 import { createAssign, createReducerMap } from "@app/slice-helpers";
 import { AppState, BillingDetail, LinkResponse } from "@app/types";
@@ -107,10 +99,12 @@ export const createStripeSource = billingApi.post<StripeSourceProps>(
 
 export const fetchStripeSources = billingApi.get<{ id: string }>(
   "/billing_details/:id/stripe_sources",
+  { saga: cacheTimer() },
   billingApi.cache(),
 );
 export const fetchTrials = billingApi.get<{ id: string }>(
   "/billing_details/:id/trials",
+  { saga: cacheTimer() },
   billingApi.cache(),
 );
 // const fetchExternalPaymentSources = billingApi.get<{ id: string }>('/billing_details/:id/external_payment_sources');

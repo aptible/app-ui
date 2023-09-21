@@ -595,6 +595,18 @@ const billingHandlers = [
   rest.get(`${testEnv.billingUrl}/billing_details/:id`, async (_, res, ctx) => {
     return res(ctx.json(testBillingDetail));
   }),
+  rest.get(
+    `${testEnv.billingUrl}/billing_details/:id/trials`,
+    async (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { trials: [] } }));
+    },
+  ),
+  rest.get(
+    `${testEnv.billingUrl}/billing_details/:id/stripe_sources`,
+    async (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { stripe_sources: [] } }));
+    },
+  ),
   rest.post(`${testEnv.billingUrl}/billing_details`, async (_, res, ctx) => {
     return res(ctx.json({}));
   }),
