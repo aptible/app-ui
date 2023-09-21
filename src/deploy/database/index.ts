@@ -709,7 +709,7 @@ export const restartDatabase = api.post<
 });
 
 export const restartRecreateDatabase = api.post<
-  { id: string, containerProfile: InstanceClass },
+  { id: string; containerProfile: InstanceClass },
   DeployOperationResponse
 >(["/databases/:id/operations", "restart_recreate"], function* (ctx, next) {
   const { id, containerProfile } = ctx.payload;

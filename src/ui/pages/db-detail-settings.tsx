@@ -20,7 +20,11 @@ import {
   updateDatabase,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { databaseActivityUrl, environmentDatabasesUrl, operationDetailUrl } from "@app/routes";
+import {
+  databaseActivityUrl,
+  environmentDatabasesUrl,
+  operationDetailUrl,
+} from "@app/routes";
 import {
   AppState,
   DeployDatabase,
@@ -114,18 +118,21 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
 
 const DatabaseRestartRecreate = ({ database }: DbProps) => {
   const environment = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: database.environmentId}),
+    selectEnvironmentById(s, { id: database.environmentId }),
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [containerProfileType, setContainerProfileType] =
     useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
   const [confirm, setConfirm] = useState(false);
-  const action = restartRecreateDatabase({ id: database.id, containerProfile: containerProfileType });
+  const action = restartRecreateDatabase({
+    id: database.id,
+    containerProfile: containerProfileType,
+  });
   const loader = useLoader(action);
   const onSubmit = () => {
     dispatch(action);
-    navigate(databaseActivityUrl(database.id))
+    navigate(databaseActivityUrl(database.id));
   };
   const invalid = !confirm;
 
@@ -167,15 +174,13 @@ const DatabaseRestartRecreate = ({ database }: DbProps) => {
 
       <Group>
         <p>
-          This action will restart <strong>{database.handle}</strong>{" "} with a different container
-          profile and allow it to move availability zones if necessary. During the restart, the
-          disk will be detached and <strong>downtime will occur</strong>.
+          This action will restart <strong>{database.handle}</strong> with a
+          different container profile and allow it to move availability zones if
+          necessary. During the restart, the disk will be detached and{" "}
+          <strong>downtime will occur</strong>.
         </p>
         <Group>
-          <FormGroup
-            label="Container Profile"
-            htmlFor="container-profile"
-          >
+          <FormGroup label="Container Profile" htmlFor="container-profile">
             <Select
               id="container-profile"
               className="w-1/2"
