@@ -121,7 +121,7 @@ const AppRestart = ({ app }: AppProps) => {
 
   return (
     <div>
-      <Label className="mt-4 pb-1">Restart App</Label>
+      <Label className="mt-4 pb-1">Restart App and Services</Label>
       <ButtonOps
         envId={app.environmentId}
         variant="white"
