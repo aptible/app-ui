@@ -204,12 +204,11 @@ const AppNameChange = ({ app }: AppProps) => {
           </Banner>
         ) : null}
       </FormGroup>
-      <FormGroup label="App Notes" htmlFor="input-notes">
+      <FormGroup label="App Note" htmlFor="app-note">
         <TextArea
-          name="input-notes"
+          name="app-note"
           type="text"
-          autoComplete="name"
-          id="input-notes"
+          id="app-note"
         />
       </FormGroup>
 
