@@ -1,6 +1,7 @@
 import { billingApi, thunks } from "@app/api";
 import {
   all,
+  batchActions,
   call,
   put,
   setLoaderError,
@@ -104,38 +105,15 @@ export const createStripeSource = billingApi.post<StripeSourceProps>(
   },
 );
 
-// TODO: for trial expiration banner
-/* const fetchStripeSources = billingApi.get<{ id: string }>('/billing_details/:id/stripe_sources');
-const fetchTrials = billingApi.get<{ id: string }>('/billing_details/:id/trials');
-const fetchExternalPaymentSources = billingApi.get<{ id: string }>('/billing_details/:id/external_payment_sources');
-*/
-
-export const fetchBillingInfo = thunks.create<{ id: string }>(
-  "fetch-billing-info",
-  function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.name }));
-
-    const bdCtx = yield* call(
-      fetchBillingDetail.run,
-      fetchBillingDetail(ctx.payload),
-    );
-    if (!bdCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.name, message: ctx.json.data.message }),
-      );
-      return;
-    }
-
-    /* yield* all([
-    call(fetchStripeSources.run, fetchStripeSources(ctx.payload)),
-    call(fetchTrials.run, fetchTrials(ctx.payload)),
-    call(fetchExternalPaymentSources.run, fetchExternalPaymentSources(ctx.payload)),
-  ]), */
-
-    yield* put(setLoaderSuccess({ id: ctx.name }));
-    yield* next();
-  },
+export const fetchStripeSources = billingApi.get<{ id: string }>(
+  "/billing_details/:id/stripe_sources",
+  billingApi.cache(),
 );
+export const fetchTrials = billingApi.get<{ id: string }>(
+  "/billing_details/:id/trials",
+  billingApi.cache(),
+);
+// const fetchExternalPaymentSources = billingApi.get<{ id: string }>('/billing_details/:id/external_payment_sources');
 
 const createBillingDetail = billingApi.post<{ orgId: string; orgName: string }>(
   "/billing_details",
