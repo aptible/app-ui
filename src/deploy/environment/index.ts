@@ -197,9 +197,12 @@ export const selectEnvironmentByName = createSelector(
 
 export const fetchEnvironmentById = api.get<{ id: string }>("/accounts/:id");
 
-export const fetchEnvironments = api.get("/accounts?per_page=5000", {
-  saga: cacheMinTimer(),
-});
+export const fetchEnvironments = api.get(
+  "/accounts?per_page=5000&no_embed=true&metrics[]=app_count&metrics[]=database_count",
+  {
+    saga: cacheMinTimer(),
+  },
+);
 
 export const fetchEnvironmentOperations = api.get<{ id: string }>(
   "/accounts/:id/operations",
