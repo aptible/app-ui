@@ -175,13 +175,7 @@ const EnvsResourceHeaderTitleBar = ({
     />
   );
 };
-const environmentHeaders = [
-  "Environment",
-  "ID",
-  "Stack",
-  "Apps",
-  "Databases",
-];
+const environmentHeaders = ["Environment", "ID", "Stack", "Apps", "Databases"];
 
 export function EnvironmentListByStack({ stackId }: { stackId: string }) {
   const query = useQuery(fetchEnvironments());
