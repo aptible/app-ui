@@ -73,7 +73,6 @@ export function EndpointAppHeaderInfo({
             <CopyTextButton text={getEndpointUrl(enp)} />
           </div>
         </DetailInfoItem>
-        <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
 
         <DetailInfoItem title="Resource">
           <Link to={appEndpointsUrl(app.id)}>{app.handle}</Link>
@@ -82,9 +81,7 @@ export function EndpointAppHeaderInfo({
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>
         <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
-        <DetailInfoItem title="">
-          <div />
-        </DetailInfoItem>
+        <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
