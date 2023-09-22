@@ -1,4 +1,3 @@
-import { prettyEnglishDate, timeAgo } from "@app/date";
 import {
   fetchEnvironments,
   selectAppsByEnvId,
@@ -6,7 +5,6 @@ import {
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
-import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
 import { useQuery } from "@app/fx";
 import {
   createProjectGitUrl,
@@ -14,7 +12,6 @@ import {
   environmentDatabasesUrl,
   stackDetailEnvsUrl,
 } from "@app/routes";
-import { capitalize } from "@app/string-utils";
 import type { AppState, DeployEnvironment } from "@app/types";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -91,26 +88,6 @@ const EnvironmentAppsCell = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
-const EnvironmentLastDeployedCell = ({ environment }: EnvironmentCellProps) => {
-  const operation = useSelector((s: AppState) =>
-    selectLatestSuccessDeployOpByEnvId(s, { envId: environment.id }),
-  );
-  const userName = operation.userName.slice(0, 15);
-  return (
-    <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      <div
-        className={tokens.type.darker}
-        style={{ textTransform: "capitalize" }}
-      >
-        {prettyEnglishDate(operation.createdAt)}
-      </div>
-      <div>
-        {timeAgo(operation.createdAt)} by {capitalize(userName)}
-      </div>
-    </Td>
-  );
-};
-
 const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
   const stack = useSelector((s: AppState) =>
     selectStackById(s, { id: environment.stackId }),
@@ -142,7 +119,6 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
       <EnvironmentPrimaryCell environment={environment} />
       <EnvironmentIdCell environment={environment} />
       <EnvironmentStackCell environment={environment} />
-      <EnvironmentLastDeployedCell environment={environment} />
       <EnvironmentAppsCell environment={environment} />
       <EnvironmentDatabasesCell environment={environment} />
     </tr>
@@ -203,7 +179,6 @@ const environmentHeaders = [
   "Environment",
   "ID",
   "Stack",
-  "Last Deployed",
   "Apps",
   "Databases",
 ];
@@ -240,7 +215,7 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
             headers={environmentHeaders}
             rightAlignedFinalCol
             leftAlignedFirstCol
-            centerAlignedColIndices={[4, 5]}
+            centerAlignedColIndices={[3, 4]}
           />
         }
         tableBody={
@@ -292,7 +267,7 @@ export function EnvironmentList() {
             headers={environmentHeaders}
             rightAlignedFinalCol
             leftAlignedFirstCol
-            centerAlignedColIndices={[4, 5]}
+            centerAlignedColIndices={[3, 4]}
           />
         }
         tableBody={
