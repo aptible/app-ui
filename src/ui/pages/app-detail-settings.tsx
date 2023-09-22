@@ -43,6 +43,7 @@ import {
   Input,
   Label,
   PreCode,
+  TextArea,
   listToInvertedTextColor,
 } from "../shared";
 
@@ -205,6 +206,10 @@ const AppNameChange = ({ app }: AppProps) => {
       </FormGroup>
 
       <BannerMessages {...loader} />
+
+      <FormGroup label="App Note" htmlFor="app-note">
+        <TextArea name="app-note" type="text" id="app-note" />
+      </FormGroup>
 
       <Group variant="horizontal" size="sm">
         <ButtonCreate
