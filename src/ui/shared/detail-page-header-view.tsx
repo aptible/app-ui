@@ -118,11 +118,11 @@ export function DetailInfoGrid({
   children,
   columns = 2,
 }: { children: ReactNode; columns?: number }) {
-  return (
-    <div className={`grid md:grid-cols-${columns} col-span-1 gap-4`}>
-      {children}
-    </div>
-  );
+  let col = "md:grid-cols-2";
+  if (columns === 3) {
+    col = "md:grid-cols-3";
+  }
+  return <div className={`grid ${col} grid-cols-1 gap-4`}>{children}</div>;
 }
 
 export function DetailInfoItem({

@@ -73,19 +73,15 @@ export function EndpointAppHeaderInfo({
             <CopyTextButton text={getEndpointUrl(enp)} />
           </div>
         </DetailInfoItem>
-        <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
 
         <DetailInfoItem title="Resource">
           <Link to={appEndpointsUrl(app.id)}>{app.handle}</Link>
         </DetailInfoItem>
-        <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
-        <DetailInfoItem title="">
-          <div />
-        </DetailInfoItem>
-
         <DetailInfoItem title="Status">
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>
+        <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
+        <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -120,11 +116,10 @@ export function EndpointDatabaseHeaderInfo({
         <DetailInfoItem title="Resource">
           <Link to={databaseEndpointsUrl(db.id)}>{db.handle}</Link>
         </DetailInfoItem>
-        <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
-
         <DetailInfoItem title="Status">
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>
+        <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
