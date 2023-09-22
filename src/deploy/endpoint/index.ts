@@ -211,7 +211,7 @@ export const selectEndpointsByServiceIds = createSelector(
   selectEndpointsAsList,
   (_: AppState, p: { ids: string[] }) => p.ids,
   (endpoints, serviceIds) => {
-    return endpoints.filter((end) => serviceIds.includes(end.serviceId));
+    return endpoints?.filter((end) => serviceIds?.includes(end.serviceId));
   },
 );
 
