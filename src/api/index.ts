@@ -40,6 +40,7 @@ import type {
   DeployApiCtx,
   HalEmbedded,
   MetricTunnelCtx,
+  TinaCtx,
 } from "@app/types";
 
 type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel";
@@ -267,9 +268,29 @@ metricTunnelApi.use(requestMonitor());
 metricTunnelApi.use(aborter);
 metricTunnelApi.use(metricTunnelApi.routes());
 metricTunnelApi.use(requestMetricTunnel);
-metricTunnelApi.use(aborter);
 metricTunnelApi.use(tokenMdw);
 metricTunnelApi.use(fetcher());
+
+export const tinaApi = createApi<TinaCtx>();
+tinaApi.use(debugMdw);
+tinaApi.use(sentryErrorHandler);
+tinaApi.use(requestMonitor());
+tinaApi.use(aborter);
+tinaApi.use(tinaApi.routes());
+tinaApi.use(function* tinaToken(ctx, next) {
+  const env = yield* select(selectEnv);
+  const tinaVersion = "1.4";
+  ctx.request = ctx.req({
+    url: `https://content.tinajs.io/${tinaVersion}/content/${env.tinaClientId}/github/main`,
+    redirect: "follow",
+    headers: {
+      "X-API-KEY": env.tinaApiKey,
+      "Content-Type": "application/json",
+    },
+  });
+  yield* next();
+});
+tinaApi.use(fetcher());
 
 export interface ThunkCtx<P = any, D = any> extends PipeCtx<P>, LoaderCtx<P> {
   actions: Action[];

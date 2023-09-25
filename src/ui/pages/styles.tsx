@@ -12,6 +12,8 @@ import {
   defaultDeployService,
   defaultDeployStack,
 } from "@app/deploy";
+import { fetchDoc } from "@app/doc";
+import { useCache } from "saga-query/react";
 import {
   AppHeader,
   DatabaseHeader,
@@ -28,6 +30,8 @@ import {
   ButtonIcon,
   ButtonLink,
   CheckBox,
+  DocsRender,
+  DocsResponse,
   FormGroup,
   Group,
   IconAlertTriangle,
@@ -67,6 +71,7 @@ import {
   IconXCircle,
   Input,
   InputSearch,
+  Loading,
   LogLine,
   Pill,
   PreCode,
@@ -255,7 +260,7 @@ const Forms = () => {
         value={selectedOption}
         options={options}
       />
-      <p className="mt-4">
+      <div className="mt-4">
         <RadioGroup name="service" selected="cmd" onSelect={() => {}}>
           <Radio value="unchecked">Radio unchecked</Radio>
           <Radio value="cmd">
@@ -265,14 +270,14 @@ const Forms = () => {
             Radio disabled
           </Radio>
         </RadioGroup>
-      </p>
+      </div>
 
       <TextArea
         className={`${tokens.type.textarea} mt-4`}
         defaultValue="Editable textarea"
       />
 
-      <CheckBox checked label="Some label" />
+      <CheckBox checked label="Some label" onChange={() => {}} />
 
       <h3 className={tokens.type.h3}>Form Groups</h3>
 
@@ -497,7 +502,7 @@ const Pills = () => (
       <h3 className={tokens.type.h3}>Operation status and time-based pill</h3>
       {operationStatuses.map((status) => (
         <div className="mt-4" key={status}>
-          <StatusPill from={new Date().toString()} status={status} />
+          <StatusPill from={new Date().toISOString()} status={status} />
         </div>
       ))}
     </div>
@@ -739,6 +744,25 @@ const NegativeSpace = () => {
   );
 };
 
+const Docs = () => {
+  const loader = useCache<DocsResponse>(
+    fetchDoc({ relativePath: "apps/apps.mdx" }),
+  );
+  if (loader.isInitialLoading) {
+    return <Loading />;
+  }
+
+  if (!loader.data) {
+    return <div>error</div>;
+  }
+
+  return (
+    <Box>
+      <DocsRender {...loader.data} />
+    </Box>
+  );
+};
+
 export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
@@ -757,6 +781,7 @@ export const StylesPage = () => (
       <Secrets />
       <Dates />
       <NegativeSpace />
+      <Docs />
     </StylesWrapper>
   </div>
 );

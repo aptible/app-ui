@@ -56,3 +56,4 @@ export * from "./cert";
 export * from "./code";
 export * from "./group";
 export * from "./copy";
+export * from "./docs";

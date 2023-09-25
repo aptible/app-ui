@@ -1,4 +1,11 @@
-import { api, authApi, billingApi, metricTunnelApi, thunks } from "@app/api";
+import {
+  api,
+  authApi,
+  billingApi,
+  metricTunnelApi,
+  thunks,
+  tinaApi,
+} from "@app/api";
 import * as auth from "@app/auth";
 import * as billing from "@app/billing";
 import * as bootup from "@app/bootup";
@@ -68,6 +75,7 @@ const initialSagas = {
   metricTunnelApi: metricTunnelApi.saga(),
   thunks: thunks.saga(),
   billingApi: billingApi.saga(),
+  tinaApi: tinaApi.saga(),
 };
 
 export const sagas = corePackages.reduce((acc, pkg) => {

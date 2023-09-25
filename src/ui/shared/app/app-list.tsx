@@ -10,6 +10,7 @@ import {
   selectServicesByAppId,
 } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
+import { fetchDoc } from "@app/doc";
 import { useLoader, useQuery } from "@app/fx";
 import {
   appDetailUrl,
@@ -238,6 +239,7 @@ export const AppsResourceHeaderTitleBar = ({
 export const AppListByOrg = () => {
   const query = useQuery(fetchApps());
   useQuery(fetchEnvironments());
+  useQuery(fetchDoc({ relativePath: "apps/apps.mdx" }));
 
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
