@@ -166,8 +166,8 @@ const DatabaseRestartRecreate = ({ database }: DbProps) => {
   );
 
   return (
-    <form onSubmit={onSubmit}>
-      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2 mb-4">
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2">
         <IconAlertTriangle color="#AD1A1A" />
         Restart Database with Disk Backup and Restore
       </h1>
