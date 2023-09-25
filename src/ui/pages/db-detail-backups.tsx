@@ -16,10 +16,12 @@ import { useMemo } from "react";
 import { usePoller } from "../hooks";
 import {
   BannerMessages,
+  ButtonDestroy,
   ButtonLink,
   ButtonOps,
   DatabaseBackupsList,
   IconEdit,
+  IconTrash,
   IconPlusCircle,
   LoadingSpinner,
 } from "../shared";
@@ -52,7 +54,8 @@ export const DatabaseBackupsPage = () => {
 
   return (
     <div>
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center justify-between">
+        <div className="flex gap-4">
         <ButtonOps
           envId={db.environmentId}
           onClick={onCreateBackup}
@@ -68,8 +71,19 @@ export const DatabaseBackupsPage = () => {
           <IconEdit variant="sm" className="mr-2" /> Edit Environment Backup
           Policy
         </ButtonLink>
+        </div>
 
         <LoadingSpinner show={pollLoader.isLoading} />
+
+        <div className="flex justify-end">
+          <ButtonDestroy
+              variant="delete"
+              className="w-70"
+              type="submit"
+            >
+              Delete All Backups
+            </ButtonDestroy>
+          </div>
       </div>
 
       <BannerMessages className="my-4" {...loader} />

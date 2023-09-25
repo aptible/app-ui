@@ -13,7 +13,7 @@ import type { AppState } from "@app/types";
 import { useValidator } from "../../hooks";
 import { BannerMessages } from "../banner";
 import { Box } from "../box";
-import { Button, ButtonAdmin } from "../button";
+import { Button, ButtonAdmin, ButtonDestroy } from "../button";
 import { FormGroup } from "../form-group";
 import { Input } from "../input";
 import { Radio, RadioGroup } from "../select";
@@ -158,6 +158,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
 
         <BannerMessages {...loader} />
 
+        <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <ButtonAdmin type="submit" envId={envId} isLoading={loader.isLoading}>
             Save Policy
@@ -167,6 +168,16 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
             Cancel
           </Button>
         </div>
+        <div className="flex justify-end">
+          <ButtonDestroy
+              variant="delete"
+              className="w-70"
+              type="submit"
+            >
+              Delete All Backups
+            </ButtonDestroy>
+          </div>
+          </div>
       </form>
     </Box>
   );
