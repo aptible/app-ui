@@ -18,6 +18,8 @@ export const createEnv = (e: Partial<Env> = {}): Env => {
     stripePublishableKey:
       import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
       "pk_test_eiw5HXHTAgTwyNnV9I5ruCrA",
+    tinaApiKey: import.meta.env.VITE_TINA_API_KEY || "",
+    tinaClientId: import.meta.env.VITE_TINA_CLIENT_ID || "",
     ...e,
   };
 };

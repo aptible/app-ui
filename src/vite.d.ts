@@ -21,4 +21,6 @@ interface ImportMetaEnv {
   VITE_ORIGIN: string;
   VITE_TUNA_ENABLED: string;
   VITE_STRIPE_PUBLISHABLE_KEY: string;
+  VITE_TINA_API_KEY: string;
+  VITE_TINA_CLIENT_ID: string;
 }

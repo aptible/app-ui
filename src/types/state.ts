@@ -45,6 +45,8 @@ export interface Env {
   legacyDashboardUrl: string;
   stripePublishableKey: string;
   origin: "app";
+  tinaClientId: string;
+  tinaApiKey: string;
 }
 
 export interface Feedback {
