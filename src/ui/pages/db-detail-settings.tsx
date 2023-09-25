@@ -172,6 +172,8 @@ const DatabaseRestartRecreate = ({ database }: DbProps) => {
         Restart Database with Disk Backup and Restore
       </h1>
 
+      <BannerMessages {...loader} />
+
       <Group>
         <p>
           This action will restart <strong>{database.handle}</strong> with a
