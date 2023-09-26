@@ -2,10 +2,12 @@ import { prettyEnglishDate } from "@app/date";
 import {
   cancelAppOpsPoll,
   fetchApp,
+  fetchConfiguration,
   fetchImageById,
   fetchServicesByAppId,
   pollAppOperations,
   selectAppById,
+  selectAppConfigById,
   selectEnvironmentById,
   selectImageById,
   selectLatestDeployOp,
@@ -47,6 +49,10 @@ export function AppHeader({ app }: { app: DeployApp }) {
   const image = useSelector((s: AppState) =>
     selectImageById(s, { id: app.currentImageId }),
   );
+  const config = useSelector((s: AppState) =>
+    selectAppConfigById(s, { id: app.currentConfigurationId }),
+  );
+  const dockerImage = config.env.APTIBLE_DOCKER_IMAGE || "Dockerfile Build";
 
   return (
     <DetailHeader>
@@ -68,12 +74,18 @@ export function AppHeader({ app }: { app: DeployApp }) {
           <CopyText text={app.gitRepo} />
         </DetailInfoItem>
 
+        <DetailInfoItem title="Git Ref">
+          <CopyText text={image.gitRef} />
+        </DetailInfoItem>
+        <DetailInfoItem title="Docker Image">
+          <CopyText text={`${dockerImage}`} />
+        </DetailInfoItem>
+
         <DetailInfoItem title="Last Deployed">
           {lastDeployOp
             ? `${prettyEnglishDate(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
-        <DetailInfoItem title="Docker Image">{image.dockerRepo}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -101,6 +113,7 @@ function AppPageHeader() {
   const loader = useQuery(fetchApp({ id }));
   useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: serviceId }),
   );
