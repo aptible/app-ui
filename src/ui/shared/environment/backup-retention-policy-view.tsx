@@ -13,11 +13,12 @@ import type { AppState } from "@app/types";
 import { useValidator } from "../../hooks";
 import { BannerMessages } from "../banner";
 import { Box } from "../box";
-import { Button, ButtonAdmin } from "../button";
+import { Button, ButtonAdmin, ButtonDestroy } from "../button";
 import { FormGroup } from "../form-group";
 import { Input } from "../input";
 import { Radio, RadioGroup } from "../select";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
 const validators = {
   daily: (data: UpdateBackupRp) => {
@@ -158,14 +159,32 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
 
         <BannerMessages {...loader} />
 
-        <div className="flex gap-2">
-          <ButtonAdmin type="submit" envId={envId} isLoading={loader.isLoading}>
-            Save Policy
-          </ButtonAdmin>
+        <div className="flex items-center justify-between">
+          <div className="flex gap-2">
+            <ButtonAdmin
+              type="submit"
+              envId={envId}
+              isLoading={loader.isLoading}
+            >
+              Save Policy
+            </ButtonAdmin>
 
-          <Button variant="white" onClick={onReset}>
-            Cancel
-          </Button>
+            <Button variant="white" onClick={onReset}>
+              Cancel
+            </Button>
+          </div>
+          <div className="flex justify-end">
+            <Tooltip text="Delete all backups of databases that no longer exist in this environment.">
+              <ButtonDestroy
+                variant="delete"
+                className="w-70"
+                type="submit"
+                requireConfirm
+              >
+                Delete Orphaned Backups
+              </ButtonDestroy>
+            </Tooltip>
+          </div>
         </div>
       </form>
     </Box>
