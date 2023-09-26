@@ -34,10 +34,10 @@ export const fetchCurrentToken = authApi.get<never, TokenSuccessResponse>(
     ctx.noToken = true;
     yield* next();
     if (!ctx.json.ok) {
-      yield put(resetToken());
+      yield* put(resetToken());
       return;
     }
-    yield call(saveToken, ctx);
+    yield* call(saveToken, ctx);
   },
 );
 
