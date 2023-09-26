@@ -120,6 +120,13 @@ export const LastOpCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
+const DatabaseSizeCell = ({ database }: DatabaseCellProps) => {
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: database.diskId }),
+  );
+  return <Td className="text-gray-900">{disk.size} GB</Td>;
+};
+
 const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td>
@@ -221,6 +228,7 @@ export const DatabaseListByOrg = () => {
     "Handle",
     "ID",
     "Environment",
+    "Disk Size",
     "Est. Monthly Cost",
     "Actions",
   ];
@@ -260,6 +268,7 @@ export const DatabaseListByOrg = () => {
                 <DatabasePrimaryCell database={db} />
                 <DatabaseIdCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
+                <DatabaseSizeCell database={db} />
                 <DatabaseCostCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
@@ -295,6 +304,7 @@ export const DatabaseListByEnvironment = ({
     "Handle",
     "ID",
     "Environment",
+    "Disk Size",
     "Est. Monthly Cost",
     "Actions",
   ];
@@ -338,6 +348,7 @@ export const DatabaseListByEnvironment = ({
                 <DatabasePrimaryCell database={db} />
                 <DatabaseIdCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
+                <DatabaseSizeCell database={db} />
                 <DatabaseCostCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
