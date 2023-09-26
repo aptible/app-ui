@@ -9,6 +9,7 @@ import {
   fetchEnvMetricDrains,
   restartApp,
   selectAppById,
+  selectAppConfigById,
   selectEnvironmentById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
@@ -41,9 +42,11 @@ import {
   IconRefresh,
   IconTrash,
   Input,
-  Label,
+  PreBox,
   PreCode,
+  TextSegment,
   listToInvertedTextColor,
+  tokens,
 } from "../shared";
 
 interface AppProps {
@@ -120,19 +123,20 @@ const AppRestart = ({ app }: AppProps) => {
   });
 
   return (
-    <div>
-      <Label className="mt-4 pb-1">Restart App and Services</Label>
-      <ButtonOps
-        envId={app.environmentId}
-        variant="white"
-        className="flex"
-        onClick={onClick}
-        isLoading={loader.isLoading}
-      >
-        <IconRefresh className="mr-2" variant="sm" />
-        Restart
-      </ButtonOps>
-    </div>
+    <Group size="sm">
+      <h3 className={tokens.type.h3}>Restart App and Services</h3>
+      <div>
+        <ButtonOps
+          envId={app.environmentId}
+          variant="white"
+          onClick={onClick}
+          isLoading={loader.isLoading}
+        >
+          <IconRefresh className="mr-2" variant="sm" />
+          Restart
+        </ButtonOps>
+      </div>
+    </Group>
   );
 };
 
@@ -225,6 +229,43 @@ const AppNameChange = ({ app }: AppProps) => {
   );
 };
 
+const AppConfigView = ({ app }: { app: DeployApp }) => {
+  const [isVisible, setVisible] = useState(false);
+  const config = useSelector((s: AppState) =>
+    selectAppConfigById(s, { id: app.currentConfigurationId }),
+  );
+  const envs: TextSegment[] = [];
+  Object.keys(config.env).forEach((key) => {
+    envs.push(
+      { text: `${key}=`, className: "text-lime" },
+      { text: `${config.env[key]}`, className: "text-white" },
+      { text: "\n", className: "" },
+    );
+  });
+
+  return (
+    <Group size="sm">
+      <h3 className={tokens.type.h3}>Environment Variables</h3>
+      {isVisible ? (
+        <Group size="sm">
+          <div>
+            <Button variant="white" onClick={() => setVisible(false)}>
+              Hide variables
+            </Button>
+          </div>
+          <PreBox allowCopy segments={envs} />
+        </Group>
+      ) : (
+        <div>
+          <Button variant="white" onClick={() => setVisible(true)}>
+            Reveal variables
+          </Button>
+        </div>
+      )}
+    </Group>
+  );
+};
+
 export const AppSettingsPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
@@ -242,23 +283,23 @@ export const AppSettingsPage = () => {
           View Docs
           <IconExternalLink className="inline ml-1 h-5 mt-0" />
         </ButtonLinkExternal>
-        <h1 className="text-lg text-gray-500">How To Deploy Changes</h1>
+        <h3 className="text-lg text-gray-500">How To Deploy Changes</h3>
         <div className="mt-4">
-          <h3 className="text-md font-semibold">Clone project code</h3>
+          <h4 className={tokens.type.h4}>Clone project code</h4>
           <PreCode
             allowCopy
             segments={listToInvertedTextColor(["git", "clone", app.gitRepo])}
           />
         </div>
         <div className="mt-4">
-          <h3 className="text-md font-semibold">Find project code</h3>
+          <h4 className={tokens.type.h4}>Find project code</h4>
           <PreCode
             allowCopy
             segments={listToInvertedTextColor(["cd", app.handle])}
           />
         </div>
         <div className="mt-4">
-          <h3 className="text-md font-semibold">Deploy code changes</h3>
+          <h4 className={tokens.type.h4}>Deploy code changes</h4>
           <PreCode
             allowCopy
             segments={listToInvertedTextColor(["git", "push", app.gitRepo])}
@@ -267,10 +308,14 @@ export const AppSettingsPage = () => {
       </Box>
 
       <Box>
-        <h1 className="text-lg text-gray-500 mb-4">App Settings</h1>
-        <AppNameChange app={app} />
-        <hr className="mt-6" />
-        <AppRestart app={app} />
+        <Group>
+          <h3 className={"text-lg text-gray-500"}>App Settings</h3>
+          <AppNameChange app={app} />
+          <hr />
+          <AppRestart app={app} />
+          <hr />
+          <AppConfigView app={app} />
+        </Group>
       </Box>
 
       <Box>
