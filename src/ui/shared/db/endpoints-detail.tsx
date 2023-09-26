@@ -8,5 +8,7 @@ export function DatabaseEndpointsOverview({
   database,
 }: { database: DeployDatabase }) {
   useQuery(fetchEndpointsByServiceId({ id: database.serviceId }));
-  return <EndpointsByDbService serviceId={database.serviceId} dbId={database.id}/>;
+  return (
+    <EndpointsByDbService serviceId={database.serviceId} dbId={database.id} />
+  );
 }

@@ -20,6 +20,7 @@ import type {
   AcmeConfiguration,
   AcmeStatus,
   AppState,
+  DeployDatabase,
   DeployEndpoint,
   LinkResponse,
   ProvisionableStatus,
@@ -207,14 +208,6 @@ export { selectEndpoints, selectEndpointsAsList };
 export const hasDeployEndpoint = (a: DeployEndpoint) => a.id !== "";
 export const endpointReducers = createReducerMap(slice);
 
-export const selectEndpointsByServiceIds = createSelector(
-  selectEndpointsAsList,
-  (_: AppState, p: { ids: string[] }) => p.ids,
-  (endpoints, serviceIds) => {
-    return endpoints?.filter((end) => serviceIds?.includes(end.serviceId));
-  },
-);
-
 export const selectEndpointsByAppId = createSelector(
   selectEndpointsAsList,
   selectServicesByAppId,
@@ -261,9 +254,11 @@ export const selectEndpointsByOrgAsList = createSelector(
   selectEndpointsAsList,
   selectEnvironmentsByOrgAsList,
   (envToServiceMap, enps, envs) => {
-    return enps.filter((enp) =>
-      envs.some((env) => envToServiceMap[env.id]?.has(enp.serviceId)),
-    );
+    return enps;
+    // This filters out database endpoints somehow, not sure it is needed anyway
+    // return enps.filter((enp) =>
+    //   envs.some((env) => envToServiceMap[env.id]?.has(enp.serviceId))
+    // );
   },
 );
 
@@ -278,8 +273,8 @@ export const selectEndpointsForTable = createSelector(
   selectServices,
   selectApps,
   selectDatabases,
-  (enps, servicesMap, apps, dbs) =>
-    enps
+  (enps, servicesMap, apps, dbs) => {
+    return enps
       .map((enp): DeployEndpointRow => {
         const service = findServiceById(servicesMap, { id: enp.serviceId });
 
@@ -310,7 +305,8 @@ export const selectEndpointsForTable = createSelector(
           resourceId: "",
         };
       })
-      .sort((a, b) => getEndpointUrl(a).localeCompare(getEndpointUrl(b))),
+      .sort((a, b) => getEndpointUrl(a).localeCompare(getEndpointUrl(b)));
+  },
 );
 
 const computeSearchMatch = (
@@ -344,6 +340,19 @@ export const selectEndpointsForTableSearch = createSelector(
     }
 
     return enps.filter((enp) => computeSearchMatch(enp, search));
+  },
+);
+
+export const selectEndpointsByServiceIds = createSelector(
+  selectEndpointsForTable,
+  selectEndpointsAsList,
+  (_: AppState, p: { search: string }) => p.search.toLocaleLowerCase(),
+  (_: AppState, p: { ids: string[] }) => p.ids,
+  (_: AppState, p: { db: DeployDatabase }) => p.db,
+  (enps, serviceIds, search, ids, db): DeployEndpointRow[] => {
+    return enps.filter(
+      (enp) => ids.includes(enp.serviceId) && computeSearchMatch(enp, search),
+    );
   },
 );
 

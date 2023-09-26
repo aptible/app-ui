@@ -15,8 +15,8 @@ import {
   selectEndpointsByCertIdForTableSearch,
   selectEndpointsByDbIdForTableSearch,
   selectEndpointsByEnvIdForTableSearch,
+  selectEndpointsByServiceIds,
   selectEndpointsForTableSearch,
-  selectEndpointsByServiceIds
 } from "@app/deploy";
 import {
   appDetailUrl,
@@ -367,16 +367,19 @@ export function EndpointsByCert({ certId }: { certId: string }) {
   );
 }
 
-export function EndpointsByDbService({ serviceId, dbId }: { serviceId: string, dbId: string }) {
+export function EndpointsByDbService({
+  serviceId,
+  dbId,
+}: { serviceId: string; dbId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch });
   };
-  const endpoints = useSelector((s: AppState) =>
-    selectEndpointsByServiceIds(s, { ids: [serviceId] }),
-  );
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  const endpoints = useSelector((s: AppState) =>
+    selectEndpointsByServiceIds(s, { ids: [serviceId], db, search }),
+  );
   const navigate = useNavigate();
   const action = (
     <ButtonCreate
