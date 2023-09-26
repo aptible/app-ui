@@ -52,8 +52,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
   const config = useSelector((s: AppState) =>
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
-  const dockerImage =
-    `${config.env.APTIBLE_DOCKER_IMAGE}` || "Dockerfile Build";
+  const dockerImage = config.env.APTIBLE_DOCKER_IMAGE || "Dockerfile Build";
 
   return (
     <DetailHeader>
@@ -79,7 +78,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
           <CopyText text={image.gitRef} />
         </DetailInfoItem>
         <DetailInfoItem title="Docker Image">
-          <CopyText text={dockerImage} />
+          <CopyText text={`${dockerImage}`} />
         </DetailInfoItem>
 
         <DetailInfoItem title="Last Deployed">

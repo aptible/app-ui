@@ -44,7 +44,7 @@ export const defaultDeployImage = (
   return {
     id: "",
     gitRepo: "",
-    gitRef: "",
+    gitRef: "Not used",
     dockerRepo: "",
     exposedPorts: [],
     dockerRef: "",
