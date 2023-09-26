@@ -124,7 +124,7 @@ const AppRestart = ({ app }: AppProps) => {
 
   return (
     <Group size="sm">
-      <h3 className={tokens.type.h3}>Restart App and Services</h3>
+      <h4 className={tokens.type.h4}>Restart App and Services</h4>
       <div>
         <ButtonOps
           envId={app.environmentId}
@@ -245,12 +245,12 @@ const AppConfigView = ({ app }: { app: DeployApp }) => {
 
   return (
     <Group size="sm">
-      <h3 className={tokens.type.h3}>Environment Variables</h3>
+      <h4 className={tokens.type.h4}>Environment Variables</h4>
       {isVisible ? (
         <Group size="sm">
           <div>
             <Button variant="white" onClick={() => setVisible(false)}>
-              Hide variables
+              Hide
             </Button>
           </div>
           <PreBox allowCopy segments={envs} />
@@ -258,7 +258,7 @@ const AppConfigView = ({ app }: { app: DeployApp }) => {
       ) : (
         <div>
           <Button variant="white" onClick={() => setVisible(true)}>
-            Reveal variables
+            Show
           </Button>
         </div>
       )}
