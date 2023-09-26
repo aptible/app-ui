@@ -28,7 +28,7 @@ export const deserializeImage = (payload: DeployImageResponse): DeployImage => {
   return {
     dockerRef: payload.docker_ref || "",
     dockerRepo: payload.docker_repo || "",
-    gitRef: payload.git_ref || "",
+    gitRef: payload.git_ref || "Not used",
     gitRepo: payload.git_repo || "",
     exposedPorts: payload.exposed_ports,
     id: `${payload.id}`,
