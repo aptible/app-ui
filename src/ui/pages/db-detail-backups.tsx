@@ -55,7 +55,7 @@ export const DatabaseBackupsPage = () => {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
         <ButtonOps
           envId={db.environmentId}
           onClick={onCreateBackup}
@@ -71,15 +71,15 @@ export const DatabaseBackupsPage = () => {
           <IconEdit variant="sm" className="mr-2" /> Edit Environment Backup
           Policy
         </ButtonLink>
-        </div>
-
         <LoadingSpinner show={pollLoader.isLoading} />
+        </div>
 
         <div className="flex justify-end">
           <ButtonDestroy
               variant="delete"
               className="w-70"
               type="submit"
+              requireConfirm
             >
               Delete All Backups
             </ButtonDestroy>

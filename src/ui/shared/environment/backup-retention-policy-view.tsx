@@ -173,6 +173,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
               variant="delete"
               className="w-70"
               type="submit"
+              requireConfirm
             >
               Delete All Backups
             </ButtonDestroy>
