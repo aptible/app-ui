@@ -53,7 +53,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
   const dockerImage =
-    config.env.APTIBLE_DOCKER_IMAGE.toString() || "Dockerfile Build";
+    `${config.env.APTIBLE_DOCKER_IMAGE}` || "Dockerfile Build";
 
   return (
     <DetailHeader>
