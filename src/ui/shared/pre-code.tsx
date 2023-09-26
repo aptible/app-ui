@@ -1,6 +1,6 @@
 import { CopyTextButton } from "./copy";
 
-interface TextSegment {
+export interface TextSegment {
   text: string;
   className: string;
 }
@@ -21,6 +21,42 @@ export const listToInvertedTextColor = (list: string[]): TextSegment[] => {
 
 export const listToTextColor = (list: string[]): TextSegment[] => {
   return list.map(createTextColor(list.length, "text-black"));
+};
+
+export const PreBox = ({
+  segments,
+  className = "bg-black",
+  allowCopy = false,
+}: {
+  segments: TextSegment[];
+  className?: string;
+  allowCopy?: boolean;
+}) => {
+  if (segments.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="relative">
+      <pre className={`p-4 rounded-lg text-sm pr-14 ${className}`}>
+        {segments.map(({ text, className }, idx) => {
+          return (
+            <span key={`${idx}-${text}`} className={className}>
+              {text}
+            </span>
+          );
+        })}
+      </pre>
+      {allowCopy ? (
+        <CopyTextButton
+          variant="left"
+          relative={false}
+          text={segments.map((t) => t.text).join("")}
+          className="absolute right-2 top-4"
+        />
+      ) : null}
+    </div>
+  );
 };
 
 export const PreCode = ({
