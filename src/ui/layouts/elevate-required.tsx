@@ -23,12 +23,12 @@ export const ElevateRequired = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (loader.isLoading) {
+    if (loader.status === "loading") {
       return;
     }
 
     if (loader.lastRun > 0 && !isAuthenticated) {
-      navigate(loginUrl());
+      navigate(loginUrl(), { replace: true });
       return;
     }
 
@@ -36,12 +36,28 @@ export const ElevateRequired = ({
       navigate(elevateUrl(location.pathname), { replace: true });
       return;
     }
-  }, [loader, isAuthenticated, isElevatedTokenValid]);
+  }, [loader.status, isAuthenticated, isElevatedTokenValid]);
 
   if (loader.isLoading) {
     return (
       <div className="flex w-full h-full items-center justify-center">
         <Loading />
+      </div>
+    );
+  }
+
+  if (!selectIsUserAuthenticated) {
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        <Loading text="Redirecting to login" />
+      </div>
+    );
+  }
+
+  if (!isElevatedTokenValid) {
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        <Loading text="Redirecting to elevated login" />
       </div>
     );
   }

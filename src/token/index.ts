@@ -140,8 +140,7 @@ export const selectIsImpersonated = (state: AppState) => {
   }
   return selectActorUrl(state) !== selectUserUrl(state);
 };
-export const selectIsUserAuthenticated = (state: AppState) =>
-  !!selectAccessToken(state);
+export const selectIsUserAuthenticated = selectIsTokenValid;
 
 export const selectElevatedToken = (state: AppState) =>
   state[ELEVATED_TOKEN_NAME];

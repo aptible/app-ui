@@ -17,5 +17,5 @@ export const usePaymentRequired = () => {
     if (!hasPaymentMethod) {
       navigate(plansUrl());
     }
-  }, [loader.lastSuccess, loader.isLoading, loader.isError, hasPaymentMethod]);
+  }, [loader.lastSuccess, loader.status, hasPaymentMethod]);
 };
