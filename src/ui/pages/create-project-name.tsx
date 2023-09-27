@@ -8,11 +8,9 @@ import {
   createDeployApp,
   fetchEnvironmentById,
   fetchStacks,
-  hasDeployStack,
   selectDefaultStack,
   selectEnvironmentById,
   selectStackById,
-  selectStackPublicDefault,
   stackToOption,
 } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
@@ -162,17 +160,13 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
 
 const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
   const org = useSelector(selectOrganizationSelected);
-  const defaultStack = useSelector(selectDefaultStack);
   const stack = useSelector((s: AppState) =>
     selectStackById(s, { id: stackId }),
   );
-  const initialStackSelected = hasDeployStack(stack) ? stack : defaultStack;
-  const [stackValue, setStackValue] = useState(
-    stackToOption(initialStackSelected),
-  );
+  const [stackValue, setStackValue] = useState(stackToOption(stack));
   useEffect(() => {
-    setStackValue(stackToOption(initialStackSelected));
-  }, [stackId, initialStackSelected.id]);
+    setStackValue(stackToOption(stack));
+  }, [stackId, stack.id]);
 
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
@@ -273,7 +267,7 @@ export const CreateProjectNamePage = () => {
   const [params] = useSearchParams();
   const queryStackId = params.get("stack_id") || "";
   const queryEnvId = params.get("environment_id") || "";
-  const defaultStack = useSelector(selectStackPublicDefault);
+  const defaultStack = useSelector(selectDefaultStack);
   const stackId = queryStackId || defaultStack.id;
 
   useQuery(fetchStacks());
