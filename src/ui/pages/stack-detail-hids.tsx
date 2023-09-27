@@ -73,7 +73,7 @@ const DownloadReport = ({
 
   return (
     <Button size="sm" variant="primary" onClick={onClick} isLoading={loading}>
-      <IconDownload variant="sm" />
+      <IconDownload className="mr-1" variant="sm" />
       {children}
     </Button>
   );
