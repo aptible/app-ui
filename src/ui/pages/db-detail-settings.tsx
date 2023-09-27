@@ -15,7 +15,7 @@ import {
   updateDatabase,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { environmentDatabasesUrl, operationDetailUrl } from "@app/routes";
+import { databaseActivityUrl, environmentDatabasesUrl } from "@app/routes";
 import {
   AppState,
   DeployDatabase,
@@ -241,7 +241,7 @@ const DatabaseRestart = ({ database }: DbProps) => {
     dispatch(action);
   };
   useLoaderSuccess(loader, () => {
-    navigate(operationDetailUrl(loader.meta.opId));
+    navigate(databaseActivityUrl(database.id));
   });
   return (
     <>
