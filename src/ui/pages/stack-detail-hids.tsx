@@ -16,6 +16,9 @@ import {
   BannerMessages,
   Button,
   Group,
+  IconArrowLeft,
+  IconArrowRight,
+  IconDownload,
   Loading,
   ResourceListView,
   TableHead,
@@ -70,7 +73,8 @@ const DownloadReport = ({
   };
 
   return (
-    <Button size="sm" variant="white" onClick={onClick} isLoading={loading}>
+    <Button size="sm" variant="primary" onClick={onClick} isLoading={loading}>
+      <IconDownload className="-mr-1" variant="sm" />
       {children}
     </Button>
   );
@@ -138,26 +142,33 @@ const ReportTable = ({ stack }: { stack: DeployStack }) => {
 
   return (
     <>
-      <Group variant="horizontal" size="sm" className="items-center">
+      <Group variant="horizontal" size="sm" className="items-center gap-2">
         <Button
+          size="sm"
           variant="white"
           disabled={page === 1}
           onClick={() => setPage(page - 1)}
         >
-          Prev Page
+          <IconArrowLeft color="#111920" variant="sm" />
         </Button>
-        <div>{page}</div>
+        <div className="mx-1">Page {page}</div>
         <Button
+          size="sm"
           variant="white"
           disabled={page === lastPage}
           onClick={() => setPage(page + 1)}
         >
-          Next Page
+          <IconArrowRight color="#111920" variant="sm" />
         </Button>
+        <div className="ml-2">
+          Weekly Host-level Intrusion Detection System (HIDS) reports for
+          auditing evidence. This report applies to all resources and
+          environments in this stack.
+        </div>
       </Group>
 
       <ResourceListView
-        tableHeader={<TableHead headers={headers} />}
+        tableHeader={<TableHead rightAlignedFinalCol headers={headers} />}
         tableBody={
           <>
             {data._embedded.intrusion_detection_reports.map((report) => (
@@ -178,17 +189,6 @@ export const StackDetailHidsPage = () => {
 
   return (
     <Group>
-      <h2 className={tokens.type.h2}>Managed HIDS Evidence</h2>
-      <p>
-        Aptible operates a host-level Intrusion Detection System (HIDS) on all
-        Deploy instances for the <strong>{stack.name}</strong> stack, and
-        periodically generates reports that you can use as evidence of HIDS when
-        you're audited. The intrusion detection reports listed below are
-        relevant to the applications and databases deployed in the environments
-        deployed on this stack.
-      </p>
-      <p>They are posted here on a weekly basis.</p>
-
       {displayNotice ? (
         <Banner variant="warning">
           Note: this stack is shared-tenancy. If you are looking for IDS
