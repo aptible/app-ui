@@ -24,7 +24,6 @@ import {
   TableHead,
   Td,
   Tr,
-  tokens,
 } from "../shared";
 
 interface HidsReport {
