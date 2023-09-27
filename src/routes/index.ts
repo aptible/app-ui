@@ -261,6 +261,8 @@ export const stackDetailVpnTunnelsUrl = (id: string) =>
 export const STACK_DETAIL_VPC_PEERING_PATH = `${STACK_DETAIL_PATH}/vpc-peering`;
 export const stackDetailVpcPeeringsUrl = (id: string) =>
   `${stackDetailUrl(id)}/vpc-peering`;
+export const STACK_DETAIL_HIDS_PATH = `${STACK_DETAIL_PATH}/hids`;
+export const stackDetailHidsUrl = (id: string) => `${stackDetailUrl(id)}/hids`;
 
 export const SEARCH_PATH = "/search";
 export const searchUrl = () => SEARCH_PATH;

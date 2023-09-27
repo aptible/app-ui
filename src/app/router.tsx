@@ -88,6 +88,7 @@ import {
   SsoFailurePage,
   SsoLoginPage,
   StackDetailEnvironmentsPage,
+  StackDetailHidsPage,
   StackDetailLayout,
   StackDetailVpcPeeringPage,
   StackDetailVpnTunnelsPage,
@@ -179,6 +180,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.STACK_DETAIL_VPN_TUNNELS_PATH,
                 element: <StackDetailVpnTunnelsPage />,
+              },
+              {
+                path: routes.STACK_DETAIL_HIDS_PATH,
+                element: <StackDetailHidsPage />,
               },
             ],
           },

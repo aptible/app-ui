@@ -1,6 +1,7 @@
 import { fetchStack, getStackType, selectStackById } from "@app/deploy";
 import {
   stackDetailEnvsUrl,
+  stackDetailHidsUrl,
   stackDetailVpcPeeringsUrl,
   stackDetailVpnTunnelsUrl,
   stacksUrl,
@@ -77,6 +78,10 @@ function StackPageHeader() {
     { name: "VPN Tunnels", href: stackDetailVpnTunnelsUrl(id) },
     { name: "VPC Peering", href: stackDetailVpcPeeringsUrl(id) },
   ];
+
+  if (stack.exposeIntrusionDetectionReports) {
+    tabs.push({ name: "Managed HIDS", href: stackDetailHidsUrl(id) });
+  }
 
   return (
     <DetailPageHeaderView
