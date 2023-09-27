@@ -17,7 +17,6 @@ export interface CreateTokenPayload {
   username: string;
   password: string;
   otpToken: string;
-  makeCurrent: boolean;
   u2f?: PublicKeyCredentialWithAssertionJSON;
 }
 function saveToken(ctx: AuthApiCtx<any, TokenSuccessResponse>) {
@@ -50,7 +49,6 @@ export const createToken = authApi.post<
       username: ctx.payload.username,
       password: ctx.payload.password,
       otp_token: ctx.payload.otpToken,
-      make_current: ctx.payload.makeCurrent,
       u2f: ctx.payload.u2f,
       expires_in: 43200, // 12 hours
       grant_type: "password",
@@ -63,11 +61,12 @@ export const createToken = authApi.post<
   yield* call(saveToken, ctx);
 });
 
-export type ElevateToken = Omit<CreateTokenPayload, "makeCurrent">;
+export type ElevateToken = CreateTokenPayload;
 
 export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
   "create-elevated-token",
   function* onElevateToken(ctx, next) {
+    ctx.credentials = "omit";
     ctx.request = ctx.req({
       url: "/tokens",
       method: "POST",
@@ -76,7 +75,6 @@ export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
         password: ctx.payload.password,
         otp_token: ctx.payload.otpToken,
         u2f: ctx.payload.u2f,
-        make_current: false,
         expires_in: 30 * 60, // 30 mins
         grant_type: "password",
         scope: "elevated",
