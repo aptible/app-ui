@@ -1,5 +1,10 @@
 import { prettyDate } from "@app/date";
-import { fetchStackManagedHids, selectStackById } from "@app/deploy";
+import {
+  fetchStackManagedHids,
+  getStackType,
+  hasDeployStack,
+  selectStackById,
+} from "@app/deploy";
 import { selectAccessToken } from "@app/token";
 import { AppState, DeployStack, HalEmbedded, LinkResponse } from "@app/types";
 import { useState } from "react";
@@ -109,6 +114,12 @@ const ReportTable = ({ stack }: { stack: DeployStack }) => {
     fetchStackManagedHids({ id: stack.id, page }),
   );
 
+  if (!stack.exposeIntrusionDetectionReports) {
+    return (
+      <div>We cannot expose intrusion detection reports for this stack.</div>
+    );
+  }
+
   if (loader.isInitialLoading) {
     return <Loading />;
   }
@@ -162,6 +173,8 @@ const ReportTable = ({ stack }: { stack: DeployStack }) => {
 export const StackDetailHidsPage = () => {
   const { id = "" } = useParams();
   const stack = useSelector((s: AppState) => selectStackById(s, { id }));
+  const displayNotice =
+    hasDeployStack(stack) && getStackType(stack) === "shared";
 
   return (
     <Group>
@@ -175,6 +188,14 @@ export const StackDetailHidsPage = () => {
         deployed on this stack.
       </p>
       <p>They are posted here on a weekly basis.</p>
+
+      {displayNotice ? (
+        <Banner variant="warning">
+          Note: this stack is shared-tenancy. If you are looking for IDS
+          evidence to pass an audit, you probably need to download reports from
+          a dedicated-tenancy stack instead.
+        </Banner>
+      ) : null}
       <ReportTable stack={stack} />
     </Group>
   );
