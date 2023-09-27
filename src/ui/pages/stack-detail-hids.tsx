@@ -190,9 +190,9 @@ export const StackDetailHidsPage = () => {
     <Group>
       {displayNotice ? (
         <Banner variant="warning">
-          Note: this stack is shared-tenancy. If you are looking for IDS
+          Note: This stack is shared tenancy. If you are looking for HIDS
           evidence to pass an audit, you probably need to download reports from
-          a dedicated-tenancy stack instead.
+          a dedicated tenancy stack instead.
         </Banner>
       ) : null}
       <ReportTable stack={stack} />
