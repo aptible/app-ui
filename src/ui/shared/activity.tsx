@@ -42,6 +42,7 @@ import { ResourceHeader, ResourceListView } from "./resource-list-view";
 import { EnvStackCell } from "./resource-table";
 import { TableHead, Td } from "./table";
 import { tokens } from "./tokens";
+import { Pill } from "./pill";
 
 interface OpCellProps {
   op: DeployActivityRow;
@@ -80,7 +81,8 @@ const getImageForResourceType = (resourceType: ResourceType) => {
 
 const OpTypeCell = ({ op }: OpCellProps) => {
   return (
-    <Td className="flex-1">
+    <Td className="flex gap-2 items-start flex-row align-top">
+      <div>
       <Link
         to={operationDetailUrl(op.id)}
         className={tokens.type["table link"]}
@@ -88,6 +90,14 @@ const OpTypeCell = ({ op }: OpCellProps) => {
         {capitalize(op.type)}
       </Link>
       <div>ID: {op.id}</div>
+      </div>
+      <Tooltip
+                  text="Operations show real-time changes to resources, such as Apps and Databases.Operations show real-time changes to resources, such as Apps and Databases.Operations show real-time changes to resources, such as Apps and Databases.Operations show real-time changes to resources, such as Apps and Databases.Operations show real-time changes to resources, such as Apps and Databases.Operations show real-time changes to resources, such as Apps and Databases."
+                >
+      <Pill>
+          ENV
+        </Pill>
+        </Tooltip>
     </Td>
   );
 };
