@@ -16,7 +16,7 @@ import {
   updateApp,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { environmentAppsUrl, operationDetailUrl } from "@app/routes";
+import { appActivityUrl, environmentAppsUrl } from "@app/routes";
 import {
   AppState,
   DeployApp,
@@ -119,7 +119,7 @@ const AppRestart = ({ app }: AppProps) => {
     dispatch(action);
   };
   useLoaderSuccess(loader, () => {
-    navigate(operationDetailUrl(loader.meta.opId));
+    navigate(appActivityUrl(app.id));
   });
 
   return (

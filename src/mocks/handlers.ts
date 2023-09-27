@@ -292,6 +292,9 @@ const apiHandlers = [
       ),
     );
   }),
+  rest.get(`${testEnv.apiUrl}/services/:id/operations`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { operations: [] } }));
+  }),
   rest.post(
     `${testEnv.apiUrl}/services/:id/operations`,
     async (req, res, ctx) => {
