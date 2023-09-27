@@ -80,7 +80,10 @@ describe("DatabaseScalePage", () => {
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
 
-    expect(await screen.findByText("Operation Details")).toBeInTheDocument();
+    expect(await screen.findByText("Database Details")).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Operations show real-time/),
+    ).toBeInTheDocument();
   });
 
   describe("when changing container profile", () => {
