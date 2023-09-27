@@ -8,6 +8,8 @@ import {
   createDeployApp,
   fetchEnvironmentById,
   fetchStacks,
+  hasDeployStack,
+  selectDefaultStack,
   selectEnvironmentById,
   selectStackById,
   selectStackPublicDefault,
@@ -160,13 +162,17 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
 
 const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
   const org = useSelector(selectOrganizationSelected);
+  const defaultStack = useSelector(selectDefaultStack);
   const stack = useSelector((s: AppState) =>
     selectStackById(s, { id: stackId }),
   );
-  const [stackValue, setStackValue] = useState(stackToOption(stack));
+  const initialStackSelected = hasDeployStack(stack) ? stack : defaultStack;
+  const [stackValue, setStackValue] = useState(
+    stackToOption(initialStackSelected),
+  );
   useEffect(() => {
-    setStackValue(stackToOption(stack));
-  }, [stackId]);
+    setStackValue(stackToOption(initialStackSelected));
+  }, [stackId, initialStackSelected.id]);
 
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
