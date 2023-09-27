@@ -72,7 +72,6 @@ export const LoginPage = () => {
     username: email,
     password,
     otpToken,
-    makeCurrent: true,
   };
   // use query.name not query.key (this is important for webauthn!)
   const loader = useLoader(login);

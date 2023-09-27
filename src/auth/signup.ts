@@ -44,7 +44,6 @@ export const signup = thunks.create<CreateUserForm>(
         username: email,
         password,
         otpToken: "",
-        makeCurrent: true,
       }),
     );
 
