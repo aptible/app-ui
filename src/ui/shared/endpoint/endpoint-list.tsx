@@ -15,7 +15,7 @@ import {
   selectEndpointsByCertIdForTableSearch,
   selectEndpointsByDbIdForTableSearch,
   selectEndpointsByEnvIdForTableSearch,
-  selectEndpointsByServiceIds,
+  selectEndpointsByServiceId,
   selectEndpointsForTableSearch,
 } from "@app/deploy";
 import {
@@ -378,7 +378,7 @@ export function EndpointsByDbService({
   };
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
   const endpoints = useSelector((s: AppState) =>
-    selectEndpointsByServiceIds(s, { ids: [serviceId], db, search }),
+    selectEndpointsByServiceId(s, { serviceId, db, search }),
   );
   const navigate = useNavigate();
   const action = (

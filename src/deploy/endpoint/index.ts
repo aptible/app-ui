@@ -343,15 +343,15 @@ export const selectEndpointsForTableSearch = createSelector(
   },
 );
 
-export const selectEndpointsByServiceIds = createSelector(
+export const selectEndpointsByServiceId = createSelector(
   selectEndpointsForTable,
   selectEndpointsAsList,
   (_: AppState, p: { search: string }) => p.search.toLocaleLowerCase(),
-  (_: AppState, p: { ids: string[] }) => p.ids,
+  (_: AppState, p: { serviceId: string }) => p.serviceId,
   (_: AppState, p: { db: DeployDatabase }) => p.db,
-  (enps, serviceIds, search, ids, db): DeployEndpointRow[] => {
+  (enps, serviceIds, search, serviceId, db): DeployEndpointRow[] => {
     return enps.filter(
-      (enp) => ids.includes(enp.serviceId) && computeSearchMatch(enp, search),
+      (enp) => serviceId === enp.serviceId && computeSearchMatch(enp, search),
     );
   },
 );
