@@ -1,4 +1,4 @@
-import { api, cacheMinTimer } from "@app/api";
+import { PaginateProps, api, cacheMinTimer, cacheShortTimer } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
@@ -273,6 +273,12 @@ export const fetchStacks = api.get("/stacks?per_page=5000", {
 });
 
 export const fetchStack = api.get<{ id: string }>("/stacks/:id");
+
+export const fetchStackManagedHids = api.get<{ id: string } & PaginateProps>(
+  "/stacks/:id/intrusion_detection_reports?page=:page&per_page=10",
+  { saga: cacheShortTimer() },
+  api.cache(),
+);
 
 export const stackEntities = {
   stack: defaultEntity({
