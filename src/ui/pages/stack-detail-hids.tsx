@@ -73,7 +73,7 @@ const DownloadReport = ({
 
   return (
     <Button size="sm" variant="primary" onClick={onClick} isLoading={loading}>
-      <IconDownload className="-mr-1" variant="sm" />
+      <IconDownload variant="sm" />
       {children}
     </Button>
   );
@@ -89,7 +89,7 @@ const ReportView = ({
       <Td>{date}</Td>
       <Td>{prettyDate(report.starts_at)}</Td>
       <Td>{prettyDate(report.ends_at)}</Td>
-      <Td>
+      <Td className="flex gap-2 justify-end mr-4">
         <Group variant="horizontal" size="sm">
           <DownloadReport
             filename={`report-${stack.name}-${date}.csv`}
