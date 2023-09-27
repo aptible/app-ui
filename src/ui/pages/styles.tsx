@@ -676,9 +676,11 @@ const Secrets = () => {
 const Dates = () => {
   return (
     <div className="flex flex-col gap-3 pt-8">
-    <h1 id="dates" className={tokens.type.h1}>Dates</h1>
-    <DateText date={new Date()} />
-    <span className="flex">
+      <h1 id="dates" className={tokens.type.h1}>
+        Dates
+      </h1>
+      <DateText date={new Date()} />
+      <span className="flex">
         <DateText date={dateFromToday(-10)} format="time-ago" />{" "}
         <strong className="ml-2">(Hover the date)</strong>
       </span>
