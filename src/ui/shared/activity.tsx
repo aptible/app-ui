@@ -38,11 +38,11 @@ import { InputSearch } from "./input";
 import { LoadResources } from "./load-resources";
 import { LoadingSpinner } from "./loading";
 import { OpStatus } from "./op-status";
+import { Pill } from "./pill";
 import { ResourceHeader, ResourceListView } from "./resource-list-view";
 import { EnvStackCell } from "./resource-table";
 import { TableHead, Td } from "./table";
 import { tokens } from "./tokens";
-import { Pill } from "./pill";
 
 interface OpCellProps {
   op: DeployActivityRow;
@@ -81,23 +81,19 @@ const getImageForResourceType = (resourceType: ResourceType) => {
 
 const OpTypeCell = ({ op }: OpCellProps) => {
   return (
-    <Td className="flex gap-2 items-start flex-row align-top">
-      <div>
+    <Td>
       <Link
         to={operationDetailUrl(op.id)}
         className={tokens.type["table link"]}
       >
-        {capitalize(op.type)}
+        <div className="flex items-center">
+          {capitalize(op.type)}
+          <Tooltip fluid text="Env Vars: VALUE, VALUE, VALUE">
+            <IconInfo className="h-5 -mt-0.5 opacity-50 hover:opacity-100" />
+          </Tooltip>
+        </div>
       </Link>
       <div>ID: {op.id}</div>
-      </div>
-      <Tooltip
-                  text="Operations show real-time changes to resources, such as Apps and Databases.Operations show real-time changes to resources, such as Apps and Databases.Operations show real-time changes to resources, such as Apps and Databases.Operations show real-time changes to resources, such as Apps and Databases.Operations show real-time changes to resources, such as Apps and Databases.Operations show real-time changes to resources, such as Apps and Databases."
-                >
-      <Pill>
-          ENV
-        </Pill>
-        </Tooltip>
     </Td>
   );
 };

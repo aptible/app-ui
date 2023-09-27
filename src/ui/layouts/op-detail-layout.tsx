@@ -18,7 +18,9 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  IconInfo,
   OpStatus,
+  Tooltip,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
@@ -42,7 +44,17 @@ export function OpHeader({
       />
 
       <DetailInfoGrid>
-        <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
+        <DetailInfoItem title="Type">
+          <div className="flex items-center">
+            {capitalize(op.type)}
+            <Tooltip
+              className="text-sm w-[100vw]"
+              text="Env Vars: VALUE, VALUE, VALUE"
+            >
+              <IconInfo className="h-5 opacity-50 hover:opacity-100" />
+            </Tooltip>
+          </div>
+        </DetailInfoItem>
         <DetailInfoItem title="Created">
           {capitalize(prettyEnglishDateWithTime(op.createdAt))}
         </DetailInfoItem>
