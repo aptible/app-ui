@@ -15,7 +15,7 @@ import {
   updateDatabase,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { databaseActivityUrl, environmentDatabasesUrl } from "@app/routes";
+import { databaseActivityUrl, environmentActivityUrl } from "@app/routes";
 import {
   AppState,
   DeployDatabase,
@@ -57,7 +57,7 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
   const loader = useLoader(action);
   const onSubmit = () => {
     dispatch(action);
-    navigate(environmentDatabasesUrl(environment.id));
+    navigate(environmentActivityUrl(environment.id));
   };
   const isDisabled = database.handle !== deleteConfirm;
 

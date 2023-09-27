@@ -16,7 +16,7 @@ import {
   updateApp,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { appActivityUrl, environmentAppsUrl } from "@app/routes";
+import { appActivityUrl, environmentActivityUrl } from "@app/routes";
 import {
   AppState,
   DeployApp,
@@ -65,7 +65,7 @@ const AppDeprovision = ({ app }: AppProps) => {
   const onClick = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     dispatch(action);
-    navigate(environmentAppsUrl(environment.id));
+    navigate(environmentActivityUrl(environment.id));
   };
   const isDisabled = app.handle !== deleteConfirm;
 
