@@ -160,7 +160,7 @@ const ReportTable = ({ stack }: { stack: DeployStack }) => {
         >
           <IconArrowRight color="#111920" variant="sm" />
         </Button>
-        <div className="ml-2">
+        <div className="ml-2 text-gray-500">
           Weekly Host-level Intrusion Detection System (HIDS) reports for
           auditing evidence. This report applies to all resources and
           environments in this stack.
