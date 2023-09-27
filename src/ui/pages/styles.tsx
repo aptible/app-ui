@@ -75,7 +75,6 @@ import {
   Secret,
   Select,
   SelectOption,
-  StatusPill,
   TableHead,
   Tabs,
   Td,
@@ -461,13 +460,6 @@ const Logs = () => (
   </div>
 );
 
-const operationStatuses: OperationStatus[] = [
-  "queued",
-  "failed",
-  "running",
-  "succeeded",
-  "unknown",
-];
 const Pills = () => (
   <div className="pt-8 space-y-4">
     <h1 id="pills" className={tokens.type.h1}>
