@@ -175,6 +175,22 @@ export const selectStacksByOrgAsOptions = createSelector(
   },
 );
 
+export const selectDefaultStack = createSelector(
+  selectStacksByOrgAsList,
+  (stacks) => {
+    const defaultPrivateStack = stacks.find((s) => s.default === true);
+    const defaultPublicStack = stacks.find((s) => {
+      return s.name === "shared-us-west-1";
+    });
+
+    if (defaultPrivateStack) {
+      return defaultPrivateStack;
+    }
+
+    return defaultPublicStack || initStack;
+  },
+);
+
 export type StackType = "shared" | "dedicated";
 /*
  * A stack with no organization id could be a coordinator or a shared stack
@@ -190,20 +206,6 @@ export const getStackType = (stack: DeployStack): StackType => {
   return stack.organizationId === "" ? "shared" : "dedicated";
 };
 
-export const selectStackPublicDefault = createSelector(
-  selectStacksByOrgAsList,
-  (stacks) => {
-    if (stacks.length === 0) {
-      return initStack;
-    }
-
-    return stacks.find((s) => s.default) || initStack;
-  },
-);
-export const selectStackPublicDefaultAsOption = createSelector(
-  selectStackPublicDefault,
-  stackToOption,
-);
 export const hasDeployStack = (s: DeployStack) => s.id !== "";
 
 export const selectStacksForTableSearch = createSelector(
