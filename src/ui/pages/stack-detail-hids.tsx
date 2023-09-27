@@ -1,4 +1,4 @@
-import { prettyDate } from "@app/date";
+import { prettyEnglishDate } from "@app/date";
 import {
   fetchStackManagedHids,
   getStackType,
@@ -83,12 +83,12 @@ const ReportView = ({
   report,
   stack,
 }: { report: HidsReport; stack: DeployStack }) => {
-  const date = prettyDate(report.created_at);
+  const date = prettyEnglishDate(report.created_at);
   return (
     <Tr>
       <Td>{date}</Td>
-      <Td>{prettyDate(report.starts_at)}</Td>
-      <Td>{prettyDate(report.ends_at)}</Td>
+      <Td>{prettyEnglishDate(report.starts_at)}</Td>
+      <Td>{prettyEnglishDate(report.ends_at)}</Td>
       <Td className="flex gap-2 justify-end mr-4">
         <Group variant="horizontal" size="sm">
           <DownloadReport
