@@ -188,7 +188,6 @@ export const selectEnvToServicesMap = createSelector(
   selectServicesAsList,
   (services) => {
     const envToServiceMap: Record<string, Set<string> | undefined> = {};
-    // console.log(services)
     services.forEach((service) => {
       if (!(service.appId || service.databaseId)) {
         return;
