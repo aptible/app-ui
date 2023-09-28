@@ -18,10 +18,12 @@ import {
   AppConfigView,
   Box,
   Button,
+  ButtonIcon,
   ButtonLinkDocs,
   ButtonSensitive,
   FormGroup,
   Group,
+  IconEdit,
   tokens,
 } from "../shared";
 
@@ -74,6 +76,7 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
           variant="white"
           onClick={() => setEditing(true)}
         >
+          <IconEdit variant="sm" className="mr-2" />
           Edit
         </ButtonSensitive>
       </div>
