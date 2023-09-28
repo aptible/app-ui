@@ -147,8 +147,8 @@ function EndpointAppHeader({
     { name: "Activity", href: endpointDetailActivityUrl(enp.id) },
     { name: "Settings", href: endpointDetailSettingsUrl(enp.id) },
   ];
-  if (requiresAcmeSetup(enp)) {
-    tabs.push({ name: "Finish Setup", href: endpointDetailSetupUrl(enp.id) });
+  if (enp.acme) {
+    tabs.push({ name: "ACME Configure", href: endpointDetailSetupUrl(enp.id) });
   }
 
   return (
