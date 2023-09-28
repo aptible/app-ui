@@ -3,8 +3,9 @@ import { selectOrganizationSelectedId } from "@app/organizations";
 import { stacksUrl } from "@app/routes";
 import { selectCurrentUser } from "@app/users";
 import { handleValidator } from "@app/validator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { resetLoaderById } from "saga-query";
 import { useLoader } from "saga-query/react";
 import { useValidator } from "../hooks";
 import {
@@ -129,6 +130,14 @@ export const CreateStackPage = () => {
     );
   };
 
+  useEffect(() => {
+    return () => {
+      // reset loader when component is unmounted because we have multiple
+      // pages that use this same loader id
+      dispatch(resetLoaderById(`${createSupportTicket}`));
+    };
+  }, []);
+
   return (
     <Group>
       <Breadcrumbs
@@ -206,6 +215,7 @@ export const CreateStackPage = () => {
                   label="Financial Data"
                   onChange={updateDataTypes("financial")}
                 />
+                <CheckBox label="Other" onChange={updateDataTypes("other")} />
               </Group>
             </FormGroup>
 
@@ -224,7 +234,10 @@ export const CreateStackPage = () => {
                 label={
                   <>
                     <span>I agree to the </span>
-                    <ExternalLink variant="info" href="https://aptible.com">
+                    <ExternalLink
+                      variant="info"
+                      href="https://www.aptible.com/legal/terms-of-service"
+                    >
                       terms and conditions
                     </ExternalLink>
                   </>
