@@ -8,7 +8,7 @@ import {
 import { useQuery } from "@app/fx";
 import type { AppState } from "@app/types";
 
-import { BackupRpView, DatabaseBackupsList } from "../shared";
+import { BackupRpView, Banner, DatabaseBackupsList } from "../shared";
 
 export const EnvironmentBackupsPage = () => {
   const { id = "" } = useParams();
@@ -20,6 +20,13 @@ export const EnvironmentBackupsPage = () => {
   return (
     <div className="flex flex-col">
       <BackupRpView envId={id} />
+      <Banner variant="info" className="mt-6">
+        <p>
+          <b>Only backups retained from deleted databases are shown below.</b>{" "}
+          Removing an original backup deletes its copies. Deleting a copy does
+          not delete the original backup.
+        </p>
+      </Banner>
       <DatabaseBackupsList backups={backups} />
     </div>
   );
