@@ -31,13 +31,12 @@ import {
   Button,
   ButtonCreate,
   ButtonDestroy,
-  ButtonLinkExternal,
+  ButtonLinkDocs,
   ButtonOps,
   ExternalLink,
   FormGroup,
   Group,
   IconAlertTriangle,
-  IconExternalLink,
   IconRefresh,
   IconTrash,
   Input,
@@ -268,16 +267,7 @@ export const DatabaseSettingsPage = () => {
   return (
     <BoxGroup>
       <Box>
-        <ButtonLinkExternal
-          href="https://www.aptible.com/docs/managing-databases"
-          className="relative float-right"
-          variant="white"
-          size="sm"
-        >
-          View Docs
-          <IconExternalLink className="inline ml-1 h-5 mt-0" />
-        </ButtonLinkExternal>
-
+        <ButtonLinkDocs href="https://www.aptible.com/docs/managing-databases" />
         <h1 className="text-lg text-gray-500 mb-4">Database Settings</h1>
         <DatabaseNameChange database={database} />
         <hr className="mt-6" />

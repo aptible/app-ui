@@ -74,6 +74,8 @@ export const appServicesUrl = (id: string) => `${appDetailUrl(id)}/services`;
 export const APP_SERVICE_PATH = `${APP_DETAIL_PATH}/services/:serviceId`;
 export const appServicePathUrl = (appId: string, serviceId: string) =>
   `${appDetailUrl(appId)}/services/${serviceId}`;
+export const APP_CONFIG_PATH = `${APP_DETAIL_PATH}/config`;
+export const appConfigUrl = (appId: string) => `${appDetailUrl(appId)}/config`;
 export const APP_SERVICE_METRICS_PATH = `${APP_DETAIL_PATH}/services/:serviceId/metrics`;
 export const appServicePathMetricsUrl = (appId: string, serviceId: string) =>
   `${appDetailUrl(appId)}/services/${serviceId}/metrics`;

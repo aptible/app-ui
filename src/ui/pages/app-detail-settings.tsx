@@ -9,7 +9,6 @@ import {
   fetchEnvMetricDrains,
   restartApp,
   selectAppById,
-  selectAppConfigById,
   selectEnvironmentById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
@@ -32,19 +31,16 @@ import {
   Button,
   ButtonCreate,
   ButtonDestroy,
-  ButtonLinkExternal,
+  ButtonLinkDocs,
   ButtonOps,
   ExternalLink,
   FormGroup,
   Group,
   IconAlertTriangle,
-  IconExternalLink,
   IconRefresh,
   IconTrash,
   Input,
-  PreBox,
   PreCode,
-  TextSegment,
   listToInvertedTextColor,
   tokens,
 } from "../shared";
@@ -229,43 +225,6 @@ const AppNameChange = ({ app }: AppProps) => {
   );
 };
 
-const AppConfigView = ({ app }: { app: DeployApp }) => {
-  const [isVisible, setVisible] = useState(false);
-  const config = useSelector((s: AppState) =>
-    selectAppConfigById(s, { id: app.currentConfigurationId }),
-  );
-  const envs: TextSegment[] = [];
-  Object.keys(config.env).forEach((key) => {
-    envs.push(
-      { text: `${key}=`, className: "text-lime" },
-      { text: `${config.env[key]}`, className: "text-white" },
-      { text: "\n", className: "" },
-    );
-  });
-
-  return (
-    <Group size="sm">
-      <h4 className={tokens.type.h4}>Environment Variables</h4>
-      {isVisible ? (
-        <Group size="sm">
-          <div>
-            <Button variant="white" onClick={() => setVisible(false)}>
-              Hide
-            </Button>
-          </div>
-          <PreBox allowCopy segments={envs} />
-        </Group>
-      ) : (
-        <div>
-          <Button variant="white" onClick={() => setVisible(true)}>
-            Show
-          </Button>
-        </div>
-      )}
-    </Group>
-  );
-};
-
 export const AppSettingsPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
@@ -274,15 +233,7 @@ export const AppSettingsPage = () => {
   return (
     <BoxGroup>
       <Box>
-        <ButtonLinkExternal
-          href="https://www.aptible.com/docs/deployment-guides"
-          className="relative float-right"
-          variant="white"
-          size="sm"
-        >
-          View Docs
-          <IconExternalLink className="inline ml-1 h-5 mt-0" />
-        </ButtonLinkExternal>
+        <ButtonLinkDocs href="https://www.aptible.com/docs/deployment-guides" />
         <h3 className="text-lg text-gray-500">How To Deploy Changes</h3>
         <div className="mt-4">
           <h4 className={tokens.type.h4}>Clone project code</h4>
@@ -313,8 +264,6 @@ export const AppSettingsPage = () => {
           <AppNameChange app={app} />
           <hr />
           <AppRestart app={app} />
-          <hr />
-          <AppConfigView app={app} />
         </Group>
       </Box>
 

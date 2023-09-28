@@ -10,8 +10,7 @@ import { Link } from "react-router-dom";
 import {
   Box,
   Button,
-  ButtonLinkExternal,
-  IconExternalLink,
+  ButtonLinkDocs,
   LoadResources,
   Pill,
   ResourceListView,
@@ -86,15 +85,7 @@ export const StackDetailVpcPeeringPage = () => {
   return (
     <div className="mb-4">
       <Box className="mb-4">
-        <ButtonLinkExternal
-          href="https://www.aptible.com/docs/network-integrations"
-          className="relative float-right"
-          variant="white"
-          size="sm"
-        >
-          View Docs
-          <IconExternalLink className="inline ml-1 h-5 mt-0" />
-        </ButtonLinkExternal>
+        <ButtonLinkDocs href="https://www.aptible.com/docs/network-integrations" />
         <p className="flex mb-4 text-gray-500 text-md">
           Contact support to edit or add new VPC Peers.
         </p>
