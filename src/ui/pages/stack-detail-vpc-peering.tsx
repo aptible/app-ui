@@ -85,7 +85,7 @@ export const StackDetailVpcPeeringPage = () => {
   return (
     <div className="mb-4">
       <Box className="mb-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-start">
           <p className="flex mb-4 text-gray-500 text-md">
             Contact support to edit or add new VPC Peers.
           </p>
