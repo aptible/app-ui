@@ -83,7 +83,7 @@ export const ButtonLinkDocs = ({ href }: { href: string }) => {
       size="sm"
     >
       View Docs
-      <IconExternalLink className="inline ml-1 h-5 mt-0" />
+      <IconExternalLink variant="sm" className="inline ml-1 h-5 mt-0" />
     </ButtonLinkExternal>
   );
 };
