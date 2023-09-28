@@ -13,7 +13,7 @@ import type { AppState } from "@app/types";
 import { useValidator } from "../../hooks";
 import { BannerMessages } from "../banner";
 import { Box } from "../box";
-import { Button, ButtonAdmin } from "../button";
+import { ButtonAdmin } from "../button";
 import { FormGroup } from "../form-group";
 import { Input } from "../input";
 import { Radio, RadioGroup } from "../select";
