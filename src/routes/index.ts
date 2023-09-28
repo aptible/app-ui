@@ -251,6 +251,8 @@ export const stylesUrl = () => STYLES_PATH;
 
 export const STACKS_PATH = "/stacks";
 export const stacksUrl = () => STACKS_PATH;
+export const CREATE_STACK_PATH = "/create/stack";
+export const createStackUrl = () => CREATE_STACK_PATH;
 
 export const STACK_DETAIL_PATH = "/stacks/:id";
 export const stackDetailUrl = (id: string) => `/stacks/${id}`;

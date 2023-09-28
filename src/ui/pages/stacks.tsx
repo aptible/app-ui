@@ -11,11 +11,14 @@ import {
 } from "@app/deploy";
 import { AppState, DeployStack } from "@app/types";
 
+import { createStackUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { useSearchParams } from "react-router-dom";
 import { AppSidebarLayout } from "../layouts";
 import {
+  ButtonLink,
   IconInfo,
+  IconPlusCircle,
   InputSearch,
   LoadResources,
   ResourceHeader,
@@ -81,12 +84,19 @@ function StackList() {
     }),
   );
 
+  const actions = [
+    <ButtonLink to={createStackUrl()}>
+      <IconPlusCircle variant="sm" className="mr-2" /> New Stack
+    </ButtonLink>,
+  ];
+
   return (
     <LoadResources query={query} isEmpty={stacks.length === 0 && search === ""}>
       <ResourceListView
         header={
           <ResourceHeader
             title="Stacks"
+            actions={actions}
             filterBar={
               <div>
                 <InputSearch
