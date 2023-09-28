@@ -233,7 +233,7 @@ export const AppSettingsPage = () => {
   return (
     <BoxGroup>
       <Box>
-        <div class="flex justify-between items-center">
+        <div className="flex justify-between items-center">
           <h3 className="text-lg text-gray-500">How To Deploy Changes</h3>
           <ButtonLinkDocs href="https://www.aptible.com/docs/deployment-guides" />
         </div>

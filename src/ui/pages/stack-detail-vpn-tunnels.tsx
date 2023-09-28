@@ -29,7 +29,7 @@ export const StackDetailVpnTunnelsPage = () => {
   return (
     <div className="mb-4">
       <Box className="mb-4">
-        <div class="flex justify-between items-center">
+        <div className="flex justify-between items-center">
           <p className="flex mb-4 text-gray-500 text-md">
             Contact support to edit or add new VPN Tunnels.
           </p>

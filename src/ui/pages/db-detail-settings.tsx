@@ -267,7 +267,7 @@ export const DatabaseSettingsPage = () => {
   return (
     <BoxGroup>
       <Box>
-        <div class="flex justify-between items-center">
+        <div className="flex justify-between items-center">
           <h1 className="text-lg text-gray-500 mb-4">Database Settings</h1>
           <ButtonLinkDocs href="https://www.aptible.com/docs/managing-databases" />
         </div>
