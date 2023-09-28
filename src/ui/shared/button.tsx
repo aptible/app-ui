@@ -166,6 +166,33 @@ export const Button: FC<ButtonProps> = ({
   );
 };
 
+export const ButtonMultPermissions = ({
+  hasPerm,
+  scopes,
+  envId,
+  children,
+  ...props
+}: {
+  hasPerm: boolean;
+  scopes: PermissionScope[];
+  envId: string;
+} & ButtonProps) => {
+  const scopesStr = capitalize(scopes.join(", "));
+  if (hasPerm) {
+    return <Button {...props}>{children}</Button>;
+  }
+
+  return (
+    <Tooltip
+      text={`You do not have ${scopesStr} permissions for this environment (id:${envId})`}
+    >
+      <Button {...props} disabled>
+        {children}
+      </Button>
+    </Tooltip>
+  );
+};
+
 const ButtonPermission = ({
   scope,
   envId,

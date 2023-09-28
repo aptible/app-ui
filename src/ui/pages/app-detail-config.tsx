@@ -6,6 +6,7 @@ import {
   prepareConfigEnv,
   selectAppById,
   selectAppConfigById,
+  selectUserHasPerms,
 } from "@app/deploy";
 import { appActivityUrl } from "@app/routes";
 import { AppState, DeployApp } from "@app/types";
@@ -19,6 +20,7 @@ import {
   Box,
   Button,
   ButtonLinkDocs,
+  ButtonMultPermissions,
   ButtonSensitive,
   FormGroup,
   Group,
@@ -36,6 +38,13 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
   const envStr = configEnvToStr(config.env);
   const { envs, envList, setEnvs, errors, validate } = useEnvEditor(envStr);
   const finalEnv = prepareConfigEnv(config.env, envList);
+  const hasSensitivePerm = useSelector((s: AppState) =>
+    selectUserHasPerms(s, { envId: app.environmentId, scope: "sensitive" }),
+  );
+  const hasDeployPerm = useSelector((s: AppState) =>
+    selectUserHasPerms(s, { envId: app.environmentId, scope: "deploy" }),
+  );
+  const hasPerm = hasSensitivePerm || hasDeployPerm;
 
   const action = createAppOperation({
     appId: app.id,
@@ -70,14 +79,16 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
   if (!editing) {
     return (
       <div>
-        <ButtonSensitive
+        <ButtonMultPermissions
           envId={app.environmentId}
+          hasPerm={hasPerm}
+          scopes={["sensitive", "deploy"]}
           variant="white"
           onClick={() => setEditing(true)}
         >
           <IconEdit variant="sm" className="mr-2" />
           Edit
-        </ButtonSensitive>
+        </ButtonMultPermissions>
       </div>
     );
   }
