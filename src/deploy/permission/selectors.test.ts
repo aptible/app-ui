@@ -266,6 +266,43 @@ describe("selectUserHasPerms", () => {
       });
     });
 
+    describe("when user has `sensitive` permission", () => {
+      describe("when scope is set to `read`", () => {
+        it("should return true", () => {
+          const role = defaultRole({
+            id: `${createId()}`,
+            name: "deployer",
+            type: "platform_user",
+          });
+          const envId = `${createId()}`;
+          const perm = defaultPermission({
+            id: `${createId()}`,
+            roleId: role.id,
+            environmentId: `${envId}`,
+            scope: "sensitive",
+          });
+
+          const state: DeepPartial<AppState> = {
+            deploy: {
+              permissions: {
+                [perm.id]: perm,
+              },
+            },
+            roles: {
+              [role.id]: role,
+            },
+            currentUserRoles: [role.id],
+          };
+
+          const actual = selectUserHasPerms(state as any, {
+            envId,
+            scope: "read",
+          });
+          expect(actual).toEqual(true);
+        });
+      });
+    });
+
     describe("when checking for `basic_read` scope", () => {
       const scopes: PermissionScope[] = [
         "basic_read",

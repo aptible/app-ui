@@ -15,6 +15,7 @@ import {
 } from "@app/deploy";
 import {
   appActivityUrl,
+  appConfigUrl,
   appEndpointsUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
@@ -140,6 +141,7 @@ function AppPageHeader() {
         { name: "Services", href: appServicesUrl(id) },
         { name: "Endpoints", href: appEndpointsUrl(id) },
         { name: "Activity", href: appActivityUrl(id) },
+        { name: "Configuration", href: appConfigUrl(id) },
         { name: "Settings", href: appSettingsUrl(id) },
       ];
 

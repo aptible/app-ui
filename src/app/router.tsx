@@ -6,6 +6,7 @@ import {
   AddSecurityKeyPage,
   AppActivityPage,
   AppCreateEndpointPage,
+  AppDetailConfigPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailPage,
@@ -239,6 +240,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.APP_SETTINGS_PATH,
                 element: <AppSettingsPage />,
+              },
+              {
+                path: routes.APP_CONFIG_PATH,
+                element: <AppDetailConfigPage />,
               },
             ],
           },

@@ -8,3 +8,4 @@ export * from "./use-project-ops";
 export * from "./use-validator";
 export * from "./use-ssh-key-required";
 export * from "./use-payment-required";
+export * from "./use-env-editor";
