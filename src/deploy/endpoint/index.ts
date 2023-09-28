@@ -255,7 +255,7 @@ export const selectEndpointsByOrgAsList = createSelector(
   selectEnvironmentsByOrgAsList,
   (envToServiceMap, enps, envs) => {
     return enps.filter((enp) =>
-      envs.some((env) => envToServiceMap[env.id]?.has(enp.serviceId))
+      envs.some((env) => envToServiceMap[env.id]?.has(enp.serviceId)),
     );
   },
 );
