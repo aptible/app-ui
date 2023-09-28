@@ -38,7 +38,8 @@ export const createSupportTicket = api.post<SupportTicketProps>(
     }
 
     ctx.loader = {
-      message: "Success!",
+      message:
+        "Request submitted successfully! Check your email for confirmation.",
     };
   },
 );
