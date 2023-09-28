@@ -254,11 +254,9 @@ export const selectEndpointsByOrgAsList = createSelector(
   selectEndpointsAsList,
   selectEnvironmentsByOrgAsList,
   (envToServiceMap, enps, envs) => {
-    return enps;
-    // This filters out database endpoints somehow, not sure it is needed anyway
-    // return enps.filter((enp) =>
-    //   envs.some((env) => envToServiceMap[env.id]?.has(enp.serviceId))
-    // );
+    return enps.filter((enp) =>
+      envs.some((env) => envToServiceMap[env.id]?.has(enp.serviceId))
+    );
   },
 );
 
