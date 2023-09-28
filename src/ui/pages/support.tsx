@@ -3,7 +3,7 @@ import {
   queryAlgoliaApi,
   uploadAttachment,
 } from "@app/deploy/support";
-import { useLoader, useQuery } from "@app/fx";
+import { resetLoaderById, useLoader, useQuery } from "@app/fx";
 import { selectCurrentUser } from "@app/users";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -129,6 +129,14 @@ export const SupportPage = () => {
       dispatch(uploadAttachment({ attachment, callback: assignAttachment }));
     }
   };
+
+  useEffect(() => {
+    return () => {
+      // reset loader when component is unmounted because we have multiple
+      // pages that use this same loader id
+      dispatch(resetLoaderById(`${createSupportTicket}`));
+    };
+  }, []);
 
   return (
     <AppSidebarLayout>
