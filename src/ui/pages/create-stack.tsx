@@ -1,4 +1,5 @@
 import { createSupportTicket } from "@app/deploy/support";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import { stacksUrl } from "@app/routes";
 import { selectCurrentUser } from "@app/users";
 import { handleValidator } from "@app/validator";
@@ -66,6 +67,7 @@ const validators = {
 export const CreateStackPage = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
+  const orgId = useSelector(selectOrganizationSelectedId);
   const [stackName, setStackName] = useState("");
   const [region, setRegion] = useState("none");
   const [dataTypes, setDataTypes] = useState<string[]>([]);
@@ -118,6 +120,7 @@ export const CreateStackPage = () => {
         priority: "high",
         attachments: [],
         description: [
+          `Org ID: ${orgId}`,
           `Stack Name: ${stackName}`,
           `Region: ${region}`,
           `Data Types: ${dataTypes.join(", ")}`,
