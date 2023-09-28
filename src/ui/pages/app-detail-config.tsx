@@ -18,7 +18,6 @@ import {
   AppConfigView,
   Box,
   Button,
-  ButtonIcon,
   ButtonLinkDocs,
   ButtonSensitive,
   FormGroup,
