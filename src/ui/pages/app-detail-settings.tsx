@@ -233,8 +233,10 @@ export const AppSettingsPage = () => {
   return (
     <BoxGroup>
       <Box>
-        <ButtonLinkDocs href="https://www.aptible.com/docs/deployment-guides" />
-        <h3 className="text-lg text-gray-500">How To Deploy Changes</h3>
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg text-gray-500">How To Deploy Changes</h3>
+          <ButtonLinkDocs href="https://www.aptible.com/docs/deployment-guides" />
+        </div>
         <div className="mt-4">
           <h4 className={tokens.type.h4}>Clone project code</h4>
           <PreCode
