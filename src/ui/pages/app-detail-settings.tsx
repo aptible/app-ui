@@ -275,7 +275,7 @@ export const AppSettingsPage = () => {
     <BoxGroup>
       <Box>
         <ButtonLinkExternal
-          href="https://www.aptible.com/docs/managing-apps"
+          href="https://www.aptible.com/docs/deployment-guides"
           className="relative float-right"
           variant="white"
           size="sm"
