@@ -162,10 +162,6 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
           <ButtonAdmin type="submit" envId={envId} isLoading={loader.isLoading}>
             Save Policy
           </ButtonAdmin>
-
-          <Button variant="white" onClick={onReset}>
-            Cancel
-          </Button>
         </div>
       </form>
     </Box>
