@@ -33,6 +33,7 @@ import {
   CreateProjectGitStatusPage,
   CreateProjectNamePage,
   CreateProjectPage,
+  CreateStackPage,
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
@@ -154,6 +155,15 @@ export const appRoutes: RouteObject[] = [
         element: (
           <AppSidebarLayout>
             <DeploymentsPage />
+          </AppSidebarLayout>
+        ),
+      },
+
+      {
+        path: routes.CREATE_STACK_PATH,
+        element: (
+          <AppSidebarLayout>
+            <CreateStackPage />
           </AppSidebarLayout>
         ),
       },

@@ -72,7 +72,7 @@ export const CheckBox = ({
   className,
   label,
   ...props
-}: InputProps & { label: string }) => (
+}: InputProps & { label: React.ReactNode }) => (
   <label className="flex">
     <Input
       type="checkbox"
