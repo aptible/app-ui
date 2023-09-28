@@ -85,10 +85,12 @@ export const StackDetailVpcPeeringPage = () => {
   return (
     <div className="mb-4">
       <Box className="mb-4">
-        <ButtonLinkDocs href="https://www.aptible.com/docs/network-integrations" />
-        <p className="flex mb-4 text-gray-500 text-md">
-          Contact support to edit or add new VPC Peers.
-        </p>
+        <div class="flex justify-between items-center">
+          <p className="flex mb-4 text-gray-500 text-md">
+            Contact support to edit or add new VPC Peers.
+          </p>
+          <ButtonLinkDocs href="https://www.aptible.com/docs/network-integrations" />
+        </div>
         <Link
           className="hover:no-underline"
           to="https://www.aptible.com/docs/support"

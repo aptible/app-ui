@@ -267,8 +267,10 @@ export const DatabaseSettingsPage = () => {
   return (
     <BoxGroup>
       <Box>
-        <ButtonLinkDocs href="https://www.aptible.com/docs/managing-databases" />
-        <h1 className="text-lg text-gray-500 mb-4">Database Settings</h1>
+        <div class="flex justify-between items-center">
+          <h1 className="text-lg text-gray-500 mb-4">Database Settings</h1>
+          <ButtonLinkDocs href="https://www.aptible.com/docs/managing-databases" />
+        </div>
         <DatabaseNameChange database={database} />
         <hr className="mt-6" />
         <DatabaseRestart database={database} />
