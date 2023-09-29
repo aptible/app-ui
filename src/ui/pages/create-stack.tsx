@@ -86,7 +86,7 @@ export const CreateStackPage = () => {
   const selectedPlan = useSelector((s: AppState) =>
     selectPlanById(s, { id: activePlan.planId }),
   );
-  const canRequestStack = !["growth", "scale", "enterprise"].includes(
+  const canRequestStack = ["growth", "scale", "enterprise"].includes(
     selectedPlan.name,
   );
 
@@ -146,6 +146,7 @@ export const CreateStackPage = () => {
           `Stack Name: ${stackName}`,
           `Region: ${region}`,
           `Data Types: ${dataTypes.join(", ")}`,
+          `Current plan: ${selectedPlan.name}`,
         ].join("\n"),
       }),
     );
@@ -188,7 +189,7 @@ export const CreateStackPage = () => {
               shortly.
             </Banner>
 
-            {canRequestStack ? null : (
+            {selectedPlan.id === "" || canRequestStack ? null : (
               <Banner variant="info">
                 Dedicated stacks are only available for{" "}
                 <strong>Growth, Scale, and Enterprise</strong> plans &mdash;{" "}
