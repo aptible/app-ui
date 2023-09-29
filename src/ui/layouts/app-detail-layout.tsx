@@ -5,6 +5,7 @@ import {
   fetchConfiguration,
   fetchImageById,
   fetchServicesByAppId,
+  langsToIcon,
   pollAppOperations,
   selectAppById,
   selectAppConfigById,
@@ -57,18 +58,13 @@ export function AppHeader({ app }: { app: DeployApp }) {
   const { codeScan } = useLatestCodeResults(app.id);
   const langs = codeScan.data?.languages_detected || [];
   const langStr = langs.join(", ");
+  const appIcon = langsToIcon(langs);
 
   return (
     <DetailHeader>
       <DetailTitleBar
         title="App Details"
-        icon={
-          <img
-            src={"/resource-types/logo-app.png"}
-            className="w-8 h-8 mr-3"
-            aria-label="App"
-          />
-        }
+        icon={<img src={appIcon} className="w-8 h-8 mr-3" aria-label="App" />}
         docsUrl="https://www.aptible.com/docs/apps"
       />
 
