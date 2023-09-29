@@ -43,7 +43,7 @@ export const LogLine = ({ text }: { text: string }) => {
 };
 
 export const LogViewer = ({ op }: { op: DeployOperation }) => {
-  const wrapper = "font-mono bg-black p-2 rounded-lg text-black-200";
+  const wrapper = "font-mono bg-black p-2 rounded-lg text-black-200 overflow-x";
   const action = fetchOperationLogs({ id: op.id });
   const loader = useApi(action);
   const data: string = useSelector((s: AppState) =>

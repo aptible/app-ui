@@ -61,7 +61,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
         title="App Details"
         icon={
           <img
-            src={"/resource-types/logo-app.png"}
+            src="/resource-types/logo-app.png"
             className="w-8 h-8 mr-3"
             aria-label="App"
           />
