@@ -21,6 +21,7 @@ import {
   Input,
   Select,
   SelectOption,
+  tokens,
 } from "../shared";
 
 const regionOptions: SelectOption[] = [
@@ -218,6 +219,11 @@ export const CreateStackPage = () => {
                 <CheckBox label="Other" onChange={updateDataTypes("other")} />
               </Group>
             </FormGroup>
+
+            <div>
+              <h4 className={tokens.type.h4}>Monthly Cost</h4>
+              <p className="text-lg text-green-400">$499</p>
+            </div>
 
             <hr />
 

@@ -20,7 +20,6 @@ import type {
   AcmeConfiguration,
   AcmeStatus,
   AppState,
-  DeployDatabase,
   DeployEndpoint,
   LinkResponse,
   ProvisionableStatus,
@@ -57,7 +56,7 @@ export interface DeployEndpointResponse {
   default: boolean;
   docker_name: string | null;
   elastic_load_balancer_name: string | null;
-  external_host: string;
+  external_host: string | null;
   external_http_port: string | null;
   external_https_port: string | null;
   internal: boolean;
@@ -138,7 +137,7 @@ export const deserializeDeployEndpoint = (
     createdAt: payload.created_at,
     default: payload.default,
     dockerName: payload.docker_name || "",
-    externalHost: payload.external_host,
+    externalHost: payload.external_host || "",
     externalHttpPort: payload.external_http_port || "",
     externalHttpsPort: payload.external_https_port || "",
     internal: payload.internal,
@@ -343,11 +342,9 @@ export const selectEndpointsForTableSearch = createSelector(
 
 export const selectEndpointsByServiceId = createSelector(
   selectEndpointsForTable,
-  selectEndpointsAsList,
   (_: AppState, p: { search: string }) => p.search.toLocaleLowerCase(),
   (_: AppState, p: { serviceId: string }) => p.serviceId,
-  (_: AppState, p: { db: DeployDatabase }) => p.db,
-  (enps, serviceIds, search, serviceId, db): DeployEndpointRow[] => {
+  (enps, search, serviceId): DeployEndpointRow[] => {
     return enps.filter(
       (enp) => serviceId === enp.serviceId && computeSearchMatch(enp, search),
     );
