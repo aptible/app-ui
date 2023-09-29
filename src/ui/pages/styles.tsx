@@ -4,6 +4,7 @@ import { OperationStatus } from "@app/types";
 
 import { dateFromToday } from "@app/date";
 import {
+  DEFAULT_INSTANCE_CLASS,
   defaultDeployApp,
   defaultDeployDatabase,
   defaultDeployEndpoint,
@@ -630,7 +631,7 @@ const DetailBoxes = () => {
     type: "postgresql",
   });
   const service = defaultDeployService({
-    instanceClass: "m5",
+    instanceClass: DEFAULT_INSTANCE_CLASS,
     containerMemoryLimitMb: 4096,
   });
   const stack = defaultDeployStack({
