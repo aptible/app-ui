@@ -1,12 +1,20 @@
+import {
+  fetchActivePlans,
+  fetchPlans,
+  selectFirstActivePlan,
+  selectPlanById,
+} from "@app/deploy";
 import { createSupportTicket } from "@app/deploy/support";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { stacksUrl } from "@app/routes";
+import { plansUrl, stacksUrl } from "@app/routes";
+import { AppState } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 import { handleValidator } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { resetLoaderById } from "saga-query";
-import { useLoader } from "saga-query/react";
+import { useLoader, useQuery } from "saga-query/react";
 import { useValidator } from "../hooks";
 import {
   Banner,
@@ -70,6 +78,18 @@ export const CreateStackPage = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
   const orgId = useSelector(selectOrganizationSelectedId);
+  const activePlan = useSelector(selectFirstActivePlan);
+
+  useQuery(fetchPlans());
+  useQuery(fetchActivePlans({ organization_id: orgId }));
+
+  const selectedPlan = useSelector((s: AppState) =>
+    selectPlanById(s, { id: activePlan.planId }),
+  );
+  const canRequestStack = !["growth", "scale", "enterprise"].includes(
+    selectedPlan.name,
+  );
+
   const [stackName, setStackName] = useState("");
   const [region, setRegion] = useState("none");
   const [dataTypes, setDataTypes] = useState<string[]>([]);
@@ -162,10 +182,19 @@ export const CreateStackPage = () => {
               Tenancy, SLA Availability, Regulatory (HIPAA, GDPR), and
               Connectivity (VPNs, VPC Peering).
             </p>
+
             <Banner variant="info">
               Fill out this form and Aptible Support will be in contact with you
               shortly.
             </Banner>
+
+            {canRequestStack ? null : (
+              <Banner variant="info">
+                Dedicated stacks are only available for{" "}
+                <strong>Growth, Scale, and Enterprise</strong> plans &mdash;{" "}
+                <Link to={plansUrl()}>Upgrade your plan for access.</Link>
+              </Banner>
+            )}
 
             <BannerMessages {...loader} />
 
@@ -234,7 +263,7 @@ export const CreateStackPage = () => {
             >
               <ButtonOwner
                 type="submit"
-                disabled={!terms}
+                disabled={!terms || !canRequestStack}
                 isLoading={loader.isLoading}
               >
                 Request Dedicated Stack
