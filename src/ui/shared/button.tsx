@@ -1,12 +1,14 @@
-import { tokens } from "./tokens";
-import { Tooltip } from "./tooltip";
 import { selectUserHasPerms } from "@app/deploy";
+import { selectIsUserAnyOwner } from "@app/roles";
 import { capitalize } from "@app/string-utils";
 import { AppState, PermissionScope } from "@app/types";
 import cn from "classnames";
-import { ButtonHTMLAttributes, FC } from "react";
+import { ButtonHTMLAttributes, FC, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, LinkProps } from "react-router-dom";
+import { IconExternalLink } from "./icons";
+import { tokens } from "./tokens";
+import { Tooltip } from "./tooltip";
 
 export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 type Shape = "button" | "pill";
@@ -16,6 +18,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
   shape?: Shape;
   isLoading?: boolean;
+  requireConfirm?: boolean;
   children?: React.ReactNode;
 }
 
@@ -71,6 +74,20 @@ export const ButtonLinkExternal = ({
   );
 };
 
+export const ButtonLinkDocs = ({ href }: { href: string }) => {
+  return (
+    <ButtonLinkExternal
+      href={href}
+      className="ml-5 w-fit"
+      variant="white"
+      size="sm"
+    >
+      View Docs
+      <IconExternalLink variant="sm" className="inline ml-1 h-5 mt-0" />
+    </ButtonLinkExternal>
+  );
+};
+
 export const ButtonLink = ({
   children,
   layout = "auto",
@@ -105,8 +122,10 @@ export const Button: FC<ButtonProps> = ({
   isLoading = false,
   type = "button",
   className = "",
+  requireConfirm = false,
   ...props
 }) => {
+  const [confirmPrompted, setConfirmPrompted] = useState(false);
   const classes = cn(
     "flex items-center justify-center",
     buttonLayout[layout],
@@ -115,6 +134,26 @@ export const Button: FC<ButtonProps> = ({
     buttonShapeStyle(size, shape),
     { "opacity-50": props.disabled },
   );
+  if (confirmPrompted) {
+    return (
+      <button
+        {...props}
+        type={type}
+        className={`${className} ${classes}`}
+        disabled={isLoading || props.disabled}
+      >
+        Confirm
+      </button>
+    );
+  }
+
+  if (requireConfirm) {
+    props = {
+      ...props,
+      onClick: () => setConfirmPrompted(true),
+    };
+  }
+
   return (
     <button
       {...props}
@@ -172,5 +211,25 @@ const createButtonPermission = (
   };
 };
 
+export const ButtonOwner = ({ children, ...props }: ButtonProps) => {
+  const isUserOwner = useSelector(selectIsUserAnyOwner);
+
+  if (isUserOwner) {
+    return <Button {...props}>{children}</Button>;
+  }
+
+  return (
+    <Tooltip text="You do not have a valid role type (platform_owner, owner) to access this resource">
+      <Button {...props} disabled>
+        {children}
+      </Button>
+    </Tooltip>
+  );
+};
+
 export const ButtonCreate = createButtonPermission("deploy");
 export const ButtonDestroy = createButtonPermission("destroy");
+export const ButtonOps = createButtonPermission("observability");
+export const ButtonSensitive = createButtonPermission("sensitive");
+export const ButtonFullVisibility = createButtonPermission("read");
+export const ButtonAdmin = createButtonPermission("admin");

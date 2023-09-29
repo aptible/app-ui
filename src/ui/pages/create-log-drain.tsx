@@ -1,20 +1,3 @@
-import { useValidator } from "../hooks";
-import { EnvironmentDetailLayout } from "../layouts";
-import {
-  Banner,
-  BannerMessages,
-  ButtonCreate,
-  CheckBox,
-  Code,
-  DbSelector,
-  EnvironmentSelect,
-  ExternalLink,
-  FormGroup,
-  Input,
-  Label,
-  Select,
-  SelectOption,
-} from "../shared";
 import {
   CreateLogDrainProps,
   LogDrainType,
@@ -28,6 +11,60 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useLoader, useLoaderSuccess } from "saga-query/react";
+import { useValidator } from "../hooks";
+import { EnvironmentDetailLayout } from "../layouts";
+import {
+  Banner,
+  BannerMessages,
+  Box,
+  ButtonOps,
+  CheckBox,
+  Code,
+  DbSelector,
+  EnvironmentSelect,
+  ExternalLink,
+  FormGroup,
+  Input,
+  Label,
+  Select,
+  SelectOption,
+} from "../shared";
+
+const DrainTypeNotice = ({
+  drainType,
+  allowPhi,
+  envHandle,
+}: { drainType: LogDrainType; allowPhi: boolean; envHandle: string }) => {
+  if (drainType === "logdna") {
+    return <Banner variant="info">Signs BAAs</Banner>;
+  }
+
+  if (drainType === "papertrail") {
+    return <Banner variant="info">Signs BAAs</Banner>;
+  }
+
+  if (drainType === "sumologic") {
+    return <Banner variant="info">Signs BAAs</Banner>;
+  }
+
+  if (drainType === "insightops") {
+    return <Banner variant="info">Signs BAAs</Banner>;
+  }
+
+  if (drainType === "datadog") {
+    return <Banner variant="info">Signs BAAs</Banner>;
+  }
+
+  if (drainType === "elasticsearch_database") {
+    if (allowPhi) {
+      return <Banner variant="info">{envHandle} is safe for PHI</Banner>;
+    } else {
+      return <Banner variant="warning">{envHandle} is not safe for PHI</Banner>;
+    }
+  }
+
+  return null;
+};
 
 const validators = {
   // all
@@ -73,7 +110,7 @@ const validators = {
 
 const options: SelectOption<LogDrainType>[] = [
   { value: "datadog", label: "Datadog" },
-  { value: "logdna", label: "Log DNA (formerly Mezmo)" },
+  { value: "logdna", label: "Mezmo (formerly LogDNA)" },
   { value: "papertrail", label: "Papertrail" },
   { value: "sumologic", label: "Sumo Logic" },
   { value: "insightops", label: "InsightOps" },
@@ -185,13 +222,13 @@ export const CreateLogDrainPage = () => {
 
   return (
     <EnvironmentDetailLayout>
-      <div className="flex flex-col gap-4 bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+      <Box>
         <h1 className="text-lg text-black font-semibold">Create Log Drain</h1>
 
-        <div>
+        <div className="py-4">
           Log Drains let you collect stdout and stderr logs from your apps and
-          databases deployed in the {env.handle} environment and route them to a
-          log destination.
+          databases deployed in the <strong>{env.handle}</strong> environment
+          and route them to a log destination.
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -224,8 +261,18 @@ export const CreateLogDrainPage = () => {
             />
           </FormGroup>
 
-          <Label>Sources</Label>
-          <p>Select which logs should be captured:</p>
+          <DrainTypeNotice
+            drainType={drainType}
+            allowPhi={env.type === "production"}
+            envHandle={env.handle}
+          />
+
+          <div className="flex flex-col">
+            <Label>Sources</Label>
+            <p className="text-gray-500">
+              Select which logs should be captured:
+            </p>
+          </div>
           <CheckBox
             label="App Logs"
             name="app-logs"
@@ -351,7 +398,7 @@ export const CreateLogDrainPage = () => {
                     <p>
                       Must be in the format of{" "}
                       <Code>
-                        https://logs.logdna.com/aptible/ingest/INGESTION KEY
+                        https://logs.mezmo.com/aptible/ingest/INGESTION KEY
                       </Code>
                       . Refer to{" "}
                       <ExternalLink
@@ -418,16 +465,16 @@ export const CreateLogDrainPage = () => {
 
           <BannerMessages {...loader} />
 
-          <ButtonCreate
+          <ButtonOps
             className="w-[200px]"
             envId={envId}
             type="submit"
             isLoading={loader.isLoading}
           >
             Save Log Drain
-          </ButtonCreate>
+          </ButtonOps>
         </form>
-      </div>
+      </Box>
     </EnvironmentDetailLayout>
   );
 };

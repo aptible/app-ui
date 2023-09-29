@@ -10,11 +10,16 @@ import {
   selectEnvironmentById,
 } from "@app/deploy";
 
+import { operationDetailUrl } from "@app/routes";
+import { AppState } from "@app/types";
+import { handleValidator, portValidator } from "@app/validator";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
   BannerMessages,
-  ButtonCreate,
+  Box,
+  ButtonOps,
   DbSelector,
   EnvironmentSelect,
   ExternalLink,
@@ -25,10 +30,6 @@ import {
   Select,
   SelectOption,
 } from "../shared";
-import { operationDetailUrl } from "@app/routes";
-import { AppState } from "@app/types";
-import { handleValidator, portValidator } from "@app/validator";
-import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
 const options: SelectOption<MetricDrainType>[] = [
   { value: "influxdb_database", label: "InfluxDb (this environment)" },
@@ -191,15 +192,15 @@ export const CreateMetricDrainPage = () => {
 
   return (
     <EnvironmentDetailLayout>
-      <div className="flex flex-col gap-4 bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+      <Box>
         <h1 className="text-lg text-black font-semibold">
           Create Metric Drain
         </h1>
 
-        <div>
+        <div className="py-4">
           Metric Drains let you collect metrics from apps and databases deployed
-          in the {env.handle} environment and route them to a metrics
-          destination.
+          in the <strong>{env.handle}</strong> environment and route them to a
+          metrics destination.
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -427,16 +428,16 @@ export const CreateMetricDrainPage = () => {
 
           <BannerMessages {...loader} />
 
-          <ButtonCreate
+          <ButtonOps
             className="w-[200px]"
             envId={envId}
             type="submit"
             isLoading={loader.isLoading}
           >
             Save Metric Drain
-          </ButtonCreate>
+          </ButtonOps>
         </form>
-      </div>
+      </Box>
     </EnvironmentDetailLayout>
   );
 };

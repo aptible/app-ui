@@ -65,8 +65,8 @@ function tableSelectors<Entity extends AnyState = AnyState, S = any>(
   );
   const selectByIds: any = createSelector(
     selectTable,
-    (_: S, p: PropIds) => p,
-    findByIds,
+    (_: S, p: PropIds) => p.ids,
+    (tbl, ids) => findByIds(tbl, { ids }),
   );
 
   return {
@@ -120,7 +120,7 @@ export function createTable<Entity extends AnyState = AnyState>({
             const s: any = state;
             const nextEntity = { ...s[id] };
             Object.keys(entity).forEach((key) => {
-              if (s.hasOwnProperty(id)) {
+              if (Object.hasOwn(s, id)) {
                 nextEntity[key] = (action.payload[id] as any)[key];
               }
             });
@@ -143,7 +143,7 @@ export function createTable<Entity extends AnyState = AnyState>({
           if (entity) {
             // getting weird issue with typing here
             const s: any = state;
-            if (!s.hasOwnProperty(id)) {
+            if (!Object.hasOwn(s, id)) {
               return;
             }
 

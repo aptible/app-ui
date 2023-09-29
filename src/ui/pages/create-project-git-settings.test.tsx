@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 
@@ -15,7 +15,7 @@ import {
   CREATE_PROJECT_GIT_SETTINGS_PATH,
   createProjectGitSettingsUrl,
 } from "@app/routes";
-import { setupIntegrationTest, waitForBootup } from "@app/test";
+import { setupIntegrationTest, sleep, waitForBootup } from "@app/test";
 
 import { CreateProjectGitSettingsPage } from "./create-project-git-settings";
 
@@ -180,7 +180,9 @@ describe("CreateProjectGitSettingsPage", () => {
     const dbSelector = await screen.findByRole("combobox", {
       name: /existing-db/,
     });
-    userEvent.selectOptions(dbSelector, "test-app-1-postgres (postgres)");
+    await act(() =>
+      userEvent.selectOptions(dbSelector, "test-app-1-postgres (postgres)"),
+    );
 
     const btn = await screen.findByRole("button", { name: "Save & Deploy" });
     fireEvent.click(btn);
@@ -227,5 +229,40 @@ describe("CreateProjectGitSettingsPage", () => {
     expect(banner[1].textContent).toMatch(/Your code has a Procfile/);
     const btn = await screen.findByRole("button", { name: /Configure/ });
     expect(btn).toBeDisabled();
+  });
+
+  it("should filter out new databases without an imgId", async () => {
+    const handlers = stacksWithResources({
+      apps: [testApp],
+    });
+    server.use(...handlers);
+
+    const { TestProvider, store } = setupIntegrationTest({
+      path: CREATE_PROJECT_GIT_SETTINGS_PATH,
+      initEntries: [createProjectGitSettingsUrl(`${testApp.id}`)],
+    });
+
+    await waitForBootup(store);
+
+    render(
+      <TestProvider>
+        <CreateProjectGitSettingsPage />
+      </TestProvider>,
+    );
+
+    await sleep(0);
+
+    const newDbBtn = await screen.findByRole("button", {
+      name: /New Database/,
+    });
+    fireEvent.click(newDbBtn);
+
+    const btn = await screen.findByRole("button", { name: "Save & Deploy" });
+    fireEvent.click(btn);
+
+    const text = await screen.findByText(
+      /Must pick a database or delete the selector from the menu/,
+    );
+    expect(text).toBeInTheDocument();
   });
 });

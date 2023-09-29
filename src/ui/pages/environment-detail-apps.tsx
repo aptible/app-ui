@@ -1,5 +1,5 @@
-import { AppListByEnvironment, DetailPageSections } from "../shared";
 import { useParams } from "react-router";
+import { AppListByEnvironment, DetailPageSections } from "../shared";
 
 export const EnvironmentAppsPage = () => {
   const { id = "" } = useParams();

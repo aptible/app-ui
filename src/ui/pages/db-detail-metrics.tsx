@@ -1,12 +1,3 @@
-import { LoadResources, Loading, LoadingSpinner } from "../shared";
-import { ContainerMetricsChart } from "../shared/container-metrics-chart";
-import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
-import {
-  MetricTabTypes,
-  MetricsHorizonControls,
-  MetricsViewControls,
-  metricHorizonAsSeconds,
-} from "../shared/metrics-controls";
 import { dateFromToday } from "@app/date";
 import {
   calcMetrics,
@@ -27,6 +18,15 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { useQuery } from "saga-query/react";
+import { LoadResources, Loading, LoadingSpinner } from "../shared";
+import { ContainerMetricsChart } from "../shared/container-metrics-chart";
+import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
+import {
+  MetricTabTypes,
+  MetricsHorizonControls,
+  MetricsViewControls,
+  metricHorizonAsSeconds,
+} from "../shared/metrics-controls";
 
 const layersToSearchForContainers = ["database"];
 
@@ -99,7 +99,7 @@ export function DatabaseMetricsPage() {
         </div>
 
         {loader.isLoading ? (
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <span className="text-black-500">{pct}%</span>
             <LoadingSpinner color="#595E63" />
           </div>

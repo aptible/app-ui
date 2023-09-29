@@ -10,6 +10,13 @@ import {
 import { useQuery } from "@app/fx";
 import { AppState, MetricHorizons } from "@app/types";
 
+import { dateFromToday } from "@app/date";
+import { selectContainersByCurrentReleaseAndHorizon } from "@app/deploy/container";
+import {
+  fetchAllMetricsByServiceId,
+  selectMetricsLoaded,
+} from "@app/metric-tunnel";
+import { useState } from "react";
 import { Loading, LoadingSpinner } from "../shared";
 import { ContainerMetricsChart } from "../shared/container-metrics-chart";
 import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
@@ -19,13 +26,6 @@ import {
   MetricsViewControls,
   metricHorizonAsSeconds,
 } from "../shared/metrics-controls";
-import { dateFromToday } from "@app/date";
-import { selectContainersByCurrentReleaseAndHorizon } from "@app/deploy/container";
-import {
-  fetchAllMetricsByServiceId,
-  selectMetricsLoaded,
-} from "@app/metric-tunnel";
-import { useState } from "react";
 
 const layersToSearchForContainers = ["app"];
 
@@ -96,7 +96,7 @@ export function AppDetailServiceMetricsPage() {
         </div>
 
         {loader.isLoading ? (
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <span className="text-black-500">{pct}%</span>
             <LoadingSpinner color="#595E63" />
           </div>

@@ -44,3 +44,42 @@ export const stringSort = (a = "", b = "") => {
 // https://stackoverflow.com/a/54246501/1713216
 export const camelToSnakeCase = (str: string) =>
   str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
+export interface TextVal<
+  M extends { [key: string]: unknown } = {
+    [key: string]: unknown;
+  },
+> {
+  key: string;
+  value: string;
+  meta: M;
+}
+
+export interface ValidatorError {
+  item: TextVal;
+  message: string;
+}
+
+const trim = (t: string) => t.trim();
+export const parseText = <
+  M extends { [key: string]: unknown } = { [key: string]: unknown },
+>(
+  text: string,
+  meta: () => M,
+): TextVal<M>[] =>
+  text
+    .split("\n")
+    .map(trim)
+    .map((t) => {
+      // sometimes the value can contain an "=" so we need to only
+      // split the first "=", (e.g. SECRET_KEY=1234=)
+      // https://stackoverflow.com/a/54708145
+      const [key, ...values] = t.split("=").map(trim);
+      const value = Array.isArray(values) ? values.join("=") : values;
+      return {
+        key,
+        value,
+        meta: meta(),
+      };
+    })
+    .filter((t) => !!t.key);

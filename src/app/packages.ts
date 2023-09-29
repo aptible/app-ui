@@ -1,5 +1,6 @@
-import { api, authApi, metricTunnelApi, thunks } from "@app/api";
+import { api, authApi, billingApi, metricTunnelApi, thunks } from "@app/api";
 import * as auth from "@app/auth";
+import * as billing from "@app/billing";
 import * as bootup from "@app/bootup";
 import * as deploy from "@app/deploy";
 import * as env from "@app/env";
@@ -44,6 +45,7 @@ const corePackages: any[] = [
   signal,
   search,
   metrics,
+  billing,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {
@@ -65,6 +67,7 @@ const initialSagas = {
   authApi: authApi.saga(),
   metricTunnelApi: metricTunnelApi.saga(),
   thunks: thunks.saga(),
+  billingApi: billingApi.saga(),
 };
 
 export const sagas = corePackages.reduce((acc, pkg) => {

@@ -4,10 +4,10 @@ import { useNavigate } from "react-router";
 import { logout } from "@app/auth";
 import { loginUrl } from "@app/routes";
 
-import { HeroBgLayout } from "../layouts";
-import { Box, Button, IconArrowRight, tokens } from "../shared";
 import { selectLegacyDashboardUrl } from "@app/env";
 import { useLoader, useLoaderSuccess } from "@app/fx";
+import { HeroBgLayout } from "../layouts";
+import { Box, Button, IconArrowRight, tokens } from "../shared";
 
 export const LogoutPage = () => {
   const dispatch = useDispatch();

@@ -12,17 +12,17 @@ import { useLoader, useLoaderSuccess } from "@app/fx";
 import { databaseActivityUrl, environmentBackupsUrl } from "@app/routes";
 import { AppState } from "@app/types";
 
+import { useMemo } from "react";
 import { usePoller } from "../hooks";
 import {
   BannerMessages,
-  ButtonCreate,
   ButtonLink,
+  ButtonOps,
   DatabaseBackupsList,
   IconEdit,
   IconPlusCircle,
   LoadingSpinner,
 } from "../shared";
-import { useMemo } from "react";
 
 export const DatabaseBackupsPage = () => {
   const dispatch = useDispatch();
@@ -53,13 +53,13 @@ export const DatabaseBackupsPage = () => {
   return (
     <div>
       <div className="flex gap-4 items-center">
-        <ButtonCreate
+        <ButtonOps
           envId={db.environmentId}
           onClick={onCreateBackup}
           isLoading={loader.isLoading}
         >
           <IconPlusCircle variant="sm" className="mr-2" /> New Backup
-        </ButtonCreate>
+        </ButtonOps>
 
         <ButtonLink
           to={environmentBackupsUrl(db.environmentId)}

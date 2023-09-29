@@ -1,8 +1,31 @@
-import { useQuery } from "@app/fx";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
+import { prettyDateRelative } from "@app/date";
 import {
-  ButtonCreate,
+  deprovisionLogDrain,
+  deprovisionMetricDrain,
+  fetchEnvLogDrains,
+  fetchEnvMetricDrains,
+  restartLogDrain,
+  restartMetricDrain,
+  selectLogDrainsByEnvId,
+  selectMetricDrainsByEnvId,
+} from "@app/deploy";
+import {
+  createLogDrainUrl,
+  createMetricDrainUrl,
+  operationDetailUrl,
+} from "@app/routes";
+import { capitalize } from "@app/string-utils";
+import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
+
+import {
+  ButtonDestroy,
+  ButtonOps,
+  EmptyResourcesTable,
+  Group,
   IconPlusCircle,
   LoadResources,
   Pill,
@@ -12,18 +35,6 @@ import {
   pillStyles,
   tokens,
 } from "../shared";
-import { EmptyResourcesTable } from "../shared/empty-resources-table";
-import { prettyDateRelative } from "@app/date";
-import {
-  fetchEnvLogDrains,
-  fetchEnvMetricDrains,
-  selectLogDrainsByEnvId,
-  selectMetricDrainsByEnvId,
-} from "@app/deploy";
-import { createLogDrainUrl, createMetricDrainUrl } from "@app/routes";
-import { capitalize } from "@app/string-utils";
-import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
-import { useSelector } from "react-redux";
 
 const DrainStatusPill = ({
   drain,
@@ -76,6 +87,7 @@ const LogDrainHandleCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
     </Td>
   );
 };
+
 const LogDrainSourcesCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   const drainSources = [];
   if (logDrain.drainApps) {
@@ -120,7 +132,65 @@ const LogDrainLastUpdatedCell = ({
   );
 };
 
-const logDrainsHeaders = ["Status", "Handle", "Sources", "Last Updated"];
+const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const restartAction = restartLogDrain({ id: logDrain.id });
+  const restartLoader = useLoader(restartAction);
+  const submitRestart = () => {
+    dispatch(restartAction);
+  };
+  useLoaderSuccess(restartLoader, () => {
+    navigate(operationDetailUrl(restartLoader.meta.opId));
+  });
+
+  const deprovisionAction = deprovisionLogDrain({ id: logDrain.id });
+  const deprovisionLoader = useLoader(deprovisionAction);
+  const submitDeprovision = () => {
+    dispatch(deprovisionAction);
+  };
+  useLoaderSuccess(deprovisionLoader, () => {
+    navigate(operationDetailUrl(deprovisionLoader.meta.opId));
+  });
+
+  return (
+    <Td className="flex justify-end gap-2 mr-4">
+      <Group variant="horizontal" size="sm">
+        <ButtonOps
+          size="sm"
+          envId={logDrain.environmentId}
+          className="semibold"
+          onClick={submitRestart}
+          isLoading={restartLoader.isLoading}
+          disabled={logDrain.backendChannel === "log_forwarder"}
+        >
+          Restart
+        </ButtonOps>
+
+        <ButtonDestroy
+          size="sm"
+          envId={logDrain.environmentId}
+          className="semibold"
+          onClick={submitDeprovision}
+          isLoading={deprovisionLoader.isLoading}
+          variant="delete"
+          requireConfirm
+        >
+          Delete
+        </ButtonDestroy>
+      </Group>
+    </Td>
+  );
+};
+
+const logDrainsHeaders = [
+  "Status",
+  "Handle",
+  "Sources",
+  "Last Updated",
+  "Actions",
+];
 
 const LogDrainsSection = ({ id }: { id: string }) => {
   const query = useQuery(fetchEnvLogDrains({ id }));
@@ -150,7 +220,9 @@ const LogDrainsSection = ({ id }: { id: string }) => {
             {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
           </p>
         }
-        tableHeader={<TableHead headers={logDrainsHeaders} />}
+        tableHeader={
+          <TableHead rightAlignedFinalCol headers={logDrainsHeaders} />
+        }
         tableBody={
           <>
             {logDrains.map((logDrain) => (
@@ -159,6 +231,7 @@ const LogDrainsSection = ({ id }: { id: string }) => {
                 <LogDrainHandleCell logDrain={logDrain} />
                 <LogDrainSourcesCell logDrain={logDrain} />
                 <LogDrainLastUpdatedCell logDrain={logDrain} />
+                <LogDrainActions logDrain={logDrain} />
               </tr>
             ))}
           </>
@@ -216,7 +289,60 @@ const MetricDrainLastUpdatedCell = ({
   );
 };
 
-const metricDrainsHeaders = ["Status", "Handle", "Last Updated"];
+const MetricDrainActions = ({
+  metricDrain,
+}: { metricDrain: DeployMetricDrain }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const restartAction = restartMetricDrain({ id: metricDrain.id });
+  const restartLoader = useLoader(restartAction);
+  const submitRestart = () => {
+    dispatch(restartAction);
+  };
+  useLoaderSuccess(restartLoader, () => {
+    navigate(operationDetailUrl(restartLoader.meta.opId));
+  });
+
+  const deprovisionAction = deprovisionMetricDrain({ id: metricDrain.id });
+  const deprovisionLoader = useLoader(deprovisionAction);
+  const submitDeprovision = () => {
+    dispatch(deprovisionAction);
+  };
+  useLoaderSuccess(deprovisionLoader, () => {
+    navigate(operationDetailUrl(deprovisionLoader.meta.opId));
+  });
+
+  return (
+    <Td className="flex justify-end gap-2 mr-4">
+      <Group variant="horizontal" size="sm">
+        <ButtonOps
+          size="sm"
+          envId={metricDrain.environmentId}
+          className="semibold"
+          onClick={submitRestart}
+          isLoading={restartLoader.isLoading}
+        >
+          Restart
+        </ButtonOps>
+
+        <ButtonDestroy
+          size="sm"
+          envId={metricDrain.environmentId}
+          className="semibold"
+          onClick={submitDeprovision}
+          isLoading={deprovisionLoader.isLoading}
+          variant="delete"
+          requireConfirm
+        >
+          Delete
+        </ButtonDestroy>
+      </Group>
+    </Td>
+  );
+};
+
+const metricDrainsHeaders = ["Status", "Handle", "Last Updated", "Actions"];
 
 const MetricDrainsSection = ({ id }: { id: string }) => {
   const query = useQuery(fetchEnvMetricDrains({ id }));
@@ -249,7 +375,9 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
               {metricDrains.length !== 1 && "s"}
             </p>
           }
-          tableHeader={<TableHead headers={metricDrainsHeaders} />}
+          tableHeader={
+            <TableHead rightAlignedFinalCol headers={metricDrainsHeaders} />
+          }
           tableBody={
             <>
               {metricDrains.map((metricDrain) => (
@@ -257,6 +385,7 @@ const MetricDrainsSection = ({ id }: { id: string }) => {
                   <MetricDrainPrimaryCell metricDrain={metricDrain} />
                   <MetricDrainHandleCell metricDrain={metricDrain} />
                   <MetricDrainLastUpdatedCell metricDrain={metricDrain} />
+                  <MetricDrainActions metricDrain={metricDrain} />
                 </tr>
               ))}
             </>
@@ -279,14 +408,15 @@ export const EnvironmentIntegrationsPage = () => {
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
-        <ButtonCreate envId={id} onClick={onCreateLogs}>
+      <Group variant="horizontal" size="sm" className="mb-4">
+        <ButtonOps envId={id} onClick={onCreateLogs}>
           <IconPlusCircle variant="sm" className="mr-1" /> New Log Drain
-        </ButtonCreate>
-        <ButtonCreate envId={id} onClick={onCreateMetrics}>
+        </ButtonOps>
+        <ButtonOps envId={id} onClick={onCreateMetrics}>
           <IconPlusCircle variant="sm" className="mr-1" /> New Metric Drain
-        </ButtonCreate>
-      </div>
+        </ButtonOps>
+      </Group>
+
       <LogDrainsSection id={id} />
       <MetricDrainsSection id={id} />
     </div>

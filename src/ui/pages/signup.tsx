@@ -13,6 +13,7 @@ import {
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
   acceptInvitationWithCodeUrl,
+  createProjectGitUrl,
   homeUrl,
   loginUrl,
   verifyEmailRequestUrl,
@@ -21,6 +22,7 @@ import { AppState } from "@app/types";
 import { CreateUserForm } from "@app/users";
 import { emailValidator, existValidtor, passValidator } from "@app/validator";
 
+import { selectIsUserAuthenticated } from "@app/token";
 import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
@@ -33,7 +35,6 @@ import {
   Input,
   tokens,
 } from "../shared";
-import { selectIsUserAuthenticated } from "@app/token";
 
 const validators = {
   name: (props: CreateUserForm) => existValidtor(props.name, "Name"),
@@ -95,7 +96,7 @@ export const SignupPage = () => {
       // if the api returns with a user.verified = true, skip email request page
       // this can happen in development when ENV['DISABLE_EMAIL_VERIFICATION']=1
       if (meta.verified) {
-        navigate(redirectPath || homeUrl());
+        navigate(redirectPath || createProjectGitUrl());
         dispatch(resetRedirectPath());
         return;
       }

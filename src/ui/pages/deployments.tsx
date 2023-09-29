@@ -1,4 +1,15 @@
-import { MenuWrappedPage } from "../layouts/menu-wrapped-page";
+import {
+  fetchApps,
+  fetchEnvironments,
+  selectAppsByEnvOnboarding,
+  selectLatestDeployOp,
+} from "@app/deploy";
+import { useLoader } from "@app/fx";
+import { createProjectGitUrl } from "@app/routes";
+import { AppState, DeployApp } from "@app/types";
+import { useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
+import { AppSidebarLayout } from "../layouts";
 import {
   Button,
   ButtonLink,
@@ -10,21 +21,8 @@ import {
 import { OnboardingLink } from "../shared/onboarding-link";
 import { StatusPill } from "../shared/pill";
 import { ResourceGroupBox } from "../shared/resource-group-box";
-import {
-  fetchAllApps,
-  fetchAllEnvironments,
-  fetchEndpointsByAppId,
-  selectAppsByEnvOnboarding,
-  selectLatestDeployOp,
-} from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
-import { createProjectGitUrl } from "@app/routes";
-import { AppState, DeployApp } from "@app/types";
-import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
-  useQuery(fetchEndpointsByAppId({ appId: app.id }));
   const deployOp = useSelector((s: AppState) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
@@ -58,8 +56,8 @@ export const DeploymentsPage = ({
   const accountIds =
     searchParams.get("accounts")?.split(",").filter(Boolean) || [];
   const apps = useSelector(selectAppsByEnvOnboarding);
-  const envsLoader = useLoader(fetchAllEnvironments());
-  const appsLoader = useLoader(fetchAllApps());
+  const envsLoader = useLoader(fetchEnvironments());
+  const appsLoader = useLoader(fetchApps());
   const filteredApps = apps.filter((app) => {
     if (accountIds.length === 0) return true;
     return accountIds.includes(app.environmentId);
@@ -120,11 +118,11 @@ export const DeploymentsPage = ({
 };
 
 export const DeploymentsPageWithMenus = () => (
-  <MenuWrappedPage>
+  <AppSidebarLayout>
     <DeploymentsPage
       headerStyle={tokens.type.h2}
       leftAlignTitle
       showDeployButton={false}
     />
-  </MenuWrappedPage>
+  </AppSidebarLayout>
 );

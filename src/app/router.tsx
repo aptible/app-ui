@@ -1,16 +1,18 @@
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
-import { Tuna } from "./tuna";
 import * as routes from "@app/routes";
 import {
   ActivityPage,
   AddSecurityKeyPage,
   AppActivityPage,
   AppCreateEndpointPage,
+  AppDetailConfigPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
+  AppDetailPage,
   AppDetailServicesPage,
   AppSettingsPage,
+  AppSidebarLayout,
   AppsPage,
   AuthRequired,
   BackupRestorePage,
@@ -29,15 +31,16 @@ import {
   CreateProjectGitPushPage,
   CreateProjectGitSettingsPage,
   CreateProjectGitStatusPage,
-  CreateProjectLayout,
   CreateProjectNamePage,
   CreateProjectPage,
+  CreateStackPage,
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
   DatabaseCreateEndpointPage,
   DatabaseCredentialsPage,
   DatabaseDetailLayout,
+  DatabaseDetailPage,
   DatabaseEndpointsPage,
   DatabaseScalePage,
   DatabaseSettingsPage,
@@ -87,11 +90,13 @@ import {
   SsoFailurePage,
   SsoLoginPage,
   StackDetailEnvironmentsPage,
+  StackDetailHidsPage,
   StackDetailLayout,
   StackDetailVpcPeeringPage,
   StackDetailVpnTunnelsPage,
   StacksPage,
   StylesPage,
+  SupportPage,
   TeamPage,
   UnauthRequired,
   VerifyEmailPage,
@@ -100,6 +105,7 @@ import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scal
 import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
 import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
 import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
+import { Tuna } from "./tuna";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -147,9 +153,18 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.CREATE_PROJECT_DEPLOYMENTS_PATH,
         element: (
-          <CreateProjectLayout>
+          <AppSidebarLayout>
             <DeploymentsPage />
-          </CreateProjectLayout>
+          </AppSidebarLayout>
+        ),
+      },
+
+      {
+        path: routes.CREATE_STACK_PATH,
+        element: (
+          <AppSidebarLayout>
+            <CreateStackPage />
+          </AppSidebarLayout>
         ),
       },
 
@@ -177,6 +192,10 @@ export const appRoutes: RouteObject[] = [
                 path: routes.STACK_DETAIL_VPN_TUNNELS_PATH,
                 element: <StackDetailVpnTunnelsPage />,
               },
+              {
+                path: routes.STACK_DETAIL_HIDS_PATH,
+                element: <StackDetailHidsPage />,
+              },
             ],
           },
         ],
@@ -196,7 +215,7 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <AppDetailServicesPage />,
+                element: <AppDetailPage />,
               },
               {
                 path: routes.APP_SERVICE_PATH,
@@ -232,6 +251,10 @@ export const appRoutes: RouteObject[] = [
                 path: routes.APP_SETTINGS_PATH,
                 element: <AppSettingsPage />,
               },
+              {
+                path: routes.APP_CONFIG_PATH,
+                element: <AppDetailConfigPage />,
+              },
             ],
           },
         ],
@@ -256,7 +279,7 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <DatabaseEndpointsPage />,
+                element: <DatabaseDetailPage />,
               },
               {
                 path: routes.DATABASE_ENDPOINT_CREATE_PATH,
@@ -498,21 +521,11 @@ export const appRoutes: RouteObject[] = [
 
       {
         path: routes.CREATE_PROJECT_SETUP_PATH,
-        element: <CreateProjectLayout />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectFromAccountSetupPage />,
-          },
-        ],
+        element: <CreateProjectFromAccountSetupPage />,
       },
       {
         path: routes.CREATE_PROJECT_ADD_KEY_PATH,
-        element: (
-          <ElevateRequired>
-            <CreateProjectLayout />
-          </ElevateRequired>
-        ),
+        element: <ElevateRequired />,
         children: [
           {
             index: true,
@@ -522,17 +535,11 @@ export const appRoutes: RouteObject[] = [
       },
       {
         path: routes.CREATE_PROJECT_ADD_NAME_PATH,
-        element: <CreateProjectLayout />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectNamePage />,
-          },
-        ],
+        element: <CreateProjectNamePage />,
       },
       {
         path: routes.CREATE_PROJECT_GIT_PATH,
-        element: <CreateProjectLayout />,
+        element: <AppSidebarLayout />,
         children: [
           {
             index: true,
@@ -542,7 +549,6 @@ export const appRoutes: RouteObject[] = [
       },
       {
         path: routes.CREATE_PROJECT_GIT_APP_PATH,
-        element: <CreateProjectLayout />,
         children: [
           {
             path: routes.CREATE_PROJECT_GIT_PUSH_PATH,
@@ -561,6 +567,10 @@ export const appRoutes: RouteObject[] = [
             element: <CreateProjectFromAppSetupPage />,
           },
         ],
+      },
+      {
+        path: routes.SUPPORT_URL,
+        element: <SupportPage />,
       },
     ],
   },
@@ -626,7 +636,7 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.FORGOT_PASS_PATH,
+    path: routes.RESET_PASSWORD_PATH,
     element: <UnauthRequired />,
     children: [
       {
@@ -682,6 +692,10 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.STYLES_PATH,
     element: <StylesPage />,
+  },
+  {
+    path: routes.SUPPORT_URL,
+    element: <SupportPage />,
   },
 
   {

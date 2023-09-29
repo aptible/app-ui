@@ -6,7 +6,16 @@ import { checkDns, renewEndpoint, selectEndpointById } from "@app/deploy";
 import { endpointDetailActivityUrl } from "@app/routes";
 import { AcmeChallenge, AppState } from "@app/types";
 
-import { Button, IconCheck, IconX, Tooltip, tokens } from "../shared";
+import {
+  Box,
+  Button,
+  CopyText,
+  Group,
+  IconCheck,
+  IconX,
+  Tooltip,
+  tokens,
+} from "../shared";
 
 const CnameItem = ({ from, to }: { from: string; to: string }) => {
   const loader = useQuery(checkDns({ from, to }));
@@ -15,12 +24,18 @@ const CnameItem = ({ from, to }: { from: string; to: string }) => {
   };
 
   return (
-    <div className="flex justify-between items-center gap-2 border rounded p-2">
-      <div>
-        <span className="font-semibold">CNAME</span> from{" "}
-        <span className="font-semibold">{from}</span> to{" "}
-        <span className="font-semibold">{to}</span>
-      </div>
+    <div className="flex justify-between items-center gap-2 border p-4 rounded-lg">
+      <Group size="sm">
+        <div className="font-semibold">CNAME</div>
+        <Group variant="horizontal" size="sm">
+          <div className="w-[50px] font-bold">From</div>
+          <CopyText text={from} />
+        </Group>
+        <Group variant="horizontal" size="sm">
+          <div className="w-[50px] font-bold">To</div>
+          <CopyText text={to} />
+        </Group>
+      </Group>
       <div className="flex items-center gap-2">
         <div>
           {loader.meta.success ? (
@@ -77,7 +92,7 @@ export const EndpointDetailSetupPage = () => {
   });
 
   return (
-    <div>
+    <Box>
       <div className="flex flex-col gap-2">
         <h3 className={tokens.type.h3}>Managed HTTPS Validation Records</h3>
 
@@ -115,10 +130,14 @@ export const EndpointDetailSetupPage = () => {
           ) : null}
         </div>
 
-        <Button isLoading={loader.isLoading} onClick={renew}>
+        <Button
+          className="w-[200px]"
+          isLoading={loader.isLoading}
+          onClick={renew}
+        >
           I created the records
         </Button>
       </div>
-    </div>
+    </Box>
   );
 };

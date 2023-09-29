@@ -1,5 +1,113 @@
-import { billingApi, thunks } from "@app/api";
+import { billingApi, cacheTimer, thunks } from "@app/api";
 import { all, call } from "@app/fx";
+import { defaultHalHref } from "@app/hal";
+import { createAssign, createReducerMap } from "@app/slice-helpers";
+import { AppState, BillingDetail, LinkResponse } from "@app/types";
+import { createSelector } from "@reduxjs/toolkit";
+import { loadStripe } from "@stripe/stripe-js/pure";
+
+export const defaultBillingDetailResponse = (
+  bt: Partial<BillingDetailResponse> = {},
+): BillingDetailResponse => {
+  return {
+    id: "",
+    _links: { payment_method: defaultHalHref() },
+    ...bt,
+  };
+};
+
+const defaultBillingDetail = (
+  bt: Partial<BillingDetail> = {},
+): BillingDetail => {
+  return {
+    id: "",
+    paymentMethodUrl: "",
+    ...bt,
+  };
+};
+
+interface BillingDetailResponse {
+  id: string;
+  _links: {
+    payment_method: LinkResponse;
+  };
+}
+
+const deserializeBillingDetail = (bt: BillingDetailResponse): BillingDetail => {
+  return {
+    id: bt.id,
+    paymentMethodUrl: bt._links.payment_method
+      ? bt._links.payment_method.href
+      : "",
+  };
+};
+
+export const BILLING_DETAIL_NAME = "billingDetail";
+const billingDetail = createAssign<BillingDetail>({
+  name: BILLING_DETAIL_NAME,
+  initialState: defaultBillingDetail(),
+});
+
+const { set: setBillingDetail } = billingDetail.actions;
+export const reducers = createReducerMap(billingDetail);
+export const selectBillingDetail = (state: AppState) =>
+  state[BILLING_DETAIL_NAME];
+export const selectHasPaymentMethod = createSelector(
+  selectBillingDetail,
+  (bt) => bt.paymentMethodUrl !== "",
+);
+
+export const fetchBillingDetail = billingApi.get<
+  { id: string },
+  BillingDetailResponse
+>("/billing_details/:id", function* (ctx, next) {
+  yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  ctx.actions.push(setBillingDetail(deserializeBillingDetail(ctx.json.data)));
+});
+
+export async function getStripe(stripePublishableKey: string) {
+  loadStripe.setLoadParameters({ advancedFraudSignals: false });
+  return loadStripe(stripePublishableKey);
+}
+
+interface StripeSourceProps {
+  id: string;
+  stripeTokenId: string;
+}
+
+export const createStripeSource = billingApi.post<StripeSourceProps>(
+  "/billing_details/:id/stripe_sources",
+  function* (ctx, next) {
+    const body = {
+      stripe_token_id: ctx.payload.stripeTokenId,
+    };
+    ctx.request = ctx.req({
+      body: JSON.stringify(body),
+    });
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = { message: "Successfully added stripe payment method!" };
+  },
+);
+
+export const fetchStripeSources = billingApi.get<{ id: string }>(
+  "/billing_details/:id/stripe_sources",
+  { saga: cacheTimer() },
+  billingApi.cache(),
+);
+export const fetchTrials = billingApi.get<{ id: string }>(
+  "/billing_details/:id/trials",
+  { saga: cacheTimer() },
+  billingApi.cache(),
+);
+// const fetchExternalPaymentSources = billingApi.get<{ id: string }>('/billing_details/:id/external_payment_sources');
 
 const createBillingDetail = billingApi.post<{ orgId: string; orgName: string }>(
   "/billing_details",

@@ -1,5 +1,3 @@
-import { AuthRequired } from "./auth-required";
-
 import { server, testEnv, testUser } from "@app/mocks";
 import { loginUrl, verifyEmailRequestUrl } from "@app/routes";
 import { setupIntegrationTest } from "@app/test";
@@ -9,6 +7,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { rest } from "msw";
+import { AuthRequired } from "./auth-required";
 
 const LoginMock = () => {
   return <div>Simulated login</div>;

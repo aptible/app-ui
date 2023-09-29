@@ -1,6 +1,6 @@
+import cn from "classnames";
 import { ActionList, ActionListView } from "./action-list-view";
 import { tokens } from "./tokens";
-import cn from "classnames";
 
 type Element = React.ReactNode | JSX.Element;
 
@@ -33,7 +33,7 @@ export const EmptyResultView = ({
   return (
     <div className={cn("text-center", className)}>
       <h3 className={cn(tokens.type.h3, "mt-2")}>{title}</h3>
-      <p className={cn(tokens.type["small lighter"], "mt-1")}>{description}</p>
+      <p className="text-base mt-1 text-gray-500">{description}</p>
       {action && (
         <div className="mt-6 flex justify-center w-full">{action}</div>
       )}
@@ -50,7 +50,11 @@ export const ResourceHeader = ({
   return (
     <div>
       <div>
-        {title ? <h1 className={cn(tokens.type.h2)}>{title}</h1> : null}
+        {title ? (
+          <div className="pb-3">
+            <h2 className={cn(tokens.type.h2)}>{title}</h2>
+          </div>
+        ) : null}
         {description ? (
           <p className="mt-2 text-sm text-gray-700">{description}</p>
         ) : null}

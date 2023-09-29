@@ -7,6 +7,7 @@ import { useQuery } from "saga-query/react";
 
 import {
   DbCreatorProps,
+  configEnvToStr,
   fetchAllDatabaseImages,
   fetchApp,
   fetchConfiguration,
@@ -14,7 +15,7 @@ import {
   fetchServiceDefinitionsByAppId,
   selectAppById,
   selectAppConfigById,
-  selectDatabaseImagesAsList,
+  selectDatabaseImagesVisible,
   selectDatabasesByEnvId,
   selectServiceDefinitionsByAppId,
 } from "@app/deploy";
@@ -22,7 +23,6 @@ import { DeployCodeScanResponse } from "@app/deploy";
 import { idCreator } from "@app/id";
 import {
   DB_ENV_TEMPLATE_KEY,
-  TextVal,
   deployProject,
   getDbEnvTemplateValue,
 } from "@app/projects";
@@ -32,7 +32,14 @@ import {
 } from "@app/routes";
 import { AppState } from "@app/types";
 
-import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
+import { parseText } from "@app/string-utils";
+import {
+  useEnvEditor,
+  useEnvOpsPoller,
+  useLatestCodeResults,
+  useProjectOps,
+} from "../hooks";
+import { AppSidebarLayout } from "../layouts";
 import {
   Banner,
   Box,
@@ -58,43 +65,23 @@ import {
   validateDbName,
 } from "../shared";
 
-const trim = (t: string) => t.trim();
-const parseText = <
-  M extends { [key: string]: unknown } = { [key: string]: unknown },
->(
-  text: string,
-  meta: () => M,
-): TextVal<M>[] =>
-  text
-    .split("\n")
-    .map(trim)
-    .map((t) => {
-      // sometimes the value can contain an "=" so we need to only
-      // split the first "=", (e.g. SECRET_KEY=1234=)
-      // https://stackoverflow.com/a/54708145
-      const [key, ...values] = t.split("=").map(trim);
-      const value = Array.isArray(values) ? values.join("=") : values;
-      return {
-        key,
-        value,
-        meta: meta(),
-      };
-    })
-    .filter((t) => !!t.key);
-
-interface ValidatorError {
-  item: TextVal;
-  message: string;
-}
-
-const validateDbs = (items: DbCreatorProps[]): DbValidatorError[] => {
+const validateNewDbs = (
+  items: DbCreatorProps[],
+  envVars: Set<string>,
+): DbValidatorError[] => {
   const errors: DbValidatorError[] = [];
-  const envVars = new Set();
 
   const validate = (item: DbCreatorProps) => {
     const name = validateDbName(item);
     if (name) {
       errors.push(name);
+    }
+
+    if (item.imgId === "") {
+      errors.push({
+        item,
+        message: "Must pick a database or delete the selector from the menu",
+      });
     }
 
     if (envVars.has(item.env)) {
@@ -111,23 +98,20 @@ const validateDbs = (items: DbCreatorProps[]): DbValidatorError[] => {
   return errors;
 };
 
-const validateEnvs = (items: TextVal[]): ValidatorError[] => {
-  const errors: ValidatorError[] = [];
+const validateExistingDbs = (
+  items: DbExistingProps[],
+  envVars: Set<string>,
+): DbValidatorError[] => {
+  const errors: DbValidatorError[] = [];
 
-  const validate = (item: TextVal) => {
-    // https://stackoverflow.com/a/2821201
-    if (!/[a-zA-Z_]+[a-zA-Z0-9_]*/.test(item.key)) {
+  const validate = (item: DbExistingProps) => {
+    if (envVars.has(item.env)) {
       errors.push({
         item,
-        message: `${item.key} does not match regex: /[a-zA-Z_]+[a-zA-Z0-9_]*/`,
+        message: `${item.env} has already been used, each database env var must be unique`,
       });
-    }
-
-    if (item.value === "") {
-      errors.push({
-        item,
-        message: `${item.key} is blank, either provide a value or remove the environment variable`,
-      });
+    } else {
+      envVars.add(item.env);
     }
   };
 
@@ -173,7 +157,7 @@ const DbExistingSelector = ({
 
   return (
     <div className="mb-4">
-      <h4 className={`${tokens.type.h4} mb-2`}>Existing Database</h4>
+      <h4 className={`${tokens.type.h4}`}>Existing Database</h4>
       <p className="text-black-500 mb-2">
         Choose an already existing database. The environment variable here will
         be injected into your app with the connection URL.
@@ -200,6 +184,7 @@ const DbExistingSelector = ({
 
 interface DbExistingProps {
   id: string;
+  name: string;
   dbId: string;
   env: string;
   connectionUrl: string;
@@ -219,6 +204,7 @@ const DatabaseExistingForm = ({
   const onClick = () => {
     const payload: DbExistingProps = {
       id: `${createId()}`,
+      name: "",
       env: "DATABASE_URL",
       dbId: "",
       connectionUrl: "",
@@ -250,8 +236,8 @@ const DatabaseExistingForm = ({
         variant="secondary"
         isLoading={isLoading}
       >
-        <IconPlusCircle className="mr-2" color="#fff" /> Connect Existing
-        Database
+        <IconPlusCircle className="mr-2" color="#fff" variant="sm" /> Connect
+        Existing Database
       </Button>
     </div>
   );
@@ -412,7 +398,7 @@ export const CreateProjectGitSettingsPage = () => {
   );
 
   const imgLoader = useQuery(fetchAllDatabaseImages());
-  const dbImages = useSelector(selectDatabaseImagesAsList);
+  const dbImages = useSelector(selectDatabaseImagesVisible);
 
   useQuery(fetchServiceDefinitionsByAppId({ appId }));
   const serviceDefinitions = useSelector((s: AppState) =>
@@ -423,11 +409,14 @@ export const CreateProjectGitSettingsPage = () => {
   const appConfig = useSelector((s: AppState) =>
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
-  const existingEnvStr = Object.keys(appConfig.env).reduce((acc, key) => {
-    const value = appConfig.env[key];
-    const prev = acc ? `${acc}\n` : "";
-    return `${prev}${key}=${value}`;
-  }, "");
+  const existingEnvStr = configEnvToStr(appConfig.env);
+  const {
+    envs,
+    setEnvs,
+    envList,
+    validate: validateEnvs,
+    errors: envErrors,
+  } = useEnvEditor(existingEnvStr);
 
   useEffect(() => {
     setEnvs(existingEnvStr);
@@ -448,9 +437,6 @@ export const CreateProjectGitSettingsPage = () => {
   }, [queryEnvsStr]);
 
   const [dbErrors, setDbErrors] = useState<DbValidatorError[]>([]);
-  const [envs, setEnvs] = useState(existingEnvStr);
-  const envList = parseText(envs, () => ({}));
-  const [envErrors, setEnvErrors] = useState<ValidatorError[]>([]);
   const [cmds, setCmds] = useState("");
   const cmdList = parseText(cmds, () => ({ id: "", http: false }));
   const [showServiceCommands, setShowServiceCommands] = useState(false);
@@ -483,6 +469,7 @@ export const CreateProjectGitSettingsPage = () => {
             imgId: img.id,
             name: db.handle,
             dbType: img.type || "",
+            enableBackups: db.enableBackups,
           },
         });
       });
@@ -509,24 +496,15 @@ export const CreateProjectGitSettingsPage = () => {
     const dbCreatorList = Object.values(dbCreatorMap).sort((a, b) =>
       a.id.localeCompare(b.id),
     );
-    const dbExistingList = Object.values(dbExistingMap).sort((a, b) =>
-      a.id.localeCompare(b.id),
-    );
+    const dbExistingList = Object.values(dbExistingMap)
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .filter((db) => db.dbId !== "");
     let cancel = false;
 
-    const allDbs = [...dbCreatorList];
-    // also check with existing db list
-    dbExistingList.forEach((edb) => {
-      allDbs.push({
-        id: edb.id,
-        env: edb.env,
-        // hack to get around name validation
-        name: edb.env.toLocaleLowerCase(),
-        dbType: "",
-        imgId: "",
-      });
-    });
-    const dberr = validateDbs(allDbs);
+    const envVars = new Set<string>();
+    const newDbErr = validateNewDbs(dbCreatorList, envVars);
+    const existingDbErr = validateExistingDbs(dbExistingList, envVars);
+    const dberr = [...newDbErr, ...existingDbErr];
 
     if (dberr.length > 0) {
       cancel = true;
@@ -535,12 +513,8 @@ export const CreateProjectGitSettingsPage = () => {
       setDbErrors([]);
     }
 
-    const enverr = validateEnvs(envList);
-    if (enverr.length > 0) {
+    if (!validateEnvs()) {
       cancel = true;
-      setEnvErrors(enverr);
-    } else {
-      setEnvErrors([]);
     }
 
     if (cancel) {
@@ -575,8 +549,8 @@ export const CreateProjectGitSettingsPage = () => {
   });
 
   return (
-    <div className="mb-8">
-      <div className="text-center">
+    <AppSidebarLayout className="mb-8">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Configure your App</h1>
         <p className="my-4 text-gray-600">
           Add required Databases and review settings to finish.
@@ -589,7 +563,7 @@ export const CreateProjectGitSettingsPage = () => {
         next={createProjectGitStatusUrl(appId)}
       />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <div className="mb-4">
           {codeScan.isInitialLoading ? (
             <Loading text="Loading code scan results..." />
@@ -696,7 +670,7 @@ export const CreateProjectGitSettingsPage = () => {
               variant="secondary"
               disabled={codeScan.data?.procfile_present}
             >
-              <IconPlusCircle color="#fff" className="mr-2" />
+              <IconPlusCircle color="#fff" className="mr-2" variant="sm" />
               Configure
             </Button>
           )}
@@ -712,6 +686,7 @@ export const CreateProjectGitSettingsPage = () => {
           </Button>
         </form>
       </Box>
-    </div>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
+    </AppSidebarLayout>
   );
 };

@@ -1,4 +1,4 @@
-import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
+import { api, cacheMinTimer, cacheShortTimer } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createAction,
@@ -8,16 +8,17 @@ import {
 } from "@app/slice-helpers";
 import type {
   AppState,
-  DeployOperationResponse,
   DeployService,
   InstanceClass,
   LinkResponse,
 } from "@app/types";
 
+import { createSelector } from "@reduxjs/toolkit";
+import { poll } from "saga-query";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
+import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
-import { poll } from "saga-query";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
 
@@ -55,7 +56,7 @@ export const defaultServiceResponse = (
     command: "",
     container_count: 0,
     container_memory_limit_mb: 0,
-    instance_class: "m5",
+    instance_class: DEFAULT_INSTANCE_CLASS,
     created_at: now,
     updated_at: now,
     _links: {
@@ -165,27 +166,84 @@ const initService = defaultDeployService();
 const must = mustSelectEntity(initService);
 export const selectServiceById = must(selectors.selectById);
 export const selectServicesByIds = selectors.selectByIds;
-export const {
-  selectTableAsList: selectServicesAsList,
-  selectTable: selectServices,
-} = selectors;
+export const { selectTable: selectServices } = selectors;
 export const hasDeployService = (a: DeployService) => a.id !== "";
 export const serviceReducers = createReducerMap(slice);
 export const findServiceById = must(selectors.findById);
 
+export const selectServicesAsList = createSelector(
+  selectors.selectTableAsList,
+  (services) => services.sort((a, b) => a.handle.localeCompare(b.handle)),
+);
+
+export const selectServicesByAppId = createSelector(
+  selectServicesAsList,
+  (_: AppState, p: { appId: string }) => p.appId,
+  (services, appId) => {
+    return services.filter((service) => service.appId === appId);
+  },
+);
+
+export const selectEnvToServicesMap = createSelector(
+  selectServicesAsList,
+  (services) => {
+    const envToServiceMap: Record<string, Set<string> | undefined> = {};
+    services.forEach((service) => {
+      if (!(service.appId || service.databaseId)) {
+        return;
+      }
+
+      if (!Object.hasOwn(envToServiceMap, service.environmentId)) {
+        envToServiceMap[service.environmentId] = new Set<string>();
+      }
+      envToServiceMap[service.environmentId]?.add(service.id);
+    });
+    return envToServiceMap;
+  },
+);
+
+export const selectServicesByEnvId = createSelector(
+  selectEnvToServicesMap,
+  (_: AppState, p: { envId: string }) => p.envId,
+  (envToServicesMap, envId) => {
+    return envToServicesMap[envId] || new Set<string>();
+  },
+);
+
+export const selectAppToServicesMap = createSelector(
+  selectServicesAsList,
+  (services) => {
+    const appToServiceMap: Record<string, string[] | undefined> = {};
+
+    services.forEach((service) => {
+      if (!service.appId) {
+        return;
+      }
+
+      if (!Object.hasOwn(appToServiceMap, service.appId)) {
+        appToServiceMap[service.appId] = [];
+      }
+
+      appToServiceMap[service.appId]?.push(service.id);
+    });
+
+    return appToServiceMap;
+  },
+);
+
 export const fetchService = api.get<{ id: string }>("/services/:id");
 
-export const fetchServices = api.get<PaginateProps>("/services?page=:page", {
-  saga: cacheTimer(),
+export const fetchServices = api.get("/services?per_page=5000", {
+  saga: cacheMinTimer(),
 });
-export const fetchAllServices = thunks.create(
-  "fetch-all-services",
-  combinePages(fetchServices),
-);
+
 export const fetchEnvironmentServices = api.get<{ id: string }>(
   "/accounts/:id/services",
 );
-export const fetchAppServices = api.get<{ id: string }>("/apps/:id/services");
+export const fetchServicesByAppId = api.get<{ id: string }>(
+  "/apps/:id/services",
+  { saga: cacheShortTimer() },
+);
 
 export const fetchServiceOperations = api.get<{ id: string }>(
   "/services/:id/operations",

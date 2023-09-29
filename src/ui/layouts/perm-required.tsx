@@ -1,14 +1,12 @@
+import { fetchCurrentToken } from "@app/auth";
+import { selectUserHasPerms } from "@app/deploy";
 import { useLoader } from "@app/fx";
+import { homeUrl } from "@app/routes";
+import { AppState, PermissionScope } from "@app/types";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
-
-import { fetchCurrentToken } from "@app/auth";
-import { homeUrl } from "@app/routes";
-
 import { Loading } from "../shared";
-import { selectUserHasPerms } from "@app/deploy";
-import { AppState, PermissionScope } from "@app/types";
 
 export const PermRequired = ({
   scope,

@@ -3,11 +3,14 @@ import { useParams } from "react-router";
 
 import type { AppState, DeployVpcPeer } from "@app/types";
 
+import { fetchVpcPeersByStackId, selectVpcPeersByStackId } from "@app/deploy";
+import { capitalize } from "@app/string-utils";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   Box,
   Button,
-  ButtonLinkExternal,
-  IconExternalLink,
+  ButtonLinkDocs,
   LoadResources,
   Pill,
   ResourceListView,
@@ -17,10 +20,6 @@ import {
   tokens,
 } from "../shared";
 import { EmptyResourcesTable } from "../shared/empty-resources-table";
-import { fetchVpcPeersByStackId, selectVpcPeersByStackId } from "@app/deploy";
-import { capitalize } from "@app/string-utils";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 
 const VPCPeerStatusPill = ({
   vpcPeer,
@@ -86,18 +85,12 @@ export const StackDetailVpcPeeringPage = () => {
   return (
     <div className="mb-4">
       <Box className="mb-4">
-        <ButtonLinkExternal
-          href="https://www.aptible.com/docs/network-integrations"
-          className="relative float-right"
-          variant="white"
-          size="sm"
-        >
-          View Docs
-          <IconExternalLink className="inline ml-1 h-5 mt-0" />
-        </ButtonLinkExternal>
-        <p className="flex mb-4 text-gray-500 text-md">
-          Contact support to edit or add new VPC Peers.
-        </p>
+        <div className="flex justify-between items-start">
+          <p className="flex mb-4 text-gray-500 text-md">
+            Contact support to edit or add new VPC Peers.
+          </p>
+          <ButtonLinkDocs href="https://www.aptible.com/docs/network-integrations" />
+        </div>
         <Link
           className="hover:no-underline"
           to="https://www.aptible.com/docs/support"

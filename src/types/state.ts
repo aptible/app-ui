@@ -14,6 +14,7 @@ import type {
   DeployDisk,
   DeployEndpoint,
   DeployEnvironment,
+  DeployImage,
   DeployLogDrain,
   DeployMetricDrain,
   DeployOperation,
@@ -42,6 +43,7 @@ export interface Env {
   metricTunnelUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
+  stripePublishableKey: string;
   origin: "app";
 }
 
@@ -90,6 +92,7 @@ export interface Organization {
   name: string;
   updatedAt: string;
   reauthRequired: boolean;
+  billingDetailId: string;
 }
 
 export interface U2fDevice {
@@ -159,6 +162,7 @@ export interface DeployState {
   backups: MapEntity<DeployBackup>;
   backupRps: MapEntity<DeployBackupRetentionPolicy>;
   activityReports: MapEntity<DeployActivityReport>;
+  images: MapEntity<DeployImage>;
 }
 
 export type MetricHorizons = "1h" | "1d" | "1w";
@@ -171,6 +175,11 @@ export interface ContainerMetrics {
   metricLabel: string;
   metricTimeRange: MetricHorizons;
   values: { date: string; value: number }[];
+}
+
+export interface BillingDetail {
+  id: string;
+  paymentMethodUrl: string;
 }
 
 export interface AppState extends QueryState {
@@ -197,6 +206,7 @@ export interface AppState extends QueryState {
   signal: AbortController;
   resourceStats: MapEntity<ResourceStats>;
   containerMetrics: MapEntity<ContainerMetrics>;
+  billingDetail: BillingDetail;
 }
 
 export interface DeployActivityRow extends DeployOperation {

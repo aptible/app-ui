@@ -1,8 +1,6 @@
-import { useSelector } from "react-redux";
-import { Link, Outlet, useParams } from "react-router-dom";
-
 import { prettyEnglishDateWithTime } from "@app/date";
 import {
+  fetchOperationById,
   getResourceUrl,
   prettyResourceType,
   selectOperationById,
@@ -11,7 +9,9 @@ import {
 import { activityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployOperation } from "@app/types";
-
+import { useSelector } from "react-redux";
+import { Link, Outlet, useParams } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 import {
   DetailHeader,
   DetailInfoGrid,
@@ -20,8 +20,7 @@ import {
   DetailTitleBar,
   OpStatus,
 } from "../shared";
-
-import { MenuWrappedPage } from "./menu-wrapped-page";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function OpHeader({
   op,
@@ -31,28 +30,40 @@ export function OpHeader({
 
   return (
     <DetailHeader>
-      <DetailTitleBar title="Operation Details" />
+      <DetailTitleBar
+        title="Operation Details"
+        icon={
+          <img
+            src={"/resource-types/logo-activity.png"}
+            className="w-8 h-8 mr-3"
+            aria-label="Operation"
+          />
+        }
+      />
 
       <DetailInfoGrid>
         <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
-        <DetailInfoItem title="Last Updated">
-          {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
+        <DetailInfoItem title="Created">
+          {capitalize(prettyEnglishDateWithTime(op.createdAt))}
         </DetailInfoItem>
-        <div className="hidden md:block" />
 
         <DetailInfoItem title="Status">
           <OpStatus status={op.status} />
         </DetailInfoItem>
-        <DetailInfoItem title="User">{op.userName}</DetailInfoItem>
-        <div className="hidden md:block" />
+        <DetailInfoItem title="Last Updated">
+          {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
+        </DetailInfoItem>
 
         <DetailInfoItem title="Resource">
           {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
-          <div className="text-gray-500 text-sm">
+          <div className="text-gray-500">
             {prettyResourceType(op.resourceType)}
           </div>
         </DetailInfoItem>
-        <DetailInfoItem title="Note">{op.note || "N/A"}</DetailInfoItem>
+        <DetailInfoItem title="User">
+          {op.userName}
+          <div className="text-gray-500">Note: {op.note || "N/A"}</div>
+        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -64,9 +75,11 @@ function OpPageHeader() {
   const resourceHandle = useSelector((s: AppState) =>
     selectResourceNameByOperationId(s, { id: op.id }),
   );
+  const loader = useQuery(fetchOperationById({ id }));
 
   return (
     <DetailPageHeaderView
+      {...loader}
       breadcrumbs={[{ name: "Activity", to: activityUrl() }]}
       title={`Operation: ${op.id}`}
       detailsBox={<OpHeader op={op} resourceHandle={resourceHandle} />}
@@ -76,8 +89,8 @@ function OpPageHeader() {
 
 export const OpDetailLayout = () => {
   return (
-    <MenuWrappedPage header={<OpPageHeader />}>
+    <AppSidebarLayout header={<OpPageHeader />}>
       <Outlet />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

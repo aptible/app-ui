@@ -1,7 +1,6 @@
-import { call, delay, fetchRetry, poll, put, select } from "@app/fx";
+import { call, delay, fetchRetry, leading, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
-import { selectDeploy } from "../slice";
 import {
   PaginateProps,
   Retryable,
@@ -36,6 +35,7 @@ import type {
   OperationType,
   ResourceType,
 } from "@app/types";
+import { selectDeploy } from "../slice";
 
 export interface DeployOperationResponse {
   id: number;
@@ -166,6 +166,9 @@ const transformOperationType = (
 };
 
 export const prettyResourceType = (rType: ResourceType): string => {
+  if (rType === "vhost") {
+    return "Endpoint";
+  }
   return capitalize(rType.replace("_", " "));
 };
 
@@ -221,8 +224,8 @@ export const selectOperationById = must(selectors.selectById);
 const { selectTableAsList } = selectors;
 export const selectOperationsAsList = createSelector(
   selectTableAsList,
-  (_: AppState, props: { limit?: number }) => props,
-  (ops, { limit }) =>
+  (_: AppState, props: { limit?: number }) => props.limit,
+  (ops, limit) =>
     ops
       .sort((a, b) => {
         return (
@@ -260,11 +263,16 @@ export const selectOperationsByEnvId = createSelector(
   (ops, envId) => ops.filter((op) => op.environmentId === envId),
 );
 
+export const findOperationsByAppId = (ops: DeployOperation[], appId: string) =>
+  ops.filter((op) => op.resourceType === "app" && op.resourceId === appId);
+
+export const findOperationsByDbId = (ops: DeployOperation[], dbId: string) =>
+  ops.filter((op) => op.resourceType === "database" && op.resourceId === dbId);
+
 export const selectOperationsByAppId = createSelector(
   selectOperationsAsList,
   (_: AppState, p: { appId: string }) => p.appId,
-  (ops, appId) =>
-    ops.filter((op) => op.resourceType === "app" && op.resourceId === appId),
+  findOperationsByAppId,
 );
 
 export const findLatestSuccessProvisionDbOp = (ops: DeployOperation[]) =>
@@ -273,25 +281,12 @@ export const findLatestSuccessProvisionDbOp = (ops: DeployOperation[]) =>
 export const selectOperationsByDatabaseId = createSelector(
   selectOperationsAsList,
   (_: AppState, p: { dbId: string }) => p.dbId,
-  (ops, dbId) =>
-    ops.filter(
-      (op) => op.resourceType === "database" && op.resourceId === dbId,
-    ),
-);
-
-export const selectLatestOpByEnvId = createSelector(
-  selectOperationsByEnvId,
-  (ops) =>
-    ops.find((op) => ["configure", "provision", "deploy"].includes(op.type)) ||
-    initOp,
+  findOperationsByDbId,
 );
 
 export const selectLatestOpByDatabaseId = createSelector(
   selectOperationsByDatabaseId,
-  (ops) =>
-    ops.find((op) =>
-      ["configure", "provision", "deploy", "deprovision"].includes(op.type),
-    ) || initOp,
+  (ops) => (ops.length > 0 ? ops[0] : initOp),
 );
 
 export const selectLatestOpByAppId = createSelector(
@@ -366,30 +361,30 @@ interface EnvIdProps {
 interface EnvOpProps extends PaginateProps, EnvIdProps {}
 
 export const fetchEnvOperations = api.get<EnvOpProps>(
-  "/accounts/:envId/operations?page=:page",
+  "/accounts/:envId/operations?page=:page&per_page=250",
+  { saga: leading },
 );
 
 export const fetchAllEnvOps = thunks.create<EnvIdProps>(
   "fetch-all-env-ops",
   { saga: cacheShortTimer() },
-  combinePages(fetchEnvOperations, { max: 10 }),
+  combinePages(fetchEnvOperations, { max: 2 }),
 );
 
 export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
-export const pollEnvAllOperations = thunks.create<EnvIdProps>(
-  "poll-env-operations",
-  { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
-  combinePages(fetchEnvOperations),
-);
-
 export const pollEnvOperations = api.get<EnvIdProps>(
   ["/accounts/:envId/operations", "poll"],
   { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
 );
 
+export const fetchOrgOperations = api.get<{ orgId: string }>(
+  "/organizations/:orgId/operations?per_page=250",
+  { saga: leading },
+);
+
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
 export const pollOrgOperations = api.get<{ orgId: string }>(
-  "/organizations/:orgId/operations?per_page=250",
+  "/organizations/:orgId/operations",
   { saga: poll(5 * 1000, `${cancelOrgOperationsPoll}`) },
 );
 

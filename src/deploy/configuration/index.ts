@@ -1,4 +1,3 @@
-import { selectDeploy } from "../slice";
 import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
@@ -6,7 +5,14 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import { AppState, DeployAppConfig, LinkResponse } from "@app/types";
+import { TextVal } from "@app/string-utils";
+import {
+  AppState,
+  DeployAppConfig,
+  DeployAppConfigEnv,
+  LinkResponse,
+} from "@app/types";
+import { selectDeploy } from "../slice";
 
 export interface DeployConfigurationResponse {
   id: number;
@@ -50,6 +56,29 @@ export const defaultDeployAppConfig = (
     appId: "",
     ...a,
   };
+};
+
+export const configEnvToStr = (env: DeployAppConfigEnv) => {
+  return Object.keys(env).reduce((acc, key) => {
+    const value = env[key];
+    const prev = acc ? `${acc}\n` : "";
+    return `${prev}${key}=${value}`;
+  }, "");
+};
+
+export const prepareConfigEnv = (cur: DeployAppConfigEnv, next: TextVal[]) => {
+  const env: { [key: string]: any } = {};
+  // the way to "remove" env vars from config is to set them as empty
+  // so we do that here
+  Object.keys(cur).forEach((key) => {
+    env[key] = "";
+  });
+
+  next.forEach((e) => {
+    env[e.key] = e.value;
+  });
+
+  return env;
 };
 
 export const APP_CONFIG_NAME = "appConfigs";

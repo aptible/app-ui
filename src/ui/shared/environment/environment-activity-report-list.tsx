@@ -1,11 +1,11 @@
+import { prettyEnglishDate } from "@app/date";
+import { downloadActivityReports } from "@app/deploy";
+import { DeployActivityReport } from "@app/types";
+import { useDispatch } from "react-redux";
 import { ButtonIcon } from "../button";
 import { IconDownload } from "../icons";
 import { ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
-import { prettyEnglishDateWithTime } from "@app/date";
-import { downloadActivityReports } from "@app/deploy";
-import { DeployActivityReport } from "@app/types";
-import { useDispatch } from "react-redux";
 
 const ActivityReportListRow = ({
   report,
@@ -15,18 +15,12 @@ const ActivityReportListRow = ({
   const dispatch = useDispatch();
   return (
     <tr className="group hover:bg-gray-50" key={`${report.id}`}>
-      <Td className="text-gray-900">
-        {prettyEnglishDateWithTime(report.createdAt)}
-      </Td>
-      <Td className="text-gray-900">
-        {prettyEnglishDateWithTime(report.startsAt)}
-      </Td>
-      <Td className="text-gray-900">
-        {prettyEnglishDateWithTime(report.endsAt)}
-      </Td>
+      <Td className="text-gray-900">{prettyEnglishDate(report.createdAt)}</Td>
+      <Td className="text-gray-900">{prettyEnglishDate(report.startsAt)}</Td>
+      <Td className="text-gray-900">{prettyEnglishDate(report.endsAt)}</Td>
       <Td className="flex gap-2 justify-end mr-4">
         <ButtonIcon
-          icon={<IconDownload className="-mr-2" variant="sm" />}
+          icon={<IconDownload className="-mr-1" variant="sm" />}
           onClick={() => {
             dispatch(
               downloadActivityReports({
@@ -36,7 +30,10 @@ const ActivityReportListRow = ({
             );
           }}
           variant="primary"
-        />
+          size="sm"
+        >
+          CSV
+        </ButtonIcon>
       </Td>
     </tr>
   );
@@ -45,7 +42,7 @@ export const ActivityReportListByEnvironment = ({
   reports,
 }: { reports: DeployActivityReport[] }) => {
   return (
-    <div className="my-4">
+    <div className="mt-2">
       <p className="text-gray-500 mb-4 text-base">
         {reports.length} Activity Report{reports.length !== 1 && "s"}
         <span className="pl-4">

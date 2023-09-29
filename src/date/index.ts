@@ -3,6 +3,7 @@ import {
   formatDistanceStrict,
   formatDistanceToNowStrict,
   formatRelative,
+  parseISO,
 } from "date-fns";
 import locale from "date-fns/locale/en-US";
 
@@ -10,19 +11,19 @@ const FormatDistanceLocale: { [key: string]: string } = {
   lessThanXSeconds: "{{count}}s",
   xSeconds: "{{count}}s",
   halfAMinute: "30s",
-  lessThanXMinutes: "{{count}}m",
-  xMinutes: "{{count}}m",
-  aboutXHours: "{{count}}h",
-  xHours: "{{count}}h",
+  lessThanXMinutes: "{{count}}min",
+  xMinutes: "{{count}}min",
+  aboutXHours: "{{count}}hr",
+  xHours: "{{count}}hr",
   xDays: "{{count}}d",
-  aboutXWeeks: "{{count}}w",
-  xWeeks: "{{count}}w",
-  aboutXMonths: "{{count}}m",
-  xMonths: "{{count}}m",
-  aboutXYears: "{{count}}y",
-  xYears: "{{count}}y",
-  overXYears: "{{count}}y",
-  almostXYears: "{{count}}y",
+  aboutXWeeks: "{{count}}wk",
+  xWeeks: "{{count}}wk",
+  aboutXMonths: "{{count}}mo",
+  xMonths: "{{count}}mo",
+  aboutXYears: "{{count}}yr",
+  xYears: "{{count}}yr",
+  overXYears: "{{count}}yr",
+  almostXYears: "{{count}}yr",
 };
 
 const formatDistanceAgo = (token: string, count: string, opts: any): string => {
@@ -80,28 +81,32 @@ export const formatDateToUTC = (dateStr = "") => {
   return new Date(dateStr).toISOString();
 };
 
+const isoToDate = (dateStr = "") => {
+  return parseISO(dateStr);
+};
+
 export const prettyEnglishDate = (dateStr = "") => {
-  return format(new Date(dateStr), "MMM dd, yyyy");
+  return format(isoToDate(dateStr), "MMM dd, yyyy");
 };
 
 export const prettyEnglishDateWithTime = (dateStr = "") => {
-  return format(new Date(dateStr), "MMM dd, yyyy 'at' hh:mm a");
+  return format(isoToDate(dateStr), "MMM dd, yyyy 'at' hh:mm a (z)");
 };
 
 export const prettyDateTime = (dateStr = "") => {
-  return format(new Date(dateStr), "yyyy-MM-dd hh:mm:ss aaa");
+  return format(isoToDate(dateStr), "yyyy-MM-dd hh:mm:ss aaa (z)");
 };
 
 export const prettyDateTimeForBackups = (dateStr = "") => {
-  return format(new Date(dateStr), "yyyy-MM-dd-hh-mm-ss");
+  return format(isoToDate(dateStr), "yyyy-MM-dd-hh-mm-ss");
 };
 
 export const prettyDate = (dateStr = "") => {
-  return format(new Date(dateStr), "yyyy-MM-dd");
+  return format(isoToDate(dateStr), "yyyy-MM-dd");
 };
 
 export const prettyDateRelative = (dateStr = "") => {
-  return formatRelative(new Date(dateStr), new Date());
+  return formatRelative(isoToDate(dateStr), new Date());
 };
 
 export const dateFromToday = (days: number) => {

@@ -5,20 +5,24 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   DeployEndpointRow,
   fetchCertificateById,
+  fetchEndpoints,
   getEndpointText,
   getEndpointUrl,
   requiresAcmeSetup,
   selectAppById,
+  selectDatabaseById,
   selectEndpointsByAppIdForTableSearch,
   selectEndpointsByCertIdForTableSearch,
   selectEndpointsByDbIdForTableSearch,
   selectEndpointsByEnvIdForTableSearch,
+  selectEndpointsByServiceId,
   selectEndpointsForTableSearch,
 } from "@app/deploy";
 import {
   appDetailUrl,
   appEndpointCreateUrl,
   databaseDetailUrl,
+  databaseEndpointCreateUrl,
   endpointDetailSetupUrl,
   endpointDetailUrl,
 } from "@app/routes";
@@ -28,6 +32,8 @@ import { Button, ButtonCreate } from "../button";
 import { TableHead } from "../table";
 import { Td } from "../table";
 
+import { useQuery } from "saga-query/react";
+import { CopyTextButton } from "../copy";
 import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import {
@@ -38,7 +44,6 @@ import {
 import { tokens } from "../tokens";
 import { Tooltip } from "../tooltip";
 import { EndpointStatusPill } from "./util";
-import { useQuery } from "saga-query/react";
 
 export const EndpointItemView = ({
   endpoint,
@@ -70,8 +75,12 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
   return (
     <tr className="group hover:bg-gray-50">
       <Td>
-        <EndpointItemView endpoint={endpoint} />
+        <div className="flex flex-row items-center gap-2">
+          <EndpointItemView endpoint={endpoint} />
+          <CopyTextButton text={getEndpointUrl(endpoint)} />
+        </div>
       </Td>
+      <Td>{endpoint.id}</Td>
       <Td>
         {endpoint.resourceType === "app" ? (
           <Link to={appDetailUrl(endpoint.resourceId)}>
@@ -90,7 +99,9 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
       <Td>{endpoint.platform.toLocaleUpperCase()}</Td>
       <Td>
         {requiresAcmeSetup(endpoint) ? (
-          <Button onClick={acmeSetup}>Setup</Button>
+          <Button variant="primary" size="sm" onClick={acmeSetup}>
+            Setup
+          </Button>
         ) : (
           "Completed"
         )}
@@ -117,7 +128,7 @@ const EndpointHeader = ({
       title={showTitle ? "Endpoints" : ""}
       actions={actions}
       filterBar={
-        <div className="pt-1">
+        <div>
           <InputSearch
             placeholder="Search endpoints..."
             search={search}
@@ -143,7 +154,8 @@ const EndpointHeader = ({
 };
 
 const headers = [
-  "Hostname",
+  "URL",
+  "ID",
   "Resource",
   "Status",
   "Placement",
@@ -192,6 +204,7 @@ export const EndpointList = ({
 export function EndpointsByOrg() {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
+  useQuery(fetchEndpoints());
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch });
   };
@@ -296,10 +309,21 @@ export function EndpointsByDatabase({ dbId }: { dbId: string }) {
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByDbIdForTableSearch(s, { search, dbId }),
   );
+  const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  const navigate = useNavigate();
+  const action = (
+    <ButtonCreate
+      envId={db.environmentId}
+      onClick={() => navigate(databaseEndpointCreateUrl(dbId))}
+    >
+      <IconPlusCircle variant="sm" className="mr-2" /> New Endpoint
+    </ButtonCreate>
+  );
 
   if (endpoints.length === 0 && search === "") {
     return (
       <EmptyResultView
+        action={action}
         title="No endpoints yet"
         description="Expose this application to the public internet by adding an endpoint"
         className="p-6 w-100"
@@ -308,7 +332,12 @@ export function EndpointsByDatabase({ dbId }: { dbId: string }) {
   }
 
   return (
-    <EndpointList endpoints={endpoints} search={search} onChange={onChange} />
+    <EndpointList
+      endpoints={endpoints}
+      search={search}
+      onChange={onChange}
+      actions={[action]}
+    />
   );
 }
 
@@ -335,5 +364,49 @@ export function EndpointsByCert({ certId }: { certId: string }) {
 
   return (
     <EndpointList endpoints={endpoints} search={search} onChange={onChange} />
+  );
+}
+
+export function EndpointsByDbService({
+  serviceId,
+  dbId,
+}: { serviceId: string; dbId: string }) {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (nextSearch: string) => {
+    setParams({ search: nextSearch });
+  };
+  const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  const endpoints = useSelector((s: AppState) =>
+    selectEndpointsByServiceId(s, { serviceId, search }),
+  );
+  const navigate = useNavigate();
+  const action = (
+    <ButtonCreate
+      envId={db.environmentId}
+      onClick={() => navigate(databaseEndpointCreateUrl(dbId))}
+    >
+      <IconPlusCircle variant="sm" className="mr-2" /> New Endpoint
+    </ButtonCreate>
+  );
+
+  if (endpoints.length === 0 && search === "") {
+    return (
+      <EmptyResultView
+        action={action}
+        title="No endpoints yet"
+        description="Expose this application to the public internet by adding an endpoint"
+        className="p-6 w-100"
+      />
+    );
+  }
+
+  return (
+    <EndpointList
+      endpoints={endpoints}
+      search={search}
+      onChange={onChange}
+      actions={[action]}
+    />
   );
 }

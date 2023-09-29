@@ -5,13 +5,14 @@ import {
   server,
   stacksWithResources,
   testAccount,
+  testAccountAdmin,
   testBackupRp,
 } from "@app/mocks";
 import { ENVIRONMENT_BACKUPS_PATH, environmentBackupsUrl } from "@app/routes";
 import { setupIntegrationTest, waitForBootup, waitForData } from "@app/test";
 
-import { EnvironmentBackupsPage } from "./environment-detail-backups";
 import { hasDeployBackupRp, selectBackupRpById } from "@app/deploy";
+import { EnvironmentBackupsPage } from "./environment-detail-backups";
 
 describe("EnvironmentBackupsPage", () => {
   it("should successfully show backup retention policy values", async () => {
@@ -50,7 +51,7 @@ describe("EnvironmentBackupsPage", () => {
   });
 
   it("should successfully edit backup retention policy values", async () => {
-    server.use(...stacksWithResources({ accounts: [testAccount] }));
+    server.use(...stacksWithResources({ accounts: [testAccountAdmin] }));
     const { TestProvider, store } = setupIntegrationTest({
       initEntries: [environmentBackupsUrl(`${testAccount.id}`)],
       path: ENVIRONMENT_BACKUPS_PATH,

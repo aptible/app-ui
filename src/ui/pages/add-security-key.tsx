@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchU2fChallenges } from "@app/mfa";
 import { selectCurrentUserId } from "@app/users";
 
-import { Banner, Button, FormGroup, Input } from "../shared";
 import { createWebauthnDevice, webauthnCreate } from "@app/auth";
+import { Banner, Button, FormGroup, Input } from "../shared";
 
 interface U2fChallenge {
   id: string;

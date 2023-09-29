@@ -16,7 +16,7 @@ import {
 import type { AppState, DeployCertificate } from "@app/types";
 
 import {
-  ButtonCreate,
+  ButtonSensitive,
   CertIssuer,
   CertManagedHTTPSPill,
   CertTrustedPill,
@@ -143,33 +143,31 @@ export const EnvironmentCertificatesPage = () => {
     navigate(environmentCreateCertUrl(id));
   };
 
+  const titleBar = (
+    <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
+      <div className="text-gray-500">
+        {certificates.length} Certificate
+        {certificates.length !== 1 && "s"}
+      </div>
+      <ButtonSensitive className="w-fit" envId={id} onClick={createCert}>
+        <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
+      </ButtonSensitive>
+    </div>
+  );
+
   return (
     <LoadResources
       empty={
         <EmptyResourcesTable
           headers={certificatesHeaders}
-          titleBar={
-            <p className="flex text-gray-500 text-base mb-4">
-              {certificates.length} Certificate
-              {certificates.length !== 1 && "s"}
-            </p>
-          }
+          titleBar={titleBar}
         />
       }
       query={query}
       isEmpty={certificates.length === 0}
     >
       <ResourceListView
-        header={
-          <div className="flex justify-between items-center mb-4">
-            <div className="text-gray-500">
-              {certificates.length} Certificate(s)
-            </div>
-            <ButtonCreate envId={id} onClick={createCert}>
-              <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
-            </ButtonCreate>
-          </div>
-        }
+        header={titleBar}
         tableHeader={<TableHead headers={certificatesHeaders} />}
         tableBody={
           <>

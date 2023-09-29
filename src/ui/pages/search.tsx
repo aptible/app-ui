@@ -24,7 +24,7 @@ import {
 } from "@app/search";
 import { AppState } from "@app/types";
 
-import { MenuWrappedPage } from "../layouts";
+import { AppSidebarLayout } from "../layouts";
 import {
   AppItemView,
   DatabaseItemView,
@@ -202,8 +202,8 @@ export const SearchPage = () => {
       return (
         <div className="mt-4">
           <div className="text-black-300 text-center">
-            Search for Stacks, Environments, Apps, and Databases by Name, Type,
-            or ID.
+            Search for Stacks, Environments, Apps, Databases, and Endpoints by
+            Name, Type, or ID.
           </div>
 
           <hr className="text-black-300 my-4" />
@@ -231,17 +231,17 @@ export const SearchPage = () => {
   };
 
   return (
-    <MenuWrappedPage>
+    <AppSidebarLayout>
       <InputSearch
         search={search}
         onChange={onChange}
-        className="w-full"
+        className="w-full h-[36px] mt-4"
         autoFocus
       />
 
       <div className="mt-2">
         <View />
       </div>
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

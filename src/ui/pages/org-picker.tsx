@@ -10,7 +10,7 @@ import {
 import { Organization } from "@app/types";
 import { selectCurrentUserId, updateUserOrg } from "@app/users";
 
-import { MenuWrappedPage } from "../layouts";
+import { AppSidebarLayout } from "../layouts";
 import { tokens } from "../shared";
 
 const OrgItem = ({
@@ -53,7 +53,7 @@ export const OrgPickerPage = () => {
   };
 
   return (
-    <MenuWrappedPage>
+    <AppSidebarLayout>
       <div className="flex flex-col gap-2">
         <h2 className={tokens.type.h2}>Choose Organization</h2>
 
@@ -86,6 +86,6 @@ export const OrgPickerPage = () => {
           </div>
         ) : null}
       </div>
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

@@ -1,23 +1,34 @@
-import { IconInfo, IconPlusCircle } from "../icons";
-import { Tooltip } from "../tooltip";
 import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { IconInfo, IconPlusCircle } from "../icons";
+import { Tooltip } from "../tooltip";
 
 import { prettyDateRelative } from "@app/date";
 import {
   DeployDatabaseRow,
-  fetchAllDatabases,
-  fetchAllEnvironments,
+  calcMetrics,
+  fetchDatabases,
+  fetchDiskById,
   fetchEnvironmentById,
+  fetchEnvironments,
   getContainerProfileFromType,
   hourlyAndMonthlyCostsForContainers,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
+  selectDiskById,
+  selectLatestOpByDatabaseId,
   selectServiceById,
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
+import {
+  databaseDetailUrl,
+  databaseScaleUrl,
+  environmentCreateDbUrl,
+  operationDetailUrl,
+} from "@app/routes";
+import { capitalize } from "@app/string-utils";
 import { ActionListView } from "../action-list-view";
 import { Button, ButtonCreate } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
@@ -28,13 +39,6 @@ import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import {
-  databaseMetricsUrl,
-  databaseScaleUrl,
-  environmentCreateDbUrl,
-  operationDetailUrl,
-} from "@app/routes";
-import { capitalize } from "@app/string-utils";
 
 type DatabaseCellProps = { database: DeployDatabase };
 
@@ -43,7 +47,7 @@ export const DatabaseItemView = ({
 }: { database: DeployDatabase }) => {
   return (
     <div className="flex">
-      <Link to={databaseMetricsUrl(database.id)} className="flex">
+      <Link to={databaseDetailUrl(database.id)} className="flex">
         <img
           src={`/database-types/logo-${database.type}.png`}
           className="w-8 h-8 mr-2 mt-2 align-middle"
@@ -68,9 +72,16 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
+const DatabaseIdCell = ({ database }: DatabaseCellProps) => {
+  return <Td className="flex-1">{database.id}</Td>;
+};
+
 const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   const service = useSelector((s: AppState) =>
     selectServiceById(s, { id: database.serviceId }),
+  );
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: database.id }),
   );
   const currentContainerProfile = getContainerProfileFromType(
     service.instanceClass,
@@ -79,7 +90,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
     service.containerCount,
     currentContainerProfile,
     service.containerMemoryLimitMb,
-    database.disk?.size || 0,
+    disk.size,
   );
   return (
     <Td>
@@ -88,30 +99,44 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
-const LastOpCell = ({ database }: DatabaseCellProps) => {
+export const LastOpCell = ({ database }: DatabaseCellProps) => {
+  const lastOperation = useSelector((s: AppState) =>
+    selectLatestOpByDatabaseId(s, { dbId: database.id }),
+  );
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      {database.lastOperation ? (
-        <>
-          <div className={tokens.type.darker}>
-            <Link
-              to={operationDetailUrl(database.lastOperation.id)}
-              className={tokens.type["table link"]}
-            >
-              {capitalize(database.lastOperation.type)} by{" "}
-              {database.lastOperation.userName}
-            </Link>
-          </div>
-          <div className={tokens.type.darker} />
-          <div className={tokens.type["normal lighter"]}>
-            <OpStatus status={database.lastOperation.status} />{" "}
-            {prettyDateRelative(database.lastOperation.createdAt)}
-          </div>
-        </>
-      ) : (
-        <div className={tokens.type["normal lighter"]}>No activity</div>
-      )}
+      <div className={tokens.type.darker}>
+        <Link
+          to={operationDetailUrl(lastOperation.id)}
+          className={tokens.type["table link"]}
+        >
+          {capitalize(lastOperation.type)} by {lastOperation.userName}
+        </Link>
+      </div>
+      <div className={tokens.type.darker} />
+      <div className={tokens.type["normal lighter"]}>
+        <OpStatus status={lastOperation.status} />{" "}
+        {prettyDateRelative(lastOperation.createdAt)}
+      </div>
     </Td>
+  );
+};
+
+const DatabaseDiskSizeCell = ({ database }: DatabaseCellProps) => {
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: database.diskId }),
+  );
+  return <Td className="text-gray-900">{disk.size} GB</Td>;
+};
+
+const DatabaseContainerSizeCell = ({ database }: DatabaseCellProps) => {
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: database.serviceId }),
+  );
+  const metrics = calcMetrics([service]);
+  useQuery(fetchDiskById({ id: database.diskId }));
+  return (
+    <Td className="text-gray-900">{metrics.totalMemoryLimit / 1024} GB</Td>
   );
 };
 
@@ -158,7 +183,7 @@ const DbsResourceHeaderTitleBar = ({
           title="Databases"
           actions={actions}
           filterBar={
-            <div className="pt-1">
+            <div>
               <InputSearch
                 placeholder="Search databases..."
                 search={search}
@@ -183,7 +208,7 @@ const DbsResourceHeaderTitleBar = ({
       );
     case "simple-text":
       return (
-        <div className="flex justify-between items-center text-gray-500 text-base mb-4">
+        <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
           <div>
             {dbs.length} Database{dbs.length !== 1 && "s"}
           </div>
@@ -198,8 +223,8 @@ const DbsResourceHeaderTitleBar = ({
 };
 
 export const DatabaseListByOrg = () => {
-  const query = useQuery(fetchAllDatabases());
-  useQuery(fetchAllEnvironments());
+  const query = useQuery(fetchDatabases());
+  useQuery(fetchEnvironments());
 
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -214,9 +239,11 @@ export const DatabaseListByOrg = () => {
 
   const headers = [
     "Handle",
+    "ID",
     "Environment",
+    "Disk Size",
+    "Container Size",
     "Est. Monthly Cost",
-    "Last Operation",
     "Actions",
   ];
 
@@ -253,9 +280,11 @@ export const DatabaseListByOrg = () => {
             {dbs.map((db) => (
               <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
+                <DatabaseIdCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
+                <DatabaseDiskSizeCell database={db} />
+                <DatabaseContainerSizeCell database={db} />
                 <DatabaseCostCell database={db} />
-                <LastOpCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
             ))}
@@ -272,7 +301,7 @@ export const DatabaseListByEnvironment = ({
   environmentId: string;
 }) => {
   const navigate = useNavigate();
-  const query = useQuery(fetchAllDatabases());
+  const query = useQuery(fetchDatabases());
   useQuery(fetchEnvironmentById({ id: environmentId }));
 
   const onCreate = () => {
@@ -288,9 +317,12 @@ export const DatabaseListByEnvironment = ({
 
   const headers = [
     "Handle",
+    "ID",
     "Environment",
+    "Disk Size",
+    "Container Size",
     "Est. Monthly Cost",
-    "Last Operation",
+    "Actions",
   ];
   const actions = [
     <ButtonCreate envId={environmentId} onClick={onCreate}>
@@ -324,15 +356,18 @@ export const DatabaseListByEnvironment = ({
             resourceHeaderType="simple-text"
           />
         }
-        tableHeader={<TableHead headers={headers} />}
+        tableHeader={<TableHead rightAlignedFinalCol headers={headers} />}
         tableBody={
           <>
             {dbs.map((db) => (
               <tr className="group hover:bg-gray-50" key={db.id}>
                 <DatabasePrimaryCell database={db} />
+                <DatabaseIdCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
+                <DatabaseDiskSizeCell database={db} />
+                <DatabaseContainerSizeCell database={db} />
                 <DatabaseCostCell database={db} />
-                <LastOpCell database={db} />
+                <DatabaseActionsCell database={db} />
               </tr>
             ))}
           </>

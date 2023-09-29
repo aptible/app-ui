@@ -1,12 +1,4 @@
-import { selectDeploy } from "../slice";
-import { api, thunks } from "@app/api";
-import {
-  call,
-  put,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
+import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -22,6 +14,7 @@ import {
   PlanName,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import { selectDeploy } from "../slice";
 
 export interface DeployPlanResponse {
   id: number;
@@ -239,7 +232,7 @@ const planSelectors = planSlice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_PLAN_NAME],
 );
 
-const initPlan = defaultPlan;
+const initPlan = defaultPlan();
 const mustPlan = mustSelectEntity(initPlan);
 
 export const selectPlanById = mustPlan(planSelectors.selectById);
@@ -301,39 +294,18 @@ export const updateActivePlan = api.put<UpdateActivePlan>(
       plan_id: planId,
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
+
     yield* next();
-  },
-);
 
-export const updateAndRefreshActivePlans = thunks.create<UpdateActivePlan>(
-  "update-and-refresh-active-plans",
-  function* (ctx, next) {
-    yield put(setLoaderStart({ id: ctx.key }));
-
-    const updateActivePlanCtx = yield* call(
-      updateActivePlan.run,
-      updateActivePlan(ctx.payload),
-    );
-    if (!updateActivePlanCtx.json.ok) {
-      yield put(
-        setLoaderError({
-          id: ctx.name,
-          message: updateActivePlanCtx.json.data.message,
-        }),
-      );
+    if (!ctx.json.ok) {
       return;
     }
-    yield* next();
 
     ctx.actions.push(removeActivePlans([ctx.payload.id]));
-    yield put(
-      setLoaderSuccess({
-        id: ctx.name,
-        message: `Successfully updated plan to ${capitalize(
-          ctx.payload.name,
-        )}.`,
-      }),
-    );
+    const name = capitalize(ctx.payload.name);
+    ctx.loader = {
+      message: `Successfully updated plan to ${name}.`,
+    };
   },
 );
 

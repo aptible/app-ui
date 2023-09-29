@@ -1,3 +1,4 @@
+import { defaultBillingDetailResponse } from "@app/billing";
 import {
   defaultActivePlanResponse,
   defaultAppResponse,
@@ -5,6 +6,7 @@ import {
   defaultConfigurationResponse,
   defaultDatabaseImageResponse,
   defaultDatabaseResponse,
+  defaultDeployDiskResponse,
   defaultEndpointResponse,
   defaultEnvResponse,
   defaultOperationResponse,
@@ -47,12 +49,24 @@ export const testUserId = createId();
 export const mockJwtHeaders = btoa(
   JSON.stringify({ alg: "HS256", typ: "JWT" }),
 );
-const mockJwtPayload = btoa(JSON.stringify({ id: `${testUserId}` }));
-export const mockJwt = (mixin: string, id: string | number = "1") =>
-  `${mockJwtHeaders}.${mockJwtPayload}.not_real_${mixin}_${id}`;
+const mockJwtPayload = (scope: string) =>
+  btoa(JSON.stringify({ id: `${testUserId}`, scope }));
+export const mockJwt = (mixin: string, scope: string) =>
+  `${mockJwtHeaders}.${mockJwtPayload(scope)}.not_real_${mixin}`;
 
 export const testToken = defaultTokenResponse({
-  access_token: `${mockJwt(createId().toString())}`,
+  access_token: `${mockJwt(createId().toString(), "manage")}`,
+  id: `${createId()}`,
+  _links: {
+    self: defaultHalHref(),
+    user: defaultHalHref(`${testEnv.authUrl}/users/${testUserId}`),
+    actor: defaultHalHref(`${testEnv.authUrl}/users/${testUserId}`),
+  },
+});
+
+export const testElevatedToken = defaultTokenResponse({
+  access_token: `${mockJwt(createId().toString(), "elevated")}`,
+  scope: "elevated",
   id: `${createId()}`,
   _links: {
     self: defaultHalHref(),
@@ -75,9 +89,28 @@ export const testUserVerified = defaultUserResponse({
 
 export const testSshKey = defaultSshKeyResponse({ id: `${createId()}` });
 
+export const testBillingDetail = defaultBillingDetailResponse({
+  id: `${createId()}`,
+  _links: {
+    payment_method: defaultHalHref(
+      `${testEnv.billingUrl}/external_payment_sources/404`,
+    ),
+  },
+});
+
 export const testOrg = defaultOrgResponse({
   name: createText("org"),
   id: `${createId()}`,
+  _links: {
+    billing_detail: defaultHalHref(
+      `${testEnv.billingUrl}/billing_details/${testBillingDetail.id}`,
+    ),
+    self: defaultHalHref(),
+    invitations: defaultHalHref(),
+    roles: defaultHalHref(),
+    security_officer: defaultHalHref(),
+    users: defaultHalHref(),
+  },
 });
 export const testOrgSpecial = defaultOrgResponse({
   id: `${createId()}`,
@@ -122,6 +155,15 @@ export const testRole = defaultRoleResponse({
   },
 });
 
+export const testRoleOwner = defaultRoleResponse({
+  id: `${createId()}`,
+  name: "Deploy Owner",
+  type: "platform_owner",
+  _links: {
+    organization: defaultHalHref(testOrg.id),
+  },
+});
+
 const testAccountId = createId();
 export const testAccount = defaultEnvResponse({
   id: testAccountId,
@@ -136,6 +178,30 @@ export const testAccount = defaultEnvResponse({
       defaultPermissionResponse({
         id: `${createId()}`,
         scope: "deploy",
+        _links: {
+          account: defaultHalHref(
+            `${testEnv.apiUrl}/accounts/${testAccountId}`,
+          ),
+          role: defaultHalHref(`${testEnv.apiUrl}/roles/${testRole.id}`),
+        },
+      }),
+    ],
+  },
+});
+
+export const testAccountAdmin = defaultEnvResponse({
+  id: testAccountId,
+  handle: createText("account"),
+  organization_id: testOrg.id,
+  _links: {
+    stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
+    environment: defaultHalHref(),
+  },
+  _embedded: {
+    permissions: [
+      defaultPermissionResponse({
+        id: `${createId()}`,
+        scope: "admin",
         _links: {
           account: defaultHalHref(
             `${testEnv.apiUrl}/accounts/${testAccountId}`,
@@ -215,6 +281,7 @@ export const testApp = defaultAppResponse({
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
     current_configuration: defaultHalHref(),
+    current_image: defaultHalHref(),
   },
   _embedded: {
     current_image: null,
@@ -255,12 +322,14 @@ export const testPostgresDatabaseImage = defaultDatabaseImageResponse({
   id: createId(),
   type: "postgres",
   version: "14",
+  description: "postgres v14",
 });
 
 export const testRedisDatabaseImage = defaultDatabaseImageResponse({
   id: createId(),
   type: "redis",
   version: "5",
+  description: "redis v5",
 });
 
 export const testDatabaseId = createId();
@@ -281,15 +350,18 @@ export const testDatabaseOp = defaultOperationResponse({
   },
 });
 
+export const testDisk = defaultDeployDiskResponse({
+  id: `${createId()}`,
+  size: 10,
+});
+
 export const testDatabasePostgres = defaultDatabaseResponse({
   id: testDatabaseId,
   handle: `${testApp.handle}-postgres`,
   type: "postgres",
   connection_url: "postgres://some:val@wow.com:5432",
   _embedded: {
-    disk: {
-      size: 10,
-    },
+    disk: testDisk,
     last_operation: testDatabaseOp,
   },
   _links: {
@@ -301,6 +373,7 @@ export const testDatabasePostgres = defaultDatabaseResponse({
     service: defaultHalHref(
       `${testEnv.apiUrl}/services/${testDatabaseServiceId}`,
     ),
+    disk: defaultHalHref(`${testEnv.apiUrl}/disks/${testDisk.id}`),
   },
 });
 
@@ -313,6 +386,7 @@ export const testDatabaseInfluxdb = defaultDatabaseResponse({
     initialize_from: defaultHalHref(),
     database_image: defaultHalHref(),
     service: defaultHalHref(),
+    disk: defaultHalHref(`${testEnv.apiUrl}/disks/${testDisk.id}`),
   },
 });
 
@@ -325,6 +399,7 @@ export const testDatabaseElasticsearch = defaultDatabaseResponse({
     initialize_from: defaultHalHref(),
     database_image: defaultHalHref(),
     service: defaultHalHref(),
+    disk: defaultHalHref(`${testEnv.apiUrl}/disks/${testDisk.id}`),
   },
 });
 
@@ -405,6 +480,7 @@ export const testAppDeployed = defaultAppResponse({
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testEnvExpress.id}`),
     current_configuration: defaultHalHref(),
+    current_image: defaultHalHref(),
   },
   _embedded: {
     services: [],

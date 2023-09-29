@@ -1,7 +1,7 @@
-import { TableHead, Td } from "./table";
 import { selectMetricDataAsFlatTableByContainer } from "@app/metric-tunnel";
 import { AppState, DeployContainer, MetricHorizons } from "@app/types";
 import { useSelector } from "react-redux";
+import { TableHead, Td } from "./table";
 
 export const ContainerMetricsDataTable = ({
   containers,

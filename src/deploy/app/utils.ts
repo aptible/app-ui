@@ -1,5 +1,5 @@
-import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { ContainerProfileData, DeployService, InstanceClass } from "@app/types";
+import { CONTAINER_PROFILES, GB } from "../container/utils";
 
 const ABSOLUTE_MAX_CONTAINER_SIZE_IN_GB = 653;
 const getContainerSizes = () => {

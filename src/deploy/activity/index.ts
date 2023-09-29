@@ -1,5 +1,11 @@
 import { createSelector } from "@reduxjs/toolkit";
 
+import {
+  appDetailUrl,
+  databaseDetailUrl,
+  environmentIntegrationsUrl,
+} from "@app/routes";
+import type { AppState, DeployActivityRow, OperationType } from "@app/types";
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
 import { findEndpointById, getEndpointUrl, selectEndpoints } from "../endpoint";
@@ -12,12 +18,6 @@ import { findLogDrainById, selectLogDrains } from "../log-drain";
 import { findMetricDrainById, selectMetricDrains } from "../metric-drain";
 import { selectOperationById, selectOperationsAsList } from "../operation";
 import { findServiceById, selectServices } from "../service";
-import {
-  appDetailUrl,
-  databaseDetailUrl,
-  environmentIntegrationsUrl,
-} from "@app/routes";
-import type { AppState, DeployActivityRow } from "@app/types";
 
 const selectActivityForTable = createSelector(
   selectOperationsAsList,
@@ -56,8 +56,8 @@ const selectActivityForTable = createSelector(
           }
           resourceHandle =
             op.containerCount && op.containerSize
-              ? `${service.handle} (${op.containerCount} Container(s) - ${op.containerSize} GB Memory)`
-              : service.handle;
+              ? `${service.processType} (${op.containerCount} Container(s) - ${op.containerSize} GB Memory)`
+              : service.processType;
           return { ...op, envHandle: env.handle, resourceHandle, url };
         } else if (op.resourceType === "log_drain") {
           const logDrain = findLogDrainById(logDrains, { id: op.resourceId });
@@ -83,6 +83,7 @@ const selectActivityForTable = createSelector(
       ),
 );
 
+const denyOpTypes: OperationType[] = ["poll"];
 const MAX_RESULTS = 50;
 // TODO: remove `slice`
 export const selectActivityForTableSearch = createSelector(
@@ -92,11 +93,17 @@ export const selectActivityForTableSearch = createSelector(
   (_: AppState, props: { resourceIds?: string[] }) => props.resourceIds || "",
   (ops, search, envId, resourceIds): DeployActivityRow[] => {
     if (search === "" && envId === "" && resourceIds.length === 0) {
-      return ops.slice(0, Math.min(ops.length, MAX_RESULTS));
+      return ops
+        .filter((op) => !denyOpTypes.includes(op.type))
+        .slice(0, Math.min(ops.length, MAX_RESULTS));
     }
 
     const filtered = ops.filter((op) => {
       const opType = op.type.toLocaleLowerCase();
+      if (denyOpTypes.includes(op.type)) {
+        return false;
+      }
+
       const status = op.status.toLocaleLowerCase();
       const user = op.userName.toLocaleLowerCase();
       const email = op.userEmail.toLocaleLowerCase();

@@ -51,6 +51,14 @@ yarn start
 
 ## Troubleshooting
 
+**Yarn commands are not working**
+
+Re-run the yarn command to add dependencies
+
+```bash
+yarn
+```
+
 **After running `yarn start`, I'm stuck on a blank page that says loading...**
 
 Unset your environment variables in terminal, by running the following commands:
@@ -65,17 +73,24 @@ unset VITE_BILLING URL
 ```
 Then re-run `yarn start` and the site should load.
 
+**Why does my pull request keep failing tests?**
+
+Lint codebase
+
+```bash
+yarn lint
+```
+
+Automatically fix issues
+
+```bash
+yarn fmt
+```
+
 ## Sites
 
 - `prod` https://app.aptible.com
-- `staging` https://cloud-ui-main.aptible-staging.com
-
-## Other Yarn Commands
-
-### Test
-```bash
-yarn test
-```
+- `staging` https://app-sbx-main.aptible-sandbox.com
 
 ## Continuous Deployment
 

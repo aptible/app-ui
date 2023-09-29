@@ -1,5 +1,5 @@
-import { VerifyEmailPage } from "./verify-email";
 import { verifyEmailUrl } from "@app/routes";
+import { VerifyEmailPage } from "./verify-email";
 
 import { server, testEnv, testUser, testUserVerified } from "@app/mocks";
 import { setupAppIntegrationTest, setupIntegrationTest } from "@app/test";
@@ -35,7 +35,10 @@ describe("Verify email confirm", () => {
     });
     render(<App />);
     await screen.findByText(/loading/);
-    await screen.findByRole("heading", { level: 1, name: /Deployments/ });
+    await screen.findByRole("heading", {
+      level: 2,
+      name: "Environments",
+    });
   });
 });
 
@@ -89,9 +92,9 @@ describe("Verify email page", () => {
         `${testEnv.authUrl}/users/:userId/email_verification_challenges`,
         (_, res, ctx) => {
           return res(
-            ctx.status(401),
+            ctx.status(400),
             ctx.json({
-              code: 401,
+              code: 400,
               exception_context: {},
               error: "invalid_credentials",
               message: "mock error message",

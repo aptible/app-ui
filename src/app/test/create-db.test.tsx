@@ -71,4 +71,49 @@ describe("Create Database flow", () => {
       screen.queryByText(/test-account-1-.+-postgres/),
     ).toBeInTheDocument();
   });
+
+  it("should not try to create a db without an imgId (e.g. user didnt pick a db yet)", async () => {
+    server.use(
+      ...stacksWithResources({
+        accounts: [testAccount],
+        databases: [],
+      }),
+      ...verifiedUserHandlers(),
+      rest.post(
+        `${testEnv.apiUrl}/databases/:id/operations`,
+        async (_, res, ctx) => {
+          return res(ctx.json(testDatabaseOp));
+        },
+      ),
+      rest.get(
+        `${testEnv.apiUrl}/accounts/:envId/operations`,
+        (_, res, ctx) => {
+          return res(
+            ctx.json({
+              _embedded: { operations: [] },
+            }),
+          );
+        },
+      ),
+    );
+
+    const { App, store } = setupAppIntegrationTest({
+      initEntries: [`/create/db?environment_id=${testAccount.id}`],
+    });
+
+    await waitForBootup(store);
+
+    render(<App />);
+
+    // hack to wait for all the data to be fetched in env header
+    // to be done.
+    await sleep(0);
+
+    await screen.findByText(testAccount.handle);
+
+    const saveBtn = await screen.findByRole("button", {
+      name: /Save/,
+    });
+    expect(saveBtn).toBeDisabled();
+  });
 });

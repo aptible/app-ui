@@ -28,7 +28,8 @@ export function webauthnCreate(payload: CredentialCreationOptionsJSON) {
     throw new Error("webauthn not supported for browser");
   }
 
-  return create(payload);
+  const result = create(payload);
+  return result;
 }
 
 export function webauthnGet(
@@ -47,6 +48,8 @@ export function webauthnGet(
     rpId: payload.rpId,
     allowCredentials: payload.allowCredentials,
     timeout: payload.timeout,
+    extensions: payload.extensions,
+    userVerification: "discouraged",
   };
   log("SECURITY KEY GET BLOB", publicKey);
 

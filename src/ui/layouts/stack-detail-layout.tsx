@@ -1,15 +1,18 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useParams } from "react-router";
-
-import { getStackType, selectStackById } from "@app/deploy";
+import { fetchStack, getStackType, selectStackById } from "@app/deploy";
 import {
   stackDetailEnvsUrl,
+  stackDetailHidsUrl,
   stackDetailVpcPeeringsUrl,
   stackDetailVpnTunnelsUrl,
   stacksUrl,
 } from "@app/routes";
+import { setResourceStats } from "@app/search";
+import { capitalize } from "@app/string-utils";
 import { AppState, DeployStack } from "@app/types";
-
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useParams } from "react-router";
+import { useQuery } from "saga-query/react";
 import {
   DetailHeader,
   DetailInfoGrid,
@@ -18,11 +21,7 @@ import {
   DetailTitleBar,
   TabItem,
 } from "../shared";
-
-import { MenuWrappedPage } from "./menu-wrapped-page";
-import { setResourceStats } from "@app/search";
-import { capitalize } from "@app/string-utils";
-import { useEffect } from "react";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function StackHeader({ stack }: { stack: DeployStack }) {
   const stackType = getStackType(stack);
@@ -48,18 +47,16 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
         <DetailInfoItem title="Memory Management">
           {stack.memoryLimits ? "Enabled" : "Disabled"}
         </DetailInfoItem>
-        <div className="hidden md:block" />
 
         <DetailInfoItem title="Tenancy">{capitalize(stackType)}</DetailInfoItem>
         <DetailInfoItem title="CPU Isolation">
           {stack.cpuLimits ? "Enabled" : "Disabled"}
         </DetailInfoItem>
-        <div className="hidden md:block" />
+
         <DetailInfoItem title="Region">{stack.region}</DetailInfoItem>
         <DetailInfoItem title="Outbound IP Addresses">
           {stack.outboundIpAddresses.join(", ")}
         </DetailInfoItem>
-        <div className="hidden md:block" />
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -71,6 +68,7 @@ function StackPageHeader() {
   useEffect(() => {
     dispatch(setResourceStats({ id, type: "stack" }));
   }, []);
+  const loader = useQuery(fetchStack({ id }));
 
   const stack = useSelector((s: AppState) => selectStackById(s, { id }));
   const crumbs = [{ name: "Stacks", to: stacksUrl() }];
@@ -81,8 +79,13 @@ function StackPageHeader() {
     { name: "VPC Peering", href: stackDetailVpcPeeringsUrl(id) },
   ];
 
+  if (stack.exposeIntrusionDetectionReports) {
+    tabs.push({ name: "Managed HIDS", href: stackDetailHidsUrl(id) });
+  }
+
   return (
     <DetailPageHeaderView
+      {...loader}
       breadcrumbs={crumbs}
       title={stack.name}
       detailsBox={<StackHeader stack={stack} />}
@@ -93,8 +96,8 @@ function StackPageHeader() {
 
 export const StackDetailLayout = () => {
   return (
-    <MenuWrappedPage header={<StackPageHeader />}>
+    <AppSidebarLayout header={<StackPageHeader />}>
       <Outlet />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

@@ -17,7 +17,7 @@ import {
   Banner,
   BannerMessages,
   Box,
-  ButtonDestroy,
+  ButtonSensitive,
   IconAlertTriangle,
   IconTrash,
   Input,
@@ -55,15 +55,11 @@ const CertDelete = ({ certId }: { certId: string }) => {
 
   return (
     <Box className="mb-8">
-      <h1 className="text-lg text-red-500 font-semibold">
-        <IconAlertTriangle
-          className="inline pr-3 mb-1"
-          style={{ width: 32 }}
-          color="#AD1A1A"
-        />
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2 mb-4">
+        <IconAlertTriangle color="#AD1A1A" />
         Delete Certificate
       </h1>
-      <form className="mt-4 flex flex-col gap-4" onSubmit={onSubmit}>
+      <form className="flex flex-col gap-4" onSubmit={onSubmit}>
         {endpoints.length > 0 ? (
           <Banner variant="error">
             This certificate is still in use and cannot be deleted. Remove all
@@ -87,7 +83,7 @@ const CertDelete = ({ certId }: { certId: string }) => {
             onChange={(e) => setConfirm(e.currentTarget.value)}
             id="delete-confirm"
           />
-          <ButtonDestroy
+          <ButtonSensitive
             type="submit"
             envId={cert.environmentId}
             variant="delete"
@@ -97,7 +93,7 @@ const CertDelete = ({ certId }: { certId: string }) => {
           >
             <IconTrash color="#FFF" className="mr-2" />
             Delete Certificate
-          </ButtonDestroy>
+          </ButtonSensitive>
         </div>
       </form>
     </Box>

@@ -1,10 +1,10 @@
-import { Select, SelectOption } from "../select";
 import {
   selectDatabasesByEnvId,
   selectDatabasesByEnvIdAndType,
 } from "@app/deploy";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
+import { Select, SelectOption } from "../select";
 
 export const DbSelector = ({
   envId,

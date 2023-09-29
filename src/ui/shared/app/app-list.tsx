@@ -1,31 +1,29 @@
-import { IconInfo, IconPlusCircle } from "../icons";
-import { Tooltip } from "../tooltip";
-import { useLoader, useQuery } from "@app/fx";
-import { useSelector } from "react-redux";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-
 import { prettyDateRelative } from "@app/date";
 import {
   calcServiceMetrics,
-  fetchAllApps,
-  fetchAllEnvironments,
+  fetchApps,
   fetchEnvironmentById,
+  fetchEnvironments,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
+  selectLatestOpByAppId,
+  selectServicesByAppId,
 } from "@app/deploy";
-import { selectServicesByIds } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
+import { useLoader, useQuery } from "@app/fx";
 import {
-  appServicesUrl,
+  appDetailUrl,
   environmentCreateAppUrl,
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
-
+import { useSelector } from "react-redux";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ActionList, ActionListView } from "../action-list-view";
 import { ButtonCreate } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
@@ -33,6 +31,7 @@ import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { Header, TableHead, Td } from "../table";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
 interface AppCellProps {
   app: DeployApp;
@@ -40,7 +39,7 @@ interface AppCellProps {
 
 export const AppItemView = ({ app }: { app: DeployApp }) => {
   return (
-    <Link to={appServicesUrl(app.id)} className="flex">
+    <Link to={appDetailUrl(app.id)} className="flex">
       <img
         src="/resource-types/logo-app.png"
         className="w-8 h-8 mr-2 align-middle"
@@ -59,16 +58,18 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
   );
 };
 
+const AppIdCell = ({ app }: AppCellProps) => {
+  return <Td className="flex-1">{app.id}</Td>;
+};
+
 const AppServicesCell = ({ app }: AppCellProps) => {
   const services = useSelector((s: AppState) =>
-    selectServicesByIds(s, { ids: app.serviceIds }),
+    selectServicesByAppId(s, { appId: app.id }),
   );
   const metrics = calcMetrics(services);
   return (
     <Td>
-      <div
-        className={tokens.type.darker}
-      >{`${app.serviceIds.length} Services`}</div>
+      <div className={tokens.type.darker}>{`${services.length} Services`}</div>
       <div className={tokens.type["normal lighter"]}>
         {metrics.totalMemoryLimit / 1024} GB &middot; {metrics.totalCPU} CPU
       </div>
@@ -78,7 +79,7 @@ const AppServicesCell = ({ app }: AppCellProps) => {
 
 const AppCostCell = ({ app }: AppCellProps) => {
   const services = useSelector((s: AppState) =>
-    selectServicesByIds(s, { ids: app.serviceIds }),
+    selectServicesByAppId(s, { appId: app.id }),
   );
   const cost = services.reduce((acc, service) => {
     const mm = calcServiceMetrics(service);
@@ -98,24 +99,27 @@ const AppCostCell = ({ app }: AppCellProps) => {
   );
 };
 
-const AppLastOpCell = ({ app }: AppCellProps) => {
+export const AppLastOpCell = ({ app }: AppCellProps) => {
+  const lastOperation = useSelector((s: AppState) =>
+    selectLatestOpByAppId(s, { appId: app.id }),
+  );
+
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      {app.lastOperation ? (
+      {lastOperation ? (
         <>
           <div className={tokens.type.darker}>
             <Link
-              to={operationDetailUrl(app.lastOperation.id)}
+              to={operationDetailUrl(lastOperation.id)}
               className={tokens.type["table link"]}
             >
-              {capitalize(app.lastOperation.type)} by{" "}
-              {app.lastOperation.userName}
+              {capitalize(lastOperation.type)} by {lastOperation.userName}
             </Link>
           </div>
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
-            <OpStatus status={app.lastOperation.status} />{" "}
-            {prettyDateRelative(app.lastOperation.createdAt)}
+            <OpStatus status={lastOperation.status} />{" "}
+            {prettyDateRelative(lastOperation.createdAt)}
           </div>
         </>
       ) : (
@@ -129,20 +133,20 @@ const AppListRow = ({ app }: AppCellProps) => {
   return (
     <tr className="group hover:bg-gray-50">
       <AppPrimaryCell app={app} />
+      <AppIdCell app={app} />
       <EnvStackCell environmentId={app.environmentId} />
       <AppServicesCell app={app} />
       <AppCostCell app={app} />
-      <AppLastOpCell app={app} />
     </tr>
   );
 };
 
 const appHeaders: Header[] = [
   "Handle",
+  "ID",
   "Environment",
   "Services",
   "Est. Monthly Cost",
-  "Last Operation",
 ];
 
 export const AppList = ({
@@ -192,7 +196,7 @@ export const AppsResourceHeaderTitleBar = ({
           title="Apps"
           actions={actions}
           filterBar={
-            <div className="pt-1">
+            <div>
               <InputSearch
                 placeholder="Search apps..."
                 search={search}
@@ -217,7 +221,7 @@ export const AppsResourceHeaderTitleBar = ({
       );
     case "simple-text":
       return (
-        <div className="flex justify-between items-center text-gray-500 text-base mb-4">
+        <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
           <div>
             {apps.length} App{apps.length !== 1 && "s"}
           </div>
@@ -232,8 +236,8 @@ export const AppsResourceHeaderTitleBar = ({
 };
 
 export const AppListByOrg = () => {
-  const query = useQuery(fetchAllApps());
-  useQuery(fetchAllEnvironments());
+  const query = useQuery(fetchApps());
+  useQuery(fetchEnvironments());
 
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -269,7 +273,7 @@ export const AppListByEnvironment = ({
   environmentId: string;
 }) => {
   const navigate = useNavigate();
-  const loader = useLoader(fetchAllApps());
+  const loader = useLoader(fetchApps());
   useQuery(fetchEnvironmentById({ id: environmentId }));
 
   const apps = useSelector((s: AppState) =>

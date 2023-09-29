@@ -1,9 +1,6 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useParams, useSearchParams } from "react-router-dom";
-
 import { timeAgo } from "@app/date";
 import {
-  fetchAllApps,
+  fetchApps,
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchEnvironmentOperations,
@@ -22,7 +19,11 @@ import {
   DeployOperation,
   DeployStack,
 } from "@app/types";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useParams, useSearchParams } from "react-router-dom";
 
+import { setResourceStats } from "@app/search";
+import { useEffect } from "react";
 import {
   DetailHeader,
   DetailInfoGrid,
@@ -31,10 +32,7 @@ import {
   DetailTitleBar,
   TabItem,
 } from "../shared";
-
-import { MenuWrappedPage } from "./menu-wrapped-page";
-import { setResourceStats } from "@app/search";
-import { useEffect } from "react";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
   endpoint.type === "tcp" ? (
@@ -77,7 +75,7 @@ export function EnvHeader({
         docsUrl="https://www.aptible.com/docs/environments"
       />
 
-      <DetailInfoGrid>
+      <DetailInfoGrid columns={3}>
         <DetailInfoItem title="ID">{environment.id}</DetailInfoItem>
         <DetailInfoItem
           title={`${environment.totalAppCount} App${
@@ -137,10 +135,10 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     dispatch(setResourceStats({ id, type: "environment" }));
   }, []);
 
-  useQuery(fetchAllApps());
+  useQuery(fetchApps());
   useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
-  useQuery(fetchEnvironmentById({ id }));
+  const loader = useQuery(fetchEnvironmentById({ id }));
 
   const latestOperation = useSelector((s: AppState) =>
     selectLatestSuccessDeployOpByEnvId(s, { envId: id }),
@@ -169,6 +167,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
 
   return (
     <DetailPageHeaderView
+      {...loader}
       breadcrumbs={crumbs}
       detailsBox={
         <EnvHeader
@@ -191,8 +190,8 @@ export const EnvironmentDetailLayout = ({
   const [params] = useSearchParams();
   const envId = id || params.get("environment_id") || "";
   return (
-    <MenuWrappedPage header={<EnvironmentPageHeader id={envId} />}>
+    <AppSidebarLayout header={<EnvironmentPageHeader id={envId} />}>
       {children ? children : <Outlet />}
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 };

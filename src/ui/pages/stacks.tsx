@@ -2,7 +2,7 @@ import { useQuery } from "@app/fx";
 import { useSelector } from "react-redux";
 
 import {
-  fetchAllStacks,
+  fetchStacks,
   getStackType,
   selectAppsCountByStack,
   selectDatabasesCountByStack,
@@ -11,9 +11,14 @@ import {
 } from "@app/deploy";
 import { AppState, DeployStack } from "@app/types";
 
-import { MenuWrappedPage } from "../layouts";
+import { createStackUrl } from "@app/routes";
+import { capitalize } from "@app/string-utils";
+import { useSearchParams } from "react-router-dom";
+import { AppSidebarLayout } from "../layouts";
 import {
+  ButtonLink,
   IconInfo,
+  IconPlusCircle,
   InputSearch,
   LoadResources,
   ResourceHeader,
@@ -23,14 +28,12 @@ import {
   Td,
   Tooltip,
 } from "../shared";
-import { capitalize } from "@app/string-utils";
-import { useSearchParams } from "react-router-dom";
 
 export function StacksPage() {
   return (
-    <MenuWrappedPage>
+    <AppSidebarLayout>
       <StackList />
-    </MenuWrappedPage>
+    </AppSidebarLayout>
   );
 }
 
@@ -51,6 +54,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
       <Td>
         <StackItemView stack={stack} />
       </Td>
+      <Td>{stack.id}</Td>
       <Td>{stack.region}</Td>
       <Td>{capitalize(stackType)}</Td>
       <Td>
@@ -66,7 +70,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
 }
 
 function StackList() {
-  const query = useQuery(fetchAllStacks());
+  const query = useQuery(fetchStacks());
 
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -80,14 +84,21 @@ function StackList() {
     }),
   );
 
+  const actions = [
+    <ButtonLink to={createStackUrl()}>
+      <IconPlusCircle variant="sm" className="mr-2" /> New Dedicated Stack
+    </ButtonLink>,
+  ];
+
   return (
     <LoadResources query={query} isEmpty={stacks.length === 0 && search === ""}>
       <ResourceListView
         header={
           <ResourceHeader
             title="Stacks"
+            actions={actions}
             filterBar={
-              <div className="pt-1">
+              <div>
                 <InputSearch
                   placeholder="Search stacks..."
                   search={search}
@@ -114,6 +125,7 @@ function StackList() {
           <TableHead
             headers={[
               "Name",
+              "ID",
               "Region",
               "Type",
               "Enabled Limits",
@@ -121,7 +133,7 @@ function StackList() {
               "Apps",
               "Databases",
             ]}
-            centerAlignedColIndices={[4, 5, 6]}
+            centerAlignedColIndices={[5, 6, 7]}
           />
         }
         tableBody={

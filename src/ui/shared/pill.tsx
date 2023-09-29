@@ -1,7 +1,7 @@
-import { IconCheck, IconInfo, IconSettings, IconX } from "./icons";
 import { prettyDateRelative } from "@app/date";
 import { OperationStatus } from "@app/types";
 import cn from "classnames";
+import { IconCheck, IconInfo, IconSettings, IconX } from "./icons";
 
 export const Pill = ({
   children,

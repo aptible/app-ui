@@ -6,11 +6,11 @@ import { useApi, useLoaderSuccess, useQuery } from "saga-query/react";
 
 import {
   createDeployApp,
-  fetchAllStacks,
   fetchEnvironmentById,
+  fetchStacks,
+  selectDefaultStack,
   selectEnvironmentById,
   selectStackById,
-  selectStackPublicDefault,
   stackToOption,
 } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
@@ -18,22 +18,23 @@ import { createProject } from "@app/projects";
 import {
   createProjectGitPushUrl,
   environmentDetailUrl,
-  stackDetailUrl,
+  stackDetailEnvsUrl,
 } from "@app/routes";
 import { AppState } from "@app/types";
 
+import { handleValidator } from "@app/validator";
+import { AppSidebarLayout } from "../layouts";
 import {
   BannerMessages,
   Box,
-  Button,
   ButtonCreate,
+  ButtonOwner,
   FormGroup,
   Input,
   ProgressProject,
   StackSelect,
   tokens,
 } from "../shared";
-import { handleValidator } from "@app/validator";
 
 const CreateAppPage = ({ envId }: { envId: string }) => {
   useQuery(fetchEnvironmentById({ id: envId }));
@@ -45,7 +46,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
   );
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
-  const thunk = useApi(createDeployApp({ name, envId }));
+  const thunk = useApi(createDeployApp({ name, envId: env.id }));
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -66,13 +67,13 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
 
   return (
     <div>
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Name your App</h1>
       </div>
 
       <ProgressProject cur={1} />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <form onSubmit={onSubmit}>
           <FormGroup
             label="Stack"
@@ -93,7 +94,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
             className="mb-4"
           >
             <div id="stack">
-              <Link to={stackDetailUrl(stack.id)} target="_blank">
+              <Link to={stackDetailEnvsUrl(stack.id)} target="_blank">
                 {stack.name}
               </Link>
             </div>
@@ -152,6 +153,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
           </ButtonCreate>
         </form>
       </Box>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </div>
   );
 };
@@ -164,7 +166,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
   const [stackValue, setStackValue] = useState(stackToOption(stack));
   useEffect(() => {
     setStackValue(stackToOption(stack));
-  }, [stackId]);
+  }, [stackId, stack.id]);
 
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
@@ -191,7 +193,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
   return (
     <div>
-      <div className="text-center">
+      <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Name your Environment</h1>
         <p className="mt-4 mb-2 text-gray-600">
           An Aptible environment contains your app along with any required
@@ -201,7 +203,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
       <ProgressProject cur={1} />
 
-      <Box>
+      <Box className="w-full max-w-[700px] mx-auto">
         <form onSubmit={onSubmit}>
           <FormGroup
             label="Stack"
@@ -246,16 +248,17 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
           <BannerMessages {...thunk} className="my-2" />
 
-          <Button
+          <ButtonOwner
             className="mt-4 w-full"
             type="submit"
             isLoading={thunk.isLoading}
             disabled={name === ""}
           >
             Create Environment
-          </Button>
+          </ButtonOwner>
         </form>
       </Box>
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </div>
   );
 };
@@ -264,14 +267,22 @@ export const CreateProjectNamePage = () => {
   const [params] = useSearchParams();
   const queryStackId = params.get("stack_id") || "";
   const queryEnvId = params.get("environment_id") || "";
-  const defaultStack = useSelector(selectStackPublicDefault);
+  const defaultStack = useSelector(selectDefaultStack);
   const stackId = queryStackId || defaultStack.id;
 
-  useQuery(fetchAllStacks());
+  useQuery(fetchStacks());
 
   if (queryEnvId === "") {
-    return <CreateEnvironmentPage stackId={stackId} />;
+    return (
+      <AppSidebarLayout>
+        <CreateEnvironmentPage stackId={stackId} />
+      </AppSidebarLayout>
+    );
   }
 
-  return <CreateAppPage envId={queryEnvId} />;
+  return (
+    <AppSidebarLayout>
+      <CreateAppPage envId={queryEnvId} />
+    </AppSidebarLayout>
+  );
 };

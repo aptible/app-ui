@@ -1,205 +1,288 @@
-import { HeroBgLayout } from "../layouts";
 import {
-  Box,
-  BoxGroup,
+  createStripeSource,
+  getStripe,
+  selectBillingDetail,
+} from "@app/billing";
+import {
+  fetchActivePlans,
+  selectFirstActivePlan,
+  selectPlanById,
+} from "@app/deploy";
+import { selectEnv } from "@app/env";
+import { selectOrganizationSelected } from "@app/organizations";
+import { homeUrl, logoutUrl, plansUrl } from "@app/routes";
+import { AppState } from "@app/types";
+import { existValidtor } from "@app/validator";
+import {
+  CardCvcElement,
+  CardExpiryElement,
+  CardNumberElement,
+  Elements,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
+import { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
+import { useValidator } from "../hooks";
+import { HeroBgView } from "../layouts";
+import {
+  AptibleLogo,
+  Banner,
+  BannerMessages,
   Button,
+  CreateProjectFooter,
   FormGroup,
+  Group,
+  IconArrowRight,
   Input,
-  Select,
-  SelectOption,
-  tokens,
+  Label,
 } from "../shared";
 
-import { countries, states } from "@app/geography";
-import { logoutUrl } from "@app/routes";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+const StripeProvider = ({ children }: { children: React.ReactNode }) => {
+  const env = useSelector(selectEnv);
+  const stripe = useMemo(() => {
+    return getStripe(env.stripePublishableKey);
+  }, [env.stripePublishableKey]);
+  return <Elements stripe={stripe}>{children}</Elements>;
+};
 
-export const BillingMethodPage = () => {
-  const [creditCardNumber, setCreditCardNumber] = useState<string>("");
-  const [expiration, setExpiration] = useState<string>("");
-  const [securityCode, setSecurityCode] = useState<string>("");
-  const [nameOnCard, setNameOnCard] = useState<string>("");
-  const [streetAddress, setStreetAddress] = useState<string>("");
-  const [aptSuiteEtc, setAptSuiteEtc] = useState<string>("");
-  const [city, setCity] = useState<string>("");
-  const [state, setState] = useState<string>("");
-  const [zipcode, setZipcode] = useState<string>("");
-  const [country, setCountry] = useState<string>("");
+interface FormProps {
+  zipcode: string;
+  nameOnCard: string;
+}
 
-  const stateOptions = states.map(({ shortCode, label }) => ({
-    value: shortCode,
-    label,
-  }));
-  const countryOptions = countries.map(({ shortCode, label }) => ({
-    value: shortCode,
-    label,
-  }));
+const validators = {
+  zipcode: (p: FormProps) => {
+    return existValidtor(p.zipcode, "zipcode");
+  },
+  name: (p: FormProps) => {
+    return existValidtor(p.nameOnCard, "name on card");
+  },
+};
 
-  const selectCountry = (option: SelectOption) => {
-    setCountry(option.value);
-  };
-  const selectState = (option: SelectOption) => {
-    setState(option.value);
-  };
-
-  const selectedState = stateOptions.find(
-    (stateOption) => stateOption.value === state,
+const CreditCardForm = () => {
+  const billingDetail = useSelector(selectBillingDetail);
+  const navigate = useNavigate();
+  const elements = useElements();
+  const stripe = useStripe();
+  const dispatch = useDispatch();
+  const [nameOnCard, setNameOnCard] = useState("");
+  const [zipcode, setZipcode] = useState("");
+  const [error, setError] = useState("");
+  const loader = useLoader(createStripeSource);
+  const [loading, setLoading] = useState(false);
+  const [errors, validate] = useValidator<FormProps, typeof validators>(
+    validators,
   );
-  const selectedCountry = countryOptions.find(
-    (countryOption) => countryOption.value === country,
-  );
+  const data = { zipcode, nameOnCard };
+
+  useLoaderSuccess(loader, () => {
+    navigate(homeUrl());
+  });
+
+  async function submit() {
+    if (!validate(data)) {
+      return;
+    }
+
+    if (!stripe || !elements) {
+      throw new Error("stripe not found");
+    }
+
+    const result = await elements.submit();
+    if (result.error) {
+      throw new Error(result.error.message || "unknown");
+    }
+
+    const element = elements.getElement(CardNumberElement);
+    if (!element) {
+      throw new Error("stripe card number element not found");
+    }
+
+    const token = await stripe.createToken(element, {
+      name: nameOnCard,
+      address_zip: zipcode,
+    });
+    if (token.error) {
+      throw new Error(token.error.message || "unknown");
+    }
+
+    const stripeTokenId = token.token?.id || "";
+    dispatch(createStripeSource({ id: billingDetail.id, stripeTokenId }));
+    return stripeTokenId;
+  }
 
   const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoading(true);
+    submit()
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
-    <HeroBgLayout>
-      <div className="text-center mt-16">
-        <h1 className={tokens.type.h1}>Add Credit Card</h1>
-        <p className="my-6 text-gray-600">
-          Aptible will attempt a $1 pre-authorization charge. <br />
-          We will not process this charge. There are no upfront charges.
-        </p>
-      </div>
-      <BoxGroup>
-        <Box>
-          <form className="space-y-6" onSubmit={onSubmitForm}>
-            <FormGroup label="Credit Card Number" htmlFor="credit-card-number">
-              <Input
-                name="credit-card-number"
-                value={creditCardNumber}
-                onChange={(e) => setCreditCardNumber(e.target.value)}
-                required
-              />
-            </FormGroup>
-            <div className="flex justify-between gap-4 mt-4">
-              <FormGroup
-                label="Expiration Date"
-                htmlFor="credit-card-number"
-                className="w-1/2"
-              >
-                <Input
-                  name="credit-card-number"
-                  value={expiration}
-                  placeholder="MM / YY"
-                  onChange={(e) => setExpiration(e.target.value)}
-                  required
-                />
-              </FormGroup>
-              <FormGroup
-                label="Security Code"
-                htmlFor="credit-card-number"
-                className="w-1/2"
-              >
-                <Input
-                  name="credit-card-number"
-                  value={securityCode}
-                  onChange={(e) => setSecurityCode(e.target.value)}
-                  required
-                />
-              </FormGroup>
-            </div>
+    <Group>
+      {error ? <Banner variant="error">{error}</Banner> : null}
+      <BannerMessages {...loader} />
 
-            <FormGroup label="Name on Card" htmlFor="name-on-card">
-              <Input
-                id="name-on-card"
-                name="name-on-card"
-                type="text"
-                autoComplete="name-on-card"
-                required
-                className="w-full"
-                value={nameOnCard}
-                onChange={(e) => setNameOnCard(e.target.value)}
-              />
-            </FormGroup>
-
-            <FormGroup label="Street Address" htmlFor="street-address">
-              <Input
-                id="street-address"
-                name="street-address"
-                type="text"
-                autoComplete="street-address"
-                required
-                className="w-full"
-                placeholder="Street and number, P.O. box, c/o."
-                value={streetAddress}
-                onChange={(e) => setStreetAddress(e.target.value)}
-              />
-            </FormGroup>
-
-            <FormGroup label="Apt, Suite, Etc. " htmlFor="apt-suite-etc">
-              <Input
-                id="apt-suite-etc"
-                name="apt-suite-etc"
-                type="text"
-                autoComplete="apt-suite-etc"
-                placeholder="Optional"
-                required={false}
-                className="w-full"
-                value={aptSuiteEtc}
-                onChange={(e) => setAptSuiteEtc(e.target.value)}
-              />
-            </FormGroup>
-
-            <FormGroup label="City " htmlFor="city">
-              <Input
-                id="city"
-                name="city"
-                type="text"
-                autoComplete="city"
-                required
-                className="w-full"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              />
-            </FormGroup>
-            <div className="flex justify-between gap-4 mt-4">
-              <div>
-                <h4 className={"text-md font-semibold mb-2"}>State</h4>
-                <div className="flex">
-                  <Select
-                    className="w-full"
-                    onSelect={selectState}
-                    value={selectedState?.value}
-                    options={stateOptions}
-                  />
-                </div>
-              </div>
-              <FormGroup label="Zipcode" htmlFor="zipcode" className="flex-1">
-                <Input
-                  name="zipcode"
-                  value={zipcode}
-                  onChange={(e) => setZipcode(e.target.value)}
-                  required
-                />
-              </FormGroup>
-            </div>
-            <div className="mb-4">
-              <h4 className={"text-md font-semibold mb-2"}>Country</h4>
-              <div className="flex mb-2">
-                <Select
-                  className="w-full"
-                  onSelect={selectCountry}
-                  value={selectedCountry?.value}
-                  options={countryOptions}
-                />
-              </div>
-            </div>
-            <Button type="submit" className="mt-4 font-semibold w-full">
-              Save & Finish
-            </Button>
-          </form>
-          <div className="text-center text-sm mt-4">
-            <p>
-              Prefer to speak to someone first?{" "}
-              <a href="https://www.aptible.com/contact">Schedule a demo</a> or
-              go to <Link to={logoutUrl()}>Logout</Link>
-            </p>
+      <form className="space-y-4" onSubmit={onSubmitForm}>
+        <Label>
+          <span>Credit Card Number</span>
+          <div className="p-3 border border-gray-300 rounded-md shadow-sm">
+            <CardNumberElement />
           </div>
-        </Box>
-      </BoxGroup>
-    </HeroBgLayout>
+        </Label>
+
+        <div className="flex flex-row gap-4">
+          <div className="w-1/2">
+            <Label>
+              <span>Expiration Date</span>
+              <div className="p-3 border border-gray-300 rounded-md shadow-sm">
+                <CardExpiryElement />
+              </div>
+            </Label>
+          </div>
+
+          <div className="w-1/2">
+            <Label>
+              <span>CVC</span>
+              <div className="p-3 border border-gray-300 rounded-md shadow-sm">
+                <CardCvcElement />
+              </div>
+            </Label>
+          </div>
+        </div>
+
+        <FormGroup
+          label="Name on Card"
+          htmlFor="name-on-card"
+          feedbackVariant={errors.name ? "danger" : "info"}
+          feedbackMessage={errors.name}
+        >
+          <Input
+            id="name-on-card"
+            name="name-on-card"
+            type="text"
+            autoComplete="name-on-card"
+            required
+            value={nameOnCard}
+            onChange={(e) => setNameOnCard(e.target.value)}
+          />
+        </FormGroup>
+
+        <FormGroup
+          label="Zipcode"
+          htmlFor="zipcode"
+          className="flex-1"
+          feedbackVariant={errors.zipcode ? "danger" : "info"}
+          feedbackMessage={errors.zipcode}
+        >
+          <Input
+            name="zipcode"
+            value={zipcode}
+            onChange={(e) => setZipcode(e.target.value)}
+            required
+          />
+        </FormGroup>
+
+        <Button
+          type="submit"
+          className="font-semibold w-full"
+          isLoading={loader.isLoading || loading}
+        >
+          Save Payment
+        </Button>
+      </form>
+    </Group>
+  );
+};
+
+export const BillingMethodPage = () => {
+  const org = useSelector(selectOrganizationSelected);
+  useQuery(fetchActivePlans({ organization_id: org.id }));
+  const activePlan = useSelector(selectFirstActivePlan);
+  const plan = useSelector((s: AppState) =>
+    selectPlanById(s, { id: activePlan.planId }),
+  );
+
+  return (
+    <StripeProvider>
+      <HeroBgView className="flex gap-6">
+        <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] lg:h-screen">
+          <div className="text-xl text-black font-bold">
+            Launch, grow, and scale your app without worrying about
+            infrastructure
+          </div>
+          <div className="text-lg text-gold font-bold pt-5 pb-1">Launch</div>
+          <p>Get up and running without any work or config.</p>
+          <hr className="mt-5 mb-4" />
+          <div className="text-lg text-gold font-bold pb-1">Grow</div>
+          <p>Aptible handles all the infrastructure operations.</p>
+          <hr className="mt-5 mb-4" />
+          <div className="text-lg text-gold font-bold pb-1">Scale</div>
+          <p>
+            Enterprise requirements such as performance, security, and
+            reliability are baked in from day one.
+          </p>
+          <p className="text-md text-black pt-8 pb-4 text-center font-semibold">
+            Companies that have scaled with Aptible
+          </p>
+          <img
+            src="/customer-logo-cloud.png"
+            className="text-center scale-90"
+            aria-label="Customer Logos"
+          />
+          <div className="pt-8 lg:px-0 px-10">
+            <CreateProjectFooter />
+          </div>
+        </div>
+
+        <div className="flex-1 mx-auto max-w-[500px]">
+          <Group>
+            <div className="flex justify-center pt-[65px] pb-4">
+              <AptibleLogo width={160} />
+            </div>
+
+            <div className="text-center">
+              <p className="text-gray-900">
+                You must enter a credit card to continue using Aptible. <br />
+                Your card will be charged at the end of your monthly billing
+                cycle.
+              </p>
+              <h1 className="text-gray-900 text-3xl font-semibold text-center pt-8">
+                Add Payment Information
+              </h1>
+            </div>
+
+            <Banner variant="info" className="w-full">
+              <div className="flex items-center gap-2">
+                Current plan: {plan.name}{" "}
+                <Link to={plansUrl()} className="flex items-center gap-1">
+                  Change plan <IconArrowRight variant="sm" color="#4361FF" />
+                </Link>
+              </div>
+            </Banner>
+
+            <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100 w-full">
+              <CreditCardForm />
+
+              <div className="text-center text-sm mt-4">
+                <p>
+                  Prefer to speak to someone first?{" "}
+                  <a href="https://www.aptible.com/contact">Schedule a demo</a>{" "}
+                  or go to <Link to={logoutUrl()}>Logout</Link>
+                </p>
+              </div>
+            </div>
+          </Group>
+        </div>
+      </HeroBgView>
+    </StripeProvider>
   );
 };

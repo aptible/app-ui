@@ -44,7 +44,7 @@ import type {
 
 type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel";
 
-const log = createLog("@app/fx");
+const log = createLog("fx");
 
 export function* elevetatedMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   ctx.elevated = true;
@@ -63,7 +63,6 @@ function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
     Sentry.captureException(err, {
       contexts: { saga: JSON.stringify(ctx) as any },
     });
-    throw err;
   }
 }
 
@@ -163,12 +162,12 @@ function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
   yield* next();
 }
 
-function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
+function* requestAuth(ctx: AuthApiCtx, next: Next): ApiGen {
   const url = yield* call(getUrl, ctx, "auth" as const);
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
-    credentials: "include",
+    credentials: ctx.credentials || "include",
     headers: {
       "Content-Type": "application/hal+json",
     },
@@ -194,7 +193,8 @@ function* requestMetricTunnel(ctx: ApiCtx, next: Next): ApiGen {
 function* expiredToken(ctx: ApiCtx, next: Next) {
   yield* next();
   if (!ctx.response) return;
-  if (ctx.response.status === 401) {
+  if (ctx.req().method === "GET" && ctx.response.status === 401) {
+    yield* put(resetToken());
     ctx.actions.push(resetToken());
   }
 }
@@ -219,6 +219,7 @@ const SECONDS = 1 * MS;
 const MINUTES = 60 * SECONDS;
 
 export const cacheTimer = () => timer(5 * MINUTES);
+export const cacheMinTimer = () => timer(60 * SECONDS);
 export const cacheShortTimer = () => timer(5 * SECONDS);
 
 export const api = createApi<DeployApiCtx>();
@@ -227,9 +228,9 @@ api.use(sentryErrorHandler);
 api.use(expiredToken);
 api.use(requestMonitor());
 api.use(aborter);
-api.use(halEntityParser);
-api.use(api.routes());
 api.use(requestApi);
+api.use(api.routes());
+api.use(halEntityParser);
 api.use(tokenMdw);
 api.use(fetcher());
 

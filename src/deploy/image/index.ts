@@ -1,6 +1,14 @@
-import type { DeployImage } from "@app/types";
+import { api } from "@app/api";
+import { defaultEntity } from "@app/hal";
+import {
+  createReducerMap,
+  createTable,
+  mustSelectEntity,
+} from "@app/slice-helpers";
+import type { AppState, DeployImage } from "@app/types";
+import { selectDeploy } from "../slice";
 
-interface DeployImageResponse {
+export interface DeployImageResponse {
   id: number;
   docker_ref: string | null;
   docker_repo: string | null;
@@ -9,6 +17,7 @@ interface DeployImageResponse {
   updated_at: string;
   created_at: string;
   exposed_ports: number[];
+  _type: "image";
 }
 
 export const deserializeImage = (payload: DeployImageResponse): DeployImage => {
@@ -19,7 +28,7 @@ export const deserializeImage = (payload: DeployImageResponse): DeployImage => {
   return {
     dockerRef: payload.docker_ref || "",
     dockerRepo: payload.docker_repo || "",
-    gitRef: payload.git_ref || "",
+    gitRef: payload.git_ref || "Not used",
     gitRepo: payload.git_repo || "",
     exposedPorts: payload.exposed_ports,
     id: `${payload.id}`,
@@ -35,7 +44,7 @@ export const defaultDeployImage = (
   return {
     id: "",
     gitRepo: "",
-    gitRef: "",
+    gitRef: "Not used",
     dockerRepo: "",
     exposedPorts: [],
     dockerRef: "",
@@ -43,4 +52,25 @@ export const defaultDeployImage = (
     updatedAt: now,
     ...img,
   };
+};
+
+export const fetchImageById = api.get<{ id: string }>("/images/:id");
+
+export const IMAGE_NAME = "images";
+const slice = createTable<DeployImage>({ name: IMAGE_NAME });
+const { add: addDeployImages } = slice.actions;
+const selectors = slice.getSelectors(
+  (s: AppState) => selectDeploy(s)[IMAGE_NAME] || {},
+);
+const initImage = defaultDeployImage();
+const must = mustSelectEntity(initImage);
+export const selectImageById = must(selectors.selectById);
+
+export const imageReducers = createReducerMap(slice);
+export const imageEntities = {
+  image: defaultEntity({
+    id: "image",
+    save: addDeployImages,
+    deserialize: deserializeImage,
+  }),
 };

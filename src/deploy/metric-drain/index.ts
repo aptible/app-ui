@@ -1,6 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
 
-import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
+import { api, cacheTimer, thunks } from "@app/api";
 import {
   call,
   put,
@@ -17,11 +17,11 @@ import {
 import {
   AppState,
   DeployMetricDrain,
-  DeployOperationResponse,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
 
+import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
 export type MetricDrainType =
@@ -163,16 +163,10 @@ export const fetchEnvMetricDrains = api.get<{ id: string }>(
   "/accounts/:id/metric_drains",
 );
 
-export const fetchMetricDrains = api.get<PaginateProps>(
-  "/metric_drains?page=:page",
-  {
-    saga: cacheTimer(),
-  },
-);
-export const fetchAllMetricDrains = thunks.create(
-  "fetch-all-metric-drains",
-  combinePages(fetchMetricDrains),
-);
+export const fetchMetricDrains = api.get("/metric_drains?per_page=5000", {
+  saga: cacheTimer(),
+});
+
 interface CreateMetricDrainBase {
   envId: string;
   handle: string;
@@ -316,6 +310,56 @@ export const provisionMetricDrain = thunks.create<CreateMetricDrainProps>(
     );
   },
 );
+
+export const deprovisionMetricDrain = api.post<
+  { id: string },
+  DeployOperationResponse
+>(["/metric_drains/:id/operations", "deprovision"], function* (ctx, next) {
+  const { id } = ctx.payload;
+  // an empty provision triggers a restart for metric drains
+  const body = {
+    type: "deprovision",
+    id,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Deprovision log drain operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
+
+export const restartMetricDrain = api.post<
+  { id: string },
+  DeployOperationResponse
+>(["/metric_drains/:id/operations", "restart"], function* (ctx, next) {
+  const { id } = ctx.payload;
+  // an empty provision triggers a restart for metric drains
+  const body = {
+    type: "provision",
+    id,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Restart log drain operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
 
 export const metricDrainEntities = {
   metric_drain: defaultEntity({

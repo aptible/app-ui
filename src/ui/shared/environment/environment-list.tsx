@@ -1,7 +1,5 @@
-import { IconInfo, IconPlusCircle } from "../icons";
-import { Tooltip } from "../tooltip";
 import {
-  fetchAllEnvironments,
+  fetchEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
   selectEnvironmentsForTableSearch,
@@ -11,22 +9,21 @@ import { useQuery } from "@app/fx";
 import {
   createProjectGitUrl,
   environmentAppsUrl,
+  environmentDatabasesUrl,
   stackDetailEnvsUrl,
 } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
+import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-
-import { ButtonIcon } from "../button";
+import { ButtonOwner } from "../button";
 import { EmptyResourcesTable } from "../empty-resources-table";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { LoadResources } from "../load-resources";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { prettyEnglishDate, timeAgo } from "@app/date";
-import { selectLatestSuccessDeployOpByEnvId } from "@app/deploy/operation";
-import { capitalize } from "@app/string-utils";
-import { useSelector } from "react-redux";
+import { Tooltip } from "../tooltip";
 
 interface EnvironmentCellProps {
   environment: DeployEnvironment;
@@ -57,13 +54,21 @@ const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
+const EnvironmentIdCell = ({ environment }: EnvironmentCellProps) => {
+  return <Td>{environment.id}</Td>;
+};
+
 const EnvironmentDatabasesCell = ({ environment }: EnvironmentCellProps) => {
   const dbs = useSelector((s: AppState) =>
     selectDatabasesByEnvId(s, { envId: environment.id }),
   );
   return (
     <Td className="center items-center justify-center">
-      <div className="text-center">{dbs.length}</div>
+      <Link to={environmentDatabasesUrl(environment.id)}>
+        <div className={`${tokens.type["table link"]} text-center`}>
+          {dbs.length}
+        </div>
+      </Link>
     </Td>
   );
 };
@@ -74,27 +79,11 @@ const EnvironmentAppsCell = ({ environment }: EnvironmentCellProps) => {
   );
   return (
     <Td className="center items-center justify-center">
-      <div className="text-center">{apps.length}</div>
-    </Td>
-  );
-};
-
-const EnvironmentLastDeployedCell = ({ environment }: EnvironmentCellProps) => {
-  const operation = useSelector((s: AppState) =>
-    selectLatestSuccessDeployOpByEnvId(s, { envId: environment.id }),
-  );
-  const userName = operation.userName.slice(0, 15);
-  return (
-    <Td className="2xl:flex-cell-md sm:flex-cell-sm">
-      <div
-        className={tokens.type.darker}
-        style={{ textTransform: "capitalize" }}
-      >
-        {prettyEnglishDate(operation.createdAt)}
-      </div>
-      <div>
-        {timeAgo(operation.createdAt)} by {capitalize(userName)}
-      </div>
+      <Link to={environmentAppsUrl(environment.id)}>
+        <div className={`${tokens.type["table link"]} text-center`}>
+          {apps.length}
+        </div>
+      </Link>
     </Td>
   );
 };
@@ -128,8 +117,8 @@ const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
   return (
     <tr className="group hover:bg-gray-50">
       <EnvironmentPrimaryCell environment={environment} />
+      <EnvironmentIdCell environment={environment} />
       <EnvironmentStackCell environment={environment} />
-      <EnvironmentLastDeployedCell environment={environment} />
       <EnvironmentAppsCell environment={environment} />
       <EnvironmentDatabasesCell environment={environment} />
     </tr>
@@ -141,26 +130,29 @@ const EnvsResourceHeaderTitleBar = ({
   search = "",
   onChange,
   showTitle = true,
+  stackId = "",
 }: {
   envs: DeployEnvironment[];
   search?: string;
   onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
   showTitle?: boolean;
+  stackId?: string;
 }) => {
   const navigate = useNavigate();
   const onCreate = () => {
-    navigate(createProjectGitUrl());
+    navigate(createProjectGitUrl(stackId ? `stack_id=${stackId}` : ""));
   };
   return (
     <ResourceHeader
       title={showTitle ? "Environments" : ""}
       actions={[
-        <ButtonIcon icon={<IconPlusCircle variant="sm" />} onClick={onCreate}>
+        <ButtonOwner onClick={onCreate}>
+          <IconPlusCircle variant="sm" className="mr-2" />
           New Environment
-        </ButtonIcon>,
+        </ButtonOwner>,
       ]}
       filterBar={
-        <div className="pt-1">
+        <div>
           <InputSearch
             placeholder="Search environments..."
             search={search}
@@ -183,16 +175,10 @@ const EnvsResourceHeaderTitleBar = ({
     />
   );
 };
-const environmentHeaders = [
-  "Environment",
-  "Stack",
-  "Last Deployed",
-  "Apps",
-  "Databases",
-];
+const environmentHeaders = ["Environment", "ID", "Stack", "Apps", "Databases"];
 
 export function EnvironmentListByStack({ stackId }: { stackId: string }) {
-  const query = useQuery(fetchAllEnvironments());
+  const query = useQuery(fetchEnvironments());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,6 +197,7 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
       <ResourceListView
         header={
           <EnvsResourceHeaderTitleBar
+            stackId={stackId}
             search={search}
             envs={environments}
             onChange={onChange}
@@ -240,7 +227,7 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
   );
 }
 export function EnvironmentList() {
-  const query = useQuery(fetchAllEnvironments());
+  const query = useQuery(fetchEnvironments());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {

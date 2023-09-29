@@ -30,7 +30,7 @@ export interface DbFormProps<P extends { id: string }> {
 
 export interface DbValidatorError {
   message: string;
-  item: DbCreatorProps;
+  item: { id: string; name: string };
 }
 
 const createId = idCreator();
@@ -155,7 +155,7 @@ export const DbCreatorSelector = ({
   const imgOptions = [
     { value: "", label: "Choose a Database" },
     ...images.map((img) => ({
-      label: `${img.type} v${img.version}`,
+      label: img.description,
       value: img.id,
     })),
   ];
@@ -163,7 +163,7 @@ export const DbCreatorSelector = ({
 
   return (
     <div className="mb-4">
-      <h4 className={`${tokens.type.h4} mb-2`}>New Database</h4>
+      <h4 className={`${tokens.type.h4}`}>New Database</h4>
       <p className="text-black-500 mb-2">
         Choose a database type and handle.{" "}
         {showEnv
@@ -224,6 +224,7 @@ export const DatabaseCreatorForm = ({
           imgId: img.id,
           name: `${namePrefix}-${img.type || ""}`,
           dbType: img.type || "",
+          enableBackups: true,
         },
       });
     });
@@ -236,6 +237,7 @@ export const DatabaseCreatorForm = ({
       name: namePrefix,
       env: "DATABASE_URL",
       dbType: "",
+      enableBackups: true,
     };
     dbDispatch({
       type: "add",

@@ -19,9 +19,10 @@ import { AppState } from "@app/types";
 import { handleValidator } from "@app/validator";
 
 import { useValidator } from "../hooks";
-import { MenuWrappedPage } from "../layouts";
+import { AppSidebarLayout } from "../layouts";
 import {
   BannerMessages,
+  Box,
   ButtonCreate,
   DatabaseNameInput,
   EnvironmentSelect,
@@ -91,12 +92,12 @@ export const BackupRestorePage = () => {
   });
 
   return (
-    <MenuWrappedPage>
-      <div className="bg-white py-8 px-8 shadow border border-black-100 rounded-lg">
+    <AppSidebarLayout>
+      <h2 className={tokens.type.h2}>Restore Database from Backup</h2>
+      <Box className="mt-3">
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <div>
-            <h2 className={tokens.type.h2}>Restore Database from Backup</h2>
-            <p className="mt-4">
+            <p>
               This will create a new database.{" "}
               <strong>It does not overwrite your existing database.</strong>
             </p>
@@ -135,7 +136,7 @@ export const BackupRestorePage = () => {
             Restore Database
           </ButtonCreate>
         </form>
-      </div>
-    </MenuWrappedPage>
+      </Box>
+    </AppSidebarLayout>
   );
 };

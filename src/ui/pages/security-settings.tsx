@@ -12,6 +12,7 @@ import {
 } from "@app/routes";
 import { selectCurrentUserId, updateEmail, updateUser } from "@app/users";
 
+import { emailValidator } from "@app/validator";
 import { useCurrentUser } from "../hooks";
 import {
   Banner,
@@ -21,7 +22,6 @@ import {
   Input,
   Loading,
 } from "../shared";
-import { emailValidator } from "@app/validator";
 
 interface SectionProps {
   children: React.ReactNode;

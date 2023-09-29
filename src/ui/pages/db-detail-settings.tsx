@@ -1,49 +1,133 @@
-import {
-  Banner,
-  Box,
-  Button,
-  ButtonLinkExternal,
-  ExternalLink,
-  FormGroup,
-  IconAlertTriangle,
-  IconExternalLink,
-  IconTrash,
-  Input,
-  Label,
-} from "../shared";
+import { FormEvent, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+
 import {
   deprovisionDatabase,
+  fetchDatabase,
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
+  restartDatabase,
   selectDatabaseById,
+  selectEnvironmentById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
   updateDatabase,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
-import { databaseActivityUrl } from "@app/routes";
-import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
-import { SyntheticEvent, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import { databaseActivityUrl, environmentActivityUrl } from "@app/routes";
+import {
+  AppState,
+  DeployDatabase,
+  DeployLogDrain,
+  DeployMetricDrain,
+} from "@app/types";
 
-export const DatabaseSettingsPage = () => {
-  const { id = "" } = useParams();
-  const [deleteConfirm, setDeleteConfirm] = useState<string>("");
-  const [handle, setHandle] = useState<string>("");
-  const [isDeprovisioning, setIsDeprovisioning] = useState<boolean>(false);
-  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+import {
+  Banner,
+  BannerMessages,
+  Box,
+  BoxGroup,
+  Button,
+  ButtonCreate,
+  ButtonDestroy,
+  ButtonLinkDocs,
+  ButtonOps,
+  ExternalLink,
+  FormGroup,
+  Group,
+  IconAlertTriangle,
+  IconRefresh,
+  IconTrash,
+  Input,
+  Label,
+  Select,
+  SelectOption,
+} from "../shared";
+
+const DatabaseDeprovision = ({ database }: DbProps) => {
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: database.environmentId }),
+  );
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
-  const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const [deleteConfirm, setDeleteConfirm] = useState<string>("");
+  const action = deprovisionDatabase({ dbId: database.id });
+  const loader = useLoader(action);
+  const onSubmit = () => {
+    dispatch(action);
+    navigate(environmentActivityUrl(environment.id));
+  };
+  const isDisabled = database.handle !== deleteConfirm;
+
+  return (
+    <form onSubmit={onSubmit}>
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2 mb-4">
+        <IconAlertTriangle color="#AD1A1A" />
+        Deprovision Database
+      </h1>
+
+      <Group>
+        <p>
+          This will permanently deprovision <strong>{database.handle}</strong>{" "}
+          database. This action cannot be undone. If you want to proceed, type
+          the <strong>{database.handle}</strong> below to continue.
+        </p>
+
+        <Group variant="horizontal" size="sm" className="items-center">
+          <Input
+            className="flex-1"
+            name="delete-confirm"
+            type="text"
+            value={deleteConfirm}
+            onChange={(e) => setDeleteConfirm(e.currentTarget.value)}
+            id="delete-confirm"
+          />
+          <ButtonDestroy
+            envId={database.environmentId}
+            variant="delete"
+            disabled={isDisabled}
+            isLoading={loader.isLoading}
+            className="w-70"
+            type="submit"
+          >
+            <IconTrash color="#FFF" className="mr-2" />
+            Deprovision Database
+          </ButtonDestroy>
+        </Group>
+      </Group>
+    </form>
+  );
+};
+
+interface DbProps {
+  database: DeployDatabase;
+}
+
+const DatabaseNameChange = ({ database }: DbProps) => {
+  const dispatch = useDispatch();
+  const [enableBackups, setEnableBackups] = useState<boolean>(true);
+  const [handle, setHandle] = useState<string>("");
+  useEffect(() => {
+    setHandle(database.handle);
+    setEnableBackups(database.enableBackups);
+  }, [database.id]);
+  const action = updateDatabase({
+    id: database.id,
+    handle,
+    enableBackups,
+  });
+  const loader = useLoader(action);
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(action);
+  };
   const logDrains = useSelector((s: AppState) =>
     selectLogDrainsByEnvId(s, { envId: database.environmentId }),
   );
   const metricDrains = useSelector((s: AppState) =>
     selectMetricDrainsByEnvId(s, { envId: database.environmentId }),
   );
-  const updatingDatabaseLoader = useLoader(updateDatabase);
 
   useQuery(fetchEnvLogDrains({ id: database.environmentId }));
   useQuery(fetchEnvMetricDrains({ id: database.environmentId }));
@@ -51,145 +135,150 @@ export const DatabaseSettingsPage = () => {
   const drains: (DeployLogDrain | DeployMetricDrain)[] =
     [...logDrains, ...metricDrains] || [];
 
-  useEffect(() => {
-    setHandle(database.handle);
-  }, [database.id]);
-
-  const onSubmitForm = (e: SyntheticEvent) => {
-    e.preventDefault();
-
-    setIsUpdating(true);
-    dispatch(updateDatabase({ id, handle }));
-    setIsUpdating(false);
-  };
-
-  const requestDeprovisionDatabase = (e: SyntheticEvent) => {
-    e.preventDefault();
-
-    setIsUpdating(true);
-    setIsDeprovisioning(true);
-    dispatch(deprovisionDatabase({ dbId: database.id }));
-    navigate(databaseActivityUrl(id));
-  };
-
-  const disabledDeprovisioning =
-    isDeprovisioning || database.handle !== deleteConfirm;
+  const options: SelectOption[] = [
+    {
+      label:
+        "Enabled: Allow backups according to environment " +
+        "backup retention policy",
+      value: "true",
+    },
+    {
+      label: "Disabled: No automatic backups enabled",
+      value: "false",
+    },
+  ];
 
   return (
-    <div className="mb-4">
-      <Box>
-        <ButtonLinkExternal
-          href="https://www.aptible.com/docs/managing-databases"
-          className="relative float-right"
-          variant="white"
-          size="sm"
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+      <FormGroup label="Database Name" htmlFor="input-name">
+        <Input
+          name="app-handle"
+          type="text"
+          value={handle}
+          onChange={(e) => setHandle(e.currentTarget.value)}
+          autoComplete="name"
+          id="input-name"
+        />
+
+        {handle !== database.handle && drains.length ? (
+          <Banner variant="info" showIcon={true} className="mt-4">
+            <p>
+              You must <b>restart the database</b> for the new name to appear in
+              the following
+              <ExternalLink
+                variant="default"
+                href="https://www.aptible.com/docs/log-drains"
+              >
+                {" "}
+                log drains
+              </ExternalLink>{" "}
+              and{" "}
+              <ExternalLink
+                variant="default"
+                href="https://www.aptible.com/docs/metric-drains"
+              >
+                {" "}
+                metric drains
+              </ExternalLink>
+              :
+            </p>
+            <ul className="list-disc ml-4">
+              {drains.map((drain) => (
+                <li key={drain.id}>{drain.handle}</li>
+              ))}
+            </ul>
+          </Banner>
+        ) : null}
+      </FormGroup>
+
+      <FormGroup label="Database Backups" htmlFor="input-backup">
+        <Select
+          ariaLabel="Database Backups"
+          id="input-backup"
+          options={options}
+          onSelect={(opt) => setEnableBackups(opt.value === "true")}
+          value={enableBackups.toString()}
+        />
+      </FormGroup>
+
+      <BannerMessages {...loader} />
+
+      <Group variant="horizontal" size="sm">
+        <ButtonCreate
+          envId={database.environmentId}
+          className="w-40 semibold"
+          type="submit"
+          isLoading={loader.isLoading}
+          disabled={
+            handle === database.handle &&
+            enableBackups === database.enableBackups
+          }
         >
-          View Docs
-          <IconExternalLink className="inline ml-1 h-5 mt-0" />
-        </ButtonLinkExternal>
-        <h1 className="text-lg text-gray-500">Database Settings</h1>
-        <br />
-        <form onSubmit={onSubmitForm}>
-          <FormGroup label={""} htmlFor="input-name">
-            <Label className="text-base font-semibold text-gray-900 block">
-              Database Name
-            </Label>
-            <Input
-              name="app-handle"
-              type="text"
-              value={handle}
-              onChange={(e) => setHandle(e.currentTarget.value)}
-              autoComplete="name"
-              data-testid="input-name"
-              id="input-name"
-            />
-          </FormGroup>
-          {handle !== database.handle && drains.length ? (
-            <Banner variant="info" showIcon={false} className="mt-4">
-              <p>
-                You must <b>reload the database</b> for the new name to appear
-                in the following log and metric drains, view the docs (
-                <ExternalLink
-                  variant="default"
-                  href="https://www.aptible.com/docs/log-drains"
-                >
-                  log drains
-                </ExternalLink>
-                ,{" "}
-                <ExternalLink
-                  variant="default"
-                  href="https://www.aptible.com/docs/metric-drains"
-                >
-                  metric drains
-                </ExternalLink>
-                ) to learn more:
-              </p>
-              <ul className="list-disc ml-4 mt-2">
-                {drains.map((drain) => (
-                  <li>{drain.handle}</li>
-                ))}
-              </ul>
-            </Banner>
-          ) : null}
+          Save Changes
+        </ButtonCreate>
 
-          <hr className="mt-6" />
+        <Button
+          variant="white"
+          onClick={() => {
+            setHandle(database.handle);
+            setEnableBackups(database.enableBackups);
+          }}
+        >
+          Cancel
+        </Button>
+      </Group>
+    </form>
+  );
+};
 
-          <div className="flex mt-4">
-            <Button
-              className="w-40 flex semibold"
-              type="submit"
-              disabled={isUpdating || updatingDatabaseLoader.isLoading}
-            >
-              {isUpdating || updatingDatabaseLoader.isLoading
-                ? "Loading..."
-                : "Save Changes"}
-            </Button>
-          </div>
-        </form>
-      </Box>
+const DatabaseRestart = ({ database }: DbProps) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const action = restartDatabase({ id: database.id });
+  const loader = useLoader(action);
+  const onClick = () => {
+    dispatch(action);
+  };
+  useLoaderSuccess(loader, () => {
+    navigate(databaseActivityUrl(database.id));
+  });
+  return (
+    <>
+      <Label className="mt-4 pb-1">Restart Database</Label>
+      <ButtonOps
+        envId={database.environmentId}
+        variant="white"
+        isLoading={loader.isLoading}
+        className="flex"
+        onClick={onClick}
+      >
+        <IconRefresh className="mr-2" variant="sm" />
+        Restart
+      </ButtonOps>
+    </>
+  );
+};
 
-      <Box className="mt-4 mb-8">
-        <h1 className="text-lg text-red-500 font-semibold">
-          <IconAlertTriangle
-            className="inline pr-3 mb-1"
-            style={{ width: 32 }}
-            color="#AD1A1A"
-          />
-          Deprovision Database
-        </h1>
-        <div className="mt-2">
-          <p>
-            This will permanently deprovision <strong>{database.handle}</strong>{" "}
-            database. This action cannot be undone. If you want to proceed, type
-            the <strong>{database.handle}</strong> below to continue.
-          </p>
-          <div className="flex mt-4 wd-60">
-            <Input
-              className="flex"
-              disabled={isDeprovisioning}
-              name="delete-confirm"
-              type="text"
-              value={deleteConfirm}
-              onChange={(e) => setDeleteConfirm(e.currentTarget.value)}
-              data-testid="delete-confirm"
-              id="delete-confirm"
-            />
-            <Button
-              variant="secondary"
-              style={{
-                backgroundColor: "#AD1A1A",
-                color: "#FFF",
-              }}
-              disabled={disabledDeprovisioning}
-              className="h-15 w-70 mb-0 ml-4 flex"
-              onClick={requestDeprovisionDatabase}
-            >
-              <IconTrash color="#FFF" className="mr-2" />
-              {isDeprovisioning ? "Deprovisioning..." : "Deprovision Database"}
-            </Button>
-          </div>
+export const DatabaseSettingsPage = () => {
+  const { id = "" } = useParams();
+  useQuery(fetchDatabase({ id }));
+  const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+
+  return (
+    <BoxGroup>
+      <Box>
+        <div className="flex justify-between items-start">
+          <h1 className="text-lg text-gray-500 mb-4">Database Settings</h1>
+          <ButtonLinkDocs href="https://www.aptible.com/docs/managing-databases" />
         </div>
+        <DatabaseNameChange database={database} />
+        <hr className="mt-6" />
+        <DatabaseRestart database={database} />
       </Box>
-    </div>
+
+      <Box>
+        <DatabaseDeprovision database={database} />
+      </Box>
+    </BoxGroup>
   );
 };

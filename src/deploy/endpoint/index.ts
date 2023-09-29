@@ -1,17 +1,11 @@
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
-import {
-  PaginateProps,
-  api,
-  cacheShortTimer,
-  cacheTimer,
-  combinePages,
-  thunks,
-} from "@app/api";
+import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
 import {
   call,
   poll,
   put,
+  select,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
@@ -27,18 +21,12 @@ import type {
   AcmeStatus,
   AppState,
   DeployEndpoint,
-  DeployOperationResponse,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
 
-import {
-  findAppById,
-  selectAppById,
-  selectApps,
-  selectAppsByEnvId,
-  selectAppsByOrgAsList,
-} from "../app";
+import { selectEnv } from "@app/env";
+import { findAppById, selectApps, selectAppsByEnvId } from "../app";
 import { createCertificate } from "../certificate";
 import {
   findDatabaseById,
@@ -46,6 +34,14 @@ import {
   selectDatabasesByOrgAsList,
 } from "../database";
 import { selectEnvironmentsByOrgAsList } from "../environment";
+import { DeployOperationResponse } from "../operation";
+import {
+  findServiceById,
+  selectAppToServicesMap,
+  selectEnvToServicesMap,
+  selectServices,
+  selectServicesByAppId,
+} from "../service";
 import { selectDeploy } from "../slice";
 
 export interface DeployEndpointResponse {
@@ -60,7 +56,7 @@ export interface DeployEndpointResponse {
   default: boolean;
   docker_name: string | null;
   elastic_load_balancer_name: string | null;
-  external_host: string;
+  external_host: string | null;
   external_http_port: string | null;
   external_https_port: string | null;
   internal: boolean;
@@ -141,7 +137,7 @@ export const deserializeDeployEndpoint = (
     createdAt: payload.created_at,
     default: payload.default,
     dockerName: payload.docker_name || "",
-    externalHost: payload.external_host,
+    externalHost: payload.external_host || "",
     externalHttpPort: payload.external_http_port || "",
     externalHttpsPort: payload.external_https_port || "",
     internal: payload.internal,
@@ -211,19 +207,13 @@ export { selectEndpoints, selectEndpointsAsList };
 export const hasDeployEndpoint = (a: DeployEndpoint) => a.id !== "";
 export const endpointReducers = createReducerMap(slice);
 
-export const selectEndpointsByServiceIds = createSelector(
-  selectEndpointsAsList,
-  (_: AppState, p: { ids: string[] }) => p.ids,
-  (endpoints, serviceIds) => {
-    return endpoints.filter((end) => serviceIds.includes(end.serviceId));
-  },
-);
-
 export const selectEndpointsByAppId = createSelector(
   selectEndpointsAsList,
-  selectAppById,
-  (endpoints, app) => {
-    return endpoints.filter((end) => app.serviceIds.includes(end.serviceId));
+  selectServicesByAppId,
+  (endpoints, services) => {
+    return endpoints.filter((end) =>
+      services.map((service) => service.id).includes(end.serviceId),
+    );
   },
 );
 
@@ -238,42 +228,6 @@ export const selectFirstEndpointByAppId = createSelector(
   },
 );
 
-const selectEnvironmentToServiceMap = createSelector(
-  selectAppsByOrgAsList,
-  selectDatabasesByOrgAsList,
-  (apps, databases) => {
-    const envToServiceIds: Record<string, Set<string> | undefined> = {};
-    apps.forEach((app) => {
-      if (!Object.hasOwn(envToServiceIds, app.environmentId)) {
-        envToServiceIds[app.environmentId] = new Set<string>();
-      }
-      app.serviceIds.forEach((id) => {
-        envToServiceIds[app.environmentId]?.add(id);
-      });
-    });
-
-    databases.forEach((db) => {
-      if (!Object.hasOwn(envToServiceIds, db.environmentId)) {
-        envToServiceIds[db.environmentId] = new Set<string>();
-      }
-      envToServiceIds[db.environmentId]?.add(db.serviceId);
-    });
-
-    return envToServiceIds;
-  },
-);
-
-const selectServiceToAppMap = createSelector(selectAppsByOrgAsList, (apps) => {
-  const serviceToAppId: Record<string, string | undefined> = {};
-  apps.forEach((app) => {
-    app.serviceIds.forEach((serviceId) => {
-      serviceToAppId[serviceId] = app.id;
-    });
-  });
-
-  return serviceToAppId;
-});
-
 const selectServiceToDbMap = createSelector(
   selectDatabasesByOrgAsList,
   (dbs) => {
@@ -287,7 +241,7 @@ const selectServiceToDbMap = createSelector(
 );
 
 export const selectEndpointsByEnvironmentId = createSelector(
-  selectEnvironmentToServiceMap,
+  selectEnvToServicesMap,
   selectEndpointsAsList,
   (_: AppState, p: { envId: string }) => p.envId,
   (envToServiceMap, enps, envId) =>
@@ -295,7 +249,7 @@ export const selectEndpointsByEnvironmentId = createSelector(
 );
 
 export const selectEndpointsByOrgAsList = createSelector(
-  selectEnvironmentToServiceMap,
+  selectEnvToServicesMap,
   selectEndpointsAsList,
   selectEnvironmentsByOrgAsList,
   (envToServiceMap, enps, envs) => {
@@ -313,16 +267,16 @@ export interface DeployEndpointRow extends DeployEndpoint {
 
 export const selectEndpointsForTable = createSelector(
   selectEndpointsByOrgAsList,
-  selectServiceToAppMap,
-  selectServiceToDbMap,
+  selectServices,
   selectApps,
   selectDatabases,
-  (enps, serviceToAppMap, serviceToDbMap, apps, dbs) =>
-    enps
+  (enps, servicesMap, apps, dbs) => {
+    return enps
       .map((enp): DeployEndpointRow => {
-        const appId = serviceToAppMap[enp.serviceId];
-        if (appId) {
-          const app = findAppById(apps, { id: appId });
+        const service = findServiceById(servicesMap, { id: enp.serviceId });
+
+        if (service.appId) {
+          const app = findAppById(apps, { id: service.appId });
           return {
             ...enp,
             resourceType: "app",
@@ -331,9 +285,8 @@ export const selectEndpointsForTable = createSelector(
           };
         }
 
-        const dbId = serviceToDbMap[enp.serviceId];
-        if (dbId) {
-          const app = findDatabaseById(dbs, { id: dbId });
+        if (service.databaseId) {
+          const app = findDatabaseById(dbs, { id: service.databaseId });
           return {
             ...enp,
             resourceType: "database",
@@ -349,7 +302,8 @@ export const selectEndpointsForTable = createSelector(
           resourceId: "",
         };
       })
-      .sort((a, b) => getEndpointUrl(a).localeCompare(getEndpointUrl(b))),
+      .sort((a, b) => getEndpointUrl(a).localeCompare(getEndpointUrl(b)));
+  },
 );
 
 const computeSearchMatch = (
@@ -386,9 +340,20 @@ export const selectEndpointsForTableSearch = createSelector(
   },
 );
 
+export const selectEndpointsByServiceId = createSelector(
+  selectEndpointsForTable,
+  (_: AppState, p: { search: string }) => p.search.toLocaleLowerCase(),
+  (_: AppState, p: { serviceId: string }) => p.serviceId,
+  (enps, search, serviceId): DeployEndpointRow[] => {
+    return enps.filter(
+      (enp) => serviceId === enp.serviceId && computeSearchMatch(enp, search),
+    );
+  },
+);
+
 export const selectEndpointsByEnvIdForTableSearch = createSelector(
   selectEndpointsForTable,
-  selectEnvironmentToServiceMap,
+  selectEnvToServicesMap,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: AppState, props: { envId: string }) => props.envId,
   (enps, envToServiceMap, search, envId): DeployEndpointRow[] => {
@@ -404,13 +369,13 @@ export const selectEndpointsByEnvIdForTableSearch = createSelector(
 
 export const selectEndpointsByAppIdForTableSearch = createSelector(
   selectEndpointsForTable,
-  selectServiceToAppMap,
+  selectServices,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: AppState, props: { appId: string }) => props.appId,
-  (enps, serviceToAppMap, search, appId): DeployEndpointRow[] => {
+  (enps, servicesMap, search, appId): DeployEndpointRow[] => {
     return enps.filter((enp) => {
-      const foundAppId = serviceToAppMap[enp.serviceId];
-      if (foundAppId !== appId) return false;
+      const service = findServiceById(servicesMap, { id: enp.serviceId });
+      if (service.appId !== appId) return false;
       const searchMatch = computeSearchMatch(enp, search);
       return searchMatch;
     });
@@ -454,13 +419,16 @@ export const selectEndpointsByCertId = createSelector(
 
 export const selectAppsByCertId = createSelector(
   selectAppsByEnvId,
+  selectAppToServicesMap,
   selectEndpointsByCertId,
-  (apps, endpoints) =>
-    apps.filter((app) =>
-      app.serviceIds.some((appServiceId) =>
+  (apps, appToServicesMap, endpoints) => {
+    return apps.filter((app) => {
+      const serviceIds = appToServicesMap[app.id] || [];
+      return serviceIds.some((appServiceId) =>
         endpoints.find((endpoint) => endpoint.serviceId === appServiceId),
-      ),
-    ),
+      );
+    });
+  },
 );
 
 export const fetchEndpointsByAppId = api.get<{ appId: string }>(
@@ -486,13 +454,9 @@ export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
   saga: cacheShortTimer(),
 });
 
-export const fetchEndpoints = api.get<PaginateProps>("/vhosts?page=:page", {
-  saga: cacheTimer(),
+export const fetchEndpoints = api.get("/vhosts?per_page=5000", {
+  saga: cacheMinTimer(),
 });
-export const fetchAllEndpoints = thunks.create(
-  "fetch-all-endpoints",
-  combinePages(fetchEndpoints),
-);
 
 export const cancelFetchEndpointPoll = createAction(
   "cancel-fetch-endpoint-poll",
@@ -535,12 +499,14 @@ interface CreateDefaultEndpoint extends CreateEndpointBase {
 interface CreateManagedEndpoint extends CreateEndpointBase {
   type: "managed";
   domain: string;
+  certId: string;
   cert?: string;
   privKey?: string;
 }
 
 interface CreateCustomEndpoint extends CreateEndpointBase {
   type: "custom";
+  certId: string;
   cert: string;
   privKey: string;
 }
@@ -553,6 +519,7 @@ export type CreateEndpointProps =
 export const createEndpoint = api.post<
   CreateEndpointProps & { certId: string }
 >("/services/:serviceId/vhosts", function* (ctx, next) {
+  const env = yield* select(selectEnv);
   const data: Record<string, any> = {
     platform: "alb",
     type: "http_proxy_protocol",
@@ -561,8 +528,11 @@ export const createEndpoint = api.post<
     internal: ctx.payload.internal,
     ip_whitelist: ctx.payload.ipAllowlist,
     container_port: ctx.payload.containerPort,
-    certificate_id: ctx.payload.certId,
   };
+
+  if (ctx.payload.certId) {
+    data.certificate = `${env.apiUrl}/certificates/${ctx.payload.certId}`;
+  }
 
   if (ctx.payload.type === "managed") {
     data.user_domain = ctx.payload.domain;
@@ -645,7 +615,9 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
 
     let certId = "";
     if (ctx.payload.type === "managed" || ctx.payload.type === "custom") {
-      if (ctx.payload.cert && ctx.payload.privKey) {
+      certId = ctx.payload.certId;
+
+      if (!certId && ctx.payload.cert && ctx.payload.privKey) {
         const certCtx = yield* call(
           createCertificate.run,
           createCertificate({
@@ -798,13 +770,12 @@ const patchEndpoint = api.patch<EndpointUpdateProps>(
 export const updateEndpoint = thunks.create<EndpointUpdateProps>(
   "update-endpoint",
   function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
+    const id = ctx.name;
+    yield* put(setLoaderStart({ id }));
 
     const patchCtx = yield* call(patchEndpoint.run, patchEndpoint(ctx.payload));
     if (!patchCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: patchCtx.json.data.message }),
-      );
+      yield* put(setLoaderError({ id, message: patchCtx.json.data.message }));
       return;
     }
 
@@ -817,13 +788,11 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
     );
 
     if (!opCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
-      );
+      yield* put(setLoaderError({ id, message: opCtx.json.data.message }));
       return;
     }
 
-    ctx.loader = { id: ctx.key, meta: { opId: opCtx.json.data.id } };
+    yield* put(setLoaderSuccess({ id, meta: { opId: opCtx.json.data.id } }));
     yield* next();
   },
 );
@@ -879,11 +848,11 @@ export const checkDns = thunks.create<{ from: string; to: string }>(
 );
 
 export const getPlacement = (enp: DeployEndpoint) => {
-  if (enp.externalHost) {
-    return "Public";
+  if (enp.internal) {
+    return "Private";
   }
 
-  return "Private";
+  return "Public";
 };
 
 export const getIpAllowlistText = (enp: DeployEndpoint) => {
@@ -891,12 +860,12 @@ export const getIpAllowlistText = (enp: DeployEndpoint) => {
 };
 
 export const getContainerPort = (
-  enp: DeployEndpoint,
+  enp: Pick<DeployEndpoint, "containerPort">,
   exposedPorts: number[],
 ) => {
   let port = "Unknown";
   if (exposedPorts.length > 0) {
-    const ports = exposedPorts.sort();
+    const ports = [...exposedPorts].sort();
     port = `${ports[0]}`;
   }
   return enp.containerPort || `Default (${port})`;

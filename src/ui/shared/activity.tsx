@@ -1,8 +1,8 @@
-import { Tooltip } from "./tooltip";
 import { useLoader, useQuery } from "@app/fx";
 import { ReactElement, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
+import { Tooltip } from "./tooltip";
 
 import { prettyDateRelative } from "@app/date";
 import {
@@ -14,6 +14,7 @@ import {
   fetchApp,
   fetchDatabase,
   fetchEnvironmentById,
+  fetchOrgOperations,
   fetchServiceOperations,
   getResourceUrl,
   pollAppOperations,
@@ -187,7 +188,7 @@ function ActivityTable({
         title={title}
         description={description}
         filterBar={
-          <div className="pt-1">
+          <div>
             <div className="flex items-center gap-3">
               <InputSearch
                 placeholder="Search operations..."
@@ -247,6 +248,7 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const loader = useLoader(pollOrgOperations);
+  useQuery(fetchOrgOperations({ orgId }));
 
   const poller = useMemo(() => pollOrgOperations({ orgId }), [orgId]);
   const cancel = useMemo(() => cancelOrgOperationsPoll(), []);
@@ -320,10 +322,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
   useQuery(fetchApp({ id: appId }));
 
-  const poller = useMemo(
-    () => pollEnvOperations({ envId: app.environmentId }),
-    [app.environmentId],
-  );
+  const poller = useMemo(() => pollAppOperations({ id: app.id }), [app.id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
   usePoller({
     action: poller,
@@ -333,10 +332,11 @@ export function ActivityByApp({ appId }: { appId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value });
 
+  const resourceIds = useMemo(() => [appId], [appId]);
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds: [appId],
+      resourceIds,
     }),
   );
 
@@ -371,10 +371,14 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value });
 
+  const resourceIds = useMemo(
+    () => [dbId, db.serviceId].filter(Boolean),
+    [dbId, db.serviceId],
+  );
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds: [dbId, db.serviceId],
+      resourceIds,
     }),
   );
 
@@ -405,10 +409,11 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value });
 
+  const resourceIds = useMemo(() => [enpId], [enpId]);
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds: [enpId],
+      resourceIds,
     }),
   );
 

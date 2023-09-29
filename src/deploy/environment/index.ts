@@ -1,7 +1,7 @@
-import { createAction, createSelector } from "@reduxjs/toolkit";
+import { createSelector } from "@reduxjs/toolkit";
 
-import { PaginateProps, api, combinePages, thunks } from "@app/api";
-import { latest, poll, put, select } from "@app/fx";
+import { api, cacheMinTimer } from "@app/api";
+import { latest, put, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
@@ -197,17 +197,11 @@ export const selectEnvironmentByName = createSelector(
 
 export const fetchEnvironmentById = api.get<{ id: string }>("/accounts/:id");
 
-export const fetchEnvironments = api.get<PaginateProps>("/accounts?page=:page");
-export const fetchAllEnvironments = thunks.create(
-  "fetch-all-envs",
-  combinePages(fetchEnvironments),
-);
-
-export const cancelEnvPoll = createAction("cancel-env-poll");
-export const pollEnvs = thunks.create(
-  "poll-envs",
-  { saga: poll(60 * 1000, `${cancelEnvPoll}`) },
-  combinePages(fetchEnvironments),
+export const fetchEnvironments = api.get(
+  "/accounts?per_page=5000&no_embed=true&metrics[]=app_count&metrics[]=database_count",
+  {
+    saga: cacheMinTimer(),
+  },
 );
 
 export const fetchEnvironmentOperations = api.get<{ id: string }>(
@@ -231,6 +225,10 @@ export const updateEnvironmentName = api.patch<{ id: string; handle: string }>(
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield* next();
+
+    ctx.loader = {
+      message: "Saved changes successfully!",
+    };
   },
 );
 

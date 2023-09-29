@@ -1,7 +1,5 @@
 import { Line } from "react-chartjs-2";
 
-import { IconInfo } from "./icons";
-import { Tooltip as AptibleTooltip } from "./tooltip";
 import { ChartToCreate, selectMetricDataByChart } from "@app/metric-tunnel";
 import { AppState, DeployContainer, MetricHorizons } from "@app/types";
 import {
@@ -19,6 +17,8 @@ import {
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 import { useSelector } from "react-redux";
+import { IconInfo } from "./icons";
+import { Tooltip as AptibleTooltip } from "./tooltip";
 
 ChartJS.register(
   CategoryScale,

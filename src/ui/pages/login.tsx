@@ -22,22 +22,24 @@ import {
   forgotPassUrl,
   homeUrl,
   signupUrl,
+  ssoUrl,
 } from "@app/routes";
 import { AppState } from "@app/types";
 import { emailValidator, existValidtor } from "@app/validator";
 
+import { selectIsUserAuthenticated } from "@app/token";
 import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
   Banner,
   BannerMessages,
   Button,
+  ButtonLink,
   ExternalLink,
   FormGroup,
   Input,
   tokens,
 } from "../shared";
-import { selectIsUserAuthenticated } from "@app/token";
 
 const validators = {
   email: (props: CreateTokenPayload) => emailValidator(props.username),
@@ -70,10 +72,9 @@ export const LoginPage = () => {
     username: email,
     password,
     otpToken,
-    makeCurrent: true,
   };
-  const action = login(data);
-  const loader = useLoader(action);
+  // use query.name not query.key (this is important for webauthn!)
+  const loader = useLoader(login);
   const meta = defaultAuthLoaderMeta(loader.meta);
   const webauthnAction = loginWebauthn({
     ...data,
@@ -84,7 +85,7 @@ export const LoginPage = () => {
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validate(data)) return;
-    dispatch(action);
+    dispatch(login(data));
   };
 
   useLoaderSuccess(loader, () => {
@@ -94,11 +95,6 @@ export const LoginPage = () => {
       navigate(redirectPath || homeUrl());
       dispatch(resetRedirectPath());
     }
-  });
-
-  useLoaderSuccess(webauthnLoader, () => {
-    navigate(redirectPath || homeUrl());
-    dispatch(resetRedirectPath());
   });
 
   useEffect(() => {
@@ -211,6 +207,7 @@ export const LoginPage = () => {
 
             <div className="my-2 flex flex-col gap-2">
               <BannerMessages {...webauthnLoader} />
+
               {isOtpRequired ? (
                 <BannerMessages
                   isSuccess={false}
@@ -233,6 +230,14 @@ export const LoginPage = () => {
             >
               Log In
             </Button>
+
+            <div className="py-2">
+              <hr />
+            </div>
+
+            <ButtonLink to={ssoUrl()} variant="white" layout="block" size="lg">
+              Log In with SSO
+            </ButtonLink>
 
             <p className="text-center">
               <Link to={forgotPassUrl()} className="text-sm text-center">
