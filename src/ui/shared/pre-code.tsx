@@ -23,6 +23,30 @@ export const listToTextColor = (list: string[]): TextSegment[] => {
   return list.map(createTextColor(list.length, "text-black"));
 };
 
+export const PreText = ({
+  text,
+  className = "",
+  allowCopy = true,
+}: { className?: string; allowCopy?: boolean; text: string }) => {
+  return (
+    <div>
+      <pre
+        className={`p-4 rounded-lg text-sm pr-14 bg-black text-lime ${className}`}
+      >
+        {text}
+      </pre>
+      {allowCopy ? (
+        <CopyTextButton
+          variant="left"
+          relative={false}
+          text={text}
+          className="absolute right-2 top-4"
+        />
+      ) : null}
+    </div>
+  );
+};
+
 export const PreBox = ({
   segments,
   className = "bg-black",

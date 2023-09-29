@@ -3,6 +3,7 @@ import {
   createAppOperation,
   fetchApp,
   fetchConfiguration,
+  hasDeployOperation,
   prepareConfigEnv,
   selectAppById,
   selectAppConfigById,
@@ -13,16 +14,20 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
-import { useEnvEditor } from "../hooks";
+import { useEnvEditor, useLatestCodeResults } from "../hooks";
 import {
   AppConfigView,
+  BannerMessages,
   Box,
   Button,
   ButtonLinkDocs,
   ButtonSensitive,
+  Code,
   FormGroup,
   Group,
   IconEdit,
+  Loading,
+  PreText,
   tokens,
 } from "../shared";
 
@@ -120,6 +125,74 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
   );
 };
 
+const CodeScanView = ({ appId }: { appId: string }) => {
+  const { codeScan, scanOp } = useLatestCodeResults(appId);
+  if (!hasDeployOperation(scanOp)) {
+    return (
+      <div>
+        Code scan information is only available for <Code>git push</Code>{" "}
+        deployments.
+      </div>
+    );
+  }
+
+  if (codeScan.isInitialLoading) {
+    return <Loading />;
+  }
+
+  if (codeScan.isError) {
+    return <BannerMessages {...codeScan} />;
+  }
+
+  if (!codeScan.data) {
+    return <div>No data found</div>;
+  }
+
+  return (
+    <Group>
+      <div>
+        <div className={tokens.type.h4}>Languages Detected</div>
+        <div>{codeScan.data.languages_detected.join(", ")}</div>
+      </div>
+
+      <div>
+        <div className={tokens.type.h4}>Dockerfile</div>
+        <div>
+          {codeScan.data.dockerfile_present ? (
+            <PreText text={codeScan.data.dockerfile_data || ""} />
+          ) : (
+            "No"
+          )}
+        </div>
+      </div>
+
+      <div>
+        <div className={tokens.type.h4}>Procfile</div>
+        <div>
+          {codeScan.data.procfile_present ? (
+            <PreText text={codeScan.data.procfile_data || ""} />
+          ) : (
+            "No"
+          )}
+        </div>
+      </div>
+
+      <div>
+        <div className={tokens.type.h4}>
+          <Code>.aptible.yml</Code>
+        </div>
+        <div>
+          {codeScan.data.aptible_yml_present ? (
+            <PreText text={codeScan.data.aptible_yml_data || ""} />
+          ) : (
+            "No"
+          )}
+        </div>
+      </div>
+    </Group>
+  );
+};
+
 export const AppDetailConfigPage = () => {
   const { id = "" } = useParams();
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
@@ -128,6 +201,13 @@ export const AppDetailConfigPage = () => {
 
   return (
     <Group>
+      <Box>
+        <Group size="sm">
+          <h3 className={tokens.type.h3}>Code Scan</h3>
+          <CodeScanView appId={app.id} />
+        </Group>
+      </Box>
+
       <Box>
         <Group size="sm">
           <h3 className={tokens.type.h3}>Current Environment Variables</h3>
