@@ -5,7 +5,6 @@ import {
   fetchConfiguration,
   fetchImageById,
   fetchServicesByAppId,
-  langsToIcon,
   pollAppOperations,
   selectAppById,
   selectAppConfigById,
@@ -25,13 +24,12 @@ import {
   environmentAppsUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
-import { useLatestCodeResults, usePoller } from "../hooks";
+import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
   CopyText,
@@ -56,16 +54,18 @@ export function AppHeader({ app }: { app: DeployApp }) {
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
   const dockerImage = config.env.APTIBLE_DOCKER_IMAGE || "Dockerfile Build";
-  const { codeScan } = useLatestCodeResults(app.id);
-  const langs = codeScan.data?.languages_detected || [];
-  const langStr = langs.join(", ");
-  const appIcon = langsToIcon(langs);
 
   return (
     <DetailHeader>
       <DetailTitleBar
         title="App Details"
-        icon={<img src={appIcon} className="w-8 h-8 mr-3" aria-label="App" />}
+        icon={
+          <img
+            src="/resource-types/logo-app.png"
+            className="w-8 h-8 mr-3"
+            aria-label="App"
+          />
+        }
         docsUrl="https://www.aptible.com/docs/apps"
       />
 
@@ -87,11 +87,6 @@ export function AppHeader({ app }: { app: DeployApp }) {
             ? `${prettyEnglishDate(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
-        {langStr ? (
-          <DetailInfoItem title="Languges">
-            {capitalize(langStr)}
-          </DetailInfoItem>
-        ) : null}
       </DetailInfoGrid>
     </DetailHeader>
   );

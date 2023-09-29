@@ -467,25 +467,3 @@ export const updateApp = api.put<UpdateApp>("/apps/:id", function* (ctx, next) {
     message: "Saved changes successfully!",
   };
 });
-
-export const langsToIcon = (langs: string[]) => {
-  for (let i = 0; i < langs.length; i += 1) {
-    const lang = langs[i];
-    switch (lang) {
-      case "node":
-        return "/language-types/logo-nodejs.png";
-      case "ruby":
-        return "/language-types/logo-ruby.png";
-      case "php":
-        return "/language-types/logo-php.png";
-      case "rust":
-        return "/language-types/logo-rust.png";
-      case "go":
-        return "/language-types/logo-go.png";
-      case "java":
-        return "/language-types/logo-java.png";
-    }
-  }
-
-  return "/resource-types/logo-app.png";
-};

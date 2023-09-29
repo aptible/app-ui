@@ -1,4 +1,5 @@
 import {
+  DeployCodeScanResponse,
   configEnvToStr,
   createAppOperation,
   fetchApp,
@@ -126,7 +127,7 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
   );
 };
 
-const CodeScanView = ({ appId }: { appId: string }) => {
+const CodeScanInfo = ({ appId }: { appId: string }) => {
   const { codeScan, scanOp } = useLatestCodeResults(appId);
   if (!hasDeployOperation(scanOp)) {
     return (
@@ -148,19 +149,27 @@ const CodeScanView = ({ appId }: { appId: string }) => {
   if (!codeScan.data) {
     return <div>No data found</div>;
   }
+  <Box>
+    <Group size="sm">
+      <h3 className={tokens.type.h3}>Code Scan</h3>
+      <CodeScanView codeScan={codeScan.data} />
+    </Group>
+  </Box>;
+};
 
+const CodeScanView = ({ codeScan }: { codeScan: DeployCodeScanResponse }) => {
   return (
     <Group>
       <div>
         <div className={tokens.type.h4}>Languages Detected</div>
-        <div>{capitalize(codeScan.data.languages_detected.join(", "))}</div>
+        <div>{capitalize(codeScan.languages_detected.join(", "))}</div>
       </div>
 
       <div>
         <div className={tokens.type.h4}>Dockerfile</div>
         <div className="relative">
-          {codeScan.data.dockerfile_present ? (
-            <PreText text={codeScan.data.dockerfile_data || ""} />
+          {codeScan.dockerfile_present ? (
+            <PreText text={codeScan.dockerfile_data || ""} />
           ) : (
             "No"
           )}
@@ -170,8 +179,8 @@ const CodeScanView = ({ appId }: { appId: string }) => {
       <div>
         <div className={tokens.type.h4}>Procfile</div>
         <div>
-          {codeScan.data.procfile_present ? (
-            <PreText text={codeScan.data.procfile_data || ""} />
+          {codeScan.procfile_present ? (
+            <PreText text={codeScan.procfile_data || ""} />
           ) : (
             "No"
           )}
@@ -183,8 +192,8 @@ const CodeScanView = ({ appId }: { appId: string }) => {
           <Code>.aptible.yml</Code>
         </div>
         <div>
-          {codeScan.data.aptible_yml_present ? (
-            <PreText text={codeScan.data.aptible_yml_data || ""} />
+          {codeScan.aptible_yml_present ? (
+            <PreText text={codeScan.aptible_yml_data || ""} />
           ) : (
             "No"
           )}
@@ -222,12 +231,7 @@ export const AppDetailConfigPage = () => {
         </Group>
       </Box>
 
-      <Box>
-        <Group size="sm">
-          <h3 className={tokens.type.h3}>Code Scan</h3>
-          <CodeScanView appId={app.id} />
-        </Group>
-      </Box>
+      <CodeScanInfo appId={app.id} />
     </Group>
   );
 };
