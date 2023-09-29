@@ -86,7 +86,7 @@ function StackList() {
 
   const actions = [
     <ButtonLink to={createStackUrl()}>
-      <IconPlusCircle variant="sm" className="mr-2" /> New Stack
+      <IconPlusCircle variant="sm" className="mr-2" /> New Dedicated Stack
     </ButtonLink>,
   ];
 
