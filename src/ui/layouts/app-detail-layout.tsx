@@ -25,6 +25,7 @@ import {
   environmentAppsUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
+import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -87,7 +88,9 @@ export function AppHeader({ app }: { app: DeployApp }) {
             : "Unknown"}
         </DetailInfoItem>
         {langStr ? (
-          <DetailInfoItem title="Languges">{langStr}</DetailInfoItem>
+          <DetailInfoItem title="Languges">
+            {capitalize(langStr)}
+          </DetailInfoItem>
         ) : null}
       </DetailInfoGrid>
     </DetailHeader>

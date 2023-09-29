@@ -9,6 +9,7 @@ import {
   selectAppConfigById,
 } from "@app/deploy";
 import { appActivityUrl } from "@app/routes";
+import { capitalize } from "@app/string-utils";
 import { AppState, DeployApp } from "@app/types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -152,12 +153,12 @@ const CodeScanView = ({ appId }: { appId: string }) => {
     <Group>
       <div>
         <div className={tokens.type.h4}>Languages Detected</div>
-        <div>{codeScan.data.languages_detected.join(", ")}</div>
+        <div>{capitalize(codeScan.data.languages_detected.join(", "))}</div>
       </div>
 
       <div>
         <div className={tokens.type.h4}>Dockerfile</div>
-        <div>
+        <div className="relative">
           {codeScan.data.dockerfile_present ? (
             <PreText text={codeScan.data.dockerfile_data || ""} />
           ) : (
@@ -203,13 +204,6 @@ export const AppDetailConfigPage = () => {
     <Group>
       <Box>
         <Group size="sm">
-          <h3 className={tokens.type.h3}>Code Scan</h3>
-          <CodeScanView appId={app.id} />
-        </Group>
-      </Box>
-
-      <Box>
-        <Group size="sm">
           <h3 className={tokens.type.h3}>Current Environment Variables</h3>
           <AppConfigView
             configId={app.currentConfigurationId}
@@ -225,6 +219,13 @@ export const AppDetailConfigPage = () => {
             <ButtonLinkDocs href="https://www.aptible.com/docs/configuration" />
           </div>
           <EnvEditor app={app} />
+        </Group>
+      </Box>
+
+      <Box>
+        <Group size="sm">
+          <h3 className={tokens.type.h3}>Code Scan</h3>
+          <CodeScanView appId={app.id} />
         </Group>
       </Box>
     </Group>
