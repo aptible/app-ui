@@ -51,7 +51,7 @@ export const AppDetailServiceScalePage = () => {
   useQuery(fetchApp({ id }));
   const [containerCount, setContainerCount] = useState(1);
   const [containerProfileType, setContainerProfileType] =
-  useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
+    useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
   const [containerSize, setContainerSize] = useState<number>(512);
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
   useQuery(fetchService({ id: serviceId }));

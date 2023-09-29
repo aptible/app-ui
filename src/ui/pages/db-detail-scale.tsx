@@ -56,7 +56,7 @@ export const DatabaseScalePage = () => {
   >(validators);
   const [containerSize, setContainerSize] = useState(512);
   const [containerProfileType, setContainerProfileType] =
-  useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
+    useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
   const [diskValue, setDiskValue] = useState<number>(10);
 
   useQuery(fetchDatabase({ id }));
