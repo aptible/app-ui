@@ -91,7 +91,7 @@ export function EndpointAppHeaderInfo({
         <DetailInfoItem title="Resource">
           <Link to={appEndpointsUrl(app.id)}>{app.handle}</Link>
         </DetailInfoItem>
-        <DetailInfoItem title="Serivce Process">
+        <DetailInfoItem title="Service Process">
           <Code>{service.processType}</Code>
         </DetailInfoItem>
         <DetailInfoItem title="Service ID">

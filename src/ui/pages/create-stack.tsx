@@ -221,7 +221,11 @@ export const CreateStackPage = () => {
 
             <hr />
 
-            <Group variant="horizontal" size="sm" className="items-center">
+            <Group
+              variant="horizontal"
+              size="sm"
+              className="items-center gap-4"
+            >
               <ButtonOwner
                 type="submit"
                 disabled={!terms}
