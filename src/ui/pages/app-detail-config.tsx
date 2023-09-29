@@ -19,6 +19,7 @@ import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import { useEnvEditor, useLatestCodeResults } from "../hooks";
 import {
   AppConfigView,
+  Banner,
   BannerMessages,
   Box,
   Button,
@@ -131,10 +132,10 @@ const CodeScanInfo = ({ appId }: { appId: string }) => {
   const { codeScan, scanOp } = useLatestCodeResults(appId);
   if (!hasDeployOperation(scanOp)) {
     return (
-      <div>
+      <Banner variant="info">
         Code scan information is only available for <Code>git push</Code>{" "}
         deployments.
-      </div>
+      </Banner>
     );
   }
 
