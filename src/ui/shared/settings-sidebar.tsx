@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { tokens } from "./tokens";
 
 export function SettingsSidebar() {
-  const profileNav = [{ name: "Security Settings", to: securitySettingsUrl() }];
+  const profileNav = [{ name: "Profile Settings", to: securitySettingsUrl() }];
 
   const companyNav = [
     { name: "Team", to: teamUrl() },
@@ -21,10 +21,10 @@ export function SettingsSidebar() {
     { name: "Billing Contacts", to: "/setting/billing-contacts" },
     { name: "Address", to: "/setting/billing-address" },
   ];
-  const active = "bg-gray-200 text-gray-900";
-  const inactive = "text-gray-600 hover:bg-gray-100 hover:text-gray-900";
+  const active = "bg-off-white text-gray-900";
+  const inactive = "text-gray-600 hover:bg-black-50 hover:text-gray-900";
   const navButton =
-    "group flex items-center p-2 mb-1 text-sm font-medium rounded-md hover:no-underline";
+    "group flex items-center p-2 mb-1 text-base rounded-md hover:no-underline";
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
@@ -32,7 +32,7 @@ export function SettingsSidebar() {
   return (
     <nav className="p-4 border-r border-gray-200 h-full flex flex-col gap-4">
       <div>
-        <h3 className={tokens.type.h3}>Profile</h3>
+        <h4 className={`${tokens.type.h4} ml-2`}>Profile</h4>
         {profileNav.map((item) => (
           <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}
@@ -41,7 +41,7 @@ export function SettingsSidebar() {
       </div>
 
       <div>
-        <h3 className={tokens.type.h3}>Company</h3>
+        <h4 className={`${tokens.type.h4} ml-2`}>Company</h4>
         {companyNav.map((item) => (
           <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}
@@ -50,7 +50,7 @@ export function SettingsSidebar() {
       </div>
 
       <div>
-        <h3 className={tokens.type.h3}>Billing</h3>
+        <h4 className={`${tokens.type.h4} ml-2`}>Billing</h4>
         {billingNav.map((item) => (
           <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}

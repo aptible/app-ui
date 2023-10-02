@@ -9,7 +9,7 @@ export function SettingsLayout() {
         <div className="w-64 h-full">
           <SettingsSidebar />
         </div>
-        <div className="flex-1 p-4">
+        <div className="flex-1 pt-4 pb-7 px-7">
           <Outlet />
         </div>
       </div>

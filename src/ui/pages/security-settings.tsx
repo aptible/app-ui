@@ -18,9 +18,12 @@ import {
   Banner,
   BannerMessages,
   Button,
+  Box,
+  BoxGroup,
   FormGroup,
   Input,
   Loading,
+  tokens,
 } from "../shared";
 
 interface SectionProps {
@@ -30,10 +33,10 @@ interface SectionProps {
 
 const Section = ({ children, title }: SectionProps) => {
   return (
-    <div className="bg-grey border rounded-lg p-4 my-4">
-      <h2>{title}</h2>
-      <div className="my-4">{children}</div>
-    </div>
+    <Box>
+      <div className={"text-lg text-gray-500 mb-4"}>{title}</div>
+      <div>{children}</div>
+    </Box>
   );
 };
 
@@ -63,7 +66,7 @@ const ChangePassword = () => {
   const groupVariant = error ? "danger" : "info";
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <FormGroup
         label="New Password"
         htmlFor="input-password"
@@ -94,6 +97,7 @@ const ChangePassword = () => {
         <div>{error}</div>
       </FormGroup>
       <Button
+        className="w-fit"
         type="submit"
         disabled={loader.isLoading}
         isLoading={loader.isLoading}
@@ -114,21 +118,17 @@ const MultiFactor = () => {
   };
 
   const btns = user.otpEnabled ? (
-    <div className="mb-2 w-100">
-      <Button onClick={disable}>Disable 2FA</Button>
+    <div>
+      <Button className="w-fit" onClick={disable}>Disable 2FA</Button>
       <Link to={otpRecoveryCodesUrl()}>Download backup codes</Link>
     </div>
   ) : (
-    <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
+    <Button className="w-fit" onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
   );
   const content = loader.isLoading ? <Loading /> : btns;
 
   return (
-    <div>
-      <div className="my-2">
-        2-factor authentication is enabled for your account.
-      </div>
-
+    <div className="flex flex-col gap-4">
       <ul className="mb-2">
         <li>Download your backup codes if you haven&apos;t done so yet.</li>
         <li>You might need to update aptible-cli for 2FA support.</li>
@@ -159,12 +159,7 @@ const ChangeEmail = () => {
 
   return (
     <div>
-      <div>
-        You will need to verify your new email address before it can be used.
-        Show pending verifications.
-      </div>
-
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <FormGroup
           label="Email"
           htmlFor="input-email"
@@ -182,7 +177,7 @@ const ChangeEmail = () => {
           />
           <div>{error}</div>
         </FormGroup>
-        <Button type="submit" disabled={!!error} isLoading={loader.isLoading}>
+        <Button className="w-fit" type="submit" disabled={!!error} isLoading={loader.isLoading}>
           Send Verification Email
         </Button>
         <BannerMessages {...loader} />
@@ -234,11 +229,11 @@ const LogOut = () => {
   );
 
   return (
-    <div>
+    <div className="flex flex-col gap-4 mb-4">
       <div>
         You can log out other sessions at any time. This cannot be undone.
       </div>
-      <Button className="mb-4" onClick={() => setConfirm(true)}>
+      <Button className="w-fit" onClick={() => setConfirm(true)}>
         Log out all other sessions
       </Button>
       {loader.isError ? (
@@ -251,26 +246,26 @@ const LogOut = () => {
 
 export const SecuritySettingsPage = () => {
   return (
-    <div>
-      <Section title="Change your password">
+    <BoxGroup>
+      <h2 className={tokens.type.h2}>Profile Settings</h2>
+      <Section title="Change Email">
+        <ChangeEmail />
+      </Section>
+      <Section title="Change Password">
         <ChangePassword />
       </Section>
 
-      <Section title="2-Factor authentication">
+      <Section title="2-Factor Authentication">
         <MultiFactor />
       </Section>
 
-      <Section title="Change your email">
-        <ChangeEmail />
-      </Section>
-
-      <Section title="Security keys">
+      <Section title="Security Keys">
         <SecurityKeys />
       </Section>
 
-      <Section title="Log out other sessions">
+      <Section title="Log out all other sessions">
         <LogOut />
       </Section>
-    </div>
+      </BoxGroup>
   );
 };
