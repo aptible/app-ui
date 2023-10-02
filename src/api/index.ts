@@ -56,12 +56,21 @@ function* debugMdw(ctx: PipeCtx, next: Next) {
   yield* next();
 }
 
+const ignoreErrs: RegExp[] = [/failed to fetch/i, /reset store/i];
 function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   try {
     yield* next();
-  } catch (err: any) {
+  } catch (err) {
+    if (err instanceof Error) {
+      for (const matcher of ignoreErrs) {
+        if (matcher.test(err.message)) {
+          return;
+        }
+      }
+    }
+
     Sentry.captureException(err, {
-      contexts: { saga: JSON.stringify(ctx) as any },
+      contexts: { extras: { queryCtx: JSON.stringify(ctx) } },
     });
   }
 }
