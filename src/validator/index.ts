@@ -35,12 +35,13 @@ export function portValidator(port = "") {
   if (portNum >= 65535) return msg;
 }
 
-const handleRegexExplainer =
-  "lowercase alphanumerics, periods, dashes, underscores, and less than 64 characters";
+export const handleRegexExplainer =
+  "lowercase alphanumerics, periods, hyphens, underscores, and less than 64 characters";
 export const handleRegex = new RegExp(/^[0-9a-z._-]{1,64}$/);
 export function handleValidator(handle = "") {
   if (handle === "") return `Must provide a handle ${handleRegexExplainer}`;
   const maxCharLength = 64;
+
   if (handle.length > maxCharLength) {
     const delta = handle.length - maxCharLength;
     return `[${handle}] is ${delta} characters too long (max: ${maxCharLength})`;
@@ -48,6 +49,24 @@ export function handleValidator(handle = "") {
 
   if (!handleRegex.test(handle)) {
     return `[${handle}] is not a valid handle ${handleRegexExplainer}`;
+  }
+}
+
+export const stackNameRegexExplainer =
+  "lowercase alphanumerics, hyphens, and less than 64 characters";
+export const stackNameRegex = new RegExp(/^[0-9a-z-]{1,26}$/);
+export function stackNameValidator(stackName = "") {
+  if (stackName === "")
+    return `Must provide a stack name ${stackNameRegexExplainer}`;
+  const maxCharLength = 26;
+
+  if (stackName.length > maxCharLength) {
+    const delta = stackName.length - maxCharLength;
+    return `[${stackName}] is ${delta} characters too long (max: ${maxCharLength})`;
+  }
+
+  if (!stackNameRegex.test(stackName)) {
+    return `[${stackName}] is not a valid stack name ${stackNameRegexExplainer}`;
   }
 }
 
