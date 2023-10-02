@@ -10,7 +10,7 @@ export const Footer = () => {
   };
   return (
     <div>
-      <div className="flex border-t border-black-100 pt-4 mt-8">
+      <div className="flex border-t border-black-100 p-4">
         <p className="grow text-gray-500 text-sm uppercase">
           Aptible, Inc. &copy; {new Date().getFullYear()}
         </p>
@@ -56,14 +56,12 @@ export const Footer = () => {
           </a>
         </div>
       </div>
-      <div className="my-4">
-        {showFeedback ? (
-          <FeedbackForm
-            feedbackEventName="feedback.survey.general_feedback"
-            description="What would you like to change about this experience?"
-          />
-        ) : null}
-      </div>
+      {showFeedback ? (
+        <FeedbackForm
+          feedbackEventName="feedback.survey.general_feedback"
+          description="What would you like to change about this experience?"
+        />
+      ) : null}
     </div>
   );
 };
