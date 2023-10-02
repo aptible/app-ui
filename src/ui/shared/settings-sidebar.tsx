@@ -9,7 +9,7 @@ export function SettingsSidebar() {
   const companyNav = [
     { name: "Team Settings", to: teamUrl() },
     { name: "Single Sign-on", to: "/settings/sso" },
-    { name: "Contact Settings", to: "/settings/contact-settings" },
+    { name: "Team Contacts", to: "/settings/contact-settings" },
     { name: "Stacks", to: "/setting/stacks" },
   ];
 
@@ -19,7 +19,7 @@ export function SettingsSidebar() {
     { name: "Payment Methods", to: "/settings/payment-methods" },
     { name: "Credits", to: "/setting/credits" },
     { name: "Billing Contacts", to: "/setting/billing-contacts" },
-    { name: "Address", to: "/setting/billing-address" },
+    { name: "Billing Address", to: "/setting/billing-address" },
   ];
   const active = "bg-off-white text-gray-900";
   const inactive = "text-gray-600 hover:bg-black-50 hover:text-gray-900";
@@ -41,7 +41,7 @@ export function SettingsSidebar() {
       </div>
 
       <div>
-        <h4 className={`${tokens.type.h4} ml-2`}>Company</h4>
+        <h4 className={`${tokens.type.h4} ml-2`}>Team</h4>
         {companyNav.map((item) => (
           <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}
