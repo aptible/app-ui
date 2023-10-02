@@ -21,8 +21,8 @@ export function SettingsSidebar() {
     { name: "Billing Contacts", to: "/setting/billing-contacts" },
     { name: "Billing Address", to: "/setting/billing-address" },
   ];
-  const active = "bg-off-white text-gray-900";
-  const inactive = "text-gray-600 hover:bg-black-50 hover:text-gray-900";
+  const active = "bg-off-white font-semibold text-black focus:text-black";
+  const inactive = "text-black-500 hover:bg-black-50 hover:text-black";
   const navButton =
     "group flex items-center p-2 mb-1 text-base rounded-md hover:no-underline";
 
@@ -30,7 +30,7 @@ export function SettingsSidebar() {
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
 
   return (
-    <nav className="p-4 border-r border-gray-200 h-full flex flex-col gap-4">
+    <nav className="flex flex-col gap-4">
       <div>
         <h4 className={`${tokens.type.h4} ml-2`}>Profile</h4>
         {profileNav.map((item) => (
@@ -38,6 +38,7 @@ export function SettingsSidebar() {
             {item.name}
           </NavLink>
         ))}
+        <hr className="mt-4"/>
       </div>
 
       <div>
@@ -47,6 +48,7 @@ export function SettingsSidebar() {
             {item.name}
           </NavLink>
         ))}
+        <hr className="mt-4"/>
       </div>
 
       <div>

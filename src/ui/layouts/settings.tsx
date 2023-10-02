@@ -4,12 +4,12 @@ import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function SettingsLayout() {
   return (
-    <AppSidebarLayout padding={false}>
-      <div className="flex h-full">
-        <div className="w-64 h-full">
+    <AppSidebarLayout>
+      <div className="flex h-full pb-7 gap-7 flex-col md:flex-row">
+        <div className="w-full md:w-64 h-full">
           <SettingsSidebar />
         </div>
-        <div className="flex-1 pt-4 pb-7 px-7">
+        <div className="w-full flex-1">
           <Outlet />
         </div>
       </div>

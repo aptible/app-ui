@@ -229,7 +229,7 @@ const LogOut = () => {
   );
 
   return (
-    <div className="flex flex-col gap-4 mb-4">
+    <div className="flex flex-col gap-4">
       <div>
         You can log out other sessions at any time. This cannot be undone.
       </div>
