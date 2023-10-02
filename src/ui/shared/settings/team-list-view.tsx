@@ -53,7 +53,8 @@ export const TeamListView = ({ users }: { users: User[] }) => {
       }
       tableHeader={
         <TableHead
-          headers={["User", "MFA Status", { name: "", className: "w-40" }]}
+          rightAlignedFinalCol
+          headers={["User", "MFA Status", "Actions"]}
         />
       }
       tableBody={

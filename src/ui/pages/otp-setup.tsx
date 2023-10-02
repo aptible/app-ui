@@ -68,7 +68,7 @@ export const OtpSetupPage = () => {
   return (
     <div className="flex p-16 justify-center">
       <div className="max-w-md">
-        <div className="mb-2">
+        <div className="mb-2 text-md font-semibold">
           2-factor authentication will be enabled for your account after
           confirmation.
         </div>
@@ -95,7 +95,7 @@ export const OtpSetupPage = () => {
               <div>Your 2FA URL: {otp.uri}</div>
               <div>Your 2FA Secret: {secret}</div>
             </div>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onSubmit} className="flex flex-col gap-4">
               <FormGroup
                 label="2FA Token"
                 htmlFor="input-mfa"

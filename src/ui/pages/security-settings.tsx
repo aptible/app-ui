@@ -21,6 +21,7 @@ import {
   BoxGroup,
   Button,
   FormGroup,
+  IconAlertTriangle,
   Input,
   Loading,
   tokens,
@@ -225,25 +226,38 @@ const LogOut = () => {
   const dispatch = useDispatch();
   const loader = useLoader(revokeAllTokens);
   const [confirm, setConfirm] = useState(false);
-  const makeItSo = () => dispatch(revokeAllTokens());
+  const confirmLogout = () => dispatch(revokeAllTokens());
 
   const confirmDialog = (
-    <div className="mt-2">
-      <div>Are you sure you want to log out of all sessions?</div>
+    <div className="flex flex-col gap-4">
       <div>
-        <Button onClick={() => setConfirm(false)}>Cancel</Button>
-        <Button onClick={makeItSo}>Make it so</Button>
+        <b>Are you sure you want to log out all sessions?</b>
+      </div>
+      <div className="flex flex-row gap-4">
+        <Button className="w-fit" onClick={confirmLogout}>
+          Confirm Logout
+        </Button>
+        <Button
+          className="w-fit"
+          variant="white"
+          onClick={() => setConfirm(false)}
+        >
+          Cancel
+        </Button>
       </div>
     </div>
   );
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        You can log out other sessions at any time. This cannot be undone.
-      </div>
-      <Button className="w-fit" onClick={() => setConfirm(true)}>
-        Log out all other sessions
+      <div>This action will log out all sessions and cannot be undone.</div>
+      <Button
+        variant="delete"
+        className="w-fit"
+        onClick={() => setConfirm(true)}
+      >
+        <IconAlertTriangle className="mr-2" color="#fff" />
+        Log out all sessions
       </Button>
       {loader.isError ? (
         <Banner variant="error">{loader.message}</Banner>
@@ -272,7 +286,7 @@ export const SecuritySettingsPage = () => {
         <SecurityKeys />
       </Section>
 
-      <Section title="Log out all other sessions">
+      <Section title="Log out all sessions">
         <LogOut />
       </Section>
     </BoxGroup>
