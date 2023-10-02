@@ -84,6 +84,7 @@ import {
   SSHSettingsPage,
   SearchPage,
   SecuritySettingsPage,
+  SettingsLayout,
   SettingsPage,
   SignupPage,
   SsoDirectPage,
@@ -505,21 +506,6 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
-        path: routes.SETTINGS_PATH,
-        element: <SettingsPage />,
-        children: [
-          {
-            index: true,
-            element: <SettingsPage />,
-          },
-          {
-            path: routes.TEAM_PATH,
-            element: <TeamPage />,
-          },
-        ],
-      },
-
-      {
         path: routes.CREATE_PROJECT_SETUP_PATH,
         element: <CreateProjectFromAccountSetupPage />,
       },
@@ -581,12 +567,17 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.SETTINGS_PATH,
     element: (
       <ElevateRequired>
-        <SettingsPage />
+        <SettingsLayout />
       </ElevateRequired>
     ),
     children: [
+      {
+        index: true,
+        element: <SettingsPage />,
+      },
       {
         path: routes.SECURITY_SETTINGS_PATH,
         element: <SecuritySettingsPage />,
@@ -610,6 +601,11 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.ADD_SECURITY_KEY_PATH,
         element: <AddSecurityKeyPage />,
+      },
+
+      {
+        path: routes.TEAM_PATH,
+        element: <TeamPage />,
       },
     ],
   },

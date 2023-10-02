@@ -1,6 +1,7 @@
 import { securitySettingsUrl, teamUrl } from "@app/routes";
 import cn from "classnames";
 import { NavLink } from "react-router-dom";
+import { tokens } from "./tokens";
 
 export function SettingsSidebar() {
   const profileNav = [{ name: "Security Settings", to: securitySettingsUrl() }];
@@ -29,33 +30,33 @@ export function SettingsSidebar() {
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200">
-      <div className="flex-1 flex flex-col py-5 overflow-y-auto">
-        <nav className="flex-1 px-4">
-          <div className="mb-6 pb-6 border-b border-gray-200">
-            <div className={cn("mb-2 p-2")}>Profile</div>
-            {profileNav.map((item) => (
-              <NavLink className={navLink} to={item.to} key={item.to}>
-                {item.name}
-              </NavLink>
-            ))}
-          </div>
-          <div className="mb-6 pb-6 border-b border-gray-200">
-            <div className={cn("mb-2 p-2")}>Company</div>
-            {companyNav.map((item) => (
-              <NavLink className={navLink} to={item.to} key={item.to}>
-                {item.name}
-              </NavLink>
-            ))}
-          </div>
-          <div className={cn("mb-2 p-2")}>Billing</div>
-          {billingNav.map((item) => (
-            <NavLink className={navLink} to={item.to} key={item.to}>
-              {item.name}
-            </NavLink>
-          ))}
-        </nav>
+    <nav className="p-4 border-r border-gray-200 h-full flex flex-col gap-4">
+      <div>
+        <h3 className={tokens.type.h3}>Profile</h3>
+        {profileNav.map((item) => (
+          <NavLink className={navLink} to={item.to} key={item.to}>
+            {item.name}
+          </NavLink>
+        ))}
       </div>
-    </div>
+
+      <div>
+        <h3 className={tokens.type.h3}>Company</h3>
+        {companyNav.map((item) => (
+          <NavLink className={navLink} to={item.to} key={item.to}>
+            {item.name}
+          </NavLink>
+        ))}
+      </div>
+
+      <div>
+        <h3 className={tokens.type.h3}>Billing</h3>
+        {billingNav.map((item) => (
+          <NavLink className={navLink} to={item.to} key={item.to}>
+            {item.name}
+          </NavLink>
+        ))}
+      </div>
+    </nav>
   );
 }
