@@ -41,7 +41,7 @@ export const TeamListView = ({ users }: { users: User[] }) => {
     <ResourceListView
       header={
         <ResourceHeader
-          title="Team"
+          title="Team Settings"
           actions={[
             <Button type="button" variant="primary">
               <IconPlusCircle variant="sm" className="mr-2" />

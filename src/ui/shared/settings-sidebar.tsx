@@ -7,7 +7,7 @@ export function SettingsSidebar() {
   const profileNav = [{ name: "Profile Settings", to: securitySettingsUrl() }];
 
   const companyNav = [
-    { name: "Team", to: teamUrl() },
+    { name: "Team Settings", to: teamUrl() },
     { name: "Single Sign-on", to: "/settings/sso" },
     { name: "Contact Settings", to: "/settings/contact-settings" },
     { name: "Stacks", to: "/setting/stacks" },
