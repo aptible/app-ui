@@ -1,11 +1,11 @@
 import type { User } from "@app/types";
 
 import { Button } from "../button";
+import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
 import { tokens } from "../tokens";
-import { IconPlusCircle } from "../icons";
 
 const UserListRow = ({ user }: { user: User }) => {
   return (
@@ -21,9 +21,9 @@ const UserListRow = ({ user }: { user: User }) => {
       </Td>
       <Td>
         <span className="flex gap-2 justify-end mr-4">
-        <Button type="submit"size="sm">
-          Edit
-        </Button>
+          <Button type="submit" size="sm">
+            Edit
+          </Button>
         </span>
       </Td>
     </tr>

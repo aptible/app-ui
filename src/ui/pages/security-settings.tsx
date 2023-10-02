@@ -17,9 +17,9 @@ import { useCurrentUser } from "../hooks";
 import {
   Banner,
   BannerMessages,
-  Button,
   Box,
   BoxGroup,
+  Button,
   FormGroup,
   Input,
   Loading,
@@ -119,11 +119,15 @@ const MultiFactor = () => {
 
   const btns = user.otpEnabled ? (
     <div>
-      <Button className="w-fit" onClick={disable}>Disable 2FA</Button>
+      <Button className="w-fit" onClick={disable}>
+        Disable 2FA
+      </Button>
       <Link to={otpRecoveryCodesUrl()}>Download backup codes</Link>
     </div>
   ) : (
-    <Button className="w-fit" onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
+    <Button className="w-fit" onClick={() => navigate(otpSetupUrl())}>
+      Configure 2FA
+    </Button>
   );
   const content = loader.isLoading ? <Loading /> : btns;
 
@@ -177,7 +181,12 @@ const ChangeEmail = () => {
           />
           <div>{error}</div>
         </FormGroup>
-        <Button className="w-fit" type="submit" disabled={!!error} isLoading={loader.isLoading}>
+        <Button
+          className="w-fit"
+          type="submit"
+          disabled={!!error}
+          isLoading={loader.isLoading}
+        >
           Send Verification Email
         </Button>
         <BannerMessages {...loader} />
@@ -266,6 +275,6 @@ export const SecuritySettingsPage = () => {
       <Section title="Log out all other sessions">
         <LogOut />
       </Section>
-      </BoxGroup>
+    </BoxGroup>
   );
 };
