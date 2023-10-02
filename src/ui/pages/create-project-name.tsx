@@ -22,7 +22,7 @@ import {
 } from "@app/routes";
 import { AppState } from "@app/types";
 
-import { handleValidator } from "@app/validator";
+import { handleRegexExplainer, handleValidator } from "@app/validator";
 import { AppSidebarLayout } from "../layouts";
 import {
   BannerMessages,
@@ -126,7 +126,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
 
           <FormGroup
             label="App Name"
-            description="Lowercase alphanumerics, periods, dashes, and underscores only"
+            description={handleRegexExplainer}
             htmlFor="name"
             feedbackVariant={nameError ? "danger" : "info"}
             feedbackMessage={nameError}
@@ -232,7 +232,7 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
           </FormGroup>
           <FormGroup
             label="Environment Name"
-            description="Lowercase alphanumerics, periods, dashes, and underscores only"
+            description={handleRegexExplainer}
             htmlFor="name"
             feedbackVariant={nameError ? "danger" : "info"}
             feedbackMessage={nameError}

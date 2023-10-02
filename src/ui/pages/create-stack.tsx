@@ -9,7 +9,7 @@ import { selectOrganizationSelectedId } from "@app/organizations";
 import { plansUrl, stacksUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { selectCurrentUser } from "@app/users";
-import { handleValidator } from "@app/validator";
+import { stackNameRegexExplainer, stackNameValidator } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -66,7 +66,7 @@ interface StackData {
 }
 
 const validators = {
-  name: (d: StackData) => handleValidator(d.stackName),
+  name: (d: StackData) => stackNameValidator(d.stackName),
   region: (d: StackData) => {
     if (d.region === "none") {
       return "must select an AWS region";
@@ -201,7 +201,7 @@ export const CreateStackPage = () => {
 
             <FormGroup
               label="Stack Name"
-              description="Lowercase alphanumerics and dashes only"
+              description={stackNameRegexExplainer}
               htmlFor="stack"
               feedbackMessage={errors.name}
               feedbackVariant={errors.name ? "danger" : "info"}
