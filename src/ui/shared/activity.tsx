@@ -20,7 +20,7 @@ import {
   selectActivityForTableSearch,
   selectAppById,
   selectDatabaseById,
-  selectServicesByAppId
+  selectServicesByAppId,
 } from "@app/deploy";
 import { useLoader, useQuery } from "@app/fx";
 import { operationDetailUrl } from "@app/routes";
@@ -331,8 +331,8 @@ export function ActivityByApp({ appId }: { appId: string }) {
 
   const services = useSelector((s: AppState) =>
     selectServicesByAppId(s, { appId }),
-  ).map(service => service.id)
-  const resourceIds = [appId, ...services]
+  ).map((service) => service.id);
+  const resourceIds = [appId, ...services];
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
