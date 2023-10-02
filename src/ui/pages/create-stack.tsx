@@ -86,9 +86,11 @@ export const CreateStackPage = () => {
   const selectedPlan = useSelector((s: AppState) =>
     selectPlanById(s, { id: activePlan.planId }),
   );
-  const canRequestStack = ["growth", "scale", "enterprise"].includes(
-    selectedPlan.name,
-  );
+  // must have a non-starter active plan or,
+  // an empty active plan (empty active plan means legacy enterprise)
+  const canRequestStack =
+    ["growth", "scale", "enterprise"].includes(selectedPlan.name) ||
+    activePlan.id === "";
 
   const [stackName, setStackName] = useState("");
   const [region, setRegion] = useState("none");
