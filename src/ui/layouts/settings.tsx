@@ -6,7 +6,7 @@ export function SettingsLayout() {
   return (
     <AppSidebarLayout>
       <div className="flex h-full pb-7 gap-7 flex-col md:flex-row">
-        <div className="w-full md:w-64 h-full">
+        <div className="w-full md:w-52 h-full">
           <SettingsSidebar />
         </div>
         <div className="w-full flex-1">
