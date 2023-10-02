@@ -38,7 +38,7 @@ export function SettingsSidebar() {
             {item.name}
           </NavLink>
         ))}
-        <hr className="mt-4 mx-2" />
+        <hr className="mt-3 mx-2" />
       </div>
 
       <div>
@@ -48,7 +48,7 @@ export function SettingsSidebar() {
             {item.name}
           </NavLink>
         ))}
-        <hr className="mt-4 mx-2" />
+        <hr className="mt-3 mx-2" />
       </div>
 
       <div>
