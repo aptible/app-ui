@@ -56,7 +56,12 @@ function* debugMdw(ctx: PipeCtx, next: Next) {
   yield* next();
 }
 
-const ignoreErrs: RegExp[] = [/failed to fetch/i, /reset store/i];
+const ignoreErrs: RegExp[] = [
+  /failed to fetch/i,
+  /reset store/i,
+  /networkerror when attempting to fetch resource/i,
+  /load failed/i,
+];
 function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   try {
     yield* next();
