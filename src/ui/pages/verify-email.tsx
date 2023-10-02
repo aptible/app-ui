@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router";
 
 import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
-import { homeUrl, loginUrl } from "@app/routes";
+import { createProjectGitUrl, homeUrl, loginUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
 import { Box, Button, Loading, ResendVerificationEmail } from "../shared";
 
@@ -53,7 +53,7 @@ export const VerifyEmailPage = () => {
   }, [loader.isLoading, user.verified]);
 
   useLoaderSuccess(verifyEmailLoader, () => {
-    navigate(redirectPath || homeUrl());
+    navigate(redirectPath || createProjectGitUrl());
     dispatch(resetRedirectPath());
   });
 
