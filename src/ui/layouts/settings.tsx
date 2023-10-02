@@ -1,6 +1,6 @@
 import { Outlet } from "react-router";
-import { AppSidebarLayout } from "../layouts";
 import { SettingsSidebar } from "../shared";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function SettingsLayout() {
   return (
