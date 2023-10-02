@@ -24,13 +24,13 @@ export function SettingsSidebar() {
   const active = "bg-off-white font-semibold text-black focus:text-black";
   const inactive = "text-black-500 hover:bg-black-50 hover:text-black";
   const navButton =
-    "group flex items-center p-2 mb-1 text-base rounded-md hover:no-underline";
+    "group flex items-center p-2 text-base rounded-md hover:no-underline";
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
 
   return (
-    <nav className="flex flex-col gap-4">
+    <nav className="flex flex-col">
       <div>
         <h4 className={`${tokens.type.h4} ml-2`}>Profile</h4>
         {profileNav.map((item) => (
@@ -38,21 +38,21 @@ export function SettingsSidebar() {
             {item.name}
           </NavLink>
         ))}
-        <hr className="mt-4" />
+        <hr className="mt-4 mx-2" />
       </div>
 
       <div>
-        <h4 className={`${tokens.type.h4} ml-2`}>Team</h4>
+        <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Team</h4>
         {companyNav.map((item) => (
           <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}
           </NavLink>
         ))}
-        <hr className="mt-4" />
+        <hr className="mt-4 mx-2" />
       </div>
 
       <div>
-        <h4 className={`${tokens.type.h4} ml-2`}>Billing</h4>
+        <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Billing</h4>
         {billingNav.map((item) => (
           <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}
