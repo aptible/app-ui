@@ -104,11 +104,11 @@ const StylesWrapper = ({
 );
 
 const StylesNavigation = () => (
-  <nav className="mt-2 flex-1 px-2 space-y-1">
+  <nav className="flex flex-col gap-2">
     <div className="mb-4">
       <AptibleLogo />
     </div>
-    <p className="pt-1">
+    <p>
       <b>STYLES</b>
     </p>
     {[
