@@ -4,12 +4,12 @@ import { NavLink } from "react-router-dom";
 import { tokens } from "./tokens";
 
 export function SettingsSidebar() {
-  const profileNav = [{ name: "Security Settings", to: securitySettingsUrl() }];
+  const profileNav = [{ name: "Profile Settings", to: securitySettingsUrl() }];
 
   const companyNav = [
-    { name: "Team", to: teamUrl() },
+    { name: "Team Settings", to: teamUrl() },
     { name: "Single Sign-on", to: "/settings/sso" },
-    { name: "Contact Settings", to: "/settings/contact-settings" },
+    { name: "Team Contacts", to: "/settings/contact-settings" },
     { name: "Stacks", to: "/setting/stacks" },
   ];
 
@@ -19,38 +19,40 @@ export function SettingsSidebar() {
     { name: "Payment Methods", to: "/settings/payment-methods" },
     { name: "Credits", to: "/setting/credits" },
     { name: "Billing Contacts", to: "/setting/billing-contacts" },
-    { name: "Address", to: "/setting/billing-address" },
+    { name: "Billing Address", to: "/setting/billing-address" },
   ];
-  const active = "bg-gray-200 text-gray-900";
-  const inactive = "text-gray-600 hover:bg-gray-100 hover:text-gray-900";
+  const active = "bg-off-white font-semibold text-black focus:text-black";
+  const inactive = "text-black-500 hover:bg-black-50 hover:text-black";
   const navButton =
-    "group flex items-center p-2 mb-1 text-sm font-medium rounded-md hover:no-underline";
+    "group flex items-center p-2 text-base rounded-md hover:no-underline";
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
 
   return (
-    <nav className="p-4 border-r border-gray-200 h-full flex flex-col gap-4">
+    <nav className="flex flex-col">
       <div>
-        <h3 className={tokens.type.h3}>Profile</h3>
+        <h4 className={`${tokens.type.h4} ml-2`}>Profile</h4>
         {profileNav.map((item) => (
           <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}
           </NavLink>
         ))}
+        <hr className="mt-3 mx-2" />
       </div>
 
       <div>
-        <h3 className={tokens.type.h3}>Company</h3>
+        <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Team</h4>
         {companyNav.map((item) => (
           <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}
           </NavLink>
         ))}
+        <hr className="mt-3 mx-2" />
       </div>
 
       <div>
-        <h3 className={tokens.type.h3}>Billing</h3>
+        <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Billing</h4>
         {billingNav.map((item) => (
           <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}

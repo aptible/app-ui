@@ -10,7 +10,7 @@ export const Footer = () => {
   };
   return (
     <div>
-      <div className="flex border-t border-black-100 p-4">
+      <div className="flex border-t border-black-100 py-4 mt-7">
         <p className="grow text-gray-500 text-sm uppercase">
           Aptible, Inc. &copy; {new Date().getFullYear()}
         </p>

@@ -1,6 +1,7 @@
 import type { User } from "@app/types";
 
 import { Button } from "../button";
+import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { ResourceHeader, ResourceListView } from "../resource-list-view";
 import { TableHead, Td } from "../table";
@@ -18,10 +19,12 @@ const UserListRow = ({ user }: { user: User }) => {
           {user.otpEnabled ? "Enabled" : "Disabled"}
         </div>
       </Td>
-      <Td className="flex gap-2 justify-end w-40">
-        <Button type="submit" variant="white" size="xs">
-          Edit
-        </Button>
+      <Td>
+        <span className="flex gap-2 justify-end mr-4">
+          <Button type="submit" size="sm">
+            Edit
+          </Button>
+        </span>
       </Td>
     </tr>
   );
@@ -38,10 +41,10 @@ export const TeamListView = ({ users }: { users: User[] }) => {
     <ResourceListView
       header={
         <ResourceHeader
-          title="Team"
-          description="Users represent individual or robots with access to your Aptible Organization. Users can be added to Roles in order to grant them permissions."
+          title="Team Settings"
           actions={[
             <Button type="button" variant="primary">
+              <IconPlusCircle variant="sm" className="mr-2" />
               Invite Users
             </Button>,
           ]}
@@ -50,7 +53,8 @@ export const TeamListView = ({ users }: { users: User[] }) => {
       }
       tableHeader={
         <TableHead
-          headers={["User", "MFA Status", { name: "", className: "w-40" }]}
+          rightAlignedFinalCol
+          headers={["User", "MFA Status", "Actions"]}
         />
       }
       tableBody={
