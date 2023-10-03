@@ -36,7 +36,7 @@ export function portValidator(port = "") {
 }
 
 export const handleRegexExplainer =
-  "lowercase alphanumerics, periods, hyphens, underscores, and less than 64 characters";
+  "Lowercase alphanumerics, periods, hyphens, underscores, and less than 64 characters";
 export const handleRegex = new RegExp(/^[0-9a-z._-]{1,64}$/);
 export function handleValidator(handle = "") {
   if (handle === "") return `Must provide a handle ${handleRegexExplainer}`;
@@ -53,7 +53,7 @@ export function handleValidator(handle = "") {
 }
 
 export const stackNameRegexExplainer =
-  "lowercase alphanumerics, hyphens, and less than 64 characters";
+  "Lowercase alphanumerics, hyphens, and less than 64 characters";
 export const stackNameRegex = new RegExp(/^[0-9a-z-]{1,26}$/);
 export function stackNameValidator(stackName = "") {
   if (stackName === "")
