@@ -27,6 +27,7 @@ import {
   ButtonAdmin,
   ButtonDestroy,
   CheckBox,
+  Code,
   FormGroup,
   IconAlertTriangle,
   IconTrash,
@@ -89,7 +90,7 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
           <ol className="list-disc list-inside">
             <li>
               Git remote URLs (e.g.:{" "}
-              <code>git@beta.aptible.com:{handle}/APP_HANDLE.git</code>)
+              <Code>git@beta.aptible.com:{handle}/APP_HANDLE.git</Code>)
             </li>
             <li>Your own external scripts (e.g. for CI/CD)</li>
           </ol>

@@ -6,7 +6,11 @@ import { AppState, DeployApp, DeployService } from "@app/types";
 import { Radio, RadioGroup } from "../select";
 
 const Code = ({ children }: { children: React.ReactNode }) => {
-  return <code className="bg-gray-200 text-black p-[2px]">{children}</code>;
+  return (
+    <code className="bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]">
+      {children}
+    </code>
+  );
 };
 
 export const CreateAppEndpointSelector = ({
