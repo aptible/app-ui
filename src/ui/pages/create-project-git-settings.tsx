@@ -57,7 +57,7 @@ import {
   IconChevronUp,
   IconPlusCircle,
   Loading,
-  PreCode,
+  PreBox,
   ProgressProject,
   SelectOption,
   dbSelectorReducer,
@@ -277,7 +277,7 @@ const DockerfileDataView = ({
       </div>
       {isOpen ? (
         <div className="pb-4">
-          <PreCode allowCopy segments={segments} />
+          <PreBox allowCopy segments={segments} />
         </div>
       ) : null}
     </div>
