@@ -207,6 +207,7 @@ export const DatabaseCreatorForm = ({
   useEffect(() => {
     if (!queryDbsStr) return;
     if (!namePrefix) return;
+    if (dbImages.length === 0) return;
     const qdbs = queryDbsStr.split(",");
     if (qdbs.length === 0) return;
 
@@ -222,7 +223,7 @@ export const DatabaseCreatorForm = ({
           env: env.toLocaleUpperCase(),
           id: `${createId()}`,
           imgId: img.id,
-          name: `${namePrefix}-${img.type || ""}`,
+          name: `${namePrefix}-${img.type}`,
           dbType: img.type || "",
           enableBackups: true,
         },
