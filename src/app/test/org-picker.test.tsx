@@ -167,7 +167,7 @@ describe("Selecting an Organization", () => {
       expect(screen.queryAllByText(/Log In/)[0]).toBeInTheDocument();
       // it should wipe the store
       expect(store.getState().deploy).toEqual({
-        active_plans: {},
+        activePlans: {},
         activityReports: {},
         appConfigs: {},
         apps: {},
