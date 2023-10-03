@@ -8,10 +8,11 @@ import { tokens } from "./tokens";
 
 const descriptionTextForPlan = (planName: PlanName): string =>
   ({
-    starter: "Deploy your first few resources",
-    growth: "Begin the search for product-market fit",
-    scale: "Scale your product and business",
-    enterprise: "Meet the highest requirements for security and reliability",
+    starter: "Deploy your app and get to market fast",
+    growth: "Gain user traction and deliver more functionality",
+    scale: "Run mission-critical apps at scale without worry",
+    enterprise:
+      "Meet any requirement across performance, reliability, and security",
   })[planName];
 
 const Section = ({
@@ -304,12 +305,16 @@ const PlanCard = ({
     <div
       className={`w-full rounded-lg overflow-hidden bg-white pt-8 px-0 mx-0 border ${borderColor} relative mt-4`}
     >
-      <div className="mb-8 mx-4" style={{ height: 135, minWidth: 225 }}>
+      <div className="mb-8 mx-auto" style={{ height: 135, minWidth: 225 }}>
         <div style={{ height: 95 }}>
           <h2 className={`text-center ${tokens.type.h2} ${fontColor}`}>
             {capitalize(plan.name)}
           </h2>
-          <p className={"text-center mt-4 text-sm"}>
+          <p
+            className={
+              "text-center mt-4 text-sm mx-auto max-w-full md:max-w-[30ch]"
+            }
+          >
             {descriptionTextForPlan(plan.name)}
           </p>
         </div>
