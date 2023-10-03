@@ -1,6 +1,7 @@
 import { ExternalLink } from "./external-link";
 import { IconChevronDown, IconChevronUp } from "./icons";
 import { tokens } from "./tokens";
+import { Code } from "./code";
 
 import { useState } from "react";
 
@@ -54,9 +55,9 @@ export const CreateProjectFooter = () => {
             <li>Deploy a starter template or your own custom code</li>
             <li>
               Push your code to Aptible using{" "}
-              <span className="bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]">
+              <Code>
                 git push
-              </span>
+              </Code>
             </li>
             <li>
               Configure your App (e.g. databases, environment variables,
