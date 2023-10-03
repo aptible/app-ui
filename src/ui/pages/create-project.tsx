@@ -9,6 +9,7 @@ import {
 import { createProjectGitUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 
+import { tunaEvent } from "@app/tuna";
 import { AppSidebarLayout, HeroBgLayout } from "../layouts";
 import {
   Box,
@@ -45,17 +46,14 @@ export const FreeFormSurvey = () => {
   const handleSurveySubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     setFeedbackSubmitted(true);
-    const w = window as any;
-    if (w.aptible?.event) {
-      if (surveyDockerPushSet) {
-        w.aptible.event("feedback.survey.docker_push", null);
-      }
-      if (surveyDockerComposeSet) {
-        w.aptible.event("feedback.survey.docker_compose", null);
-      }
-      if (surveyGithubIntegrationSet) {
-        w.aptible.event("feedback.survey.github_integration", null);
-      }
+    if (surveyDockerPushSet) {
+      tunaEvent("feedback.survey.docker_push");
+    }
+    if (surveyDockerComposeSet) {
+      tunaEvent("feedback.survey.docker_compose");
+    }
+    if (surveyGithubIntegrationSet) {
+      tunaEvent("feedback.survey.github_integration");
     }
     dispatch(setFeedback({ ...feedback, preDeploySurveyAnswered: true }));
   };

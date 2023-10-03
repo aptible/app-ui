@@ -1,4 +1,5 @@
 import { selectFeedback, setFeedback } from "@app/feedback";
+import { tunaEvent } from "@app/tuna";
 import { SyntheticEvent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./button";
@@ -18,11 +19,8 @@ export const FeedbackForm = ({
   const handleFeedbackSubmission = (e: SyntheticEvent) => {
     e.preventDefault();
     setFeedbackSubmitted(true);
-    const w = window as any;
-    if (w.aptible?.event) {
-      if (freeformSurveyData) {
-        w.aptible.event(feedbackEventName, freeformSurveyData);
-      }
+    if (freeformSurveyData) {
+      tunaEvent(feedbackEventName, freeformSurveyData);
     }
     dispatch(setFeedback({ ...feedback, freeformFeedbackGiven: true }));
   };
