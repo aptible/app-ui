@@ -427,10 +427,7 @@ export const CreateProjectGitPushPage = () => {
         {hasDeployOperation(deployOp) ? (
           <div className="text-black-900 mb-4">
             We detected an app deployment, did you push to the{" "}
-            <Code>
-              aptible-scan
-            </Code>{" "}
-            branch?
+            <Code>aptible-scan</Code> branch?
           </div>
         ) : null}
 
