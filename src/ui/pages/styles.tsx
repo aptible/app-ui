@@ -108,7 +108,7 @@ const StylesNavigation = () => (
     <div className="mb-4">
       <AptibleLogo />
     </div>
-    <p>
+    <p className="pt-1">
       <b>STYLES</b>
     </p>
     {[
@@ -125,7 +125,6 @@ const StylesNavigation = () => (
       { name: "Tooltips", to: "#tooltips" },
       { name: "Detail Boxes", to: "#detail-boxes" },
       { name: "Secrets", to: "#secrets" },
-      { name: "Dates", to: "#dates" },
       { name: "Boxes", to: "#boxes" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
@@ -216,7 +215,7 @@ const Forms = () => {
   );
 
   return (
-    <div className="pt-8 space-y-4">
+    <div className="pt-8 flex flex-col gap-2 w-1/3">
       <h1 id="forms" className={tokens.type.h1}>
         Forms
       </h1>
@@ -255,28 +254,30 @@ const Forms = () => {
         value={selectedOption}
         options={options}
       />
-      <p className="mt-4">
+      <div className="mt-4">
         <RadioGroup name="service" selected="cmd" onSelect={() => {}}>
           <Radio value="unchecked">Radio unchecked</Radio>
-          <Radio value="cmd">
-            Docker <strong>CMD</strong>
-          </Radio>
+          <Radio value="cmd">Radio checked</Radio>
           <Radio value="disabled" disabled={true}>
             Radio disabled
           </Radio>
         </RadioGroup>
-      </p>
+      </div>
+
+      <div className="mt-4">
+        <CheckBox checked label="Some label" />
+      </div>
 
       <TextArea
         className={`${tokens.type.textarea} mt-4`}
         defaultValue="Editable textarea"
       />
 
-      <CheckBox checked label="Some label" />
+      <div className="my-4">
+        <h3 className={tokens.type.h3}>Form Groups</h3>
+      </div>
 
-      <h3 className={tokens.type.h3}>Form Groups</h3>
-
-      <FormGroup htmlFor="input - name" label="Input (label)">
+      <FormGroup htmlFor="input - name" label="Label">
         <Input
           name="app-handle"
           type="text"
@@ -419,7 +420,9 @@ const Buttons = () => (
 
     <ButtonIcon icon={<IconPlusCircle />}>Button Icon</ButtonIcon>
 
-    <ButtonLink to="#">Button Link</ButtonLink>
+    <ButtonLink className="w-fit" to="#">
+      Button Link
+    </ButtonLink>
 
     <h3 className={tokens.type.h3}>Button Sizes</h3>
     <Button className="mt-2" size="xs">
@@ -492,14 +495,6 @@ const Pills = () => (
       <div className="mt-4">
         <Pill className={pillStyles.success}>Success Pill</Pill>
       </div>
-    </div>
-    <div className="mt-4">
-      <h3 className={tokens.type.h3}>Operation status and time-based pill</h3>
-      {operationStatuses.map((status) => (
-        <div className="mt-4" key={status}>
-          <StatusPill from={new Date().toString()} status={status} />
-        </div>
-      ))}
     </div>
   </div>
 );
@@ -689,23 +684,6 @@ const Secrets = () => {
   );
 };
 
-const Dates = () => {
-  return (
-    <div className="flex flex-col gap-3 pt-8">
-      <h1 id="dates" className={tokens.type.h1}>
-        Dates
-      </h1>
-      <DateText date={new Date()} />
-      <DateText date={new Date()} format="pretty-english" />
-      <DateText date={new Date()} format="pretty-english-date-relative" />
-      <span className="flex">
-        <DateText date={dateFromToday(-10)} format="time-ago" />{" "}
-        <strong className="ml-2">(Hover the date)</strong>
-      </span>
-    </div>
-  );
-};
-
 const NegativeSpace = () => {
   return (
     <Group>
@@ -755,7 +733,6 @@ export const StylesPage = () => (
       <Info />
       <DetailBoxes />
       <Secrets />
-      <Dates />
       <NegativeSpace />
     </StylesWrapper>
   </div>
