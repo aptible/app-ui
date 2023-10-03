@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import { OperationStatus } from "@app/types";
 
-import { dateFromToday } from "@app/date";
 import {
   defaultDeployApp,
   defaultDeployDatabase,
@@ -75,7 +74,6 @@ import {
   Secret,
   Select,
   SelectOption,
-  StatusPill,
   TableHead,
   Tabs,
   Td,
@@ -85,7 +83,6 @@ import {
   pillStyles,
   tokens,
 } from "../shared";
-import { DateText } from "../shared/date-text";
 
 const StylesWrapper = ({
   children,
@@ -464,13 +461,6 @@ const Logs = () => (
   </div>
 );
 
-const operationStatuses: OperationStatus[] = [
-  "queued",
-  "failed",
-  "running",
-  "succeeded",
-  "unknown",
-];
 const Pills = () => (
   <div className="pt-8 space-y-4">
     <h1 id="pills" className={tokens.type.h1}>
