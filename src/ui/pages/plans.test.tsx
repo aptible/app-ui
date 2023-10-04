@@ -110,11 +110,11 @@ describe("Plans page", () => {
     );
     expect(errText).not.toBeInTheDocument();
 
-    const el = await screen.findByRole("button", {
+    const el = await screen.findAllByRole("button", {
       name: /Select Plan/,
     });
 
-    fireEvent.click(el);
+    fireEvent.click(el[0]);
     await screen.findByText(/Successfully updated plan to Growth/);
   });
 
@@ -132,11 +132,11 @@ describe("Plans page", () => {
     await screen.findByText("Choose a Plan");
     await screen.findByText("Growth");
 
-    const el = await screen.findByRole("button", {
+    const el = await screen.findAllByRole("button", {
       name: /Select Plan/,
     });
 
-    fireEvent.click(el);
+    fireEvent.click(el[0]);
     await screen.findByText(/mock error message/);
   });
 

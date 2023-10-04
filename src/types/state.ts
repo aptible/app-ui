@@ -152,7 +152,7 @@ export interface DeployState {
   logDrains: MapEntity<DeployLogDrain>;
   metricDrains: MapEntity<DeployMetricDrain>;
   operations: MapEntity<DeployOperation>;
-  active_plans: MapEntity<DeployActivePlan>;
+  activePlans: MapEntity<DeployActivePlan>;
   plans: MapEntity<DeployPlan>;
   permissions: MapEntity<Permission>;
   releases: MapEntity<DeployRelease>;

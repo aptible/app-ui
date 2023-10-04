@@ -1,7 +1,13 @@
 import { fetchCurrentToken } from "@app/auth";
 import { useLoader } from "@app/fx";
 import { resetRedirectPath, setRedirectPath } from "@app/redirect-path";
-import { homeUrl, loginUrl, logoutUrl, signupUrl } from "@app/routes";
+import {
+  homeUrl,
+  loginUrl,
+  logoutUrl,
+  signupUrl,
+  verifyEmailRequestUrl,
+} from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +15,13 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { usePaymentRequired, useVerifiedRequired } from "../hooks";
 import { Loading } from "../shared";
 
-const denyList = [logoutUrl(), loginUrl(), signupUrl(), homeUrl()];
+const denyList = [
+  logoutUrl(),
+  loginUrl(),
+  signupUrl(),
+  homeUrl(),
+  verifyEmailRequestUrl(),
+];
 
 const useAuthRequired = () => {
   const loader = useLoader(fetchCurrentToken);

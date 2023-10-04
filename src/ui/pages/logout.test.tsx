@@ -55,7 +55,7 @@ describe("LogoutPage", () => {
       await sleep(500);
 
       expect(store.getState().deploy).toEqual({
-        active_plans: {},
+        activePlans: {},
         activityReports: {},
         apps: {},
         appConfigs: {},

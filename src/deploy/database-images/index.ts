@@ -106,7 +106,7 @@ export const selectDatabaseImagesVisible = createSelector(
 );
 
 export const fetchDatabaseImages = api.get<PaginateProps>(
-  "/database_images?page=:page",
+  "/database_images?page=:page&per_page=5000",
   { saga: cacheTimer() },
 );
 
