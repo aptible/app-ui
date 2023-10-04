@@ -71,11 +71,12 @@ export const queryAlgoliaApi = thunks.create<{
   );
   const data = yield* call([resp, "json"]);
   yield* put(setLoaderSuccess({ id: ctx.key, meta: { hits: data.hits } }));
+  yield* next();
 });
 
 interface AttachmentProps {
   attachment: File;
-  callback: Function;
+  callback: (p: { token: string; filename: string }) => void;
 }
 
 export const uploadAttachment = api.post<AttachmentProps>(
