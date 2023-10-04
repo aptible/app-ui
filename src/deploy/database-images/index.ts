@@ -3,7 +3,7 @@ import { defaultEntity } from "@app/hal";
 import { createTable } from "@app/slice-helpers";
 import { AppState, DeployDatabaseImage } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
-import { createReducerMap, mustSelectEntity } from "robodux";
+import { createReducerMap, mustSelectEntity } from "@app/slice-helpers";
 import { selectDeploy } from "../slice";
 
 export interface DeployDatabaseImageResponse {
