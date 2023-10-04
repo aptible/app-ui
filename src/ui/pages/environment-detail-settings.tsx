@@ -123,7 +123,7 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
 const EnvDestroy = ({ envId }: { envId: string }) => {
   const navigate = useNavigate();
   useQuery(fetchEnvironmentById({ id: envId }));
-  useQuery(fetchDatabaseBackupsByEnvironment({ id: envId }));
+  useQuery(fetchDatabaseBackupsByEnvironment({ id: envId, orphaned: false }));
   useQuery(fetchEnvLogDrains({ id: envId }));
   useQuery(fetchEnvMetricDrains({ id: envId }));
 
