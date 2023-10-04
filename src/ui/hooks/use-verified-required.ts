@@ -10,16 +10,14 @@ import { useCurrentUser } from "./use-current-user";
 const ignoreList = ["/logout"];
 
 export const useVerifiedRequired = () => {
-  const [user, loader] = useCurrentUser();
+  const [user] = useCurrentUser();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   useEffect(() => {
     if (ignoreList.includes(pathname)) return;
-    if (loader.lastSuccess === 0) return;
-    if (loader.isLoading) return;
-    if (!user.verified) {
+    if (user.id !== "" && !user.verified) {
       navigate(verifyEmailRequestUrl());
     }
-  }, [pathname, user.verified, loader.lastSuccess, loader.isLoading]);
+  }, [pathname, user.verified, user.id]);
 };
