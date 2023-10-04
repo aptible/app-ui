@@ -50,6 +50,7 @@ export const SupportPage = () => {
   });
   const [subjectTyping, setSubjectTyping] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachmentObject[]>([]);
+  const [viewedSuggestion, setViewedSuggestion] = useState(false)
 
   // Drag and Drop reference hook and functions
   const drop = useRef(null);
@@ -105,6 +106,13 @@ export const SupportPage = () => {
     e.preventDefault();
     const attachments = attachedFiles.map((file) => file.token);
     dispatch(createSupportTicket({ ...formState, attachments: attachments }));
+    
+    const w = window as any;
+    if (w.aptible?.event) {
+        setViewedSuggestion(true)
+        w.aptible.event('submittedAppUiSupportForm', `{ "viewedDocs": "${viewedSuggestion}", "email": "${user.email}" }`);
+    }
+
     setFormState({
       email: user.email || "",
       name: user.name || "",
@@ -114,6 +122,7 @@ export const SupportPage = () => {
       priority: "",
     });
     setAttachedFiles([]);
+    setViewedSuggestion(false)
   };
 
   const assignAttachment = (attachment: AttachmentObject) => {
@@ -236,7 +245,13 @@ export const SupportPage = () => {
                       return (
                         <li key={key + 1}>
                           <div>
-                            <a target="_blank" href={hit.url} rel="noreferrer">
+                            <a target="_blank" href={hit.url} rel="noreferrer" onClick={() => {
+                              const w = window as any;
+                              if (w.aptible?.event) {
+                                  setViewedSuggestion(true)
+                                  w.aptible.event('usedSupportSuggestion', `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`);
+                              }
+                            }}>
                               {hit.title}
                             </a>
                           </div>
