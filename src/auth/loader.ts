@@ -45,9 +45,9 @@ export const defaultAuthLoaderMeta = (
   return {
     error: "",
     code: 0,
-    exception_context: { ...context },
     verified: false,
     id: "",
     ...p,
+    exception_context: { ...context },
   };
 };
