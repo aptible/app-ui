@@ -1,4 +1,4 @@
-import { server, testEnv, testUser } from "@app/mocks";
+import { server, testEnv, testUser, verifiedUserHandlers } from "@app/mocks";
 import { loginUrl, verifyEmailRequestUrl } from "@app/routes";
 import { setupIntegrationTest } from "@app/test";
 import {
@@ -18,6 +18,7 @@ const VerifyMock = () => {
 
 describe("AuthRequired", () => {
   it("should allow child to render without a redirect when current token active", async () => {
+    server.use(...verifiedUserHandlers());
     const { TestProvider } = setupIntegrationTest({
       path: "/mock",
       initEntries: ["/mock"],

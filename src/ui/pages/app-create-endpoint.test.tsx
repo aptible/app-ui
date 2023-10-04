@@ -202,7 +202,7 @@ describe("AppCreateEndpointPage", () => {
       const enpType = await screen.findByRole("combobox", {
         name: /Endpoint Type/,
       });
-      await act(() => userEvent.selectOptions(enpType, "custom"));
+      await userEvent.selectOptions(enpType, "custom");
 
       const newCert = await screen.findByLabelText(/Create a New Certificate/);
       fireEvent.click(newCert);
@@ -244,7 +244,7 @@ describe("AppCreateEndpointPage", () => {
       const enpType = await screen.findByRole("combobox", {
         name: /Endpoint Type/,
       });
-      await act(() => userEvent.selectOptions(enpType, "custom"));
+      await userEvent.selectOptions(enpType, "custom");
 
       const newCert = await screen.findByLabelText(/Create a New Certificate/);
       fireEvent.click(newCert);
@@ -289,7 +289,7 @@ describe("AppCreateEndpointPage", () => {
       const enpType = await screen.findByRole("combobox", {
         name: /Endpoint Type/,
       });
-      await act(() => userEvent.selectOptions(enpType, "custom"));
+      await userEvent.selectOptions(enpType, "custom");
 
       const newCert = await screen.findByLabelText(/Create a New Certificate/);
       fireEvent.click(newCert);

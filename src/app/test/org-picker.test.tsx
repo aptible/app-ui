@@ -47,7 +47,8 @@ describe("Selecting an Organization", () => {
       return Object.values(state.organizations).length > 0;
     });
 
-    expect(screen.queryByText(/Wow Org/)).toBeInTheDocument();
+    expect(screen.queryAllByText(/Wow Org/)[0]).toBeInTheDocument();
+    expect(screen.queryByText(/Continue using/)).toBeInTheDocument();
   });
 
   it("should successfully change the selected organization", async () => {
