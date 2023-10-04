@@ -135,9 +135,11 @@ const MultiFactor = () => {
   return (
     <div className="flex flex-col gap-4">
       <ul className="mb-2">
-        <li>Download your backup codes if you haven&apos;t done so yet.</li>
-        <li>You might need to update aptible-cli for 2FA support.</li>
-        <li>Note that 2FA does not apply to git push operations.</li>
+        <li>
+          Download your backup codes if you haven&apos;t done so yet. You might
+          need to update aptible-cli for 2FA support. 2FA does not apply to git
+          push operations.
+        </li>
       </ul>
 
       {content}
@@ -176,11 +178,10 @@ const ChangeEmail = () => {
             value={email}
             onChange={(e) => setEmail(e.currentTarget.value)}
             autoComplete="username"
-            autoFocus={true}
             data-testid="input-email"
             id="input-email"
           />
-          <div>{error}</div>
+          <div className="text-gray-500">{error}</div>
         </FormGroup>
         <Button
           className="w-fit"
@@ -271,21 +272,21 @@ export const SecuritySettingsPage = () => {
   return (
     <BoxGroup>
       <h2 className={tokens.type.h2}>Profile Settings</h2>
-      <Section title="Change Email">
-        <ChangeEmail />
-      </Section>
-      <Section title="Change Password">
-        <ChangePassword />
-      </Section>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Section title="Change Password">
+          <ChangePassword />
+        </Section>
+        <Section title="Change Email">
+          <ChangeEmail />
+        </Section>
+      </div>
 
       <Section title="2-Factor Authentication">
         <MultiFactor />
       </Section>
-
       <Section title="Security Keys">
         <SecurityKeys />
       </Section>
-
       <Section title="Log out all sessions">
         <LogOut />
       </Section>
