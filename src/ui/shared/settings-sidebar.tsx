@@ -8,7 +8,7 @@ export function SettingsSidebar() {
 
   const companyNav = [
     { name: "Team Settings", to: teamUrl() },
-    { name: "Single Sign-on", to: "/settings/sso" },
+    { name: "Single Sign-On", to: "/settings/sso" },
     { name: "Team Contacts", to: "/settings/contact-settings" },
     { name: "Stacks", to: "/setting/stacks" },
   ];
