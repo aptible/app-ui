@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 
 import { fetchStripeSources, fetchTrials } from "@app/billing";
-import { server, testEnv } from "@app/mocks";
+import { server, testEnv, verifiedUserHandlers } from "@app/mocks";
 import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { rest } from "msw";
 import { selectLoaderById } from "saga-query";
@@ -15,6 +15,7 @@ describe("Trial notice", () => {
       after.setDate(after.getDate() - 5);
 
       server.use(
+        ...verifiedUserHandlers(),
         rest.get(
           `${testEnv.billingUrl}/billing_details/:id/trials`,
           async (_, res, ctx) => {
@@ -62,6 +63,7 @@ describe("Trial notice", () => {
       after.setDate(after.getDate() - 5);
 
       server.use(
+        ...verifiedUserHandlers(),
         rest.get(
           `${testEnv.billingUrl}/billing_details/:id/trials`,
           async (_, res, ctx) => {
@@ -116,6 +118,7 @@ describe("Trial notice", () => {
         after.setDate(after.getDate() + 2);
 
         server.use(
+          ...verifiedUserHandlers(),
           rest.get(
             `${testEnv.billingUrl}/billing_details/:id/trials`,
             async (_, res, ctx) => {
@@ -175,6 +178,7 @@ describe("Trial notice", () => {
         after.setDate(after.getDate() + 2);
 
         server.use(
+          ...verifiedUserHandlers(),
           rest.get(
             `${testEnv.billingUrl}/billing_details/:id/trials`,
             async (_, res, ctx) => {
@@ -229,6 +233,7 @@ describe("Trial notice", () => {
         after.setDate(after.getDate() + 2);
 
         server.use(
+          ...verifiedUserHandlers(),
           rest.get(
             `${testEnv.billingUrl}/billing_details/:id/trials`,
             async (_, res, ctx) => {

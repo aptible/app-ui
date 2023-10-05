@@ -6,7 +6,6 @@ import * as deploy from "@app/deploy";
 import * as env from "@app/env";
 import * as feedback from "@app/feedback";
 import * as hal from "@app/hal";
-import * as initData from "@app/initial-data";
 import * as invitations from "@app/invitations";
 import * as metrics from "@app/metric-tunnel";
 import * as mfa from "@app/mfa";
@@ -39,7 +38,6 @@ const corePackages: any[] = [
   theme,
   deploy,
   modal,
-  initData,
   roles,
   nav,
   signal,

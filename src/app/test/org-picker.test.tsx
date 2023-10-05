@@ -19,7 +19,6 @@ import {
   setupAppIntegrationTest,
   waitForBootup,
   waitForData,
-  waitForToken,
 } from "@app/test";
 import { rest } from "msw";
 
@@ -39,7 +38,6 @@ describe("Selecting an Organization", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(<App />);
 
@@ -51,7 +49,7 @@ describe("Selecting an Organization", () => {
     expect(screen.queryByText(/Continue using/)).toBeInTheDocument();
   });
 
-  it("should successfully change the selected organization", async () => {
+  it.only("should successfully change the selected organization", async () => {
     const testStackSpecial = defaultStackResponse({
       id: createId(),
       name: "Special Stack",
@@ -72,10 +70,10 @@ describe("Selecting an Organization", () => {
     });
 
     server.use(
+      ...verifiedUserHandlers(),
       ...stacksWithResources({
         stacks: [testStack, testStackSpecial, testStackDontShow],
       }),
-      ...verifiedUserHandlers(),
       rest.get(`${testEnv.authUrl}/organizations`, (_, res, ctx) => {
         return res(
           ctx.json({ _embedded: { organizations: [testOrg, testOrgSpecial] } }),

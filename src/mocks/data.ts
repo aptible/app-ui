@@ -83,7 +83,7 @@ export const testUser = defaultUserResponse({
 });
 export const testUserVerified = defaultUserResponse({
   id: testUserId,
-  email: testEmail,
+  email: "test.verified@aptible.com",
   verified: true,
 });
 
@@ -124,7 +124,7 @@ export const testOrgReauth = defaultOrgResponse({
   reauth_required: true,
 });
 export const testUserOrgSelected = defaultUserResponse({
-  id: createId(),
+  id: testUserId,
   email: "special@aptible.com",
   verified: true,
   _links: {
