@@ -15,11 +15,7 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { orgPickerUrl } from "@app/routes";
-import {
-  setupAppIntegrationTest,
-  waitForBootup,
-  waitForData,
-} from "@app/test";
+import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { rest } from "msw";
 
 describe("Selecting an Organization", () => {

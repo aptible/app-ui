@@ -8,6 +8,7 @@ import {
   stacksWithResources,
   testAccount,
   testEnv,
+  verifiedUserHandlers,
 } from "@app/mocks";
 import { createProjectGitAppSetupUrl } from "@app/routes";
 import { setupAppIntegrationTest } from "@app/test";
@@ -29,6 +30,7 @@ describe("CreateProjectFromAppSetupPage", () => {
       });
 
       server.use(
+        ...verifiedUserHandlers(),
         ...stacksWithResources({
           accounts: [testAccount],
           apps: [app],
@@ -80,6 +82,7 @@ describe("CreateProjectFromAppSetupPage", () => {
       });
 
       server.use(
+        ...verifiedUserHandlers(),
         ...stacksWithResources({
           accounts: [testAccount],
           apps: [app],
@@ -138,6 +141,7 @@ describe("CreateProjectFromAppSetupPage", () => {
       });
 
       server.use(
+        ...verifiedUserHandlers(),
         ...stacksWithResources({
           accounts: [testAccount],
           apps: [app],

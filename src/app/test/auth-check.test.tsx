@@ -1,4 +1,10 @@
-import { server, testElevatedToken, testEnv, testToken, verifiedUserHandlers } from "@app/mocks";
+import {
+  server,
+  testElevatedToken,
+  testEnv,
+  testToken,
+  verifiedUserHandlers,
+} from "@app/mocks";
 import { appsUrl, homeUrl } from "@app/routes";
 import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 import { render, screen } from "@testing-library/react";

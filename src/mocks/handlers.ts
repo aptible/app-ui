@@ -112,11 +112,12 @@ export const verifiedUserHandlers = (
 ) => {
   return [
     rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (_, res, ctx) => {
-      console.log('USER', user);
       return res(ctx.json({ _embedded: [user] }));
     }),
     rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
-      console.log('USER', user);
+      return res(ctx.json(user));
+    }),
+    rest.put(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
       return res(ctx.json(user));
     }),
     rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (_, res, ctx) => {

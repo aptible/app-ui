@@ -36,8 +36,5 @@ export const selectCanImpersonate = createSelector(
 
 export const selectIsUserVerified = createSelector(
   selectCurrentUser,
-  (user) => {
-    console.log(user);
-    return user.verified;
-  }
+  (user) => user.verified,
 );
