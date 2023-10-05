@@ -21,7 +21,6 @@ import {
   BoxGroup,
   Button,
   FormGroup,
-  IconAlertTriangle,
   Input,
   Loading,
   tokens,
@@ -119,8 +118,8 @@ const MultiFactor = () => {
   };
 
   const btns = user.otpEnabled ? (
-    <div>
-      <Button className="w-fit" onClick={disable}>
+    <div className="flex flex-col gap-4">
+      <Button className="w-fit" variant="delete" onClick={disable}>
         Disable 2FA
       </Button>
       <Link to={otpRecoveryCodesUrl()}>Download backup codes</Link>
@@ -206,7 +205,7 @@ const SecurityKeys = () => {
   return (
     <div>
       {user.otpEnabled ? (
-        <div>
+        <div className="flex flex-col gap-4">
           <div>
             The following Security Keys are associated with your account and can
             be used to log in:
@@ -257,7 +256,6 @@ const LogOut = () => {
         className="w-fit"
         onClick={() => setConfirm(true)}
       >
-        <IconAlertTriangle className="mr-2" color="#fff" />
         Log out all sessions
       </Button>
       {loader.isError ? (
