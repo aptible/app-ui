@@ -118,12 +118,12 @@ const MultiFactor = () => {
   };
 
   const btns = user.otpEnabled ? (
-    <div className="flex flex-col gap-4">
+    <Group>
       <Button className="w-fit" variant="delete" onClick={disable}>
         Disable 2FA
       </Button>
       <Link to={otpRecoveryCodesUrl()}>Download backup codes</Link>
-    </div>
+    </Group>
   ) : (
     <Button className="w-fit" onClick={() => navigate(otpSetupUrl())}>
       Configure 2FA
@@ -205,13 +205,13 @@ const SecurityKeys = () => {
   return (
     <div>
       {user.otpEnabled ? (
-        <div className="flex flex-col gap-4">
+        <Group>
           <div>
             The following Security Keys are associated with your account and can
             be used to log in:
           </div>
           <Link to={addSecurityKeyUrl()}>Add a new Security Key</Link>
-        </div>
+        </Group>
       ) : (
         <div>
           In order to add a hardware security key, you must set up 2FA
