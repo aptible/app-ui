@@ -15,7 +15,6 @@ import {
   Button,
   FormGroup,
   Input,
-  tokens,
 } from "../shared";
 
 interface U2fChallenge {
