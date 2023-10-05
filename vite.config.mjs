@@ -10,6 +10,7 @@ export default defineConfig(() => {
         output: {
           manualChunks: {
             chart: ["react-chartjs-2", "chart.js", "chartjs-adapter-date-fns"],
+            // NOTICE: do not include `date-fns` it breaks the build
             vendor: [
               "@github/webauthn-json",
               "@reduxjs/toolkit",
@@ -17,7 +18,6 @@ export default defineConfig(() => {
               "@stripe/react-stripe-js",
               "@stripe/stripe-js",
               "classnames",
-              "date-fns",
               "debug",
               "react",
               "react-dom",
@@ -36,6 +36,9 @@ export default defineConfig(() => {
     },
     plugins: [react(), tsconfigPaths()],
     server: {
+      port: 4200,
+    },
+    preview: {
       port: 4200,
     },
     test: {
