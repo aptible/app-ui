@@ -107,7 +107,7 @@ export const SignupPage = () => {
 
   return (
     <HeroBgView className="flex gap-6">
-      <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] lg:h-screen">
+      <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] h-fit min-h-screen">
         <div className="text-xl text-black font-bold">
           Launch, grow, and scale your app without worrying about infrastructure
         </div>
