@@ -939,8 +939,7 @@ export const CreateProjectGitStatusPage = () => {
         <div className="text-center mt-10">
           <h1 className={tokens.type.h1}>Deployment Failed</h1>
           <p className="my-4 text-gray-600">
-            Don't worry! Edit your project settings and click Redeploy when
-            ready.
+            Don't worry! Edit your configuration or push your code to redeploy.
           </p>
         </div>
       );
