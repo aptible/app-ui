@@ -100,7 +100,6 @@ import {
   StylesPage,
   SupportPage,
   TeamPage,
-  UnauthRequired,
   VerifyEmailPage,
   VerifyEmailRequired,
 } from "@app/ui";
@@ -596,9 +595,11 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.SETTINGS_PATH,
     element: (
-      <ElevateRequired>
-        <SettingsLayout />
-      </ElevateRequired>
+      <AuthRequired>
+        <ElevateRequired>
+          <SettingsLayout />
+        </ElevateRequired>
+      </AuthRequired>
     ),
     children: [
       {
@@ -649,57 +650,27 @@ export const appRoutes: RouteObject[] = [
 
   {
     path: routes.FORGOT_PASS_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <ForgotPassPage />,
-      },
-    ],
+    element: <ForgotPassPage />,
   },
 
   {
     path: routes.RESET_PASSWORD_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <ForgotPassVerifyPage />,
-      },
-    ],
+    element: <ForgotPassVerifyPage />,
   },
 
   {
     path: routes.SSO_ORG_FAILURE_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SsoFailurePage />,
-      },
-    ],
+    element: <SsoFailurePage />,
   },
 
   {
     path: routes.SSO_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SsoLoginPage />,
-      },
-    ],
+    element: <SsoLoginPage />,
   },
 
   {
     path: routes.SSO_DIRECT_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SsoDirectPage />,
-      },
-    ],
+    element: <SsoDirectPage />,
   },
 
   {

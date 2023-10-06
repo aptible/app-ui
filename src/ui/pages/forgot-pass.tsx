@@ -6,11 +6,13 @@ import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { HeroBgLayout } from "../layouts";
 import {
+  AlreadyAuthenticatedBanner,
   Banner,
   BannerMessages,
   Box,
   Button,
   FormGroup,
+  Group,
   Input,
   tokens,
 } from "../shared";
@@ -27,17 +29,20 @@ export const ForgotPassPage = () => {
 
   return (
     <HeroBgLayout>
-      <div className="text-center">
+      <div className="text-center mb-4">
         <h1 className={`${tokens.type.h1} text-center`}>Reset your password</h1>
         <p className="mt-6 text-gray-600 mb-4">
           Check your email for reset instructions or go back to{" "}
           <Link to={loginUrl()}>Log In</Link>.
         </p>
       </div>
-      <div className="pt-4">
-        <Box>
+
+      <Box>
+        <Group>
+          <AlreadyAuthenticatedBanner />
+          <BannerMessages {...loader} />
+
           <form onSubmit={onSubmit}>
-            <BannerMessages className="my-2" {...loader} />
             <FormGroup label="Email" htmlFor="email">
               <Input
                 type="email"
@@ -57,8 +62,8 @@ export const ForgotPassPage = () => {
               Reset Password
             </Button>
           </form>
-        </Box>
-      </div>
+        </Group>
+      </Box>
     </HeroBgLayout>
   );
 };
@@ -80,28 +85,10 @@ export const ForgotPassVerifyPage = () => {
         <h1 className={tokens.type.h1}>Reset Password</h1>
         <p className="mt-6 text-gray-600">Finish changing your password.</p>
       </div>
-      <Box>
-        <form onSubmit={onSubmit}>
-          <FormGroup label="New Password" htmlFor="pass">
-            <Input
-              type="password"
-              id="pass"
-              name="pass"
-              value={pass}
-              onChange={(e) => setPass(e.currentTarget.value)}
-              placeholder="Enter your new password"
-              className="w-full"
-            />
-          </FormGroup>
-          <Button
-            className="w-full mt-4"
-            disabled={pass === "" || loader.isSuccess}
-            isLoading={loader.isLoading}
-            type="submit"
-          >
-            Change password
-          </Button>
 
+      <Box>
+        <Group>
+          <AlreadyAuthenticatedBanner />
           {loader.isError ? (
             <BannerMessages className="my-2" {...loader} />
           ) : null}
@@ -110,7 +97,29 @@ export const ForgotPassVerifyPage = () => {
               Success! Continue to <Link to={loginUrl()}>login</Link>
             </Banner>
           ) : null}
-        </form>
+
+          <form onSubmit={onSubmit}>
+            <FormGroup label="New Password" htmlFor="pass">
+              <Input
+                type="password"
+                id="pass"
+                name="pass"
+                value={pass}
+                onChange={(e) => setPass(e.currentTarget.value)}
+                placeholder="Enter your new password"
+                className="w-full"
+              />
+            </FormGroup>
+            <Button
+              className="w-full mt-4"
+              disabled={pass === "" || loader.isSuccess}
+              isLoading={loader.isLoading}
+              type="submit"
+            >
+              Change password
+            </Button>
+          </form>
+        </Group>
       </Box>
     </HeroBgLayout>
   );

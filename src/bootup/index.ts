@@ -69,11 +69,13 @@ function* onFetchRequiredData() {
   yield* put(setLoaderStart({ id: FETCH_REQUIRED_DATA }));
   yield* call(fetchOrganizations.run, fetchOrganizations());
   const org = yield* select(selectOrganizationSelected);
-  yield* call(fetchUsers.run, fetchUsers({ orgId: org.id }));
-  yield* call(
-    fetchBillingDetail.run,
-    fetchBillingDetail({ id: org.billingDetailId }),
-  );
+  yield* all([
+    call(fetchUsers.run, fetchUsers({ orgId: org.id })),
+    call(
+      fetchBillingDetail.run,
+      fetchBillingDetail({ id: org.billingDetailId }),
+    ),
+  ]);
   yield* put(setLoaderSuccess({ id: FETCH_REQUIRED_DATA }));
 }
 

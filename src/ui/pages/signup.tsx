@@ -26,6 +26,7 @@ import { selectIsUserAuthenticated } from "@app/token";
 import { useValidator } from "../hooks";
 import { HeroBgView } from "../layouts";
 import {
+  AlreadyAuthenticatedBanner,
   AptibleLogo,
   Banner,
   BannerMessages,
@@ -153,12 +154,7 @@ export const SignupPage = () => {
           </div>
           <div className="mx-auto max-w-[500px] bg-white py-8 px-10 shadow rounded-lg border border-black-100">
             <form className="space-y-4" onSubmit={onSubmitForm}>
-              {isAuthenticated && !loader.isLoading ? (
-                <Banner variant="info">
-                  You are already logged in.{" "}
-                  <Link to={homeUrl()}>Go to the dashboard.</Link>
-                </Banner>
-              ) : null}
+              <AlreadyAuthenticatedBanner />
 
               <FormGroup
                 label="Name"

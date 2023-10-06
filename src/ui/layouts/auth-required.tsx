@@ -1,4 +1,4 @@
-import { selectHasPaymentMethod } from "@app/billing";
+import { selectBillingDetail, selectHasPaymentMethod } from "@app/billing";
 import { FETCH_REQUIRED_DATA } from "@app/bootup";
 import { createLog } from "@app/debug";
 import { selectLoaderById } from "@app/fx";
@@ -13,7 +13,7 @@ import {
 } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 import { AppState } from "@app/types";
-import { selectIsUserVerified } from "@app/users";
+import { selectCurrentUserId, selectIsUserVerified } from "@app/users";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
@@ -31,20 +31,10 @@ const denyList = [
 export const VerifyEmailRequired = ({
   children,
 }: { children?: React.ReactNode }) => {
-  const loader = useSelector((s: AppState) =>
-    selectLoaderById(s, { id: FETCH_REQUIRED_DATA }),
-  );
   const isUserVerified = useSelector(selectIsUserVerified);
+  const userId = useSelector(selectCurrentUserId);
 
-  if (loader.isLoading || loader.isIdle) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        <Loading />
-      </div>
-    );
-  }
-
-  if (!isUserVerified) {
+  if (userId !== "" && !isUserVerified) {
     log("user not verified, redirecting to verify");
     return <Navigate to={verifyEmailRequestUrl()} replace />;
   }
@@ -55,20 +45,10 @@ export const VerifyEmailRequired = ({
 export const PaymentMethodRequired = ({
   children,
 }: { children?: React.ReactNode }) => {
-  const loader = useSelector((s: AppState) =>
-    selectLoaderById(s, { id: FETCH_REQUIRED_DATA }),
-  );
+  const billingDetail = useSelector(selectBillingDetail);
   const hasPaymentMethod = useSelector(selectHasPaymentMethod);
 
-  if (loader.isLoading || loader.isIdle) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        <Loading />
-      </div>
-    );
-  }
-
-  if (!hasPaymentMethod) {
+  if (billingDetail.id !== "" && !hasPaymentMethod) {
     log("user has no payment method, redirecting to billing");
     return <Navigate to={plansUrl()} replace />;
   }
@@ -98,7 +78,7 @@ export const AuthRequired = ({ children }: { children?: React.ReactNode }) => {
   if (loader.isLoading || loader.isIdle) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
-        <Loading />
+        <Loading text="Loading token" />
       </div>
     );
   }
