@@ -14,6 +14,7 @@ describe("Loading app", () => {
   describe("user with expired token", () => {
     it("should be sent to login page", async () => {
       server.use(
+        ...verifiedUserHandlers(),
         rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
           return res(ctx.status(401), ctx.json({}));
         }),

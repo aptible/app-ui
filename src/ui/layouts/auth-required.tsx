@@ -11,9 +11,9 @@ import {
   signupUrl,
   verifyEmailRequestUrl,
 } from "@app/routes";
-import { selectIsUserAuthenticated } from "@app/token";
+import { selectAccessToken } from "@app/token";
 import { AppState } from "@app/types";
-import { selectCurrentUserId, selectIsUserVerified } from "@app/users";
+import { selectCurrentUser, selectIsUserVerified } from "@app/users";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
@@ -32,9 +32,9 @@ export const VerifyEmailRequired = ({
   children,
 }: { children?: React.ReactNode }) => {
   const isUserVerified = useSelector(selectIsUserVerified);
-  const userId = useSelector(selectCurrentUserId);
+  const user = useSelector(selectCurrentUser);
 
-  if (userId !== "" && !isUserVerified) {
+  if (user.id !== "" && !isUserVerified) {
     log("user not verified, redirecting to verify");
     return <Navigate to={verifyEmailRequestUrl()} replace />;
   }
@@ -62,30 +62,30 @@ export const AuthRequired = ({ children }: { children?: React.ReactNode }) => {
   const loader = useSelector((s: AppState) =>
     selectLoaderById(s, { id: FETCH_REQUIRED_DATA }),
   );
-  const isUserAuthenticated = useSelector(selectIsUserAuthenticated);
+  const accessToken = useSelector(selectAccessToken);
 
   useEffect(() => {
     if (
       loader.status === "success" &&
-      !isUserAuthenticated &&
+      accessToken === "" &&
       !denyList.includes(location.pathname)
     ) {
       log(`setting redirect path ${location.pathname}`);
       dispatch(setRedirectPath(location.pathname));
     }
-  }, [location.pathname, isUserAuthenticated, loader.status]);
+  }, [location.pathname, accessToken, loader.status]);
 
-  if (loader.isLoading || loader.isIdle) {
+  if (accessToken === "" && loader.lastSuccess > 0) {
+    log("user not authenticated, redirecting to login");
+    return <Navigate to={loginUrl()} replace />;
+  }
+
+  if (accessToken === "") {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
         <Loading text="Loading token" />
       </div>
     );
-  }
-
-  if (!isUserAuthenticated) {
-    log("user not authenticating, redirecting to login");
-    return <Navigate to={loginUrl()} replace />;
   }
 
   return children ? <>{children}</> : <Outlet />;

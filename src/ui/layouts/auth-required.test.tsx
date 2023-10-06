@@ -25,8 +25,9 @@ describe("AllRequired", () => {
     });
     render(
       <TestProvider>
-        <AllRequired />
-        <h1>Test element</h1>
+        <AllRequired>
+          <h1>Test element</h1>
+        </AllRequired>
       </TestProvider>,
     );
     await waitForElementToBeRemoved(() => screen.queryByText(/Loading token/));

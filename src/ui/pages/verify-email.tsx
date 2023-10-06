@@ -21,7 +21,7 @@ import {
 export const VerifyEmailPage = () => {
   const loader = useLoader(fetchCurrentToken);
   const dispatch = useDispatch();
-  const { id: userId, email } = useSelector(selectJWTToken);
+  const jwt = useSelector(selectJWTToken);
   const user = useSelector(selectCurrentUser);
   const { verificationId = "", verificationCode = "" } = useParams();
   const navigate = useNavigate();
@@ -35,16 +35,16 @@ export const VerifyEmailPage = () => {
   };
 
   useEffect(() => {
-    if (verificationCode && verificationId && userId) {
+    if (verificationCode && verificationId && user.id) {
       dispatch(
         verifyEmail({
-          userId,
+          userId: user.id,
           challengeId: verificationId,
           verificationCode: verificationCode,
         }),
       );
     }
-  }, [verificationId, verificationCode, userId]);
+  }, [verificationId, verificationCode, user.id]);
 
   // useLoaderSuccess(verifyEmailLoader) does *not* work in this case
   // because there's a race between submitting email verification request
@@ -54,7 +54,7 @@ export const VerifyEmailPage = () => {
       navigate(redirectPath || createProjectGitUrl());
       dispatch(resetRedirectPath());
     }
-  }, [user.verified, verifyEmailLoader.status]);
+  }, [verifyEmailLoader.status]);
 
   if (verifyEmailLoader.isLoading) {
     return (
@@ -90,8 +90,8 @@ export const VerifyEmailPage = () => {
               </Banner>
             ) : (
               <p className="text-h3 text-gray-500 leading-normal">
-                We've sent a verification link to {email}. Click the link in the
-                email to confirm your account.
+                We've sent a verification link to {jwt.email}. Click the link in
+                the email to confirm your account.
               </p>
             )}
           </div>
