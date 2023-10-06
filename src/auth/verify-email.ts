@@ -1,9 +1,7 @@
 import { authApi } from "@app/api";
-import { leading, put, setLoaderSuccess } from "@app/fx";
+import { leading, put } from "@app/fx";
 import { AuthApiCtx } from "@app/types";
 import { patchUsers } from "@app/users";
-
-import { AUTH_LOADER_ID } from "./loader";
 
 interface VerifyEmail {
   userId: string;
@@ -31,7 +29,6 @@ export const verifyEmail = authApi.post<VerifyEmail>(
     }
 
     yield* put(patchUsers({ [userId]: { id: userId, verified: true } }));
-    yield* put(setLoaderSuccess({ id: AUTH_LOADER_ID }));
   },
 );
 

@@ -4,7 +4,6 @@ import { createLog } from "@app/debug";
 import { selectLoaderById } from "@app/fx";
 import { setRedirectPath } from "@app/redirect-path";
 import {
-  billingMethodUrl,
   homeUrl,
   loginUrl,
   logoutUrl,
@@ -29,22 +28,61 @@ const denyList = [
   verifyEmailRequestUrl(),
 ];
 
-export const AuthRequired = () => {
+export const VerifyEmailRequired = ({
+  children,
+}: { children?: React.ReactNode }) => {
+  const loader = useSelector((s: AppState) =>
+    selectLoaderById(s, { id: FETCH_REQUIRED_DATA }),
+  );
+  const isUserVerified = useSelector(selectIsUserVerified);
+
+  if (loader.isLoading || loader.isIdle) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (!isUserVerified) {
+    log("user not verified, redirecting to verify");
+    return <Navigate to={verifyEmailRequestUrl()} replace />;
+  }
+
+  return children ? <>{children}</> : <Outlet />;
+};
+
+export const PaymentMethodRequired = ({
+  children,
+}: { children?: React.ReactNode }) => {
+  const loader = useSelector((s: AppState) =>
+    selectLoaderById(s, { id: FETCH_REQUIRED_DATA }),
+  );
+  const hasPaymentMethod = useSelector(selectHasPaymentMethod);
+
+  if (loader.isLoading || loader.isIdle) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (!hasPaymentMethod) {
+    log("user has no payment method, redirecting to billing");
+    return <Navigate to={plansUrl()} replace />;
+  }
+
+  return children ? <>{children}</> : <Outlet />;
+};
+
+export const AuthRequired = ({ children }: { children?: React.ReactNode }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const loader = useSelector((s: AppState) =>
     selectLoaderById(s, { id: FETCH_REQUIRED_DATA }),
   );
   const isUserAuthenticated = useSelector(selectIsUserAuthenticated);
-  const isUserVerified = useSelector(selectIsUserVerified);
-  const hasPaymentMethod = useSelector(selectHasPaymentMethod);
-  log({
-    isUserAuthenticated,
-    isUserVerified,
-    hasPaymentMethod,
-    loader,
-    pathname: location.pathname,
-  });
 
   useEffect(() => {
     if (
@@ -59,7 +97,7 @@ export const AuthRequired = () => {
 
   if (loader.isLoading || loader.isIdle) {
     return (
-      <div className="flex w-full h-full items-center justify-center">
+      <div className="flex h-screen w-screen items-center justify-center">
         <Loading />
       </div>
     );
@@ -70,18 +108,17 @@ export const AuthRequired = () => {
     return <Navigate to={loginUrl()} replace />;
   }
 
-  if (!isUserVerified && !/verify/.test(location.pathname)) {
-    log("user not verified, redirecting to verify");
-    return <Navigate to={verifyEmailRequestUrl()} replace />;
-  }
+  return children ? <>{children}</> : <Outlet />;
+};
 
-  if (
-    !hasPaymentMethod &&
-    ![plansUrl(), billingMethodUrl()].includes(location.pathname)
-  ) {
-    log("user has no payment method, redirecting to billing");
-    return <Navigate to={plansUrl()} replace />;
-  }
-
-  return <Outlet />;
+export const AllRequired = ({ children }: { children?: React.ReactNode }) => {
+  return (
+    <AuthRequired>
+      <VerifyEmailRequired>
+        <PaymentMethodRequired>
+          {children ? <>{children}</> : <Outlet />}
+        </PaymentMethodRequired>
+      </VerifyEmailRequired>
+    </AuthRequired>
+  );
 };

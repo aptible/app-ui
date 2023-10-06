@@ -25,7 +25,7 @@ export const VerifyEmailPage = () => {
   const dispatch = useDispatch();
   const { id: userId, email } = useSelector(selectJWTToken);
   const user = useSelector(selectCurrentUser);
-  const params = useParams();
+  const { verificationId = "", verificationCode = "" } = useParams();
   const navigate = useNavigate();
   const verifyEmailLoader = useLoader(verifyEmail);
   const redirectPath = useSelector(selectRedirectPath);
@@ -37,16 +37,16 @@ export const VerifyEmailPage = () => {
   };
 
   useEffect(() => {
-    if (params.verificationCode && params.verificationId && userId) {
+    if (verificationCode && verificationId && userId) {
       dispatch(
         verifyEmail({
           userId,
-          challengeId: params.verificationId,
-          verificationCode: params.verificationCode,
+          challengeId: verificationId,
+          verificationCode: verificationCode,
         }),
       );
     }
-  }, [params.verificationId, params.verificationCode, userId]);
+  }, [verificationId, verificationCode, userId]);
 
   // useLoaderSuccess(verifyEmailLoader) does *not* work in this case
   // because there's a race between submitting email verification request
@@ -60,8 +60,8 @@ export const VerifyEmailPage = () => {
 
   if (verifyEmailLoader.isLoading) {
     return (
-      <div className="flex h-screen w-screen bg-gray-900 text-gray-400 items-center justify-center">
-        <Loading className="text-brandGreen-400" />
+      <div className="flex h-screen w-screen items-center justify-center">
+        <Loading />
       </div>
     );
   }

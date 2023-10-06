@@ -7,7 +7,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { rest } from "msw";
-import { AuthRequired } from "./auth-required";
+import { AllRequired } from "./auth-required";
 
 const LoginMock = () => {
   return <div>Simulated login</div>;
@@ -16,7 +16,7 @@ const VerifyMock = () => {
   return <div>Simulated verify</div>;
 };
 
-describe("AuthRequired", () => {
+describe("AllRequired", () => {
   it("should allow child to render without a redirect when current token active", async () => {
     server.use(...verifiedUserHandlers());
     const { TestProvider } = setupIntegrationTest({
@@ -25,7 +25,7 @@ describe("AuthRequired", () => {
     });
     render(
       <TestProvider>
-        <AuthRequired />
+        <AllRequired />
         <h1>Test element</h1>
       </TestProvider>,
     );
@@ -50,7 +50,7 @@ describe("AuthRequired", () => {
     );
     render(
       <TestProvider>
-        <AuthRequired />
+        <AllRequired />
         <h1>Test element</h1>
       </TestProvider>,
     );
@@ -93,7 +93,7 @@ describe("AuthRequired", () => {
     render(
       <TestProvider>
         <div>
-          <AuthRequired />
+          <AllRequired />
           <h1>Test element</h1>
         </div>
       </TestProvider>,

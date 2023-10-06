@@ -4,6 +4,7 @@ import * as routes from "@app/routes";
 import {
   ActivityPage,
   AddSecurityKeyPage,
+  AllRequired,
   AppActivityPage,
   AppCreateEndpointPage,
   AppDetailConfigPage,
@@ -101,6 +102,7 @@ import {
   TeamPage,
   UnauthRequired,
   VerifyEmailPage,
+  VerifyEmailRequired,
 } from "@app/ui";
 import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
 import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
@@ -129,7 +131,7 @@ const applyPatches = (appRoute: RouteObject) =>
 export const appRoutes: RouteObject[] = [
   {
     path: routes.HOME_PATH,
-    element: <AuthRequired />,
+    element: <AllRequired />,
     children: [
       {
         index: true,
@@ -471,31 +473,6 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
-        path: routes.LOGOUT_PATH,
-        element: <LogoutPage />,
-      },
-
-      {
-        path: routes.VERIFY_EMAIL_REQUEST_PATH,
-        element: <VerifyEmailPage />,
-      },
-
-      {
-        path: routes.VERIFY_EMAIL_PATH,
-        element: <VerifyEmailPage />,
-      },
-
-      {
-        path: routes.PLANS_PATH,
-        element: <PlansPage />,
-      },
-
-      {
-        path: routes.BILLING_METHOD_PAGE,
-        element: <BillingMethodPage />,
-      },
-
-      {
         path: routes.CREATE_ORG_PATH,
         element: <CreateOrgPage />,
       },
@@ -554,16 +531,66 @@ export const appRoutes: RouteObject[] = [
           },
         ],
       },
-      {
-        path: routes.SUPPORT_URL,
-        element: <SupportPage />,
-      },
     ],
+  },
+
+  {
+    path: routes.LOGOUT_PATH,
+    element: (
+      <AuthRequired>
+        <LogoutPage />
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.VERIFY_EMAIL_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailPage />
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.VERIFY_EMAIL_REQUEST_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailPage />
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.PLANS_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <PlansPage />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.BILLING_METHOD_PAGE,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <BillingMethodPage />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
   },
 
   {
     path: routes.CREATE_PROJECT_PATH,
     element: <CreateProjectPage />,
+  },
+
+  {
+    path: routes.SUPPORT_URL,
+    element: <SupportPage />,
   },
 
   {
@@ -688,10 +715,6 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.STYLES_PATH,
     element: <StylesPage />,
-  },
-  {
-    path: routes.SUPPORT_URL,
-    element: <SupportPage />,
   },
 
   {
