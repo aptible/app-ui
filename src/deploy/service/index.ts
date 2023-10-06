@@ -20,7 +20,7 @@ import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
-export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m4";
+export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
 
 export interface DeployServiceResponse {
   id: number;

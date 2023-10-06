@@ -138,7 +138,7 @@ describe("DatabaseScalePage", () => {
         expect(screen.getByLabelText(/Container Profile/)).toBeInTheDocument();
         expect(
           screen.getByText(
-            /Changed from General Purpose \(M\) - Legacy to Compute Optimized \(C\)/,
+            /Changed from General Purpose \(M\) to Compute Optimized \(C\)/,
           ),
         ).toBeInTheDocument();
         expect(screen.getByText(/Container Size/)).toBeInTheDocument();

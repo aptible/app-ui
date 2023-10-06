@@ -249,8 +249,7 @@ export const selectContainerProfilesForStack = createSelector(
 
     if (stack.allowMInstanceProfile) {
       containerProfiles.m4 = CONTAINER_PROFILES.m4;
-      // TODO - when ready on backends, uncomment this line
-      // containerProfiles.m5 = CONTAINER_PROFILES.m5;
+      containerProfiles.m5 = CONTAINER_PROFILES.m5;
     }
 
     if (stack.allowRInstanceProfile) {
