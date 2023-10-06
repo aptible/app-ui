@@ -38,11 +38,11 @@ export const createText = (mixin: string, id: string | number = "1") => {
 
 export const testEnv = createEnv({
   origin: "app",
-  authUrl: "https://auth.aptible.com",
-  apiUrl: "https://api.aptible.com",
-  billingUrl: "https://billing.aptible.com",
-  legacyDashboardUrl: "https://dashboard.aptible.com",
-  metricTunnelUrl: "https://metrictunnel.aptible.com",
+  authUrl: "https://auth.aptible-test.com",
+  apiUrl: "https://api.aptible-test.com",
+  billingUrl: "https://billing.aptible-test.com",
+  legacyDashboardUrl: "https://dashboard.aptible-test.com",
+  metricTunnelUrl: "https://metrictunnel.aptible-test.com",
 });
 
 export const testUserId = createId();

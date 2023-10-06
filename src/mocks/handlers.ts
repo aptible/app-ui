@@ -442,7 +442,7 @@ const apiHandlers = [
     return res(ctx.json(testEndpoint));
   }),
   rest.get(`${testEnv.apiUrl}/vhosts/:id/operations`, (_, res, ctx) => {
-    return res(ctx.json({_embedded: { operations: [] } }))
+    return res(ctx.json({ _embedded: { operations: [] } }));
   }),
   rest.post(`${testEnv.apiUrl}/vhosts/:id/operations`, async (_, res, ctx) => {
     return res(
