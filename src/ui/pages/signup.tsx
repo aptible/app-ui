@@ -1,8 +1,3 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { Link, useSearchParams } from "react-router-dom";
-
 import { defaultAuthLoaderMeta, signup } from "@app/auth";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import {
@@ -14,21 +9,22 @@ import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
   acceptInvitationWithCodeUrl,
   createProjectGitUrl,
-  homeUrl,
   loginUrl,
   verifyEmailRequestUrl,
 } from "@app/routes";
+import { selectIsUserAuthenticated } from "@app/token";
 import { AppState } from "@app/types";
 import { CreateUserForm } from "@app/users";
 import { emailValidator, existValidtor, passValidator } from "@app/validator";
-
-import { selectIsUserAuthenticated } from "@app/token";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { Link, useSearchParams } from "react-router-dom";
 import { useValidator } from "../hooks";
 import { HeroBgView } from "../layouts";
 import {
   AlreadyAuthenticatedBanner,
   AptibleLogo,
-  Banner,
   BannerMessages,
   Button,
   CreateProjectFooter,

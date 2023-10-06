@@ -1,12 +1,14 @@
-import { useLoader } from "@app/fx";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
 import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";
+import { useLoader } from "@app/fx";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import { createProjectGitUrl, homeUrl, loginUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
+import { selectCurrentUser } from "@app/users";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
+import { HeroBgLayout } from "../layouts";
 import {
   Banner,
   Box,
@@ -15,10 +17,6 @@ import {
   Loading,
   ResendVerificationEmail,
 } from "../shared";
-
-import { selectCurrentUser } from "@app/users";
-import { Link } from "react-router-dom";
-import { HeroBgLayout } from "../layouts";
 
 export const VerifyEmailPage = () => {
   const loader = useLoader(fetchCurrentToken);
