@@ -209,7 +209,6 @@ function* expiredToken(ctx: ApiCtx, next: Next) {
   if (!ctx.response) return;
   if (ctx.req().method === "GET" && ctx.response.status === 401) {
     yield* put(resetToken());
-    ctx.actions.push(resetToken());
   }
 }
 

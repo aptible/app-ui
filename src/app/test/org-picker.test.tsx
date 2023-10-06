@@ -15,12 +15,7 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { orgPickerUrl } from "@app/routes";
-import {
-  setupAppIntegrationTest,
-  waitForBootup,
-  waitForData,
-  waitForToken,
-} from "@app/test";
+import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { rest } from "msw";
 
 describe("Selecting an Organization", () => {
@@ -39,7 +34,6 @@ describe("Selecting an Organization", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(<App />);
 
@@ -72,10 +66,10 @@ describe("Selecting an Organization", () => {
     });
 
     server.use(
+      ...verifiedUserHandlers(),
       ...stacksWithResources({
         stacks: [testStack, testStackSpecial, testStackDontShow],
       }),
-      ...verifiedUserHandlers(),
       rest.get(`${testEnv.authUrl}/organizations`, (_, res, ctx) => {
         return res(
           ctx.json({ _embedded: { organizations: [testOrg, testOrgSpecial] } }),

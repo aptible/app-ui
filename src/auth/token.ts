@@ -1,4 +1,4 @@
-import { call, put, setLoaderSuccess } from "@app/fx";
+import { call, setLoaderSuccess } from "@app/fx";
 import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 
 import { authApi } from "@app/api";
@@ -33,10 +33,6 @@ export const fetchCurrentToken = authApi.get<never, TokenSuccessResponse>(
   function* onFetchToken(ctx, next) {
     ctx.noToken = true;
     yield* next();
-    if (!ctx.json.ok) {
-      yield* put(resetToken());
-      return;
-    }
     yield* call(saveToken, ctx);
   },
 );

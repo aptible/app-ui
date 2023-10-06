@@ -52,7 +52,6 @@ describe("LogoutPage", () => {
       fireEvent.click(logout);
 
       await screen.findByText(/Login!/);
-      await sleep(500);
 
       expect(store.getState().deploy).toEqual({
         activePlans: {},

@@ -15,7 +15,7 @@ import {
   CREATE_PROJECT_GIT_SETTINGS_PATH,
   createProjectGitSettingsUrl,
 } from "@app/routes";
-import { setupIntegrationTest, sleep, waitForBootup } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 
 import { CreateProjectGitSettingsPage } from "./create-project-git-settings";
 
@@ -249,8 +249,6 @@ describe("CreateProjectGitSettingsPage", () => {
         <CreateProjectGitSettingsPage />
       </TestProvider>,
     );
-
-    await sleep(0);
 
     const newDbBtn = await screen.findByRole("button", {
       name: /New Database/,

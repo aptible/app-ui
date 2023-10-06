@@ -1,12 +1,14 @@
-import { useLoader } from "@app/fx";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
 import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";
+import { useLoader } from "@app/fx";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import { createProjectGitUrl, homeUrl, loginUrl } from "@app/routes";
 import { selectJWTToken } from "@app/token";
+import { selectCurrentUser } from "@app/users";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
+import { HeroBgLayout } from "../layouts";
 import {
   Banner,
   Box,
@@ -16,16 +18,12 @@ import {
   ResendVerificationEmail,
 } from "../shared";
 
-import { selectCurrentUser } from "@app/users";
-import { Link } from "react-router-dom";
-import { HeroBgLayout } from "../layouts";
-
 export const VerifyEmailPage = () => {
   const loader = useLoader(fetchCurrentToken);
   const dispatch = useDispatch();
-  const { id: userId, email } = useSelector(selectJWTToken);
+  const jwt = useSelector(selectJWTToken);
   const user = useSelector(selectCurrentUser);
-  const params = useParams();
+  const { verificationId = "", verificationCode = "" } = useParams();
   const navigate = useNavigate();
   const verifyEmailLoader = useLoader(verifyEmail);
   const redirectPath = useSelector(selectRedirectPath);
@@ -37,16 +35,16 @@ export const VerifyEmailPage = () => {
   };
 
   useEffect(() => {
-    if (params.verificationCode && params.verificationId && userId) {
+    if (verificationCode && verificationId && user.id) {
       dispatch(
         verifyEmail({
-          userId,
-          challengeId: params.verificationId,
-          verificationCode: params.verificationCode,
+          userId: user.id,
+          challengeId: verificationId,
+          verificationCode: verificationCode,
         }),
       );
     }
-  }, [params.verificationId, params.verificationCode, userId]);
+  }, [verificationId, verificationCode, user.id]);
 
   // useLoaderSuccess(verifyEmailLoader) does *not* work in this case
   // because there's a race between submitting email verification request
@@ -56,12 +54,12 @@ export const VerifyEmailPage = () => {
       navigate(redirectPath || createProjectGitUrl());
       dispatch(resetRedirectPath());
     }
-  }, [user.verified, verifyEmailLoader.status]);
+  }, [verifyEmailLoader.status]);
 
   if (verifyEmailLoader.isLoading) {
     return (
-      <div className="flex h-screen w-screen bg-gray-900 text-gray-400 items-center justify-center">
-        <Loading className="text-brandGreen-400" />
+      <div className="flex h-screen w-screen items-center justify-center">
+        <Loading />
       </div>
     );
   }
@@ -92,8 +90,8 @@ export const VerifyEmailPage = () => {
               </Banner>
             ) : (
               <p className="text-h3 text-gray-500 leading-normal">
-                We've sent a verification link to {email}. Click the link in the
-                email to confirm your account.
+                We've sent a verification link to {jwt.email}. Click the link in
+                the email to confirm your account.
               </p>
             )}
           </div>

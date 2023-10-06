@@ -1,6 +1,6 @@
 import { prepareStore, selectLoaderById } from "@app/fx";
 import { Store, configureStore } from "@reduxjs/toolkit";
-import { act, waitFor } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
 import { REHYDRATE } from "redux-persist";
@@ -156,11 +156,8 @@ export const waitForEnv = (store: Store<AppState>, envId: string | number) =>
   });
 
 export const sleep = (n: number) =>
-  act(
-    () =>
-      new Promise<void>((resolve) => {
-        setTimeout(() => {
-          resolve();
-        }, n);
-      }),
-  );
+  new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, n);
+  });

@@ -13,7 +13,6 @@ import {
 import { databaseScaleUrl } from "@app/routes";
 import {
   setupAppIntegrationTest,
-  sleep,
   waitForBootup,
   waitForData,
   waitForEnv,
@@ -67,8 +66,6 @@ describe("DatabaseScalePage", () => {
       /Optimize container performance with a custom profile./,
     );
     const btn = await screen.findByRole("button", { name: /Save Changes/ });
-    // need to load all the service data into useState() hooks before checking disabled
-    await sleep(0);
     expect(btn).toBeDisabled();
 
     const diskSize = await screen.findByLabelText(/Disk Size/);

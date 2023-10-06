@@ -117,6 +117,9 @@ export const verifiedUserHandlers = (
     rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
       return res(ctx.json(user));
     }),
+    rest.put(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
+      return res(ctx.json(user));
+    }),
     rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (_, res, ctx) => {
       return res(ctx.json({ _embedded: { roles: [role] } }));
     }),
@@ -437,6 +440,9 @@ const apiHandlers = [
   }),
   rest.post(`${testEnv.apiUrl}/services/:id/vhosts`, async (_, res, ctx) => {
     return res(ctx.json(testEndpoint));
+  }),
+  rest.get(`${testEnv.apiUrl}/vhosts/:id/operations`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { operations: [] } }));
   }),
   rest.post(`${testEnv.apiUrl}/vhosts/:id/operations`, async (_, res, ctx) => {
     return res(
