@@ -6,7 +6,6 @@ import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { HeroBgLayout } from "../layouts";
 import {
-  AlreadyAuthenticatedBanner,
   Banner,
   BannerMessages,
   Box,
@@ -39,7 +38,6 @@ export const ForgotPassPage = () => {
 
       <Box>
         <Group>
-          <AlreadyAuthenticatedBanner />
           <BannerMessages {...loader} />
 
           <form onSubmit={onSubmit}>
@@ -88,7 +86,6 @@ export const ForgotPassVerifyPage = () => {
 
       <Box>
         <Group>
-          <AlreadyAuthenticatedBanner />
           {loader.isError ? (
             <BannerMessages className="my-2" {...loader} />
           ) : null}
