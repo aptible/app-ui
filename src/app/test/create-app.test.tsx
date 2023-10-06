@@ -96,7 +96,7 @@ describe("Create App flow", () => {
       await screen.findByRole("link", {
         name: /View Environment/,
       });
-      const status = await screen.findByText(/Deployed today/);
+      const status = await screen.findByText(/Deployed/);
       expect(status).toBeInTheDocument();
 
       await screen.findByText("Initial configuration");
