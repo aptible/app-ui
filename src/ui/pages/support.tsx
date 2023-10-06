@@ -4,6 +4,7 @@ import {
   uploadAttachment,
 } from "@app/deploy/support";
 import { resetLoaderById, useLoader, useQuery } from "@app/fx";
+import { tunaEvent } from "@app/tuna";
 import { selectCurrentUser } from "@app/users";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -50,6 +51,7 @@ export const SupportPage = () => {
   });
   const [subjectTyping, setSubjectTyping] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachmentObject[]>([]);
+  const [viewedSuggestion, setViewedSuggestion] = useState(false);
 
   // Drag and Drop reference hook and functions
   const drop = useRef(null);
@@ -105,6 +107,10 @@ export const SupportPage = () => {
     e.preventDefault();
     const attachments = attachedFiles.map((file) => file.token);
     dispatch(createSupportTicket({ ...formState, attachments: attachments }));
+    tunaEvent(
+      "submittedAppUiSupportForm",
+      `{ "viewedDocs": "${viewedSuggestion}", "email": "${user.email}" }`,
+    );
     setFormState({
       email: user.email || "",
       name: user.name || "",
@@ -114,6 +120,7 @@ export const SupportPage = () => {
       priority: "",
     });
     setAttachedFiles([]);
+    setViewedSuggestion(false);
   };
 
   const assignAttachment = (attachment: AttachmentObject) => {
@@ -235,7 +242,21 @@ export const SupportPage = () => {
                     {algoliaLoader.meta.hits.map((hit: any, key: number) => {
                       return (
                         <li key={key + 1}>
-                          <div>
+                          <div
+                            onClick={() => {
+                              tunaEvent(
+                                "usedSupportSuggestion",
+                                `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
+                              );
+                            }}
+                            // linter is requiring onKeyPress as well
+                            onKeyPress={() => {
+                              tunaEvent(
+                                "usedSupportSuggestion",
+                                `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
+                              );
+                            }}
+                          >
                             <a target="_blank" href={hit.url} rel="noreferrer">
                               {hit.title}
                             </a>
