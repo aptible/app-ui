@@ -53,7 +53,7 @@ export const PlansPage = () => {
       <div className="flex text-center items-center justify-center my-4">
         <div className="max-w-2xl">
           <p>
-            Your trial has expired, choose a plan to continue or{" "}
+            If your trial has expired, choose a plan to continue or{" "}
             <Link to={logoutUrl()}>Log Out</Link>
           </p>
         </div>
