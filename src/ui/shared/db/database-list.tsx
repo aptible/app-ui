@@ -4,7 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { IconInfo, IconPlusCircle } from "../icons";
 import { Tooltip } from "../tooltip";
 
-import { prettyDateRelative } from "@app/date";
+import { prettyEnglishDateWithTime } from "@app/date";
 import {
   DeployDatabaseRow,
   calcMetrics,
@@ -116,7 +116,7 @@ export const LastOpCell = ({ database }: DatabaseCellProps) => {
       <div className={tokens.type.darker} />
       <div className={tokens.type["normal lighter"]}>
         <OpStatus status={lastOperation.status} />{" "}
-        {prettyDateRelative(lastOperation.createdAt)}
+        {prettyEnglishDateWithTime(lastOperation.createdAt)}
       </div>
     </Td>
   );

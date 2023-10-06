@@ -1,4 +1,4 @@
-import { prettyDateRelative } from "@app/date";
+import { prettyEnglishDateWithTime } from "@app/date";
 import {
   calcServiceMetrics,
   fetchApps,
@@ -119,7 +119,7 @@ export const AppLastOpCell = ({ app }: AppCellProps) => {
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
             <OpStatus status={lastOperation.status} />{" "}
-            {prettyDateRelative(lastOperation.createdAt)}
+            {prettyEnglishDateWithTime(lastOperation.createdAt)}
           </div>
         </>
       ) : (

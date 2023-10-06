@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 
-import { prettyDateRelative } from "@app/date";
+import { prettyEnglishDateWithTime } from "@app/date";
 import { selectEnvironmentById } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployOperation, OperationStatus } from "@app/types";
@@ -39,7 +39,7 @@ export const EnvironmentOperationActivity = ({
         </span>
         <br />
         <span style={{ textTransform: "capitalize" }}>
-          {prettyDateRelative(operation.createdAt)}
+          {prettyEnglishDateWithTime(operation.createdAt)}
         </span>
       </Td>
     </tr>
