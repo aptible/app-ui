@@ -40,9 +40,6 @@ const ServiceListRow = ({
             {service.processType}
           </div>
           <div className={tokens.type["normal lighter"]}>ID: {service.id}</div>
-          <div className={tokens.type["normal lighter"]}>
-            {service.processType}
-          </div>
         </Td>
 
         <Td className="flex-1">
