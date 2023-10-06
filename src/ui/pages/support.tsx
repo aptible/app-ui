@@ -242,18 +242,22 @@ export const SupportPage = () => {
                     {algoliaLoader.meta.hits.map((hit: any, key: number) => {
                       return (
                         <li key={key + 1}>
-                          <div>
-                            <a
-                              target="_blank"
-                              href={hit.url}
-                              rel="noreferrer"
-                              onClick={() => {
-                                tunaEvent(
-                                  "usedSupportSuggestion",
-                                  `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
-                                );
-                              }}
-                            >
+                          <div
+                            onClick={() => {
+                              tunaEvent(
+                                "usedSupportSuggestion",
+                                `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
+                              );
+                            }}
+                            // linter is requiring onKeyPress as well
+                            onKeyPress={() => {
+                              tunaEvent(
+                                "usedSupportSuggestion",
+                                `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
+                              );
+                            }}
+                          >
+                            <a target="_blank" href={hit.url} rel="noreferrer">
                               {hit.title}
                             </a>
                           </div>
