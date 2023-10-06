@@ -6,6 +6,7 @@ import {
   AddSecurityKeyPage,
   AppActivityPage,
   AppCreateEndpointPage,
+  AppDetailConfigPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailPage,
@@ -32,6 +33,7 @@ import {
   CreateProjectGitStatusPage,
   CreateProjectNamePage,
   CreateProjectPage,
+  CreateStackPage,
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
@@ -82,12 +84,14 @@ import {
   SSHSettingsPage,
   SearchPage,
   SecuritySettingsPage,
+  SettingsLayout,
   SettingsPage,
   SignupPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
   StackDetailEnvironmentsPage,
+  StackDetailHidsPage,
   StackDetailLayout,
   StackDetailVpcPeeringPage,
   StackDetailVpnTunnelsPage,
@@ -157,6 +161,15 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
+        path: routes.CREATE_STACK_PATH,
+        element: (
+          <AppSidebarLayout>
+            <CreateStackPage />
+          </AppSidebarLayout>
+        ),
+      },
+
+      {
         path: routes.STACKS_PATH,
         children: [
           {
@@ -179,6 +192,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.STACK_DETAIL_VPN_TUNNELS_PATH,
                 element: <StackDetailVpnTunnelsPage />,
+              },
+              {
+                path: routes.STACK_DETAIL_HIDS_PATH,
+                element: <StackDetailHidsPage />,
               },
             ],
           },
@@ -234,6 +251,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.APP_SETTINGS_PATH,
                 element: <AppSettingsPage />,
+              },
+              {
+                path: routes.APP_CONFIG_PATH,
+                element: <AppDetailConfigPage />,
               },
             ],
           },
@@ -485,21 +506,6 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
-        path: routes.SETTINGS_PATH,
-        element: <SettingsPage />,
-        children: [
-          {
-            index: true,
-            element: <SettingsPage />,
-          },
-          {
-            path: routes.TEAM_PATH,
-            element: <TeamPage />,
-          },
-        ],
-      },
-
-      {
         path: routes.CREATE_PROJECT_SETUP_PATH,
         element: <CreateProjectFromAccountSetupPage />,
       },
@@ -561,12 +567,17 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.SETTINGS_PATH,
     element: (
       <ElevateRequired>
-        <SettingsPage />
+        <SettingsLayout />
       </ElevateRequired>
     ),
     children: [
+      {
+        index: true,
+        element: <SettingsPage />,
+      },
       {
         path: routes.SECURITY_SETTINGS_PATH,
         element: <SecuritySettingsPage />,
@@ -590,6 +601,11 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.ADD_SECURITY_KEY_PATH,
         element: <AddSecurityKeyPage />,
+      },
+
+      {
+        path: routes.TEAM_PATH,
+        element: <TeamPage />,
       },
     ],
   },

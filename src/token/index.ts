@@ -116,7 +116,7 @@ export const reducers = createReducerMap(token, elevatedToken);
 const unixNow = () => Math.floor(Date.now() / 1000);
 const initJWTToken = defaultJWTToken();
 const findJWTToken = (curToken: Token) => {
-  if (!curToken.accessToken) {
+  if (curToken.accessToken === "") {
     return initJWTToken;
   }
   return parseJwt(curToken.accessToken);
@@ -131,7 +131,7 @@ export const selectUserUrl = (state: AppState) => selectToken(state).userUrl;
 export const selectJWTToken = createSelector(selectToken, findJWTToken);
 export const selectIsTokenValid = createSelector(
   selectJWTToken,
-  (jwtToken) => jwtToken.scope === "manage" && !hasExpired(jwtToken),
+  (jwtToken) => jwtToken.scope !== "" && !hasExpired(jwtToken),
 );
 
 export const selectIsImpersonated = (state: AppState) => {
@@ -140,8 +140,7 @@ export const selectIsImpersonated = (state: AppState) => {
   }
   return selectActorUrl(state) !== selectUserUrl(state);
 };
-export const selectIsUserAuthenticated = (state: AppState) =>
-  !!selectAccessToken(state);
+export const selectIsUserAuthenticated = selectIsTokenValid;
 
 export const selectElevatedToken = (state: AppState) =>
   state[ELEVATED_TOKEN_NAME];

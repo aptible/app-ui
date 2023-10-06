@@ -20,11 +20,7 @@ import {
   updateDatabase,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import {
-  databaseActivityUrl,
-  environmentDatabasesUrl,
-  operationDetailUrl,
-} from "@app/routes";
+import { databaseActivityUrl, environmentActivityUrl } from "@app/routes";
 import {
   AppState,
   DeployDatabase,
@@ -41,14 +37,13 @@ import {
   Button,
   ButtonCreate,
   ButtonDestroy,
-  ButtonLinkExternal,
+  ButtonLinkDocs,
   ButtonOps,
   CheckBox,
   ExternalLink,
   FormGroup,
   Group,
   IconAlertTriangle,
-  IconExternalLink,
   IconRefresh,
   IconTrash,
   Input,
@@ -72,7 +67,7 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
   const loader = useLoader(action);
   const onSubmit = () => {
     dispatch(action);
-    navigate(environmentDatabasesUrl(environment.id));
+    navigate(environmentActivityUrl(environment.id));
   };
   const isDisabled = database.handle !== deleteConfirm;
 
@@ -350,7 +345,7 @@ const DatabaseRestart = ({ database }: DbProps) => {
     dispatch(action);
   };
   useLoaderSuccess(loader, () => {
-    navigate(operationDetailUrl(loader.meta.opId));
+    navigate(databaseActivityUrl(database.id));
   });
   return (
     <>
@@ -377,17 +372,10 @@ export const DatabaseSettingsPage = () => {
   return (
     <BoxGroup>
       <Box>
-        <ButtonLinkExternal
-          href="https://www.aptible.com/docs/managing-databases"
-          className="relative float-right"
-          variant="white"
-          size="sm"
-        >
-          View Docs
-          <IconExternalLink className="inline ml-1 h-5 mt-0" />
-        </ButtonLinkExternal>
-
-        <h1 className="text-lg text-gray-500 mb-4">Database Settings</h1>
+        <div className="flex justify-between items-start">
+          <h1 className="text-lg text-gray-500 mb-4">Database Settings</h1>
+          <ButtonLinkDocs href="https://www.aptible.com/docs/managing-databases" />
+        </div>
         <DatabaseNameChange database={database} />
         <hr className="mt-6" />
         <DatabaseRestart database={database} />

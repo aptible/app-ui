@@ -8,6 +8,7 @@ import { selectNav, setCollapsed } from "@app/nav";
 import {
   activityUrl,
   appsUrl,
+  billingMethodUrl,
   createProjectGitUrl,
   databaseUrl,
   deploymentsUrl,
@@ -32,7 +33,9 @@ import {
   IconShield,
 } from "./icons";
 
+import { useTrialNotice } from "../hooks/use-trial-notice";
 import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
+import { Banner } from "./banner";
 import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import { OrgPicker } from "./org-picker";
@@ -42,6 +45,7 @@ export const ApplicationSidebar = () => {
   const env = useSelector(selectEnv);
   const dispatch = useDispatch();
   const { collapsed } = useSelector(selectNav);
+  const { hasTrialNoPayment, expiresIn } = useTrialNotice();
 
   const navigate = useNavigate();
   const navigation = [
@@ -113,11 +117,24 @@ export const ApplicationSidebar = () => {
           </div>
         )}
 
-        <nav className="mt-2 flex-1 px-2 bg-white">
-          {navigation.map((item) => (
-            <LinkNav key={item.name} {...item} hideName={collapsed} />
-          ))}
-        </nav>
+        <div className="mt-2 flex-1 px-2">
+          <nav className="bg-white">
+            {navigation.map((item) => (
+              <LinkNav key={item.name} {...item} hideName={collapsed} />
+            ))}
+          </nav>
+
+          {hasTrialNoPayment && !collapsed ? (
+            <Banner variant="error" className="mt-2">
+              <div>Trial expires in {expiresIn}.</div>
+              <div>
+                <Link to={billingMethodUrl()} className="text-white underline">
+                  Add payment
+                </Link>
+              </div>
+            </Banner>
+          ) : null}
+        </div>
       </div>
 
       <div className="px-2 w-full">
@@ -148,21 +165,21 @@ export const ApplicationSidebar = () => {
         <UserMenu hideName={collapsed} />
 
         {collapsed ? null : (
-          <div className="my-6 flex justify-between text-xs text-gray-500">
+          <div className="mb-6 mt-4 flex justify-between text-sm text-black-500">
             <a
-              className="text-gray-500 hover:text-indigo px-3"
+              className="text-black-500 hover:text-indigo px-2"
               href="https://aptible.com/docs"
             >
               DOCS
             </a>
             <Link
               to={supportUrl()}
-              className="text-gray-500 hover:text-indigo px-3"
+              className="text-black-500 hover:text-indigo px-2"
             >
               SUPPORT
             </Link>
             <a
-              className="text-gray-500 hover:text-indigo px-3"
+              className="text-black-500 hover:text-indigo px-2"
               href="https://www.aptible.com/docs/cli"
             >
               INSTALL CLI

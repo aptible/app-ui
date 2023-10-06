@@ -235,7 +235,7 @@ export const CreateLogDrainPage = () => {
           <div className="text-md font-semibold text-gray-900 block -mb-3">
             Environment
           </div>
-          <EnvironmentSelect onSelect={onEnvSelect} />
+          <EnvironmentSelect value={envId} onSelect={onEnvSelect} />
 
           <FormGroup
             label="Handle"

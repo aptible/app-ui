@@ -1,3 +1,4 @@
+import { defaultBillingDetailResponse } from "@app/billing";
 import {
   defaultActivePlanResponse,
   defaultAppResponse,
@@ -88,9 +89,28 @@ export const testUserVerified = defaultUserResponse({
 
 export const testSshKey = defaultSshKeyResponse({ id: `${createId()}` });
 
+export const testBillingDetail = defaultBillingDetailResponse({
+  id: `${createId()}`,
+  _links: {
+    payment_method: defaultHalHref(
+      `${testEnv.billingUrl}/external_payment_sources/404`,
+    ),
+  },
+});
+
 export const testOrg = defaultOrgResponse({
   name: createText("org"),
   id: `${createId()}`,
+  _links: {
+    billing_detail: defaultHalHref(
+      `${testEnv.billingUrl}/billing_details/${testBillingDetail.id}`,
+    ),
+    self: defaultHalHref(),
+    invitations: defaultHalHref(),
+    roles: defaultHalHref(),
+    security_officer: defaultHalHref(),
+    users: defaultHalHref(),
+  },
 });
 export const testOrgSpecial = defaultOrgResponse({
   id: `${createId()}`,

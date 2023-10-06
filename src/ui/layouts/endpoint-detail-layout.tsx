@@ -2,7 +2,9 @@ import {
   cancelFetchEndpointPoll,
   fetchApp,
   fetchDatabase,
+  fetchImageById,
   fetchService,
+  getContainerPort,
   getEndpointText,
   getEndpointUrl,
   pollFetchEndpoint,
@@ -10,6 +12,7 @@ import {
   selectAppById,
   selectDatabaseById,
   selectEndpointById,
+  selectImageById,
   selectServiceById,
 } from "@app/deploy";
 import {
@@ -27,13 +30,16 @@ import type {
   DeployEndpoint,
   DeployService,
 } from "@app/types";
-import { SyntheticEvent, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
 import { useLoader, useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   Banner,
+  Code,
+  CopyText,
+  CopyTextButton,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -41,24 +47,22 @@ import {
   DetailTitleBar,
   EndpointStatusPill,
   EndpointUrl,
-  IconCopy,
   Loading,
   TabItem,
-  Tooltip,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
-
-const handleCopy = (e: SyntheticEvent, text: string) => {
-  e.preventDefault();
-  e.stopPropagation();
-  navigator.clipboard.writeText(text);
-};
 
 export function EndpointAppHeaderInfo({
   enp,
   app,
-}: { enp: DeployEndpoint; app: DeployApp }) {
+  service,
+}: { enp: DeployEndpoint; app: DeployApp; service: DeployService }) {
   const txt = getEndpointText(enp);
+  const image = useSelector((s: AppState) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+  const portTxt = getContainerPort(enp, image.exposedPorts);
+
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -75,28 +79,27 @@ export function EndpointAppHeaderInfo({
 
       <DetailInfoGrid>
         <DetailInfoItem title="URL">
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center gap-2">
             <EndpointUrl enp={enp} />
-            <Tooltip text="Copy">
-              <IconCopy
-                variant="sm"
-                className="ml-2"
-                color="#888C90"
-                onClick={(e) => handleCopy(e, `${getEndpointUrl(enp)}`)}
-              />
-            </Tooltip>
+            <CopyTextButton text={getEndpointUrl(enp)} />
           </div>
         </DetailInfoItem>
-        <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
+        <DetailInfoItem title="Hostname">
+          <CopyText text={enp.externalHost} />
+        </DetailInfoItem>
 
         <DetailInfoItem title="Resource">
           <Link to={appEndpointsUrl(app.id)}>{app.handle}</Link>
         </DetailInfoItem>
-        <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
-        <DetailInfoItem title="">
-          <div />
+        <DetailInfoItem title="Service Process">
+          <Code>{service.processType}</Code>
         </DetailInfoItem>
-
+        <DetailInfoItem title="Service ID">
+          <CopyText text={service.id} />
+        </DetailInfoItem>
+        <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
+        <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
+        <DetailInfoItem title="Port">{portTxt}</DetailInfoItem>
         <DetailInfoItem title="Status">
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>
@@ -126,26 +129,18 @@ export function EndpointDatabaseHeaderInfo({
 
       <DetailInfoGrid>
         <DetailInfoItem title="URL">
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center gap-2">
             <EndpointUrl enp={enp} />
-            <Tooltip text="Copy">
-              <IconCopy
-                variant="sm"
-                className="ml-2"
-                color="#888C90"
-                onClick={(e) => handleCopy(e, `${getEndpointUrl(enp)}`)}
-              />
-            </Tooltip>
+            <CopyTextButton text={getEndpointUrl(enp)} />
           </div>
         </DetailInfoItem>
         <DetailInfoItem title="Resource">
           <Link to={databaseEndpointsUrl(db.id)}>{db.handle}</Link>
         </DetailInfoItem>
-        <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
-
         <DetailInfoItem title="Status">
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>
+        <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -168,13 +163,14 @@ function EndpointAppHeader({
   const app = useSelector((s: AppState) =>
     selectAppById(s, { id: service.appId }),
   );
+  useQuery(fetchImageById({ id: app.currentImageId }));
   const url = appEndpointsUrl(app.id);
   const tabs: TabItem[] = [
     { name: "Activity", href: endpointDetailActivityUrl(enp.id) },
     { name: "Settings", href: endpointDetailSettingsUrl(enp.id) },
   ];
-  if (requiresAcmeSetup(enp)) {
-    tabs.push({ name: "Finish Setup", href: endpointDetailSetupUrl(enp.id) });
+  if (enp.acme) {
+    tabs.push({ name: "ACME Configure", href: endpointDetailSetupUrl(enp.id) });
   }
 
   return (
@@ -197,7 +193,9 @@ function EndpointAppHeader({
         tabs={tabs}
         breadcrumbs={[{ name: app.handle, to: url }]}
         title={`Endpoint: ${enp.id}`}
-        detailsBox={<EndpointAppHeaderInfo enp={enp} app={app} />}
+        detailsBox={
+          <EndpointAppHeaderInfo enp={enp} app={app} service={service} />
+        }
       />
     </>
   );

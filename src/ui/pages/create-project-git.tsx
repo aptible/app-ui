@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
@@ -79,12 +79,12 @@ import {
   Button,
   ButtonLink,
   Code,
+  CopyTextButton,
   CreateAppEndpointSelector,
   ExternalLink,
   IconArrowRight,
   IconChevronDown,
   IconChevronUp,
-  IconCopy,
   Loading,
   LogViewer,
   PreCode,
@@ -427,10 +427,7 @@ export const CreateProjectGitPushPage = () => {
         {hasDeployOperation(deployOp) ? (
           <div className="text-black-900 mb-4">
             We detected an app deployment, did you push to the{" "}
-            <span className="bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]">
-              aptible-scan
-            </span>{" "}
-            branch?
+            <Code>aptible-scan</Code> branch?
           </div>
         ) : null}
 
@@ -518,12 +515,6 @@ const Op = ({
   if (!hasDeployOperation(op)) {
     return null;
   }
-
-  const handleCopy = (e: SyntheticEvent, text: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    navigator.clipboard.writeText(text);
-  };
 
   const extra = "border-b border-black-100";
   const statusView = () => {
@@ -615,14 +606,7 @@ const Op = ({
           <div className="flex items-center ml-2">
             <div className="mr-2 text-xs text-black-300">ID: {op.id}</div>
             <div title={`aptible operation:logs ${op.id}`}>
-              <IconCopy
-                variant="sm"
-                color="#888C90"
-                className="cursor-pointer"
-                onClick={(e) =>
-                  handleCopy(e, `aptible operation:logs ${op.id}`)
-                }
-              />
+              <CopyTextButton text={`aptible operation:logs ${op.id}`} />
             </div>
           </div>
         </div>
@@ -955,8 +939,7 @@ export const CreateProjectGitStatusPage = () => {
         <div className="text-center mt-10">
           <h1 className={tokens.type.h1}>Deployment Failed</h1>
           <p className="my-4 text-gray-600">
-            Don't worry! Edit your project settings and click Redeploy when
-            ready.
+            Don't worry! Edit your configuration or push your code to redeploy.
           </p>
         </div>
       );

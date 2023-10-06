@@ -34,6 +34,11 @@ export const Th = ({ children, className }: CellProps) => {
     </th>
   );
 };
+
+export const Tr = ({ children }: { children: React.ReactNode }) => {
+  return <tr className="group hover:bg-gray-50">{children}</tr>;
+};
+
 export type Header = string | { name: string; className: string };
 export const TableHead = ({
   headers,

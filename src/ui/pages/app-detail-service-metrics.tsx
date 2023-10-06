@@ -96,7 +96,7 @@ export function AppDetailServiceMetricsPage() {
         </div>
 
         {loader.isLoading ? (
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <span className="text-black-500">{pct}%</span>
             <LoadingSpinner color="#595E63" />
           </div>

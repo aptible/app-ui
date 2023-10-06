@@ -166,13 +166,15 @@ const initService = defaultDeployService();
 const must = mustSelectEntity(initService);
 export const selectServiceById = must(selectors.selectById);
 export const selectServicesByIds = selectors.selectByIds;
-export const {
-  selectTableAsList: selectServicesAsList,
-  selectTable: selectServices,
-} = selectors;
+export const { selectTable: selectServices } = selectors;
 export const hasDeployService = (a: DeployService) => a.id !== "";
 export const serviceReducers = createReducerMap(slice);
 export const findServiceById = must(selectors.findById);
+
+export const selectServicesAsList = createSelector(
+  selectors.selectTableAsList,
+  (services) => services.sort((a, b) => a.handle.localeCompare(b.handle)),
+);
 
 export const selectServicesByAppId = createSelector(
   selectServicesAsList,
@@ -186,19 +188,16 @@ export const selectEnvToServicesMap = createSelector(
   selectServicesAsList,
   (services) => {
     const envToServiceMap: Record<string, Set<string> | undefined> = {};
-
     services.forEach((service) => {
-      if (!service.appId) {
+      if (!(service.appId || service.databaseId)) {
         return;
       }
 
       if (!Object.hasOwn(envToServiceMap, service.environmentId)) {
         envToServiceMap[service.environmentId] = new Set<string>();
       }
-
       envToServiceMap[service.environmentId]?.add(service.id);
     });
-
     return envToServiceMap;
   },
 );

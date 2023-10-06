@@ -2,39 +2,55 @@ import {
   fetchActivePlans,
   fetchPlans,
   selectFirstActivePlan,
-  selectPlanById,
-  selectPlansAsList,
-  updateAndRefreshActivePlans,
+  selectPlanByActiveId,
+  updateActivePlan,
 } from "@app/deploy";
-import { selectOrganizationSelected } from "@app/organizations";
-import { logoutUrl } from "@app/routes";
-import { HeroBgLayout } from "../layouts";
-import { BannerMessages, Plans, tokens } from "../shared";
-
 import { useLoader, useQuery } from "@app/fx";
+import { selectOrganizationSelected } from "@app/organizations";
+import { billingMethodUrl, logoutUrl } from "@app/routes";
 import { AppState } from "@app/types";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { HeroBgLayout } from "../layouts";
+import {
+  Banner,
+  BannerMessages,
+  Group,
+  IconArrowRight,
+  Plans,
+  tokens,
+} from "../shared";
 
 export const PlansPage = () => {
+  const dispatch = useDispatch();
   const org = useSelector(selectOrganizationSelected);
-  const plans = useSelector(selectPlansAsList);
-  const activePlan = useSelector(selectFirstActivePlan);
 
-  const updatePlanLoader = useLoader(updateAndRefreshActivePlans);
-  const planLoader = useQuery(fetchPlans());
   const activePlanLoader = useQuery(
     fetchActivePlans({ organization_id: org.id }),
   );
+  const activePlan = useSelector(selectFirstActivePlan);
 
+  const planLoader = useQuery(fetchPlans());
   const selectedPlan = useSelector((s: AppState) =>
-    selectPlanById(s, { id: activePlan.planId }),
+    selectPlanByActiveId(s, { id: activePlan.planId }),
   );
+  const updatePlanLoader = useLoader(updateActivePlan);
+
+  const onSelectPlan = ({ planId, name }: { planId: string; name: string }) => {
+    dispatch(
+      updateActivePlan({
+        id: activePlan.id,
+        planId,
+        name,
+      }),
+    );
+  };
 
   return (
     <HeroBgLayout width={1200}>
       <h1 className={`${tokens.type.h1} text-center`}>Choose a Plan</h1>
-      <div className="flex text-center items-center justify-center mt-4">
+
+      <div className="flex text-center items-center justify-center my-4">
         <div className="max-w-2xl">
           <p>
             Your trial has expired, choose a plan to continue or{" "}
@@ -42,16 +58,23 @@ export const PlansPage = () => {
           </p>
         </div>
       </div>
-      <BannerMessages className="mt-6" {...updatePlanLoader} />
-      <BannerMessages {...planLoader} />
-      <BannerMessages {...activePlanLoader} />
-      {planLoader.isSuccess && activePlanLoader.isSuccess ? (
-        <Plans
-          plans={plans}
-          activePlan={activePlan}
-          selectedPlan={selectedPlan}
-        />
-      ) : null}
+
+      <Group>
+        <BannerMessages {...updatePlanLoader} />
+        <BannerMessages {...planLoader} />
+        <BannerMessages {...activePlanLoader} />
+        <Banner>
+          <Link to={billingMethodUrl()} className="flex items-center gap-1">
+            Continue to billing <IconArrowRight variant="sm" color="#4361FF" />
+          </Link>
+        </Banner>
+      </Group>
+
+      <Plans
+        activePlan={activePlan}
+        selected={selectedPlan.name}
+        onSelectPlan={onSelectPlan}
+      />
     </HeroBgLayout>
   );
 };

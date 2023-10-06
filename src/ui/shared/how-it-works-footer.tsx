@@ -1,3 +1,4 @@
+import { Code } from "./code";
 import { ExternalLink } from "./external-link";
 import { IconChevronDown, IconChevronUp } from "./icons";
 import { tokens } from "./tokens";
@@ -53,10 +54,7 @@ export const CreateProjectFooter = () => {
             <li>Create an environment</li>
             <li>Deploy a starter template or your own custom code</li>
             <li>
-              Push your code to Aptible using{" "}
-              <span className="bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]">
-                git push
-              </span>
+              Push your code to Aptible using <Code>git push</Code>
             </li>
             <li>
               Configure your App (e.g. databases, environment variables,

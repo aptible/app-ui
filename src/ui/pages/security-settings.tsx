@@ -17,10 +17,14 @@ import { useCurrentUser } from "../hooks";
 import {
   Banner,
   BannerMessages,
+  Box,
+  BoxGroup,
   Button,
   FormGroup,
+  IconAlertTriangle,
   Input,
   Loading,
+  tokens,
 } from "../shared";
 
 interface SectionProps {
@@ -30,10 +34,10 @@ interface SectionProps {
 
 const Section = ({ children, title }: SectionProps) => {
   return (
-    <div className="bg-grey border rounded-lg p-4 my-4">
-      <h2>{title}</h2>
-      <div className="my-4">{children}</div>
-    </div>
+    <Box>
+      <div className={"text-lg text-gray-500 mb-4"}>{title}</div>
+      <div>{children}</div>
+    </Box>
   );
 };
 
@@ -63,7 +67,7 @@ const ChangePassword = () => {
   const groupVariant = error ? "danger" : "info";
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <FormGroup
         label="New Password"
         htmlFor="input-password"
@@ -94,6 +98,7 @@ const ChangePassword = () => {
         <div>{error}</div>
       </FormGroup>
       <Button
+        className="w-fit"
         type="submit"
         disabled={loader.isLoading}
         isLoading={loader.isLoading}
@@ -114,25 +119,27 @@ const MultiFactor = () => {
   };
 
   const btns = user.otpEnabled ? (
-    <div className="mb-2 w-100">
-      <Button onClick={disable}>Disable 2FA</Button>
+    <div>
+      <Button className="w-fit" onClick={disable}>
+        Disable 2FA
+      </Button>
       <Link to={otpRecoveryCodesUrl()}>Download backup codes</Link>
     </div>
   ) : (
-    <Button onClick={() => navigate(otpSetupUrl())}>Configure 2FA</Button>
+    <Button className="w-fit" onClick={() => navigate(otpSetupUrl())}>
+      Configure 2FA
+    </Button>
   );
   const content = loader.isLoading ? <Loading /> : btns;
 
   return (
-    <div>
-      <div className="my-2">
-        2-factor authentication is enabled for your account.
-      </div>
-
+    <div className="flex flex-col gap-4">
       <ul className="mb-2">
-        <li>Download your backup codes if you haven&apos;t done so yet.</li>
-        <li>You might need to update aptible-cli for 2FA support.</li>
-        <li>Note that 2FA does not apply to git push operations.</li>
+        <li>
+          Download your backup codes if you haven&apos;t done so yet. You might
+          need to update aptible-cli for 2FA support. 2FA does not apply to git
+          push operations.
+        </li>
       </ul>
 
       {content}
@@ -159,12 +166,7 @@ const ChangeEmail = () => {
 
   return (
     <div>
-      <div>
-        You will need to verify your new email address before it can be used.
-        Show pending verifications.
-      </div>
-
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <FormGroup
           label="Email"
           htmlFor="input-email"
@@ -176,13 +178,17 @@ const ChangeEmail = () => {
             value={email}
             onChange={(e) => setEmail(e.currentTarget.value)}
             autoComplete="username"
-            autoFocus={true}
             data-testid="input-email"
             id="input-email"
           />
-          <div>{error}</div>
+          <div className="text-gray-500">{error}</div>
         </FormGroup>
-        <Button type="submit" disabled={!!error} isLoading={loader.isLoading}>
+        <Button
+          className="w-fit"
+          type="submit"
+          disabled={!!error}
+          isLoading={loader.isLoading}
+        >
           Send Verification Email
         </Button>
         <BannerMessages {...loader} />
@@ -221,25 +227,38 @@ const LogOut = () => {
   const dispatch = useDispatch();
   const loader = useLoader(revokeAllTokens);
   const [confirm, setConfirm] = useState(false);
-  const makeItSo = () => dispatch(revokeAllTokens());
+  const confirmLogout = () => dispatch(revokeAllTokens());
 
   const confirmDialog = (
-    <div className="mt-2">
-      <div>Are you sure you want to log out of all sessions?</div>
+    <div className="flex flex-col gap-4">
       <div>
-        <Button onClick={() => setConfirm(false)}>Cancel</Button>
-        <Button onClick={makeItSo}>Make it so</Button>
+        <b>Are you sure you want to log out all sessions?</b>
+      </div>
+      <div className="flex flex-row gap-4">
+        <Button className="w-fit" onClick={confirmLogout}>
+          Confirm Logout
+        </Button>
+        <Button
+          className="w-fit"
+          variant="white"
+          onClick={() => setConfirm(false)}
+        >
+          Cancel
+        </Button>
       </div>
     </div>
   );
 
   return (
-    <div>
-      <div>
-        You can log out other sessions at any time. This cannot be undone.
-      </div>
-      <Button className="mb-4" onClick={() => setConfirm(true)}>
-        Log out all other sessions
+    <div className="flex flex-col gap-4">
+      <div>This action will log out all sessions and cannot be undone.</div>
+      <Button
+        variant="delete"
+        className="w-fit"
+        onClick={() => setConfirm(true)}
+      >
+        <IconAlertTriangle className="mr-2" color="#fff" />
+        Log out all sessions
       </Button>
       {loader.isError ? (
         <Banner variant="error">{loader.message}</Banner>
@@ -251,26 +270,26 @@ const LogOut = () => {
 
 export const SecuritySettingsPage = () => {
   return (
-    <div>
-      <Section title="Change your password">
-        <ChangePassword />
-      </Section>
+    <BoxGroup>
+      <h2 className={tokens.type.h2}>Profile Settings</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Section title="Change Password">
+          <ChangePassword />
+        </Section>
+        <Section title="Change Email">
+          <ChangeEmail />
+        </Section>
+      </div>
 
-      <Section title="2-Factor authentication">
+      <Section title="2-Factor Authentication">
         <MultiFactor />
       </Section>
-
-      <Section title="Change your email">
-        <ChangeEmail />
-      </Section>
-
-      <Section title="Security keys">
+      <Section title="Security Keys">
         <SecurityKeys />
       </Section>
-
-      <Section title="Log out other sessions">
+      <Section title="Log out all sessions">
         <LogOut />
       </Section>
-    </div>
+    </BoxGroup>
   );
 };

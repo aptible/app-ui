@@ -8,6 +8,7 @@ export interface AuthApiCtx<P = any, S = any>
   extends ApiCtx<P, S, AuthApiError> {
   elevated: boolean;
   noToken: boolean;
+  credentials: RequestCredentials;
 }
 export type MetricTunnelCtx<P = any, S = any> = ApiCtx<
   P,

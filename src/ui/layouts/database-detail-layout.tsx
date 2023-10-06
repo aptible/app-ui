@@ -67,7 +67,7 @@ export function DatabaseHeader({
         docsUrl="https://www.aptible.com/docs/databases"
       />
 
-      <DetailInfoGrid>
+      <DetailInfoGrid columns={3}>
         <DetailInfoItem title="ID">{database.id}</DetailInfoItem>
         <DetailInfoItem title="Disk IOPS">
           {disk.provisionedIops}

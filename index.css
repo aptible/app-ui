@@ -24,12 +24,24 @@ html, body, #app {
   overflow-x: hidden;
 }
 
-.tooltip-inner {
+.tooltip-top {
   display: none;
   transform: translate(0%, -110%);
 }
 
-.tooltip:hover .tooltip-inner {
+.tooltip:hover .tooltip-top {
   display: inline;
 }
 
+.tooltip-left {
+  display: none;
+  transform: translate(-110%, -30%);
+}
+
+.tooltip:hover .tooltip-left {
+  display: inline;
+}
+
+.hero-bg {
+  background-image: url(/background-pattern-v2.png);
+}

@@ -7,7 +7,9 @@ import { Tooltip } from "../tooltip";
 import { prettyDateRelative } from "@app/date";
 import {
   DeployDatabaseRow,
+  calcMetrics,
   fetchDatabases,
+  fetchDiskById,
   fetchEnvironmentById,
   fetchEnvironments,
   getContainerProfileFromType,
@@ -120,6 +122,24 @@ export const LastOpCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
+const DatabaseDiskSizeCell = ({ database }: DatabaseCellProps) => {
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: database.diskId }),
+  );
+  return <Td className="text-gray-900">{disk.size} GB</Td>;
+};
+
+const DatabaseContainerSizeCell = ({ database }: DatabaseCellProps) => {
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: database.serviceId }),
+  );
+  const metrics = calcMetrics([service]);
+  useQuery(fetchDiskById({ id: database.diskId }));
+  return (
+    <Td className="text-gray-900">{metrics.totalMemoryLimit / 1024} GB</Td>
+  );
+};
+
 const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td>
@@ -221,6 +241,8 @@ export const DatabaseListByOrg = () => {
     "Handle",
     "ID",
     "Environment",
+    "Disk Size",
+    "Container Size",
     "Est. Monthly Cost",
     "Actions",
   ];
@@ -260,6 +282,8 @@ export const DatabaseListByOrg = () => {
                 <DatabasePrimaryCell database={db} />
                 <DatabaseIdCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
+                <DatabaseDiskSizeCell database={db} />
+                <DatabaseContainerSizeCell database={db} />
                 <DatabaseCostCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
@@ -295,6 +319,8 @@ export const DatabaseListByEnvironment = ({
     "Handle",
     "ID",
     "Environment",
+    "Disk Size",
+    "Container Size",
     "Est. Monthly Cost",
     "Actions",
   ];
@@ -338,6 +364,8 @@ export const DatabaseListByEnvironment = ({
                 <DatabasePrimaryCell database={db} />
                 <DatabaseIdCell database={db} />
                 <EnvStackCell environmentId={db.environmentId} />
+                <DatabaseDiskSizeCell database={db} />
+                <DatabaseContainerSizeCell database={db} />
                 <DatabaseCostCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>

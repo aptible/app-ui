@@ -12,3 +12,4 @@ export * from "./app-sidebar-layout";
 export * from "./stack-detail-layout";
 export * from "./endpoint-detail-layout";
 export * from "./cert-detail-layout";
+export * from "./settings";

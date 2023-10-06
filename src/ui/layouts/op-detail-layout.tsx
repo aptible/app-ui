@@ -30,32 +30,40 @@ export function OpHeader({
 
   return (
     <DetailHeader>
-      <DetailTitleBar title="Operation Details" />
+      <DetailTitleBar
+        title="Operation Details"
+        icon={
+          <img
+            src={"/resource-types/logo-activity.png"}
+            className="w-8 h-8 mr-3"
+            aria-label="Operation"
+          />
+        }
+      />
 
       <DetailInfoGrid>
         <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
-        <div className="col-span-2">
-          <DetailInfoItem title="Last Updated">
-            {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
-          </DetailInfoItem>
-        </div>
+        <DetailInfoItem title="Created">
+          {capitalize(prettyEnglishDateWithTime(op.createdAt))}
+        </DetailInfoItem>
 
         <DetailInfoItem title="Status">
           <OpStatus status={op.status} />
         </DetailInfoItem>
-        <div className="col-span-2">
-          <DetailInfoItem title="User">{op.userName}</DetailInfoItem>
-        </div>
+        <DetailInfoItem title="Last Updated">
+          {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
+        </DetailInfoItem>
 
         <DetailInfoItem title="Resource">
           {url ? <Link to={url}>{resourceHandle}</Link> : resourceHandle}
-          <div className="text-gray-500 text-sm">
+          <div className="text-gray-500">
             {prettyResourceType(op.resourceType)}
           </div>
         </DetailInfoItem>
-        <div className="col-span-2">
-          <DetailInfoItem title="Note">{op.note || "N/A"}</DetailInfoItem>
-        </div>
+        <DetailInfoItem title="User">
+          {op.userName}
+          <div className="text-gray-500">Note: {op.note || "N/A"}</div>
+        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );

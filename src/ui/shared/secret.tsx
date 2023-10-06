@@ -6,7 +6,7 @@ export const Secret = ({
   envId,
   secret,
 }: { secret: string; envId: string }) => {
-  const [isShowing, setIsShowing] = useState<boolean>(false);
+  const [isShowing, setIsShowing] = useState(false);
   return (
     <div className="flex gap-4">
       {isShowing ? (

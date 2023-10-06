@@ -1,4 +1,3 @@
-import { SyntheticEvent } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
@@ -16,6 +15,7 @@ import {
   selectEndpointsByCertIdForTableSearch,
   selectEndpointsByDbIdForTableSearch,
   selectEndpointsByEnvIdForTableSearch,
+  selectEndpointsByServiceId,
   selectEndpointsForTableSearch,
 } from "@app/deploy";
 import {
@@ -33,7 +33,8 @@ import { TableHead } from "../table";
 import { Td } from "../table";
 
 import { useQuery } from "saga-query/react";
-import { IconCopy, IconInfo, IconPlusCircle } from "../icons";
+import { CopyTextButton } from "../copy";
+import { IconInfo, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import {
   EmptyResultView,
@@ -43,12 +44,6 @@ import {
 import { tokens } from "../tokens";
 import { Tooltip } from "../tooltip";
 import { EndpointStatusPill } from "./util";
-
-const handleCopy = (e: SyntheticEvent, text: string) => {
-  e.preventDefault();
-  e.stopPropagation();
-  navigator.clipboard.writeText(text);
-};
 
 export const EndpointItemView = ({
   endpoint,
@@ -80,16 +75,9 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
   return (
     <tr className="group hover:bg-gray-50">
       <Td>
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center gap-2">
           <EndpointItemView endpoint={endpoint} />
-          <Tooltip text="Copy">
-            <IconCopy
-              variant="sm"
-              className="ml-2"
-              color="#888C90"
-              onClick={(e) => handleCopy(e, `${getEndpointUrl(endpoint)}`)}
-            />
-          </Tooltip>
+          <CopyTextButton text={getEndpointUrl(endpoint)} />
         </div>
       </Td>
       <Td>{endpoint.id}</Td>
@@ -376,5 +364,49 @@ export function EndpointsByCert({ certId }: { certId: string }) {
 
   return (
     <EndpointList endpoints={endpoints} search={search} onChange={onChange} />
+  );
+}
+
+export function EndpointsByDbService({
+  serviceId,
+  dbId,
+}: { serviceId: string; dbId: string }) {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (nextSearch: string) => {
+    setParams({ search: nextSearch });
+  };
+  const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  const endpoints = useSelector((s: AppState) =>
+    selectEndpointsByServiceId(s, { serviceId, search }),
+  );
+  const navigate = useNavigate();
+  const action = (
+    <ButtonCreate
+      envId={db.environmentId}
+      onClick={() => navigate(databaseEndpointCreateUrl(dbId))}
+    >
+      <IconPlusCircle variant="sm" className="mr-2" /> New Endpoint
+    </ButtonCreate>
+  );
+
+  if (endpoints.length === 0 && search === "") {
+    return (
+      <EmptyResultView
+        action={action}
+        title="No endpoints yet"
+        description="Expose this application to the public internet by adding an endpoint"
+        className="p-6 w-100"
+      />
+    );
+  }
+
+  return (
+    <EndpointList
+      endpoints={endpoints}
+      search={search}
+      onChange={onChange}
+      actions={[action]}
+    />
   );
 }

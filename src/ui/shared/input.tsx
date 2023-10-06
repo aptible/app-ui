@@ -72,8 +72,8 @@ export const CheckBox = ({
   className,
   label,
   ...props
-}: InputProps & { label: string }) => (
-  <label className="flex">
+}: InputProps & { label: React.ReactNode }) => (
+  <label className="flex w-fit">
     <Input
       type="checkbox"
       className={`rounded-lg h-6 ${className}`}
