@@ -1,4 +1,4 @@
-import { prettyDateRelative } from "@app/date";
+import { prettyEnglishDateWithTime } from "@app/date";
 import { OperationStatus } from "@app/types";
 import cn from "classnames";
 import { IconCheck, IconInfo, IconSettings, IconX } from "./icons";
@@ -39,7 +39,7 @@ export const StatusPill = ({
   status: OperationStatus;
   from: string;
 }) => {
-  const date = prettyDateRelative(from);
+  const date = prettyEnglishDateWithTime(from);
 
   const className = cn(
     "rounded-full border-2",
