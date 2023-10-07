@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
 import { Tooltip } from "./tooltip";
 
-import { prettyDateRelative } from "@app/date";
+import { prettyEnglishDateWithTime } from "@app/date";
 import {
   cancelAppOpsPoll,
   cancelDatabaseOpsPoll,
@@ -139,7 +139,7 @@ const OpActionsCell = ({ op }: OpCellProps) => {
 const OpLastUpdatedCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-      <div>{capitalize(prettyDateRelative(op.updatedAt))}</div>
+      <div>{capitalize(prettyEnglishDateWithTime(op.updatedAt))}</div>
     </Td>
   );
 };

@@ -1,8 +1,3 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { Link, useSearchParams } from "react-router-dom";
-
 import { defaultAuthLoaderMeta, signup } from "@app/auth";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import {
@@ -14,24 +9,27 @@ import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
   acceptInvitationWithCodeUrl,
   createProjectGitUrl,
-  homeUrl,
   loginUrl,
   verifyEmailRequestUrl,
 } from "@app/routes";
+import { selectIsUserAuthenticated } from "@app/token";
 import { AppState } from "@app/types";
 import { CreateUserForm } from "@app/users";
 import { emailValidator, existValidtor, passValidator } from "@app/validator";
-
-import { selectIsUserAuthenticated } from "@app/token";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { Link, useSearchParams } from "react-router-dom";
 import { useValidator } from "../hooks";
-import { HeroBgLayout } from "../layouts";
+import { HeroBgView } from "../layouts";
 import {
+  AlreadyAuthenticatedBanner,
   AptibleLogo,
-  Banner,
   BannerMessages,
   Button,
   CreateProjectFooter,
   FormGroup,
+  Group,
   Input,
   tokens,
 } from "../shared";
@@ -105,8 +103,8 @@ export const SignupPage = () => {
   });
 
   return (
-    <HeroBgLayout width={500} showLogo={false}>
-      <div className="absolute top-0 left-0 h-auto min-h-[100vh] bg-white/90 shadow p-16 lg:block hidden w-[40vw] lg:px-[5%] px-[32px]">
+    <HeroBgView className="flex gap-6">
+      <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] h-fit min-h-screen">
         <div className="text-xl text-black font-bold">
           Launch, grow, and scale your app without worrying about infrastructure
         </div>
@@ -133,14 +131,14 @@ export const SignupPage = () => {
           <CreateProjectFooter />
         </div>
       </div>
-      <div className="absolute lg:top-[30px] md:top-0 top-0 left-0  lg:w-[60vw] w-[100vw] lg:ml-[40vw] ml-auto lg:px-[5%] md:px-[32px] px-auto">
-        <div className="flex flex-col justify-center items-center md:w-[500px] md:ml-[50%] md:left-[-250px] w-full ml-none left-0 relative">
-          <div className="flex justify-center pt-10 pb-8">
+      <div className="flex-1 mx-auto max-w-[570px] px-4 md:px-0">
+        <Group>
+          <div className="flex justify-center pt-[65px] pb-4">
             <AptibleLogo width={160} />
           </div>
           <div className="flex text-center items-center justify-center">
-            <div className="max-w-2xl">
-              <p className="lg:px-0 px-8 lg:min-w-[570px] min-w-full">
+            <div>
+              <p>
                 Our web app and API hosting platform automates the work of
                 provisioning, managing, and scaling infrastructure, so you can
                 focus on what actually matters: <strong>your product.</strong>
@@ -150,129 +148,121 @@ export const SignupPage = () => {
               </h1>
             </div>
           </div>
-          <div className="mt-6">
-            <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
-              <form className="space-y-4" onSubmit={onSubmitForm}>
-                {isAuthenticated && !loader.isLoading ? (
-                  <Banner variant="info">
-                    You are already logged in.{" "}
-                    <Link to={homeUrl()}>Go to the dashboard.</Link>
-                  </Banner>
-                ) : null}
+          <div className="mx-auto max-w-[500px] bg-white py-8 px-10 shadow rounded-lg border border-black-100">
+            <form className="space-y-4" onSubmit={onSubmitForm}>
+              <AlreadyAuthenticatedBanner />
 
-                <FormGroup
-                  label="Name"
-                  htmlFor="name"
-                  feedbackMessage={errors.name}
-                  feedbackVariant={errors.name ? "danger" : "info"}
+              <FormGroup
+                label="Name"
+                htmlFor="name"
+                feedbackMessage={errors.name}
+                feedbackVariant={errors.name ? "danger" : "info"}
+              >
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  required={true}
+                  value={name}
+                  className="w-full"
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </FormGroup>
+
+              <FormGroup
+                label="Company"
+                htmlFor="company"
+                feedbackMessage={errors.company}
+                feedbackVariant={errors.company ? "danger" : "info"}
+              >
+                <Input
+                  id="company"
+                  name="company"
+                  type="text"
+                  autoComplete="company"
+                  required={true}
+                  value={company}
+                  className="w-full"
+                  onChange={(e) => setCompany(e.target.value)}
+                />
+              </FormGroup>
+
+              <FormGroup
+                label="Email"
+                htmlFor="email"
+                feedbackMessage={errors.email}
+                feedbackVariant={errors.email ? "danger" : "info"}
+              >
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required={true}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full"
+                />
+              </FormGroup>
+
+              <FormGroup
+                label="Password"
+                htmlFor="password"
+                feedbackMessage={errors.pass}
+                feedbackVariant={errors.pass ? "danger" : "info"}
+              >
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required={true}
+                  value={password}
+                  className="w-full"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </FormGroup>
+
+              <BannerMessages {...loader} />
+
+              <div>
+                <Button
+                  type="submit"
+                  layout="block"
+                  size="lg"
+                  isLoading={loader.isLoading}
+                  disabled={isAuthenticated}
                 >
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    autoComplete="name"
-                    autoFocus={true}
-                    required={true}
-                    value={name}
-                    className="w-full"
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </FormGroup>
-
-                <FormGroup
-                  label="Company"
-                  htmlFor="company"
-                  feedbackMessage={errors.company}
-                  feedbackVariant={errors.company ? "danger" : "info"}
-                >
-                  <Input
-                    id="company"
-                    name="company"
-                    type="text"
-                    autoComplete="company"
-                    required={true}
-                    value={company}
-                    className="w-full"
-                    onChange={(e) => setCompany(e.target.value)}
-                  />
-                </FormGroup>
-
-                <FormGroup
-                  label="Email"
-                  htmlFor="email"
-                  feedbackMessage={errors.email}
-                  feedbackVariant={errors.email ? "danger" : "info"}
-                >
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required={true}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full"
-                  />
-                </FormGroup>
-
-                <FormGroup
-                  label="Password"
-                  htmlFor="password"
-                  feedbackMessage={errors.pass}
-                  feedbackVariant={errors.pass ? "danger" : "info"}
-                >
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required={true}
-                    value={password}
-                    className="w-full"
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </FormGroup>
-
-                <BannerMessages {...loader} />
-
-                <div>
-                  <Button
-                    type="submit"
-                    layout="block"
-                    size="lg"
-                    isLoading={loader.isLoading}
-                    disabled={isAuthenticated}
-                  >
-                    Create Account
-                  </Button>
-                </div>
-                <p className="mt-4 text-center text-sm text-gray-600">
-                  If you already have an account, you can{" "}
-                  <Link to={loginUrl()} className="font-medium">
-                    log in here
-                  </Link>
-                  .
-                </p>
-                <p className="mt-4 text-center text-sm text-gray-600">
-                  By submitting this form, I confirm that I have read and agree
-                  to Aptible's{" "}
-                  <a href="https://www.aptible.com/legal/terms-of-service">
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a href="https://www.aptible.com/legal/privacy">
-                    Privacy Policy
-                  </a>
-                  .
-                </p>
-              </form>
-            </div>
+                  Create Account
+                </Button>
+              </div>
+              <p className="mt-4 text-center text-sm text-gray-600">
+                If you already have an account, you can{" "}
+                <Link to={loginUrl()} className="font-medium">
+                  log in here
+                </Link>
+                .
+              </p>
+              <p className="mt-4 text-center text-sm text-gray-600">
+                By submitting this form, I confirm that I have read and agree to
+                Aptible's{" "}
+                <a href="https://www.aptible.com/legal/terms-of-service">
+                  Terms of Service
+                </a>{" "}
+                and{" "}
+                <a href="https://www.aptible.com/legal/privacy">
+                  Privacy Policy
+                </a>
+                .
+              </p>
+            </form>
           </div>
           <div className="mt-6 px-10 lg:hidden block pb-10 w-full">
             <CreateProjectFooter />
           </div>
-        </div>
+        </Group>
       </div>
-    </HeroBgLayout>
+    </HeroBgView>
   );
 };

@@ -6,6 +6,7 @@ import cn from "classnames";
 import { ButtonHTMLAttributes, FC, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, LinkProps } from "react-router-dom";
+import { IconExternalLink } from "./icons";
 import { tokens } from "./tokens";
 import { Tooltip } from "./tooltip";
 
@@ -70,6 +71,20 @@ export const ButtonLinkExternal = ({
     <a {...props} target="_blank" className={`${className} ${classes}`}>
       {isLoading ? "Loading..." : children}
     </a>
+  );
+};
+
+export const ButtonLinkDocs = ({ href }: { href: string }) => {
+  return (
+    <ButtonLinkExternal
+      href={href}
+      className="ml-5 w-fit"
+      variant="white"
+      size="sm"
+    >
+      View Docs
+      <IconExternalLink variant="sm" className="inline ml-1 h-5 mt-0" />
+    </ButtonLinkExternal>
   );
 };
 
@@ -216,4 +231,5 @@ export const ButtonCreate = createButtonPermission("deploy");
 export const ButtonDestroy = createButtonPermission("destroy");
 export const ButtonOps = createButtonPermission("observability");
 export const ButtonSensitive = createButtonPermission("sensitive");
+export const ButtonFullVisibility = createButtonPermission("read");
 export const ButtonAdmin = createButtonPermission("admin");

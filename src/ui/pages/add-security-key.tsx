@@ -1,13 +1,21 @@
 import { useCache, useLoader } from "@app/fx";
+import { fetchU2fChallenges } from "@app/mfa";
+import { securitySettingsUrl } from "@app/routes";
+import { selectCurrentUserId } from "@app/users";
 import { PublicKeyCredentialCreationOptionsJSON } from "@github/webauthn-json/dist/types/basic/json";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetchU2fChallenges } from "@app/mfa";
-import { selectCurrentUserId } from "@app/users";
-
 import { createWebauthnDevice, webauthnCreate } from "@app/auth";
-import { Banner, Button, FormGroup, Input } from "../shared";
+import {
+  Banner,
+  Box,
+  BoxGroup,
+  Breadcrumbs,
+  Button,
+  FormGroup,
+  Input,
+} from "../shared";
 
 interface U2fChallenge {
   id: string;
@@ -26,7 +34,7 @@ export const AddSecurityKeyPage = () => {
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!name) {
-      setError("name must not be blank");
+      setError("Name must not be blank");
       return;
     }
 
@@ -46,42 +54,54 @@ export const AddSecurityKeyPage = () => {
   };
 
   return (
-    <div>
-      <div>
-        Security Keys are hardware devices that can be used for two-factor
-        authentication. To sign in using a Security Key, you press a button on
-        the device, rather than type in a token.
-      </div>
-      <div>
-        Security Keys help protect against phishing, and as a result, they can
-        be more secure than token-based two-factor authentication.
-      </div>
+    <BoxGroup>
+      <Breadcrumbs
+        crumbs={[
+          { name: "Profile Settings", to: securitySettingsUrl() },
+          { name: "Security Keys", to: null },
+        ]}
+      />
+      <Box>
+        <div className="flex flex-col gap-4 justify-center">
+          <div>
+            Security Keys are hardware devices that can be used for two-factor
+            authentication. To sign in using a Security Key, you press a button
+            on the device, rather than type in a token.
+          </div>
+          <div>
+            Security Keys help protect against phishing, and as a result, they
+            can be more secure than token-based two-factor authentication.
+          </div>
 
-      <form onSubmit={onSubmit}>
-        <FormGroup
-          label="Name"
-          htmlFor="input-name"
-          feedbackVariant={error ? "danger" : "info"}
-        >
-          <Input
-            name="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.currentTarget.value)}
-            autoComplete="username"
-          />
-          <div>Pick a name that helps you remember this key</div>
-        </FormGroup>
-        {error ? <Banner variant="error">{error}</Banner> : null}
-        {loader.isError ? (
-          <Banner variant="error">{loader.message}</Banner>
-        ) : null}
-        <div>
-          <Button type="submit" isLoading={loader.isLoading}>
-            Register
-          </Button>
+          <form onSubmit={onSubmit} className="flex flex-col gap-4">
+            <FormGroup
+              label="Name"
+              htmlFor="input-name"
+              feedbackVariant={error ? "danger" : "info"}
+            >
+              <Input
+                name="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.currentTarget.value)}
+                autoComplete="username"
+              />
+              <div className="text-gray-500">
+                Pick a name that helps you remember this key
+              </div>
+            </FormGroup>
+            {error ? <Banner variant="error">{error}</Banner> : null}
+            {loader.isError ? (
+              <Banner variant="error">{loader.message}</Banner>
+            ) : null}
+            <div>
+              <Button type="submit" isLoading={loader.isLoading}>
+                Save Key
+              </Button>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
+      </Box>
+    </BoxGroup>
   );
 };

@@ -13,7 +13,6 @@ import {
 import { databaseScaleUrl } from "@app/routes";
 import {
   setupAppIntegrationTest,
-  sleep,
   waitForBootup,
   waitForData,
   waitForEnv,
@@ -67,8 +66,6 @@ describe("DatabaseScalePage", () => {
       /Optimize container performance with a custom profile./,
     );
     const btn = await screen.findByRole("button", { name: /Save Changes/ });
-    // need to load all the service data into useState() hooks before checking disabled
-    await sleep(0);
     expect(btn).toBeDisabled();
 
     const diskSize = await screen.findByLabelText(/Disk Size/);
@@ -80,7 +77,10 @@ describe("DatabaseScalePage", () => {
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
 
-    expect(await screen.findByText("Operation Details")).toBeInTheDocument();
+    expect(await screen.findByText("Database Details")).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Operations show real-time/),
+    ).toBeInTheDocument();
   });
 
   describe("when changing container profile", () => {
@@ -135,7 +135,7 @@ describe("DatabaseScalePage", () => {
         expect(screen.getByLabelText(/Container Profile/)).toBeInTheDocument();
         expect(
           screen.getByText(
-            /Changed from General Purpose \(M\) - Legacy to Compute Optimized \(C\)/,
+            /Changed from General Purpose \(M\) to Compute Optimized \(C\)/,
           ),
         ).toBeInTheDocument();
         expect(screen.getByText(/Container Size/)).toBeInTheDocument();

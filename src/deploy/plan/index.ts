@@ -236,10 +236,40 @@ const initPlan = defaultPlan();
 const mustPlan = mustSelectEntity(initPlan);
 
 export const selectPlanById = mustPlan(planSelectors.selectById);
-export const { selectTableAsList: selectPlansAsList } = planSelectors;
 export const planReducers = createReducerMap(planSlice);
 
-export const DEPLOY_ACTIVE_PLAN_NAME = "active_plans";
+// when there is no active plan that means we should assume
+// the user is on a legacy "enterprise" plan
+export const selectPlanByActiveId = createSelector(
+  planSelectors.selectTableAsList,
+  selectPlanById,
+  (plans, planById) => {
+    if (planById.id !== "") {
+      return planById;
+    }
+
+    return plans.find((p) => p.name === "enterprise") || initPlan;
+  },
+);
+
+export const selectPlansForView = createSelector(
+  planSelectors.selectTableAsList,
+  (plans) => {
+    const init: Record<PlanName, DeployPlan> = {
+      starter: defaultPlan({ name: "starter" }),
+      growth: defaultPlan({ name: "growth" }),
+      scale: defaultPlan({ name: "scale" }),
+      enterprise: defaultPlan({ name: "enterprise" }),
+    };
+    return plans.reduce((acc, plan) => {
+      // plan.name should be unique
+      acc[plan.name] = plan;
+      return acc;
+    }, init);
+  },
+);
+
+export const DEPLOY_ACTIVE_PLAN_NAME = "activePlans";
 const activePlanSlice = createTable<DeployActivePlan>({
   name: DEPLOY_ACTIVE_PLAN_NAME,
 });

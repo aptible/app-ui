@@ -74,6 +74,8 @@ export const appServicesUrl = (id: string) => `${appDetailUrl(id)}/services`;
 export const APP_SERVICE_PATH = `${APP_DETAIL_PATH}/services/:serviceId`;
 export const appServicePathUrl = (appId: string, serviceId: string) =>
   `${appDetailUrl(appId)}/services/${serviceId}`;
+export const APP_CONFIG_PATH = `${APP_DETAIL_PATH}/config`;
+export const appConfigUrl = (appId: string) => `${appDetailUrl(appId)}/config`;
 export const APP_SERVICE_METRICS_PATH = `${APP_DETAIL_PATH}/services/:serviceId/metrics`;
 export const appServicePathMetricsUrl = (appId: string, serviceId: string) =>
   `${appDetailUrl(appId)}/services/${serviceId}/metrics`;
@@ -249,6 +251,8 @@ export const stylesUrl = () => STYLES_PATH;
 
 export const STACKS_PATH = "/stacks";
 export const stacksUrl = () => STACKS_PATH;
+export const CREATE_STACK_PATH = "/create/stack";
+export const createStackUrl = () => CREATE_STACK_PATH;
 
 export const STACK_DETAIL_PATH = "/stacks/:id";
 export const stackDetailUrl = (id: string) => `/stacks/${id}`;
@@ -261,6 +265,8 @@ export const stackDetailVpnTunnelsUrl = (id: string) =>
 export const STACK_DETAIL_VPC_PEERING_PATH = `${STACK_DETAIL_PATH}/vpc-peering`;
 export const stackDetailVpcPeeringsUrl = (id: string) =>
   `${stackDetailUrl(id)}/vpc-peering`;
+export const STACK_DETAIL_HIDS_PATH = `${STACK_DETAIL_PATH}/hids`;
+export const stackDetailHidsUrl = (id: string) => `${stackDetailUrl(id)}/hids`;
 
 export const SEARCH_PATH = "/search";
 export const searchUrl = () => SEARCH_PATH;

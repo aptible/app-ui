@@ -23,6 +23,7 @@ import {
   hasDeployApp,
   hasDeployEnvironment,
   mapCreatorToProvision,
+  prepareConfigEnv,
   provisionDatabase,
   selectAppById,
   selectDatabasesByEnvId,
@@ -30,6 +31,7 @@ import {
   updateDeployEnvironmentStatus,
   waitForOperation,
 } from "@app/deploy";
+import { TextVal } from "@app/string-utils";
 import { ApiGen, DeployApp } from "@app/types";
 
 interface CreateProjectProps {
@@ -137,16 +139,6 @@ function* waitForDb(opId: string, dbId: string): Iterator<any, WaitDbProps> {
   };
 }
 
-export interface TextVal<
-  M extends { [key: string]: unknown } = {
-    [key: string]: unknown;
-  },
-> {
-  key: string;
-  value: string;
-  meta: M;
-}
-
 export interface CreateProjectSettingsProps {
   appId: string;
   envId: string;
@@ -202,16 +194,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       }),
     );
 
-    const env: { [key: string]: any } = {};
-    // the way to "remove" env vars from config is to set them as empty
-    // so we do that here
-    Object.keys(curEnvs).forEach((key) => {
-      env[key] = "";
-    });
-
-    envs.forEach((e) => {
-      env[e.key] = e.value;
-    });
+    const env = prepareConfigEnv(curEnvs, envs);
     // we want to also inject the db env vars with placeholders
     dbs.forEach((db) => {
       env[`${db.env}${DB_ENV_TEMPLATE_KEY}`] = getDbEnvTemplateValue(db.name);

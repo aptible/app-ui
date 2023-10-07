@@ -1,4 +1,4 @@
-import { prettyEnglishDateWithTime } from "@app/date";
+import { prettyEnglishDate } from "@app/date";
 import { downloadActivityReports } from "@app/deploy";
 import { DeployActivityReport } from "@app/types";
 import { useDispatch } from "react-redux";
@@ -15,15 +15,9 @@ const ActivityReportListRow = ({
   const dispatch = useDispatch();
   return (
     <tr className="group hover:bg-gray-50" key={`${report.id}`}>
-      <Td className="text-gray-900">
-        {prettyEnglishDateWithTime(report.createdAt)}
-      </Td>
-      <Td className="text-gray-900">
-        {prettyEnglishDateWithTime(report.startsAt)}
-      </Td>
-      <Td className="text-gray-900">
-        {prettyEnglishDateWithTime(report.endsAt)}
-      </Td>
+      <Td className="text-gray-900">{prettyEnglishDate(report.createdAt)}</Td>
+      <Td className="text-gray-900">{prettyEnglishDate(report.startsAt)}</Td>
+      <Td className="text-gray-900">{prettyEnglishDate(report.endsAt)}</Td>
       <Td className="flex gap-2 justify-end mr-4">
         <ButtonIcon
           icon={<IconDownload className="-mr-1" variant="sm" />}

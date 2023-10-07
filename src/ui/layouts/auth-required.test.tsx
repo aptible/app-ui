@@ -1,4 +1,4 @@
-import { server, testEnv, testUser } from "@app/mocks";
+import { server, testEnv, testUser, verifiedUserHandlers } from "@app/mocks";
 import { loginUrl, verifyEmailRequestUrl } from "@app/routes";
 import { setupIntegrationTest } from "@app/test";
 import {
@@ -7,7 +7,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { rest } from "msw";
-import { AuthRequired } from "./auth-required";
+import { AllRequired } from "./auth-required";
 
 const LoginMock = () => {
   return <div>Simulated login</div>;
@@ -16,19 +16,21 @@ const VerifyMock = () => {
   return <div>Simulated verify</div>;
 };
 
-describe("AuthRequired", () => {
+describe("AllRequired", () => {
   it("should allow child to render without a redirect when current token active", async () => {
+    server.use(...verifiedUserHandlers());
     const { TestProvider } = setupIntegrationTest({
       path: "/mock",
       initEntries: ["/mock"],
     });
     render(
       <TestProvider>
-        <AuthRequired />
-        <h1>Test element</h1>
+        <AllRequired>
+          <h1>Test element</h1>
+        </AllRequired>
       </TestProvider>,
     );
-    await waitForElementToBeRemoved(() => screen.queryByText("loading..."));
+    await waitForElementToBeRemoved(() => screen.queryByText(/Loading token/));
     expect(screen.queryByText("Test element")).toBeInTheDocument();
   });
   it("should redirect when current token expired", async () => {
@@ -49,11 +51,11 @@ describe("AuthRequired", () => {
     );
     render(
       <TestProvider>
-        <AuthRequired />
+        <AllRequired />
         <h1>Test element</h1>
       </TestProvider>,
     );
-    await waitForElementToBeRemoved(() => screen.queryByText("loading..."));
+    await waitForElementToBeRemoved(() => screen.queryByText(/Loading token/));
     await screen.findByText("Simulated login");
     expect(screen.queryByText("Test element")).not.toBeInTheDocument();
   });
@@ -92,7 +94,7 @@ describe("AuthRequired", () => {
     render(
       <TestProvider>
         <div>
-          <AuthRequired />
+          <AllRequired />
           <h1>Test element</h1>
         </div>
       </TestProvider>,

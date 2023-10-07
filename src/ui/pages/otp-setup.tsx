@@ -1,13 +1,16 @@
 import { useLoader } from "@app/fx";
+import { selectOtp, setupOtp } from "@app/mfa";
+import { securitySettingsUrl } from "@app/routes";
+import { selectCurrentUserId, updateUser } from "@app/users";
 import QRCode from "qrcode.react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { selectOtp, setupOtp } from "@app/mfa";
-import { selectCurrentUserId, updateUser } from "@app/users";
-
 import {
   BannerMessages,
+  Box,
+  BoxGroup,
+  Breadcrumbs,
   Button,
   ExternalLink,
   FormGroup,
@@ -66,65 +69,80 @@ export const OtpSetupPage = () => {
   };
 
   return (
-    <div className="flex p-16 justify-center">
-      <div className="max-w-md">
-        <div className="mb-2">
-          2-factor authentication will be enabled for your account after
-          confirmation.
-        </div>
+    <BoxGroup>
+      <Breadcrumbs
+        crumbs={[
+          { name: "Profile Settings", to: securitySettingsUrl() },
+          { name: "2-Factor Authentication", to: null },
+        ]}
+      />
+      <Box>
         <div>
-          To proceed, scan the QR code below with your 2FA app (we recommend
-          using{" "}
-          <ExternalLink
-            href="https://support.google.com/accounts/answer/1066447?hl=en"
-            variant="info"
-          >
-            Google Authenticator
-          </ExternalLink>
-          ), input the code generated, and click on Enable 2FA.
-        </div>
-
-        {otpLoader.isLoading ? (
-          <Loading />
-        ) : (
-          <div>
-            <div className="my-4">
-              <div className="flex my-4 justify-center align-center">
-                <QRCode value={otp.uri} />
-              </div>
-              <div>Your 2FA URL: {otp.uri}</div>
-              <div>Your 2FA Secret: {secret}</div>
-            </div>
-            <form onSubmit={onSubmit}>
-              <FormGroup
-                label="2FA Token"
-                htmlFor="input-mfa"
-                feedbackVariant={error ? "danger" : "info"}
-              >
-                <Input
-                  name="mfa"
-                  type="mfa"
-                  value={mfa}
-                  onChange={(e) => setMFA(e.currentTarget.value)}
-                  data-testid="input-mfa"
-                />
-                <div>{error}</div>
-              </FormGroup>
-              <Button
-                type="submit"
-                disabled={!!error || !mfa}
-                isLoading={userLoader.isLoading}
-              >
-                Enable 2FA
-              </Button>
-              <div className="mt-4">
-                <BannerMessages {...userLoader} />
-                {otpLoader.isError ? <BannerMessages {...otpLoader} /> : null}
-              </div>
-            </form>
+          <div className="mb-2 text-md font-semibold">
+            2-factor authentication will be enabled for your account after
+            confirmation.
           </div>
-        )}
-      </div>
-    </div>
+          <div className="max-w-lg">
+            To proceed, scan the QR code below with your 2FA app (we recommend
+            using{" "}
+            <ExternalLink
+              href="https://support.google.com/accounts/answer/1066447?hl=en"
+              variant="info"
+            >
+              Google Authenticator
+            </ExternalLink>
+            ), input the code generated, and click on Enable 2FA.
+          </div>
+
+          {otpLoader.isLoading ? (
+            <Loading />
+          ) : (
+            <div>
+              <div className="my-4">
+                <div className="flex my-10 justify-center align-center max-w-lg">
+                  <QRCode value={otp.uri} />
+                </div>
+                <div>
+                  <b>Your 2FA URL:</b> {otp.uri}
+                </div>
+                <div>
+                  <b>Your 2FA Secret:</b> {secret}
+                </div>
+              </div>
+              <form
+                onSubmit={onSubmit}
+                className="flex flex-col gap-4 max-w-lg"
+              >
+                <FormGroup
+                  label="2FA Token"
+                  htmlFor="input-mfa"
+                  feedbackVariant={error ? "danger" : "info"}
+                >
+                  <Input
+                    name="mfa"
+                    type="mfa"
+                    value={mfa}
+                    onChange={(e) => setMFA(e.currentTarget.value)}
+                    data-testid="input-mfa"
+                  />
+                  <div>{error}</div>
+                </FormGroup>
+                <Button
+                  type="submit"
+                  disabled={!!error || !mfa}
+                  isLoading={userLoader.isLoading}
+                >
+                  Enable 2FA
+                </Button>
+                <div>
+                  <BannerMessages {...userLoader} />
+                  {otpLoader.isError ? <BannerMessages {...otpLoader} /> : null}
+                </div>
+              </form>
+            </div>
+          )}
+        </div>
+      </Box>
+    </BoxGroup>
   );
 };

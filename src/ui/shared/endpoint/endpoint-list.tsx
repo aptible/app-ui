@@ -15,6 +15,7 @@ import {
   selectEndpointsByCertIdForTableSearch,
   selectEndpointsByDbIdForTableSearch,
   selectEndpointsByEnvIdForTableSearch,
+  selectEndpointsByServiceId,
   selectEndpointsForTableSearch,
 } from "@app/deploy";
 import {
@@ -363,5 +364,49 @@ export function EndpointsByCert({ certId }: { certId: string }) {
 
   return (
     <EndpointList endpoints={endpoints} search={search} onChange={onChange} />
+  );
+}
+
+export function EndpointsByDbService({
+  serviceId,
+  dbId,
+}: { serviceId: string; dbId: string }) {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (nextSearch: string) => {
+    setParams({ search: nextSearch });
+  };
+  const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  const endpoints = useSelector((s: AppState) =>
+    selectEndpointsByServiceId(s, { serviceId, search }),
+  );
+  const navigate = useNavigate();
+  const action = (
+    <ButtonCreate
+      envId={db.environmentId}
+      onClick={() => navigate(databaseEndpointCreateUrl(dbId))}
+    >
+      <IconPlusCircle variant="sm" className="mr-2" /> New Endpoint
+    </ButtonCreate>
+  );
+
+  if (endpoints.length === 0 && search === "") {
+    return (
+      <EmptyResultView
+        action={action}
+        title="No endpoints yet"
+        description="Expose this application to the public internet by adding an endpoint"
+        className="p-6 w-100"
+      />
+    );
+  }
+
+  return (
+    <EndpointList
+      endpoints={endpoints}
+      search={search}
+      onChange={onChange}
+      actions={[action]}
+    />
   );
 }

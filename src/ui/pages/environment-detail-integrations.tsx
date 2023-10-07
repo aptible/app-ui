@@ -2,7 +2,7 @@ import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
-import { prettyDateRelative } from "@app/date";
+import { prettyEnglishDateWithTime } from "@app/date";
 import {
   deprovisionLogDrain,
   deprovisionMetricDrain,
@@ -124,7 +124,7 @@ const LogDrainLastUpdatedCell = ({
       <div className="flex">
         <p className="leading-4">
           <span className={tokens.type.darker}>
-            {capitalize(prettyDateRelative(logDrain.updatedAt))}
+            {capitalize(prettyEnglishDateWithTime(logDrain.updatedAt))}
           </span>
         </p>
       </div>
@@ -281,7 +281,7 @@ const MetricDrainLastUpdatedCell = ({
       <div className="flex">
         <p className="leading-4">
           <span className={tokens.type.darker}>
-            {capitalize(prettyDateRelative(metricDrain.updatedAt))}
+            {capitalize(prettyEnglishDateWithTime(metricDrain.updatedAt))}
           </span>
         </p>
       </div>

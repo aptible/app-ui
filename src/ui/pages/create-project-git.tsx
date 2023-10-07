@@ -427,10 +427,7 @@ export const CreateProjectGitPushPage = () => {
         {hasDeployOperation(deployOp) ? (
           <div className="text-black-900 mb-4">
             We detected an app deployment, did you push to the{" "}
-            <span className="bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]">
-              aptible-scan
-            </span>{" "}
-            branch?
+            <Code>aptible-scan</Code> branch?
           </div>
         ) : null}
 
@@ -942,8 +939,7 @@ export const CreateProjectGitStatusPage = () => {
         <div className="text-center mt-10">
           <h1 className={tokens.type.h1}>Deployment Failed</h1>
           <p className="my-4 text-gray-600">
-            Don't worry! Edit your project settings and click Redeploy when
-            ready.
+            Don't worry! Edit your configuration or push your code to redeploy.
           </p>
         </div>
       );

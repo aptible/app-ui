@@ -13,6 +13,7 @@ import { createLog } from "@app/debug";
 import { ApiGen } from "@app/types";
 import { CreateUserForm, createUser } from "@app/users";
 
+import { tunaEvent } from "@app/tuna";
 import { AUTH_LOADER_ID, defaultAuthLoaderMeta } from "./loader";
 import { createOrganization } from "./organization";
 import { createToken, elevateToken } from "./token";
@@ -38,13 +39,14 @@ export const signup = thunks.create<CreateUserForm>(
       return;
     }
 
+    tunaEvent("nux.signup.created-user", email);
+
     const tokenCtx = yield* call(
       createToken.run,
       createToken({
         username: email,
         password,
         otpToken: "",
-        makeCurrent: true,
       }),
     );
 
@@ -76,15 +78,22 @@ export const signup = thunks.create<CreateUserForm>(
       return;
     }
 
+    const orgId = orgCtx.json.data.id;
+    tunaEvent("nux.signup.created-organization", { name: orgName, orgId });
+
     const billsCtx = yield* call(
       createSignupBillingRecords.run,
       createSignupBillingRecords({
-        orgId: orgCtx.json.data.id,
+        orgId,
         orgName,
         contactName: name,
         contactEmail: email,
       }),
     );
+
+    if (billsCtx.json.ok) {
+      tunaEvent("nux.signup.created-billing", { name: orgName, orgId });
+    }
 
     // ignore billing errors because we could be in development
     log(billsCtx);

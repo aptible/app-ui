@@ -7,9 +7,10 @@ ARG VITE_API_URL=https://api.aptible.com
 ARG VITE_LEGACY_DASHBOARD_URL=https://dashboard.aptible.com
 ARG VITE_METRIC_TUNNEL_URL=https://metrictunnel.aptible.com
 ARG VITE_ORIGIN=app
-ARG VITE_SENTRY_DSN
 ARG VITE_TUNA_ENABLED=false
 ARG NODE_ENV=production
+ARG VITE_SENTRY_DSN
+ARG VITE_STRIPE_PUBLISHABLE_KEY
 
 RUN corepack enable
 RUN corepack prepare yarn@stable --activate

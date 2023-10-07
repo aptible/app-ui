@@ -1,18 +1,40 @@
+import { thunks } from "@app/api";
 import {
+  AUTH_LOADER_ID,
+  fetchCurrentToken,
+  fetchCurrentUserRoles,
+  fetchOrganizations,
+  fetchRoles,
+} from "@app/auth";
+import { fetchBillingDetail } from "@app/billing";
+import {
+  fetchApps,
+  fetchDatabases,
+  fetchEndpoints,
+  fetchEnvironments,
+  fetchLogDrains,
+  fetchMetricDrains,
+  fetchOrgOperations,
+  fetchServices,
+  fetchStacks,
+} from "@app/deploy";
+import {
+  all,
   call,
   put,
   select,
   setLoaderStart,
   setLoaderSuccess,
   take,
+  takeEvery,
 } from "@app/fx";
+import { selectOrganizationSelected } from "@app/organizations";
+import { selectAccessToken } from "@app/token";
+import { AnyAction, ApiGen } from "@app/types";
+import { fetchUsers, selectCurrentUserId } from "@app/users";
 import { REHYDRATE } from "redux-persist";
 
-import { thunks } from "@app/api";
-import { fetchCurrentToken } from "@app/auth";
-import { onFetchInitData } from "@app/initial-data";
-import { selectAccessToken } from "@app/token";
-import { ApiGen } from "@app/types";
+export const FETCH_REQUIRED_DATA = "fetch-required-data";
 
 export const bootup = thunks.create(
   "bootup",
@@ -21,17 +43,73 @@ export const bootup = thunks.create(
     yield* put(setLoaderStart({ id }));
     // wait for redux-persist to rehydrate redux store
     yield* take(REHYDRATE);
+
     yield* call(fetchCurrentToken.run, fetchCurrentToken());
     const token: string = yield* select(selectAccessToken);
     if (!token) {
+      yield* put(
+        setLoaderSuccess({
+          id: FETCH_REQUIRED_DATA,
+          message: "no token found",
+        }),
+      );
       yield* put(setLoaderSuccess({ id, message: "no token found" }));
       return;
     }
+    yield* call(onFetchRequiredData);
 
-    yield* call(onFetchInitData);
+    yield* call(onFetchResourceData);
+    yield* put(setLoaderSuccess({ id }));
 
     yield* next();
-
-    yield* put(setLoaderSuccess({ id }));
   },
 );
+
+function* onFetchRequiredData() {
+  yield* put(setLoaderStart({ id: FETCH_REQUIRED_DATA }));
+  yield* call(fetchOrganizations.run, fetchOrganizations());
+  const org = yield* select(selectOrganizationSelected);
+  yield* all([
+    call(fetchUsers.run, fetchUsers({ orgId: org.id })),
+    call(
+      fetchBillingDetail.run,
+      fetchBillingDetail({ id: org.billingDetailId }),
+    ),
+  ]);
+  yield* put(setLoaderSuccess({ id: FETCH_REQUIRED_DATA }));
+}
+
+function* onFetchResourceData() {
+  const org = yield* select(selectOrganizationSelected);
+  const userId = yield* select(selectCurrentUserId);
+  yield* all([
+    call(fetchRoles.run, fetchRoles({ orgId: org.id })),
+    call(fetchCurrentUserRoles.run, fetchCurrentUserRoles({ userId: userId })),
+    call(fetchStacks.run, fetchStacks()),
+    call(fetchEnvironments.run, fetchEnvironments()),
+    call(fetchApps.run, fetchApps()),
+    call(fetchDatabases.run, fetchDatabases()),
+    call(fetchLogDrains.run, fetchLogDrains()),
+    call(fetchMetricDrains.run, fetchMetricDrains()),
+    call(fetchServices.run, fetchServices()),
+    call(fetchEndpoints.run, fetchEndpoints()),
+    call(fetchOrgOperations.run, fetchOrgOperations({ orgId: org.id })),
+  ]);
+}
+
+function* onRefreshData() {
+  yield* call(onFetchRequiredData);
+  yield* call(onFetchResourceData);
+}
+
+function* watchRefreshData() {
+  const act = (action: AnyAction) => {
+    const matched =
+      action.type === `${setLoaderSuccess}` &&
+      action.payload?.id === AUTH_LOADER_ID;
+    return matched;
+  };
+  yield* takeEvery(act, onRefreshData);
+}
+
+export const sagas = { watchRefreshData };

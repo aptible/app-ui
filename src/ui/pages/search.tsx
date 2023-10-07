@@ -202,8 +202,8 @@ export const SearchPage = () => {
       return (
         <div className="mt-4">
           <div className="text-black-300 text-center">
-            Search for Stacks, Environments, Apps, and Databases by Name, Type,
-            or ID.
+            Search for Stacks, Environments, Apps, Databases, and Endpoints by
+            Name, Type, or ID.
           </div>
 
           <hr className="text-black-300 my-4" />

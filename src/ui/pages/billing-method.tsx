@@ -12,6 +12,7 @@ import { selectEnv } from "@app/env";
 import { selectOrganizationSelected } from "@app/organizations";
 import { homeUrl, logoutUrl, plansUrl } from "@app/routes";
 import { AppState } from "@app/types";
+import { existValidtor } from "@app/validator";
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -24,6 +25,7 @@ import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
+import { useValidator } from "../hooks";
 import { HeroBgView } from "../layouts";
 import {
   AptibleLogo,
@@ -46,6 +48,20 @@ const StripeProvider = ({ children }: { children: React.ReactNode }) => {
   return <Elements stripe={stripe}>{children}</Elements>;
 };
 
+interface FormProps {
+  zipcode: string;
+  nameOnCard: string;
+}
+
+const validators = {
+  zipcode: (p: FormProps) => {
+    return existValidtor(p.zipcode, "zipcode");
+  },
+  name: (p: FormProps) => {
+    return existValidtor(p.nameOnCard, "name on card");
+  },
+};
+
 const CreditCardForm = () => {
   const billingDetail = useSelector(selectBillingDetail);
   const navigate = useNavigate();
@@ -57,14 +73,21 @@ const CreditCardForm = () => {
   const [error, setError] = useState("");
   const loader = useLoader(createStripeSource);
   const [loading, setLoading] = useState(false);
+  const [errors, validate] = useValidator<FormProps, typeof validators>(
+    validators,
+  );
+  const data = { zipcode, nameOnCard };
 
   useLoaderSuccess(loader, () => {
     navigate(homeUrl());
   });
 
   async function submit() {
+    if (!validate(data)) {
+      return;
+    }
+
     if (!stripe || !elements) {
-      setError("stripe not found");
       throw new Error("stripe not found");
     }
 
@@ -136,7 +159,12 @@ const CreditCardForm = () => {
           </div>
         </div>
 
-        <FormGroup label="Name on Card" htmlFor="name-on-card">
+        <FormGroup
+          label="Name on Card"
+          htmlFor="name-on-card"
+          feedbackVariant={errors.name ? "danger" : "info"}
+          feedbackMessage={errors.name}
+        >
           <Input
             id="name-on-card"
             name="name-on-card"
@@ -148,7 +176,13 @@ const CreditCardForm = () => {
           />
         </FormGroup>
 
-        <FormGroup label="Zipcode" htmlFor="zipcode" className="flex-1">
+        <FormGroup
+          label="Zipcode"
+          htmlFor="zipcode"
+          className="flex-1"
+          feedbackVariant={errors.zipcode ? "danger" : "info"}
+          feedbackMessage={errors.zipcode}
+        >
           <Input
             name="zipcode"
             value={zipcode}
@@ -180,7 +214,7 @@ export const BillingMethodPage = () => {
   return (
     <StripeProvider>
       <HeroBgView className="flex gap-6">
-        <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] lg:h-screen">
+        <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] h-fit min-h-screen">
           <div className="text-xl text-black font-bold">
             Launch, grow, and scale your app without worrying about
             infrastructure

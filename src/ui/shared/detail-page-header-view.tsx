@@ -3,8 +3,8 @@ import { ReactNode } from "react";
 import { ActionList, ActionListView } from "./action-list-view";
 import { Box } from "./box";
 import { Breadcrumbs, Crumb } from "./breadcrumbs";
-import { ButtonLinkExternal } from "./button";
-import { IconAlertTriangle, IconExternalLink } from "./icons";
+import { ButtonLinkDocs } from "./button";
+import { IconAlertTriangle } from "./icons";
 import { TabItem, Tabs } from "./tabs";
 
 interface HeaderProps {
@@ -99,17 +99,7 @@ export function DetailTitleBar({
         <h1 className="text-lg text-gray-500">{title}</h1>
       </div>
 
-      {docsUrl ? (
-        <ButtonLinkExternal
-          href={docsUrl}
-          className="ml-5"
-          variant="white"
-          size="sm"
-        >
-          View Docs
-          <IconExternalLink className="inline ml-1 h-5 mt-0" />
-        </ButtonLinkExternal>
-      ) : null}
+      {docsUrl ? <ButtonLinkDocs href={docsUrl} /> : null}
     </div>
   );
 }
@@ -118,11 +108,11 @@ export function DetailInfoGrid({
   children,
   columns = 2,
 }: { children: ReactNode; columns?: number }) {
-  return (
-    <div className={`grid md:grid-cols-${columns} col-span-1 gap-4`}>
-      {children}
-    </div>
-  );
+  let col = "md:grid-cols-2";
+  if (columns === 3) {
+    col = "md:grid-cols-3";
+  }
+  return <div className={`grid ${col} grid-cols-1 gap-4`}>{children}</div>;
 }
 
 export function DetailInfoItem({

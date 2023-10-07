@@ -33,3 +33,8 @@ export const selectCanImpersonate = createSelector(
     return user.superuser || user.readOnlyImpersonate;
   },
 );
+
+export const selectIsUserVerified = createSelector(
+  selectCurrentUser,
+  (user) => user.verified,
+);

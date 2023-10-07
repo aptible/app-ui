@@ -56,7 +56,7 @@ describe("Signup page", () => {
   it("during signup expect validation to guard against submission", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
-        return res(ctx.status(401));
+        return res(ctx.status(401), ctx.json({}));
       }),
     );
     const { App } = setupAppIntegrationTest({

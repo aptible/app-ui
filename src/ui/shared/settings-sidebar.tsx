@@ -1,14 +1,15 @@
 import { securitySettingsUrl, teamUrl } from "@app/routes";
 import cn from "classnames";
 import { NavLink } from "react-router-dom";
+import { tokens } from "./tokens";
 
 export function SettingsSidebar() {
-  const profileNav = [{ name: "Security Settings", to: securitySettingsUrl() }];
+  const profileNav = [{ name: "Profile Settings", to: securitySettingsUrl() }];
 
   const companyNav = [
-    { name: "Team", to: teamUrl() },
-    { name: "Single Sign-on", to: "/settings/sso" },
-    { name: "Contact Settings", to: "/settings/contact-settings" },
+    { name: "Team Settings", to: teamUrl() },
+    { name: "Single Sign-On", to: "/settings/sso" },
+    { name: "Team Contacts", to: "/settings/contact-settings" },
     { name: "Stacks", to: "/setting/stacks" },
   ];
 
@@ -18,44 +19,46 @@ export function SettingsSidebar() {
     { name: "Payment Methods", to: "/settings/payment-methods" },
     { name: "Credits", to: "/setting/credits" },
     { name: "Billing Contacts", to: "/setting/billing-contacts" },
-    { name: "Address", to: "/setting/billing-address" },
+    { name: "Billing Address", to: "/setting/billing-address" },
   ];
-  const active = "bg-gray-200 text-gray-900";
-  const inactive = "text-gray-600 hover:bg-gray-100 hover:text-gray-900";
+  const active = "bg-off-white font-semibold text-black focus:text-black";
+  const inactive = "text-black-500 hover:bg-black-50 hover:text-black";
   const navButton =
-    "group flex items-center p-2 mb-1 text-sm font-medium rounded-md hover:no-underline";
+    "group flex items-center p-2 text-base rounded-md hover:no-underline";
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200">
-      <div className="flex-1 flex flex-col py-5 overflow-y-auto">
-        <nav className="flex-1 px-4">
-          <div className="mb-6 pb-6 border-b border-gray-200">
-            <div className={cn("mb-2 p-2")}>Profile</div>
-            {profileNav.map((item) => (
-              <NavLink className={navLink} to={item.to} key={item.to}>
-                {item.name}
-              </NavLink>
-            ))}
-          </div>
-          <div className="mb-6 pb-6 border-b border-gray-200">
-            <div className={cn("mb-2 p-2")}>Company</div>
-            {companyNav.map((item) => (
-              <NavLink className={navLink} to={item.to} key={item.to}>
-                {item.name}
-              </NavLink>
-            ))}
-          </div>
-          <div className={cn("mb-2 p-2")}>Billing</div>
-          {billingNav.map((item) => (
-            <NavLink className={navLink} to={item.to} key={item.to}>
-              {item.name}
-            </NavLink>
-          ))}
-        </nav>
+    <nav className="flex flex-col">
+      <div>
+        <h4 className={`${tokens.type.h4} ml-2`}>Profile</h4>
+        {profileNav.map((item) => (
+          <NavLink className={navLink} to={item.to} key={item.to}>
+            {item.name}
+          </NavLink>
+        ))}
+        <hr className="mt-3 mx-2" />
       </div>
-    </div>
+
+      <div>
+        <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Team</h4>
+        {companyNav.map((item) => (
+          <NavLink className={navLink} to={item.to} key={item.to}>
+            {item.name}
+          </NavLink>
+        ))}
+        <hr className="mt-3 mx-2" />
+      </div>
+
+      <div>
+        <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Billing</h4>
+        {billingNav.map((item) => (
+          <NavLink className={navLink} to={item.to} key={item.to}>
+            {item.name}
+          </NavLink>
+        ))}
+      </div>
+    </nav>
   );
 }

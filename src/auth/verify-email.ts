@@ -1,9 +1,7 @@
 import { authApi } from "@app/api";
-import { delay, leading, put, setLoaderSuccess } from "@app/fx";
+import { leading, put } from "@app/fx";
 import { AuthApiCtx } from "@app/types";
 import { patchUsers } from "@app/users";
-
-import { AUTH_LOADER_ID } from "./loader";
 
 interface VerifyEmail {
   userId: string;
@@ -31,14 +29,6 @@ export const verifyEmail = authApi.post<VerifyEmail>(
     }
 
     yield* put(patchUsers({ [userId]: { id: userId, verified: true } }));
-    // we need to add a delay because for some reason we are getting
-    // a race issue where we are calling `fetchUsers()` and the response
-    // has stale information for the current user.  So even though
-    // the user should be verified, the API returns `false` which means
-    // our redirect logic gets borked and keeps the user on the verify
-    // page.
-    yield* delay(250);
-    ctx.actions.push(setLoaderSuccess({ id: AUTH_LOADER_ID }));
   },
 );
 

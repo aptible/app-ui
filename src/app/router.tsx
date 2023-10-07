@@ -4,8 +4,10 @@ import * as routes from "@app/routes";
 import {
   ActivityPage,
   AddSecurityKeyPage,
+  AllRequired,
   AppActivityPage,
   AppCreateEndpointPage,
+  AppDetailConfigPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailPage,
@@ -32,6 +34,7 @@ import {
   CreateProjectGitStatusPage,
   CreateProjectNamePage,
   CreateProjectPage,
+  CreateStackPage,
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
@@ -82,12 +85,14 @@ import {
   SSHSettingsPage,
   SearchPage,
   SecuritySettingsPage,
+  SettingsLayout,
   SettingsPage,
   SignupPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
   StackDetailEnvironmentsPage,
+  StackDetailHidsPage,
   StackDetailLayout,
   StackDetailVpcPeeringPage,
   StackDetailVpnTunnelsPage,
@@ -95,8 +100,8 @@ import {
   StylesPage,
   SupportPage,
   TeamPage,
-  UnauthRequired,
   VerifyEmailPage,
+  VerifyEmailRequired,
 } from "@app/ui";
 import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
 import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
@@ -125,7 +130,7 @@ const applyPatches = (appRoute: RouteObject) =>
 export const appRoutes: RouteObject[] = [
   {
     path: routes.HOME_PATH,
-    element: <AuthRequired />,
+    element: <AllRequired />,
     children: [
       {
         index: true,
@@ -157,6 +162,15 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
+        path: routes.CREATE_STACK_PATH,
+        element: (
+          <AppSidebarLayout>
+            <CreateStackPage />
+          </AppSidebarLayout>
+        ),
+      },
+
+      {
         path: routes.STACKS_PATH,
         children: [
           {
@@ -179,6 +193,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.STACK_DETAIL_VPN_TUNNELS_PATH,
                 element: <StackDetailVpnTunnelsPage />,
+              },
+              {
+                path: routes.STACK_DETAIL_HIDS_PATH,
+                element: <StackDetailHidsPage />,
               },
             ],
           },
@@ -234,6 +252,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.APP_SETTINGS_PATH,
                 element: <AppSettingsPage />,
+              },
+              {
+                path: routes.APP_CONFIG_PATH,
+                element: <AppDetailConfigPage />,
               },
             ],
           },
@@ -450,31 +472,6 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
-        path: routes.LOGOUT_PATH,
-        element: <LogoutPage />,
-      },
-
-      {
-        path: routes.VERIFY_EMAIL_REQUEST_PATH,
-        element: <VerifyEmailPage />,
-      },
-
-      {
-        path: routes.VERIFY_EMAIL_PATH,
-        element: <VerifyEmailPage />,
-      },
-
-      {
-        path: routes.PLANS_PATH,
-        element: <PlansPage />,
-      },
-
-      {
-        path: routes.BILLING_METHOD_PAGE,
-        element: <BillingMethodPage />,
-      },
-
-      {
         path: routes.CREATE_ORG_PATH,
         element: <CreateOrgPage />,
       },
@@ -482,21 +479,6 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.ELEVATE_PATH,
         element: <ElevatePage />,
-      },
-
-      {
-        path: routes.SETTINGS_PATH,
-        element: <SettingsPage />,
-        children: [
-          {
-            index: true,
-            element: <SettingsPage />,
-          },
-          {
-            path: routes.TEAM_PATH,
-            element: <TeamPage />,
-          },
-        ],
       },
 
       {
@@ -548,11 +530,56 @@ export const appRoutes: RouteObject[] = [
           },
         ],
       },
-      {
-        path: routes.SUPPORT_URL,
-        element: <SupportPage />,
-      },
     ],
+  },
+
+  {
+    path: routes.LOGOUT_PATH,
+    element: (
+      <AuthRequired>
+        <LogoutPage />
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.VERIFY_EMAIL_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailPage />
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.VERIFY_EMAIL_REQUEST_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailPage />
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.PLANS_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <PlansPage />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.BILLING_METHOD_PAGE,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <BillingMethodPage />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
   },
 
   {
@@ -561,12 +588,24 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.SUPPORT_URL,
+    element: <SupportPage />,
+  },
+
+  {
+    path: routes.SETTINGS_PATH,
     element: (
-      <ElevateRequired>
-        <SettingsPage />
-      </ElevateRequired>
+      <AuthRequired>
+        <ElevateRequired>
+          <SettingsLayout />
+        </ElevateRequired>
+      </AuthRequired>
     ),
     children: [
+      {
+        index: true,
+        element: <SettingsPage />,
+      },
       {
         path: routes.SECURITY_SETTINGS_PATH,
         element: <SecuritySettingsPage />,
@@ -591,6 +630,11 @@ export const appRoutes: RouteObject[] = [
         path: routes.ADD_SECURITY_KEY_PATH,
         element: <AddSecurityKeyPage />,
       },
+
+      {
+        path: routes.TEAM_PATH,
+        element: <TeamPage />,
+      },
     ],
   },
 
@@ -606,57 +650,27 @@ export const appRoutes: RouteObject[] = [
 
   {
     path: routes.FORGOT_PASS_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <ForgotPassPage />,
-      },
-    ],
+    element: <ForgotPassPage />,
   },
 
   {
     path: routes.RESET_PASSWORD_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <ForgotPassVerifyPage />,
-      },
-    ],
+    element: <ForgotPassVerifyPage />,
   },
 
   {
     path: routes.SSO_ORG_FAILURE_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SsoFailurePage />,
-      },
-    ],
+    element: <SsoFailurePage />,
   },
 
   {
     path: routes.SSO_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SsoLoginPage />,
-      },
-    ],
+    element: <SsoLoginPage />,
   },
 
   {
     path: routes.SSO_DIRECT_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SsoDirectPage />,
-      },
-    ],
+    element: <SsoDirectPage />,
   },
 
   {
@@ -672,10 +686,6 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.STYLES_PATH,
     element: <StylesPage />,
-  },
-  {
-    path: routes.SUPPORT_URL,
-    element: <SupportPage />,
   },
 
   {

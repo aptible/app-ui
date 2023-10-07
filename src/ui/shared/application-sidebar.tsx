@@ -165,21 +165,21 @@ export const ApplicationSidebar = () => {
         <UserMenu hideName={collapsed} />
 
         {collapsed ? null : (
-          <div className="my-6 flex justify-between text-xs text-gray-500">
+          <div className="mb-6 mt-4 flex justify-between text-sm text-black-500">
             <a
-              className="text-gray-500 hover:text-indigo px-3"
+              className="text-black-500 hover:text-indigo px-2"
               href="https://aptible.com/docs"
             >
               DOCS
             </a>
             <Link
               to={supportUrl()}
-              className="text-gray-500 hover:text-indigo px-3"
+              className="text-black-500 hover:text-indigo px-2"
             >
               SUPPORT
             </Link>
             <a
-              className="text-gray-500 hover:text-indigo px-3"
+              className="text-black-500 hover:text-indigo px-2"
               href="https://www.aptible.com/docs/cli"
             >
               INSTALL CLI

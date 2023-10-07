@@ -1,48 +1,54 @@
-import { verifyEmailUrl } from "@app/routes";
-import { VerifyEmailPage } from "./verify-email";
-
 import { server, testEnv, testUser, testUserVerified } from "@app/mocks";
-import { setupAppIntegrationTest, setupIntegrationTest } from "@app/test";
+import { verifyEmailUrl } from "@app/routes";
+import {
+  setupAppIntegrationTest,
+  setupIntegrationTest,
+  waitForBootup,
+} from "@app/test";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { rest } from "msw";
-
-describe("Verify email confirm", () => {
-  it("should redirect to dashboard", async () => {
-    let counterA = 0;
-    let counterB = 0;
-
-    server.use(
-      rest.get(
-        `${testEnv.authUrl}/organizations/:orgId/users`,
-        (_, res, ctx) => {
-          counterA += 1;
-          if (counterA === 1) {
-            return res(ctx.json({ _embedded: [testUser] }));
-          }
-          return res(ctx.json({ _embedded: [testUserVerified] }));
-        },
-      ),
-      rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
-        counterB += 1;
-        if (counterB === 1) {
-          return res(ctx.json(testUser));
-        }
-        return res(ctx.json(testUserVerified));
-      }),
-    );
-    const { App } = setupAppIntegrationTest({
-      initEntries: [verifyEmailUrl("111", "222")],
-    });
-    render(<App />);
-    await screen.findByText(/loading/);
-    await screen.findByRole("heading", {
-      level: 2,
-      name: "Environments",
-    });
-  });
-});
+import { VerifyEmailPage } from "./verify-email";
 
 describe("Verify email page", () => {
+  describe("email confirmation page", () => {
+    it("should redirect to dashboard", async () => {
+      let counterA = 0;
+      let counterB = 0;
+
+      server.use(
+        rest.get(
+          `${testEnv.authUrl}/organizations/:orgId/users`,
+          (_, res, ctx) => {
+            counterA += 1;
+            if (counterA === 1) {
+              return res(ctx.json({ _embedded: [testUser] }));
+            }
+            return res(ctx.json({ _embedded: [testUserVerified] }));
+          },
+        ),
+        rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
+          counterB += 1;
+          if (counterB === 1) {
+            return res(ctx.json(testUser));
+          }
+          return res(ctx.json(testUserVerified));
+        }),
+      );
+
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [verifyEmailUrl("111", "222")],
+      });
+      await waitForBootup(store);
+
+      render(<App />);
+
+      await screen.findByRole("heading", {
+        level: 1,
+        name: /Name your Environment/,
+      });
+    });
+  });
+
   it("the verify email page should render", async () => {
     const { TestProvider } = setupIntegrationTest();
     render(

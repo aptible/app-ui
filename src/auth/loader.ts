@@ -39,14 +39,15 @@ export const isAuthenticationError = (error: AuthErrorType) => {
 };
 
 export const defaultAuthLoaderMeta = (
-  p: Partial<AuthLoaderMeta>,
+  p?: Partial<AuthLoaderMeta>,
 ): AuthLoaderMeta => {
+  const context = p?.exception_context || {};
   return {
     error: "",
     code: 0,
-    exception_context: { ...p.exception_context },
     verified: false,
     id: "",
     ...p,
+    exception_context: { ...context },
   };
 };

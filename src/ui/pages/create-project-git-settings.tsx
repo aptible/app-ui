@@ -7,6 +7,7 @@ import { useQuery } from "saga-query/react";
 
 import {
   DbCreatorProps,
+  configEnvToStr,
   fetchAllDatabaseImages,
   fetchApp,
   fetchConfiguration,
@@ -22,7 +23,6 @@ import { DeployCodeScanResponse } from "@app/deploy";
 import { idCreator } from "@app/id";
 import {
   DB_ENV_TEMPLATE_KEY,
-  TextVal,
   deployProject,
   getDbEnvTemplateValue,
 } from "@app/projects";
@@ -32,7 +32,13 @@ import {
 } from "@app/routes";
 import { AppState } from "@app/types";
 
-import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
+import { parseText } from "@app/string-utils";
+import {
+  useEnvEditor,
+  useEnvOpsPoller,
+  useLatestCodeResults,
+  useProjectOps,
+} from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
   Banner,
@@ -51,42 +57,13 @@ import {
   IconChevronUp,
   IconPlusCircle,
   Loading,
-  PreCode,
+  PreBox,
   ProgressProject,
   SelectOption,
   dbSelectorReducer,
   tokens,
   validateDbName,
 } from "../shared";
-
-const trim = (t: string) => t.trim();
-const parseText = <
-  M extends { [key: string]: unknown } = { [key: string]: unknown },
->(
-  text: string,
-  meta: () => M,
-): TextVal<M>[] =>
-  text
-    .split("\n")
-    .map(trim)
-    .map((t) => {
-      // sometimes the value can contain an "=" so we need to only
-      // split the first "=", (e.g. SECRET_KEY=1234=)
-      // https://stackoverflow.com/a/54708145
-      const [key, ...values] = t.split("=").map(trim);
-      const value = Array.isArray(values) ? values.join("=") : values;
-      return {
-        key,
-        value,
-        meta: meta(),
-      };
-    })
-    .filter((t) => !!t.key);
-
-interface ValidatorError {
-  item: TextVal;
-  message: string;
-}
 
 const validateNewDbs = (
   items: DbCreatorProps[],
@@ -135,30 +112,6 @@ const validateExistingDbs = (
       });
     } else {
       envVars.add(item.env);
-    }
-  };
-
-  items.forEach(validate);
-  return errors;
-};
-
-const validateEnvs = (items: TextVal[]): ValidatorError[] => {
-  const errors: ValidatorError[] = [];
-
-  const validate = (item: TextVal) => {
-    // https://stackoverflow.com/a/2821201
-    if (!/[a-zA-Z_]+[a-zA-Z0-9_]*/.test(item.key)) {
-      errors.push({
-        item,
-        message: `${item.key} does not match regex: /[a-zA-Z_]+[a-zA-Z0-9_]*/`,
-      });
-    }
-
-    if (item.value === "") {
-      errors.push({
-        item,
-        message: `${item.key} is blank, either provide a value or remove the environment variable`,
-      });
     }
   };
 
@@ -324,7 +277,7 @@ const DockerfileDataView = ({
       </div>
       {isOpen ? (
         <div className="pb-4">
-          <PreCode allowCopy segments={segments} />
+          <PreBox allowCopy segments={segments} />
         </div>
       ) : null}
     </div>
@@ -456,11 +409,14 @@ export const CreateProjectGitSettingsPage = () => {
   const appConfig = useSelector((s: AppState) =>
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
-  const existingEnvStr = Object.keys(appConfig.env).reduce((acc, key) => {
-    const value = appConfig.env[key];
-    const prev = acc ? `${acc}\n` : "";
-    return `${prev}${key}=${value}`;
-  }, "");
+  const existingEnvStr = configEnvToStr(appConfig.env);
+  const {
+    envs,
+    setEnvs,
+    envList,
+    validate: validateEnvs,
+    errors: envErrors,
+  } = useEnvEditor(existingEnvStr);
 
   useEffect(() => {
     setEnvs(existingEnvStr);
@@ -481,9 +437,6 @@ export const CreateProjectGitSettingsPage = () => {
   }, [queryEnvsStr]);
 
   const [dbErrors, setDbErrors] = useState<DbValidatorError[]>([]);
-  const [envs, setEnvs] = useState(existingEnvStr);
-  const envList = parseText(envs, () => ({}));
-  const [envErrors, setEnvErrors] = useState<ValidatorError[]>([]);
   const [cmds, setCmds] = useState("");
   const cmdList = parseText(cmds, () => ({ id: "", http: false }));
   const [showServiceCommands, setShowServiceCommands] = useState(false);
@@ -560,12 +513,8 @@ export const CreateProjectGitSettingsPage = () => {
       setDbErrors([]);
     }
 
-    const enverr = validateEnvs(envList);
-    if (enverr.length > 0) {
+    if (!validateEnvs()) {
       cancel = true;
-      setEnvErrors(enverr);
-    } else {
-      setEnvErrors([]);
     }
 
     if (cancel) {

@@ -3,24 +3,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
 import {
+  DEFAULT_INSTANCE_CLASS,
   deprovisionDatabase,
   fetchDatabase,
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
+  getContainerProfileFromType,
   restartDatabase,
+  restartRecreateDatabase,
+  selectContainerProfilesForStack,
   selectDatabaseById,
   selectEnvironmentById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
+  selectServiceById,
   updateDatabase,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { environmentDatabasesUrl, operationDetailUrl } from "@app/routes";
+import { databaseActivityUrl, environmentActivityUrl } from "@app/routes";
 import {
   AppState,
   DeployDatabase,
   DeployLogDrain,
   DeployMetricDrain,
+  InstanceClass,
 } from "@app/types";
 
 import {
@@ -31,13 +37,13 @@ import {
   Button,
   ButtonCreate,
   ButtonDestroy,
-  ButtonLinkExternal,
+  ButtonLinkDocs,
   ButtonOps,
+  CheckBox,
   ExternalLink,
   FormGroup,
   Group,
   IconAlertTriangle,
-  IconExternalLink,
   IconRefresh,
   IconTrash,
   Input,
@@ -45,6 +51,10 @@ import {
   Select,
   SelectOption,
 } from "../shared";
+
+interface DbProps {
+  database: DeployDatabase;
+}
 
 const DatabaseDeprovision = ({ database }: DbProps) => {
   const environment = useSelector((s: AppState) =>
@@ -57,7 +67,7 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
   const loader = useLoader(action);
   const onSubmit = () => {
     dispatch(action);
-    navigate(environmentDatabasesUrl(environment.id));
+    navigate(environmentActivityUrl(environment.id));
   };
   const isDisabled = database.handle !== deleteConfirm;
 
@@ -101,9 +111,103 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
   );
 };
 
-interface DbProps {
-  database: DeployDatabase;
-}
+const DatabaseRestartRecreate = ({ database }: DbProps) => {
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: database.environmentId }),
+  );
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [containerProfileType, setContainerProfileType] =
+    useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
+  const [confirm, setConfirm] = useState(false);
+  const action = restartRecreateDatabase({
+    id: database.id,
+    containerProfile: containerProfileType,
+  });
+  const loader = useLoader(action);
+  const onSubmit = () => {
+    dispatch(action);
+    navigate(databaseActivityUrl(database.id));
+  };
+  const invalid = !confirm;
+
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: database.serviceId }),
+  );
+  const containerProfilesForStack = useSelector((s: AppState) =>
+    selectContainerProfilesForStack(s, { id: environment.stackId }),
+  );
+
+  useEffect(() => {
+    setContainerProfileType(service.instanceClass);
+  }, [service.instanceClass]);
+
+  const handleContainerProfileSelection = (opt: SelectOption) => {
+    const value = opt.value as InstanceClass;
+    const profile = getContainerProfileFromType(value);
+    if (!profile) {
+      return;
+    }
+    setContainerProfileType(value);
+  };
+
+  const profileOptions = Object.keys(containerProfilesForStack).map(
+    (containerProfileType) => {
+      const profile = getContainerProfileFromType(
+        containerProfileType as InstanceClass,
+      );
+      return { label: profile.name, value: containerProfileType };
+    },
+  );
+
+  return (
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2">
+        <IconAlertTriangle color="#AD1A1A" />
+        Restart Database with Disk Backup and Restore
+      </h1>
+
+      <BannerMessages {...loader} />
+
+      <Group>
+        <p>
+          This action will restart <strong>{database.handle}</strong> with a
+          different container profile and allow it to move availability zones if
+          necessary. During the restart, the disk will be detached and{" "}
+          <strong>downtime will occur</strong>.
+        </p>
+        <Group>
+          <FormGroup label="Container Profile" htmlFor="container-profile">
+            <Select
+              id="container-profile"
+              className="w-1/2"
+              ariaLabel="container-profile"
+              disabled={Object.keys(containerProfilesForStack).length <= 1}
+              value={containerProfileType}
+              onSelect={handleContainerProfileSelection}
+              options={profileOptions}
+            />
+          </FormGroup>
+          <CheckBox
+            label="I understand the warning above"
+            checked={confirm}
+            onChange={(e) => setConfirm(e.currentTarget.checked)}
+          />
+          <ButtonDestroy
+            envId={database.environmentId}
+            variant="primary"
+            disabled={invalid}
+            isLoading={loader.isLoading}
+            type="submit"
+            className="w-fit"
+          >
+            Restart Database with Disk Backup and Restore
+          </ButtonDestroy>
+        </Group>
+      </Group>
+    </form>
+  );
+};
 
 const DatabaseNameChange = ({ database }: DbProps) => {
   const dispatch = useDispatch();
@@ -241,7 +345,7 @@ const DatabaseRestart = ({ database }: DbProps) => {
     dispatch(action);
   };
   useLoaderSuccess(loader, () => {
-    navigate(operationDetailUrl(loader.meta.opId));
+    navigate(databaseActivityUrl(database.id));
   });
   return (
     <>
@@ -268,20 +372,17 @@ export const DatabaseSettingsPage = () => {
   return (
     <BoxGroup>
       <Box>
-        <ButtonLinkExternal
-          href="https://www.aptible.com/docs/managing-databases"
-          className="relative float-right"
-          variant="white"
-          size="sm"
-        >
-          View Docs
-          <IconExternalLink className="inline ml-1 h-5 mt-0" />
-        </ButtonLinkExternal>
-
-        <h1 className="text-lg text-gray-500 mb-4">Database Settings</h1>
+        <div className="flex justify-between items-start">
+          <h1 className="text-lg text-gray-500 mb-4">Database Settings</h1>
+          <ButtonLinkDocs href="https://www.aptible.com/docs/managing-databases" />
+        </div>
         <DatabaseNameChange database={database} />
         <hr className="mt-6" />
         <DatabaseRestart database={database} />
+      </Box>
+
+      <Box>
+        <DatabaseRestartRecreate database={database} />
       </Box>
 
       <Box>

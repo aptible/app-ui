@@ -1,9 +1,10 @@
 import { useCache } from "@app/fx";
 import { fetchOtpCodes } from "@app/mfa";
+import { securitySettingsUrl } from "@app/routes";
 import { HalEmbedded } from "@app/types";
 
 import { useCurrentUser } from "../hooks";
-import { Loading } from "../shared";
+import { Box, BoxGroup, Breadcrumbs, Loading } from "../shared";
 
 interface OtpCode {
   id: string;
@@ -27,15 +28,22 @@ export const OtpRecoveryCodesPage = () => {
   const codes = data._embedded.otp_recovery_codes;
 
   return (
-    <div className="py-4 px-16">
-      <div>Recovery codes</div>
-      {codes.map((d) => {
-        return (
-          <div key={d.id} className="my-2">
-            {d.value}
-          </div>
-        );
-      })}
-    </div>
+    <BoxGroup>
+      <Breadcrumbs
+        crumbs={[
+          { name: "Profile Settings", to: securitySettingsUrl() },
+          { name: "Recovery Codes", to: null },
+        ]}
+      />
+      <Box>
+        {codes.map((d) => {
+          return (
+            <div key={d.id} className="my-2">
+              {d.value}
+            </div>
+          );
+        })}
+      </Box>
+    </BoxGroup>
   );
 };
