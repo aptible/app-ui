@@ -87,10 +87,10 @@ export function AppHeader({ app }: { app: DeployApp }) {
             ? `${prettyEnglishDate(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
+        <DetailInfoItem title="App Note">
+          <div>Can be deprovisioned after 2023-12-01, confirm with Joe</div>
+        </DetailInfoItem>
       </DetailInfoGrid>
-      <DetailInfoItem title="App Note">
-        <div>Can be deprovisioned after 2023-12-01, confirm with Joe</div>
-      </DetailInfoItem>
     </DetailHeader>
   );
 }

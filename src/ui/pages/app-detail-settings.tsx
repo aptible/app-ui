@@ -205,11 +205,7 @@ const AppNameChange = ({ app }: AppProps) => {
         ) : null}
       </FormGroup>
       <FormGroup label="App Note" htmlFor="app-note">
-        <TextArea
-          name="app-note"
-          type="text"
-          id="app-note"
-        />
+        <TextArea name="app-note" type="text" id="app-note" />
       </FormGroup>
 
       <BannerMessages {...loader} />
