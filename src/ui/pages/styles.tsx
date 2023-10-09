@@ -32,6 +32,7 @@ import {
   IconArrowLeft,
   IconArrowRight,
   IconBox,
+  IconCertificate,
   IconCheck,
   IconCheckCircle,
   IconChevronDown,
@@ -567,6 +568,7 @@ const Icons = () => (
         ["IconHeart", <IconHeart />],
         ["IconCloud", <IconCloud />],
         ["IconHamburger", <IconHamburger />],
+        ["IconCertificate", <IconCertificate />],
       ].map(([title, icon]) => (
         <div key={title as string}>
           <div className="inline-block -mb-1">{icon}</div>{" "}
