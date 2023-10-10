@@ -19,6 +19,20 @@ import { render, screen } from "@testing-library/react";
 import { rest } from "msw";
 
 describe("EndpointSettings", () => {
+  describe("when endpoint does not require a cert", () => {
+    it("should *not* display cert selector", async () => {
+
+    });
+  });
+
+  describe("when user edits ip allowlist", () => {
+    it("should update the ip allowlist", async () => {});
+  });
+
+  describe("when user edits container port", () => {
+    it("should update the container port", async () => {});
+  });
+
   describe("when endpoint requires as cert", () => {
     it("should display cert selector", async () => {
       const curCert = defaultCertificateResponse({
@@ -79,18 +93,6 @@ describe("EndpointSettings", () => {
       await screen.findByText(/cur cert/);
       expect(screen.queryByText(/cur cert/)).toBeInTheDocument()
     });
-  });
-
-  describe("when endpoint does not require a cert", () => {
-    it("should *not* display cert selector", async () => {});
-  });
-
-  describe("when user edits ip allowlist", () => {
-    it("should update the ip allowlist", async () => {});
-  });
-
-  describe("when user edits container port", () => {
-    it("should update the container port", async () => {});
   });
 
   describe("when user changes current cert", () => {
