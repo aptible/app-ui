@@ -441,6 +441,16 @@ const apiHandlers = [
   rest.post(`${testEnv.apiUrl}/services/:id/vhosts`, async (_, res, ctx) => {
     return res(ctx.json(testEndpoint));
   }),
+  rest.patch(`${testEnv.apiUrl}/vhosts/:id`, async (req, res, ctx) => {
+    const data = await req.json();
+    return res(
+      ctx.json({
+        ...testEndpoint,
+        container_port: data.container_port,
+        ip_whitelist: data.ip_whitelist,
+      }),
+    );
+  }),
   rest.get(`${testEnv.apiUrl}/vhosts/:id/operations`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { operations: [] } }));
   }),

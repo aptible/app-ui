@@ -773,6 +773,7 @@ const patchEndpoint = api.patch<EndpointPatchProps>(
     if (ctx.payload.certId) {
       data.certificate = `${env.apiUrl}/certificates/${ctx.payload.certId}`;
     }
+    console.log(data);
     const body = JSON.stringify(data);
     ctx.request = ctx.req({ body });
 

@@ -88,10 +88,13 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     containerPort: port,
     certId,
     envId: service.environmentId,
+    cert,
+    privKey,
   };
   const ipsSame = origAllowlist === ipAllowlist;
   const portSame = enp.containerPort === port;
-  const isDisabled = ipsSame && portSame;
+  const certSame = enp.certificateId === certId;
+  const isDisabled = ipsSame && portSame && certSame && cert === "";
   const curPortText = getContainerPort(enp, exposedPorts);
   const requiresCert = isRequiresCert(enp);
   const loader = useLoader(updateEndpoint);
@@ -186,27 +189,31 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
       </>
     ) : null;
 
+  const portForm = service.appId ? (
+    <FormGroup
+      label="Container Port"
+      description={`Current container port: ${curPortText}`}
+      htmlFor="port"
+      feedbackMessage={errors.port}
+      feedbackVariant={errors.port ? "danger" : "info"}
+    >
+      <Input
+        type="text"
+        id="port"
+        name="port"
+        value={port}
+        onChange={(e) => setPort(e.currentTarget.value)}
+      />
+    </FormGroup>
+  ) : null;
+
   return (
     <Box>
       <h1 className="text-lg text-gray-500 mb-4">Endpoint Settings</h1>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        {service.appId ? (
-          <FormGroup
-            label={`Container Port (current: ${curPortText})`}
-            htmlFor="port"
-            feedbackMessage={errors.port}
-            feedbackVariant={errors.port ? "danger" : "info"}
-          >
-            <Input
-              type="text"
-              id="port"
-              name="port"
-              value={port}
-              onChange={(e) => setPort(e.currentTarget.value)}
-            />
-          </FormGroup>
-        ) : null}
+        <BannerMessages {...loader} />
 
+        {portForm}
         {certEditForm}
 
         <FormGroup
@@ -222,8 +229,6 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
             onChange={(e) => setIpAllowlist(e.currentTarget.value)}
           />
         </FormGroup>
-
-        <BannerMessages {...loader} />
 
         <ButtonCreate
           type="submit"
