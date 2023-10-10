@@ -68,7 +68,7 @@ export interface DeployEndpointResponse {
   ip_whitelist: string[];
   platform: "alb" | "elb";
   security_group_id: string;
-  type: string;
+  type: EndpointType;
   user_domain: string;
   virtual_domain: string;
   status: ProvisionableStatus;
@@ -107,7 +107,7 @@ export const defaultEndpointResponse = (
     internal_https_port: "",
     ip_whitelist: [],
     platform: "elb",
-    type: "",
+    type: "unknown",
     user_domain: "",
     virtual_domain: "",
     security_group_id: "",
