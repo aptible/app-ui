@@ -16,10 +16,15 @@ import { selectCurrentUser } from "@app/users";
 
 import { HeroBgLayout } from "../layouts";
 import {
+  Banner,
   BannerMessages,
+  Box,
   Button,
+  Code,
   ExternalLink,
   FormGroup,
+  Group,
+  HelpTextAccordion,
   Input,
   tokens,
 } from "../shared";
@@ -71,75 +76,83 @@ export const ElevatePage = () => {
 
   return (
     <HeroBgLayout>
-      <h1 className={`${tokens.type.h1} text-center`}>
-        Re-enter your credentials
-      </h1>
-      <div className="flex text-center items-center justify-center mt-4">
-        <div className="max-w-2xl">
-          <p>You must confirm your credentials before proceeding.</p>
-        </div>
-      </div>
+      <Group>
+        <h1 className={`${tokens.type.h1} text-center`}>
+          Re-enter your credentials
+        </h1>
 
-      <div className="mt-8">
-        <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
-          <form className="space-y-4" onSubmit={onSubmit}>
-            <FormGroup label="Email" htmlFor="email">
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                disabled={true}
-                value={user.email}
-                autoComplete="username"
-                autoFocus={true}
-              />
-            </FormGroup>
+        <Box>
+          <Group>
+            <Banner variant="warning">
+              You must confirm your credentials before proceeding.
+            </Banner>
 
-            <FormGroup label="Password" htmlFor="password">
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required={true}
-                value={password}
-                className="w-full"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </FormGroup>
+            <div>
+              <HelpTextAccordion title="Why do I need to elevate my credentials?">
+                We require users to elevate their access token whenever they
+                want to make account related changes. For some operations (e.g.
+                deploying an App with <Code>git push</Code>) we require the user
+                have an SSH key associated with their account during App setup,
+                which then requires an elevated access token.
+              </HelpTextAccordion>
+            </div>
 
-            {requireOtp ? (
-              <FormGroup
-                label="Two-Factor Authentication Required"
-                htmlFor="otp"
-                description={
-                  <p>
-                    Read our 2fa{" "}
-                    <ExternalLink
-                      href="https://www.aptible.com/docs/password-authentication#2-factor-authentication-2fa"
-                      variant="info"
-                    >
-                      docs
-                    </ExternalLink>{" "}
-                    to learn more.
-                  </p>
-                }
-              >
+            <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+              <FormGroup label="Email" htmlFor="email">
                 <Input
-                  id="otp"
-                  name="otp"
-                  type="number"
-                  value={otpToken}
-                  onChange={(e) => setOtpToken(e.currentTarget.value)}
-                  autoComplete="off"
-                  autoFocus
+                  id="email"
+                  name="email"
+                  type="email"
+                  disabled={true}
+                  value={user.email}
+                  autoComplete="username"
+                  autoFocus={true}
                 />
               </FormGroup>
-            ) : null}
 
-            <div className="my-2 flex flex-col gap-2">
+              <FormGroup label="Password" htmlFor="password">
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required={true}
+                  value={password}
+                  className="w-full"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </FormGroup>
+
+              {requireOtp ? (
+                <FormGroup
+                  label="Two-Factor Authentication Required"
+                  htmlFor="otp"
+                  description={
+                    <p>
+                      Read our 2fa{" "}
+                      <ExternalLink
+                        href="https://www.aptible.com/docs/password-authentication#2-factor-authentication-2fa"
+                        variant="info"
+                      >
+                        docs
+                      </ExternalLink>{" "}
+                      to learn more.
+                    </p>
+                  }
+                >
+                  <Input
+                    id="otp"
+                    name="otp"
+                    type="number"
+                    value={otpToken}
+                    onChange={(e) => setOtpToken(e.currentTarget.value)}
+                    autoComplete="off"
+                    autoFocus
+                  />
+                </FormGroup>
+              ) : null}
+
               <BannerMessages {...webauthnLoader} />
-
               {isOtpRequired ? (
                 <BannerMessages
                   isSuccess={false}
@@ -150,25 +163,25 @@ export const ElevatePage = () => {
               ) : (
                 <BannerMessages {...loader} />
               )}
-            </div>
 
-            <Button
-              isLoading={loader.isLoading}
-              type="submit"
-              layout="block"
-              size="lg"
-            >
-              Confirm
-            </Button>
+              <Button
+                isLoading={loader.isLoading}
+                type="submit"
+                layout="block"
+                size="lg"
+              >
+                Confirm
+              </Button>
 
-            <p className="text-center">
-              <Link to={forgotPassUrl()} className="text-sm text-center">
-                Forgot your password?
-              </Link>
-            </p>
-          </form>
-        </div>
-      </div>
+              <p className="text-center">
+                <Link to={forgotPassUrl()} className="text-sm text-center">
+                  Forgot your password?
+                </Link>
+              </p>
+            </form>
+          </Group>
+        </Box>
+      </Group>
     </HeroBgLayout>
   );
 };

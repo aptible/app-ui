@@ -98,8 +98,7 @@ function* onFetchResourceData() {
 }
 
 function* onRefreshData() {
-  yield* call(onFetchRequiredData);
-  yield* call(onFetchResourceData);
+  yield* all([call(onFetchRequiredData), call(onFetchResourceData)]);
 }
 
 function* watchRefreshData() {

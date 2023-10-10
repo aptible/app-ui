@@ -5,7 +5,7 @@ import { tokens } from "./tokens";
 
 import { useState } from "react";
 
-const HelpTextAccordion = ({
+export const HelpTextAccordion = ({
   title,
   children,
 }: {
