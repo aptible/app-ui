@@ -597,9 +597,9 @@ const Op = ({
             onKeyUp={() => setOpen(!isOpen)}
           >
             {isOpen ? (
-              <IconChevronUp variant="sm" />
+              <IconChevronUp />
             ) : (
-              <IconChevronRight variant="sm" />
+              <IconChevronRight />
             )}
             <div>{createReadableResourceName(op, resource.handle)}</div>
           </div>
