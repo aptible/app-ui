@@ -596,11 +596,7 @@ const Op = ({
             onClick={() => setOpen(!isOpen)}
             onKeyUp={() => setOpen(!isOpen)}
           >
-            {isOpen ? (
-              <IconChevronUp />
-            ) : (
-              <IconChevronRight />
-            )}
+            {isOpen ? <IconChevronUp /> : <IconChevronRight />}
             <div>{createReadableResourceName(op, resource.handle)}</div>
           </div>
           <div className="flex items-center ml-2">

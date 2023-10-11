@@ -266,11 +266,7 @@ const DockerfileDataView = ({
             onClick={() => setOpen(!isOpen)}
             onKeyUp={() => setOpen(!isOpen)}
           >
-            {isOpen ? (
-              <IconChevronUp />
-            ) : (
-              <IconChevronRight />
-            )}
+            {isOpen ? <IconChevronUp /> : <IconChevronRight />}
             <p className="ml-2">View scanned Dockerfile:</p>
           </div>
         </div>
