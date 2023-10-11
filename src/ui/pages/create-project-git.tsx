@@ -83,7 +83,7 @@ import {
   CreateAppEndpointSelector,
   ExternalLink,
   IconArrowRight,
-  IconChevronDown,
+  IconChevronRight,
   IconChevronUp,
   Loading,
   LogViewer,
@@ -596,11 +596,7 @@ const Op = ({
             onClick={() => setOpen(!isOpen)}
             onKeyUp={() => setOpen(!isOpen)}
           >
-            {isOpen ? (
-              <IconChevronUp variant="sm" />
-            ) : (
-              <IconChevronDown variant="sm" />
-            )}
+            {isOpen ? <IconChevronUp /> : <IconChevronRight />}
             <div>{createReadableResourceName(op, resource.handle)}</div>
           </div>
           <div className="flex items-center ml-2">

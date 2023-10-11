@@ -53,7 +53,7 @@ import {
   DbValidatorError,
   ExternalLink,
   FormGroup,
-  IconChevronDown,
+  IconChevronRight,
   IconChevronUp,
   IconPlusCircle,
   Loading,
@@ -266,11 +266,7 @@ const DockerfileDataView = ({
             onClick={() => setOpen(!isOpen)}
             onKeyUp={() => setOpen(!isOpen)}
           >
-            {isOpen ? (
-              <IconChevronUp variant="sm" />
-            ) : (
-              <IconChevronDown variant="sm" />
-            )}
+            {isOpen ? <IconChevronUp /> : <IconChevronRight />}
             <p className="ml-2">View scanned Dockerfile:</p>
           </div>
         </div>
