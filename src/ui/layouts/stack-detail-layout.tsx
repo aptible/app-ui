@@ -44,14 +44,8 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
 
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{stack.id}</DetailInfoItem>
-        <DetailInfoItem title="Memory Management">
-          {stack.memoryLimits ? "Enabled" : "Disabled"}
-        </DetailInfoItem>
 
         <DetailInfoItem title="Tenancy">{capitalize(stackType)}</DetailInfoItem>
-        <DetailInfoItem title="CPU Isolation">
-          {stack.cpuLimits ? "Enabled" : "Disabled"}
-        </DetailInfoItem>
 
         <DetailInfoItem title="Region">{stack.region}</DetailInfoItem>
         <DetailInfoItem title="Outbound IP Addresses">
