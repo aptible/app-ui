@@ -57,6 +57,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
       <Td>{stack.id}</Td>
       <Td>{stack.region}</Td>
       <Td>{capitalize(stackType)}</Td>
+      <Td>{stack.memoryLimits ? "Memory" : ""}</Td>
       <Td className="text-center">{envCount}</Td>
       <Td className="text-center">{appCount}</Td>
       <Td className="text-center">{dbCount}</Td>
@@ -123,11 +124,12 @@ function StackList() {
               "ID",
               "Region",
               "Type",
+              "Enabled Limits",
               "Environments",
               "Apps",
               "Databases",
             ]}
-            centerAlignedColIndices={[4, 5, 6]}
+            centerAlignedColIndices={[5, 6, 7]}
           />
         }
         tableBody={
