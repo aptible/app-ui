@@ -74,7 +74,7 @@ export const DatabaseBackupsPage = () => {
 
       <BannerMessages className="my-4" {...loader} />
 
-      <DatabaseBackupsList backups={backups} />
+      <DatabaseBackupsList backups={backups} showDatabase={false} />
     </div>
   );
 };

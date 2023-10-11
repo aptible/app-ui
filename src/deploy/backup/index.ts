@@ -64,7 +64,7 @@ export const deserializeDeployBackup = (b: BackupResponse): DeployBackup => {
     id: `${b.id}`,
     awsRegion: b.aws_region,
     createdByEmail: b.created_by_email,
-    copiedFromId: `${b._embedded.copied_from?.id}` || "",
+    copiedFromId: `${b._embedded.copied_from?.id || ""}`,
     size: b.size,
     manual: b.manual,
     createdAt: b.created_at,

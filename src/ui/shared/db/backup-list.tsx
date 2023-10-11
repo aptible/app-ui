@@ -64,8 +64,10 @@ const DeleteBackup = ({ envId, id }: { envId: string; id: string }) => {
 
 const BackupListRow = ({
   backup,
+  showDatabase = true,
 }: {
   backup: DeployBackup;
+  showDatabase?: boolean;
 }) => {
   const navigate = useNavigate();
   const db = useSelector((s: AppState) =>
@@ -79,17 +81,21 @@ const BackupListRow = ({
   return (
     <tr className="group hover:bg-gray-50" key={`${backup.id}`}>
       <Td>
-        <div className={tokens.type["normal lighter"]}>{backup.id}</div>
+        <div className={tokens.type["normal lighter"]}>
+          {backup.copiedFromId ? `Copy of ${backup.copiedFromId}` : backup.id}
+        </div>
       </Td>
 
-      <Td>
-        <Link
-          className="text-black group-hover:text-indigo hover:text-indigo"
-          to={databaseDetailUrl(backup.databaseId)}
-        >
-          {db.handle}
-        </Link>
-      </Td>
+      {showDatabase ? (
+        <Td>
+          <Link
+            className="text-black group-hover:text-indigo hover:text-indigo"
+            to={databaseDetailUrl(backup.databaseId)}
+          >
+            {db.handle}
+          </Link>
+        </Td>
+      ) : null}
 
       <Td className="flex-1">
         <div className="text-gray-900">
@@ -144,10 +150,28 @@ const BackupListRow = ({
 
 export const DatabaseBackupsList = ({
   backups,
+  showDatabase = true,
 }: {
   backups: DeployBackup[];
+  showDatabase?: boolean;
 }) => {
   const loader = useLoader(deleteBackup);
+
+  const headers = ["ID"];
+
+  if (showDatabase) {
+    headers.push("Database");
+  }
+
+  headers.push(
+    "Type",
+    "Size",
+    "Region",
+    "Created At",
+    "Creator",
+    "Operation ID",
+    "Actions",
+  );
 
   return (
     <div className="my-4">
@@ -159,26 +183,15 @@ export const DatabaseBackupsList = ({
         {backups.length} Backup{backups.length !== 1 && "s"}
       </p>
       <ResourceListView
-        tableHeader={
-          <TableHead
-            headers={[
-              "ID",
-              "Database",
-              "Type",
-              "Size",
-              "Region",
-              "Created At",
-              "Creator",
-              "Operation ID",
-              "Actions",
-            ]}
-            rightAlignedFinalCol
-          />
-        }
+        tableHeader={<TableHead headers={headers} rightAlignedFinalCol />}
         tableBody={
           <>
             {backups.map((backup) => (
-              <BackupListRow key={backup.id} backup={backup} />
+              <BackupListRow
+                key={backup.id}
+                backup={backup}
+                showDatabase={showDatabase}
+              />
             ))}
           </>
         }
