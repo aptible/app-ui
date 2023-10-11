@@ -83,7 +83,7 @@ import {
   CreateAppEndpointSelector,
   ExternalLink,
   IconArrowRight,
-  IconChevronDown,
+  IconChevronRight,
   IconChevronUp,
   Loading,
   LogViewer,
@@ -599,7 +599,7 @@ const Op = ({
             {isOpen ? (
               <IconChevronUp variant="sm" />
             ) : (
-              <IconChevronDown variant="sm" />
+              <IconChevronRight variant="sm" />
             )}
             <div>{createReadableResourceName(op, resource.handle)}</div>
           </div>
