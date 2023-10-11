@@ -125,8 +125,6 @@ export interface DeployStack extends Timestamps {
   default: boolean;
   public: boolean;
   outboundIpAddresses: string[];
-  memoryLimits: boolean;
-  cpuLimits: boolean;
   intrusionDetection: boolean;
   exposeIntrusionDetectionReports: boolean;
   allowTInstanceProfile: boolean;
