@@ -35,12 +35,12 @@ const validators = {
   port: (data: EndpointUpdateProps) => portValidator(data.containerPort),
   ipAllowlist: (data: EndpointUpdateProps) => ipValidator(data.ipAllowlist),
   cert: (data: EndpointUpdateProps) => {
-    if (data.certId === "" && data.cert === "") {
+    if (data.requiresCert && data.certId === "" && data.cert === "") {
       return "A certificate is required for custom HTTPS";
     }
   },
   privKey: (data: EndpointUpdateProps) => {
-    if (data.certId === "" && data.privKey === "") {
+    if (data.requiresCert && data.certId === "" && data.privKey === "") {
       return "A private key is required for custom HTTPS";
     }
   },
@@ -90,13 +90,13 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     envId: service.environmentId,
     cert,
     privKey,
+    requiresCert: isRequiresCert(enp),
   };
   const ipsSame = origAllowlist === ipAllowlist;
   const portSame = enp.containerPort === port;
   const certSame = enp.certificateId === certId;
   const isDisabled = ipsSame && portSame && certSame && cert === "";
   const curPortText = getContainerPort(enp, exposedPorts);
-  const requiresCert = isRequiresCert(enp);
   const loader = useLoader(updateEndpoint);
   const [errors, validate] = useValidator<
     EndpointUpdateProps,
@@ -181,7 +181,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   );
 
   const certEditForm =
-    service.appId && requiresCert ? (
+    service.appId && data.requiresCert ? (
       <>
         {certSelectorForm}
         {certForm}

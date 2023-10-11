@@ -1,6 +1,7 @@
 import {
   defaultCertificateResponse,
   defaultEndpointResponse,
+  defaultOperationResponse,
 } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import {
@@ -159,7 +160,7 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
     });
   });
 
-  describe.only("when user changes current cert", () => {
+  describe("when user changes current cert", () => {
     describe("when user adds new cert", () => {
       it("should replace current cert with a new one", async () => {
         const curCert = defaultCertificateResponse({
@@ -212,6 +213,33 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
               return res(ctx.json({ _embedded: { certificates: [curCert] } }));
             },
           ),
+          rest.get(`${testEnv.apiUrl}/vhosts/:id/operations`, (_, res, ctx) => {
+            return res(
+              ctx.json({
+                _embedded: {
+                  operations: [
+                    defaultOperationResponse({
+                      id: createId(),
+                      type: "provision",
+                      status: "succeeded",
+                      _links: {
+                        resource: defaultHalHref(
+                          `${testEnv.apiUrl}/vhosts/${enp.id}`,
+                        ),
+                        account: testApp._links.account,
+                        code_scan_result: defaultHalHref(),
+                        self: defaultHalHref(),
+                        ssh_portal_connections: defaultHalHref(),
+                        ephemeral_sessions: defaultHalHref(),
+                        logs: defaultHalHref(),
+                        user: defaultHalHref(),
+                      },
+                    }),
+                  ],
+                },
+              }),
+            );
+          }),
         );
 
         const { App, store } = setupAppIntegrationTest({
@@ -246,7 +274,121 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
     });
 
     describe("when user changes cert to an already existing cert", () => {
-      it("should replace current cert with an already existing one", async () => {});
+      it("should replace current cert with an already existing one", async () => {
+        const curCert = defaultCertificateResponse({
+          id: createId(),
+          common_name: "cur cert",
+          _links: {
+            account: defaultHalHref(
+              `${testEnv.apiUrl}/accounts/${testAccount.id}`,
+            ),
+          },
+        });
+
+        const otherCert = defaultCertificateResponse({
+          id: createId(),
+          common_name: "other cert",
+          _links: {
+            account: defaultHalHref(
+              `${testEnv.apiUrl}/accounts/${testAccount.id}`,
+            ),
+          },
+        });
+
+        const enp = defaultEndpointResponse({
+          id: createId(),
+          default: false,
+          acme: false,
+          type: "http",
+          _links: {
+            service: defaultHalHref(
+              `${testEnv.apiUrl}/services/${testServiceRails.id}`,
+            ),
+            certificate: defaultHalHref(
+              `${testEnv.apiUrl}/certificates/${curCert.id}`,
+            ),
+          },
+        });
+
+        server.use(
+          ...verifiedUserHandlers(),
+          ...stacksWithResources({
+            accounts: [testAccount],
+            apps: [testApp],
+            services: [testServiceRails],
+          }),
+          rest.get(`${testEnv.apiUrl}/vhosts/:id`, (_, res, ctx) => {
+            return res(ctx.json(enp));
+          }),
+          rest.get(`${testEnv.apiUrl}/vhosts`, (_, res, ctx) => {
+            return res(ctx.json({ _embedded: { vhosts: [enp] } }));
+          }),
+          rest.get(
+            `${testEnv.apiUrl}/certificates/:id`,
+            async (_, res, ctx) => {
+              return res(ctx.json(curCert));
+            },
+          ),
+          rest.get(
+            `${testEnv.apiUrl}/accounts/:id/certificates`,
+            async (_, res, ctx) => {
+              return res(
+                ctx.json({ _embedded: { certificates: [curCert, otherCert] } }),
+              );
+            },
+          ),
+          rest.get(`${testEnv.apiUrl}/vhosts/:id/operations`, (_, res, ctx) => {
+            return res(
+              ctx.json({
+                _embedded: {
+                  operations: [
+                    defaultOperationResponse({
+                      id: createId(),
+                      type: "provision",
+                      status: "succeeded",
+                      _links: {
+                        resource: defaultHalHref(
+                          `${testEnv.apiUrl}/vhosts/${enp.id}`,
+                        ),
+                        account: testApp._links.account,
+                        code_scan_result: defaultHalHref(),
+                        self: defaultHalHref(),
+                        ssh_portal_connections: defaultHalHref(),
+                        ephemeral_sessions: defaultHalHref(),
+                        logs: defaultHalHref(),
+                        user: defaultHalHref(),
+                      },
+                    }),
+                  ],
+                },
+              }),
+            );
+          }),
+        );
+
+        const { App, store } = setupAppIntegrationTest({
+          initEntries: [endpointDetailSettingsUrl(`${enp.id}`)],
+        });
+        await waitForBootup(store);
+        render(<App />);
+
+        await screen.findAllByText(/Certificate/);
+
+        await screen.findByText(/other cert/);
+        const certSelector = await screen.findByRole("combobox", {
+          name: /existing-cert/,
+        });
+        await act(() =>
+          userEvent.selectOptions(certSelector, "other cert - Unknown Issuer"),
+        );
+
+        const btn = await screen.findByRole("button", { name: /Save Changes/ });
+        fireEvent.click(btn);
+
+        await screen.findByText(
+          /Operations show real-time changes to resources/,
+        );
+      });
     });
   });
 });

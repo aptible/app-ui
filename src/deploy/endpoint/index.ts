@@ -760,6 +760,7 @@ export interface EndpointUpdateProps extends EndpointPatchProps {
   cert?: string;
   privKey?: string;
   envId: string;
+  requiresCert: boolean;
 }
 
 const patchEndpoint = api.patch<EndpointPatchProps>(
@@ -773,7 +774,6 @@ const patchEndpoint = api.patch<EndpointPatchProps>(
     if (ctx.payload.certId) {
       data.certificate = `${env.apiUrl}/certificates/${ctx.payload.certId}`;
     }
-    console.log(data);
     const body = JSON.stringify(data);
     ctx.request = ctx.req({ body });
 
@@ -834,7 +834,13 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       return;
     }
 
-    yield* put(setLoaderSuccess({ id, meta: { opId: opCtx.json.data.id } }));
+    yield* put(
+      setLoaderSuccess({
+        id,
+        meta: { opId: opCtx.json.data.id },
+        message: "Success!",
+      }),
+    );
     yield* next();
   },
 );
