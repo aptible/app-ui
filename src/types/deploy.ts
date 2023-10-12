@@ -67,6 +67,13 @@ export interface AcmeConfiguration {
 
 export type AcmeStatus = "pending" | "transitioning" | "ready";
 
+export type EndpointType =
+  | "http"
+  | "http_proxy_protocol"
+  | "tcp"
+  | "tls"
+  | "unknown";
+
 export interface DeployEndpoint extends Provisionable, Timestamps {
   id: string;
   acme: boolean;
@@ -84,7 +91,7 @@ export interface DeployEndpoint extends Provisionable, Timestamps {
   internal: boolean;
   ipWhitelist: string[];
   platform: "alb" | "elb";
-  type: string;
+  type: EndpointType;
   userDomain: string;
   virtualDomain: string;
   serviceId: string;

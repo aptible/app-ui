@@ -21,6 +21,7 @@ import type {
   AcmeStatus,
   AppState,
   DeployEndpoint,
+  EndpointType,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
@@ -67,7 +68,7 @@ export interface DeployEndpointResponse {
   ip_whitelist: string[];
   platform: "alb" | "elb";
   security_group_id: string;
-  type: string;
+  type: EndpointType;
   user_domain: string;
   virtual_domain: string;
   status: ProvisionableStatus;
@@ -106,7 +107,7 @@ export const defaultEndpointResponse = (
     internal_https_port: "",
     ip_whitelist: [],
     platform: "elb",
-    type: "",
+    type: "unknown",
     user_domain: "",
     virtual_domain: "",
     security_group_id: "",
@@ -143,7 +144,7 @@ export const deserializeDeployEndpoint = (
     internal: payload.internal,
     ipWhitelist: payload.ip_whitelist,
     platform: payload.platform,
-    type: payload.type,
+    type: payload.type as EndpointType,
     updatedAt: payload.updated_at,
     userDomain: payload.user_domain,
     virtualDomain: payload.virtual_domain,
@@ -175,7 +176,7 @@ export const defaultDeployEndpoint = (
     internal: false,
     ipWhitelist: [],
     platform: "elb",
-    type: "",
+    type: "unknown",
     createdAt: now,
     updatedAt: now,
     userDomain: "",
@@ -481,10 +482,10 @@ export const endpointEntities = {
   }),
 };
 
-export type EndpointType = "default" | "managed" | "custom";
+export type EndpointManagedType = "default" | "managed" | "custom";
 
 interface CreateEndpointBase {
-  type: EndpointType;
+  type: EndpointManagedType;
   envId: string;
   serviceId: string;
   internal: boolean;
@@ -748,19 +749,32 @@ export const renewEndpoint = api.post<{ id: string }, DeployOperationResponse>(
   },
 );
 
-export interface EndpointUpdateProps {
+interface EndpointPatchProps {
   id: string;
   ipAllowlist: string[];
   containerPort: string;
+  certId: string;
 }
 
-const patchEndpoint = api.patch<EndpointUpdateProps>(
+export interface EndpointUpdateProps extends EndpointPatchProps {
+  cert?: string;
+  privKey?: string;
+  envId: string;
+  requiresCert: boolean;
+}
+
+const patchEndpoint = api.patch<EndpointPatchProps>(
   "/vhosts/:id",
   function* (ctx, next) {
-    const body = JSON.stringify({
+    const env = yield* select(selectEnv);
+    const data: Record<string, any> = {
       ip_whitelist: ctx.payload.ipAllowlist,
       container_port: ctx.payload.containerPort,
-    });
+    };
+    if (ctx.payload.certId) {
+      data.certificate = `${env.apiUrl}/certificates/${ctx.payload.certId}`;
+    }
+    const body = JSON.stringify(data);
     ctx.request = ctx.req({ body });
 
     yield* next();
@@ -773,7 +787,35 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
     const id = ctx.name;
     yield* put(setLoaderStart({ id }));
 
-    const patchCtx = yield* call(patchEndpoint.run, patchEndpoint(ctx.payload));
+    let certId = ctx.payload.certId;
+    if (!certId && ctx.payload.cert && ctx.payload.privKey) {
+      const certCtx = yield* call(
+        createCertificate.run,
+        createCertificate({
+          envId: ctx.payload.envId,
+          cert: ctx.payload.cert,
+          privKey: ctx.payload.privKey,
+        }),
+      );
+      if (!certCtx.json.ok) {
+        yield* put(
+          setLoaderError({ id: ctx.key, message: certCtx.json.data.message }),
+        );
+        return;
+      }
+
+      certId = `${certCtx.json.data.id}`;
+    }
+
+    const patchCtx = yield* call(
+      patchEndpoint.run,
+      patchEndpoint({
+        id: ctx.payload.id,
+        ipAllowlist: ctx.payload.ipAllowlist,
+        containerPort: ctx.payload.containerPort,
+        certId,
+      }),
+    );
     if (!patchCtx.json.ok) {
       yield* put(setLoaderError({ id, message: patchCtx.json.data.message }));
       return;
@@ -792,7 +834,13 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       return;
     }
 
-    yield* put(setLoaderSuccess({ id, meta: { opId: opCtx.json.data.id } }));
+    yield* put(
+      setLoaderSuccess({
+        id,
+        meta: { opId: opCtx.json.data.id },
+        message: "Success!",
+      }),
+    );
     yield* next();
   },
 );
@@ -857,6 +905,13 @@ export const getPlacement = (enp: DeployEndpoint) => {
 
 export const getIpAllowlistText = (enp: DeployEndpoint) => {
   return enp.ipWhitelist.length > 0 ? enp.ipWhitelist.join(", ") : "Disabled";
+};
+
+export const isRequiresCert = (enp: DeployEndpoint) => {
+  const isHttp = enp.type === "http" || enp.type === "http_proxy_protocol";
+  const isTls = enp.type === "tls";
+  // https://github.com/aptible/deploy-ui/blob/1342a430ac6849b38eeaa64cdb94ada1754b26fd/app/models/vhost.js#L47
+  return (isHttp || isTls) && !enp.default && !enp.acme;
 };
 
 export const getContainerPort = (

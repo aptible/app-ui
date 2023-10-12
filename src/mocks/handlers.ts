@@ -6,8 +6,8 @@ import {
   DeployMetricDrainResponse,
   DeployServiceResponse,
   DeployStackResponse,
+  defaultCertificateResponse,
   defaultDatabaseResponse,
-  defaultDeployCertificate,
   defaultLogDrainResponse,
   defaultMetricDrainResponse,
   defaultOperationResponse,
@@ -189,19 +189,19 @@ export const stacksWithResources = (
       return res(ctx.json({ _embedded: { databases } }));
     }),
     rest.get(`${testEnv.apiUrl}/vhosts`, (_, res, ctx) => {
-      return res(ctx.json({ vhosts }));
+      return res(ctx.json({ _embedded: { vhosts } }));
     }),
     rest.get(`${testEnv.apiUrl}/metric_drains`, (_, res, ctx) => {
-      return res(ctx.json({ metric_drains }));
+      return res(ctx.json({ _embedded: { metric_drains } }));
     }),
     rest.get(`${testEnv.apiUrl}/log_drains`, (_, res, ctx) => {
-      return res(ctx.json({ log_drains }));
+      return res(ctx.json({ _embedded: { log_drains } }));
     }),
     rest.get(`${testEnv.apiUrl}/services`, (_, res, ctx) => {
-      return res(ctx.json({ services }));
+      return res(ctx.json({ _embedded: { services } }));
     }),
     rest.get(`${testEnv.apiUrl}/apps/:id/services`, (_, res, ctx) => {
-      return res(ctx.json({ services }));
+      return res(ctx.json({ _embedded: { services } }));
     }),
     rest.get(`${testEnv.apiUrl}/services/:id`, (req, res, ctx) => {
       return res(
@@ -441,6 +441,16 @@ const apiHandlers = [
   rest.post(`${testEnv.apiUrl}/services/:id/vhosts`, async (_, res, ctx) => {
     return res(ctx.json(testEndpoint));
   }),
+  rest.patch(`${testEnv.apiUrl}/vhosts/:id`, async (req, res, ctx) => {
+    const data = await req.json();
+    return res(
+      ctx.json({
+        ...testEndpoint,
+        container_port: data.container_port,
+        ip_whitelist: data.ip_whitelist,
+      }),
+    );
+  }),
   rest.get(`${testEnv.apiUrl}/vhosts/:id/operations`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { operations: [] } }));
   }),
@@ -494,10 +504,13 @@ const apiHandlers = [
       return res(ctx.json({ _embedded: { certificates: [] } }));
     },
   ),
+  rest.get(`${testEnv.apiUrl}/certificates/:id`, async (_, res, ctx) => {
+    return res(ctx.json({}));
+  }),
   rest.post(
     `${testEnv.apiUrl}/accounts/:id/certificates`,
     async (_, res, ctx) => {
-      return res(ctx.json(defaultDeployCertificate({ id: `${createId()}` })));
+      return res(ctx.json(defaultCertificateResponse({ id: createId() })));
     },
   ),
   rest.get(`${testEnv.apiUrl}/accounts/:id/backups`, async (_, res, ctx) => {

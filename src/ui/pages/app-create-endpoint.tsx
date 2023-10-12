@@ -4,16 +4,13 @@ import { useNavigate, useParams } from "react-router";
 
 import {
   CreateEndpointProps,
-  EndpointType,
-  fetchAllCertsByEnvId,
+  EndpointManagedType,
   fetchApp,
   fetchImageById,
-  getCertLabel,
   getContainerPort,
   parseIpStr,
   provisionEndpoint,
   selectAppById,
-  selectCertificatesByEnvId,
   selectImageById,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
@@ -26,6 +23,7 @@ import {
   BannerMessages,
   Box,
   ButtonCreate,
+  CertSelector,
   CheckBox,
   CreateAppEndpointSelector,
   Form,
@@ -37,40 +35,6 @@ import {
   SelectOption,
   TextArea,
 } from "../shared";
-
-const CertSelector = ({
-  envId,
-  onSelect,
-  selectedId,
-  className = "",
-}: {
-  envId: string;
-  onSelect: (opt: SelectOption) => void;
-  selectedId: string;
-  className?: string;
-}) => {
-  useQuery(fetchAllCertsByEnvId({ id: envId }));
-  const certs = useSelector((s: AppState) =>
-    selectCertificatesByEnvId(s, { envId }),
-  );
-  const options: SelectOption[] = [
-    { label: "Select an Existing Certificate", value: "" },
-  ];
-  certs.forEach((cert) => {
-    options.push({ label: getCertLabel(cert), value: cert.id });
-  });
-
-  return (
-    <Select
-      id="existing-cert"
-      ariaLabel="existing-cert"
-      options={options}
-      onSelect={onSelect}
-      value={selectedId}
-      className={className}
-    />
-  );
-};
 
 const validators = {
   port: (data: CreateEndpointProps) => portValidator(data.containerPort),
@@ -110,7 +74,7 @@ export const AppCreateEndpointPage = () => {
 
   const [serviceId, setServiceId] = useState("");
   const [port, setPort] = useState("");
-  const [enpType, setEnpType] = useState<EndpointType>("default");
+  const [enpType, setEnpType] = useState<EndpointManagedType>("default");
   const [enpPlacement, setEnpPlacement] = useState("external");
   const [ipAllowlist, setIpAllowlist] = useState("");
   const [domain, setDomain] = useState("");
@@ -398,7 +362,7 @@ export const AppCreateEndpointPage = () => {
             ariaLabel="Endpoint Type"
             id="endpoint-type"
             options={options}
-            onSelect={(opt) => setEnpType(opt.value as EndpointType)}
+            onSelect={(opt) => setEnpType(opt.value as EndpointManagedType)}
             value={enpType}
           />
         </FormGroup>
