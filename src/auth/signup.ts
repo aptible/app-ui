@@ -13,6 +13,7 @@ import { createLog } from "@app/debug";
 import { ApiGen } from "@app/types";
 import { CreateUserForm, createUser } from "@app/users";
 
+import { submitHubspotForm } from "@app/hubspot";
 import { tunaEvent } from "@app/tuna";
 import { AUTH_LOADER_ID, defaultAuthLoaderMeta } from "./loader";
 import { createOrganization } from "./organization";
@@ -97,6 +98,9 @@ export const signup = thunks.create<CreateUserForm>(
 
     // ignore billing errors because we could be in development
     log(billsCtx);
+
+    // Send signup data to Hubspot
+    submitHubspotForm(name, email, orgName, orgId);
 
     const elevateCtx = yield* call(
       elevateToken.run,
