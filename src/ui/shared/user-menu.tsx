@@ -39,7 +39,12 @@ export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
         />
       ) : null}
       {isAuthWithSso ? (
-        <LinkNav to={ssoTokenUrl()} name="CLI SSO Token" icon={<IconKey />} />
+        <LinkNav
+          to={ssoTokenUrl()}
+          name="CLI SSO Token"
+          hideName={hideName}
+          icon={<IconKey />}
+        />
       ) : null}
       <LinkNav
         to={logoutUrl()}
