@@ -15,7 +15,7 @@ import { Loading } from "./loading";
 export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
   const [user, loader] = useCurrentUser();
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
-  const { id: organizationId } = useSelector(selectOrganizationSelected);
+  const org = useSelector(selectOrganizationSelected);
 
   const canImpersonate = useSelector(selectCanImpersonate);
 
@@ -26,7 +26,7 @@ export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
   return (
     <div className="w-full mb-2">
       <LinkNav
-        to={`${legacyUrl}/organizations/${organizationId}/members`}
+        to={`${legacyUrl}/organizations/${org.id}/members`}
         icon={<IconUserCircle />}
         name="Settings"
         hideName={hideName}
@@ -39,7 +39,9 @@ export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
           hideName={hideName}
         />
       ) : null}
-      <LinkNav to={ssoTokenUrl()} name="SSO Token" icon={<IconKey />} />
+      {org.ssoEnforced ? (
+        <LinkNav to={ssoTokenUrl()} name="SSO Token" icon={<IconKey />} />
+      ) : null}
       <LinkNav
         to={logoutUrl()}
         icon={<IconLogout />}
