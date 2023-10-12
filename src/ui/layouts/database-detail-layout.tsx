@@ -1,3 +1,4 @@
+import { formatDatabaseType } from "@app/database";
 import {
   calcMetrics,
   cancelDatabaseOpsPoll,
@@ -25,7 +26,6 @@ import {
   environmentDatabasesUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import { capitalize } from "@app/string-utils";
 import type { AppState, DeployDatabase, DeployService } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -82,7 +82,8 @@ export function DatabaseHeader({
           {metrics.totalMemoryLimit / 1024} GB
         </DetailInfoItem>
         <DetailInfoItem title="Type">
-          {`${capitalize(database.type)} ${image.version || ""}`}
+          {formatDatabaseType(database.type, image.version)}
+          {/* {`${capitalize(database.type)} ${image.version || ""}`} */}
         </DetailInfoItem>
         <DetailInfoItem title="Disk Type">{disk.ebsVolumeType}</DetailInfoItem>
         <DetailInfoItem title="CPU Share">{metrics.totalCPU}</DetailInfoItem>

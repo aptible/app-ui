@@ -24,6 +24,7 @@ import {
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
+import { formatDatabaseType } from "@app/database";
 import {
   databaseDetailUrl,
   databaseScaleUrl,
@@ -61,7 +62,7 @@ export const DatabaseItemView = ({
         <p className="flex flex-col">
           <span className={tokens.type["table link"]}>{database.handle}</span>
           <span className={tokens.type["normal lighter"]}>
-            {`${capitalize(database.type)} ${image.version || ""}`}
+            {formatDatabaseType(database.type, image.version)}
           </span>
         </p>
       </Link>
