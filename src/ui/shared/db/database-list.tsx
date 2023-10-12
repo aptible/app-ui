@@ -8,12 +8,14 @@ import { prettyEnglishDateWithTime } from "@app/date";
 import {
   DeployDatabaseRow,
   calcMetrics,
+  fetchAllDatabaseImages,
   fetchDatabases,
   fetchDiskById,
   fetchEnvironmentById,
   fetchEnvironments,
   getContainerProfileFromType,
   hourlyAndMonthlyCostsForContainers,
+  selectDatabaseImageById,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
   selectDiskById,
@@ -22,6 +24,7 @@ import {
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
+import { formatDatabaseType } from "@app/deploy";
 import {
   databaseDetailUrl,
   databaseScaleUrl,
@@ -45,6 +48,9 @@ type DatabaseCellProps = { database: DeployDatabase };
 export const DatabaseItemView = ({
   database,
 }: { database: DeployDatabase }) => {
+  const image = useSelector((s: AppState) =>
+    selectDatabaseImageById(s, { id: database.databaseImageId }),
+  );
   return (
     <div className="flex">
       <Link to={databaseDetailUrl(database.id)} className="flex">
@@ -56,7 +62,7 @@ export const DatabaseItemView = ({
         <p className="flex flex-col">
           <span className={tokens.type["table link"]}>{database.handle}</span>
           <span className={tokens.type["normal lighter"]}>
-            {capitalize(database.type)}
+            {formatDatabaseType(database.type, image.version)}
           </span>
         </p>
       </Link>
@@ -225,6 +231,7 @@ const DbsResourceHeaderTitleBar = ({
 export const DatabaseListByOrg = () => {
   const query = useQuery(fetchDatabases());
   useQuery(fetchEnvironments());
+  useQuery(fetchAllDatabaseImages());
 
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";

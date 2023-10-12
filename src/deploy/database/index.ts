@@ -1,3 +1,4 @@
+import { ThunkCtx, api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import {
   FetchJson,
   Payload,
@@ -10,14 +11,13 @@ import {
   setLoaderStart,
   setLoaderSuccess,
 } from "@app/fx";
-
-import { ThunkCtx, api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
+import { capitalize } from "@app/string-utils";
 import type {
   AppState,
   DeployApiCtx,
@@ -758,3 +758,7 @@ export const scaleDatabase = api.post<
     meta: { opId: `${opId}` },
   };
 });
+
+export const formatDatabaseType = (type: string, version: string) => {
+  return `${capitalize(type)} ${version}`;
+};

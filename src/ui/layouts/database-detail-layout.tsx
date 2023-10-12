@@ -1,11 +1,14 @@
+import { formatDatabaseType } from "@app/deploy";
 import {
   calcMetrics,
   cancelDatabaseOpsPoll,
+  fetchAllDatabaseImages,
   fetchDatabase,
   fetchDiskById,
   fetchService,
   pollDatabaseOperations,
   selectDatabaseById,
+  selectDatabaseImageById,
   selectDiskById,
   selectEnvironmentById,
   selectServiceById,
@@ -23,7 +26,6 @@ import {
   environmentDatabasesUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import { capitalize } from "@app/string-utils";
 import type { AppState, DeployDatabase, DeployService } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -53,6 +55,10 @@ export function DatabaseHeader({
   const disk = useSelector((s: AppState) =>
     selectDiskById(s, { id: database.diskId }),
   );
+  useQuery(fetchAllDatabaseImages());
+  const image = useSelector((s: AppState) =>
+    selectDatabaseImageById(s, { id: database.databaseImageId }),
+  );
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -75,13 +81,11 @@ export function DatabaseHeader({
         <DetailInfoItem title="Memory Limit">
           {metrics.totalMemoryLimit / 1024} GB
         </DetailInfoItem>
-
         <DetailInfoItem title="Type">
-          {capitalize(database.type)}
+          {formatDatabaseType(database.type, image.version)}
         </DetailInfoItem>
         <DetailInfoItem title="Disk Type">{disk.ebsVolumeType}</DetailInfoItem>
         <DetailInfoItem title="CPU Share">{metrics.totalCPU}</DetailInfoItem>
-
         <DetailInfoItem title="Disk Size">{disk.size} GB</DetailInfoItem>
         <DetailInfoItem title="Disk Encryption">
           AES-{disk.keyBytes * 8}
