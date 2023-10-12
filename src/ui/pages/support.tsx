@@ -248,6 +248,7 @@ export const SupportPage = () => {
                                 "usedSupportSuggestion",
                                 `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
                               );
+                              setViewedSuggestion(true)
                             }}
                             // linter is requiring onKeyPress as well
                             onKeyPress={() => {
@@ -255,6 +256,7 @@ export const SupportPage = () => {
                                 "usedSupportSuggestion",
                                 `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
                               );
+                              setViewedSuggestion(true)
                             }}
                           >
                             <a target="_blank" href={hit.url} rel="noreferrer">
