@@ -2,7 +2,7 @@ import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";
 import { useLoader } from "@app/fx";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import { createProjectGitUrl, homeUrl, loginUrl } from "@app/routes";
-import { selectJWTToken } from "@app/token";
+import { selectJwtToken } from "@app/token";
 import { selectCurrentUser } from "@app/users";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,7 +21,7 @@ import {
 export const VerifyEmailPage = () => {
   const loader = useLoader(fetchCurrentToken);
   const dispatch = useDispatch();
-  const jwt = useSelector(selectJWTToken);
+  const jwt = useSelector(selectJwtToken);
   const user = useSelector(selectCurrentUser);
   const { verificationId = "", verificationCode = "" } = useParams();
   const navigate = useNavigate();

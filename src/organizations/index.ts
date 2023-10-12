@@ -27,6 +27,7 @@ export interface OrganizationResponse {
   updated_at: string;
   zip: string;
   reauth_required?: boolean;
+  sso_enforced: boolean;
   _links: {
     billing_detail: LinkResponse;
     invitations: LinkResponse;
@@ -55,6 +56,7 @@ export const defaultOrgResponse = (
     security_alert_email: "",
     state: "",
     zip: "",
+    sso_enforced: false,
     _links: {
       billing_detail: { href: "" },
       invitations: { href: "" },
@@ -110,6 +112,7 @@ export const defaultOrganization = (
   id: "",
   name: "",
   billingDetailId: "",
+  ssoEnforced: false,
   updatedAt: new Date().toISOString(),
   reauthRequired: false,
   ...o,
@@ -142,6 +145,7 @@ function deserializeOrganization(o: OrganizationResponse): Organization {
     id: o.id,
     name: o.name,
     updatedAt: o.updated_at,
+    ssoEnforced: o.sso_enforced,
     billingDetailId: extractIdFromLink(o._links.billing_detail),
     reauthRequired: o.reauth_required || false,
   };

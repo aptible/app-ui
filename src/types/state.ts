@@ -93,6 +93,7 @@ export interface Organization {
   updatedAt: string;
   reauthRequired: boolean;
   billingDetailId: string;
+  ssoEnforced: boolean;
 }
 
 export interface U2fDevice {
