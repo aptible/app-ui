@@ -87,7 +87,7 @@ export const SsoFailurePage = () => {
     <HeroBgLayout>
       <div className="text-center mt-16">
         <h1 className={`${tokens.type.h1} text-center`}>
-          We could not process your Single Sign-On (SSO) login
+          We could not process your Single Sign-On login
         </h1>
         <Banner variant="error" className="my-6">
           {message}

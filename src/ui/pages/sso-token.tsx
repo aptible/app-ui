@@ -8,7 +8,9 @@ import {
   Box,
   Button,
   ExternalLink,
+  FormGroup,
   Group,
+  Label,
   PreCode,
   Select,
   SelectOption,
@@ -45,17 +47,17 @@ export const SsoTokenPage = () => {
       <Box>
         <Group>
           <h1 className={tokens.type.h1}>
-            Single Sign On (SSO) Token for Aptible CLI
+            Single Sign-On Token for Aptible CLI
           </h1>
           <div>
             To use the{" "}
             <ExternalLink variant="info" href="https://aptible.com/docs/cli">
               Aptible CLI
             </ExternalLink>{" "}
-            with SSO, you must generate a new token below. The selected lifetime
-            is the maximum duration the token will be valid. If your SSO
-            provider is configured to use a shorter session duration, that will
-            be applied to the token instead. The security best practice is to
+            with SSO, you must generate a new token. The selected lifetime is
+            the maximum duration the token will be valid. If your SSO provider
+            is configured to use a shorter session duration, that will be
+            applied to the token instead. The security best practice is to
             select the shortest lifetime that will meet your needs.{" "}
             <strong>
               Logging out of your browser session will revoke the token,
@@ -64,10 +66,12 @@ export const SsoTokenPage = () => {
           </div>
 
           <form onSubmit={onSubmit}>
-            <Group size="sm">
+            <FormGroup label="Token Duration">
               <Select options={durations} onSelect={onSelect} value={dur} />
-              <Button type="submit">Generate</Button>
-            </Group>
+              <Button className="mt-4" type="submit">
+                Generate Token
+              </Button>
+            </FormGroup>
           </form>
         </Group>
       </Box>
