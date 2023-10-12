@@ -91,6 +91,8 @@ import {
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
+  SsoTokenPage,
+  SsoTokenReadPage,
   StackDetailEnvironmentsPage,
   StackDetailHidsPage,
   StackDetailLayout,
@@ -671,6 +673,16 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.SSO_DIRECT_PATH,
     element: <SsoDirectPage />,
+  },
+
+  {
+    path: routes.SSO_TOKEN_PATH,
+    element: <SsoTokenPage />,
+  },
+
+  {
+    path: routes.SSO_TOKEN_READ_PATH,
+    element: <SsoTokenReadPage />,
   },
 
   {

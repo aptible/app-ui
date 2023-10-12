@@ -1,13 +1,13 @@
 import { useSelector } from "react-redux";
 
-import { impersonateUrl, logoutUrl } from "@app/routes";
+import { impersonateUrl, logoutUrl, ssoTokenUrl } from "@app/routes";
 import { selectCanImpersonate } from "@app/users";
 
 import { useCurrentUser } from "../hooks";
 
 import { selectLegacyDashboardUrl } from "@app/env";
 import { selectOrganizationSelected } from "@app/organizations";
-import { IconLogout, IconUserCircle } from "./icons";
+import { IconGlobe, IconLogout, IconUserCircle } from "./icons";
 import { IconAlertCircle } from "./icons";
 import { LinkNav } from "./link";
 import { Loading } from "./loading";
@@ -39,6 +39,7 @@ export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
           hideName={hideName}
         />
       ) : null}
+      <LinkNav to={ssoTokenUrl()} name="SSO Token" icon={<IconGlobe />} />
       <LinkNav
         to={logoutUrl()}
         icon={<IconLogout />}

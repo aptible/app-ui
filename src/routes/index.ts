@@ -240,6 +240,10 @@ export const ssoDirectUrl = (orgId: string) => `/sso/${orgId}`;
 export const SSO_ORG_FAILURE_PATH = "/sso/failure";
 export const ssoFailureUrl = (message = "") =>
   `${SSO_ORG_FAILURE_PATH}?message=${message}`;
+export const SSO_TOKEN_READ_PATH = "/sso-token/read";
+export const ssoTokenReadUrl = () => SSO_TOKEN_READ_PATH;
+export const SSO_TOKEN_PATH = "/sso-token";
+export const ssoTokenUrl = () => SSO_TOKEN_PATH;
 
 export const ACTIVITY_PATH = "/activity";
 export const activityUrl = () => ACTIVITY_PATH;
