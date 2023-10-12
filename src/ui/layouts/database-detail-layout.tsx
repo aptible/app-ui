@@ -1,4 +1,4 @@
-import { formatDatabaseType } from "@app/database";
+import { formatDatabaseType } from "@app/deploy";
 import {
   calcMetrics,
   cancelDatabaseOpsPoll,

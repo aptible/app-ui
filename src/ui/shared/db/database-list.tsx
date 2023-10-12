@@ -24,7 +24,7 @@ import {
 } from "@app/deploy";
 import type { AppState, DeployDatabase } from "@app/types";
 
-import { formatDatabaseType } from "@app/database";
+import { formatDatabaseType } from "@app/deploy";
 import {
   databaseDetailUrl,
   databaseScaleUrl,
