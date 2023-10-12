@@ -1,3 +1,4 @@
+import { ThunkCtx, api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import {
   FetchJson,
   Payload,
@@ -10,14 +11,13 @@ import {
   setLoaderStart,
   setLoaderSuccess,
 } from "@app/fx";
-import { capitalize } from "@app/string-utils";
-import { ThunkCtx, api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
+import { capitalize } from "@app/string-utils";
 import type {
   AppState,
   DeployApiCtx,

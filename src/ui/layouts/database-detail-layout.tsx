@@ -83,7 +83,6 @@ export function DatabaseHeader({
         </DetailInfoItem>
         <DetailInfoItem title="Type">
           {formatDatabaseType(database.type, image.version)}
-          {/* {`${capitalize(database.type)} ${image.version || ""}`} */}
         </DetailInfoItem>
         <DetailInfoItem title="Disk Type">{disk.ebsVolumeType}</DetailInfoItem>
         <DetailInfoItem title="CPU Share">{metrics.totalCPU}</DetailInfoItem>
