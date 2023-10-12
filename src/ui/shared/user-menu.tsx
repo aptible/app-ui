@@ -1,12 +1,10 @@
-import { useSelector } from "react-redux";
-
-import { impersonateUrl, logoutUrl, ssoTokenUrl } from "@app/routes";
-import { selectCanImpersonate } from "@app/users";
-
-import { useCurrentUser } from "../hooks";
-
 import { selectLegacyDashboardUrl } from "@app/env";
-import { selectOrganizationSelected } from "@app/organizations";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { impersonateUrl, logoutUrl, ssoTokenUrl } from "@app/routes";
+import { selectIsAuthWithSso } from "@app/token";
+import { selectCanImpersonate } from "@app/users";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "../hooks";
 import { IconKey, IconLogout, IconUserCircle } from "./icons";
 import { IconAlertCircle } from "./icons";
 import { LinkNav } from "./link";
@@ -15,7 +13,8 @@ import { Loading } from "./loading";
 export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
   const [user, loader] = useCurrentUser();
   const legacyUrl = useSelector(selectLegacyDashboardUrl);
-  const org = useSelector(selectOrganizationSelected);
+  const isAuthWithSso = useSelector(selectIsAuthWithSso);
+  const orgId = useSelector(selectOrganizationSelectedId);
 
   const canImpersonate = useSelector(selectCanImpersonate);
 
@@ -26,7 +25,7 @@ export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
   return (
     <div className="w-full mb-2">
       <LinkNav
-        to={`${legacyUrl}/organizations/${org.id}/members`}
+        to={`${legacyUrl}/organizations/${orgId}/members`}
         icon={<IconUserCircle />}
         name="Settings"
         hideName={hideName}
@@ -39,8 +38,8 @@ export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
           hideName={hideName}
         />
       ) : null}
-      {org.ssoEnforced ? (
-        <LinkNav to={ssoTokenUrl()} name="SSO Token" icon={<IconKey />} />
+      {isAuthWithSso ? (
+        <LinkNav to={ssoTokenUrl()} name="CLI SSO Token" icon={<IconKey />} />
       ) : null}
       <LinkNav
         to={logoutUrl()}

@@ -10,7 +10,6 @@ import {
   ExternalLink,
   FormGroup,
   Group,
-  Label,
   PreCode,
   Select,
   SelectOption,
@@ -27,7 +26,7 @@ const durations: SelectOption[] = [
   { label: "1 Week", value: "604800" },
 ];
 
-export const SsoTokenPage = () => {
+export const SsoTokenCliPage = () => {
   const env = useSelector(selectEnv);
   const [dur, setDur] = useState(durations[durations.length - 1].value);
   const orgId = useSelector(selectOrganizationSelectedId);
@@ -66,8 +65,13 @@ export const SsoTokenPage = () => {
           </div>
 
           <form onSubmit={onSubmit}>
-            <FormGroup label="Token Duration">
-              <Select options={durations} onSelect={onSelect} value={dur} />
+            <FormGroup htmlFor="token-duration" label="Token Duration">
+              <Select
+                options={durations}
+                onSelect={onSelect}
+                value={dur}
+                ariaLabel="token-duration"
+              />
               <Button className="mt-4" type="submit">
                 Generate Token
               </Button>
@@ -79,7 +83,7 @@ export const SsoTokenPage = () => {
   );
 };
 
-export const SsoTokenReadPage = () => {
+export const SsoTokenCliReadPage = () => {
   const accessToken = useSelector(selectAccessToken);
   return (
     <AppSidebarLayout>
