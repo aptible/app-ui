@@ -27,7 +27,7 @@ export function ipValidator(ips: string[]) {
   ips.forEach((ip) => {
     if (isIPv4(ip)) return;
     if (isIPv4Cidr(ip)) return;
-    errs.push(`${ip} is not a valid IPv4 address or CIDR`);
+    errs.push(`[${ip}] is not a valid IPv4 address or CIDR`);
   });
 
   if (errs.length === 0) return;
