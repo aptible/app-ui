@@ -1,10 +1,13 @@
+import { fetchCurrentToken } from "@app/auth";
 import { selectEnv } from "@app/env";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { selectAccessToken } from "@app/token";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useApi } from "saga-query/react";
 import { AppSidebarLayout, HeroBgLayout } from "../layouts";
 import {
+  Banner,
   Box,
   Button,
   ExternalLink,
@@ -85,6 +88,8 @@ export const SsoTokenCliPage = () => {
 
 export const SsoTokenCliReadPage = () => {
   const accessToken = useSelector(selectAccessToken);
+  const query = useApi(fetchCurrentToken());
+
   return (
     <AppSidebarLayout>
       <Box>
@@ -103,7 +108,22 @@ export const SsoTokenCliReadPage = () => {
             </strong>
           </div>
 
-          <div>
+          <Group>
+            {accessToken === "" && !query.isLoading ? (
+              <Banner variant="error">
+                <div className="flex gap-2 items-center">
+                  Failed to fetch token, try again.{" "}
+                  <Button
+                    variant="delete"
+                    onClick={() => query.trigger()}
+                    isLoading={query.isLoading}
+                  >
+                    Retry
+                  </Button>
+                </div>
+              </Banner>
+            ) : null}
+
             <PreCode
               allowCopy
               segments={listToInvertedTextColor([
@@ -111,7 +131,7 @@ export const SsoTokenCliReadPage = () => {
                 accessToken,
               ])}
             />
-          </div>
+          </Group>
         </Group>
       </Box>
     </AppSidebarLayout>
