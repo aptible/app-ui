@@ -4,9 +4,15 @@ const IP_WHITELIST_MAX_SIZE = 25;
 const v4 =
   "(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)){3}";
 const v4exact = new RegExp(`^${v4}$`);
+const v4Cidr = `${v4}\\/(3[0-2]|[12]?[0-9])`;
+const v4CidrExact = new RegExp(`^${v4Cidr}$`);
 
 function isIPv4(ip: string) {
   return v4exact.test(ip.slice(0, MAX_IPV4_LENGTH));
+}
+
+function isIPv4Cidr(ip: string) {
+  return v4CidrExact.test(ip.slice(0, MAX_IPV4_LENGTH));
 }
 
 export function ipValidator(ips: string[]) {
@@ -19,6 +25,7 @@ export function ipValidator(ips: string[]) {
 
   ips.forEach((ip) => {
     if (isIPv4(ip)) return;
+    if (isIPv4Cidr(ip)) return;
     errs.push(`${ip} is not a valid IPv4 address`);
   });
 
