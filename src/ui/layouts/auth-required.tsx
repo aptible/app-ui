@@ -77,8 +77,8 @@ we render `<Navigate to={...} />`.
 At the time of writing this we have 4 forced redirect components:
 
 - `<AuthRequired />` -> checks for access token
-- `<EmailVerifyRequired />` -> checks for `user.verified === true`
-- `<PaymentMethodRequired />` -> checks for `billing_detail._links.payment_methods.href`
+- `<EmailVerifyRequired />` -> checks for user.verified
+- `<PaymentMethodRequired />` -> checks for a payment method
 - `<ElevateRequired />` -> checks for an elevated token in our redux store
 
 # Design Principle

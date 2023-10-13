@@ -74,13 +74,14 @@ export const ImpersonatePage = () => {
     isImpersonated;
 
   useEffect(() => {
+    if (user.id === "") return;
     // if the current token is being impersonated by a user then
     // we let them stay on this screen
     if (canImpersonate || isImpersonated) {
       return;
     }
     navigate(homeUrl());
-  }, [canImpersonate, isImpersonated]);
+  }, [canImpersonate, isImpersonated, user.id]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
