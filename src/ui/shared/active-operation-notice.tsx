@@ -90,7 +90,7 @@ export const ActiveOperationNotice = ({
       <BannerWrapper>
         <Banner variant={operationStatusToBannerStatus(operation.status)}>
           <p>
-            {gerundOfOpType} <b>{resourceType}</b> (
+            {capitalize(gerundOfOpType)} <b>{resourceType}</b> (
             {timeAgo(operation.createdAt)}) -{" "}
             <Link
               className="text-white underline"
