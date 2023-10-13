@@ -4,6 +4,7 @@ const IP_WHITELIST_MAX_SIZE = 25;
 const v4 =
   "(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)){3}";
 const v4exact = new RegExp(`^${v4}$`);
+// inlined from: https://github.com/silverwind/cidr-regex/blob/master/index.js#L4
 const v4Cidr = `${v4}\\/(3[0-2]|[12]?[0-9])`;
 const v4CidrExact = new RegExp(`^${v4Cidr}$`);
 
