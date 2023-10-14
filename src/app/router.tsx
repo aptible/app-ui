@@ -51,6 +51,7 @@ import {
   ElevatePage,
   ElevateRequired,
   EndpointDetailActivityPage,
+  EndpointDetailCredentialsPage,
   EndpointDetailLayout,
   EndpointDetailPage,
   EndpointDetailSettingsPage,
@@ -373,6 +374,10 @@ export const appRoutes: RouteObject[] = [
           {
             path: routes.ENDPOINT_DETAIL_SETTINGS_PATH,
             element: <EndpointDetailSettingsPage />,
+          },
+          {
+            path: routes.ENDPOINT_DETAIL_CREDENDTIALS_PATH,
+            element: <EndpointDetailCredentialsPage />,
           },
         ],
       },

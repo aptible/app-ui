@@ -140,6 +140,9 @@ export const endpointDetailSettingsUrl = (id: string) =>
   `${endpointDetailUrl(id)}/settings`;
 export const ENDPOINTS_PATH = "/endpoints";
 export const endpointsUrl = () => ENDPOINTS_PATH;
+export const ENDPOINT_DETAIL_CREDENDTIALS_PATH = "/endpoints/:id/credentials";
+export const endpointDetailCredentialsUrl = (id: string) =>
+  `/endpoints/${id}/credentials`;
 
 export const DEPLOYMENTS_PATH = "/deployments";
 export const deploymentsUrl = () => DEPLOYMENTS_PATH;

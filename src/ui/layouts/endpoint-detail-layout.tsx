@@ -19,6 +19,7 @@ import {
   appEndpointsUrl,
   databaseEndpointsUrl,
   endpointDetailActivityUrl,
+  endpointDetailCredentialsUrl,
   endpointDetailSettingsUrl,
   endpointDetailSetupUrl,
 } from "@app/routes";
@@ -134,12 +135,15 @@ export function EndpointDatabaseHeaderInfo({
             <CopyTextButton text={getEndpointUrl(enp)} />
           </div>
         </DetailInfoItem>
-        <DetailInfoItem title="Resource">
-          <Link to={databaseEndpointsUrl(db.id)}>{db.handle}</Link>
-        </DetailInfoItem>
+
         <DetailInfoItem title="Status">
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>
+
+        <DetailInfoItem title="Resource">
+          <Link to={databaseEndpointsUrl(db.id)}>{db.handle}</Link>
+        </DetailInfoItem>
+
         <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
@@ -221,6 +225,10 @@ function EndpointDatabaseHeader({
   const url = databaseEndpointsUrl(db.id);
   const tabs: TabItem[] = [
     { name: "Activity", href: endpointDetailActivityUrl(enp.id) },
+    {
+      name: "Authenticated Endpoint URL",
+      href: endpointDetailCredentialsUrl(enp.id),
+    },
     { name: "Settings", href: endpointDetailSettingsUrl(enp.id) },
   ];
 
