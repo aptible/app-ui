@@ -226,7 +226,7 @@ function EndpointDatabaseHeader({
   const tabs: TabItem[] = [
     { name: "Activity", href: endpointDetailActivityUrl(enp.id) },
     {
-      name: "Authenticated Endpoint URL",
+      name: "Authenticated URL",
       href: endpointDetailCredentialsUrl(enp.id),
     },
     { name: "Settings", href: endpointDetailSettingsUrl(enp.id) },
