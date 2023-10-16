@@ -50,7 +50,6 @@ describe("Deployments page", () => {
       onboarding_status: "initiated",
       _links: {
         stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-        environment: defaultHalHref(),
       },
     });
     const envLaravel = defaultEnvResponse({
@@ -60,7 +59,6 @@ describe("Deployments page", () => {
       onboarding_status: "completed",
       _links: {
         stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
-        environment: { href: "" },
       },
     });
     const accounts = [envExpress, envLaravel];
@@ -142,7 +140,6 @@ describe("Deployments page", () => {
       onboarding_status: "initiated",
       _links: {
         stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-        environment: defaultHalHref(),
       },
     });
     const envLaravel = defaultEnvResponse({
@@ -152,7 +149,6 @@ describe("Deployments page", () => {
       onboarding_status: "completed",
       _links: {
         stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
-        environment: { href: "" },
       },
     });
     const envLegacy = defaultEnvResponse({
@@ -162,7 +158,6 @@ describe("Deployments page", () => {
       onboarding_status: "unknown",
       _links: {
         stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
-        environment: { href: "" },
       },
     });
     const accounts = [envExpress, envLaravel, envLegacy];

@@ -5,22 +5,21 @@ import {
   selectLatestDeployOp,
 } from "@app/deploy";
 import { useLoader } from "@app/fx";
-import { createProjectGitUrl } from "@app/routes";
+import { deployUrl } from "@app/routes";
 import { AppState, DeployApp } from "@app/types";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { AppSidebarLayout } from "../layouts";
 import {
   Button,
   ButtonLink,
   IconPlusCircle,
   Loading,
+  OnboardingLink,
+  ResourceGroupBox,
+  StatusPill,
   resolveOperationStatuses,
   tokens,
 } from "../shared";
-import { OnboardingLink } from "../shared/onboarding-link";
-import { StatusPill } from "../shared/pill";
-import { ResourceGroupBox } from "../shared/resource-group-box";
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   const deployOp = useSelector((s: AppState) =>
@@ -41,17 +40,7 @@ const DeploymentOverview = ({ app }: { app: DeployApp }) => {
   );
 };
 
-interface DeploymentPageProps {
-  leftAlignTitle?: boolean;
-  showDeployButton?: boolean;
-  headerStyle?: string;
-}
-
-export const DeploymentsPage = ({
-  headerStyle = tokens.type.h1,
-  leftAlignTitle = false,
-  showDeployButton = true,
-}: DeploymentPageProps) => {
+export const DeploymentsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const accountIds =
     searchParams.get("accounts")?.split(",").filter(Boolean) || [];
@@ -82,16 +71,10 @@ export const DeploymentsPage = ({
 
   return (
     <div>
-      <h1
-        className={`${headerStyle} mb-4 ${leftAlignTitle ? "" : "text-center"}`}
-      >
-        Deployments
-      </h1>
-      {showDeployButton ? (
-        <ButtonLink to={createProjectGitUrl()}>
-          <IconPlusCircle className="mr-2" /> Deploy
-        </ButtonLink>
-      ) : null}
+      <h1 className={`${tokens.type.h1} mb-4`}>Deployments</h1>
+      <ButtonLink to={deployUrl()}>
+        <IconPlusCircle className="mr-2" /> Deploy
+      </ButtonLink>
 
       {view()}
 
@@ -116,13 +99,3 @@ export const DeploymentsPage = ({
     </div>
   );
 };
-
-export const DeploymentsPageWithMenus = () => (
-  <AppSidebarLayout>
-    <DeploymentsPage
-      headerStyle={tokens.type.h2}
-      leftAlignTitle
-      showDeployButton={false}
-    />
-  </AppSidebarLayout>
-);

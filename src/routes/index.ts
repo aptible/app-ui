@@ -198,43 +198,73 @@ export const settingsUrl = () => SETTINGS_PATH;
 export const TEAM_PATH = `${SETTINGS_PATH}/team`;
 export const teamUrl = () => TEAM_PATH;
 
-export const CREATE_PROJECT_PATH = "/create";
-export const createProjectUrl = () => CREATE_PROJECT_PATH;
+/*
+ * /create -- unauthed page "get started"
+ * /create/deployments -- view deployments
+ * /create/app -- create a standalone app
+ * /create/environment -- create a standalone env
+ *
+ * /environments/:id/resume -- resume app deployment with just env id
+ * /apps/:id/resume -- resume app deployment with just app id
+ *
+ * /app/:id/get-started -- decision point (git or docker)
+ * /app/:id/git -- git push page
+ * /app/:id/git/ssh -- add ssh key page
+ * /app/:id/deploy/settings -- app configure page (dbs, image registry, env vars, etc)
+ * /app/:id/deploy/status -- app deploy status page
+ */
 
-export const CREATE_PROJECT_ADD_NAME_PATH = "/create/name";
-export const createProjectAddNameUrl = (params = "") => {
-  return `${CREATE_PROJECT_ADD_NAME_PATH}${params ? `?${params}` : ""}`;
+export const GET_STARTED_PATH = "/create";
+export const getStartedUrl = () => GET_STARTED_PATH;
+
+export const DEPLOY_PATH = "/deploy";
+export const deployUrl = (stackId = "") =>
+  `${DEPLOY_PATH}${stackId ? `?stack_id=${stackId}` : ""}`;
+
+export const CREATE_DEPLOYMENTS_PATH = "/create/deployments";
+export const createDeploymentsUrl = (params = "") =>
+  `${CREATE_DEPLOYMENTS_PATH}${params ? `?${params}` : ""}`;
+
+export const CREATE_APP_PATH = "/create/app";
+export const createAppUrl = (params = "") => {
+  return `${CREATE_APP_PATH}${params ? `?${params}` : ""}`;
 };
-export const CREATE_PROJECT_DEPLOYMENTS_PATH = "/create/deployments";
-export const createProjectDeploymentsUrl = (params = "") =>
-  `${CREATE_PROJECT_DEPLOYMENTS_PATH}${params ? `?${params}` : ""}`;
 
-export const CREATE_PROJECT_GIT_PATH = "/create/git";
-export const createProjectGitUrl = (params = "") =>
-  `${CREATE_PROJECT_GIT_PATH}${params ? `?${params}` : ""}`;
+export const CREATE_ENV_PATH = "/create/environment";
+export const createEnvUrl = (params = "") => {
+  return `${CREATE_ENV_PATH}${params ? `?${params}` : ""}`;
+};
 
-export const CREATE_PROJECT_SETUP_PATH = "/accounts/:envId/setup";
-export const createProjectSetupUrl = (envId: string) =>
-  `/accounts/${envId}/setup`;
-export const CREATE_PROJECT_APP_SETUP_PATH = "/apps/:appId/git/setup";
-export const createProjectGitAppSetupUrl = (appId: string) =>
-  `/apps/${appId}/git/setup`;
+export const ENV_SELECT_PATH = "/select/env";
+export const envSelectUrl = (params = "") =>
+  `${ENV_SELECT_PATH}${params ? `?${params}` : ""}`;
 
-export const CREATE_PROJECT_GIT_APP_PATH = "/apps/:appId/git";
-export const createProjectGitAppUrl = (appId: string) => `/apps/${appId}/git`;
-export const CREATE_PROJECT_ADD_KEY_PATH = "/apps/:appId/git/ssh";
-export const createProjectAddKeyUrl = (appId: string) => {
+export const APP_DEPLOY_RESUME_WITH_ENV_PATH = "/environments/:envId/resume";
+export const appDeployResumeWithEnvUrl = (envId: string) =>
+  `/environments/${envId}/resume`;
+
+export const APP_DEPLOY_RESUME_PATH = "/apps/:appId/resume";
+export const appDeployResumeUrl = (appId: string) => `/apps/${appId}/resume`;
+
+export const APP_DEPLOY_GET_STARTED_PATH = "/apps/:appId/get-started";
+export const appDeployGetStartedUrl = (appId: string) =>
+  `/apps/${appId}/get-started`;
+
+export const APP_DEPLOY_WITH_GIT_PATH = "/apps/:appId/git";
+export const appDeployWithGitUrl = (appId: string) => `/apps/${appId}/git`;
+
+export const APP_DEPLOY_WITH_GIT_ADD_KEY_PATH = "/apps/:appId/git/ssh";
+export const appDeployWithGitAddKeyUrl = (appId: string) => {
   return `/apps/${appId}/git/ssh`;
 };
-export const CREATE_PROJECT_GIT_PUSH_PATH = "/apps/:appId/git/push";
-export const createProjectGitPushUrl = (appId: string) =>
-  `/apps/${appId}/git/push`;
-export const CREATE_PROJECT_GIT_SETTINGS_PATH = "/apps/:appId/git/settings";
-export const createProjectGitSettingsUrl = (appId: string, query = "") =>
-  `/apps/${appId}/git/settings${query ? `?${query}` : ""}`;
-export const CREATE_PROJECT_GIT_STATUS_PATH = "/apps/:appId/git/status";
-export const createProjectGitStatusUrl = (appId: string) =>
-  `/apps/${appId}/git/status`;
+
+export const APP_DEPLOY_CONFIGURE_PATH = "/apps/:appId/deploy/configure";
+export const appDeployConfigureUrl = (appId: string, query = "") =>
+  `/apps/${appId}/deploy/configure${query ? `?${query}` : ""}`;
+
+export const APP_DEPLOY_STATUS_PATH = "/apps/:appId/deploy/status";
+export const appDeployStatusUrl = (appId: string) =>
+  `/apps/${appId}/deploy/status`;
 
 export const SSO_PATH = "/sso";
 export const ssoUrl = () => SSO_PATH;

@@ -7,7 +7,7 @@ import {
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
 import {
-  createProjectGitUrl,
+  createEnvUrl,
   environmentAppsUrl,
   environmentDatabasesUrl,
   stackDetailEnvsUrl,
@@ -140,7 +140,7 @@ const EnvsResourceHeaderTitleBar = ({
 }) => {
   const navigate = useNavigate();
   const onCreate = () => {
-    navigate(createProjectGitUrl(stackId ? `stack_id=${stackId}` : ""));
+    navigate(createEnvUrl(stackId ? `stack_id=${stackId}` : ""));
   };
   return (
     <ResourceHeader

@@ -22,21 +22,27 @@ export function Label(props: LabelProps) {
 }
 
 export interface Feedback {
-  message: string;
-  variant: FeedbackVariant;
+  variant?: FeedbackVariant;
+  children: React.ReactNode;
 }
 
-export function FormGroupFeedback({ message, variant }: Feedback) {
+export function FormGroupFeedback({ children, variant = "default" }: Feedback) {
   const classes = classNames("text-sm mt-1", {
     "text-red-400": variant === "danger",
     "text-limegreen": variant === "success",
     "text-orange-400": variant === "warn",
     "text-indigo-400": variant === "info",
+    "text-black": variant === "default",
   });
-  return <div className={classes}>{message}</div>;
+  return <div className={classes}>{children}</div>;
 }
 
-export type FeedbackVariant = "warn" | "danger" | "success" | "info";
+export type FeedbackVariant =
+  | "warn"
+  | "danger"
+  | "success"
+  | "info"
+  | "default";
 
 interface Props extends PropsWithChildren {
   label: string;
@@ -57,7 +63,7 @@ export function FormGroup({
   htmlFor,
   description,
   splitWidthInputs,
-  feedbackVariant = "info",
+  feedbackVariant = "default",
   className = "",
 }: Props) {
   return (
@@ -80,10 +86,9 @@ export function FormGroup({
       >
         {children}
         {feedbackMessage ? (
-          <FormGroupFeedback
-            message={feedbackMessage}
-            variant={feedbackVariant}
-          />
+          <FormGroupFeedback variant={feedbackVariant}>
+            {feedbackMessage}
+          </FormGroupFeedback>
         ) : null}
       </div>
     </div>

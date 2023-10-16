@@ -1,7 +1,3 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { rest } from "msw";
-
 import { defaultCodeScanResponse } from "@app/deploy";
 import {
   createId,
@@ -11,23 +7,22 @@ import {
   testDatabasePostgres,
   testEnv,
 } from "@app/mocks";
-import {
-  CREATE_PROJECT_GIT_SETTINGS_PATH,
-  createProjectGitSettingsUrl,
-} from "@app/routes";
+import { APP_DEPLOY_CONFIGURE_PATH, appDeployConfigureUrl } from "@app/routes";
 import { setupIntegrationTest, waitForBootup } from "@app/test";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { rest } from "msw";
+import { AppDeployConfigurePage } from "./app-deploy-configure";
 
-import { CreateProjectGitSettingsPage } from "./create-project-git-settings";
-
-describe("CreateProjectGitSettingsPage", () => {
+describe("AppDeployConfigurePage", () => {
   it("should render settings from url query param", async () => {
     const handlers = stacksWithResources({ apps: [testApp] });
     server.use(...handlers);
 
     const { TestProvider, store } = setupIntegrationTest({
-      path: CREATE_PROJECT_GIT_SETTINGS_PATH,
+      path: APP_DEPLOY_CONFIGURE_PATH,
       initEntries: [
-        createProjectGitSettingsUrl(
+        appDeployConfigureUrl(
           `${testApp.id}`,
           "dbs=database_url:postgres:14&envs=DEBUG:1,APP",
         ),
@@ -38,7 +33,7 @@ describe("CreateProjectGitSettingsPage", () => {
 
     render(
       <TestProvider>
-        <CreateProjectGitSettingsPage />
+        <AppDeployConfigurePage />
       </TestProvider>,
     );
 
@@ -52,15 +47,15 @@ describe("CreateProjectGitSettingsPage", () => {
     server.use(...handlers);
 
     const { TestProvider, store } = setupIntegrationTest({
-      path: CREATE_PROJECT_GIT_SETTINGS_PATH,
-      initEntries: [createProjectGitSettingsUrl(`${testApp.id}`)],
+      path: APP_DEPLOY_CONFIGURE_PATH,
+      initEntries: [appDeployConfigureUrl(`${testApp.id}`)],
     });
 
     await waitForBootup(store);
 
     render(
       <TestProvider>
-        <CreateProjectGitSettingsPage />
+        <AppDeployConfigurePage />
       </TestProvider>,
     );
 
@@ -78,9 +73,9 @@ describe("CreateProjectGitSettingsPage", () => {
     server.use(...handlers);
 
     const { TestProvider, store } = setupIntegrationTest({
-      path: CREATE_PROJECT_GIT_SETTINGS_PATH,
+      path: APP_DEPLOY_CONFIGURE_PATH,
       initEntries: [
-        createProjectGitSettingsUrl(
+        appDeployConfigureUrl(
           `${testApp.id}`,
           "dbs=database_url:postgres:14&envs=DEBUG:1,APP",
         ),
@@ -91,7 +86,7 @@ describe("CreateProjectGitSettingsPage", () => {
 
     render(
       <TestProvider>
-        <CreateProjectGitSettingsPage />
+        <AppDeployConfigurePage />
       </TestProvider>,
     );
 
@@ -115,9 +110,9 @@ describe("CreateProjectGitSettingsPage", () => {
     server.use(...handlers);
 
     const { TestProvider, store } = setupIntegrationTest({
-      path: CREATE_PROJECT_GIT_SETTINGS_PATH,
+      path: APP_DEPLOY_CONFIGURE_PATH,
       initEntries: [
-        createProjectGitSettingsUrl(
+        appDeployConfigureUrl(
           `${testApp.id}`,
           "dbs=database_url:postgres:14,database_url:redis:5&envs=DEBUG:1,APP",
         ),
@@ -128,7 +123,7 @@ describe("CreateProjectGitSettingsPage", () => {
 
     render(
       <TestProvider>
-        <CreateProjectGitSettingsPage />
+        <AppDeployConfigurePage />
       </TestProvider>,
     );
 
@@ -153,12 +148,9 @@ describe("CreateProjectGitSettingsPage", () => {
     server.use(...handlers);
 
     const { TestProvider, store } = setupIntegrationTest({
-      path: CREATE_PROJECT_GIT_SETTINGS_PATH,
+      path: APP_DEPLOY_CONFIGURE_PATH,
       initEntries: [
-        createProjectGitSettingsUrl(
-          `${testApp.id}`,
-          "dbs=database_url:postgres:14",
-        ),
+        appDeployConfigureUrl(`${testApp.id}`, "dbs=database_url:postgres:14"),
       ],
     });
 
@@ -166,7 +158,7 @@ describe("CreateProjectGitSettingsPage", () => {
 
     render(
       <TestProvider>
-        <CreateProjectGitSettingsPage />
+        <AppDeployConfigurePage />
       </TestProvider>,
     );
 
@@ -212,15 +204,15 @@ describe("CreateProjectGitSettingsPage", () => {
     );
 
     const { TestProvider, store } = setupIntegrationTest({
-      path: CREATE_PROJECT_GIT_SETTINGS_PATH,
-      initEntries: [createProjectGitSettingsUrl(`${testApp.id}`)],
+      path: APP_DEPLOY_CONFIGURE_PATH,
+      initEntries: [appDeployConfigureUrl(`${testApp.id}`)],
     });
 
     await waitForBootup(store);
 
     render(
       <TestProvider>
-        <CreateProjectGitSettingsPage />
+        <AppDeployConfigurePage />
       </TestProvider>,
     );
 
@@ -238,15 +230,15 @@ describe("CreateProjectGitSettingsPage", () => {
     server.use(...handlers);
 
     const { TestProvider, store } = setupIntegrationTest({
-      path: CREATE_PROJECT_GIT_SETTINGS_PATH,
-      initEntries: [createProjectGitSettingsUrl(`${testApp.id}`)],
+      path: APP_DEPLOY_CONFIGURE_PATH,
+      initEntries: [appDeployConfigureUrl(`${testApp.id}`)],
     });
 
     await waitForBootup(store);
 
     render(
       <TestProvider>
-        <CreateProjectGitSettingsPage />
+        <AppDeployConfigurePage />
       </TestProvider>,
     );
 

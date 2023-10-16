@@ -7,6 +7,13 @@ import {
   AllRequired,
   AppActivityPage,
   AppCreateEndpointPage,
+  AppDeployConfigurePage,
+  AppDeployGetStartedPage,
+  AppDeployResumePage,
+  AppDeployResumeWithEnvPage,
+  AppDeployStatusPage,
+  AppDeployWithGitAddKeyPage,
+  AppDeployWithGitPage,
   AppDetailConfigPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
@@ -21,19 +28,12 @@ import {
   CertDetailLayout,
   CertDetailPage,
   CertDetailSettingsPage,
+  CreateAppPage,
   CreateDatabasePage,
+  CreateEnvironmentPage,
   CreateLogDrainPage,
   CreateMetricDrainPage,
   CreateOrgPage,
-  CreateProjectAddKeyPage,
-  CreateProjectFromAccountSetupPage,
-  CreateProjectFromAppSetupPage,
-  CreateProjectGitPage,
-  CreateProjectGitPushPage,
-  CreateProjectGitSettingsPage,
-  CreateProjectGitStatusPage,
-  CreateProjectNamePage,
-  CreateProjectPage,
   CreateStackPage,
   DatabaseActivityPage,
   DatabaseBackupsPage,
@@ -47,7 +47,6 @@ import {
   DatabaseSettingsPage,
   DatabasesPage,
   DeploymentsPage,
-  DeploymentsPageWithMenus,
   ElevatePage,
   ElevateRequired,
   EndpointDetailActivityPage,
@@ -57,6 +56,7 @@ import {
   EndpointDetailSettingsPage,
   EndpointDetailSetupPage,
   EndpointsPage,
+  EnvSelectorPage,
   EnvironmentActivityPage,
   EnvironmentAppsPage,
   EnvironmentBackupsPage,
@@ -71,6 +71,7 @@ import {
   ErrorPage,
   ForgotPassPage,
   ForgotPassVerifyPage,
+  GetStartedPage,
   HomePage,
   ImpersonatePage,
   LoginPage,
@@ -109,7 +110,10 @@ import {
 import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
 import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
 import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
+import { DeployPage } from "@app/ui/pages/deploy";
+import { EnvironmentDetailPage } from "@app/ui/pages/environment-detail";
 import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
+import { StackDetailPage } from "@app/ui/pages/stack-detail";
 import { Tuna } from "./tuna";
 
 const trackingPatch = (appRoute: RouteObject) => ({
@@ -152,11 +156,16 @@ export const appRoutes: RouteObject[] = [
 
       {
         path: routes.DEPLOYMENTS_PATH,
-        element: <DeploymentsPageWithMenus />,
+        element: (
+          <AppSidebarLayout>
+            <DeploymentsPage />
+          </AppSidebarLayout>
+        ),
       },
 
+      // legacy deploy-ui "Deployment Monitor" -> app-ui "/deployments"
       {
-        path: routes.CREATE_PROJECT_DEPLOYMENTS_PATH,
+        path: routes.CREATE_DEPLOYMENTS_PATH,
         element: (
           <AppSidebarLayout>
             <DeploymentsPage />
@@ -185,7 +194,10 @@ export const appRoutes: RouteObject[] = [
             element: <StackDetailLayout />,
             children: [
               {
-                index: true,
+                path: routes.STACK_DETAIL_PATH,
+                element: <StackDetailPage />,
+              },
+              {
                 path: routes.STACK_DETAIL_ENVS_PATH,
                 element: <StackDetailEnvironmentsPage />,
               },
@@ -405,7 +417,7 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <EnvironmentAppsPage />,
+                element: <EnvironmentDetailPage />,
               },
               {
                 path: routes.ENVIRONMENT_APPS_PATH,
@@ -489,53 +501,52 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
-        path: routes.CREATE_PROJECT_SETUP_PATH,
-        element: <CreateProjectFromAccountSetupPage />,
+        path: routes.DEPLOY_PATH,
+        element: <DeployPage />,
       },
       {
-        path: routes.CREATE_PROJECT_ADD_KEY_PATH,
-        element: <ElevateRequired />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectAddKeyPage />,
-          },
-        ],
+        path: routes.CREATE_ENV_PATH,
+        element: <CreateEnvironmentPage />,
       },
       {
-        path: routes.CREATE_PROJECT_ADD_NAME_PATH,
-        element: <CreateProjectNamePage />,
+        path: routes.ENV_SELECT_PATH,
+        element: <EnvSelectorPage />,
       },
       {
-        path: routes.CREATE_PROJECT_GIT_PATH,
-        element: <AppSidebarLayout />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectGitPage />,
-          },
-        ],
+        path: routes.CREATE_APP_PATH,
+        element: <CreateAppPage />,
       },
       {
-        path: routes.CREATE_PROJECT_GIT_APP_PATH,
-        children: [
-          {
-            path: routes.CREATE_PROJECT_GIT_PUSH_PATH,
-            element: <CreateProjectGitPushPage />,
-          },
-          {
-            path: routes.CREATE_PROJECT_GIT_SETTINGS_PATH,
-            element: <CreateProjectGitSettingsPage />,
-          },
-          {
-            path: routes.CREATE_PROJECT_GIT_STATUS_PATH,
-            element: <CreateProjectGitStatusPage />,
-          },
-          {
-            path: routes.CREATE_PROJECT_APP_SETUP_PATH,
-            element: <CreateProjectFromAppSetupPage />,
-          },
-        ],
+        path: routes.APP_DEPLOY_RESUME_WITH_ENV_PATH,
+        element: <AppDeployResumeWithEnvPage />,
+      },
+      {
+        path: routes.APP_DEPLOY_RESUME_PATH,
+        element: <AppDeployResumePage />,
+      },
+      {
+        path: routes.APP_DEPLOY_GET_STARTED_PATH,
+        element: <AppDeployGetStartedPage />,
+      },
+      {
+        path: routes.APP_DEPLOY_WITH_GIT_PATH,
+        element: <AppDeployWithGitPage />,
+      },
+      {
+        path: routes.APP_DEPLOY_WITH_GIT_ADD_KEY_PATH,
+        element: (
+          <ElevateRequired>
+            <AppDeployWithGitAddKeyPage />
+          </ElevateRequired>
+        ),
+      },
+      {
+        path: routes.APP_DEPLOY_CONFIGURE_PATH,
+        element: <AppDeployConfigurePage />,
+      },
+      {
+        path: routes.APP_DEPLOY_STATUS_PATH,
+        element: <AppDeployStatusPage />,
       },
     ],
   },
@@ -590,8 +601,8 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.CREATE_PROJECT_PATH,
-    element: <CreateProjectPage />,
+    path: routes.GET_STARTED_PATH,
+    element: <GetStartedPage />,
   },
 
   {

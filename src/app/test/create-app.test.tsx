@@ -12,6 +12,7 @@ import {
   testEnv,
   testUserVerified,
 } from "@app/mocks";
+import { createAppUrl } from "@app/routes";
 import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 import { rest } from "msw";
 
@@ -48,7 +49,7 @@ describe("Create App flow", () => {
       );
 
       const { App, store } = setupAppIntegrationTest({
-        initEntries: [`/create/name?environment_id=${testAccount.id}`],
+        initEntries: [createAppUrl(`environment_id=${testAccount.id}`)],
       });
 
       await waitForBootup(store);

@@ -10,9 +10,9 @@ import {
 import { AppState, DeployApp, DeployService } from "@app/types";
 
 import {
+  appDeployResumeUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
-  createProjectGitAppSetupUrl,
 } from "@app/routes";
 import { useNavigate } from "react-router";
 import { useQuery } from "saga-query/react";
@@ -112,7 +112,7 @@ export function ServicesOverview({
     selectServicesByAppId(s, { appId }),
   );
   const onDeploy = () => {
-    navigate(createProjectGitAppSetupUrl(app.id));
+    navigate(appDeployResumeUrl(app.id));
   };
   useQuery(fetchServicesByAppId({ id: app.id }));
 

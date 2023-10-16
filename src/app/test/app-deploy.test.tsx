@@ -14,10 +14,11 @@ import {
   testSshKey,
   verifiedUserHandlers,
 } from "@app/mocks";
+import { getStartedUrl } from "@app/routes";
 import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 import { deserializeToken } from "@app/token";
 
-describe("Create project flow", () => {
+describe("App deploy flow", () => {
   describe("existing user *without* ssh keys", () => {
     it("should ask user to add SSH keys before proceeding", async () => {
       server.use(
@@ -58,7 +59,7 @@ describe("Create project flow", () => {
         initState: {
           elevatedToken: deserializeToken(testElevatedToken),
         },
-        initEntries: ["/create"],
+        initEntries: [getStartedUrl()],
       });
 
       await waitForBootup(store);
@@ -66,24 +67,37 @@ describe("Create project flow", () => {
       render(<App />);
 
       // deploy code landing page
-      const el = screen.getByRole("link", {
-        name: /Deploy with Git Push/,
+      const el = await screen.findByRole("link", {
+        name: /Get Started/,
       });
-      expect(el.textContent).toMatch(/Deploy with Git Push/);
       // go to next page
       fireEvent.click(el);
 
+      const elEnv = await screen.findByRole("link", {
+        name: /Create a new Environment/,
+      });
+      fireEvent.click(elEnv);
+
       // create environment page
       const nameInput = await screen.findByRole("textbox", { name: "name" });
-      await act(async () => {
-        await userEvent.type(nameInput, "test-project");
-      });
+      await act(() => userEvent.type(nameInput, "test-project"));
 
       const btn = await screen.findByRole("button", {
         name: /Create Environment/,
       });
       // go to next page
       fireEvent.click(btn);
+
+      // create app page
+      await screen.findByText(/test-account/);
+      const appNameInput = await screen.findByRole("textbox", { name: "name" });
+      await act(() => userEvent.type(appNameInput, "test-project"));
+
+      const appBtn = await screen.findByRole("button", {
+        name: /Create App/,
+      });
+      // go to next page
+      fireEvent.click(appBtn);
 
       await screen.findByText(/Paste Public SSH Key/);
       const keyTextArea = await screen.findByLabelText(
@@ -96,6 +110,7 @@ describe("Create project flow", () => {
 
       // push your code page
       await screen.findByText(/Push your code to Aptible/);
+      expect(true).toBe(true);
     });
   });
 
@@ -120,7 +135,7 @@ describe("Create project flow", () => {
         ...verifiedUserHandlers({ role: testRoleOwner }),
       );
       const { App, store } = setupAppIntegrationTest({
-        initEntries: ["/create"],
+        initEntries: [getStartedUrl()],
       });
 
       await waitForBootup(store);
@@ -128,24 +143,37 @@ describe("Create project flow", () => {
       render(<App />);
 
       // deploy code landing page
-      const el = screen.getByRole("link", {
-        name: /Deploy with Git Push/,
+      const el = await screen.findByRole("link", {
+        name: /Get Started/,
       });
-      expect(el.textContent).toMatch(/Deploy with Git Push/);
       // go to next page
       fireEvent.click(el);
 
+      const elEnv = await screen.findByRole("link", {
+        name: /Create a new Environment/,
+      });
+      fireEvent.click(elEnv);
+
       // create environment page
       const nameInput = await screen.findByRole("textbox", { name: "name" });
-      await act(async () => {
-        await userEvent.type(nameInput, "test-project");
-      });
+      await act(() => userEvent.type(nameInput, "test-project"));
 
       const btn = await screen.findByRole("button", {
         name: /Create Environment/,
       });
       // go to next page
       fireEvent.click(btn);
+
+      // create app page
+      await screen.findByText(/test-account/);
+      const appNameInput = await screen.findByRole("textbox", { name: "name" });
+      await act(() => userEvent.type(appNameInput, "test-project"));
+
+      const appBtn = await screen.findByRole("button", {
+        name: /Create App/,
+      });
+      // go to next page
+      fireEvent.click(appBtn);
 
       // push your code page
       await screen.findByText(/Push your code to Aptible/);
