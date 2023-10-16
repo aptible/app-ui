@@ -272,6 +272,7 @@ export interface DeployDatabase extends Provisionable, Timestamps {
   serviceId: string;
   databaseImageId: string;
   initializeFrom: string;
+  portMapping: [number, number][];
 }
 
 export interface DeployDatabaseCredential {

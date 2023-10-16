@@ -81,3 +81,4 @@ export * from "./stack-detail-hids";
 export * from "./app-detail-config";
 export * from "./create-stack";
 export * from "./sso-token-cli";
+export * from "./endpoint-detail-credential";

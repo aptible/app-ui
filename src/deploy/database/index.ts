@@ -59,6 +59,7 @@ export interface DeployDatabaseResponse {
   created_at: string;
   updated_at: string;
   enable_backups: boolean;
+  port_mapping: [number, number][];
   _links: {
     account: LinkResponse;
     service: LinkResponse;
@@ -98,6 +99,7 @@ export const defaultDatabaseResponse = (
     created_at: now,
     updated_at: now,
     enable_backups: true,
+    port_mapping: [],
     _links: {
       account: { href: "" },
       service: { href: "" },
@@ -133,6 +135,7 @@ export const deserializeDeployDatabase = (
     enableBackups: payload.enable_backups,
     type: payload.type,
     status: payload.status,
+    portMapping: payload.port_mapping,
     databaseImageId: extractIdFromLink(links.database_image),
     environmentId: extractIdFromLink(links.account),
     serviceId: extractIdFromLink(links.service),
@@ -162,6 +165,7 @@ export const defaultDeployDatabase = (
     serviceId: "",
     diskId: "",
     initializeFrom: "",
+    portMapping: [],
     ...d,
   };
 };
