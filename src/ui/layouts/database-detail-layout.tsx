@@ -137,7 +137,7 @@ function DatabasePageHeader() {
     { name: "Activity", href: databaseActivityUrl(id) },
     { name: "Backups", href: databaseBackupsUrl(id) },
     { name: "Cluster", href: databaseClusterUrl(id) },
-    { name: "Authenticated URLs", href: databaseCredentialsUrl(id) },
+    { name: "Connection URLs", href: databaseCredentialsUrl(id) },
     { name: "Settings", href: databaseSettingsUrl(id) },
   ] as TabItem[];
 
