@@ -317,7 +317,7 @@ const CodeScanInfo = ({
     </>
   );
 
-  if (codeScan.languages_detected.includes("python")) {
+  if (codeScan.languages_detected?.includes("python")) {
     return (
       <>
         <Banner variant="info">

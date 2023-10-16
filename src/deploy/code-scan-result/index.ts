@@ -9,7 +9,7 @@ export interface DeployCodeScanResponse {
   dockerfile_data?: string;
   procfile_present: boolean;
   procfile_data?: string;
-  languages_detected: string[];
+  languages_detected: string[] | null;
   _links: {
     app: LinkResponse;
     operation: LinkResponse;
