@@ -162,7 +162,7 @@ const CodeScanView = ({ codeScan }: { codeScan: DeployCodeScanResponse }) => {
     <Group>
       <div>
         <div className={tokens.type.h4}>Languages Detected</div>
-        <div>{capitalize(codeScan.languages_detected.join(", "))}</div>
+        <div>{capitalize(codeScan.languages_detected?.join(", ") || "")}</div>
       </div>
 
       <div>

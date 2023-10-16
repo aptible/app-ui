@@ -42,6 +42,7 @@ export const defaultJWTToken = (t: Partial<JwtToken> = {}): JwtToken => {
 };
 
 export function parseJwt(token: string): JwtToken {
+  if (!token) return defaultJWTToken();
   const base64Url = token.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   const jsonPayload = decodeURIComponent(
