@@ -235,7 +235,8 @@ const planSelectors = planSlice.getSelectors(
 const initPlan = defaultPlan();
 const mustPlan = mustSelectEntity(initPlan);
 
-export const selectPlanById = mustPlan(planSelectors.selectById);
+// You probably want to use `selectPlanByActiveId` instead
+const selectPlanById = mustPlan(planSelectors.selectById);
 export const planReducers = createReducerMap(planSlice);
 
 // when there is no active plan that means we should assume
@@ -302,12 +303,8 @@ export const selectFirstActivePlan = createSelector(
 export const fetchPlans = api.get("/plans");
 export const fetchPlanById = api.get<{ id: string }>("/plans/:id");
 
-export const fetchAllActivePlans = api.get<{ organization_id: string }>(
-  "/active_plans",
-);
-
-export const fetchActivePlans = api.get<{ organization_id: string }>(
-  "/active_plans?organization_id=:organization_id",
+export const fetchActivePlans = api.get<{ orgId: string }>(
+  "/active_plans?organization_id=:orgId",
 );
 
 interface UpdateActivePlan {

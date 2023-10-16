@@ -2,7 +2,7 @@ import {
   fetchActivePlans,
   fetchPlans,
   selectFirstActivePlan,
-  selectPlanById,
+  selectPlanByActiveId,
 } from "@app/deploy";
 import { createSupportTicket } from "@app/deploy/support";
 import { selectOrganizationSelectedId } from "@app/organizations";
@@ -81,16 +81,16 @@ export const CreateStackPage = () => {
   const activePlan = useSelector(selectFirstActivePlan);
 
   useQuery(fetchPlans());
-  useQuery(fetchActivePlans({ organization_id: orgId }));
+  useQuery(fetchActivePlans({ orgId }));
 
   const selectedPlan = useSelector((s: AppState) =>
-    selectPlanById(s, { id: activePlan.planId }),
+    selectPlanByActiveId(s, { id: activePlan.planId }),
   );
   // must have a non-starter active plan or,
   // an empty active plan (empty active plan means legacy enterprise)
-  const canRequestStack =
-    ["growth", "scale", "enterprise"].includes(selectedPlan.name) ||
-    activePlan.id === "";
+  const canRequestStack = ["growth", "scale", "enterprise"].includes(
+    selectedPlan.name,
+  );
 
   const [stackName, setStackName] = useState("");
   const [region, setRegion] = useState("none");

@@ -25,9 +25,7 @@ export const PlansPage = () => {
   const dispatch = useDispatch();
   const org = useSelector(selectOrganizationSelected);
 
-  const activePlanLoader = useQuery(
-    fetchActivePlans({ organization_id: org.id }),
-  );
+  const activePlanLoader = useQuery(fetchActivePlans({ orgId: org.id }));
   const activePlan = useSelector(selectFirstActivePlan);
 
   const planLoader = useQuery(fetchPlans());

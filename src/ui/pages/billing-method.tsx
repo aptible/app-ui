@@ -5,8 +5,9 @@ import {
 } from "@app/billing";
 import {
   fetchActivePlans,
+  fetchPlans,
   selectFirstActivePlan,
-  selectPlanById,
+  selectPlanByActiveId,
 } from "@app/deploy";
 import { selectEnv } from "@app/env";
 import { selectOrganizationSelected } from "@app/organizations";
@@ -205,10 +206,11 @@ const CreditCardForm = () => {
 
 export const BillingMethodPage = () => {
   const org = useSelector(selectOrganizationSelected);
-  useQuery(fetchActivePlans({ organization_id: org.id }));
+  useQuery(fetchActivePlans({ orgId: org.id }));
+  useQuery(fetchPlans());
   const activePlan = useSelector(selectFirstActivePlan);
   const plan = useSelector((s: AppState) =>
-    selectPlanById(s, { id: activePlan.planId }),
+    selectPlanByActiveId(s, { id: activePlan.planId }),
   );
 
   return (
