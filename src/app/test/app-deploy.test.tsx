@@ -73,11 +73,6 @@ describe("App deploy flow", () => {
       // go to next page
       fireEvent.click(el);
 
-      const elEnv = await screen.findByRole("link", {
-        name: /Create a new Environment/,
-      });
-      fireEvent.click(elEnv);
-
       // create environment page
       const nameInput = await screen.findByRole("textbox", { name: "name" });
       await act(() => userEvent.type(nameInput, "test-project"));
@@ -148,11 +143,6 @@ describe("App deploy flow", () => {
       });
       // go to next page
       fireEvent.click(el);
-
-      const elEnv = await screen.findByRole("link", {
-        name: /Create a new Environment/,
-      });
-      fireEvent.click(elEnv);
 
       // create environment page
       const nameInput = await screen.findByRole("textbox", { name: "name" });
