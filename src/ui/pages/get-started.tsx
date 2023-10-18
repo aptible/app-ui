@@ -3,7 +3,7 @@ import {
   selectPreDeploySurveyAnswered,
   setFeedback,
 } from "@app/feedback";
-import { deployUrl } from "@app/routes";
+import { createEnvUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 import { tunaEvent } from "@app/tuna";
 import { SyntheticEvent, useState } from "react";
@@ -158,7 +158,7 @@ export const GetStartedPage = () => {
 
           <Box className="w-full mx-auto">
             <Group>
-              <ButtonLink to={deployUrl()} className="font-bold">
+              <ButtonLink to={createEnvUrl()} className="font-bold">
                 Get Started
                 <IconArrowRight variant="sm" className="ml-2" />
               </ButtonLink>
