@@ -95,7 +95,7 @@ describe("Selecting an Organization", () => {
     const next = await screen.findByRole("button", { name: /^wow org/i });
     fireEvent.click(next);
 
-    const stacks = await screen.findByText(/Stacks/);
+    const stacks = await screen.findByRole("link", { name: /Stacks/ });
     fireEvent.click(stacks);
 
     expect(screen.queryByText(/Wow Org/)).toBeInTheDocument();
