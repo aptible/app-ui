@@ -184,7 +184,7 @@ export const environmentCreateCertUrl = (id: string) =>
   `/environments/${id}/certificates/create`;
 
 export const environmentCreateAppUrl = (id: string) =>
-  `/create/name?environment_id=${id}`;
+  `/create/app?environment_id=${id}`;
 export const environmentCreateDbUrl = (id: string) =>
   `/create/db?environment_id=${id}`;
 
