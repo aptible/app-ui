@@ -5,7 +5,7 @@ import { selectIsAuthWithSso } from "@app/token";
 import { selectCanImpersonate } from "@app/users";
 import { useSelector } from "react-redux";
 import { useCurrentUser } from "../hooks";
-import { IconKey, IconLogout, IconUserCircle } from "./icons";
+import { IconKey, IconLogout, IconSettings } from "./icons";
 import { IconAlertCircle } from "./icons";
 import { LinkNav } from "./link";
 import { Loading } from "./loading";
@@ -26,7 +26,7 @@ export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
     <div className="w-full mb-2">
       <LinkNav
         to={`${legacyUrl}/organizations/${orgId}/members`}
-        icon={<IconUserCircle />}
+        icon={<IconSettings />}
         name="Settings"
         hideName={hideName}
       />
