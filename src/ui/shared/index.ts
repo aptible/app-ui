@@ -56,3 +56,6 @@ export * from "./code";
 export * from "./group";
 export * from "./copy";
 export * from "./cert-selector";
+export * from "./pill";
+export * from "./onboarding-link";
+export * from "./resource-group-box";

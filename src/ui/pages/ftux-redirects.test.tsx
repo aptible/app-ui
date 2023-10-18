@@ -1,5 +1,3 @@
-import { render, screen } from "@testing-library/react";
-
 import { defaultAppResponse, defaultOperationResponse } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import {
@@ -10,8 +8,9 @@ import {
   testEnv,
   verifiedUserHandlers,
 } from "@app/mocks";
-import { createProjectGitAppSetupUrl } from "@app/routes";
+import { appDeployResumeUrl } from "@app/routes";
 import { setupAppIntegrationTest } from "@app/test";
+import { render, screen } from "@testing-library/react";
 import { rest } from "msw";
 
 describe("CreateProjectFromAppSetupPage", () => {
@@ -38,7 +37,7 @@ describe("CreateProjectFromAppSetupPage", () => {
       );
 
       const { App } = setupAppIntegrationTest({
-        initEntries: [createProjectGitAppSetupUrl(`${app.id}`)],
+        initEntries: [appDeployResumeUrl(`${app.id}`)],
       });
 
       render(<App />);
@@ -99,7 +98,7 @@ describe("CreateProjectFromAppSetupPage", () => {
       );
 
       const { App } = setupAppIntegrationTest({
-        initEntries: [createProjectGitAppSetupUrl(`${app.id}`)],
+        initEntries: [appDeployResumeUrl(`${app.id}`)],
       });
 
       render(<App />);
@@ -158,7 +157,7 @@ describe("CreateProjectFromAppSetupPage", () => {
       );
 
       const { App } = setupAppIntegrationTest({
-        initEntries: [createProjectGitAppSetupUrl(`${app.id}`)],
+        initEntries: [appDeployResumeUrl(`${app.id}`)],
       });
 
       render(<App />);

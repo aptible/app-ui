@@ -8,7 +8,7 @@ import {
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
   acceptInvitationWithCodeUrl,
-  createProjectGitUrl,
+  deployUrl,
   loginUrl,
   verifyEmailRequestUrl,
 } from "@app/routes";
@@ -94,7 +94,7 @@ export const SignupPage = () => {
       // if the api returns with a user.verified = true, skip email request page
       // this can happen in development when ENV['DISABLE_EMAIL_VERIFICATION']=1
       if (meta.verified) {
-        navigate(redirectPath || createProjectGitUrl());
+        navigate(redirectPath || deployUrl());
         dispatch(resetRedirectPath());
         return;
       }

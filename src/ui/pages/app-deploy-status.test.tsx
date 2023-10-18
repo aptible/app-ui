@@ -16,10 +16,7 @@ import {
   testServiceRails,
 } from "@app/mocks";
 import { deployProject } from "@app/projects";
-import {
-  CREATE_PROJECT_GIT_STATUS_PATH,
-  createProjectGitStatusUrl,
-} from "@app/routes";
+import { APP_DEPLOY_STATUS_PATH, appDeployStatusUrl } from "@app/routes";
 import { setupIntegrationTest, waitForBootup } from "@app/test";
 import {
   fireEvent,
@@ -28,9 +25,9 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { rest } from "msw";
-import { CreateProjectGitStatusPage } from "./create-project-git";
+import { AppDeployStatusPage } from "./app-deploy-status";
 
-describe("CreateProjectGitStatusPage", () => {
+describe("AppDeployStatusPage", () => {
   describe("when app deployed and no vhost provisioned yet", () => {
     it("should let the user create a vhost", async () => {
       const handlers = stacksWithResources({
@@ -40,15 +37,15 @@ describe("CreateProjectGitStatusPage", () => {
       server.use(...handlers);
 
       const { store, TestProvider } = setupIntegrationTest({
-        path: CREATE_PROJECT_GIT_STATUS_PATH,
-        initEntries: [createProjectGitStatusUrl(`${testApp.id}`)],
+        path: APP_DEPLOY_STATUS_PATH,
+        initEntries: [appDeployStatusUrl(`${testApp.id}`)],
       });
 
       await waitForBootup(store);
 
       render(
         <TestProvider>
-          <CreateProjectGitStatusPage />
+          <AppDeployStatusPage />
         </TestProvider>,
       );
 
@@ -97,15 +94,15 @@ describe("CreateProjectGitStatusPage", () => {
       );
 
       const { store, TestProvider } = setupIntegrationTest({
-        path: CREATE_PROJECT_GIT_STATUS_PATH,
-        initEntries: [createProjectGitStatusUrl(`${testApp.id}`)],
+        path: APP_DEPLOY_STATUS_PATH,
+        initEntries: [appDeployStatusUrl(`${testApp.id}`)],
       });
 
       await waitForBootup(store);
 
       render(
         <TestProvider>
-          <CreateProjectGitStatusPage />
+          <AppDeployStatusPage />
         </TestProvider>,
       );
 
@@ -167,8 +164,8 @@ describe("CreateProjectGitStatusPage", () => {
       server.use(...handlers);
 
       const { TestProvider, store } = setupIntegrationTest({
-        path: CREATE_PROJECT_GIT_STATUS_PATH,
-        initEntries: [createProjectGitStatusUrl(`${app.id}`)],
+        path: APP_DEPLOY_STATUS_PATH,
+        initEntries: [appDeployStatusUrl(`${app.id}`)],
         initState: {
           "@@saga-query/loaders": {
             [`${deployProject}`]: defaultLoadingItem({
@@ -183,7 +180,7 @@ describe("CreateProjectGitStatusPage", () => {
 
       render(
         <TestProvider>
-          <CreateProjectGitStatusPage />
+          <AppDeployStatusPage />
         </TestProvider>,
       );
 

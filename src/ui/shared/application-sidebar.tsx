@@ -1,16 +1,11 @@
-import { useLayoutEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
-
 import { selectEnv } from "@app/env";
 import { selectNav, setCollapsed } from "@app/nav";
 import {
   activityUrl,
   appsUrl,
   billingMethodUrl,
-  createProjectGitUrl,
   databaseUrl,
+  deployUrl,
   deploymentsUrl,
   endpointsUrl,
   environmentsUrl,
@@ -19,6 +14,14 @@ import {
   stacksUrl,
   supportUrl,
 } from "@app/routes";
+import { useLayoutEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import { useTrialNotice } from "../hooks/use-trial-notice";
+import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
+import { Banner } from "./banner";
+import { ButtonIcon } from "./button";
 import {
   IconBox,
   IconCloud,
@@ -32,11 +35,6 @@ import {
   IconSearch,
   IconShield,
 } from "./icons";
-
-import { useTrialNotice } from "../hooks/use-trial-notice";
-import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
-import { Banner } from "./banner";
-import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import { OrgPicker } from "./org-picker";
 import { UserMenu } from "./user-menu";
@@ -141,7 +139,7 @@ export const ApplicationSidebar = () => {
         <div className="ml-0">
           <ButtonIcon
             className="w-full mb-4"
-            onClick={() => navigate(createProjectGitUrl())}
+            onClick={() => navigate(deployUrl())}
             icon={
               <IconPlusCircle
                 style={

@@ -5,7 +5,7 @@ import {
   hasDeployOperation,
   selectLatestDeployOp,
 } from "@app/deploy";
-import { createProjectGitAppSetupUrl } from "@app/routes";
+import { appDeployResumeUrl } from "@app/routes";
 import { AppState, DeployApp } from "@app/types";
 
 import { useSelector } from "react-redux";
@@ -21,10 +21,7 @@ export const OnboardingLink = ({ app }: { app: DeployApp }) => {
   }
 
   return (
-    <Link
-      to={createProjectGitAppSetupUrl(app.id)}
-      className="flex items-center"
-    >
+    <Link to={appDeployResumeUrl(app.id)} className="flex items-center">
       {hasDeployOperation(deployOp) ? (
         <>
           View Status <IconArrowRight variant="sm" color="#4361FF" />

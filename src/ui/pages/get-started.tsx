@@ -1,15 +1,13 @@
-import { SyntheticEvent, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
 import {
   selectFeedback,
   selectPreDeploySurveyAnswered,
   setFeedback,
 } from "@app/feedback";
-import { createProjectGitUrl } from "@app/routes";
+import { createEnvUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
-
 import { tunaEvent } from "@app/tuna";
+import { SyntheticEvent, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { AppSidebarLayout, HeroBgLayout } from "../layouts";
 import {
   Box,
@@ -17,6 +15,7 @@ import {
   ButtonIcon,
   ButtonLink,
   CreateProjectFooter,
+  Group,
   IconArrowRight,
   IconCheck,
   IconThumbsUp,
@@ -138,37 +137,45 @@ export const FreeFormSurvey = () => {
   );
 };
 
-export const CreateProjectPage = () => {
+export const GetStartedPage = () => {
   const preDeploySurveyAnswered = useSelector(selectPreDeploySurveyAnswered);
   const isUserAuthenticated = useSelector(selectIsUserAuthenticated);
   const Wrapper = isUserAuthenticated ? AppSidebarLayout : HeroBgLayout;
 
   return (
     <Wrapper>
-      <div className="text-center mt-10">
-        <h1 className={tokens.type.h1}>Deploy your App</h1>
-        <p className="my-6 text-gray-600 w-full max-w-[700px] mx-auto">
-          Aptible is the{" "}
-          <span className="text-black font-bold">No Infrastructure</span>{" "}
-          Platform as a Service that startups use to deploy in seconds, scale
-          infinitely, and forget about infrastructure.
-        </p>
-      </div>
-      <Box className="w-full max-w-[700px] mx-auto">
-        <ButtonLink to={createProjectGitUrl()} className="font-bold">
-          Deploy with Git Push
-          <IconArrowRight className="ml-2" />
-        </ButtonLink>
-        {!preDeploySurveyAnswered && (
-          <>
-            <hr className="h-px mt-6 mb-4 bg-gray-200 border-0 dark:bg-gray-700" />
-            <FreeFormSurvey />
-          </>
-        )}
-      </Box>
+      <div className="flex flex-col items-center">
+        <div className="max-w-[600px]">
+          <div className="text-center mt-10">
+            <h1 className={tokens.type.h1}>Deploy your App</h1>
+            <p className="my-6 text-gray-600 w-full mx-auto">
+              Aptible is the{" "}
+              <span className="text-black font-bold">No Infrastructure</span>{" "}
+              Platform as a Service that startups use to deploy in seconds,
+              scale infinitely, and forget about infrastructure.
+            </p>
+          </div>
 
-      <div className="mt-6 w-full max-w-[700px] mx-auto">
-        <CreateProjectFooter />
+          <Box className="w-full mx-auto">
+            <Group>
+              <ButtonLink to={createEnvUrl()} className="font-bold">
+                Get Started
+                <IconArrowRight variant="sm" className="ml-2" />
+              </ButtonLink>
+            </Group>
+
+            {!preDeploySurveyAnswered && (
+              <>
+                <hr className="h-px mt-6 mb-4 bg-gray-200 border-0 dark:bg-gray-700" />
+                <FreeFormSurvey />
+              </>
+            )}
+          </Box>
+
+          <div className="mt-6 w-full mx-auto">
+            <CreateProjectFooter />
+          </div>
+        </div>
       </div>
       <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </Wrapper>

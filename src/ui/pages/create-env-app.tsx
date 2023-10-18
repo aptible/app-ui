@@ -1,42 +1,46 @@
+import {
+  createDeployApp,
+  createDeployEnvironment,
+  fetchEnvironmentById,
+  selectDefaultStack,
+  selectEnvironmentById,
+  selectStackById,
+} from "@app/deploy";
+import { selectOrganizationSelected } from "@app/organizations";
+import {
+  appDeployGetStartedUrl,
+  createAppUrl,
+  createEnvUrl,
+  createStackUrl,
+  environmentDetailUrl,
+  stackDetailUrl,
+} from "@app/routes";
+import { AppState } from "@app/types";
+import { handleRegexExplainer, handleValidator } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 import { useApi, useLoaderSuccess, useQuery } from "saga-query/react";
-
-import {
-  createDeployApp,
-  fetchEnvironmentById,
-  fetchStacks,
-  selectDefaultStack,
-  selectEnvironmentById,
-  selectStackById,
-  stackToOption,
-} from "@app/deploy";
-import { selectOrganizationSelected } from "@app/organizations";
-import { createProject } from "@app/projects";
-import {
-  createProjectGitPushUrl,
-  environmentDetailUrl,
-  stackDetailEnvsUrl,
-} from "@app/routes";
-import { AppState } from "@app/types";
-
-import { handleRegexExplainer, handleValidator } from "@app/validator";
 import { AppSidebarLayout } from "../layouts";
 import {
   BannerMessages,
   Box,
+  Button,
   ButtonCreate,
   ButtonOwner,
+  EnvironmentSelect,
   FormGroup,
+  FormGroupFeedback,
   Input,
   ProgressProject,
   StackSelect,
   tokens,
 } from "../shared";
 
-const CreateAppPage = ({ envId }: { envId: string }) => {
+export const CreateAppPage = () => {
+  const [params] = useSearchParams();
+  const envId = params.get("environment_id") || "";
   useQuery(fetchEnvironmentById({ id: envId }));
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
@@ -62,11 +66,11 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
   const navigate = useNavigate();
 
   useLoaderSuccess(thunk, () => {
-    navigate(createProjectGitPushUrl(thunk.meta.appId));
+    navigate(appDeployGetStartedUrl(thunk.meta.appId));
   });
 
   return (
-    <div>
+    <AppSidebarLayout>
       <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Name your App</h1>
       </div>
@@ -85,7 +89,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  stack
+                  Stack
                 </a>
               </p>
             }
@@ -94,7 +98,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
             className="mb-4"
           >
             <div id="stack">
-              <Link to={stackDetailEnvsUrl(stack.id)} target="_blank">
+              <Link to={stackDetailUrl(stack.id)} target="_blank">
                 {stack.name}
               </Link>
             </div>
@@ -110,7 +114,7 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  environment
+                  Environment
                 </a>
               </p>
             }
@@ -154,25 +158,32 @@ const CreateAppPage = ({ envId }: { envId: string }) => {
         </form>
       </Box>
       <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
-    </div>
+    </AppSidebarLayout>
   );
 };
 
-const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
+export const CreateEnvironmentPage = () => {
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const queryStackId = params.get("stack_id") || "";
   const org = useSelector(selectOrganizationSelected);
-  const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: stackId }),
-  );
-  const [stackValue, setStackValue] = useState(stackToOption(stack));
-  useEffect(() => {
-    setStackValue(stackToOption(stack));
-  }, [stackId, stack.id]);
+  const defaultStack = useSelector(selectDefaultStack);
 
+  const [stackId, setStackId] = useState(queryStackId || defaultStack.id);
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
   const thunk = useApi(
-    createProject({ name, stackId: stackValue.value, orgId: org.id }),
+    createDeployEnvironment({ name, stackId, orgId: org.id }),
   );
+
+  useEffect(() => {
+    setStackId(queryStackId);
+  }, [queryStackId]);
+  useEffect(() => {
+    if (queryStackId) return;
+    setStackId(defaultStack.id);
+  }, [defaultStack.id]);
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -185,51 +196,43 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
 
     thunk.trigger();
   };
-  const navigate = useNavigate();
 
   useLoaderSuccess(thunk, () => {
-    navigate(createProjectGitPushUrl(thunk.meta.appId));
+    navigate(createAppUrl(`environment_id=${thunk.meta.id}`));
   });
 
   return (
-    <div>
+    <AppSidebarLayout>
       <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Name your Environment</h1>
-        <p className="mt-4 mb-2 text-gray-600">
+        <p className="mt-4 mb-8 text-gray-600">
           An Aptible environment contains your app along with any required
           databases.
         </p>
       </div>
 
-      <ProgressProject cur={1} />
-
       <Box className="w-full max-w-[700px] mx-auto">
         <form onSubmit={onSubmit}>
+          <BannerMessages {...thunk} className="my-2" />
+
           <FormGroup
             label="Stack"
-            description={
-              <p>
-                The project will be created inside this{" "}
-                <a
-                  href="https://www.aptible.com/docs/stacks"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  stack
-                </a>
-              </p>
-            }
             htmlFor="stack"
             feedbackVariant="info"
             className="mb-4"
           >
             <StackSelect
-              value={stackValue.value}
-              onSelect={(stack) => {
-                setStackValue(stack);
+              value={stackId}
+              onSelect={(opt) => {
+                setStackId(opt.value);
               }}
             />
+            <FormGroupFeedback>
+              Need a new dedicated stack?{" "}
+              <Link to={createStackUrl()}>Request a new stack.</Link>
+            </FormGroupFeedback>
           </FormGroup>
+
           <FormGroup
             label="Environment Name"
             description={handleRegexExplainer}
@@ -246,8 +249,6 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
             />
           </FormGroup>
 
-          <BannerMessages {...thunk} className="my-2" />
-
           <ButtonOwner
             className="mt-4 w-full"
             type="submit"
@@ -258,31 +259,91 @@ const CreateEnvironmentPage = ({ stackId }: { stackId: string }) => {
           </ButtonOwner>
         </form>
       </Box>
+
       <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
-    </div>
+    </AppSidebarLayout>
   );
 };
 
-export const CreateProjectNamePage = () => {
+export const EnvSelectorPage = () => {
   const [params] = useSearchParams();
   const queryStackId = params.get("stack_id") || "";
-  const queryEnvId = params.get("environment_id") || "";
   const defaultStack = useSelector(selectDefaultStack);
-  const stackId = queryStackId || defaultStack.id;
+  const [stackId, setStackId] = useState(queryStackId || defaultStack.id);
+  const [envId, setEnvId] = useState("");
+  const navigate = useNavigate();
 
-  useQuery(fetchStacks());
+  useEffect(() => {
+    setStackId(queryStackId);
+  }, [queryStackId]);
+  useEffect(() => {
+    if (queryStackId) return;
+    setStackId(defaultStack.id);
+  }, [defaultStack.id]);
+  useEffect(() => {
+    // when we change the stack we need to reset the env selector
+    setEnvId("");
+  }, [stackId]);
 
-  if (queryEnvId === "") {
-    return (
-      <AppSidebarLayout>
-        <CreateEnvironmentPage stackId={stackId} />
-      </AppSidebarLayout>
-    );
-  }
+  const onSubmit = () => {
+    navigate(createAppUrl(`stack_id=${stackId}&environment_id=${envId}`));
+  };
 
   return (
     <AppSidebarLayout>
-      <CreateAppPage envId={queryEnvId} />
+      <div className="text-center mt-10">
+        <h1 className={tokens.type.h1}>Choose your Environment</h1>
+        <p className="mt-4 mb-8 text-gray-600">
+          An Aptible environment is a container for your Apps and Databases.
+        </p>
+      </div>
+
+      <Box className="w-full max-w-[700px] mx-auto">
+        <form onSubmit={onSubmit}>
+          <FormGroup
+            label="Stack"
+            htmlFor="stack"
+            feedbackVariant="info"
+            className="mb-4"
+          >
+            <StackSelect
+              value={stackId}
+              onSelect={(opt) => {
+                setStackId(opt.value);
+              }}
+            />
+            <FormGroupFeedback>
+              Need a new dedicated stack?{" "}
+              <Link to={createStackUrl()}>Request Stack</Link>
+            </FormGroupFeedback>
+          </FormGroup>
+
+          <FormGroup label="Environment" htmlFor="env-select">
+            <EnvironmentSelect
+              onSelect={(opt) => {
+                setEnvId(opt.value);
+              }}
+              value={envId}
+              stackId={stackId}
+              ariaLabel="env-select"
+            />
+            <FormGroupFeedback>
+              Need a new environment?{" "}
+              <Link to={createEnvUrl()}>Create Environment</Link>
+            </FormGroupFeedback>
+          </FormGroup>
+
+          <Button
+            className="mt-4 w-full"
+            type="submit"
+            disabled={!stackId || !envId}
+          >
+            Next
+          </Button>
+        </form>
+      </Box>
+
+      <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </AppSidebarLayout>
   );
 };

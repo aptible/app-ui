@@ -171,7 +171,6 @@ export const testAccount = defaultEnvResponse({
   organization_id: testOrg.id,
   _links: {
     stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-    environment: defaultHalHref(),
   },
   _embedded: {
     permissions: [
@@ -195,7 +194,6 @@ export const testAccountAdmin = defaultEnvResponse({
   organization_id: testOrg.id,
   _links: {
     stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-    environment: defaultHalHref(),
   },
   _embedded: {
     permissions: [
@@ -220,7 +218,6 @@ export const testDestroyAccount = defaultEnvResponse({
   organization_id: testOrg.id,
   _links: {
     stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-    environment: defaultHalHref(),
   },
   _embedded: {
     permissions: [
@@ -454,7 +451,6 @@ export const testEnvExpress = defaultEnvResponse({
   onboarding_status: "initiated",
   _links: {
     stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-    environment: defaultHalHref(),
   },
 });
 export const testAppDeployedId = createId();
