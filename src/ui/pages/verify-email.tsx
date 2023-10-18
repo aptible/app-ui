@@ -1,7 +1,7 @@
 import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";
 import { useLoader } from "@app/fx";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
-import { deployUrl, homeUrl, loginUrl } from "@app/routes";
+import { getStartedUrl, homeUrl, loginUrl } from "@app/routes";
 import { selectJwtToken } from "@app/token";
 import { selectCurrentUser } from "@app/users";
 import { useEffect } from "react";
@@ -51,7 +51,7 @@ export const VerifyEmailPage = () => {
   // and fetching users (where we determine if the user is verified).
   useEffect(() => {
     if (verifyEmailLoader.status === "success" && user.verified) {
-      navigate(redirectPath || deployUrl());
+      navigate(redirectPath || getStartedUrl());
       dispatch(resetRedirectPath());
     }
   }, [verifyEmailLoader.status]);

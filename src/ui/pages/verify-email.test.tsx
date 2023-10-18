@@ -44,7 +44,7 @@ describe("Verify email page", () => {
 
       await screen.findByRole("heading", {
         level: 1,
-        name: /Choose your Environment/,
+        name: /Deploy your App/,
       });
     });
   });
