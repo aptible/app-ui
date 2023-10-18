@@ -1,5 +1,3 @@
-import { RouteObject, createBrowserRouter } from "react-router-dom";
-
 import * as routes from "@app/routes";
 import {
   ActivityPage,
@@ -107,13 +105,16 @@ import {
   VerifyEmailPage,
   VerifyEmailRequired,
 } from "@app/ui";
+import { AppDetailServiceMetricsPage } from "@app/ui/pages/app-detail-service-metrics";
 import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
 import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
 import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
+import { DatabaseMetricsPage } from "@app/ui/pages/db-detail-metrics";
 import { DeployPage } from "@app/ui/pages/deploy";
 import { EnvironmentDetailPage } from "@app/ui/pages/environment-detail";
 import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
 import { StackDetailPage } from "@app/ui/pages/stack-detail";
+import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
 
 const trackingPatch = (appRoute: RouteObject) => ({
@@ -239,8 +240,7 @@ export const appRoutes: RouteObject[] = [
                 children: [
                   {
                     path: routes.APP_SERVICE_METRICS_PATH,
-                    lazy: () =>
-                      import("@app/ui/pages/app-detail-service-metrics"),
+                    element: <AppDetailServiceMetricsPage />,
                   },
                   {
                     path: routes.APP_SERVICE_SCALE_PATH,
@@ -316,7 +316,7 @@ export const appRoutes: RouteObject[] = [
               },
               {
                 path: routes.DATABASE_METRICS_PATH,
-                lazy: () => import("@app/ui/pages/db-detail-metrics"),
+                element: <DatabaseMetricsPage />,
               },
               {
                 path: routes.DATABASE_CLUSTER_PATH,
