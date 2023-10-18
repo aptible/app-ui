@@ -97,7 +97,7 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
           htmlFor="envs"
           feedbackVariant={errors.length > 0 ? "danger" : "info"}
           feedbackMessage={errors.map((e) => e.message).join(". ")}
-          description="Add any additional required variables, such as API keys, KNOWN_HOSTS setting, etc. Each line is a separate variable in format: ENV_VAR=VALUE."
+          description="Add any additional required variables, such as API keys, KNOWN_HOSTS setting, etc. Each line is a separate variable in format: ENV_VAR=VALUE. Multiline values are supported but must be wrapped in double-quotes."
         >
           <textarea
             id="envs"

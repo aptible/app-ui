@@ -60,26 +60,82 @@ export interface ValidatorError {
   message: string;
 }
 
-const trim = (t: string) => t.trim();
 export const parseText = <
   M extends { [key: string]: unknown } = { [key: string]: unknown },
 >(
   text: string,
   meta: () => M,
-): TextVal<M>[] =>
-  text
-    .split("\n")
-    .map(trim)
-    .map((t) => {
-      // sometimes the value can contain an "=" so we need to only
-      // split the first "=", (e.g. SECRET_KEY=1234=)
-      // https://stackoverflow.com/a/54708145
-      const [key, ...values] = t.split("=").map(trim);
-      const value = Array.isArray(values) ? values.join("=") : values;
-      return {
-        key,
-        value,
+): TextVal<M>[] => {
+  const items: TextVal<M>[] = [];
+
+  let key = "";
+  let value = "";
+  // switch to place characters into the key or value "bucket"
+  let collectVal = false;
+  // helps us figure out if we are at the start or end of a multiline value
+  let foundQuote = false;
+  // submit and reset fn
+  const submit = () => {
+    if (key !== "") {
+      items.push({
+        key: key.trim(),
+        value: value.trim(),
         meta: meta(),
-      };
-    })
-    .filter((t) => !!t.key);
+      });
+    }
+    key = "";
+    value = "";
+    collectVal = false;
+    foundQuote = false;
+  };
+
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+
+    if (char === "\n") {
+      // since we found a quote we want to include the newline in the value
+      if (foundQuote) {
+        value += char;
+      } else {
+        // if find a newline typically that means the value is done
+        submit();
+      }
+      continue;
+    }
+
+    if (collectVal) {
+      // value has a double-quote which might be multiline
+      if (char === '"') {
+        // closing double-quote
+        if (foundQuote) {
+          value += char;
+          submit();
+          continue;
+        } else {
+          // we found a double-quote so record it so we can detect
+          // the closing quote
+          foundQuote = true;
+        }
+      }
+    } else {
+      // we found an equal char so that marks the end of the key string
+      // and the start of the value string
+      if (char === "=") {
+        collectVal = true;
+        continue;
+      }
+    }
+
+    // which bucket do we put the char into?
+    if (collectVal) {
+      value += char;
+    } else {
+      key += char;
+    }
+  }
+
+  // pick up the leftovers
+  submit();
+
+  return items;
+};
