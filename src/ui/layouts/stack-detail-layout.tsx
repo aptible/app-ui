@@ -51,7 +51,7 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
           {stack.memoryLimits ? "Enabled" : "Disabled"}
         </DetailInfoItem>
         <DetailInfoItem title="Tenancy">{capitalize(stackType)}</DetailInfoItem>
-        <DetailInfoItem>
+        <DetailInfoItem title="">
           <Tooltip text="When sharing outbound IP addresses with vendors/partners for whitelisting, make sure to add all the provided IP addresses to the whitelist.">
             <IconInfo
               className="inline-block mb-1 mr-1 opacity-50 hover:opacity-100"
