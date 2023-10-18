@@ -8,6 +8,7 @@ import { tokens } from "./tokens";
 
 const descriptionTextForPlan = (planName: PlanName): string =>
   ({
+    none: "",
     starter: "Deploy your app and get to market fast",
     growth: "Gain user traction and deliver more functionality",
     scale: "Run mission-critical apps at scale without worry",

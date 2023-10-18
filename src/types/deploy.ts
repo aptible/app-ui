@@ -376,7 +376,7 @@ export interface DeployPrereleaseCommand extends Timestamps {
   index: number;
 }
 
-export type PlanName = "starter" | "growth" | "scale" | "enterprise";
+export type PlanName = "starter" | "growth" | "scale" | "enterprise" | "none";
 export interface DeployPlan extends Timestamps {
   id: string;
   automatedBackupLimitPerDb: number;

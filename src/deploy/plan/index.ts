@@ -1,4 +1,5 @@
 import { api } from "@app/api";
+import { selectHasPaymentMethod } from "@app/billing";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -80,7 +81,7 @@ export const defaultPlan = (c: Partial<DeployPlan> = {}): DeployPlan => {
     includedDiskGb: 0,
     includedVhosts: 0,
     manualBackupLimitPerDb: 0,
-    name: "starter",
+    name: "none",
     updatedAt: now,
     vhostLimit: 0,
     ...c,
@@ -153,7 +154,7 @@ export const defaultActivePlan = (
   return {
     id: "",
     automatedBackupLimitPerDb: 0,
-    availablePlans: [],
+    availablePlans: ["starter", "growth", "scale"],
     complianceDashboardAccess: false,
     containerMemoryLimit: 0,
     costCents: 0,
@@ -244,12 +245,20 @@ export const planReducers = createReducerMap(planSlice);
 export const selectPlanByActiveId = createSelector(
   planSelectors.selectTableAsList,
   selectPlanById,
-  (plans, planById) => {
+  selectHasPaymentMethod,
+  (plans, planById, hasPaymentMethod) => {
     if (planById.id !== "") {
       return planById;
     }
 
-    return plans.find((p) => p.name === "enterprise") || initPlan;
+    if (!hasPaymentMethod) {
+      return initPlan;
+    }
+
+    // if user has payment method and no active plan that means they are
+    // legacy enterprise
+    const enterprise = plans.find((p) => p.name === "enterprise");
+    return enterprise || initPlan;
   },
 );
 
@@ -257,6 +266,7 @@ export const selectPlansForView = createSelector(
   planSelectors.selectTableAsList,
   (plans) => {
     const init: Record<PlanName, DeployPlan> = {
+      none: defaultPlan({ name: "none" }),
       starter: defaultPlan({ name: "starter" }),
       growth: defaultPlan({ name: "growth" }),
       scale: defaultPlan({ name: "scale" }),
