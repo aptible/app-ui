@@ -205,7 +205,7 @@ export const CreateEnvironmentPage = () => {
     <AppSidebarLayout>
       <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Name your Environment</h1>
-        <p className="mt-4 mb-2 text-gray-600">
+        <p className="mt-4 mb-8 text-gray-600">
           An Aptible environment contains your app along with any required
           databases.
         </p>
@@ -292,8 +292,8 @@ export const EnvSelectorPage = () => {
   return (
     <AppSidebarLayout>
       <div className="text-center mt-10">
-        <h1 className={tokens.type.h1}>Select your Environment</h1>
-        <p className="mt-4 mb-2 text-gray-600">
+        <h1 className={tokens.type.h1}>Choose your Environment</h1>
+        <p className="mt-4 mb-8 text-gray-600">
           An Aptible environment is a container for your Apps and Databases.
         </p>
       </div>
@@ -314,14 +314,11 @@ export const EnvSelectorPage = () => {
             />
             <FormGroupFeedback>
               Need a new dedicated stack?{" "}
-              <Link to={createStackUrl()}>Request a new stack.</Link>
+              <Link to={createStackUrl()}>Request Stack</Link>
             </FormGroupFeedback>
           </FormGroup>
 
-          <FormGroup
-            label="Select an Existing Environment"
-            htmlFor="env-select"
-          >
+          <FormGroup label="Environment" htmlFor="env-select">
             <EnvironmentSelect
               onSelect={(opt) => {
                 setEnvId(opt.value);
@@ -332,7 +329,7 @@ export const EnvSelectorPage = () => {
             />
             <FormGroupFeedback>
               Need a new environment?{" "}
-              <Link to={createEnvUrl()}>Create a new Environment.</Link>
+              <Link to={createEnvUrl()}>Create Environment</Link>
             </FormGroupFeedback>
           </FormGroup>
 

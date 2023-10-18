@@ -5,14 +5,11 @@ import {
   selectLatestDeployOp,
 } from "@app/deploy";
 import { useLoader } from "@app/fx";
-import { deployUrl } from "@app/routes";
 import { AppState, DeployApp } from "@app/types";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import {
   Button,
-  ButtonLink,
-  IconPlusCircle,
   Loading,
   OnboardingLink,
   ResourceGroupBox,
@@ -72,9 +69,6 @@ export const DeploymentsPage = () => {
   return (
     <div>
       <h1 className={`${tokens.type.h1} mb-4`}>Deployments</h1>
-      <ButtonLink to={deployUrl()}>
-        <IconPlusCircle className="mr-2" /> Deploy
-      </ButtonLink>
 
       {view()}
 
