@@ -122,7 +122,7 @@ export function DetailInfoItem({
   return (
     <div>
       <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-      <div>{children}</div>
+      <div className="break-all">{children}</div>
     </div>
   );
 }
