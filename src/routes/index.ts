@@ -25,6 +25,17 @@ export const OTP_RECOVERY_CODES_PATH = "/settings/otp-recovery-codes";
 export const otpRecoveryCodesUrl = () => OTP_RECOVERY_CODES_PATH;
 export const ADD_SECURITY_KEY_PATH = "/settings/add-security-key";
 export const addSecurityKeyUrl = () => ADD_SECURITY_KEY_PATH;
+export const SECOND_FACTOR_SETTINGS_PATH = "/settings/2fa";
+export const secondFactorSettingsUrl = () => SECOND_FACTOR_SETTINGS_PATH;
+export const TEAM_CONTACT_SETTINGS_PATH = "/settings/team-contacts";
+export const teamContactSettingsUrl = () => TEAM_CONTACT_SETTINGS_PATH;
+export const TEAM_SSO_SETTINGS_PATH = "/settings/team-sso";
+export const teamSsoSettingsUrl = () => TEAM_SSO_SETTINGS_PATH;
+export const TEAM_PENDING_INVITES_PATH = "/settings/team-pending-invites";
+export const teamPendingInvitesUrl = () => TEAM_PENDING_INVITES_PATH;
+export const TEAM_ROLES_PATH = "/settings/team-roles";
+export const teamRolesUrl = () => TEAM_ROLES_PATH;
+
 export const IMPERSONATE_PATH = "/impersonate";
 export const impersonateUrl = () => IMPERSONATE_PATH;
 

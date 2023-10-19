@@ -1,11 +1,10 @@
 import { useLoader } from "@app/fx";
 import { selectOtp, setupOtp } from "@app/mfa";
-import { securitySettingsUrl } from "@app/routes";
+import { settingsUrl } from "@app/routes";
 import { selectCurrentUserId, updateUser } from "@app/users";
 import QRCode from "qrcode.react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import {
   BannerMessages,
   Box,
@@ -72,7 +71,7 @@ export const OtpSetupPage = () => {
     <BoxGroup>
       <Breadcrumbs
         crumbs={[
-          { name: "Profile Settings", to: securitySettingsUrl() },
+          { name: "Settings", to: settingsUrl() },
           { name: "2-Factor Authentication", to: null },
         ]}
       />

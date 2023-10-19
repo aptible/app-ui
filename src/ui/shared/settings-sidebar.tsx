@@ -1,26 +1,35 @@
-import { securitySettingsUrl, teamUrl } from "@app/routes";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import {
+  secondFactorSettingsUrl,
+  securitySettingsUrl,
+  teamContactSettingsUrl,
+  teamPendingInvitesUrl,
+  teamRolesUrl,
+  teamSsoSettingsUrl,
+  teamUrl,
+} from "@app/routes";
 import cn from "classnames";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import { ExternalLink } from "./external-link";
+import { IconExternalLink } from "./icons";
 import { tokens } from "./tokens";
 
 export function SettingsSidebar() {
-  const profileNav = [{ name: "Profile Settings", to: securitySettingsUrl() }];
+  const orgId = useSelector(selectOrganizationSelectedId);
+  const accountNav = [
+    { name: "Security", to: securitySettingsUrl() },
+    { name: "2fa", to: secondFactorSettingsUrl() },
+  ];
 
   const companyNav = [
-    { name: "Team Settings", to: teamUrl() },
-    { name: "Single Sign-On", to: "/settings/sso" },
-    { name: "Team Contacts", to: "/settings/contact-settings" },
-    { name: "Stacks", to: "/setting/stacks" },
+    { name: "Roles", to: teamRolesUrl() },
+    { name: "Members", to: teamUrl() },
+    { name: "Pending Invites", to: teamPendingInvitesUrl() },
+    { name: "Single Sign-On", to: teamSsoSettingsUrl() },
+    { name: "Contacts", to: teamContactSettingsUrl() },
   ];
 
-  const billingNav = [
-    { name: "Contracts", to: "/settings/contracts" },
-    { name: "Invoices & Projections", to: "/settings/invoices" },
-    { name: "Payment Methods", to: "/settings/payment-methods" },
-    { name: "Credits", to: "/setting/credits" },
-    { name: "Billing Contacts", to: "/setting/billing-contacts" },
-    { name: "Billing Address", to: "/setting/billing-address" },
-  ];
   const active = "bg-off-white font-semibold text-black focus:text-black";
   const inactive = "text-black-500 hover:bg-black-50 hover:text-black";
   const navButton =
@@ -32,8 +41,8 @@ export function SettingsSidebar() {
   return (
     <nav className="flex flex-col">
       <div>
-        <h4 className={`${tokens.type.h4} ml-2`}>Profile</h4>
-        {profileNav.map((item) => (
+        <h4 className={`${tokens.type.h4} ml-2`}>Account Settings</h4>
+        {accountNav.map((item) => (
           <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}
           </NavLink>
@@ -52,12 +61,28 @@ export function SettingsSidebar() {
       </div>
 
       <div>
-        <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Billing</h4>
-        {billingNav.map((item) => (
-          <NavLink className={navLink} to={item.to} key={item.to}>
-            {item.name}
-          </NavLink>
-        ))}
+        <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Legacy UI</h4>
+        <ExternalLink
+          className="group flex items-center p-2 text-base rounded-md hover:no-underline text-black-500 hover:bg-black-50 hover:text-black gap-2"
+          variant="info"
+          href={"https://dashboard.aptible.com/settings/profile"}
+        >
+          Profile <IconExternalLink variant="sm" />
+        </ExternalLink>
+        <ExternalLink
+          className="group flex items-center p-2 text-base rounded-md hover:no-underline text-black-500 hover:bg-black-50 hover:text-black gap-2"
+          variant="info"
+          href={`https://dashboard.aptible.com/organizations/${orgId}/members`}
+        >
+          Team <IconExternalLink variant="sm" />
+        </ExternalLink>
+        <ExternalLink
+          className="group flex items-center p-2 text-base rounded-md hover:no-underline text-black-500 hover:bg-black-50 hover:text-black gap-2"
+          variant="info"
+          href={`https://dashboard.aptible.com/organizations/${orgId}/admin/billing/invoices`}
+        >
+          Billing <IconExternalLink variant="sm" />
+        </ExternalLink>
       </div>
     </nav>
   );

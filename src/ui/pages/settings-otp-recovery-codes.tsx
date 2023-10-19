@@ -1,8 +1,7 @@
 import { useCache } from "@app/fx";
 import { fetchOtpCodes } from "@app/mfa";
-import { securitySettingsUrl } from "@app/routes";
+import { settingsUrl } from "@app/routes";
 import { HalEmbedded } from "@app/types";
-
 import { useCurrentUser } from "../hooks";
 import { Box, BoxGroup, Breadcrumbs, Loading } from "../shared";
 
@@ -31,7 +30,7 @@ export const OtpRecoveryCodesPage = () => {
     <BoxGroup>
       <Breadcrumbs
         crumbs={[
-          { name: "Profile Settings", to: securitySettingsUrl() },
+          { name: "Settings", to: settingsUrl() },
           { name: "Recovery Codes", to: null },
         ]}
       />

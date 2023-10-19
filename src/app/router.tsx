@@ -84,6 +84,7 @@ import {
   ReactRouterErrorElement,
   SSHSettingsPage,
   SearchPage,
+  SecondFactorSettingsPage,
   SecuritySettingsPage,
   SettingsLayout,
   SettingsPage,
@@ -101,6 +102,7 @@ import {
   StacksPage,
   StylesPage,
   SupportPage,
+  TeamContactSettingsPage,
   TeamPage,
   VerifyEmailPage,
   VerifyEmailRequired,
@@ -113,6 +115,9 @@ import { DatabaseMetricsPage } from "@app/ui/pages/db-detail-metrics";
 import { DeployPage } from "@app/ui/pages/deploy";
 import { EnvironmentDetailPage } from "@app/ui/pages/environment-detail";
 import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
+import { TeamPendingInvitesPage } from "@app/ui/pages/settings-team-pending-invites";
+import { TeamRolesPage } from "@app/ui/pages/settings-team-roles";
+import { TeamSsoSettingsPage } from "@app/ui/pages/settings-team-sso";
 import { StackDetailPage } from "@app/ui/pages/stack-detail";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
@@ -628,6 +633,10 @@ export const appRoutes: RouteObject[] = [
         path: routes.SECURITY_SETTINGS_PATH,
         element: <SecuritySettingsPage />,
       },
+      {
+        path: routes.SECOND_FACTOR_SETTINGS_PATH,
+        element: <SecondFactorSettingsPage />,
+      },
 
       {
         path: routes.SSH_SETTINGS_PATH,
@@ -648,12 +657,62 @@ export const appRoutes: RouteObject[] = [
         path: routes.ADD_SECURITY_KEY_PATH,
         element: <AddSecurityKeyPage />,
       },
-
-      {
-        path: routes.TEAM_PATH,
-        element: <TeamPage />,
-      },
     ],
+  },
+
+  {
+    path: routes.TEAM_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_ROLES_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamRolesPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_PENDING_INVITES_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamPendingInvitesPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_SSO_SETTINGS_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamSsoSettingsPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_CONTACT_SETTINGS_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamContactSettingsPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
   },
 
   {

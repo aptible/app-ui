@@ -1,12 +1,11 @@
+import { createWebauthnDevice, webauthnCreate } from "@app/auth";
 import { useCache, useLoader } from "@app/fx";
 import { fetchU2fChallenges } from "@app/mfa";
-import { securitySettingsUrl } from "@app/routes";
+import { settingsUrl } from "@app/routes";
 import { selectCurrentUserId } from "@app/users";
 import { PublicKeyCredentialCreationOptionsJSON } from "@github/webauthn-json/dist/types/basic/json";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
-import { createWebauthnDevice, webauthnCreate } from "@app/auth";
 import {
   Banner,
   Box,
@@ -57,7 +56,7 @@ export const AddSecurityKeyPage = () => {
     <BoxGroup>
       <Breadcrumbs
         crumbs={[
-          { name: "Profile Settings", to: securitySettingsUrl() },
+          { name: "Settings", to: settingsUrl() },
           { name: "Security Keys", to: null },
         ]}
       />
