@@ -67,7 +67,7 @@ import {
   IconXCircle,
   Input,
   InputSearch,
-  LogLine,
+  LogViewerText,
   Pill,
   PreCode,
   Radio,
@@ -447,20 +447,29 @@ const Buttons = () => (
   </div>
 );
 
-const Logs = () => (
-  <div className="pt-8 space-y-4">
-    <h1 id="logs" className={tokens.type.h1}>
-      Logs
-    </h1>
-    <div className="mt-4 font-mono bg-black p-2 rounded-lg text-black-200">
-      {"2023-06-14 16:45:39 +0000 INFO -- : Starting Database backup operation with ID: 3946\n2023-06-14 16:45:39 +0000 INFO -- : STARTING: Snapshot EBS volume\n        2023-06-14 16:45:40 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:45:52 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:46:04 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:46:16 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:46:29 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:46:41 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:46:45 +0000 INFO -- : COMPLETED (after 65.95s): Snapshot EBS volume\n        2023-06-14 16:46:45 +0000 INFO -- : STARTING: Commit Backup in API\n        2023-06-14 16:46:46 +0000 INFO -- : COMPLETED (after 0.2s): Commit Backup in API\n"
-        .split("\n")
-        .map((line, i) => {
-          return <LogLine key={`log-${i}`} text={line} />;
-        })}
+const Logs = () => {
+  const log = `2023-06-14 16:45:39 +0000 INFO -- : Starting Database backup operation with ID: 3946
+2023-06-14 16:45:39 +0000 INFO -- : Obtaining dependency information for asgiref==3.7.2 from https://files.pythonhosted.org/packages/9b/80/b9051a4a07ad231558fcd8ffc89232711b4e618c15cb7a392a17384bbeef/asgiref-3.7.2-py3-none-any.whl.metadata
+2023-06-14 16:45:39 +0000 INFO -- : STARTING: Snapshot EBS volume
+2023-06-14 16:45:40 +0000 WARN -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:45:52 +0000 INFO -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:46:04 +0000 INFO -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:46:16 +0000 ERROR -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:46:29 +0000 INFO -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:46:41 +0000 INFO -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:46:45 +0000 INFO -- : COMPLETED (after 65.95s): Snapshot EBS volume
+2023-06-14 16:46:45 +0000 INFO -- : STARTING: Commit Backup in API
+2023-06-14 16:46:46 +0000 INFO -- : COMPLETED (after 0.2s): Commit Backup in API
+`;
+  return (
+    <div className="pt-8 space-y-4 w-[500px]">
+      <h1 id="logs" className={tokens.type.h1}>
+        Logs
+      </h1>
+      <LogViewerText text={log} />
     </div>
-  </div>
-);
+  );
+};
 
 const Pills = () => (
   <div className="pt-8 space-y-4">

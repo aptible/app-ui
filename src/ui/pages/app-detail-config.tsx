@@ -149,12 +149,15 @@ const CodeScanInfo = ({ appId }: { appId: string }) => {
   if (!codeScan.data) {
     return <div>No data found</div>;
   }
-  <Box>
-    <Group size="sm">
-      <h3 className={tokens.type.h3}>Code Scan</h3>
-      <CodeScanView codeScan={codeScan.data} />
-    </Group>
-  </Box>;
+
+  return (
+    <Box>
+      <Group size="sm">
+        <h3 className={tokens.type.h3}>Code Scan</h3>
+        <CodeScanView codeScan={codeScan.data} />
+      </Group>
+    </Box>
+  );
 };
 
 const CodeScanView = ({ codeScan }: { codeScan: DeployCodeScanResponse }) => {
@@ -163,17 +166,6 @@ const CodeScanView = ({ codeScan }: { codeScan: DeployCodeScanResponse }) => {
       <div>
         <div className={tokens.type.h4}>Languages Detected</div>
         <div>{capitalize(codeScan.languages_detected?.join(", ") || "")}</div>
-      </div>
-
-      <div>
-        <div className={tokens.type.h4}>Dockerfile</div>
-        <div className="relative">
-          {codeScan.dockerfile_present ? (
-            <PreText text={codeScan.dockerfile_data || ""} />
-          ) : (
-            "No"
-          )}
-        </div>
       </div>
 
       <div>
@@ -194,6 +186,17 @@ const CodeScanView = ({ codeScan }: { codeScan: DeployCodeScanResponse }) => {
         <div>
           {codeScan.aptible_yml_present ? (
             <PreText text={codeScan.aptible_yml_data || ""} />
+          ) : (
+            "No"
+          )}
+        </div>
+      </div>
+
+      <div>
+        <div className={tokens.type.h4}>Dockerfile</div>
+        <div className="relative">
+          {codeScan.dockerfile_present ? (
+            <PreText text={codeScan.dockerfile_data || ""} />
           ) : (
             "No"
           )}

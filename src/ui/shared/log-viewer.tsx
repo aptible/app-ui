@@ -24,14 +24,14 @@ export const LogLine = ({ text }: { text: string }) => {
 
   const Type = () => {
     if (leftPart.endsWith("ERROR")) {
-      return <span className="text-red-300">{rightPart}</span>;
+      return <span className="text-red-300 break-all">{rightPart}</span>;
     }
 
     if (leftPart.endsWith("WARN")) {
-      return <span className="text-orange-400">{rightPart}</span>;
+      return <span className="text-orange-400 break-all">{rightPart}</span>;
     }
 
-    return <span className="text-lime">{rightPart}</span>;
+    return <span className="text-lime break-all">{rightPart}</span>;
   };
 
   return (
@@ -42,8 +42,18 @@ export const LogLine = ({ text }: { text: string }) => {
   );
 };
 
+const wrapper = "font-mono bg-black p-2 rounded-lg text-black-200 overflow-x";
+export const LogViewerText = ({ text }: { text: string }) => {
+  return (
+    <div className={wrapper}>
+      {text.split("\n").map((line, i) => {
+        return <LogLine key={`log-${i}`} text={line} />;
+      })}
+    </div>
+  );
+};
+
 export const LogViewer = ({ op }: { op: DeployOperation }) => {
-  const wrapper = "font-mono bg-black p-2 rounded-lg text-black-200 overflow-x";
   const action = fetchOperationLogs({ id: op.id });
   const loader = useApi(action);
   const data: string = useSelector((s: AppState) =>
@@ -71,11 +81,5 @@ export const LogViewer = ({ op }: { op: DeployOperation }) => {
     return <div className={wrapper}>No data found</div>;
   }
 
-  return (
-    <div className={wrapper}>
-      {data.split("\n").map((line, i) => {
-        return <LogLine key={`log-${i}`} text={line} />;
-      })}
-    </div>
-  );
+  return <LogViewerText text={data} />;
 };
