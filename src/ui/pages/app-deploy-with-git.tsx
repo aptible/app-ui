@@ -28,6 +28,7 @@ import {
   Box,
   Code,
   ExternalLink,
+  PreBox,
   PreCode,
   ProgressProject,
   Select,
@@ -265,14 +266,14 @@ export const AppDeployWithGitPage = () => {
           <h4 className={tokens.type.h4}>
             Configure database migrations (Optional)
           </h4>
-          <div className="text-black-500 mb-1 mr-2">
+          <div className="text-black-500 mb-2 mr-2">
             Add a <Code>.aptible.yml</Code> file in the root directory of your
             app. Here’s an example:
           </div>
-          <PreCode
+          <PreBox
             segments={listToInvertedTextColor([
-              "before_release:",
-              "- command1",
+              "before_release:\n",
+              "  - command1",
             ])}
             allowCopy
           />
