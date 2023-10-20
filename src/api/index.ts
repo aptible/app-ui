@@ -153,7 +153,7 @@ function* requestBilling(ctx: ApiCtx, next: Next): ApiGen {
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
-    credentials: "include",
+    credentials: "omit",
     headers: {
       "Content-Type": "application/hal+json",
     },
@@ -167,7 +167,7 @@ function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
-    credentials: "include",
+    credentials: "omit",
     headers: {
       "Content-Type": "application/hal+json",
     },
@@ -181,7 +181,7 @@ function* requestAuth(ctx: AuthApiCtx, next: Next): ApiGen {
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
-    credentials: ctx.credentials || "include",
+    credentials: ctx.credentials || "omit",
     headers: {
       "Content-Type": "application/hal+json",
     },
@@ -195,7 +195,7 @@ function* requestMetricTunnel(ctx: ApiCtx, next: Next): ApiGen {
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
-    credentials: "include",
+    credentials: "omit",
     headers: {
       "Content-Type": "application/json",
     },
@@ -304,7 +304,7 @@ export function combinePages<
   P extends { [key: string]: any } = { [key: string]: any },
 >(
   actionFn: CreateActionWithPayload<DeployApiCtx, PaginateProps & P>,
-  { max = 50 }: CombinePagesProps = { max: 50 },
+  { max = 15 }: CombinePagesProps = { max: 15 },
 ) {
   function* paginator(ctx: ThunkCtx, next: Next) {
     let results: DeployApiCtx[] = [];

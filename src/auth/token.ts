@@ -1,7 +1,5 @@
-import { call, setLoaderSuccess } from "@app/fx";
-import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
-
 import { authApi } from "@app/api";
+import { call, put, setLoaderSuccess } from "@app/fx";
 import { resetStore } from "@app/reset-store";
 import {
   TokenSuccessResponse,
@@ -12,6 +10,7 @@ import {
 } from "@app/token";
 import { tunaEvent, tunaIdentify } from "@app/tuna";
 import { AuthApiCtx } from "@app/types";
+import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 import { AUTH_LOADER_ID } from "./loader";
 
 export interface CreateTokenPayload {
@@ -20,18 +19,19 @@ export interface CreateTokenPayload {
   otpToken: string;
   u2f?: PublicKeyCredentialWithAssertionJSON;
 }
-function saveToken(ctx: AuthApiCtx<any, TokenSuccessResponse>) {
+function* saveToken(ctx: AuthApiCtx<any, TokenSuccessResponse>) {
   if (!ctx.json.ok) {
     return;
   }
   const curToken = deserializeToken(ctx.json.data);
-  ctx.actions.push(setToken(curToken));
+  yield* put(setToken(curToken));
 }
 
 export const fetchCurrentToken = authApi.get<never, TokenSuccessResponse>(
   "/current_token",
   function* onFetchToken(ctx, next) {
     ctx.noToken = true;
+    ctx.credentials = "include";
     yield* next();
     yield* call(saveToken, ctx);
   },

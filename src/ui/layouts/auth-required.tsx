@@ -1,7 +1,7 @@
+import { fetchCurrentToken } from "@app/auth";
 import { selectBillingDetail, selectHasPaymentMethod } from "@app/billing";
-import { FETCH_REQUIRED_DATA } from "@app/bootup";
 import { createLog } from "@app/debug";
-import { selectLoaderById } from "@app/fx";
+import { useLoader } from "@app/fx";
 import { setRedirectPath } from "@app/redirect-path";
 import {
   homeUrl,
@@ -12,7 +12,6 @@ import {
   verifyEmailRequestUrl,
 } from "@app/routes";
 import { selectAccessToken } from "@app/token";
-import { AppState } from "@app/types";
 import { selectCurrentUser, selectIsUserVerified } from "@app/users";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -99,9 +98,7 @@ This provides us with some unique features:
 export const AuthRequired = ({ children }: { children?: React.ReactNode }) => {
   const location = useLocation();
   const dispatch = useDispatch();
-  const loader = useSelector((s: AppState) =>
-    selectLoaderById(s, { id: FETCH_REQUIRED_DATA }),
-  );
+  const loader = useLoader(fetchCurrentToken());
   const accessToken = useSelector(selectAccessToken);
 
   useEffect(() => {
@@ -120,7 +117,7 @@ export const AuthRequired = ({ children }: { children?: React.ReactNode }) => {
     return <Navigate to={loginUrl()} replace />;
   }
 
-  if (accessToken === "") {
+  if (loader.isInitialLoading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
         <Loading text="Loading token" />
