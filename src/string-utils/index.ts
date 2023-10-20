@@ -60,6 +60,17 @@ export interface ValidatorError {
   message: string;
 }
 
+const stripQuote = (value: string) => {
+  let str = value;
+  if (str.startsWith('"')) {
+    str = str.slice(1);
+  }
+  if (str.endsWith('"')) {
+    str = str.slice(0, str.length - 1);
+  }
+  return str;
+};
+
 export const parseText = <
   M extends { [key: string]: unknown } = { [key: string]: unknown },
 >(
@@ -79,7 +90,7 @@ export const parseText = <
     if (key !== "") {
       items.push({
         key: key.trim(),
-        value: value.trim(),
+        value: stripQuote(value.trim()),
         meta: meta(),
       });
     }

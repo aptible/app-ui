@@ -1,4 +1,6 @@
-import { TextVal, parseText } from ".";
+import { TextVal } from "@app/string-utils";
+import { DeployAppConfigEnv } from "@app/types";
+import { configEnvToStr, configStrToEnvList } from "./index";
 
 function defaultTextVal(key: string, value: string): TextVal {
   return {
@@ -8,7 +10,30 @@ function defaultTextVal(key: string, value: string): TextVal {
   };
 }
 
-describe("parseText", () => {
+describe("configEnvToStr", () => {
+  describe("basic", () => {
+    it("should match expectations", () => {
+      const envObj: DeployAppConfigEnv = {
+        ONE: 1,
+        TWO: "some string",
+        MULTI: "A multiline\nstring to test\nwhat happens",
+        ZETA: true,
+        WRAPPED: '"what happens now?"',
+      };
+      const expected = `MULTI="A multiline
+string to test
+what happens"
+ONE=1
+TWO=some string
+WRAPPED="what happens now?"
+ZETA=true`;
+      const actual = configEnvToStr(envObj);
+      expect(actual).toEqual(expected);
+    });
+  });
+});
+
+describe("configStrToEnvList", () => {
   describe("each line is a separate key=value pair", () => {
     describe("basic value", () => {
       it("should parse properly", () => {
@@ -17,7 +42,7 @@ describe("parseText", () => {
         SOMETHING="do you even?"
         NO=1`;
 
-        const actual = parseText(input, () => ({}));
+        const actual = configStrToEnvList(input);
         expect(actual).toEqual([
           defaultTextVal("DEBUG", "true"),
           defaultTextVal("WOW", "very nice"),
@@ -33,7 +58,7 @@ describe("parseText", () => {
         WOW=very=nice
         SANDWICH=ok`;
 
-        const actual = parseText(input, () => ({}));
+        const actual = configStrToEnvList(input);
         expect(actual).toEqual([
           defaultTextVal("DEBUG", "true"),
           defaultTextVal("WOW", "very=nice"),
@@ -54,7 +79,7 @@ describe("parseText", () => {
 
 `;
 
-        const actual = parseText(input, () => ({}));
+        const actual = configStrToEnvList(input);
         expect(actual).toEqual([
           defaultTextVal("DEBUG", "true"),
           defaultTextVal("WOW", "very=nice"),
@@ -72,7 +97,7 @@ comment. I can keep
 going and it should work"
         SANDWICH=ok`;
 
-      const actual = parseText(input, () => ({}));
+      const actual = configStrToEnvList(input);
       expect(actual).toEqual([
         defaultTextVal("DEBUG", "true"),
         defaultTextVal(

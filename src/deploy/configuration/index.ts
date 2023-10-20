@@ -1,7 +1,7 @@
 import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { db } from "@app/schema";
-import { TextVal } from "@app/string-utils";
+import { TextVal, parseText } from "@app/string-utils";
 import { DeployAppConfig, DeployAppConfigEnv, LinkResponse } from "@app/types";
 
 export interface DeployConfigurationResponse {
@@ -37,16 +37,28 @@ export const deserializeAppConfig = (
   };
 };
 
-export const configEnvToStr = (env: DeployAppConfigEnv) => {
-  return Object.keys(env).reduce((acc, key) => {
-    const value = env[key];
-    const prev = acc ? `${acc}\n` : "";
-    return `${prev}${key}=${value}`;
-  }, "");
+export const configEnvToStr = (env: DeployAppConfigEnv): string => {
+  return Object.keys(env)
+    .sort((a, b) => a.localeCompare(b))
+    .reduce((acc, key) => {
+      let value = env[key];
+      const prev = acc ? `${acc}\n` : "";
+      if (typeof value === "string" && value.includes("\n")) {
+        value = `"${value}"`;
+      }
+      return `${prev}${key}=${value}`;
+    }, "");
 };
 
-export const prepareConfigEnv = (cur: DeployAppConfigEnv, next: TextVal[]) => {
-  const env: { [key: string]: any } = {};
+export const configStrToEnvList = (text: string): TextVal[] => {
+  return parseText(text, () => ({}));
+};
+
+export const configEnvListToEnv = (
+  cur: DeployAppConfigEnv,
+  next: TextVal[],
+): DeployAppConfigEnv => {
+  const env: DeployAppConfigEnv = {};
   // the way to "remove" env vars from config is to set them as empty
   // so we do that here
   Object.keys(cur).forEach((key) => {

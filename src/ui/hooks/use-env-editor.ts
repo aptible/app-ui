@@ -1,4 +1,5 @@
-import { TextVal, ValidatorError, parseText } from "@app/string-utils";
+import { configStrToEnvList } from "@app/deploy";
+import { TextVal, ValidatorError } from "@app/string-utils";
 import { useState } from "react";
 
 export const validateEnvs = (items: TextVal[]): ValidatorError[] => {
@@ -38,7 +39,7 @@ export const validateEnvs = (items: TextVal[]): ValidatorError[] => {
 export function useEnvEditor(envStr: string) {
   const [errors, setErrors] = useState<ValidatorError[]>([]);
   const [envs, setEnvs] = useState(envStr);
-  const envList = parseText(envs, () => ({}));
+  const envList = configStrToEnvList(envs);
   const validate = () => {
     const enverr = validateEnvs(envList);
     if (enverr.length > 0) {
