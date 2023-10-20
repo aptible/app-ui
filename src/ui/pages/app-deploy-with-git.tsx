@@ -277,7 +277,7 @@ export const AppDeployWithGitPage = () => {
             <PreBox
               segments={listToInvertedTextColor([
                 "before_release:\n",
-                "  - command1",
+                "  - python3 manage.py migrate",
               ])}
               allowCopy
             />
