@@ -271,7 +271,7 @@ export const AppDeployWithGitPage = () => {
               1. Add a <Code>.aptible.yml</Code> file in the root directory of
               your app (see example below).
             </div>
-            <div className="text-black-500 mb-2 mr-2">
+            <div className="text-black-500 mb-1 mr-2">
               2. Commit your code changes.
             </div>
             <PreBox
