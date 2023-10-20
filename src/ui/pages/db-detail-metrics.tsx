@@ -159,5 +159,3 @@ export function DatabaseMetricsPage() {
     </LoadResources>
   );
 }
-
-export const Component = DatabaseMetricsPage;

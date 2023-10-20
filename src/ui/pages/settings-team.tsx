@@ -1,5 +1,6 @@
-import { TeamList } from "../shared";
+import { teamMembersUrl } from "@app/routes";
+import { Navigate } from "react-router";
 
 export function TeamPage() {
-  return <TeamList />;
+  return <Navigate to={teamMembersUrl()} replace />;
 }

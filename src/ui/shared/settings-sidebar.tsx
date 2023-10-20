@@ -1,12 +1,12 @@
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
-  secondFactorSettingsUrl,
   securitySettingsUrl,
-  teamContactSettingsUrl,
+  sshSettingsUrl,
+  teamContactsUrl,
+  teamMembersUrl,
   teamPendingInvitesUrl,
   teamRolesUrl,
-  teamSsoSettingsUrl,
-  teamUrl,
+  teamSsoUrl,
 } from "@app/routes";
 import cn from "classnames";
 import { useSelector } from "react-redux";
@@ -19,15 +19,15 @@ export function SettingsSidebar() {
   const orgId = useSelector(selectOrganizationSelectedId);
   const accountNav = [
     { name: "Security", to: securitySettingsUrl() },
-    { name: "2fa", to: secondFactorSettingsUrl() },
+    { name: "SSH Keys", to: sshSettingsUrl() },
   ];
 
   const companyNav = [
     { name: "Roles", to: teamRolesUrl() },
-    { name: "Members", to: teamUrl() },
+    { name: "Members", to: teamMembersUrl() },
     { name: "Pending Invites", to: teamPendingInvitesUrl() },
-    { name: "Single Sign-On", to: teamSsoSettingsUrl() },
-    { name: "Contacts", to: teamContactSettingsUrl() },
+    { name: "Single Sign-On", to: teamSsoUrl() },
+    { name: "Contacts", to: teamContactsUrl() },
   ];
 
   const active = "bg-off-white font-semibold text-black focus:text-black";

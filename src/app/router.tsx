@@ -16,6 +16,8 @@ import {
   AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailPage,
+  AppDetailServiceMetricsPage,
+  AppDetailServiceScalePage,
   AppDetailServicesPage,
   AppSettingsPage,
   AppSidebarLayout,
@@ -23,6 +25,8 @@ import {
   AuthRequired,
   BackupRestorePage,
   BillingMethodPage,
+  CertDetailAppsPage,
+  CertDetailEndpointsPage,
   CertDetailLayout,
   CertDetailPage,
   CertDetailSettingsPage,
@@ -41,9 +45,11 @@ import {
   DatabaseDetailLayout,
   DatabaseDetailPage,
   DatabaseEndpointsPage,
+  DatabaseMetricsPage,
   DatabaseScalePage,
   DatabaseSettingsPage,
   DatabasesPage,
+  DeployPage,
   DeploymentsPage,
   ElevatePage,
   ElevateRequired,
@@ -56,12 +62,14 @@ import {
   EndpointsPage,
   EnvSelectorPage,
   EnvironmentActivityPage,
+  EnvironmentActivityReportsPage,
   EnvironmentAppsPage,
   EnvironmentBackupsPage,
   EnvironmentCertificatesPage,
   EnvironmentDatabasesPage,
   EnvironmentDetailCreateCertPage,
   EnvironmentDetailLayout,
+  EnvironmentDetailPage,
   EnvironmentIntegrationsPage,
   EnvironmentSecurityPage,
   EnvironmentSettingsPage,
@@ -84,7 +92,6 @@ import {
   ReactRouterErrorElement,
   SSHSettingsPage,
   SearchPage,
-  SecondFactorSettingsPage,
   SecuritySettingsPage,
   SettingsLayout,
   SettingsPage,
@@ -97,28 +104,21 @@ import {
   StackDetailEnvironmentsPage,
   StackDetailHidsPage,
   StackDetailLayout,
+  StackDetailPage,
   StackDetailVpcPeeringPage,
   StackDetailVpnTunnelsPage,
   StacksPage,
   StylesPage,
   SupportPage,
-  TeamContactSettingsPage,
+  TeamContactsPage,
+  TeamMembersPage,
   TeamPage,
+  TeamPendingInvitesPage,
+  TeamRolesPage,
+  TeamSsoPage,
   VerifyEmailPage,
   VerifyEmailRequired,
 } from "@app/ui";
-import { AppDetailServiceMetricsPage } from "@app/ui/pages/app-detail-service-metrics";
-import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
-import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
-import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
-import { DatabaseMetricsPage } from "@app/ui/pages/db-detail-metrics";
-import { DeployPage } from "@app/ui/pages/deploy";
-import { EnvironmentDetailPage } from "@app/ui/pages/environment-detail";
-import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
-import { TeamPendingInvitesPage } from "@app/ui/pages/settings-team-pending-invites";
-import { TeamRolesPage } from "@app/ui/pages/settings-team-roles";
-import { TeamSsoSettingsPage } from "@app/ui/pages/settings-team-sso";
-import { StackDetailPage } from "@app/ui/pages/stack-detail";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
 
@@ -629,13 +629,10 @@ export const appRoutes: RouteObject[] = [
         index: true,
         element: <SettingsPage />,
       },
+
       {
         path: routes.SECURITY_SETTINGS_PATH,
         element: <SecuritySettingsPage />,
-      },
-      {
-        path: routes.SECOND_FACTOR_SETTINGS_PATH,
-        element: <SecondFactorSettingsPage />,
       },
 
       {
@@ -672,6 +669,17 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.TEAM_MEMBERS_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamMembersPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
     path: routes.TEAM_ROLES_PATH,
     element: (
       <AuthRequired>
@@ -694,22 +702,22 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.TEAM_SSO_SETTINGS_PATH,
+    path: routes.TEAM_SSO_PATH,
     element: (
       <AuthRequired>
         <SettingsLayout>
-          <TeamSsoSettingsPage />
+          <TeamSsoPage />
         </SettingsLayout>
       </AuthRequired>
     ),
   },
 
   {
-    path: routes.TEAM_CONTACT_SETTINGS_PATH,
+    path: routes.TEAM_CONTACTS_PATH,
     element: (
       <AuthRequired>
         <SettingsLayout>
-          <TeamContactSettingsPage />
+          <TeamContactsPage />
         </SettingsLayout>
       </AuthRequired>
     ),

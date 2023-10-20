@@ -1,9 +1,17 @@
 import { revokeAllTokens } from "@app/auth";
 import { useLoader } from "@app/fx";
+import {
+  addSecurityKeyUrl,
+  otpRecoveryCodesUrl,
+  otpSetupUrl,
+} from "@app/routes";
 import { selectCurrentUserId, updateEmail, updateUser } from "@app/users";
 import { emailValidator } from "@app/validator";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import { useCurrentUser } from "../hooks";
 import {
   Banner,
   BannerMessages,
@@ -11,7 +19,9 @@ import {
   BoxGroup,
   Button,
   FormGroup,
+  Group,
   Input,
+  Loading,
   tokens,
 } from "../shared";
 
@@ -148,6 +158,69 @@ const ChangeEmail = () => {
   );
 };
 
+const MultiFactor = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [user, loader] = useCurrentUser();
+  const disable = () => {
+    dispatch(updateUser({ type: "otp", userId: user.id, otp_enabled: false }));
+  };
+
+  const btns = user.otpEnabled ? (
+    <Group>
+      <Button className="w-fit" variant="delete" onClick={disable}>
+        Disable 2FA
+      </Button>
+      <Link to={otpRecoveryCodesUrl()}>Download backup codes</Link>
+    </Group>
+  ) : (
+    <Button className="w-fit" onClick={() => navigate(otpSetupUrl())}>
+      Configure 2FA
+    </Button>
+  );
+  const content = loader.isLoading ? <Loading /> : btns;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <ul className="mb-2">
+        <li>
+          Download your backup codes if you haven&apos;t done so yet. You might
+          need to update aptible-cli for 2FA support. 2FA does not apply to git
+          push operations.
+        </li>
+      </ul>
+
+      {content}
+    </div>
+  );
+};
+
+const SecurityKeys = () => {
+  const [user, loader] = useCurrentUser();
+  if (loader.isLoading) {
+    return <Loading />;
+  }
+
+  return (
+    <div>
+      {user.otpEnabled ? (
+        <Group>
+          <div>
+            The following Security Keys are associated with your account and can
+            be used to log in:
+          </div>
+          <Link to={addSecurityKeyUrl()}>Add a new Security Key</Link>
+        </Group>
+      ) : (
+        <Banner variant="info">
+          In order to add a hardware security key, you must set up 2FA
+          authentication first.
+        </Banner>
+      )}
+    </div>
+  );
+};
+
 const LogOut = () => {
   const dispatch = useDispatch();
   const loader = useLoader(revokeAllTokens);
@@ -205,6 +278,12 @@ export const SecuritySettingsPage = () => {
         </Section>
       </div>
 
+      <Section title="OTP">
+        <MultiFactor />
+      </Section>
+      <Section title="Security Keys">
+        <SecurityKeys />
+      </Section>
       <Section title="Log out all sessions">
         <LogOut />
       </Section>
