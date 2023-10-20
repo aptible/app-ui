@@ -262,22 +262,27 @@ export const AppDeployWithGitPage = () => {
           />
         </div>
 
-        <div className="mt-4">
-          <h4 className={tokens.type.h4}>
-            Configure database migrations (Optional)
-          </h4>
-          <div className="text-black-500 mb-2 mr-2">
-            Add a <Code>.aptible.yml</Code> file in the root directory of your
-            app. Here’s an example:
+        {starter && starter.value === "none" ? (
+          <div className="mt-4">
+            <h4 className={tokens.type.h4}>
+              Configure database migrations (Optional)
+            </h4>
+            <div className="text-black-500 mr-2">
+              1. Add a <Code>.aptible.yml</Code> file in the root directory of
+              your app (see example below).
+            </div>
+            <div className="text-black-500 mb-2 mr-2">
+              2. Commit your code changes.
+            </div>
+            <PreBox
+              segments={listToInvertedTextColor([
+                "before_release:\n",
+                "  - command1",
+              ])}
+              allowCopy
+            />
           </div>
-          <PreBox
-            segments={listToInvertedTextColor([
-              "before_release:\n",
-              "  - command1",
-            ])}
-            allowCopy
-          />
-        </div>
+        ) : null}
 
         <div className="mt-4">
           <h4 className={tokens.type.h4}>Push your code to our scan branch</h4>
