@@ -11,7 +11,7 @@ import { REDIRECT_NAME } from "@app/redirect-path";
 import { resetReducer } from "@app/reset-store";
 import { RESOURCE_STATS_NAME } from "@app/search";
 import { THEME_NAME } from "@app/theme";
-import { ELEVATED_TOKEN_NAME, TOKEN_NAME } from "@app/token";
+import { ELEVATED_TOKEN_NAME } from "@app/token";
 import type { AppState } from "@app/types";
 
 import { reducers, sagas } from "./packages";
@@ -30,7 +30,6 @@ export const persistConfig = {
   key: "root",
   storage,
   whitelist: [
-    TOKEN_NAME,
     ELEVATED_TOKEN_NAME,
     THEME_NAME,
     NAV_NAME,
