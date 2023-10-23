@@ -182,7 +182,7 @@ export function EnvironmentListByStack({ stackId }: { stackId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
   };
 
   const environments = useSelector((s: AppState) =>
@@ -231,7 +231,7 @@ export function EnvironmentList() {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
   };
 
   const environments = useSelector((s: AppState) =>
