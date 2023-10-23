@@ -191,8 +191,11 @@ export const DEPLOY_ENDPOINT_NAME = "endpoints";
 const slice = createTable<DeployEndpoint>({
   name: DEPLOY_ENDPOINT_NAME,
 });
-const { add: addDeployEndpoints, remove: removeDeployEndpoints } =
-  slice.actions;
+const {
+  add: addDeployEndpoints,
+  remove: removeDeployEndpoints,
+  reset: resetDeployEndpoints,
+} = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_ENDPOINT_NAME],
 );
@@ -455,9 +458,19 @@ export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
   saga: cacheShortTimer(),
 });
 
-export const fetchEndpoints = api.get("/vhosts?per_page=5000", {
-  saga: cacheMinTimer(),
-});
+export const fetchEndpoints = api.get(
+  "/vhosts?per_page=5000",
+  {
+    saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetDeployEndpoints());
+  },
+);
 
 export const cancelFetchEndpointPoll = createAction(
   "cancel-fetch-endpoint-poll",

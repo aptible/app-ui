@@ -1,6 +1,7 @@
 import { api, cacheMinTimer, thunks } from "@app/api";
 import { call, poll, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   createReducerMap,
   createTable,
@@ -14,8 +15,6 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-
-import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -124,7 +123,11 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
 
 export const DEPLOY_APP_NAME = "apps";
 const slice = createTable<DeployApp>({ name: DEPLOY_APP_NAME });
-export const { add: addDeployApps, patch: patchDeployApps } = slice.actions;
+export const {
+  add: addDeployApps,
+  patch: patchDeployApps,
+  reset: resetDeployApps,
+} = slice.actions;
 export const hasDeployApp = (a: DeployApp) => a.id !== "";
 export const appReducers = createReducerMap(slice);
 
@@ -293,9 +296,19 @@ export const selectAppsCountByStack = createSelector(
   (apps) => apps.length,
 );
 
-export const fetchApps = api.get("/apps?per_page=5000&no_embed=true", {
-  saga: cacheMinTimer(),
-});
+export const fetchApps = api.get(
+  "/apps?per_page=5000&no_embed=true",
+  {
+    saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetDeployApps());
+  },
+);
 
 interface AppIdProp {
   id: string;

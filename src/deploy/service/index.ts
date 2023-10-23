@@ -158,7 +158,7 @@ export const DEPLOY_SERVICE_NAME = "services";
 const slice = createTable<DeployService>({
   name: DEPLOY_SERVICE_NAME,
 });
-const { add: addDeployServices } = slice.actions;
+const { add: addDeployServices, reset: resetDeployServices } = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_SERVICE_NAME],
 );
@@ -233,9 +233,19 @@ export const selectAppToServicesMap = createSelector(
 
 export const fetchService = api.get<{ id: string }>("/services/:id");
 
-export const fetchServices = api.get("/services?per_page=5000", {
-  saga: cacheMinTimer(),
-});
+export const fetchServices = api.get(
+  "/services?per_page=5000",
+  {
+    saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetDeployServices());
+  },
+);
 
 export const fetchEnvironmentServices = api.get<{ id: string }>(
   "/accounts/:id/services",

@@ -205,7 +205,7 @@ export const defaultDeployLogDrain = (
 
 export const DEPLOY_LOG_DRAIN_NAME = "logDrains";
 const slice = createTable<DeployLogDrain>({ name: DEPLOY_LOG_DRAIN_NAME });
-const { add: addDeployLogDrains } = slice.actions;
+const { add: addDeployLogDrains, reset: resetDeployLogDrains } = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_LOG_DRAIN_NAME],
 );
@@ -233,9 +233,19 @@ export const selectLogDrainsByEnvId = createSelector(
 export const hasDeployLogDrain = (a: DeployLogDrain) => a.id !== "";
 export const logDrainReducers = createReducerMap(slice);
 
-export const fetchLogDrains = api.get("/log_drains?per_page=5000", {
-  saga: cacheMinTimer(),
-});
+export const fetchLogDrains = api.get(
+  "/log_drains?per_page=5000",
+  {
+    saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetDeployLogDrains());
+  },
+);
 
 export const fetchEnvLogDrains = api.get<{ id: string }>(
   "/accounts/:id/log_drains",
