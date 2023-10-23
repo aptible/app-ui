@@ -112,8 +112,14 @@ interface StarterOption extends SelectOption {
   repo: string;
 }
 
+const customCodeOption = {
+  label: "Custom Code",
+  value: "none",
+  query: {},
+  repo: "",
+};
 const starterTemplateOptions: StarterOption[] = [
-  { label: "Custom Code", value: "none", query: {}, repo: "" },
+  customCodeOption,
   {
     label: "Ruby on Rails v7 Template",
     value: "git@github.com:aptible/template-rails.git",
@@ -159,7 +165,7 @@ export const AppDeployWithGitPage = () => {
   const { appId = "" } = useParams();
   useSshKeyRequired(appDeployWithGitAddKeyUrl(appId));
 
-  const [starter, setStarter] = useState<StarterOption>();
+  const [starter, setStarter] = useState<StarterOption>(customCodeOption);
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   usePollAppOperations(appId);
