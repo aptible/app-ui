@@ -56,7 +56,7 @@ export const DatabaseItemView = ({
       <Link to={databaseDetailUrl(database.id)} className="flex">
         <img
           src={`/database-types/logo-${database.type}.png`}
-          className="w-8 h-8 mr-2 mt-2 align-middle"
+          className="w-[32px] h-[32px] mr-2 mt-2 align-middle"
           aria-label={`${database.type} Database`}
         />
         <p className="flex flex-col">

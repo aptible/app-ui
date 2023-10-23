@@ -18,7 +18,7 @@ export const StackItemView = ({ stack }: { stack: DeployStack }) => {
               : "/resource-types/logo-stack.png"
           }
           alt="stack icon"
-          className="w-8 h-8 mr-2"
+          className="w-[32px] h-[32px] mr-2"
         />
         {stack.name}
       </Link>

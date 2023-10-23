@@ -35,7 +35,7 @@ export function OpHeader({
         icon={
           <img
             src={"/resource-types/logo-activity.png"}
-            className="w-8 h-8 mr-3"
+            className="w-[32px] h-[32px] mr-3"
             aria-label="Operation"
           />
         }
