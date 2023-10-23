@@ -28,6 +28,7 @@ import {
   Box,
   Code,
   ExternalLink,
+  PreBox,
   PreCode,
   ProgressProject,
   Select,
@@ -111,8 +112,14 @@ interface StarterOption extends SelectOption {
   repo: string;
 }
 
+const customCodeOption = {
+  label: "Custom Code",
+  value: "none",
+  query: {},
+  repo: "",
+};
 const starterTemplateOptions: StarterOption[] = [
-  { label: "Custom Code", value: "none", query: {}, repo: "" },
+  customCodeOption,
   {
     label: "Ruby on Rails v7 Template",
     value: "git@github.com:aptible/template-rails.git",
@@ -158,7 +165,7 @@ export const AppDeployWithGitPage = () => {
   const { appId = "" } = useParams();
   useSshKeyRequired(appDeployWithGitAddKeyUrl(appId));
 
-  const [starter, setStarter] = useState<StarterOption>();
+  const [starter, setStarter] = useState<StarterOption>(customCodeOption);
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   usePollAppOperations(appId);
@@ -260,6 +267,28 @@ export const AppDeployWithGitPage = () => {
             allowCopy
           />
         </div>
+
+        {starter && starter.value === "none" ? (
+          <div className="mt-4">
+            <h4 className={tokens.type.h4}>
+              Configure database migrations (Optional)
+            </h4>
+            <div className="text-black-500 mr-2">
+              1. Add a <Code>.aptible.yml</Code> file in the root directory of
+              your app (see example below).
+            </div>
+            <div className="text-black-500 mb-1 mr-2">
+              2. Commit your code changes.
+            </div>
+            <PreBox
+              segments={listToInvertedTextColor([
+                "before_release:\n",
+                "  - python3 manage.py migrate",
+              ])}
+              allowCopy
+            />
+          </div>
+        ) : null}
 
         <div className="mt-4">
           <h4 className={tokens.type.h4}>Push your code to our scan branch</h4>
