@@ -179,7 +179,7 @@ export const DEPLOY_DATABASE_NAME = "databases";
 const slice = createTable<DeployDatabase>({
   name: DEPLOY_DATABASE_NAME,
 });
-const { add: addDeployDatabases } = slice.actions;
+const { add: addDeployDatabases, reset: resetDeployDatabases } = slice.actions;
 
 export const hasDeployDatabase = (a: DeployDatabase) => a.id !== "";
 export const databaseReducers = createReducerMap(slice);
@@ -349,6 +349,13 @@ export const fetchDatabases = api.get(
   "/databases?per_page=5000&no_embed=true",
   {
     saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetDeployDatabases());
   },
 );
 

@@ -131,7 +131,8 @@ export const DEPLOY_METRIC_DRAIN_NAME = "metricDrains";
 const slice = createTable<DeployMetricDrain>({
   name: DEPLOY_METRIC_DRAIN_NAME,
 });
-const { add: addDeployMetricDrains } = slice.actions;
+const { add: addDeployMetricDrains, reset: resetDeployMetricDrains } =
+  slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_METRIC_DRAIN_NAME],
 );
@@ -163,9 +164,19 @@ export const fetchEnvMetricDrains = api.get<{ id: string }>(
   "/accounts/:id/metric_drains",
 );
 
-export const fetchMetricDrains = api.get("/metric_drains?per_page=5000", {
-  saga: cacheTimer(),
-});
+export const fetchMetricDrains = api.get(
+  "/metric_drains?per_page=5000",
+  {
+    saga: cacheTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetDeployMetricDrains());
+  },
+);
 
 interface CreateMetricDrainBase {
   envId: string;

@@ -125,7 +125,7 @@ export const DEPLOY_STACK_NAME = "stacks";
 const slice = createTable<DeployStack>({
   name: DEPLOY_STACK_NAME,
 });
-const { add: addDeployStacks } = slice.actions;
+const { add: addDeployStacks, reset: resetDeployStacks } = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_STACK_NAME],
 );
@@ -267,9 +267,19 @@ export const selectContainerProfilesForStack = createSelector(
 
 export const stackReducers = createReducerMap(slice);
 
-export const fetchStacks = api.get("/stacks?per_page=5000", {
-  saga: cacheMinTimer(),
-});
+export const fetchStacks = api.get(
+  "/stacks?per_page=5000",
+  {
+    saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetDeployStacks());
+  },
+);
 
 export const fetchStack = api.get<{ id: string }>("/stacks/:id");
 

@@ -141,6 +141,7 @@ const {
   add: addDeployEnvironments,
   patch: patchDeployEnvironments,
   remove: removeEnvironments,
+  reset: resetEnvironments,
 } = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_ENVIRONMENT_NAME],
@@ -197,6 +198,13 @@ export const fetchEnvironments = api.get(
   "/accounts?per_page=5000&no_embed=true&metrics[]=app_count&metrics[]=database_count",
   {
     saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetEnvironments());
   },
 );
 
