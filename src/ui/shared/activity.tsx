@@ -72,7 +72,7 @@ const getImageForResourceType = (resourceType: ResourceType) => {
   return (
     <img
       src={imageToUse}
-      className="w-[32px] h-[32px] mr-2 mt-2 align-middle"
+      className="w-[32px] h-[32px] mr-2 mt-1 align-middle"
       aria-label={resourceType}
     />
   );
