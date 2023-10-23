@@ -42,7 +42,7 @@ export const AppItemView = ({ app }: { app: DeployApp }) => {
     <Link to={appDetailUrl(app.id)} className="flex">
       <img
         src="/resource-types/logo-app.png"
-        className="w-8 h-8 mr-2 align-middle"
+        className="w-[32px] h-[32px] mr-2 align-middle"
         aria-label="App"
       />
       <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
@@ -242,7 +242,7 @@ export const AppListByOrg = () => {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
   };
   const apps = useSelector((s: AppState) =>
     selectAppsForTableSearch(s, { search }),

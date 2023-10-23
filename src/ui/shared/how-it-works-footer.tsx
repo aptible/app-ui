@@ -1,6 +1,6 @@
 import { Code } from "./code";
 import { ExternalLink } from "./external-link";
-import { IconChevronRight, IconChevronUp } from "./icons";
+import { IconChevronDown, IconChevronRight } from "./icons";
 import { tokens } from "./tokens";
 
 import { useState } from "react";
@@ -22,7 +22,7 @@ export const HelpTextAccordion = ({
           onClick={() => setOpen(!isOpen)}
         >
           {isOpen ? (
-            <IconChevronUp className="w-[30px]" />
+            <IconChevronDown className="w-[30px]" />
           ) : (
             <IconChevronRight className="w-[30px]" />
           )}

@@ -66,7 +66,7 @@ export function DatabaseHeader({
         icon={
           <img
             src={`/database-types/logo-${database.type}.png`}
-            className="w-8 h-8 mr-3"
+            className="w-[32px] h-[32px] mr-3"
             aria-label={`${database.type} Database`}
           />
         }

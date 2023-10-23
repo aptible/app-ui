@@ -56,7 +56,7 @@ export const DatabaseItemView = ({
       <Link to={databaseDetailUrl(database.id)} className="flex">
         <img
           src={`/database-types/logo-${database.type}.png`}
-          className="w-8 h-8 mr-2 mt-2 align-middle"
+          className="w-[32px] h-[32px] mr-2 mt-2 align-middle"
           aria-label={`${database.type} Database`}
         />
         <p className="flex flex-col">
@@ -236,7 +236,7 @@ export const DatabaseListByOrg = () => {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
   };
   const dbs = useSelector((s: AppState) =>
     selectDatabasesForTableSearch(s, {

@@ -95,7 +95,7 @@ export function DetailTitleBar({
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center">
-        {icon ? <div className="w-8 h-8 mr-3">{icon}</div> : null}
+        {icon ? <div className="w-[32px] h-[32px] mr-3">{icon}</div> : null}
         <h1 className="text-lg text-gray-500">{title}</h1>
       </div>
 
@@ -122,7 +122,7 @@ export function DetailInfoItem({
   return (
     <div>
       <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-      <div>{children}</div>
+      <div className="break-all">{children}</div>
     </div>
   );
 }

@@ -55,7 +55,7 @@ export const EndpointItemView = ({
     >
       <img
         src="/resource-types/logo-vhost.png"
-        className="w-8 h-8 mr-2 align-middle"
+        className="w-[32px] h-[32px] mr-2 align-middle"
         aria-label="Endpoint"
       />
       <p className={`${tokens.type["table link"]} leading-8`}>
@@ -206,7 +206,7 @@ export function EndpointsByOrg() {
   const search = params.get("search") || "";
   useQuery(fetchEndpoints());
   const onChange = (nextSearch: string) => {
-    setParams({ search: nextSearch });
+    setParams({ search: nextSearch }, { replace: true });
   };
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsForTableSearch(s, { search }),
@@ -236,7 +236,7 @@ export function EndpointsByEnv({ envId }: { envId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (nextSearch: string) => {
-    setParams({ search: nextSearch });
+    setParams({ search: nextSearch }, { replace: true });
   };
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByEnvIdForTableSearch(s, { search, envId }),
@@ -262,7 +262,7 @@ export function EndpointsByApp({ appId }: { appId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (nextSearch: string) => {
-    setParams({ search: nextSearch });
+    setParams({ search: nextSearch }, { replace: true });
   };
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
   const endpoints = useSelector((s: AppState) =>
@@ -304,7 +304,7 @@ export function EndpointsByDatabase({ dbId }: { dbId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (nextSearch: string) => {
-    setParams({ search: nextSearch });
+    setParams({ search: nextSearch }, { replace: true });
   };
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByDbIdForTableSearch(s, { search, dbId }),
@@ -345,7 +345,7 @@ export function EndpointsByCert({ certId }: { certId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (nextSearch: string) => {
-    setParams({ search: nextSearch });
+    setParams({ search: nextSearch }, { replace: true });
   };
   useQuery(fetchCertificateById({ certId }));
   const endpoints = useSelector((s: AppState) =>
@@ -374,7 +374,7 @@ export function EndpointsByDbService({
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (nextSearch: string) => {
-    setParams({ search: nextSearch });
+    setParams({ search: nextSearch }, { replace: true });
   };
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
   const endpoints = useSelector((s: AppState) =>

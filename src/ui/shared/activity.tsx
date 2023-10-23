@@ -72,7 +72,7 @@ const getImageForResourceType = (resourceType: ResourceType) => {
   return (
     <img
       src={imageToUse}
-      className="w-8 h-8 mr-2 mt-2 align-middle"
+      className="w-[32px] h-[32px] mr-2 mt-2 align-middle"
       aria-label={resourceType}
     />
   );
@@ -258,7 +258,7 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   });
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
 
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
@@ -293,7 +293,7 @@ export function ActivityByEnv({ envId }: { envId: string }) {
   });
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
 
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
@@ -330,7 +330,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
   });
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
 
   const resourceIds = useMemo(() => [appId], [appId]);
   const ops = useSelector((s: AppState) =>
@@ -369,7 +369,7 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   });
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
 
   const resourceIds = useMemo(
     () => [dbId, db.serviceId].filter(Boolean),
@@ -407,7 +407,7 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
   });
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
 
   const resourceIds = useMemo(() => [enpId], [enpId]);
   const ops = useSelector((s: AppState) =>
