@@ -55,7 +55,7 @@ export const EndpointItemView = ({
     >
       <img
         src="/resource-types/logo-vhost.png"
-        className="w-8 h-8 mr-2 align-middle"
+        className="w-[32px] h-[32px] mr-2 align-middle"
         aria-label="Endpoint"
       />
       <p className={`${tokens.type["table link"]} leading-8`}>

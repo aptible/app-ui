@@ -299,56 +299,56 @@ const Colors = () => (
 
     <h3 className={tokens.type.h3}>Main Colors</h3>
     <div className="flex my-2">
-      <div className="rounded-full bg-black w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-black w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Black</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-white border-solid border border-black w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-white border-solid border border-black w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">White</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-indigo w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-indigo w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Indigo</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-yellow w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-yellow w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Yellow</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-gold w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-gold w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Gold</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-forest w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-forest w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Forest</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-red w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-red w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Red</p>
     </div>
     <h3 className={tokens.type.h3}>Misc. Colors</h3>
     <div className="flex my-2">
-      <div className="rounded-full bg-off-white border-solid border border-black w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-off-white border-solid border border-black w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Off-White</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-lime w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-lime w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Lime</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-cyan w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-cyan w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Cyan</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-brown w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-brown w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Brown</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-lavender w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-lavender w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Lavender</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-plum w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-plum w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Plum</p>
     </div>
   </div>
