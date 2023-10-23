@@ -1,7 +1,7 @@
 import { useLoader } from "@app/fx";
 import { selectOtp, setupOtp } from "@app/mfa";
 import { settingsUrl } from "@app/routes";
-import { selectCurrentUserId, updateUser } from "@app/users";
+import { selectCurrentUserId, updateSecurityUser } from "@app/users";
 import QRCode from "qrcode.react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,7 +21,7 @@ export const OtpSetupPage = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
   const otpLoader = useLoader(setupOtp);
-  const userLoader = useLoader(updateUser);
+  const userLoader = useLoader(updateSecurityUser);
   const otp = useSelector(selectOtp);
   const [error, setError] = useState("");
   const [mfa, setMFA] = useState("");
@@ -56,7 +56,7 @@ export const OtpSetupPage = () => {
     }
 
     dispatch(
-      updateUser({
+      updateSecurityUser({
         type: "otp",
         userId,
         otp_enabled: true,

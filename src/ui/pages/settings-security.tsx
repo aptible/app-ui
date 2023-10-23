@@ -5,7 +5,11 @@ import {
   otpRecoveryCodesUrl,
   otpSetupUrl,
 } from "@app/routes";
-import { selectCurrentUserId, updateEmail, updateUser } from "@app/users";
+import {
+  selectCurrentUserId,
+  updateEmail,
+  updateSecurityUser,
+} from "@app/users";
 import { emailValidator } from "@app/validator";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,7 +46,7 @@ const Section = ({ children, title }: SectionProps) => {
 const ChangePassword = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
-  const loader = useLoader(updateUser);
+  const loader = useLoader(updateSecurityUser);
 
   const [pass, setPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
@@ -59,7 +63,9 @@ const ChangePassword = () => {
       return;
     }
 
-    dispatch(updateUser({ type: "update-password", userId, password: pass }));
+    dispatch(
+      updateSecurityUser({ type: "update-password", userId, password: pass }),
+    );
   };
 
   const groupVariant = error ? "danger" : "info";
@@ -163,7 +169,9 @@ const MultiFactor = () => {
   const navigate = useNavigate();
   const [user, loader] = useCurrentUser();
   const disable = () => {
-    dispatch(updateUser({ type: "otp", userId: user.id, otp_enabled: false }));
+    dispatch(
+      updateSecurityUser({ type: "otp", userId: user.id, otp_enabled: false }),
+    );
   };
 
   const btns = user.otpEnabled ? (

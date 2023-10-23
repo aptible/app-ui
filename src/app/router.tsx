@@ -119,6 +119,7 @@ import {
   VerifyEmailPage,
   VerifyEmailRequired,
 } from "@app/ui";
+import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
 
@@ -619,9 +620,7 @@ export const appRoutes: RouteObject[] = [
     path: routes.SETTINGS_PATH,
     element: (
       <AuthRequired>
-        <ElevateRequired>
-          <SettingsLayout />
-        </ElevateRequired>
+        <SettingsLayout />
       </AuthRequired>
     ),
     children: [
@@ -630,6 +629,23 @@ export const appRoutes: RouteObject[] = [
         element: <SettingsPage />,
       },
 
+      {
+        path: routes.SETTINGS_PROFILE_PATH,
+        element: <SettingsProfilePage />,
+      },
+    ],
+  },
+
+  {
+    path: routes.SETTINGS_PATH,
+    element: (
+      <AuthRequired>
+        <ElevateRequired>
+          <SettingsLayout />
+        </ElevateRequired>
+      </AuthRequired>
+    ),
+    children: [
       {
         path: routes.SECURITY_SETTINGS_PATH,
         element: <SecuritySettingsPage />,

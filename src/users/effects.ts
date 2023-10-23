@@ -80,7 +80,19 @@ function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
   yield* next();
 }
 
-export const updateUser = authApi.patch<PatchUser>(
+export const updateUserName = authApi.patch<{ userId: string; name: string }>(
+  ["/users/:userId", "name"],
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({ name: ctx.payload.name }),
+    });
+    yield* next();
+    if (!ctx.json.ok) return;
+    ctx.loader = { message: "Successfully updated your name!" };
+  },
+);
+
+export const updateSecurityUser = authApi.patch<PatchUser>(
   "/users/:userId",
   elevatedUpdate,
 );

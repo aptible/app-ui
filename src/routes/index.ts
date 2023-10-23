@@ -17,6 +17,8 @@ export const elevateUrl = (redirect = "") =>
 
 export const SETTINGS_PATH = "/settings";
 export const settingsUrl = () => SETTINGS_PATH;
+export const SETTINGS_PROFILE_PATH = "/settings/profile";
+export const settingsProfileUrl = () => SETTINGS_PROFILE_PATH;
 
 export const SECURITY_SETTINGS_PATH = "/settings/security";
 export const securitySettingsUrl = () => SECURITY_SETTINGS_PATH;

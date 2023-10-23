@@ -1,6 +1,7 @@
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   securitySettingsUrl,
+  settingsProfileUrl,
   sshSettingsUrl,
   teamContactsUrl,
   teamMembersUrl,
@@ -18,6 +19,7 @@ import { tokens } from "./tokens";
 export function SettingsSidebar() {
   const orgId = useSelector(selectOrganizationSelectedId);
   const accountNav = [
+    { name: "Profile", to: settingsProfileUrl() },
     { name: "Security", to: securitySettingsUrl() },
     { name: "SSH Keys", to: sshSettingsUrl() },
   ];
