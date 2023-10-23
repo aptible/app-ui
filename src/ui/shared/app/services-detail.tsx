@@ -65,7 +65,7 @@ const ServiceListRow = ({
             ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
           </div>
         </Td>
-        <Td className="flex justify-end gap-2 mr-4 mt-4">
+        <Td className="flex justify-end gap-2 mr-4">
           <ButtonLink
             className="w-15"
             size="sm"
