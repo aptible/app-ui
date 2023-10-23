@@ -183,7 +183,7 @@ export const SearchPage = () => {
     selectResourcesForSearch(s, { search }),
   );
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
   const curLimit = Math.min(resources.length, SEARCH_DISPLAY_LIMIT);
   const resultText = `Displaying ${curLimit} of ${resources.length} results`;
 

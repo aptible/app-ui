@@ -242,7 +242,7 @@ export const AppListByOrg = () => {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
   };
   const apps = useSelector((s: AppState) =>
     selectAppsForTableSearch(s, { search }),
