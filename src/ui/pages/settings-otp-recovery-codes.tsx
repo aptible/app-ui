@@ -1,9 +1,17 @@
 import { useCache } from "@app/fx";
 import { fetchOtpCodes } from "@app/mfa";
-import { settingsUrl } from "@app/routes";
+import { securitySettingsUrl } from "@app/routes";
 import { HalEmbedded } from "@app/types";
 import { useCurrentUser } from "../hooks";
-import { Box, BoxGroup, Breadcrumbs, Loading } from "../shared";
+import {
+  BannerMessages,
+  Box,
+  BoxGroup,
+  Breadcrumbs,
+  Group,
+  Loading,
+  PreCode,
+} from "../shared";
 
 interface OtpCode {
   id: string;
@@ -14,34 +22,39 @@ type OtpResponse = HalEmbedded<{ otp_recovery_codes: OtpCode[] }>;
 
 export const OtpRecoveryCodesPage = () => {
   const [user] = useCurrentUser();
-  const { data, isLoading } = useCache<OtpResponse>(
+  const loader = useCache<OtpResponse>(
     fetchOtpCodes({ otpId: user.currentOtpId }),
   );
-
-  if (isLoading) {
-    return <Loading />;
-  }
-  if (!data) {
-    return <div>Woops</div>;
-  }
-  const codes = data._embedded.otp_recovery_codes;
+  const codes = loader.data?._embedded?.otp_recovery_codes || [];
 
   return (
     <BoxGroup>
       <Breadcrumbs
         crumbs={[
-          { name: "Settings", to: settingsUrl() },
+          { name: "Security Settings", to: securitySettingsUrl() },
           { name: "Recovery Codes", to: null },
         ]}
       />
       <Box>
-        {codes.map((d) => {
-          return (
-            <div key={d.id} className="my-2">
-              {d.value}
-            </div>
-          );
-        })}
+        <Group>
+          {loader.isInitialLoading ? <Loading /> : null}
+
+          <BannerMessages {...loader} />
+
+          <p>Backup codes can only be used once. Keep them somewhere safe.</p>
+
+          <p>
+            If you run out, you'll need to disable and re-enable 2-factor
+            authentication.
+          </p>
+
+          <PreCode
+            allowCopy
+            segments={codes
+              .filter((c) => c.used === false)
+              .map((c) => ({ text: c.value, className: "text-lime" }))}
+          />
+        </Group>
       </Box>
     </BoxGroup>
   );

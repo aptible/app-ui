@@ -55,3 +55,11 @@ export const fetchEmailVerificationPending = authApi.get<{ userId: string }>(
     yield* next();
   },
 );
+
+export const revokeEmailVerification = authApi.delete<{ id: string }>(
+  "/email_verification_challenges/:id",
+  function* (ctx, next) {
+    ctx.elevated = true;
+    yield* next();
+  },
+);

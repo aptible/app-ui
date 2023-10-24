@@ -61,11 +61,6 @@ interface RemoveOtp extends UserBase {
   otp_enabled: false;
 }
 
-// This is a discriminated union.
-// When we provide a `type` to this payload we can make guarentees about the
-// we require in order to perform the update.
-type PatchUser = UpdatePassword | AddOtp | RemoveOtp;
-
 type ElevatedPostCtx = AuthApiCtx<
   any,
   { userId: string; [key: string]: string | number | boolean }
@@ -97,8 +92,16 @@ export const updateUserName = authApi.patch<{ userId: string; name: string }>(
   },
 );
 
-export const updateSecurityUser = authApi.patch<PatchUser>(
-  "/users/:userId",
+export const updatePassword = authApi.patch<UpdatePassword>(
+  ["/users/:userId", "pass"],
+  elevatedUpdate,
+);
+export const addOtp = authApi.patch<AddOtp>(
+  ["/users/:userId", "addotp"],
+  elevatedUpdate,
+);
+export const rmOtp = authApi.patch<RemoveOtp>(
+  ["/users/:userId", "rmotp"],
   elevatedUpdate,
 );
 

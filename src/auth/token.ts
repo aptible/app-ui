@@ -1,17 +1,18 @@
-import { call, setLoaderSuccess } from "@app/fx";
-import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
-
 import { authApi } from "@app/api";
+import { selectEnv } from "@app/env";
+import { call, select, setLoaderSuccess } from "@app/fx";
 import { resetStore } from "@app/reset-store";
 import {
   TokenSuccessResponse,
   deserializeToken,
-  resetToken,
+  selectElevatedToken,
+  selectToken,
   setElevatedToken,
   setToken,
 } from "@app/token";
 import { tunaEvent, tunaIdentify } from "@app/tuna";
 import { AuthApiCtx } from "@app/types";
+import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 import { AUTH_LOADER_ID } from "./loader";
 
 export interface CreateTokenPayload {
@@ -145,12 +146,22 @@ export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
 export const revokeAllTokens = authApi.post(
   "/tokens/revoke_all_accessible",
   function* onRevokeAll(ctx, next) {
+    const env = yield* select(selectEnv);
+    const token = yield* select(selectToken);
+    const elevated = yield* select(selectElevatedToken);
+    ctx.request = ctx.req({
+      body: JSON.stringify({
+        except_tokens: [
+          `${env.authUrl}/tokens/${token.tokenId}`,
+          `${env.authUrl}/tokens/${elevated.tokenId}`,
+        ],
+      }),
+    });
     yield* next();
     if (!ctx.json.ok) {
       return;
     }
     tunaEvent("revoked-all-tokens");
-    ctx.actions.push(resetToken());
     ctx.loader = { message: "Success!" };
   },
 );

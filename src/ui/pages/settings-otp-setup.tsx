@@ -1,10 +1,11 @@
-import { useLoader } from "@app/fx";
+import { useLoader, useLoaderSuccess } from "@app/fx";
 import { selectOtp, setupOtp } from "@app/mfa";
-import { settingsUrl } from "@app/routes";
-import { selectCurrentUserId, updateSecurityUser } from "@app/users";
+import { securitySettingsUrl } from "@app/routes";
+import { addOtp, selectCurrentUserId } from "@app/users";
 import QRCode from "qrcode.react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import {
   BannerMessages,
   Box,
@@ -18,14 +19,23 @@ import {
 } from "../shared";
 
 export const OtpSetupPage = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
   const otpLoader = useLoader(setupOtp);
-  const userLoader = useLoader(updateSecurityUser);
   const otp = useSelector(selectOtp);
   const [error, setError] = useState("");
   const [mfa, setMFA] = useState("");
   const [secret, setSecret] = useState("");
+  const action = addOtp({
+    type: "otp",
+    userId,
+    otp_enabled: true,
+    current_otp_configuration: otp.currentUrl,
+    current_otp_configuration_id: otp.id,
+    otp_token: mfa,
+  });
+  const userLoader = useLoader(action);
 
   useEffect(() => {
     if (!otp.uri) {
@@ -55,23 +65,18 @@ export const OtpSetupPage = () => {
       return;
     }
 
-    dispatch(
-      updateSecurityUser({
-        type: "otp",
-        userId,
-        otp_enabled: true,
-        current_otp_configuration: otp.currentUrl,
-        current_otp_configuration_id: otp.id,
-        otp_token: mfa,
-      }),
-    );
+    dispatch(action);
   };
+
+  useLoaderSuccess(userLoader, () => {
+    navigate(securitySettingsUrl());
+  });
 
   return (
     <BoxGroup>
       <Breadcrumbs
         crumbs={[
-          { name: "Settings", to: settingsUrl() },
+          { name: "Security Settings", to: securitySettingsUrl() },
           { name: "2-Factor Authentication", to: null },
         ]}
       />

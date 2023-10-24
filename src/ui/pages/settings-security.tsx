@@ -1,4 +1,8 @@
-import { fetchEmailVerificationPending, revokeAllTokens } from "@app/auth";
+import {
+  fetchEmailVerificationPending,
+  revokeAllTokens,
+  revokeEmailVerification,
+} from "@app/auth";
 import { prettyDateTime } from "@app/date";
 import { useCache, useLoader, useLoaderSuccess } from "@app/fx";
 import {
@@ -8,15 +12,14 @@ import {
 } from "@app/routes";
 import { HalEmbedded } from "@app/types";
 import {
+  rmOtp,
   selectCurrentUserId,
   updateEmail,
-  updateSecurityUser,
+  updatePassword,
 } from "@app/users";
 import { emailValidator } from "@app/validator";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
 import { useCurrentUser } from "../hooks";
 import {
   Banner,
@@ -24,6 +27,7 @@ import {
   Box,
   BoxGroup,
   Button,
+  ButtonLink,
   FormGroup,
   Group,
   Input,
@@ -52,12 +56,12 @@ const ChangePassword = () => {
   const [pass, setPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
   const [error, setError] = useState("");
-  const action = updateSecurityUser({
+  const action = updatePassword({
     type: "update-password",
     userId,
     password: pass,
   });
-  const loader = useLoader(updateSecurityUser);
+  const loader = useLoader(updatePassword);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -146,6 +150,7 @@ const ChangeEmail = () => {
   const pending = useCache<
     HalEmbedded<{ email_verification_challenges: EmailVerificationChallenge[] }>
   >(fetchEmailVerificationPending({ userId }));
+  const revokeLoader = useLoader(revokeEmailVerification);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -158,9 +163,18 @@ const ChangeEmail = () => {
     dispatch(updateEmail({ userId, email }));
   };
 
+  const onRevoke = (id: string) => {
+    dispatch(revokeEmailVerification({ id }));
+  };
+
   useLoaderSuccess(loader, () => {
     setError("");
     setEmail("");
+    pending.trigger();
+  });
+
+  useLoaderSuccess(revokeLoader, () => {
+    pending.trigger();
   });
 
   return (
@@ -208,8 +222,14 @@ const ChangeEmail = () => {
               <Tooltip text={`Expires ${prettyDateTime(em.expires_at)}`}>
                 <span>{em.email}</span>
               </Tooltip>
-              <Button size="xs" requireConfirm variant="delete">
-                revoke
+              <Button
+                size="xs"
+                requireConfirm
+                variant="delete"
+                onClick={() => onRevoke(em.id)}
+                isLoading={revokeLoader.isLoading}
+              >
+                Revoke
               </Button>
             </div>
           );
@@ -221,39 +241,52 @@ const ChangeEmail = () => {
 
 const MultiFactor = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [user, loader] = useCurrentUser();
-  const disable = () => {
-    dispatch(
-      updateSecurityUser({ type: "otp", userId: user.id, otp_enabled: false }),
-    );
+  const rmAction = rmOtp({
+    type: "otp",
+    userId: user.id,
+    otp_enabled: false,
+  });
+  const rmLoader = useLoader(rmAction);
+  const onDisable = () => {
+    dispatch(rmAction);
   };
 
-  const btns = user.otpEnabled ? (
-    <Group>
-      <Button className="w-fit" variant="delete" onClick={disable}>
-        Disable 2FA
-      </Button>
-      <Link to={otpRecoveryCodesUrl()}>Download backup codes</Link>
-    </Group>
-  ) : (
-    <Button className="w-fit" onClick={() => navigate(otpSetupUrl())}>
-      Configure 2FA
-    </Button>
-  );
-  const content = loader.isLoading ? <Loading /> : btns;
-
   return (
-    <div className="flex flex-col gap-4">
-      <ul className="mb-2">
-        <li>
-          Download your backup codes if you haven&apos;t done so yet. 2FA does
-          not apply to git push operations.
-        </li>
-      </ul>
+    <Group>
+      {loader.isLoading ? <Loading /> : null}
+      <BannerMessages {...rmLoader} />
 
-      {content}
-    </div>
+      {user.otpEnabled ? (
+        <Group>
+          <p>2FA does not apply to git push operations.</p>
+          <Button
+            className="w-fit"
+            variant="delete"
+            onClick={onDisable}
+            requireConfirm
+            isLoading={rmLoader.isLoading}
+          >
+            Disable 2FA
+          </Button>
+          <Banner variant="info">
+            Download your backup codes if you haven&apos;t done so yet!
+          </Banner>
+          <div>
+            <ButtonLink to={otpRecoveryCodesUrl()} className="w-fit">
+              Download backup codes
+            </ButtonLink>
+          </div>
+        </Group>
+      ) : (
+        <Group>
+          <p>2-factor authentication can be enabled for your account.</p>
+          <ButtonLink to={otpSetupUrl()} className="w-fit">
+            Configure 2FA
+          </ButtonLink>
+        </Group>
+      )}
+    </Group>
   );
 };
 
@@ -271,7 +304,9 @@ const SecurityKeys = () => {
             The following Security Keys are associated with your account and can
             be used to log in:
           </div>
-          <Link to={addSecurityKeyUrl()}>Add a new Security Key</Link>
+          <ButtonLink className="w-fit" to={addSecurityKeyUrl()}>
+            Add a new Security Key
+          </ButtonLink>
         </Group>
       ) : (
         <Banner variant="info">
@@ -321,7 +356,7 @@ export const SecuritySettingsPage = () => {
         </Section>
       </div>
 
-      <Section title="OTP">
+      <Section title="2-Factor Authentication">
         <MultiFactor />
       </Section>
       <Section title="Security Keys">
