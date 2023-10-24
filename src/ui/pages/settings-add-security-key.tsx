@@ -31,27 +31,41 @@ export const AddSecurityKeyPage = () => {
   const challenge = useCache<U2fChallenge>(fetchU2fChallenges({ userId }));
   const dispatch = useDispatch();
   const loader = useLoader(createWebauthnDevice);
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!name) {
-      setError("Name must not be blank");
-      return;
-    }
-
+  const createKey = () => {
+    setLoading(true);
     if (challenge.isError) {
       setError(challenge.message);
       return;
     }
 
     if (!challenge.data) {
-      setError("could not load u2f challenge");
+      setError("Could not load u2f challenge");
+      return;
+    }
+
+    webauthnCreate({ publicKey: challenge.data.payload })
+      .then((u2f) => {
+        dispatch(createWebauthnDevice({ userId, name, u2f }));
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!name) {
+      setError("Name must not be blank");
       return;
     }
 
     setError("");
-    const u2f = await webauthnCreate({ publicKey: challenge.data.payload });
-    dispatch(createWebauthnDevice({ userId, name, u2f }));
+    createKey();
   };
 
   useLoaderSuccess(loader, () => {
@@ -106,7 +120,7 @@ export const AddSecurityKeyPage = () => {
               <div>
                 <Button
                   type="submit"
-                  isLoading={loader.isLoading}
+                  isLoading={loader.isLoading || loading}
                   disabled={name === ""}
                 >
                   Save Key
