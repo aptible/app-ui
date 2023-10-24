@@ -54,6 +54,12 @@ const SshItem = ({
   );
 };
 
+const sortDate = (a: { created_at: string }, b: { created_at: string }) => {
+  const aDate = new Date(a.created_at).getTime();
+  const bDate = new Date(b.created_at).getTime();
+  return bDate - aDate;
+};
+
 export const SSHSettingsPage = () => {
   const user = useSelector(selectCurrentUser);
   const loader = useCache<
@@ -74,11 +80,9 @@ export const SSHSettingsPage = () => {
       <Group>
         <BannerMessages {...rmLoader} />
         {loader.isInitialLoading ? <Loading /> : null}
-        {loader.data?._embedded?.ssh_keys.map((ssh) => {
+        {loader.data?._embedded?.ssh_keys.sort(sortDate).map((ssh) => {
           return (
-            <div key={ssh.id}>
-              <SshItem ssh={ssh} onDelete={() => loader.trigger()} />
-            </div>
+            <SshItem key={ssh.id} ssh={ssh} onDelete={() => loader.trigger()} />
           );
         })}
       </Group>

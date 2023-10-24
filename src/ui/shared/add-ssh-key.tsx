@@ -9,6 +9,7 @@ import { selectCurrentUserId } from "@app/users";
 import { BannerMessages } from "./banner";
 import { Button } from "./button";
 import { FormGroup } from "./form-group";
+import { Group } from "./group";
 import { PreCode } from "./pre-code";
 import { tokens } from "./tokens";
 
@@ -29,6 +30,7 @@ export const AddSSHKeyForm = ({
   };
 
   useLoaderSuccess(loader, () => {
+    setKey("");
     onSuccess();
   });
 
@@ -63,32 +65,33 @@ export const AddSSHKeyForm = ({
       <div className="mt-2">
         <h4 className={tokens.type.h4} />
         <form onSubmit={addKey}>
-          <FormGroup
-            label="Step 2. Paste Public SSH Key"
-            htmlFor="public-key"
-            feedbackVariant="info"
-          >
-            <textarea
-              id="public-key"
-              name="public-key"
-              className={tokens.type.textarea}
-              value={key}
-              onChange={(e) => setKey(e.currentTarget.value)}
-            />
-          </FormGroup>
-
-          {loader.isError ? <BannerMessages {...loader} /> : null}
-
-          <div>
-            <Button
-              type="submit"
-              className="w-full mt-2"
-              disabled={!key}
-              isLoading={loader.isLoading}
+          <Group size="sm">
+            <FormGroup
+              label="Step 2. Paste Public SSH Key"
+              htmlFor="public-key"
+              feedbackVariant="info"
             >
-              Save Key
-            </Button>
-          </div>
+              <textarea
+                id="public-key"
+                name="public-key"
+                className={tokens.type.textarea}
+                value={key}
+                onChange={(e) => setKey(e.currentTarget.value)}
+              />
+            </FormGroup>
+
+            {loader.isError ? <BannerMessages {...loader} /> : null}
+
+            <div>
+              <Button
+                type="submit"
+                disabled={!key}
+                isLoading={loader.isLoading}
+              >
+                Save Key
+              </Button>
+            </div>
+          </Group>
         </form>
       </div>
     </div>
