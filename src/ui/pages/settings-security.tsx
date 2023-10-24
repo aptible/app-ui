@@ -69,6 +69,10 @@ const ChangePassword = () => {
       return;
     }
 
+    if (pass === "") {
+      return;
+    }
+
     if (pass !== confirmPass) {
       setError("Passwords do not match");
       return;
@@ -125,7 +129,7 @@ const ChangePassword = () => {
         <Button
           className="w-fit"
           type="submit"
-          disabled={loader.isLoading}
+          disabled={pass === ""}
           isLoading={loader.isLoading}
         >
           Change Password
