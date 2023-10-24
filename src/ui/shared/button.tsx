@@ -152,6 +152,12 @@ export const Button: FC<ButtonProps> = ({
         </button>
         <button
           {...props}
+          onClick={(e) => {
+            setConfirmPrompted(false);
+            if (props.onClick) {
+              props.onClick(e);
+            }
+          }}
           type={type}
           className={`${className} ${classes}`}
           disabled={isLoading || props.disabled}

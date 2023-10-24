@@ -177,6 +177,9 @@ const ChangeEmail = () => {
     pending.trigger();
   });
 
+  const challenges =
+    pending.data?._embedded?.email_verification_challenges || [];
+
   return (
     <Group>
       <form onSubmit={onSubmit}>
@@ -216,7 +219,10 @@ const ChangeEmail = () => {
       <Group size="sm">
         <h4 className={tokens.type.h4}>Pending Requests</h4>
         {pending.isInitialLoading ? <Loading /> : null}
-        {pending.data?._embedded?.email_verification_challenges.map((em) => {
+        {challenges.length === 0 ? (
+          <Banner variant="info">No pending requests</Banner>
+        ) : null}
+        {challenges.map((em) => {
           return (
             <div key={em.id} className="flex justify-between items-center">
               <Tooltip text={`Expires ${prettyDateTime(em.expires_at)}`}>
@@ -325,14 +331,12 @@ const LogOut = () => {
 
   return (
     <Group>
+      <BannerMessages {...loader} />
+
       <div>
         This action will log out all <strong>other</strong> sessions and cannot
         be undone.
       </div>
-
-      {loader.isError ? (
-        <Banner variant="error">{loader.message}</Banner>
-      ) : null}
 
       <div>
         <Button variant="delete" requireConfirm onClick={confirmLogout}>
