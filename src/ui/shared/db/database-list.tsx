@@ -26,6 +26,7 @@ import type { AppState, DeployDatabase } from "@app/types";
 
 import { formatDatabaseType } from "@app/deploy";
 import {
+  databaseBackupsUrl,
   databaseDetailUrl,
   databaseScaleUrl,
   environmentCreateDbUrl,
@@ -101,6 +102,36 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   return (
     <Td>
       <div className={tokens.type.darker}>${currentPrice}</div>
+      <div className={tokens.type["normal lighter"]}>Monthly Est.</div>
+    </Td>
+  );
+};
+
+const DatabaseBackupsCell = ({ database }: DatabaseCellProps) => {
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: database.serviceId }),
+  );
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: database.id }),
+  );
+  const currentContainerProfile = getContainerProfileFromType(
+    service.instanceClass,
+  );
+  const { pricePerMonth: currentPrice } = hourlyAndMonthlyCostsForContainers(
+    service.containerCount,
+    currentContainerProfile,
+    service.containerMemoryLimitMb,
+    disk.size,
+  );
+  return (
+    <Td>
+      <Link
+        to={databaseBackupsUrl(database.id)}
+        className={tokens.type["table link"]}
+      >
+        ${currentPrice}
+      </Link>
+      <div className={tokens.type["normal lighter"]}>3 Copies</div>
     </Td>
   );
 };
@@ -250,7 +281,8 @@ export const DatabaseListByOrg = () => {
     "Environment",
     "Disk Size",
     "Container Size",
-    "Est. Monthly Cost",
+    "Container Cost",
+    "Backup Cost",
     "Actions",
   ];
 
@@ -292,6 +324,7 @@ export const DatabaseListByOrg = () => {
                 <DatabaseDiskSizeCell database={db} />
                 <DatabaseContainerSizeCell database={db} />
                 <DatabaseCostCell database={db} />
+                <DatabaseBackupsCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
             ))}
@@ -328,7 +361,8 @@ export const DatabaseListByEnvironment = ({
     "Environment",
     "Disk Size",
     "Container Size",
-    "Est. Monthly Cost",
+    "Container Cost",
+    "Backup Cost",
     "Actions",
   ];
   const actions = [
@@ -374,6 +408,7 @@ export const DatabaseListByEnvironment = ({
                 <DatabaseDiskSizeCell database={db} />
                 <DatabaseContainerSizeCell database={db} />
                 <DatabaseCostCell database={db} />
+                <DatabaseBackupsCell database={db} />
                 <DatabaseActionsCell database={db} />
               </tr>
             ))}
