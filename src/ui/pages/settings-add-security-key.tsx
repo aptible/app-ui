@@ -1,7 +1,7 @@
 import { createWebauthnDevice, webauthnCreate } from "@app/auth";
 import { useCache, useLoader, useLoaderSuccess } from "@app/fx";
 import { fetchU2fChallenges } from "@app/mfa";
-import { securitySettingsUrl, settingsUrl } from "@app/routes";
+import { securitySettingsUrl } from "@app/routes";
 import { selectCurrentUserId } from "@app/users";
 import { PublicKeyCredentialCreationOptionsJSON } from "@github/webauthn-json/dist/types/basic/json";
 import { useState } from "react";
@@ -62,7 +62,7 @@ export const AddSecurityKeyPage = () => {
     <BoxGroup>
       <Breadcrumbs
         crumbs={[
-          { name: "Settings", to: settingsUrl() },
+          { name: "Security Settings", to: securitySettingsUrl() },
           { name: "Security Keys", to: null },
         ]}
       />
