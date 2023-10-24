@@ -1,11 +1,12 @@
 import { createWebauthnDevice, webauthnCreate } from "@app/auth";
-import { useCache, useLoader } from "@app/fx";
+import { useCache, useLoader, useLoaderSuccess } from "@app/fx";
 import { fetchU2fChallenges } from "@app/mfa";
-import { settingsUrl } from "@app/routes";
+import { securitySettingsUrl, settingsUrl } from "@app/routes";
 import { selectCurrentUserId } from "@app/users";
 import { PublicKeyCredentialCreationOptionsJSON } from "@github/webauthn-json/dist/types/basic/json";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import {
   Banner,
   Box,
@@ -23,6 +24,7 @@ interface U2fChallenge {
 }
 
 export const AddSecurityKeyPage = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const userId = useSelector(selectCurrentUserId);
@@ -51,6 +53,10 @@ export const AddSecurityKeyPage = () => {
     const u2f = await webauthnCreate({ publicKey: challenge.data.payload });
     dispatch(createWebauthnDevice({ userId, name, u2f }));
   };
+
+  useLoaderSuccess(loader, () => {
+    navigate(securitySettingsUrl());
+  });
 
   return (
     <BoxGroup>
@@ -94,7 +100,11 @@ export const AddSecurityKeyPage = () => {
               <Banner variant="error">{loader.message}</Banner>
             ) : null}
             <div>
-              <Button type="submit" isLoading={loader.isLoading}>
+              <Button
+                type="submit"
+                isLoading={loader.isLoading}
+                disabled={name === ""}
+              >
                 Save Key
               </Button>
             </div>
