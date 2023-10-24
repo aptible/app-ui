@@ -40,7 +40,7 @@ export function SettingsProfilePage() {
 
   return (
     <Group>
-      <h1 className={tokens.type.h1}>Profile</h1>
+      <h2 className={tokens.type.h2}>Profile</h2>
       <Box>
         <Group size="sm" variant="horizontal">
           <Group size="sm" className="w-[100px] font-bold">

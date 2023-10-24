@@ -71,7 +71,7 @@ export const SSHSettingsPage = () => {
 
   return (
     <Group>
-      <h1 className={tokens.type.h1}>SSH Settings</h1>
+      <h2 className={tokens.type.h2}>SSH Keys</h2>
 
       <Box>
         <AddSSHKeyForm onSuccess={() => loader.trigger()} />
