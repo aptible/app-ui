@@ -16,6 +16,8 @@ import {
   AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailPage,
+  AppDetailServiceMetricsPage,
+  AppDetailServiceScalePage,
   AppDetailServicesPage,
   AppSettingsPage,
   AppSidebarLayout,
@@ -23,6 +25,8 @@ import {
   AuthRequired,
   BackupRestorePage,
   BillingMethodPage,
+  CertDetailAppsPage,
+  CertDetailEndpointsPage,
   CertDetailLayout,
   CertDetailPage,
   CertDetailSettingsPage,
@@ -41,9 +45,11 @@ import {
   DatabaseDetailLayout,
   DatabaseDetailPage,
   DatabaseEndpointsPage,
+  DatabaseMetricsPage,
   DatabaseScalePage,
   DatabaseSettingsPage,
   DatabasesPage,
+  DeployPage,
   DeploymentsPage,
   ElevatePage,
   ElevateRequired,
@@ -56,12 +62,14 @@ import {
   EndpointsPage,
   EnvSelectorPage,
   EnvironmentActivityPage,
+  EnvironmentActivityReportsPage,
   EnvironmentAppsPage,
   EnvironmentBackupsPage,
   EnvironmentCertificatesPage,
   EnvironmentDatabasesPage,
   EnvironmentDetailCreateCertPage,
   EnvironmentDetailLayout,
+  EnvironmentDetailPage,
   EnvironmentIntegrationsPage,
   EnvironmentSecurityPage,
   EnvironmentSettingsPage,
@@ -96,24 +104,22 @@ import {
   StackDetailEnvironmentsPage,
   StackDetailHidsPage,
   StackDetailLayout,
+  StackDetailPage,
   StackDetailVpcPeeringPage,
   StackDetailVpnTunnelsPage,
   StacksPage,
   StylesPage,
   SupportPage,
+  TeamContactsPage,
+  TeamMembersPage,
   TeamPage,
+  TeamPendingInvitesPage,
+  TeamRolesPage,
+  TeamSsoPage,
   VerifyEmailPage,
   VerifyEmailRequired,
 } from "@app/ui";
-import { AppDetailServiceMetricsPage } from "@app/ui/pages/app-detail-service-metrics";
-import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
-import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
-import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
-import { DatabaseMetricsPage } from "@app/ui/pages/db-detail-metrics";
-import { DeployPage } from "@app/ui/pages/deploy";
-import { EnvironmentDetailPage } from "@app/ui/pages/environment-detail";
-import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
-import { StackDetailPage } from "@app/ui/pages/stack-detail";
+import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
 
@@ -614,9 +620,7 @@ export const appRoutes: RouteObject[] = [
     path: routes.SETTINGS_PATH,
     element: (
       <AuthRequired>
-        <ElevateRequired>
-          <SettingsLayout />
-        </ElevateRequired>
+        <SettingsLayout />
       </AuthRequired>
     ),
     children: [
@@ -624,6 +628,24 @@ export const appRoutes: RouteObject[] = [
         index: true,
         element: <SettingsPage />,
       },
+
+      {
+        path: routes.SETTINGS_PROFILE_PATH,
+        element: <SettingsProfilePage />,
+      },
+    ],
+  },
+
+  {
+    path: routes.SETTINGS_PATH,
+    element: (
+      <AuthRequired>
+        <ElevateRequired>
+          <SettingsLayout />
+        </ElevateRequired>
+      </AuthRequired>
+    ),
+    children: [
       {
         path: routes.SECURITY_SETTINGS_PATH,
         element: <SecuritySettingsPage />,
@@ -648,12 +670,73 @@ export const appRoutes: RouteObject[] = [
         path: routes.ADD_SECURITY_KEY_PATH,
         element: <AddSecurityKeyPage />,
       },
-
-      {
-        path: routes.TEAM_PATH,
-        element: <TeamPage />,
-      },
     ],
+  },
+
+  {
+    path: routes.TEAM_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_MEMBERS_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamMembersPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_ROLES_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamRolesPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_PENDING_INVITES_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamPendingInvitesPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_SSO_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamSsoPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_CONTACTS_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamContactsPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
   },
 
   {

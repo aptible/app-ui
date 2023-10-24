@@ -1,7 +1,7 @@
 import { authApi } from "@app/api";
 import { HalEmbedded } from "@app/types";
 
-interface SshKeyResponse {
+export interface SshKeyResponse {
   id: string;
   name: string;
   md5_fingerprint: string;
@@ -51,3 +51,5 @@ export const addSSHKey = authApi.post<{
 
   yield* next();
 });
+
+export const rmSSHKey = authApi.delete<{ id: string }>("/ssh_keys/:id");

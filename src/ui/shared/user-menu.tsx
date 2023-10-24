@@ -1,6 +1,9 @@
-import { selectLegacyDashboardUrl } from "@app/env";
-import { selectOrganizationSelectedId } from "@app/organizations";
-import { impersonateUrl, logoutUrl, ssoTokenUrl } from "@app/routes";
+import {
+  impersonateUrl,
+  logoutUrl,
+  settingsUrl,
+  ssoTokenUrl,
+} from "@app/routes";
 import { selectIsAuthWithSso } from "@app/token";
 import { selectCanImpersonate } from "@app/users";
 import { useSelector } from "react-redux";
@@ -12,9 +15,7 @@ import { Loading } from "./loading";
 
 export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
   const [user, loader] = useCurrentUser();
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
   const isAuthWithSso = useSelector(selectIsAuthWithSso);
-  const orgId = useSelector(selectOrganizationSelectedId);
 
   const canImpersonate = useSelector(selectCanImpersonate);
 
@@ -25,7 +26,7 @@ export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
   return (
     <div className="w-full mb-2">
       <LinkNav
-        to={`${legacyUrl}/organizations/${orgId}/members`}
+        to={settingsUrl()}
         icon={<IconSettings />}
         name="Settings"
         hideName={hideName}

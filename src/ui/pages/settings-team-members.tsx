@@ -1,5 +1,5 @@
 import { TeamList } from "../shared";
 
-export function TeamPage() {
+export function TeamMembersPage() {
   return <TeamList />;
 }

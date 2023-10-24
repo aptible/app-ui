@@ -6,6 +6,7 @@ import cn from "classnames";
 import { ButtonHTMLAttributes, FC, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, LinkProps } from "react-router-dom";
+import { Group } from "./group";
 import { IconExternalLink } from "./icons";
 import { tokens } from "./tokens";
 import { Tooltip } from "./tooltip";
@@ -135,15 +136,35 @@ export const Button: FC<ButtonProps> = ({
     { "opacity-50": props.disabled },
   );
   if (confirmPrompted) {
+    const cls = cn(
+      tokens.buttons.sizes[size],
+      tokens.buttons.styles.white,
+      buttonShapeStyle(size, shape),
+    );
     return (
-      <button
-        {...props}
-        type={type}
-        className={`${className} ${classes}`}
-        disabled={isLoading || props.disabled}
-      >
-        Confirm
-      </button>
+      <Group variant="horizontal" size="sm">
+        <button
+          className={cls}
+          type="reset"
+          onClick={() => setConfirmPrompted(false)}
+        >
+          Cancel
+        </button>
+        <button
+          {...props}
+          onClick={(e) => {
+            setConfirmPrompted(false);
+            if (props.onClick) {
+              props.onClick(e);
+            }
+          }}
+          type={type}
+          className={`${className} ${classes}`}
+          disabled={isLoading || props.disabled}
+        >
+          Confirm
+        </button>
+      </Group>
     );
   }
 

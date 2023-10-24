@@ -1,10 +1,21 @@
 export const Box = ({
   children,
   className = "",
-}: { children: React.ReactNode; className?: string }) => {
+  size = "lg",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  size?: "lg" | "md" | "sm";
+}) => {
+  const cls = () => {
+    if (size === "md") return "p-4";
+    if (size === "sm") return "p-2";
+    return "p-7";
+  };
+
   return (
     <div
-      className={`bg-white py-7 px-7 shadow border border-black-100 rounded-lg ${className}`}
+      className={`bg-white ${cls()} shadow border border-black-100 rounded-lg ${className}`}
     >
       {children}
     </div>

@@ -15,6 +15,11 @@ export const ELEVATE_PATH = "/elevate";
 export const elevateUrl = (redirect = "") =>
   `${ELEVATE_PATH}?redirect=${redirect}`;
 
+export const SETTINGS_PATH = "/settings";
+export const settingsUrl = () => SETTINGS_PATH;
+export const SETTINGS_PROFILE_PATH = "/settings/profile";
+export const settingsProfileUrl = () => SETTINGS_PROFILE_PATH;
+
 export const SECURITY_SETTINGS_PATH = "/settings/security";
 export const securitySettingsUrl = () => SECURITY_SETTINGS_PATH;
 export const SSH_SETTINGS_PATH = "/settings/ssh";
@@ -25,6 +30,20 @@ export const OTP_RECOVERY_CODES_PATH = "/settings/otp-recovery-codes";
 export const otpRecoveryCodesUrl = () => OTP_RECOVERY_CODES_PATH;
 export const ADD_SECURITY_KEY_PATH = "/settings/add-security-key";
 export const addSecurityKeyUrl = () => ADD_SECURITY_KEY_PATH;
+
+export const TEAM_PATH = `${SETTINGS_PATH}/team`;
+export const teamUrl = () => TEAM_PATH;
+export const TEAM_MEMBERS_PATH = "/settings/team/members";
+export const teamMembersUrl = () => TEAM_MEMBERS_PATH;
+export const TEAM_CONTACTS_PATH = "/settings/team/contacts";
+export const teamContactsUrl = () => TEAM_CONTACTS_PATH;
+export const TEAM_SSO_PATH = "/settings/team/sso";
+export const teamSsoUrl = () => TEAM_SSO_PATH;
+export const TEAM_PENDING_INVITES_PATH = "/settings/team/pending-invites";
+export const teamPendingInvitesUrl = () => TEAM_PENDING_INVITES_PATH;
+export const TEAM_ROLES_PATH = "/settings/team/roles";
+export const teamRolesUrl = () => TEAM_ROLES_PATH;
+
 export const IMPERSONATE_PATH = "/impersonate";
 export const impersonateUrl = () => IMPERSONATE_PATH;
 
@@ -192,11 +211,6 @@ export const CREATE_DB_PATH = "/create/db";
 export const createDbUrl = () => `${CREATE_DB_PATH}`;
 
 export const ERROR_PATH = "/error";
-
-export const SETTINGS_PATH = "/settings";
-export const settingsUrl = () => SETTINGS_PATH;
-export const TEAM_PATH = `${SETTINGS_PATH}/team`;
-export const teamUrl = () => TEAM_PATH;
 
 /*
  * /create -- unauthed page "get started"
