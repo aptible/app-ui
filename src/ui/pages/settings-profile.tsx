@@ -72,13 +72,15 @@ export function SettingsProfilePage() {
               />
             </FormGroup>
 
+            <div>
             <Button
               type="submit"
               isLoading={loader.isLoading}
               disabled={isDisabled}
             >
-              Update
+              Save Changes
             </Button>
+            </div>
           </Group>
         </form>
       </Box>

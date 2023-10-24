@@ -30,12 +30,17 @@ const SshItem = ({
   });
 
   return (
-    <Box size="md">
+    <Box>
       <Group size="sm">
-        <Group variant="horizontal" size="sm" className="items-center">
-          <div className="font-bold">{ssh.name}</div>
-          <Button
-            size="xs"
+        <h4 className={tokens.type.h4}>{ssh.name}</h4>
+
+        <PreCode
+          allowCopy
+          segments={[{ text: ssh.ssh_public_key, className: "text-lime" }]}
+        />
+
+        <div>
+        <Button
             requireConfirm
             onClick={iDelete}
             variant="delete"
@@ -43,12 +48,7 @@ const SshItem = ({
           >
             Delete
           </Button>
-        </Group>
-
-        <PreCode
-          allowCopy
-          segments={[{ text: ssh.ssh_public_key, className: "text-lime" }]}
-        />
+          </div>
       </Group>
     </Box>
   );
