@@ -52,11 +52,7 @@ export function SettingsSidebar() {
       <div>
         <h4 className={`${tokens.type.h4} ml-2`}>Account Settings</h4>
         {accountNav.map((item) => (
-          <NavLink
-            className={navLink}
-            to={item.to}
-            key={item.to}
-          >
+          <NavLink className={navLink} to={item.to} key={item.to}>
             {item.name}
           </NavLink>
         ))}
@@ -78,7 +74,10 @@ export function SettingsSidebar() {
 
       <div>
         <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Billing</h4>
-        <NavLink className={navLink} to={url(`/organizations/${orgId}/admin/billing/invoices`)}>
+        <NavLink
+          className={navLink}
+          to={url(`/organizations/${orgId}/admin/billing/invoices`)}
+        >
           Dashboard <IconExternalLink variant="sm" className="ml-2" />
         </NavLink>
       </div>

@@ -1,10 +1,12 @@
-import { revokeAllTokens } from "@app/auth";
-import { useLoader } from "@app/fx";
+import { fetchEmailVerificationPending, revokeAllTokens } from "@app/auth";
+import { prettyDateTime } from "@app/date";
+import { useCache, useLoader, useLoaderSuccess } from "@app/fx";
 import {
   addSecurityKeyUrl,
   otpRecoveryCodesUrl,
   otpSetupUrl,
 } from "@app/routes";
+import { HalEmbedded } from "@app/types";
 import {
   selectCurrentUserId,
   updateEmail,
@@ -26,6 +28,7 @@ import {
   Group,
   Input,
   Loading,
+  Tooltip,
   tokens,
 } from "../shared";
 
@@ -46,11 +49,15 @@ const Section = ({ children, title }: SectionProps) => {
 const ChangePassword = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
-  const loader = useLoader(updateSecurityUser);
-
   const [pass, setPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
   const [error, setError] = useState("");
+  const action = updateSecurityUser({
+    type: "update-password",
+    userId,
+    password: pass,
+  });
+  const loader = useLoader(updateSecurityUser);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,108 +66,156 @@ const ChangePassword = () => {
     }
 
     if (pass !== confirmPass) {
-      setError("passwords do not match");
+      setError("Passwords do not match");
       return;
     }
 
-    dispatch(
-      updateSecurityUser({ type: "update-password", userId, password: pass }),
-    );
+    dispatch(action);
   };
+
+  useLoaderSuccess(loader, () => {
+    setPass("");
+    setConfirmPass("");
+    setError("");
+  });
 
   const groupVariant = error ? "danger" : "info";
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <FormGroup
-        label="New Password"
-        htmlFor="input-password"
-        feedbackVariant={groupVariant}
-      >
-        <Input
-          name="password"
-          type="new-password"
-          value={pass}
-          onChange={(e) => setPass(e.currentTarget.value)}
-          data-testid="input-password"
-          className="border-black border"
-        />
-      </FormGroup>
-      <FormGroup
-        label="Confirm New Password"
-        htmlFor="input-password"
-        feedbackVariant={groupVariant}
-      >
-        <Input
-          name="config-password"
-          type="new-password"
-          value={confirmPass}
-          onChange={(e) => setConfirmPass(e.currentTarget.value)}
-          data-testid="input-confirm-password"
-          className="border-black border"
-        />
-        <div>{error}</div>
-      </FormGroup>
-      <Button
-        className="w-fit"
-        type="submit"
-        disabled={loader.isLoading}
-        isLoading={loader.isLoading}
-      >
-        Change Password
-      </Button>
-      <BannerMessages {...loader} />
+      <Group size="sm">
+        <BannerMessages {...loader} />
+
+        <FormGroup
+          label="New Password"
+          htmlFor="input-password"
+          feedbackVariant={groupVariant}
+        >
+          <Input
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            value={pass}
+            onChange={(e) => setPass(e.currentTarget.value)}
+            data-testid="input-password"
+            className="border-black border"
+          />
+        </FormGroup>
+        <FormGroup
+          label="Confirm New Password"
+          htmlFor="input-password"
+          feedbackVariant={groupVariant}
+          feedbackMessage={error}
+        >
+          <Input
+            name="confirm-password"
+            type="password"
+            autoComplete="new-password"
+            value={confirmPass}
+            onChange={(e) => setConfirmPass(e.currentTarget.value)}
+            data-testid="input-confirm-password"
+            className="border-black border"
+          />
+        </FormGroup>
+
+        <Button
+          className="w-fit"
+          type="submit"
+          disabled={loader.isLoading}
+          isLoading={loader.isLoading}
+        >
+          Change Password
+        </Button>
+      </Group>
     </form>
   );
 };
+
+interface EmailVerificationChallenge {
+  email: string;
+  expires_at: string;
+  id: string;
+}
 
 const ChangeEmail = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
   const [email, setEmail] = useState<string>("");
   const loader = useLoader(updateEmail);
-  const error = emailValidator(email);
+  const [error, setError] = useState("");
+  const pending = useCache<
+    HalEmbedded<{ email_verification_challenges: EmailVerificationChallenge[] }>
+  >(fetchEmailVerificationPending({ userId }));
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!userId) {
-      return;
-    }
-    if (error) {
+    if (!userId) return;
+    const errorMsg = emailValidator(email);
+    if (errorMsg) {
+      setError(errorMsg);
       return;
     }
     dispatch(updateEmail({ userId, email }));
   };
 
+  useLoaderSuccess(loader, () => {
+    setError("");
+    setEmail("");
+  });
+
   return (
-    <div>
-      <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <FormGroup
-          label="Email"
-          htmlFor="input-email"
-          feedbackVariant={error ? "danger" : "info"}
-        >
-          <Input
-            name="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.currentTarget.value)}
-            autoComplete="username"
-            data-testid="input-email"
-            id="input-email"
-          />
-          <div className="text-gray-500">{error}</div>
-        </FormGroup>
-        <Button
-          className="w-fit"
-          type="submit"
-          disabled={!!error}
-          isLoading={loader.isLoading}
-        >
-          Send Verification Email
-        </Button>
-        <BannerMessages {...loader} />
+    <Group>
+      <form onSubmit={onSubmit}>
+        <Group>
+          <BannerMessages {...loader} />
+
+          <FormGroup
+            label="Email"
+            htmlFor="input-email"
+            feedbackVariant={error ? "danger" : "info"}
+            feedbackMessage={error}
+          >
+            <Input
+              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
+              autoComplete="username"
+              data-testid="input-email"
+              id="input-email"
+            />
+          </FormGroup>
+
+          <Button
+            className="w-fit"
+            type="submit"
+            disabled={email === ""}
+            isLoading={loader.isLoading}
+          >
+            Send Verification Email
+          </Button>
+        </Group>
       </form>
-    </div>
+
+      <hr />
+
+      <Group size="sm">
+        <h4 className={tokens.type.h4}>Pending Requests</h4>
+        {pending.isInitialLoading ? <Loading /> : null}
+        {pending.data?._embedded?.email_verification_challenges.map((em) => {
+          return (
+            <div key={em.id} className="flex justify-between items-center">
+              <Tooltip text={`Expires ${prettyDateTime(em.expires_at)}`}>
+                <span>{em.email}</span>
+              </Tooltip>
+              <Button size="xs" requireConfirm variant="delete">
+                revoke
+              </Button>
+            </div>
+          );
+        })}
+      </Group>
+    </Group>
   );
 };
 
@@ -192,9 +247,8 @@ const MultiFactor = () => {
     <div className="flex flex-col gap-4">
       <ul className="mb-2">
         <li>
-          Download your backup codes if you haven&apos;t done so yet. You might
-          need to update aptible-cli for 2FA support. 2FA does not apply to git
-          push operations.
+          Download your backup codes if you haven&apos;t done so yet. 2FA does
+          not apply to git push operations.
         </li>
       </ul>
 
@@ -232,44 +286,25 @@ const SecurityKeys = () => {
 const LogOut = () => {
   const dispatch = useDispatch();
   const loader = useLoader(revokeAllTokens);
-  const [confirm, setConfirm] = useState(false);
   const confirmLogout = () => dispatch(revokeAllTokens());
 
-  const confirmDialog = (
-    <div className="flex flex-col gap-4">
-      <div>
-        <b>Are you sure you want to log out all sessions?</b>
-      </div>
-      <div className="flex flex-row gap-4">
-        <Button className="w-fit" onClick={confirmLogout}>
-          Confirm Logout
-        </Button>
-        <Button
-          className="w-fit"
-          variant="white"
-          onClick={() => setConfirm(false)}
-        >
-          Cancel
-        </Button>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="flex flex-col gap-4">
-      <div>This action will log out all sessions and cannot be undone.</div>
-      <Button
-        variant="delete"
-        className="w-fit"
-        onClick={() => setConfirm(true)}
-      >
-        Log out all sessions
-      </Button>
+    <Group>
+      <div>
+        This action will log out all <strong>other</strong> sessions and cannot
+        be undone.
+      </div>
+
       {loader.isError ? (
         <Banner variant="error">{loader.message}</Banner>
       ) : null}
-      {confirm ? confirmDialog : null}
-    </div>
+
+      <div>
+        <Button variant="delete" requireConfirm onClick={confirmLogout}>
+          Log out all sessions
+        </Button>
+      </div>
+    </Group>
   );
 };
 

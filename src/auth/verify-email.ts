@@ -47,3 +47,11 @@ export const resendVerification = authApi.post<ResendVerification>(
     yield* next();
   },
 );
+
+export const fetchEmailVerificationPending = authApi.get<{ userId: string }>(
+  "/users/:userId/email_verification_challenges",
+  function* onResendVerification(ctx, next) {
+    ctx.cache = true;
+    yield* next();
+  },
+);

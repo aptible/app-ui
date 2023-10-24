@@ -151,5 +151,6 @@ export const revokeAllTokens = authApi.post(
     }
     tunaEvent("revoked-all-tokens");
     ctx.actions.push(resetToken());
+    ctx.loader = { message: "Success!" };
   },
 );

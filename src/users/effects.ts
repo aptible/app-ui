@@ -72,12 +72,17 @@ type ElevatedPostCtx = AuthApiCtx<
 >;
 
 function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
-  const { userId, type: _, ...payload } = ctx.payload;
+  const { userId, ...payload } = ctx.payload;
   ctx.elevated = true;
   ctx.request = ctx.req({
     body: JSON.stringify(payload),
   });
   yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  ctx.loader = { message: "Saved changes successfully!" };
 }
 
 export const updateUserName = authApi.patch<{ userId: string; name: string }>(
@@ -114,7 +119,7 @@ interface UpdateEmail {
 }
 
 export const updateEmail = authApi.post<UpdateEmail>(
-  "/:userId/email_verification_challenges",
+  ["/users/:userId/email_verification_challenges", "update"],
   elevatedUpdate,
 );
 

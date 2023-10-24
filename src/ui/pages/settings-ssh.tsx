@@ -40,7 +40,7 @@ const SshItem = ({
         />
 
         <div>
-        <Button
+          <Button
             requireConfirm
             onClick={iDelete}
             variant="delete"
@@ -48,7 +48,7 @@ const SshItem = ({
           >
             Delete
           </Button>
-          </div>
+        </div>
       </Group>
     </Box>
   );
