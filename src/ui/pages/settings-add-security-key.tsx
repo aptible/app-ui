@@ -10,10 +10,10 @@ import { useNavigate } from "react-router";
 import {
   Banner,
   Box,
-  BoxGroup,
   Breadcrumbs,
   Button,
   FormGroup,
+  Group,
   Input,
 } from "../shared";
 
@@ -59,7 +59,7 @@ export const AddSecurityKeyPage = () => {
   });
 
   return (
-    <BoxGroup>
+    <Group>
       <Breadcrumbs
         crumbs={[
           { name: "Security Settings", to: securitySettingsUrl() },
@@ -78,39 +78,44 @@ export const AddSecurityKeyPage = () => {
             can be more secure than token-based two-factor authentication.
           </div>
 
-          <form onSubmit={onSubmit} className="flex flex-col gap-4">
-            <FormGroup
-              label="Name"
-              htmlFor="input-name"
-              feedbackVariant={error ? "danger" : "info"}
-            >
-              <Input
-                name="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.currentTarget.value)}
-                autoComplete="username"
-              />
-              <div className="text-gray-500">
-                Pick a name that helps you remember this key
-              </div>
-            </FormGroup>
-            {error ? <Banner variant="error">{error}</Banner> : null}
-            {loader.isError ? (
-              <Banner variant="error">{loader.message}</Banner>
-            ) : null}
-            <div>
-              <Button
-                type="submit"
-                isLoading={loader.isLoading}
-                disabled={name === ""}
+          <form onSubmit={onSubmit}>
+            <Group>
+              <FormGroup
+                label="Name"
+                htmlFor="input-name"
+                feedbackVariant={error ? "danger" : "info"}
               >
-                Save Key
-              </Button>
-            </div>
+                <Input
+                  name="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.currentTarget.value)}
+                  autoComplete="username"
+                />
+                <div className="text-gray-500">
+                  Pick a name that helps you remember this key
+                </div>
+              </FormGroup>
+
+              {error ? <Banner variant="error">{error}</Banner> : null}
+
+              {loader.isError ? (
+                <Banner variant="error">{loader.message}</Banner>
+              ) : null}
+
+              <div>
+                <Button
+                  type="submit"
+                  isLoading={loader.isLoading}
+                  disabled={name === ""}
+                >
+                  Save Key
+                </Button>
+              </div>
+            </Group>
           </form>
         </div>
       </Box>
-    </BoxGroup>
+    </Group>
   );
 };
