@@ -19,8 +19,8 @@ import {
   Input,
   Radio,
   RadioGroup,
-  ResourceHeader,
   TextArea,
+  TitleBar,
 } from "../shared";
 
 interface SupportForm {
@@ -151,7 +151,10 @@ export const SupportPage = () => {
 
   return (
     <AppSidebarLayout>
-      <ResourceHeader title="Submit Support Request" />
+      <TitleBar description="A real person will respond to tickets submitted through this form.">
+        Submit Support Request
+      </TitleBar>
+
       <div className="flex flex-row gap-10">
         <Box className="-mt-4 w-full">
           <div className="mb-4">

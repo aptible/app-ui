@@ -1,9 +1,3 @@
-import cn from "classnames";
-import { ReactElement } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { useLoader } from "saga-query/react";
-
 import { prettyEnglishDateWithTime } from "@app/date";
 import { deleteBackup, selectDatabaseById } from "@app/deploy";
 import {
@@ -12,11 +6,17 @@ import {
   operationDetailUrl,
 } from "@app/routes";
 import { AppState, DeployBackup } from "@app/types";
-
+import { usePaginate } from "@app/ui/hooks";
+import cn from "classnames";
+import { ReactElement } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useLoader } from "saga-query/react";
 import { BannerMessages } from "../banner";
 import { ButtonCreate, ButtonDestroy } from "../button";
-import { ResourceListView } from "../resource-list-view";
-import { TableHead, Td } from "../table";
+import { Group } from "../group";
+import { DescBar, FilterBar, PaginateBar } from "../resource-list-view";
+import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
 
 const BackupTypePill = ({ manual }: { manual: boolean }): ReactElement => {
@@ -79,7 +79,7 @@ const BackupListRow = ({
   };
 
   return (
-    <tr className="group hover:bg-gray-50" key={`${backup.id}`}>
+    <Tr>
       <Td>
         <div className={tokens.type["normal lighter"]}>
           {backup.copiedFromId ? `Copy of ${backup.copiedFromId}` : backup.id}
@@ -144,7 +144,7 @@ const BackupListRow = ({
         </ButtonCreate>
         <DeleteBackup id={backup.id} envId={backup.environmentId} />
       </Td>
-    </tr>
+    </Tr>
   );
 };
 
@@ -156,46 +156,46 @@ export const DatabaseBackupsList = ({
   showDatabase?: boolean;
 }) => {
   const loader = useLoader(deleteBackup);
-
-  const headers = ["ID"];
-
-  if (showDatabase) {
-    headers.push("Database");
-  }
-
-  headers.push(
-    "Type",
-    "Size",
-    "Region",
-    "Created At",
-    "Creator",
-    "Operation ID",
-    "Actions",
-  );
+  const paginated = usePaginate(backups);
 
   return (
-    <div className="my-4">
-      <div className="mb-4">
+    <Group>
+      <Group size="sm">
         <BannerMessages {...loader} />
-      </div>
 
-      <p className="text-gray-500 mb-4 text-base">
-        {backups.length} Backup{backups.length !== 1 && "s"}
-      </p>
-      <ResourceListView
-        tableHeader={<TableHead headers={headers} rightAlignedFinalCol />}
-        tableBody={
-          <>
-            {backups.map((backup) => (
-              <BackupListRow
-                key={backup.id}
-                backup={backup}
-                showDatabase={showDatabase}
-              />
-            ))}
-          </>
-        }
-      />
-    </div>
+        <FilterBar>
+          <Group variant="horizontal" size="lg" className="items-center">
+            <DescBar>{paginated.totalItems} Backups</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>ID</Th>
+          {showDatabase ? <Th>Database</Th> : null}
+          <Th>Type</Th>
+          <Th>Region</Th>
+          <Th>Created At</Th>
+          <Th>Creator</Th>
+          <Th>Operation ID</Th>
+          <Th>Actions</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? (
+            <EmptyTr colSpan={showDatabase ? 8 : 7} />
+          ) : null}
+          {paginated.data.map((backup) => (
+            <BackupListRow
+              key={backup.id}
+              backup={backup}
+              showDatabase={showDatabase}
+            />
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 };

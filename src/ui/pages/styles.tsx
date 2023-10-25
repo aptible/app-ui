@@ -76,11 +76,15 @@ import {
   Secret,
   Select,
   SelectOption,
-  TableHead,
+  TBody,
+  THead,
+  Table,
   Tabs,
   Td,
   TextArea,
+  Th,
   Tooltip,
+  Tr,
   listToTextColor,
   pillStyles,
   tokens,
@@ -166,30 +170,84 @@ const Tables = () => (
     <h1 id="tables" className={tokens.type.h1}>
       Tables
     </h1>
-    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg my-4 mx-4 sm:my-auto sm:mx-auto">
-      <table className="min-w-full divide-y divide-gray-300">
-        <TableHead
-          headers={Array(8)
-            .fill(0)
-            .map((_, idx) => `Header ${idx + 1}`)}
-        />
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {Array(5)
-            .fill(0)
-            .map((_, rowIdx) => (
-              <tr className="group hover:bg-gray-50" key={`row-${rowIdx}`}>
-                {Array(8)
-                  .fill(0)
-                  .map((_, colIdx) => (
-                    <Td key={`arr-${colIdx}`}>{`Cell - ${colIdx + 1} x ${
-                      rowIdx + 1
-                    }`}</Td>
-                  ))}
-              </tr>
-            ))}
-        </tbody>
-      </table>
-    </div>
+
+    <Table>
+      <THead>
+        <Th>Header 1</Th>
+        <Th>Header 2</Th>
+        <Th>Header 3</Th>
+        <Th>Header 4</Th>
+        <Th>Header 5</Th>
+        <Th>Header 6</Th>
+        <Th>Header 7</Th>
+        <Th>Header 8</Th>
+        <Th>Header 9</Th>
+        <Th>Header 10</Th>
+      </THead>
+
+      <TBody>
+        <Tr>
+          <Td>Row 1 Value 1</Td>
+          <Td>Row 1 Value 2</Td>
+          <Td>Row 1 Value 3</Td>
+          <Td>Row 1 Value 4</Td>
+          <Td>Row 1 Value 5</Td>
+          <Td>Row 1 Value 6</Td>
+          <Td>Row 1 Value 7</Td>
+          <Td>Row 1 Value 8</Td>
+          <Td>Row 1 Value 9</Td>
+          <Td>Row 1 Value 10</Td>
+        </Tr>
+        <Tr>
+          <Td>Row 2 Value 1</Td>
+          <Td>Row 2 Value 2</Td>
+          <Td>Row 2 Value 3</Td>
+          <Td>Row 2 Value 4</Td>
+          <Td>Row 2 Value 5</Td>
+          <Td>Row 2 Value 6</Td>
+          <Td>Row 2 Value 7</Td>
+          <Td>Row 2 Value 8</Td>
+          <Td>Row 2 Value 9</Td>
+          <Td>Row 2 Value 10</Td>
+        </Tr>
+        <Tr>
+          <Td>Row 3 Value 1</Td>
+          <Td>Row 3 Value 2</Td>
+          <Td>Row 3 Value 3</Td>
+          <Td>Row 3 Value 4</Td>
+          <Td>Row 3 Value 5</Td>
+          <Td>Row 3 Value 6</Td>
+          <Td>Row 3 Value 7</Td>
+          <Td>Row 3 Value 8</Td>
+          <Td>Row 3 Value 9</Td>
+          <Td>Row 3 Value 10</Td>
+        </Tr>
+        <Tr>
+          <Td>Row 4 Value 1</Td>
+          <Td>Row 4 Value 2</Td>
+          <Td>Row 4 Value 3</Td>
+          <Td>Row 4 Value 4</Td>
+          <Td>Row 4 Value 5</Td>
+          <Td>Row 4 Value 6</Td>
+          <Td>Row 4 Value 7</Td>
+          <Td>Row 4 Value 8</Td>
+          <Td>Row 4 Value 9</Td>
+          <Td>Row 4 Value 10</Td>
+        </Tr>
+        <Tr>
+          <Td>Row 5 Value 1</Td>
+          <Td>Row 5 Value 2</Td>
+          <Td>Row 5 Value 3</Td>
+          <Td>Row 5 Value 4</Td>
+          <Td>Row 5 Value 5</Td>
+          <Td>Row 5 Value 6</Td>
+          <Td>Row 5 Value 7</Td>
+          <Td>Row 5 Value 8</Td>
+          <Td>Row 5 Value 9</Td>
+          <Td>Row 5 Value 10</Td>
+        </Tr>
+      </TBody>
+    </Table>
   </div>
 );
 

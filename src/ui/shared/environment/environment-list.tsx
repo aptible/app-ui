@@ -13,58 +13,59 @@ import {
   stackDetailEnvsUrl,
 } from "@app/routes";
 import type { AppState, DeployEnvironment } from "@app/types";
+import { usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonOwner } from "../button";
-import { EmptyResourcesTable } from "../empty-resources-table";
-import { IconInfo, IconPlusCircle } from "../icons";
+import { Group } from "../group";
+import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
-import { LoadResources } from "../load-resources";
-import { ResourceHeader, ResourceListView } from "../resource-list-view";
-import { TableHead, Td } from "../table";
+import {
+  ActionBar,
+  DescBar,
+  FilterBar,
+  PaginateBar,
+  TitleBar,
+} from "../resource-list-view";
+import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
-import { Tooltip } from "../tooltip";
 
 interface EnvironmentCellProps {
-  environment: DeployEnvironment;
+  env: DeployEnvironment;
 }
 
-export const EnvironmentItemView = ({
-  environment,
-}: { environment: DeployEnvironment }) => {
+export const EnvironmentItemView = ({ env }: EnvironmentCellProps) => {
   return (
-    <Link to={environmentAppsUrl(environment.id)} className="flex">
+    <Link to={environmentAppsUrl(env.id)} className="flex">
       <img
         src="/resource-types/logo-environment.png"
         className="w-[32px] h-[32px] mr-2 align-middle"
         aria-label="Environment"
       />
-      <p className={`${tokens.type["table link"]} leading-8`}>
-        {environment.handle}
-      </p>
+      <p className={`${tokens.type["table link"]} leading-8`}>{env.handle}</p>
     </Link>
   );
 };
 
-const EnvironmentPrimaryCell = ({ environment }: EnvironmentCellProps) => {
+const EnvironmentPrimaryCell = ({ env }: EnvironmentCellProps) => {
   return (
     <Td>
-      <EnvironmentItemView environment={environment} />
+      <EnvironmentItemView env={env} />
     </Td>
   );
 };
 
-const EnvironmentIdCell = ({ environment }: EnvironmentCellProps) => {
-  return <Td>{environment.id}</Td>;
+const EnvironmentIdCell = ({ env }: EnvironmentCellProps) => {
+  return <Td variant="center">{env.id}</Td>;
 };
 
-const EnvironmentDatabasesCell = ({ environment }: EnvironmentCellProps) => {
+const EnvironmentDatabasesCell = ({ env }: EnvironmentCellProps) => {
   const dbs = useSelector((s: AppState) =>
-    selectDatabasesByEnvId(s, { envId: environment.id }),
+    selectDatabasesByEnvId(s, { envId: env.id }),
   );
   return (
-    <Td className="center items-center justify-center">
-      <Link to={environmentDatabasesUrl(environment.id)}>
+    <Td variant="center" className="center items-center justify-center">
+      <Link to={environmentDatabasesUrl(env.id)}>
         <div className={`${tokens.type["table link"]} text-center`}>
           {dbs.length}
         </div>
@@ -73,13 +74,13 @@ const EnvironmentDatabasesCell = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
-const EnvironmentAppsCell = ({ environment }: EnvironmentCellProps) => {
+const EnvironmentAppsCell = ({ env }: EnvironmentCellProps) => {
   const apps = useSelector((s: AppState) =>
-    selectAppsByEnvId(s, { envId: environment.id }),
+    selectAppsByEnvId(s, { envId: env.id }),
   );
   return (
-    <Td className="center items-center justify-center">
-      <Link to={environmentAppsUrl(environment.id)}>
+    <Td variant="center" className="center items-center justify-center">
+      <Link to={environmentAppsUrl(env.id)}>
         <div className={`${tokens.type["table link"]} text-center`}>
           {apps.length}
         </div>
@@ -88,9 +89,9 @@ const EnvironmentAppsCell = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
-const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
+const EnvironmentStackCell = ({ env }: EnvironmentCellProps) => {
   const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: environment.stackId }),
+    selectStackById(s, { id: env.stackId }),
   );
 
   return (
@@ -113,168 +114,81 @@ const EnvironmentStackCell = ({ environment }: EnvironmentCellProps) => {
   );
 };
 
-const EnvironmentListRow = ({ environment }: EnvironmentCellProps) => {
-  return (
-    <tr className="group hover:bg-gray-50">
-      <EnvironmentPrimaryCell environment={environment} />
-      <EnvironmentIdCell environment={environment} />
-      <EnvironmentStackCell environment={environment} />
-      <EnvironmentAppsCell environment={environment} />
-      <EnvironmentDatabasesCell environment={environment} />
-    </tr>
-  );
-};
-
-const EnvsResourceHeaderTitleBar = ({
-  envs,
-  search = "",
-  onChange,
-  showTitle = true,
+export function EnvironmentList({
   stackId = "",
-}: {
-  envs: DeployEnvironment[];
-  search?: string;
-  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-  showTitle?: boolean;
-  stackId?: string;
-}) => {
+  showTitle = true,
+}: { stackId?: string; showTitle?: boolean }) {
+  useQuery(fetchEnvironments());
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+  };
   const navigate = useNavigate();
   const onCreate = () => {
     navigate(createEnvUrl(stackId ? `stack_id=${stackId}` : ""));
   };
-  return (
-    <ResourceHeader
-      title={showTitle ? "Environments" : ""}
-      actions={[
-        <ButtonOwner onClick={onCreate}>
-          <IconPlusCircle variant="sm" className="mr-2" />
-          New Environment
-        </ButtonOwner>,
-      ]}
-      filterBar={
-        <div>
-          <InputSearch
-            placeholder="Search environments..."
-            search={search}
-            onChange={onChange}
-          />
 
-          <div className="flex items-center gap-1 text-gray-500 mt-4 text-base">
-            <span>
-              {envs.length} Environment{envs.length !== 1 && "s"}
-            </span>
-            <Tooltip
-              fluid
-              text="Environments are how you separate resources like staging and production."
-            >
-              <IconInfo className="opacity-50 hover:opacity-100" variant="sm" />
-            </Tooltip>
-          </div>
-        </div>
-      }
-    />
-  );
-};
-const environmentHeaders = ["Environment", "ID", "Stack", "Apps", "Databases"];
-
-export function EnvironmentListByStack({ stackId }: { stackId: string }) {
-  const query = useQuery(fetchEnvironments());
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value }, { replace: true });
-  };
-
-  const environments = useSelector((s: AppState) =>
+  const envs = useSelector((s: AppState) =>
     selectEnvironmentsForTableSearch(s, { search, stackId }),
   );
+  const paginated = usePaginate(envs);
 
   return (
-    <LoadResources
-      query={query}
-      isEmpty={environments.length === 0 && search === ""}
-    >
-      <ResourceListView
-        header={
-          <EnvsResourceHeaderTitleBar
-            stackId={stackId}
-            search={search}
-            envs={environments}
-            onChange={onChange}
-            showTitle={false}
-          />
-        }
-        tableHeader={
-          <TableHead
-            headers={environmentHeaders}
-            rightAlignedFinalCol
-            leftAlignedFirstCol
-            centerAlignedColIndices={[3, 4]}
-          />
-        }
-        tableBody={
-          <>
-            {environments.map((environment) => (
-              <EnvironmentListRow
-                environment={environment}
-                key={environment.id}
-              />
-            ))}
-          </>
-        }
-      />
-    </LoadResources>
-  );
-}
-export function EnvironmentList() {
-  const query = useQuery(fetchEnvironments());
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value }, { replace: true });
-  };
+    <Group>
+      <Group size="sm">
+        <TitleBar
+          visible={showTitle}
+          description="Environments are how you separate resources like staging and production."
+        >
+          Environments
+        </TitleBar>
 
-  const environments = useSelector((s: AppState) =>
-    selectEnvironmentsForTableSearch(s, { search }),
-  );
+        <FilterBar>
+          <div className="flex justify-between">
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
 
-  const titleBar = (
-    <EnvsResourceHeaderTitleBar
-      envs={environments}
-      search={search}
-      onChange={onChange}
-    />
-  );
+            <ActionBar>
+              <ButtonOwner onClick={onCreate}>
+                <IconPlusCircle variant="sm" className="mr-2" />
+                New Environment
+              </ButtonOwner>
+            </ActionBar>
+          </div>
 
-  return (
-    <LoadResources
-      empty={
-        <EmptyResourcesTable headers={environmentHeaders} titleBar={titleBar} />
-      }
-      query={query}
-      isEmpty={environments.length === 0 && search === ""}
-    >
-      <ResourceListView
-        header={titleBar}
-        tableHeader={
-          <TableHead
-            headers={environmentHeaders}
-            rightAlignedFinalCol
-            leftAlignedFirstCol
-            centerAlignedColIndices={[3, 4]}
-          />
-        }
-        tableBody={
-          <>
-            {environments.map((environment) => (
-              <EnvironmentListRow
-                environment={environment}
-                key={environment.id}
-              />
-            ))}
-          </>
-        }
-      />
-    </LoadResources>
+          <Group variant="horizontal" size="lg" className="items-center mt-1">
+            <DescBar>{paginated.totalItems} Environments</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Environment</Th>
+          <Th variant="center">ID</Th>
+          <Th>Stack</Th>
+          <Th variant="center">Apps</Th>
+          <Th variant="center">Database</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.map((env) => (
+            <Tr key={env.id}>
+              <EnvironmentPrimaryCell env={env} />
+              <EnvironmentIdCell env={env} />
+              <EnvironmentStackCell env={env} />
+              <EnvironmentAppsCell env={env} />
+              <EnvironmentDatabasesCell env={env} />
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 }

@@ -8,7 +8,7 @@ export interface TooltipProps {
   rightAnchored?: boolean;
   className?: string;
   relative?: boolean;
-  variant?: "top" | "left";
+  variant?: "top" | "left" | "bottom" | "right";
 }
 
 export const Tooltip = ({

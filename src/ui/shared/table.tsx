@@ -1,37 +1,26 @@
 import cn from "classnames";
 
-import { tokens } from "./tokens";
-
-export type CellProps = {
-  children: React.ReactNode;
-  first?: boolean;
-  last?: boolean;
-  className?: string;
-  colSpan?: number;
-};
-
-export const Td = ({ children, className }: CellProps) => {
-  const classes = cn(
-    tokens.type["small lighter"],
-    "pl-4 py-3",
-    "break-words",
-    className,
-  );
-  return <td className={classes}>{children}</td>;
-};
-
-export const Th = ({ children, className }: CellProps) => {
-  const classes = cn(
-    "pl-4 py-3",
-    tokens.type["small normal lighter"],
-    "text-left",
-    className,
-  );
-
+export const Table = ({ children }: { children: React.ReactNode }) => {
   return (
-    <th scope="col" className={classes}>
-      {children}
-    </th>
+    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+      <table className="table-auto min-w-full divide-y divide-gray-300">
+        {children}
+      </table>
+    </div>
+  );
+};
+
+export const THead = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <thead className="bg-gray-50">
+      <tr>{children}</tr>
+    </thead>
+  );
+};
+
+export const TBody = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <tbody className="divide-y divide-gray-200 bg-white">{children}</tbody>
   );
 };
 
@@ -39,49 +28,67 @@ export const Tr = ({ children }: { children: React.ReactNode }) => {
   return <tr className="group hover:bg-gray-50">{children}</tr>;
 };
 
-export type Header = string | { name: string; className: string };
-export const TableHead = ({
-  headers,
-  rightAlignedFinalCol = false,
-  leftAlignedFirstCol = false,
-  centerAlignedColIndices = [],
-}: {
-  headers: Header[];
-  rightAlignedFinalCol?: boolean;
-  leftAlignedFirstCol?: boolean;
-  centerAlignedColIndices?: number[];
-}) => {
+export const EmptyTr = ({
+  children = "No resources found",
+  colSpan = 1,
+}: { children?: React.ReactNode; colSpan?: number }) => {
   return (
-    <thead className="bg-gray-50">
-      <tr className="group hover:bg-gray-50">
-        {headers.map((header, i) => {
-          let [className, label] =
-            typeof header === "string"
-              ? ["", header]
-              : [header.className, header.name];
+    <Tr>
+      <Td colSpan={colSpan} variant="center">
+        {children}
+      </Td>
+    </Tr>
+  );
+};
 
-          if (centerAlignedColIndices.includes(i)) {
-            className += "text-center";
-          } else {
-            if (leftAlignedFirstCol && i === 0) {
-              className += " pl-4";
-            }
-            if (rightAlignedFinalCol && i === headers.length - 1) {
-              className += " flex gap-2 justify-end mr-4";
-            }
-          }
-          return (
-            <Th
-              className={className}
-              key={`table-header-${i}`}
-              first={true}
-              last={i === headers.length - 1}
-            >
-              {label}
-            </Th>
-          );
-        })}
-      </tr>
-    </thead>
+export interface CellProps {
+  children: React.ReactNode;
+  className?: string;
+  variant?: "left" | "center" | "right";
+  colSpan?: number;
+}
+
+export const Td = ({
+  children,
+  className,
+  colSpan = 1,
+  variant,
+}: CellProps) => {
+  const align = () => {
+    if (variant === "right") return "text-right";
+    if (variant === "center") return "text-center";
+    return "text-left";
+  };
+  const classes = cn(
+    "text-sm text-gray-500",
+    "pl-4 py-3",
+    "break-words",
+    align(),
+    className,
+  );
+  return (
+    <td colSpan={colSpan} className={classes}>
+      {children}
+    </td>
+  );
+};
+
+export const Th = ({ children, className, variant = "left" }: CellProps) => {
+  const align = () => {
+    if (variant === "right") return "text-right";
+    if (variant === "center") return "text-center";
+    return "text-left";
+  };
+  const classes = cn(
+    "pl-4 py-3",
+    "text-sm font-normal text-gray-500",
+    align(),
+    className,
+  );
+
+  return (
+    <th scope="col" className={classes}>
+      {children}
+    </th>
   );
 };

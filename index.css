@@ -33,12 +33,30 @@ html, body, #app {
   display: inline;
 }
 
+.tooltip-bottom {
+  display: none;
+  transform: translate(0%, 85%);
+}
+
+.tooltip:hover .tooltip-bottom {
+  display: inline;
+}
+
 .tooltip-left {
   display: none;
   transform: translate(-110%, -30%);
 }
 
 .tooltip:hover .tooltip-left {
+  display: inline;
+}
+
+.tooltip-right {
+  display: none;
+  transform: translate(5%, -30%);
+}
+
+.tooltip:hover .tooltip-right {
   display: inline;
 }
 

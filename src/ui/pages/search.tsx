@@ -64,7 +64,7 @@ const EnvResource = ({ resource }: { resource: EnvItem }) => {
   );
   return (
     <ResourceView>
-      <EnvironmentItemView environment={env} />
+      <EnvironmentItemView env={env} />
       <div className="text-black-300 text-base">
         {capitalize(resource.type)} ID: {capitalize(resource.id)}
       </div>
