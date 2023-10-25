@@ -37,14 +37,14 @@ export function SettingsSidebar() {
         <NavLink className={navLink} to={securitySettingsUrl()}>
           Security
           <Tooltip text="Reauthentication Required" fluid>
-            <IconLock variant="sm" className="ml-2" />
+            <IconLock variant="sm" className="ml-1 opacity-60" />
           </Tooltip>
         </NavLink>
 
         <NavLink className={navLink} to={sshSettingsUrl()}>
           SSH Keys
           <Tooltip text="Reauthentication Required" fluid>
-            <IconLock variant="sm" className="ml-2" />
+            <IconLock variant="sm" className="ml-1 opacity-60" />
           </Tooltip>
         </NavLink>
 
@@ -60,7 +60,7 @@ export function SettingsSidebar() {
           target="_blank"
         >
           Members
-          <IconExternalLink variant="sm" className="ml-2" />
+          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
         </NavLink>
 
         <NavLink
@@ -69,7 +69,7 @@ export function SettingsSidebar() {
           target="_blank"
         >
           Roles
-          <IconExternalLink variant="sm" className="ml-2" />
+          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
         </NavLink>
 
         <NavLink
@@ -78,7 +78,7 @@ export function SettingsSidebar() {
           target="_blank"
         >
           Pending Invites
-          <IconExternalLink variant="sm" className="ml-2" />
+          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
         </NavLink>
 
         <NavLink
@@ -87,7 +87,7 @@ export function SettingsSidebar() {
           target="_blank"
         >
           Single Sign-On
-          <IconExternalLink variant="sm" className="ml-2" />
+          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
         </NavLink>
 
         <NavLink
@@ -96,7 +96,7 @@ export function SettingsSidebar() {
           target="_blank"
         >
           Contacts
-          <IconExternalLink variant="sm" className="ml-2" />
+          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
         </NavLink>
 
         <hr className="mt-3 mx-2" />
@@ -110,7 +110,8 @@ export function SettingsSidebar() {
           to={url(`/organizations/${orgId}/admin/billing/invoices`)}
           target="_blank"
         >
-          Dashboard <IconExternalLink variant="sm" className="ml-2" />
+          Dashboard{" "}
+          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
         </NavLink>
       </div>
     </nav>
