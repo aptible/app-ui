@@ -144,13 +144,6 @@ export const Button: FC<ButtonProps> = ({
     return (
       <Group variant="horizontal" size="sm">
         <button
-          className={cls}
-          type="reset"
-          onClick={() => setConfirmPrompted(false)}
-        >
-          Cancel
-        </button>
-        <button
           {...props}
           onClick={(e) => {
             setConfirmPrompted(false);
@@ -163,6 +156,13 @@ export const Button: FC<ButtonProps> = ({
           disabled={isLoading || props.disabled}
         >
           Confirm
+        </button>
+        <button
+          className={cls}
+          type="reset"
+          onClick={() => setConfirmPrompted(false)}
+        >
+          Cancel
         </button>
       </Group>
     );
