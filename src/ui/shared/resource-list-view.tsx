@@ -1,90 +1,86 @@
-import cn from "classnames";
-import { ActionList, ActionListView } from "./action-list-view";
+import { PaginateProps } from "../hooks";
+import { ButtonIcon } from "./button";
+import { Group } from "./group";
+import { IconArrowLeft, IconArrowRight, IconInfo } from "./icons";
+import { LoadingSpinner } from "./loading";
 import { tokens } from "./tokens";
+import { Tooltip } from "./tooltip";
 
-type Element = React.ReactNode | JSX.Element;
-
-interface ResourceHeaderProps {
-  title: Element;
-  description?: Element;
-  actions?: ActionList;
-  filterBar?: JSX.Element;
-}
-
-interface GenericResourceListProps {
-  header?: React.ReactNode;
-  tableHeader: JSX.Element;
-  tableBody: React.ReactNode;
-}
-
-interface EmptyResultProps {
-  title: Element;
-  description: Element;
-  action?: Element;
-  className?: string;
-}
-
-export const EmptyResultView = ({
-  title,
+export const TitleBar = ({
+  children,
   description,
-  action,
-  className,
-}: EmptyResultProps) => {
+  visible = true,
+}: { children: React.ReactNode; description: string; visible?: boolean }) => {
+  if (!visible) return null;
+
   return (
-    <div className={cn("text-center", className)}>
-      <h3 className={cn(tokens.type.h3, "mt-2")}>{title}</h3>
-      <p className="text-base mt-1 text-gray-500">{description}</p>
-      {action && (
-        <div className="mt-6 flex justify-center w-full">{action}</div>
-      )}
-    </div>
+    <Group variant="horizontal" size="sm" className="items-center">
+      <h2 className={tokens.type.h2}>{children}</h2>
+      <Tooltip fluid text={description} variant="bottom">
+        <IconInfo className="opacity-50 hover:opacity-100" variant="sm" />
+      </Tooltip>
+    </Group>
   );
 };
-
-export const ResourceHeader = ({
-  title,
-  filterBar,
-  description = "",
-  actions = [],
-}: ResourceHeaderProps) => {
-  return (
-    <div>
+export const FilterBar = ({ children }: { children: React.ReactNode }) => {
+  return <Group size="sm">{children}</Group>;
+};
+export const ActionBar = ({ children }: { children: React.ReactNode }) => {
+  return <div>{children}</div>;
+};
+export const DescBar = ({ children }: { children: React.ReactNode }) => {
+  return <div className="text-gray-500">{children}</div>;
+};
+export const LoadingBar = ({ isLoading = false }: { isLoading?: boolean }) => {
+  if (isLoading) {
+    return (
       <div>
-        {title ? (
-          <div className="pb-3">
-            <h2 className={cn(tokens.type.h2)}>{title}</h2>
-          </div>
-        ) : null}
-        {description ? (
-          <p className="mt-2 text-sm text-gray-700">{description}</p>
-        ) : null}
+        <LoadingSpinner />
       </div>
-
-      <div className="flex justify-between mb-4">
-        {filterBar ? filterBar : null}
-        {actions.length > 0 ? <ActionListView actions={actions} /> : null}
-      </div>
-    </div>
-  );
+    );
+  }
+  return null;
 };
 
-export const ResourceListView = ({
-  header,
-  tableHeader,
-  tableBody,
-}: GenericResourceListProps) => {
+export function PaginateBar<T>(
+  paginate: Pick<PaginateProps<T>, "totalPages" | "page" | "prev" | "next">,
+) {
+  if (paginate.totalPages === 1) {
+    return null;
+  }
+
   return (
-    <div>
-      {header ? <div>{header}</div> : null}
-
-      <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-        <table className="min-w-full divide-y divide-gray-300">
-          {tableHeader}
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {tableBody}
-          </tbody>
-        </table>
+    <Group
+      variant="horizontal"
+      size="sm"
+      className="items-center text-gray-500"
+    >
+      <div>
+        Page {paginate.page} of {paginate.totalPages}
       </div>
-    </div>
+      <Group variant="horizontal" size="sm" className="items-center">
+        <ButtonIcon
+          variant="white"
+          icon={<IconArrowLeft color="#111920" variant="sm" />}
+          size="xs"
+          disabled={paginate.page === 1}
+          onClick={(e) => {
+            e.preventDefault();
+            paginate.prev();
+          }}
+        />
+
+        <ButtonIcon
+          variant="white"
+          icon={<IconArrowRight color="#111920" variant="sm" />}
+          size="xs"
+          disabled={paginate.page === paginate.totalPages}
+          onClick={(e) => {
+            e.preventDefault();
+            paginate.next();
+          }}
+        />
+      </Group>
+    </Group>
   );
-};
+}

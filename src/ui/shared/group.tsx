@@ -7,9 +7,15 @@ export const Group = ({
   children: React.ReactNode;
   className?: string;
   variant?: "horizontal" | "vertical";
-  size?: "sm" | "lg";
+  size?: "xs" | "sm" | "lg";
 }) => {
   const orient = variant === "vertical" ? "flex-col" : "flex-row";
-  const gap = size === "lg" ? "gap-4" : "gap-2";
-  return <div className={`flex ${gap} ${orient} ${className}`}>{children}</div>;
+  const gap = () => {
+    if (size === "xs") return "gap-0.5";
+    if (size === "sm") return "gap-2";
+    return "gap-4";
+  };
+  return (
+    <div className={`flex ${gap()} ${orient} ${className}`}>{children}</div>
+  );
 };

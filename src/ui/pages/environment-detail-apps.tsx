@@ -7,7 +7,7 @@ export const EnvironmentAppsPage = () => {
   return (
     <div className="mb-4">
       <DetailPageSections>
-        <AppListByEnvironment environmentId={id} />
+        <AppListByEnvironment envId={id} />
       </DetailPageSections>
     </div>
   );

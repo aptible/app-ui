@@ -15,14 +15,16 @@ import {
   Banner,
   BannerMessages,
   Button,
+  EmptyTr,
   Group,
-  IconArrowLeft,
-  IconArrowRight,
   IconDownload,
   Loading,
-  ResourceListView,
-  TableHead,
+  PaginateBar,
+  TBody,
+  THead,
+  Table,
   Td,
+  Th,
   Tr,
 } from "../shared";
 
@@ -109,8 +111,6 @@ const ReportView = ({
   );
 };
 
-const headers = ["Posted Date", "From Date", "To Date", "Download"];
-
 const ReportTable = ({ stack }: { stack: DeployStack }) => {
   const [page, setPage] = useState(1);
   const loader = useCache<HidsResponse>(
@@ -138,27 +138,18 @@ const ReportTable = ({ stack }: { stack: DeployStack }) => {
     );
   }
   const lastPage = Math.ceil((data.total_count || 0) / (data.per_page || 0));
+  const reports = data._embedded.intrusion_detection_reports;
 
   return (
     <>
-      <Group variant="horizontal" size="sm" className="items-center gap-2">
-        <Button
-          size="sm"
-          variant="white"
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-        >
-          <IconArrowLeft color="#111920" variant="sm" />
-        </Button>
-        <div className="mx-1">Page {page}</div>
-        <Button
-          size="sm"
-          variant="white"
-          disabled={page === lastPage}
-          onClick={() => setPage(page + 1)}
-        >
-          <IconArrowRight color="#111920" variant="sm" />
-        </Button>
+      <Group variant="horizontal" size="sm" className="items-center">
+        <PaginateBar
+          page={page}
+          totalPages={lastPage}
+          prev={() => setPage(page - 1)}
+          next={() => setPage(page + 1)}
+        />
+
         <div className="ml-2 text-gray-500">
           Weekly Host-level Intrusion Detection System (HIDS) reports for
           auditing evidence. This report applies to all resources and
@@ -166,16 +157,21 @@ const ReportTable = ({ stack }: { stack: DeployStack }) => {
         </div>
       </Group>
 
-      <ResourceListView
-        tableHeader={<TableHead rightAlignedFinalCol headers={headers} />}
-        tableBody={
-          <>
-            {data._embedded.intrusion_detection_reports.map((report) => (
-              <ReportView key={report.id} report={report} stack={stack} />
-            ))}
-          </>
-        }
-      />
+      <Table>
+        <THead>
+          <Th>Posted Date</Th>
+          <Th>From Date</Th>
+          <Th>To Date</Th>
+          <Th>Download</Th>
+        </THead>
+
+        <TBody>
+          {reports.length === 0 ? <EmptyTr colSpan={4} /> : null}
+          {reports.map((report) => (
+            <ReportView key={report.id} report={report} stack={stack} />
+          ))}
+        </TBody>
+      </Table>
     </>
   );
 };
@@ -195,6 +191,7 @@ export const StackDetailHidsPage = () => {
           a dedicated tenancy stack instead.
         </Banner>
       ) : null}
+
       <ReportTable stack={stack} />
     </Group>
   );

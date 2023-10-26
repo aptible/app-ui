@@ -1,7 +1,3 @@
-import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
-
 import {
   fetchAllCertsByEnvId,
   selectAppsByCertId,
@@ -14,19 +10,29 @@ import {
   environmentCreateCertUrl,
 } from "@app/routes";
 import type { AppState, DeployCertificate } from "@app/types";
-
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
+import { usePaginate } from "../hooks";
 import {
+  ActionBar,
   ButtonSensitive,
   CertIssuer,
   CertManagedHTTPSPill,
   CertTrustedPill,
   CertValidDateRange,
-  EmptyResourcesTable,
+  DescBar,
+  EmptyTr,
+  FilterBar,
+  Group,
   IconPlusCircle,
-  LoadResources,
-  ResourceListView,
-  TableHead,
+  PaginateBar,
+  TBody,
+  THead,
+  Table,
   Td,
+  Th,
+  Tr,
   tokens,
 } from "../shared";
 
@@ -123,19 +129,10 @@ const CertificateStatusCell = ({
   );
 };
 
-const certificatesHeaders = [
-  "ID",
-  "Certificate",
-  "Date Range",
-  "Issuer",
-  "Apps",
-  "Status",
-];
-
 export const EnvironmentCertificatesPage = () => {
   const { id = "" } = useParams();
   const navigate = useNavigate();
-  const query = useQuery(fetchAllCertsByEnvId({ id }));
+  useQuery(fetchAllCertsByEnvId({ id }));
   const certificates = useSelector((s: AppState) =>
     selectCertificatesByEnvId(s, { envId: id }),
   );
@@ -143,47 +140,49 @@ export const EnvironmentCertificatesPage = () => {
     navigate(environmentCreateCertUrl(id));
   };
 
-  const titleBar = (
-    <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
-      <div className="text-gray-500">
-        {certificates.length} Certificate
-        {certificates.length !== 1 && "s"}
-      </div>
-      <ButtonSensitive className="w-fit" envId={id} onClick={createCert}>
-        <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
-      </ButtonSensitive>
-    </div>
-  );
+  const paginated = usePaginate(certificates);
 
   return (
-    <LoadResources
-      empty={
-        <EmptyResourcesTable
-          headers={certificatesHeaders}
-          titleBar={titleBar}
-        />
-      }
-      query={query}
-      isEmpty={certificates.length === 0}
-    >
-      <ResourceListView
-        header={titleBar}
-        tableHeader={<TableHead headers={certificatesHeaders} />}
-        tableBody={
-          <>
-            {certificates.map((certificate) => (
-              <tr className="group hover:bg-gray-50" key={certificate.id}>
-                <CertificatePrimaryCell certificate={certificate} />
-                <CertificateName certificate={certificate} />
-                <CertificateValidDateRangeCell certificate={certificate} />
-                <CertificateIssuerCell certificate={certificate} />
-                <CertificateServicesCell certificate={certificate} />
-                <CertificateStatusCell certificate={certificate} />
-              </tr>
-            ))}
-          </>
-        }
-      />
-    </LoadResources>
+    <Group>
+      <FilterBar>
+        <div className="mb-1">
+          <ActionBar>
+            <ButtonSensitive className="w-fit" envId={id} onClick={createCert}>
+              <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
+            </ButtonSensitive>
+          </ActionBar>
+        </div>
+
+        <Group variant="horizontal" size="lg" className="items-center">
+          <DescBar>{paginated.totalItems} Certificates</DescBar>
+          <PaginateBar {...paginated} />
+        </Group>
+      </FilterBar>
+
+      <Table>
+        <THead>
+          <Th variant="center">ID</Th>
+          <Th>Certificate</Th>
+          <Th>Date Range</Th>
+          <Th>Issuer</Th>
+          <Th variant="center">Apps</Th>
+          <Th variant="center">Status</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={6} /> : null}
+          {paginated.data.map((certificate) => (
+            <Tr key={certificate.id}>
+              <CertificatePrimaryCell certificate={certificate} />
+              <CertificateName certificate={certificate} />
+              <CertificateValidDateRangeCell certificate={certificate} />
+              <CertificateIssuerCell certificate={certificate} />
+              <CertificateServicesCell certificate={certificate} />
+              <CertificateStatusCell certificate={certificate} />
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 };

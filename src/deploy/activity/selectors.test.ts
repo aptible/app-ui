@@ -1,6 +1,6 @@
 import { dateFromToday } from "@app/date";
 import { createId, testOrg } from "@app/mocks";
-import { AppState, DeepPartial, DeployOperation } from "@app/types";
+import { AppState, DeepPartial } from "@app/types";
 import { defaultDeployApp } from "../app";
 import { defaultDeployDatabase } from "../database";
 import { defaultDeployEndpoint } from "../endpoint";
@@ -74,29 +74,8 @@ const op1Row = { ...op1, envHandle: env1.handle, resourceHandle: app1.handle };
 const op2Row = { ...op2, envHandle: env2.handle, resourceHandle: db1.handle };
 const op3Row = { ...op3, envHandle: env2.handle, resourceHandle: vhost1.id };
 
-const createOps = (n: number) => {
-  const ops: { [key: string]: DeployOperation } = {};
-  for (let i = 0; i < n; i += 1) {
-    const id = `${createId()}`;
-    ops[id] = defaultDeployOperation({
-      id,
-      environmentId: env1.id,
-    });
-  }
-  return ops;
-};
-
 describe("selectActivityForTableSearch", () => {
   describe("when search is empty", () => {
-    it("should return latest 50 operations", () => {
-      const ops = createOps(100);
-      const actual = selectActivityForTableSearch(
-        { ...state, deploy: { ...state.deploy, operations: ops } } as any,
-        { search: "" },
-      );
-      expect(actual.length).toBe(50);
-    });
-
     it("should return latest operations", () => {
       const actual = selectActivityForTableSearch(state as any, { search: "" });
       expect(actual).toEqual([op2Row, op3Row, op1Row]);

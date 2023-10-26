@@ -27,3 +27,4 @@ export * from "./database-credential";
 export * from "./activity-report";
 export * from "./image";
 export * from "./disk";
+export * from "./container";

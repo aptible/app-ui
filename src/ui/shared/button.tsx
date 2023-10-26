@@ -45,7 +45,7 @@ export const ButtonIcon = ({
   return (
     <Button {...props}>
       {icon}
-      <span className="pl-2">{children}</span>
+      <span className={children ? "pl-2" : ""}>{children}</span>
     </Button>
   );
 };

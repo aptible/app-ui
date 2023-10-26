@@ -1,4 +1,5 @@
 import {
+  CONTAINER_PROFILES,
   calcMetrics,
   fetchAllDatabaseImages,
   fetchDatabase,
@@ -10,7 +11,6 @@ import {
   selectDiskById,
   selectServiceById,
 } from "@app/deploy";
-import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
 import { useQuery } from "@app/fx";
 import { databaseEndpointsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
@@ -18,11 +18,19 @@ import { AppState, DeployDatabase } from "@app/types";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { usePaginate } from "../hooks";
 import {
-  LoadResources,
-  ResourceListView,
-  TableHead,
+  DescBar,
+  EmptyTr,
+  FilterBar,
+  Group,
+  PaginateBar,
+  TBody,
+  THead,
+  Table,
   Td,
+  Th,
+  Tr,
   tokens,
 } from "../shared";
 
@@ -42,7 +50,7 @@ const ClusterDatabaseRow = ({
     selectDiskById(s, { id: db.diskId }),
   );
   return (
-    <tr className="group hover:bg-gray-50" key={`${db.id}`}>
+    <Tr>
       <Td className="flex-1 pl-4">
         <Link to={databaseEndpointsUrl(db.id)}>
           <div className={tokens.type.darker}>{db.handle}</div>
@@ -72,7 +80,7 @@ const ClusterDatabaseRow = ({
           {CONTAINER_PROFILES[service.instanceClass].name}
         </div>
       </Td>
-    </tr>
+    </Tr>
   );
 };
 
@@ -80,52 +88,56 @@ export const DatabaseClusterPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchDatabase({ id }));
   const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  useQuery(fetchDatabaseDependents({ id }));
   const clusterDatabases = useSelector((s: AppState) =>
     selectDatabaseDependents(s, { id }),
   );
-  const dependentsQuery = useQuery(fetchDatabaseDependents({ id }));
   useQuery(fetchAllDatabaseImages());
   useQuery(fetchEnvironmentServices({ id: database.environmentId }));
 
+  const paginated = usePaginate(clusterDatabases);
+
   return (
-    <LoadResources query={dependentsQuery} isEmpty={false}>
-      <div className="text-sm text-gray-500 select-none">
-        <div className="text-base inline">
-          {clusterDatabases.length ? clusterDatabases.length : 0} Cluster
-          Members. Replicas can only be added via the Aptible CLI,{" "}
-          <a
-            href="https://www.aptible.com/docs/replication-clustering"
-            className="text-blue-500"
-          >
-            view docs to learn more
-          </a>
-          .
+    <Group>
+      <Group size="sm">
+        <div className="text-sm text-gray-500 select-none">
+          <div className="text-base inline">
+            {clusterDatabases.length ? clusterDatabases.length : 0} Cluster
+            Members. Replicas can only be added via the Aptible CLI,{" "}
+            <a
+              href="https://www.aptible.com/docs/replication-clustering"
+              className="text-blue-500"
+            >
+              view docs to learn more
+            </a>
+            .
+          </div>
+
+          <FilterBar>
+            <Group variant="horizontal" size="lg" className="items-center">
+              <DescBar>{paginated.totalItems} Cluster Databases</DescBar>
+              <PaginateBar {...paginated} />
+            </Group>
+          </FilterBar>
         </div>
-      </div>
-      {clusterDatabases.length ? (
-        <div className="my-4">
-          <ResourceListView
-            tableHeader={
-              <TableHead
-                headers={[
-                  "Database",
-                  "Type",
-                  "Disk Size",
-                  "Container Size",
-                  "Profile",
-                ]}
-              />
-            }
-            tableBody={
-              <>
-                {clusterDatabases.map((db) => (
-                  <ClusterDatabaseRow key={db.id} db={db} />
-                ))}
-              </>
-            }
-          />
-        </div>
-      ) : null}
-    </LoadResources>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Database</Th>
+          <Th>Type</Th>
+          <Th>Disk Size</Th>
+          <Th>Container Size</Th>
+          <Th>Profile</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.map((db) => (
+            <ClusterDatabaseRow key={db.id} db={db} />
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 };

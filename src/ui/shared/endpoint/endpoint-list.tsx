@@ -1,7 +1,3 @@
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { Link, useSearchParams } from "react-router-dom";
-
 import {
   DeployEndpointRow,
   fetchCertificateById,
@@ -27,22 +23,27 @@ import {
   endpointDetailUrl,
 } from "@app/routes";
 import { AppState, DeployEndpoint } from "@app/types";
-
-import { Button, ButtonCreate } from "../button";
-import { TableHead } from "../table";
-import { Td } from "../table";
-
+import { usePaginate } from "@app/ui/hooks";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
+import { Button, ButtonCreate } from "../button";
 import { CopyTextButton } from "../copy";
-import { IconInfo, IconPlusCircle } from "../icons";
+import { Group } from "../group";
+import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import {
-  EmptyResultView,
-  ResourceHeader,
-  ResourceListView,
+  ActionBar,
+  DescBar,
+  FilterBar,
+  LoadingBar,
+  PaginateBar,
+  TitleBar,
 } from "../resource-list-view";
+import { EmptyTr, TBody, THead, Table, Th, Tr } from "../table";
+import { Td } from "../table";
 import { tokens } from "../tokens";
-import { Tooltip } from "../tooltip";
 import { EndpointStatusPill } from "./util";
 
 export const EndpointItemView = ({
@@ -73,7 +74,7 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
   };
 
   return (
-    <tr className="group hover:bg-gray-50">
+    <Tr>
       <Td>
         <div className="flex flex-row items-center gap-2">
           <EndpointItemView endpoint={endpoint} />
@@ -106,105 +107,88 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
           "Completed"
         )}
       </Td>
-    </tr>
+    </Tr>
   );
 };
 
-const EndpointHeader = ({
-  search,
-  onChange,
-  actions,
-  enps,
-  showTitle = false,
-}: {
-  search: string;
-  onChange: (s: string) => void;
-  actions: JSX.Element[];
-  enps: DeployEndpoint[];
-  showTitle?: boolean;
-}) => {
-  return (
-    <ResourceHeader
-      title={showTitle ? "Endpoints" : ""}
-      actions={actions}
-      filterBar={
-        <div>
-          <InputSearch
-            placeholder="Search endpoints..."
-            search={search}
-            onChange={(ev) => onChange(ev.currentTarget.value)}
-          />
-          <div className="flex">
-            <p className="flex text-gray-500 mt-4 text-base">
-              {enps.length} Endpoint{enps.length !== 1 && "s"}
-            </p>
-            <div className="mt-4">
-              <Tooltip
-                fluid
-                text="Endpoints let you expose your Apps on Aptible to clients over the public internet or your Stack's internal network."
-              >
-                <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
-              </Tooltip>
-            </div>
-          </div>
-        </div>
-      }
-    />
-  );
-};
-
-const headers = [
-  "URL",
-  "ID",
-  "Resource",
-  "Status",
-  "Placement",
-  "Platform",
-  "ACME Status",
-];
-
-export const EndpointList = ({
+const EndpointList = ({
   endpoints,
   actions = [],
   search = "",
   onChange = () => {},
   showTitle = false,
+  isLoading = false,
 }: {
   endpoints: DeployEndpointRow[];
   actions?: JSX.Element[];
   search?: string;
   onChange?: (s: string) => void;
   showTitle?: boolean;
+  isLoading?: boolean;
 }) => {
-  const titleBar = (
-    <EndpointHeader
-      enps={endpoints}
-      search={search}
-      onChange={onChange}
-      actions={actions}
-      showTitle={showTitle}
-    />
-  );
+  const paginated = usePaginate(endpoints);
 
   return (
-    <ResourceListView
-      header={titleBar}
-      tableHeader={<TableHead headers={headers} />}
-      tableBody={
-        <>
-          {endpoints.map((enp) => (
+    <Group>
+      <Group size="sm">
+        <TitleBar
+          visible={showTitle}
+          description="Endpoints let you expose your Apps on Aptible to clients over the public internet or your Stack's internal network."
+        >
+          Endpoints
+        </TitleBar>
+
+        <FilterBar>
+          <div className="flex justify-between mb-1">
+            <Group variant="horizontal" size="sm" className="items-center">
+              <InputSearch
+                placeholder="Search ..."
+                search={search}
+                onChange={(e) => onChange(e.currentTarget.value)}
+              />
+              <LoadingBar isLoading={isLoading} />
+            </Group>
+
+            <ActionBar>
+              {actions.map((comp, idx) => {
+                return <span key={`${idx}-action`}>{comp}</span>;
+              })}
+            </ActionBar>
+          </div>
+
+          <Group variant="horizontal" size="lg" className="items-center">
+            <DescBar>{paginated.totalItems} Endpoints</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>URL</Th>
+          <Th>ID</Th>
+          <Th>Resource</Th>
+          <Th>Status</Th>
+          <Th>Placement</Th>
+          <Th>Platform</Th>
+          <Th>ACME Status</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+          {paginated.data.map((enp) => (
             <EndpointRow endpoint={enp} key={enp.id} />
           ))}
-        </>
-      }
-    />
+        </TBody>
+      </Table>
+    </Group>
   );
 };
 
 export function EndpointsByOrg() {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  useQuery(fetchEndpoints());
+  const { isLoading } = useQuery(fetchEndpoints());
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch }, { replace: true });
   };
@@ -212,21 +196,12 @@ export function EndpointsByOrg() {
     selectEndpointsForTableSearch(s, { search }),
   );
 
-  if (endpoints.length === 0 && search === "") {
-    return (
-      <EmptyResultView
-        title="No endpoints yet"
-        description="Expose an application to the public internet by adding an endpoint"
-        className="p-6 w-100"
-      />
-    );
-  }
-
   return (
     <EndpointList
       endpoints={endpoints}
       search={search}
       onChange={onChange}
+      isLoading={isLoading}
       showTitle
     />
   );
@@ -241,16 +216,6 @@ export function EndpointsByEnv({ envId }: { envId: string }) {
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByEnvIdForTableSearch(s, { search, envId }),
   );
-
-  if (endpoints.length === 0 && search === "") {
-    return (
-      <EmptyResultView
-        title="No endpoints yet"
-        description="Expose this application to the public internet by adding an endpoint"
-        className="p-6 w-100"
-      />
-    );
-  }
 
   return (
     <EndpointList endpoints={endpoints} search={search} onChange={onChange} />
@@ -278,17 +243,6 @@ export function EndpointsByApp({ appId }: { appId: string }) {
       <IconPlusCircle variant="sm" className="mr-2" /> New Endpoint
     </ButtonCreate>
   );
-
-  if (endpoints.length === 0 && search === "") {
-    return (
-      <EmptyResultView
-        title="No endpoints yet"
-        description="Expose this application to the public internet by adding an endpoint"
-        className="p-6 w-100"
-        action={action}
-      />
-    );
-  }
 
   return (
     <EndpointList
@@ -320,17 +274,6 @@ export function EndpointsByDatabase({ dbId }: { dbId: string }) {
     </ButtonCreate>
   );
 
-  if (endpoints.length === 0 && search === "") {
-    return (
-      <EmptyResultView
-        action={action}
-        title="No endpoints yet"
-        description="Expose this application to the public internet by adding an endpoint"
-        className="p-6 w-100"
-      />
-    );
-  }
-
   return (
     <EndpointList
       endpoints={endpoints}
@@ -351,16 +294,6 @@ export function EndpointsByCert({ certId }: { certId: string }) {
   const endpoints = useSelector((s: AppState) =>
     selectEndpointsByCertIdForTableSearch(s, { search, certId }),
   );
-
-  if (endpoints.length === 0 && search === "") {
-    return (
-      <EmptyResultView
-        title="No endpoints yet"
-        description="Expose this application to the public internet by adding an endpoint"
-        className="p-6 w-100"
-      />
-    );
-  }
 
   return (
     <EndpointList endpoints={endpoints} search={search} onChange={onChange} />
@@ -389,17 +322,6 @@ export function EndpointsByDbService({
       <IconPlusCircle variant="sm" className="mr-2" /> New Endpoint
     </ButtonCreate>
   );
-
-  if (endpoints.length === 0 && search === "") {
-    return (
-      <EmptyResultView
-        action={action}
-        title="No endpoints yet"
-        description="Expose this application to the public internet by adding an endpoint"
-        className="p-6 w-100"
-      />
-    );
-  }
 
   return (
     <EndpointList

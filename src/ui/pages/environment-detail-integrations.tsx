@@ -1,7 +1,3 @@
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
 import { prettyEnglishDateWithTime } from "@app/date";
 import {
   deprovisionLogDrain,
@@ -13,6 +9,7 @@ import {
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
 } from "@app/deploy";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import {
   createLogDrainUrl,
   createMetricDrainUrl,
@@ -20,18 +17,26 @@ import {
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
-
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import { usePaginate } from "../hooks";
 import {
   ButtonDestroy,
   ButtonOps,
-  EmptyResourcesTable,
+  DescBar,
+  EmptyTr,
+  FilterBar,
   Group,
   IconPlusCircle,
-  LoadResources,
+  PaginateBar,
   Pill,
-  ResourceListView,
-  TableHead,
+  TBody,
+  THead,
+  Table,
   Td,
+  Th,
+  TitleBar,
+  Tr,
   pillStyles,
   tokens,
 } from "../shared";
@@ -184,60 +189,51 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   );
 };
 
-const logDrainsHeaders = [
-  "Status",
-  "Handle",
-  "Sources",
-  "Last Updated",
-  "Actions",
-];
-
-const LogDrainsSection = ({ id }: { id: string }) => {
-  const query = useQuery(fetchEnvLogDrains({ id }));
-
+const LogDrainTable = ({ envId }: { envId: string }) => {
+  useQuery(fetchEnvLogDrains({ id: envId }));
   const logDrains = useSelector((s: AppState) =>
-    selectLogDrainsByEnvId(s, { envId: id }),
+    selectLogDrainsByEnvId(s, { envId }),
   );
+  const paginated = usePaginate(logDrains);
 
   return (
-    <LoadResources
-      empty={
-        <EmptyResourcesTable
-          headers={logDrainsHeaders}
-          titleBar={
-            <p className="flex text-gray-500 text-base mb-4">
-              {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
-            </p>
-          }
-        />
-      }
-      query={query}
-      isEmpty={logDrains.length === 0}
-    >
-      <ResourceListView
-        header={
-          <p className="flex text-gray-500 text-base mb-4">
-            {logDrains.length} Log Drain{logDrains.length !== 1 && "s"}
-          </p>
-        }
-        tableHeader={
-          <TableHead rightAlignedFinalCol headers={logDrainsHeaders} />
-        }
-        tableBody={
-          <>
-            {logDrains.map((logDrain) => (
-              <tr className="group hover:bg-gray-50" key={logDrain.id}>
-                <LogDrainPrimaryCell logDrain={logDrain} />
-                <LogDrainHandleCell logDrain={logDrain} />
-                <LogDrainSourcesCell logDrain={logDrain} />
-                <LogDrainLastUpdatedCell logDrain={logDrain} />
-                <LogDrainActions logDrain={logDrain} />
-              </tr>
-            ))}
-          </>
-        }
-      />
-    </LoadResources>
+    <Group>
+      <Group size="sm">
+        <TitleBar description="Log Drains allow you to centralize and analyze application logs.">
+          Log Drains
+        </TitleBar>
+
+        <FilterBar>
+          <Group variant="horizontal" size="lg" className="items-center">
+            <DescBar>{paginated.totalItems} Drains</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Status</Th>
+          <Th>Handle</Th>
+          <Th>Sources</Th>
+          <Th>Last Updated</Th>
+          <Th>Actions</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.map((drain) => (
+            <Tr key={drain.id}>
+              <LogDrainPrimaryCell logDrain={drain} />
+              <LogDrainHandleCell logDrain={drain} />
+              <LogDrainSourcesCell logDrain={drain} />
+              <LogDrainLastUpdatedCell logDrain={drain} />
+              <LogDrainActions logDrain={drain} />
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 };
 
@@ -342,57 +338,49 @@ const MetricDrainActions = ({
   );
 };
 
-const metricDrainsHeaders = ["Status", "Handle", "Last Updated", "Actions"];
-
-const MetricDrainsSection = ({ id }: { id: string }) => {
-  const query = useQuery(fetchEnvMetricDrains({ id }));
-
+const MetricDrainTable = ({ envId }: { envId: string }) => {
+  useQuery(fetchEnvMetricDrains({ id: envId }));
   const metricDrains = useSelector((s: AppState) =>
-    selectMetricDrainsByEnvId(s, { envId: id }),
+    selectMetricDrainsByEnvId(s, { envId }),
   );
+  const paginated = usePaginate(metricDrains);
 
   return (
-    <div className="mb-4">
-      <LoadResources
-        empty={
-          <EmptyResourcesTable
-            headers={metricDrainsHeaders}
-            titleBar={
-              <p className="flex text-gray-500 text-base my-4">
-                {metricDrains.length} Metric Drain
-                {metricDrains.length !== 1 && "s"}
-              </p>
-            }
-          />
-        }
-        query={query}
-        isEmpty={metricDrains.length === 0}
-      >
-        <ResourceListView
-          header={
-            <p className="flex text-gray-500 text-base my-4">
-              {metricDrains.length} Metric Drain
-              {metricDrains.length !== 1 && "s"}
-            </p>
-          }
-          tableHeader={
-            <TableHead rightAlignedFinalCol headers={metricDrainsHeaders} />
-          }
-          tableBody={
-            <>
-              {metricDrains.map((metricDrain) => (
-                <tr className="group hover:bg-gray-50" key={metricDrain.id}>
-                  <MetricDrainPrimaryCell metricDrain={metricDrain} />
-                  <MetricDrainHandleCell metricDrain={metricDrain} />
-                  <MetricDrainLastUpdatedCell metricDrain={metricDrain} />
-                  <MetricDrainActions metricDrain={metricDrain} />
-                </tr>
-              ))}
-            </>
-          }
-        />
-      </LoadResources>
-    </div>
+    <Group>
+      <Group size="sm">
+        <TitleBar description="Metric Drains enable you to export application metrics to external monitoring and analytics services.">
+          Metric Drains
+        </TitleBar>
+
+        <FilterBar>
+          <Group variant="horizontal" size="lg" className="items-center">
+            <DescBar>{paginated.totalItems} Drains</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Status</Th>
+          <Th>Handle</Th>
+          <Th>Last Updated</Th>
+          <Th>Actions</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={4} /> : null}
+          {paginated.data.map((drain) => (
+            <Tr key={drain.id}>
+              <MetricDrainPrimaryCell metricDrain={drain} />
+              <MetricDrainHandleCell metricDrain={drain} />
+              <MetricDrainLastUpdatedCell metricDrain={drain} />
+              <MetricDrainActions metricDrain={drain} />
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 };
 
@@ -407,8 +395,8 @@ export const EnvironmentIntegrationsPage = () => {
   };
 
   return (
-    <div>
-      <Group variant="horizontal" size="sm" className="mb-4">
+    <Group>
+      <Group variant="horizontal" size="sm">
         <ButtonOps envId={id} onClick={onCreateLogs}>
           <IconPlusCircle variant="sm" className="mr-1" /> New Log Drain
         </ButtonOps>
@@ -417,8 +405,8 @@ export const EnvironmentIntegrationsPage = () => {
         </ButtonOps>
       </Group>
 
-      <LogDrainsSection id={id} />
-      <MetricDrainsSection id={id} />
-    </div>
+      <LogDrainTable envId={id} />
+      <MetricDrainTable envId={id} />
+    </Group>
   );
 };

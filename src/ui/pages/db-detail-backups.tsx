@@ -19,6 +19,7 @@ import {
   ButtonLink,
   ButtonOps,
   DatabaseBackupsList,
+  Group,
   IconEdit,
   IconPlusCircle,
   LoadingSpinner,
@@ -51,7 +52,7 @@ export const DatabaseBackupsPage = () => {
   });
 
   return (
-    <div>
+    <Group>
       <div className="flex gap-4 items-center">
         <ButtonOps
           envId={db.environmentId}
@@ -75,6 +76,6 @@ export const DatabaseBackupsPage = () => {
       <BannerMessages className="my-4" {...loader} />
 
       <DatabaseBackupsList backups={backups} showDatabase={false} />
-    </div>
+    </Group>
   );
 };
