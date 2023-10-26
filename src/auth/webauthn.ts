@@ -56,11 +56,6 @@ export function webauthnGet(
   return get({ publicKey });
 }
 
-export const fetchU2fDevices = authApi.get<{ userId: string }>(
-  "/users/:userId/u2f_devices",
-  authApi.cache(),
-);
-
 interface CreateWebauthnDeviceProps {
   userId: string;
   name: string;
