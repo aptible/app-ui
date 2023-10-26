@@ -52,10 +52,10 @@ export const Td = ({
   children,
   className,
   colSpan = 1,
-  variant,
+  variant = "left",
 }: CellProps) => {
   const align = () => {
-    if (variant === "right") return "text-right";
+    if (variant === "right") return "flex justify-end pr-4";
     if (variant === "center") return "text-center";
     return "text-left";
   };
@@ -75,7 +75,7 @@ export const Td = ({
 
 export const Th = ({ children, className, variant = "left" }: CellProps) => {
   const align = () => {
-    if (variant === "right") return "text-right";
+    if (variant === "right") return "text-right pr-4";
     if (variant === "center") return "text-center";
     return "text-left";
   };

@@ -1,4 +1,5 @@
 import { PaginateProps } from "../hooks";
+import { ButtonIcon } from "./button";
 import { Group } from "./group";
 import { IconArrowLeft, IconArrowRight, IconInfo } from "./icons";
 import { tokens } from "./tokens";
@@ -46,18 +47,22 @@ export function PaginateBar<T>(
         Page {paginate.page} of {paginate.totalPages}
       </div>
       <Group variant="horizontal" size="sm" className="items-center">
-        <IconArrowLeft
-          color="#111920"
-          className="cursor-pointer opacity-60 hover:opacity-100 border border-black-200 p-1 rounded-md hover:shadow"
+        <ButtonIcon
+          variant="white"
+          icon={<IconArrowLeft color="#111920" variant="sm" />}
+          size="xs"
+          disabled={paginate.page === 1}
           onClick={(e) => {
             e.preventDefault();
             paginate.prev();
           }}
         />
 
-        <IconArrowRight
-          color="#111920"
-          className="cursor-pointer opacity-60 hover:opacity-100 border border-black-200 p-1 rounded-md hover:shadow"
+        <ButtonIcon
+          variant="white"
+          icon={<IconArrowRight color="#111920" variant="sm" />}
+          size="xs"
+          disabled={paginate.page === paginate.totalPages}
           onClick={(e) => {
             e.preventDefault();
             paginate.next();

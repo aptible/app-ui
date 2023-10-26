@@ -84,8 +84,6 @@ const selectActivityForTable = createSelector(
 );
 
 const denyOpTypes: OperationType[] = ["poll"];
-const MAX_RESULTS = 50;
-// TODO: remove `slice`
 export const selectActivityForTableSearch = createSelector(
   selectActivityForTable,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
@@ -93,9 +91,7 @@ export const selectActivityForTableSearch = createSelector(
   (_: AppState, props: { resourceIds?: string[] }) => props.resourceIds || "",
   (ops, search, envId, resourceIds): DeployActivityRow[] => {
     if (search === "" && envId === "" && resourceIds.length === 0) {
-      return ops
-        .filter((op) => !denyOpTypes.includes(op.type))
-        .slice(0, Math.min(ops.length, MAX_RESULTS));
+      return ops.filter((op) => !denyOpTypes.includes(op.type));
     }
 
     const filtered = ops.filter((op) => {
@@ -157,7 +153,7 @@ export const selectActivityForTableSearch = createSelector(
       return searchMatch;
     });
 
-    return filtered.slice(0, Math.min(ops.length, MAX_RESULTS));
+    return filtered;
   },
 );
 

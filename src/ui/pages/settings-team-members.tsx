@@ -80,10 +80,9 @@ export const TeamMembersPage = () => {
       <Table>
         <THead>
           <Th>User</Th>
-          <Th>Email</Th>
           <Th variant="center">Verified</Th>
           <Th variant="center">MFA Status</Th>
-          <Th>Actions</Th>
+          <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
@@ -94,9 +93,11 @@ export const TeamMembersPage = () => {
                 <div>{user.name}</div>
                 <div>{user.email}</div>
               </Td>
-              <Td>{user.verified ? "Enabled" : "Disabled"}</Td>
-              <Td>{user.otpEnabled ? "Enabled" : "Disabled"}</Td>
-              <Td>
+              <Td variant="center">{user.verified ? "Yes" : "No"}</Td>
+              <Td variant="center">
+                {user.otpEnabled ? "Enabled" : "Disabled"}
+              </Td>
+              <Td variant="right">
                 <Button type="submit" size="sm">
                   Edit
                 </Button>

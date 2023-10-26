@@ -200,7 +200,11 @@ function ActivityTable({
               search={search}
               onChange={onChange}
             />
-            {isLoading ? <LoadingSpinner /> : null}
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <LoadingSpinner />
+              </div>
+            ) : null}
           </Group>
 
           <Group variant="horizontal" size="lg" className="items-center">
@@ -221,6 +225,7 @@ function ActivityTable({
         <THead>
           <Th>Resource</Th>
           <Th>Status</Th>
+          <Th>Type</Th>
           <Th>Environment</Th>
           <Th>User</Th>
           <Th>Last Updated</Th>

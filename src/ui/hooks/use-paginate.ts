@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 
-const ITEMS_PER_PAGE = 50;
+const ITEMS_PER_PAGE = 25;
 
 function paginate<T>(
   data: T[],
