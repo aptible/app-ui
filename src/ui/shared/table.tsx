@@ -2,10 +2,12 @@ import cn from "classnames";
 
 export const Table = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-      <table className="table-auto min-w-full divide-y divide-gray-300">
-        {children}
-      </table>
+    <div className="overflow-x-scroll w-full shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+      <div className="min-w-[600px]">
+        <table className="table-auto w-full divide-y divide-gray-300">
+          {children}
+        </table>
+      </div>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import {
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useLoader, useQuery } from "@app/fx";
 import {
   createEnvUrl,
   environmentAppsUrl,
@@ -24,6 +24,7 @@ import {
   ActionBar,
   DescBar,
   FilterBar,
+  LoadingBar,
   PaginateBar,
   TitleBar,
 } from "../resource-list-view";
@@ -121,6 +122,7 @@ export function EnvironmentList({
   useQuery(fetchEnvironments());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
+  const { isLoading } = useLoader(fetchEnvironments());
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
@@ -146,11 +148,14 @@ export function EnvironmentList({
 
         <FilterBar>
           <div className="flex justify-between">
-            <InputSearch
-              placeholder="Search..."
-              search={search}
-              onChange={onChange}
-            />
+            <Group variant="horizontal" size="sm" className="items-center">
+              <InputSearch
+                placeholder="Search..."
+                search={search}
+                onChange={onChange}
+              />
+              <LoadingBar isLoading={isLoading} />
+            </Group>
 
             <ActionBar>
               <ButtonOwner onClick={onCreate}>

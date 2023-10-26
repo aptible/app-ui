@@ -2,6 +2,7 @@ import { PaginateProps } from "../hooks";
 import { ButtonIcon } from "./button";
 import { Group } from "./group";
 import { IconArrowLeft, IconArrowRight, IconInfo } from "./icons";
+import { LoadingSpinner } from "./loading";
 import { tokens } from "./tokens";
 import { Tooltip } from "./tooltip";
 
@@ -30,6 +31,17 @@ export const ActionBar = ({ children }: { children: React.ReactNode }) => {
 export const DescBar = ({ children }: { children: React.ReactNode }) => {
   return <div className="text-gray-500">{children}</div>;
 };
+export const LoadingBar = ({ isLoading = false }: { isLoading?: boolean }) => {
+  if (isLoading) {
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
+  }
+  return null;
+};
+
 export function PaginateBar<T>(
   paginate: Pick<PaginateProps<T>, "totalPages" | "page" | "prev" | "next">,
 ) {

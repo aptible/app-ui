@@ -37,6 +37,7 @@ import {
   ActionBar,
   DescBar,
   FilterBar,
+  LoadingBar,
   PaginateBar,
   TitleBar,
 } from "../resource-list-view";
@@ -165,7 +166,7 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
 };
 
 export const DatabaseListByOrg = () => {
-  useQuery(fetchDatabases());
+  const { isLoading } = useQuery(fetchDatabases());
   useQuery(fetchEnvironments());
   useQuery(fetchAllDatabaseImages());
   const [params, setParams] = useSearchParams();
@@ -188,11 +189,14 @@ export const DatabaseListByOrg = () => {
         </TitleBar>
 
         <FilterBar>
-          <InputSearch
-            placeholder="Search..."
-            search={search}
-            onChange={onChange}
-          />
+          <Group variant="horizontal" size="sm" className="items-center">
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
+            <LoadingBar isLoading={isLoading} />
+          </Group>
 
           <Group variant="horizontal" size="lg" className="items-center mt-1">
             <DescBar>{paginated.totalItems} Databases</DescBar>

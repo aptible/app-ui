@@ -31,6 +31,7 @@ import {
   ActionBar,
   DescBar,
   FilterBar,
+  LoadingBar,
   PaginateBar,
   TitleBar,
 } from "../resource-list-view";
@@ -135,7 +136,7 @@ export const AppLastOpCell = ({ app }: AppCellProps) => {
 };
 
 export const AppListByOrg = () => {
-  useQuery(fetchApps());
+  const { isLoading } = useQuery(fetchApps());
   useQuery(fetchEnvironments());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -155,11 +156,14 @@ export const AppListByOrg = () => {
         </TitleBar>
 
         <FilterBar>
-          <InputSearch
-            placeholder="Search..."
-            search={search}
-            onChange={onChange}
-          />
+          <Group variant="horizontal" size="sm" className="items-center">
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
+            <LoadingBar isLoading={isLoading} />
+          </Group>
 
           <Group variant="horizontal" size="lg" className="items-center mt-1">
             <DescBar>{paginated.totalItems} Apps</DescBar>

@@ -37,6 +37,7 @@ import {
   ActionBar,
   DescBar,
   FilterBar,
+  LoadingBar,
   PaginateBar,
   TitleBar,
 } from "../resource-list-view";
@@ -116,12 +117,14 @@ const EndpointList = ({
   search = "",
   onChange = () => {},
   showTitle = false,
+  isLoading = false,
 }: {
   endpoints: DeployEndpointRow[];
   actions?: JSX.Element[];
   search?: string;
   onChange?: (s: string) => void;
   showTitle?: boolean;
+  isLoading?: boolean;
 }) => {
   const paginated = usePaginate(endpoints);
 
@@ -137,11 +140,14 @@ const EndpointList = ({
 
         <FilterBar>
           <div className="flex justify-between mb-1">
-            <InputSearch
-              placeholder="Search ..."
-              search={search}
-              onChange={(e) => onChange(e.currentTarget.value)}
-            />
+            <Group variant="horizontal" size="sm" className="items-center">
+              <InputSearch
+                placeholder="Search ..."
+                search={search}
+                onChange={(e) => onChange(e.currentTarget.value)}
+              />
+              <LoadingBar isLoading={isLoading} />
+            </Group>
 
             <ActionBar>
               {actions.map((comp, idx) => {
@@ -182,7 +188,7 @@ const EndpointList = ({
 export function EndpointsByOrg() {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  useQuery(fetchEndpoints());
+  const { isLoading } = useQuery(fetchEndpoints());
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch }, { replace: true });
   };
@@ -195,6 +201,7 @@ export function EndpointsByOrg() {
       endpoints={endpoints}
       search={search}
       onChange={onChange}
+      isLoading={isLoading}
       showTitle
     />
   );

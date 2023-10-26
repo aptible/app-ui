@@ -23,6 +23,7 @@ import {
   Group,
   IconPlusCircle,
   InputSearch,
+  LoadingBar,
   PaginateBar,
   StackItemView,
   TBody,
@@ -71,7 +72,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
 }
 
 function StackList() {
-  useQuery(fetchStacks());
+  const { isLoading } = useQuery(fetchStacks());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,11 +94,14 @@ function StackList() {
 
         <FilterBar>
           <div className="flex justify-between">
-            <InputSearch
-              placeholder="Search..."
-              search={search}
-              onChange={onChange}
-            />
+            <Group variant="horizontal" size="sm" className="items-center">
+              <InputSearch
+                placeholder="Search..."
+                search={search}
+                onChange={onChange}
+              />
+              <LoadingBar isLoading={isLoading} />
+            </Group>
 
             <ActionBar>
               <ButtonLink to={createStackUrl()}>
