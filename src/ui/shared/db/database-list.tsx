@@ -213,7 +213,7 @@ export const DatabaseListByOrg = () => {
           <Th>Disk Size</Th>
           <Th>Container Size</Th>
           <Th>Est. Monthly Cost</Th>
-          <Th>Actions</Th>
+          <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
@@ -290,7 +290,7 @@ export const DatabaseListByEnvironment = ({
           <Th>Disk Size</Th>
           <Th>Container Size</Th>
           <Th>Est. Monthly Cost</Th>
-          <Th>Actions</Th>
+          <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
