@@ -26,8 +26,11 @@ export const TBody = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const Tr = ({ children }: { children: React.ReactNode }) => {
-  return <tr className="group hover:bg-gray-50">{children}</tr>;
+export const Tr = ({
+  children,
+  className = "",
+}: { children: React.ReactNode; className?: string }) => {
+  return <tr className={`group hover:bg-gray-50 ${className}`}>{children}</tr>;
 };
 
 export const EmptyTr = ({

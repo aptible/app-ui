@@ -126,8 +126,6 @@ export function ServicesOverview({
   return (
     <Group>
       <Group size="sm">
-        <TitleBar description="Services">Services</TitleBar>
-
         <FilterBar>
           <ActionBar>
             <ButtonCreate

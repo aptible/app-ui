@@ -199,7 +199,9 @@ const LogDrainTable = ({ envId }: { envId: string }) => {
   return (
     <Group>
       <Group size="sm">
-        <TitleBar description="Log Drains">Log Drains</TitleBar>
+        <TitleBar description="Log Drains allow you to centralize and analyze application logs.">
+          Log Drains
+        </TitleBar>
 
         <FilterBar>
           <Group variant="horizontal" size="lg" className="items-center">
@@ -346,11 +348,13 @@ const MetricDrainTable = ({ envId }: { envId: string }) => {
   return (
     <Group>
       <Group size="sm">
-        <TitleBar description="Metric drains">Metric Drains</TitleBar>
+        <TitleBar description="Metric Drains enable you to export application metrics to external monitoring and analytics services.">
+          Metric Drains
+        </TitleBar>
 
         <FilterBar>
           <Group variant="horizontal" size="lg" className="items-center">
-            <DescBar>{paginated.totalItems} Metric Drains</DescBar>
+            <DescBar>{paginated.totalItems} Drains</DescBar>
             <PaginateBar {...paginated} />
           </Group>
         </FilterBar>
@@ -391,8 +395,8 @@ export const EnvironmentIntegrationsPage = () => {
   };
 
   return (
-    <div>
-      <Group variant="horizontal" size="sm" className="mb-4">
+    <Group>
+      <Group variant="horizontal" size="sm">
         <ButtonOps envId={id} onClick={onCreateLogs}>
           <IconPlusCircle variant="sm" className="mr-1" /> New Log Drain
         </ButtonOps>
@@ -403,6 +407,6 @@ export const EnvironmentIntegrationsPage = () => {
 
       <LogDrainTable envId={id} />
       <MetricDrainTable envId={id} />
-    </div>
+    </Group>
   );
 };

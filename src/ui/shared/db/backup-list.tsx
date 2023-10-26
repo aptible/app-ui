@@ -134,7 +134,7 @@ const BackupListRow = ({
         </div>
       </Td>
 
-      <Td className="flex gap-2 justify-end mr-4">
+      <Td variant="right" className="flex gap-2">
         <ButtonCreate
           envId={backup.environmentId}
           onClick={onRestore}
@@ -176,11 +176,12 @@ export const DatabaseBackupsList = ({
           <Th>ID</Th>
           {showDatabase ? <Th>Database</Th> : null}
           <Th>Type</Th>
+          <Th>Size</Th>
           <Th>Region</Th>
           <Th>Created At</Th>
           <Th>Creator</Th>
           <Th>Operation ID</Th>
-          <Th>Actions</Th>
+          <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
