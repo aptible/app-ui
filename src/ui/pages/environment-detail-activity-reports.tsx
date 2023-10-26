@@ -22,7 +22,6 @@ import {
   Table,
   Td,
   Th,
-  TitleBar,
   Tr,
 } from "../shared";
 
@@ -37,7 +36,7 @@ const ActivityReportListRow = ({
       <Td className="text-gray-900">{prettyEnglishDate(report.createdAt)}</Td>
       <Td className="text-gray-900">{prettyEnglishDate(report.startsAt)}</Td>
       <Td className="text-gray-900">{prettyEnglishDate(report.endsAt)}</Td>
-      <Td className="flex gap-2 justify-end mr-4">
+      <Td variant="right">
         <ButtonIcon
           icon={<IconDownload className="-mr-1" variant="sm" />}
           onClick={() => {
@@ -69,13 +68,9 @@ export const EnvironmentActivityReportsPage = () => {
   return (
     <Group>
       <Group size="sm">
-        <TitleBar description="Weekly CSV downloads that list all environment operations.">
-          Activity Reports
-        </TitleBar>
-
         <FilterBar>
           <Group variant="horizontal" size="lg" className="items-center">
-            <DescBar>{paginated.totalItems} Reports</DescBar>
+            <DescBar>{paginated.totalItems} Weekly CSV Reports</DescBar>
             <PaginateBar {...paginated} />
           </Group>
         </FilterBar>
@@ -86,7 +81,7 @@ export const EnvironmentActivityReportsPage = () => {
           <Th>Posted</Th>
           <Th>From Date</Th>
           <Th>To Date</Th>
-          <Th>Download</Th>
+          <Th variant="right">Download</Th>
         </THead>
 
         <TBody>

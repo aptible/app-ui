@@ -100,22 +100,20 @@ export const DatabaseClusterPage = () => {
   return (
     <Group>
       <Group size="sm">
-        <div className="text-sm text-gray-500 select-none">
-          <div className="text-base inline">
-            {clusterDatabases.length ? clusterDatabases.length : 0} Cluster
-            Members. Replicas can only be added via the Aptible CLI,{" "}
-            <a
-              href="https://www.aptible.com/docs/replication-clustering"
-              className="text-blue-500"
-            >
-              view docs to learn more
-            </a>
-            .
-          </div>
-
+        <div className="text-gray-500 select-none">
           <FilterBar>
             <Group variant="horizontal" size="lg" className="items-center">
-              <DescBar>{paginated.totalItems} Cluster Databases</DescBar>
+              <DescBar>
+                {paginated.totalItems} Cluster Databases. Replicas can only be
+                added via the Aptible CLI,{" "}
+                <a
+                  href="https://www.aptible.com/docs/replication-clustering"
+                  className="text-blue-500"
+                >
+                  view docs to learn more
+                </a>
+                .{" "}
+              </DescBar>
               <PaginateBar {...paginated} />
             </Group>
           </FilterBar>

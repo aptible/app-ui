@@ -125,11 +125,8 @@ const OpResourceCell = ({ op }: OpCellProps) => {
 
 const OpActionsCell = ({ op }: OpCellProps) => {
   return (
-    <Td>
-      <Link
-        to={operationDetailUrl(op.id)}
-        className="hover:no-underline flex justify-end mr-4"
-      >
+    <Td variant="right">
+      <Link to={operationDetailUrl(op.id)} className="hover:no-underline">
         <Button variant="primary" size="sm">
           Logs
         </Button>
@@ -194,6 +191,13 @@ function ActivityTable({
         </TitleBar>
 
         <FilterBar>
+          {showTitle ? null : (
+            <DescBar>
+              Operations show real-time changes to resources, such as Apps and
+              Databases.
+            </DescBar>
+          )}
+
           <Group variant="horizontal" size="sm">
             <InputSearch
               placeholder="Search ..."
@@ -207,17 +211,10 @@ function ActivityTable({
             ) : null}
           </Group>
 
-          <Group variant="horizontal" size="lg" className="items-center">
+          <Group variant="horizontal" size="lg" className="items-center mt-1">
             <DescBar>{paginated.totalItems} Operations</DescBar>
             <PaginateBar {...paginated} />
           </Group>
-
-          {showTitle ? null : (
-            <DescBar>
-              Operations show real-time changes to resources, such as Apps and
-              Databases.
-            </DescBar>
-          )}
         </FilterBar>
       </Group>
 
@@ -229,7 +226,7 @@ function ActivityTable({
           <Th>Environment</Th>
           <Th>User</Th>
           <Th>Last Updated</Th>
-          <Th>Actions</Th>
+          <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
