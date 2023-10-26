@@ -39,7 +39,7 @@ export const U2F_DEVICES_NAME = "u2fDevices";
 const u2fDevices = createTable<U2fDevice>({ name: U2F_DEVICES_NAME });
 export const { selectTableAsList: selectU2fDevicesAsList } =
   u2fDevices.getSelectors((s: AppState) => s[U2F_DEVICES_NAME]);
-const { add: addU2fDevice } = u2fDevices.actions;
+const { add: addU2fDevice, remove: removeU2fDevices } = u2fDevices.actions;
 
 interface U2fDeviceResponse {
   id: string;
@@ -73,6 +73,23 @@ export const entities = {
 
 export const fetchU2fDevices = authApi.get<{ userId: string }>(
   "/users/:userId/u2f_devices",
+  function* (ctx, next) {
+    ctx.elevated = true;
+    yield* next();
+  },
+);
+
+export const deleteU2fDevice = authApi.delete<{ deviceId: string }>(
+  "/u2f_devices/:deviceId",
+  function* (ctx, next) {
+    const { deviceId } = ctx.payload;
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.actions.push(removeU2fDevices([deviceId]));
+  },
 );
 
 interface SetupOtp {

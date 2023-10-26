@@ -51,6 +51,7 @@ export const resendVerification = authApi.post<ResendVerification>(
 export const fetchEmailVerificationPending = authApi.get<{ userId: string }>(
   "/users/:userId/email_verification_challenges",
   function* onResendVerification(ctx, next) {
+    ctx.elevated = true;
     ctx.cache = true;
     yield* next();
   },

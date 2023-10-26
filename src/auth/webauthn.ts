@@ -65,6 +65,7 @@ interface CreateWebauthnDeviceProps {
 export const createWebauthnDevice = authApi.post<CreateWebauthnDeviceProps>(
   "/users/:userId/u2f_devices",
   function* (ctx, next) {
+    ctx.elevated = true;
     const { u2f, name } = ctx.payload;
     ctx.request = ctx.req({
       body: JSON.stringify({ u2f, name, version: "WEBAUTHN" }),

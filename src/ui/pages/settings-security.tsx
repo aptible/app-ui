@@ -4,7 +4,12 @@ import {
   revokeEmailVerification,
 } from "@app/auth";
 import { prettyDateTime } from "@app/date";
-import { useCache, useLoader, useLoaderSuccess } from "@app/fx";
+import { useCache, useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  deleteU2fDevice,
+  fetchU2fDevices,
+  selectU2fDevicesAsList,
+} from "@app/mfa";
 import {
   addSecurityKeyUrl,
   otpRecoveryCodesUrl,
@@ -301,30 +306,59 @@ const MultiFactor = () => {
 };
 
 const SecurityKeys = () => {
+  const dispatch = useDispatch();
   const [user, loader] = useCurrentUser();
+  useQuery(fetchU2fDevices({ userId: user.id }));
+  const devices = useSelector(selectU2fDevicesAsList);
+  const onRemove = (deviceId: string) => {
+    dispatch(deleteU2fDevice({ deviceId }));
+  };
+  const rmLoader = useLoader(deleteU2fDevice);
+
   if (loader.isLoading) {
     return <Loading />;
   }
 
+  if (!user.otpEnabled) {
+    return (
+      <Banner variant="info">
+        In order to add a hardware security key, you must set up 2FA
+        authentication first.
+      </Banner>
+    );
+  }
+
   return (
-    <div>
-      {user.otpEnabled ? (
-        <Group>
-          <div>
-            The following Security Keys are associated with your account and can
-            be used to log in:
-          </div>
-          <ButtonLink className="w-fit" to={addSecurityKeyUrl()}>
-            Add a new Security Key
-          </ButtonLink>
-        </Group>
-      ) : (
-        <Banner variant="info">
-          In order to add a hardware security key, you must set up 2FA
-          authentication first.
-        </Banner>
-      )}
-    </div>
+    <Group>
+      <div>
+        The following Security Keys are associated with your account and can be
+        used to log in:
+      </div>
+
+      <BannerMessages {...rmLoader} />
+
+      <div>
+        {devices.map((dev) => {
+          return (
+            <div key={dev.id} className="flex gap-4 items-center">
+              {dev.name}{" "}
+              <Button
+                requireConfirm
+                size="sm"
+                variant="delete"
+                onClick={() => onRemove(dev.id)}
+              >
+                Remove
+              </Button>
+            </div>
+          );
+        })}
+      </div>
+
+      <ButtonLink className="w-fit" to={addSecurityKeyUrl()}>
+        Add a new Security Key
+      </ButtonLink>
+    </Group>
   );
 };
 
