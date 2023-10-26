@@ -212,7 +212,7 @@ const LogDrainTable = ({ envId }: { envId: string }) => {
           <Th>Handle</Th>
           <Th>Sources</Th>
           <Th>Last Updated</Th>
-          <Th>Actions</Th>
+          <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
@@ -356,7 +356,7 @@ const MetricDrainTable = ({ envId }: { envId: string }) => {
           <Th>Status</Th>
           <Th>Handle</Th>
           <Th>Last Updated</Th>
-          <Th>Actions</Th>
+          <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>

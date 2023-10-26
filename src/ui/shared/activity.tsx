@@ -230,7 +230,7 @@ function ActivityTable({
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
           {paginated.data.map((op) => (
             <OpListRow op={op} key={op.id} />
           ))}
