@@ -35,7 +35,6 @@ import {
   Table,
   Td,
   Th,
-  TitleBar,
   Tr,
   pillStyles,
   tokens,
@@ -199,13 +198,9 @@ const LogDrainTable = ({ envId }: { envId: string }) => {
   return (
     <Group>
       <Group size="sm">
-        <TitleBar description="Log Drains allow you to centralize and analyze application logs.">
-          Log Drains
-        </TitleBar>
-
         <FilterBar>
           <Group variant="horizontal" size="lg" className="items-center">
-            <DescBar>{paginated.totalItems} Drains</DescBar>
+            <DescBar>{paginated.totalItems} Log Drains</DescBar>
             <PaginateBar {...paginated} />
           </Group>
         </FilterBar>
@@ -348,13 +343,9 @@ const MetricDrainTable = ({ envId }: { envId: string }) => {
   return (
     <Group>
       <Group size="sm">
-        <TitleBar description="Metric Drains enable you to export application metrics to external monitoring and analytics services.">
-          Metric Drains
-        </TitleBar>
-
         <FilterBar>
           <Group variant="horizontal" size="lg" className="items-center">
-            <DescBar>{paginated.totalItems} Drains</DescBar>
+            <DescBar>{paginated.totalItems} Metric Drains</DescBar>
             <PaginateBar {...paginated} />
           </Group>
         </FilterBar>
