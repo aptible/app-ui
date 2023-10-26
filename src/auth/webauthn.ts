@@ -56,6 +56,11 @@ export function webauthnGet(
   return get({ publicKey });
 }
 
+export const fetchU2fDevices = authApi.get<{ userId: string }>(
+  "/users/:userId/u2f_devices",
+  authApi.cache(),
+);
+
 interface CreateWebauthnDeviceProps {
   userId: string;
   name: string;
@@ -65,6 +70,7 @@ interface CreateWebauthnDeviceProps {
 export const createWebauthnDevice = authApi.post<CreateWebauthnDeviceProps>(
   "/users/:userId/u2f_devices",
   function* (ctx, next) {
+    ctx.elevated = true;
     const { u2f, name } = ctx.payload;
     ctx.request = ctx.req({
       body: JSON.stringify({ u2f, name, version: "WEBAUTHN" }),
