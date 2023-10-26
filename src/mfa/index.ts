@@ -82,6 +82,7 @@ export const fetchU2fDevices = authApi.get<{ userId: string }>(
 export const deleteU2fDevice = authApi.delete<{ deviceId: string }>(
   "/u2f_devices/:deviceId",
   function* (ctx, next) {
+    ctx.elevated = true;
     const { deviceId } = ctx.payload;
     yield* next();
     if (!ctx.json.ok) {
