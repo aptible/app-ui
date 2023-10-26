@@ -23,7 +23,6 @@ import {
   DescBar,
   FilterBar,
   PaginateBar,
-  TitleBar,
 } from "../resource-list-view";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
