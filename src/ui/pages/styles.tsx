@@ -424,6 +424,14 @@ const Buttons = () => (
     </ButtonLink>
 
     <h3 className={tokens.type.h3}>Button Sizes</h3>
+    <div className="flex flex-row gap-1">
+      <Button variant="white" size="xxs">
+        <IconArrowLeft color="#111920" variant="sm" />
+      </Button>
+      <Button variant="white" size="xxs">
+        <IconArrowRight color="#111920" variant="sm" />
+      </Button>
+    </div>
     <Button className="mt-2" size="xs">
       Extra Small
     </Button>

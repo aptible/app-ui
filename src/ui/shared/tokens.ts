@@ -30,6 +30,7 @@ export const tokens = {
 
   buttons: {
     sizes: {
+      xxs: "p-1 text-xs font-medium h-[24px] w-[24px] ",
       xs: "px-2.5 py-1.5 text-xs font-medium ",
       sm: "px-3 py-2 text-sm leading-4 font-medium",
       md: "px-4 py-2 text-base font-medium",

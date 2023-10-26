@@ -11,7 +11,7 @@ import { IconExternalLink } from "./icons";
 import { tokens } from "./tokens";
 import { Tooltip } from "./tooltip";
 
-export type Size = "xs" | "sm" | "md" | "lg" | "xl";
+export type Size = "xxs" | "xs" | "sm" | "md" | "lg" | "xl";
 type Shape = "button" | "pill";
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   layout?: "block" | "auto";
