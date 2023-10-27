@@ -142,7 +142,7 @@ const EndpointList = ({
           <div className="flex justify-between mb-1">
             <Group variant="horizontal" size="sm" className="items-center">
               <InputSearch
-                placeholder="Search ..."
+                placeholder="Search..."
                 search={search}
                 onChange={(e) => onChange(e.currentTarget.value)}
               />
