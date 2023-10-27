@@ -9,6 +9,7 @@ import {
 import { fetchBillingDetail } from "@app/billing";
 import {
   fetchApps,
+  fetchDatabaseImages,
   fetchDatabases,
   fetchEndpoints,
   fetchEnvironments,
@@ -89,6 +90,7 @@ function* onFetchResourceData() {
     call(fetchEnvironments.run, fetchEnvironments()),
     call(fetchApps.run, fetchApps()),
     call(fetchDatabases.run, fetchDatabases()),
+    call(fetchDatabaseImages.run, fetchDatabaseImages()),
     call(fetchLogDrains.run, fetchLogDrains()),
     call(fetchMetricDrains.run, fetchMetricDrains()),
     call(fetchServices.run, fetchServices()),

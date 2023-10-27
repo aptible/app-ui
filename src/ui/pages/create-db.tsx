@@ -5,7 +5,7 @@ import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
 import {
   DbCreatorProps,
-  fetchAllDatabaseImages,
+  fetchDatabaseImages,
   provisionDatabaseList,
   selectDatabaseImagesVisible,
   selectEnvironmentById,
@@ -56,7 +56,7 @@ export const CreateDatabasePage = () => {
     .sort((a, b) => a.id.localeCompare(b.id))
     .filter((db) => db.imgId !== "");
   const isDisabled = dbCreatorList.length === 0;
-  const imgLoader = useQuery(fetchAllDatabaseImages());
+  const imgLoader = useQuery(fetchDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesVisible);
   const env = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id: envId }),
