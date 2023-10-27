@@ -1,8 +1,7 @@
-import { formatDatabaseType } from "@app/deploy";
+import { fetchDatabaseImages, formatDatabaseType } from "@app/deploy";
 import {
   calcMetrics,
   cancelDatabaseOpsPoll,
-  fetchAllDatabaseImages,
   fetchDatabase,
   fetchDiskById,
   fetchService,
@@ -55,7 +54,7 @@ export function DatabaseHeader({
   const disk = useSelector((s: AppState) =>
     selectDiskById(s, { id: database.diskId }),
   );
-  useQuery(fetchAllDatabaseImages());
+  useQuery(fetchDatabaseImages());
   const image = useSelector((s: AppState) =>
     selectDatabaseImageById(s, { id: database.databaseImageId }),
   );

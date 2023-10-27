@@ -1,9 +1,9 @@
 import {
   CONTAINER_PROFILES,
   calcMetrics,
-  fetchAllDatabaseImages,
   fetchDatabase,
   fetchDatabaseDependents,
+  fetchDatabaseImages,
   fetchEnvironmentServices,
   selectDatabaseById,
   selectDatabaseDependents,
@@ -92,7 +92,7 @@ export const DatabaseClusterPage = () => {
   const clusterDatabases = useSelector((s: AppState) =>
     selectDatabaseDependents(s, { id }),
   );
-  useQuery(fetchAllDatabaseImages());
+  useQuery(fetchDatabaseImages());
   useQuery(fetchEnvironmentServices({ id: database.environmentId }));
 
   const paginated = usePaginate(clusterDatabases);

@@ -1,9 +1,9 @@
 import {
   DbCreatorProps,
   configEnvToStr,
-  fetchAllDatabaseImages,
   fetchApp,
   fetchConfiguration,
+  fetchDatabaseImages,
   fetchDatabasesByEnvId,
   fetchServiceDefinitionsByAppId,
   selectAppById,
@@ -81,7 +81,7 @@ export const AppDeployConfigurePage = () => {
     selectDatabasesByEnvId(s, { envId: app.environmentId }),
   );
 
-  const imgLoader = useQuery(fetchAllDatabaseImages());
+  const imgLoader = useQuery(fetchDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesVisible);
 
   useQuery(fetchServiceDefinitionsByAppId({ appId }));

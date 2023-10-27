@@ -1,7 +1,7 @@
 import { prettyEnglishDateWithTime } from "@app/date";
 import {
   calcMetrics,
-  fetchAllDatabaseImages,
+  fetchDatabaseImages,
   fetchDatabases,
   fetchDiskById,
   fetchEnvironmentById,
@@ -168,7 +168,7 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
 export const DatabaseListByOrg = () => {
   const { isLoading } = useQuery(fetchDatabases());
   useQuery(fetchEnvironments());
-  useQuery(fetchAllDatabaseImages());
+  useQuery(fetchDatabaseImages());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
