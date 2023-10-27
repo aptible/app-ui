@@ -92,7 +92,7 @@ export function SettingsSidebar() {
 
         <NavLink
           className={navLink}
-          to={url(`/organizations/${orgId}/adming/contact-settings`)}
+          to={url(`/organizations/${orgId}/admin/contact-settings`)}
           target="_blank"
         >
           Contacts
