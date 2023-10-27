@@ -203,7 +203,7 @@ function ActivityTable({
 
           <Group variant="horizontal" size="sm">
             <InputSearch
-              placeholder="Search ..."
+              placeholder="Search..."
               search={search}
               onChange={onChange}
             />

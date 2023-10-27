@@ -51,7 +51,7 @@ export const TeamMembersPage = () => {
           <div className="flex justify-between mb-1">
             <div>
               <InputSearch
-                placeholder="Search ..."
+                placeholder="Search..."
                 search={search}
                 onChange={onChange}
               />
