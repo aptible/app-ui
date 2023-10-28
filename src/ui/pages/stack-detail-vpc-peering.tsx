@@ -50,8 +50,6 @@ export const StackDetailVpcPeeringPage = () => {
   return (
     <Group>
       <Group size="sm">
-        <TitleBar description="VPC Peers">VPC Peers</TitleBar>
-
         <Box className="mb-4">
           <div className="flex justify-between items-start">
             <p className="flex mb-4 text-gray-500 text-md">
