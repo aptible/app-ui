@@ -21,7 +21,6 @@ import {
   Table,
   Td,
   Th,
-  TitleBar,
   Tr,
   pillStyles,
   tokens,
