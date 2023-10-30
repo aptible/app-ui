@@ -22,6 +22,7 @@ import {
 import {
   all,
   call,
+  fork,
   put,
   select,
   setLoaderStart,
@@ -57,11 +58,10 @@ export const bootup = thunks.create(
       yield* put(setLoaderSuccess({ id, message: "no token found" }));
       return;
     }
-    yield* call(onFetchRequiredData);
 
+    yield* fork(onFetchRequiredData);
     yield* call(onFetchResourceData);
     yield* put(setLoaderSuccess({ id }));
-
     yield* next();
   },
 );
