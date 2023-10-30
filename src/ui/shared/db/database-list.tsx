@@ -3,7 +3,6 @@ import {
   calcMetrics,
   fetchDatabaseImages,
   fetchDatabases,
-  fetchDiskById,
   fetchEnvironmentById,
   fetchEnvironments,
   getContainerProfileFromType,
@@ -144,7 +143,6 @@ const DatabaseContainerSizeCell = ({ database }: DatabaseCellProps) => {
     selectServiceById(s, { id: database.serviceId }),
   );
   const metrics = calcMetrics([service]);
-  useQuery(fetchDiskById({ id: database.diskId }));
   return (
     <Td className="text-gray-900">{metrics.totalMemoryLimit / 1024} GB</Td>
   );

@@ -1,10 +1,8 @@
-import { Next, call, put, select } from "@app/fx";
-
 import { authApi, cacheShortTimer, cacheTimer, elevetatedMdw } from "@app/api";
 import { selectOrigin } from "@app/env";
+import { Next, call, put, select } from "@app/fx";
 import { setOrganizationSelected } from "@app/organizations";
 import type { ApiGen, AuthApiCtx } from "@app/types";
-
 import { deserializeUser } from "./serializers";
 import type { CreateUserForm, UserResponse } from "./types";
 
@@ -109,7 +107,9 @@ export const updateUserOrg = authApi.put<{ userId: string; orgId: string }>(
   ["/users/:userId", "org"],
   function* (ctx, next) {
     ctx.request = ctx.req({
-      body: JSON.stringify({ selected_organization: ctx.payload.orgId }),
+      body: JSON.stringify({
+        selected_organization_id: ctx.payload.orgId,
+      }),
     });
     yield* put(setOrganizationSelected(ctx.payload.orgId));
     yield* next();
