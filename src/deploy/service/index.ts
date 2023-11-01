@@ -257,13 +257,11 @@ export const fetchServicesByAppId = api.get<{ id: string }>(
 
 export const fetchServiceOperations = api.get<{ id: string }>(
   "/services/:id/operations",
-  api.cache(),
 );
 export const cancelServicesOpsPoll = createAction("cancel-services-ops-poll");
 export const pollServiceOperations = api.get<{ id: string }>(
   ["/services/:id/operations", "poll"],
   { saga: poll(5 * 1000, `${cancelServicesOpsPoll}`) },
-  api.cache(),
 );
 
 export const serviceEntities = {
