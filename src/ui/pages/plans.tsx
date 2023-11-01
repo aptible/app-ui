@@ -14,14 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useTrialNotice } from "../hooks/use-trial-notice";
 import { HeroBgLayout } from "../layouts";
-import {
-  Banner,
-  BannerMessages,
-  Group,
-  IconArrowRight,
-  Plans,
-  tokens,
-} from "../shared";
+import { Banner, BannerMessages, Group, Plans, tokens } from "../shared";
 
 export const PlansPage = () => {
   const dispatch = useDispatch();
@@ -67,15 +60,11 @@ export const PlansPage = () => {
         <BannerMessages {...planLoader} />
         <BannerMessages {...activePlanLoader} />
         {paymentRequired ? (
-          <Banner variant="warning" className="mt-4">
-            You must add a payment method before changing your plan.
+          <Banner>
+            You must <Link to={billingMethodUrl()}>add a payment method</Link>{" "}
+            before changing your plan.
           </Banner>
         ) : null}
-        <Banner>
-          <Link to={billingMethodUrl()} className="flex items-center gap-1">
-            Add a credit card <IconArrowRight variant="sm" color="#4361FF" />
-          </Link>
-        </Banner>
       </Group>
 
       <Plans
