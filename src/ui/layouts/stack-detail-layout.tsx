@@ -64,6 +64,18 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
           <CopyText text={stack.outboundIpAddresses.join(", ")} />
         </DetailInfoItem>
         <DetailInfoItem title="Region">{stack.region}</DetailInfoItem>
+        <DetailInfoItem title="">
+          <Tooltip text="Classless Inter-Domain Routing for outbound IP addresses">
+            <IconInfo
+              className="inline-block mb-1 mr-1 opacity-50 hover:opacity-100"
+              variant="sm"
+            />
+            <span className="text-base font-semibold text-gray-900">
+              Outbound CIDR Range
+            </span>
+          </Tooltip>
+          <CopyText text={stack.outboundIpAddresses.join(", ")} />
+        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
