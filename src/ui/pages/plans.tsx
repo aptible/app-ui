@@ -1,3 +1,4 @@
+import { selectHasPaymentMethod } from "@app/billing";
 import {
   fetchActivePlans,
   fetchPlans,
@@ -11,6 +12,7 @@ import { billingMethodUrl, logoutUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useTrialNotice } from "../hooks/use-trial-notice";
 import { HeroBgLayout } from "../layouts";
 import {
   Banner,
@@ -33,6 +35,9 @@ export const PlansPage = () => {
     selectPlanByActiveId(s, { id: activePlan.planId }),
   );
   const updatePlanLoader = useLoader(updateActivePlan);
+  const { hasTrialNoPayment } = useTrialNotice();
+  const hasPaymentMethod = useSelector(selectHasPaymentMethod);
+  const paymentRequired = hasTrialNoPayment || !hasPaymentMethod;
 
   const onSelectPlan = ({ planId, name }: { planId: string; name: string }) => {
     dispatch(
@@ -61,9 +66,14 @@ export const PlansPage = () => {
         <BannerMessages {...updatePlanLoader} />
         <BannerMessages {...planLoader} />
         <BannerMessages {...activePlanLoader} />
+        {paymentRequired ? (
+          <Banner variant="warning" className="mt-4">
+            You must add a payment method before changing your plan.
+          </Banner>
+        ) : null}
         <Banner>
           <Link to={billingMethodUrl()} className="flex items-center gap-1">
-            Continue to billing <IconArrowRight variant="sm" color="#4361FF" />
+            Add a credit card <IconArrowRight variant="sm" color="#4361FF" />
           </Link>
         </Banner>
       </Group>
@@ -72,6 +82,7 @@ export const PlansPage = () => {
         activePlan={activePlan}
         selected={selectedPlan.name}
         onSelectPlan={onSelectPlan}
+        paymentRequired={paymentRequired}
       />
     </HeroBgLayout>
   );

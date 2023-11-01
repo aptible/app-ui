@@ -1,9 +1,7 @@
-import { selectHasPaymentMethod } from "@app/billing";
 import { selectPlansForView } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { DeployActivePlan, DeployPlan, PlanName } from "@app/types";
 import { useSelector } from "react-redux";
-import { Banner } from "./banner";
 import { Button, ButtonLinkExternal } from "./button";
 import { IconCheckCircle } from "./icons";
 import { tokens } from "./tokens";
@@ -343,68 +341,61 @@ export const Plans = ({
   activePlan,
   selected,
   onSelectPlan,
+  paymentRequired,
 }: {
   activePlan: DeployActivePlan;
   selected: string;
   onSelectPlan: (p: { planId: string; name: string }) => void;
+  paymentRequired: boolean;
 }) => {
   const plans = useSelector(selectPlansForView);
-  const hasPaymentMethod = useSelector(selectHasPaymentMethod);
 
   return (
-    <div>
-      {hasPaymentMethod ? null : (
-        <Banner variant="warning">
-          You must add a payment method before changing you plan.
-        </Banner>
-      )}
+    <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 lg:mx-0 mx-10">
+      <PlanCard
+        plan={plans.starter}
+        available={activePlan.availablePlans.includes(plans.starter.name)}
+        selected={plans.starter.name === selected}
+        onSelectPlan={() =>
+          onSelectPlan({ planId: plans.starter.id, name: plans.starter.name })
+        }
+      />
 
-      <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 lg:mx-0 mx-10 mt-4">
-        <PlanCard
-          plan={plans.starter}
-          available={activePlan.availablePlans.includes(plans.starter.name)}
-          selected={plans.starter.name === selected}
-          onSelectPlan={() =>
-            onSelectPlan({ planId: plans.starter.id, name: plans.starter.name })
-          }
-        />
+      <PlanCard
+        plan={plans.growth}
+        available={
+          !paymentRequired &&
+          activePlan.availablePlans.includes(plans.growth.name)
+        }
+        selected={plans.growth.name === selected}
+        onSelectPlan={() =>
+          onSelectPlan({ planId: plans.growth.id, name: plans.growth.name })
+        }
+      />
 
-        <PlanCard
-          plan={plans.growth}
-          available={
-            hasPaymentMethod &&
-            activePlan.availablePlans.includes(plans.growth.name)
-          }
-          selected={plans.growth.name === selected}
-          onSelectPlan={() =>
-            onSelectPlan({ planId: plans.growth.id, name: plans.growth.name })
-          }
-        />
+      <PlanCard
+        plan={plans.scale}
+        available={
+          !paymentRequired &&
+          activePlan.availablePlans.includes(plans.scale.name)
+        }
+        selected={plans.scale.name === selected}
+        onSelectPlan={() =>
+          onSelectPlan({ planId: plans.scale.id, name: plans.scale.name })
+        }
+      />
 
-        <PlanCard
-          plan={plans.scale}
-          available={
-            hasPaymentMethod &&
-            activePlan.availablePlans.includes(plans.scale.name)
-          }
-          selected={plans.scale.name === selected}
-          onSelectPlan={() =>
-            onSelectPlan({ planId: plans.scale.id, name: plans.scale.name })
-          }
-        />
-
-        <PlanCard
-          plan={plans.enterprise}
-          available={activePlan.availablePlans.includes(plans.enterprise.name)}
-          selected={plans.enterprise.name === selected}
-          onSelectPlan={() =>
-            onSelectPlan({
-              planId: plans.enterprise.id,
-              name: plans.enterprise.name,
-            })
-          }
-        />
-      </div>
+      <PlanCard
+        plan={plans.enterprise}
+        available={activePlan.availablePlans.includes(plans.enterprise.name)}
+        selected={plans.enterprise.name === selected}
+        onSelectPlan={() =>
+          onSelectPlan({
+            planId: plans.enterprise.id,
+            name: plans.enterprise.name,
+          })
+        }
+      />
     </div>
   );
 };
