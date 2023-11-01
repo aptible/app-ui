@@ -99,7 +99,7 @@ describe("Payment page takeover", () => {
       await screen.findByText(/Successfully updated plan to Growth/);
 
       const link = await screen.findByRole("link", {
-        name: /Add a credit card/,
+        name: /add a payment method/,
       });
       fireEvent.click(link);
 
@@ -205,7 +205,7 @@ describe("Payment page takeover", () => {
       await screen.findByText(/Choose a Plan/);
 
       const link = await screen.findByRole("link", {
-        name: /Add a credit card/,
+        name: /add a payment method/,
       });
       fireEvent.click(link);
 
