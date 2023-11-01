@@ -9,7 +9,7 @@ import {
   fetchDatabase,
   fetchEnvironmentById,
   fetchOrgOperations,
-  fetchServiceOperations,
+  fetchServicesByAppId,
   getResourceUrl,
   pollAppOperations,
   pollDatabaseOperations,
@@ -20,6 +20,7 @@ import {
   selectActivityForTableSearch,
   selectAppById,
   selectDatabaseById,
+  selectServicesByAppId,
 } from "@app/deploy";
 import { useLoader, useQuery } from "@app/fx";
 import { operationDetailUrl } from "@app/routes";
@@ -313,12 +314,14 @@ export function ActivityByEnv({ envId }: { envId: string }) {
 export function ActivityByApp({ appId }: { appId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  const loader = useLoader(pollAppOperations);
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const action = pollAppOperations({ id: app.id });
+  const loader = useLoader(action);
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
   useQuery(fetchApp({ id: appId }));
+  useQuery(fetchServicesByAppId({ id: appId }));
 
-  const poller = useMemo(() => pollAppOperations({ id: app.id }), [app.id]);
+  const poller = useMemo(() => action, [app.id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
   usePoller({
     action: poller,
@@ -328,7 +331,11 @@ export function ActivityByApp({ appId }: { appId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value }, { replace: true });
 
-  const resourceIds = useMemo(() => [appId], [appId]);
+  const services = useSelector((s: AppState) =>
+    selectServicesByAppId(s, { appId }),
+  );
+  const serviceIds = services.map((service) => service.id);
+  const resourceIds = [appId, ...serviceIds];
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
@@ -350,13 +357,13 @@ export function ActivityByApp({ appId }: { appId: string }) {
 export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  const loader = useLoader(pollDatabaseOperations);
+  const action = pollDatabaseOperations({ id: dbId });
+  const loader = useLoader(action);
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
   useQuery(fetchEnvironmentById({ id: db.environmentId }));
   useQuery(fetchDatabase({ id: dbId }));
-  useQuery(fetchServiceOperations({ id: db.serviceId }));
 
-  const poller = useMemo(() => pollDatabaseOperations({ id: dbId }), [dbId]);
+  const poller = useMemo(() => action, [dbId]);
   const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);
   usePoller({
     action: poller,
