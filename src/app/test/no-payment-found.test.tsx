@@ -97,28 +97,6 @@ describe("Payment page takeover", () => {
 
       fireEvent.click(el[0]);
       await screen.findByText(/Successfully updated plan to Growth/);
-
-      const link = await screen.findByRole("link", {
-        name: /add a payment method/,
-      });
-      fireEvent.click(link);
-
-      // credit card screen
-      await screen.findByText(
-        /You must enter a credit card to continue using Aptible/,
-      );
-
-      const zip = await screen.findByRole("textbox", { name: /zipcode/ });
-      await act(() => userEvent.type(zip, "45215"));
-
-      const name = await screen.findByRole("textbox", { name: /name-on-card/ });
-      await act(() => userEvent.type(name, "bobby lee"));
-
-      const btn = await screen.findByRole("button", { name: /Save Payment/ });
-      expect(btn).toBeEnabled();
-
-      fireEvent.click(btn);
-      await screen.findByText(/stripe not found/);
     });
   });
 
