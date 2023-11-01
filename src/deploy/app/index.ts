@@ -1,5 +1,13 @@
 import { api, cacheMinTimer, thunks } from "@app/api";
-import { call, poll, select } from "@app/fx";
+import {
+  all,
+  call,
+  poll,
+  put,
+  select,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
@@ -29,7 +37,12 @@ import {
   selectOperationsAsList,
   waitForOperation,
 } from "../operation";
-import { DeployServiceResponse, selectServiceById } from "../service";
+import {
+  DeployServiceResponse,
+  fetchServiceOperations,
+  selectServiceById,
+  selectServicesByAppId,
+} from "../service";
 import { selectDeploy } from "../slice";
 
 export * from "./utils";
@@ -319,9 +332,29 @@ export const fetchApp = api.get<AppIdProp>("/apps/:id");
 export const fetchAppOperations = api.get<AppIdProp>("/apps/:id/operations");
 
 export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
-export const pollAppOperations = api.get<AppIdProp>(
-  ["/apps/:id/operations", "poll"],
+export const pollAppOperations = thunks.create<AppIdProp>(
+  "app-service-op-poll",
   { saga: poll(5 * 1000, `${cancelAppOpsPoll}`) },
+  function* (ctx, next) {
+    yield* put(setLoaderStart({ id: ctx.key }));
+
+    const services = yield* select(selectServicesByAppId, {
+      appId: ctx.payload.id,
+    });
+    const serviceOps = services.map((service) =>
+      call(
+        fetchServiceOperations.run,
+        fetchServiceOperations({ id: service.id }),
+      ),
+    );
+    yield* all([
+      call(fetchAppOperations.run, fetchAppOperations(ctx.payload)),
+      ...serviceOps,
+    ]);
+
+    yield* next();
+    yield* put(setLoaderSuccess({ id: ctx.key }));
+  },
 );
 
 interface CreateAppProps {

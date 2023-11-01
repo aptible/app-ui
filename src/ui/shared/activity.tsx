@@ -10,6 +10,7 @@ import {
   fetchEnvironmentById,
   fetchOrgOperations,
   fetchServiceOperations,
+  fetchServicesByAppId,
   getResourceUrl,
   pollAppOperations,
   pollDatabaseOperations,
@@ -314,12 +315,14 @@ export function ActivityByEnv({ envId }: { envId: string }) {
 export function ActivityByApp({ appId }: { appId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  const loader = useLoader(pollAppOperations);
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const action = pollAppOperations({ id: app.id });
+  const loader = useLoader(action);
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
   useQuery(fetchApp({ id: appId }));
+  useQuery(fetchServicesByAppId({ id: appId }));
 
-  const poller = useMemo(() => pollAppOperations({ id: app.id }), [app.id]);
+  const poller = useMemo(() => action, [app.id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
   usePoller({
     action: poller,
@@ -331,8 +334,9 @@ export function ActivityByApp({ appId }: { appId: string }) {
 
   const services = useSelector((s: AppState) =>
     selectServicesByAppId(s, { appId }),
-  ).map((service) => service.id);
-  const resourceIds = [appId, ...services];
+  );
+  const serviceIds = services.map((service) => service.id);
+  const resourceIds = [appId, ...serviceIds];
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
