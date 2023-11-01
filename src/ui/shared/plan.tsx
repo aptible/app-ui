@@ -341,14 +341,17 @@ export const Plans = ({
   activePlan,
   selected,
   onSelectPlan,
+  paymentRequired,
 }: {
   activePlan: DeployActivePlan;
   selected: string;
   onSelectPlan: (p: { planId: string; name: string }) => void;
+  paymentRequired: boolean;
 }) => {
   const plans = useSelector(selectPlansForView);
+
   return (
-    <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 lg:mx-0 mx-10 mt-4">
+    <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 lg:mx-0 mx-10">
       <PlanCard
         plan={plans.starter}
         available={activePlan.availablePlans.includes(plans.starter.name)}
@@ -360,7 +363,10 @@ export const Plans = ({
 
       <PlanCard
         plan={plans.growth}
-        available={activePlan.availablePlans.includes(plans.growth.name)}
+        available={
+          !paymentRequired &&
+          activePlan.availablePlans.includes(plans.growth.name)
+        }
         selected={plans.growth.name === selected}
         onSelectPlan={() =>
           onSelectPlan({ planId: plans.growth.id, name: plans.growth.name })
@@ -369,7 +375,10 @@ export const Plans = ({
 
       <PlanCard
         plan={plans.scale}
-        available={activePlan.availablePlans.includes(plans.scale.name)}
+        available={
+          !paymentRequired &&
+          activePlan.availablePlans.includes(plans.scale.name)
+        }
         selected={plans.scale.name === selected}
         onSelectPlan={() =>
           onSelectPlan({ planId: plans.scale.id, name: plans.scale.name })
