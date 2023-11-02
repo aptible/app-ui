@@ -19,3 +19,8 @@ export const fetchCurrentUserRoles = authApi.get<
     setCurrentUserRoleIds(ctx.json.data._embedded.roles.map((r) => r.id)),
   );
 });
+
+export const fetchUserRoles = authApi.get<{ userId: string }>(
+  ["/users/:userId/roles", "user"],
+  authApi.cache(),
+);

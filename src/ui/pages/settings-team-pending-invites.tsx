@@ -7,7 +7,7 @@ import {
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { AppState } from "@app/types";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoader, useQuery } from "saga-query/react";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import {
   BannerMessages,
   Button,
@@ -25,7 +25,7 @@ import {
 export const TeamPendingInvitesPage = () => {
   const dispatch = useDispatch();
   const orgId = useSelector(selectOrganizationSelectedId);
-  useQuery(fetchInvitations({ orgId }));
+  const invites = useQuery(fetchInvitations({ orgId }));
   const invitations = useSelector((s: AppState) =>
     selectInvitationsByOrgId(s, { orgId }),
   );
@@ -37,6 +37,9 @@ export const TeamPendingInvitesPage = () => {
   };
   const revokeLoader = useLoader(revokeInvitation);
   const resendLoader = useLoader(resetInvitation);
+  useLoaderSuccess(revokeLoader, () => {
+    invites.trigger();
+  });
 
   return (
     <Group>
@@ -63,9 +66,9 @@ export const TeamPendingInvitesPage = () => {
                 <Td>{invite.email}</Td>
                 <Td variant="right">
                   <Group
-                    className="flex justify-end"
                     variant="horizontal"
                     size="sm"
+                    className="flex justify-end"
                   >
                     <Button
                       requireConfirm="invert"

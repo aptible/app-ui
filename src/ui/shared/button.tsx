@@ -1,5 +1,4 @@
-import { selectUserHasPerms } from "@app/deploy";
-import { selectIsUserAnyOwner } from "@app/roles";
+import { selectIsUserAnyOwner, selectUserHasPerms } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { AppState, PermissionScope } from "@app/types";
 import cn from "classnames";

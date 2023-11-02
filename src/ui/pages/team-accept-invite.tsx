@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useLoader, useQuery } from "saga-query/react";
 import { HeroBgLayout } from "../layouts";
-import { Banner, Box, Button, Group, Loading } from "../shared";
+import { Banner, BannerMessages, Box, Button, Group, Loading } from "../shared";
 
 function AcceptInviteView({
   invitation,
@@ -42,12 +42,6 @@ function AcceptInviteView({
     dispatch(action);
   };
 
-  const onLogout = () => {
-    dispatch(setRedirectPath(teamAcceptInviteUrl(invitation.id, code)));
-    dispatch(logout());
-    navigate(loginUrl());
-  };
-
   useEffect(() => {
     // auth loader gets marked as success after logging in so we want to
     // make sure the user clicked the accpet invite button first
@@ -57,7 +51,7 @@ function AcceptInviteView({
   }, [authLoader.status, accepted]);
 
   if (!invitation.id) {
-    return <Loading />;
+    return null;
   }
 
   if (user.email !== invitation.email) {
@@ -67,7 +61,6 @@ function AcceptInviteView({
           This invitation ({invitation.email}) is not associated with your
           account ({user.email}). Please log in with the correct account.
         </Banner>
-        <Button onClick={onLogout}>Logout</Button>
       </Group>
     );
   }
@@ -105,17 +98,34 @@ function AcceptInviteView({
 }
 
 export function TeamAcceptInvitePage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { inviteId = "", code = "" } = useParams();
-  useQuery(fetchInvitation({ id: inviteId }));
+  const loader = useQuery(fetchInvitation({ id: inviteId }));
   const invitation = useSelector((s: AppState) =>
     selectInvitationById(s, { id: inviteId }),
   );
+  const onLogout = () => {
+    dispatch(setRedirectPath(teamAcceptInviteUrl(inviteId, code)));
+    dispatch(logout());
+    navigate(loginUrl());
+  };
 
   return (
     <HeroBgLayout>
-      <Box>
-        <AcceptInviteView invitation={invitation} code={code} />
-      </Box>
+      <Group>
+        <Box>
+          <Group>
+            <BannerMessages {...loader} />
+            <Loading {...loader} />
+            <AcceptInviteView invitation={invitation} code={code} />
+          </Group>
+        </Box>
+
+        <div>
+          <Button onClick={onLogout}>Logout</Button>
+        </div>
+      </Group>
     </HeroBgLayout>
   );
 }

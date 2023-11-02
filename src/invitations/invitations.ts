@@ -70,7 +70,7 @@ const INVITATIONS_NAME = "invitations";
 export const invitations = createTable<Invitation>({
   name: INVITATIONS_NAME,
 });
-export const { add: addInvitations } = invitations.actions;
+export const { add: addInvitations, set: setInvitations } = invitations.actions;
 const selectors = invitations.getSelectors(
   (s: AppState) => s[INVITATIONS_NAME],
 );
@@ -105,7 +105,7 @@ export const fetchInvitations = authApi.get<
     return acc;
   }, {});
 
-  ctx.actions.push(addInvitations(invitationsMap));
+  ctx.actions.push(setInvitations(invitationsMap));
 });
 
 export const fetchInvitation = authApi.get<{ id: string }, InvitationResponse>(
@@ -113,6 +113,12 @@ export const fetchInvitation = authApi.get<{ id: string }, InvitationResponse>(
   function* onFetchInvitation(ctx, next) {
     yield* next();
     if (!ctx.json.ok) {
+      if (ctx.response?.status === 404) {
+        ctx.loader = {
+          message:
+            "We could not find this invitation.  So either it never existed or was later revoked.",
+        };
+      }
       return;
     }
     const { data } = ctx.json;

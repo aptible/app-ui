@@ -1,6 +1,6 @@
+import { selectIsUserOwner } from "@app/deploy";
 import { useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
-import { selectIsUserOwner } from "@app/roles";
 import { teamInviteUrl, teamMembersEditUrl } from "@app/routes";
 import type { AppState } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
@@ -99,9 +99,9 @@ export const TeamMembersPage = () => {
               <Td variant="right">
                 {isOwner ? (
                   <ButtonLink
-                    className="w-fit justify-self-end inline-flex"
                     size="sm"
                     to={teamMembersEditUrl(user.id)}
+                    className="w-fit justify-self-end inline-flex"
                   >
                     Edit
                   </ButtonLink>

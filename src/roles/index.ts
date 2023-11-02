@@ -113,9 +113,8 @@ export const selectIsUserOwner = createSelector(
 
 export const selectIsUserAnyOwner = createSelector(
   selectCurrentUserRoles,
-  (roles) => {
-    return roles.some((r) => r.type === "owner" || r.type === "platform_owner");
-  },
+  (_: AppState, p: { orgId: string }) => p.orgId,
+  (roles, orgId) => roles.filter((r) => r.organizationId === orgId),
 );
 
 export const entities = {
