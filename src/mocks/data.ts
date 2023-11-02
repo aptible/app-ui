@@ -18,6 +18,7 @@ import {
 import { defaultCodeScanResponse } from "@app/deploy/code-scan-result";
 import { createEnv } from "@app/env";
 import { defaultHalHref } from "@app/hal";
+import { defaultInvitationResponse } from "@app/invitations";
 import { defaultOrgResponse } from "@app/organizations";
 import { defaultRoleResponse } from "@app/roles";
 import { defaultSshKeyResponse } from "@app/ssh-keys";
@@ -84,6 +85,11 @@ export const testUser = defaultUserResponse({
 export const testUserVerified = defaultUserResponse({
   id: testUserId,
   email: "test.verified@aptible.com",
+  verified: true,
+});
+export const testUserVerifiedSecond = defaultUserResponse({
+  id: testUserId,
+  email: "test.verified.2@aptible.com",
   verified: true,
 });
 
@@ -500,5 +506,18 @@ export const testBackupRp = defaultBackupRpResponse({
   make_copy: false,
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccountId}`),
+  },
+});
+
+export const testVerifiedInvitation = defaultInvitationResponse({
+  id: `${createId()}`,
+  email: testUserVerified.email,
+  organization_name: testOrg.name,
+  inviter_name: "test.owner@aptible.com",
+  role_name: testRole.name,
+  _links: {
+    organization: defaultHalHref(
+      `${testEnv.authUrl}/organizations/${testOrg.id}`,
+    ),
   },
 });

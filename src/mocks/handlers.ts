@@ -44,6 +44,7 @@ import {
   testToken,
   testUser,
   testUserVerified,
+  testVerifiedInvitation,
 } from "./data";
 
 const authHandlers = [
@@ -99,6 +100,9 @@ const authHandlers = [
   rest.delete(`${testEnv.authUrl}/tokens/:id`, (_, res, ctx) => {
     return res(ctx.status(204));
   }),
+  rest.get(`${testEnv.authUrl}/invitations/:id`, (_, res, ctx) => {
+    return res(ctx.json(testVerifiedInvitation));
+  }),
 ];
 
 export const verifiedUserHandlers = (
@@ -115,6 +119,9 @@ export const verifiedUserHandlers = (
       return res(ctx.json({ _embedded: [user] }));
     }),
     rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
+      return res(ctx.json(user));
+    }),
+    rest.post(`${testEnv.authUrl}/users`, (_, res, ctx) => {
       return res(ctx.json(user));
     }),
     rest.put(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {

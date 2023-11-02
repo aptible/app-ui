@@ -1,13 +1,13 @@
 import { useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
+import { teamInviteUrl, teamMembersEditUrl } from "@app/routes";
 import type { AppState } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { fetchUsers, selectUsersForSearchTable } from "@app/users";
 import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ActionBar,
-  Button,
   ButtonOwner,
   DescBar,
   EmptyTr,
@@ -26,6 +26,7 @@ import {
 } from "../shared";
 
 export const TeamMembersPage = () => {
+  const navigate = useNavigate();
   const org = useSelector(selectOrganizationSelected);
   const orgId = org.id;
   useQuery(fetchUsers({ orgId }));
@@ -38,7 +39,9 @@ export const TeamMembersPage = () => {
     selectUsersForSearchTable(s, { search }),
   );
   const paginated = usePaginate(users);
-  const onInvite = () => {};
+  const onInvite = () => {
+    navigate(teamInviteUrl());
+  };
 
   return (
     <Group>
@@ -98,9 +101,9 @@ export const TeamMembersPage = () => {
                 {user.otpEnabled ? "Enabled" : "Disabled"}
               </Td>
               <Td variant="right">
-                <Button type="submit" size="sm">
-                  Edit
-                </Button>
+                <div className="flex-1">
+                  <Link to={teamMembersEditUrl(user.id)}>Edit</Link>
+                </div>
               </Td>
             </Tr>
           ))}

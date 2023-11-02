@@ -1,8 +1,3 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
-
 import {
   CreateTokenPayload,
   defaultAuthLoaderMeta,
@@ -10,24 +5,15 @@ import {
   login,
   loginWebauthn,
 } from "@app/auth";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import {
-  fetchInvitation,
-  selectInvitationById,
-  selectInvitationRequest,
-} from "@app/invitations";
+import { useLoader, useLoaderSuccess } from "@app/fx";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
-import {
-  acceptInvitationWithCodeUrl,
-  forgotPassUrl,
-  homeUrl,
-  signupUrl,
-  ssoUrl,
-} from "@app/routes";
-import { AppState } from "@app/types";
-import { emailValidator, existValidtor } from "@app/validator";
-
+import { forgotPassUrl, homeUrl, signupUrl, ssoUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
+import { emailValidator, existValidtor } from "@app/validator";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
@@ -61,11 +47,6 @@ export const LoginPage = () => {
     typeof validators
   >(validators);
 
-  const invitationRequest = useSelector(selectInvitationRequest);
-  const invitation = useSelector((s: AppState) =>
-    selectInvitationById(s, { id: invitationRequest.invitationId }),
-  );
-  useQuery(fetchInvitation({ id: invitationRequest.invitationId }));
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
 
   const data = {
@@ -89,18 +70,9 @@ export const LoginPage = () => {
   };
 
   useLoaderSuccess(loader, () => {
-    if (invitationRequest.invitationId) {
-      navigate(acceptInvitationWithCodeUrl(invitationRequest));
-    } else {
-      navigate(redirectPath || homeUrl());
-      dispatch(resetRedirectPath());
-    }
+    navigate(redirectPath || homeUrl());
+    dispatch(resetRedirectPath());
   });
-
-  useEffect(() => {
-    if (invitation.email === "") return;
-    setEmail(invitation.email);
-  }, [invitation.email]);
 
   const otpError = isOtpError(meta.error);
   useEffect(() => {
@@ -146,7 +118,6 @@ export const LoginPage = () => {
                 autoComplete="email"
                 autoFocus={true}
                 required={true}
-                disabled={invitation.id !== ""}
                 value={email}
                 className="w-full"
                 onChange={(e) => setEmail(e.target.value)}

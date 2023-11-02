@@ -1,9 +1,6 @@
-import { call, select } from "@app/fx";
-
 import { authApi } from "@app/api";
+import { call, select } from "@app/fx";
 import { selectToken } from "@app/token";
-import { ApiGen } from "@app/types";
-
 import { exchangeToken } from "./token";
 
 interface AcceptInvitation {
@@ -11,9 +8,9 @@ interface AcceptInvitation {
   verificationCode?: string;
 }
 
-export const acceptInvitation = authApi.post<any, AcceptInvitation>(
+export const acceptInvitation = authApi.post<AcceptInvitation>(
   "accept-invitation",
-  function* onAcceptInvitation(ctx, next): ApiGen {
+  function* onAcceptInvitation(ctx, next) {
     if (ctx.payload.verificationCode) {
       ctx.request = ctx.req({
         url: "/verifications",

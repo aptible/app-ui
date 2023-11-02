@@ -82,8 +82,13 @@ export const { set: setCurrentUserRoleIds } = userRoles.actions;
 
 export const reducers = createReducerMap(roles, userRoles);
 
-export const { selectTable: selectRoles } = roles.getSelectors(
-  (s: AppState) => s[ROLES_NAME],
+const { selectTable: selectRoles, selectTableAsList: selectRolesAsList } =
+  roles.getSelectors((s: AppState) => s[ROLES_NAME]);
+
+export const selectRolesByOrgId = createSelector(
+  selectRolesAsList,
+  (_: AppState, p: { orgId: string }) => p.orgId,
+  (roles, orgId) => roles.filter((r) => r.organizationId === orgId),
 );
 
 export const selectCurrentUserRoleIds = (s: AppState) =>

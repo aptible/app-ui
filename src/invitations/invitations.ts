@@ -1,8 +1,7 @@
-import { select } from "@app/fx";
-import { isBefore } from "date-fns";
-
 import { authApi } from "@app/api";
-import { selectOrigin } from "@app/env";
+import { selectEnv, selectOrigin } from "@app/env";
+import { select } from "@app/fx";
+import { defaultHalHref, extractIdFromLink } from "@app/hal";
 import { createTable, mustSelectEntity } from "@app/slice-helpers";
 import { selectToken } from "@app/token";
 import type {
@@ -14,13 +13,17 @@ import type {
   MapEntity,
   Token,
 } from "@app/types";
+import { createSelector } from "@reduxjs/toolkit";
+import { isBefore } from "date-fns";
 
 export const defaultInvitation = (i?: Partial<Invitation>): Invitation => {
+  const now = new Date().toISOString();
   return {
     id: "",
     email: "",
-    createdAt: "",
-    updatedAt: "",
+    createdAt: now,
+    updatedAt: now,
+    organizationId: "",
     organizationName: "",
     inviterName: "",
     roleName: "",
@@ -32,15 +35,19 @@ export const defaultInvitation = (i?: Partial<Invitation>): Invitation => {
 export const defaultInvitationResponse = (
   i?: Partial<InvitationResponse>,
 ): InvitationResponse => {
+  const now = new Date().toISOString();
   return {
     id: "",
     email: "",
-    created_at: "",
-    updated_at: "",
+    created_at: now,
+    updated_at: now,
     organization_name: "",
     inviter_name: "",
     role_name: "",
     verification_code_expires_at: "",
+    _links: {
+      organization: defaultHalHref(),
+    },
     ...i,
   };
 };
@@ -51,6 +58,7 @@ export function deserializeInvitation(i: InvitationResponse): Invitation {
     email: i.email,
     createdAt: i.created_at,
     updatedAt: i.updated_at,
+    organizationId: extractIdFromLink(i._links.organization),
     organizationName: i.organization_name,
     inviterName: i.inviter_name,
     roleName: i.role_name,
@@ -69,6 +77,12 @@ const selectors = invitations.getSelectors(
 export const initInvitation = defaultInvitation();
 const must = mustSelectEntity(initInvitation);
 export const selectInvitationById = must(selectors.selectById);
+export const selectInvitationsByOrgId = createSelector(
+  selectors.selectTableAsList,
+  (_: AppState, p: { orgId: string }) => p.orgId,
+  (invitations, orgId) =>
+    invitations.filter((inv) => inv.organizationId === orgId),
+);
 
 export const fetchInvitations = authApi.get<
   { orgId: string },
@@ -109,7 +123,7 @@ export const fetchInvitation = authApi.get<{ id: string }, InvitationResponse>(
   },
 );
 
-export const resetInvitation = authApi.post<string>(
+export const resetInvitation = authApi.post<{ invitationId: string }>(
   "/resets",
   function* onResetInvitation(ctx, next): ApiGen {
     const origin = yield* select(selectOrigin);
@@ -117,9 +131,32 @@ export const resetInvitation = authApi.post<string>(
       body: JSON.stringify({
         type: "invitation",
         origin,
-        invitation_id: ctx.payload,
+        invitation_id: ctx.payload.invitationId,
       }),
     });
     yield* next();
+    if (!ctx.json.ok) return;
+    ctx.loader = { message: "Resent invitation to user" };
+  },
+);
+
+export const revokeInvitation = authApi.delete<{ id: string }>(
+  "/invitations/:id",
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) return;
+    ctx.loader = { message: "Revoked invitation" };
+  },
+);
+
+export const createInvitation = authApi.post<{ email: string }>(
+  "/roles/:roleId/invitations",
+  function* (ctx, next) {
+    const env = yield* select(selectEnv);
+    ctx.request = ctx.req({
+      body: JSON.stringify({ email: ctx.payload.email, origin: env.origin }),
+    });
+    yield* next();
+    ctx.loader = { message: `Invitation sent to ${ctx.payload.email}` };
   },
 );

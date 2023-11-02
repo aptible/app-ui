@@ -1,4 +1,4 @@
-import { HalEmbedded } from "./hal";
+import { HalEmbedded, LinkResponse } from "./hal";
 
 export interface Invitation {
   id: string;
@@ -9,9 +9,9 @@ export interface Invitation {
   inviterName: string;
   roleName: string;
   expired: boolean;
+  organizationId: string;
 }
 
-// TODO: Needs meta about expiration (return expired boolean)
 export interface InvitationResponse {
   id: string;
   email: string;
@@ -21,6 +21,9 @@ export interface InvitationResponse {
   inviter_name: string;
   role_name: string;
   verification_code_expires_at: string;
+  _links: {
+    organization: LinkResponse;
+  };
 }
 
 export type InvitationsResponse = HalEmbedded<{
