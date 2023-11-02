@@ -110,7 +110,10 @@ import {
   StacksPage,
   StylesPage,
   SupportPage,
+  TeamAcceptInvitePage,
   TeamContactsPage,
+  TeamInvitePage,
+  TeamMembersEditPage,
   TeamMembersPage,
   TeamPage,
   TeamPendingInvitesPage,
@@ -697,6 +700,37 @@ export const appRoutes: RouteObject[] = [
         <SettingsLayout>
           <TeamMembersPage />
         </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_MEMBERS_EDIT_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamMembersEditPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_INVITE_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamInvitePage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_ACCEPT_INVITE_PATH,
+    element: (
+      <AuthRequired>
+        <TeamAcceptInvitePage />
       </AuthRequired>
     ),
   },

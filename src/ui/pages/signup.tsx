@@ -1,15 +1,11 @@
 import { defaultAuthLoaderMeta, signup } from "@app/auth";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import {
-  fetchInvitation,
-  selectInvitationById,
-  selectInvitationRequest,
-} from "@app/invitations";
+import { fetchInvitation, selectInvitationById } from "@app/invitations";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
-  acceptInvitationWithCodeUrl,
   deployUrl,
   loginUrl,
+  teamAcceptInviteUrl,
   verifyEmailRequestUrl,
 } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
@@ -35,20 +31,127 @@ import {
 
 const validators = {
   name: (props: CreateUserForm) => existValidtor(props.name, "Name"),
-  company: (props: CreateUserForm) => existValidtor(props.company, "Company"),
+  company: (props: CreateUserForm) => {
+    if (props.challenge_token !== "") {
+      return;
+    }
+    return existValidtor(props.company, "Company");
+  },
   email: (props: CreateUserForm) => emailValidator(props.email),
   pass: (props: CreateUserForm) => passValidator(props.password),
 };
+
+const SignupMarketing = () => {
+  return (
+    <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] h-fit min-h-screen">
+      <div className="text-xl text-black font-bold">
+        Try the platform hundreds of scaling engineering teams use to achieve
+        enterprise best practices for their infrastructure
+      </div>
+      <div className="text-lg text-gold font-bold pt-5 pb-1">
+        Control your Infrastructure
+      </div>
+      <p>
+        Manage your entire infrastructure, optimize cloud spending, and prevent
+        vendor lock-in.
+      </p>
+      <hr className="mt-5 mb-4" />
+      <div className="text-lg text-gold font-bold pb-1">Ensure Reliability</div>
+      <p>
+        Aptible fully monitors your entire compute and data resources, and holds
+        the pager 24x7 for your infrastructure.
+      </p>
+      <hr className="mt-5 mb-4" />
+      <div className="text-lg text-gold font-bold pb-1">
+        Achieve Best Practices
+      </div>
+      <p>
+        Get the flexibility that scaling companies need: support non-HTTPS
+        services; enforce fine-grained RBAC; comply with security frameworks;
+        and scale to the limits of AWS for containers, disks, or backups.
+      </p>
+      <p className="text-md text-black pt-8 pb-4 text-center font-semibold">
+        Companies that have scaled with Aptible
+      </p>
+      <img
+        src="/customer-logo-cloud.png"
+        className="text-center scale-90"
+        aria-label="Customer Logos"
+      />
+    </div>
+  );
+};
+
+const SignupFooter = () => {
+  return (
+    <>
+      <p className="mt-4 text-center text-sm text-gray-600">
+        If you already have an account, you can{" "}
+        <Link to={loginUrl()} className="font-medium">
+          log in here
+        </Link>
+        .
+      </p>
+      <p className="mt-4 text-center text-sm text-gray-600">
+        By submitting this form, I confirm that I have read and agree to
+        Aptible's{" "}
+        <a href="https://www.aptible.com/legal/terms-of-service">
+          Terms of Service
+        </a>{" "}
+        and <a href="https://www.aptible.com/legal/privacy">Privacy Policy</a>.
+      </p>
+    </>
+  );
+};
+
+const SignupHeader = () => {
+  return (
+    <div className="mx-auto max-w-[570px] px-4 md:px-0">
+      <Group>
+        <div className="flex justify-center pt-[65px] pb-4">
+          <AptibleLogo width={160} />
+        </div>
+        <div className="flex text-center items-center justify-center">
+          <div>
+            <p>
+              Control your AWS resources, guarantee uptime, and achieve
+              enterprise best practices without building your own internal
+              developer platform.
+            </p>
+            <h1 className={`${tokens.type.h1} text-center pt-8`}>
+              Get started for free
+            </h1>
+          </div>
+        </div>
+      </Group>
+    </div>
+  );
+};
+
+function useInvitation(redirectPath: string) {
+  let inviteId = "";
+  let code = "";
+  if (redirectPath.includes("/claim/")) {
+    const claim = redirectPath.replace("/claim/", "");
+    [inviteId, code] = claim.split("/");
+  }
+
+  return { inviteId, code };
+}
 
 export const SignupPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const queryEmail = params.get("email") || "";
-  const challengeToken = params.get("token") || "";
-
   const redirectPath = useSelector(selectRedirectPath);
+  const { inviteId, code } = useInvitation(redirectPath);
+
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  useQuery(fetchInvitation({ id: inviteId }));
+  const invitation = useSelector((s: AppState) =>
+    selectInvitationById(s, { id: inviteId }),
+  );
 
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -58,23 +161,12 @@ export const SignupPage = () => {
     validators,
   );
 
-  const invitationRequest = useSelector(selectInvitationRequest);
-  useQuery(fetchInvitation({ id: invitationRequest.invitationId }));
-  const invitation = useSelector((s: AppState) =>
-    selectInvitationById(s, { id: invitationRequest.invitationId }),
-  );
-
-  useEffect(() => {
-    if (invitation.email === "") return;
-    setEmail(invitation.email);
-  }, [invitation.email]);
-
   const data = {
     company,
     name,
     email,
     password,
-    challenge_token: challengeToken,
+    challenge_token: code,
   };
   const action = signup(data);
   const loader = useLoader(action);
@@ -85,79 +177,37 @@ export const SignupPage = () => {
     dispatch(action);
   };
 
+  useEffect(() => {
+    if (invitation.email === "") return;
+    setEmail(invitation.email);
+  }, [invitation.email]);
+
   useLoaderSuccess(loader, () => {
-    if (invitationRequest.invitationId) {
-      navigate(acceptInvitationWithCodeUrl(invitationRequest));
-    } else {
-      const meta = defaultAuthLoaderMeta(loader.meta);
-      // if the api returns with a user.verified = true, skip email request page
-      // this can happen in development when ENV['DISABLE_EMAIL_VERIFICATION']=1
-      if (meta.verified) {
-        navigate(redirectPath || deployUrl());
-        dispatch(resetRedirectPath());
-        return;
-      }
-      navigate(verifyEmailRequestUrl());
+    if (inviteId) {
+      navigate(teamAcceptInviteUrl(inviteId, code));
+      dispatch(resetRedirectPath());
+      return;
     }
+
+    const meta = defaultAuthLoaderMeta(loader.meta);
+    // if the api returns with a user.verified = true, skip email request page
+    // this can happen in development when ENV['DISABLE_EMAIL_VERIFICATION']=1
+    if (meta.verified) {
+      navigate(redirectPath || deployUrl());
+      dispatch(resetRedirectPath());
+      return;
+    }
+    navigate(verifyEmailRequestUrl());
   });
 
   return (
     <HeroBgView className="flex gap-6">
-      <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] h-fit min-h-screen">
-        <div className="text-xl text-black font-bold">
-          Try the platform hundreds of scaling engineering teams use to achieve
-          enterprise best practices for their infrastructure
-        </div>
-        <div className="text-lg text-gold font-bold pt-5 pb-1">
-          Control your Infrastructure
-        </div>
-        <p>
-          Manage your entire infrastructure, optimize cloud spending, and
-          prevent vendor lock-in.
-        </p>
-        <hr className="mt-5 mb-4" />
-        <div className="text-lg text-gold font-bold pb-1">
-          Ensure Reliability
-        </div>
-        <p>
-          Aptible fully monitors your entire compute and data resources, and
-          holds the pager 24x7 for your infrastructure.
-        </p>
-        <hr className="mt-5 mb-4" />
-        <div className="text-lg text-gold font-bold pb-1">
-          Achieve Best Practices
-        </div>
-        <p>
-          Get the flexibility that scaling companies need: support non-HTTPS
-          services; enforce fine-grained RBAC; comply with security frameworks;
-          and scale to the limits of AWS for containers, disks, or backups.
-        </p>
-        <p className="text-md text-black pt-8 pb-4 text-center font-semibold">
-          Companies that have scaled with Aptible
-        </p>
-        <img
-          src="/customer-logo-cloud.png"
-          className="text-center scale-90"
-          aria-label="Customer Logos"
-        />
-      </div>
-      <div className="flex-1 mx-auto max-w-[570px] px-4 md:px-0">
-        <Group>
-          <div className="flex justify-center pt-[65px] pb-4">
-            <AptibleLogo width={160} />
-          </div>
-          <div className="flex text-center items-center justify-center">
-            <div>
-              <p>
-                Control your AWS resources, guarantee uptime, and achieve
-                enterprise best practices without building your own internal
-                developer platform.
-              </p>
-              <h1 className={`${tokens.type.h1} text-center pt-8`}>
-                Get started for free
-              </h1>
-            </div>
-          </div>
+      <SignupMarketing />
+
+      <div className="flex justify-center w-full">
+        <Group variant="vertical">
+          <SignupHeader />
+
           <div className="mx-auto max-w-[500px] bg-white py-8 px-10 shadow rounded-lg border border-black-100">
             <form className="space-y-4" onSubmit={onSubmitForm}>
               <AlreadyAuthenticatedBanner />
@@ -180,23 +230,25 @@ export const SignupPage = () => {
                 />
               </FormGroup>
 
-              <FormGroup
-                label="Company"
-                htmlFor="company"
-                feedbackMessage={errors.company}
-                feedbackVariant={errors.company ? "danger" : "info"}
-              >
-                <Input
-                  id="company"
-                  name="company"
-                  type="text"
-                  autoComplete="company"
-                  required={true}
-                  value={company}
-                  className="w-full"
-                  onChange={(e) => setCompany(e.target.value)}
-                />
-              </FormGroup>
+              {inviteId ? null : (
+                <FormGroup
+                  label="Company"
+                  htmlFor="company"
+                  feedbackMessage={errors.company}
+                  feedbackVariant={errors.company ? "danger" : "info"}
+                >
+                  <Input
+                    id="company"
+                    name="company"
+                    type="text"
+                    autoComplete="company"
+                    required={true}
+                    value={company}
+                    className="w-full"
+                    onChange={(e) => setCompany(e.target.value)}
+                  />
+                </FormGroup>
+              )}
 
               <FormGroup
                 label="Email"
@@ -247,25 +299,8 @@ export const SignupPage = () => {
                   Create Account
                 </Button>
               </div>
-              <p className="mt-4 text-center text-sm text-gray-600">
-                If you already have an account, you can{" "}
-                <Link to={loginUrl()} className="font-medium">
-                  log in here
-                </Link>
-                .
-              </p>
-              <p className="mt-4 text-center text-sm text-gray-600">
-                By submitting this form, I confirm that I have read and agree to
-                Aptible's{" "}
-                <a href="https://www.aptible.com/legal/terms-of-service">
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a href="https://www.aptible.com/legal/privacy">
-                  Privacy Policy
-                </a>
-                .
-              </p>
+
+              <SignupFooter />
             </form>
           </div>
         </Group>

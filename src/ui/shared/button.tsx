@@ -1,5 +1,4 @@
-import { selectUserHasPerms } from "@app/deploy";
-import { selectIsUserAnyOwner } from "@app/roles";
+import { selectIsUserAnyOwner, selectUserHasPerms } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { AppState, PermissionScope } from "@app/types";
 import cn from "classnames";
@@ -19,7 +18,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
   shape?: Shape;
   isLoading?: boolean;
-  requireConfirm?: boolean;
+  requireConfirm?: boolean | "invert";
   children?: React.ReactNode;
 }
 
@@ -142,7 +141,11 @@ export const Button: FC<ButtonProps> = ({
       buttonShapeStyle(size, shape),
     );
     return (
-      <Group variant="horizontal" size="sm">
+      <Group
+        variant="horizontal"
+        size="sm"
+        className={requireConfirm === "invert" ? "flex-row-reverse" : ""}
+      >
         <button
           className={cls}
           type="reset"
