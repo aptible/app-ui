@@ -28,11 +28,13 @@ import {
   Box,
   Code,
   ExternalLink,
+  IconInfo,
   PreBox,
   PreCode,
   ProgressProject,
   Select,
   SelectOption,
+  Tooltip,
   listToInvertedTextColor,
   tokens,
 } from "../shared";
@@ -291,7 +293,20 @@ export const AppDeployWithGitPage = () => {
         ) : null}
 
         <div className="mt-4">
-          <h4 className={tokens.type.h4}>Push your code to our scan branch</h4>
+          <div className="flex flex-row items-center">
+            <h4 className={tokens.type.h4}>
+              Push your code to our scan branch
+            </h4>
+            <Tooltip
+              fluid
+              text="If your local branch is named master, push to master:aptible-scan"
+            >
+              <IconInfo
+                className="opacity-50 hover:opacity-100 ml-1"
+                variant="sm"
+              />
+            </Tooltip>
+          </div>
           <PreCode
             segments={listToInvertedTextColor([
               "git push aptible",
