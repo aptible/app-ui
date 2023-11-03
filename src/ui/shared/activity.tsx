@@ -11,8 +11,8 @@ import {
   fetchOrgOperations,
   fetchServicesByAppId,
   getResourceUrl,
-  pollAppOperations,
-  pollDatabaseOperations,
+  pollAppAndServiceOperations,
+  pollDatabaseAndServiceOperations,
   pollEndpointOperations,
   pollEnvOperations,
   pollOrgOperations,
@@ -315,7 +315,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  const action = pollAppOperations({ id: app.id });
+  const action = pollAppAndServiceOperations({ id: app.id });
   const loader = useLoader(action);
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
   useQuery(fetchApp({ id: appId }));
@@ -357,7 +357,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
 export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  const action = pollDatabaseOperations({ id: dbId });
+  const action = pollDatabaseAndServiceOperations({ id: dbId });
   const loader = useLoader(action);
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
   useQuery(fetchEnvironmentById({ id: db.environmentId }));
