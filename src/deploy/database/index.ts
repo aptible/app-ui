@@ -640,7 +640,6 @@ export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
 
     yield* next();
     yield* put(setLoaderSuccess({ id: ctx.key }));
-    yield* next();
   },
 );
 
