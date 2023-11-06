@@ -13,6 +13,7 @@ import {
   selectEndpointsByEnvIdForTableSearch,
   selectEndpointsByServiceId,
   selectEndpointsForTableSearch,
+  selectServiceById,
 } from "@app/deploy";
 import {
   appDetailUrl,
@@ -29,7 +30,7 @@ import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "saga-query/react";
 import { Button, ButtonCreate } from "../button";
-import { CopyTextButton } from "../copy";
+import { CopyText, CopyTextButton } from "../copy";
 import { Group } from "../group";
 import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -72,6 +73,9 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
   const acmeSetup = () => {
     navigate(endpointDetailSetupUrl(endpoint.id));
   };
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: endpoint.serviceId }),
+  );
 
   return (
     <Tr>
@@ -81,7 +85,9 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
           <CopyTextButton text={getEndpointUrl(endpoint)} />
         </div>
       </Td>
-      <Td>{endpoint.id}</Td>
+      <Td>
+        <CopyText text={endpoint.externalHost} />
+      </Td>
       <Td>
         {endpoint.resourceType === "app" ? (
           <Link to={appDetailUrl(endpoint.resourceId)}>
@@ -93,6 +99,7 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
           </Link>
         )}
       </Td>
+      <Td>{service.processType}</Td>
       <Td>
         <EndpointStatusPill status={endpoint.status} />
       </Td>
@@ -166,8 +173,9 @@ const EndpointList = ({
       <Table>
         <THead>
           <Th>URL</Th>
-          <Th>ID</Th>
+          <Th>Hostname</Th>
           <Th>Resource</Th>
+          <Th>Service</Th>
           <Th>Status</Th>
           <Th>Placement</Th>
           <Th>Platform</Th>
@@ -175,7 +183,7 @@ const EndpointList = ({
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={8} /> : null}
           {paginated.data.map((enp) => (
             <EndpointRow endpoint={enp} key={enp.id} />
           ))}

@@ -14,6 +14,7 @@ import { AppState, DeployApp, DeployService } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 import { useQuery } from "saga-query/react";
 import { ButtonCreate, ButtonLink } from "../button";
 import { Group } from "../group";
@@ -40,58 +41,63 @@ const ServiceListRow = ({
   return (
     <>
       <Tr>
-        <Td className="flex-1 pl-4">
-          <div className="text-base font-semibold text-gray-900">
-            {service.processType}
-          </div>
+        <Td>
+          <Link to={appServicePathMetricsUrl(app.id, service.id)}>
+            <div className="text-base font-semibold text-gray-900">
+              {service.processType}
+            </div>
+          </Link>
           <div className={tokens.type["normal lighter"]}>ID: {service.id}</div>
         </Td>
 
-        <Td className="flex-1">
+        <Td>
           <div className={tokens.type.darker}>{metrics.containerSizeGB} GB</div>
         </Td>
 
-        <Td className="flex-1">
+        <Td>
           <div className={tokens.type.darker}>{totalCPU}</div>
         </Td>
 
-        <Td className="flex-1">
+        <Td>
           <div className={tokens.type.darker}>{service.containerCount}</div>
         </Td>
 
-        <Td className="flex-1">
+        <Td>
           <div className={tokens.type["normal lighter"]}>
             {metrics.containerProfile.name}
           </div>
         </Td>
 
-        <Td className="flex-1">
+        <Td>
           <div className={tokens.type.darker}>
             ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
           </div>
         </Td>
-        <Td className="flex justify-end gap-2 mr-4">
-          <ButtonLink
-            className="w-15"
-            size="sm"
-            to={appServicePathMetricsUrl(app.id, service.id)}
-            variant="primary"
-          >
-            Metrics
-          </ButtonLink>
-          <ButtonLink
-            className="w-15"
-            size="sm"
-            to={appServiceScalePathUrl(app.id, service.id)}
-            variant="primary"
-          >
-            Scale
-          </ButtonLink>
+
+        <Td variant="right">
+          <Group size="sm" variant="horizontal">
+            <ButtonLink
+              className="w-15"
+              size="sm"
+              to={appServicePathMetricsUrl(app.id, service.id)}
+              variant="primary"
+            >
+              Metrics
+            </ButtonLink>
+            <ButtonLink
+              className="w-15"
+              size="sm"
+              to={appServiceScalePathUrl(app.id, service.id)}
+              variant="primary"
+            >
+              Scale
+            </ButtonLink>
+          </Group>
         </Td>
       </Tr>
       {service.command ? (
         <Tr>
-          <td colSpan={7} className="p-4">
+          <Td colSpan={7} className="pr-4">
             <span className="text-sm text-gray-500">Command</span>
             <div>
               <PreCode
@@ -99,7 +105,7 @@ const ServiceListRow = ({
                 segments={listToInvertedTextColor(service.command.split(" "))}
               />
             </div>
-          </td>
+          </Td>
         </Tr>
       ) : null}
     </>
@@ -151,7 +157,7 @@ export function ServicesOverview({
           <Th>Container Count</Th>
           <Th>Profile</Th>
           <Th>Monthly Cost</Th>
-          <Th>Actions</Th>
+          <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
