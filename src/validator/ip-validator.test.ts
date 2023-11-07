@@ -11,6 +11,12 @@ describe("ipValidator", () => {
     expect(ipValidator(inp)).toEqual(undefined);
   });
 
+  it("should support IPv4 CIDR", () => {
+    const inp = ["100.100.22.154/32", "105.138.225.172/22", "106.191.240.0/24"];
+
+    expect(ipValidator(inp)).toEqual(undefined);
+  });
+
   it("should reject invalid IPv4 addresses", () => {
     const inp = ["1920.168.0.15", "192.168.0.0.10"];
     expect(ipValidator(inp)).toEqual(

@@ -1,4 +1,3 @@
-const MAX_IPV4_LENGTH = 15;
 const IP_WHITELIST_MAX_SIZE = 25;
 // inlined from: https://github.com/sindresorhus/ip-regex/blob/main/index.js
 const v4 =
@@ -9,11 +8,11 @@ const v4Cidr = `${v4}\\/(3[0-2]|[12]?[0-9])`;
 const v4CidrExact = new RegExp(`^${v4Cidr}$`);
 
 function isIPv4(ip: string) {
-  return v4exact.test(ip.slice(0, MAX_IPV4_LENGTH));
+  return v4exact.test(ip);
 }
 
 function isIPv4Cidr(ip: string) {
-  return v4CidrExact.test(ip.slice(0, MAX_IPV4_LENGTH));
+  return v4CidrExact.test(ip);
 }
 
 export function ipValidator(ips: string[]) {
