@@ -18,8 +18,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Extract tags for Docker images
-        id: docker-meta
-        uses: docker/metadata-action@v3
+        id: meta
+        uses: docker/metadata-action@v5
         with:
           images: quay.io/aptible/cloud-ui
 
@@ -28,7 +28,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.docker-meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}
           build-args: |
             VITE_SENTRY_DSN=${{ secrets.PROD_SENTRY_DSN }}
             VITE_ORIGIN=app
