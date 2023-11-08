@@ -56,12 +56,26 @@ function* debugMdw(ctx: PipeCtx, next: Next) {
   yield* next();
 }
 
+const ignoreErrs: RegExp[] = [
+  /failed to fetch/i,
+  /reset store/i,
+  /networkerror when attempting to fetch resource/i,
+  /load failed/i,
+];
 function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   try {
     yield* next();
-  } catch (err: any) {
+  } catch (err) {
+    if (err instanceof Error) {
+      for (const matcher of ignoreErrs) {
+        if (matcher.test(err.message)) {
+          return;
+        }
+      }
+    }
+
     Sentry.captureException(err, {
-      contexts: { saga: JSON.stringify(ctx) as any },
+      contexts: { extras: { queryCtx: JSON.stringify(ctx) } },
     });
   }
 }
@@ -162,12 +176,12 @@ function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
   yield* next();
 }
 
-function* requestAuth(ctx: ApiCtx, next: Next): ApiGen {
+function* requestAuth(ctx: AuthApiCtx, next: Next): ApiGen {
   const url = yield* call(getUrl, ctx, "auth" as const);
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
-    credentials: "include",
+    credentials: ctx.credentials || "include",
     headers: {
       "Content-Type": "application/hal+json",
     },
@@ -193,9 +207,8 @@ function* requestMetricTunnel(ctx: ApiCtx, next: Next): ApiGen {
 function* expiredToken(ctx: ApiCtx, next: Next) {
   yield* next();
   if (!ctx.response) return;
-  if (ctx.response.status === 401) {
+  if (ctx.req().method === "GET" && ctx.response.status === 401) {
     yield* put(resetToken());
-    ctx.actions.push(resetToken());
   }
 }
 
@@ -229,8 +242,8 @@ api.use(expiredToken);
 api.use(requestMonitor());
 api.use(aborter);
 api.use(requestApi);
-api.use(api.routes());
 api.use(halEntityParser);
+api.use(api.routes());
 api.use(tokenMdw);
 api.use(fetcher());
 

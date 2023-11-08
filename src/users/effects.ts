@@ -1,10 +1,8 @@
-import { Next, call, put, select } from "@app/fx";
-
 import { authApi, cacheShortTimer, cacheTimer, elevetatedMdw } from "@app/api";
 import { selectOrigin } from "@app/env";
+import { Next, call, put, select } from "@app/fx";
 import { setOrganizationSelected } from "@app/organizations";
 import type { ApiGen, AuthApiCtx } from "@app/types";
-
 import { deserializeUser } from "./serializers";
 import type { CreateUserForm, UserResponse } from "./types";
 
@@ -61,27 +59,47 @@ interface RemoveOtp extends UserBase {
   otp_enabled: false;
 }
 
-// This is a discriminated union.
-// When we provide a `type` to this payload we can make guarentees about the
-// we require in order to perform the update.
-type PatchUser = UpdatePassword | AddOtp | RemoveOtp;
-
 type ElevatedPostCtx = AuthApiCtx<
   any,
   { userId: string; [key: string]: string | number | boolean }
 >;
 
 function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
-  const { userId, type: _, ...payload } = ctx.payload;
+  const { userId, ...payload } = ctx.payload;
   ctx.elevated = true;
   ctx.request = ctx.req({
     body: JSON.stringify(payload),
   });
   yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  ctx.loader = { message: "Saved changes successfully!" };
 }
 
-export const updateUser = authApi.patch<PatchUser>(
-  "/users/:userId",
+export const updateUserName = authApi.patch<{ userId: string; name: string }>(
+  ["/users/:userId", "name"],
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({ name: ctx.payload.name }),
+    });
+    yield* next();
+    if (!ctx.json.ok) return;
+    ctx.loader = { message: "Successfully updated your name!" };
+  },
+);
+
+export const updatePassword = authApi.patch<UpdatePassword>(
+  ["/users/:userId", "pass"],
+  elevatedUpdate,
+);
+export const addOtp = authApi.patch<AddOtp>(
+  ["/users/:userId", "addotp"],
+  elevatedUpdate,
+);
+export const rmOtp = authApi.patch<RemoveOtp>(
+  ["/users/:userId", "rmotp"],
   elevatedUpdate,
 );
 
@@ -89,7 +107,9 @@ export const updateUserOrg = authApi.put<{ userId: string; orgId: string }>(
   ["/users/:userId", "org"],
   function* (ctx, next) {
     ctx.request = ctx.req({
-      body: JSON.stringify({ selected_organization: ctx.payload.orgId }),
+      body: JSON.stringify({
+        selected_organization_id: ctx.payload.orgId,
+      }),
     });
     yield* put(setOrganizationSelected(ctx.payload.orgId));
     yield* next();
@@ -102,7 +122,7 @@ interface UpdateEmail {
 }
 
 export const updateEmail = authApi.post<UpdateEmail>(
-  "/:userId/email_verification_challenges",
+  ["/users/:userId/email_verification_challenges", "update"],
   elevatedUpdate,
 );
 

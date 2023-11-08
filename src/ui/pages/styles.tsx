@@ -1,9 +1,7 @@
 import { useState } from "react";
 
-import { OperationStatus } from "@app/types";
-
-import { dateFromToday } from "@app/date";
 import {
+  DEFAULT_INSTANCE_CLASS,
   defaultDeployApp,
   defaultDeployDatabase,
   defaultDeployEndpoint,
@@ -34,6 +32,7 @@ import {
   IconArrowLeft,
   IconArrowRight,
   IconBox,
+  IconCertificate,
   IconCheck,
   IconCheckCircle,
   IconChevronDown,
@@ -53,7 +52,9 @@ import {
   IconHamburger,
   IconHeart,
   IconInfo,
+  IconKey,
   IconLayers,
+  IconLock,
   IconLogout,
   IconPlusCircle,
   IconRefresh,
@@ -67,7 +68,7 @@ import {
   IconXCircle,
   Input,
   InputSearch,
-  LogLine,
+  LogViewerText,
   Pill,
   PreCode,
   Radio,
@@ -75,17 +76,19 @@ import {
   Secret,
   Select,
   SelectOption,
-  StatusPill,
-  TableHead,
+  TBody,
+  THead,
+  Table,
   Tabs,
   Td,
   TextArea,
+  Th,
   Tooltip,
+  Tr,
   listToTextColor,
   pillStyles,
   tokens,
 } from "../shared";
-import { DateText } from "../shared/date-text";
 
 const StylesWrapper = ({
   children,
@@ -104,7 +107,7 @@ const StylesWrapper = ({
 );
 
 const StylesNavigation = () => (
-  <nav className="mt-2 flex-1 px-2 space-y-1">
+  <nav className="flex flex-col gap-2">
     <div className="mb-4">
       <AptibleLogo />
     </div>
@@ -125,7 +128,6 @@ const StylesNavigation = () => (
       { name: "Tooltips", to: "#tooltips" },
       { name: "Detail Boxes", to: "#detail-boxes" },
       { name: "Secrets", to: "#secrets" },
-      { name: "Dates", to: "#dates" },
       { name: "Boxes", to: "#boxes" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
@@ -168,30 +170,84 @@ const Tables = () => (
     <h1 id="tables" className={tokens.type.h1}>
       Tables
     </h1>
-    <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg my-4 mx-4 sm:my-auto sm:mx-auto">
-      <table className="min-w-full divide-y divide-gray-300">
-        <TableHead
-          headers={Array(8)
-            .fill(0)
-            .map((_, idx) => `Header ${idx + 1}`)}
-        />
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {Array(5)
-            .fill(0)
-            .map((_, rowIdx) => (
-              <tr className="group hover:bg-gray-50" key={`row-${rowIdx}`}>
-                {Array(8)
-                  .fill(0)
-                  .map((_, colIdx) => (
-                    <Td key={`arr-${colIdx}`}>{`Cell - ${colIdx + 1} x ${
-                      rowIdx + 1
-                    }`}</Td>
-                  ))}
-              </tr>
-            ))}
-        </tbody>
-      </table>
-    </div>
+
+    <Table>
+      <THead>
+        <Th>Header 1</Th>
+        <Th>Header 2</Th>
+        <Th>Header 3</Th>
+        <Th>Header 4</Th>
+        <Th>Header 5</Th>
+        <Th>Header 6</Th>
+        <Th>Header 7</Th>
+        <Th>Header 8</Th>
+        <Th>Header 9</Th>
+        <Th>Header 10</Th>
+      </THead>
+
+      <TBody>
+        <Tr>
+          <Td>Row 1 Value 1</Td>
+          <Td>Row 1 Value 2</Td>
+          <Td>Row 1 Value 3</Td>
+          <Td>Row 1 Value 4</Td>
+          <Td>Row 1 Value 5</Td>
+          <Td>Row 1 Value 6</Td>
+          <Td>Row 1 Value 7</Td>
+          <Td>Row 1 Value 8</Td>
+          <Td>Row 1 Value 9</Td>
+          <Td>Row 1 Value 10</Td>
+        </Tr>
+        <Tr>
+          <Td>Row 2 Value 1</Td>
+          <Td>Row 2 Value 2</Td>
+          <Td>Row 2 Value 3</Td>
+          <Td>Row 2 Value 4</Td>
+          <Td>Row 2 Value 5</Td>
+          <Td>Row 2 Value 6</Td>
+          <Td>Row 2 Value 7</Td>
+          <Td>Row 2 Value 8</Td>
+          <Td>Row 2 Value 9</Td>
+          <Td>Row 2 Value 10</Td>
+        </Tr>
+        <Tr>
+          <Td>Row 3 Value 1</Td>
+          <Td>Row 3 Value 2</Td>
+          <Td>Row 3 Value 3</Td>
+          <Td>Row 3 Value 4</Td>
+          <Td>Row 3 Value 5</Td>
+          <Td>Row 3 Value 6</Td>
+          <Td>Row 3 Value 7</Td>
+          <Td>Row 3 Value 8</Td>
+          <Td>Row 3 Value 9</Td>
+          <Td>Row 3 Value 10</Td>
+        </Tr>
+        <Tr>
+          <Td>Row 4 Value 1</Td>
+          <Td>Row 4 Value 2</Td>
+          <Td>Row 4 Value 3</Td>
+          <Td>Row 4 Value 4</Td>
+          <Td>Row 4 Value 5</Td>
+          <Td>Row 4 Value 6</Td>
+          <Td>Row 4 Value 7</Td>
+          <Td>Row 4 Value 8</Td>
+          <Td>Row 4 Value 9</Td>
+          <Td>Row 4 Value 10</Td>
+        </Tr>
+        <Tr>
+          <Td>Row 5 Value 1</Td>
+          <Td>Row 5 Value 2</Td>
+          <Td>Row 5 Value 3</Td>
+          <Td>Row 5 Value 4</Td>
+          <Td>Row 5 Value 5</Td>
+          <Td>Row 5 Value 6</Td>
+          <Td>Row 5 Value 7</Td>
+          <Td>Row 5 Value 8</Td>
+          <Td>Row 5 Value 9</Td>
+          <Td>Row 5 Value 10</Td>
+        </Tr>
+      </TBody>
+    </Table>
   </div>
 );
 
@@ -216,7 +272,7 @@ const Forms = () => {
   );
 
   return (
-    <div className="pt-8 space-y-4">
+    <div className="pt-8 flex flex-col gap-2 w-1/3">
       <h1 id="forms" className={tokens.type.h1}>
         Forms
       </h1>
@@ -255,28 +311,30 @@ const Forms = () => {
         value={selectedOption}
         options={options}
       />
-      <p className="mt-4">
+      <div className="mt-4">
         <RadioGroup name="service" selected="cmd" onSelect={() => {}}>
           <Radio value="unchecked">Radio unchecked</Radio>
-          <Radio value="cmd">
-            Docker <strong>CMD</strong>
-          </Radio>
+          <Radio value="cmd">Radio checked</Radio>
           <Radio value="disabled" disabled={true}>
             Radio disabled
           </Radio>
         </RadioGroup>
-      </p>
+      </div>
+
+      <div className="mt-4">
+        <CheckBox checked label="Some label" />
+      </div>
 
       <TextArea
         className={`${tokens.type.textarea} mt-4`}
         defaultValue="Editable textarea"
       />
 
-      <CheckBox checked label="Some label" />
+      <div className="my-4">
+        <h3 className={tokens.type.h3}>Form Groups</h3>
+      </div>
 
-      <h3 className={tokens.type.h3}>Form Groups</h3>
-
-      <FormGroup htmlFor="input - name" label="Input (label)">
+      <FormGroup htmlFor="input - name" label="Label">
         <Input
           name="app-handle"
           type="text"
@@ -300,56 +358,56 @@ const Colors = () => (
 
     <h3 className={tokens.type.h3}>Main Colors</h3>
     <div className="flex my-2">
-      <div className="rounded-full bg-black w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-black w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Black</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-white border-solid border border-black w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-white border-solid border border-black w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">White</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-indigo w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-indigo w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Indigo</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-yellow w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-yellow w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Yellow</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-gold w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-gold w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Gold</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-forest w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-forest w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Forest</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-red w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-red w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Red</p>
     </div>
     <h3 className={tokens.type.h3}>Misc. Colors</h3>
     <div className="flex my-2">
-      <div className="rounded-full bg-off-white border-solid border border-black w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-off-white border-solid border border-black w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Off-White</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-lime w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-lime w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Lime</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-cyan w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-cyan w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Cyan</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-brown w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-brown w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Brown</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-lavender w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-lavender w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Lavender</p>
     </div>
     <div className="flex my-2">
-      <div className="rounded-full bg-plum w-8 h-8 block mr-2" />
+      <div className="rounded-full bg-plum w-[32px] h-[32px] block mr-2" />
       <p className="leading-8">Plum</p>
     </div>
   </div>
@@ -419,7 +477,9 @@ const Buttons = () => (
 
     <ButtonIcon icon={<IconPlusCircle />}>Button Icon</ButtonIcon>
 
-    <ButtonLink to="#">Button Link</ButtonLink>
+    <ButtonLink className="w-fit" to="#">
+      Button Link
+    </ButtonLink>
 
     <h3 className={tokens.type.h3}>Button Sizes</h3>
     <Button className="mt-2" size="xs">
@@ -446,28 +506,30 @@ const Buttons = () => (
   </div>
 );
 
-const Logs = () => (
-  <div className="pt-8 space-y-4">
-    <h1 id="logs" className={tokens.type.h1}>
-      Logs
-    </h1>
-    <div className="mt-4 font-mono bg-black p-2 rounded-lg text-black-200">
-      {"2023-06-14 16:45:39 +0000 INFO -- : Starting Database backup operation with ID: 3946\n2023-06-14 16:45:39 +0000 INFO -- : STARTING: Snapshot EBS volume\n        2023-06-14 16:45:40 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:45:52 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:46:04 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:46:16 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:46:29 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:46:41 +0000 INFO -- : WAITING FOR: Snapshot EBS volume\n        2023-06-14 16:46:45 +0000 INFO -- : COMPLETED (after 65.95s): Snapshot EBS volume\n        2023-06-14 16:46:45 +0000 INFO -- : STARTING: Commit Backup in API\n        2023-06-14 16:46:46 +0000 INFO -- : COMPLETED (after 0.2s): Commit Backup in API\n"
-        .split("\n")
-        .map((line, i) => {
-          return <LogLine key={`log-${i}`} text={line} />;
-        })}
+const Logs = () => {
+  const log = `2023-06-14 16:45:39 +0000 INFO -- : Starting Database backup operation with ID: 3946
+2023-06-14 16:45:39 +0000 INFO -- : Obtaining dependency information for asgiref==3.7.2 from https://files.pythonhosted.org/packages/9b/80/b9051a4a07ad231558fcd8ffc89232711b4e618c15cb7a392a17384bbeef/asgiref-3.7.2-py3-none-any.whl.metadata
+2023-06-14 16:45:39 +0000 INFO -- : STARTING: Snapshot EBS volume
+2023-06-14 16:45:40 +0000 WARN -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:45:52 +0000 INFO -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:46:04 +0000 INFO -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:46:16 +0000 ERROR -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:46:29 +0000 INFO -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:46:41 +0000 INFO -- : WAITING FOR: Snapshot EBS volume
+2023-06-14 16:46:45 +0000 INFO -- : COMPLETED (after 65.95s): Snapshot EBS volume
+2023-06-14 16:46:45 +0000 INFO -- : STARTING: Commit Backup in API
+2023-06-14 16:46:46 +0000 INFO -- : COMPLETED (after 0.2s): Commit Backup in API
+`;
+  return (
+    <div className="pt-8 space-y-4 w-[500px]">
+      <h1 id="logs" className={tokens.type.h1}>
+        Logs
+      </h1>
+      <LogViewerText text={log} />
     </div>
-  </div>
-);
+  );
+};
 
-const operationStatuses: OperationStatus[] = [
-  "queued",
-  "failed",
-  "running",
-  "succeeded",
-  "unknown",
-];
 const Pills = () => (
   <div className="pt-8 space-y-4">
     <h1 id="pills" className={tokens.type.h1}>
@@ -492,14 +554,6 @@ const Pills = () => (
       <div className="mt-4">
         <Pill className={pillStyles.success}>Success Pill</Pill>
       </div>
-    </div>
-    <div className="mt-4">
-      <h3 className={tokens.type.h3}>Operation status and time-based pill</h3>
-      {operationStatuses.map((status) => (
-        <div className="mt-4" key={status}>
-          <StatusPill from={new Date().toString()} status={status} />
-        </div>
-      ))}
     </div>
   </div>
 );
@@ -583,6 +637,9 @@ const Icons = () => (
         ["IconHeart", <IconHeart />],
         ["IconCloud", <IconCloud />],
         ["IconHamburger", <IconHamburger />],
+        ["IconCertificate", <IconCertificate />],
+        ["IconKey", <IconKey />],
+        ["IconLock", <IconLock />],
       ].map(([title, icon]) => (
         <div key={title as string}>
           <div className="inline-block -mb-1">{icon}</div>{" "}
@@ -630,7 +687,7 @@ const DetailBoxes = () => {
     type: "postgresql",
   });
   const service = defaultDeployService({
-    instanceClass: "m4",
+    instanceClass: DEFAULT_INSTANCE_CLASS,
     containerMemoryLimitMb: 4096,
   });
   const stack = defaultDeployStack({
@@ -689,23 +746,6 @@ const Secrets = () => {
   );
 };
 
-const Dates = () => {
-  return (
-    <div className="flex flex-col gap-3 pt-8">
-      <h1 id="dates" className={tokens.type.h1}>
-        Dates
-      </h1>
-      <DateText date={new Date()} />
-      <DateText date={new Date()} format="pretty-english" />
-      <DateText date={new Date()} format="pretty-english-date-relative" />
-      <span className="flex">
-        <DateText date={dateFromToday(-10)} format="time-ago" />{" "}
-        <strong className="ml-2">(Hover the date)</strong>
-      </span>
-    </div>
-  );
-};
-
 const NegativeSpace = () => {
   return (
     <Group>
@@ -755,7 +795,6 @@ export const StylesPage = () => (
       <Info />
       <DetailBoxes />
       <Secrets />
-      <Dates />
       <NegativeSpace />
     </StylesWrapper>
   </div>

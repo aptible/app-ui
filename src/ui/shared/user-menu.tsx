@@ -1,21 +1,21 @@
-import { useSelector } from "react-redux";
-
-import { impersonateUrl, logoutUrl } from "@app/routes";
+import {
+  impersonateUrl,
+  logoutUrl,
+  settingsUrl,
+  ssoTokenUrl,
+} from "@app/routes";
+import { selectIsAuthWithSso } from "@app/token";
 import { selectCanImpersonate } from "@app/users";
-
+import { useSelector } from "react-redux";
 import { useCurrentUser } from "../hooks";
-
-import { selectLegacyDashboardUrl } from "@app/env";
-import { selectOrganizationSelected } from "@app/organizations";
-import { IconLogout, IconUserCircle } from "./icons";
+import { IconKey, IconLogout, IconSettings } from "./icons";
 import { IconAlertCircle } from "./icons";
 import { LinkNav } from "./link";
 import { Loading } from "./loading";
 
 export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
   const [user, loader] = useCurrentUser();
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
-  const { id: organizationId } = useSelector(selectOrganizationSelected);
+  const isAuthWithSso = useSelector(selectIsAuthWithSso);
 
   const canImpersonate = useSelector(selectCanImpersonate);
 
@@ -26,8 +26,8 @@ export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
   return (
     <div className="w-full mb-2">
       <LinkNav
-        to={`${legacyUrl}/organizations/${organizationId}/members`}
-        icon={<IconUserCircle />}
+        to={settingsUrl()}
+        icon={<IconSettings />}
         name="Settings"
         hideName={hideName}
       />
@@ -37,6 +37,14 @@ export const UserMenu = ({ hideName = false }: { hideName?: boolean }) => {
           icon={<IconAlertCircle />}
           name="Impersonate"
           hideName={hideName}
+        />
+      ) : null}
+      {isAuthWithSso ? (
+        <LinkNav
+          to={ssoTokenUrl()}
+          name="CLI SSO Token"
+          hideName={hideName}
+          icon={<IconKey />}
         />
       ) : null}
       <LinkNav

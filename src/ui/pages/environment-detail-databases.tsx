@@ -7,12 +7,7 @@ export const EnvironmentDatabasesPage = () => {
   return (
     <div className="mb-4">
       <DetailPageSections>
-        {/* <div className="flex mt-4">
-          <div className="flex w-1/2">
-            <ButtonIcon icon={<IconPlusCircle />}>New Database</ButtonIcon>
-          </div>
-        </div> */}
-        <DatabaseListByEnvironment environmentId={id} />
+        <DatabaseListByEnvironment envId={id} />
       </DetailPageSections>
     </div>
   );

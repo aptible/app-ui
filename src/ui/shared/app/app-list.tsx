@@ -1,16 +1,17 @@
-import { prettyDateRelative } from "@app/date";
+import { prettyEnglishDateWithTime } from "@app/date";
 import {
   calcServiceMetrics,
   fetchApps,
   fetchEnvironmentById,
   fetchEnvironments,
+  selectAppsByCertId,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
   selectLatestOpByAppId,
   selectServicesByAppId,
 } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
+import { useQuery } from "@app/fx";
 import {
   appDetailUrl,
   environmentCreateAppUrl,
@@ -18,20 +19,25 @@ import {
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployApp } from "@app/types";
+import { usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ActionList, ActionListView } from "../action-list-view";
 import { ButtonCreate } from "../button";
-import { EmptyResourcesTable } from "../empty-resources-table";
-import { IconInfo, IconPlusCircle } from "../icons";
+import { Group } from "../group";
+import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
-import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
-import { ResourceHeader, ResourceListView } from "../resource-list-view";
+import {
+  ActionBar,
+  DescBar,
+  FilterBar,
+  LoadingBar,
+  PaginateBar,
+  TitleBar,
+} from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
-import { Header, TableHead, Td } from "../table";
+import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
-import { Tooltip } from "../tooltip";
 
 interface AppCellProps {
   app: DeployApp;
@@ -42,7 +48,7 @@ export const AppItemView = ({ app }: { app: DeployApp }) => {
     <Link to={appDetailUrl(app.id)} className="flex">
       <img
         src="/resource-types/logo-app.png"
-        className="w-8 h-8 mr-2 align-middle"
+        className="w-[32px] h-[32px] mr-2 align-middle"
         aria-label="App"
       />
       <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
@@ -59,7 +65,7 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
 };
 
 const AppIdCell = ({ app }: AppCellProps) => {
-  return <Td className="flex-1">{app.id}</Td>;
+  return <Td variant="center">{app.id}</Td>;
 };
 
 const AppServicesCell = ({ app }: AppCellProps) => {
@@ -119,7 +125,7 @@ export const AppLastOpCell = ({ app }: AppCellProps) => {
           <div className={tokens.type.darker} />
           <div className={tokens.type["normal lighter"]}>
             <OpStatus status={lastOperation.status} />{" "}
-            {prettyDateRelative(lastOperation.createdAt)}
+            {prettyEnglishDateWithTime(lastOperation.createdAt)}
           </div>
         </>
       ) : (
@@ -129,183 +135,189 @@ export const AppLastOpCell = ({ app }: AppCellProps) => {
   );
 };
 
-const AppListRow = ({ app }: AppCellProps) => {
-  return (
-    <tr className="group hover:bg-gray-50">
-      <AppPrimaryCell app={app} />
-      <AppIdCell app={app} />
-      <EnvStackCell environmentId={app.environmentId} />
-      <AppServicesCell app={app} />
-      <AppCostCell app={app} />
-    </tr>
-  );
-};
-
-const appHeaders: Header[] = [
-  "Handle",
-  "ID",
-  "Environment",
-  "Services",
-  "Est. Monthly Cost",
-];
-
-export const AppList = ({
-  apps,
-  headerTitleBar,
-}: {
-  apps: DeployApp[];
-  headerTitleBar: React.ReactNode;
-}) => {
-  return (
-    <ResourceListView
-      header={headerTitleBar}
-      tableHeader={<TableHead headers={appHeaders} />}
-      tableBody={
-        <>
-          {apps.map((app) => (
-            <AppListRow app={app} key={app.id} />
-          ))}
-        </>
-      }
-    />
-  );
-};
-
-type HeaderTypes =
-  | {
-      resourceHeaderType: "title-bar";
-      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-    }
-  | { resourceHeaderType: "simple-text"; onChange?: null };
-
-export const AppsResourceHeaderTitleBar = ({
-  apps,
-  search = "",
-  resourceHeaderType,
-  onChange,
-  actions = [],
-}: {
-  apps: DeployApp[];
-  search?: string;
-  actions?: ActionList;
-} & HeaderTypes) => {
-  switch (resourceHeaderType) {
-    case "title-bar":
-      return (
-        <ResourceHeader
-          title="Apps"
-          actions={actions}
-          filterBar={
-            <div>
-              <InputSearch
-                placeholder="Search apps..."
-                search={search}
-                onChange={onChange}
-              />
-              <div className="flex">
-                <p className="flex text-gray-500 mt-4 text-base">
-                  {apps.length} App{apps.length !== 1 && "s"}
-                </p>
-                <div className="mt-4">
-                  <Tooltip
-                    fluid
-                    text="Apps are how you deploy your code, scale services, and manage endpoints."
-                  >
-                    <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
-                  </Tooltip>
-                </div>
-              </div>
-            </div>
-          }
-        />
-      );
-    case "simple-text":
-      return (
-        <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
-          <div>
-            {apps.length} App{apps.length !== 1 && "s"}
-          </div>
-          <div>
-            {actions.length > 0 ? <ActionListView actions={actions} /> : null}
-          </div>
-        </div>
-      );
-    default:
-      return null;
-  }
-};
-
 export const AppListByOrg = () => {
-  const query = useQuery(fetchApps());
+  const { isLoading } = useQuery(fetchApps());
   useQuery(fetchEnvironments());
-
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
   };
   const apps = useSelector((s: AppState) =>
     selectAppsForTableSearch(s, { search }),
   );
-  const titleBar = (
-    <AppsResourceHeaderTitleBar
-      apps={apps}
-      search={search}
-      resourceHeaderType="title-bar"
-      onChange={onChange}
-    />
-  );
+  const paginated = usePaginate(apps);
 
   return (
-    <LoadResources
-      empty={<EmptyResourcesTable headers={appHeaders} titleBar={titleBar} />}
-      query={query}
-      isEmpty={apps.length === 0 && search === ""}
-    >
-      <AppList apps={apps} headerTitleBar={titleBar} />
-    </LoadResources>
+    <Group>
+      <Group size="sm">
+        <TitleBar description="Apps are how you deploy your code, scale services, and manage endpoints.">
+          Apps
+        </TitleBar>
+
+        <FilterBar>
+          <Group variant="horizontal" size="sm" className="items-center">
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
+            <LoadingBar isLoading={isLoading} />
+          </Group>
+
+          <Group variant="horizontal" size="lg" className="items-center mt-1">
+            <DescBar>{paginated.totalItems} Apps</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Handle</Th>
+          <Th variant="center">ID</Th>
+          <Th>Environment</Th>
+          <Th>Services</Th>
+          <Th>Est. Monthly Cost</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.map((app) => (
+            <Tr key={app.id}>
+              <AppPrimaryCell app={app} />
+              <AppIdCell app={app} />
+              <EnvStackCell environmentId={app.environmentId} />
+              <AppServicesCell app={app} />
+              <AppCostCell app={app} />
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 };
 
 export const AppListByEnvironment = ({
-  environmentId,
+  envId,
 }: {
-  environmentId: string;
+  envId: string;
 }) => {
   const navigate = useNavigate();
-  const loader = useLoader(fetchApps());
-  useQuery(fetchEnvironmentById({ id: environmentId }));
-
+  useQuery(fetchEnvironmentById({ id: envId }));
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+  };
   const apps = useSelector((s: AppState) =>
     selectAppsForTableSearchByEnvironmentId(s, {
-      envId: environmentId,
-      search: "",
+      envId,
+      search,
     }),
   );
+  const paginated = usePaginate(apps);
 
   const onCreate = () => {
-    navigate(environmentCreateAppUrl(environmentId));
+    navigate(environmentCreateAppUrl(envId));
   };
 
-  const titleBar = (
-    <AppsResourceHeaderTitleBar
-      apps={apps}
-      resourceHeaderType="simple-text"
-      actions={[
-        <ButtonCreate envId={environmentId} onClick={onCreate}>
-          <IconPlusCircle variant="sm" /> <div className="ml-2">New App</div>
-        </ButtonCreate>,
-      ]}
-    />
+  return (
+    <Group>
+      <Group size="sm">
+        <FilterBar>
+          <div className="flex justify-between">
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
+
+            <ActionBar>
+              <ButtonCreate envId={envId} onClick={onCreate}>
+                <IconPlusCircle variant="sm" />{" "}
+                <div className="ml-2">New App</div>
+              </ButtonCreate>
+            </ActionBar>
+          </div>
+
+          <Group variant="horizontal" size="lg" className="items-center mt-1">
+            <DescBar>{paginated.totalItems} Apps</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Handle</Th>
+          <Th variant="center">ID</Th>
+          <Th>Services</Th>
+          <Th>Est. Monthly Cost</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={4} /> : null}
+          {paginated.data.map((app) => (
+            <Tr key={app.id}>
+              <AppPrimaryCell app={app} />
+              <AppIdCell app={app} />
+              <AppServicesCell app={app} />
+              <AppCostCell app={app} />
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
+};
+
+export const AppListByCertificate = ({
+  certId,
+  envId,
+}: {
+  certId: string;
+  envId: string;
+}) => {
+  const apps = useSelector((s: AppState) =>
+    selectAppsByCertId(s, {
+      certId,
+      envId,
+    }),
+  );
+  const paginated = usePaginate(apps);
 
   return (
-    <LoadResources
-      empty={<EmptyResourcesTable headers={appHeaders} titleBar={titleBar} />}
-      query={loader}
-      isEmpty={apps.length === 0}
-    >
-      <AppList apps={apps} headerTitleBar={titleBar} />
-    </LoadResources>
+    <Group>
+      <FilterBar>
+        <Group variant="horizontal" size="lg" className="items-center mt-1">
+          <DescBar>{paginated.totalItems} Apps</DescBar>
+          <PaginateBar {...paginated} />
+        </Group>
+      </FilterBar>
+
+      <Table>
+        <THead>
+          <Th>Handle</Th>
+          <Th variant="center">ID</Th>
+          <Th>Environment</Th>
+          <Th>Services</Th>
+          <Th>Est. Monthly Cost</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.map((app) => (
+            <Tr key={app.id}>
+              <AppPrimaryCell app={app} />
+              <AppIdCell app={app} />
+              <EnvStackCell environmentId={app.environmentId} />
+              <AppServicesCell app={app} />
+              <AppCostCell app={app} />
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 };

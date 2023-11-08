@@ -62,7 +62,10 @@ describe("AppDetailServiceScalePage", () => {
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
 
-    expect(await screen.findByText("Operation Details")).toBeInTheDocument();
+    expect(await screen.findByText("App Details")).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Operations show real-time/),
+    ).toBeInTheDocument();
   });
 
   describe("when changing container profile", () => {

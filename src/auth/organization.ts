@@ -29,8 +29,10 @@ export const fetchOrganizations = authApi.get<
     );
 
     const foundOrg = orgs.find((o) => o.id === orgSelected);
-    if (!foundOrg) {
-      ctx.actions.push(setOrganizationSelected(orgs[0].id));
+    if (!foundOrg && orgs.length > 0) {
+      const org = orgs[0];
+      if (!org) return;
+      ctx.actions.push(setOrganizationSelected(org.id));
     }
   },
 );

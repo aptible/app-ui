@@ -89,7 +89,7 @@ export const StandaloneErrorBoundary = ({
 export const ReactRouterErrorElement = () => {
   const error = useRouteError();
   const errorData: string | Error =
-    error instanceof Error ? (error as Error) : (error as Object).toString();
+    error instanceof Error ? (error as Error) : (error as any).toString();
   if (error) {
     captureException(error);
   }

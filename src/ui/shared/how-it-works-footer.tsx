@@ -1,10 +1,11 @@
+import { Code } from "./code";
 import { ExternalLink } from "./external-link";
-import { IconChevronDown, IconChevronUp } from "./icons";
+import { IconChevronDown, IconChevronRight } from "./icons";
 import { tokens } from "./tokens";
 
 import { useState } from "react";
 
-const HelpTextAccordion = ({
+export const HelpTextAccordion = ({
   title,
   children,
 }: {
@@ -21,9 +22,9 @@ const HelpTextAccordion = ({
           onClick={() => setOpen(!isOpen)}
         >
           {isOpen ? (
-            <IconChevronUp className="w-[30px]" />
-          ) : (
             <IconChevronDown className="w-[30px]" />
+          ) : (
+            <IconChevronRight className="w-[30px]" />
           )}
           <span className="flex-1 font-bold">{title}</span>
         </div>
@@ -53,10 +54,7 @@ export const CreateProjectFooter = () => {
             <li>Create an environment</li>
             <li>Deploy a starter template or your own custom code</li>
             <li>
-              Push your code to Aptible using{" "}
-              <span className="bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]">
-                git push
-              </span>
+              Push your code to Aptible using <Code>git push</Code>
             </li>
             <li>
               Configure your App (e.g. databases, environment variables,

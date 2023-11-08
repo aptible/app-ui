@@ -10,6 +10,8 @@ import {
 import { Organization } from "@app/types";
 import { selectCurrentUserId, updateUserOrg } from "@app/users";
 
+import { loginUrl } from "@app/routes";
+import { useNavigate } from "react-router";
 import { AppSidebarLayout } from "../layouts";
 import { tokens } from "../shared";
 
@@ -36,6 +38,7 @@ const OrgItem = ({
 };
 
 export const OrgPickerPage = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
   const org = useSelector(selectOrganizationSelected);
@@ -46,6 +49,7 @@ export const OrgPickerPage = () => {
   const onClick = (orgId: string, reauth = false) => {
     if (reauth) {
       dispatch(batchActions([updateUserOrg({ userId, orgId }), logout()]));
+      navigate(loginUrl());
       return;
     }
 

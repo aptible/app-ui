@@ -1,16 +1,11 @@
-import { useLayoutEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
-
 import { selectEnv } from "@app/env";
 import { selectNav, setCollapsed } from "@app/nav";
 import {
   activityUrl,
   appsUrl,
   billingMethodUrl,
-  createProjectGitUrl,
   databaseUrl,
+  deployUrl,
   deploymentsUrl,
   endpointsUrl,
   environmentsUrl,
@@ -19,6 +14,14 @@ import {
   stacksUrl,
   supportUrl,
 } from "@app/routes";
+import { useLayoutEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import { useTrialNotice } from "../hooks/use-trial-notice";
+import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
+import { Banner } from "./banner";
+import { ButtonIcon } from "./button";
 import {
   IconBox,
   IconCloud,
@@ -32,11 +35,6 @@ import {
   IconSearch,
   IconShield,
 } from "./icons";
-
-import { useTrialNotice } from "../hooks/use-trial-notice";
-import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
-import { Banner } from "./banner";
-import { ButtonIcon } from "./button";
 import { LinkNav } from "./link";
 import { OrgPicker } from "./org-picker";
 import { UserMenu } from "./user-menu";
@@ -96,7 +94,7 @@ export const ApplicationSidebar = () => {
         </div>
 
         {collapsed ? null : (
-          <div className="mt-5 px-3">
+          <div className="mt-4 px-3">
             <OrgPicker />
           </div>
         )}
@@ -141,7 +139,7 @@ export const ApplicationSidebar = () => {
         <div className="ml-0">
           <ButtonIcon
             className="w-full mb-4"
-            onClick={() => navigate(createProjectGitUrl())}
+            onClick={() => navigate(deployUrl())}
             icon={
               <IconPlusCircle
                 style={
@@ -165,21 +163,21 @@ export const ApplicationSidebar = () => {
         <UserMenu hideName={collapsed} />
 
         {collapsed ? null : (
-          <div className="my-6 flex justify-between text-xs text-gray-500">
+          <div className="mb-6 mt-4 flex justify-between text-sm text-black-500">
             <a
-              className="text-gray-500 hover:text-indigo px-3"
+              className="text-black-500 hover:text-indigo px-2"
               href="https://aptible.com/docs"
             >
               DOCS
             </a>
             <Link
               to={supportUrl()}
-              className="text-gray-500 hover:text-indigo px-3"
+              className="text-black-500 hover:text-indigo px-2"
             >
               SUPPORT
             </Link>
             <a
-              className="text-gray-500 hover:text-indigo px-3"
+              className="text-black-500 hover:text-indigo px-2"
               href="https://www.aptible.com/docs/cli"
             >
               INSTALL CLI

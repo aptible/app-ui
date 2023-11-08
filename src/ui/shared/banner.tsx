@@ -2,6 +2,10 @@ import classNames from "classnames";
 
 import { StatusVariant, variantToClassName } from "@app/status-variant";
 
+import { homeUrl } from "@app/routes";
+import { selectIsUserAuthenticated } from "@app/token";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { IconAlertTriangle, IconCheck, IconInfo } from "./icons";
 import { LoadingSpinner } from "./loading";
 
@@ -101,4 +105,16 @@ export const BannerMessages = ({
   }
 
   return null;
+};
+
+export const AlreadyAuthenticatedBanner = () => {
+  const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  return isAuthenticated ? (
+    <Banner variant="success">
+      You are already logged in!{" "}
+      <Link to={homeUrl()} className="text-white underline">
+        Continue to dashboard
+      </Link>
+    </Banner>
+  ) : null;
 };

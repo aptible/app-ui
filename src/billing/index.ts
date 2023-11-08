@@ -109,19 +109,19 @@ export const fetchTrials = billingApi.get<{ id: string }>(
 );
 // const fetchExternalPaymentSources = billingApi.get<{ id: string }>('/billing_details/:id/external_payment_sources');
 
-const createBillingDetail = billingApi.post<{ orgId: string; orgName: string }>(
-  "/billing_details",
-  function* (ctx, next) {
-    ctx.request = ctx.req({
-      body: JSON.stringify({
-        id: ctx.payload.orgId,
-        organization_details_json: { name: ctx.payload.orgName },
-      }),
-    });
+export const createBillingDetail = billingApi.post<{
+  orgId: string;
+  orgName: string;
+}>("/billing_details", function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify({
+      id: ctx.payload.orgId,
+      organization_details_json: { name: ctx.payload.orgName },
+    }),
+  });
 
-    yield* next();
-  },
-);
+  yield* next();
+});
 
 const createBillingCycle = billingApi.post<{ orgId: string }>(
   "/billing_details/:orgId/billing_cycles",

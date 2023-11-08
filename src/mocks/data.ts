@@ -39,11 +39,11 @@ export const createText = (mixin: string, id: string | number = "1") => {
 
 export const testEnv = createEnv({
   origin: "app",
-  authUrl: "https://auth.aptible.com",
-  apiUrl: "https://api.aptible.com",
-  billingUrl: "https://billing.aptible.com",
-  legacyDashboardUrl: "https://dashboard.aptible.com",
-  metricTunnelUrl: "https://metrictunnel.aptible.com",
+  authUrl: "https://auth.aptible-test.com",
+  apiUrl: "https://api.aptible-test.com",
+  billingUrl: "https://billing.aptible-test.com",
+  legacyDashboardUrl: "https://dashboard.aptible-test.com",
+  metricTunnelUrl: "https://metrictunnel.aptible-test.com",
 });
 
 export const testUserId = createId();
@@ -84,7 +84,7 @@ export const testUser = defaultUserResponse({
 });
 export const testUserVerified = defaultUserResponse({
   id: testUserId,
-  email: testEmail,
+  email: "test.verified@aptible.com",
   verified: true,
 });
 
@@ -125,7 +125,7 @@ export const testOrgReauth = defaultOrgResponse({
   reauth_required: true,
 });
 export const testUserOrgSelected = defaultUserResponse({
-  id: createId(),
+  id: testUserId,
   email: "special@aptible.com",
   verified: true,
   _links: {
@@ -172,7 +172,6 @@ export const testAccount = defaultEnvResponse({
   organization_id: testOrg.id,
   _links: {
     stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-    environment: defaultHalHref(),
   },
   _embedded: {
     permissions: [
@@ -196,7 +195,6 @@ export const testAccountAdmin = defaultEnvResponse({
   organization_id: testOrg.id,
   _links: {
     stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-    environment: defaultHalHref(),
   },
   _embedded: {
     permissions: [
@@ -221,7 +219,6 @@ export const testDestroyAccount = defaultEnvResponse({
   organization_id: testOrg.id,
   _links: {
     stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-    environment: defaultHalHref(),
   },
   _embedded: {
     permissions: [
@@ -455,7 +452,6 @@ export const testEnvExpress = defaultEnvResponse({
   onboarding_status: "initiated",
   _links: {
     stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-    environment: defaultHalHref(),
   },
 });
 export const testAppDeployedId = createId();

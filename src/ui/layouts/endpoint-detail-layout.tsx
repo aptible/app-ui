@@ -2,7 +2,9 @@ import {
   cancelFetchEndpointPoll,
   fetchApp,
   fetchDatabase,
+  fetchImageById,
   fetchService,
+  getContainerPort,
   getEndpointText,
   getEndpointUrl,
   pollFetchEndpoint,
@@ -10,12 +12,14 @@ import {
   selectAppById,
   selectDatabaseById,
   selectEndpointById,
+  selectImageById,
   selectServiceById,
 } from "@app/deploy";
 import {
   appEndpointsUrl,
   databaseEndpointsUrl,
   endpointDetailActivityUrl,
+  endpointDetailCredentialsUrl,
   endpointDetailSettingsUrl,
   endpointDetailSetupUrl,
 } from "@app/routes";
@@ -34,6 +38,8 @@ import { useLoader, useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   Banner,
+  Code,
+  CopyText,
   CopyTextButton,
   DetailHeader,
   DetailInfoGrid,
@@ -50,8 +56,14 @@ import { AppSidebarLayout } from "./app-sidebar-layout";
 export function EndpointAppHeaderInfo({
   enp,
   app,
-}: { enp: DeployEndpoint; app: DeployApp }) {
+  service,
+}: { enp: DeployEndpoint; app: DeployApp; service: DeployService }) {
   const txt = getEndpointText(enp);
+  const image = useSelector((s: AppState) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+  const portTxt = getContainerPort(enp, image.exposedPorts);
+
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -59,7 +71,7 @@ export function EndpointAppHeaderInfo({
         icon={
           <img
             src={"/resource-types/logo-vhost.png"}
-            className="w-8 h-8 mr-3"
+            className="w-[32px] h-[32px] mr-3"
             aria-label="App"
           />
         }
@@ -73,15 +85,25 @@ export function EndpointAppHeaderInfo({
             <CopyTextButton text={getEndpointUrl(enp)} />
           </div>
         </DetailInfoItem>
+        <DetailInfoItem title="Hostname">
+          <CopyText text={enp.externalHost} />
+        </DetailInfoItem>
 
         <DetailInfoItem title="Resource">
           <Link to={appEndpointsUrl(app.id)}>{app.handle}</Link>
         </DetailInfoItem>
-        <DetailInfoItem title="Status">
-          <EndpointStatusPill status={enp.status} />
+        <DetailInfoItem title="Service Process">
+          <Code>{service.processType}</Code>
+        </DetailInfoItem>
+        <DetailInfoItem title="Service ID">
+          <CopyText text={service.id} />
         </DetailInfoItem>
         <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
         <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
+        <DetailInfoItem title="Port">{portTxt}</DetailInfoItem>
+        <DetailInfoItem title="Status">
+          <EndpointStatusPill status={enp.status} />
+        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -99,7 +121,7 @@ export function EndpointDatabaseHeaderInfo({
         icon={
           <img
             src={"/resource-types/logo-vhost.png"}
-            className="w-8 h-8 mr-3"
+            className="w-[32px] h-[32px] mr-3"
             aria-label="App"
           />
         }
@@ -113,12 +135,15 @@ export function EndpointDatabaseHeaderInfo({
             <CopyTextButton text={getEndpointUrl(enp)} />
           </div>
         </DetailInfoItem>
-        <DetailInfoItem title="Resource">
-          <Link to={databaseEndpointsUrl(db.id)}>{db.handle}</Link>
-        </DetailInfoItem>
+
         <DetailInfoItem title="Status">
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>
+
+        <DetailInfoItem title="Resource">
+          <Link to={databaseEndpointsUrl(db.id)}>{db.handle}</Link>
+        </DetailInfoItem>
+
         <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
@@ -142,13 +167,14 @@ function EndpointAppHeader({
   const app = useSelector((s: AppState) =>
     selectAppById(s, { id: service.appId }),
   );
+  useQuery(fetchImageById({ id: app.currentImageId }));
   const url = appEndpointsUrl(app.id);
   const tabs: TabItem[] = [
     { name: "Activity", href: endpointDetailActivityUrl(enp.id) },
     { name: "Settings", href: endpointDetailSettingsUrl(enp.id) },
   ];
-  if (requiresAcmeSetup(enp)) {
-    tabs.push({ name: "Finish Setup", href: endpointDetailSetupUrl(enp.id) });
+  if (enp.acme) {
+    tabs.push({ name: "ACME Configure", href: endpointDetailSetupUrl(enp.id) });
   }
 
   return (
@@ -171,7 +197,9 @@ function EndpointAppHeader({
         tabs={tabs}
         breadcrumbs={[{ name: app.handle, to: url }]}
         title={`Endpoint: ${enp.id}`}
-        detailsBox={<EndpointAppHeaderInfo enp={enp} app={app} />}
+        detailsBox={
+          <EndpointAppHeaderInfo enp={enp} app={app} service={service} />
+        }
       />
     </>
   );
@@ -197,6 +225,10 @@ function EndpointDatabaseHeader({
   const url = databaseEndpointsUrl(db.id);
   const tabs: TabItem[] = [
     { name: "Activity", href: endpointDetailActivityUrl(enp.id) },
+    {
+      name: "Connection URL",
+      href: endpointDetailCredentialsUrl(enp.id),
+    },
     { name: "Settings", href: endpointDetailSettingsUrl(enp.id) },
   ];
 

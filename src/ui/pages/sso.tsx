@@ -8,12 +8,14 @@ import { loginUrl, ssoDirectUrl, ssoFailureUrl } from "@app/routes";
 
 import { HeroBgLayout } from "../layouts";
 import {
+  AlreadyAuthenticatedBanner,
   Banner,
   Box,
   Button,
   ButtonLink,
   ExternalLink,
   FormGroup,
+  Group,
   Input,
   Loading,
   tokens,
@@ -35,21 +37,25 @@ export const SsoLoginPage = () => {
           Use your organization's single sign-on provider to authenticate.
         </p>
       </div>
-      <Box>
-        <form onSubmit={onSubmit}>
-          <FormGroup label="Organization ID / Name" htmlFor="org">
-            <Input
-              type="text"
-              name="org"
-              id="org"
-              onChange={(e) => setOrg(e.currentTarget.value)}
-            />
-          </FormGroup>
 
-          <Button type="submit" className="w-full mt-4" disabled={org === ""}>
-            Log In
-          </Button>
-        </form>
+      <Box>
+        <Group>
+          <AlreadyAuthenticatedBanner />
+          <form onSubmit={onSubmit}>
+            <FormGroup label="Organization ID / Name" htmlFor="org">
+              <Input
+                type="text"
+                name="org"
+                id="org"
+                onChange={(e) => setOrg(e.currentTarget.value)}
+              />
+            </FormGroup>
+
+            <Button type="submit" className="w-full mt-4" disabled={org === ""}>
+              Log In
+            </Button>
+          </form>
+        </Group>
       </Box>
     </HeroBgLayout>
   );
@@ -81,27 +87,32 @@ export const SsoFailurePage = () => {
     <HeroBgLayout>
       <div className="text-center mt-16">
         <h1 className={`${tokens.type.h1} text-center`}>
-          We could not process your Single Sign-On (SSO) login
+          We could not process your Single Sign-On login
         </h1>
         <Banner variant="error" className="my-6">
           {message}
         </Banner>
       </div>
-      <Box>
-        <ButtonLink to={loginUrl()} className="font-semibold w-full">
-          Back to Login
-        </ButtonLink>
 
-        <p className="mt-4">
-          Not an Enterprise customer?{" "}
-          <ExternalLink
-            href="https://aptible.zendesk.com/hc/en-us/requests/new"
-            variant="info"
-          >
-            Contact support
-          </ExternalLink>{" "}
-          to learn more about upgrading your account to support SSO.
-        </p>
+      <Box>
+        <Group>
+          <AlreadyAuthenticatedBanner />
+
+          <ButtonLink to={loginUrl()} className="font-semibold w-full">
+            Back to Login
+          </ButtonLink>
+
+          <div>
+            Not an Enterprise customer?{" "}
+            <ExternalLink
+              href="https://aptible.zendesk.com/hc/en-us/requests/new"
+              variant="info"
+            >
+              Contact support
+            </ExternalLink>{" "}
+            to learn more about upgrading your account to support SSO.
+          </div>
+        </Group>
       </Box>
     </HeroBgLayout>
   );

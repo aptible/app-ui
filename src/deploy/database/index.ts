@@ -1,3 +1,4 @@
+import { ThunkCtx, api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import {
   FetchJson,
   Payload,
@@ -10,14 +11,13 @@ import {
   setLoaderStart,
   setLoaderSuccess,
 } from "@app/fx";
-
-import { ThunkCtx, api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
+import { capitalize } from "@app/string-utils";
 import type {
   AppState,
   DeployApiCtx,
@@ -45,6 +45,7 @@ import {
   selectOperationsByDatabaseId,
   waitForOperation,
 } from "../operation";
+import { fetchServiceOperations } from "../service";
 import { selectDeploy } from "../slice";
 
 export interface DeployDatabaseResponse {
@@ -59,6 +60,7 @@ export interface DeployDatabaseResponse {
   created_at: string;
   updated_at: string;
   enable_backups: boolean;
+  port_mapping: [number, number][];
   _links: {
     account: LinkResponse;
     service: LinkResponse;
@@ -98,6 +100,7 @@ export const defaultDatabaseResponse = (
     created_at: now,
     updated_at: now,
     enable_backups: true,
+    port_mapping: [],
     _links: {
       account: { href: "" },
       service: { href: "" },
@@ -133,6 +136,7 @@ export const deserializeDeployDatabase = (
     enableBackups: payload.enable_backups,
     type: payload.type,
     status: payload.status,
+    portMapping: payload.port_mapping,
     databaseImageId: extractIdFromLink(links.database_image),
     environmentId: extractIdFromLink(links.account),
     serviceId: extractIdFromLink(links.service),
@@ -162,6 +166,7 @@ export const defaultDeployDatabase = (
     serviceId: "",
     diskId: "",
     initializeFrom: "",
+    portMapping: [],
     ...d,
   };
 };
@@ -175,7 +180,7 @@ export const DEPLOY_DATABASE_NAME = "databases";
 const slice = createTable<DeployDatabase>({
   name: DEPLOY_DATABASE_NAME,
 });
-const { add: addDeployDatabases } = slice.actions;
+const { add: addDeployDatabases, reset: resetDeployDatabases } = slice.actions;
 
 export const hasDeployDatabase = (a: DeployDatabase) => a.id !== "";
 export const databaseReducers = createReducerMap(slice);
@@ -345,6 +350,13 @@ export const fetchDatabases = api.get(
   "/databases?per_page=5000&no_embed=true",
   {
     saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetDeployDatabases());
   },
 );
 
@@ -610,7 +622,25 @@ export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
 export const pollDatabaseOperations = api.get<{ id: string }>(
   ["/databases/:id/operations", "poll"],
   { saga: poll(5 * 1000, `${cancelDatabaseOpsPoll}`) },
-  api.cache(),
+);
+export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
+  "db-service-op-poll",
+  { saga: poll(5 * 1000, `${cancelDatabaseOpsPoll}`) },
+  function* (ctx, next) {
+    yield* put(setLoaderStart({ id: ctx.key }));
+    const db = yield* select(selectDatabaseById, ctx.payload);
+
+    yield* all([
+      call(fetchDatabaseOperations.run, fetchDatabaseOperations(ctx.payload)),
+      call(
+        fetchServiceOperations.run,
+        fetchServiceOperations({ id: db.serviceId }),
+      ),
+    ]);
+
+    yield* next();
+    yield* put(setLoaderSuccess({ id: ctx.key }));
+  },
 );
 
 export const fetchDatabaseDependents = api.get<{ id: string }>(
@@ -708,6 +738,31 @@ export const restartDatabase = api.post<
   };
 });
 
+export const restartRecreateDatabase = api.post<
+  { id: string; containerProfile: InstanceClass },
+  DeployOperationResponse
+>(["/databases/:id/operations", "restart_recreate"], function* (ctx, next) {
+  const { id, containerProfile } = ctx.payload;
+  const body = {
+    type: "restart_recreate",
+    id,
+    instance_profile: containerProfile,
+  };
+
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.data.id;
+  ctx.loader = {
+    message: `Restart database with disk move operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
+});
+
 export const scaleDatabase = api.post<
   DatabaseScaleProps,
   DeployOperationResponse
@@ -733,3 +788,7 @@ export const scaleDatabase = api.post<
     meta: { opId: `${opId}` },
   };
 });
+
+export const formatDatabaseType = (type: string, version: string) => {
+  return `${capitalize(type)} ${version}`;
+};

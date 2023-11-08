@@ -1,10 +1,4 @@
-import { useLoader, useQuery } from "@app/fx";
-import { ReactElement, useMemo } from "react";
-import { useSelector } from "react-redux";
-import { Link, useSearchParams } from "react-router-dom";
-import { Tooltip } from "./tooltip";
-
-import { prettyDateRelative } from "@app/date";
+import { prettyEnglishDateWithTime } from "@app/date";
 import {
   cancelAppOpsPoll,
   cancelDatabaseOpsPoll,
@@ -15,10 +9,10 @@ import {
   fetchDatabase,
   fetchEnvironmentById,
   fetchOrgOperations,
-  fetchServiceOperations,
+  fetchServicesByAppId,
   getResourceUrl,
-  pollAppOperations,
-  pollDatabaseOperations,
+  pollAppAndServiceOperations,
+  pollDatabaseAndServiceOperations,
   pollEndpointOperations,
   pollEnvOperations,
   pollOrgOperations,
@@ -26,21 +20,30 @@ import {
   selectActivityForTableSearch,
   selectAppById,
   selectDatabaseById,
+  selectServicesByAppId,
 } from "@app/deploy";
+import { useLoader, useQuery } from "@app/fx";
 import { operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployActivityRow, ResourceType } from "@app/types";
-
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
+import { Link, useSearchParams } from "react-router-dom";
+import { usePaginate } from "../hooks";
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
-import { IconInfo } from "./icons";
+import { Group } from "./group";
 import { InputSearch } from "./input";
-import { LoadResources } from "./load-resources";
 import { LoadingSpinner } from "./loading";
 import { OpStatus } from "./op-status";
-import { ResourceHeader, ResourceListView } from "./resource-list-view";
+import {
+  DescBar,
+  FilterBar,
+  PaginateBar,
+  TitleBar,
+} from "./resource-list-view";
 import { EnvStackCell } from "./resource-table";
-import { TableHead, Td } from "./table";
+import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "./table";
 import { tokens } from "./tokens";
 
 interface OpCellProps {
@@ -72,7 +75,7 @@ const getImageForResourceType = (resourceType: ResourceType) => {
   return (
     <img
       src={imageToUse}
-      className="w-8 h-8 mr-2 mt-2 align-middle"
+      className="w-[32px] h-[32px] mr-2 mt-1 align-middle"
       aria-label={resourceType}
     />
   );
@@ -139,7 +142,7 @@ const OpActionsCell = ({ op }: OpCellProps) => {
 const OpLastUpdatedCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-      <div>{capitalize(prettyDateRelative(op.updatedAt))}</div>
+      <div>{capitalize(prettyEnglishDateWithTime(op.updatedAt))}</div>
     </Td>
   );
 };
@@ -155,7 +158,7 @@ const OpUserCell = ({ op }: OpCellProps) => {
 
 const OpListRow = ({ op }: OpCellProps) => {
   return (
-    <tr className="group hover:bg-gray-50">
+    <Tr>
       <OpResourceCell op={op} />
       <OpStatusCell op={op} />
       <OpTypeCell op={op} />
@@ -163,84 +166,81 @@ const OpListRow = ({ op }: OpCellProps) => {
       <OpUserCell op={op} />
       <OpLastUpdatedCell op={op} />
       <OpActionsCell op={op} />
-    </tr>
+    </Tr>
   );
 };
 
 function ActivityTable({
   ops,
   search,
-  isLoading,
   onChange,
-  title = "",
-  description = "",
+  showTitle = true,
+  isLoading = false,
 }: {
   ops: DeployActivityRow[];
   search: string;
-  isLoading: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  title?: string;
-  description?: string;
+  showTitle?: boolean;
+  isLoading?: boolean;
 }) {
-  const resourceHeaderTitleBar = (): ReactElement | undefined => {
-    return (
-      <ResourceHeader
-        title={title}
-        description={description}
-        filterBar={
-          <div>
-            <div className="flex items-center gap-3">
-              <InputSearch
-                placeholder="Search operations..."
-                search={search}
-                onChange={onChange}
-              />
-              {isLoading ? <LoadingSpinner /> : null}
-            </div>
-            <div className="flex">
-              <p className="flex text-gray-500 mt-4 text-base">
-                {ops.length} Operation{ops.length !== 1 ? "s" : ""}
-              </p>
-              <div className="mt-4">
-                <Tooltip
-                  fluid
-                  text="Operations show real-time changes to resources, such as Apps and Databases."
-                >
-                  <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
-                </Tooltip>
-              </div>
-            </div>
-          </div>
-        }
-      />
-    );
-  };
-
+  const paginated = usePaginate(ops);
   return (
-    <ResourceListView
-      header={resourceHeaderTitleBar()}
-      tableHeader={
-        <TableHead
-          rightAlignedFinalCol
-          headers={[
-            "Resource",
-            "Status",
-            "Operation Type",
-            "Environment",
-            "User",
-            "Last Updated",
-            "Actions",
-          ]}
-        />
-      }
-      tableBody={
-        <>
-          {ops.map((op) => (
+    <Group>
+      <Group size="sm">
+        <TitleBar
+          visible={showTitle}
+          description="Operations show real-time changes to resources, such as Apps and Databases."
+        >
+          Activity
+        </TitleBar>
+
+        <FilterBar>
+          {showTitle ? null : (
+            <DescBar>
+              Operations show real-time changes to resources, such as Apps and
+              Databases.
+            </DescBar>
+          )}
+
+          <Group variant="horizontal" size="sm">
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <LoadingSpinner />
+              </div>
+            ) : null}
+          </Group>
+
+          <Group variant="horizontal" size="lg" className="items-center mt-1">
+            <DescBar>{paginated.totalItems} Operations</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Resource</Th>
+          <Th>Status</Th>
+          <Th>Type</Th>
+          <Th>Environment</Th>
+          <Th>User</Th>
+          <Th>Last Updated</Th>
+          <Th variant="right">Actions</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+          {paginated.data.map((op) => (
             <OpListRow op={op} key={op.id} />
           ))}
-        </>
-      }
-    />
+        </TBody>
+      </Table>
+    </Group>
   );
 }
 
@@ -258,7 +258,7 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   });
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
 
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
@@ -267,15 +267,13 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   );
 
   return (
-    <LoadResources query={loader} isEmpty={ops.length === 0 && search === ""}>
-      <ActivityTable
-        ops={ops}
-        onChange={onChange}
-        isLoading={loader.isLoading}
-        search={search}
-        title="Activity"
-      />
-    </LoadResources>
+    <ActivityTable
+      ops={ops}
+      onChange={onChange}
+      isLoading={loader.isLoading}
+      search={search}
+      showTitle
+    />
   );
 }
 
@@ -293,7 +291,7 @@ export function ActivityByEnv({ envId }: { envId: string }) {
   });
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
 
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
@@ -303,26 +301,27 @@ export function ActivityByEnv({ envId }: { envId: string }) {
   );
 
   return (
-    <LoadResources query={loader} isEmpty={ops.length === 0 && search === ""}>
-      <ActivityTable
-        ops={ops}
-        onChange={onChange}
-        isLoading={loader.isLoading}
-        search={search}
-      />
-    </LoadResources>
+    <ActivityTable
+      ops={ops}
+      onChange={onChange}
+      isLoading={loader.isLoading}
+      search={search}
+      showTitle={false}
+    />
   );
 }
 
 export function ActivityByApp({ appId }: { appId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  const loader = useLoader(pollAppOperations);
   const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const action = pollAppAndServiceOperations({ id: app.id });
+  const loader = useLoader(action);
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
   useQuery(fetchApp({ id: appId }));
+  useQuery(fetchServicesByAppId({ id: appId }));
 
-  const poller = useMemo(() => pollAppOperations({ id: app.id }), [app.id]);
+  const poller = useMemo(() => action, [app.id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
   usePoller({
     action: poller,
@@ -330,9 +329,13 @@ export function ActivityByApp({ appId }: { appId: string }) {
   });
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
 
-  const resourceIds = useMemo(() => [appId], [appId]);
+  const services = useSelector((s: AppState) =>
+    selectServicesByAppId(s, { appId }),
+  );
+  const serviceIds = services.map((service) => service.id);
+  const resourceIds = [appId, ...serviceIds];
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
@@ -341,27 +344,26 @@ export function ActivityByApp({ appId }: { appId: string }) {
   );
 
   return (
-    <LoadResources query={loader} isEmpty={ops.length === 0 && search === ""}>
-      <ActivityTable
-        ops={ops}
-        onChange={onChange}
-        isLoading={loader.isLoading}
-        search={search}
-      />
-    </LoadResources>
+    <ActivityTable
+      ops={ops}
+      onChange={onChange}
+      isLoading={loader.isLoading}
+      search={search}
+      showTitle={false}
+    />
   );
 }
 
 export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  const loader = useLoader(pollDatabaseOperations);
+  const action = pollDatabaseAndServiceOperations({ id: dbId });
+  const loader = useLoader(action);
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
   useQuery(fetchEnvironmentById({ id: db.environmentId }));
   useQuery(fetchDatabase({ id: dbId }));
-  useQuery(fetchServiceOperations({ id: db.serviceId }));
 
-  const poller = useMemo(() => pollDatabaseOperations({ id: dbId }), [dbId]);
+  const poller = useMemo(() => action, [dbId]);
   const cancel = useMemo(() => cancelDatabaseOpsPoll(), []);
   usePoller({
     action: poller,
@@ -369,7 +371,7 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   });
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
 
   const resourceIds = useMemo(
     () => [dbId, db.serviceId].filter(Boolean),
@@ -383,14 +385,13 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   );
 
   return (
-    <LoadResources query={loader} isEmpty={ops.length === 0 && search === ""}>
-      <ActivityTable
-        ops={ops}
-        onChange={onChange}
-        isLoading={loader.isLoading}
-        search={search}
-      />
-    </LoadResources>
+    <ActivityTable
+      ops={ops}
+      onChange={onChange}
+      isLoading={loader.isLoading}
+      search={search}
+      showTitle={false}
+    />
   );
 }
 
@@ -407,7 +408,7 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
   });
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
 
   const resourceIds = useMemo(() => [enpId], [enpId]);
   const ops = useSelector((s: AppState) =>
@@ -418,13 +419,12 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
   );
 
   return (
-    <LoadResources query={loader} isEmpty={ops.length === 0 && search === ""}>
-      <ActivityTable
-        ops={ops}
-        onChange={onChange}
-        isLoading={loader.isLoading}
-        search={search}
-      />
-    </LoadResources>
+    <ActivityTable
+      ops={ops}
+      onChange={onChange}
+      isLoading={loader.isLoading}
+      search={search}
+      showTitle={false}
+    />
   );
 }

@@ -1,6 +1,3 @@
-import { useQuery } from "@app/fx";
-import { useSelector } from "react-redux";
-
 import {
   fetchStacks,
   getStackType,
@@ -9,21 +6,33 @@ import {
   selectEnvironmentsCountByStack,
   selectStacksForTableSearch,
 } from "@app/deploy";
-import { AppState, DeployStack } from "@app/types";
-
+import { useQuery } from "@app/fx";
+import { createStackUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
+import { AppState, DeployStack } from "@app/types";
+import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
-  IconInfo,
+  ActionBar,
+  ButtonLink,
+  DescBar,
+  EmptyTr,
+  FilterBar,
+  Group,
+  IconPlusCircle,
   InputSearch,
-  LoadResources,
-  ResourceHeader,
-  ResourceListView,
+  LoadingBar,
+  PaginateBar,
   StackItemView,
-  TableHead,
+  TBody,
+  THead,
+  Table,
   Td,
-  Tooltip,
+  Th,
+  TitleBar,
+  Tr,
 } from "../shared";
 
 export function StacksPage() {
@@ -47,93 +56,87 @@ function StackListRow({ stack }: { stack: DeployStack }) {
   );
 
   return (
-    <tr className="group hover:bg-gray-50">
+    <Tr>
       <Td>
         <StackItemView stack={stack} />
       </Td>
       <Td>{stack.id}</Td>
       <Td>{stack.region}</Td>
       <Td>{capitalize(stackType)}</Td>
-      <Td>
-        {stack.cpuLimits ? "CPU" : ""}
-        {stack.cpuLimits && stack.memoryLimits ? ", " : ""}
-        {stack.memoryLimits ? "Memory" : ""}
-      </Td>
-      <Td className="text-center">{envCount}</Td>
-      <Td className="text-center">{appCount}</Td>
-      <Td className="text-center">{dbCount}</Td>
-    </tr>
+      <Td>{stack.memoryLimits ? "Memory" : ""}</Td>
+      <Td variant="center">{envCount}</Td>
+      <Td variant="center">{appCount}</Td>
+      <Td variant="center">{dbCount}</Td>
+    </Tr>
   );
 }
 
 function StackList() {
-  const query = useQuery(fetchStacks());
-
+  const { isLoading } = useQuery(fetchStacks());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
   };
-
   const stacks = useSelector((s: AppState) =>
     selectStacksForTableSearch(s, {
       search,
     }),
   );
+  const paginated = usePaginate(stacks);
 
   return (
-    <LoadResources query={query} isEmpty={stacks.length === 0 && search === ""}>
-      <ResourceListView
-        header={
-          <ResourceHeader
-            title="Stacks"
-            filterBar={
-              <div>
-                <InputSearch
-                  placeholder="Search stacks..."
-                  search={search}
-                  onChange={onChange}
-                />
-                <div className="flex">
-                  <p className="text-gray-500 mt-4 text-base">
-                    {stacks.length} Stack{stacks.length !== 1 && "s"}
-                  </p>
-                  <div className="mt-4">
-                    <Tooltip
-                      fluid
-                      text="Stacks represent the virtualized infrastructure where resources are deployed."
-                    >
-                      <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
-                    </Tooltip>
-                  </div>
-                </div>
-              </div>
-            }
-          />
-        }
-        tableHeader={
-          <TableHead
-            headers={[
-              "Name",
-              "ID",
-              "Region",
-              "Type",
-              "Enabled Limits",
-              "Environments",
-              "Apps",
-              "Databases",
-            ]}
-            centerAlignedColIndices={[5, 6, 7]}
-          />
-        }
-        tableBody={
-          <>
-            {stacks.map((stack) => (
-              <StackListRow stack={stack} key={stack.id} />
-            ))}
-          </>
-        }
-      />
-    </LoadResources>
+    <Group>
+      <Group size="sm">
+        <TitleBar description="Stacks represent the virtualized infrastructure where resources are deployed.">
+          Stacks
+        </TitleBar>
+
+        <FilterBar>
+          <div className="flex justify-between">
+            <Group variant="horizontal" size="sm" className="items-center">
+              <InputSearch
+                placeholder="Search..."
+                search={search}
+                onChange={onChange}
+              />
+              <LoadingBar isLoading={isLoading} />
+            </Group>
+
+            <ActionBar>
+              <ButtonLink to={createStackUrl()}>
+                <IconPlusCircle variant="sm" className="mr-2" /> New Dedicated
+                Stack
+              </ButtonLink>
+            </ActionBar>
+          </div>
+
+          <Group variant="horizontal" size="lg" className="items-center mt-1">
+            <DescBar>{paginated.totalItems} Stacks</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Name</Th>
+          <Th>ID</Th>
+          <Th>Region</Th>
+          <Th>Type</Th>
+          <Th>Enabled Limits</Th>
+          <Th variant="center">Environments</Th>
+          <Th variant="center">Apps</Th>
+          <Th variant="center">Databases</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={8} /> : null}
+          {paginated.data.map((stack) => (
+            <StackListRow stack={stack} key={stack.id} />
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 }

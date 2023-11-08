@@ -1,6 +1,15 @@
 import { api, cacheMinTimer, thunks } from "@app/api";
-import { call, poll, select } from "@app/fx";
+import {
+  all,
+  call,
+  poll,
+  put,
+  select,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   createReducerMap,
   createTable,
@@ -14,8 +23,6 @@ import type {
   ProvisionableStatus,
 } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
-
-import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -30,7 +37,12 @@ import {
   selectOperationsAsList,
   waitForOperation,
 } from "../operation";
-import { DeployServiceResponse, selectServiceById } from "../service";
+import {
+  DeployServiceResponse,
+  fetchServiceOperations,
+  selectServiceById,
+  selectServicesByAppId,
+} from "../service";
 import { selectDeploy } from "../slice";
 
 export * from "./utils";
@@ -124,7 +136,11 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
 
 export const DEPLOY_APP_NAME = "apps";
 const slice = createTable<DeployApp>({ name: DEPLOY_APP_NAME });
-export const { add: addDeployApps, patch: patchDeployApps } = slice.actions;
+export const {
+  add: addDeployApps,
+  patch: patchDeployApps,
+  reset: resetDeployApps,
+} = slice.actions;
 export const hasDeployApp = (a: DeployApp) => a.id !== "";
 export const appReducers = createReducerMap(slice);
 
@@ -293,9 +309,19 @@ export const selectAppsCountByStack = createSelector(
   (apps) => apps.length,
 );
 
-export const fetchApps = api.get("/apps?per_page=5000&no_embed=true", {
-  saga: cacheMinTimer(),
-});
+export const fetchApps = api.get(
+  "/apps?per_page=5000&no_embed=true",
+  {
+    saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetDeployApps());
+  },
+);
 
 interface AppIdProp {
   id: string;
@@ -308,7 +334,34 @@ export const fetchAppOperations = api.get<AppIdProp>("/apps/:id/operations");
 export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
 export const pollAppOperations = api.get<AppIdProp>(
   ["/apps/:id/operations", "poll"],
+  {
+    saga: poll(5 * 1000, `${cancelAppOpsPoll}`),
+  },
+);
+
+export const pollAppAndServiceOperations = thunks.create<AppIdProp>(
+  "app-service-op-poll",
   { saga: poll(5 * 1000, `${cancelAppOpsPoll}`) },
+  function* (ctx, next) {
+    yield* put(setLoaderStart({ id: ctx.key }));
+
+    const services = yield* select(selectServicesByAppId, {
+      appId: ctx.payload.id,
+    });
+    const serviceOps = services.map((service) =>
+      call(
+        fetchServiceOperations.run,
+        fetchServiceOperations({ id: service.id }),
+      ),
+    );
+    yield* all([
+      call(fetchAppOperations.run, fetchAppOperations(ctx.payload)),
+      ...serviceOps,
+    ]);
+
+    yield* next();
+    yield* put(setLoaderSuccess({ id: ctx.key }));
+  },
 );
 
 interface CreateAppProps {

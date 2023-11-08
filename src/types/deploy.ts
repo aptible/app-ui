@@ -67,6 +67,13 @@ export interface AcmeConfiguration {
 
 export type AcmeStatus = "pending" | "transitioning" | "ready";
 
+export type EndpointType =
+  | "http"
+  | "http_proxy_protocol"
+  | "tcp"
+  | "tls"
+  | "unknown";
+
 export interface DeployEndpoint extends Provisionable, Timestamps {
   id: string;
   acme: boolean;
@@ -84,7 +91,7 @@ export interface DeployEndpoint extends Provisionable, Timestamps {
   internal: boolean;
   ipWhitelist: string[];
   platform: "alb" | "elb";
-  type: string;
+  type: EndpointType;
   userDomain: string;
   virtualDomain: string;
   serviceId: string;
@@ -266,6 +273,7 @@ export interface DeployDatabase extends Provisionable, Timestamps {
   serviceId: string;
   databaseImageId: string;
   initializeFrom: string;
+  portMapping: [number, number][];
 }
 
 export interface DeployDatabaseCredential {
@@ -369,7 +377,7 @@ export interface DeployPrereleaseCommand extends Timestamps {
   index: number;
 }
 
-export type PlanName = "starter" | "growth" | "scale" | "enterprise";
+export type PlanName = "starter" | "growth" | "scale" | "enterprise" | "none";
 export interface DeployPlan extends Timestamps {
   id: string;
   automatedBackupLimitPerDb: number;

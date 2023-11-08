@@ -94,6 +94,7 @@ describe("Login page", () => {
       render(<App />);
 
       server.use(
+        ...verifiedUserHandlers(),
         ...stacksWithResources({
           accounts: [testEnvExpress],
           apps: [testAppDeployed],

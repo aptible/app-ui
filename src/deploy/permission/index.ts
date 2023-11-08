@@ -124,8 +124,13 @@ export const selectUserHasPerms = createSelector(
         return true;
       }
 
-      // anything create op under `obserability` a `deploy` perm can do
+      // anything created under `obserability` a `deploy` perm can do
       if (perm.scope === "deploy" && scope === "observability") {
+        return true;
+      }
+
+      // `sensitive` perm can read anyting under `read` scope
+      if (perm.scope === "sensitive" && scope === "read") {
         return true;
       }
 

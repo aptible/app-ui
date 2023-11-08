@@ -15,6 +15,11 @@ export const ELEVATE_PATH = "/elevate";
 export const elevateUrl = (redirect = "") =>
   `${ELEVATE_PATH}?redirect=${redirect}`;
 
+export const SETTINGS_PATH = "/settings";
+export const settingsUrl = () => SETTINGS_PATH;
+export const SETTINGS_PROFILE_PATH = "/settings/profile";
+export const settingsProfileUrl = () => SETTINGS_PROFILE_PATH;
+
 export const SECURITY_SETTINGS_PATH = "/settings/security";
 export const securitySettingsUrl = () => SECURITY_SETTINGS_PATH;
 export const SSH_SETTINGS_PATH = "/settings/ssh";
@@ -25,6 +30,20 @@ export const OTP_RECOVERY_CODES_PATH = "/settings/otp-recovery-codes";
 export const otpRecoveryCodesUrl = () => OTP_RECOVERY_CODES_PATH;
 export const ADD_SECURITY_KEY_PATH = "/settings/add-security-key";
 export const addSecurityKeyUrl = () => ADD_SECURITY_KEY_PATH;
+
+export const TEAM_PATH = `${SETTINGS_PATH}/team`;
+export const teamUrl = () => TEAM_PATH;
+export const TEAM_MEMBERS_PATH = "/settings/team/members";
+export const teamMembersUrl = () => TEAM_MEMBERS_PATH;
+export const TEAM_CONTACTS_PATH = "/settings/team/contacts";
+export const teamContactsUrl = () => TEAM_CONTACTS_PATH;
+export const TEAM_SSO_PATH = "/settings/team/sso";
+export const teamSsoUrl = () => TEAM_SSO_PATH;
+export const TEAM_PENDING_INVITES_PATH = "/settings/team/pending-invites";
+export const teamPendingInvitesUrl = () => TEAM_PENDING_INVITES_PATH;
+export const TEAM_ROLES_PATH = "/settings/team/roles";
+export const teamRolesUrl = () => TEAM_ROLES_PATH;
+
 export const IMPERSONATE_PATH = "/impersonate";
 export const impersonateUrl = () => IMPERSONATE_PATH;
 
@@ -74,6 +93,8 @@ export const appServicesUrl = (id: string) => `${appDetailUrl(id)}/services`;
 export const APP_SERVICE_PATH = `${APP_DETAIL_PATH}/services/:serviceId`;
 export const appServicePathUrl = (appId: string, serviceId: string) =>
   `${appDetailUrl(appId)}/services/${serviceId}`;
+export const APP_CONFIG_PATH = `${APP_DETAIL_PATH}/config`;
+export const appConfigUrl = (appId: string) => `${appDetailUrl(appId)}/config`;
 export const APP_SERVICE_METRICS_PATH = `${APP_DETAIL_PATH}/services/:serviceId/metrics`;
 export const appServicePathMetricsUrl = (appId: string, serviceId: string) =>
   `${appDetailUrl(appId)}/services/${serviceId}/metrics`;
@@ -138,6 +159,9 @@ export const endpointDetailSettingsUrl = (id: string) =>
   `${endpointDetailUrl(id)}/settings`;
 export const ENDPOINTS_PATH = "/endpoints";
 export const endpointsUrl = () => ENDPOINTS_PATH;
+export const ENDPOINT_DETAIL_CREDENDTIALS_PATH = "/endpoints/:id/credentials";
+export const endpointDetailCredentialsUrl = (id: string) =>
+  `/endpoints/${id}/credentials`;
 
 export const DEPLOYMENTS_PATH = "/deployments";
 export const deploymentsUrl = () => DEPLOYMENTS_PATH;
@@ -179,7 +203,7 @@ export const environmentCreateCertUrl = (id: string) =>
   `/environments/${id}/certificates/create`;
 
 export const environmentCreateAppUrl = (id: string) =>
-  `/create/name?environment_id=${id}`;
+  `/create/app?environment_id=${id}`;
 export const environmentCreateDbUrl = (id: string) =>
   `/create/db?environment_id=${id}`;
 
@@ -188,48 +212,73 @@ export const createDbUrl = () => `${CREATE_DB_PATH}`;
 
 export const ERROR_PATH = "/error";
 
-export const SETTINGS_PATH = "/settings";
-export const settingsUrl = () => SETTINGS_PATH;
-export const TEAM_PATH = `${SETTINGS_PATH}/team`;
-export const teamUrl = () => TEAM_PATH;
+/*
+ * /create -- unauthed page "get started"
+ * /create/deployments -- view deployments
+ * /create/app -- create a standalone app
+ * /create/environment -- create a standalone env
+ *
+ * /environments/:id/resume -- resume app deployment with just env id
+ * /apps/:id/resume -- resume app deployment with just app id
+ *
+ * /app/:id/get-started -- decision point (git or docker)
+ * /app/:id/git -- git push page
+ * /app/:id/git/ssh -- add ssh key page
+ * /app/:id/deploy/settings -- app configure page (dbs, image registry, env vars, etc)
+ * /app/:id/deploy/status -- app deploy status page
+ */
 
-export const CREATE_PROJECT_PATH = "/create";
-export const createProjectUrl = () => CREATE_PROJECT_PATH;
+export const GET_STARTED_PATH = "/create";
+export const getStartedUrl = () => GET_STARTED_PATH;
 
-export const CREATE_PROJECT_ADD_NAME_PATH = "/create/name";
-export const createProjectAddNameUrl = (params = "") => {
-  return `${CREATE_PROJECT_ADD_NAME_PATH}${params ? `?${params}` : ""}`;
+export const DEPLOY_PATH = "/deploy";
+export const deployUrl = (stackId = "") =>
+  `${DEPLOY_PATH}${stackId ? `?stack_id=${stackId}` : ""}`;
+
+export const CREATE_DEPLOYMENTS_PATH = "/create/deployments";
+export const createDeploymentsUrl = (params = "") =>
+  `${CREATE_DEPLOYMENTS_PATH}${params ? `?${params}` : ""}`;
+
+export const CREATE_APP_PATH = "/create/app";
+export const createAppUrl = (params = "") => {
+  return `${CREATE_APP_PATH}${params ? `?${params}` : ""}`;
 };
-export const CREATE_PROJECT_DEPLOYMENTS_PATH = "/create/deployments";
-export const createProjectDeploymentsUrl = (params = "") =>
-  `${CREATE_PROJECT_DEPLOYMENTS_PATH}${params ? `?${params}` : ""}`;
 
-export const CREATE_PROJECT_GIT_PATH = "/create/git";
-export const createProjectGitUrl = (params = "") =>
-  `${CREATE_PROJECT_GIT_PATH}${params ? `?${params}` : ""}`;
+export const CREATE_ENV_PATH = "/create/environment";
+export const createEnvUrl = (params = "") => {
+  return `${CREATE_ENV_PATH}${params ? `?${params}` : ""}`;
+};
 
-export const CREATE_PROJECT_SETUP_PATH = "/accounts/:envId/setup";
-export const createProjectSetupUrl = (envId: string) =>
-  `/accounts/${envId}/setup`;
-export const CREATE_PROJECT_APP_SETUP_PATH = "/apps/:appId/git/setup";
-export const createProjectGitAppSetupUrl = (appId: string) =>
-  `/apps/${appId}/git/setup`;
+export const ENV_SELECT_PATH = "/select/env";
+export const envSelectUrl = (params = "") =>
+  `${ENV_SELECT_PATH}${params ? `?${params}` : ""}`;
 
-export const CREATE_PROJECT_GIT_APP_PATH = "/apps/:appId/git";
-export const createProjectGitAppUrl = (appId: string) => `/apps/${appId}/git`;
-export const CREATE_PROJECT_ADD_KEY_PATH = "/apps/:appId/git/ssh";
-export const createProjectAddKeyUrl = (appId: string) => {
+export const APP_DEPLOY_RESUME_WITH_ENV_PATH = "/environments/:envId/resume";
+export const appDeployResumeWithEnvUrl = (envId: string) =>
+  `/environments/${envId}/resume`;
+
+export const APP_DEPLOY_RESUME_PATH = "/apps/:appId/resume";
+export const appDeployResumeUrl = (appId: string) => `/apps/${appId}/resume`;
+
+export const APP_DEPLOY_GET_STARTED_PATH = "/apps/:appId/get-started";
+export const appDeployGetStartedUrl = (appId: string) =>
+  `/apps/${appId}/get-started`;
+
+export const APP_DEPLOY_WITH_GIT_PATH = "/apps/:appId/git";
+export const appDeployWithGitUrl = (appId: string) => `/apps/${appId}/git`;
+
+export const APP_DEPLOY_WITH_GIT_ADD_KEY_PATH = "/apps/:appId/git/ssh";
+export const appDeployWithGitAddKeyUrl = (appId: string) => {
   return `/apps/${appId}/git/ssh`;
 };
-export const CREATE_PROJECT_GIT_PUSH_PATH = "/apps/:appId/git/push";
-export const createProjectGitPushUrl = (appId: string) =>
-  `/apps/${appId}/git/push`;
-export const CREATE_PROJECT_GIT_SETTINGS_PATH = "/apps/:appId/git/settings";
-export const createProjectGitSettingsUrl = (appId: string, query = "") =>
-  `/apps/${appId}/git/settings${query ? `?${query}` : ""}`;
-export const CREATE_PROJECT_GIT_STATUS_PATH = "/apps/:appId/git/status";
-export const createProjectGitStatusUrl = (appId: string) =>
-  `/apps/${appId}/git/status`;
+
+export const APP_DEPLOY_CONFIGURE_PATH = "/apps/:appId/deploy/configure";
+export const appDeployConfigureUrl = (appId: string, query = "") =>
+  `/apps/${appId}/deploy/configure${query ? `?${query}` : ""}`;
+
+export const APP_DEPLOY_STATUS_PATH = "/apps/:appId/deploy/status";
+export const appDeployStatusUrl = (appId: string) =>
+  `/apps/${appId}/deploy/status`;
 
 export const SSO_PATH = "/sso";
 export const ssoUrl = () => SSO_PATH;
@@ -238,6 +287,10 @@ export const ssoDirectUrl = (orgId: string) => `/sso/${orgId}`;
 export const SSO_ORG_FAILURE_PATH = "/sso/failure";
 export const ssoFailureUrl = (message = "") =>
   `${SSO_ORG_FAILURE_PATH}?message=${message}`;
+export const SSO_TOKEN_CLI_READ_PATH = "/sso/cli/read";
+export const ssoTokenReadUrl = () => SSO_TOKEN_CLI_READ_PATH;
+export const SSO_TOKEN_CLI_PATH = "/sso/cli";
+export const ssoTokenUrl = () => SSO_TOKEN_CLI_PATH;
 
 export const ACTIVITY_PATH = "/activity";
 export const activityUrl = () => ACTIVITY_PATH;
@@ -249,6 +302,8 @@ export const stylesUrl = () => STYLES_PATH;
 
 export const STACKS_PATH = "/stacks";
 export const stacksUrl = () => STACKS_PATH;
+export const CREATE_STACK_PATH = "/create/stack";
+export const createStackUrl = () => CREATE_STACK_PATH;
 
 export const STACK_DETAIL_PATH = "/stacks/:id";
 export const stackDetailUrl = (id: string) => `/stacks/${id}`;
@@ -261,6 +316,8 @@ export const stackDetailVpnTunnelsUrl = (id: string) =>
 export const STACK_DETAIL_VPC_PEERING_PATH = `${STACK_DETAIL_PATH}/vpc-peering`;
 export const stackDetailVpcPeeringsUrl = (id: string) =>
   `${stackDetailUrl(id)}/vpc-peering`;
+export const STACK_DETAIL_HIDS_PATH = `${STACK_DETAIL_PATH}/hids`;
+export const stackDetailHidsUrl = (id: string) => `${stackDetailUrl(id)}/hids`;
 
 export const SEARCH_PATH = "/search";
 export const searchUrl = () => SEARCH_PATH;

@@ -1,6 +1,3 @@
-import { createAction, createSelector } from "@reduxjs/toolkit";
-import { poll } from "saga-query";
-
 import { api } from "@app/api";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
@@ -10,7 +7,9 @@ import {
 } from "@app/slice-helpers";
 import { dateDescSort } from "@app/sort";
 import { AppState, DeployBackup, LinkResponse } from "@app/types";
-
+import { createAction, createSelector } from "@reduxjs/toolkit";
+import { poll } from "saga-query";
+import { selectDatabases } from "../database";
 import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
@@ -65,7 +64,7 @@ export const deserializeDeployBackup = (b: BackupResponse): DeployBackup => {
     id: `${b.id}`,
     awsRegion: b.aws_region,
     createdByEmail: b.created_by_email,
-    copiedFromId: `${b._embedded.copied_from?.id}` || "",
+    copiedFromId: `${b._embedded.copied_from?.id || ""}`,
     size: b.size,
     manual: b.manual,
     createdAt: b.created_at,
@@ -101,6 +100,18 @@ export const selectBackupsByEnvId = createSelector(
     backups.filter((bk) => bk.environmentId === envId).sort(dateDescSort),
 );
 
+export const selectOrphanedBackupsByEnvId = createSelector(
+  selectBackupsByEnvId,
+  selectDatabases,
+  (backups, databases) => {
+    return backups.filter((backup) => {
+      const db = databases[backup.databaseId];
+      if (!db) return true;
+      return false;
+    });
+  },
+);
+
 export const selectBackupsByDatabaseId = createSelector(
   selectBackupsAsList,
   (_: AppState, p: { dbId: string }) => p.dbId,
@@ -127,9 +138,17 @@ export const pollDatabaseBackups = api.get<{ id: string }>(
 
 export const fetchBackup = api.get<{ id: string }>("/backups/:id");
 
-export const fetchDatabaseBackupsByEnvironment = api.get<{ id: string }>(
-  "/accounts/:id/backups",
-);
+export const fetchDatabaseBackupsByEnvironment = api.get<{
+  id: string;
+  orphaned: boolean;
+}>("/accounts/:id/backups", function* (ctx, next) {
+  if (ctx.payload.orphaned) {
+    ctx.request = ctx.req({
+      url: `${ctx.req().url}?orphaned=true`,
+    });
+  }
+  yield* next();
+});
 export const deleteBackup = api.post<{ id: string }, DeployOperationResponse>(
   ["/backups/:id/operations", "delete"],
   function* (ctx, next) {

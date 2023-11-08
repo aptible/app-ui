@@ -20,7 +20,7 @@ import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
-export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m4";
+export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
 
 export interface DeployServiceResponse {
   id: number;
@@ -158,7 +158,7 @@ export const DEPLOY_SERVICE_NAME = "services";
 const slice = createTable<DeployService>({
   name: DEPLOY_SERVICE_NAME,
 });
-const { add: addDeployServices } = slice.actions;
+const { add: addDeployServices, reset: resetDeployServices } = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_SERVICE_NAME],
 );
@@ -188,19 +188,16 @@ export const selectEnvToServicesMap = createSelector(
   selectServicesAsList,
   (services) => {
     const envToServiceMap: Record<string, Set<string> | undefined> = {};
-
     services.forEach((service) => {
-      if (!service.appId) {
+      if (!(service.appId || service.databaseId)) {
         return;
       }
 
       if (!Object.hasOwn(envToServiceMap, service.environmentId)) {
         envToServiceMap[service.environmentId] = new Set<string>();
       }
-
       envToServiceMap[service.environmentId]?.add(service.id);
     });
-
     return envToServiceMap;
   },
 );
@@ -236,9 +233,19 @@ export const selectAppToServicesMap = createSelector(
 
 export const fetchService = api.get<{ id: string }>("/services/:id");
 
-export const fetchServices = api.get("/services?per_page=5000", {
-  saga: cacheMinTimer(),
-});
+export const fetchServices = api.get(
+  "/services?per_page=5000",
+  {
+    saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetDeployServices());
+  },
+);
 
 export const fetchEnvironmentServices = api.get<{ id: string }>(
   "/accounts/:id/services",
@@ -312,13 +319,11 @@ export const defaultServiceSizingPolicyResponse = (
 
 export const fetchServiceOperations = api.get<{ id: string }>(
   "/services/:id/operations",
-  api.cache(),
 );
 export const cancelServicesOpsPoll = createAction("cancel-services-ops-poll");
 export const pollServiceOperations = api.get<{ id: string }>(
   ["/services/:id/operations", "poll"],
   { saga: poll(5 * 1000, `${cancelServicesOpsPoll}`) },
-  api.cache(),
 );
 
 export const serviceEntities = {

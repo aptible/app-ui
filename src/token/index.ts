@@ -4,7 +4,7 @@ import { createAssign, createReducerMap } from "@app/slice-helpers";
 import { AppState, LinkResponse, Token } from "@app/types";
 
 import { defaultHalHref } from "@app/hal";
-import { parseJwt } from "./jwt-parser";
+import { JwtToken, defaultJWTToken, parseJwt } from "./jwt-parser";
 
 export * from "./jwt-parser";
 
@@ -22,18 +22,6 @@ export interface TokenSuccessResponse {
     actor?: LinkResponse;
   };
   _type: "token";
-}
-
-export interface JWTToken {
-  id: string;
-  iss: string;
-  sub: string;
-  scope: string;
-  exp: number;
-  session: string;
-  email: string;
-  email_verified: boolean;
-  name: string;
 }
 
 export const defaultTokenResponse = (
@@ -57,21 +45,6 @@ export const defaultTokenResponse = (
       ...t._links,
     },
     _type: "token",
-    ...t,
-  };
-};
-
-export const defaultJWTToken = (t: Partial<JWTToken> = {}): JWTToken => {
-  return {
-    id: "",
-    iss: "",
-    sub: "",
-    scope: "",
-    exp: 0,
-    session: "",
-    email: "",
-    email_verified: false,
-    name: "",
     ...t,
   };
 };
@@ -114,25 +87,28 @@ export const { set: setElevatedToken, reset: resetElevatedToken } =
 export const reducers = createReducerMap(token, elevatedToken);
 
 const unixNow = () => Math.floor(Date.now() / 1000);
-const initJWTToken = defaultJWTToken();
-const findJWTToken = (curToken: Token) => {
-  if (!curToken.accessToken) {
-    return initJWTToken;
+const initJwtToken = defaultJWTToken();
+const findJwtToken = (curToken: Token): JwtToken => {
+  if (curToken.accessToken === "") {
+    return initJwtToken;
   }
   return parseJwt(curToken.accessToken);
 };
-const hasExpired = (curToken: JWTToken) => unixNow() > curToken.exp;
+const hasExpired = (curToken: JwtToken) => unixNow() > curToken.exp;
 
 export const selectToken = (state: AppState) => state[TOKEN_NAME];
 export const selectAccessToken = (state: AppState) =>
   selectToken(state).accessToken;
 export const selectActorUrl = (state: AppState) => selectToken(state).actorUrl;
 export const selectUserUrl = (state: AppState) => selectToken(state).userUrl;
-export const selectJWTToken = createSelector(selectToken, findJWTToken);
+export const selectJwtToken = createSelector(selectToken, findJwtToken);
 export const selectIsTokenValid = createSelector(
-  selectJWTToken,
-  (jwtToken) => jwtToken.scope === "manage" && !hasExpired(jwtToken),
+  selectJwtToken,
+  (jwtToken) => jwtToken.scope !== "" && !hasExpired(jwtToken),
 );
+export const selectIsAuthWithSso = createSelector(selectJwtToken, (jwt) => {
+  return jwt._type === "org";
+});
 
 export const selectIsImpersonated = (state: AppState) => {
   if (!selectActorUrl(state)) {
@@ -140,17 +116,16 @@ export const selectIsImpersonated = (state: AppState) => {
   }
   return selectActorUrl(state) !== selectUserUrl(state);
 };
-export const selectIsUserAuthenticated = (state: AppState) =>
-  !!selectAccessToken(state);
+export const selectIsUserAuthenticated = selectIsTokenValid;
 
 export const selectElevatedToken = (state: AppState) =>
   state[ELEVATED_TOKEN_NAME];
-export const selectJWTElevatedToken = createSelector(
+export const selectJwtElevatedToken = createSelector(
   selectElevatedToken,
-  findJWTToken,
+  findJwtToken,
 );
 export const selectIsElevatedTokenValid = createSelector(
-  selectJWTElevatedToken,
+  selectJwtElevatedToken,
   (jwtToken) => jwtToken.scope === "elevated" && !hasExpired(jwtToken),
 );
 export const selectElevatedAccessToken = (state: AppState) =>

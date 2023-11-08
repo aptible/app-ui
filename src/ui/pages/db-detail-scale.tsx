@@ -14,7 +14,7 @@ import {
   selectServiceById,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { operationDetailUrl } from "@app/routes";
+import { databaseActivityUrl } from "@app/routes";
 import { AppState, InstanceClass } from "@app/types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -103,7 +103,7 @@ export const DatabaseScalePage = () => {
   }, [disk.size]);
 
   useLoaderSuccess(loader, () => {
-    navigate(operationDetailUrl(loader.meta.opId));
+    navigate(databaseActivityUrl(database.id));
   });
 
   const changesExist =

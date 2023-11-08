@@ -3,21 +3,24 @@ import {
   queryAlgoliaApi,
   uploadAttachment,
 } from "@app/deploy/support";
-import { useLoader, useQuery } from "@app/fx";
+import { resetLoaderById, useLoader, useQuery } from "@app/fx";
+import { tunaEvent } from "@app/tuna";
 import { selectCurrentUser } from "@app/users";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppSidebarLayout } from "../layouts";
 import {
+  Banner,
   BannerMessages,
   Box,
   Button,
   FormGroup,
+  Group,
   Input,
   Radio,
   RadioGroup,
-  ResourceHeader,
   TextArea,
+  TitleBar,
 } from "../shared";
 
 interface SupportForm {
@@ -46,10 +49,12 @@ export const SupportPage = () => {
     description: "",
     subject: "",
     attachments: [],
-    priority: "",
+    priority: "normal",
   });
+  const isDisabled = formState.subject === "" || formState.description === "";
   const [subjectTyping, setSubjectTyping] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachmentObject[]>([]);
+  const [viewedSuggestion, setViewedSuggestion] = useState(false);
 
   // Drag and Drop reference hook and functions
   const drop = useRef(null);
@@ -70,6 +75,7 @@ export const SupportPage = () => {
 
   // Loader for submitting the ticket
   const loader = useLoader(createSupportTicket);
+  const attachmentLoader = useLoader(uploadAttachment);
 
   // Loader for algolia query
   const algoliaLoader = useQuery(
@@ -105,6 +111,10 @@ export const SupportPage = () => {
     e.preventDefault();
     const attachments = attachedFiles.map((file) => file.token);
     dispatch(createSupportTicket({ ...formState, attachments: attachments }));
+    tunaEvent(
+      "submittedAppUiSupportForm",
+      `{ "viewedDocs": "${viewedSuggestion}", "email": "${user.email}" }`,
+    );
     setFormState({
       email: user.email || "",
       name: user.name || "",
@@ -114,6 +124,7 @@ export const SupportPage = () => {
       priority: "",
     });
     setAttachedFiles([]);
+    setViewedSuggestion(false);
   };
 
   const assignAttachment = (attachment: AttachmentObject) => {
@@ -130,11 +141,22 @@ export const SupportPage = () => {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      // reset loader when component is unmounted because we have multiple
+      // pages that use this same loader id
+      dispatch(resetLoaderById(`${createSupportTicket}`));
+    };
+  }, []);
+
   return (
     <AppSidebarLayout>
-      <ResourceHeader title="Submit Support Request" />
+      <TitleBar description="A real person will respond to tickets submitted through this form.">
+        Submit Support Request
+      </TitleBar>
+
       <div className="flex flex-row gap-10">
-        <Box className="-mt-4 w-full">
+        <Box className="mt-4 w-full">
           <div className="mb-4">
             Please enter the details of your request. A member of our support
             staff will respond as soon as possible. Be sure to include relevant
@@ -142,17 +164,14 @@ export const SupportPage = () => {
             <b>omit sensitive information </b>
             like passwords.
           </div>
+
           <BannerMessages className="my-2" {...loader} />
+
           <form onSubmit={onSubmitForm}>
-            <div className="mb-4">
+            <Group>
               {user.email !== formState.email ? (
                 <>
-                  <FormGroup
-                    description=""
-                    htmlFor="email"
-                    label="Email"
-                    className="mt-5"
-                  >
+                  <FormGroup description="" htmlFor="email" label="Email">
                     <Input
                       className="flex w-full"
                       name="email"
@@ -169,12 +188,7 @@ export const SupportPage = () => {
                     />
                   </FormGroup>
 
-                  <FormGroup
-                    description=""
-                    htmlFor="name"
-                    label="name"
-                    className="mt-5"
-                  >
+                  <FormGroup description="" htmlFor="name" label="name">
                     <Input
                       className="flex w-full"
                       name="name"
@@ -192,12 +206,8 @@ export const SupportPage = () => {
                   </FormGroup>
                 </>
               ) : null}
-              <FormGroup
-                description=""
-                htmlFor="subject"
-                label="Subject"
-                className={user.email !== formState.email ? "mt-5" : ""}
-              >
+
+              <FormGroup description="" htmlFor="subject" label="Subject">
                 <Input
                   className="flex w-full"
                   name="subject"
@@ -218,7 +228,7 @@ export const SupportPage = () => {
               {algoliaLoader?.meta?.hits?.length ? (
                 <div
                   style={{ backgroundColor: "#FDF8F0" }}
-                  className="mt-5 rounded-lg"
+                  className="rounded-lg"
                 >
                   <div className="pl-5 pt-3 font-semibold">
                     Related Articles
@@ -227,7 +237,22 @@ export const SupportPage = () => {
                     {algoliaLoader.meta.hits.map((hit: any, key: number) => {
                       return (
                         <li key={key + 1}>
-                          <div>
+                          <div
+                            onClick={() => {
+                              tunaEvent(
+                                "usedSupportSuggestion",
+                                `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
+                              );
+                              setViewedSuggestion(true);
+                            }}
+                            onKeyUp={() => {
+                              tunaEvent(
+                                "usedSupportSuggestion",
+                                `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
+                              );
+                              setViewedSuggestion(true);
+                            }}
+                          >
                             <a target="_blank" href={hit.url} rel="noreferrer">
                               {hit.title}
                             </a>
@@ -239,12 +264,7 @@ export const SupportPage = () => {
                 </div>
               ) : null}
 
-              <FormGroup
-                description=""
-                htmlFor="message"
-                label="Message"
-                className="mt-5"
-              >
+              <FormGroup description="" htmlFor="message" label="Message">
                 <TextArea
                   className="flex min-h-1000 pt-100 text-red-800"
                   name="message"
@@ -261,12 +281,15 @@ export const SupportPage = () => {
               </FormGroup>
 
               <FormGroup
-                className="mt-5"
                 description=""
                 htmlFor="attachments"
                 label="Upload Attachments"
               >
-                <div>
+                <Group size="sm">
+                  {attachmentLoader.isLoading ? (
+                    <Banner>Uploading attachment ...</Banner>
+                  ) : null}
+
                   {attachedFiles?.map((file) => {
                     return (
                       <div className="last:pb-2" key={file.token}>
@@ -292,49 +315,52 @@ export const SupportPage = () => {
                       </div>
                     );
                   })}
-                </div>
-                <label
-                  htmlFor="attachments"
-                  className="flex w-full h-full justify-center items-center cursor-pointer rounded-lg"
-                  style={{
-                    backgroundColor: "#FAFAFA",
-                    border: "2px dashed #E7E8E8",
-                  }}
-                  ref={drop}
-                  onDrop={handleDrop}
-                  onDragOver={handleDragOver}
-                >
-                  <div className="flex justify-center items-center h-16">
-                    <span
-                      style={{
-                        color: "#4361FF",
-                        marginRight: "0.3em",
-                      }}
-                    >
-                      Add Files
-                    </span>{" "}
-                    or Drop Files
-                  </div>
-                </label>
-                <Input
-                  // className="flex w-full"
-                  style={{ visibility: "hidden", height: "0px" }}
-                  name="attachments"
-                  type="file"
-                  value=""
-                  onChange={(e) => {
-                    const chosenFiles = Array.prototype.slice.call(
-                      e.target.files,
-                    );
-                    onAttachmentUpload(chosenFiles);
-                  }}
-                  data-testid="attachments"
-                  id="attachments"
-                />
+
+                  <label
+                    htmlFor="attachments"
+                    className="flex w-full h-full justify-center items-center cursor-pointer rounded-lg"
+                    style={{
+                      backgroundColor: "#FAFAFA",
+                      border: "2px dashed #E7E8E8",
+                    }}
+                    ref={drop}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                  >
+                    <div className="flex justify-center items-center h-16 gap-1">
+                      <span
+                        style={{
+                          color: "#4361FF",
+                        }}
+                      >
+                        Add Files
+                      </span>{" "}
+                      or Drop Files
+                    </div>
+                  </label>
+
+                  <Input
+                    style={{
+                      visibility: "hidden",
+                      height: "0px",
+                      padding: "0px",
+                    }}
+                    name="attachments"
+                    type="file"
+                    value=""
+                    onChange={(e) => {
+                      const chosenFiles = Array.prototype.slice.call(
+                        e.target.files,
+                      );
+                      onAttachmentUpload(chosenFiles);
+                    }}
+                    data-testid="attachments"
+                    id="attachments"
+                  />
+                </Group>
               </FormGroup>
 
               <FormGroup
-                className="-mt-2"
                 description=""
                 htmlFor="priority"
                 label="Choose Priority"
@@ -394,10 +420,16 @@ export const SupportPage = () => {
                   </Radio>
                 </RadioGroup>
               </FormGroup>
-            </div>
-            <Button className="w-40 flex font-semibold" type="submit">
-              Submit Request
-            </Button>
+
+              <Button
+                className="w-40 flex font-semibold"
+                type="submit"
+                isLoading={loader.isLoading}
+                disabled={isDisabled}
+              >
+                Submit Request
+              </Button>
+            </Group>
           </form>
         </Box>
       </div>

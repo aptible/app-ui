@@ -1,14 +1,23 @@
-import { RouteObject, createBrowserRouter } from "react-router-dom";
-
 import * as routes from "@app/routes";
 import {
   ActivityPage,
   AddSecurityKeyPage,
+  AllRequired,
   AppActivityPage,
   AppCreateEndpointPage,
+  AppDeployConfigurePage,
+  AppDeployGetStartedPage,
+  AppDeployResumePage,
+  AppDeployResumeWithEnvPage,
+  AppDeployStatusPage,
+  AppDeployWithGitAddKeyPage,
+  AppDeployWithGitPage,
+  AppDetailConfigPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailPage,
+  AppDetailServiceMetricsPage,
+  AppDetailServiceScalePage,
   AppDetailServicesPage,
   AppSettingsPage,
   AppSidebarLayout,
@@ -16,22 +25,18 @@ import {
   AuthRequired,
   BackupRestorePage,
   BillingMethodPage,
+  CertDetailAppsPage,
+  CertDetailEndpointsPage,
   CertDetailLayout,
   CertDetailPage,
   CertDetailSettingsPage,
+  CreateAppPage,
   CreateDatabasePage,
+  CreateEnvironmentPage,
   CreateLogDrainPage,
   CreateMetricDrainPage,
   CreateOrgPage,
-  CreateProjectAddKeyPage,
-  CreateProjectFromAccountSetupPage,
-  CreateProjectFromAppSetupPage,
-  CreateProjectGitPage,
-  CreateProjectGitPushPage,
-  CreateProjectGitSettingsPage,
-  CreateProjectGitStatusPage,
-  CreateProjectNamePage,
-  CreateProjectPage,
+  CreateStackPage,
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
@@ -40,26 +45,31 @@ import {
   DatabaseDetailLayout,
   DatabaseDetailPage,
   DatabaseEndpointsPage,
+  DatabaseMetricsPage,
   DatabaseScalePage,
   DatabaseSettingsPage,
   DatabasesPage,
+  DeployPage,
   DeploymentsPage,
-  DeploymentsPageWithMenus,
   ElevatePage,
   ElevateRequired,
   EndpointDetailActivityPage,
+  EndpointDetailCredentialsPage,
   EndpointDetailLayout,
   EndpointDetailPage,
   EndpointDetailSettingsPage,
   EndpointDetailSetupPage,
   EndpointsPage,
+  EnvSelectorPage,
   EnvironmentActivityPage,
+  EnvironmentActivityReportsPage,
   EnvironmentAppsPage,
   EnvironmentBackupsPage,
   EnvironmentCertificatesPage,
   EnvironmentDatabasesPage,
   EnvironmentDetailCreateCertPage,
   EnvironmentDetailLayout,
+  EnvironmentDetailPage,
   EnvironmentIntegrationsPage,
   EnvironmentSecurityPage,
   EnvironmentSettingsPage,
@@ -67,6 +77,7 @@ import {
   ErrorPage,
   ForgotPassPage,
   ForgotPassVerifyPage,
+  GetStartedPage,
   HomePage,
   ImpersonatePage,
   LoginPage,
@@ -82,26 +93,34 @@ import {
   SSHSettingsPage,
   SearchPage,
   SecuritySettingsPage,
+  SettingsLayout,
   SettingsPage,
   SignupPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
+  SsoTokenCliPage,
+  SsoTokenCliReadPage,
   StackDetailEnvironmentsPage,
+  StackDetailHidsPage,
   StackDetailLayout,
+  StackDetailPage,
   StackDetailVpcPeeringPage,
   StackDetailVpnTunnelsPage,
   StacksPage,
   StylesPage,
   SupportPage,
+  TeamContactsPage,
+  TeamMembersPage,
   TeamPage,
-  UnauthRequired,
+  TeamPendingInvitesPage,
+  TeamRolesPage,
+  TeamSsoPage,
   VerifyEmailPage,
+  VerifyEmailRequired,
 } from "@app/ui";
-import { AppDetailServiceScalePage } from "@app/ui/pages/app-detail-service-scale";
-import { CertDetailAppsPage } from "@app/ui/pages/cert-detail-apps";
-import { CertDetailEndpointsPage } from "@app/ui/pages/cert-detail-endpoints";
-import { EnvironmentActivityReportsPage } from "@app/ui/pages/environment-detail-activity-reports";
+import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
+import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
 
 const trackingPatch = (appRoute: RouteObject) => ({
@@ -125,7 +144,7 @@ const applyPatches = (appRoute: RouteObject) =>
 export const appRoutes: RouteObject[] = [
   {
     path: routes.HOME_PATH,
-    element: <AuthRequired />,
+    element: <AllRequired />,
     children: [
       {
         index: true,
@@ -144,14 +163,28 @@ export const appRoutes: RouteObject[] = [
 
       {
         path: routes.DEPLOYMENTS_PATH,
-        element: <DeploymentsPageWithMenus />,
-      },
-
-      {
-        path: routes.CREATE_PROJECT_DEPLOYMENTS_PATH,
         element: (
           <AppSidebarLayout>
             <DeploymentsPage />
+          </AppSidebarLayout>
+        ),
+      },
+
+      // legacy deploy-ui "Deployment Monitor" -> app-ui "/deployments"
+      {
+        path: routes.CREATE_DEPLOYMENTS_PATH,
+        element: (
+          <AppSidebarLayout>
+            <DeploymentsPage />
+          </AppSidebarLayout>
+        ),
+      },
+
+      {
+        path: routes.CREATE_STACK_PATH,
+        element: (
+          <AppSidebarLayout>
+            <CreateStackPage />
           </AppSidebarLayout>
         ),
       },
@@ -168,7 +201,10 @@ export const appRoutes: RouteObject[] = [
             element: <StackDetailLayout />,
             children: [
               {
-                index: true,
+                path: routes.STACK_DETAIL_PATH,
+                element: <StackDetailPage />,
+              },
+              {
                 path: routes.STACK_DETAIL_ENVS_PATH,
                 element: <StackDetailEnvironmentsPage />,
               },
@@ -179,6 +215,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.STACK_DETAIL_VPN_TUNNELS_PATH,
                 element: <StackDetailVpnTunnelsPage />,
+              },
+              {
+                path: routes.STACK_DETAIL_HIDS_PATH,
+                element: <StackDetailHidsPage />,
               },
             ],
           },
@@ -206,8 +246,7 @@ export const appRoutes: RouteObject[] = [
                 children: [
                   {
                     path: routes.APP_SERVICE_METRICS_PATH,
-                    lazy: () =>
-                      import("@app/ui/pages/app-detail-service-metrics"),
+                    element: <AppDetailServiceMetricsPage />,
                   },
                   {
                     path: routes.APP_SERVICE_SCALE_PATH,
@@ -234,6 +273,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.APP_SETTINGS_PATH,
                 element: <AppSettingsPage />,
+              },
+              {
+                path: routes.APP_CONFIG_PATH,
+                element: <AppDetailConfigPage />,
               },
             ],
           },
@@ -279,7 +322,7 @@ export const appRoutes: RouteObject[] = [
               },
               {
                 path: routes.DATABASE_METRICS_PATH,
-                lazy: () => import("@app/ui/pages/db-detail-metrics"),
+                element: <DatabaseMetricsPage />,
               },
               {
                 path: routes.DATABASE_CLUSTER_PATH,
@@ -350,6 +393,10 @@ export const appRoutes: RouteObject[] = [
             path: routes.ENDPOINT_DETAIL_SETTINGS_PATH,
             element: <EndpointDetailSettingsPage />,
           },
+          {
+            path: routes.ENDPOINT_DETAIL_CREDENDTIALS_PATH,
+            element: <EndpointDetailCredentialsPage />,
+          },
         ],
       },
 
@@ -376,7 +423,7 @@ export const appRoutes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: <EnvironmentAppsPage />,
+                element: <EnvironmentDetailPage />,
               },
               {
                 path: routes.ENVIRONMENT_APPS_PATH,
@@ -450,31 +497,6 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
-        path: routes.LOGOUT_PATH,
-        element: <LogoutPage />,
-      },
-
-      {
-        path: routes.VERIFY_EMAIL_REQUEST_PATH,
-        element: <VerifyEmailPage />,
-      },
-
-      {
-        path: routes.VERIFY_EMAIL_PATH,
-        element: <VerifyEmailPage />,
-      },
-
-      {
-        path: routes.PLANS_PATH,
-        element: <PlansPage />,
-      },
-
-      {
-        path: routes.BILLING_METHOD_PAGE,
-        element: <BillingMethodPage />,
-      },
-
-      {
         path: routes.CREATE_ORG_PATH,
         element: <CreateOrgPage />,
       },
@@ -485,86 +507,143 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
-        path: routes.SETTINGS_PATH,
-        element: <SettingsPage />,
-        children: [
-          {
-            index: true,
-            element: <SettingsPage />,
-          },
-          {
-            path: routes.TEAM_PATH,
-            element: <TeamPage />,
-          },
-        ],
-      },
-
-      {
-        path: routes.CREATE_PROJECT_SETUP_PATH,
-        element: <CreateProjectFromAccountSetupPage />,
+        path: routes.DEPLOY_PATH,
+        element: <DeployPage />,
       },
       {
-        path: routes.CREATE_PROJECT_ADD_KEY_PATH,
-        element: <ElevateRequired />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectAddKeyPage />,
-          },
-        ],
+        path: routes.CREATE_ENV_PATH,
+        element: <CreateEnvironmentPage />,
       },
       {
-        path: routes.CREATE_PROJECT_ADD_NAME_PATH,
-        element: <CreateProjectNamePage />,
+        path: routes.ENV_SELECT_PATH,
+        element: <EnvSelectorPage />,
       },
       {
-        path: routes.CREATE_PROJECT_GIT_PATH,
-        element: <AppSidebarLayout />,
-        children: [
-          {
-            index: true,
-            element: <CreateProjectGitPage />,
-          },
-        ],
+        path: routes.CREATE_APP_PATH,
+        element: <CreateAppPage />,
       },
       {
-        path: routes.CREATE_PROJECT_GIT_APP_PATH,
-        children: [
-          {
-            path: routes.CREATE_PROJECT_GIT_PUSH_PATH,
-            element: <CreateProjectGitPushPage />,
-          },
-          {
-            path: routes.CREATE_PROJECT_GIT_SETTINGS_PATH,
-            element: <CreateProjectGitSettingsPage />,
-          },
-          {
-            path: routes.CREATE_PROJECT_GIT_STATUS_PATH,
-            element: <CreateProjectGitStatusPage />,
-          },
-          {
-            path: routes.CREATE_PROJECT_APP_SETUP_PATH,
-            element: <CreateProjectFromAppSetupPage />,
-          },
-        ],
+        path: routes.APP_DEPLOY_RESUME_WITH_ENV_PATH,
+        element: <AppDeployResumeWithEnvPage />,
       },
       {
-        path: routes.SUPPORT_URL,
-        element: <SupportPage />,
+        path: routes.APP_DEPLOY_RESUME_PATH,
+        element: <AppDeployResumePage />,
+      },
+      {
+        path: routes.APP_DEPLOY_GET_STARTED_PATH,
+        element: <AppDeployGetStartedPage />,
+      },
+      {
+        path: routes.APP_DEPLOY_WITH_GIT_PATH,
+        element: <AppDeployWithGitPage />,
+      },
+      {
+        path: routes.APP_DEPLOY_WITH_GIT_ADD_KEY_PATH,
+        element: (
+          <ElevateRequired>
+            <AppDeployWithGitAddKeyPage />
+          </ElevateRequired>
+        ),
+      },
+      {
+        path: routes.APP_DEPLOY_CONFIGURE_PATH,
+        element: <AppDeployConfigurePage />,
+      },
+      {
+        path: routes.APP_DEPLOY_STATUS_PATH,
+        element: <AppDeployStatusPage />,
       },
     ],
   },
 
   {
-    path: routes.CREATE_PROJECT_PATH,
-    element: <CreateProjectPage />,
+    path: routes.LOGOUT_PATH,
+    element: (
+      <AuthRequired>
+        <LogoutPage />
+      </AuthRequired>
+    ),
   },
 
   {
+    path: routes.VERIFY_EMAIL_PATH,
     element: (
-      <ElevateRequired>
-        <SettingsPage />
-      </ElevateRequired>
+      <AuthRequired>
+        <VerifyEmailPage />
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.VERIFY_EMAIL_REQUEST_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailPage />
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.PLANS_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <PlansPage />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.BILLING_METHOD_PAGE,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <BillingMethodPage />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.GET_STARTED_PATH,
+    element: <GetStartedPage />,
+  },
+
+  {
+    path: routes.SUPPORT_URL,
+    element: <SupportPage />,
+  },
+
+  {
+    path: routes.SETTINGS_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout />
+      </AuthRequired>
+    ),
+    children: [
+      {
+        index: true,
+        element: <SettingsPage />,
+      },
+
+      {
+        path: routes.SETTINGS_PROFILE_PATH,
+        element: <SettingsProfilePage />,
+      },
+    ],
+  },
+
+  {
+    path: routes.SETTINGS_PATH,
+    element: (
+      <AuthRequired>
+        <ElevateRequired>
+          <SettingsLayout />
+        </ElevateRequired>
+      </AuthRequired>
     ),
     children: [
       {
@@ -595,6 +674,72 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.TEAM_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_MEMBERS_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamMembersPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_ROLES_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamRolesPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_PENDING_INVITES_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamPendingInvitesPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_SSO_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamSsoPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_CONTACTS_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamContactsPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
     path: routes.LOGIN_PATH,
     element: <LoginPage />,
   },
@@ -606,57 +751,37 @@ export const appRoutes: RouteObject[] = [
 
   {
     path: routes.FORGOT_PASS_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <ForgotPassPage />,
-      },
-    ],
+    element: <ForgotPassPage />,
   },
 
   {
     path: routes.RESET_PASSWORD_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <ForgotPassVerifyPage />,
-      },
-    ],
+    element: <ForgotPassVerifyPage />,
   },
 
   {
     path: routes.SSO_ORG_FAILURE_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SsoFailurePage />,
-      },
-    ],
+    element: <SsoFailurePage />,
   },
 
   {
     path: routes.SSO_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SsoLoginPage />,
-      },
-    ],
+    element: <SsoLoginPage />,
   },
 
   {
     path: routes.SSO_DIRECT_PATH,
-    element: <UnauthRequired />,
-    children: [
-      {
-        index: true,
-        element: <SsoDirectPage />,
-      },
-    ],
+    element: <SsoDirectPage />,
+  },
+
+  {
+    path: routes.SSO_TOKEN_CLI_PATH,
+    element: <SsoTokenCliPage />,
+  },
+
+  {
+    path: routes.SSO_TOKEN_CLI_READ_PATH,
+    element: <SsoTokenCliReadPage />,
   },
 
   {
@@ -672,10 +797,6 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.STYLES_PATH,
     element: <StylesPage />,
-  },
-  {
-    path: routes.SUPPORT_URL,
-    element: <SupportPage />,
   },
 
   {

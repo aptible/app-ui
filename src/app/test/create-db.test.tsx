@@ -10,7 +10,7 @@ import {
   testEnv,
   verifiedUserHandlers,
 } from "@app/mocks";
-import { setupAppIntegrationTest, sleep, waitForBootup } from "@app/test";
+import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 
 describe("Create Database flow", () => {
   it("should successfully provision a database within an environment", async () => {
@@ -45,10 +45,6 @@ describe("Create Database flow", () => {
     await waitForBootup(store);
 
     render(<App />);
-
-    // hack to wait for all the data to be fetched in env header
-    // to be done.
-    await sleep(0);
 
     await screen.findByText(testAccount.handle);
     await screen.findByRole("button", { name: /Save/ });
@@ -104,10 +100,6 @@ describe("Create Database flow", () => {
     await waitForBootup(store);
 
     render(<App />);
-
-    // hack to wait for all the data to be fetched in env header
-    // to be done.
-    await sleep(0);
 
     await screen.findByText(testAccount.handle);
 

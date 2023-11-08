@@ -1,9 +1,9 @@
-import { PaginateProps, api, cacheTimer, combinePages, thunks } from "@app/api";
+import { api, cacheTimer } from "@app/api";
 import { defaultEntity } from "@app/hal";
 import { createTable } from "@app/slice-helpers";
+import { createReducerMap, mustSelectEntity } from "@app/slice-helpers";
 import { AppState, DeployDatabaseImage } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
-import { createReducerMap, mustSelectEntity } from "robodux";
 import { selectDeploy } from "../slice";
 
 export interface DeployDatabaseImageResponse {
@@ -105,16 +105,9 @@ export const selectDatabaseImagesVisible = createSelector(
   (images) => images.filter((img) => img.visible),
 );
 
-export const fetchDatabaseImages = api.get<PaginateProps>(
-  "/database_images?page=:page",
-  { saga: cacheTimer() },
-);
-
-export const fetchAllDatabaseImages = thunks.create(
-  "fetch-all-database-images",
-  { saga: cacheTimer() },
-  combinePages(fetchDatabaseImages),
-);
+export const fetchDatabaseImages = api.get("/database_images?per_page=5000", {
+  saga: cacheTimer(),
+});
 
 export const databaseImageEntities = {
   database_image: defaultEntity({

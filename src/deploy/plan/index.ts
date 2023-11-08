@@ -1,4 +1,5 @@
 import { api } from "@app/api";
+import { selectHasPaymentMethod } from "@app/billing";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -80,7 +81,7 @@ export const defaultPlan = (c: Partial<DeployPlan> = {}): DeployPlan => {
     includedDiskGb: 0,
     includedVhosts: 0,
     manualBackupLimitPerDb: 0,
-    name: "starter",
+    name: "none",
     updatedAt: now,
     vhostLimit: 0,
     ...c,
@@ -153,7 +154,7 @@ export const defaultActivePlan = (
   return {
     id: "",
     automatedBackupLimitPerDb: 0,
-    availablePlans: [],
+    availablePlans: ["starter", "growth", "scale"],
     complianceDashboardAccess: false,
     containerMemoryLimit: 0,
     costCents: 0,
@@ -235,11 +236,51 @@ const planSelectors = planSlice.getSelectors(
 const initPlan = defaultPlan();
 const mustPlan = mustSelectEntity(initPlan);
 
-export const selectPlanById = mustPlan(planSelectors.selectById);
-export const { selectTableAsList: selectPlansAsList } = planSelectors;
+// You probably want to use `selectPlanByActiveId` instead
+const selectPlanById = mustPlan(planSelectors.selectById);
 export const planReducers = createReducerMap(planSlice);
 
-export const DEPLOY_ACTIVE_PLAN_NAME = "active_plans";
+// when there is no active plan that means we should assume
+// the user is on a legacy "enterprise" plan
+export const selectPlanByActiveId = createSelector(
+  planSelectors.selectTableAsList,
+  selectPlanById,
+  selectHasPaymentMethod,
+  (plans, planById, hasPaymentMethod) => {
+    if (planById.id !== "") {
+      return planById;
+    }
+
+    if (!hasPaymentMethod) {
+      return initPlan;
+    }
+
+    // if user has payment method and no active plan that means they are
+    // legacy enterprise
+    const enterprise = plans.find((p) => p.name === "enterprise");
+    return enterprise || initPlan;
+  },
+);
+
+export const selectPlansForView = createSelector(
+  planSelectors.selectTableAsList,
+  (plans) => {
+    const init: Record<PlanName, DeployPlan> = {
+      none: defaultPlan({ name: "none" }),
+      starter: defaultPlan({ name: "starter" }),
+      growth: defaultPlan({ name: "growth" }),
+      scale: defaultPlan({ name: "scale" }),
+      enterprise: defaultPlan({ name: "enterprise" }),
+    };
+    return plans.reduce((acc, plan) => {
+      // plan.name should be unique
+      acc[plan.name] = plan;
+      return acc;
+    }, init);
+  },
+);
+
+export const DEPLOY_ACTIVE_PLAN_NAME = "activePlans";
 const activePlanSlice = createTable<DeployActivePlan>({
   name: DEPLOY_ACTIVE_PLAN_NAME,
 });
@@ -272,12 +313,8 @@ export const selectFirstActivePlan = createSelector(
 export const fetchPlans = api.get("/plans");
 export const fetchPlanById = api.get<{ id: string }>("/plans/:id");
 
-export const fetchAllActivePlans = api.get<{ organization_id: string }>(
-  "/active_plans",
-);
-
-export const fetchActivePlans = api.get<{ organization_id: string }>(
-  "/active_plans?organization_id=:organization_id",
+export const fetchActivePlans = api.get<{ orgId: string }>(
+  "/active_plans?organization_id=:orgId",
 );
 
 interface UpdateActivePlan {

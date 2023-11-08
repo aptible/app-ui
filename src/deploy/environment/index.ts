@@ -44,7 +44,6 @@ export interface DeployEnvironmentResponse {
     permissions: PermissionResponse[];
   };
   _links: {
-    environment: LinkResponse;
     stack: LinkResponse;
   };
   _type: "account";
@@ -76,7 +75,6 @@ export const defaultEnvResponse = (
       permissions: [],
     },
     _links: {
-      environment: { href: "" },
       stack: { href: "" },
       ...e._links,
     },
@@ -143,6 +141,7 @@ const {
   add: addDeployEnvironments,
   patch: patchDeployEnvironments,
   remove: removeEnvironments,
+  reset: resetEnvironments,
 } = slice.actions;
 const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_ENVIRONMENT_NAME],
@@ -174,17 +173,15 @@ export const selectEnvironmentsByOrgAsList = createSelector(
   (envs) => Object.values(envs).filter(excludesFalse),
 );
 
-export const selectEnvironmentsAsOptions = createSelector(
-  selectEnvironmentsByOrgAsList,
-  (envs) => {
-    return envs.map((e) => {
-      return {
-        label: e.handle,
-        value: e.id,
-      };
-    });
-  },
-);
+export const envToOption = (
+  env: DeployEnvironment,
+): { label: string; value: string } => {
+  return {
+    label: env.handle,
+    value: env.id,
+  };
+};
+
 export const hasDeployEnvironment = (a: DeployEnvironment) => a.id !== "";
 export const environmentReducers = createReducerMap(slice);
 export const selectEnvironmentByName = createSelector(
@@ -201,6 +198,13 @@ export const fetchEnvironments = api.get(
   "/accounts?per_page=5000&no_embed=true&metrics[]=app_count&metrics[]=database_count",
   {
     saga: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetEnvironments());
   },
 );
 
@@ -274,8 +278,12 @@ export const selectEnvironmentsForTableSearch = createSelector(
 
 export const selectEnvironmentsByStackId = createSelector(
   selectEnvironmentsAsList,
-  (_: AppState, props: { stackId: string }) => props.stackId,
+  (_: AppState, props: { stackId?: string }) => props.stackId || "",
   (envs, stackId) => {
+    if (stackId === "") {
+      return [...envs].sort((a, b) => a.id.localeCompare(b.id));
+    }
+
     return envs
       .filter((env) => env.stackId === stackId)
       .sort((a, b) => a.id.localeCompare(b.id));
@@ -303,16 +311,8 @@ export const selectEnvironmentsForTableSearchByStackId = createSelector(
   },
 );
 
-export const selectEnvironmentsByStack = createSelector(
-  selectEnvironmentsAsList,
-  (_: AppState, p: { stackId: string }) => p.stackId,
-  (envs, stackId) => {
-    return envs.filter((env) => env.stackId === stackId);
-  },
-);
-
 export const selectEnvironmentsCountByStack = createSelector(
-  selectEnvironmentsByStack,
+  selectEnvironmentsByStackId,
   (envs) => envs.length,
 );
 

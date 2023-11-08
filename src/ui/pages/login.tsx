@@ -31,7 +31,7 @@ import { selectIsUserAuthenticated } from "@app/token";
 import { useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
-  Banner,
+  AlreadyAuthenticatedBanner,
   BannerMessages,
   Button,
   ButtonLink,
@@ -72,7 +72,6 @@ export const LoginPage = () => {
     username: email,
     password,
     otpToken,
-    makeCurrent: true,
   };
   // use query.name not query.key (this is important for webauthn!)
   const loader = useLoader(login);
@@ -132,12 +131,7 @@ export const LoginPage = () => {
       <div className="mt-8">
         <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
           <form className="space-y-4" onSubmit={onSubmit}>
-            {isAuthenticated ? (
-              <Banner variant="info">
-                You are already logged in.{" "}
-                <Link to={homeUrl()}>Go to the dashboard.</Link>
-              </Banner>
-            ) : null}
+            <AlreadyAuthenticatedBanner />
 
             <FormGroup
               label="Email"

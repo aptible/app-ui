@@ -16,7 +16,7 @@ import {
   selectStackById,
 } from "@app/deploy";
 import { useCache, useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { operationDetailUrl } from "@app/routes";
+import { appActivityUrl } from "@app/routes";
 import { AppState, HalEmbedded, InstanceClass } from "@app/types";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -209,7 +209,7 @@ export const AppDetailServiceScalePage = () => {
     service.containerMemoryLimitMb !== containerSize;
 
   useLoaderSuccess(loader, () => {
-    navigate(operationDetailUrl(loader.meta.opId));
+    navigate(appActivityUrl(app.id));
   });
 
   const currentContainerProfile = getContainerProfileFromType(

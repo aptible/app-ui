@@ -10,7 +10,7 @@ export const Footer = () => {
   };
   return (
     <div>
-      <div className="flex border-t border-black-100 pt-4 mt-8">
+      <div className="flex border-t border-black-100 py-4 mt-7">
         <p className="grow text-gray-500 text-sm uppercase">
           Aptible, Inc. &copy; {new Date().getFullYear()}
         </p>
@@ -28,12 +28,21 @@ export const Footer = () => {
             )}
           </span>
           <a
+            href="https://github.com/aptible/app-ui"
+            target="_blank"
+            className="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase hidden md:block"
+            rel="noreferrer"
+          >
+            GitHub Repo{" "}
+            <IconExternalLink className="inline h-4 -ml-1 -mt-1 opacity-60" />
+          </a>
+          <a
             href="https://www.aptible.com/changelog"
             target="_blank"
             className="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase hidden md:block"
             rel="noreferrer"
           >
-            View Changelog{" "}
+            Changelog{" "}
             <IconExternalLink className="inline h-4 -ml-1 -mt-1 opacity-60" />
           </a>
           <a
@@ -42,19 +51,17 @@ export const Footer = () => {
             className="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase hidden md:block"
             rel="noreferrer"
           >
-            View Legacy App{" "}
+            Legacy Dashboard{" "}
             <IconExternalLink className="inline h-4 -ml-1 -mt-1 opacity-60" />
           </a>
         </div>
       </div>
-      <div className="my-4">
-        {showFeedback ? (
-          <FeedbackForm
-            feedbackEventName="feedback.survey.general_feedback"
-            description="What would you like to change about this experience?"
-          />
-        ) : null}
-      </div>
+      {showFeedback ? (
+        <FeedbackForm
+          feedbackEventName="feedback.survey.general_feedback"
+          description="What would you like to change about this experience?"
+        />
+      ) : null}
     </div>
   );
 };

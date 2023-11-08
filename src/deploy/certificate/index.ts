@@ -2,7 +2,7 @@ import { createAction, createSelector } from "@reduxjs/toolkit";
 import { createThrottle, poll } from "saga-query";
 
 import { PaginateProps, api, combinePages, thunks } from "@app/api";
-import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
   createTable,
@@ -41,7 +41,45 @@ interface DeployCertificateResponse {
   _links: {
     account: LinkResponse;
   };
+  _type: "certificate";
 }
+
+export const defaultCertificateResponse = (
+  p: Partial<DeployCertificateResponse> = {},
+): DeployCertificateResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 0,
+    common_name: "",
+    certificate_body: "",
+    not_before: "",
+    not_after: "",
+    issuer_country: "",
+    issuer_organization: "",
+    issuer_website: "",
+    issuer_common_name: "",
+    subject_country: "",
+    subject_state: "",
+    subject_locale: "",
+    subject_organization: "",
+    acme: false,
+    leaf_certificate: "",
+    certificate_chain: "",
+    sha256_fingerprint: "",
+    trusted: false,
+    self_signed: false,
+    subject_alternative_names: [],
+    private_key_algorithm: "",
+    private_key: "",
+    created_at: now,
+    updated_at: now,
+    _links: {
+      account: defaultHalHref(),
+    },
+    _type: "certificate",
+    ...p,
+  };
+};
 
 export const deserializeCertificate = (
   payload: DeployCertificateResponse,
@@ -142,7 +180,6 @@ export const selectCertificatesByEnvId = createSelector(
 
 export const certificateReducers = createReducerMap(slice);
 
-export const fetchCert = api.get<{ id: string }>("/certificates/:id");
 export const cancelPollCert = createAction("cancel-poll-cert");
 export const pollCert = api.get<{ id: string }>(["/certificates/:id", "poll"], {
   saga: poll(5 * 1000, `${cancelPollCert}`),

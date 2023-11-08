@@ -15,12 +15,7 @@ import {
   verifiedUserHandlers,
 } from "@app/mocks";
 import { orgPickerUrl } from "@app/routes";
-import {
-  setupAppIntegrationTest,
-  waitForBootup,
-  waitForData,
-  waitForToken,
-} from "@app/test";
+import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { rest } from "msw";
 
 describe("Selecting an Organization", () => {
@@ -39,7 +34,6 @@ describe("Selecting an Organization", () => {
     });
 
     await waitForBootup(store);
-    await waitForToken(store);
 
     render(<App />);
 
@@ -47,7 +41,8 @@ describe("Selecting an Organization", () => {
       return Object.values(state.organizations).length > 0;
     });
 
-    expect(screen.queryByText(/Wow Org/)).toBeInTheDocument();
+    expect(screen.queryAllByText(/Wow Org/)[0]).toBeInTheDocument();
+    expect(screen.queryByText(/Continue using/)).toBeInTheDocument();
   });
 
   it("should successfully change the selected organization", async () => {
@@ -71,10 +66,10 @@ describe("Selecting an Organization", () => {
     });
 
     server.use(
+      ...verifiedUserHandlers(),
       ...stacksWithResources({
         stacks: [testStack, testStackSpecial, testStackDontShow],
       }),
-      ...verifiedUserHandlers(),
       rest.get(`${testEnv.authUrl}/organizations`, (_, res, ctx) => {
         return res(
           ctx.json({ _embedded: { organizations: [testOrg, testOrgSpecial] } }),
@@ -100,7 +95,7 @@ describe("Selecting an Organization", () => {
     const next = await screen.findByRole("button", { name: /^wow org/i });
     fireEvent.click(next);
 
-    const stacks = await screen.findByText(/Stacks/);
+    const stacks = await screen.findByRole("link", { name: /Stacks/ });
     fireEvent.click(stacks);
 
     expect(screen.queryByText(/Wow Org/)).toBeInTheDocument();
@@ -167,7 +162,7 @@ describe("Selecting an Organization", () => {
       expect(screen.queryAllByText(/Log In/)[0]).toBeInTheDocument();
       // it should wipe the store
       expect(store.getState().deploy).toEqual({
-        active_plans: {},
+        activePlans: {},
         activityReports: {},
         appConfigs: {},
         apps: {},

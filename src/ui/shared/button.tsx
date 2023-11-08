@@ -6,6 +6,8 @@ import cn from "classnames";
 import { ButtonHTMLAttributes, FC, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, LinkProps } from "react-router-dom";
+import { Group } from "./group";
+import { IconExternalLink } from "./icons";
 import { tokens } from "./tokens";
 import { Tooltip } from "./tooltip";
 
@@ -43,7 +45,7 @@ export const ButtonIcon = ({
   return (
     <Button {...props}>
       {icon}
-      <span className="pl-2">{children}</span>
+      <span className={children ? "pl-2" : ""}>{children}</span>
     </Button>
   );
 };
@@ -70,6 +72,20 @@ export const ButtonLinkExternal = ({
     <a {...props} target="_blank" className={`${className} ${classes}`}>
       {isLoading ? "Loading..." : children}
     </a>
+  );
+};
+
+export const ButtonLinkDocs = ({ href }: { href: string }) => {
+  return (
+    <ButtonLinkExternal
+      href={href}
+      className="ml-5 w-fit"
+      variant="white"
+      size="sm"
+    >
+      View Docs
+      <IconExternalLink variant="sm" className="inline ml-1 h-5 mt-0" />
+    </ButtonLinkExternal>
   );
 };
 
@@ -120,15 +136,35 @@ export const Button: FC<ButtonProps> = ({
     { "opacity-50": props.disabled },
   );
   if (confirmPrompted) {
+    const cls = cn(
+      tokens.buttons.sizes[size],
+      tokens.buttons.styles.white,
+      buttonShapeStyle(size, shape),
+    );
     return (
-      <button
-        {...props}
-        type={type}
-        className={`${className} ${classes}`}
-        disabled={isLoading || props.disabled}
-      >
-        Confirm
-      </button>
+      <Group variant="horizontal" size="sm">
+        <button
+          className={cls}
+          type="reset"
+          onClick={() => setConfirmPrompted(false)}
+        >
+          Cancel
+        </button>
+        <button
+          {...props}
+          onClick={(e) => {
+            setConfirmPrompted(false);
+            if (props.onClick) {
+              props.onClick(e);
+            }
+          }}
+          type={type}
+          className={`${className} ${classes}`}
+          disabled={isLoading || props.disabled}
+        >
+          Confirm
+        </button>
+      </Group>
     );
   }
 
@@ -216,4 +252,5 @@ export const ButtonCreate = createButtonPermission("deploy");
 export const ButtonDestroy = createButtonPermission("destroy");
 export const ButtonOps = createButtonPermission("observability");
 export const ButtonSensitive = createButtonPermission("sensitive");
+export const ButtonFullVisibility = createButtonPermission("read");
 export const ButtonAdmin = createButtonPermission("admin");

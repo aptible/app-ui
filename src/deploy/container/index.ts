@@ -15,6 +15,8 @@ import {
 import { createSelector } from "@reduxjs/toolkit";
 import { selectDeploy } from "../slice";
 
+export * from "./utils";
+
 export interface DeployContainerResponse {
   id: number;
   aws_instance_id: string;

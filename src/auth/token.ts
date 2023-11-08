@@ -1,23 +1,24 @@
-import { call, put, setLoaderSuccess } from "@app/fx";
-import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
-
 import { authApi } from "@app/api";
+import { selectEnv } from "@app/env";
+import { call, select, setLoaderSuccess } from "@app/fx";
 import { resetStore } from "@app/reset-store";
 import {
   TokenSuccessResponse,
   deserializeToken,
-  resetToken,
+  selectElevatedToken,
+  selectToken,
   setElevatedToken,
   setToken,
 } from "@app/token";
+import { tunaEvent, tunaIdentify } from "@app/tuna";
 import { AuthApiCtx } from "@app/types";
+import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 import { AUTH_LOADER_ID } from "./loader";
 
 export interface CreateTokenPayload {
   username: string;
   password: string;
   otpToken: string;
-  makeCurrent: boolean;
   u2f?: PublicKeyCredentialWithAssertionJSON;
 }
 function saveToken(ctx: AuthApiCtx<any, TokenSuccessResponse>) {
@@ -33,11 +34,7 @@ export const fetchCurrentToken = authApi.get<never, TokenSuccessResponse>(
   function* onFetchToken(ctx, next) {
     ctx.noToken = true;
     yield* next();
-    if (!ctx.json.ok) {
-      yield put(resetToken());
-      return;
-    }
-    yield call(saveToken, ctx);
+    yield* call(saveToken, ctx);
   },
 );
 
@@ -50,7 +47,6 @@ export const createToken = authApi.post<
       username: ctx.payload.username,
       password: ctx.payload.password,
       otp_token: ctx.payload.otpToken,
-      make_current: ctx.payload.makeCurrent,
       u2f: ctx.payload.u2f,
       expires_in: 43200, // 12 hours
       grant_type: "password",
@@ -60,14 +56,18 @@ export const createToken = authApi.post<
   });
 
   yield* next();
+  if (ctx.json.ok) {
+    tunaIdentify(ctx.payload.username);
+  }
   yield* call(saveToken, ctx);
 });
 
-export type ElevateToken = Omit<CreateTokenPayload, "makeCurrent">;
+export type ElevateToken = CreateTokenPayload;
 
 export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
   "create-elevated-token",
   function* onElevateToken(ctx, next) {
+    ctx.credentials = "omit";
     ctx.request = ctx.req({
       url: "/tokens",
       method: "POST",
@@ -76,7 +76,6 @@ export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
         password: ctx.payload.password,
         otp_token: ctx.payload.otpToken,
         u2f: ctx.payload.u2f,
-        make_current: false,
         expires_in: 30 * 60, // 30 mins
         grant_type: "password",
         scope: "elevated",
@@ -89,6 +88,8 @@ export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
     if (!ctx.json.ok) {
       return;
     }
+
+    tunaEvent("elevated-token", ctx.payload.username);
     const curToken = deserializeToken(ctx.json.data);
     ctx.actions.push(setElevatedToken(curToken));
   },
@@ -134,6 +135,9 @@ export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
     // Regardless, we want to reset the store first then save the token because
     // resetStore will delete the token stored inside redux.
     ctx.actions.push(resetStore(), setLoaderSuccess({ id: AUTH_LOADER_ID }));
+    if (ctx.json.ok) {
+      tunaEvent("exchanged-token", ctx.payload);
+    }
     yield* call(saveToken, ctx);
     ctx.loader = { message: "Success" };
   },
@@ -142,10 +146,22 @@ export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
 export const revokeAllTokens = authApi.post(
   "/tokens/revoke_all_accessible",
   function* onRevokeAll(ctx, next) {
+    const env = yield* select(selectEnv);
+    const token = yield* select(selectToken);
+    const elevated = yield* select(selectElevatedToken);
+    ctx.request = ctx.req({
+      body: JSON.stringify({
+        except_tokens: [
+          `${env.authUrl}/tokens/${token.tokenId}`,
+          `${env.authUrl}/tokens/${elevated.tokenId}`,
+        ],
+      }),
+    });
     yield* next();
     if (!ctx.json.ok) {
       return;
     }
-    ctx.actions.push(resetToken());
+    tunaEvent("revoked-all-tokens");
+    ctx.loader = { message: "Success!" };
   },
 );

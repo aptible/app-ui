@@ -1,5 +1,3 @@
-import { useSelector } from "react-redux";
-
 import {
   calcMetrics,
   calcServiceMetrics,
@@ -7,19 +5,27 @@ import {
   selectAppById,
   selectServicesByAppId,
 } from "@app/deploy";
-import { AppState, DeployApp, DeployService } from "@app/types";
-
 import {
+  appDeployResumeUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
-  createProjectGitAppSetupUrl,
 } from "@app/routes";
+import { AppState, DeployApp, DeployService } from "@app/types";
+import { usePaginate } from "@app/ui/hooks";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 import { useQuery } from "saga-query/react";
 import { ButtonCreate, ButtonLink } from "../button";
+import { Group } from "../group";
 import { PreCode, listToInvertedTextColor } from "../pre-code";
-import { ResourceListView } from "../resource-list-view";
-import { TableHead, Td } from "../table";
+import {
+  ActionBar,
+  DescBar,
+  FilterBar,
+  PaginateBar,
+} from "../resource-list-view";
+import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
 
 const ServiceListRow = ({
@@ -34,60 +40,64 @@ const ServiceListRow = ({
 
   return (
     <>
-      <tr className="group hover:bg-gray-50" key={`${service.id}`}>
-        <Td className="flex-1 pl-4">
-          <div className={tokens.type.darker}>{service.processType}</div>
+      <Tr>
+        <Td>
+          <Link to={appServicePathMetricsUrl(app.id, service.id)}>
+            <div className="text-base font-semibold text-gray-900">
+              {service.processType}
+            </div>
+          </Link>
           <div className={tokens.type["normal lighter"]}>ID: {service.id}</div>
-          <div className={tokens.type["normal lighter"]}>
-            {service.processType}
-          </div>
         </Td>
 
-        <Td className="flex-1">
+        <Td>
           <div className={tokens.type.darker}>{metrics.containerSizeGB} GB</div>
         </Td>
 
-        <Td className="flex-1">
+        <Td>
           <div className={tokens.type.darker}>{totalCPU}</div>
         </Td>
 
-        <Td className="flex-1">
+        <Td>
           <div className={tokens.type.darker}>{service.containerCount}</div>
         </Td>
 
-        <Td className="flex-1">
+        <Td>
           <div className={tokens.type["normal lighter"]}>
             {metrics.containerProfile.name}
           </div>
         </Td>
 
-        <Td className="flex-1">
+        <Td>
           <div className={tokens.type.darker}>
             ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
           </div>
         </Td>
-        <Td className="flex justify-end gap-2 mr-4 mt-4">
-          <ButtonLink
-            className="w-15"
-            size="sm"
-            to={appServicePathMetricsUrl(app.id, service.id)}
-            variant="primary"
-          >
-            Metrics
-          </ButtonLink>
-          <ButtonLink
-            className="w-15"
-            size="sm"
-            to={appServiceScalePathUrl(app.id, service.id)}
-            variant="primary"
-          >
-            Scale
-          </ButtonLink>
+
+        <Td variant="right">
+          <Group size="sm" variant="horizontal">
+            <ButtonLink
+              className="w-15"
+              size="sm"
+              to={appServicePathMetricsUrl(app.id, service.id)}
+              variant="primary"
+            >
+              Metrics
+            </ButtonLink>
+            <ButtonLink
+              className="w-15"
+              size="sm"
+              to={appServiceScalePathUrl(app.id, service.id)}
+              variant="primary"
+            >
+              Scale
+            </ButtonLink>
+          </Group>
         </Td>
-      </tr>
+      </Tr>
       {service.command ? (
-        <tr key={`${service.id}.${service.command}`} className="border-none">
-          <td colSpan={7} className="p-4">
+        <Tr>
+          <Td colSpan={7} className="pr-4">
             <span className="text-sm text-gray-500">Command</span>
             <div>
               <PreCode
@@ -95,8 +105,8 @@ const ServiceListRow = ({
                 segments={listToInvertedTextColor(service.command.split(" "))}
               />
             </div>
-          </td>
-        </tr>
+          </Td>
+        </Tr>
       ) : null}
     </>
   );
@@ -113,49 +123,50 @@ export function ServicesOverview({
     selectServicesByAppId(s, { appId }),
   );
   const onDeploy = () => {
-    navigate(createProjectGitAppSetupUrl(app.id));
+    navigate(appDeployResumeUrl(app.id));
   };
   useQuery(fetchServicesByAppId({ id: app.id }));
+  const paginated = usePaginate(services);
 
   return (
-    <div className="mb-4">
-      <ResourceListView
-        header={
-          <>
-            <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
-              <span>{services.length} Services</span>
-              <ButtonCreate
-                className="w-fit"
-                envId={app.environmentId}
-                onClick={onDeploy}
-              >
-                Deployment Monitor
-              </ButtonCreate>
-            </div>
-          </>
-        }
-        tableHeader={
-          <TableHead
-            rightAlignedFinalCol
-            headers={[
-              "Service",
-              "Memory Limit",
-              "CPU Share",
-              "Container Count",
-              "Profile",
-              "Monthly Cost",
-              "Actions",
-            ]}
-          />
-        }
-        tableBody={
-          <>
-            {services.map((service) => (
-              <ServiceListRow key={service.id} app={app} service={service} />
-            ))}
-          </>
-        }
-      />
-    </div>
+    <Group>
+      <Group size="sm">
+        <FilterBar>
+          <ActionBar>
+            <ButtonCreate
+              className="w-fit"
+              envId={app.environmentId}
+              onClick={onDeploy}
+            >
+              Deployment Monitor
+            </ButtonCreate>
+          </ActionBar>
+
+          <Group variant="horizontal" size="lg" className="items-center">
+            <DescBar>{paginated.totalItems} Services</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Service</Th>
+          <Th>Memory Limit</Th>
+          <Th>CPU Share</Th>
+          <Th>Container Count</Th>
+          <Th>Profile</Th>
+          <Th>Monthly Cost</Th>
+          <Th variant="right">Actions</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+          {paginated.data.map((service) => (
+            <ServiceListRow key={service.id} app={app} service={service} />
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 }

@@ -1,25 +1,21 @@
-import { useQuery } from "@app/fx";
-import { useSelector } from "react-redux";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { IconInfo, IconPlusCircle } from "../icons";
-import { Tooltip } from "../tooltip";
-
-import { prettyDateRelative } from "@app/date";
+import { prettyEnglishDateWithTime } from "@app/date";
 import {
-  DeployDatabaseRow,
+  calcMetrics,
+  fetchDatabaseImages,
   fetchDatabases,
   fetchEnvironmentById,
   fetchEnvironments,
   getContainerProfileFromType,
   hourlyAndMonthlyCostsForContainers,
+  selectDatabaseImageById,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
   selectDiskById,
   selectLatestOpByDatabaseId,
   selectServiceById,
 } from "@app/deploy";
-import type { AppState, DeployDatabase } from "@app/types";
-
+import { formatDatabaseType } from "@app/deploy";
+import { useQuery } from "@app/fx";
 import {
   databaseDetailUrl,
   databaseScaleUrl,
@@ -27,34 +23,49 @@ import {
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { ActionListView } from "../action-list-view";
+import type { AppState, DeployDatabase } from "@app/types";
+import { usePaginate } from "@app/ui/hooks";
+import { useSelector } from "react-redux";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, ButtonCreate } from "../button";
-import { EmptyResourcesTable } from "../empty-resources-table";
+import { Group } from "../group";
+import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
-import { LoadResources } from "../load-resources";
 import { OpStatus } from "../op-status";
-import { ResourceHeader, ResourceListView } from "../resource-list-view";
+import {
+  ActionBar,
+  DescBar,
+  FilterBar,
+  LoadingBar,
+  PaginateBar,
+  TitleBar,
+} from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
-import { TableHead, Td } from "../table";
+import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
 
-type DatabaseCellProps = { database: DeployDatabase };
+interface DatabaseCellProps {
+  database: DeployDatabase;
+}
 
 export const DatabaseItemView = ({
   database,
 }: { database: DeployDatabase }) => {
+  const image = useSelector((s: AppState) =>
+    selectDatabaseImageById(s, { id: database.databaseImageId }),
+  );
   return (
     <div className="flex">
       <Link to={databaseDetailUrl(database.id)} className="flex">
         <img
           src={`/database-types/logo-${database.type}.png`}
-          className="w-8 h-8 mr-2 mt-2 align-middle"
+          className="w-[32px] h-[32px] mr-2 mt-1 align-middle"
           aria-label={`${database.type} Database`}
         />
         <p className="flex flex-col">
           <span className={tokens.type["table link"]}>{database.handle}</span>
           <span className={tokens.type["normal lighter"]}>
-            {capitalize(database.type)}
+            {formatDatabaseType(database.type, image.version)}
           </span>
         </p>
       </Link>
@@ -114,9 +125,26 @@ export const LastOpCell = ({ database }: DatabaseCellProps) => {
       <div className={tokens.type.darker} />
       <div className={tokens.type["normal lighter"]}>
         <OpStatus status={lastOperation.status} />{" "}
-        {prettyDateRelative(lastOperation.createdAt)}
+        {prettyEnglishDateWithTime(lastOperation.createdAt)}
       </div>
     </Td>
+  );
+};
+
+const DatabaseDiskSizeCell = ({ database }: DatabaseCellProps) => {
+  const disk = useSelector((s: AppState) =>
+    selectDiskById(s, { id: database.diskId }),
+  );
+  return <Td className="text-gray-900">{disk.size} GB</Td>;
+};
+
+const DatabaseContainerSizeCell = ({ database }: DatabaseCellProps) => {
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: database.serviceId }),
+  );
+  const metrics = calcMetrics([service]);
+  return (
+    <Td className="text-gray-900">{metrics.totalMemoryLimit / 1024} GB</Td>
   );
 };
 
@@ -135,216 +163,148 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
-type HeaderTypes =
-  | {
-      resourceHeaderType: "title-bar";
-      onChange: (ev: React.ChangeEvent<HTMLInputElement>) => void;
-    }
-  | { resourceHeaderType: "simple-text"; onChange?: null };
-
-const DbsResourceHeaderTitleBar = ({
-  dbs,
-  resourceHeaderType = "title-bar",
-  search = "",
-  onChange,
-  actions = [],
-}: {
-  dbs: DeployDatabaseRow[];
-  search?: string;
-  actions?: JSX.Element[];
-} & HeaderTypes) => {
-  switch (resourceHeaderType) {
-    case "title-bar":
-      if (!onChange) {
-        return null;
-      }
-      return (
-        <ResourceHeader
-          title="Databases"
-          actions={actions}
-          filterBar={
-            <div>
-              <InputSearch
-                placeholder="Search databases..."
-                search={search}
-                onChange={onChange}
-              />
-              <div className="flex">
-                <p className="flex text-gray-500 mt-4 text-base">
-                  {dbs.length} Database{dbs.length !== 1 && "s"}
-                </p>
-                <div className="mt-4">
-                  <Tooltip
-                    fluid
-                    text="Databases provide data persistence and are automatically configured and managed."
-                  >
-                    <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100" />
-                  </Tooltip>
-                </div>
-              </div>
-            </div>
-          }
-        />
-      );
-    case "simple-text":
-      return (
-        <div className="flex flex-col flex-col-reverse gap-4 text-gray-500 text-base mb-4">
-          <div>
-            {dbs.length} Database{dbs.length !== 1 && "s"}
-          </div>
-          <div>
-            {actions.length > 0 ? <ActionListView actions={actions} /> : null}
-          </div>
-        </div>
-      );
-    default:
-      return null;
-  }
-};
-
 export const DatabaseListByOrg = () => {
-  const query = useQuery(fetchDatabases());
+  const { isLoading } = useQuery(fetchDatabases());
   useQuery(fetchEnvironments());
-
+  useQuery(fetchDatabaseImages());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
   };
   const dbs = useSelector((s: AppState) =>
     selectDatabasesForTableSearch(s, {
       search,
     }),
   );
-
-  const headers = [
-    "Handle",
-    "ID",
-    "Environment",
-    "Est. Monthly Cost",
-    "Actions",
-  ];
+  const paginated = usePaginate(dbs);
 
   return (
-    <LoadResources
-      empty={
-        <EmptyResourcesTable
-          headers={headers}
-          titleBar={
-            <DbsResourceHeaderTitleBar
-              dbs={dbs}
-              resourceHeaderType="title-bar"
+    <Group>
+      <Group size="sm">
+        <TitleBar description="Databases provide data persistence and are automatically configured and managed.">
+          Databases
+        </TitleBar>
+
+        <FilterBar>
+          <Group variant="horizontal" size="sm" className="items-center">
+            <InputSearch
+              placeholder="Search..."
               search={search}
               onChange={onChange}
             />
-          }
-        />
-      }
-      query={query}
-      isEmpty={dbs.length === 0 && search === ""}
-    >
-      <ResourceListView
-        header={
-          <DbsResourceHeaderTitleBar
-            dbs={dbs}
-            resourceHeaderType="title-bar"
-            search={search}
-            onChange={onChange}
-          />
-        }
-        tableHeader={<TableHead rightAlignedFinalCol headers={headers} />}
-        tableBody={
-          <>
-            {dbs.map((db) => (
-              <tr className="group hover:bg-gray-50" key={db.id}>
-                <DatabasePrimaryCell database={db} />
-                <DatabaseIdCell database={db} />
-                <EnvStackCell environmentId={db.environmentId} />
-                <DatabaseCostCell database={db} />
-                <DatabaseActionsCell database={db} />
-              </tr>
-            ))}
-          </>
-        }
-      />
-    </LoadResources>
+            <LoadingBar isLoading={isLoading} />
+          </Group>
+
+          <Group variant="horizontal" size="lg" className="items-center mt-1">
+            <DescBar>{paginated.totalItems} Databases</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Handle</Th>
+          <Th>ID</Th>
+          <Th>Environment</Th>
+          <Th>Disk Size</Th>
+          <Th>Container Size</Th>
+          <Th>Est. Monthly Cost</Th>
+          <Th variant="right">Actions</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+          {paginated.data.map((db) => (
+            <Tr key={db.id}>
+              <DatabasePrimaryCell database={db} />
+              <DatabaseIdCell database={db} />
+              <EnvStackCell environmentId={db.environmentId} />
+              <DatabaseDiskSizeCell database={db} />
+              <DatabaseContainerSizeCell database={db} />
+              <DatabaseCostCell database={db} />
+              <DatabaseActionsCell database={db} />
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 };
 
 export const DatabaseListByEnvironment = ({
-  environmentId,
+  envId,
 }: {
-  environmentId: string;
+  envId: string;
 }) => {
   const navigate = useNavigate();
-  const query = useQuery(fetchDatabases());
-  useQuery(fetchEnvironmentById({ id: environmentId }));
-
+  useQuery(fetchDatabases());
+  useQuery(fetchEnvironmentById({ id: envId }));
   const onCreate = () => {
-    navigate(environmentCreateDbUrl(environmentId));
+    navigate(environmentCreateDbUrl(envId));
   };
-
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+  };
   const dbs = useSelector((s: AppState) =>
     selectDatabasesForTableSearchByEnvironmentId(s, {
-      envId: environmentId,
-      search: "",
+      envId,
+      search,
     }),
   );
-
-  const headers = [
-    "Handle",
-    "ID",
-    "Environment",
-    "Est. Monthly Cost",
-    "Actions",
-  ];
-  const actions = [
-    <ButtonCreate envId={environmentId} onClick={onCreate}>
-      <IconPlusCircle variant="sm" />
-      <div className="ml-2">New Database</div>
-    </ButtonCreate>,
-  ];
+  const paginated = usePaginate(dbs);
 
   return (
-    <LoadResources
-      empty={
-        <EmptyResourcesTable
-          headers={headers}
-          titleBar={
-            <DbsResourceHeaderTitleBar
-              dbs={dbs}
-              resourceHeaderType="simple-text"
-              actions={actions}
-            />
-          }
-        />
-      }
-      query={query}
-      isEmpty={dbs.length === 0}
-    >
-      <ResourceListView
-        header={
-          <DbsResourceHeaderTitleBar
-            actions={actions}
-            dbs={dbs}
-            resourceHeaderType="simple-text"
+    <Group>
+      <FilterBar>
+        <div className="flex justify-between">
+          <InputSearch
+            placeholder="Search..."
+            search={search}
+            onChange={onChange}
           />
-        }
-        tableHeader={<TableHead rightAlignedFinalCol headers={headers} />}
-        tableBody={
-          <>
-            {dbs.map((db) => (
-              <tr className="group hover:bg-gray-50" key={db.id}>
-                <DatabasePrimaryCell database={db} />
-                <DatabaseIdCell database={db} />
-                <EnvStackCell environmentId={db.environmentId} />
-                <DatabaseCostCell database={db} />
-                <DatabaseActionsCell database={db} />
-              </tr>
-            ))}
-          </>
-        }
-      />
-    </LoadResources>
+
+          <ActionBar>
+            <ButtonCreate envId={envId} onClick={onCreate}>
+              <IconPlusCircle variant="sm" />
+              <div className="ml-2">New Database</div>
+            </ButtonCreate>
+          </ActionBar>
+        </div>
+
+        <Group variant="horizontal" size="lg" className="items-center mt-1">
+          <DescBar>{paginated.totalItems} Databases</DescBar>
+          <PaginateBar {...paginated} />
+        </Group>
+      </FilterBar>
+
+      <Table>
+        <THead>
+          <Th>Handle</Th>
+          <Th>ID</Th>
+          <Th>Disk Size</Th>
+          <Th>Container Size</Th>
+          <Th>Est. Monthly Cost</Th>
+          <Th variant="right">Actions</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={6} /> : null}
+          {paginated.data.map((db) => (
+            <Tr key={db.id}>
+              <DatabasePrimaryCell database={db} />
+              <DatabaseIdCell database={db} />
+              <DatabaseDiskSizeCell database={db} />
+              <DatabaseContainerSizeCell database={db} />
+              <DatabaseCostCell database={db} />
+              <DatabaseActionsCell database={db} />
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
   );
 };

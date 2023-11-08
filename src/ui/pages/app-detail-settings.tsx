@@ -1,7 +1,3 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
 import {
   deprovisionApp,
   fetchApp,
@@ -15,14 +11,16 @@ import {
   updateApp,
 } from "@app/deploy";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { environmentAppsUrl, operationDetailUrl } from "@app/routes";
+import { appActivityUrl, environmentActivityUrl } from "@app/routes";
 import {
   AppState,
   DeployApp,
   DeployLogDrain,
   DeployMetricDrain,
 } from "@app/types";
-
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
 import {
   Banner,
   BannerMessages,
@@ -31,19 +29,15 @@ import {
   Button,
   ButtonCreate,
   ButtonDestroy,
-  ButtonLinkExternal,
   ButtonOps,
   ExternalLink,
   FormGroup,
   Group,
   IconAlertTriangle,
-  IconExternalLink,
   IconRefresh,
   IconTrash,
   Input,
-  Label,
-  PreCode,
-  listToInvertedTextColor,
+  tokens,
 } from "../shared";
 
 interface AppProps {
@@ -62,7 +56,7 @@ const AppDeprovision = ({ app }: AppProps) => {
   const onClick = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     dispatch(action);
-    navigate(environmentAppsUrl(environment.id));
+    navigate(environmentActivityUrl(environment.id));
   };
   const isDisabled = app.handle !== deleteConfirm;
 
@@ -116,23 +110,24 @@ const AppRestart = ({ app }: AppProps) => {
     dispatch(action);
   };
   useLoaderSuccess(loader, () => {
-    navigate(operationDetailUrl(loader.meta.opId));
+    navigate(appActivityUrl(app.id));
   });
 
   return (
-    <div>
-      <Label className="mt-4 pb-1">Restart App and Services</Label>
-      <ButtonOps
-        envId={app.environmentId}
-        variant="white"
-        className="flex"
-        onClick={onClick}
-        isLoading={loader.isLoading}
-      >
-        <IconRefresh className="mr-2" variant="sm" />
-        Restart
-      </ButtonOps>
-    </div>
+    <Group size="sm">
+      <h4 className={tokens.type.h4}>Restart App and Services</h4>
+      <div>
+        <ButtonOps
+          envId={app.environmentId}
+          variant="white"
+          onClick={onClick}
+          isLoading={loader.isLoading}
+        >
+          <IconRefresh className="mr-2" variant="sm" />
+          Restart
+        </ButtonOps>
+      </div>
+    </Group>
   );
 };
 
@@ -233,44 +228,12 @@ export const AppSettingsPage = () => {
   return (
     <BoxGroup>
       <Box>
-        <ButtonLinkExternal
-          href="https://www.aptible.com/docs/managing-apps"
-          className="relative float-right"
-          variant="white"
-          size="sm"
-        >
-          View Docs
-          <IconExternalLink className="inline ml-1 h-5 mt-0" />
-        </ButtonLinkExternal>
-        <h1 className="text-lg text-gray-500">How To Deploy Changes</h1>
-        <div className="mt-4">
-          <h3 className="text-md font-semibold">Clone project code</h3>
-          <PreCode
-            allowCopy
-            segments={listToInvertedTextColor(["git", "clone", app.gitRepo])}
-          />
-        </div>
-        <div className="mt-4">
-          <h3 className="text-md font-semibold">Find project code</h3>
-          <PreCode
-            allowCopy
-            segments={listToInvertedTextColor(["cd", app.handle])}
-          />
-        </div>
-        <div className="mt-4">
-          <h3 className="text-md font-semibold">Deploy code changes</h3>
-          <PreCode
-            allowCopy
-            segments={listToInvertedTextColor(["git", "push", app.gitRepo])}
-          />
-        </div>
-      </Box>
-
-      <Box>
-        <h1 className="text-lg text-gray-500 mb-4">App Settings</h1>
-        <AppNameChange app={app} />
-        <hr className="mt-6" />
-        <AppRestart app={app} />
+        <Group>
+          <h3 className={"text-lg text-gray-500"}>App Settings</h3>
+          <AppNameChange app={app} />
+          <hr />
+          <AppRestart app={app} />
+        </Group>
       </Box>
 
       <Box>

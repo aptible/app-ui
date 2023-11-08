@@ -1,6 +1,7 @@
 import { fetchStack, getStackType, selectStackById } from "@app/deploy";
 import {
   stackDetailEnvsUrl,
+  stackDetailHidsUrl,
   stackDetailVpcPeeringsUrl,
   stackDetailVpnTunnelsUrl,
   stacksUrl,
@@ -13,12 +14,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router";
 import { useQuery } from "saga-query/react";
 import {
+  CopyText,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  IconInfo,
   TabItem,
+  Tooltip,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
@@ -46,16 +50,20 @@ export function StackHeader({ stack }: { stack: DeployStack }) {
         <DetailInfoItem title="Memory Management">
           {stack.memoryLimits ? "Enabled" : "Disabled"}
         </DetailInfoItem>
-
         <DetailInfoItem title="Tenancy">{capitalize(stackType)}</DetailInfoItem>
-        <DetailInfoItem title="CPU Isolation">
-          {stack.cpuLimits ? "Enabled" : "Disabled"}
+        <DetailInfoItem title="">
+          <Tooltip text="When sharing outbound IP addresses with vendors/partners for whitelisting, make sure to add all the provided IP addresses to the whitelist.">
+            <IconInfo
+              className="inline-block mb-1 mr-1 opacity-50 hover:opacity-100"
+              variant="sm"
+            />
+            <span className="text-base font-semibold text-gray-900">
+              Outbound IP Addresses
+            </span>
+          </Tooltip>
+          <CopyText text={stack.outboundIpAddresses.join(", ")} />
         </DetailInfoItem>
-
         <DetailInfoItem title="Region">{stack.region}</DetailInfoItem>
-        <DetailInfoItem title="Outbound IP Addresses">
-          {stack.outboundIpAddresses.join(", ")}
-        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -77,6 +85,10 @@ function StackPageHeader() {
     { name: "VPN Tunnels", href: stackDetailVpnTunnelsUrl(id) },
     { name: "VPC Peering", href: stackDetailVpcPeeringsUrl(id) },
   ];
+
+  if (stack.exposeIntrusionDetectionReports) {
+    tabs.push({ name: "Managed HIDS", href: stackDetailHidsUrl(id) });
+  }
 
   return (
     <DetailPageHeaderView

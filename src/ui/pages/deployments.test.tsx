@@ -35,8 +35,6 @@ describe("Deployments page", () => {
       </TestProvider>,
     );
 
-    const btn = await screen.findByRole("link", { name: /Deploy/ });
-    expect(btn).toBeInTheDocument();
     expect(await screen.findByText(testAppDeployed.handle)).toBeInTheDocument();
     const status = await screen.findByRole("status");
     expect(status.textContent).toMatch(/Deployed 04\/08\/2023/);
@@ -50,7 +48,6 @@ describe("Deployments page", () => {
       onboarding_status: "initiated",
       _links: {
         stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-        environment: defaultHalHref(),
       },
     });
     const envLaravel = defaultEnvResponse({
@@ -60,7 +57,6 @@ describe("Deployments page", () => {
       onboarding_status: "completed",
       _links: {
         stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
-        environment: { href: "" },
       },
     });
     const accounts = [envExpress, envLaravel];
@@ -142,7 +138,6 @@ describe("Deployments page", () => {
       onboarding_status: "initiated",
       _links: {
         stack: defaultHalHref(`${testEnv.apiUrl}/stacks/${testStack.id}`),
-        environment: defaultHalHref(),
       },
     });
     const envLaravel = defaultEnvResponse({
@@ -152,7 +147,6 @@ describe("Deployments page", () => {
       onboarding_status: "completed",
       _links: {
         stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
-        environment: { href: "" },
       },
     });
     const envLegacy = defaultEnvResponse({
@@ -162,7 +156,6 @@ describe("Deployments page", () => {
       onboarding_status: "unknown",
       _links: {
         stack: { href: `${testEnv.apiUrl}/stacks/${testStack.id}` },
-        environment: { href: "" },
       },
     });
     const accounts = [envExpress, envLaravel, envLegacy];
@@ -228,8 +221,6 @@ describe("Deployments page", () => {
       </TestProvider>,
     );
 
-    const btn = await screen.findByRole("link", { name: /Deploy/ });
-    expect(btn).toBeInTheDocument();
     expect(await screen.findByText(apps[0].handle)).toBeInTheDocument();
     expect(await screen.findByText(apps[1].handle)).toBeInTheDocument();
     expect(await screen.findByText(apps[2].handle)).toBeInTheDocument();

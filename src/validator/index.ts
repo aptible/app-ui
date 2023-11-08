@@ -1,12 +1,18 @@
-const MAX_IPV4_LENGTH = 15;
 const IP_WHITELIST_MAX_SIZE = 25;
 // inlined from: https://github.com/sindresorhus/ip-regex/blob/main/index.js
 const v4 =
   "(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)){3}";
 const v4exact = new RegExp(`^${v4}$`);
+// inlined from: https://github.com/silverwind/cidr-regex/blob/master/index.js#L4
+const v4Cidr = `${v4}\\/(3[0-2]|[12]?[0-9])`;
+const v4CidrExact = new RegExp(`^${v4Cidr}$`);
 
 function isIPv4(ip: string) {
-  return v4exact.test(ip.slice(0, MAX_IPV4_LENGTH));
+  return v4exact.test(ip);
+}
+
+function isIPv4Cidr(ip: string) {
+  return v4CidrExact.test(ip);
 }
 
 export function ipValidator(ips: string[]) {
@@ -19,7 +25,8 @@ export function ipValidator(ips: string[]) {
 
   ips.forEach((ip) => {
     if (isIPv4(ip)) return;
-    errs.push(`${ip} is not a valid IPv4 address`);
+    if (isIPv4Cidr(ip)) return;
+    errs.push(`[${ip}] is not a valid IPv4 address or CIDR`);
   });
 
   if (errs.length === 0) return;
@@ -35,12 +42,13 @@ export function portValidator(port = "") {
   if (portNum >= 65535) return msg;
 }
 
-const handleRegexExplainer =
-  "lowercase alphanumerics, periods, dashes, underscores, and less than 64 characters";
+export const handleRegexExplainer =
+  "Lowercase alphanumerics, periods, hyphens, underscores, and less than 64 characters";
 export const handleRegex = new RegExp(/^[0-9a-z._-]{1,64}$/);
 export function handleValidator(handle = "") {
   if (handle === "") return `Must provide a handle ${handleRegexExplainer}`;
   const maxCharLength = 64;
+
   if (handle.length > maxCharLength) {
     const delta = handle.length - maxCharLength;
     return `[${handle}] is ${delta} characters too long (max: ${maxCharLength})`;
@@ -48,6 +56,24 @@ export function handleValidator(handle = "") {
 
   if (!handleRegex.test(handle)) {
     return `[${handle}] is not a valid handle ${handleRegexExplainer}`;
+  }
+}
+
+export const stackNameRegexExplainer =
+  "Lowercase alphanumerics, hyphens, and less than 64 characters";
+export const stackNameRegex = new RegExp(/^[0-9a-z-]{1,26}$/);
+export function stackNameValidator(stackName = "") {
+  if (stackName === "")
+    return `Must provide a stack name ${stackNameRegexExplainer}`;
+  const maxCharLength = 26;
+
+  if (stackName.length > maxCharLength) {
+    const delta = stackName.length - maxCharLength;
+    return `[${stackName}] is ${delta} characters too long (max: ${maxCharLength})`;
+  }
+
+  if (!stackNameRegex.test(stackName)) {
+    return `[${stackName}] is not a valid stack name ${stackNameRegexExplainer}`;
   }
 }
 

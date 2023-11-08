@@ -36,7 +36,7 @@ import {
 
 const ResourceView = ({ children }: { children: React.ReactNode }) => {
   const className = cn(
-    "my-2 px-3 flex items-center justify-between min-h-[48px]",
+    "my-2 px-2 flex items-center justify-between min-h-[48px]",
     "cursor-pointer",
     "border border-gray-200 rounded-lg",
     "bg-white hover:bg-black-50",
@@ -64,7 +64,7 @@ const EnvResource = ({ resource }: { resource: EnvItem }) => {
   );
   return (
     <ResourceView>
-      <EnvironmentItemView environment={env} />
+      <EnvironmentItemView env={env} />
       <div className="text-black-300 text-base">
         {capitalize(resource.type)} ID: {capitalize(resource.id)}
       </div>
@@ -183,7 +183,7 @@ export const SearchPage = () => {
     selectResourcesForSearch(s, { search }),
   );
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value });
+    setParams({ search: ev.currentTarget.value }, { replace: true });
   const curLimit = Math.min(resources.length, SEARCH_DISPLAY_LIMIT);
   const resultText = `Displaying ${curLimit} of ${resources.length} results`;
 
@@ -202,8 +202,8 @@ export const SearchPage = () => {
       return (
         <div className="mt-4">
           <div className="text-black-300 text-center">
-            Search for Stacks, Environments, Apps, and Databases by Name, Type,
-            or ID.
+            Search for Stacks, Environments, Apps, Databases, and Endpoints by
+            Name, Type, or ID.
           </div>
 
           <hr className="text-black-300 my-4" />

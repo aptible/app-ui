@@ -1,8 +1,4 @@
 export const tokens = {
-  layout: {
-    "main width": "mx-auto px-4 sm:px-6 md:px-8 w-full",
-  },
-
   type: {
     h1: "text-gray-900 text-3xl font-semibold",
     h2: "text-xl font-semibold text-gray-900",

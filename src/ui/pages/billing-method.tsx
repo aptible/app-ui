@@ -5,8 +5,9 @@ import {
 } from "@app/billing";
 import {
   fetchActivePlans,
+  fetchPlans,
   selectFirstActivePlan,
-  selectPlanById,
+  selectPlanByActiveId,
 } from "@app/deploy";
 import { selectEnv } from "@app/env";
 import { selectOrganizationSelected } from "@app/organizations";
@@ -205,16 +206,17 @@ const CreditCardForm = () => {
 
 export const BillingMethodPage = () => {
   const org = useSelector(selectOrganizationSelected);
-  useQuery(fetchActivePlans({ organization_id: org.id }));
+  useQuery(fetchActivePlans({ orgId: org.id }));
+  useQuery(fetchPlans());
   const activePlan = useSelector(selectFirstActivePlan);
   const plan = useSelector((s: AppState) =>
-    selectPlanById(s, { id: activePlan.planId }),
+    selectPlanByActiveId(s, { id: activePlan.planId }),
   );
 
   return (
     <StripeProvider>
       <HeroBgView className="flex gap-6">
-        <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] lg:h-screen">
+        <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] h-fit min-h-screen">
           <div className="text-xl text-black font-bold">
             Launch, grow, and scale your app without worrying about
             infrastructure

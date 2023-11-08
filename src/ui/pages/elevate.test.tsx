@@ -14,10 +14,12 @@ import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 
 describe("Elevate page", () => {
   it("should naviate to redirect url", async () => {
-    const { App } = setupAppIntegrationTest({ initEntries: [elevateUrl()] });
-    render(<App />);
-
     server.use(...verifiedUserHandlers());
+    const { App, store } = setupAppIntegrationTest({
+      initEntries: [elevateUrl()],
+    });
+    await waitForBootup(store);
+    render(<App />);
 
     const email = await screen.findByRole("textbox", { name: "email" });
     await act(() => userEvent.type(email, testEmail));
@@ -34,10 +36,6 @@ describe("Elevate page", () => {
 
   describe("on failed login", () => {
     it("should error properly", async () => {
-      const { App, store } = setupAppIntegrationTest({
-        initEntries: [elevateUrl("/")],
-      });
-
       server.use(
         rest.post(`${testEnv.authUrl}/tokens`, (_, res, ctx) => {
           return res(
@@ -52,6 +50,10 @@ describe("Elevate page", () => {
         }),
         ...verifiedUserHandlers(),
       );
+
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [elevateUrl("/")],
+      });
 
       await waitForBootup(store);
 
