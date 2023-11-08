@@ -519,7 +519,6 @@ export const testAutoscalingAccount = defaultEnvResponse({
     stack: defaultHalHref(
       `${testEnv.apiUrl}/stacks/${testAutoscalingStack.id}`,
     ),
-    environment: defaultHalHref(),
   },
   _embedded: {
     permissions: [
