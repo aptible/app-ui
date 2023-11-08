@@ -21,6 +21,7 @@ import {
   testAccount,
   testActivePlan,
   testApp,
+  testAutoscalingPolicy,
   testBackupRp,
   testBillingDetail,
   testCodeScanResult,
@@ -589,6 +590,24 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/disks/:id`, async (_, res, ctx) => {
     return res(ctx.json(testDisk));
   }),
+  rest.get(
+    `${testEnv.apiUrl}/services/:id/service_sizing_policies`,
+    async (_, res, ctx) => {
+      return res(ctx.json(testAutoscalingPolicy));
+    },
+  ),
+  rest.post(
+    `${testEnv.apiUrl}/services/:id/service_sizing_policies`,
+    async (_, res, ctx) => {
+      return res(ctx.json(testAutoscalingPolicy));
+    },
+  ),
+  rest.delete(
+    `${testEnv.apiUrl}/services/:id/service_sizing_policy`,
+    async (_, res, ctx) => {
+      return res(ctx.status(204));
+    },
+  ),
 ];
 
 const billingHandlers = [

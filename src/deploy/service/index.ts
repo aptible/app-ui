@@ -248,6 +248,68 @@ export const fetchServicesByAppId = api.get<{ id: string }>(
   { saga: cacheShortTimer() },
 );
 
+export const fetchServiceSizingPoliciesByServiceId = api.get<{ id: string }>(
+  "/services/:id/service_sizing_policies",
+  { saga: cacheShortTimer() },
+  api.cache(),
+);
+
+export const createServiceSizingPoliciesByServiceId = api.post<{ id: string }>(
+  "/services/:id/service_sizing_policies",
+);
+
+export const deleteServiceSizingPoliciesByServiceId = api.delete<{
+  id: string;
+}>("/services/:id/service_sizing_policy");
+
+export interface ServiceSizingPolicyResponse {
+  id: number;
+  scaling_enabled: boolean;
+  default_policy: boolean;
+  metric_lookback_seconds: number;
+  percentile: number;
+  post_scale_up_cooldown_seconds: number;
+  post_scale_down_cooldown_seconds: number;
+  post_release_cooldown_seconds: number;
+  mem_cpu_ratio_r_threshold: number;
+  mem_cpu_ratio_c_threshold: number;
+  mem_scale_up_threshold: number;
+  mem_scale_down_threshold: number;
+  minimum_memory: number;
+  created_at: string;
+  updated_at: string;
+  _links: {
+    account: LinkResponse;
+  };
+  _type: "service_sizing_policy";
+}
+
+export const defaultServiceSizingPolicyResponse = (
+  s: Partial<ServiceSizingPolicyResponse>,
+): ServiceSizingPolicyResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: 1,
+    scaling_enabled: true,
+    default_policy: false,
+    metric_lookback_seconds: 300,
+    percentile: 99,
+    post_scale_up_cooldown_seconds: 60,
+    post_scale_down_cooldown_seconds: 300,
+    post_release_cooldown_seconds: 300,
+    mem_cpu_ratio_r_threshold: 4,
+    mem_cpu_ratio_c_threshold: 2,
+    mem_scale_up_threshold: 0.9,
+    mem_scale_down_threshold: 0.75,
+    minimum_memory: 2048,
+    created_at: now,
+    updated_at: now,
+    _links: { account: { href: "" } },
+    _type: "service_sizing_policy",
+    ...s,
+  };
+};
+
 export const fetchServiceOperations = api.get<{ id: string }>(
   "/services/:id/operations",
   api.cache(),

@@ -134,6 +134,7 @@ export interface DeployStack extends Timestamps {
   allowMInstanceProfile: boolean;
   allowRInstanceProfile: boolean;
   allowGranularContainerSizes: boolean;
+  verticalAutoscaling: boolean;
   organizationId: string;
 }
 
