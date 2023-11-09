@@ -162,10 +162,11 @@ function StackList() {
         className="mt-2 items-center flex flex-row justify-between"
       >
         <Group variant="horizontal" size="sm" className="items-center">
-          <Button variant="white" size="sm">
+          <Button disabled variant="white" size="sm">
             First
           </Button>
           <ButtonIcon
+            disabled
             variant="white"
             size="sm"
             icon={<IconArrowLeft className="h-[14px] w-[14px]" variant="sm" />}
