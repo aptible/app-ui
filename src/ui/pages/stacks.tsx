@@ -16,15 +16,21 @@ import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
   ActionBar,
+  Button,
+  ButtonIcon,
   ButtonLink,
   DescBar,
   EmptyTr,
   FilterBar,
   Group,
+  IconArrowLeft,
+  IconArrowRight,
   IconPlusCircle,
   InputSearch,
   LoadingBar,
   PaginateBar,
+  Select,
+  SelectOption,
   StackItemView,
   TBody,
   THead,
@@ -34,6 +40,19 @@ import {
   TitleBar,
   Tr,
 } from "../shared";
+
+const selectOption = (option: SelectOption) => {
+  setChoice(option.value);
+};
+const options: SelectOption[] = Array(8)
+  .fill(0)
+  .map((_, idx) => ({
+    label: "Page Size: 50",
+    value: `option_${idx + 1}`,
+  }));
+const selectedOption = [].find(
+  (option: SelectOption) => option.value === choice,
+);
 
 export function StacksPage() {
   return (
@@ -137,6 +156,49 @@ function StackList() {
           ))}
         </TBody>
       </Table>
+      <Group
+        variant="horizontal"
+        size="sm"
+        className="mt-2 items-center flex flex-row justify-between"
+      >
+        <Group variant="horizontal" size="sm" className="items-center">
+          <Button variant="white" size="sm">
+            First
+          </Button>
+          <ButtonIcon
+            variant="white"
+            size="sm"
+            icon={<IconArrowLeft className="h-[14px] w-[14px]" variant="sm" />}
+          />
+          <Button variant="active" size="sm">
+            1
+          </Button>
+          <Button variant="white" size="sm">
+            2
+          </Button>
+          <Button variant="white" size="sm">
+            3
+          </Button>
+          <p className="text-sm leading-4 font-medium">of</p>
+          <Button variant="white" size="sm">
+            99
+          </Button>
+          <ButtonIcon
+            variant="white"
+            size="sm"
+            icon={<IconArrowRight className="h-[14px] w-[14px]" variant="sm" />}
+          />
+          <Button variant="white" size="sm">
+            Last
+          </Button>
+        </Group>
+        <Select
+          className="py-[8px] text-sm leading-4 font-medium"
+          onSelect={selectOption}
+          value={selectedOption}
+          options={options}
+        />
+      </Group>
     </Group>
   );
 }
