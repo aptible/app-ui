@@ -27,7 +27,6 @@ import {
   AptibleLogo,
   BannerMessages,
   Button,
-  CreateProjectFooter,
   FormGroup,
   Group,
   Input,
@@ -106,18 +105,32 @@ export const SignupPage = () => {
     <HeroBgView className="flex gap-6">
       <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] h-fit min-h-screen">
         <div className="text-xl text-black font-bold">
-          Launch, grow, and scale your app without worrying about infrastructure
+          Try the platform hundreds of scaling engineering teams use to achieve
+          enterprise best practices for their infrastructure
         </div>
-        <div className="text-lg text-gold font-bold pt-5 pb-1">Launch</div>
-        <p>Get up and running without any work or config.</p>
-        <hr className="mt-5 mb-4" />
-        <div className="text-lg text-gold font-bold pb-1">Grow</div>
-        <p>Aptible handles all the infrastructure operations.</p>
-        <hr className="mt-5 mb-4" />
-        <div className="text-lg text-gold font-bold pb-1">Scale</div>
+        <div className="text-lg text-gold font-bold pt-5 pb-1">
+          Control your Infrastructure
+        </div>
         <p>
-          Enterprise requirements such as performance, security, and reliability
-          are baked in from day one.
+          Manage your entire infrastructure, optimize cloud spending, and
+          prevent vendor lock-in.
+        </p>
+        <hr className="mt-5 mb-4" />
+        <div className="text-lg text-gold font-bold pb-1">
+          Ensure Reliability
+        </div>
+        <p>
+          Aptible fully monitors your entire compute and data resources, and
+          holds the pager 24x7 for your infrastructure.
+        </p>
+        <hr className="mt-5 mb-4" />
+        <div className="text-lg text-gold font-bold pb-1">
+          Achieve Best Practices
+        </div>
+        <p>
+          Get the flexibility that scaling companies need: support non-HTTPS
+          services; enforce fine-grained RBAC; comply with security frameworks;
+          and scale to the limits of AWS for containers, disks, or backups.
         </p>
         <p className="text-md text-black pt-8 pb-4 text-center font-semibold">
           Companies that have scaled with Aptible
@@ -127,9 +140,6 @@ export const SignupPage = () => {
           className="text-center scale-90"
           aria-label="Customer Logos"
         />
-        <div className="pt-8 lg:px-0 px-10">
-          <CreateProjectFooter />
-        </div>
       </div>
       <div className="flex-1 mx-auto max-w-[570px] px-4 md:px-0">
         <Group>
@@ -139,9 +149,9 @@ export const SignupPage = () => {
           <div className="flex text-center items-center justify-center">
             <div>
               <p>
-                Our web app and API hosting platform automates the work of
-                provisioning, managing, and scaling infrastructure, so you can
-                focus on what actually matters: <strong>your product.</strong>
+                Control your AWS resources, guarantee uptime, and achieve
+                enterprise best practices without building your own internal
+                developer platform.
               </p>
               <h1 className={`${tokens.type.h1} text-center pt-8`}>
                 Get started for free
@@ -257,9 +267,6 @@ export const SignupPage = () => {
                 .
               </p>
             </form>
-          </div>
-          <div className="mt-6 px-10 lg:hidden block pb-10 w-full">
-            <CreateProjectFooter />
           </div>
         </Group>
       </div>
