@@ -108,7 +108,7 @@ const VerticalAutoscalingSection = ({
       {stack.verticalAutoscaling ? (
         <Box>
           <form onSubmit={onSubmitForm}>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               <h1 className="text-lg text-gray-500">Autoscale</h1>
               <BannerMessages {...createLoader} />
               <BannerMessages {...deleteLoader} />
@@ -263,7 +263,7 @@ export const AppDetailServiceScalePage = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       <VerticalAutoscalingSection id={service.id} stackId={stack.id} />
       <Box>
         <form onSubmit={onSubmitForm}>
