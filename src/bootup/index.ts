@@ -59,6 +59,7 @@ export const bootup = thunks.create(
       return;
     }
 
+    yield* call(fetchOrganizations.run, fetchOrganizations());
     yield* fork(onFetchRequiredData);
     yield* call(onFetchResourceData);
     yield* put(setLoaderSuccess({ id }));
@@ -68,7 +69,6 @@ export const bootup = thunks.create(
 
 function* onFetchRequiredData() {
   yield* put(setLoaderStart({ id: FETCH_REQUIRED_DATA }));
-  yield* call(fetchOrganizations.run, fetchOrganizations());
   const org = yield* select(selectOrganizationSelected);
   yield* all([
     call(fetchUsers.run, fetchUsers({ orgId: org.id })),

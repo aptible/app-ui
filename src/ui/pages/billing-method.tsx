@@ -38,6 +38,7 @@ import {
   IconArrowRight,
   Input,
   Label,
+  OrgPicker,
 } from "../shared";
 
 const StripeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -261,16 +262,18 @@ export const BillingMethodPage = () => {
               <AptibleLogo width={160} />
             </div>
 
-            <div className="text-center">
-              <p className="text-gray-900">
+            <Group className="items-center">
+              <p className="text-gray-900 text-center">
                 You must enter a credit card to continue using Aptible. <br />
                 Your card will be charged at the end of your monthly billing
                 cycle.
               </p>
-              <h1 className="text-gray-900 text-3xl font-semibold text-center pt-8">
+              <h1 className="text-gray-900 text-3xl font-semibold text-center">
                 Add Payment Information
               </h1>
-            </div>
+
+              <OrgPicker />
+            </Group>
 
             <Banner variant="info" className="w-full">
               <div className="flex items-center gap-2">
