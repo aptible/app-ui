@@ -100,6 +100,7 @@ function* onFetchResourceData() {
 }
 
 function* onRefreshData() {
+  yield* call(fetchOrganizations.run, fetchOrganizations());
   yield* all([call(onFetchRequiredData), call(onFetchResourceData)]);
 }
 
