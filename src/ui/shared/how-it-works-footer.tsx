@@ -48,6 +48,10 @@ export const CreateProjectFooter = () => {
 
       <div>
         <HelpTextAccordion title="How do I deploy an App?">
+          <p className="mb-2">
+            Click <strong>Get Started</strong> and we'll guide you through each
+            step:
+          </p>
           <ol className="list-decimal list-inside">
             <li>Sign up for an Aptible account</li>
             <li>Add an SSH key</li>
