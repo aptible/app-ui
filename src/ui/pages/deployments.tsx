@@ -16,7 +16,6 @@ import {
   StatusPill,
   TitleBar,
   resolveOperationStatuses,
-  tokens,
 } from "../shared";
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
