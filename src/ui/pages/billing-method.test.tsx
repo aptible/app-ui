@@ -10,7 +10,7 @@ describe("Billing Method page", () => {
         <BillingMethodPage />
       </TestProvider>,
     );
-    const el = await screen.findByRole("button");
+    const el = await screen.findByRole("button", { name: /Save Payment/ });
     expect(el.textContent).toEqual("Save Payment");
   });
 });
