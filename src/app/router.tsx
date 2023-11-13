@@ -157,11 +157,6 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
-        path: routes.ORG_PICKER_PATH,
-        element: <OrgPickerPage />,
-      },
-
-      {
         path: routes.DEPLOYMENTS_PATH,
         element: (
           <AppSidebarLayout>
@@ -555,6 +550,17 @@ export const appRoutes: RouteObject[] = [
         element: <AppDeployStatusPage />,
       },
     ],
+  },
+
+  {
+    path: routes.ORG_PICKER_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <OrgPickerPage />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
   },
 
   {
