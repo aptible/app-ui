@@ -9,8 +9,8 @@ import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ActionBar,
+  ButtonAnyOwner,
   ButtonLink,
-  ButtonOwner,
   DescBar,
   EmptyTr,
   FilterBar,
@@ -62,10 +62,10 @@ export const TeamMembersPage = () => {
             />
 
             <ActionBar>
-              <ButtonOwner onClick={onInvite}>
+              <ButtonAnyOwner onClick={onInvite}>
                 <IconPlusCircle variant="sm" className="mr-2" />
                 Invite User
-              </ButtonOwner>
+              </ButtonAnyOwner>
             </ActionBar>
           </div>
 

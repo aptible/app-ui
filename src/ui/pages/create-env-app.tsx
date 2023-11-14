@@ -27,8 +27,8 @@ import {
   BannerMessages,
   Box,
   Button,
+  ButtonAnyOwner,
   ButtonCreate,
-  ButtonOwner,
   EnvironmentSelect,
   FormGroup,
   FormGroupFeedback,
@@ -249,14 +249,14 @@ export const CreateEnvironmentPage = () => {
             />
           </FormGroup>
 
-          <ButtonOwner
+          <ButtonAnyOwner
             className="mt-4 w-full"
             type="submit"
             isLoading={thunk.isLoading}
             disabled={name === ""}
           >
             Create Environment
-          </ButtonOwner>
+          </ButtonAnyOwner>
         </form>
       </Box>
 
