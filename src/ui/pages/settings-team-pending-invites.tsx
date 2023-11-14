@@ -62,7 +62,11 @@ export const TeamPendingInvitesPage = () => {
               <Tr key={invite.id}>
                 <Td>{invite.email}</Td>
                 <Td variant="right">
-                  <Group variant="horizontal" size="sm">
+                  <Group
+                    className="flex justify-end"
+                    variant="horizontal"
+                    size="sm"
+                  >
                     <Button
                       requireConfirm="invert"
                       size="sm"
