@@ -110,8 +110,8 @@ import {
   StacksPage,
   StylesPage,
   SupportPage,
+  TeamAcceptInvitePage,
   TeamContactsPage,
-  TeamInviteClaimPage,
   TeamInvitePage,
   TeamMembersEditPage,
   TeamMembersPage,
@@ -727,10 +727,10 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.TEAM_INVITE_CLAIM_PATH,
+    path: routes.TEAM_ACCEPT_INVITE_PATH,
     element: (
       <AuthRequired>
-        <TeamInviteClaimPage />
+        <TeamAcceptInvitePage />
       </AuthRequired>
     ),
   },

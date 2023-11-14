@@ -104,7 +104,7 @@ function AcceptInviteView({
   );
 }
 
-export function TeamInviteClaimPage() {
+export function TeamAcceptInvitePage() {
   const { inviteId = "", code = "" } = useParams();
   useQuery(fetchInvitation({ id: inviteId }));
   const invitation = useSelector((s: AppState) =>

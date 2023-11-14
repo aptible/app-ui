@@ -16,7 +16,7 @@ export * from "./settings-team-sso";
 export * from "./settings-team-pending-invites";
 export * from "./settings-team-roles";
 export * from "./settings-team-invite";
-export * from "./team-invite-claim";
+export * from "./team-accept-invite";
 export * from "./stack-detail";
 export * from "./app-detail-service-metrics";
 export * from "./app-detail-service-scale";

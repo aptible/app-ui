@@ -47,8 +47,8 @@ export const TEAM_MEMBERS_EDIT_PATH = "/settings/team/members/:id";
 export const teamMembersEditUrl = (id: string) =>
   `/settings/team/members/${id}`;
 
-export const TEAM_INVITE_CLAIM_PATH = "/claim/:inviteId/:code";
-export const teamInviteClaimUrl = (inviteId: string, code: string) =>
+export const TEAM_ACCEPT_INVITE_PATH = "/claim/:inviteId/:code";
+export const teamAcceptInviteUrl = (inviteId: string, code: string) =>
   `/claim/${inviteId}/${code}`;
 
 export const IMPERSONATE_PATH = "/impersonate";

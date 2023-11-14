@@ -99,6 +99,18 @@ export const selectCurrentUserRoles = createSelector(
   (roles, roleIds) => roleIds.map((id) => roles[id]).filter(excludesFalse),
 );
 
+export const selectCurrentUserRolesByOrgId = createSelector(
+  selectCurrentUserRoles,
+  (_: AppState, p: { orgId: string }) => p.orgId,
+  (roles, orgId) => roles.filter((r) => r.organizationId === orgId),
+);
+
+export const selectIsUserOwner = createSelector(
+  selectCurrentUserRolesByOrgId,
+  (roles) =>
+    roles.some((r) => r.type === "owner" || r.type === "platform_owner"),
+);
+
 export const selectIsUserAnyOwner = createSelector(
   selectCurrentUserRoles,
   (roles) => {

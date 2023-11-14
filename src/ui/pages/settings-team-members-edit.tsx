@@ -1,10 +1,14 @@
 import { removeUserFromOrg } from "@app/auth";
 import { updateUserMemberships } from "@app/auth/membership";
 import { selectOrganizationSelected } from "@app/organizations";
-import { selectCurrentUserRoleIds, selectRolesByOrgId } from "@app/roles";
+import {
+  selectCurrentUserRoleIds,
+  selectIsUserOwner,
+  selectRolesByOrgId,
+} from "@app/roles";
 import { teamMembersUrl } from "@app/routes";
 import { AppState } from "@app/types";
-import { selectUserById } from "@app/users";
+import { selectCurrentUser, selectUserById } from "@app/users";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
@@ -23,6 +27,7 @@ export function TeamMembersEditPage() {
   const { id = "" } = useParams();
   const dispatch = useDispatch();
   const org = useSelector(selectOrganizationSelected);
+  const currentUser = useSelector(selectCurrentUser);
   const user = useSelector((s: AppState) => selectUserById(s, { id }));
   const roles = useSelector((s: AppState) =>
     selectRolesByOrgId(s, { orgId: org.id }),
@@ -71,6 +76,10 @@ export function TeamMembersEditPage() {
   const onRemoveFromOrg = () => {
     dispatch(removeUserFromOrg({ orgId: org.id, userId: user.id }));
   };
+  const isOwner = useSelector((s: AppState) =>
+    selectIsUserOwner(s, { orgId: org.id }),
+  );
+  const canRemoveUser = isOwner && user.id !== currentUser.id;
 
   return (
     <Group>
@@ -115,21 +124,23 @@ export function TeamMembersEditPage() {
         </form>
       </Box>
 
-      <Box>
-        <Group>
-          <BannerMessages {...rmLoader} />
+      {canRemoveUser ? (
+        <Box>
+          <Group>
+            <BannerMessages {...rmLoader} />
 
-          <h3 className={tokens.type.h3}>
-            Remove {user.name} from {org.name}
-          </h3>
+            <h3 className={tokens.type.h3}>
+              Remove {user.name} from {org.name}
+            </h3>
 
-          <div>
-            <Button variant="delete" onClick={onRemoveFromOrg} requireConfirm>
-              Remove from {org.name}
-            </Button>
-          </div>
-        </Group>
-      </Box>
+            <div>
+              <Button variant="delete" onClick={onRemoveFromOrg} requireConfirm>
+                Remove from {org.name}
+              </Button>
+            </div>
+          </Group>
+        </Box>
+      ) : null}
     </Group>
   );
 }
