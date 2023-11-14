@@ -1,7 +1,7 @@
 import { fetchRoles } from "@app/auth";
+import { selectRolesEditable } from "@app/deploy";
 import { createInvitation } from "@app/invitations";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { selectRolesByOrgId } from "@app/roles";
 import { teamMembersUrl, teamPendingInvitesUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { emailValidator, existValidtor } from "@app/validator";
@@ -36,7 +36,7 @@ export function TeamInvitePage() {
   const dispatch = useDispatch();
   const orgId = useSelector(selectOrganizationSelectedId);
   useQuery(fetchRoles({ orgId }));
-  const roles = useSelector((s: AppState) => selectRolesByOrgId(s, { orgId }));
+  const roles = useSelector((s: AppState) => selectRolesEditable(s, { orgId }));
   const options = [
     { value: "", label: "Select a Role" },
     ...roles.map((role) => {

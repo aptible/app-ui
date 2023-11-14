@@ -33,7 +33,7 @@ import {
 import { selectOrganizationSelected } from "@app/organizations";
 import { selectAccessToken } from "@app/token";
 import { AnyAction, ApiGen } from "@app/types";
-import { fetchUsers, selectCurrentUserId } from "@app/users";
+import { fetchUser, fetchUsers, selectCurrentUserId } from "@app/users";
 import { REHYDRATE } from "redux-persist";
 
 export const FETCH_REQUIRED_DATA = "fetch-required-data";
@@ -70,8 +70,9 @@ export const bootup = thunks.create(
 function* onFetchRequiredData() {
   yield* put(setLoaderStart({ id: FETCH_REQUIRED_DATA }));
   const org = yield* select(selectOrganizationSelected);
+  const userId = yield* select(selectCurrentUserId);
   yield* all([
-    call(fetchUsers.run, fetchUsers({ orgId: org.id })),
+    call(fetchUser.run, fetchUser({ userId })),
     call(
       fetchBillingDetail.run,
       fetchBillingDetail({ id: org.billingDetailId }),
@@ -84,6 +85,7 @@ function* onFetchResourceData() {
   const org = yield* select(selectOrganizationSelected);
   const userId = yield* select(selectCurrentUserId);
   yield* all([
+    call(fetchUsers.run, fetchUsers({ orgId: org.id })),
     call(fetchRoles.run, fetchRoles({ orgId: org.id })),
     call(fetchCurrentUserRoles.run, fetchCurrentUserRoles({ userId: userId })),
     call(fetchStacks.run, fetchStacks()),

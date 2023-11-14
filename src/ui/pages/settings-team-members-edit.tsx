@@ -1,18 +1,15 @@
-import { removeUserFromOrg } from "@app/auth";
+import { fetchUserRoles, removeUserFromOrg } from "@app/auth";
 import { updateUserMemberships } from "@app/auth/membership";
+import { selectIsUserOwner, selectRolesEditable } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
-import {
-  selectCurrentUserRoleIds,
-  selectIsUserOwner,
-  selectRolesByOrgId,
-} from "@app/roles";
+import { RoleResponse } from "@app/roles";
 import { teamMembersUrl } from "@app/routes";
-import { AppState } from "@app/types";
+import { AppState, HalEmbedded } from "@app/types";
 import { selectCurrentUser, selectUserById } from "@app/users";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { useLoader } from "saga-query/react";
+import { useNavigate, useParams } from "react-router";
+import { useCache, useLoader, useLoaderSuccess } from "saga-query/react";
 import {
   BannerMessages,
   Box,
@@ -23,19 +20,29 @@ import {
   tokens,
 } from "../shared";
 
+function useFetchUserRoles(userId: string) {
+  const rolesLoader = useCache<HalEmbedded<{ roles: RoleResponse[] }>>(
+    fetchUserRoles({ userId: userId }),
+  );
+  const userRoles = rolesLoader.data?._embedded?.roles.map((r) => r.id) || [];
+  return { rolesLoader, userRoles };
+}
+
 export function TeamMembersEditPage() {
   const { id = "" } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const org = useSelector(selectOrganizationSelected);
   const currentUser = useSelector(selectCurrentUser);
   const user = useSelector((s: AppState) => selectUserById(s, { id }));
   const roles = useSelector((s: AppState) =>
-    selectRolesByOrgId(s, { orgId: org.id }),
+    selectRolesEditable(s, { orgId: org.id }),
   );
-  const userRoles = useSelector(selectCurrentUserRoleIds);
+  const { rolesLoader, userRoles } = useFetchUserRoles(user.id);
+
   useEffect(() => {
     setSelected(userRoles);
-  }, [userRoles]);
+  }, [rolesLoader.status]);
 
   const [selected, setSelected] = useState(userRoles);
   const hasOnlyOneRole = selected.length === 1;
@@ -61,16 +68,15 @@ export function TeamMembersEditPage() {
     }
   };
 
-  const loader = useLoader(updateUserMemberships);
+  const remove = userRoles.filter(
+    (roleId) => selected.includes(roleId) === false,
+  );
+  const add = selected.filter((roleId) => userRoles.includes(roleId) === false);
+  const action = updateUserMemberships({ userId: user.id, add, remove });
+  const loader = useLoader(action);
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const remove = userRoles.filter(
-      (roleId) => selected.includes(roleId) === false,
-    );
-    const add = selected.filter(
-      (roleId) => userRoles.includes(roleId) === false,
-    );
-    dispatch(updateUserMemberships({ userId: user.id, add, remove }));
+    dispatch(action);
   };
   const rmLoader = useLoader(removeUserFromOrg);
   const onRemoveFromOrg = () => {
@@ -80,6 +86,9 @@ export function TeamMembersEditPage() {
     selectIsUserOwner(s, { orgId: org.id }),
   );
   const canRemoveUser = isOwner && user.id !== currentUser.id;
+  useLoaderSuccess(rmLoader, () => {
+    navigate(teamMembersUrl());
+  });
 
   return (
     <Group>
