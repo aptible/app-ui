@@ -98,7 +98,11 @@ export const TeamMembersPage = () => {
               </Td>
               <Td variant="right">
                 {isOwner ? (
-                  <ButtonLink size="sm" to={teamMembersEditUrl(user.id)}>
+                  <ButtonLink
+                    className="w-fit justify-self-end inline-flex"
+                    size="sm"
+                    to={teamMembersEditUrl(user.id)}
+                  >
                     Edit
                   </ButtonLink>
                 ) : null}
