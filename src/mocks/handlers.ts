@@ -14,6 +14,7 @@ import {
 } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import { RoleResponse } from "@app/roles";
+import { STATUSPAGE_URL } from "@app/system-status";
 import { UserResponse } from "@app/users";
 import { rest } from "msw";
 import {
@@ -653,4 +654,15 @@ const billingHandlers = [
   ),
 ];
 
-export const handlers = [...authHandlers, ...apiHandlers, ...billingHandlers];
+const statusHandlers = [
+  rest.get(STATUSPAGE_URL, async (_, res, ctx) => {
+    return res(ctx.json({}));
+  }),
+];
+
+export const handlers = [
+  ...authHandlers,
+  ...apiHandlers,
+  ...billingHandlers,
+  ...statusHandlers,
+];
