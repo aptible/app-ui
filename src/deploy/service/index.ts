@@ -261,13 +261,99 @@ export const fetchServiceSizingPoliciesByServiceId = api.get<{ id: string }>(
   api.cache(),
 );
 
-export const createServiceSizingPoliciesByServiceId = api.post<{ id: string }>(
-  "/services/:id/service_sizing_policies",
-);
+export const createServiceSizingPoliciesByServiceId = api.post<
+  ServiceSizingPolicyEditProps,
+  ServiceSizingPolicyResponse
+>(["/services/:id/service_sizing_policies"], function* (ctx, next) {
+  const {
+    id,
+    minimumMemory,
+    memoryScaleUp,
+    memoryScaleDown,
+    percentile,
+    lookbackInterval,
+    scaleUpCooldown,
+    scaleDownCooldown,
+    releaseCooldown,
+    rRatioLimit,
+    cRatioLimit,
+  } = ctx.payload;
+  const body = {
+    id,
+    minimum_memory: minimumMemory,
+    mem_scale_up_threshold: memoryScaleUp,
+    mem_scale_down_threshold: memoryScaleDown,
+    percentile: percentile,
+    metric_lookback_seconds: lookbackInterval,
+    post_scale_up_cooldown_seconds: scaleUpCooldown,
+    post_scale_down_cooldown_seconds: scaleDownCooldown,
+    post_release_cooldown_seconds: releaseCooldown,
+    mem_cpu_ratio_r_threshold: rRatioLimit,
+    mem_cpu_ratio_c_threshold: cRatioLimit,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+});
 
 export const deleteServiceSizingPoliciesByServiceId = api.delete<{
   id: string;
 }>("/services/:id/service_sizing_policy");
+
+export interface ServiceSizingPolicyEditProps {
+  id: string;
+  minimumMemory?: number;
+  memoryScaleUp?: number;
+  memoryScaleDown?: number;
+  percentile?: number;
+  lookbackInterval?: number;
+  scaleUpCooldown?: number;
+  scaleDownCooldown?: number;
+  releaseCooldown?: number;
+  rRatioLimit?: number;
+  cRatioLimit?: number;
+}
+
+export const updateServiceSizingPoliciesByServiceId = api.put<
+  ServiceSizingPolicyEditProps,
+  ServiceSizingPolicyResponse
+>(["/services/:id/service_sizing_policies"], function* (ctx, next) {
+  const {
+    id,
+    minimumMemory,
+    memoryScaleUp,
+    memoryScaleDown,
+    percentile,
+    lookbackInterval,
+    scaleUpCooldown,
+    scaleDownCooldown,
+    releaseCooldown,
+    rRatioLimit,
+    cRatioLimit,
+  } = ctx.payload;
+  const body = {
+    id,
+    minimum_memory: minimumMemory,
+    mem_scale_up_threshold: memoryScaleUp,
+    mem_scale_down_threshold: memoryScaleDown,
+    percentile: percentile,
+    metric_lookback_seconds: lookbackInterval,
+    post_scale_up_cooldown_seconds: scaleUpCooldown,
+    post_scale_down_cooldown_seconds: scaleDownCooldown,
+    post_release_cooldown_seconds: releaseCooldown,
+    mem_cpu_ratio_r_threshold: rRatioLimit,
+    mem_cpu_ratio_c_threshold: cRatioLimit,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+});
 
 export interface ServiceSizingPolicyResponse {
   id: number;
