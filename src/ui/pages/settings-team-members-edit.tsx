@@ -1,6 +1,6 @@
 import { fetchUserRoles, removeUserFromOrg } from "@app/auth";
 import { updateUserMemberships } from "@app/auth/membership";
-import { selectIsUserOwner, selectRolesEditable } from "@app/deploy";
+import { selectIsAccountOwner, selectRolesEditable } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
 import { RoleResponse } from "@app/roles";
 import { teamMembersUrl } from "@app/routes";
@@ -82,10 +82,10 @@ export function TeamMembersEditPage() {
   const onRemoveFromOrg = () => {
     dispatch(removeUserFromOrg({ orgId: org.id, userId: user.id }));
   };
-  const isOwner = useSelector((s: AppState) =>
-    selectIsUserOwner(s, { orgId: org.id }),
+  const isAccountOwner = useSelector((s: AppState) =>
+    selectIsAccountOwner(s, { orgId: org.id }),
   );
-  const canRemoveUser = isOwner && user.id !== currentUser.id;
+  const canRemoveUser = isAccountOwner && user.id !== currentUser.id;
   useLoaderSuccess(rmLoader, () => {
     navigate(teamMembersUrl());
   });

@@ -21,7 +21,7 @@ import {
   BannerMessages,
   Box,
   Breadcrumbs,
-  ButtonOwner,
+  ButtonAnyOwner,
   CheckBox,
   ExternalLink,
   FormGroup,
@@ -264,13 +264,13 @@ export const CreateStackPage = () => {
               size="sm"
               className="items-center gap-4"
             >
-              <ButtonOwner
+              <ButtonAnyOwner
                 type="submit"
                 disabled={!terms || !canRequestStack}
                 isLoading={loader.isLoading}
               >
                 Request Dedicated Stack
-              </ButtonOwner>
+              </ButtonAnyOwner>
               <CheckBox
                 onChange={(e) => setTerms(e.currentTarget.checked)}
                 label={
