@@ -1,4 +1,5 @@
 import { selectEnv } from "@app/env";
+import { selectDataById } from "@app/fx";
 import { selectNav, setCollapsed } from "@app/nav";
 import {
   activityUrl,
@@ -14,6 +15,8 @@ import {
   stacksUrl,
   supportUrl,
 } from "@app/routes";
+import { SYSTEM_STATUS_ID } from "@app/system-status";
+import { AppState } from "@app/types";
 import { useLayoutEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -22,6 +25,7 @@ import { useTrialNotice } from "../hooks/use-trial-notice";
 import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
 import { Banner } from "./banner";
 import { ButtonIcon } from "./button";
+import { ExternalLink } from "./external-link";
 import {
   IconBox,
   IconCloud,
@@ -44,6 +48,9 @@ export const ApplicationSidebar = () => {
   const dispatch = useDispatch();
   const { collapsed } = useSelector(selectNav);
   const { hasTrialNoPayment, expiresIn } = useTrialNotice();
+  const systemStatus = useSelector((s: AppState) =>
+    selectDataById(s, { id: SYSTEM_STATUS_ID }),
+  );
 
   const navigate = useNavigate();
   const navigation = [
@@ -129,6 +136,17 @@ export const ApplicationSidebar = () => {
                 <Link to={billingMethodUrl()} className="text-white underline">
                   Add payment
                 </Link>
+              </div>
+            </Banner>
+          ) : null}
+
+          {systemStatus?.description && !collapsed ? (
+            <Banner variant="warning" className="mt-2 text-xs">
+              <div>{systemStatus.description}</div>
+              <div>
+                <ExternalLink variant="error" href="https://status.aptible.com">
+                  Status Page
+                </ExternalLink>
               </div>
             </Banner>
           ) : null}
