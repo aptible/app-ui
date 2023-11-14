@@ -7,7 +7,7 @@ import {
   testVerifiedInvitation,
   verifiedUserHandlers,
 } from "@app/mocks";
-import { teamInviteClaimUrl } from "@app/routes";
+import { teamAcceptInviteUrl } from "@app/routes";
 import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -18,7 +18,7 @@ describe("Accept invitation flows", () => {
     it("should let the user accept an invitation to a new org", async () => {
       server.use(...verifiedUserHandlers());
       const { App, store } = setupAppIntegrationTest({
-        initEntries: [teamInviteClaimUrl(testVerifiedInvitation.id, "222")],
+        initEntries: [teamAcceptInviteUrl(testVerifiedInvitation.id, "222")],
       });
 
       await waitForBootup(store);
@@ -56,7 +56,7 @@ describe("Accept invitation flows", () => {
         }),
       );
       const { App, store } = setupAppIntegrationTest({
-        initEntries: [teamInviteClaimUrl(testVerifiedInvitation.id, "222")],
+        initEntries: [teamAcceptInviteUrl(testVerifiedInvitation.id, "222")],
       });
 
       await waitForBootup(store);
@@ -89,7 +89,7 @@ describe("Accept invitation flows", () => {
         ...verifiedUserHandlers(),
       );
       const { App, store } = setupAppIntegrationTest({
-        initEntries: [teamInviteClaimUrl(testVerifiedInvitation.id, "222")],
+        initEntries: [teamAcceptInviteUrl(testVerifiedInvitation.id, "222")],
       });
 
       await waitForBootup(store);
@@ -124,7 +124,7 @@ describe("Accept invitation flows", () => {
         ...verifiedUserHandlers(),
       );
       const { App, store } = setupAppIntegrationTest({
-        initEntries: [teamInviteClaimUrl(testVerifiedInvitation.id, "222")],
+        initEntries: [teamAcceptInviteUrl(testVerifiedInvitation.id, "222")],
       });
 
       await waitForBootup(store);

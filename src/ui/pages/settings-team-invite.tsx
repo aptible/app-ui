@@ -105,7 +105,7 @@ export function TeamInvitePage() {
 
             <div>
               <Button type="submit" isLoading={loader.isLoading}>
-                Invite
+                Share Invite
               </Button>
             </div>
           </Group>

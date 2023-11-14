@@ -3,7 +3,7 @@ import { acceptInvitation } from "@app/auth/accept-invitation";
 import { selectLoaderById } from "@app/fx";
 import { fetchInvitation, selectInvitationById } from "@app/invitations";
 import { setRedirectPath } from "@app/redirect-path";
-import { homeUrl, loginUrl, teamInviteClaimUrl } from "@app/routes";
+import { homeUrl, loginUrl, teamAcceptInviteUrl } from "@app/routes";
 import { AppState, Invitation } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 import { useEffect, useState } from "react";
@@ -43,7 +43,7 @@ function AcceptInviteView({
   };
 
   const onLogout = () => {
-    dispatch(setRedirectPath(teamInviteClaimUrl(invitation.id, code)));
+    dispatch(setRedirectPath(teamAcceptInviteUrl(invitation.id, code)));
     dispatch(logout());
     navigate(loginUrl());
   };

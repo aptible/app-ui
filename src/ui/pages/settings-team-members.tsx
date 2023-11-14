@@ -1,13 +1,15 @@
 import { useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
+import { selectIsUserOwner } from "@app/roles";
 import { teamInviteUrl, teamMembersEditUrl } from "@app/routes";
 import type { AppState } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { fetchUsers, selectUsersForSearchTable } from "@app/users";
 import { useSelector } from "react-redux";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ActionBar,
+  ButtonLink,
   ButtonOwner,
   DescBar,
   EmptyTr,
@@ -42,28 +44,22 @@ export const TeamMembersPage = () => {
   const onInvite = () => {
     navigate(teamInviteUrl());
   };
+  const isOwner = useSelector((s: AppState) => selectIsUserOwner(s, { orgId }));
 
   return (
     <Group>
       <Group size="sm">
-        <TitleBar description="This is a list of members in your Organization">
+        <TitleBar description="Search members by name or status by typing verified, mfa, !verified, or !mfa">
           Members
         </TitleBar>
 
         <FilterBar>
           <div className="flex justify-between mb-1">
-            <div>
-              <InputSearch
-                placeholder="Search..."
-                search={search}
-                onChange={onChange}
-              />
-              <p>
-                Special search terms: <code>verified</code> and <code>mfa</code>
-                . The inverse is also available: <code>!verified</code> and{" "}
-                <code>!mfa</code>.
-              </p>
-            </div>
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
 
             <ActionBar>
               <ButtonOwner onClick={onInvite}>
@@ -101,9 +97,11 @@ export const TeamMembersPage = () => {
                 {user.otpEnabled ? "Enabled" : "Disabled"}
               </Td>
               <Td variant="right">
-                <div className="flex-1">
-                  <Link to={teamMembersEditUrl(user.id)}>Edit</Link>
-                </div>
+                {isOwner ? (
+                  <ButtonLink size="sm" to={teamMembersEditUrl(user.id)}>
+                    Edit
+                  </ButtonLink>
+                ) : null}
               </Td>
             </Tr>
           ))}

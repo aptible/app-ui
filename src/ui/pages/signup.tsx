@@ -5,7 +5,7 @@ import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
   deployUrl,
   loginUrl,
-  teamInviteClaimUrl,
+  teamAcceptInviteUrl,
   verifyEmailRequestUrl,
 } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
@@ -184,7 +184,7 @@ export const SignupPage = () => {
 
   useLoaderSuccess(loader, () => {
     if (inviteId) {
-      navigate(teamInviteClaimUrl(inviteId, code));
+      navigate(teamAcceptInviteUrl(inviteId, code));
       dispatch(resetRedirectPath());
       return;
     }
