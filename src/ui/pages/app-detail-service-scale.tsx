@@ -46,35 +46,36 @@ type AppScaleProps = {
   containerCount: number;
 };
 
+type ServiceSizingPolicyResponse = {
+  id: number;
+  _type: string;
+  scaling_enabled: boolean;
+  default_policy: boolean;
+  metric_lookback_seconds: number;
+  percentile: number;
+  post_scale_up_cooldown_seconds: number;
+  post_scale_down_cooldown_seconds: number;
+  post_release_cooldown_seconds: number;
+  mem_cpu_ratio_r_threshold: number;
+  mem_cpu_ratio_c_threshold: number;
+  mem_scale_up_threshold: number;
+  mem_scale_down_threshold: number;
+  minimum_memory: number;
+};
+
 const VerticalAutoscalingSection = ({
   id,
   stackId,
 }: { id: string; stackId: string }) => {
   const policy = useCache<
     HalEmbedded<{
-      service_sizing_policies: {
-        id: number;
-        _type: string;
-        scaling_enabled: boolean;
-        default_policy: boolean;
-        metric_lookback_seconds: number;
-        percentile: number;
-        post_scale_up_cooldown_seconds: number;
-        post_scale_down_cooldown_seconds: number;
-        post_release_cooldown_seconds: number;
-        mem_cpu_ratio_r_threshold: number;
-        mem_cpu_ratio_c_threshold: number;
-        mem_scale_up_threshold: number;
-        mem_scale_down_threshold: number;
-        minimum_memory: number;
-      }[];
+      service_sizing_policies: ServiceSizingPolicyResponse[];
     }>
   >(fetchServiceSizingPoliciesByServiceId({ id }));
   const dispatch = useDispatch();
 
   const isScaling: boolean =
-    policy.data !== null &&
-    policy.data._embedded !== undefined &&
+    policy.data?._embedded?.service_sizing_policies !== undefined &&
     policy.data._embedded.service_sizing_policies.length > 0 &&
     policy.data._embedded.service_sizing_policies[0].scaling_enabled;
   const createLoader = useLoader(createServiceSizingPoliciesByServiceId);
@@ -262,6 +263,12 @@ export const AppDetailServiceScalePage = () => {
     setContainerProfileType(instClass);
   };
 
+  const setContainerScalingValues = () => {
+    setContainerProfileType(service.instanceClass);
+    setContainerSize(service.containerMemoryLimitMb);
+    setContainerCount(service.containerCount);
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <VerticalAutoscalingSection id={service.id} stackId={stack.id} />
@@ -423,11 +430,7 @@ export const AppDetailServiceScalePage = () => {
             {changesExist ? (
               <Button
                 className="w-40 ml-2 flex font-semibold"
-                onClick={() => {
-                  setContainerProfileType(service.instanceClass);
-                  setContainerSize(service.containerMemoryLimitMb);
-                  setContainerCount(service.containerCount);
-                }}
+                onClick={setContainerScalingValues}
                 variant="white"
               >
                 Cancel
