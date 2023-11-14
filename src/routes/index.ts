@@ -1,5 +1,3 @@
-import { InvitationRequest } from "@app/types";
-
 export const HOME_PATH = "/";
 export const homeUrl = () => HOME_PATH;
 export const NOT_FOUND_PATH = "/404";
@@ -35,6 +33,8 @@ export const TEAM_PATH = `${SETTINGS_PATH}/team`;
 export const teamUrl = () => TEAM_PATH;
 export const TEAM_MEMBERS_PATH = "/settings/team/members";
 export const teamMembersUrl = () => TEAM_MEMBERS_PATH;
+export const TEAM_INVITE_PATH = "/settings/team/invite";
+export const teamInviteUrl = () => TEAM_INVITE_PATH;
 export const TEAM_CONTACTS_PATH = "/settings/team/contacts";
 export const teamContactsUrl = () => TEAM_CONTACTS_PATH;
 export const TEAM_SSO_PATH = "/settings/team/sso";
@@ -43,6 +43,13 @@ export const TEAM_PENDING_INVITES_PATH = "/settings/team/pending-invites";
 export const teamPendingInvitesUrl = () => TEAM_PENDING_INVITES_PATH;
 export const TEAM_ROLES_PATH = "/settings/team/roles";
 export const teamRolesUrl = () => TEAM_ROLES_PATH;
+export const TEAM_MEMBERS_EDIT_PATH = "/settings/team/members/:id";
+export const teamMembersEditUrl = (id: string) =>
+  `/settings/team/members/${id}`;
+
+export const TEAM_ACCEPT_INVITE_PATH = "/claim/:inviteId/:code";
+export const teamAcceptInviteUrl = (inviteId: string, code: string) =>
+  `/claim/${inviteId}/${code}`;
 
 export const IMPERSONATE_PATH = "/impersonate";
 export const impersonateUrl = () => IMPERSONATE_PATH;
@@ -74,15 +81,6 @@ export const CREATE_ORG_PATH = "/organizations/create";
 export const createOrgUrl = () => CREATE_ORG_PATH;
 export const ORG_PICKER_PATH = "/organizations/picker";
 export const orgPickerUrl = () => ORG_PICKER_PATH;
-
-export const ACCEPT_INVITATION_WITH_CODE_PATH =
-  "/accept-invitation/:invitationId/:verificationCode";
-export const acceptInvitationWithCodeUrl = (props: InvitationRequest) =>
-  `/accept-invitation/${props.invitationId}/${props.verificationCode}`;
-export const ACCEPT_INVITATION_WITHOUT_CODE_PATH =
-  "/accept-invitation/:invitationId";
-export const acceptInvitationWithoutCodeUrl = (invitationId: string) =>
-  `/accept-invitation/${invitationId}`;
 
 export const APPS_PATH = "/apps";
 export const appsUrl = () => APPS_PATH;

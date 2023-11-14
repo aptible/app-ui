@@ -61,46 +61,50 @@ export const signup = thunks.create<CreateUserForm>(
       return;
     }
 
-    const orgCtx = yield* call(
-      createOrganization.run,
-      createOrganization({ name: orgName }),
-    );
-
-    // hack because useLoaderSuccess expected loader.isLoader then loader.isSuccess
-    yield* put(setLoaderStart({ id }));
-
-    log(orgCtx);
-
-    if (!orgCtx.json.ok) {
-      const { message, ...meta } = orgCtx.json.data;
-      yield* put(
-        setLoaderError({ id, message, meta: defaultAuthLoaderMeta(meta) }),
+    // sometimes a user is being invited to an org and we dont want to
+    // create an org or billing for that signup event.
+    if (orgName !== "") {
+      const orgCtx = yield* call(
+        createOrganization.run,
+        createOrganization({ name: orgName }),
       );
-      return;
+
+      // hack because useLoaderSuccess expected loader.isLoader then loader.isSuccess
+      yield* put(setLoaderStart({ id }));
+
+      log(orgCtx);
+
+      if (!orgCtx.json.ok) {
+        const { message, ...meta } = orgCtx.json.data;
+        yield* put(
+          setLoaderError({ id, message, meta: defaultAuthLoaderMeta(meta) }),
+        );
+        return;
+      }
+
+      const orgId = orgCtx.json.data.id;
+      tunaEvent("nux.signup.created-organization", { name: orgName, orgId });
+
+      const billsCtx = yield* call(
+        createSignupBillingRecords.run,
+        createSignupBillingRecords({
+          orgId,
+          orgName,
+          contactName: name,
+          contactEmail: email,
+        }),
+      );
+
+      if (billsCtx.json.ok) {
+        tunaEvent("nux.signup.created-billing", { name: orgName, orgId });
+      }
+
+      // ignore billing errors because we could be in development
+      log(billsCtx);
+
+      // Send signup data to Hubspot
+      submitHubspotForm(name, email, orgName, orgId);
     }
-
-    const orgId = orgCtx.json.data.id;
-    tunaEvent("nux.signup.created-organization", { name: orgName, orgId });
-
-    const billsCtx = yield* call(
-      createSignupBillingRecords.run,
-      createSignupBillingRecords({
-        orgId,
-        orgName,
-        contactName: name,
-        contactEmail: email,
-      }),
-    );
-
-    if (billsCtx.json.ok) {
-      tunaEvent("nux.signup.created-billing", { name: orgName, orgId });
-    }
-
-    // ignore billing errors because we could be in development
-    log(billsCtx);
-
-    // Send signup data to Hubspot
-    submitHubspotForm(name, email, orgName, orgId);
 
     const elevateCtx = yield* call(
       elevateToken.run,

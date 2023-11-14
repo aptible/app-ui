@@ -1,18 +1,19 @@
-import { createSelector } from "@reduxjs/toolkit";
-
+import { mustSelectEntity } from "@app/slice-helpers";
 import { selectToken } from "@app/token";
 import type { AppState } from "@app/types";
-
+import { createSelector } from "@reduxjs/toolkit";
 import { USERS_NAME } from "./constants";
 import { defaultUser } from "./serializers";
 import { users } from "./slice";
 
+const initUser = defaultUser();
 const selectors = users.getSelectors((state: AppState) => state[USERS_NAME]);
 export const {
   selectTable: selectUsers,
-  selectById: selectUserById,
   selectTableAsList: selectUsersAsList,
 } = selectors;
+const must = mustSelectEntity(initUser);
+export const selectUserById = must(selectors.selectById);
 
 export const selectUsersForSearchTable = createSelector(
   selectUsersAsList,
@@ -46,7 +47,6 @@ export const selectCurrentUserId = createSelector(selectToken, (token) => {
   return token.userUrl.split("/").pop() || "";
 });
 
-const initUser = defaultUser();
 export const selectCurrentUser = createSelector(
   selectUsers,
   selectCurrentUserId,
