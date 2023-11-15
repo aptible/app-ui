@@ -8,6 +8,11 @@ import {
   stacksWithResources,
   testAccount,
   testApp,
+  testAutoscalingAccount,
+  testAutoscalingApp,
+  testAutoscalingPolicy,
+  testAutoscalingService,
+  testAutoscalingStack,
   testEnv,
   testServiceRails,
   verifiedUserHandlers,
@@ -112,6 +117,77 @@ describe("AppDetailServiceScalePage", () => {
         expect(
           screen.getByText(/Changed from 0.5 GB to 2 GB/),
         ).toBeInTheDocument();
+      });
+    });
+
+    describe("when autoscaling is enabled", () => {
+      describe("no existing scaling policy on a service", () => {
+        it("should allow enabling autoscaling", async () => {
+          server.use(
+            ...verifiedUserHandlers(),
+            ...stacksWithResources({
+              stacks: [testAutoscalingStack],
+              accounts: [testAutoscalingAccount],
+              apps: [testAutoscalingApp],
+            }),
+            rest.get(`${testEnv.apiUrl}/operations/:id/logs`, (_, res, ctx) => {
+              return res(ctx.text("/mock"));
+            }),
+            rest.get(`${testEnv.apiUrl}/mock`, (_, res, ctx) => {
+              return res(ctx.text("complete"));
+            }),
+
+            rest.post(
+              `${testEnv.apiUrl}/services/:id/service_sizing_policies`,
+              async (_, res, ctx) => {
+                return res(ctx.json(testAutoscalingPolicy));
+              },
+            ),
+          );
+          const { App, store } = setupAppIntegrationTest({
+            initEntries: [
+              appServiceScalePathUrl(
+                `${testAutoscalingApp.id}`,
+                `${testAutoscalingService.id}`,
+              ),
+            ],
+          });
+
+          await waitForBootup(store);
+
+          render(<App />);
+
+          await waitForData(store, (state) => {
+            return hasDeployApp(
+              selectAppById(state, { id: `${testAutoscalingApp.id}` }),
+            );
+          });
+
+          await screen.findByText(
+            /Automatically scale your services by regularly revieweing recent CPU and RAM/,
+          );
+
+          const btns = await screen.getAllByRole("button", {
+            name: /Save Changes/,
+          });
+          const autoscaleBtn = btns[0];
+          expect(autoscaleBtn).toBeDisabled();
+
+          const cmdDisabledRadio = await screen.findByRole("radio", {
+            name: /Disabled/,
+          });
+          expect(cmdDisabledRadio).toBeChecked();
+
+          const cmdEnabledRadio = await screen.findByRole("radio", {
+            name: /Enabled/,
+          });
+          fireEvent.click(cmdEnabledRadio);
+
+          expect(autoscaleBtn).toBeEnabled();
+          fireEvent.click(autoscaleBtn);
+
+          expect(autoscaleBtn).toBeDisabled();
+        });
       });
     });
   });

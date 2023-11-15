@@ -13,6 +13,7 @@ import {
   defaultPermissionResponse,
   defaultPlanResponse,
   defaultServiceResponse,
+  defaultServiceSizingPolicyResponse,
   defaultStackResponse,
 } from "@app/deploy";
 import { defaultCodeScanResponse } from "@app/deploy/code-scan-result";
@@ -507,6 +508,77 @@ export const testBackupRp = defaultBackupRpResponse({
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccountId}`),
   },
+});
+
+export const testAutoscalingStack = defaultStackResponse({
+  id: createId(),
+  name: createText("stack"),
+  vertical_autoscaling: true,
+  region: "us-east-1",
+});
+
+export const testAutoscalingAccount = defaultEnvResponse({
+  id: createId(),
+  handle: createText("account"),
+  organization_id: testOrg.id,
+  _links: {
+    stack: defaultHalHref(
+      `${testEnv.apiUrl}/stacks/${testAutoscalingStack.id}`,
+    ),
+  },
+  _embedded: {
+    permissions: [
+      defaultPermissionResponse({
+        id: `${createId()}`,
+        scope: "deploy",
+        _links: {
+          account: defaultHalHref(
+            `${testEnv.apiUrl}/accounts/${testAccountId}`,
+          ),
+          role: defaultHalHref(`${testEnv.apiUrl}/roles/${testRole.id}`),
+        },
+      }),
+    ],
+  },
+});
+
+const testAutoscalingAppId = createId();
+export const testAutoscalingService = defaultServiceResponse({
+  id: createId(),
+  handle: createText("web"),
+  command: "rails s",
+  container_count: 1,
+  container_memory_limit_mb: 512,
+  instance_class: "m5",
+  _links: {
+    current_release: defaultHalHref(),
+    app: defaultHalHref(`${testEnv.apiUrl}/apps/${testAutoscalingAppId}`),
+    account: defaultHalHref(
+      `${testEnv.apiUrl}/accounts/${testAutoscalingAccount.id}`,
+    ),
+  },
+});
+
+export const testAutoscalingApp = defaultAppResponse({
+  id: testAutoscalingAppId,
+  handle: createText("app"),
+  _links: {
+    account: defaultHalHref(
+      `${testEnv.apiUrl}/accounts/${testAutoscalingAccount.id}`,
+    ),
+    current_configuration: defaultHalHref(),
+    current_image: defaultHalHref(),
+  },
+  _embedded: {
+    current_image: null,
+    last_operation: null,
+    last_deploy_operation: null,
+    services: [testAutoscalingService],
+  },
+});
+
+export const testAutoscalingPolicy = defaultServiceSizingPolicyResponse({
+  id: createId(),
 });
 
 export const testVerifiedInvitation = defaultInvitationResponse({

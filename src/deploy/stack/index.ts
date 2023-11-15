@@ -35,6 +35,7 @@ export interface DeployStackResponse {
   allow_m_instance_profile: boolean;
   allow_r_instance_profile: boolean;
   allow_granular_container_sizes: boolean;
+  vertical_autoscaling: boolean;
   _links: {
     organization: LinkResponse;
   };
@@ -63,6 +64,7 @@ export const defaultStackResponse = (
     allow_r_instance_profile: true,
     allow_t_instance_profile: true,
     allow_granular_container_sizes: true,
+    vertical_autoscaling: false,
     _links: { organization: { href: "" } },
     _type: "stack",
     ...s,
@@ -90,6 +92,7 @@ export const deserializeDeployStack = (
     allowMInstanceProfile: payload.allow_m_instance_profile,
     allowRInstanceProfile: payload.allow_r_instance_profile,
     allowGranularContainerSizes: payload.allow_granular_container_sizes,
+    verticalAutoscaling: payload.vertical_autoscaling,
     organizationId: extractIdFromLink(payload._links.organization),
   };
 };
@@ -117,6 +120,7 @@ export const defaultDeployStack = (
     allowRInstanceProfile: false,
     allowTInstanceProfile: false,
     allowGranularContainerSizes: false,
+    verticalAutoscaling: false,
     ...s,
   };
 };
