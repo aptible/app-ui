@@ -4,6 +4,7 @@ import { Next, call, put, select } from "@app/fx";
 import { setOrganizationSelected } from "@app/organizations";
 import type { ApiGen, AuthApiCtx } from "@app/types";
 import { deserializeUser } from "./serializers";
+import { resetUsers } from "./slice";
 import type { CreateUserForm, UserResponse } from "./types";
 
 interface UserBase {
@@ -26,6 +27,13 @@ export const fetchUsers = authApi.get<{ orgId: string }>(
   "/organizations/:orgId/users",
   {
     saga: cacheShortTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    ctx.actions.push(resetUsers());
   },
 );
 
