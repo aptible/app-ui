@@ -629,11 +629,11 @@ export const fetchDatabaseOperations = api.get<{ id: string }>(
 export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
 export const pollDatabaseOperations = api.get<{ id: string }>(
   ["/databases/:id/operations", "poll"],
-  { saga: poll(5 * 1000, `${cancelDatabaseOpsPoll}`) },
+  { saga: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
 );
 export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
   "db-service-op-poll",
-  { saga: poll(5 * 1000, `${cancelDatabaseOpsPoll}`) },
+  { saga: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
   function* (ctx, next) {
     yield* put(setLoaderStart({ id: ctx.key }));
     const db = yield* select(selectDatabaseById, ctx.payload);

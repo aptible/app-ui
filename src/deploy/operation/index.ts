@@ -374,7 +374,7 @@ export const fetchAllEnvOps = thunks.create<EnvIdProps>(
 export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
 export const pollEnvOperations = api.get<EnvIdProps>(
   ["/accounts/:envId/operations", "poll"],
-  { saga: poll(5 * 1000, `${cancelEnvOperationsPoll}`) },
+  { saga: poll(10 * 1000, `${cancelEnvOperationsPoll}`) },
 );
 
 export const fetchOrgOperations = api.get<{ orgId: string }>(
@@ -385,7 +385,7 @@ export const fetchOrgOperations = api.get<{ orgId: string }>(
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
 export const pollOrgOperations = api.get<{ orgId: string }>(
   "/organizations/:orgId/operations",
-  { saga: poll(5 * 1000, `${cancelOrgOperationsPoll}`) },
+  { saga: poll(10 * 1000, `${cancelOrgOperationsPoll}`) },
 );
 
 export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
