@@ -83,3 +83,8 @@ export const createOrganization = authApi.post<CreateOrg, OrganizationResponse>(
     ctx.actions.push(setOrganizationSelected(ctx.json.data.id));
   },
 );
+
+export const removeUserFromOrg = authApi.delete<{
+  orgId: string;
+  userId: string;
+}>("/organizations/:orgId/users/:userId");

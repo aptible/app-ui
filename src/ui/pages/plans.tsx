@@ -14,7 +14,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useTrialNotice } from "../hooks/use-trial-notice";
 import { HeroBgLayout } from "../layouts";
-import { Banner, BannerMessages, Group, Plans, tokens } from "../shared";
+import {
+  Banner,
+  BannerMessages,
+  Group,
+  OrgPicker,
+  Plans,
+  tokens,
+} from "../shared";
 
 export const PlansPage = () => {
   const dispatch = useDispatch();
@@ -44,35 +51,40 @@ export const PlansPage = () => {
 
   return (
     <HeroBgLayout width={1200}>
-      <h1 className={`${tokens.type.h1} text-center`}>Choose a Plan</h1>
-
-      <div className="flex text-center items-center justify-center my-4">
-        <div className="max-w-2xl">
-          <p>
-            If your trial has expired, choose a plan to continue or{" "}
-            <Link to={logoutUrl()}>Log Out</Link>
-          </p>
-        </div>
-      </div>
-
       <Group>
-        <BannerMessages {...updatePlanLoader} />
-        <BannerMessages {...planLoader} />
-        <BannerMessages {...activePlanLoader} />
-        {paymentRequired ? (
-          <Banner>
-            You must <Link to={billingMethodUrl()}>add a payment method</Link>{" "}
-            before changing your plan.
-          </Banner>
-        ) : null}
-      </Group>
+        <h1 className={`${tokens.type.h1} text-center`}>Choose a Plan</h1>
 
-      <Plans
-        activePlan={activePlan}
-        selected={selectedPlan.name}
-        onSelectPlan={onSelectPlan}
-        paymentRequired={paymentRequired}
-      />
+        <Group className="items-center">
+          <div className="max-w-2xl">
+            <p>
+              If your trial has expired, choose a plan to continue or{" "}
+              <Link to={logoutUrl()}>Log Out</Link>
+            </p>
+          </div>
+          <div>
+            <OrgPicker />
+          </div>
+        </Group>
+
+        <Group>
+          <BannerMessages {...updatePlanLoader} />
+          <BannerMessages {...planLoader} />
+          <BannerMessages {...activePlanLoader} />
+          {paymentRequired ? (
+            <Banner>
+              You must <Link to={billingMethodUrl()}>add a payment method</Link>{" "}
+              before changing your plan.
+            </Banner>
+          ) : null}
+        </Group>
+
+        <Plans
+          activePlan={activePlan}
+          selected={selectedPlan.name}
+          onSelectPlan={onSelectPlan}
+          paymentRequired={paymentRequired}
+        />
+      </Group>
     </HeroBgLayout>
   );
 };

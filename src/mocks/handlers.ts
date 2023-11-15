@@ -14,6 +14,7 @@ import {
 } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import { RoleResponse } from "@app/roles";
+import { STATUSPAGE_URL } from "@app/system-status";
 import { UserResponse } from "@app/users";
 import { rest } from "msw";
 import {
@@ -45,6 +46,7 @@ import {
   testToken,
   testUser,
   testUserVerified,
+  testVerifiedInvitation,
 } from "./data";
 
 const authHandlers = [
@@ -100,6 +102,9 @@ const authHandlers = [
   rest.delete(`${testEnv.authUrl}/tokens/:id`, (_, res, ctx) => {
     return res(ctx.status(204));
   }),
+  rest.get(`${testEnv.authUrl}/invitations/:id`, (_, res, ctx) => {
+    return res(ctx.json(testVerifiedInvitation));
+  }),
 ];
 
 export const verifiedUserHandlers = (
@@ -116,6 +121,9 @@ export const verifiedUserHandlers = (
       return res(ctx.json({ _embedded: [user] }));
     }),
     rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
+      return res(ctx.json(user));
+    }),
+    rest.post(`${testEnv.authUrl}/users`, (_, res, ctx) => {
       return res(ctx.json(user));
     }),
     rest.put(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
@@ -665,4 +673,15 @@ const billingHandlers = [
   ),
 ];
 
-export const handlers = [...authHandlers, ...apiHandlers, ...billingHandlers];
+const statusHandlers = [
+  rest.get(STATUSPAGE_URL, async (_, res, ctx) => {
+    return res(ctx.json({}));
+  }),
+];
+
+export const handlers = [
+  ...authHandlers,
+  ...apiHandlers,
+  ...billingHandlers,
+  ...statusHandlers,
+];

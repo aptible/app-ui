@@ -14,8 +14,8 @@ import {
   OnboardingLink,
   ResourceGroupBox,
   StatusPill,
+  TitleBar,
   resolveOperationStatuses,
-  tokens,
 } from "../shared";
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
@@ -68,7 +68,9 @@ export const DeploymentsPage = () => {
 
   return (
     <div>
-      <h1 className={`${tokens.type.h1} mb-4`}>Deployments</h1>
+      <TitleBar description="Deployments can be in one of the following states: not deployed, queued, pending, or done.">
+        Deployments
+      </TitleBar>
 
       {view()}
 

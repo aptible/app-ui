@@ -149,10 +149,9 @@ export const GetStartedPage = () => {
           <div className="text-center mt-10">
             <h1 className={tokens.type.h1}>Deploy your App</h1>
             <p className="my-6 text-gray-600 w-full mx-auto">
-              Aptible is the{" "}
-              <span className="text-black font-bold">No Infrastructure</span>{" "}
-              Platform as a Service that startups use to deploy in seconds,
-              scale infinitely, and forget about infrastructure.
+              Control your AWS resources, guarantee uptime, and achieve
+              enterprise best practices without building your own internal
+              developer platform.
             </p>
           </div>
 

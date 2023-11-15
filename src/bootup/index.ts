@@ -31,9 +31,10 @@ import {
   takeEvery,
 } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
+import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";
 import { AnyAction, ApiGen } from "@app/types";
-import { fetchUsers, selectCurrentUserId } from "@app/users";
+import { fetchUser, fetchUsers, selectCurrentUserId } from "@app/users";
 import { REHYDRATE } from "redux-persist";
 
 export const FETCH_REQUIRED_DATA = "fetch-required-data";
@@ -59,6 +60,7 @@ export const bootup = thunks.create(
       return;
     }
 
+    yield* call(fetchOrganizations.run, fetchOrganizations());
     yield* fork(onFetchRequiredData);
     yield* call(onFetchResourceData);
     yield* put(setLoaderSuccess({ id }));
@@ -68,10 +70,10 @@ export const bootup = thunks.create(
 
 function* onFetchRequiredData() {
   yield* put(setLoaderStart({ id: FETCH_REQUIRED_DATA }));
-  yield* call(fetchOrganizations.run, fetchOrganizations());
   const org = yield* select(selectOrganizationSelected);
+  const userId = yield* select(selectCurrentUserId);
   yield* all([
-    call(fetchUsers.run, fetchUsers({ orgId: org.id })),
+    call(fetchUser.run, fetchUser({ userId })),
     call(
       fetchBillingDetail.run,
       fetchBillingDetail({ id: org.billingDetailId }),
@@ -84,6 +86,7 @@ function* onFetchResourceData() {
   const org = yield* select(selectOrganizationSelected);
   const userId = yield* select(selectCurrentUserId);
   yield* all([
+    call(fetchUsers.run, fetchUsers({ orgId: org.id })),
     call(fetchRoles.run, fetchRoles({ orgId: org.id })),
     call(fetchCurrentUserRoles.run, fetchCurrentUserRoles({ userId: userId })),
     call(fetchStacks.run, fetchStacks()),
@@ -96,10 +99,12 @@ function* onFetchResourceData() {
     call(fetchServices.run, fetchServices()),
     call(fetchEndpoints.run, fetchEndpoints()),
     call(fetchOrgOperations.run, fetchOrgOperations({ orgId: org.id })),
+    call(fetchSystemStatus.run, fetchSystemStatus()),
   ]);
 }
 
 function* onRefreshData() {
+  yield* call(fetchOrganizations.run, fetchOrganizations());
   yield* all([call(onFetchRequiredData), call(onFetchResourceData)]);
 }
 

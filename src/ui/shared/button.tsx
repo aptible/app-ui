@@ -1,5 +1,6 @@
-import { selectUserHasPerms } from "@app/deploy";
-import { selectIsUserAnyOwner } from "@app/roles";
+import { selectIsUserAnyOwner, selectUserHasPerms } from "@app/deploy";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { selectIsUserOwner } from "@app/roles";
 import { capitalize } from "@app/string-utils";
 import { AppState, PermissionScope } from "@app/types";
 import cn from "classnames";
@@ -19,7 +20,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
   shape?: Shape;
   isLoading?: boolean;
-  requireConfirm?: boolean;
+  requireConfirm?: boolean | "invert";
   children?: React.ReactNode;
 }
 
@@ -142,7 +143,11 @@ export const Button: FC<ButtonProps> = ({
       buttonShapeStyle(size, shape),
     );
     return (
-      <Group variant="horizontal" size="sm">
+      <Group
+        variant="horizontal"
+        size="sm"
+        className={requireConfirm === "invert" ? "flex-row-reverse" : ""}
+      >
         <button
           className={cls}
           type="reset"
@@ -232,8 +237,27 @@ const createButtonPermission = (
   };
 };
 
-export const ButtonOwner = ({ children, ...props }: ButtonProps) => {
+export const ButtonAnyOwner = ({ children, ...props }: ButtonProps) => {
   const isUserOwner = useSelector(selectIsUserAnyOwner);
+
+  if (isUserOwner) {
+    return <Button {...props}>{children}</Button>;
+  }
+
+  return (
+    <Tooltip text="You do not have a valid role type (platform_owner, owner) to access this resource">
+      <Button {...props} disabled>
+        {children}
+      </Button>
+    </Tooltip>
+  );
+};
+
+export const ButtonOrgOwner = ({ children, ...props }: ButtonProps) => {
+  const orgId = useSelector(selectOrganizationSelectedId);
+  const isUserOwner = useSelector((s: AppState) =>
+    selectIsUserOwner(s, { orgId }),
+  );
 
   if (isUserOwner) {
     return <Button {...props}>{children}</Button>;

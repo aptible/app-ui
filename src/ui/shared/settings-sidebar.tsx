@@ -4,6 +4,8 @@ import {
   securitySettingsUrl,
   settingsProfileUrl,
   sshSettingsUrl,
+  teamMembersUrl,
+  teamPendingInvitesUrl,
 } from "@app/routes";
 import cn from "classnames";
 import { useSelector } from "react-redux";
@@ -54,13 +56,12 @@ export function SettingsSidebar() {
       <div>
         <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Team</h4>
 
-        <NavLink
-          className={navLink}
-          to={url(`/organizations/${orgId}/members`)}
-          target="_blank"
-        >
+        <NavLink className={navLink} to={teamMembersUrl()}>
           Members
-          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
+        </NavLink>
+
+        <NavLink className={navLink} to={teamPendingInvitesUrl()}>
+          Pending Invites
         </NavLink>
 
         <NavLink
@@ -69,15 +70,6 @@ export function SettingsSidebar() {
           target="_blank"
         >
           Roles
-          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
-        </NavLink>
-
-        <NavLink
-          className={navLink}
-          to={url(`/organizations/${orgId}/pending-invitations`)}
-          target="_blank"
-        >
-          Pending Invites
           <IconExternalLink variant="sm" className="ml-1 opacity-60" />
         </NavLink>
 

@@ -1,5 +1,9 @@
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { selectCurrentUserRoles } from "@app/roles";
+import {
+  selectCurrentUserRoles,
+  selectCurrentUserRolesByOrgId,
+  selectRolesByOrgId,
+} from "@app/roles";
 import { createReducerMap, createTable } from "@app/slice-helpers";
 import {
   AppState,
@@ -69,6 +73,47 @@ export const {
   selectTableAsList: selectPermissionsAsList,
 } = permissions.getSelectors(
   (s: AppState) => selectDeploy(s)[PERMISSIONS_NAME] || {},
+);
+
+export const selectIsAccountOwner = createSelector(
+  selectCurrentUserRolesByOrgId,
+  (roles) => roles.some((r) => r.type === "owner"),
+);
+
+export const selectIsPlatformOwner = createSelector(
+  selectCurrentUserRolesByOrgId,
+  (roles) => roles.some((r) => r.type === "platform_owner"),
+);
+
+export const selectRolesEditable = createSelector(
+  selectRolesByOrgId,
+  selectIsAccountOwner,
+  selectIsPlatformOwner,
+  (roles, isAccountOwner, isPlatformOwner) => {
+    if (isAccountOwner) {
+      return roles;
+    }
+
+    if (isPlatformOwner) {
+      // platform owners are not allowed to add owner role to a user
+      return roles.filter((r) => r.type !== "owner");
+    }
+
+    return [];
+  },
+);
+
+export const selectIsUserOwner = createSelector(
+  selectIsAccountOwner,
+  selectIsPlatformOwner,
+  (isAccountOwner, isPlatformOwner) => isAccountOwner || isPlatformOwner,
+);
+
+export const selectIsUserAnyOwner = createSelector(
+  selectCurrentUserRoles,
+  (roles) => {
+    return roles.some((r) => r.type === "owner" || r.type === "platform_owner");
+  },
 );
 
 export const selectPermsByAccount = createSelector(

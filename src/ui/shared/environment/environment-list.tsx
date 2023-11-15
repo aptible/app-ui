@@ -16,7 +16,7 @@ import type { AppState, DeployEnvironment } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ButtonOwner } from "../button";
+import { ButtonAnyOwner } from "../button";
 import { Group } from "../group";
 import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -158,10 +158,10 @@ export function EnvironmentList({
             </Group>
 
             <ActionBar>
-              <ButtonOwner onClick={onCreate}>
+              <ButtonAnyOwner onClick={onCreate}>
                 <IconPlusCircle variant="sm" className="mr-2" />
                 New Environment
-              </ButtonOwner>
+              </ButtonAnyOwner>
             </ActionBar>
           </div>
 

@@ -1,4 +1,4 @@
-import { authApi, cacheShortTimer, cacheTimer, elevetatedMdw } from "@app/api";
+import { authApi, cacheShortTimer, elevetatedMdw } from "@app/api";
 import { selectOrigin } from "@app/env";
 import { Next, call, put, select } from "@app/fx";
 import { setOrganizationSelected } from "@app/organizations";
@@ -25,7 +25,7 @@ export const fetchUser = authApi.get<UserBase, UserResponse>(
 export const fetchUsers = authApi.get<{ orgId: string }>(
   "/organizations/:orgId/users",
   {
-    saga: cacheTimer(),
+    saga: cacheShortTimer(),
   },
 );
 

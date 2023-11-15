@@ -1,14 +1,16 @@
+import { selectIsUserOwner } from "@app/deploy";
 import { useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
+import { teamInviteUrl, teamMembersEditUrl } from "@app/routes";
 import type { AppState } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { fetchUsers, selectUsersForSearchTable } from "@app/users";
 import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ActionBar,
-  Button,
-  ButtonOwner,
+  ButtonAnyOwner,
+  ButtonLink,
   DescBar,
   EmptyTr,
   FilterBar,
@@ -26,6 +28,7 @@ import {
 } from "../shared";
 
 export const TeamMembersPage = () => {
+  const navigate = useNavigate();
   const org = useSelector(selectOrganizationSelected);
   const orgId = org.id;
   useQuery(fetchUsers({ orgId }));
@@ -38,35 +41,31 @@ export const TeamMembersPage = () => {
     selectUsersForSearchTable(s, { search }),
   );
   const paginated = usePaginate(users);
-  const onInvite = () => {};
+  const onInvite = () => {
+    navigate(teamInviteUrl());
+  };
+  const isOwner = useSelector((s: AppState) => selectIsUserOwner(s, { orgId }));
 
   return (
     <Group>
       <Group size="sm">
-        <TitleBar description="This is a list of members in your Organization">
+        <TitleBar description="Search members by name or status by typing verified, mfa, !verified, or !mfa">
           Members
         </TitleBar>
 
         <FilterBar>
           <div className="flex justify-between mb-1">
-            <div>
-              <InputSearch
-                placeholder="Search..."
-                search={search}
-                onChange={onChange}
-              />
-              <p>
-                Special search terms: <code>verified</code> and <code>mfa</code>
-                . The inverse is also available: <code>!verified</code> and{" "}
-                <code>!mfa</code>.
-              </p>
-            </div>
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
 
             <ActionBar>
-              <ButtonOwner onClick={onInvite}>
+              <ButtonAnyOwner onClick={onInvite}>
                 <IconPlusCircle variant="sm" className="mr-2" />
                 Invite User
-              </ButtonOwner>
+              </ButtonAnyOwner>
             </ActionBar>
           </div>
 
@@ -98,9 +97,15 @@ export const TeamMembersPage = () => {
                 {user.otpEnabled ? "Enabled" : "Disabled"}
               </Td>
               <Td variant="right">
-                <Button type="submit" size="sm">
-                  Edit
-                </Button>
+                {isOwner ? (
+                  <ButtonLink
+                    size="sm"
+                    to={teamMembersEditUrl(user.id)}
+                    className="w-fit justify-self-end inline-flex"
+                  >
+                    Edit
+                  </ButtonLink>
+                ) : null}
               </Td>
             </Tr>
           ))}

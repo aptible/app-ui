@@ -33,12 +33,12 @@ import {
   Banner,
   BannerMessages,
   Button,
-  CreateProjectFooter,
   FormGroup,
   Group,
   IconArrowRight,
   Input,
   Label,
+  OrgPicker,
 } from "../shared";
 
 const StripeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -218,19 +218,33 @@ export const BillingMethodPage = () => {
       <HeroBgView className="flex gap-6">
         <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] h-fit min-h-screen">
           <div className="text-xl text-black font-bold">
-            Launch, grow, and scale your app without worrying about
-            infrastructure
+            Try the platform hundreds of scaling engineering teams use to
+            achieve enterprise best practices for their infrastructure
           </div>
-          <div className="text-lg text-gold font-bold pt-5 pb-1">Launch</div>
-          <p>Get up and running without any work or config.</p>
-          <hr className="mt-5 mb-4" />
-          <div className="text-lg text-gold font-bold pb-1">Grow</div>
-          <p>Aptible handles all the infrastructure operations.</p>
-          <hr className="mt-5 mb-4" />
-          <div className="text-lg text-gold font-bold pb-1">Scale</div>
+          <div className="text-lg text-gold font-bold pt-5 pb-1">
+            Control your Infrastructure
+          </div>
           <p>
-            Enterprise requirements such as performance, security, and
-            reliability are baked in from day one.
+            Manage your entire infrastructure, optimize cloud spending, and
+            prevent vendor lock-in.
+          </p>
+          <hr className="mt-5 mb-4" />
+          <div className="text-lg text-gold font-bold pb-1">
+            Ensure Reliability
+          </div>
+          <p>
+            Aptible fully monitors your entire compute and data resources, and
+            holds the pager 24x7 for your infrastructure.
+          </p>
+          <hr className="mt-5 mb-4" />
+          <div className="text-lg text-gold font-bold pb-1">
+            Achieve Best Practices
+          </div>
+          <p>
+            Get the flexibility that scaling companies need: support non-HTTPS
+            services; enforce fine-grained RBAC; comply with security
+            frameworks; and scale to the limits of AWS for containers, disks, or
+            backups.
           </p>
           <p className="text-md text-black pt-8 pb-4 text-center font-semibold">
             Companies that have scaled with Aptible
@@ -240,9 +254,6 @@ export const BillingMethodPage = () => {
             className="text-center scale-90"
             aria-label="Customer Logos"
           />
-          <div className="pt-8 lg:px-0 px-10">
-            <CreateProjectFooter />
-          </div>
         </div>
 
         <div className="flex-1 mx-auto max-w-[500px]">
@@ -251,16 +262,18 @@ export const BillingMethodPage = () => {
               <AptibleLogo width={160} />
             </div>
 
-            <div className="text-center">
-              <p className="text-gray-900">
+            <Group className="items-center">
+              <p className="text-gray-900 text-center">
                 You must enter a credit card to continue using Aptible. <br />
                 Your card will be charged at the end of your monthly billing
                 cycle.
               </p>
-              <h1 className="text-gray-900 text-3xl font-semibold text-center pt-8">
+              <h1 className="text-gray-900 text-3xl font-semibold text-center">
                 Add Payment Information
               </h1>
-            </div>
+
+              <OrgPicker />
+            </Group>
 
             <Banner variant="info" className="w-full">
               <div className="flex items-center gap-2">

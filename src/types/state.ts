@@ -30,7 +30,7 @@ import type {
 } from "./deploy";
 import type { EntityMap } from "./hal";
 import type { MapEntity } from "./helpers";
-import type { Invitation, InvitationRequest } from "./invitations";
+import type { Invitation } from "./invitations";
 import type { ModalState } from "./modal";
 
 export interface Env {
@@ -189,7 +189,6 @@ export interface AppState extends QueryState {
   users: MapEntity<User>;
   token: Token;
   elevatedToken: Token;
-  invitationRequest: InvitationRequest;
   invitations: MapEntity<Invitation>;
   entities: EntityMap;
   redirectPath: string;

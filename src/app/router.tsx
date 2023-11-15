@@ -110,7 +110,10 @@ import {
   StacksPage,
   StylesPage,
   SupportPage,
+  TeamAcceptInvitePage,
   TeamContactsPage,
+  TeamInvitePage,
+  TeamMembersEditPage,
   TeamMembersPage,
   TeamPage,
   TeamPendingInvitesPage,
@@ -154,11 +157,6 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.SEARCH_PATH,
         element: <SearchPage />,
-      },
-
-      {
-        path: routes.ORG_PICKER_PATH,
-        element: <OrgPickerPage />,
       },
 
       {
@@ -558,6 +556,17 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.ORG_PICKER_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <OrgPickerPage />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
+  },
+
+  {
     path: routes.LOGOUT_PATH,
     element: (
       <AuthRequired>
@@ -691,6 +700,37 @@ export const appRoutes: RouteObject[] = [
         <SettingsLayout>
           <TeamMembersPage />
         </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_MEMBERS_EDIT_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamMembersEditPage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_INVITE_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout>
+          <TeamInvitePage />
+        </SettingsLayout>
+      </AuthRequired>
+    ),
+  },
+
+  {
+    path: routes.TEAM_ACCEPT_INVITE_PATH,
+    element: (
+      <AuthRequired>
+        <TeamAcceptInvitePage />
       </AuthRequired>
     ),
   },
