@@ -163,6 +163,7 @@ export const createInvitation = authApi.post<{ email: string }>(
       body: JSON.stringify({ email: ctx.payload.email, origin: env.origin }),
     });
     yield* next();
+    if (!ctx.json.ok) return;
     ctx.loader = { message: `Invitation sent to ${ctx.payload.email}` };
   },
 );
