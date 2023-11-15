@@ -74,6 +74,12 @@ const ServiceListRow = ({
           </div>
         </Td>
 
+        <Td variant="center">
+          <div className={tokens.type.darker}>
+            Enabled
+          </div>
+        </Td>
+
         <Td variant="right">
           <Group size="sm" variant="horizontal">
             <ButtonLink
@@ -157,6 +163,7 @@ export function ServicesOverview({
           <Th>Container Count</Th>
           <Th>Profile</Th>
           <Th>Monthly Cost</Th>
+          <Th variant="center">Autoscaling</Th>
           <Th variant="right">Actions</Th>
         </THead>
 
