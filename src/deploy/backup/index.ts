@@ -133,7 +133,7 @@ export const fetchDatabaseBackups = api.get<{ id: string }>(
 export const cancelPollDatabaseBackups = createAction("cancel-poll-db-backups");
 export const pollDatabaseBackups = api.get<{ id: string }>(
   ["/databases/:id/backups", "poll"],
-  { saga: poll(5 * 1000, `${cancelPollDatabaseBackups}`) },
+  { saga: poll(10 * 1000, `${cancelPollDatabaseBackups}`) },
 );
 
 export const fetchBackup = api.get<{ id: string }>("/backups/:id");

@@ -335,13 +335,13 @@ export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
 export const pollAppOperations = api.get<AppIdProp>(
   ["/apps/:id/operations", "poll"],
   {
-    saga: poll(5 * 1000, `${cancelAppOpsPoll}`),
+    saga: poll(10 * 1000, `${cancelAppOpsPoll}`),
   },
 );
 
 export const pollAppAndServiceOperations = thunks.create<AppIdProp>(
   "app-service-op-poll",
-  { saga: poll(5 * 1000, `${cancelAppOpsPoll}`) },
+  { saga: poll(10 * 1000, `${cancelAppOpsPoll}`) },
   function* (ctx, next) {
     yield* put(setLoaderStart({ id: ctx.key }));
 

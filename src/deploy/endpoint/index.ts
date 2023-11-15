@@ -483,7 +483,7 @@ export const pollFetchEndpoint = api.get<{ id: string }>(
 export const cancelEndpointOpsPoll = createAction("cancel-enp-ops-poll");
 export const pollEndpointOperations = api.get<{ id: string }>(
   ["/vhosts/:id/operations", "poll"],
-  { saga: poll(5 * 1000, `${cancelEndpointOpsPoll}`) },
+  { saga: poll(10 * 1000, `${cancelEndpointOpsPoll}`) },
   api.cache(),
 );
 
