@@ -91,7 +91,7 @@ const ReportView = ({
       <Td>{date}</Td>
       <Td>{prettyEnglishDate(report.starts_at)}</Td>
       <Td>{prettyEnglishDate(report.ends_at)}</Td>
-      <Td className="flex gap-2 justify-end mr-4">
+      <Td variant="right">
         <Group variant="horizontal" size="sm">
           <DownloadReport
             filename={`report-${stack.name}-${date}.csv`}
