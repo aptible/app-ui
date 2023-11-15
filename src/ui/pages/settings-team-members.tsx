@@ -2,7 +2,7 @@ import { selectIsUserOwner } from "@app/deploy";
 import { useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { teamInviteUrl, teamMembersEditUrl } from "@app/routes";
-import type { AppState } from "@app/types";
+import type { AppState, User } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { fetchUsers, selectUsersForSearchTable } from "@app/users";
 import { useSelector } from "react-redux";
@@ -11,6 +11,7 @@ import {
   ActionBar,
   ButtonAnyOwner,
   ButtonLink,
+  CsvButton,
   DescBar,
   EmptyTr,
   FilterBar,
@@ -26,6 +27,14 @@ import {
   TitleBar,
   Tr,
 } from "../shared";
+
+function generateMembersCsv(users: User[]) {
+  let csv = "id,name,email,verified,2fa\n";
+  users.forEach((user) => {
+    csv += `${user.id},${user.name},${user.email},${user.verified},${user.otpEnabled}\n`;
+  });
+  return csv;
+}
 
 export const TeamMembersPage = () => {
   const navigate = useNavigate();
@@ -62,10 +71,16 @@ export const TeamMembersPage = () => {
             />
 
             <ActionBar>
-              <ButtonAnyOwner onClick={onInvite}>
-                <IconPlusCircle variant="sm" className="mr-2" />
-                Invite User
-              </ButtonAnyOwner>
+              <Group variant="horizontal" size="sm">
+                <CsvButton
+                  csv={() => generateMembersCsv(users)}
+                  title={`aptible_${org.name.toLocaleLowerCase()}_members`}
+                />
+                <ButtonAnyOwner onClick={onInvite}>
+                  <IconPlusCircle variant="sm" className="mr-2" />
+                  Invite User
+                </ButtonAnyOwner>
+              </Group>
             </ActionBar>
           </div>
 
