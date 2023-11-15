@@ -60,7 +60,7 @@ export const Td = ({
   variant = "left",
 }: CellProps) => {
   const align = () => {
-    if (variant === "right") return "text-right pr-4";
+    if (variant === "right") return "text-right pr-4 flex gap-2 justify-end";
     if (variant === "center") return "text-center";
     return "text-left";
   };
