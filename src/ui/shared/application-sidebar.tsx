@@ -51,6 +51,8 @@ export const ApplicationSidebar = () => {
   const systemStatus = useSelector((s: AppState) =>
     selectDataById(s, { id: SYSTEM_STATUS_ID }),
   );
+  const hasSystemStatus =
+    systemStatus?.description && systemStatus?.indicator !== "none";
 
   const navigate = useNavigate();
   const navigation = [
@@ -140,7 +142,7 @@ export const ApplicationSidebar = () => {
             </Banner>
           ) : null}
 
-          {systemStatus?.description && !collapsed ? (
+          {hasSystemStatus && !collapsed ? (
             <Banner variant="warning" className="mt-2 text-xs">
               <div>{systemStatus.description}</div>
               <div>
