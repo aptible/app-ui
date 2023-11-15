@@ -199,8 +199,15 @@ export const findDatabaseById = must(selectors.findById);
 
 export const selectDatabaseByHandle = createSelector(
   selectDatabasesAsList,
+  (_: AppState, p: { envId: string }) => p.envId,
   (_: AppState, p: { handle: string }) => p.handle,
-  (dbs, handle) => dbs.find((db) => db.handle === handle) || initDb,
+  (dbs, envId, handle) => {
+    const dbFound = dbs.find((db) => {
+      return db.environmentId === envId && db.handle === handle;
+    });
+
+    return dbFound || initDb;
+  },
 );
 
 export const selectDatabasesByOrgAsList = createSelector(
@@ -485,6 +492,7 @@ export const provisionDatabase = thunks.create<
 
   const dbAlreadyExists = yield* select(selectDatabaseByHandle, {
     handle: ctx.payload.handle,
+    envId: ctx.payload.envId,
   });
 
   let dbId = dbAlreadyExists.id;
