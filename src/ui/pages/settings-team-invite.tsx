@@ -28,7 +28,7 @@ interface FormData {
 
 const validators = {
   email: (data: FormData) => emailValidator(data.email),
-  role: (data: FormData) => existValidtor(data.roleId, "must select a role"),
+  role: (data: FormData) => existValidtor(data.roleId, "role"),
 };
 
 export function TeamInvitePage() {
@@ -82,6 +82,7 @@ export function TeamInvitePage() {
               label="Email"
               htmlFor="email"
               feedbackMessage={errors.email}
+              feedbackVariant={errors.email ? "danger" : "info"}
             >
               <Input
                 id="email"
@@ -95,6 +96,7 @@ export function TeamInvitePage() {
               label="Role"
               htmlFor="role"
               feedbackMessage={errors.role}
+              feedbackVariant={errors.role ? "danger" : "info"}
             >
               <Select
                 options={options}
