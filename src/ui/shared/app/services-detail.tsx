@@ -63,7 +63,7 @@ const ServiceListRow = ({
         </Td>
 
         <Td>
-          <div className={tokens.type["normal lighter"]}>
+          <div className={tokens.type.darker}>
             {metrics.containerProfile.name}
           </div>
         </Td>
