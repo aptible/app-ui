@@ -1,6 +1,7 @@
 import {
   DEFAULT_INSTANCE_CLASS,
   ServiceSizingPolicyEditProps,
+  ServiceSizingPolicyResponse,
   createServiceSizingPoliciesByServiceId,
   deleteServiceSizingPoliciesByServiceId,
   exponentialContainerSizesByProfile,
@@ -65,23 +66,6 @@ type AppScaleProps = {
   containerCount: number;
 };
 
-type ServiceSizingPolicyResponse = {
-  id: number;
-  _type: string;
-  scaling_enabled: boolean;
-  default_policy: boolean;
-  metric_lookback_seconds: number;
-  percentile: number;
-  post_scale_up_cooldown_seconds: number;
-  post_scale_down_cooldown_seconds: number;
-  post_release_cooldown_seconds: number;
-  mem_cpu_ratio_r_threshold: number;
-  mem_cpu_ratio_c_threshold: number;
-  mem_scale_up_threshold: number;
-  mem_scale_down_threshold: number;
-  minimum_memory: number;
-};
-
 const VerticalAutoscalingSection = ({
   id,
   stackId,
@@ -103,6 +87,7 @@ const VerticalAutoscalingSection = ({
   const [minimumMemory, setMinimumMemory] = useState<number>(
     existingPolicy?.minimum_memory || 2048,
   );
+  const [maximumMemory, setMaximumMemory] = useState<number>();
   const [memoryScaleUp, setMemoryScaleUp] = useState<number>(
     existingPolicy?.mem_scale_up_threshold || 0.9,
   );
@@ -153,6 +138,9 @@ const VerticalAutoscalingSection = ({
   useEffect(() => {
     setMinimumMemory(existingPolicy?.minimum_memory || 2048);
   }, [existingPolicy?.minimum_memory]);
+  useEffect(() => {
+    setMaximumMemory(existingPolicy?.maximum_memory);
+  }, [existingPolicy?.maximum_memory]);
   useEffect(() => {
     setMemoryScaleUp(existingPolicy?.mem_scale_up_threshold || 0.9);
   }, [existingPolicy?.mem_scale_up_threshold]);
@@ -224,6 +212,7 @@ const VerticalAutoscalingSection = ({
         cRatioLimit !== existingPolicy?.mem_cpu_ratio_c_threshold ||
         percentile !== existingPolicy?.percentile ||
         minimumMemory !== existingPolicy?.minimum_memory ||
+        maximumMemory !== existingPolicy?.maximum_memory ||
         memoryScaleUp !== existingPolicy?.mem_scale_up_threshold ||
         memoryScaleDown !== existingPolicy?.mem_scale_down_threshold ||
         lookbackInterval !== existingPolicy?.metric_lookback_seconds ||
@@ -314,7 +303,7 @@ const VerticalAutoscalingSection = ({
                       </FormGroup>
                       <FormGroup
                         splitWidthInputs
-                        description="The lowest memory at which vertical autoscaling will take action for this service"
+                        description="The minimum memory that vertical autoscaling will scale this service"
                         label="Minimum memory"
                         htmlFor="minimum-memory"
                       >
@@ -327,6 +316,26 @@ const VerticalAutoscalingSection = ({
                           max="784384"
                           onChange={(e) =>
                             setMinimumMemory(
+                              parseInt(e.currentTarget.value, 10),
+                            )
+                          }
+                        />
+                      </FormGroup>
+                      <FormGroup
+                        splitWidthInputs
+                        description="The maximum memory that vertical autoscaling will scale this service"
+                        label="Maximum memory"
+                        htmlFor="maximum-memory"
+                      >
+                        <Input
+                          id="maximum-memory"
+                          name="maximum-memory"
+                          type="number"
+                          value={maximumMemory}
+                          min="0"
+                          max="784384"
+                          onChange={(e) =>
+                            setMaximumMemory(
                               parseInt(e.currentTarget.value, 10),
                             )
                           }

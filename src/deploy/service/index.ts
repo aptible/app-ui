@@ -268,6 +268,7 @@ export const createServiceSizingPoliciesByServiceId = api.post<
   const {
     id,
     minimumMemory,
+    maximumMemory,
     memoryScaleUp,
     memoryScaleDown,
     percentile,
@@ -281,6 +282,7 @@ export const createServiceSizingPoliciesByServiceId = api.post<
   const body = {
     id,
     minimum_memory: minimumMemory,
+    maxmimum_memory: maximumMemory,
     mem_scale_up_threshold: memoryScaleUp,
     mem_scale_down_threshold: memoryScaleDown,
     percentile: percentile,
@@ -306,6 +308,7 @@ export const deleteServiceSizingPoliciesByServiceId = api.delete<{
 export interface ServiceSizingPolicyEditProps {
   id: string;
   minimumMemory?: number;
+  maximumMemory?: number;
   memoryScaleUp?: number;
   memoryScaleDown?: number;
   percentile?: number;
@@ -324,6 +327,7 @@ export const updateServiceSizingPoliciesByServiceId = api.put<
   const {
     id,
     minimumMemory,
+    maximumMemory,
     memoryScaleUp,
     memoryScaleDown,
     percentile,
@@ -337,6 +341,7 @@ export const updateServiceSizingPoliciesByServiceId = api.put<
   const body = {
     id,
     minimum_memory: minimumMemory,
+    maxmimum_memory: maximumMemory,
     mem_scale_up_threshold: memoryScaleUp,
     mem_scale_down_threshold: memoryScaleDown,
     percentile: percentile,
@@ -369,6 +374,7 @@ export interface ServiceSizingPolicyResponse {
   mem_scale_up_threshold: number;
   mem_scale_down_threshold: number;
   minimum_memory: number;
+  maximum_memory: number | undefined;
   created_at: string;
   updated_at: string;
   _links: {
@@ -395,6 +401,7 @@ export const defaultServiceSizingPolicyResponse = (
     mem_scale_up_threshold: 0.9,
     mem_scale_down_threshold: 0.75,
     minimum_memory: 2048,
+    maximum_memory: undefined,
     created_at: now,
     updated_at: now,
     _links: { account: { href: "" } },
