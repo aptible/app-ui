@@ -43,7 +43,7 @@ const validators = {
 
 const SignupMarketing = () => {
   return (
-    <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] h-fit min-h-screen">
+    <div className="bg-white/90 shadow p-12 lg:block hidden lg:w-[500px] h-fit min-h-screen">
       <div className="text-xl text-black font-bold">
         Try the platform hundreds of scaling engineering teams use to achieve
         enterprise best practices for their infrastructure
@@ -75,7 +75,7 @@ const SignupMarketing = () => {
       </p>
       <img
         src="/customer-logo-cloud.png"
-        className="text-center scale-90"
+        className="text-center scale-90 pb-[200px]"
         aria-label="Customer Logos"
       />
     </div>
@@ -118,7 +118,7 @@ const SignupHeader = () => {
               enterprise best practices without building your own internal
               developer platform.
             </p>
-            <h1 className={`${tokens.type.h1} text-center pt-8`}>
+            <h1 className={`${tokens.type.h1} text-center pt-4`}>
               Get started for free
             </h1>
           </div>
@@ -204,7 +204,7 @@ export const SignupPage = () => {
     <HeroBgView className="flex gap-6">
       <SignupMarketing />
 
-      <div className="flex justify-center w-full">
+      <div className="flex-1 mx-auto max-w-[500px]">
         <Group variant="vertical">
           <SignupHeader />
 
