@@ -94,7 +94,7 @@ export const TeamMembersPage = () => {
 
       <Table>
         <THead>
-          <Th>User</Th>
+          <Th>Name</Th>
           <Th>Email</Th>
           <Th variant="center">Verified</Th>
           <Th variant="center">MFA Status</Th>
