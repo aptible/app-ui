@@ -95,6 +95,7 @@ export const TeamMembersPage = () => {
       <Table>
         <THead>
           <Th>User</Th>
+          <Th>Email</Th>
           <Th variant="center">Verified</Th>
           <Th variant="center">MFA Status</Th>
           <Th variant="right">Actions</Th>
@@ -106,6 +107,8 @@ export const TeamMembersPage = () => {
             <Tr key={user.id}>
               <Td>
                 <div className={tokens.type.darker}>{user.name}</div>
+              </Td>
+              <Td>
                 <div>{user.email}</div>
               </Td>
               <Td variant="center">{user.verified ? "Yes" : "No"}</Td>
