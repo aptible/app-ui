@@ -132,6 +132,11 @@ const CreditCardForm = () => {
       {error ? <Banner variant="error">{error}</Banner> : null}
       <BannerMessages {...loader} />
 
+      <div className="flex flex-col gap-0">
+        <Label>Organization</Label>
+        <OrgPicker />
+      </div>
+
       <form className="space-y-4" onSubmit={onSubmitForm}>
         <Label>
           <span>Credit Card Number</span>
@@ -216,7 +221,7 @@ export const BillingMethodPage = () => {
   return (
     <StripeProvider>
       <HeroBgView className="flex gap-6">
-        <div className="bg-white/90 shadow p-16 lg:block hidden lg:w-[500px] h-fit min-h-screen">
+        <div className="bg-white/90 shadow p-12 lg:block hidden lg:w-[500px] h-fit min-h-screen">
           <div className="text-xl text-black font-bold">
             Try the platform hundreds of scaling engineering teams use to
             achieve enterprise best practices for their infrastructure
@@ -251,7 +256,7 @@ export const BillingMethodPage = () => {
           </p>
           <img
             src="/customer-logo-cloud.png"
-            className="text-center scale-90"
+            className="text-center scale-90 pb-[200px]"
             aria-label="Customer Logos"
           />
         </div>
@@ -271,8 +276,6 @@ export const BillingMethodPage = () => {
               <h1 className="text-gray-900 text-3xl font-semibold text-center">
                 Add Payment Information
               </h1>
-
-              <OrgPicker />
             </Group>
 
             <Banner variant="info" className="w-full">

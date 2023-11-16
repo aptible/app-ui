@@ -61,7 +61,7 @@ export const PlansPage = () => {
               <Link to={logoutUrl()}>Log Out</Link>
             </p>
           </div>
-          <div>
+          <div className="min-w-[260px]">
             <OrgPicker />
           </div>
         </Group>
