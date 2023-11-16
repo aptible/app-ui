@@ -282,7 +282,7 @@ export const createServiceSizingPoliciesByServiceId = api.post<
   const body = {
     id,
     minimum_memory: minimumMemory,
-    maxmimum_memory: maximumMemory,
+    maximum_memory: maximumMemory,
     mem_scale_up_threshold: memoryScaleUp,
     mem_scale_down_threshold: memoryScaleDown,
     percentile: percentile,
@@ -341,7 +341,7 @@ export const updateServiceSizingPoliciesByServiceId = api.put<
   const body = {
     id,
     minimum_memory: minimumMemory,
-    maxmimum_memory: maximumMemory,
+    maximum_memory: maximumMemory,
     mem_scale_up_threshold: memoryScaleUp,
     mem_scale_down_threshold: memoryScaleDown,
     percentile: percentile,

@@ -87,7 +87,9 @@ const VerticalAutoscalingSection = ({
   const [minimumMemory, setMinimumMemory] = useState<number>(
     existingPolicy?.minimum_memory || 2048,
   );
-  const [maximumMemory, setMaximumMemory] = useState<number>();
+  const [maximumMemory, setMaximumMemory] = useState<number | undefined>(
+    existingPolicy?.maximum_memory,
+  );
   const [memoryScaleUp, setMemoryScaleUp] = useState<number>(
     existingPolicy?.mem_scale_up_threshold || 0.9,
   );
@@ -174,6 +176,7 @@ const VerticalAutoscalingSection = ({
   const policyFormData: ServiceSizingPolicyEditProps = {
     id,
     minimumMemory,
+    maximumMemory,
     memoryScaleUp,
     memoryScaleDown,
     percentile,
@@ -303,7 +306,7 @@ const VerticalAutoscalingSection = ({
                       </FormGroup>
                       <FormGroup
                         splitWidthInputs
-                        description="The minimum memory that vertical autoscaling will scale this service"
+                        description="The minimum memory that vertical autoscaling can scale this service to"
                         label="Minimum memory"
                         htmlFor="minimum-memory"
                       >
@@ -323,7 +326,7 @@ const VerticalAutoscalingSection = ({
                       </FormGroup>
                       <FormGroup
                         splitWidthInputs
-                        description="The maximum memory that vertical autoscaling will scale this service"
+                        description="The maximum memory that vertical autoscaling can scale this service to"
                         label="Maximum memory"
                         htmlFor="maximum-memory"
                       >
