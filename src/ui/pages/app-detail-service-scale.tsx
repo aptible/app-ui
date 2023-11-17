@@ -527,7 +527,7 @@ const VerticalAutoscalingSection = ({
               </div>
               <hr />
 
-              <div className="flex mt-4">
+              <div className="flex">
                 <Button
                   name="autoscaling"
                   className="w-40 flex font-semibold"

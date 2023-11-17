@@ -26,6 +26,7 @@ import {
   Th,
   TitleBar,
   Tr,
+  tokens,
 } from "../shared";
 
 function generateMembersCsv(users: User[]) {
@@ -93,7 +94,8 @@ export const TeamMembersPage = () => {
 
       <Table>
         <THead>
-          <Th>User</Th>
+          <Th>Name</Th>
+          <Th>Email</Th>
           <Th variant="center">Verified</Th>
           <Th variant="center">MFA Status</Th>
           <Th variant="right">Actions</Th>
@@ -104,7 +106,9 @@ export const TeamMembersPage = () => {
           {paginated.data.map((user) => (
             <Tr key={user.id}>
               <Td>
-                <div>{user.name}</div>
+                <div className={tokens.type.darker}>{user.name}</div>
+              </Td>
+              <Td>
                 <div>{user.email}</div>
               </Td>
               <Td variant="center">{user.verified ? "Yes" : "No"}</Td>
