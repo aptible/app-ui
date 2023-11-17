@@ -32,6 +32,7 @@ export function Select<V = string>({
   const finClassName = cn(
     "border-gray-300 text-black",
     "hover:border-gray-500",
+    "focus:ring-gray-500 focus:border-gray-500",
     "active:border-black-100 active:text-black",
     "disabled:bg-black-50 disabled:border-black-100 disabled:text-black",
     "rounded-md shadow-sm",
