@@ -1,6 +1,8 @@
 import {
+  ServiceSizingPolicyResponse,
   calcMetrics,
   calcServiceMetrics,
+  fetchServiceSizingPoliciesByServiceId,
   fetchServicesByAppId,
   selectAppById,
   selectEnvironmentById,
@@ -12,12 +14,12 @@ import {
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
 } from "@app/routes";
-import { AppState, DeployApp, DeployService } from "@app/types";
+import { AppState, DeployApp, DeployService, HalEmbedded } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { useQuery } from "saga-query/react";
+import { useCache, useQuery } from "saga-query/react";
 import { ButtonCreate, ButtonLink } from "../button";
 import { Group } from "../group";
 import { PreCode, listToInvertedTextColor } from "../pre-code";
@@ -45,6 +47,15 @@ const ServiceListRow = ({
   const stack = useSelector((s: AppState) =>
     selectStackById(s, { id: environment.stackId }),
   );
+  const autoscaling = useCache<
+    HalEmbedded<{
+      service_sizing_policies: ServiceSizingPolicyResponse[];
+    }>
+  >(fetchServiceSizingPoliciesByServiceId({ service_id: service.id }));
+
+  const autoscalingEnabled =
+    (autoscaling.data?._embedded?.service_sizing_policies || []).length > 0 &&
+    autoscaling.data?._embedded?.service_sizing_policies[0].scaling_enabled;
 
   return (
     <>
@@ -83,7 +94,9 @@ const ServiceListRow = ({
         </Td>
         {stack.verticalAutoscaling ? (
           <Td variant="center">
-            <div className={tokens.type.darker}>Enabled</div>
+            <div className={tokens.type.darker}>
+              {autoscalingEnabled ? "Enabled" : "Disabled"}
+            </div>
           </Td>
         ) : null}
 
