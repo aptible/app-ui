@@ -229,7 +229,7 @@ const VerticalAutoscalingSection = ({
                       id="maximum-memory"
                       name="maximum-memory"
                       type="number"
-                      value={nextPolicy.maximum_memory || ''}
+                      value={nextPolicy.maximum_memory || ""}
                       min="0"
                       max="784384"
                       onChange={(e) =>
