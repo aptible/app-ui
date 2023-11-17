@@ -68,7 +68,7 @@ function useServiceSizingPolicy(id: string) {
     }>
   >(fetchServiceSizingPoliciesByServiceId({ id }));
 
-  const policies = policy.data?._embedded.service_sizing_policies || [];
+  const policies = policy.data?._embedded?.service_sizing_policies || [];
   const existingPolicy = useMemo(() => {
     return defaultServiceSizingPolicyResponse(policies[0]);
   }, [id, policies.length]);
