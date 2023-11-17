@@ -291,7 +291,7 @@ export const defaultServiceSizingPolicyResponse = (
   const now = new Date().toISOString();
   return {
     id: undefined,
-    service_id: "0",
+    service_id: "",
     scaling_enabled: false,
     default_policy: false,
     metric_lookback_seconds: 300,
