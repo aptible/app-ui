@@ -156,7 +156,7 @@ const VerticalAutoscalingSection = ({
             </RadioGroup>
           </FormGroup>
           <div>
-            <div className="py-4 flex justify-between items-center">
+            <div className="pb-4 flex justify-between items-center">
               <div className="flex flex-1">
                 <div
                   className="font-semibold flex items-center cursor-pointer"
@@ -164,9 +164,7 @@ const VerticalAutoscalingSection = ({
                   onKeyUp={() => setOpen(!advancedIsOpen)}
                 >
                   {advancedIsOpen ? <IconChevronDown /> : <IconChevronRight />}
-                  <p className="ml-2">
-                    {advancedIsOpen ? "Hide" : "Show"} Advanced settings
-                  </p>
+                  <p>{advancedIsOpen ? "Hide" : "Show"} Advanced settings</p>
                 </div>
               </div>
             </div>
@@ -330,7 +328,7 @@ const VerticalAutoscalingSection = ({
                       }
                     />
                   </FormGroup>
-                  <h2 className="text-md text-gray-500">Time-based settings</h2>
+                  <h2 className="text-md text-gray-500">Time-Based Settings</h2>
                   <FormGroup
                     splitWidthInputs
                     description="Time interval in seconds to fetch metrics for evaluation"
@@ -421,7 +419,7 @@ const VerticalAutoscalingSection = ({
           </div>
           <hr />
 
-          <div className="flex mt-4">
+          <div className="flex">
             <Button
               name="autoscaling"
               className="w-40 flex font-semibold"
