@@ -3,7 +3,9 @@ import {
   calcServiceMetrics,
   fetchServicesByAppId,
   selectAppById,
+  selectEnvironmentById,
   selectServicesByAppId,
+  selectStackById,
 } from "@app/deploy";
 import {
   appDeployResumeUrl,
@@ -37,6 +39,12 @@ const ServiceListRow = ({
 }) => {
   const metrics = calcServiceMetrics(service);
   const { totalCPU } = calcMetrics([service]);
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const stack = useSelector((s: AppState) =>
+    selectStackById(s, { id: environment.stackId }),
+  );
 
   return (
     <>
@@ -73,12 +81,11 @@ const ServiceListRow = ({
             ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
           </div>
         </Td>
-
-        <Td variant="center">
-          <div className={tokens.type.darker}>
-            Enabled
-          </div>
-        </Td>
+        {stack.verticalAutoscaling ? (
+          <Td variant="center">
+            <div className={tokens.type.darker}>Enabled</div>
+          </Td>
+        ) : null}
 
         <Td variant="right">
           <Group size="sm" variant="horizontal">
@@ -133,6 +140,12 @@ export function ServicesOverview({
   };
   useQuery(fetchServicesByAppId({ id: app.id }));
   const paginated = usePaginate(services);
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const stack = useSelector((s: AppState) =>
+    selectStackById(s, { id: environment.stackId }),
+  );
 
   return (
     <Group>
@@ -163,7 +176,9 @@ export function ServicesOverview({
           <Th>Container Count</Th>
           <Th>Profile</Th>
           <Th>Monthly Cost</Th>
-          <Th variant="center">Autoscaling</Th>
+          {stack.verticalAutoscaling ? (
+            <Th variant="center">Autoscaling</Th>
+          ) : null}
           <Th variant="right">Actions</Th>
         </THead>
 
