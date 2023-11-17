@@ -167,7 +167,7 @@ describe("AppDetailServiceScalePage", () => {
             /Automatically scale your services by regularly revieweing recent CPU and RAM/,
           );
 
-          const btns = await screen.getAllByRole("button", {
+          const btns = screen.getAllByRole("button", {
             name: /Save Changes/,
           });
           const autoscaleBtn = btns[0];

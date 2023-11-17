@@ -2,26 +2,25 @@ import {
   DEFAULT_INSTANCE_CLASS,
   ServiceSizingPolicyEditProps,
   ServiceSizingPolicyResponse,
-  createServiceSizingPoliciesByServiceId,
-  deleteServiceSizingPoliciesByServiceId,
+  defaultServiceSizingPolicyResponse,
   exponentialContainerSizesByProfile,
   fetchApp,
   fetchService,
   fetchServiceSizingPoliciesByServiceId,
   getContainerProfileFromType,
   hourlyAndMonthlyCostsForContainers,
+  modifyServiceSizingPolicy,
   scaleService,
   selectAppById,
   selectContainerProfilesForStack,
   selectEnvironmentById,
   selectServiceById,
   selectStackById,
-  updateServiceSizingPoliciesByServiceId,
 } from "@app/deploy";
 import { useCache, useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { appActivityUrl } from "@app/routes";
 import { AppState, HalEmbedded, InstanceClass } from "@app/types";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
@@ -52,11 +51,7 @@ const validators = {
 
 const policyValidators = {
   ratios: (data: ServiceSizingPolicyEditProps) => {
-    if (
-      data.rRatioLimit !== undefined &&
-      data.cRatioLimit !== undefined &&
-      data.rRatioLimit < data.cRatioLimit
-    ) {
+    if (data.mem_cpu_ratio_r_threshold < data.mem_cpu_ratio_c_threshold) {
       return "Ratio for R must be larger than ratio for C";
     }
   },
@@ -66,487 +61,380 @@ type AppScaleProps = {
   containerCount: number;
 };
 
-const VerticalAutoscalingSection = ({
-  id,
-  stackId,
-}: { id: string; stackId: string }) => {
+function useServiceSizingPolicy(service_id: string) {
   const policy = useCache<
     HalEmbedded<{
       service_sizing_policies: ServiceSizingPolicyResponse[];
     }>
-  >(fetchServiceSizingPoliciesByServiceId({ id }));
+  >(fetchServiceSizingPoliciesByServiceId({ service_id }));
+
+  const policies = policy.data?._embedded?.service_sizing_policies || [];
+  const existingPolicy = useMemo(() => {
+    let policy;
+    if (policies[0] === undefined) {
+      policy = { service_id };
+    } else {
+      policy = policies[0];
+      policy.service_id = service_id;
+    }
+    return defaultServiceSizingPolicyResponse(policy);
+  }, [policies.length, policies[0]?.id, policies[0]?.service_id]);
+
+  return { policy, existingPolicy };
+}
+
+const VerticalAutoscalingSection = ({
+  id,
+  stackId,
+}: { id: string; stackId: string }) => {
   const dispatch = useDispatch();
+  const { policy, existingPolicy } = useServiceSizingPolicy(id);
+  const [nextPolicy, setNextPolicy] = useState(existingPolicy);
+  useEffect(() => {
+    setNextPolicy(existingPolicy);
+  }, [existingPolicy]);
+  const getChangesExist = () => {
+    if (!nextPolicy.scaling_enabled && !existingPolicy.scaling_enabled) {
+      return false;
+    }
+    return existingPolicy !== nextPolicy;
+  };
+  const changesExist = getChangesExist();
 
-  const existingPolicy =
-    policy.data !== null &&
-    policy.data._embedded !== undefined &&
-    policy.data._embedded.service_sizing_policies.length > 0
-      ? policy.data._embedded.service_sizing_policies[0]
-      : null;
-
-  const [minimumMemory, setMinimumMemory] = useState<number>(
-    existingPolicy?.minimum_memory || 2048,
-  );
-  const [maximumMemory, setMaximumMemory] = useState<number | undefined>(
-    existingPolicy?.maximum_memory,
-  );
-  const [memoryScaleUp, setMemoryScaleUp] = useState<number>(
-    existingPolicy?.mem_scale_up_threshold || 0.9,
-  );
-  const [memoryScaleDown, setMemoryScaleDown] = useState<number>(
-    existingPolicy?.mem_scale_down_threshold || 0.75,
-  );
-  const [percentile, setPercentile] = useState<number>(
-    existingPolicy?.percentile || 99.0,
-  );
-  const [lookbackInterval, setLookbackInterval] = useState<number>(
-    existingPolicy?.metric_lookback_seconds || 1800,
-  );
-  const [scaleUpCooldown, setScaleUpCooldown] = useState<number>(
-    existingPolicy?.post_scale_up_cooldown_seconds || 60,
-  );
-  const [scaleDownCooldown, setScaleDownCooldown] = useState<number>(
-    existingPolicy?.post_scale_down_cooldown_seconds || 300,
-  );
-  const [releaseCooldown, setReleaseCooldown] = useState<number>(
-    existingPolicy?.post_release_cooldown_seconds || 300,
-  );
-  const [rRatioLimit, setRRatioLimit] = useState<number>(
-    existingPolicy?.mem_cpu_ratio_r_threshold || 4.0,
-  );
-  const [cRatioLimit, setCRatioLimit] = useState<number>(
-    existingPolicy?.mem_cpu_ratio_c_threshold || 2.0,
-  );
-
-  const isScaling: boolean =
-    policy.data?._embedded?.service_sizing_policies !== undefined &&
-    policy.data._embedded.service_sizing_policies.length > 0 &&
-    policy.data._embedded.service_sizing_policies[0].scaling_enabled;
-  const createLoader = useLoader(createServiceSizingPoliciesByServiceId);
-  const updateLoader = useLoader(updateServiceSizingPoliciesByServiceId);
-  const deleteLoader = useLoader(deleteServiceSizingPoliciesByServiceId);
+  const modifyLoader = useLoader(modifyServiceSizingPolicy);
   const stack = useSelector((s: AppState) =>
     selectStackById(s, { id: stackId }),
   );
-  useLoaderSuccess(createLoader, () => policy.trigger());
-  useLoaderSuccess(updateLoader, () => policy.trigger());
-  useLoaderSuccess(deleteLoader, () => policy.trigger());
-  const [enabled, setEnabled] = useState<"enabled" | "disabled">(
-    isScaling ? "enabled" : "disabled",
-  );
-  useEffect(() => {
-    setEnabled(isScaling ? "enabled" : "disabled");
-  }, [isScaling]);
-  useEffect(() => {
-    setMinimumMemory(existingPolicy?.minimum_memory || 2048);
-  }, [existingPolicy?.minimum_memory]);
-  useEffect(() => {
-    setMaximumMemory(existingPolicy?.maximum_memory);
-  }, [existingPolicy?.maximum_memory]);
-  useEffect(() => {
-    setMemoryScaleUp(existingPolicy?.mem_scale_up_threshold || 0.9);
-  }, [existingPolicy?.mem_scale_up_threshold]);
-  useEffect(() => {
-    setMemoryScaleDown(existingPolicy?.mem_scale_down_threshold || 0.75);
-  }, [existingPolicy?.mem_scale_down_threshold]);
-  useEffect(() => {
-    setPercentile(existingPolicy?.percentile || 99.0);
-  }, [existingPolicy?.percentile]);
-  useEffect(() => {
-    setLookbackInterval(existingPolicy?.metric_lookback_seconds || 1800);
-  }, [existingPolicy?.metric_lookback_seconds]);
-  useEffect(() => {
-    setScaleUpCooldown(existingPolicy?.post_scale_up_cooldown_seconds || 60);
-  }, [existingPolicy?.post_scale_up_cooldown_seconds]);
-  useEffect(() => {
-    setScaleDownCooldown(
-      existingPolicy?.post_scale_down_cooldown_seconds || 300,
-    );
-  }, [existingPolicy?.post_scale_down_cooldown_seconds]);
-  useEffect(() => {
-    setReleaseCooldown(existingPolicy?.post_release_cooldown_seconds || 300);
-  }, [existingPolicy?.post_release_cooldown_seconds]);
-  useEffect(() => {
-    setRRatioLimit(existingPolicy?.mem_cpu_ratio_r_threshold || 4.0);
-  }, [existingPolicy?.mem_cpu_ratio_r_threshold]);
-  useEffect(() => {
-    setCRatioLimit(existingPolicy?.mem_cpu_ratio_c_threshold || 2.0);
-  }, [existingPolicy?.mem_cpu_ratio_c_threshold]);
+  useLoaderSuccess(modifyLoader, () => policy.trigger());
 
-  const policyFormData: ServiceSizingPolicyEditProps = {
-    id,
-    minimumMemory,
-    maximumMemory,
-    memoryScaleUp,
-    memoryScaleDown,
-    percentile,
-    lookbackInterval,
-    scaleUpCooldown,
-    scaleDownCooldown,
-    releaseCooldown,
-    rRatioLimit,
-    cRatioLimit,
-  };
   const [errors, validate] = useValidator<
     ServiceSizingPolicyEditProps,
     typeof policyValidators
   >(policyValidators);
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
-    if (!validate(policyFormData)) {
-      return;
-    }
-    if (enabled === "enabled") {
-      if (existingPolicy === null) {
-        dispatch(createServiceSizingPoliciesByServiceId(policyFormData));
-      } else {
-        dispatch(updateServiceSizingPoliciesByServiceId(policyFormData));
-      }
-    } else {
-      dispatch(deleteServiceSizingPoliciesByServiceId({ id }));
-    }
+    if (!validate(nextPolicy)) return;
+    dispatch(modifyServiceSizingPolicy(nextPolicy));
   };
-
-  const changesExist =
-    enabled === "disabled"
-      ? isScaling
-      : (isScaling && enabled !== "enabled") ||
-        rRatioLimit !== existingPolicy?.mem_cpu_ratio_r_threshold ||
-        cRatioLimit !== existingPolicy?.mem_cpu_ratio_c_threshold ||
-        percentile !== existingPolicy?.percentile ||
-        minimumMemory !== existingPolicy?.minimum_memory ||
-        maximumMemory !== existingPolicy?.maximum_memory ||
-        memoryScaleUp !== existingPolicy?.mem_scale_up_threshold ||
-        memoryScaleDown !== existingPolicy?.mem_scale_down_threshold ||
-        lookbackInterval !== existingPolicy?.metric_lookback_seconds ||
-        scaleUpCooldown !== existingPolicy?.post_scale_up_cooldown_seconds ||
-        scaleDownCooldown !==
-          existingPolicy?.post_scale_down_cooldown_seconds ||
-        releaseCooldown !== existingPolicy?.post_release_cooldown_seconds;
+  const updatePolicy = <K extends keyof ServiceSizingPolicyEditProps>(
+    key: K,
+    value: ServiceSizingPolicyEditProps[K],
+  ) => {
+    setNextPolicy({ ...nextPolicy, [key]: value });
+  };
 
   const [advancedIsOpen, setOpen] = useState(false);
 
-  return (
-    <>
-      {stack.verticalAutoscaling ? (
-        <Box>
-          <form onSubmit={onSubmitForm}>
-            <div className="flex flex-col gap-4">
-              <h1 className="text-lg text-gray-500">Autoscale</h1>
-              <BannerMessages {...createLoader} />
-              <BannerMessages {...deleteLoader} />
-              <BannerMessages {...updateLoader} />
-              <FormGroup
-                splitWidthInputs
-                description="Automatically scale your services by regularly revieweing recent CPU and RAM utilization and scaling to the optimal configuration."
-                label="Vertical Autoscaling"
-                htmlFor="vertical-autoscaling"
-              >
-                <RadioGroup
-                  name="vertical-autoscaling"
-                  selected={enabled}
-                  onSelect={(e) => {
-                    setEnabled(e);
-                    if (e === "disabled") {
-                      setOpen(false);
-                    }
-                  }}
-                >
-                  <Radio value="enabled">Enabled</Radio>
-                  <Radio value="disabled">Disabled</Radio>
-                </RadioGroup>
-              </FormGroup>
-              <div>
-                <div className="py-4 flex justify-between items-center">
-                  <div className="flex flex-1">
-                    <div
-                      className="font-semibold flex items-center cursor-pointer"
-                      onClick={() => setOpen(!advancedIsOpen)}
-                      onKeyUp={() => setOpen(!advancedIsOpen)}
-                    >
-                      {advancedIsOpen ? (
-                        <IconChevronDown />
-                      ) : (
-                        <IconChevronRight />
-                      )}
-                      <p className="ml-2">
-                        {advancedIsOpen ? "Hide" : "Show"} Advanced settings
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                {advancedIsOpen ? (
-                  <div className="pb-4">
-                    <div className="flex flex-col gap-2">
-                      <h2 className="text-md text-gray-500">
-                        RAM & CPU Threshold Settings
-                      </h2>
-                      <FormGroup
-                        splitWidthInputs
-                        description="Percentile to use for RAM and CPU"
-                        label="Percentile"
-                        htmlFor="percentile"
-                      >
-                        <Input
-                          id="percentile"
-                          name="percentile"
-                          type="number"
-                          step="0.1"
-                          value={percentile}
-                          min="0"
-                          max="100"
-                          onChange={(e) =>
-                            setPercentile(
-                              Number(
-                                parseFloat(e.currentTarget.value).toFixed(1),
-                              ),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                      <FormGroup
-                        splitWidthInputs
-                        description="The minimum memory that vertical autoscaling can scale this service to"
-                        label="Minimum memory"
-                        htmlFor="minimum-memory"
-                      >
-                        <Input
-                          id="minimum-memory"
-                          name="minimum-memory"
-                          type="number"
-                          value={minimumMemory}
-                          min="0"
-                          max="784384"
-                          onChange={(e) =>
-                            setMinimumMemory(
-                              parseInt(e.currentTarget.value, 10),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                      <FormGroup
-                        splitWidthInputs
-                        description="The maximum memory that vertical autoscaling can scale this service to"
-                        label="Maximum memory"
-                        htmlFor="maximum-memory"
-                      >
-                        <Input
-                          id="maximum-memory"
-                          name="maximum-memory"
-                          type="number"
-                          value={maximumMemory}
-                          min="0"
-                          max="784384"
-                          onChange={(e) =>
-                            setMaximumMemory(
-                              parseInt(e.currentTarget.value, 10),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                      <FormGroup
-                        splitWidthInputs
-                        description="Percent of the current memory limit for a container that will trigger a scale up"
-                        label="Memory Scale Up Percentage"
-                        htmlFor="memory-scale-up"
-                      >
-                        <Input
-                          id="memory-scale-up"
-                          name="memory-scale-up"
-                          type="number"
-                          step="0.01"
-                          value={memoryScaleUp}
-                          min="0"
-                          max="1"
-                          onChange={(e) =>
-                            setMemoryScaleUp(
-                              Number(
-                                parseFloat(e.currentTarget.value).toFixed(2),
-                              ),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                      <FormGroup
-                        splitWidthInputs
-                        description="Percent of the next smallest memory limit for a container that will trigger a scale down"
-                        label="Memory Scale Down Percentage"
-                        htmlFor="memory-scale-down"
-                      >
-                        <Input
-                          id="memory-scale-down"
-                          name="memory-scale-down"
-                          type="number"
-                          step="0.01"
-                          value={memoryScaleDown}
-                          min="0"
-                          max="1"
-                          onChange={(e) =>
-                            setMemoryScaleDown(
-                              Number(
-                                parseFloat(e.currentTarget.value).toFixed(2),
-                              ),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                      <FormGroup
-                        splitWidthInputs
-                        feedbackMessage={errors.ratios}
-                        feedbackVariant={errors.ratios ? "danger" : "info"}
-                        description="Threshold of the Memory (in GB) to CPU (in CPUs) ratio in which values above will move into R profile"
-                        label="Memory Optimized Memory/CPU Ratio Threshold"
-                        htmlFor="r-ratio"
-                      >
-                        <Input
-                          id="r-ratio"
-                          name="r-ratio"
-                          type="number"
-                          step="0.1"
-                          value={rRatioLimit}
-                          min="0"
-                          max="16"
-                          onChange={(e) =>
-                            setRRatioLimit(
-                              Number(
-                                parseFloat(e.currentTarget.value).toFixed(1),
-                              ),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                      <FormGroup
-                        splitWidthInputs
-                        description="Threshold of the Memory (in GB) to CPU (in CPUs) ratio in which values below will move into C profile"
-                        label="Compute Optimized Memory/CPU Ratio Threshold"
-                        htmlFor="c-ratio"
-                      >
-                        <Input
-                          id="c-ratio"
-                          name="c-ratio"
-                          type="number"
-                          step="0.01"
-                          value={cRatioLimit}
-                          min="0"
-                          max="8"
-                          onChange={(e) =>
-                            setCRatioLimit(
-                              Number(
-                                parseFloat(e.currentTarget.value).toFixed(2),
-                              ),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                      <h2 className="text-md text-gray-500">
-                        Time-based settings
-                      </h2>
-                      <FormGroup
-                        splitWidthInputs
-                        description="Time interval in seconds to fetch metrics for evaluation"
-                        label="Metrics Lookback Time Interval"
-                        htmlFor="lookback-interval"
-                      >
-                        <Input
-                          id="lookback-interval"
-                          name="lookback-interval"
-                          type="number"
-                          value={lookbackInterval}
-                          min="0"
-                          max="3600"
-                          onChange={(e) =>
-                            setLookbackInterval(
-                              parseInt(e.currentTarget.value, 10),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                      <FormGroup
-                        splitWidthInputs
-                        description="The number of seconds to wait after an automated scale up to potentially take another action"
-                        label="Post Scale Up Cooldown"
-                        htmlFor="scale-up-cooldown"
-                      >
-                        <Input
-                          id="scale-up-cooldown"
-                          name="scale-up-cooldown"
-                          type="number"
-                          value={scaleUpCooldown}
-                          min="0"
-                          max="3600"
-                          onChange={(e) =>
-                            setScaleUpCooldown(
-                              parseInt(e.currentTarget.value, 10),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                      <FormGroup
-                        splitWidthInputs
-                        description="The number of seconds to wait after an automated scale down to potentially take another action"
-                        label="Post Scale Down Cooldown"
-                        htmlFor="scale-down-cooldown"
-                      >
-                        <Input
-                          id="scale-down-cooldown"
-                          name="scale-down-cooldown"
-                          type="number"
-                          value={scaleDownCooldown}
-                          min="0"
-                          max="3600"
-                          onChange={(e) =>
-                            setScaleDownCooldown(
-                              parseInt(e.currentTarget.value, 10),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                      <FormGroup
-                        splitWidthInputs
-                        description="The number of seconds to wait after a general scale to potentially take another action"
-                        label="Post Release Cooldown"
-                        htmlFor="release-cooldown"
-                      >
-                        <Input
-                          id="release-cooldown"
-                          name="release-cooldown"
-                          type="number"
-                          value={releaseCooldown}
-                          min="0"
-                          max="3600"
-                          onChange={(e) =>
-                            setReleaseCooldown(
-                              parseInt(e.currentTarget.value, 10),
-                            )
-                          }
-                        />
-                      </FormGroup>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-              <hr />
+  if (!stack.verticalAutoscaling) {
+    return null;
+  }
 
-              <div className="flex mt-4">
-                <Button
-                  name="autoscaling"
-                  className="w-40 flex font-semibold"
-                  type="submit"
-                  disabled={!changesExist}
-                  isLoading={
-                    createLoader.isLoading ||
-                    updateLoader.isLoading ||
-                    deleteLoader.isLoading
-                  }
+  return (
+    <Box>
+      <form onSubmit={onSubmitForm}>
+        <div className="flex flex-col gap-4">
+          <h1 className="text-lg text-gray-500">Autoscale</h1>
+          <BannerMessages {...modifyLoader} />
+          <FormGroup
+            splitWidthInputs
+            description="Automatically scale your services by regularly revieweing recent CPU and RAM utilization and scaling to the optimal configuration."
+            label="Vertical Autoscaling"
+            htmlFor="vertical-autoscaling"
+          >
+            <RadioGroup
+              name="vertical-autoscaling"
+              selected={nextPolicy.scaling_enabled ? "enabled" : "disabled"}
+              onSelect={(e) => {
+                updatePolicy("scaling_enabled", e === "enabled");
+                if (e === "disabled") {
+                  setOpen(false);
+                }
+              }}
+            >
+              <Radio value="enabled">Enabled</Radio>
+              <Radio value="disabled">Disabled</Radio>
+            </RadioGroup>
+          </FormGroup>
+          <div>
+            <div className="py-4 flex justify-between items-center">
+              <div className="flex flex-1">
+                <div
+                  className="font-semibold flex items-center cursor-pointer"
+                  onClick={() => setOpen(!advancedIsOpen)}
+                  onKeyUp={() => setOpen(!advancedIsOpen)}
                 >
-                  Save Changes
-                </Button>
+                  {advancedIsOpen ? <IconChevronDown /> : <IconChevronRight />}
+                  <p className="ml-2">
+                    {advancedIsOpen ? "Hide" : "Show"} Advanced settings
+                  </p>
+                </div>
               </div>
             </div>
-          </form>
-        </Box>
-      ) : null}
-    </>
+            {advancedIsOpen ? (
+              <div className="pb-4">
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-md text-gray-500">
+                    RAM & CPU Threshold Settings
+                  </h2>
+                  <FormGroup
+                    splitWidthInputs
+                    description="Percentile to use for RAM and CPU"
+                    label="Percentile"
+                    htmlFor="percentile"
+                  >
+                    <Input
+                      id="percentile"
+                      name="percentile"
+                      type="number"
+                      step="0.1"
+                      value={nextPolicy.percentile}
+                      min="0"
+                      max="100"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "percentile",
+                          Number(parseFloat(e.currentTarget.value).toFixed(1)),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    splitWidthInputs
+                    description="The minimum memory that vertical autoscaling can scale this service to"
+                    label="Minimum memory"
+                    htmlFor="minimum-memory"
+                  >
+                    <Input
+                      id="minimum-memory"
+                      name="minimum-memory"
+                      type="number"
+                      value={nextPolicy.minimum_memory}
+                      min="0"
+                      max="784384"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "minimum_memory",
+                          parseInt(e.currentTarget.value, 10),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    splitWidthInputs
+                    description="The maximum memory that vertical autoscaling can scale this service to"
+                    label="Maximum memory"
+                    htmlFor="maximum-memory"
+                  >
+                    <Input
+                      id="maximum-memory"
+                      name="maximum-memory"
+                      type="number"
+                      value={nextPolicy.maximum_memory || ''}
+                      min="0"
+                      max="784384"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "maximum_memory",
+                          parseInt(e.currentTarget.value, 10),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    splitWidthInputs
+                    description="Percent of the current memory limit for a container that will trigger a scale up"
+                    label="Memory Scale Up Percentage"
+                    htmlFor="memory-scale-up"
+                  >
+                    <Input
+                      id="memory-scale-up"
+                      name="memory-scale-up"
+                      type="number"
+                      step="0.01"
+                      value={nextPolicy.mem_scale_up_threshold}
+                      min="0"
+                      max="1"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "mem_scale_up_threshold",
+                          Number(parseFloat(e.currentTarget.value).toFixed(2)),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    splitWidthInputs
+                    description="Percent of the next smallest memory limit for a container that will trigger a scale down"
+                    label="Memory Scale Down Percentage"
+                    htmlFor="memory-scale-down"
+                  >
+                    <Input
+                      id="memory-scale-down"
+                      name="memory-scale-down"
+                      type="number"
+                      step="0.01"
+                      value={nextPolicy.mem_scale_down_threshold}
+                      min="0"
+                      max="1"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "mem_scale_down_threshold",
+                          Number(parseFloat(e.currentTarget.value).toFixed(2)),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    splitWidthInputs
+                    feedbackMessage={errors.ratios}
+                    feedbackVariant={errors.ratios ? "danger" : "info"}
+                    description="Threshold of the Memory (in GB) to CPU (in CPUs) ratio in which values above will move into R profile"
+                    label="Memory Optimized Memory/CPU Ratio Threshold"
+                    htmlFor="r-ratio"
+                  >
+                    <Input
+                      id="r-ratio"
+                      name="r-ratio"
+                      type="number"
+                      step="0.1"
+                      value={nextPolicy.mem_cpu_ratio_r_threshold}
+                      min="0"
+                      max="16"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "mem_cpu_ratio_r_threshold",
+                          Number(parseFloat(e.currentTarget.value).toFixed(1)),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    splitWidthInputs
+                    description="Threshold of the Memory (in GB) to CPU (in CPUs) ratio in which values below will move into C profile"
+                    label="Compute Optimized Memory/CPU Ratio Threshold"
+                    htmlFor="c-ratio"
+                  >
+                    <Input
+                      id="c-ratio"
+                      name="c-ratio"
+                      type="number"
+                      step="0.01"
+                      value={nextPolicy.mem_cpu_ratio_c_threshold}
+                      min="0"
+                      max="8"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "mem_cpu_ratio_c_threshold",
+                          Number(parseFloat(e.currentTarget.value).toFixed(2)),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                  <h2 className="text-md text-gray-500">Time-based settings</h2>
+                  <FormGroup
+                    splitWidthInputs
+                    description="Time interval in seconds to fetch metrics for evaluation"
+                    label="Metrics Lookback Time Interval"
+                    htmlFor="lookback-interval"
+                  >
+                    <Input
+                      id="lookback-interval"
+                      name="lookback-interval"
+                      type="number"
+                      value={nextPolicy.metric_lookback_seconds}
+                      min="0"
+                      max="3600"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "metric_lookback_seconds",
+                          parseInt(e.currentTarget.value, 10),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    splitWidthInputs
+                    description="The number of seconds to wait after an automated scale up to potentially take another action"
+                    label="Post Scale Up Cooldown"
+                    htmlFor="scale-up-cooldown"
+                  >
+                    <Input
+                      id="scale-up-cooldown"
+                      name="scale-up-cooldown"
+                      type="number"
+                      value={nextPolicy.post_scale_up_cooldown_seconds}
+                      min="0"
+                      max="3600"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "post_scale_up_cooldown_seconds",
+                          parseInt(e.currentTarget.value, 10),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    splitWidthInputs
+                    description="The number of seconds to wait after an automated scale down to potentially take another action"
+                    label="Post Scale Down Cooldown"
+                    htmlFor="scale-down-cooldown"
+                  >
+                    <Input
+                      id="scale-down-cooldown"
+                      name="scale-down-cooldown"
+                      type="number"
+                      value={nextPolicy.post_scale_down_cooldown_seconds}
+                      min="0"
+                      max="3600"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "post_scale_down_cooldown_seconds",
+                          parseInt(e.currentTarget.value, 10),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    splitWidthInputs
+                    description="The number of seconds to wait after a general scale to potentially take another action"
+                    label="Post Release Cooldown"
+                    htmlFor="release-cooldown"
+                  >
+                    <Input
+                      id="release-cooldown"
+                      name="release-cooldown"
+                      type="number"
+                      value={nextPolicy.post_release_cooldown_seconds}
+                      min="0"
+                      max="3600"
+                      onChange={(e) =>
+                        updatePolicy(
+                          "post_release_cooldown_seconds",
+                          parseInt(e.currentTarget.value, 10),
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </div>
+              </div>
+            ) : null}
+          </div>
+          <hr />
+
+          <div className="flex mt-4">
+            <Button
+              name="autoscaling"
+              className="w-40 flex font-semibold"
+              type="submit"
+              disabled={!changesExist}
+              isLoading={modifyLoader.isLoading}
+            >
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      </form>
+    </Box>
   );
 };
 
@@ -671,7 +559,7 @@ export const AppDetailServiceScalePage = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <VerticalAutoscalingSection id={service.id} stackId={stack.id} />
+      <VerticalAutoscalingSection id={serviceId} stackId={stack.id} />
       <Box>
         <form onSubmit={onSubmitForm}>
           <div className="flex flex-col gap-2">
