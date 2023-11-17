@@ -13,8 +13,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     "appearance-none outline-none",
     "leading-none",
     "p-3",
+    "hover:border-gray-500",
     "border border-gray-300 placeholder-gray-400 rounded-md shadow-sm",
-    "focus:ring-inset focus:ring-gray-500 focus:border-gray-500",
     "disabled:cursor-not-allowed disabled:opacity-50",
     props.className,
   );
