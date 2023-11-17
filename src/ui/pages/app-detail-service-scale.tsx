@@ -61,17 +61,24 @@ type AppScaleProps = {
   containerCount: number;
 };
 
-function useServiceSizingPolicy(id: string) {
+function useServiceSizingPolicy(service_id: string) {
   const policy = useCache<
     HalEmbedded<{
       service_sizing_policies: ServiceSizingPolicyResponse[];
     }>
-  >(fetchServiceSizingPoliciesByServiceId({ id }));
+  >(fetchServiceSizingPoliciesByServiceId({ service_id }));
 
   const policies = policy.data?._embedded?.service_sizing_policies || [];
   const existingPolicy = useMemo(() => {
-    return defaultServiceSizingPolicyResponse(policies[0]);
-  }, [id, policies.length]);
+    let policy;
+    if (policies[0] === undefined) {
+      policy = { service_id };
+    } else {
+      policy = policies[0];
+      policy.service_id = service_id;
+    }
+    return defaultServiceSizingPolicyResponse(policy);
+  }, [policies.length, policies[0]?.id, policies[0]?.service_id]);
 
   return { policy, existingPolicy };
 }
@@ -87,7 +94,9 @@ const VerticalAutoscalingSection = ({
     setNextPolicy(existingPolicy);
   }, [existingPolicy]);
   const getChangesExist = () => {
-    if (!nextPolicy.scaling_enabled) return false;
+    if (!nextPolicy.scaling_enabled && !existingPolicy.scaling_enabled) {
+      return false;
+    }
     return existingPolicy !== nextPolicy;
   };
   const changesExist = getChangesExist();
@@ -220,7 +229,7 @@ const VerticalAutoscalingSection = ({
                       id="maximum-memory"
                       name="maximum-memory"
                       type="number"
-                      value={nextPolicy.maximum_memory}
+                      value={nextPolicy.maximum_memory || ""}
                       min="0"
                       max="784384"
                       onChange={(e) =>
@@ -550,7 +559,7 @@ export const AppDetailServiceScalePage = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <VerticalAutoscalingSection id={service.id} stackId={stack.id} />
+      <VerticalAutoscalingSection id={serviceId} stackId={stack.id} />
       <Box>
         <form onSubmit={onSubmitForm}>
           <div className="flex flex-col gap-2">

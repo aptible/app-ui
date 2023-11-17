@@ -262,7 +262,8 @@ export const fetchServicesByAppId = api.get<{ id: string }>(
 );
 
 export interface ServiceSizingPolicyResponse {
-  id: number;
+  id: number | undefined;
+  service_id: string;
   scaling_enabled: boolean;
   default_policy: boolean;
   metric_lookback_seconds: number;
@@ -289,7 +290,8 @@ export const defaultServiceSizingPolicyResponse = (
 ): ServiceSizingPolicyResponse => {
   const now = new Date().toISOString();
   return {
-    id: 1,
+    id: undefined,
+    service_id: "0",
     scaling_enabled: false,
     default_policy: false,
     metric_lookback_seconds: 300,
@@ -311,8 +313,10 @@ export const defaultServiceSizingPolicyResponse = (
   };
 };
 
-export const fetchServiceSizingPoliciesByServiceId = api.get<{ id: string }>(
-  "/services/:id/service_sizing_policies",
+export const fetchServiceSizingPoliciesByServiceId = api.get<{
+  service_id: string;
+}>(
+  "/services/:service_id/service_sizing_policies",
   { saga: cacheShortTimer() },
   api.cache(),
 );
@@ -322,7 +326,7 @@ export type ServiceSizingPolicyEditProps = ServiceSizingPolicyResponse;
 export const createServiceSizingPoliciesByServiceId = api.post<
   ServiceSizingPolicyEditProps,
   ServiceSizingPolicyResponse
->(["/services/:id/service_sizing_policies"], function* (ctx, next) {
+>(["/services/:service_id/service_sizing_policies"], function* (ctx, next) {
   ctx.request = ctx.req({ body: JSON.stringify(ctx.payload) });
   yield* next();
 });
@@ -330,14 +334,14 @@ export const createServiceSizingPoliciesByServiceId = api.post<
 export const updateServiceSizingPoliciesByServiceId = api.put<
   ServiceSizingPolicyEditProps,
   ServiceSizingPolicyResponse
->(["/services/:id/service_sizing_policies"], function* (ctx, next) {
+>(["/services/:service_id/service_sizing_policies"], function* (ctx, next) {
   ctx.request = ctx.req({ body: JSON.stringify(ctx.payload) });
   yield* next();
 });
 
 export const deleteServiceSizingPoliciesByServiceId = api.delete<{
-  id: string;
-}>("/services/:id/service_sizing_policy");
+  service_id: string;
+}>("/services/:service_id/service_sizing_policy");
 
 export const modifyServiceSizingPolicy =
   thunks.create<ServiceSizingPolicyEditProps>(
@@ -347,7 +351,7 @@ export const modifyServiceSizingPolicy =
       const nextPolicy = ctx.payload;
       let updateCtx;
       if (nextPolicy.scaling_enabled) {
-        if (nextPolicy._links.account.href === "") {
+        if (nextPolicy.id === undefined) {
           updateCtx = yield* call(
             createServiceSizingPoliciesByServiceId.run,
             createServiceSizingPoliciesByServiceId(nextPolicy),
@@ -361,7 +365,9 @@ export const modifyServiceSizingPolicy =
       } else {
         updateCtx = yield* call(
           deleteServiceSizingPoliciesByServiceId.run,
-          deleteServiceSizingPoliciesByServiceId({ id: `${nextPolicy.id}` }),
+          deleteServiceSizingPoliciesByServiceId({
+            service_id: `${nextPolicy.service_id}`,
+          }),
         );
       }
 
