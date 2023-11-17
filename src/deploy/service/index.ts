@@ -1,4 +1,12 @@
-import { api, cacheMinTimer, cacheShortTimer } from "@app/api";
+import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
+import {
+  call,
+  poll,
+  put,
+  setLoaderError,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   createAction,
@@ -12,9 +20,7 @@ import type {
   InstanceClass,
   LinkResponse,
 } from "@app/types";
-
 import { createSelector } from "@reduxjs/toolkit";
-import { poll } from "saga-query";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { DeployOperationResponse } from "../operation";
@@ -255,111 +261,6 @@ export const fetchServicesByAppId = api.get<{ id: string }>(
   { saga: cacheShortTimer() },
 );
 
-export const fetchServiceSizingPoliciesByServiceId = api.get<{ id: string }>(
-  "/services/:id/service_sizing_policies",
-  { saga: cacheShortTimer() },
-  api.cache(),
-);
-
-export const createServiceSizingPoliciesByServiceId = api.post<
-  ServiceSizingPolicyEditProps,
-  ServiceSizingPolicyResponse
->(["/services/:id/service_sizing_policies"], function* (ctx, next) {
-  const {
-    id,
-    minimumMemory,
-    maximumMemory,
-    memoryScaleUp,
-    memoryScaleDown,
-    percentile,
-    lookbackInterval,
-    scaleUpCooldown,
-    scaleDownCooldown,
-    releaseCooldown,
-    rRatioLimit,
-    cRatioLimit,
-  } = ctx.payload;
-  const body = {
-    id,
-    minimum_memory: minimumMemory,
-    maximum_memory: maximumMemory,
-    mem_scale_up_threshold: memoryScaleUp,
-    mem_scale_down_threshold: memoryScaleDown,
-    percentile: percentile,
-    metric_lookback_seconds: lookbackInterval,
-    post_scale_up_cooldown_seconds: scaleUpCooldown,
-    post_scale_down_cooldown_seconds: scaleDownCooldown,
-    post_release_cooldown_seconds: releaseCooldown,
-    mem_cpu_ratio_r_threshold: rRatioLimit,
-    mem_cpu_ratio_c_threshold: cRatioLimit,
-  };
-  ctx.request = ctx.req({ body: JSON.stringify(body) });
-  yield* next();
-
-  if (!ctx.json.ok) {
-    return;
-  }
-});
-
-export const deleteServiceSizingPoliciesByServiceId = api.delete<{
-  id: string;
-}>("/services/:id/service_sizing_policy");
-
-export interface ServiceSizingPolicyEditProps {
-  id: string;
-  minimumMemory?: number;
-  maximumMemory?: number;
-  memoryScaleUp?: number;
-  memoryScaleDown?: number;
-  percentile?: number;
-  lookbackInterval?: number;
-  scaleUpCooldown?: number;
-  scaleDownCooldown?: number;
-  releaseCooldown?: number;
-  rRatioLimit?: number;
-  cRatioLimit?: number;
-}
-
-export const updateServiceSizingPoliciesByServiceId = api.put<
-  ServiceSizingPolicyEditProps,
-  ServiceSizingPolicyResponse
->(["/services/:id/service_sizing_policies"], function* (ctx, next) {
-  const {
-    id,
-    minimumMemory,
-    maximumMemory,
-    memoryScaleUp,
-    memoryScaleDown,
-    percentile,
-    lookbackInterval,
-    scaleUpCooldown,
-    scaleDownCooldown,
-    releaseCooldown,
-    rRatioLimit,
-    cRatioLimit,
-  } = ctx.payload;
-  const body = {
-    id,
-    minimum_memory: minimumMemory,
-    maximum_memory: maximumMemory,
-    mem_scale_up_threshold: memoryScaleUp,
-    mem_scale_down_threshold: memoryScaleDown,
-    percentile: percentile,
-    metric_lookback_seconds: lookbackInterval,
-    post_scale_up_cooldown_seconds: scaleUpCooldown,
-    post_scale_down_cooldown_seconds: scaleDownCooldown,
-    post_release_cooldown_seconds: releaseCooldown,
-    mem_cpu_ratio_r_threshold: rRatioLimit,
-    mem_cpu_ratio_c_threshold: cRatioLimit,
-  };
-  ctx.request = ctx.req({ body: JSON.stringify(body) });
-  yield* next();
-
-  if (!ctx.json.ok) {
-    return;
-  }
-});
-
 export interface ServiceSizingPolicyResponse {
   id: number;
   scaling_enabled: boolean;
@@ -404,11 +305,75 @@ export const defaultServiceSizingPolicyResponse = (
     maximum_memory: undefined,
     created_at: now,
     updated_at: now,
-    _links: { account: { href: "" } },
+    _links: { account: defaultHalHref() },
     _type: "service_sizing_policy",
     ...s,
   };
 };
+
+export const fetchServiceSizingPoliciesByServiceId = api.get<{ id: string }>(
+  "/services/:id/service_sizing_policies",
+  { saga: cacheShortTimer() },
+  api.cache(),
+);
+
+export type ServiceSizingPolicyEditProps = ServiceSizingPolicyResponse;
+
+export const createServiceSizingPoliciesByServiceId = api.post<
+  ServiceSizingPolicyEditProps,
+  ServiceSizingPolicyResponse
+>(["/services/:id/service_sizing_policies"], function* (ctx, next) {
+  ctx.request = ctx.req({ body: JSON.stringify(ctx.payload) });
+  yield* next();
+});
+
+export const updateServiceSizingPoliciesByServiceId = api.put<
+  ServiceSizingPolicyEditProps,
+  ServiceSizingPolicyResponse
+>(["/services/:id/service_sizing_policies"], function* (ctx, next) {
+  ctx.request = ctx.req({ body: JSON.stringify(ctx.payload) });
+  yield* next();
+});
+
+export const deleteServiceSizingPoliciesByServiceId = api.delete<{
+  id: string;
+}>("/services/:id/service_sizing_policy");
+
+export const modifyServiceSizingPolicy =
+  thunks.create<ServiceSizingPolicyEditProps>(
+    "modify-service-sizing-policy",
+    function* (ctx, next) {
+      yield* put(setLoaderStart({ id: ctx.name }));
+      const nextPolicy = ctx.payload;
+      let updateCtx;
+      if (nextPolicy.scaling_enabled) {
+        if (nextPolicy._links.account.href === "") {
+          updateCtx = yield* call(
+            createServiceSizingPoliciesByServiceId.run,
+            createServiceSizingPoliciesByServiceId(nextPolicy),
+          );
+        } else {
+          updateCtx = yield* call(
+            updateServiceSizingPoliciesByServiceId.run,
+            updateServiceSizingPoliciesByServiceId(nextPolicy),
+          );
+        }
+      } else {
+        updateCtx = yield* call(
+          deleteServiceSizingPoliciesByServiceId.run,
+          deleteServiceSizingPoliciesByServiceId({ id: `${nextPolicy.id}` }),
+        );
+      }
+
+      yield* next();
+
+      if (updateCtx.json.ok) {
+        yield* put(setLoaderSuccess({ id: ctx.name }));
+      } else {
+        yield* put(setLoaderError({ id: ctx.name }));
+      }
+    },
+  );
 
 export const fetchServiceOperations = api.get<{ id: string }>(
   "/services/:id/operations",
