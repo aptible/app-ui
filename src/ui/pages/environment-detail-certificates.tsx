@@ -161,12 +161,12 @@ export const EnvironmentCertificatesPage = () => {
 
       <Table>
         <THead>
-          <Th variant="center">ID</Th>
+          <Th>ID</Th>
           <Th>Certificate</Th>
           <Th>Date Range</Th>
           <Th>Issuer</Th>
-          <Th variant="center">Apps</Th>
-          <Th variant="center">Status</Th>
+          <Th>Apps</Th>
+          <Th>Status</Th>
         </THead>
 
         <TBody>
