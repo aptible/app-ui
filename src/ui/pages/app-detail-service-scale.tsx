@@ -156,7 +156,7 @@ const VerticalAutoscalingSection = ({
             </RadioGroup>
           </FormGroup>
           <div>
-            <div className="py-4 flex justify-between items-center">
+            <div className="pb-4 flex justify-between items-center">
               <div className="flex flex-1">
                 <div
                   className="font-semibold flex items-center cursor-pointer"
@@ -164,9 +164,7 @@ const VerticalAutoscalingSection = ({
                   onKeyUp={() => setOpen(!advancedIsOpen)}
                 >
                   {advancedIsOpen ? <IconChevronDown /> : <IconChevronRight />}
-                  <p className="ml-2">
-                    {advancedIsOpen ? "Hide" : "Show"} Advanced settings
-                  </p>
+                  <p>{advancedIsOpen ? "Hide" : "Show"} Advanced settings</p>
                 </div>
               </div>
             </div>
@@ -421,7 +419,7 @@ const VerticalAutoscalingSection = ({
           </div>
           <hr />
 
-          <div className="flex mt-4">
+          <div className="flex">
             <Button
               name="autoscaling"
               className="w-40 flex font-semibold"
