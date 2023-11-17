@@ -276,7 +276,7 @@ export interface ServiceSizingPolicyResponse {
   mem_scale_up_threshold: number;
   mem_scale_down_threshold: number;
   minimum_memory: number;
-  maximum_memory: number | undefined;
+  maximum_memory: number | string;
   created_at: string;
   updated_at: string;
   _links: {
@@ -304,7 +304,7 @@ export const defaultServiceSizingPolicyResponse = (
     mem_scale_up_threshold: 0.9,
     mem_scale_down_threshold: 0.75,
     minimum_memory: 2048,
-    maximum_memory: undefined,
+    maximum_memory: '',
     created_at: now,
     updated_at: now,
     _links: { account: defaultHalHref() },
@@ -323,11 +323,18 @@ export const fetchServiceSizingPoliciesByServiceId = api.get<{
 
 export type ServiceSizingPolicyEditProps = ServiceSizingPolicyResponse;
 
+const maybeRemoveMaximumMemory = (payload: ServiceSizingPolicyEditProps) => {
+  if (payload.maximum_memory == 0) {
+    payload.maximum_memory = ''
+  }
+  return payload
+}
+
 export const createServiceSizingPoliciesByServiceId = api.post<
   ServiceSizingPolicyEditProps,
   ServiceSizingPolicyResponse
 >(["/services/:service_id/service_sizing_policies"], function* (ctx, next) {
-  ctx.request = ctx.req({ body: JSON.stringify(ctx.payload) });
+  ctx.request = ctx.req({ body: JSON.stringify(maybeRemoveMaximumMemory(ctx.payload)) });
   yield* next();
 });
 
@@ -335,7 +342,7 @@ export const updateServiceSizingPoliciesByServiceId = api.put<
   ServiceSizingPolicyEditProps,
   ServiceSizingPolicyResponse
 >(["/services/:service_id/service_sizing_policies"], function* (ctx, next) {
-  ctx.request = ctx.req({ body: JSON.stringify(ctx.payload) });
+  ctx.request = ctx.req({ body: JSON.stringify(maybeRemoveMaximumMemory(ctx.payload)) });
   yield* next();
 });
 
