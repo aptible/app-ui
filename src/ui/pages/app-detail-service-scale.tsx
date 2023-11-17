@@ -328,7 +328,7 @@ const VerticalAutoscalingSection = ({
                       }
                     />
                   </FormGroup>
-                  <h2 className="text-md text-gray-500">Time-based settings</h2>
+                  <h2 className="text-md text-gray-500">Time-Based Settings</h2>
                   <FormGroup
                     splitWidthInputs
                     description="Time interval in seconds to fetch metrics for evaluation"
