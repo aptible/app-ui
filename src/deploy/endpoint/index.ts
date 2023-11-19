@@ -812,7 +812,7 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       );
       if (!certCtx.json.ok) {
         yield* put(
-          setLoaderError({ id: ctx.key, message: certCtx.json.data.message }),
+          setLoaderError({ id, message: certCtx.json.data.message }),
         );
         return;
       }
