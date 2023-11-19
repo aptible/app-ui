@@ -5,6 +5,7 @@ import { defaultHalHref, extractIdFromLink } from "@app/hal";
 import { createTable, mustSelectEntity } from "@app/slice-helpers";
 import { selectToken } from "@app/token";
 import type {
+  ApiGen,
   AppState,
   HalEmbedded,
   Invitation,
@@ -87,7 +88,7 @@ export const fetchInvitations = authApi.get<
   { orgId: string },
   HalEmbedded<{ invitations: InvitationResponse[] }>
 >("/organizations/:orgId/invitations", function* onFetchInvitations(ctx, next) {
-  const token: Token = yield* select(selectToken);
+  const token: Token = yield select(selectToken);
   if (!token) {
     return;
   }
@@ -130,7 +131,7 @@ export const fetchInvitation = authApi.get<{ id: string }, InvitationResponse>(
 
 export const resetInvitation = authApi.post<{ invitationId: string }>(
   "/resets",
-  function* onResetInvitation(ctx, next) {
+  function* onResetInvitation(ctx, next): ApiGen {
     const origin = yield* select(selectOrigin);
     ctx.request = ctx.req({
       body: JSON.stringify({

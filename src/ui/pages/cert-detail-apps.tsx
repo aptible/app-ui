@@ -3,10 +3,10 @@ import {
   fetchEndpointsByCertId,
   selectCertificateById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { useQuery } from "saga-query/react";
 import { AppListByCertificate } from "../shared";
 
 export const CertDetailAppsPage = () => {

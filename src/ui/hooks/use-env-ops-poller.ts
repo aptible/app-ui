@@ -1,6 +1,6 @@
-import { useLoader, useQuery } from "@app/fx";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useLoader, useQuery } from "saga-query/react";
 
 import {
   cancelEnvOperationsPoll,

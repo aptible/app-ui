@@ -1,4 +1,4 @@
-import { ThunkCtx, thunks } from "@app/api";
+import { thunks } from "@app/api";
 import {
   AUTH_LOADER_ID,
   fetchCurrentToken,
@@ -20,91 +20,92 @@ import {
   fetchStacks,
 } from "@app/deploy";
 import {
+  all,
   call,
-  parallel,
+  fork,
   put,
   select,
   setLoaderStart,
   setLoaderSuccess,
-  spawn,
   take,
   takeEvery,
 } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";
-import { AnyAction, ApiCtx } from "@app/types";
+import { AnyAction, ApiGen } from "@app/types";
 import { fetchUser, fetchUsers, selectCurrentUserId } from "@app/users";
 import { REHYDRATE } from "redux-persist";
 
 export const FETCH_REQUIRED_DATA = "fetch-required-data";
 
-export const bootup = thunks.create("bootup", function* onBootup(ctx, next) {
-  const id = ctx.name;
-  yield* put(setLoaderStart({ id }));
-  // wait for redux-persist to rehydrate redux store
-  yield* take(REHYDRATE);
+export const bootup = thunks.create(
+  "bootup",
+  function* onBootup(ctx, next): ApiGen {
+    const id = ctx.name;
+    yield* put(setLoaderStart({ id }));
+    // wait for redux-persist to rehydrate redux store
+    yield* take(REHYDRATE);
 
-  yield* call(() => fetchCurrentToken.run(fetchCurrentToken()));
-  const token: string = yield* select(selectAccessToken);
-  if (!token) {
-    yield* put(
-      setLoaderSuccess({
-        id: FETCH_REQUIRED_DATA,
-        message: "no token found",
-      }),
-    );
-    yield* put(setLoaderSuccess({ id, message: "no token found" }));
-    return;
-  }
+    yield* call(fetchCurrentToken.run, fetchCurrentToken());
+    const token: string = yield* select(selectAccessToken);
+    if (!token) {
+      yield* put(
+        setLoaderSuccess({
+          id: FETCH_REQUIRED_DATA,
+          message: "no token found",
+        }),
+      );
+      yield* put(setLoaderSuccess({ id, message: "no token found" }));
+      return;
+    }
 
-  yield* call(() => fetchOrganizations.run(fetchOrganizations()));
-  const task = yield* spawn(onFetchRequiredData);
-  yield* call(onFetchResourceData);
-  yield* task;
-  yield* put(setLoaderSuccess({ id }));
-  yield* next();
-});
+    yield* call(fetchOrganizations.run, fetchOrganizations());
+    yield* fork(onFetchRequiredData);
+    yield* call(onFetchResourceData);
+    yield* put(setLoaderSuccess({ id }));
+    yield* next();
+  },
+);
 
 function* onFetchRequiredData() {
   yield* put(setLoaderStart({ id: FETCH_REQUIRED_DATA }));
   const org = yield* select(selectOrganizationSelected);
   const userId = yield* select(selectCurrentUserId);
-  const group = yield* parallel<ApiCtx>([
-    () => fetchUser.run(fetchUser({ userId })),
-    () =>
-      fetchBillingDetail.run(fetchBillingDetail({ id: org.billingDetailId })),
+  yield* all([
+    call(fetchUser.run, fetchUser({ userId })),
+    call(
+      fetchBillingDetail.run,
+      fetchBillingDetail({ id: org.billingDetailId }),
+    ),
   ]);
-  yield* group;
   yield* put(setLoaderSuccess({ id: FETCH_REQUIRED_DATA }));
 }
 
 function* onFetchResourceData() {
   const org = yield* select(selectOrganizationSelected);
   const userId = yield* select(selectCurrentUserId);
-  const group = yield* parallel<ThunkCtx>([
-    () => fetchUsers.run(fetchUsers({ orgId: org.id })),
-    () => fetchRoles.run(fetchRoles({ orgId: org.id })),
-    () => fetchCurrentUserRoles.run(fetchCurrentUserRoles({ userId: userId })),
-    () => fetchStacks.run(fetchStacks()),
-    () => fetchEnvironments.run(fetchEnvironments()),
-    () => fetchApps.run(fetchApps()),
-    () => fetchDatabases.run(fetchDatabases()),
-    () => fetchDatabaseImages.run(fetchDatabaseImages()),
-    () => fetchLogDrains.run(fetchLogDrains()),
-    () => fetchMetricDrains.run(fetchMetricDrains()),
-    () => fetchServices.run(fetchServices()),
-    () => fetchEndpoints.run(fetchEndpoints()),
-    () => fetchOrgOperations.run(fetchOrgOperations({ orgId: org.id })),
-    () => fetchSystemStatus.run(fetchSystemStatus()),
+  yield* all([
+    call(fetchUsers.run, fetchUsers({ orgId: org.id })),
+    call(fetchRoles.run, fetchRoles({ orgId: org.id })),
+    call(fetchCurrentUserRoles.run, fetchCurrentUserRoles({ userId: userId })),
+    call(fetchStacks.run, fetchStacks()),
+    call(fetchEnvironments.run, fetchEnvironments()),
+    call(fetchApps.run, fetchApps()),
+    call(fetchDatabases.run, fetchDatabases()),
+    call(fetchDatabaseImages.run, fetchDatabaseImages()),
+    call(fetchLogDrains.run, fetchLogDrains()),
+    call(fetchMetricDrains.run, fetchMetricDrains()),
+    call(fetchServices.run, fetchServices()),
+    call(fetchEndpoints.run, fetchEndpoints()),
+    call(fetchOrgOperations.run, fetchOrgOperations({ orgId: org.id })),
+    call(fetchSystemStatus.run, fetchSystemStatus()),
   ]);
-  yield* group;
 }
 
 function* onRefreshData() {
-  yield* call(() => fetchOrganizations.run(fetchOrganizations()));
-  const group = yield* parallel([onFetchRequiredData, onFetchResourceData]);
-  yield* group;
+  yield* call(fetchOrganizations.run, fetchOrganizations());
+  yield* all([call(onFetchRequiredData), call(onFetchResourceData)]);
 }
 
 function* watchRefreshData() {
@@ -114,8 +115,7 @@ function* watchRefreshData() {
       action.payload?.id === AUTH_LOADER_ID;
     return matched;
   };
-  const task = yield* takeEvery(act, onRefreshData);
-  yield* task;
+  yield* takeEvery(act, onRefreshData);
 }
 
 export const sagas = { watchRefreshData };

@@ -9,26 +9,24 @@ import {
   selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
 import {
   fetchAllMetricsByServiceId,
-  metricHorizonAsSeconds,
   selectMetricsLoaded,
 } from "@app/metric-tunnel";
 import { AppState, MetricHorizons } from "@app/types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { useQuery } from "saga-query/react";
+import { LoadResources, Loading, LoadingSpinner } from "../shared";
+import { ContainerMetricsChart } from "../shared/container-metrics-chart";
+import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
 import {
-  ContainerMetricsChart,
-  ContainerMetricsDataTable,
-  LoadResources,
-  Loading,
-  LoadingSpinner,
   MetricTabTypes,
   MetricsHorizonControls,
   MetricsViewControls,
-} from "../shared";
+  metricHorizonAsSeconds,
+} from "../shared/metrics-controls";
 
 const layersToSearchForContainers = ["database"];
 

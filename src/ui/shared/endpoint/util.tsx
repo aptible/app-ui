@@ -1,7 +1,7 @@
-import { useLoader, useLoaderSuccess } from "@app/fx";
 import cn from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 import {
   deprovisionEndpoint,

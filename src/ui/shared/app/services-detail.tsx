@@ -5,7 +5,6 @@ import {
   selectAppById,
   selectServicesByAppId,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
 import {
   appDeployResumeUrl,
   appServicePathMetricsUrl,
@@ -16,6 +15,7 @@ import { usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 import { ButtonCreate, ButtonLink } from "../button";
 import { Group } from "../group";
 import { PreCode, listToInvertedTextColor } from "../pre-code";

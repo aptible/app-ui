@@ -1,4 +1,4 @@
-import { BATCH, Operation, prepareStore } from "@app/fx";
+import { BATCH, prepareStore } from "@app/fx";
 import { configureStore } from "@reduxjs/toolkit";
 import type { Middleware, Store } from "@reduxjs/toolkit";
 import debug from "debug";
@@ -6,7 +6,6 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
 import { FEEDBACK_NAME } from "@app/feedback";
-import { parallel } from "@app/fx";
 import { NAV_NAME } from "@app/nav";
 import { REDIRECT_NAME } from "@app/redirect-path";
 import { resetReducer } from "@app/reset-store";
@@ -15,7 +14,7 @@ import { THEME_NAME } from "@app/theme";
 import { ELEVATED_TOKEN_NAME } from "@app/token";
 import type { AppState } from "@app/types";
 
-import { reducers, tasks } from "./packages";
+import { reducers, sagas } from "./packages";
 import { sentryErrorReporter } from "./sentry";
 
 interface Props {
@@ -58,14 +57,16 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
   }
 
   middleware.push(sentryErrorReporter);
-  const { fx, reducer } = prepareStore({
+  const prepared = prepareStore({
     reducers,
+    sagas,
   });
 
-  middleware.push(fx.middleware as any);
+  middleware.push(...prepared.middleware);
+
   // we need this baseReducer so we can wipe the localStorage cache as well as
   // reset the store when a user logs out
-  const baseReducer = resetReducer(reducer, persistConfig);
+  const baseReducer = resetReducer(prepared.reducer, persistConfig);
   const persistedReducer = persistReducer(persistConfig, baseReducer);
 
   const store = configureStore({
@@ -76,10 +77,7 @@ export function setupStore({ initState }: Props): AppStore<AppState> {
   });
   const persistor = persistStore(store);
 
-  fx.run(function* (): Operation<void> {
-    const group = yield* parallel(tasks);
-    yield* group;
-  });
+  prepared.run();
 
   return { store, persistor };
 }

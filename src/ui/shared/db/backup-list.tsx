@@ -1,6 +1,5 @@
 import { prettyEnglishDateWithTime } from "@app/date";
 import { deleteBackup, selectDatabaseById } from "@app/deploy";
-import { useLoader } from "@app/fx";
 import {
   backupRestoreUrl,
   databaseDetailUrl,
@@ -12,6 +11,7 @@ import cn from "classnames";
 import { ReactElement } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { useLoader } from "saga-query/react";
 import { BannerMessages } from "../banner";
 import { ButtonCreate, ButtonDestroy } from "../button";
 import { Group } from "../group";

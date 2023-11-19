@@ -15,7 +15,6 @@ import {
   selectEndpointsForTableSearch,
   selectServiceById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
 import {
   appDetailUrl,
   appEndpointCreateUrl,
@@ -29,6 +28,7 @@ import { usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 import { Button, ButtonCreate } from "../button";
 import { CopyText, CopyTextButton } from "../copy";
 import { Group } from "../group";

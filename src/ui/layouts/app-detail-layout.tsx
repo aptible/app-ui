@@ -13,7 +13,6 @@ import {
   selectLatestDeployOp,
   selectServiceById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
 import {
   appActivityUrl,
   appConfigUrl,
@@ -29,6 +28,7 @@ import type { AppState, DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,

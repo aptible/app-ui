@@ -19,13 +19,10 @@ export const elevate = thunks.create<ElevateToken>(
     // use ctx.name not ctx.key (this is important for webauthn!)
     const id = ctx.name;
     yield* put(setLoaderStart({ id }));
-    const tokenCtx = yield* call(() =>
-      elevateToken.run(elevateToken(ctx.payload)),
-    );
+    const tokenCtx = yield* call(elevateToken.run, elevateToken(ctx.payload));
 
     if (!tokenCtx.json.ok) {
-      const { message, error, code, exception_context } = tokenCtx.json
-        .data as any;
+      const { message, error, code, exception_context } = tokenCtx.json.data;
       yield* put(
         setLoaderError({
           id,
@@ -56,12 +53,12 @@ export const elevateWebauthn = thunks.create<
   yield* put(setLoaderStart({ id }));
 
   try {
-    const u2f = yield* call(() => webauthnGet(webauthn.payload));
-    yield* call(() => elevate.run(elevate({ ...props, u2f })));
+    const u2f = yield* call(webauthnGet, webauthn.payload);
+    yield* call(elevate.run, elevate({ ...props, u2f }));
     yield* next();
     yield* put(setLoaderSuccess({ id }));
   } catch (err) {
-    yield* put(
+    yield put(
       setLoaderError({
         id,
         message: (err as Error).message,

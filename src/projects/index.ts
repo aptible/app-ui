@@ -1,4 +1,14 @@
-import { thunks } from "@app/api";
+import {
+  all,
+  call,
+  put,
+  select,
+  setLoaderError,
+  setLoaderStart,
+  setLoaderSuccess,
+} from "@app/fx";
+
+import { ThunkCtx, thunks } from "@app/api";
 import { createLog } from "@app/debug";
 import {
   DbCreatorProps,
@@ -21,18 +31,8 @@ import {
   updateDeployEnvironmentStatus,
   waitForOperation,
 } from "@app/deploy";
-import {
-  Operation,
-  call,
-  parallel,
-  put,
-  select,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
 import { TextVal } from "@app/string-utils";
-import { AppState, DeployApp } from "@app/types";
+import { ApiGen, DeployApp } from "@app/types";
 
 interface CreateProjectProps {
   name: string;
@@ -49,7 +49,7 @@ export const getDbEnvTemplateValue = (dbHandle: string) => `{{${dbHandle}}}`;
 
 export const createProject = thunks.create<CreateProjectProps>(
   "create-project",
-  function* (ctx, next) {
+  function* (ctx, next): ApiGen {
     yield* put(setLoaderStart({ id: ctx.key }));
 
     if (!ctx.payload.stackId) {
@@ -66,11 +66,9 @@ export const createProject = thunks.create<CreateProjectProps>(
       return;
     }
 
-    const env = yield* select((s: AppState) =>
-      selectEnvironmentByName(s, {
-        handle: ctx.payload.name,
-      }),
-    );
+    const env = yield* select(selectEnvironmentByName, {
+      handle: ctx.payload.name,
+    });
 
     let envId = "";
     if (hasDeployEnvironment(env)) {
@@ -78,13 +76,15 @@ export const createProject = thunks.create<CreateProjectProps>(
       envId = env.id;
     } else {
       log("environment doesn't exist, creating");
-      const envCtx = yield* call(() =>
-        createDeployEnvironment.run(createDeployEnvironment(ctx.payload)),
+      const envCtx = yield* call(
+        createDeployEnvironment.run,
+        createDeployEnvironment(ctx.payload),
       );
 
       if (!envCtx.json.ok) {
-        const data = envCtx.json.data as any;
-        yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+        yield* put(
+          setLoaderError({ id: ctx.key, message: envCtx.json.data.message }),
+        );
         return;
       }
 
@@ -92,17 +92,17 @@ export const createProject = thunks.create<CreateProjectProps>(
       envId = `${envCtx.json.data.id}`;
     }
 
-    const appCtx = yield* call(() =>
-      createDeployApp.run(createDeployApp({ name: ctx.payload.name, envId })),
+    const appCtx = yield* call(
+      createDeployApp.run,
+      createDeployApp({ name: ctx.payload.name, envId }),
     );
 
     if (!appCtx.json.ok) {
-      const data = appCtx.json.data as any;
       yield* put(
         setLoaderError({
           id: ctx.key,
           meta: { envId },
-          message: data.message,
+          message: appCtx.json.data.message,
         }),
       );
       return;
@@ -127,9 +127,9 @@ interface WaitDbProps {
   connectionUrl: string;
 }
 
-function* waitForDb(opId: string, dbId: string): Operation<WaitDbProps> {
-  yield* call(() => waitForOperation({ id: opId, skipFetch: true }));
-  const res = yield* call(() => fetchDatabase.run(fetchDatabase({ id: dbId })));
+function* waitForDb(opId: string, dbId: string): Iterator<any, WaitDbProps> {
+  yield* call(waitForOperation, { id: opId, skipFetch: true });
+  const res = yield* call(fetchDatabase.run, fetchDatabase({ id: dbId }));
   if (!res.json.ok) return { id: "", handle: "", connectionUrl: "" };
 
   return {
@@ -151,14 +151,12 @@ export interface CreateProjectSettingsProps {
 
 export const deployProject = thunks.create<CreateProjectSettingsProps>(
   "project-deploy",
-  function* (ctx, next) {
+  function* (ctx: ThunkCtx<CreateProjectSettingsProps>, next) {
     const { appId, envId, dbs, envs, cmds, gitRef, curEnvs } = ctx.payload;
     const id = ctx.name;
     yield* put(setLoaderStart({ id }));
 
-    const app: DeployApp = yield* select((s: AppState) =>
-      selectAppById(s, { id: appId }),
-    );
+    const app: DeployApp = yield select(selectAppById, { id: appId });
     if (!hasDeployApp(app)) {
       const message = `no app found with id ${appId}, cannot deploy project`;
       log(message);
@@ -182,20 +180,19 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
 
     // TODO - convert this to a series of updates where possible (currently information is agnostic)
     // create all the new ones
-    const group = yield* parallel(
+    yield* all(
       cmds.map((cmd) => {
         const processType = cmd.key;
-        return () =>
-          createServiceDefinition.run(
-            createServiceDefinition({
-              appId,
-              processType,
-              command: cmd.value,
-            }),
-          );
+        return call(
+          createServiceDefinition.run,
+          createServiceDefinition({
+            appId,
+            processType,
+            command: cmd.value,
+          }),
+        );
       }),
     );
-    yield* group;
 
     const env = prepareConfigEnv(curEnvs, envs);
     // we want to also inject the db env vars with placeholders
@@ -205,36 +202,35 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
 
     // Trigger configure operation now so we can store the env vars
     // immediately.
-    const configCtx = yield* call(() =>
-      createAppOperation.run(
-        createAppOperation({
-          type: "configure",
-          appId,
-          env,
-        }),
-      ),
+    const configCtx = yield* call(
+      createAppOperation.run,
+      createAppOperation({
+        type: "configure",
+        appId,
+        env,
+      }),
     );
 
     if (!configCtx.json.ok) {
-      const data = configCtx.json.data as any;
-      yield* put(setLoaderError({ id, message: data.message }));
+      yield* put(setLoaderError({ id, message: configCtx.json.data.message }));
       return;
     }
 
-    const groupDb = yield* parallel(
+    const results = yield* all(
       dbs.map((db) => {
-        return () => provisionDatabase.run(provisionDatabase(mapCreatorToProvision(envId, db)));
+        return call(
+          provisionDatabase.run,
+          provisionDatabase(mapCreatorToProvision(envId, db)),
+        );
       }),
     );
-    const results = yield* groupDb;
 
     // when creating a standalone app with no databases to provision
     // we don't want to deploy an app until the config operation completes
-    const data = configCtx.json.data;
-    yield* call(() => waitForOperation({ id: `${data.id}` }));
+    yield* call(waitForOperation, { id: `${configCtx.json.data.id}` });
 
     // fetch app to get latest configuration id
-    yield* call(() => fetchApp.run(fetchApp({ id: appId })));
+    yield* call(fetchApp.run, fetchApp({ id: appId }));
 
     /**
      * now we hot-swap db env vars for the actual connection url
@@ -243,16 +239,14 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     const waiting = [];
     for (let i = 0; i < results.length; i += 1) {
       const res = results[i];
-      if (!res.ok) continue;
-      const json = res.value.json;
-      if (!json) continue;
+      if (!res.json) continue;
 
-      if (json.error) {
-        yield* put(setLoaderError({ id, message: json.error }));
+      if (res.json.error) {
+        yield* put(setLoaderError({ id, message: res.json.error }));
         continue;
       }
 
-      const { opCtx, dbCtx, dbId } = json;
+      const { opCtx, dbCtx, dbId } = res.json;
       if (opCtx && !opCtx.json.ok) {
         yield* put(setLoaderError({ id, message: opCtx.json.data.message }));
         continue;
@@ -264,33 +258,29 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       }
 
       if (opCtx) {
-        waiting.push(() => waitForDb(`${opCtx.json.data.id}`, dbId));
+        waiting.push(call(waitForDb, `${opCtx.json.data.id}`, dbId));
       }
     }
 
-    const groupWait = yield* parallel(waiting);
-    yield* groupWait;
+    yield* all(waiting);
 
-    yield* call(() =>
-      updateEnvWithDbUrls.run(
-        updateEnvWithDbUrls({ appId, envId, force: true }),
-      ),
+    yield* call(
+      updateEnvWithDbUrls.run,
+      updateEnvWithDbUrls({ appId, envId, force: true }),
     );
 
-    const deployCtx = yield* call(() =>
-      createAppOperation.run(
-        createAppOperation({
-          type: "deploy",
-          appId,
-          envId,
-          gitRef,
-        }),
-      ),
+    const deployCtx = yield* call(
+      createAppOperation.run,
+      createAppOperation({
+        type: "deploy",
+        appId,
+        envId,
+        gitRef,
+      }),
     );
 
     if (!deployCtx.json.ok) {
-      const data = deployCtx.json.data as any;
-      yield* put(setLoaderError({ id, message: data.message }));
+      yield* put(setLoaderError({ id, message: deployCtx.json.data.message }));
       return;
     }
 
@@ -326,24 +316,20 @@ function* _updateEnvWithDbUrls({
 
   // finally trigger the operation to overwrite previous temporary
   // env vars with real ones
-  const configureCtx = yield* call(() =>
-    createAppOperation.run(
-      createAppOperation({
-        type: "configure",
-        appId,
-        env: nextEnv,
-      }),
-    ),
+  const configureCtx = yield* call(
+    createAppOperation.run,
+    createAppOperation({
+      type: "configure",
+      appId,
+      env: nextEnv,
+    }),
   );
 
   if (!configureCtx.json.ok) return;
-  const id = `${configureCtx.json.data.id}`;
-  yield* call(() =>
-    waitForOperation({
-      id,
-      skipFetch: true,
-    }),
-  );
+  yield* call(waitForOperation, {
+    id: `${configureCtx.json.data.id}`,
+    skipFetch: true,
+  });
 }
 
 export const updateEnvWithDbUrls = thunks.create<{
@@ -353,41 +339,36 @@ export const updateEnvWithDbUrls = thunks.create<{
 }>("update-env-with-db-urls", function* (ctx, next) {
   const { appId, envId, force = false } = ctx.payload;
   const id = ctx.name;
-  const app = yield* select((s: AppState) => selectAppById(s, { id: appId }));
+  const app = yield* select(selectAppById, { id: appId });
 
-  const dbCtx = yield* call(() =>
-    fetchDatabasesByEnvId.run(fetchDatabasesByEnvId({ envId })),
-  );
-  const configCtx = yield* call(() =>
-    fetchConfiguration.run(
+  const results = yield* all({
+    dbs: call(fetchDatabasesByEnvId.run, fetchDatabasesByEnvId({ envId })),
+    configure: call(
+      fetchConfiguration.run,
       fetchConfiguration({ id: app.currentConfigurationId }),
     ),
-  );
+  });
 
-  if (!dbCtx.json.ok) {
+  if (!results.dbs.json.ok) {
     yield* next();
     ctx.json = { message: "failed to fetch databases" };
     return;
   }
 
-  if (!configCtx.json.ok) {
+  if (!results.configure.json.ok) {
     yield* next();
     ctx.json = { message: "failed to fetch app env vars" };
     return;
   }
 
-  const env = configCtx.json.data.env;
-  const dbs = yield* select((s: AppState) =>
-    selectDatabasesByEnvId(s, { envId }),
-  );
-  yield* call(() =>
-    _updateEnvWithDbUrls({
-      appId,
-      dbs,
-      env,
-      force,
-    }),
-  );
+  const dbs = yield* select(selectDatabasesByEnvId, { envId });
+
+  yield* call(_updateEnvWithDbUrls, {
+    appId,
+    dbs,
+    env: results.configure.json.data.env,
+    force,
+  });
 
   yield* put(setLoaderSuccess({ id }));
   yield* next();
@@ -402,8 +383,9 @@ export const redeployApp = thunks.create<{
 }>("redeploy-app", function* (ctx, next) {
   const id = ctx.name;
   yield* put(setLoaderStart({ id }));
-  const result = yield* call(() =>
-    updateEnvWithDbUrls.run(updateEnvWithDbUrls(ctx.payload)),
+  const result = yield* call(
+    updateEnvWithDbUrls.run,
+    updateEnvWithDbUrls(ctx.payload),
   );
 
   if (result.json.message !== "success") {
@@ -413,19 +395,17 @@ export const redeployApp = thunks.create<{
     return;
   }
 
-  const deployCtx = yield* call(() =>
-    createAppOperation.run(
-      createAppOperation({
-        type: "deploy",
-        appId: ctx.payload.appId,
-        envId: ctx.payload.envId,
-        gitRef: ctx.payload.gitRef,
-      }),
-    ),
+  const deployCtx = yield* call(
+    createAppOperation.run,
+    createAppOperation({
+      type: "deploy",
+      appId: ctx.payload.appId,
+      envId: ctx.payload.envId,
+      gitRef: ctx.payload.gitRef,
+    }),
   );
   if (!deployCtx.json.ok) {
-    const data = deployCtx.json.data as any;
-    yield* put(setLoaderError({ id, message: data.message }));
+    yield* put(setLoaderError({ id, message: deployCtx.json.data.message }));
     yield* next();
     return;
   }

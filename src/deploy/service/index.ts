@@ -242,7 +242,7 @@ export const fetchService = api.get<{ id: string }>("/services/:id");
 export const fetchServices = api.get(
   "/services?per_page=5000",
   {
-    supervisor: cacheMinTimer(),
+    saga: cacheMinTimer(),
   },
   function* (ctx, next) {
     yield* next();
@@ -258,7 +258,7 @@ export const fetchEnvironmentServices = api.get<{ id: string }>(
 );
 export const fetchServicesByAppId = api.get<{ id: string }>(
   "/apps/:id/services",
-  { supervisor: cacheShortTimer() },
+  { saga: cacheShortTimer() },
 );
 
 export interface ServiceSizingPolicyResponse {
@@ -317,7 +317,7 @@ export const fetchServiceSizingPoliciesByServiceId = api.get<{
   service_id: string;
 }>(
   "/services/:service_id/service_sizing_policies",
-  { supervisor: cacheShortTimer() },
+  { saga: cacheShortTimer() },
   api.cache(),
 );
 
@@ -363,25 +363,22 @@ export const modifyServiceSizingPolicy =
       let updateCtx;
       if (nextPolicy.scaling_enabled) {
         if (nextPolicy.id === undefined) {
-          updateCtx = yield* call(() =>
-            createServiceSizingPoliciesByServiceId.run(
-              createServiceSizingPoliciesByServiceId(nextPolicy),
-            ),
+          updateCtx = yield* call(
+            createServiceSizingPoliciesByServiceId.run,
+            createServiceSizingPoliciesByServiceId(nextPolicy),
           );
         } else {
-          updateCtx = yield* call(() =>
-            updateServiceSizingPoliciesByServiceId.run(
-              updateServiceSizingPoliciesByServiceId(nextPolicy),
-            ),
+          updateCtx = yield* call(
+            updateServiceSizingPoliciesByServiceId.run,
+            updateServiceSizingPoliciesByServiceId(nextPolicy),
           );
         }
       } else {
-        updateCtx = yield* call(() =>
-          deleteServiceSizingPoliciesByServiceId.run(
-            deleteServiceSizingPoliciesByServiceId({
-              service_id: `${nextPolicy.service_id}`,
-            }),
-          ),
+        updateCtx = yield* call(
+          deleteServiceSizingPoliciesByServiceId.run,
+          deleteServiceSizingPoliciesByServiceId({
+            service_id: `${nextPolicy.service_id}`,
+          }),
         );
       }
 
@@ -401,7 +398,7 @@ export const fetchServiceOperations = api.get<{ id: string }>(
 export const cancelServicesOpsPoll = createAction("cancel-services-ops-poll");
 export const pollServiceOperations = api.get<{ id: string }>(
   ["/services/:id/operations", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelServicesOpsPoll}`) },
+  { saga: poll(10 * 1000, `${cancelServicesOpsPoll}`) },
 );
 
 export const serviceEntities = {

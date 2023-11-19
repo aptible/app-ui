@@ -1,7 +1,7 @@
-import { useLoader, useLoaderSuccess } from "@app/fx";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
+import { useLoader, useLoaderSuccess } from "saga-query/react";
 
 import { CreateCertProps, createCertificate } from "@app/deploy";
 import { environmentCertificatesUrl } from "@app/routes";

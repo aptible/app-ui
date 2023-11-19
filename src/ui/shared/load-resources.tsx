@@ -3,7 +3,7 @@ import type { LoadingState } from "@app/fx";
 import { Loading } from "./loading";
 
 interface LoadResourcesProps {
-  query: Omit<LoadingState, "id">;
+  query: LoadingState;
   children: React.ReactNode;
   isEmpty: boolean;
   empty?: JSX.Element;

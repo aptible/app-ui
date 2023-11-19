@@ -1,6 +1,6 @@
-import { batchActions } from "@app/fx";
-import { useQuery } from "@app/fx";
 import { useDispatch, useSelector } from "react-redux";
+import { batchActions } from "saga-query";
+import { useQuery } from "saga-query/react";
 
 import { fetchReauthOrganizations, logout } from "@app/auth";
 import {

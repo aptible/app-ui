@@ -57,7 +57,7 @@
     "redux": "^4.2.1",
     "redux-batched-actions": "^0.5.0",
     "redux-persist": "^6.0.0",
-    "starfx": "^0.0.34",
+    "saga-query": "^9.0.2",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.2.2",
     "vite": "^4.4.10",

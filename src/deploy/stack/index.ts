@@ -274,7 +274,7 @@ export const stackReducers = createReducerMap(slice);
 export const fetchStacks = api.get(
   "/stacks?per_page=5000",
   {
-    supervisor: cacheMinTimer(),
+    saga: cacheMinTimer(),
   },
   function* (ctx, next) {
     yield* next();
@@ -289,7 +289,7 @@ export const fetchStack = api.get<{ id: string }>("/stacks/:id");
 
 export const fetchStackManagedHids = api.get<{ id: string } & PaginateProps>(
   "/stacks/:id/intrusion_detection_reports?page=:page&per_page=10",
-  { supervisor: cacheShortTimer() },
+  { saga: cacheShortTimer() },
   api.cache(),
 );
 

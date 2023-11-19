@@ -4,13 +4,13 @@ import {
   provisionLogDrain,
   selectEnvironmentById,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess } from "@app/fx";
 import { operationDetailUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { handleValidator, portValidator } from "@app/validator";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLoader, useLoaderSuccess } from "saga-query/react";
 import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {

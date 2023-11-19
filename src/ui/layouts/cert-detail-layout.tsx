@@ -5,7 +5,6 @@ import {
   selectCertificateById,
   selectEnvironmentById,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
 import {
   certDetailAppsUrl,
   certDetailEndpointsUrl,
@@ -16,6 +15,7 @@ import type { AppState, DeployCertificate } from "@app/types";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
+import { useLoader, useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   CertIssuer,

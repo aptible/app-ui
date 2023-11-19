@@ -3,7 +3,7 @@ import { useCache, useLoader, useLoaderSuccess } from "@app/fx";
 import { fetchU2fChallenges } from "@app/mfa";
 import { securitySettingsUrl } from "@app/routes";
 import { selectCurrentUserId } from "@app/users";
-import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
+import { PublicKeyCredentialCreationOptionsJSON } from "@github/webauthn-json/dist/types/basic/json";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";

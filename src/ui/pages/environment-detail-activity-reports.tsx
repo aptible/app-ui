@@ -4,10 +4,10 @@ import {
   fetchEnvActivityReports,
   selectActivityReportsByEnvId,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
 import { AppState, DeployActivityReport } from "@app/types";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { useQuery } from "saga-query/react";
 import { usePaginate } from "../hooks";
 import {
   ButtonIcon,

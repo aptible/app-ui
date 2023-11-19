@@ -1,16 +1,12 @@
-import { createLog } from "@app/debug";
-import { selectEnv } from "@app/env";
 import {
-  Ok,
+  all,
   call,
   createApi,
   createPipe,
   dispatchActions,
   fetcher,
-  parallel,
   put,
   race,
-  reduxMdw,
   requestMonitor,
   select,
   setLoaderError,
@@ -19,12 +15,16 @@ import {
   timer,
 } from "@app/fx";
 import type {
+  ApiCtx,
   CreateActionWithPayload,
   LoaderCtx,
   Next,
   PipeCtx,
-  Result,
 } from "@app/fx";
+import * as Sentry from "@sentry/react";
+
+import { createLog } from "@app/debug";
+import { selectEnv } from "@app/env";
 import { halEntityParser } from "@app/hal";
 import { selectSignal } from "@app/signal";
 import {
@@ -34,20 +34,19 @@ import {
 } from "@app/token";
 import type {
   Action,
-  ApiCtx,
+  ApiGen,
   AppCtx,
   AuthApiCtx,
   DeployApiCtx,
   HalEmbedded,
   MetricTunnelCtx,
 } from "@app/types";
-import * as Sentry from "@sentry/react";
 
 type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel";
 
 const log = createLog("fx");
 
-export function* elevetatedMdw(ctx: AuthApiCtx, next: Next) {
+export function* elevetatedMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   ctx.elevated = true;
   yield* next();
 }
@@ -81,7 +80,7 @@ function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   }
 }
 
-function* getApiBaseUrl(endpoint: EndpointUrl) {
+function* getApiBaseUrl(endpoint: EndpointUrl): ApiGen<string> {
   const env = yield* select(selectEnv);
   if (endpoint === "auth") {
     return env.authUrl;
@@ -98,7 +97,7 @@ function* getApiBaseUrl(endpoint: EndpointUrl) {
   return env.apiUrl;
 }
 
-function* tokenMdw(ctx: ApiCtx & { noToken?: boolean }, next: Next) {
+function* tokenMdw(ctx: ApiCtx & { noToken?: boolean }, next: Next): ApiGen {
   if (ctx.noToken) {
     yield* next();
     return;
@@ -118,7 +117,7 @@ function* tokenMdw(ctx: ApiCtx & { noToken?: boolean }, next: Next) {
   yield* next();
 }
 
-function* elevatedTokenMdw(ctx: AuthApiCtx, next: Next) {
+function* elevatedTokenMdw(ctx: AuthApiCtx, next: Next): ApiGen {
   if (!ctx.elevated) {
     yield* next();
     return;
@@ -138,19 +137,19 @@ function* elevatedTokenMdw(ctx: AuthApiCtx, next: Next) {
   yield* next();
 }
 
-function* getUrl(ctx: AppCtx, endpoint: EndpointUrl) {
+function* getUrl(ctx: AppCtx, endpoint: EndpointUrl): ApiGen<string> {
   const { url } = ctx.req();
   const fullUrl = url.startsWith("http");
   if (fullUrl) {
     return url;
   }
 
-  const baseUrl = yield* call(() => getApiBaseUrl(endpoint));
+  const baseUrl = yield* call(getApiBaseUrl, endpoint);
   return `${baseUrl}${url}`;
 }
 
-function* requestBilling(ctx: ApiCtx, next: Next) {
-  const url = yield* call(() => getUrl(ctx, "billing" as const));
+function* requestBilling(ctx: ApiCtx, next: Next): ApiGen {
+  const url = yield* call(getUrl, ctx, "billing" as const);
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
@@ -163,8 +162,8 @@ function* requestBilling(ctx: ApiCtx, next: Next) {
   yield* next();
 }
 
-function* requestApi(ctx: ApiCtx, next: Next) {
-  const url = yield* call(() => getUrl(ctx, "api" as const));
+function* requestApi(ctx: ApiCtx, next: Next): ApiGen {
+  const url = yield* call(getUrl, ctx, "api" as const);
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
@@ -177,8 +176,8 @@ function* requestApi(ctx: ApiCtx, next: Next) {
   yield* next();
 }
 
-function* requestAuth(ctx: AuthApiCtx, next: Next) {
-  const url = yield* call(() => getUrl(ctx, "auth" as const));
+function* requestAuth(ctx: AuthApiCtx, next: Next): ApiGen {
+  const url = yield* call(getUrl, ctx, "auth" as const);
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
@@ -191,8 +190,8 @@ function* requestAuth(ctx: AuthApiCtx, next: Next) {
   yield* next();
 }
 
-function* requestMetricTunnel(ctx: ApiCtx, next: Next) {
-  const url = yield* call(() => getUrl(ctx, "metrictunnel" as const));
+function* requestMetricTunnel(ctx: ApiCtx, next: Next): ApiGen {
+  const url = yield* call(getUrl, ctx, "metrictunnel" as const);
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
@@ -225,7 +224,7 @@ function* aborter(ctx: ApiCtx, next: Next) {
     signal: signal.signal,
   });
 
-  yield* race({ next, aborted });
+  yield* race([next(), call(aborted)]);
 }
 
 const MS = 1000;
@@ -240,7 +239,6 @@ export const api = createApi<DeployApiCtx>();
 api.use(debugMdw);
 api.use(sentryErrorHandler);
 api.use(expiredToken);
-api.use(reduxMdw());
 api.use(requestMonitor());
 api.use(aborter);
 api.use(requestApi);
@@ -253,7 +251,6 @@ export const authApi = createApi<AuthApiCtx>();
 authApi.use(debugMdw);
 authApi.use(sentryErrorHandler);
 authApi.use(expiredToken);
-authApi.use(reduxMdw());
 authApi.use(requestMonitor());
 authApi.use(aborter);
 authApi.use(halEntityParser);
@@ -267,7 +264,6 @@ export const billingApi = createApi<DeployApiCtx>();
 billingApi.use(debugMdw);
 billingApi.use(sentryErrorHandler);
 billingApi.use(expiredToken);
-billingApi.use(reduxMdw());
 billingApi.use(requestMonitor());
 billingApi.use(aborter);
 billingApi.use(halEntityParser);
@@ -280,7 +276,6 @@ export const metricTunnelApi = createApi<MetricTunnelCtx>();
 metricTunnelApi.use(debugMdw);
 metricTunnelApi.use(sentryErrorHandler);
 metricTunnelApi.use(expiredToken);
-metricTunnelApi.use(reduxMdw());
 metricTunnelApi.use(requestMonitor());
 metricTunnelApi.use(aborter);
 metricTunnelApi.use(metricTunnelApi.routes());
@@ -312,11 +307,12 @@ export function combinePages<
   { max = 50 }: CombinePagesProps = { max: 50 },
 ) {
   function* paginator(ctx: ThunkCtx, next: Next) {
-    let results: Result<DeployApiCtx>[] = [];
-    yield* put(setLoaderStart({ id: ctx.key }));
+    let results: DeployApiCtx[] = [];
+    yield put(setLoaderStart({ id: ctx.key }));
 
-    const firstPage: DeployApiCtx<HalEmbedded<any>> = yield* call(() =>
-      actionFn.run(actionFn({ ...ctx.payload, page: 1 })),
+    const firstPage: DeployApiCtx<HalEmbedded<any>> = yield* call(
+      actionFn.run,
+      actionFn({ ...ctx.payload, page: 1 }),
     );
 
     if (!firstPage.json.ok) {
@@ -326,7 +322,7 @@ export function combinePages<
       return;
     }
 
-    results = [Ok(firstPage)];
+    results = [firstPage];
 
     if (firstPage.json.data.current_page) {
       const cur = firstPage.json.data.current_page;
@@ -335,13 +331,12 @@ export function combinePages<
       const lastPage = Math.min(max, Math.ceil(total / per));
       const fetchAll = [];
       for (let i = cur + 1; i <= lastPage; i += 1) {
-        fetchAll.push(() =>
-          actionFn.run(actionFn({ ...ctx.payload, page: i })),
+        fetchAll.push(
+          call(actionFn.run, actionFn({ ...ctx.payload, page: i })),
         );
       }
       if (fetchAll.length > 0) {
-        const group = yield* parallel(fetchAll);
-        results = yield* group;
+        results = yield* all(fetchAll);
       }
     }
 

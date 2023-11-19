@@ -106,7 +106,7 @@ export const selectDatabaseImagesVisible = createSelector(
 );
 
 export const fetchDatabaseImages = api.get("/database_images?per_page=5000", {
-  supervisor: cacheTimer(),
+  saga: cacheTimer(),
 });
 
 export const databaseImageEntities = {

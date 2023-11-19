@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 
 import { fetchStripeSources, fetchTrials } from "@app/billing";
-import { selectLoaderById } from "@app/fx";
 import { server, testEnv, verifiedUserHandlers } from "@app/mocks";
 import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { rest } from "msw";
+import { selectLoaderById } from "saga-query";
 
 describe("Trial notice", () => {
   describe("with no trials", () => {

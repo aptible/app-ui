@@ -6,12 +6,12 @@ import {
   selectOperationById,
   selectResourceNameByOperationId,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
 import { activityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployOperation } from "@app/types";
 import { useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
+import { useQuery } from "saga-query/react";
 import {
   DetailHeader,
   DetailInfoGrid,

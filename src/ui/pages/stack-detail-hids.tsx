@@ -5,12 +5,12 @@ import {
   hasDeployStack,
   selectStackById,
 } from "@app/deploy";
-import { useCache } from "@app/fx";
 import { selectAccessToken } from "@app/token";
 import { AppState, DeployStack, HalEmbedded, LinkResponse } from "@app/types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
+import { useCache } from "saga-query/react";
 import {
   Banner,
   BannerMessages,

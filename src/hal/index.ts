@@ -1,4 +1,4 @@
-import { Next, Operation, select } from "@app/fx";
+import { Next, select } from "@app/fx";
 
 import { createAssign, createReducerMap } from "@app/slice-helpers";
 import type {
@@ -89,14 +89,14 @@ export function defaultEntity<E = any>(e: EmbeddedMap<E>): EmbeddedMap<E> {
 export function* halEntityParser(
   ctx: DeployApiCtx<any, HalEmbedded<{ [key: string]: any }>>,
   next: Next,
-): Operation<any> {
+) {
   yield* next();
 
   if (!ctx.json.ok) {
     return;
   }
 
-  const entityMap: EntityMap = yield* select(selectEntities);
+  const entityMap: EntityMap = yield select(selectEntities);
   const { data } = ctx.json;
 
   const actions: Action<any>[] = [];

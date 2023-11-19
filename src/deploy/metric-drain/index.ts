@@ -167,7 +167,7 @@ export const fetchEnvMetricDrains = api.get<{ id: string }>(
 export const fetchMetricDrains = api.get(
   "/metric_drains?per_page=5000",
   {
-    supervisor: cacheTimer(),
+    saga: cacheTimer(),
   },
   function* (ctx, next) {
     yield* next();
@@ -288,24 +288,26 @@ export const provisionMetricDrain = thunks.create<CreateMetricDrainProps>(
   function* (ctx, next) {
     yield* put(setLoaderStart({ id: ctx.key }));
 
-    const mdCtx = yield* call(() =>
-      createMetricDrain.run(createMetricDrain(ctx.payload)),
+    const mdCtx = yield* call(
+      createMetricDrain.run,
+      createMetricDrain(ctx.payload),
     );
     if (!mdCtx.json.ok) {
-      const data = mdCtx.json.data as any;
-      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+      yield* put(
+        setLoaderError({ id: ctx.key, message: mdCtx.json.data.message }),
+      );
       return;
     }
 
     const metricDrainId = mdCtx.json.data.id;
-    const opCtx = yield* call(() =>
-      createMetricDrainOperation.run(
-        createMetricDrainOperation({ id: metricDrainId }),
-      ),
+    const opCtx = yield* call(
+      createMetricDrainOperation.run,
+      createMetricDrainOperation({ id: metricDrainId }),
     );
     if (!opCtx.json.ok) {
-      const data = opCtx.json.data as any;
-      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+      yield* put(
+        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
+      );
       return;
     }
 

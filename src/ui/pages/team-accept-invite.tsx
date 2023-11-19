@@ -1,7 +1,6 @@
 import { AUTH_LOADER_ID, logout } from "@app/auth";
 import { acceptInvitation } from "@app/auth/accept-invitation";
 import { selectLoaderById } from "@app/fx";
-import { useLoader, useQuery } from "@app/fx";
 import { fetchInvitation, selectInvitationById } from "@app/invitations";
 import { setRedirectPath } from "@app/redirect-path";
 import { homeUrl, loginUrl, teamAcceptInviteUrl } from "@app/routes";
@@ -10,6 +9,7 @@ import { selectCurrentUser } from "@app/users";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
+import { useLoader, useQuery } from "saga-query/react";
 import { HeroBgLayout } from "../layouts";
 import { Banner, BannerMessages, Box, Button, Group, Loading } from "../shared";
 

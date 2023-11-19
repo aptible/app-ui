@@ -10,10 +10,10 @@ import {
   selectEnvironmentById,
 } from "@app/deploy";
 
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { operationDetailUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { handleValidator, portValidator } from "@app/validator";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {

@@ -27,7 +27,7 @@ export default defineConfig(() => {
               "redux",
               "redux-batched-actions",
               "redux-persist",
-              "starfx",
+              "saga-query",
               "qrcode.react",
             ],
           },

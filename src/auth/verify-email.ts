@@ -11,7 +11,7 @@ interface VerifyEmail {
 
 export const verifyEmail = authApi.post<VerifyEmail>(
   "/verifications",
-  { supervisor: leading },
+  { saga: leading },
   function* onVerifyEmail(ctx: AuthApiCtx<any, VerifyEmail>, next) {
     const { challengeId, verificationCode, userId } = ctx.payload;
     ctx.request = ctx.req({

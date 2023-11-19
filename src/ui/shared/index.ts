@@ -58,7 +58,3 @@ export * from "./pill";
 export * from "./onboarding-link";
 export * from "./resource-group-box";
 export * from "./csv";
-export * from "./metrics-controls";
-export * from "./cookie-notice";
-export * from "./container-metrics-chart";
-export * from "./container-metrics-table";

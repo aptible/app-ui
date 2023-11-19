@@ -1,5 +1,5 @@
-import { put, select } from "@app/fx";
 import { createSelector } from "@reduxjs/toolkit";
+import { put, select } from "saga-query";
 
 import { thunks } from "@app/api";
 import {
@@ -187,11 +187,9 @@ export const setResourceStats = thunks.create<
   Pick<ResourceStats, "id" | "type">
 >("add-recent-resource", function* (ctx, next) {
   const id = getResourceStatId(ctx.payload);
-  const resource = yield* select((s: AppState) =>
-    selectResourceStatsById(s, {
-      id,
-    }),
-  );
+  const resource = yield* select(selectResourceStatsById, {
+    id,
+  });
   const now = new Date().toISOString();
   if (!resource) {
     yield* put(

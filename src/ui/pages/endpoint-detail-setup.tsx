@@ -1,6 +1,6 @@
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
+import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
 import { checkDns, renewEndpoint, selectEndpointById } from "@app/deploy";
 import { endpointDetailActivityUrl } from "@app/routes";

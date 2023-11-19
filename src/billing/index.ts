@@ -1,5 +1,5 @@
 import { billingApi, cacheTimer, thunks } from "@app/api";
-import { call, parallel } from "@app/fx";
+import { all, call } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
 import { createAssign, createReducerMap } from "@app/slice-helpers";
 import { AppState, BillingDetail, LinkResponse } from "@app/types";
@@ -99,12 +99,12 @@ export const createStripeSource = billingApi.post<StripeSourceProps>(
 
 export const fetchStripeSources = billingApi.get<{ id: string }>(
   "/billing_details/:id/stripe_sources",
-  { supervisor: cacheTimer() },
+  { saga: cacheTimer() },
   billingApi.cache(),
 );
 export const fetchTrials = billingApi.get<{ id: string }>(
   "/billing_details/:id/trials",
-  { supervisor: cacheTimer() },
+  { saga: cacheTimer() },
   billingApi.cache(),
 );
 // const fetchExternalPaymentSources = billingApi.get<{ id: string }>('/billing_details/:id/external_payment_sources');
@@ -171,8 +171,9 @@ export const createSignupBillingRecords =
   thunks.create<CreateBillingRecordProps>(
     "create-signup-billing-records",
     function* (ctx, next) {
-      const dtail = yield* call(() =>
-        createBillingDetail.run(createBillingDetail(ctx.payload)),
+      const dtail = yield* call(
+        createBillingDetail.run,
+        createBillingDetail(ctx.payload),
       );
       if (!dtail.json.ok) {
         ctx.json = {
@@ -182,22 +183,15 @@ export const createSignupBillingRecords =
         return;
       }
 
-      const group = yield* parallel([
-        () => createBillingCycle.run(createBillingCycle(ctx.payload)),
-        () => createBillingContact.run(createBillingContact(ctx.payload)),
+      const results = yield* all([
+        call(createBillingCycle.run, createBillingCycle(ctx.payload)),
+        call(createBillingContact.run, createBillingContact(ctx.payload)),
       ]);
-      const results = yield* group;
       // check each resp for an error
       const msg: string[] = [];
       for (let i = 0; i < results.length; i += 1) {
-        const result = results[i];
-        if (!result.ok) {
-          msg.push(result.error.message);
-          continue;
-        }
-
-        if (!result.value.json.ok) {
-          msg.push(result.value.json.data.message);
+        if (!results[i].json.ok) {
+          msg.push(results[i].json.data.message);
         }
       }
 

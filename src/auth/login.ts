@@ -23,13 +23,10 @@ export const login = thunks.create<CreateTokenPayload>(
     // use ctx.name not ctx.key (this is important for webauthn!)
     const id = ctx.name;
     yield* put(setLoaderStart({ id }));
-    const tokenCtx = yield* call(() =>
-      createToken.run(createToken(ctx.payload)),
-    );
+    const tokenCtx = yield* call(createToken.run, createToken(ctx.payload));
 
     if (!tokenCtx.json.ok) {
-      const { error, code, exception_context, message } = tokenCtx.json
-        .data as any;
+      const { error, code, exception_context, message } = tokenCtx.json.data;
       yield* put(
         setLoaderError({
           id,
@@ -42,8 +39,9 @@ export const login = thunks.create<CreateTokenPayload>(
 
     // only elevate token if it's a normal password login, otp/u2f won't work
     if (!ctx.payload.u2f && ctx.payload.otpToken === "") {
-      const elevateCtx = yield* call(() =>
-        elevateToken.run(elevateToken(ctx.payload)),
+      const elevateCtx = yield* call(
+        elevateToken.run,
+        elevateToken(ctx.payload),
       );
       log(elevateCtx);
     }
@@ -73,12 +71,12 @@ export const loginWebauthn = thunks.create<
   }
 
   try {
-    const u2f = yield* call(() => webauthnGet(webauthn.payload));
-    yield* call(() => login.run(login({ ...props, u2f })));
+    const u2f = yield* call(webauthnGet, webauthn.payload);
+    yield* call(login.run, login({ ...props, u2f }));
     yield* next();
   } catch (err) {
     console.error(err);
-    yield* put(
+    yield put(
       setLoaderError({
         id,
         message: (err as Error).message,

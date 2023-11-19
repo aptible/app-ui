@@ -7,28 +7,22 @@ import {
   selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
+import { createReducerMap, createTable } from "@app/slice-helpers";
+import { AppState, ContainerMetrics, MetricHorizons } from "@app/types";
+import { metricHorizonAsSeconds } from "@app/ui/shared/metrics-controls";
+import { createSelector } from "@reduxjs/toolkit";
 import {
+  all,
   call,
   delay,
-  leading,
-  parallel,
   put,
   select,
   selectLoaders,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
-} from "@app/fx";
-import { createReducerMap, createTable } from "@app/slice-helpers";
-import { AppState, ContainerMetrics, MetricHorizons } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-
-export const metricHorizonAsSeconds = (metricHorizon: MetricHorizons) =>
-  ({
-    "1h": 60 * 60,
-    "1d": 60 * 60 * 24,
-    "1w": 60 * 60 * 24 * 7,
-  })[metricHorizon];
+  takeLeading,
+} from "saga-query";
 
 export interface MetricTunnelContainerResponse {
   columns: (string | null | number)[][];
@@ -265,7 +259,7 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
   MetricTunnelContainerResponse
 >(
   `/proxy/:containerId?horizon=:metricHorizon&ts=${getUtc()}&metric=:metricName&requestedTicks=300`,
-  { supervisor: cacheTimer() },
+  { saga: cacheTimer() },
   function* (ctx, next) {
     const key = metricsKey(ctx.payload.serviceId, ctx.payload.metricHorizon);
     const id = `${ctx.key}-${ctx.payload.containerId}-${ctx.payload.metricName}-${key}`;
@@ -299,32 +293,28 @@ export const fetchContainersByServiceId = thunks.create<{ serviceId: string }>(
   function* (ctx, next) {
     const { serviceId } = ctx.payload;
     yield* put(setLoaderStart({ id: ctx.key }));
-    const releaseCtx = yield* call(() =>
-      fetchReleasesByServiceWithDeleted.run(
-        fetchReleasesByServiceWithDeleted({ serviceId: ctx.payload.serviceId }),
-      ),
+    const releaseCtx = yield* call(
+      fetchReleasesByServiceWithDeleted.run,
+      fetchReleasesByServiceWithDeleted({ serviceId: ctx.payload.serviceId }),
     );
     if (!releaseCtx.json.ok) {
       yield* put(setLoaderError({ id: ctx.key }));
       yield* next();
       return releaseCtx;
     }
-    const releases = yield* select((s: AppState) =>
-      selectReleasesByServiceAfterDate(s, {
-        serviceId,
-        date: dateFromToday(-7).toISOString(),
-      }),
-    );
+    const releases = yield* select(selectReleasesByServiceAfterDate, {
+      serviceId,
+      date: dateFromToday(-7).toISOString(),
+    });
     const releaseIds = releases.map((release) => release.id);
 
-    const fx = releaseIds.map(
-      (releaseId) => () =>
-        fetchContainersByReleaseIdWithDeleted.run(
-          fetchContainersByReleaseIdWithDeleted({ releaseId }),
-        ),
+    const fx = releaseIds.map((releaseId) =>
+      call(
+        fetchContainersByReleaseIdWithDeleted.run,
+        fetchContainersByReleaseIdWithDeleted({ releaseId }),
+      ),
     );
-    const group = yield* parallel(fx);
-    yield* group;
+    yield* all(fx);
 
     yield* put(setLoaderSuccess({ id: ctx.key }));
     yield* next();
@@ -340,30 +330,24 @@ export const fetchMetricByServiceId = thunks.create<{
 }>("fetch-metric-by-service-id", function* (ctx, next) {
   yield* put(setLoaderStart({ id: ctx.key }));
   const { serviceId, metricHorizon, metricName } = ctx.payload;
-  const service = yield* select((s: AppState) =>
-    selectServiceById(s, { id: serviceId }),
-  );
+  const service = yield* select(selectServiceById, { id: serviceId });
 
   // we always go back exactly one week, though it might be a bit too far for some that way
   // we do not have to refetch this if the component state changes as this is fairly expensive
-  const releases = yield* select((s: AppState) =>
-    selectReleasesByServiceAfterDate(s, {
-      serviceId,
-      date: dateFromToday(-7).toISOString(),
-    }),
-  );
+  const releases = yield* select(selectReleasesByServiceAfterDate, {
+    serviceId,
+    date: dateFromToday(-7).toISOString(),
+  });
   const releaseIds = releases.map((release) => release.id);
 
   const layersToSearchForContainers = ["app", "database"];
   const horizonInSeconds = metricHorizonAsSeconds(metricHorizon);
-  const containers = yield* select((s: AppState) =>
-    selectContainersByCurrentReleaseAndHorizon(s, {
-      layers: layersToSearchForContainers,
-      releaseIds,
-      horizonInSeconds,
-      currentReleaseId: service.currentReleaseId,
-    }),
-  );
+  const containers = yield* select(selectContainersByCurrentReleaseAndHorizon, {
+    layers: layersToSearchForContainers,
+    releaseIds,
+    horizonInSeconds,
+    currentReleaseId: service.currentReleaseId,
+  });
 
   const BATCH_REQUEST_LIMIT = 20;
   const totalRequests = containers.length;
@@ -382,8 +366,9 @@ export const fetchMetricByServiceId = thunks.create<{
         continue;
       }
 
-      fx.push(() =>
-        fetchMetricTunnelDataForContainer.run(
+      fx.push(
+        call(
+          fetchMetricTunnelDataForContainer.run,
           fetchMetricTunnelDataForContainer({
             containerId: container.id,
             metricName,
@@ -394,8 +379,7 @@ export const fetchMetricByServiceId = thunks.create<{
       );
     }
 
-    const group = yield* parallel(fx);
-    yield* group;
+    yield* all(fx);
     yield* delay(250);
   }
 
@@ -432,20 +416,22 @@ export const fetchAllMetricsByServiceId = thunks.create<{
 }>(
   "fetch-all-metrics-by-service-id",
   {
-    supervisor: leading,
+    saga: takeLeading,
   },
   function* (ctx, next) {
     const { serviceId, metrics, metricHorizon } = ctx.payload;
     yield* put(setLoaderStart({ id: ctx.key }));
 
-    yield* call(() =>
-      fetchContainersByServiceId.run(fetchContainersByServiceId({ serviceId })),
+    yield* call(
+      fetchContainersByServiceId.run,
+      fetchContainersByServiceId({ serviceId }),
     );
 
     const fx: any[] = [];
     metrics.forEach((metricName) => {
-      fx.push(() =>
-        fetchMetricByServiceId.run(
+      fx.push(
+        call(
+          fetchMetricByServiceId.run,
           fetchMetricByServiceId({
             serviceId,
             metricName,
@@ -454,8 +440,7 @@ export const fetchAllMetricsByServiceId = thunks.create<{
         ),
       );
     });
-    const group = yield* parallel(fx);
-    yield* group;
+    yield* all(fx);
 
     yield* put(setLoaderSuccess({ id: ctx.key }));
     yield* next();

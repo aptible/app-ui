@@ -9,7 +9,6 @@ import {
   combinePages,
   thunks,
 } from "@app/api";
-import { Operation } from "@app/fx";
 import {
   defaultEntity,
   extractIdFromLink,
@@ -27,6 +26,7 @@ import {
 } from "@app/slice-helpers";
 import { capitalize } from "@app/string-utils";
 import type {
+  ApiGen,
   AppState,
   DeployActivityRow,
   DeployOperation,
@@ -362,30 +362,30 @@ interface EnvOpProps extends PaginateProps, EnvIdProps {}
 
 export const fetchEnvOperations = api.get<EnvOpProps>(
   "/accounts/:envId/operations?page=:page&per_page=250",
-  { supervisor: leading },
+  { saga: leading },
 );
 
 export const fetchAllEnvOps = thunks.create<EnvIdProps>(
   "fetch-all-env-ops",
-  { supervisor: cacheShortTimer() },
+  { saga: cacheShortTimer() },
   combinePages(fetchEnvOperations, { max: 2 }),
 );
 
 export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
 export const pollEnvOperations = api.get<EnvIdProps>(
   ["/accounts/:envId/operations", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelEnvOperationsPoll}`) },
+  { saga: poll(10 * 1000, `${cancelEnvOperationsPoll}`) },
 );
 
 export const fetchOrgOperations = api.get<{ orgId: string }>(
   "/organizations/:orgId/operations?per_page=250",
-  { supervisor: leading },
+  { saga: leading },
 );
 
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
 export const pollOrgOperations = api.get<{ orgId: string }>(
   "/organizations/:orgId/operations",
-  { supervisor: poll(10 * 1000, `${cancelOrgOperationsPoll}`) },
+  { saga: poll(10 * 1000, `${cancelOrgOperationsPoll}`) },
 );
 
 export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
@@ -402,8 +402,8 @@ export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
       }
 
       const url = ctx.json.data;
-      const response = yield* call(() => fetch(url));
-      const data = yield* call(() => response.text());
+      const response = yield* call(fetch, url);
+      const data = yield* call([response, "text"]);
 
       if (!response.ok) {
         ctx.json = {
@@ -429,9 +429,7 @@ export const cancelOpByIdPoll = createAction("cancel-op-by-id-poll");
 export const pollOperationById = api.get<
   { id: string },
   DeployOperationResponse
->(["/operations/:id", "poll"], {
-  supervisor: poll(3 * 1000, `${cancelOpByIdPoll}`),
-});
+>(["/operations/:id", "poll"], { saga: poll(3 * 1000, `${cancelOpByIdPoll}`) });
 
 type WaitResult = DeployOperation | undefined;
 
@@ -443,16 +441,17 @@ export function* waitForOperation({
   id: string;
   wait?: number;
   skipFetch?: boolean;
-}): Operation<WaitResult> {
+}): ApiGen<WaitResult> {
   while (true) {
     if (skipFetch) {
-      const op = yield* select((s: AppState) => selectOperationById(s, { id }));
+      const op = yield* select(selectOperationById, { id });
       if (op.status === "succeeded" || op.status === "failed") {
         return op;
       }
     } else {
-      const ctx = yield* call(() =>
-        fetchOperationById.run(fetchOperationById({ id })),
+      const ctx = yield* call(
+        fetchOperationById.run,
+        fetchOperationById({ id }),
       );
 
       if (ctx.json.ok) {
@@ -463,9 +462,7 @@ export function* waitForOperation({
           return deserializeDeployOperation(ctx.json.data);
         }
       } else {
-        const op = yield* select((s: AppState) =>
-          selectOperationById(s, { id }),
-        );
+        const op = yield* select(selectOperationById, { id });
         // When a deprovision happens and it is successful, the API will
         // eventually return a 404 because the operation is "soft" deleted.
         // As a result, we "hack" the FE by checking for this edge case

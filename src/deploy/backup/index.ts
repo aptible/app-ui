@@ -1,5 +1,4 @@
 import { api } from "@app/api";
-import { poll } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -9,6 +8,7 @@ import {
 import { dateDescSort } from "@app/sort";
 import { AppState, DeployBackup, LinkResponse } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
+import { poll } from "saga-query";
 import { selectDatabases } from "../database";
 import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
@@ -133,7 +133,7 @@ export const fetchDatabaseBackups = api.get<{ id: string }>(
 export const cancelPollDatabaseBackups = createAction("cancel-poll-db-backups");
 export const pollDatabaseBackups = api.get<{ id: string }>(
   ["/databases/:id/backups", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelPollDatabaseBackups}`) },
+  { saga: poll(10 * 1000, `${cancelPollDatabaseBackups}`) },
 );
 
 export const fetchBackup = api.get<{ id: string }>("/backups/:id");
