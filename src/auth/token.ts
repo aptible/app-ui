@@ -1,6 +1,6 @@
 import { authApi } from "@app/api";
 import { selectEnv } from "@app/env";
-import { call, select, setLoaderSuccess } from "@app/fx";
+import { select, setLoaderSuccess } from "@app/fx";
 import { resetStore } from "@app/reset-store";
 import {
   TokenSuccessResponse,
@@ -36,7 +36,7 @@ export const fetchCurrentToken = authApi.get<
 >("/current_token", function* onFetchToken(ctx, next) {
   ctx.noToken = true;
   yield* next();
-  yield* call(() => saveToken(ctx));
+  saveToken(ctx);
 });
 
 export const createToken = authApi.post<
@@ -61,7 +61,7 @@ export const createToken = authApi.post<
   if (ctx.json.ok) {
     tunaIdentify(ctx.payload.username);
   }
-  yield* call(() => saveToken(ctx));
+  saveToken(ctx);
 });
 
 export type ElevateToken = CreateTokenPayload;
@@ -142,7 +142,7 @@ export const exchangeToken = authApi.post<
   if (ctx.json.ok) {
     tunaEvent("exchanged-token", ctx.payload);
   }
-  yield* call(() => saveToken(ctx));
+  saveToken(ctx);
   ctx.loader = { message: "Success" };
 });
 

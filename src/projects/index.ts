@@ -22,6 +22,7 @@ import {
   waitForOperation,
 } from "@app/deploy";
 import {
+  Operation,
   call,
   parallel,
   put,
@@ -126,7 +127,7 @@ interface WaitDbProps {
   connectionUrl: string;
 }
 
-function* waitForDb(opId: string, dbId: string): Iterator<any, WaitDbProps> {
+function* waitForDb(opId: string, dbId: string): Operation<WaitDbProps> {
   yield* call(() => waitForOperation({ id: opId, skipFetch: true }));
   const res = yield* call(() => fetchDatabase.run(fetchDatabase({ id: dbId })));
   if (!res.json.ok) return { id: "", handle: "", connectionUrl: "" };

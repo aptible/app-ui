@@ -10,7 +10,7 @@ import {
   setLoaderSuccess,
 } from "@app/fx";
 import { extractIdFromLink } from "@app/hal";
-import { AuthApiError, HalEmbedded } from "@app/types";
+import { AuthApiCtx, AuthApiError, HalEmbedded } from "@app/types";
 
 export const createMembership = authApi.post<{ id: string; userUrl: string }>(
   "/roles/:id/memberships",
@@ -70,14 +70,18 @@ export const updateUserMemberships = thunks.create<{
     rmReqs.push(cl);
   }
 
-  const group = yield* parallel([...addReqs, ...rmReqs]);
-  const results: any[] = yield* group;
+  const group = yield* parallel<AuthApiCtx>([...addReqs, ...rmReqs]);
+  const results = yield* group;
 
   yield* next();
 
   const errors = results
-    .filter((res) => res.json.ok === false)
-    .map((res) => res.json.data.message);
+    .map((res) => {
+      if (!res.ok) return res.error.message;
+      if (!res.value.json.ok) return res.value.json.data.message;
+      return "";
+    })
+    .filter(Boolean);
 
   if (errors.length > 0) {
     yield* put(setLoaderError({ id, message: errors.join(", ") }));
