@@ -1,4 +1,4 @@
-import { thunks } from "@app/api";
+import { ThunkCtx, thunks } from "@app/api";
 import {
   AUTH_LOADER_ID,
   fetchCurrentToken,
@@ -33,7 +33,7 @@ import {
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";
-import { AnyAction } from "@app/types";
+import { AnyAction, ApiCtx } from "@app/types";
 import { fetchUser, fetchUsers, selectCurrentUserId } from "@app/users";
 import { REHYDRATE } from "redux-persist";
 
@@ -70,7 +70,7 @@ function* onFetchRequiredData() {
   yield* put(setLoaderStart({ id: FETCH_REQUIRED_DATA }));
   const org = yield* select(selectOrganizationSelected);
   const userId = yield* select(selectCurrentUserId);
-  const group = yield* parallel<unknown>([
+  const group = yield* parallel<ApiCtx>([
     () => fetchUser.run(fetchUser({ userId })),
     () =>
       fetchBillingDetail.run(fetchBillingDetail({ id: org.billingDetailId })),
@@ -82,7 +82,7 @@ function* onFetchRequiredData() {
 function* onFetchResourceData() {
   const org = yield* select(selectOrganizationSelected);
   const userId = yield* select(selectCurrentUserId);
-  const group = yield* parallel<unknown>([
+  const group = yield* parallel<ThunkCtx>([
     () => fetchUsers.run(fetchUsers({ orgId: org.id })),
     () => fetchRoles.run(fetchRoles({ orgId: org.id })),
     () => fetchCurrentUserRoles.run(fetchCurrentUserRoles({ userId: userId })),
