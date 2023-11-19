@@ -1,8 +1,8 @@
+import { useCache, useLoader, useLoaderSuccess } from "@app/fx";
 import { SshKeyResponse, fetchSSHKeys, rmSSHKey } from "@app/ssh-keys";
 import { HalEmbedded } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 import { useDispatch, useSelector } from "react-redux";
-import { useCache, useLoader, useLoaderSuccess } from "saga-query/react";
 import {
   AddSSHKeyForm,
   BannerMessages,

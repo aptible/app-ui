@@ -1,7 +1,7 @@
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { useEffect, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useLoader, useLoaderSuccess, useQuery } from "saga-query/react";
 
 import {
   DbCreatorProps,

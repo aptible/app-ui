@@ -51,25 +51,27 @@ export const queryAlgoliaApi = thunks.create<{
   const { query, debounce } = ctx.payload;
 
   if (!query || debounce) {
+    yield* next();
     return;
   }
 
   yield* put(setLoaderStart({ id: ctx.key }));
-  const resp = yield* call(
-    fetch,
-    "https://6C0QTHJH2V-dsn.algolia.net/1/indexes/docs/query?x-algolia-api-key=b14dbd7f78ae21d0a844c64cecc52cf5&x-algolia-application-id=6C0QTHJH2V",
-    {
-      method: "POST",
-      headers: {
-        "content-type": "application/json;charset=UTF-8",
+  const resp = yield* call(() =>
+    fetch(
+      "https://6C0QTHJH2V-dsn.algolia.net/1/indexes/docs/query?x-algolia-api-key=b14dbd7f78ae21d0a844c64cecc52cf5&x-algolia-application-id=6C0QTHJH2V",
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json;charset=UTF-8",
+        },
+        body: JSON.stringify({
+          query: query,
+          hitsPerPage: 5,
+        }),
       },
-      body: JSON.stringify({
-        query: query,
-        hitsPerPage: 5,
-      }),
-    },
+    ),
   );
-  const data = yield* call([resp, "json"]);
+  const data = yield* call(() => resp.json());
   yield* put(setLoaderSuccess({ id: ctx.key, meta: { hits: data.hits } }));
   yield* next();
 });

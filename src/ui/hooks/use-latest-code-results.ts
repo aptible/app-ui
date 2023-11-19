@@ -3,9 +3,9 @@ import {
   DeployCodeScanResponse,
   fetchCodeScanResult,
 } from "@app/deploy/code-scan-result";
+import { useCache, useQuery } from "@app/fx";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
-import { useCache, useQuery } from "saga-query/react";
 
 export const useLatestCodeResults = (appId: string) => {
   const appOps = useQuery(fetchAppOperations({ id: appId }));

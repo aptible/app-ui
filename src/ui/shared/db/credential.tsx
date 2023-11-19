@@ -4,9 +4,9 @@ import {
   selectCredentialsByDatabaseId,
   selectDatabaseById,
 } from "@app/deploy";
+import { useQuery } from "@app/fx";
 import { AppState, DeployDatabaseCredential } from "@app/types";
 import { useSelector } from "react-redux";
-import { useQuery } from "saga-query/react";
 import { Box } from "../box";
 import { IconAlertTriangle } from "../icons";
 import { Secret } from "../secret";

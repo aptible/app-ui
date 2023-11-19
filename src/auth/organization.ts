@@ -1,14 +1,12 @@
-import { call, select } from "@app/fx";
-
 import { authApi, cacheTimer } from "@app/api";
+import { call, select } from "@app/fx";
 import {
   OrganizationResponse,
   selectOrganizationSelectedId,
   setOrganizationSelected,
 } from "@app/organizations";
 import { selectToken } from "@app/token";
-import { ApiGen, HalEmbedded } from "@app/types";
-
+import { AuthApiError, HalEmbedded } from "@app/types";
 import { exchangeToken } from "./token";
 
 export const fetchOrganizations = authApi.get<
@@ -17,7 +15,7 @@ export const fetchOrganizations = authApi.get<
 >(
   "/organizations",
   {
-    saga: cacheTimer(),
+    supervisor: cacheTimer(),
   },
   function* (ctx, next) {
     yield* next();
@@ -41,7 +39,7 @@ export const fetchReauthOrganizations = authApi.get<
   HalEmbedded<{ organizations: OrganizationResponse[] }>
 >(
   "/reauthenticate_organizations",
-  { saga: cacheTimer() },
+  { supervisor: cacheTimer() },
   function* (ctx, next) {
     yield* next();
     if (!ctx.json.ok) return;
@@ -58,31 +56,33 @@ interface CreateOrg {
   name: string;
 }
 
-export const createOrganization = authApi.post<CreateOrg, OrganizationResponse>(
-  "/organizations",
-  function* onCreateOrg(ctx, next): ApiGen {
-    const { name } = ctx.payload;
-    ctx.request = ctx.req({
-      body: JSON.stringify({ name }),
-    });
-    yield* next();
-    const token = yield* select(selectToken);
-    if (!ctx.json.ok) {
-      return;
-    }
+export const createOrganization = authApi.post<
+  CreateOrg,
+  OrganizationResponse,
+  AuthApiError
+>("/organizations", function* onCreateOrg(ctx, next) {
+  const { name } = ctx.payload;
+  ctx.request = ctx.req({
+    body: JSON.stringify({ name }),
+  });
+  yield* next();
+  const token = yield* select(selectToken);
+  if (!ctx.json.ok) {
+    return;
+  }
 
-    yield* call(
-      exchangeToken.run,
+  yield* call(() =>
+    exchangeToken.run(
       exchangeToken({
         actorToken: token.accessToken,
         subjectToken: token.userUrl,
         subjectTokenType: "aptible:user:href",
         scope: "manage",
       }),
-    );
-    ctx.actions.push(setOrganizationSelected(ctx.json.data.id));
-  },
-);
+    ),
+  );
+  ctx.actions.push(setOrganizationSelected(ctx.json.data.id));
+});
 
 export const removeUserFromOrg = authApi.delete<{
   orgId: string;

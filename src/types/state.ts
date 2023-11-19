@@ -1,4 +1,4 @@
-import type { QueryState } from "@app/fx";
+import type { QueryState } from "starfx";
 
 import type {
   DeployActivePlan,

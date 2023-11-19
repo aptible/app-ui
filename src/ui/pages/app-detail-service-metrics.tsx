@@ -1,31 +1,30 @@
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-
+import { dateFromToday } from "@app/date";
 import {
   calcMetrics,
   fetchApp,
   selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
+import { selectContainersByCurrentReleaseAndHorizon } from "@app/deploy";
 import { useQuery } from "@app/fx";
-import { AppState, MetricHorizons } from "@app/types";
-
-import { dateFromToday } from "@app/date";
-import { selectContainersByCurrentReleaseAndHorizon } from "@app/deploy/container";
 import {
   fetchAllMetricsByServiceId,
+  metricHorizonAsSeconds,
   selectMetricsLoaded,
 } from "@app/metric-tunnel";
+import { AppState, MetricHorizons } from "@app/types";
 import { useState } from "react";
-import { Loading, LoadingSpinner } from "../shared";
-import { ContainerMetricsChart } from "../shared/container-metrics-chart";
-import { ContainerMetricsDataTable } from "../shared/container-metrics-table";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import {
+  ContainerMetricsChart,
+  ContainerMetricsDataTable,
+  Loading,
+  LoadingSpinner,
   MetricTabTypes,
   MetricsHorizonControls,
   MetricsViewControls,
-  metricHorizonAsSeconds,
-} from "../shared/metrics-controls";
+} from "../shared";
 
 const layersToSearchForContainers = ["app"];
 

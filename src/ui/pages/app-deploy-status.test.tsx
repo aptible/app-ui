@@ -167,7 +167,7 @@ describe("AppDeployStatusPage", () => {
         path: APP_DEPLOY_STATUS_PATH,
         initEntries: [appDeployStatusUrl(`${app.id}`)],
         initState: {
-          "@@saga-query/loaders": {
+          "@@starfx/loaders": {
             [`${deployProject}`]: defaultLoadingItem({
               status: "error",
               message: "Plan limit exceeded",

@@ -1,4 +1,5 @@
 import { fetchStack, getStackType, selectStackById } from "@app/deploy";
+import { useQuery } from "@app/fx";
 import {
   stackDetailEnvsUrl,
   stackDetailHidsUrl,
@@ -12,7 +13,6 @@ import { AppState, DeployStack } from "@app/types";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router";
-import { useQuery } from "saga-query/react";
 import {
   CopyText,
   DetailHeader,

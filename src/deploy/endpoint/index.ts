@@ -1,5 +1,3 @@
-import { createAction, createSelector } from "@reduxjs/toolkit";
-
 import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
 import {
   call,
@@ -12,6 +10,7 @@ import {
 } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
+  createAction,
   createReducerMap,
   createTable,
   mustSelectEntity,
@@ -27,6 +26,7 @@ import type {
 } from "@app/types";
 
 import { selectEnv } from "@app/env";
+import { createSelector } from "@reduxjs/toolkit";
 import { findAppById, selectApps, selectAppsByEnvId } from "../app";
 import { createCertificate } from "../certificate";
 import {
@@ -437,31 +437,31 @@ export const selectAppsByCertId = createSelector(
 
 export const fetchEndpointsByAppId = api.get<{ appId: string }>(
   "/apps/:appId/vhosts",
-  { saga: cacheShortTimer() },
+  { supervisor: cacheShortTimer() },
 );
 export const fetchEndpointsByDatabaseId = api.get<{ dbId: string }>(
   "/databases/:dbId/vhosts",
-  { saga: cacheShortTimer() },
+  { supervisor: cacheShortTimer() },
 );
 export const fetchEndpointsByEnvironmentId = api.get<{ id: string }>(
   "/accounts/:id/vhosts",
-  { saga: cacheShortTimer() },
+  { supervisor: cacheShortTimer() },
 );
 export const fetchEndpointsByServiceId = api.get<{ id: string }>(
   "/services/:id/vhosts",
   {
-    saga: cacheShortTimer(),
+    supervisor: cacheShortTimer(),
   },
 );
 
 export const fetchEndpoint = api.get<{ id: string }>("/vhosts/:id", {
-  saga: cacheShortTimer(),
+  supervisor: cacheShortTimer(),
 });
 
 export const fetchEndpoints = api.get(
   "/vhosts?per_page=5000",
   {
-    saga: cacheMinTimer(),
+    supervisor: cacheMinTimer(),
   },
   function* (ctx, next) {
     yield* next();
@@ -477,13 +477,13 @@ export const cancelFetchEndpointPoll = createAction(
 );
 export const pollFetchEndpoint = api.get<{ id: string }>(
   ["/vhosts/:id", "poll"],
-  { saga: poll(5 * 1000, `${cancelFetchEndpointPoll}`) },
+  { supervisor: poll(5 * 1000, `${cancelFetchEndpointPoll}`) },
 );
 
 export const cancelEndpointOpsPoll = createAction("cancel-enp-ops-poll");
 export const pollEndpointOperations = api.get<{ id: string }>(
   ["/vhosts/:id/operations", "poll"],
-  { saga: poll(10 * 1000, `${cancelEndpointOpsPoll}`) },
+  { supervisor: poll(10 * 1000, `${cancelEndpointOpsPoll}`) },
   api.cache(),
 );
 
@@ -625,25 +625,26 @@ export const deprovisionEndpoint = api.post<
 export const provisionEndpoint = thunks.create<CreateEndpointProps>(
   "provision-endpoint",
   function* (ctx, next) {
-    yield put(setLoaderStart({ id: ctx.key }));
+    yield* put(setLoaderStart({ id: ctx.key }));
 
     let certId = "";
-    if (ctx.payload.type === "managed" || ctx.payload.type === "custom") {
-      certId = ctx.payload.certId;
+    const payload = ctx.payload;
+    if (payload.type === "managed" || payload.type === "custom") {
+      certId = payload.certId;
 
-      if (!certId && ctx.payload.cert && ctx.payload.privKey) {
-        const certCtx = yield* call(
-          createCertificate.run,
-          createCertificate({
-            envId: ctx.payload.envId,
-            cert: ctx.payload.cert,
-            privKey: ctx.payload.privKey,
-          }),
+      if (!certId && payload.cert && payload.privKey) {
+        const certCtx = yield* call(() =>
+          createCertificate.run(
+            createCertificate({
+              envId: payload.envId,
+              cert: payload.cert as string,
+              privKey: payload.privKey as string,
+            }),
+          ),
         );
         if (!certCtx.json.ok) {
-          yield* put(
-            setLoaderError({ id: ctx.key, message: certCtx.json.data.message }),
-          );
+          const data = certCtx.json.data as any;
+          yield* put(setLoaderError({ id: ctx.key, message: data.message }));
           return;
         }
 
@@ -651,9 +652,8 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
       }
     }
 
-    const endpointCtx = yield* call(
-      createEndpoint.run,
-      createEndpoint({ ...ctx.payload, certId }),
+    const endpointCtx = yield* call(() =>
+      createEndpoint.run(createEndpoint({ ...ctx.payload, certId })),
     );
 
     if (!endpointCtx.json.ok) {
@@ -665,18 +665,18 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
 
     yield* next();
 
-    const opCtx = yield* call(
-      createEndpointOperation.run,
-      createEndpointOperation({
-        endpointId: `${endpointCtx.json.data.id}`,
-        type: "provision",
-      }),
+    const opCtx = yield* call(() =>
+      createEndpointOperation.run(
+        createEndpointOperation({
+          endpointId: `${endpointCtx.json.data.id}`,
+          type: "provision",
+        }),
+      ),
     );
 
     if (!opCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
-      );
+      const data = opCtx.json.data as any;
+      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
       return;
     }
 
@@ -699,11 +699,10 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
 export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
   "provision-db-endpoint",
   function* (ctx, next) {
-    yield put(setLoaderStart({ id: ctx.key }));
+    yield* put(setLoaderStart({ id: ctx.key }));
 
-    const endpointCtx = yield* call(
-      createDatabaseEndpoint.run,
-      createDatabaseEndpoint(ctx.payload),
+    const endpointCtx = yield* call(() =>
+      createDatabaseEndpoint.run(createDatabaseEndpoint(ctx.payload)),
     );
 
     if (!endpointCtx.json.ok) {
@@ -715,18 +714,18 @@ export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
 
     yield* next();
 
-    const opCtx = yield* call(
-      createEndpointOperation.run,
-      createEndpointOperation({
-        endpointId: `${endpointCtx.json.data.id}`,
-        type: "provision",
-      }),
+    const opCtx = yield* call(() =>
+      createEndpointOperation.run(
+        createEndpointOperation({
+          endpointId: `${endpointCtx.json.data.id}`,
+          type: "provision",
+        }),
+      ),
     );
 
     if (!opCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: opCtx.json.data.message }),
-      );
+      const data = opCtx.json.data as any;
+      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
       return;
     }
 
@@ -802,13 +801,14 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
 
     let certId = ctx.payload.certId;
     if (!certId && ctx.payload.cert && ctx.payload.privKey) {
-      const certCtx = yield* call(
-        createCertificate.run,
-        createCertificate({
-          envId: ctx.payload.envId,
-          cert: ctx.payload.cert,
-          privKey: ctx.payload.privKey,
-        }),
+      const certCtx = yield* call(() =>
+        createCertificate.run(
+          createCertificate({
+            envId: ctx.payload.envId,
+            cert: ctx.payload.cert || "",
+            privKey: ctx.payload.privKey || "",
+          }),
+        ),
       );
       if (!certCtx.json.ok) {
         yield* put(
@@ -820,30 +820,33 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       certId = `${certCtx.json.data.id}`;
     }
 
-    const patchCtx = yield* call(
-      patchEndpoint.run,
-      patchEndpoint({
-        id: ctx.payload.id,
-        ipAllowlist: ctx.payload.ipAllowlist,
-        containerPort: ctx.payload.containerPort,
-        certId,
-      }),
+    const patchCtx = yield* call(() =>
+      patchEndpoint.run(
+        patchEndpoint({
+          id: ctx.payload.id,
+          ipAllowlist: ctx.payload.ipAllowlist,
+          containerPort: ctx.payload.containerPort,
+          certId,
+        }),
+      ),
     );
     if (!patchCtx.json.ok) {
       yield* put(setLoaderError({ id, message: patchCtx.json.data.message }));
       return;
     }
 
-    const opCtx = yield* call(
-      createEndpointOperation.run,
-      createEndpointOperation({
-        endpointId: ctx.payload.id,
-        type: "provision",
-      }),
+    const opCtx = yield* call(() =>
+      createEndpointOperation.run(
+        createEndpointOperation({
+          endpointId: ctx.payload.id,
+          type: "provision",
+        }),
+      ),
     );
 
     if (!opCtx.json.ok) {
-      yield* put(setLoaderError({ id, message: opCtx.json.data.message }));
+      const data = opCtx.json.data as any;
+      yield* put(setLoaderError({ id, message: data.message }));
       return;
     }
 
@@ -881,16 +884,16 @@ export const checkDns = thunks.create<{ from: string; to: string }>(
     // we add a random number to the google request so the browser
     // doesn't cache the response
     const rand = Math.floor(Math.random() * 10000);
-    const resp = yield* call(
-      fetch,
-      `https://dns.google.com/resolve?rand=${rand}&name=${ensureTrailingPeriod(
-        from,
-      )}`,
+    const resp = yield* call(() =>
+      fetch(
+        `https://dns.google.com/resolve?rand=${rand}&name=${ensureTrailingPeriod(
+          from,
+        )}`,
+      ),
     );
-    const data: { Status: number; Answer: DnsAnswer[] } = yield* call([
-      resp,
-      "json",
-    ]);
+    const data: { Status: number; Answer: DnsAnswer[] } = yield* call(() =>
+      resp.json(),
+    );
 
     let success = false;
     const answers: DnsAnswer[] = data.Answer || [];
