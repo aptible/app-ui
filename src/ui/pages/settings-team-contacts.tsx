@@ -1,7 +1,7 @@
 import { updateOrganization } from "@app/auth";
 import { selectOrganizationSelected } from "@app/organizations";
 import { Organization } from "@app/types";
-import { emailValidator } from "@app/validator";
+import { emailValidator, existValidtor } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLoader } from "starfx/react";
@@ -19,6 +19,7 @@ import {
 const validators = {
   securityEmail: (org: Organization) => emailValidator(org.securityAlertEmail),
   opsEmail: (org: Organization) => emailValidator(org.opsAlertEmail),
+  name: (org: Organization) => existValidtor(org.name, "name"),
 };
 
 export const TeamContactsPage = () => {
