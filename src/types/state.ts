@@ -94,6 +94,14 @@ export interface Organization {
   reauthRequired: boolean;
   billingDetailId: string;
   ssoEnforced: boolean;
+  city: string;
+  address: string;
+  emergencyPhone: string;
+  opsAlertEmail: string;
+  securityAlertEmail: string;
+  primaryPhone: string;
+  state: string;
+  zip: string;
 }
 
 export interface U2fDevice {

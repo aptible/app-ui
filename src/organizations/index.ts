@@ -14,18 +14,18 @@ import {
 } from "@app/types";
 
 export interface OrganizationResponse {
-  address: string;
-  city: string;
+  address: string | null;
+  city: string | null;
   created_at: string;
-  emergency_phone: string;
+  emergency_phone: string | null;
   id: string;
   name: string;
-  ops_alert_email: string;
-  primary_phone: string;
-  security_alert_email: string;
-  state: string;
+  ops_alert_email: string | null;
+  primary_phone: string | null;
+  security_alert_email: string | null;
+  state: string | null;
   updated_at: string;
-  zip: string;
+  zip: string | null;
   reauth_required?: boolean;
   sso_enforced: boolean;
   _links: {
@@ -115,6 +115,14 @@ export const defaultOrganization = (
   ssoEnforced: false,
   updatedAt: new Date().toISOString(),
   reauthRequired: false,
+  address: "",
+  city: "",
+  zip: "",
+  state: "",
+  securityAlertEmail: "",
+  opsAlertEmail: "",
+  emergencyPhone: "",
+  primaryPhone: "",
   ...o,
 });
 export const hasOrganization = (o: Organization): boolean => !!o.id;
@@ -148,6 +156,14 @@ function deserializeOrganization(o: OrganizationResponse): Organization {
     ssoEnforced: o.sso_enforced,
     billingDetailId: extractIdFromLink(o._links.billing_detail),
     reauthRequired: o.reauth_required || false,
+    address: o.address || "",
+    city: o.city || "",
+    zip: o.zip || "",
+    state: o.state || "",
+    securityAlertEmail: o.security_alert_email || "",
+    opsAlertEmail: o.ops_alert_email || "",
+    emergencyPhone: o.emergency_phone || "",
+    primaryPhone: o.primary_phone || "",
   };
 }
 

@@ -4,6 +4,7 @@ import {
   securitySettingsUrl,
   settingsProfileUrl,
   sshSettingsUrl,
+  teamContactsUrl,
   teamMembersUrl,
   teamPendingInvitesUrl,
 } from "@app/routes";
@@ -82,13 +83,8 @@ export function SettingsSidebar() {
           <IconExternalLink variant="sm" className="ml-1 opacity-60" />
         </NavLink>
 
-        <NavLink
-          className={navLink}
-          to={url(`/organizations/${orgId}/admin/contact-settings`)}
-          target="_blank"
-        >
+        <NavLink className={navLink} to={teamContactsUrl()}>
           Contacts
-          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
         </NavLink>
 
         <hr className="mt-3 mx-2" />
