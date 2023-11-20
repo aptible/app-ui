@@ -1,3 +1,4 @@
+import { defaultSamlConfigurationResponse } from "@app/auth";
 import {
   DeployAppResponse,
   DeployDatabaseResponse,
@@ -108,6 +109,68 @@ const authHandlers = [
   rest.get(`${testEnv.authUrl}/invitations/:id`, (_, res, ctx) => {
     return res(ctx.json(testVerifiedInvitation));
   }),
+  rest.get(`${testEnv.authUrl}/saml_configurations`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { saml_configurations: [] } }));
+  }),
+  rest.get(
+    `${testEnv.authUrl}/organizations/:id/whitelist_memberships`,
+    (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { whitelist_memberships: [] } }));
+    },
+  ),
+  rest.post(
+    `${testEnv.authUrl}/organizations/:id/whitelist_memberships`,
+    (_, res, ctx) => {
+      return res(ctx.json({}));
+    },
+  ),
+  rest.delete(
+    `${testEnv.authUrl}/whitelist_memberships/:id`,
+    async (_, res, ctx) => {
+      return res(ctx.status(204));
+    },
+  ),
+  rest.delete(
+    `${testEnv.authUrl}/saml_configurations/:id`,
+    async (_, res, ctx) => {
+      return res(ctx.status(204));
+    },
+  ),
+  rest.patch(
+    `${testEnv.authUrl}/saml_configurations/:id`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json(
+          defaultSamlConfigurationResponse({
+            id: `${createId()}`,
+            _links: {
+              organization: defaultHalHref(
+                `${testEnv.authUrl}/organizations/${testOrg.id}`,
+              ),
+            },
+          }),
+        ),
+      );
+    },
+  ),
+  rest.post(
+    `${testEnv.authUrl}/organizations/:id/saml_configurations`,
+    async (req, res, ctx) => {
+      const orgId = req.params.id;
+      return res(
+        ctx.json(
+          defaultSamlConfigurationResponse({
+            id: `${createId()}`,
+            _links: {
+              organization: defaultHalHref(
+                `${testEnv.authUrl}/organizations/${orgId}`,
+              ),
+            },
+          }),
+        ),
+      );
+    },
+  ),
 ];
 
 export const verifiedUserHandlers = (
