@@ -6,7 +6,7 @@ import {
   setOrganizationSelected,
 } from "@app/organizations";
 import { selectToken } from "@app/token";
-import { AuthApiError, HalEmbedded } from "@app/types";
+import { AuthApiError, HalEmbedded, Organization } from "@app/types";
 import { exchangeToken } from "./token";
 
 export const fetchOrganizations = authApi.get<
@@ -83,6 +83,33 @@ export const createOrganization = authApi.post<
   );
   ctx.actions.push(setOrganizationSelected(ctx.json.data.id));
 });
+
+export const updateOrganization = authApi.patch<Organization>(
+  "/organizations/:id",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({
+        name: ctx.payload.name,
+        address: ctx.payload.address,
+        city: ctx.payload.city,
+        state: ctx.payload.state,
+        zip: ctx.payload.zip,
+        security_alert_email: ctx.payload.securityAlertEmail,
+        ops_alert_email: ctx.payload.opsAlertEmail,
+        emergency_phone: ctx.payload.emergencyPhone,
+        primary_phone: ctx.payload.primaryPhone,
+      }),
+    });
+
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = { message: "Successfully updated contact settings!" };
+  },
+);
 
 export const removeUserFromOrg = authApi.delete<{
   orgId: string;

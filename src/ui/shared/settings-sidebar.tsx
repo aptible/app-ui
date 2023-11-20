@@ -1,12 +1,16 @@
+import { selectIsAccountOwner } from "@app/deploy";
 import { selectEnv } from "@app/env";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
+  plansUrl,
   securitySettingsUrl,
   settingsProfileUrl,
   sshSettingsUrl,
+  teamContactsUrl,
   teamMembersUrl,
   teamPendingInvitesUrl,
 } from "@app/routes";
+import { AppState } from "@app/types";
 import cn from "classnames";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
@@ -23,6 +27,9 @@ export function SettingsSidebar() {
   const env = useSelector(selectEnv);
   const url = (slug: string) => `${env.legacyDashboardUrl}${slug}`;
   const orgId = useSelector(selectOrganizationSelectedId);
+  const isAccountOwner = useSelector((s: AppState) =>
+    selectIsAccountOwner(s, { orgId }),
+  );
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
@@ -54,7 +61,7 @@ export function SettingsSidebar() {
       </div>
 
       <div>
-        <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Team</h4>
+        <h4 className={`${tokens.type.h4} ml-2 mt-4`}>Team Settings</h4>
 
         <NavLink className={navLink} to={teamMembersUrl()}>
           Members
@@ -73,23 +80,49 @@ export function SettingsSidebar() {
           <IconExternalLink variant="sm" className="ml-1 opacity-60" />
         </NavLink>
 
-        <NavLink
-          className={navLink}
-          to={url(`/organizations/${orgId}/single-sign-on`)}
-          target="_blank"
-        >
-          Single Sign-On
-          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
-        </NavLink>
+        {isAccountOwner ? (
+          <NavLink
+            className={navLink}
+            to={url(`/organizations/${orgId}/single-sign-on`)}
+            target="_blank"
+          >
+            Single Sign-On
+            <IconExternalLink variant="sm" className="ml-1 opacity-60" />
+          </NavLink>
+        ) : (
+          <span className={navLink({ isActive: false })}>
+            Single Sign-On
+            <Tooltip text="Must be account owner" fluid>
+              <IconLock variant="sm" className="ml-1 opacity-60" />
+            </Tooltip>
+          </span>
+        )}
 
-        <NavLink
-          className={navLink}
-          to={url(`/organizations/${orgId}/admin/contact-settings`)}
-          target="_blank"
-        >
-          Contacts
-          <IconExternalLink variant="sm" className="ml-1 opacity-60" />
-        </NavLink>
+        {isAccountOwner ? (
+          <NavLink className={navLink} to={teamContactsUrl()}>
+            Organization Settings
+          </NavLink>
+        ) : (
+          <span className={navLink({ isActive: false })}>
+            Organization Settings
+            <Tooltip text="Must be account owner" fluid>
+              <IconLock variant="sm" className="ml-1 opacity-60" />
+            </Tooltip>
+          </span>
+        )}
+
+        {isAccountOwner ? (
+          <NavLink className={navLink} to={plansUrl()}>
+            Plans
+          </NavLink>
+        ) : (
+          <span className={navLink({ isActive: false })}>
+            Plans
+            <Tooltip text="Must be account owner" fluid>
+              <IconLock variant="sm" className="ml-1 opacity-60" />
+            </Tooltip>
+          </span>
+        )}
 
         <hr className="mt-3 mx-2" />
       </div>
