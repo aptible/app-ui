@@ -2,6 +2,7 @@ import { selectIsAccountOwner } from "@app/deploy";
 import { selectEnv } from "@app/env";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
+  plansUrl,
   securitySettingsUrl,
   settingsProfileUrl,
   sshSettingsUrl,
@@ -104,6 +105,19 @@ export function SettingsSidebar() {
         ) : (
           <span className={navLink({ isActive: false })}>
             Organization Settings
+            <Tooltip text="Must be account owner" fluid>
+              <IconLock variant="sm" className="ml-1 opacity-60" />
+            </Tooltip>
+          </span>
+        )}
+
+        {isAccountOwner ? (
+          <NavLink className={navLink} to={plansUrl()}>
+            Plans
+          </NavLink>
+        ) : (
+          <span className={navLink({ isActive: false })}>
+            Plans
             <Tooltip text="Must be account owner" fluid>
               <IconLock variant="sm" className="ml-1 opacity-60" />
             </Tooltip>

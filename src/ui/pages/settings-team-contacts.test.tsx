@@ -17,7 +17,7 @@ describe("TeamContactsPage", () => {
       </TestProvider>,
     );
 
-    await screen.findByText(/Edit Contact Settings/);
+    await screen.findByText(/Organization Settings/);
 
     const securityEmail = await screen.findByRole("textbox", {
       name: "security-alert-email",
