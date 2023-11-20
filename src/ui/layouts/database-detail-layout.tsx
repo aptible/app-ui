@@ -13,6 +13,7 @@ import {
   selectServiceById,
 } from "@app/deploy";
 import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
+import { useQuery } from "@app/fx";
 import {
   databaseActivityUrl,
   databaseBackupsUrl,
@@ -29,7 +30,6 @@ import type { AppState, DeployDatabase, DeployService } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
-import { useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   DetailHeader,

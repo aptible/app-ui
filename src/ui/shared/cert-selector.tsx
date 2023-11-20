@@ -3,9 +3,9 @@ import {
   getCertLabel,
   selectCertificatesByEnvId,
 } from "@app/deploy";
+import { useQuery } from "@app/fx";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
-import { useQuery } from "saga-query/react";
 import { Select, SelectOption } from "./select";
 
 export const CertSelector = ({

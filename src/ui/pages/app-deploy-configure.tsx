@@ -13,6 +13,8 @@ import {
   selectServiceDefinitionsByAppId,
 } from "@app/deploy";
 import { DeployCodeScanResponse } from "@app/deploy";
+import { selectLoaderById } from "@app/fx";
+import { useQuery } from "@app/fx";
 import { idCreator } from "@app/id";
 import {
   DB_ENV_TEMPLATE_KEY,
@@ -26,8 +28,6 @@ import { Reducer, useEffect, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
-import { selectLoaderById } from "saga-query";
-import { useQuery } from "saga-query/react";
 import {
   useEnvEditor,
   useEnvOpsPoller,

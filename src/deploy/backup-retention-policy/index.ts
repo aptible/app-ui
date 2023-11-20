@@ -1,4 +1,4 @@
-import { put } from "saga-query";
+import { put } from "@app/fx";
 
 import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";

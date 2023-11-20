@@ -15,6 +15,7 @@ import {
   selectImageById,
   selectServiceById,
 } from "@app/deploy";
+import { useLoader, useQuery } from "@app/fx";
 import {
   appEndpointsUrl,
   databaseEndpointsUrl,
@@ -34,7 +35,6 @@ import type {
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
-import { useLoader, useQuery } from "saga-query/react";
 import { usePoller } from "../hooks";
 import {
   Banner,

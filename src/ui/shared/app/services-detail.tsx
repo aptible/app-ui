@@ -9,6 +9,7 @@ import {
   selectServicesByAppId,
   selectStackById,
 } from "@app/deploy";
+import { useQuery } from "@app/fx";
 import {
   appDeployResumeUrl,
   appServicePathMetricsUrl,

@@ -34,7 +34,7 @@ export const defaultSshKeyResponse = (
 export const fetchSSHKeys = authApi.get<
   { userId: string },
   HalEmbedded<{ ssh_keys: SshKeyResponse[] }>
->("/users/:userId/ssh_keys", authApi.cache());
+>("/users/:userId/ssh_keys", authApi.cache() as any);
 
 export const addSSHKey = authApi.post<{
   name: string;

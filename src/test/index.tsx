@@ -1,34 +1,32 @@
-import { prepareStore, selectLoaderById } from "@app/fx";
+import {
+  appRoutes,
+  persistConfig,
+  reducers,
+  rootEntities,
+  tasks,
+} from "@app/app";
+import { bootup } from "@app/bootup";
+import { hasDeployEnvironment, selectEnvironmentById } from "@app/deploy";
+import { parallel, prepareStore, selectLoaderById } from "@app/fx";
+import { testEnv } from "@app/mocks";
+import { resetReducer } from "@app/reset-store";
+import type { AppState } from "@app/types";
 import { Store, configureStore } from "@reduxjs/toolkit";
 import { waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
 import { REHYDRATE } from "redux-persist";
 
-import {
-  appRoutes,
-  persistConfig,
-  reducers,
-  rootEntities,
-  sagas,
-} from "@app/app";
-import { bootup } from "@app/bootup";
-import { hasDeployEnvironment, selectEnvironmentById } from "@app/deploy";
-import { testEnv } from "@app/mocks";
-import { resetReducer } from "@app/reset-store";
-import type { AppState } from "@app/types";
-
 export const setupTestStore = (
   initState: Partial<AppState> = {},
 ): { store: Store<AppState> } => {
   const middleware = [];
-  const prepared = prepareStore({
+  const { fx, reducer } = prepareStore({
     reducers: reducers,
-    sagas: sagas,
   });
 
-  middleware.push(...prepared.middleware);
-  const baseReducer = resetReducer(prepared.reducer, persistConfig);
+  middleware.push(fx.middleware as any);
+  const baseReducer = resetReducer(reducer, persistConfig);
 
   const store = configureStore({
     preloadedState: { ...initState, entities: rootEntities },
@@ -37,7 +35,10 @@ export const setupTestStore = (
     middleware: middleware,
   });
 
-  prepared.run();
+  fx.run(function* (): any {
+    const group = yield* parallel(tasks);
+    yield* group;
+  });
 
   return { store: store as any };
 };

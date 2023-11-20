@@ -2,7 +2,7 @@ import { authApi, cacheShortTimer, elevetatedMdw } from "@app/api";
 import { selectOrigin } from "@app/env";
 import { Next, call, put, select } from "@app/fx";
 import { setOrganizationSelected } from "@app/organizations";
-import type { ApiGen, AuthApiCtx } from "@app/types";
+import type { AuthApiCtx } from "@app/types";
 import { deserializeUser } from "./serializers";
 import { resetUsers } from "./slice";
 import type { CreateUserForm, UserResponse } from "./types";
@@ -13,9 +13,9 @@ interface UserBase {
 
 export const fetchUser = authApi.get<UserBase, UserResponse>(
   "/users/:userId",
-  { saga: cacheShortTimer() },
+  { supervisor: cacheShortTimer() },
   function* (ctx, next) {
-    yield* call(elevetatedMdw, ctx, next);
+    yield* call(() => elevetatedMdw(ctx as any, next));
     if (!ctx.json.ok) return;
     const user = deserializeUser(ctx.json.data);
     if (user.selectedOrganizationId) {
@@ -26,7 +26,7 @@ export const fetchUser = authApi.get<UserBase, UserResponse>(
 export const fetchUsers = authApi.get<{ orgId: string }>(
   "/organizations/:orgId/users",
   {
-    saga: cacheShortTimer(),
+    supervisor: cacheShortTimer(),
   },
   function* (ctx, next) {
     yield* next();
@@ -39,7 +39,7 @@ export const fetchUsers = authApi.get<{ orgId: string }>(
 
 export const createUser = authApi.post<CreateUserForm, UserResponse>(
   "/users",
-  function* onCreateUser(ctx, next): ApiGen {
+  function* onCreateUser(ctx, next) {
     const origin = yield* select(selectOrigin);
     ctx.request = ctx.req({
       body: JSON.stringify({ ...ctx.payload, origin }),

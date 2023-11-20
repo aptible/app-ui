@@ -59,7 +59,6 @@ const authHandlers = [
   rest.get(`${testEnv.authUrl}/reauthenticate_organizations`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { organizations: [testOrgReauth] } }));
   }),
-
   rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
     return res(ctx.json(testUser));
   }),
@@ -77,6 +76,10 @@ const authHandlers = [
   }),
   rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { roles: [testRole] } }));
+  }),
+  rest.patch(`${testEnv.authUrl}/organizations/:id`, async (req, res, ctx) => {
+    const data = await req.json();
+    return res(ctx.json({ ...testOrg, ...data }));
   }),
   rest.get(`${testEnv.authUrl}/users/:userId/roles`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { roles: [testRole] } }));
