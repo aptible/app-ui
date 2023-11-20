@@ -11,6 +11,7 @@ const selectors = users.getSelectors((state: AppState) => state[USERS_NAME]);
 export const {
   selectTable: selectUsers,
   selectTableAsList: selectUsersAsList,
+  selectByIds: selectUsersByIds,
 } = selectors;
 const must = mustSelectEntity(initUser);
 export const selectUserById = must(selectors.selectById);
