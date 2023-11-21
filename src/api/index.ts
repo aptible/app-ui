@@ -62,6 +62,8 @@ const ignoreErrs: RegExp[] = [
   /reset store/i,
   /networkerror when attempting to fetch resource/i,
   /load failed/i,
+  /request signal is aborted/i,
+  /the operation was aborted/i,
 ];
 function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   try {
