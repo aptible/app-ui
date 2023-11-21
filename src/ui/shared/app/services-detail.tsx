@@ -3,7 +3,9 @@ import {
   calcServiceMetrics,
   fetchServicesByAppId,
   selectAppById,
+  selectEnvironmentById,
   selectServicesByAppId,
+  selectStackById,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
 import {
@@ -12,7 +14,7 @@ import {
   appServiceScalePathUrl,
 } from "@app/routes";
 import { AppState, DeployApp, DeployService } from "@app/types";
-import { usePaginate } from "@app/ui/hooks";
+import { usePaginate, useServiceSizingPolicy } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -31,12 +33,16 @@ import { tokens } from "../tokens";
 const ServiceListRow = ({
   app,
   service,
+  verticalAutoscaling,
 }: {
   app: DeployApp;
   service: DeployService;
+  verticalAutoscaling: boolean;
 }) => {
   const metrics = calcServiceMetrics(service);
   const { totalCPU } = calcMetrics([service]);
+  const { existingPolicy } = useServiceSizingPolicy(service.id);
+  const autoscalingEnabled = existingPolicy.scaling_enabled;
 
   return (
     <>
@@ -63,7 +69,7 @@ const ServiceListRow = ({
         </Td>
 
         <Td>
-          <div className={tokens.type["normal lighter"]}>
+          <div className={tokens.type.darker}>
             {metrics.containerProfile.name}
           </div>
         </Td>
@@ -73,6 +79,14 @@ const ServiceListRow = ({
             ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
           </div>
         </Td>
+
+        {verticalAutoscaling ? (
+          <Td variant="center">
+            <div className={tokens.type.darker}>
+              {autoscalingEnabled ? "Enabled" : "Disabled"}
+            </div>
+          </Td>
+        ) : null}
 
         <Td variant="right">
           <Group size="sm" variant="horizontal">
@@ -95,6 +109,7 @@ const ServiceListRow = ({
           </Group>
         </Td>
       </Tr>
+
       {service.command ? (
         <Tr>
           <Td colSpan={7} className="pr-4">
@@ -127,6 +142,12 @@ export function ServicesOverview({
   };
   useQuery(fetchServicesByAppId({ id: app.id }));
   const paginated = usePaginate(services);
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const stack = useSelector((s: AppState) =>
+    selectStackById(s, { id: environment.stackId }),
+  );
 
   return (
     <Group>
@@ -157,13 +178,23 @@ export function ServicesOverview({
           <Th>Container Count</Th>
           <Th>Profile</Th>
           <Th>Monthly Cost</Th>
+          {stack.verticalAutoscaling ? (
+            <Th variant="center">Autoscaling</Th>
+          ) : null}
           <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+          {paginated.data.length === 0 ? (
+            <EmptyTr colSpan={stack.verticalAutoscaling ? 8 : 7} />
+          ) : null}
           {paginated.data.map((service) => (
-            <ServiceListRow key={service.id} app={app} service={service} />
+            <ServiceListRow
+              key={service.id}
+              app={app}
+              service={service}
+              verticalAutoscaling={stack.verticalAutoscaling}
+            />
           ))}
         </TBody>
       </Table>

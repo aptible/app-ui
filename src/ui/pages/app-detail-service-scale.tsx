@@ -1,12 +1,9 @@
 import {
   DEFAULT_INSTANCE_CLASS,
   ServiceSizingPolicyEditProps,
-  ServiceSizingPolicyResponse,
-  defaultServiceSizingPolicyResponse,
   exponentialContainerSizesByProfile,
   fetchApp,
   fetchService,
-  fetchServiceSizingPoliciesByServiceId,
   getContainerProfileFromType,
   hourlyAndMonthlyCostsForContainers,
   modifyServiceSizingPolicy,
@@ -17,13 +14,13 @@ import {
   selectServiceById,
   selectStackById,
 } from "@app/deploy";
-import { useCache, useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { appActivityUrl } from "@app/routes";
-import { AppState, HalEmbedded, InstanceClass } from "@app/types";
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import { AppState, InstanceClass } from "@app/types";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { useValidator } from "../hooks";
+import { useServiceSizingPolicy, useValidator } from "../hooks";
 import {
   IconChevronDown,
   IconChevronRight,
@@ -60,28 +57,6 @@ const policyValidators = {
 type AppScaleProps = {
   containerCount: number;
 };
-
-function useServiceSizingPolicy(service_id: string) {
-  const policy = useCache<
-    HalEmbedded<{
-      service_sizing_policies: ServiceSizingPolicyResponse[];
-    }>
-  >(fetchServiceSizingPoliciesByServiceId({ service_id }));
-
-  const policies = policy.data?._embedded?.service_sizing_policies || [];
-  const existingPolicy = useMemo(() => {
-    let policy;
-    if (policies[0] === undefined) {
-      policy = { service_id };
-    } else {
-      policy = policies[0];
-      policy.service_id = service_id;
-    }
-    return defaultServiceSizingPolicyResponse(policy);
-  }, [policies.length, policies[0]?.id, policies[0]?.service_id]);
-
-  return { policy, existingPolicy };
-}
 
 const VerticalAutoscalingSection = ({
   id,
