@@ -37,8 +37,8 @@ export interface DeployServiceResponse {
   docker_ref: string;
   process_type: string;
   command: string;
-  container_count: number;
-  container_memory_limit_mb: number;
+  container_count: number | null;
+  container_memory_limit_mb: number | null;
   instance_class: InstanceClass;
   _links: {
     current_release: LinkResponse;
@@ -95,8 +95,8 @@ export const deserializeDeployService = (
     dockerRef: payload.docker_ref,
     processType: payload.process_type,
     command: payload.command || "",
-    containerCount: payload.container_count,
-    containerMemoryLimitMb: payload.container_memory_limit_mb,
+    containerCount: payload.container_count || 1,
+    containerMemoryLimitMb: payload.container_memory_limit_mb || 512,
     currentReleaseId: extractIdFromLink(links.current_release),
     instanceClass: payload.instance_class || DEFAULT_INSTANCE_CLASS,
     createdAt: payload.created_at,
