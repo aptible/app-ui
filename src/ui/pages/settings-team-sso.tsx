@@ -32,6 +32,11 @@ import {
 } from "../shared";
 
 function ConfigureSso() {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // TODO
+    e.preventDefault();
+  };
+
   return (
     <Box>
       <h3 className={tokens.type.h3}>
@@ -52,7 +57,7 @@ function ConfigureSso() {
         with additional details.
       </p>
 
-      <form>
+      <form onSubmit={onSubmit}>
         <Group>
           <FormGroup
             label="Single sign on URL (Assertion Consumer Service [ACS] URL)"
@@ -94,7 +99,7 @@ function ConfigureSso() {
           </FormGroup>
 
           <div>
-            <Button>Configure SSO Provider</Button>
+            <Button type="submit">Configure SSO Provider</Button>
           </div>
         </Group>
       </form>
@@ -124,14 +129,15 @@ function SsoBypass({ orgId }: { orgId: string }) {
   options.unshift({ label: "Add user to SSO Bypass", value: "" });
 
   const onSelect = (opt: SelectOption) => {
+    // TODO
     console.log("select", opt);
   };
   const onAdd = () => {
-    console.log("add");
+    // TODO
     allowlist.trigger();
   };
   const onRemove = () => {
-    console.log("rm");
+    // TODO
     allowlist.trigger();
   };
 
@@ -185,6 +191,7 @@ function SsoEdit({
   org,
 }: { saml: SamlConfigurationResponse; org: Organization }) {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // TODO
     e.preventDefault();
   };
 
