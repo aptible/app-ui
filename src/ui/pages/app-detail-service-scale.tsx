@@ -170,6 +170,47 @@ const VerticalAutoscalingSection = ({
             </div>
             {advancedIsOpen ? (
               <div className="pb-4">
+                <h1 className="text-lg text-gray-500 mb-4">Configuration Templates</h1>
+        <div className="flex flex-row gap-4">
+          <FormGroup
+            label="Existing Templates"
+            htmlFor=""
+            className="flex w-full mb-4"
+          >
+            <Select
+              id="container-profile"
+              ariaLabel="container-profile"
+              disabled={Object.keys(containerProfilesForStack).length <= 1}
+              value={containerProfileType}
+              onSelect={handleContainerProfileSelection}
+              options={profileOptions}
+            />
+            <Button
+              className="w-fit flex font-semibold mt-2"
+              variant="delete">
+              Delete
+            </Button>
+          </FormGroup>
+          <FormGroup
+            label="New Template"
+            htmlFor=""
+            className="flex w-full mb-4"
+          >
+            <Input
+              className="flex disabled w-full"
+              name="number-containers"
+              type="text"
+              data-testid=""
+              id=""
+            />
+            <Button
+            className="w-40 flex font-semibold mt-2"
+            type="submit"
+          >
+            Save Template
+          </Button>
+          </FormGroup>
+        </div>
                 <div className="flex flex-col gap-2">
                   <h2 className="text-md text-gray-500">
                     RAM & CPU Threshold Settings
