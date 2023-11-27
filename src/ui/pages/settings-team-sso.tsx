@@ -39,70 +39,72 @@ function ConfigureSso() {
 
   return (
     <Box>
-      <h3 className={tokens.type.h3}>
-        You haven't configured an SSO provider.
-      </h3>
+      <Group>
+        <h3 className={tokens.type.h3}>
+          You haven't configured an SSO provider.
+        </h3>
 
-      <p>
-        In order to configure an SSO Provider, you will need to enter the below
-        information into your SSO Provider's setup process. The terminology and
-        acronyms vary between SSO providers. We have tried to provide the most
-        common below. If you use Okta, please follow our{" "}
-        <ExternalLink
-          variant="default"
-          href="https://www.aptible.com/docs/sso-setup#okta-walkthrough"
-        >
-          guided walkthrough
-        </ExternalLink>{" "}
-        with additional details.
-      </p>
-
-      <form onSubmit={onSubmit}>
-        <Group>
-          <FormGroup
-            label="Single sign on URL (Assertion Consumer Service [ACS] URL)"
-            htmlFor="sso-url"
+        <p>
+          In order to configure an SSO Provider, you will need to enter the
+          below information into your SSO Provider's setup process. The
+          terminology and acronyms vary between SSO providers. We have tried to
+          provide the most common below. If you use Okta, please follow our{" "}
+          <ExternalLink
+            variant="default"
+            href="https://www.aptible.com/docs/sso-setup#okta-walkthrough"
           >
-            <Input id="sso-url" name="sso-url" />
-          </FormGroup>
+            guided walkthrough
+          </ExternalLink>{" "}
+          with additional details.
+        </p>
 
-          <FormGroup
-            label="Audience URI (Service Provider Entity ID)"
-            htmlFor="audience-uri"
-          >
-            <Input id="audience-uri" name="audience-uri" />
-          </FormGroup>
+        <form onSubmit={onSubmit}>
+          <Group>
+            <FormGroup
+              label="Single sign on URL (Assertion Consumer Service [ACS] URL)"
+              htmlFor="sso-url"
+            >
+              <Input id="sso-url" name="sso-url" />
+            </FormGroup>
 
-          <div>
-            <h4 className={tokens.type.h4}>Name ID format</h4>
+            <FormGroup
+              label="Audience URI (Service Provider Entity ID)"
+              htmlFor="audience-uri"
+            >
+              <Input id="audience-uri" name="audience-uri" />
+            </FormGroup>
+
             <div>
-              EmailAddress is preferred. Unspecified is also acceptible.
+              <h4 className={tokens.type.h4}>Name ID format</h4>
+              <div>
+                EmailAddress is preferred. Unspecified is also acceptible.
+              </div>
             </div>
-          </div>
 
-          <div>
-            <h4 className={tokens.type.h4}>
-              Application username (NameID attribute)
-            </h4>
             <div>
-              Email is required. The email sent by the SSO provider must exactly
-              match the Aptible account.
+              <h4 className={tokens.type.h4}>
+                Application username (NameID attribute)
+              </h4>
+              <div>
+                Email is required. The email sent by the SSO provider must
+                exactly match the Aptible account.
+              </div>
             </div>
-          </div>
 
-          <FormGroup label="Metadata URL" htmlFor="metadata-url">
-            <Input id="metadata-url" name="metadata-url" />
-          </FormGroup>
+            <FormGroup label="Metadata URL" htmlFor="metadata-url">
+              <Input id="metadata-url" name="metadata-url" />
+            </FormGroup>
 
-          <FormGroup label="Metadata File XML Content" htmlFor="metadata-xml">
-            <TextArea id="metadata-xml" name="metadata-xml" />
-          </FormGroup>
+            <FormGroup label="Metadata File XML Content" htmlFor="metadata-xml">
+              <TextArea id="metadata-xml" name="metadata-xml" />
+            </FormGroup>
 
-          <div>
-            <Button type="submit">Configure SSO Provider</Button>
-          </div>
-        </Group>
-      </form>
+            <div>
+              <Button type="submit">Configure SSO Provider</Button>
+            </div>
+          </Group>
+        </form>
+      </Group>
     </Box>
   );
 }
