@@ -373,7 +373,7 @@ describe("TeamSsoPage", () => {
       const confirmBtn = await screen.findByRole("button", { name: /Confirm/ });
       fireEvent.click(confirmBtn);
 
-      await screen.findByText(/You haven't configured an SSO provider/);
+      await screen.findByText(/To configure an SSO Provider/);
     });
 
     it("should let admin provide a metadata URL to edit saml configuration", async () => {
@@ -528,7 +528,7 @@ describe("TeamSsoPage", () => {
         </TestProvider>,
       );
 
-      await screen.findByText(/You haven't configured an SSO provider/);
+      await screen.findByText(/To configure an SSO Provider/);
 
       const inp = await screen.findByRole("textbox", { name: /metadata-url/ });
       await act(() => userEvent.type(inp, "http://ipd.oktadev.com/metadata"));
@@ -573,7 +573,7 @@ describe("TeamSsoPage", () => {
         </TestProvider>,
       );
 
-      await screen.findByText(/You haven't configured an SSO provider/);
+      await screen.findByText(/To configure an SSO Provider/);
 
       const inp = await screen.findByRole("textbox", { name: /metadata-xml/ });
       fireEvent.change(inp, { target: { value: testMetadataXml } });
