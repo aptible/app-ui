@@ -10,7 +10,9 @@ import {
   deleteSamlConfiguration,
   fetchAllowlistMemberships,
   fetchSamlConfigurations,
+  fetchUsersForRole,
   updateSamlConfiguration,
+  updateSamlHandle,
   updateSsoForOrganization,
 } from "@app/auth";
 import { selectEnv } from "@app/env";
@@ -19,8 +21,11 @@ import {
   selectOrganizationSelected,
   selectOrganizationSelectedId,
 } from "@app/organizations";
-import { Organization } from "@app/types";
-import { selectUsersAsList } from "@app/users";
+import { selectRolesByOrgId } from "@app/roles";
+import { ssoUrl } from "@app/routes";
+import { AppState, HalEmbedded, Organization } from "@app/types";
+import { UserResponse, selectUsersAsList } from "@app/users";
+import { existValidtor } from "@app/validator";
 import { useState } from "react";
 import {
   useCache,
@@ -36,6 +41,7 @@ import {
   Box,
   Button,
   CopyText,
+  EmptyTr,
   ExternalLink,
   FormGroup,
   Group,
@@ -180,7 +186,7 @@ function ConfigureSso({ onSuccess }: { onSuccess: () => void }) {
                 id="metadata-url"
                 name="metadata-url"
                 value={metadataUrl}
-                onChange={(e) => setMetadataUrl(e.currentTarget.value)}
+                onChange={(e) => setMetadataUrl(e.currentTarget.value.trim())}
               />
             </FormGroup>
 
@@ -196,7 +202,7 @@ function ConfigureSso({ onSuccess }: { onSuccess: () => void }) {
                 id="metadata-xml"
                 aria-label="metadata-xml"
                 value={metadata}
-                onChange={(e) => setMetadata(e.currentTarget.value)}
+                onChange={(e) => setMetadata(e.currentTarget.value.trim())}
               />
             </FormGroup>
 
@@ -258,7 +264,7 @@ function SsoEdit({
   return (
     <Box>
       <Group>
-        <h3>Edit SSO Configuration</h3>
+        <h3 className={tokens.type.h3}>Edit SSO Configuration</h3>
 
         <div>
           <h4 className={tokens.type.h4}>Entity ID</h4>
@@ -289,7 +295,7 @@ function SsoEdit({
                 id="metadata-url"
                 name="metadata-url"
                 value={metadataUrl}
-                onChange={(e) => setMetadataUrl(e.currentTarget.value)}
+                onChange={(e) => setMetadataUrl(e.currentTarget.value.trim())}
               />
             </FormGroup>
 
@@ -303,12 +309,16 @@ function SsoEdit({
                 id="metadata-xml"
                 aria-label="metadata-xml"
                 value={metadata}
-                onChange={(e) => setMetadata(e.currentTarget.value)}
+                onChange={(e) => setMetadata(e.currentTarget.value.trim())}
               />
             </FormGroup>
 
             <div>
-              <Button type="submit" isLoading={loader.isLoading}>
+              <Button
+                type="submit"
+                isLoading={loader.isLoading}
+                disabled={!metadataUrl && !metadata}
+              >
                 Save Changes
               </Button>
             </div>
@@ -318,31 +328,51 @@ function SsoEdit({
         <Group>
           <BannerMessages {...rmLoader} />
 
-          {org.ssoEnforced ? (
-            <Banner variant="info">
-              SSO must not be enforced to be removed
-            </Banner>
-          ) : (
-            <Button
-              variant="delete"
-              requireConfirm
-              onClick={onRemove}
-              isLoading={rmLoader.isLoading}
-            >
-              Remove SSO Config
-            </Button>
-          )}
+          <div>
+            {org.ssoEnforced ? (
+              <Banner variant="info">
+                SSO must not be enforced to be removed
+              </Banner>
+            ) : (
+              <Button
+                variant="delete"
+                requireConfirm
+                onClick={onRemove}
+                isLoading={rmLoader.isLoading}
+              >
+                Remove SSO Config
+              </Button>
+            )}
+          </div>
         </Group>
       </Group>
     </Box>
   );
 }
 
+function useOrgOwnerIds(orgId: string) {
+  const roles = useSelector((s: AppState) => selectRolesByOrgId(s, { orgId }));
+  const ownerRole = roles.find((r) => r.type === "owner");
+  const ownersReq = useCache<HalEmbedded<{ users: UserResponse[] }>>(
+    fetchUsersForRole({ roleId: ownerRole?.id || "" }),
+  );
+  const init: string[] = [];
+  if (!ownersReq.data) return init;
+  if (typeof ownersReq.data === "string") return init;
+  const owners = ownersReq.data?._embedded.users || [];
+  return owners.map((u) => `${u.id}`);
+}
+
+const allowlistValidators = {
+  add: (data: { userId: string }) => existValidtor(data.userId, "user"),
+};
+
 function SsoBypass({ orgId }: { orgId: string }) {
   const dispatch = useDispatch();
   const allowlist = useCache<FetchAllowlistMemberships>(
     fetchAllowlistMemberships({ orgId }),
   );
+  const ownerIds = useOrgOwnerIds(orgId);
   const members = allowlist.data?._embedded.whitelist_memberships || [];
   const userIds = members.map((m) => {
     return extractIdFromLink(m._links.user);
@@ -352,17 +382,25 @@ function SsoBypass({ orgId }: { orgId: string }) {
 
   const options = users
     .filter((u) => userIds.includes(u.id) === false)
+    .filter((u) => !ownerIds.includes(u.id))
     .map((u) => ({ label: `${u.name} (${u.email})`, value: u.id }));
   options.unshift({ label: "Add user to SSO Bypass", value: "" });
   const [selected, setSelected] = useState("");
   const addLoader = useLoader(addAllowlistMembership);
   const rmLoader = useLoader(deleteAllowlistMembership);
 
+  const [errors, validate] = useValidator<
+    { userId: string },
+    typeof allowlistValidators
+  >(allowlistValidators);
+  const data = { orgId, userId: selected };
+
   const onSelect = (opt: SelectOption) => {
     setSelected(opt.value);
   };
   const onAdd = () => {
-    dispatch(addAllowlistMembership({ orgId }));
+    if (!validate(data)) return;
+    dispatch(addAllowlistMembership(data));
   };
   const onRemove = (id: string) => {
     dispatch(deleteAllowlistMembership({ id }));
@@ -395,6 +433,12 @@ function SsoBypass({ orgId }: { orgId: string }) {
           </THead>
 
           <TBody>
+            {allowlistUsers.length === 0 ? (
+              <EmptyTr colSpan={4}>
+                No users added to SSO exception list
+              </EmptyTr>
+            ) : null}
+
             {allowlistUsers.map((u) => {
               return (
                 <Tr key={u.id}>
@@ -417,7 +461,9 @@ function SsoBypass({ orgId }: { orgId: string }) {
           </TBody>
         </Table>
 
-        <div>
+        {errors.add ? <Banner variant="error">{errors.add}</Banner> : null}
+
+        <Group variant="horizontal">
           <Select
             options={options}
             onSelect={onSelect}
@@ -427,7 +473,7 @@ function SsoBypass({ orgId }: { orgId: string }) {
           <Button onClick={onAdd} isLoading={addLoader.isLoading}>
             Add
           </Button>
-        </div>
+        </Group>
       </Group>
     </Box>
   );
@@ -456,13 +502,97 @@ const EnforceSso = ({ org }: { org: Organization }) => {
 
         <BannerMessages {...loader} />
 
-        <Button
-          onClick={onToggle}
-          isLoading={loader.isLoading}
-          variant={org.ssoEnforced ? "delete" : "primary"}
+        <div>
+          <Button
+            onClick={onToggle}
+            isLoading={loader.isLoading}
+            variant={org.ssoEnforced ? "delete" : "primary"}
+          >
+            {org.ssoEnforced ? "Disable" : "Enable"}
+          </Button>
+        </div>
+      </Group>
+    </Box>
+  );
+};
+
+const LoginSso = ({
+  org,
+  saml,
+  onSuccess,
+}: {
+  org: Organization;
+  saml: SamlConfigurationResponse;
+  onSuccess: () => void;
+}) => {
+  const dispatch = useDispatch();
+  const curHandle = saml.handle || org.id;
+  const [handle, setHandle] = useState(curHandle);
+  const loader = useLoader(updateSamlHandle);
+  const env = useSelector(selectEnv);
+  const url = `${env.appUrl}/sso/${curHandle}`;
+  const shouldDisable = !handle || handle === curHandle;
+
+  useLoaderSuccess(loader, () => {
+    onSuccess();
+  });
+
+  return (
+    <Box>
+      <Group>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            dispatch(updateSamlHandle({ samlId: saml.id, handle }));
+          }}
         >
-          {org.ssoEnforced ? "Disable" : "Enable"}
-        </Button>
+          <Group>
+            <BannerMessages {...loader} />
+
+            <FormGroup
+              htmlFor="saml-handle"
+              label="SSO Login ID"
+              description={
+                <div>
+                  Your members must enter this login ID on the{" "}
+                  <ExternalLink variant="info" href={ssoUrl()}>
+                    SSO login page
+                  </ExternalLink>
+                  . We suggest picking a memorable, unique value such as your
+                  company's primary email domain.
+                </div>
+              }
+            >
+              <Input
+                value={handle}
+                onChange={(e) => setHandle(e.currentTarget.value)}
+                id="saml-handle"
+                name="saml-handle"
+              />
+            </FormGroup>
+
+            <div>
+              <Button
+                type="submit"
+                disabled={shouldDisable}
+                isLoading={loader.isLoading}
+              >
+                Update Login ID
+              </Button>
+            </div>
+          </Group>
+        </form>
+
+        <hr />
+
+        <Group>
+          <h4 className={tokens.type.h4}>Shortcut SSO login URL</h4>
+          <div>
+            Your members may also use this direct link to login to your Aptible
+            organization via SSO.
+          </div>
+          <CopyText text={url} />
+        </Group>
       </Group>
     </Box>
   );
@@ -485,6 +615,7 @@ export const TeamSsoPage = () => {
   return (
     <Group>
       <SsoEdit saml={configs[0]} org={org} onSuccess={() => saml.trigger()} />
+      <LoginSso saml={configs[0]} org={org} onSuccess={() => saml.trigger()} />
       <EnforceSso org={org} />
       {org.ssoEnforced ? <SsoBypass orgId={org.id} /> : null}
     </Group>

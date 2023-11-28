@@ -28,7 +28,7 @@ const testMetadataXml = `<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:me
     <KeyDescriptor use="signing">
       <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
         <X509Data>
-          <X509Certificate>MIIDPDCCAiQCCQDydJgOlszqbzANBgkqhkiG9w0BAQUFADBgMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5jaXNjbzEQMA4GA1UEChMHSmFua3lDbzESMBAGA1UEAxMJbG9jYWxob3N0MB4XDTE0MDMxMjE5NDYzM1oXDTI3MTExOTE5NDYzM1owYDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xEDAOBgNVBAoTB0phbmt5Q28xEjAQBgNVBAMTCWxvY2FsaG9zdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMGvJpRTTasRUSPqcbqCG+ZnTAurnu0vVpIG9lzExnh11o/BGmzu7lB+yLHcEdwrKBBmpepDBPCYxpVajvuEhZdKFx/Fdy6j5mH3rrW0Bh/zd36CoUNjbbhHyTjeM7FN2yF3u9lcyubuvOzr3B3gX66IwJlU46+wzcQVhSOlMk2tXR+fIKQExFrOuK9tbX3JIBUqItpI+HnAow509CnM134svw8PTFLkR6/CcMqnDfDK1m993PyoC1Y+N4X9XkhSmEQoAlAHPI5LHrvuujM13nvtoVYvKYoj7ScgumkpWNEvX652LfXOnKYlkB8ZybuxmFfIkzedQrbJsyOhfL03cMECAwEAATANBgkqhkiG9w0BAQUFAAOCAQEAeHwzqwnzGEkxjzSD47imXaTqtYyETZow7XwBc0ZaFS50qRFJUgKTAmKS1xQBP/qHpStsROT35DUxJAE6NY1Kbq3ZbCuhGoSlY0L7VzVT5tpu4EY8+Dq/u2EjRmmhoL7UkskvIZ2n1DdERtd+YUMTeqYl9co43csZwDno/IKomeN5qaPc39IZjikJ+nUC6kPFKeu/3j9rgHNlRtocI6S1FdtFz9OZMQlpr0JbUt2T3xS/YoQJn6coDmJL5GTiiKM6cOe+Ur1VwzS1JEDbSS2TWWhzq8ojLdrotYLGd9JOsoQhElmz+tMfCFQUFLExinPAyy7YHlSiVX13QH2XTu/iQQ==</X509Certificate>
+          <X509Certificate>MIIDZjCCAk6gAwIBAgIBATANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDY29tMRcwFQYKCZImiZPyLGQBGRYHYXB0aWJsZTEUMBIGA1UEAwwLQXB0aWJsZSBJZFAwHhcNMjMxMTI4MTkwMDAwWhcNMzMxMTI1MTkwMDAwWjBEMRMwEQYKCZImiZPyLGQBGRYDY29tMRcwFQYKCZImiZPyLGQBGRYHYXB0aWJsZTEUMBIGA1UEAwwLQXB0aWJsZSBJZFAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDDYvCLke2CvCOG2ie8xpxbMKTpvTfGc6PKhPBW0rETLtEFSlCSG3MA5/zN9NYoo+Xi8QDgGyyQMMpS5v1h3r3BXfyByORUjYcL1n7DUCJYD+s0deep/NkzkL2E5UNmliZ21BJOKpSmH3xcFeiU4VBiZarJsKBEB6gXPXnOLWDyyhfoCQXr25eJI4Qp0g2L3krtgOA+K+MZY+hubhe1BYd0Ruao0/9v/s7hT0MXyW2CT7ft3Z08+DEkwdXHdsgVhWsJpxHwVk71b8nszd5qAz5WBfVjZaFJOdT9jstqxonuaPtvi30hfI4RH4ZQUP8k3bU6jlpjqCSH1MgsCYRCpoMxAgMBAAGjYzBhMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgGGMB0GA1UdDgQWBBRfeJyZuocNpw35Suwwey9kxgHFOzAfBgNVHSMEGDAWgBRfeJyZuocNpw35Suwwey9kxgHFOzANBgkqhkiG9w0BAQsFAAOCAQEANI0IcUAB9ldXsLS0BAbqzjNMbBNf1+BcIz0Gm3XnIq+gevKjwz8mj0CELChw1Ym26SRIQo0OPmjOTxE22dXv5wprjIZR5dKIWCf3BNHOdiB/CIShRt+FX4JY6i4/lSk5SrVw5bgHLlbfm2IeL0DrDptvcnWzXgkmR9XWCYC1ws79509boTcTrueBPAP93LWsN7lHg558XtmwavZWxHvEw1IYHyCuYEjPEtplT0hSzfGC036N+qkfAn2GnaADt5bz8/ko7T0TnVxQnnl5aec1roWHWCeoUAW/q1WGJg0kRLuqf7Fogml/L/VYRRnQkVHWehqW6n/jKrCXzMgGMtgTag==</X509Certificate>
         </X509Data>
       </KeyInfo>
     </KeyDescriptor>
@@ -45,6 +45,56 @@ const testMetadataXml = `<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:me
 
 describe("TeamSsoPage", () => {
   describe("when saml configuration exists for org", () => {
+    it("should let admin change login ID", async () => {
+      let counter = 0;
+      server.use(
+        rest.get(
+          `${testEnv.authUrl}/saml_configurations`,
+          async (_, res, ctx) => {
+            counter += 1;
+            if (counter === 1) {
+              return res(
+                ctx.json({ _embedded: { saml_configurations: [testSaml] } }),
+              );
+            }
+
+            return res(
+              ctx.json({
+                _embedded: {
+                  saml_configurations: [{ ...testSaml, handle: "wownice" }],
+                },
+              }),
+            );
+          },
+        ),
+      );
+
+      const { TestProvider, store } = setupIntegrationTest({
+        path: TEAM_SSO_PATH,
+        initEntries: [teamSsoUrl()],
+      });
+
+      await waitForBootup(store);
+
+      render(
+        <TestProvider>
+          <TeamSsoPage />
+        </TestProvider>,
+      );
+
+      await screen.findByText(/SSO Login ID/);
+
+      const inp = await screen.findByRole("textbox", { name: /saml-handle/ });
+      await act(() => userEvent.type(inp, "wownice"));
+
+      const btn = await screen.findByRole("button", {
+        name: /Update Login ID/,
+      });
+      fireEvent.click(btn);
+
+      await screen.findByText(/sso\/wownice/);
+    });
+
     it("should let admin enforce SSO", async () => {
       server.use(
         rest.get(`${testEnv.authUrl}/saml_configurations`, (_, res, ctx) => {

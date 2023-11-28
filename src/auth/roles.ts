@@ -24,3 +24,8 @@ export const fetchUserRoles = authApi.get<{ userId: string }>(
   ["/users/:userId/roles", "user"],
   authApi.cache(),
 );
+
+export const fetchUsersForRole = authApi.get<{ roleId: string }>(
+  "/roles/:roleId/users",
+  authApi.cache(),
+);

@@ -1,6 +1,8 @@
 import { authApi } from "@app/api";
+import { selectEnv } from "@app/env";
 import { defaultHalHref } from "@app/hal";
 import { AuthApiError, HalEmbedded, LinkResponse } from "@app/types";
+import { select } from "starfx/redux";
 
 export interface SamlConfigurationResponse {
   id: string;
@@ -120,6 +122,24 @@ export const updateSamlConfiguration = authApi.patch<UpdateSamlConfiguration>(
   },
 );
 
+export const updateSamlHandle = authApi.patch<{
+  samlId: string;
+  handle: string;
+}>(["/saml_configurations/:samlId", "handle"], function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify({
+      handle: ctx.payload.handle,
+    }),
+  });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  ctx.loader = { message: "Success!" };
+});
+
 export const deleteSamlConfiguration = authApi.delete<{ id: string }>(
   "/saml_configurations/:id",
 );
@@ -135,10 +155,18 @@ export const fetchAllowlistMemberships = authApi.get<
 >("/organizations/:orgId/whitelist_memberships", authApi.cache());
 
 export const addAllowlistMembership = authApi.post<
-  { orgId: string },
+  { orgId: string; userId: string },
   AllowlistMemberships,
   AuthApiError
->("/organizations/:orgId/whitelist_memberships", authApi.cache());
+>("/organizations/:orgId/whitelist_memberships", function* (ctx, next) {
+  const env = yield* select(selectEnv);
+  ctx.request = ctx.req({
+    body: JSON.stringify({
+      user: `${env.authUrl}/users/${ctx.payload.userId}`,
+    }),
+  });
+  yield* next();
+});
 
 export const deleteAllowlistMembership = authApi.delete<{ id: string }>(
   "/whitelist_memberships/:id",
