@@ -105,21 +105,17 @@ function ConfigureSso({ onSuccess }: { onSuccess: () => void }) {
       <h2 className={tokens.type.h2}>Single Sign-On</h2>
       <Box>
         <Group>
-          <Banner>You haven't configured an SSO provider.</Banner>
-
-          <p>
-            In order to configure an SSO Provider, you will need to enter the
-            below information into your SSO Provider's setup process. The
-            terminology and acronyms vary between SSO providers. We have tried
-            to provide the most common below. If you use Okta, please follow our{" "}
+          <Banner>
+            To configure an SSO Provider, enter the required information into
+            the provider's setup process. Terminology and acronyms vary between
+            providers. For Okta, follow our{" "}
             <ExternalLink
               variant="default"
               href="https://www.aptible.com/docs/sso-setup#okta-walkthrough"
             >
-              guided walkthrough
-            </ExternalLink>{" "}
-            with additional details.
-          </p>
+              guided walkthrough.
+            </ExternalLink>
+          </Banner>
 
           <BannerMessages {...loader} />
 
@@ -159,21 +155,11 @@ function ConfigureSso({ onSuccess }: { onSuccess: () => void }) {
 
           <form onSubmit={onSubmit}>
             <Group>
-              <p>
-                After completing your SSO provider setup, it should generate an
-                XML metadata file for you. If you use Okta, please follow our{" "}
-                <ExternalLink
-                  variant="default"
-                  href="https://www.aptible.com/docs/sso-setup#okta-walkthrough"
-                >
-                  guided walkthrough
-                </ExternalLink>{" "}
-                with additional details.
-              </p>
-
               <Banner>
-                Please enter either the URL of the file <strong>or</strong> the
-                file contents.
+                After completing your SSO provider setup, it should generate an
+                XML metadata file for you. Please enter either the{" "}
+                <strong>Metadata URL</strong> OR{" "}
+                <strong>Metadata File XML Content.</strong>
               </Banner>
 
               <FormGroup
