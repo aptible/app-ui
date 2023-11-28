@@ -1,4 +1,5 @@
 import { authApi } from "@app/api";
+import { defaultHalHref } from "@app/hal";
 import { AuthApiError, HalEmbedded, LinkResponse } from "@app/types";
 
 export interface SamlConfigurationResponse {
@@ -20,6 +21,32 @@ export interface SamlConfigurationResponse {
   };
   _type: "saml_configuration";
 }
+
+export const defaultSamlConfigurationResponse = (
+  s: Partial<SamlConfigurationResponse> = {},
+): SamlConfigurationResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    entity_id: "",
+    sign_in_url: "",
+    sign_out_url: "",
+    name_format: "",
+    certificate: "",
+    certificate_fingerprint: "",
+    certificate_fingerprint_algo: "",
+    aptible_certificate: "",
+    aptible_private_key: "",
+    created_at: now,
+    updated_at: now,
+    handle: "",
+    _links: {
+      organization: defaultHalHref(),
+    },
+    _type: "saml_configuration",
+    ...s,
+  };
+};
 
 export type FetchSamlConfigurations = HalEmbedded<{
   saml_configurations: SamlConfigurationResponse[];
@@ -43,6 +70,60 @@ export interface AllowlistMemberships {
   _type: "whitelist_membership";
 }
 
+export interface CreateSamlConfiguration {
+  orgId: string;
+  metadata: string;
+  metadataUrl: string;
+}
+
+export const createSamlConfiguration = authApi.post<CreateSamlConfiguration>(
+  "/organizations/:orgId/saml_configurations",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({
+        metadata: ctx.payload.metadata,
+        metadata_url: ctx.payload.metadataUrl,
+      }),
+    });
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = { message: "Success!" };
+  },
+);
+
+export interface UpdateSamlConfiguration {
+  samlId: string;
+  metadata: string;
+  metadataUrl: string;
+}
+
+export const updateSamlConfiguration = authApi.patch<UpdateSamlConfiguration>(
+  "/saml_configurations/:samlId",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({
+        metadata: ctx.payload.metadata,
+        metadata_url: ctx.payload.metadataUrl,
+      }),
+    });
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = { message: "Success!" };
+  },
+);
+
+export const deleteSamlConfiguration = authApi.delete<{ id: string }>(
+  "/saml_configurations/:id",
+);
+
 export type FetchAllowlistMemberships = HalEmbedded<{
   whitelist_memberships: AllowlistMemberships[];
 }>;
@@ -52,3 +133,14 @@ export const fetchAllowlistMemberships = authApi.get<
   FetchAllowlistMemberships,
   AuthApiError
 >("/organizations/:orgId/whitelist_memberships", authApi.cache());
+
+export const addAllowlistMembership = authApi.post<
+  { orgId: string },
+  AllowlistMemberships,
+  AuthApiError
+>("/organizations/:orgId/whitelist_memberships", authApi.cache());
+
+export const deleteAllowlistMembership = authApi.delete<{ id: string }>(
+  "/whitelist_memberships/:id",
+  authApi.cache(),
+);

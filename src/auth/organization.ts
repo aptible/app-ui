@@ -111,6 +111,25 @@ export const updateOrganization = authApi.patch<Organization>(
   },
 );
 
+export const updateSsoForOrganization = authApi.patch<{
+  id: string;
+  ssoEnforced: boolean;
+}>(["/organizations/:id", "sso"], function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify({
+      sso_enforced: ctx.payload.ssoEnforced,
+    }),
+  });
+
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  ctx.loader = { message: "Successfully organization SSO enforcement!" };
+});
+
 export const removeUserFromOrg = authApi.delete<{
   orgId: string;
   userId: string;
