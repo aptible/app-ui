@@ -101,120 +101,121 @@ function ConfigureSso({ onSuccess }: { onSuccess: () => void }) {
   });
 
   return (
-    <Box>
-      <Group>
-        <h3 className={tokens.type.h3}>
-          You haven't configured an SSO provider.
-        </h3>
+    <Group>
+      <h2 className={tokens.type.h2}>Single Sign-On</h2>
+      <Box>
+        <Group>
+          <Banner>You haven't configured an SSO provider.</Banner>
 
-        <p>
-          In order to configure an SSO Provider, you will need to enter the
-          below information into your SSO Provider's setup process. The
-          terminology and acronyms vary between SSO providers. We have tried to
-          provide the most common below. If you use Okta, please follow our{" "}
-          <ExternalLink
-            variant="default"
-            href="https://www.aptible.com/docs/sso-setup#okta-walkthrough"
-          >
-            guided walkthrough
-          </ExternalLink>{" "}
-          with additional details.
-        </p>
-
-        <BannerMessages {...loader} />
-
-        <div>
-          <h4 className={tokens.type.h4}>
-            Single sign on URL (Assertion Consumer Service [ACS] URL)
-          </h4>
-          <CopyText text={ssoUrl} />
-        </div>
-
-        <div>
-          <h4 className={tokens.type.h4}>
-            Audience URI (Service Provider Entity ID)
-          </h4>
-          <CopyText text={audienceUrl} />
-        </div>
-
-        <div>
-          <h4 className={tokens.type.h4}>Name ID format</h4>
-          <div>
-            <strong>EmailAddress</strong> is preferred. Unspecified is also
-            acceptible.
-          </div>
-        </div>
-
-        <div>
-          <h4 className={tokens.type.h4}>
-            Application username (NameID attribute)
-          </h4>
-          <div>
-            <strong>Email</strong> is required. The email sent by the SSO
-            provider must exactly match the Aptible account.
-          </div>
-        </div>
-
-        <hr />
-
-        <form onSubmit={onSubmit}>
-          <Group>
-            <p>
-              After completing your SSO provider setup, it should generate an
-              XML metadata file for you. If you use Okta, please follow our{" "}
-              <ExternalLink
-                variant="default"
-                href="https://www.aptible.com/docs/sso-setup#okta-walkthrough"
-              >
-                guided walkthrough
-              </ExternalLink>{" "}
-              with additional details.
-            </p>
-
-            <Banner>
-              Please enter either the URL of the file <strong>or</strong> the
-              file contents.
-            </Banner>
-
-            <FormGroup
-              label="Metadata URL"
-              htmlFor="metadata-url"
-              feedbackMessage={errors.metadata}
-              feedbackVariant={errors.metadata ? "danger" : "info"}
+          <p>
+            In order to configure an SSO Provider, you will need to enter the
+            below information into your SSO Provider's setup process. The
+            terminology and acronyms vary between SSO providers. We have tried
+            to provide the most common below. If you use Okta, please follow our{" "}
+            <ExternalLink
+              variant="default"
+              href="https://www.aptible.com/docs/sso-setup#okta-walkthrough"
             >
-              <Input
-                id="metadata-url"
-                name="metadata-url"
-                value={metadataUrl}
-                onChange={(e) => setMetadataUrl(e.currentTarget.value.trim())}
-              />
-            </FormGroup>
+              guided walkthrough
+            </ExternalLink>{" "}
+            with additional details.
+          </p>
 
-            <h4 className={tokens.type.h4}>- OR -</h4>
+          <BannerMessages {...loader} />
 
-            <FormGroup
-              label="Metadata File XML Content"
-              htmlFor="metadata-xml"
-              feedbackMessage={errors.metadata}
-              feedbackVariant={errors.metadata ? "danger" : "info"}
-            >
-              <TextArea
-                id="metadata-xml"
-                aria-label="metadata-xml"
-                value={metadata}
-                onChange={(e) => setMetadata(e.currentTarget.value.trim())}
-              />
-            </FormGroup>
+          <div>
+            <h4 className={tokens.type.h4}>
+              Single Sign-On URL (Assertion Consumer Service [ACS] URL)
+            </h4>
+            <CopyText text={ssoUrl} />
+          </div>
 
+          <div>
+            <h4 className={tokens.type.h4}>
+              Audience URI (Service Provider Entity ID)
+            </h4>
+            <CopyText text={audienceUrl} />
+          </div>
+
+          <div>
+            <h4 className={tokens.type.h4}>Name ID format</h4>
             <div>
-              <Button type="submit" isLoading={loader.isLoading}>
-                Save
-              </Button>
+              <strong>EmailAddress</strong> is preferred. Unspecified is also
+              acceptible.
             </div>
-          </Group>
-        </form>
-      </Group>
-    </Box>
+          </div>
+
+          <div>
+            <h4 className={tokens.type.h4}>
+              Application Username (NameID attribute)
+            </h4>
+            <div>
+              <strong>Email</strong> is required. The email sent by the SSO
+              provider must exactly match the Aptible account.
+            </div>
+          </div>
+
+          <hr />
+
+          <form onSubmit={onSubmit}>
+            <Group>
+              <p>
+                After completing your SSO provider setup, it should generate an
+                XML metadata file for you. If you use Okta, please follow our{" "}
+                <ExternalLink
+                  variant="default"
+                  href="https://www.aptible.com/docs/sso-setup#okta-walkthrough"
+                >
+                  guided walkthrough
+                </ExternalLink>{" "}
+                with additional details.
+              </p>
+
+              <Banner>
+                Please enter either the URL of the file <strong>or</strong> the
+                file contents.
+              </Banner>
+
+              <FormGroup
+                label="Metadata URL"
+                htmlFor="metadata-url"
+                feedbackMessage={errors.metadata}
+                feedbackVariant={errors.metadata ? "danger" : "info"}
+              >
+                <Input
+                  id="metadata-url"
+                  name="metadata-url"
+                  value={metadataUrl}
+                  onChange={(e) => setMetadataUrl(e.currentTarget.value.trim())}
+                />
+              </FormGroup>
+
+              <h4 className={tokens.type.h4}>- OR -</h4>
+
+              <FormGroup
+                label="Metadata File XML Content"
+                htmlFor="metadata-xml"
+                feedbackMessage={errors.metadata}
+                feedbackVariant={errors.metadata ? "danger" : "info"}
+              >
+                <TextArea
+                  id="metadata-xml"
+                  aria-label="metadata-xml"
+                  value={metadata}
+                  onChange={(e) => setMetadata(e.currentTarget.value.trim())}
+                />
+              </FormGroup>
+
+              <div>
+                <Button type="submit" isLoading={loader.isLoading}>
+                  Save
+                </Button>
+              </div>
+            </Group>
+          </form>
+        </Group>
+      </Box>
+    </Group>
   );
 }
 
@@ -262,91 +263,94 @@ function SsoEdit({
   });
 
   return (
-    <Box>
-      <Group>
-        <h3 className={tokens.type.h3}>Edit SSO Configuration</h3>
-
-        <div>
-          <h4 className={tokens.type.h4}>Entity ID</h4>
-          <CopyText text={saml.entity_id} />
-        </div>
-
-        <div>
-          <h4 className={tokens.type.h4}>Sign-in URL</h4>
-          <CopyText text={saml.sign_in_url} />
-        </div>
-
-        <div>
-          <h4 className={tokens.type.h4}>Name Format</h4>
-          <CopyText text={saml.name_format} />
-        </div>
-
-        <form onSubmit={onSubmit}>
-          <Group>
-            <BannerMessages {...loader} />
-
-            <FormGroup
-              label="Metadata URL"
-              htmlFor="metadata-url"
-              feedbackMessage={errors.metadata}
-              feedbackVariant={errors.metadata ? "danger" : "info"}
-            >
-              <Input
-                id="metadata-url"
-                name="metadata-url"
-                value={metadataUrl}
-                onChange={(e) => setMetadataUrl(e.currentTarget.value.trim())}
-              />
-            </FormGroup>
-
-            <FormGroup
-              label="Metadata File XML Content"
-              htmlFor="metadata-xml"
-              feedbackMessage={errors.metadata}
-              feedbackVariant={errors.metadata ? "danger" : "info"}
-            >
-              <TextArea
-                id="metadata-xml"
-                aria-label="metadata-xml"
-                value={metadata}
-                onChange={(e) => setMetadata(e.currentTarget.value.trim())}
-              />
-            </FormGroup>
-
-            <div>
-              <Button
-                type="submit"
-                isLoading={loader.isLoading}
-                disabled={!metadataUrl && !metadata}
-              >
-                Save Changes
-              </Button>
-            </div>
-          </Group>
-        </form>
-
+    <Group>
+      <h2 className={tokens.type.h2}>Single Sign-On</h2>
+      <Box>
         <Group>
-          <BannerMessages {...rmLoader} />
+          <h3 className={tokens.type.h3}>Edit SSO Configuration</h3>
 
           <div>
-            {org.ssoEnforced ? (
-              <Banner variant="info">
-                SSO must not be enforced to be removed
-              </Banner>
-            ) : (
-              <Button
-                variant="delete"
-                requireConfirm
-                onClick={onRemove}
-                isLoading={rmLoader.isLoading}
-              >
-                Remove SSO Config
-              </Button>
-            )}
+            <h4 className={tokens.type.h4}>Entity ID</h4>
+            <CopyText text={saml.entity_id} />
           </div>
+
+          <div>
+            <h4 className={tokens.type.h4}>Sign-In URL</h4>
+            <CopyText text={saml.sign_in_url} />
+          </div>
+
+          <div>
+            <h4 className={tokens.type.h4}>Name Format</h4>
+            <CopyText text={saml.name_format} />
+          </div>
+
+          <form onSubmit={onSubmit}>
+            <Group>
+              <BannerMessages {...loader} />
+
+              <FormGroup
+                label="Metadata URL"
+                htmlFor="metadata-url"
+                feedbackMessage={errors.metadata}
+                feedbackVariant={errors.metadata ? "danger" : "info"}
+              >
+                <Input
+                  id="metadata-url"
+                  name="metadata-url"
+                  value={metadataUrl}
+                  onChange={(e) => setMetadataUrl(e.currentTarget.value.trim())}
+                />
+              </FormGroup>
+
+              <FormGroup
+                label="Metadata File XML Content"
+                htmlFor="metadata-xml"
+                feedbackMessage={errors.metadata}
+                feedbackVariant={errors.metadata ? "danger" : "info"}
+              >
+                <TextArea
+                  id="metadata-xml"
+                  aria-label="metadata-xml"
+                  value={metadata}
+                  onChange={(e) => setMetadata(e.currentTarget.value.trim())}
+                />
+              </FormGroup>
+
+              <div>
+                <Button
+                  type="submit"
+                  isLoading={loader.isLoading}
+                  disabled={!metadataUrl && !metadata}
+                >
+                  Save Changes
+                </Button>
+              </div>
+            </Group>
+          </form>
+
+          <Group>
+            <BannerMessages {...rmLoader} />
+
+            <div>
+              {org.ssoEnforced ? (
+                <Banner variant="info">
+                  SSO must not be enforced to be removed
+                </Banner>
+              ) : (
+                <Button
+                  variant="delete"
+                  requireConfirm
+                  onClick={onRemove}
+                  isLoading={rmLoader.isLoading}
+                >
+                  Remove SSO Configuration
+                </Button>
+              )}
+            </div>
+          </Group>
         </Group>
-      </Group>
-    </Box>
+      </Box>
+    </Group>
   );
 }
 

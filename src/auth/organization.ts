@@ -127,7 +127,7 @@ export const updateSsoForOrganization = authApi.patch<{
     return;
   }
 
-  ctx.loader = { message: "Successfully organization SSO enforcement!" };
+  ctx.loader = { message: "Successful organization SSO enforcement!" };
 });
 
 export const removeUserFromOrg = authApi.delete<{
