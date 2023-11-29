@@ -519,7 +519,12 @@ export const updateApp = api.put<UpdateApp>("/apps/:id", function* (ctx, next) {
     handle,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
+
   yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
 
   ctx.loader = {
     message: "Saved changes successfully!",
