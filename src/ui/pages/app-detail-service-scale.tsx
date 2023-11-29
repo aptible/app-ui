@@ -136,8 +136,8 @@ const VerticalAutoscalingSection = ({
     <Group>
       <Banner>
         <strong>Last Scale:</strong> 09-01-2023 09:00:00 scale to 4 Containers{" "}
-        <Link to={appActivityUrl}>View Logs</Link>, <strong>Next Scale:</strong>{" "}
-        Queued to 2 Containers (1m 15s)
+        <Link to={appActivityUrl}>View Activity</Link>,{" "}
+        <strong>Next Scale:</strong> Queued to 2 Containers (1m 15s)
       </Banner>
       <Box>
         <form onSubmit={onSubmitForm}>
