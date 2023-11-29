@@ -5,7 +5,7 @@ export * from "./database-detail-layout";
 export * from "./environment-detail-layout";
 export * from "./hero-bg-layout";
 export * from "./error-boundary";
-export * from "./op-detail-layout";
+export * from "./operation-detail-layout";
 export * from "./perm-required";
 export * from "./app-sidebar-layout";
 export * from "./stack-detail-layout";

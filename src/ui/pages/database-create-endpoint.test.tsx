@@ -1,9 +1,3 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { rest } from "msw";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router";
-
 import { defaultEndpointResponse, selectEndpointById } from "@app/deploy";
 import {
   createId,
@@ -21,8 +15,12 @@ import {
 } from "@app/routes";
 import { setupIntegrationTest, waitForBootup, waitForEnv } from "@app/test";
 import { AppState } from "@app/types";
-
-import { DatabaseCreateEndpointPage } from "./db-create-endpoint";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { rest } from "msw";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router";
+import { DatabaseCreateEndpointPage } from "./database-create-endpoint";
 
 const TestDetailPage = () => {
   const { id = "" } = useParams();
