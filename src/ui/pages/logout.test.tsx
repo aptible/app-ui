@@ -53,7 +53,7 @@ describe("LogoutPage", () => {
 
       await screen.findByText(/Login!/);
 
-      expect(store.getState().deploy).toEqual({
+      expect(store.getState()).toMatchObject({
         activePlans: {},
         activityReports: {},
         apps: {},

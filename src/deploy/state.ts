@@ -1,5 +1,3 @@
-import { combineReducers } from "@reduxjs/toolkit";
-
 import {
   activityReportEntities,
   activityReportReducers,
@@ -40,43 +38,33 @@ import { stackEntities, stackReducers } from "./stack";
 import { vpcPeerEntities, vpcPeerReducers } from "./vpc_peer";
 import { vpnTunnelEntities, vpnTunnelReducers } from "./vpn_tunnel";
 
-const allReducers: any[] = [
-  appReducers,
-  certificateReducers,
-  serviceDefinitionReducers,
-  stackReducers,
-  environmentReducers,
-  endpointReducers,
-  databaseReducers,
-  logDrainReducers,
-  metricDrainReducers,
-  serviceReducers,
-  databaseImageReducers,
-  opReducers,
-  planReducers,
-  activePlanReducers,
-  permissionReducers,
-  releaseReducers,
-  containerReducers,
-  vpcPeerReducers,
-  vpnTunnelReducers,
-  appConfigReducers,
-  backupReducers,
-  backupRpReducers,
-  credReducers,
-  activityReportReducers,
-  imageReducers,
-  diskReducers,
-];
-
-const rootReducer = combineReducers(
-  allReducers.reduce((acc, red) => {
-    return { ...acc, ...red };
-  }, {}),
-);
-
 export const reducers = {
-  deploy: rootReducer,
+  ...appReducers,
+  ...certificateReducers,
+  ...serviceDefinitionReducers,
+  ...stackReducers,
+  ...environmentReducers,
+  ...databaseReducers,
+  ...endpointReducers,
+  ...logDrainReducers,
+  ...metricDrainReducers,
+  ...serviceReducers,
+  ...databaseImageReducers,
+  ...opReducers,
+  ...planReducers,
+  ...activePlanReducers,
+  ...permissionReducers,
+  ...releaseReducers,
+  ...containerReducers,
+  ...vpcPeerReducers,
+  ...vpnTunnelReducers,
+  ...appConfigReducers,
+  ...backupReducers,
+  ...backupRpReducers,
+  ...credReducers,
+  ...activityReportReducers,
+  ...imageReducers,
+  ...diskReducers,
 };
 
 export const entities = {
