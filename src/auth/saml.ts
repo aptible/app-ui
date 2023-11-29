@@ -1,8 +1,6 @@
 import { authApi } from "@app/api";
-import { selectEnv } from "@app/env";
 import { defaultHalHref } from "@app/hal";
 import { AuthApiError, HalEmbedded, LinkResponse } from "@app/types";
-import { select } from "starfx/redux";
 
 export interface SamlConfigurationResponse {
   id: string;
@@ -72,6 +70,10 @@ export interface AllowlistMemberships {
   _type: "whitelist_membership";
 }
 
+const prepareXml = (xml: string) => {
+  return window.btoa(xml.trim());
+};
+
 export interface CreateSamlConfiguration {
   orgId: string;
   metadata: string;
@@ -83,8 +85,8 @@ export const createSamlConfiguration = authApi.post<CreateSamlConfiguration>(
   function* (ctx, next) {
     ctx.request = ctx.req({
       body: JSON.stringify({
-        metadata: ctx.payload.metadata,
-        metadata_url: ctx.payload.metadataUrl,
+        metadata: prepareXml(ctx.payload.metadata),
+        metadata_url: ctx.payload.metadataUrl.trim(),
       }),
     });
     yield* next();
@@ -108,8 +110,8 @@ export const updateSamlConfiguration = authApi.patch<UpdateSamlConfiguration>(
   function* (ctx, next) {
     ctx.request = ctx.req({
       body: JSON.stringify({
-        metadata: ctx.payload.metadata,
-        metadata_url: ctx.payload.metadataUrl,
+        metadata: prepareXml(ctx.payload.metadata),
+        metadata_url: ctx.payload.metadataUrl.trim(),
       }),
     });
     yield* next();
@@ -159,10 +161,9 @@ export const addAllowlistMembership = authApi.post<
   AllowlistMemberships,
   AuthApiError
 >("/organizations/:orgId/whitelist_memberships", function* (ctx, next) {
-  const env = yield* select(selectEnv);
   ctx.request = ctx.req({
     body: JSON.stringify({
-      user: `${env.authUrl}/users/${ctx.payload.userId}`,
+      user_id: ctx.payload.userId,
     }),
   });
   yield* next();

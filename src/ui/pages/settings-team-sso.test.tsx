@@ -150,7 +150,7 @@ describe("TeamSsoPage", () => {
               }
 
               const membership = {
-                id: "",
+                id: `${createId()}`,
                 _links: {
                   user: defaultHalHref(
                     `${testEnv.authUrl}/users/${testUser.id}`,
@@ -219,7 +219,7 @@ describe("TeamSsoPage", () => {
               counter += 1;
               if (counter === 1) {
                 const membership = {
-                  id: "",
+                  id: `${createId()}`,
                   _links: {
                     user: defaultHalHref(
                       `${testEnv.authUrl}/users/${testUser.id}`,

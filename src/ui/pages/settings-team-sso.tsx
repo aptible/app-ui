@@ -172,7 +172,7 @@ function ConfigureSso({ onSuccess }: { onSuccess: () => void }) {
                   id="metadata-url"
                   name="metadata-url"
                   value={metadataUrl}
-                  onChange={(e) => setMetadataUrl(e.currentTarget.value.trim())}
+                  onChange={(e) => setMetadataUrl(e.currentTarget.value)}
                 />
               </FormGroup>
 
@@ -188,7 +188,7 @@ function ConfigureSso({ onSuccess }: { onSuccess: () => void }) {
                   id="metadata-xml"
                   aria-label="metadata-xml"
                   value={metadata}
-                  onChange={(e) => setMetadata(e.currentTarget.value.trim())}
+                  onChange={(e) => setMetadata(e.currentTarget.value)}
                 />
               </FormGroup>
 
@@ -284,7 +284,7 @@ function SsoEdit({
                   id="metadata-url"
                   name="metadata-url"
                   value={metadataUrl}
-                  onChange={(e) => setMetadataUrl(e.currentTarget.value.trim())}
+                  onChange={(e) => setMetadataUrl(e.currentTarget.value)}
                 />
               </FormGroup>
 
@@ -298,7 +298,7 @@ function SsoEdit({
                   id="metadata-xml"
                   aria-label="metadata-xml"
                   value={metadata}
-                  onChange={(e) => setMetadata(e.currentTarget.value.trim())}
+                  onChange={(e) => setMetadata(e.currentTarget.value)}
                 />
               </FormGroup>
 
@@ -357,24 +357,44 @@ const allowlistValidators = {
   add: (data: { userId: string }) => existValidtor(data.userId, "user"),
 };
 
-function SsoBypass({ orgId }: { orgId: string }) {
-  const dispatch = useDispatch();
+function useAllowlistMembers(orgId: string) {
   const allowlist = useCache<FetchAllowlistMemberships>(
     fetchAllowlistMemberships({ orgId }),
   );
   const ownerIds = useOrgOwnerIds(orgId);
   const members = allowlist.data?._embedded.whitelist_memberships || [];
-  const userIds = members.map((m) => {
-    return extractIdFromLink(m._links.user);
+  // get relevant info from membership
+  const memberUserMap = members.map((m) => {
+    return { id: m.id, userId: extractIdFromLink(m._links.user) };
   });
   const users = useSelector(selectUsersAsList);
-  const allowlistUsers = users.filter((u) => userIds.includes(u.id));
+  const allowlistUsers = users
+    // find users within allowlist group
+    .map((u) => {
+      const member = memberUserMap.find((mp) => mp.userId === u.id);
+      return { ...u, memberId: member?.id || "" };
+    })
+    // filter out users without an allowlist membership
+    .filter((u) => u.memberId !== "");
 
   const options = users
-    .filter((u) => userIds.includes(u.id) === false)
+    // exclude users already inside allowlist membership
+    .filter((u) => {
+      return !allowlistUsers.find((a) => a.id === u.id);
+    })
+    // exclude owners since they are implicitly inside allowlist
     .filter((u) => !ownerIds.includes(u.id))
+    // turn it into an option
     .map((u) => ({ label: `${u.name} (${u.email})`, value: u.id }));
+  // add empty selection to first item in select options
   options.unshift({ label: "Add user to SSO Bypass", value: "" });
+
+  return { allowlist, allowlistUsers, options };
+}
+
+function SsoBypass({ orgId }: { orgId: string }) {
+  const dispatch = useDispatch();
+  const { allowlist, allowlistUsers, options } = useAllowlistMembers(orgId);
   const [selected, setSelected] = useState("");
   const addLoader = useLoader(addAllowlistMembership);
   const rmLoader = useLoader(deleteAllowlistMembership);
@@ -439,7 +459,7 @@ function SsoBypass({ orgId }: { orgId: string }) {
                     <Button
                       variant="delete"
                       requireConfirm
-                      onClick={() => onRemove(u.id)}
+                      onClick={() => onRemove(u.memberId)}
                       isLoading={rmLoader.isLoading}
                     >
                       Remove user
