@@ -79,7 +79,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     setPort(enp.containerPort);
   }, [enp.containerPort]);
   useEffect(() => {
-    setCertId(certId);
+    setCertId(enp.certificateId);
   }, [enp.certificateId]);
 
   const data = {
