@@ -23,7 +23,6 @@ import { AppState, HalEmbedded, InstanceClass } from "@app/types";
 import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
 import { useValidator } from "../hooks";
 import {
   IconChevronDown,
@@ -135,8 +134,7 @@ const VerticalAutoscalingSection = ({
   return (
     <Group>
       <Banner>
-        <strong>Last Scale:</strong> 09-01-2023 09:00:00 scale to 4 Containers{" "}
-        <Link to={appActivityUrl(app.id)}>View Activity</Link>,{" "}
+        <strong>Last Scale:</strong> 09-01-2023 09:00:00 scale to 4 Containers,{" "}
         <strong>Next Scale:</strong> Queued to 2 Containers (1m 15s)
       </Banner>
       <Box>
