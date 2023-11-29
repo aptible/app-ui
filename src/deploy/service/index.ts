@@ -388,7 +388,9 @@ export const modifyServiceSizingPolicy =
       yield* next();
 
       if (updateCtx.json.ok) {
-        yield* put(setLoaderSuccess({ id: ctx.name, message: 'Policy changes saved' }));
+        yield* put(
+          setLoaderSuccess({ id: ctx.name, message: "Policy changes saved" }),
+        );
       } else {
         const data = updateCtx.json.data as any;
         yield* put(setLoaderError({ id: ctx.name, message: data.message }));
