@@ -205,8 +205,8 @@ export interface AppState extends QueryState {
   permissions: MapEntity<Permission>;
   releases: MapEntity<DeployRelease>;
   containers: MapEntity<DeployContainer>;
-  vpc_peers: MapEntity<DeployVpcPeer>;
-  vpn_tunnels: MapEntity<DeployVpnTunnel>;
+  vpcPeers: MapEntity<DeployVpcPeer>;
+  vpnTunnels: MapEntity<DeployVpnTunnel>;
   backups: MapEntity<DeployBackup>;
   backupRps: MapEntity<DeployBackupRetentionPolicy>;
   activityReports: MapEntity<DeployActivityReport>;

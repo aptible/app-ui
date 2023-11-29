@@ -186,8 +186,8 @@ describe("Selecting an Organization", () => {
         serviceDefinitions: {},
         services: {},
         stacks: {},
-        vpc_peers: {},
-        vpn_tunnels: {},
+        vpcPeers: {},
+        vpnTunnels: {},
       });
     });
   });

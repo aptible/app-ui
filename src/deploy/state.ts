@@ -35,8 +35,8 @@ import {
 import { releaseEntities, releaseReducers } from "./release";
 import { serviceEntities, serviceReducers } from "./service";
 import { stackEntities, stackReducers } from "./stack";
-import { vpcPeerEntities, vpcPeerReducers } from "./vpc_peer";
-import { vpnTunnelEntities, vpnTunnelReducers } from "./vpn_tunnel";
+import { vpcPeerEntities, vpcPeerReducers } from "./vpc-peer";
+import { vpnTunnelEntities, vpnTunnelReducers } from "./vpn-tunnel";
 
 export const reducers = {
   ...appReducers,
