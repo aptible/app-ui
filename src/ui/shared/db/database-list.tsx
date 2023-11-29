@@ -31,7 +31,7 @@ import { Button, ButtonCreate } from "../button";
 import { Group } from "../group";
 import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
-import { OpStatus } from "../op-status";
+import { OpStatus } from "../operation-status";
 import {
   ActionBar,
   DescBar,
