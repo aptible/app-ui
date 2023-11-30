@@ -57,7 +57,7 @@ const EnvironmentPrimaryCell = ({ env }: EnvironmentCellProps) => {
 };
 
 const EnvironmentIdCell = ({ env }: EnvironmentCellProps) => {
-  return <Td variant="center">{env.id}</Td>;
+  return <Td>{env.id}</Td>;
 };
 
 const EnvironmentDatabasesCell = ({ env }: EnvironmentCellProps) => {
@@ -175,7 +175,7 @@ export function EnvironmentList({
       <Table>
         <THead>
           <Th>Environment</Th>
-          <Th variant="center">ID</Th>
+          <Th>ID</Th>
           <Th>Stack</Th>
           <Th variant="center">Apps</Th>
           <Th variant="center">Database</Th>
