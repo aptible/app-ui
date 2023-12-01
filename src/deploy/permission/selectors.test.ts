@@ -1,7 +1,7 @@
+// @vitest-environment node
 import { createId } from "@app/mocks";
 import { defaultRole } from "@app/roles";
 import { AppState, DeepPartial, PermissionScope } from "@app/types";
-// @vitest-environment node
 import { defaultPermission, selectUserHasPerms } from "./index";
 
 describe("selectUserHasPerms", () => {
@@ -15,9 +15,7 @@ describe("selectUserHasPerms", () => {
       const envId = `${createId()}`;
 
       const state: DeepPartial<AppState> = {
-        deploy: {
-          permissions: {},
-        },
+        permissions: {},
         roles: {
           [role.id]: role,
         },
@@ -42,9 +40,7 @@ describe("selectUserHasPerms", () => {
       const envId = `${createId()}`;
 
       const state: DeepPartial<AppState> = {
-        deploy: {
-          permissions: {},
-        },
+        permissions: {},
         roles: {
           [role.id]: role,
         },
@@ -77,10 +73,8 @@ describe("selectUserHasPerms", () => {
           });
 
           const state: DeepPartial<AppState> = {
-            deploy: {
-              permissions: {
-                [perm.id]: perm,
-              },
+            permissions: {
+              [perm.id]: perm,
             },
             roles: {
               [role.id]: role,
@@ -112,10 +106,8 @@ describe("selectUserHasPerms", () => {
           });
 
           const state: DeepPartial<AppState> = {
-            deploy: {
-              permissions: {
-                [perm.id]: perm,
-              },
+            permissions: {
+              [perm.id]: perm,
             },
             roles: {
               [role.id]: role,
@@ -149,10 +141,8 @@ describe("selectUserHasPerms", () => {
           });
 
           const state: DeepPartial<AppState> = {
-            deploy: {
-              permissions: {
-                [perm.id]: perm,
-              },
+            permissions: {
+              [perm.id]: perm,
             },
             roles: {
               [role.id]: role,
@@ -184,10 +174,8 @@ describe("selectUserHasPerms", () => {
           });
 
           const state: DeepPartial<AppState> = {
-            deploy: {
-              permissions: {
-                [perm.id]: perm,
-              },
+            permissions: {
+              [perm.id]: perm,
             },
             roles: {
               [role.id]: role,
@@ -213,9 +201,7 @@ describe("selectUserHasPerms", () => {
           const envId = `${createId()}`;
 
           const state: DeepPartial<AppState> = {
-            deploy: {
-              permissions: {},
-            },
+            permissions: {},
             roles: {
               [role.id]: role,
             },
@@ -246,10 +232,8 @@ describe("selectUserHasPerms", () => {
           });
 
           const state: DeepPartial<AppState> = {
-            deploy: {
-              permissions: {
-                [perm.id]: perm,
-              },
+            permissions: {
+              [perm.id]: perm,
             },
             roles: {
               [role.id]: role,
@@ -283,10 +267,8 @@ describe("selectUserHasPerms", () => {
           });
 
           const state: DeepPartial<AppState> = {
-            deploy: {
-              permissions: {
-                [perm.id]: perm,
-              },
+            permissions: {
+              [perm.id]: perm,
             },
             roles: {
               [role.id]: role,
@@ -332,10 +314,8 @@ describe("selectUserHasPerms", () => {
             });
 
             const state: DeepPartial<AppState> = {
-              deploy: {
-                permissions: {
-                  [perm.id]: perm,
-                },
+              permissions: {
+                [perm.id]: perm,
               },
               roles: {
                 [role.id]: role,

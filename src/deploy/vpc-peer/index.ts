@@ -77,7 +77,7 @@ export const defaultDeployVpcPeer = (
   };
 };
 
-export const DEPLOY_VPC_PEER_NAME = "vpc_peers";
+export const DEPLOY_VPC_PEER_NAME = "vpcPeers";
 const slice = createTable<DeployVpcPeer>({
   name: DEPLOY_VPC_PEER_NAME,
 });

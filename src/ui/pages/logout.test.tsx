@@ -53,7 +53,7 @@ describe("LogoutPage", () => {
 
       await screen.findByText(/Login!/);
 
-      expect(store.getState().deploy).toEqual({
+      expect(store.getState()).toMatchObject({
         activePlans: {},
         activityReports: {},
         apps: {},
@@ -76,8 +76,8 @@ describe("LogoutPage", () => {
         stacks: {},
         releases: {},
         containers: {},
-        vpc_peers: {},
-        vpn_tunnels: {},
+        vpcPeers: {},
+        vpnTunnels: {},
         backups: {},
         backupRps: {},
       });
