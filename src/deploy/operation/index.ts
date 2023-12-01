@@ -1,4 +1,4 @@
-import { call, delay, fetchRetry, leading, poll, put, select } from "@app/fx";
+import { call, delay, leading, mdw, poll, put, select } from "@app/fx";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 
 import {
@@ -401,7 +401,7 @@ export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
         return;
       }
 
-      const url = ctx.json.data;
+      const url = ctx.json.value;
       const response = yield* call(() => fetch(url));
       const data = yield* call(() => response.text());
 
@@ -409,14 +409,16 @@ export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
         ctx.json = {
           ok: false,
           data,
+          error: data,
         };
         return;
       }
       // overwrite the URL provided by the API with the actual logs
       // so we can just fetch the data in a single endpoint
+      ctx.json.value = data;
       ctx.json.data = data;
     },
-    fetchRetry(),
+    mdw.fetchRetry(),
   ],
 );
 
@@ -457,10 +459,10 @@ export function* waitForOperation({
 
       if (ctx.json.ok) {
         if (
-          ctx.json.data.status === "succeeded" ||
-          ctx.json.data.status === "failed"
+          ctx.json.value.status === "succeeded" ||
+          ctx.json.value.status === "failed"
         ) {
-          return deserializeDeployOperation(ctx.json.data);
+          return deserializeDeployOperation(ctx.json.value);
         }
       } else {
         const op = yield* select((s: AppState) =>
