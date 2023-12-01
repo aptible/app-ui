@@ -1,17 +1,7 @@
-import { createSelector } from "@reduxjs/toolkit";
-
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import {
-  createAssign,
-  createReducerMap,
-  createTable,
-} from "@app/slice-helpers";
-import {
-  AppState,
-  LinkResponse,
-  Organization,
-  excludesFalse,
-} from "@app/types";
+import { db } from "@app/schema";
+import { LinkResponse, Organization, excludesFalse } from "@app/types";
 
 export interface OrganizationResponse {
   address: string | null;
@@ -71,29 +61,9 @@ export const defaultOrgResponse = (
   };
 };
 
-export const ORGANIZATIONS_NAME = "organizations";
-export const ORGANIZATION_SELECTED_NAME = "organizationSelected";
-
-const organizations = createTable<Organization>({
-  name: ORGANIZATIONS_NAME,
-});
-
-const organizationSelected = createAssign<string>({
-  name: ORGANIZATION_SELECTED_NAME,
-  initialState: "",
-});
-
-const { add: addOrganizations } = organizations.actions;
-export const { set: setOrganizationSelected } = organizationSelected.actions;
-
-export const reducers = createReducerMap(organizations, organizationSelected);
-
-const selectors = organizations.getSelectors(
-  (s: AppState) => s[ORGANIZATIONS_NAME],
-);
-export const selectOrganizationById = selectors.selectById;
+export const selectOrganizationById = db.organizations.selectById;
 export const selectOrganizationsAsList = createSelector(
-  selectors.selectTable,
+  db.organizations.selectTable,
   (orgMap) => {
     return Object.values(orgMap)
       .filter(excludesFalse)
@@ -103,41 +73,18 @@ export const selectOrganizationsAsList = createSelector(
       );
   },
 );
-
-export const selectOrganizationSelectedId = (s: AppState) =>
-  s[ORGANIZATION_SELECTED_NAME] || "";
-
-export const defaultOrganization = (
-  o: Partial<Organization> = {},
-): Organization => ({
-  id: "",
-  name: "",
-  billingDetailId: "",
-  ssoEnforced: false,
-  updatedAt: new Date().toISOString(),
-  reauthRequired: false,
-  address: "",
-  city: "",
-  zip: "",
-  state: "",
-  securityAlertEmail: "",
-  opsAlertEmail: "",
-  emergencyPhone: "",
-  primaryPhone: "",
-  ...o,
-});
+export const selectOrganizationSelectedId = db.organizationSelected.select;
 export const hasOrganization = (o: Organization): boolean => !!o.id;
 
-const initOrg = defaultOrganization();
 export const selectOrganizationSelected = createSelector(
   selectOrganizationsAsList,
   selectOrganizationSelectedId,
   (orgs, id): Organization => {
     if (orgs.length === 0) {
-      return initOrg;
+      return db.organizations.empty;
     }
     if (!id) {
-      return initOrg;
+      return db.organizations.empty;
     }
 
     const org = orgs.find((o) => o.id === id);
@@ -145,7 +92,7 @@ export const selectOrganizationSelected = createSelector(
       return org;
     }
 
-    return initOrg;
+    return db.organizations.empty;
   },
 );
 
@@ -171,7 +118,7 @@ function deserializeOrganization(o: OrganizationResponse): Organization {
 export const entities = {
   organization: defaultEntity({
     id: "organization",
-    save: addOrganizations,
+    save: db.organizations.add,
     deserialize: deserializeOrganization,
   }),
 };

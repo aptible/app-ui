@@ -3,9 +3,7 @@ import {
   fetchEnvironments,
   selectEnvironmentsByStackId,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
-import { AppState } from "@app/types";
-import { useSelector } from "react-redux";
+import { useQuery, useSelector } from "@app/react";
 import { EmptyResources, ErrorResources } from "./load-resources";
 import { Loading } from "./loading";
 import { Select, SelectOption, SelectProps } from "./select";
@@ -19,9 +17,7 @@ export const EnvironmentSelect = ({
   stackId?: string;
 } & Omit<SelectProps, "options" | "onSelect">) => {
   const { isInitialLoading, isError, message } = useQuery(fetchEnvironments());
-  const envs = useSelector((s: AppState) =>
-    selectEnvironmentsByStackId(s, { stackId }),
-  );
+  const envs = useSelector((s) => selectEnvironmentsByStackId(s, { stackId }));
   const options = [
     { label: "Select an Environment", value: "" },
     ...envs.map(envToOption),

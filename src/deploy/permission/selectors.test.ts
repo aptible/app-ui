@@ -1,8 +1,8 @@
 // @vitest-environment node
 import { createId } from "@app/mocks";
-import { defaultRole } from "@app/roles";
-import { AppState, DeepPartial, PermissionScope } from "@app/types";
-import { defaultPermission, selectUserHasPerms } from "./index";
+import { WebState, defaultPermission, defaultRole } from "@app/schema";
+import { DeepPartial, PermissionScope } from "@app/types";
+import { selectUserHasPerms } from "./index";
 
 describe("selectUserHasPerms", () => {
   describe("when user is an `owner`", () => {
@@ -14,7 +14,7 @@ describe("selectUserHasPerms", () => {
       });
       const envId = `${createId()}`;
 
-      const state: DeepPartial<AppState> = {
+      const state: DeepPartial<WebState> = {
         permissions: {},
         roles: {
           [role.id]: role,
@@ -39,7 +39,7 @@ describe("selectUserHasPerms", () => {
       });
       const envId = `${createId()}`;
 
-      const state: DeepPartial<AppState> = {
+      const state: DeepPartial<WebState> = {
         permissions: {},
         roles: {
           [role.id]: role,
@@ -72,7 +72,7 @@ describe("selectUserHasPerms", () => {
             scope: "deploy",
           });
 
-          const state: DeepPartial<AppState> = {
+          const state: DeepPartial<WebState> = {
             permissions: {
               [perm.id]: perm,
             },
@@ -105,7 +105,7 @@ describe("selectUserHasPerms", () => {
             scope: "observability",
           });
 
-          const state: DeepPartial<AppState> = {
+          const state: DeepPartial<WebState> = {
             permissions: {
               [perm.id]: perm,
             },
@@ -140,7 +140,7 @@ describe("selectUserHasPerms", () => {
             scope: "deploy",
           });
 
-          const state: DeepPartial<AppState> = {
+          const state: DeepPartial<WebState> = {
             permissions: {
               [perm.id]: perm,
             },
@@ -173,7 +173,7 @@ describe("selectUserHasPerms", () => {
             scope: "admin",
           });
 
-          const state: DeepPartial<AppState> = {
+          const state: DeepPartial<WebState> = {
             permissions: {
               [perm.id]: perm,
             },
@@ -200,7 +200,7 @@ describe("selectUserHasPerms", () => {
           });
           const envId = `${createId()}`;
 
-          const state: DeepPartial<AppState> = {
+          const state: DeepPartial<WebState> = {
             permissions: {},
             roles: {
               [role.id]: role,
@@ -231,7 +231,7 @@ describe("selectUserHasPerms", () => {
             scope: "tunnel",
           });
 
-          const state: DeepPartial<AppState> = {
+          const state: DeepPartial<WebState> = {
             permissions: {
               [perm.id]: perm,
             },
@@ -266,7 +266,7 @@ describe("selectUserHasPerms", () => {
             scope: "sensitive",
           });
 
-          const state: DeepPartial<AppState> = {
+          const state: DeepPartial<WebState> = {
             permissions: {
               [perm.id]: perm,
             },
@@ -313,7 +313,7 @@ describe("selectUserHasPerms", () => {
               scope,
             });
 
-            const state: DeepPartial<AppState> = {
+            const state: DeepPartial<WebState> = {
               permissions: {
                 [perm.id]: perm,
               },

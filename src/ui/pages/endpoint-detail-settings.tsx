@@ -10,12 +10,16 @@ import {
   selectServiceById,
   updateEndpoint,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { endpointDetailActivityUrl } from "@app/routes";
-import { AppState } from "@app/types";
 import { ipValidator, portValidator } from "@app/validator";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
 import {
@@ -49,17 +53,13 @@ const validators = {
 const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const enp = useSelector((s: AppState) =>
-    selectEndpointById(s, { id: endpointId }),
-  );
-  const service = useSelector((s: AppState) =>
+  const enp = useSelector((s) => selectEndpointById(s, { id: endpointId }));
+  const service = useSelector((s) =>
     selectServiceById(s, { id: enp.serviceId }),
   );
-  const app = useSelector((s: AppState) =>
-    selectAppById(s, { id: service.appId }),
-  );
+  const app = useSelector((s) => selectAppById(s, { id: service.appId }));
   useQuery(fetchImageById({ id: app.currentImageId }));
-  const image = useSelector((s: AppState) =>
+  const image = useSelector((s) =>
     selectImageById(s, { id: app.currentImageId }),
   );
   const exposedPorts = image.exposedPorts;
@@ -246,8 +246,8 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
 
 export const EndpointDetailSettingsPage = () => {
   const { id = "" } = useParams();
-  const enp = useSelector((s: AppState) => selectEndpointById(s, { id }));
-  const service = useSelector((s: AppState) =>
+  const enp = useSelector((s) => selectEndpointById(s, { id }));
+  const service = useSelector((s) =>
     selectServiceById(s, { id: enp.serviceId }),
   );
 

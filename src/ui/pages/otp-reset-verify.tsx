@@ -1,7 +1,6 @@
-import { useLoader, useLoaderSuccess } from "@app/fx";
 import { resetOtpVerify } from "@app/mfa";
+import { useDispatch, useLoader, useLoaderSuccess } from "@app/react";
 import { loginUrl } from "@app/routes";
-import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { HeroBgLayout } from "../layouts";
 import { BannerMessages, Box, Button, Group, Loading } from "../shared";

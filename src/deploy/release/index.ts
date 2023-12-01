@@ -1,13 +1,8 @@
 import { api } from "@app/api";
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import { AppState, DeployRelease, LinkResponse } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectDeploy } from "../slice";
+import { WebState, db } from "@app/schema";
+import { DeployRelease, LinkResponse } from "@app/types";
 
 export interface DeployReleaseResponse {
   id: number;
@@ -55,38 +50,12 @@ export const deserializeDeployRelease = (
   };
 };
 
-export const defaultDeployRelease = (
-  r: Partial<DeployRelease> = {},
-): DeployRelease => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    dockerRef: "",
-    dockerRepo: "",
-    createdAt: now,
-    updatedAt: now,
-    serviceId: "",
-    ...r,
-  };
-};
-
-export const DEPLOY_RELEASE_NAME = "releases";
-const slice = createTable<DeployRelease>({
-  name: DEPLOY_RELEASE_NAME,
-});
-const { add: addDeployReleases } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_RELEASE_NAME],
-);
-const initRelease = defaultDeployRelease();
-const must = mustSelectEntity(initRelease);
-export const selectReleaseById = must(selectors.selectById);
-export const selectReleaseByIds = selectors.selectByIds;
-export const { selectTableAsList: selectReleaseAsList } = selectors;
-export const releaseReducers = createReducerMap(slice);
+export const selectReleaseById = db.releases.selectById;
+export const selectReleaseByIds = db.releases.selectByIds;
+export const selectReleaseAsList = db.releases.selectTableAsList;
 export const selectReleasesByService = createSelector(
   selectReleaseAsList,
-  (_: AppState, p: { serviceId: string }) => p.serviceId,
+  (_: WebState, p: { serviceId: string }) => p.serviceId,
   (releases, serviceId) => {
     return releases
       .filter((release) => release.serviceId === serviceId)
@@ -100,8 +69,8 @@ export const selectReleasesByService = createSelector(
 
 export const selectReleasesByServiceAfterDate = createSelector(
   selectReleaseAsList,
-  (_: AppState, p: { date: string }) => p.date,
-  (_: AppState, p: { serviceId: string }) => p.serviceId,
+  (_: WebState, p: { date: string }) => p.date,
+  (_: WebState, p: { serviceId: string }) => p.serviceId,
   (releases, date, serviceId) => {
     const filteredReleases = releases
       .filter((release) => release.serviceId === serviceId)
@@ -135,7 +104,7 @@ export const fetchReleasesByServiceWithDeleted = api.get<{ serviceId: string }>(
 export const releaseEntities = {
   release: defaultEntity({
     id: "release",
-    save: addDeployReleases,
+    save: db.releases.add,
     deserialize: deserializeDeployRelease,
   }),
 };

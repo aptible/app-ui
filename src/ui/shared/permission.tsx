@@ -1,6 +1,6 @@
 import { selectUserHasPerms } from "@app/deploy";
-import { AppState, PermissionScope } from "@app/types";
-import { useSelector } from "react-redux";
+import { useSelector } from "@app/react";
+import { PermissionScope } from "@app/types";
 
 export const PermissionGate = ({
   envId,
@@ -11,9 +11,7 @@ export const PermissionGate = ({
   scope: PermissionScope;
   children: React.ReactNode;
 }) => {
-  const hasPerm = useSelector((s: AppState) =>
-    selectUserHasPerms(s, { envId, scope }),
-  );
+  const hasPerm = useSelector((s) => selectUserHasPerms(s, { envId, scope }));
 
   if (!hasPerm) {
     return null;

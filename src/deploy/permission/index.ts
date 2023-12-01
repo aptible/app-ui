@@ -1,18 +1,12 @@
+import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
   selectCurrentUserRoles,
   selectCurrentUserRolesByOrgId,
   selectRolesByOrgId,
 } from "@app/roles";
-import { createReducerMap, createTable } from "@app/slice-helpers";
-import {
-  AppState,
-  LinkResponse,
-  Permission,
-  PermissionScope,
-} from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectDeploy } from "../slice";
+import { WebState, db } from "@app/schema";
+import { LinkResponse, Permission, PermissionScope } from "@app/types";
 
 export interface PermissionResponse {
   id: string;
@@ -39,16 +33,6 @@ export const defaultPermissionResponse = (
   };
 };
 
-export const defaultPermission = (r: Partial<Permission> = {}): Permission => {
-  return {
-    id: "",
-    scope: "unknown",
-    environmentId: "",
-    roleId: "",
-    ...r,
-  };
-};
-
 export const deserializePermission = (
   permission: PermissionResponse,
 ): Permission => {
@@ -60,20 +44,8 @@ export const deserializePermission = (
   };
 };
 
-export const PERMISSIONS_NAME = "permissions";
-const permissions = createTable<Permission>({
-  name: PERMISSIONS_NAME,
-});
-const { add: addPermissions } = permissions.actions;
-
-export const permissionReducers = createReducerMap(permissions);
-
-export const {
-  selectTable: selectPermissions,
-  selectTableAsList: selectPermissionsAsList,
-} = permissions.getSelectors(
-  (s: AppState) => selectDeploy(s)[PERMISSIONS_NAME] || {},
-);
+export const selectPermissions = db.permissions.selectTable;
+export const selectPermissionsAsList = db.permissions.selectTableAsList;
 
 export const selectIsAccountOwner = createSelector(
   selectCurrentUserRolesByOrgId,
@@ -118,7 +90,7 @@ export const selectIsUserAnyOwner = createSelector(
 
 export const selectPermsByAccount = createSelector(
   selectPermissionsAsList,
-  (_: AppState, p: { envId: string }) => p.envId,
+  (_: WebState, p: { envId: string }) => p.envId,
   (perms, envId) => {
     return perms.filter((p) => p.environmentId === envId);
   },
@@ -132,7 +104,7 @@ export const selectPermsByAccount = createSelector(
 export const selectUserHasPerms = createSelector(
   selectPermsByAccount,
   selectCurrentUserRoles,
-  (_: AppState, p: { scope: PermissionScope }) => p.scope,
+  (_: WebState, p: { scope: PermissionScope }) => p.scope,
   (perms, userRoles, scope) => {
     const isAdmin = userRoles.find((r) =>
       ["owner", "platform_owner"].includes(r.type),
@@ -192,7 +164,7 @@ export const selectUserHasPerms = createSelector(
 export const permissionEntities = {
   permission: defaultEntity({
     id: "permission",
-    save: addPermissions,
+    save: db.permissions.add,
     deserialize: deserializePermission,
   }),
 };

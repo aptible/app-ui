@@ -1,8 +1,3 @@
-import { capitalize } from "@app/string-utils";
-import cn from "classnames";
-import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
-
 import {
   selectAppById,
   selectDatabaseById,
@@ -10,6 +5,7 @@ import {
   selectEnvironmentById,
   selectStackById,
 } from "@app/deploy";
+import { useSelector } from "@app/react";
 import {
   AppItem,
   DbItem,
@@ -22,8 +18,9 @@ import {
   selectResourcesByMostVisited,
   selectResourcesForSearch,
 } from "@app/search";
-import { AppState } from "@app/types";
-
+import { capitalize } from "@app/string-utils";
+import cn from "classnames";
+import { useSearchParams } from "react-router-dom";
 import { AppSidebarLayout } from "../layouts";
 import {
   AppItemView,
@@ -45,9 +42,7 @@ const ResourceView = ({ children }: { children: React.ReactNode }) => {
 };
 
 const StackResource = ({ resource }: { resource: StackItem }) => {
-  const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: resource.id }),
-  );
+  const stack = useSelector((s) => selectStackById(s, { id: resource.id }));
   return (
     <ResourceView>
       <StackItemView stack={stack} />
@@ -59,9 +54,7 @@ const StackResource = ({ resource }: { resource: StackItem }) => {
 };
 
 const EnvResource = ({ resource }: { resource: EnvItem }) => {
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: resource.id }),
-  );
+  const env = useSelector((s) => selectEnvironmentById(s, { id: resource.id }));
   return (
     <ResourceView>
       <EnvironmentItemView env={env} />
@@ -73,9 +66,7 @@ const EnvResource = ({ resource }: { resource: EnvItem }) => {
 };
 
 const AppResource = ({ resource }: { resource: AppItem }) => {
-  const env = useSelector((s: AppState) =>
-    selectAppById(s, { id: resource.id }),
-  );
+  const env = useSelector((s) => selectAppById(s, { id: resource.id }));
   return (
     <ResourceView>
       <AppItemView app={env} />
@@ -87,9 +78,7 @@ const AppResource = ({ resource }: { resource: AppItem }) => {
 };
 
 const DbResource = ({ resource }: { resource: DbItem }) => {
-  const db = useSelector((s: AppState) =>
-    selectDatabaseById(s, { id: resource.id }),
-  );
+  const db = useSelector((s) => selectDatabaseById(s, { id: resource.id }));
   return (
     <ResourceView>
       <DatabaseItemView database={db} />
@@ -101,9 +90,7 @@ const DbResource = ({ resource }: { resource: DbItem }) => {
 };
 
 const EndpointResource = ({ resource }: { resource: EndpointItem }) => {
-  const enp = useSelector((s: AppState) =>
-    selectEndpointById(s, { id: resource.id }),
-  );
+  const enp = useSelector((s) => selectEndpointById(s, { id: resource.id }));
   return (
     <ResourceView>
       <EndpointItemView endpoint={enp} />
@@ -179,9 +166,7 @@ const EmptySearchView = () => {
 export const SearchPage = () => {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  const resources = useSelector((s: AppState) =>
-    selectResourcesForSearch(s, { search }),
-  );
+  const resources = useSelector((s) => selectResourcesForSearch(s, { search }));
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value }, { replace: true });
   const curLimit = Math.min(resources.length, SEARCH_DISPLAY_LIMIT);

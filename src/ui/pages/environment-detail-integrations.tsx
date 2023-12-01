@@ -9,15 +9,20 @@ import {
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import {
   createLogDrainUrl,
   createMetricDrainUrl,
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { AppState, DeployLogDrain, DeployMetricDrain } from "@app/types";
-import { useDispatch, useSelector } from "react-redux";
+import { DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { useNavigate, useParams } from "react-router";
 import { usePaginate } from "../hooks";
 import {
@@ -190,9 +195,7 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
 
 const LogDrainTable = ({ envId }: { envId: string }) => {
   useQuery(fetchEnvLogDrains({ id: envId }));
-  const logDrains = useSelector((s: AppState) =>
-    selectLogDrainsByEnvId(s, { envId }),
-  );
+  const logDrains = useSelector((s) => selectLogDrainsByEnvId(s, { envId }));
   const paginated = usePaginate(logDrains);
 
   return (
@@ -335,7 +338,7 @@ const MetricDrainActions = ({
 
 const MetricDrainTable = ({ envId }: { envId: string }) => {
   useQuery(fetchEnvMetricDrains({ id: envId }));
-  const metricDrains = useSelector((s: AppState) =>
+  const metricDrains = useSelector((s) =>
     selectMetricDrainsByEnvId(s, { envId }),
   );
   const paginated = usePaginate(metricDrains);

@@ -1,23 +1,6 @@
 import { defaultHalHref, extractIdFromLink } from "@app/hal";
 import type { User } from "@app/types";
-
 import type { UserResponse } from "./types";
-
-export const defaultUser = (u: Partial<User> = {}): User => {
-  return {
-    id: "",
-    name: "Aptible",
-    email: "",
-    otpEnabled: false,
-    superuser: false,
-    readOnlyImpersonate: false,
-    username: "",
-    verified: false,
-    currentOtpId: "",
-    selectedOrganizationId: "",
-    ...u,
-  };
-};
 
 export function deserializeUser(u: UserResponse): User {
   return {

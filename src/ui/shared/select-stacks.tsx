@@ -1,10 +1,6 @@
-import { useQuery } from "@app/fx";
-import { useSelector } from "react-redux";
-
 import { fetchStacks, selectStacksByOrgAsOptions } from "@app/deploy";
-
 import { selectOrganizationSelected } from "@app/organizations";
-import { AppState } from "@app/types";
+import { useQuery, useSelector } from "@app/react";
 import { EmptyResources, ErrorResources } from "./load-resources";
 import { Loading } from "./loading";
 import { Select, SelectProps } from "./select";
@@ -12,7 +8,7 @@ import { Select, SelectProps } from "./select";
 export const StackSelect = (props: Omit<SelectProps, "options">) => {
   const { isInitialLoading, isError, message } = useQuery(fetchStacks());
   const org = useSelector(selectOrganizationSelected);
-  const options = useSelector((s: AppState) =>
+  const options = useSelector((s) =>
     selectStacksByOrgAsOptions(s, { orgId: org.id }),
   );
 

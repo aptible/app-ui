@@ -1,7 +1,6 @@
-import { Line } from "react-chartjs-2";
-
 import { ChartToCreate, selectMetricDataByChart } from "@app/metric-tunnel";
-import { AppState, DeployContainer, MetricHorizons } from "@app/types";
+import { useSelector } from "@app/react";
+import { DeployContainer, MetricHorizons } from "@app/types";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -16,7 +15,7 @@ import {
   Tooltip,
 } from "chart.js";
 import "chartjs-adapter-luxon";
-import { useSelector } from "react-redux";
+import { Line } from "react-chartjs-2";
 import { IconInfo } from "./icons";
 import { Tooltip as AptibleTooltip } from "./tooltip";
 
@@ -175,7 +174,7 @@ export const ContainerMetricsChart = ({
 }) => {
   const containerIds = containers.map((container) => container.id).sort();
   // for now, we only use the FIRST container id pending cross-release
-  const chartToCreate = useSelector((s: AppState) =>
+  const chartToCreate = useSelector((s) =>
     selectMetricDataByChart(s, {
       containerIds,
       metricNames,

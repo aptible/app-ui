@@ -1,10 +1,9 @@
+import { selectEnv } from "@app/config";
+import { useSelector } from "@app/react";
+import { loginUrl, ssoDirectUrl, ssoFailureUrl } from "@app/routes";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
-
-import { selectEnv } from "@app/env";
-import { loginUrl, ssoDirectUrl, ssoFailureUrl } from "@app/routes";
 
 import { HeroBgLayout } from "../layouts";
 import {

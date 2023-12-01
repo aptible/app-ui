@@ -1,6 +1,3 @@
-import { put, select } from "@app/fx";
-import { createSelector } from "@reduxjs/toolkit";
-
 import { thunks } from "@app/api";
 import {
   getEndpointUrl,
@@ -10,10 +7,10 @@ import {
   selectEnvironmentsByOrgAsList,
   selectStacksByOrgAsList,
 } from "@app/deploy";
-import { createReducerMap, createTable } from "@app/slice-helpers";
+import { createSelector, select } from "@app/fx";
+import { WebState, db, schema } from "@app/schema";
 import {
   AbstractResourceItem,
-  AppState,
   DeployApp,
   DeployDatabase,
   DeployEndpoint,
@@ -108,7 +105,7 @@ export const selectAllResourcesAsList = createSelector(
 
 export const selectResourcesForSearch = createSelector(
   selectAllResourcesAsList,
-  (_: AppState, p: { search: string }) => p.search,
+  (_: WebState, p: { search: string }) => p.search,
   (resources, search) => {
     const searchLower = search.toLocaleLowerCase();
     if (search === "") {
@@ -134,18 +131,8 @@ export const selectResourcesForSearch = createSelector(
   },
 );
 
-export const RESOURCE_STATS_NAME = "resourceStats";
-export const slice = createTable<ResourceStats>({
-  name: RESOURCE_STATS_NAME,
-});
-export const { add: addResourceStats, patch: patchResourceStats } =
-  slice.actions;
-const selectors = slice.getSelectors((s: AppState) => s.resourceStats);
-const {
-  selectTableAsList: selectResourceStatsAsList,
-  selectById: selectResourceStatsById,
-} = selectors;
-export const reducers = createReducerMap(slice);
+export const selectResourceStatsAsList = db.resourceStats.selectTableAsList;
+export const selectResourceStatsById = db.resourceStats.selectById;
 
 export const selectResourcesByLastAccessed = createSelector(
   selectResourceStatsAsList,
@@ -187,21 +174,21 @@ export const setResourceStats = thunks.create<
   Pick<ResourceStats, "id" | "type">
 >("add-recent-resource", function* (ctx, next) {
   const id = getResourceStatId(ctx.payload);
-  const resource = yield* select((s: AppState) =>
+  const resource = yield* select((s: WebState) =>
     selectResourceStatsById(s, {
       id,
     }),
   );
   const now = new Date().toISOString();
   if (!resource) {
-    yield* put(
-      addResourceStats({
+    yield* schema.update(
+      db.resourceStats.add({
         [id]: { ...ctx.payload, count: 1, lastAccessed: now },
       }),
     );
   } else {
-    yield* put(
-      patchResourceStats({
+    yield* schema.update(
+      db.resourceStats.patch({
         [id]: {
           count: resource.count + 1,
           lastAccessed: now,

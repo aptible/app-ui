@@ -1,6 +1,5 @@
 import { fetchInvitation, selectInvitationById } from "@app/invitations";
-import { AppState } from "@app/types";
-import { useQuery, useSelector } from "starfx/react";
+import { useQuery, useSelector } from "@app/react";
 
 export function useInvitation(redirectPath: string) {
   let inviteId = "";
@@ -11,7 +10,7 @@ export function useInvitation(redirectPath: string) {
   }
 
   useQuery(fetchInvitation({ id: inviteId }));
-  const invitation = useSelector((s: AppState) =>
+  const invitation = useSelector((s) =>
     selectInvitationById(s, { id: inviteId }),
   );
 

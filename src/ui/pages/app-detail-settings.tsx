@@ -10,16 +10,16 @@ import {
   selectMetricDrainsByEnvId,
   updateApp,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { appActivityUrl, environmentActivityUrl } from "@app/routes";
 import {
-  AppState,
-  DeployApp,
-  DeployLogDrain,
-  DeployMetricDrain,
-} from "@app/types";
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
+import { appActivityUrl, environmentActivityUrl } from "@app/routes";
+import { DeployApp, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import {
   Banner,
@@ -45,7 +45,7 @@ interface AppProps {
 }
 
 const AppDeprovision = ({ app }: AppProps) => {
-  const environment = useSelector((s: AppState) =>
+  const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
   const dispatch = useDispatch();
@@ -134,10 +134,10 @@ const AppRestart = ({ app }: AppProps) => {
 const AppNameChange = ({ app }: AppProps) => {
   const dispatch = useDispatch();
   const [handle, setHandle] = useState<string>("");
-  const logDrains = useSelector((s: AppState) =>
+  const logDrains = useSelector((s) =>
     selectLogDrainsByEnvId(s, { envId: app.environmentId }),
   );
-  const metricDrains = useSelector((s: AppState) =>
+  const metricDrains = useSelector((s) =>
     selectMetricDrainsByEnvId(s, { envId: app.environmentId }),
   );
 
@@ -223,7 +223,7 @@ const AppNameChange = ({ app }: AppProps) => {
 export const AppSettingsPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const app = useSelector((s) => selectAppById(s, { id }));
 
   return (
     <BoxGroup>

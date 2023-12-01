@@ -1,14 +1,12 @@
-import { AUTH_LOADER_ID, logout } from "@app/auth";
+import { exchangeToken, logout } from "@app/auth";
 import { acceptInvitation } from "@app/auth/accept-invitation";
-import { selectLoaderById } from "@app/fx";
-import { useLoader, useQuery } from "@app/fx";
 import { fetchInvitation, selectInvitationById } from "@app/invitations";
+import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { setRedirectPath } from "@app/redirect-path";
 import { homeUrl, loginUrl, teamAcceptInviteUrl } from "@app/routes";
-import { AppState, Invitation } from "@app/types";
+import { Invitation } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { HeroBgLayout } from "../layouts";
 import { Banner, BannerMessages, Box, Button, Group, Loading } from "../shared";
@@ -34,9 +32,7 @@ function AcceptInviteView({
   // So instead of relying on the loader state for `acceptInvitation`
   //  we rely on the auth loader which is set after exchanging the user
   //  token.
-  const authLoader = useSelector((s: AppState) =>
-    selectLoaderById(s, { id: AUTH_LOADER_ID }),
-  );
+  const authLoader = useLoader(exchangeToken);
   const onAccept = () => {
     setAccepted(true);
     dispatch(action);
@@ -106,7 +102,7 @@ export function TeamAcceptInvitePage() {
   const navigate = useNavigate();
   const { inviteId = "", code = "" } = useParams();
   const loader = useQuery(fetchInvitation({ id: inviteId }));
-  const invitation = useSelector((s: AppState) =>
+  const invitation = useSelector((s) =>
     selectInvitationById(s, { id: inviteId }),
   );
   const onLogout = () => {

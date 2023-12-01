@@ -6,15 +6,14 @@ import {
   selectServiceById,
 } from "@app/deploy";
 import { selectContainersByCurrentReleaseAndHorizon } from "@app/deploy";
-import { useQuery } from "@app/fx";
 import {
   fetchAllMetricsByServiceId,
   metricHorizonAsSeconds,
   selectMetricsLoaded,
 } from "@app/metric-tunnel";
-import { AppState, MetricHorizons } from "@app/types";
+import { useQuery, useSelector } from "@app/react";
+import { MetricHorizons } from "@app/types";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
   ContainerMetricsChart,
@@ -41,19 +40,17 @@ export function AppDetailServiceMetricsPage() {
       metricHorizon,
     }),
   );
-  const metricsLoaded = useSelector((s: AppState) =>
+  const metricsLoaded = useSelector((s) =>
     selectMetricsLoaded(s, {
       serviceId,
       metricHorizon,
     }),
   );
-  const service = useSelector((s: AppState) =>
-    selectServiceById(s, { id: serviceId }),
-  );
+  const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
 
   // we always go back exactly one week, though it might be a bit too far for some that way
   // we do not have to refetch this if the component state changes as this is fairly expensive
-  const releases = useSelector((s: AppState) =>
+  const releases = useSelector((s) =>
     selectReleasesByServiceAfterDate(s, {
       serviceId,
       date: dateFromToday(-7).toISOString(),
@@ -61,7 +58,7 @@ export function AppDetailServiceMetricsPage() {
   );
   const releaseIds = releases.map((release) => release.id);
   const horizonInSeconds = metricHorizonAsSeconds(metricHorizon);
-  const containers = useSelector((s: AppState) =>
+  const containers = useSelector((s) =>
     selectContainersByCurrentReleaseAndHorizon(s, {
       layers: layersToSearchForContainers,
       releaseIds,

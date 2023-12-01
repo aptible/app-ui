@@ -1,6 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-
+import { hasDeployBackupRp, selectBackupRpById } from "@app/deploy";
 import {
   server,
   stacksWithResources,
@@ -10,8 +8,8 @@ import {
 } from "@app/mocks";
 import { ENVIRONMENT_BACKUPS_PATH, environmentBackupsUrl } from "@app/routes";
 import { setupIntegrationTest, waitForBootup, waitForData } from "@app/test";
-
-import { hasDeployBackupRp, selectBackupRpById } from "@app/deploy";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { EnvironmentBackupsPage } from "./environment-detail-backups";
 
 describe("EnvironmentBackupsPage", () => {

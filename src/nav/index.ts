@@ -1,17 +1,11 @@
-import { createAssign, createReducerMap } from "@app/slice-helpers";
-import { AppState, Nav } from "@app/types";
+import { thunks } from "@app/api";
+import { db, schema } from "@app/schema";
 
-const getDefaultNav = (): Nav => ({
-  collapsed: false,
-});
-const defaultNav = getDefaultNav();
-
-export const NAV_NAME = "nav";
-const slice = createAssign<Nav>({
-  name: NAV_NAME,
-  initialState: defaultNav,
-});
-export const { set: setCollapsed } = slice.actions;
-export const selectNav = (s: AppState) => s[NAV_NAME] || defaultNav;
-
-export const reducers = createReducerMap(slice);
+export const selectNav = db.nav.select;
+export const setCollapsed = thunks.create<{ collapsed: boolean }>(
+  "nav-collapse",
+  function* (ctx, next) {
+    yield* schema.update(db.nav.set(ctx.payload));
+    yield* next();
+  },
+);

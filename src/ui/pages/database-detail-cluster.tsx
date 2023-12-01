@@ -11,11 +11,10 @@ import {
   selectDiskById,
   selectServiceById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useQuery, useSelector } from "@app/react";
 import { databaseEndpointsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { AppState, DeployDatabase } from "@app/types";
-import { useSelector } from "react-redux";
+import { DeployDatabase } from "@app/types";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { usePaginate } from "../hooks";
@@ -39,16 +38,14 @@ const ClusterDatabaseRow = ({
 }: {
   db: DeployDatabase;
 }) => {
-  const service = useSelector((s: AppState) =>
+  const service = useSelector((s) =>
     selectServiceById(s, { id: db.serviceId }),
   );
-  const image = useSelector((s: AppState) =>
+  const image = useSelector((s) =>
     selectDatabaseImageById(s, { id: db.databaseImageId }),
   );
   const metrics = calcMetrics([service]);
-  const disk = useSelector((s: AppState) =>
-    selectDiskById(s, { id: db.diskId }),
-  );
+  const disk = useSelector((s) => selectDiskById(s, { id: db.diskId }));
   return (
     <Tr>
       <Td className="flex-1 pl-4">
@@ -87,9 +84,9 @@ const ClusterDatabaseRow = ({
 export const DatabaseClusterPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchDatabase({ id }));
-  const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const database = useSelector((s) => selectDatabaseById(s, { id }));
   useQuery(fetchDatabaseDependents({ id }));
-  const clusterDatabases = useSelector((s: AppState) =>
+  const clusterDatabases = useSelector((s) =>
     selectDatabaseDependents(s, { id }),
   );
   useQuery(fetchDatabaseImages());

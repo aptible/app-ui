@@ -1,19 +1,21 @@
-import { authApi } from "@app/api";
-import { selectEnv } from "@app/env";
-import { select, setLoaderSuccess } from "@app/fx";
+import { authApi, thunks } from "@app/api";
+import { selectEnv } from "@app/config";
+import { put, select } from "@app/fx";
 import { resetStore } from "@app/reset-store";
+import { db, schema } from "@app/schema";
 import {
   TokenSuccessResponse,
   deserializeToken,
-  selectElevatedToken,
   selectToken,
-  setElevatedToken,
-  setToken,
 } from "@app/token";
 import { tunaEvent, tunaIdentify } from "@app/tuna";
-import { AuthApiCtx, AuthApiError } from "@app/types";
+import { AuthApiCtx, AuthApiError, Token } from "@app/types";
 import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
-import { AUTH_LOADER_ID } from "./loader";
+
+const setToken = thunks.create<Token>("set-token", function* (ctx, next) {
+  yield* schema.update(db.token.set(ctx.payload));
+  yield* next();
+});
 
 export interface CreateTokenPayload {
   username: string;
@@ -21,11 +23,11 @@ export interface CreateTokenPayload {
   otpToken: string;
   u2f?: PublicKeyCredentialWithAssertionJSON;
 }
-function saveToken(ctx: AuthApiCtx<any, TokenSuccessResponse>) {
+function* saveToken(ctx: AuthApiCtx<any, TokenSuccessResponse>) {
   if (!ctx.json.ok) {
     return;
   }
-  const curToken = deserializeToken(ctx.json.data);
+  const curToken = deserializeToken(ctx.json.value);
   ctx.actions.push(setToken(curToken));
 }
 
@@ -36,7 +38,7 @@ export const fetchCurrentToken = authApi.get<
 >("/current_token", function* onFetchToken(ctx, next) {
   ctx.noToken = true;
   yield* next();
-  saveToken(ctx);
+  yield* saveToken(ctx);
 });
 
 export const createToken = authApi.post<
@@ -61,7 +63,7 @@ export const createToken = authApi.post<
   if (ctx.json.ok) {
     tunaIdentify(ctx.payload.username);
   }
-  saveToken(ctx);
+  yield* saveToken(ctx);
 });
 
 export type ElevateToken = CreateTokenPayload;
@@ -92,8 +94,8 @@ export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
     }
 
     tunaEvent("elevated-token", ctx.payload.username);
-    const curToken = deserializeToken(ctx.json.data);
-    ctx.actions.push(setElevatedToken(curToken));
+    const curToken = deserializeToken(ctx.json.value);
+    yield* schema.update(db.elevatedToken.set(curToken));
   },
 );
 
@@ -142,10 +144,10 @@ export const exchangeToken = authApi.post<
   // a user impersonates another user.
   // Regardless, we want to reset the store first then save the token because
   // resetStore will delete the token stored inside redux.
-  ctx.actions.push(resetStore(), setLoaderSuccess({ id: AUTH_LOADER_ID }));
-  tunaEvent("exchanged-token", ctx.payload);
-  saveToken(ctx);
+  const curToken = deserializeToken(ctx.json.value);
+  yield* put([resetStore(), setToken(curToken), { type: "REFRESH_DATA" }]);
   ctx.loader = { message: "Success" };
+  tunaEvent("exchanged-token", ctx.payload);
 });
 
 export const revokeAllTokens = authApi.post(
@@ -153,7 +155,7 @@ export const revokeAllTokens = authApi.post(
   function* onRevokeAll(ctx, next) {
     const env = yield* select(selectEnv);
     const token = yield* select(selectToken);
-    const elevated = yield* select(selectElevatedToken);
+    const elevated = yield* select(db.elevatedToken.select);
     ctx.request = ctx.req({
       body: JSON.stringify({
         except_tokens: [

@@ -3,9 +3,7 @@ import {
   getCertLabel,
   selectCertificatesByEnvId,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
-import { AppState } from "@app/types";
-import { useSelector } from "react-redux";
+import { useQuery, useSelector } from "@app/react";
 import { Select, SelectOption } from "./select";
 
 export const CertSelector = ({
@@ -20,9 +18,7 @@ export const CertSelector = ({
   className?: string;
 }) => {
   useQuery(fetchAllCertsByEnvId({ id: envId }));
-  const certs = useSelector((s: AppState) =>
-    selectCertificatesByEnvId(s, { envId }),
-  );
+  const certs = useSelector((s) => selectCertificatesByEnvId(s, { envId }));
   const options: SelectOption[] = [
     { label: "Select an Existing Certificate", value: "" },
   ];

@@ -6,11 +6,11 @@ import {
   selectOperationById,
   selectResourceNameByOperationId,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useSelector } from "@app/react";
+import { useQuery } from "@app/react";
 import { activityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import type { AppState, DeployOperation } from "@app/types";
-import { useSelector } from "react-redux";
+import type { DeployOperation } from "@app/types";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
   DetailHeader,
@@ -71,8 +71,8 @@ export function OpHeader({
 
 function OpPageHeader() {
   const { id = "" } = useParams();
-  const op = useSelector((s: AppState) => selectOperationById(s, { id }));
-  const resourceHandle = useSelector((s: AppState) =>
+  const op = useSelector((s) => selectOperationById(s, { id }));
+  const resourceHandle = useSelector((s) =>
     selectResourceNameByOperationId(s, { id: op.id }),
   );
   const loader = useQuery(fetchOperationById({ id }));

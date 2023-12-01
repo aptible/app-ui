@@ -3,17 +3,22 @@ import {
   getStripe,
   selectBillingDetail,
 } from "@app/billing";
+import { selectEnv } from "@app/config";
 import {
   fetchActivePlans,
   fetchPlans,
   selectFirstActivePlan,
   selectPlanByActiveId,
 } from "@app/deploy";
-import { selectEnv } from "@app/env";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { homeUrl, logoutUrl, plansUrl } from "@app/routes";
-import { AppState } from "@app/types";
 import { existValidtor } from "@app/validator";
 import {
   CardCvcElement,
@@ -24,7 +29,6 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useValidator } from "../hooks";
 import { HeroBgView } from "../layouts";
@@ -214,7 +218,7 @@ export const BillingMethodPage = () => {
   useQuery(fetchActivePlans({ orgId: org.id }));
   useQuery(fetchPlans());
   const activePlan = useSelector(selectFirstActivePlan);
-  const plan = useSelector((s: AppState) =>
+  const plan = useSelector((s) =>
     selectPlanByActiveId(s, { id: activePlan.planId }),
   );
 

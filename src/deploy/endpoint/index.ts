@@ -1,32 +1,17 @@
 import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
-import {
-  call,
-  poll,
-  put,
-  select,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
+import { selectEnv } from "@app/config";
+import { call, createAction, poll, select } from "@app/fx";
+import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import {
-  createAction,
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
+import { WebState, db, schema } from "@app/schema";
 import type {
   AcmeConfiguration,
   AcmeStatus,
-  AppState,
   DeployEndpoint,
   EndpointType,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
-
-import { selectEnv } from "@app/env";
-import { createSelector } from "@reduxjs/toolkit";
 import { findAppById, selectApps, selectAppsByEnvId } from "../app";
 import { createCertificate } from "../certificate";
 import {
@@ -43,7 +28,6 @@ import {
   selectServices,
   selectServicesByAppId,
 } from "../service";
-import { selectDeploy } from "../slice";
 
 export interface DeployEndpointResponse {
   id: number;
@@ -154,62 +138,11 @@ export const deserializeDeployEndpoint = (
   };
 };
 
-export const defaultDeployEndpoint = (
-  e: Partial<DeployEndpoint> = {},
-): DeployEndpoint => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    status: "pending",
-    acme: false,
-    acmeConfiguration: null,
-    acmeDnsChallengeHost: "",
-    acmeStatus: "pending",
-    containerExposedPorts: [],
-    containerPort: "",
-    containerPorts: [],
-    default: false,
-    dockerName: "",
-    externalHost: "",
-    externalHttpPort: "",
-    externalHttpsPort: "",
-    internal: false,
-    ipWhitelist: [],
-    platform: "elb",
-    type: "unknown",
-    createdAt: now,
-    updatedAt: now,
-    userDomain: "",
-    virtualDomain: "",
-    serviceId: "",
-    certificateId: "",
-    ...e,
-  };
-};
-
-export const DEPLOY_ENDPOINT_NAME = "endpoints";
-const slice = createTable<DeployEndpoint>({
-  name: DEPLOY_ENDPOINT_NAME,
-});
-const {
-  add: addDeployEndpoints,
-  remove: removeDeployEndpoints,
-  reset: resetDeployEndpoints,
-} = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_ENDPOINT_NAME],
-);
-const initApp = defaultDeployEndpoint();
-const must = mustSelectEntity(initApp);
-const {
-  selectTable: selectEndpoints,
-  selectTableAsList: selectEndpointsAsList,
-} = selectors;
-export const selectEndpointById = must(selectors.selectById);
-export const findEndpointById = must(selectors.findById);
-export { selectEndpoints, selectEndpointsAsList };
+export const selectEndpointById = db.endpoints.selectById;
+export const findEndpointById = db.endpoints.findById;
+export const selectEndpoints = db.endpoints.selectTable;
+export const selectEndpointsAsList = db.endpoints.selectTableAsList;
 export const hasDeployEndpoint = (a: DeployEndpoint) => a.id !== "";
-export const endpointReducers = createReducerMap(slice);
 
 export const selectEndpointsByAppId = createSelector(
   selectEndpointsAsList,
@@ -225,7 +158,7 @@ export const selectFirstEndpointByAppId = createSelector(
   selectEndpointsByAppId,
   (endpoints) => {
     if (endpoints.length === 0) {
-      return defaultDeployEndpoint();
+      return db.endpoints.empty;
     }
 
     return endpoints[0];
@@ -247,7 +180,7 @@ const selectServiceToDbMap = createSelector(
 export const selectEndpointsByEnvironmentId = createSelector(
   selectEnvToServicesMap,
   selectEndpointsAsList,
-  (_: AppState, p: { envId: string }) => p.envId,
+  (_: WebState, p: { envId: string }) => p.envId,
   (envToServiceMap, enps, envId) =>
     enps.filter((enp) => envToServiceMap[envId]?.has(enp.serviceId)),
 );
@@ -334,7 +267,7 @@ const computeSearchMatch = (
 
 export const selectEndpointsForTableSearch = createSelector(
   selectEndpointsForTable,
-  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (enps, search): DeployEndpointRow[] => {
     if (search === "") {
       return enps;
@@ -346,8 +279,8 @@ export const selectEndpointsForTableSearch = createSelector(
 
 export const selectEndpointsByServiceId = createSelector(
   selectEndpointsForTable,
-  (_: AppState, p: { search: string }) => p.search.toLocaleLowerCase(),
-  (_: AppState, p: { serviceId: string }) => p.serviceId,
+  (_: WebState, p: { search: string }) => p.search.toLocaleLowerCase(),
+  (_: WebState, p: { serviceId: string }) => p.serviceId,
   (enps, search, serviceId): DeployEndpointRow[] => {
     return enps.filter(
       (enp) => serviceId === enp.serviceId && computeSearchMatch(enp, search),
@@ -358,8 +291,8 @@ export const selectEndpointsByServiceId = createSelector(
 export const selectEndpointsByEnvIdForTableSearch = createSelector(
   selectEndpointsForTable,
   selectEnvToServicesMap,
-  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: AppState, props: { envId: string }) => props.envId,
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { envId: string }) => props.envId,
   (enps, envToServiceMap, search, envId): DeployEndpointRow[] => {
     return enps.filter((enp) => {
       const serviceIds = envToServiceMap[envId];
@@ -374,8 +307,8 @@ export const selectEndpointsByEnvIdForTableSearch = createSelector(
 export const selectEndpointsByAppIdForTableSearch = createSelector(
   selectEndpointsForTable,
   selectServices,
-  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: AppState, props: { appId: string }) => props.appId,
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { appId: string }) => props.appId,
   (enps, servicesMap, search, appId): DeployEndpointRow[] => {
     return enps.filter((enp) => {
       const service = findServiceById(servicesMap, { id: enp.serviceId });
@@ -389,8 +322,8 @@ export const selectEndpointsByAppIdForTableSearch = createSelector(
 export const selectEndpointsByDbIdForTableSearch = createSelector(
   selectEndpointsForTable,
   selectServiceToDbMap,
-  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: AppState, props: { dbId: string }) => props.dbId,
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { dbId: string }) => props.dbId,
   (enps, serviceToDbMap, search, dbId): DeployEndpointRow[] => {
     return enps.filter((enp) => {
       const foundDbId = serviceToDbMap[enp.serviceId];
@@ -403,8 +336,8 @@ export const selectEndpointsByDbIdForTableSearch = createSelector(
 
 export const selectEndpointsByCertIdForTableSearch = createSelector(
   selectEndpointsForTable,
-  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: AppState, props: { certId: string }) => props.certId,
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { certId: string }) => props.certId,
   (enps, search, certId): DeployEndpointRow[] => {
     return enps.filter((enp) => {
       if (certId !== enp.certificateId) return false;
@@ -416,7 +349,7 @@ export const selectEndpointsByCertIdForTableSearch = createSelector(
 
 export const selectEndpointsByCertId = createSelector(
   selectEndpointsByEnvironmentId,
-  (_: AppState, p: { certId: string }) => p.certId,
+  (_: WebState, p: { certId: string }) => p.certId,
   (endpoints, certId) =>
     endpoints.filter((endpoint) => endpoint.certificateId === certId),
 );
@@ -468,7 +401,7 @@ export const fetchEndpoints = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    ctx.actions.push(resetDeployEndpoints());
+    yield* schema.update(db.endpoints.reset());
   },
 );
 
@@ -491,7 +424,7 @@ export const endpointEntities = {
   vhost: defaultEntity({
     id: "vhost",
     deserialize: deserializeDeployEndpoint,
-    save: addDeployEndpoints,
+    save: db.endpoints.add,
   }),
 };
 
@@ -585,7 +518,7 @@ export const deleteEndpoint = api.delete<{ id: string }>(
   "/vhosts/:id",
   function* (ctx, next) {
     yield* next();
-    ctx.actions.push(removeDeployEndpoints([ctx.payload.id]));
+    yield* schema.update(db.endpoints.remove([ctx.payload.id]));
   },
 );
 
@@ -619,13 +552,13 @@ export const deprovisionEndpoint = api.post<
     return;
   }
 
-  ctx.loader = { meta: { opId: ctx.json.data.id } };
+  ctx.loader = { meta: { opId: ctx.json.value.id } };
 });
 
 export const provisionEndpoint = thunks.create<CreateEndpointProps>(
   "provision-endpoint",
   function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
+    yield* schema.update(db.loaders.start({ id: ctx.key }));
 
     let certId = "";
     const payload = ctx.payload;
@@ -643,22 +576,27 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
           ),
         );
         if (!certCtx.json.ok) {
-          const data = certCtx.json.data as any;
-          yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+          const data = certCtx.json.error as any;
+          yield* schema.update(
+            db.loaders.error({ id: ctx.key, message: data.message }),
+          );
           return;
         }
 
-        certId = `${certCtx.json.data.id}`;
+        certId = `${certCtx.json.value.id}`;
       }
     }
 
     const endpointCtx = yield* call(() =>
       createEndpoint.run(createEndpoint({ ...ctx.payload, certId })),
     );
-
-    if (!endpointCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: endpointCtx.json.data.message }),
+    const result = endpointCtx.json;
+    if (!result.ok) {
+      yield* schema.update(
+        db.loaders.error({
+          id: ctx.key,
+          message: result.error.message,
+        }),
       );
       return;
     }
@@ -668,15 +606,17 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
     const opCtx = yield* call(() =>
       createEndpointOperation.run(
         createEndpointOperation({
-          endpointId: `${endpointCtx.json.data.id}`,
+          endpointId: `${result.value.id}`,
           type: "provision",
         }),
       ),
     );
 
     if (!opCtx.json.ok) {
-      const data = opCtx.json.data as any;
-      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+      const data = opCtx.json.error as any;
+      yield* schema.update(
+        db.loaders.error({ id: ctx.key, message: data.message }),
+      );
       return;
     }
 
@@ -684,13 +624,13 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
       endpointCtx,
       opCtx,
     };
-    yield* put(
-      setLoaderSuccess({
+    yield* schema.update(
+      db.loaders.success({
         id: ctx.key,
         meta: {
-          endpointId: endpointCtx.json.data.id,
-          opId: opCtx.json.data.id,
-        },
+          endpointId: result.value.id,
+          opId: opCtx.json.value.id,
+        } as any,
       }),
     );
   },
@@ -699,15 +639,19 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
 export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
   "provision-db-endpoint",
   function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
+    yield* schema.update(db.loaders.start({ id: ctx.key }));
 
     const endpointCtx = yield* call(() =>
       createDatabaseEndpoint.run(createDatabaseEndpoint(ctx.payload)),
     );
 
-    if (!endpointCtx.json.ok) {
-      yield* put(
-        setLoaderError({ id: ctx.key, message: endpointCtx.json.data.message }),
+    const result = endpointCtx.json;
+    if (!result.ok) {
+      yield* schema.update(
+        db.loaders.error({
+          id: ctx.key,
+          message: result.error.message,
+        }),
       );
       return;
     }
@@ -717,15 +661,17 @@ export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
     const opCtx = yield* call(() =>
       createEndpointOperation.run(
         createEndpointOperation({
-          endpointId: `${endpointCtx.json.data.id}`,
+          endpointId: `${result.value.id}`,
           type: "provision",
         }),
       ),
     );
 
     if (!opCtx.json.ok) {
-      const data = opCtx.json.data as any;
-      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+      const data = opCtx.json.error as any;
+      yield* schema.update(
+        db.loaders.error({ id: ctx.key, message: data.message }),
+      );
       return;
     }
 
@@ -733,13 +679,13 @@ export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
       endpointCtx,
       opCtx,
     };
-    yield* put(
-      setLoaderSuccess({
+    yield* schema.update(
+      db.loaders.success({
         id: ctx.key,
         meta: {
-          endpointId: endpointCtx.json.data.id,
-          opId: opCtx.json.data.id,
-        },
+          endpointId: result.value.id,
+          opId: opCtx.json.value.id,
+        } as any,
       }),
     );
   },
@@ -757,7 +703,7 @@ export const renewEndpoint = api.post<{ id: string }, DeployOperationResponse>(
       return;
     }
 
-    ctx.loader = { meta: { opId: ctx.json.data.id } };
+    ctx.loader = { meta: { opId: ctx.json.value.id } };
   },
 );
 
@@ -797,7 +743,7 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
   "update-endpoint",
   function* (ctx, next) {
     const id = ctx.name;
-    yield* put(setLoaderStart({ id }));
+    yield* schema.update(db.loaders.start({ id }));
 
     let certId = ctx.payload.certId;
     if (!certId && ctx.payload.cert && ctx.payload.privKey) {
@@ -811,11 +757,13 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
         ),
       );
       if (!certCtx.json.ok) {
-        yield* put(setLoaderError({ id, message: certCtx.json.data.message }));
+        yield* schema.update(
+          db.loaders.error({ id, message: certCtx.json.error.message }),
+        );
         return;
       }
 
-      certId = `${certCtx.json.data.id}`;
+      certId = `${certCtx.json.value.id}`;
     }
 
     const patchCtx = yield* call(() =>
@@ -829,7 +777,9 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       ),
     );
     if (!patchCtx.json.ok) {
-      yield* put(setLoaderError({ id, message: patchCtx.json.data.message }));
+      yield* schema.update(
+        db.loaders.error({ id: ctx.key, message: patchCtx.json.error.message }),
+      );
       return;
     }
 
@@ -843,15 +793,17 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
     );
 
     if (!opCtx.json.ok) {
-      const data = opCtx.json.data as any;
-      yield* put(setLoaderError({ id, message: data.message }));
+      const data = opCtx.json.error as any;
+      yield* schema.update(
+        db.loaders.error({ id: ctx.key, message: data.message }),
+      );
       return;
     }
 
-    yield* put(
-      setLoaderSuccess({
+    yield* schema.update(
+      db.loaders.success({
         id,
-        meta: { opId: opCtx.json.data.id },
+        meta: { opId: opCtx.json.value.id } as any,
         message: "Success!",
       }),
     );
@@ -878,7 +830,7 @@ export const checkDns = thunks.create<{ from: string; to: string }>(
   "check-dns",
   function* (ctx, next) {
     const { from, to } = ctx.payload;
-    yield* put(setLoaderStart({ id: ctx.key }));
+    yield* schema.update(db.loaders.start({ id: ctx.key }));
     // we add a random number to the google request so the browser
     // doesn't cache the response
     const rand = Math.floor(Math.random() * 10000);
@@ -897,14 +849,18 @@ export const checkDns = thunks.create<{ from: string; to: string }>(
     const answers: DnsAnswer[] = data.Answer || [];
 
     if (data.Status !== 0) {
-      yield* put(setLoaderSuccess({ id: ctx.key, meta: { success } }));
+      yield* schema.update(
+        db.loaders.success({ id: ctx.key, meta: { success } as any }),
+      );
     }
 
     success = answers.some((answer) => {
       return ensureTrailingPeriod(answer.data) === ensureTrailingPeriod(to);
     });
 
-    yield* put(setLoaderSuccess({ id: ctx.key, meta: { success } }));
+    yield* schema.update(
+      db.loaders.success({ id: ctx.key, meta: { success } as any }),
+    );
     yield* next();
   },
 );

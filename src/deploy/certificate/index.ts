@@ -1,17 +1,10 @@
-import { leading, poll } from "@app/fx";
-import { createAction, createSelector } from "@reduxjs/toolkit";
-
 import { PaginateProps, api, combinePages, thunks } from "@app/api";
-import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import { AppState, DeployCertificate, LinkResponse } from "@app/types";
-
 import { prettyDateTime } from "@app/date";
-import { selectDeploy } from "../slice";
+import { leading, poll } from "@app/fx";
+import { createAction, createSelector } from "@app/fx";
+import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
+import { WebState, db, schema } from "@app/schema";
+import { DeployCertificate, LinkResponse } from "@app/types";
 
 interface DeployCertificateResponse {
   id: number;
@@ -115,58 +108,13 @@ export const deserializeCertificate = (
   };
 };
 
-export const defaultDeployCertificate = (
-  c: Partial<DeployCertificate> = {},
-): DeployCertificate => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    commonName: "",
-    certificateBody: "",
-    notBefore: now,
-    notAfter: now,
-    issuerCountry: "",
-    issuerOrganization: "",
-    issuerWebsite: "",
-    issuerCommonName: "",
-    subjectCountry: "",
-    subjectState: "",
-    subjectLocale: "",
-    subjectOrganization: "",
-    acme: false,
-    leafCertificate: "",
-    certificateChain: "",
-    sha256Fingerprint: "",
-    trusted: false,
-    selfSigned: true,
-    subjectAlternativeNames: [],
-    privateKeyAlgorithm: "",
-    privateKey: "",
-    createdAt: now,
-    updatedAt: now,
-    environmentId: "",
-    ...c,
-  };
-};
-
-export const DEPLOY_CERTIFICATE_NAME = "certificates";
-const slice = createTable<DeployCertificate>({
-  name: DEPLOY_CERTIFICATE_NAME,
-});
-export const { add: addDeployCertificates, remove: removeDeployCertificates } =
-  slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_CERTIFICATE_NAME],
-);
-const initCertificate = defaultDeployCertificate();
-const must = mustSelectEntity(initCertificate);
-export const selectCertificateById = must(selectors.selectById);
-export const { selectTableAsList: selectCertificatesAsList } = selectors;
+export const selectCertificateById = db.certificates.selectById;
+export const selectCertificatesAsList = db.certificates.selectTableAsList;
 export const hasDeployCertificate = (a: DeployCertificate) => a.id !== "";
 
 export const selectCertificatesByEnvId = createSelector(
   selectCertificatesAsList,
-  (_: AppState, props: { envId: string }) => props.envId,
+  (_: WebState, props: { envId: string }) => props.envId,
   (certs, envId) => {
     return certs
       .filter((cert) => cert.environmentId === envId)
@@ -177,8 +125,6 @@ export const selectCertificatesByEnvId = createSelector(
       });
   },
 );
-
-export const certificateReducers = createReducerMap(slice);
 
 export const cancelPollCert = createAction("cancel-poll-cert");
 export const pollCert = api.get<{ id: string }>(["/certificates/:id", "poll"], {
@@ -209,6 +155,14 @@ export const fetchAllCertsByEnvId = thunks.create<{ id: string }>(
   combinePages(fetchCertificatesByEnvironmentId),
 );
 
+export const removeDeployCertificates = thunks.create<string[]>(
+  "remove-certs",
+  function* (ctx, next) {
+    yield* schema.update(db.certificates.remove(ctx.payload));
+    yield* next();
+  },
+);
+
 export interface CreateCertProps {
   cert: string;
   privKey: string;
@@ -233,7 +187,7 @@ export const certificateEntities = {
   certificate: defaultEntity({
     id: "certificate",
     deserialize: deserializeCertificate,
-    save: addDeployCertificates,
+    save: db.certificates.add,
   }),
 };
 

@@ -4,9 +4,8 @@ import {
   selectAppsByEnvOnboarding,
   selectLatestDeployOp,
 } from "@app/deploy";
-import { useLoader } from "@app/fx";
-import { AppState, DeployApp } from "@app/types";
-import { useSelector } from "react-redux";
+import { useLoader, useSelector } from "@app/react";
+import { DeployApp } from "@app/types";
 import { useSearchParams } from "react-router-dom";
 import {
   Button,
@@ -19,7 +18,7 @@ import {
 } from "../shared";
 
 const DeploymentOverview = ({ app }: { app: DeployApp }) => {
-  const deployOp = useSelector((s: AppState) =>
+  const deployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
   const [status, dateStr] = resolveOperationStatuses([deployOp]);

@@ -13,15 +13,13 @@ import {
   selectServiceDefinitionsByAppId,
 } from "@app/deploy";
 import { DeployCodeScanResponse } from "@app/deploy";
-import { selectLoaderById } from "@app/fx";
-import { useQuery } from "@app/fx";
 import { idCreator } from "@app/id";
 import { DB_ENV_TEMPLATE_KEY, deployProject } from "@app/projects";
+import { useDispatch, useQuery, useSelector } from "@app/react";
 import { appDeployGetStartedUrl, appDeployStatusUrl } from "@app/routes";
+import { db } from "@app/schema";
 import { parseText } from "@app/string-utils";
-import { AppState } from "@app/types";
 import { Reducer, useEffect, useReducer, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -64,17 +62,17 @@ export const AppDeployConfigurePage = () => {
   const [searchParams] = useSearchParams();
   const queryEnvsStr = searchParams.get("envs") || "";
 
-  const loader = useSelector((s: AppState) =>
-    selectLoaderById(s, { id: `${deployProject}` }),
+  const loader = useSelector((s) =>
+    db.loaders.selectById(s, { id: `${deployProject}` }),
   );
 
   useQuery(fetchApp({ id: appId }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
   const { scanOp, codeScan } = useLatestCodeResults(appId);
   const dbsQuery = useQuery(
     fetchDatabasesByEnvId({ envId: app.environmentId }),
   );
-  const existingDbs = useSelector((s: AppState) =>
+  const existingDbs = useSelector((s) =>
     selectDatabasesByEnvId(s, { envId: app.environmentId }),
   );
 
@@ -82,12 +80,12 @@ export const AppDeployConfigurePage = () => {
   const dbImages = useSelector(selectDatabaseImagesVisible);
 
   useQuery(fetchServiceDefinitionsByAppId({ appId }));
-  const serviceDefinitions = useSelector((s: AppState) =>
+  const serviceDefinitions = useSelector((s) =>
     selectServiceDefinitionsByAppId(s, { appId }),
   );
 
   useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
-  const appConfig = useSelector((s: AppState) =>
+  const appConfig = useSelector((s) =>
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
   const existingEnvStr = configEnvToStr(appConfig.env);
@@ -418,9 +416,7 @@ const DbExistingSelector = ({
   propChange: (d: DbExistingProps) => void;
   onDelete: () => void;
 }) => {
-  const dbs = useSelector((s: AppState) =>
-    selectDatabasesByEnvId(s, { envId }),
-  );
+  const dbs = useSelector((s) => selectDatabasesByEnvId(s, { envId }));
   const selectChange = (option: SelectOption) => {
     const dbId = option.value;
     const foundDb = dbs.find((d) => d.id === dbId);

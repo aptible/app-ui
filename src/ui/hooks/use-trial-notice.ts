@@ -4,9 +4,8 @@ import {
   selectBillingDetail,
 } from "@app/billing";
 import { timeBetween } from "@app/date";
-import { useCache } from "@app/fx";
+import { useCache, useSelector } from "@app/react";
 import { HalEmbedded } from "@app/types";
-import { useSelector } from "react-redux";
 
 interface StripeSourceResponse {
   id: string;

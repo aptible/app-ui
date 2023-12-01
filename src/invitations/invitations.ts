@@ -1,35 +1,17 @@
 import { authApi } from "@app/api";
+import { selectEnv, selectOrigin } from "@app/config";
 import { isBefore } from "@app/date";
-import { selectEnv, selectOrigin } from "@app/env";
 import { select } from "@app/fx";
+import { createSelector } from "@app/fx";
 import { defaultHalHref, extractIdFromLink } from "@app/hal";
-import { createTable, mustSelectEntity } from "@app/slice-helpers";
+import { WebState, db, schema } from "@app/schema";
 import { selectToken } from "@app/token";
 import type {
-  AppState,
   HalEmbedded,
   Invitation,
   InvitationResponse,
-  MapEntity,
   Token,
 } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-
-export const defaultInvitation = (i?: Partial<Invitation>): Invitation => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    email: "",
-    createdAt: now,
-    updatedAt: now,
-    organizationId: "",
-    organizationName: "",
-    inviterName: "",
-    roleName: "",
-    expired: false,
-    ...i,
-  };
-};
 
 export const defaultInvitationResponse = (
   i?: Partial<InvitationResponse>,
@@ -65,20 +47,10 @@ export function deserializeInvitation(i: InvitationResponse): Invitation {
   };
 }
 
-const INVITATIONS_NAME = "invitations";
-export const invitations = createTable<Invitation>({
-  name: INVITATIONS_NAME,
-});
-export const { add: addInvitations, set: setInvitations } = invitations.actions;
-const selectors = invitations.getSelectors(
-  (s: AppState) => s[INVITATIONS_NAME],
-);
-export const initInvitation = defaultInvitation();
-const must = mustSelectEntity(initInvitation);
-export const selectInvitationById = must(selectors.selectById);
+export const selectInvitationById = db.invitations.selectById;
 export const selectInvitationsByOrgId = createSelector(
-  selectors.selectTableAsList,
-  (_: AppState, p: { orgId: string }) => p.orgId,
+  db.invitations.selectTableAsList,
+  (_: WebState, p: { orgId: string }) => p.orgId,
   (invitations, orgId) =>
     invitations.filter((inv) => inv.organizationId === orgId),
 );
@@ -96,15 +68,15 @@ export const fetchInvitations = authApi.get<
     return;
   }
 
-  const { data } = ctx.json;
-  const invitationsMap = data._embedded.invitations.reduce<
-    MapEntity<Invitation>
+  const { value } = ctx.json;
+  const invitationsMap = value._embedded.invitations.reduce<
+    Record<string, Invitation>
   >((acc, invitation) => {
     acc[invitation.id] = deserializeInvitation(invitation);
     return acc;
   }, {});
 
-  ctx.actions.push(setInvitations(invitationsMap));
+  yield* schema.update(db.invitations.set(invitationsMap));
 });
 
 export const fetchInvitation = authApi.get<{ id: string }, InvitationResponse>(
@@ -120,10 +92,10 @@ export const fetchInvitation = authApi.get<{ id: string }, InvitationResponse>(
       }
       return;
     }
-    const { data } = ctx.json;
+    const { value } = ctx.json;
 
-    ctx.actions.push(
-      addInvitations({ [data.id]: deserializeInvitation(data) }),
+    yield* schema.update(
+      db.invitations.add({ [value.id]: deserializeInvitation(value) }),
     );
   },
 );

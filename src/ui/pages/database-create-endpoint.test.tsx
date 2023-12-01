@@ -8,23 +8,22 @@ import {
   testEnv,
   verifiedUserHandlers,
 } from "@app/mocks";
+import { useSelector } from "@app/react";
 import {
   DATABASE_ENDPOINT_CREATE_PATH,
   ENDPOINT_DETAIL_PATH,
   databaseEndpointCreateUrl,
 } from "@app/routes";
 import { setupIntegrationTest, waitForBootup, waitForEnv } from "@app/test";
-import { AppState } from "@app/types";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
-import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { DatabaseCreateEndpointPage } from "./database-create-endpoint";
 
 const TestDetailPage = () => {
   const { id = "" } = useParams();
-  const enp = useSelector((s: AppState) => selectEndpointById(s, { id }));
+  const enp = useSelector((s) => selectEndpointById(s, { id }));
   return (
     <div>
       <div>Endpoint detail page</div>

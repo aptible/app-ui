@@ -1,7 +1,6 @@
-import { useLoader } from "@app/fx";
+import { useDispatch, useLoader, useSelector } from "@app/react";
 import { selectCurrentUser, updateUserName } from "@app/users";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   BannerMessages,
   Box,

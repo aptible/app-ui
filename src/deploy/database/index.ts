@@ -3,23 +3,17 @@ import {
   FetchJson,
   Payload,
   call,
+  createAction,
   parallel,
   poll,
-  put,
   select,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
 } from "@app/fx";
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { WebState, db, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
-  AppState,
   DeployApiCtx,
   DeployDatabase,
   DeployOperation,
@@ -28,9 +22,6 @@ import type {
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
-
-import { selectOrganizationSelectedId } from "@app/organizations";
-import { createAction, createSelector } from "@reduxjs/toolkit";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -39,13 +30,11 @@ import {
 } from "../environment";
 import {
   DeployOperationResponse,
-  defaultDeployOperation,
   findOperationsByDbId,
   selectOperationsAsList,
   selectOperationsByDatabaseId,
   waitForOperation,
 } from "../operation";
-import { selectDeploy } from "../slice";
 
 export interface DeployDatabaseResponse {
   id: number;
@@ -144,68 +133,27 @@ export const deserializeDeployDatabase = (
   };
 };
 
-export const defaultDeployDatabase = (
-  d: Partial<DeployDatabase> = {},
-): DeployDatabase => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    databaseImageId: "",
-    status: "pending",
-    handle: "",
-    connectionUrl: "",
-    createdAt: now,
-    updatedAt: now,
-    currentKmsArn: "",
-    dockerRepo: "",
-    provisioned: false,
-    enableBackups: true,
-    type: "",
-    environmentId: "",
-    serviceId: "",
-    diskId: "",
-    initializeFrom: "",
-    portMapping: [],
-    ...d,
-  };
-};
-
 export interface DeployDatabaseRow extends DeployDatabase {
   envHandle: string;
   lastOperation: DeployOperation;
 }
 
-export const DEPLOY_DATABASE_NAME = "databases";
-const slice = createTable<DeployDatabase>({
-  name: DEPLOY_DATABASE_NAME,
-});
-const { add: addDeployDatabases, reset: resetDeployDatabases } = slice.actions;
-
 export const hasDeployDatabase = (a: DeployDatabase) => a.id !== "";
-export const databaseReducers = createReducerMap(slice);
-const initDb = defaultDeployDatabase();
-const must = mustSelectEntity(initDb);
-
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_DATABASE_NAME],
-);
-export const selectDatabaseById = must(selectors.selectById);
-export const {
-  selectTableAsList: selectDatabasesAsList,
-  selectTable: selectDatabases,
-} = selectors;
-export const findDatabaseById = must(selectors.findById);
+export const selectDatabaseById = schema.db.databases.selectById;
+export const selectDatabasesAsList = schema.db.databases.selectTableAsList;
+export const selectDatabases = schema.db.databases.selectTable;
+export const findDatabaseById = schema.db.databases.findById;
 
 export const selectDatabaseByHandle = createSelector(
   selectDatabasesAsList,
-  (_: AppState, p: { envId: string }) => p.envId,
-  (_: AppState, p: { handle: string }) => p.handle,
+  (_: WebState, p: { envId: string }) => p.envId,
+  (_: WebState, p: { handle: string }) => p.handle,
   (dbs, envId, handle) => {
     const dbFound = dbs.find((db) => {
       return db.environmentId === envId && db.handle === handle;
     });
 
-    return dbFound || initDb;
+    return dbFound || schema.db.databases.empty;
   },
 );
 
@@ -227,19 +175,19 @@ export const selectDatabasesForTable = createSelector(
   selectOperationsAsList,
   (dbs, envs, ops) =>
     dbs
-      .map((db): DeployDatabaseRow => {
-        const env = findEnvById(envs, { id: db.environmentId });
-        const dbOps = findOperationsByDbId(ops, db.id);
-        let lastOperation = defaultDeployOperation();
+      .map((dbb): DeployDatabaseRow => {
+        const env = findEnvById(envs, { id: dbb.environmentId });
+        const dbOps = findOperationsByDbId(ops, dbb.id);
+        let lastOperation = db.operations.empty;
         if (dbOps.length > 0) {
           lastOperation = dbOps[0];
         }
-        return { ...db, envHandle: env.handle, lastOperation };
+        return { ...dbb, envHandle: env.handle, lastOperation };
       })
       .sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
-const selectSearchProp = (_: AppState, props: { search: string }) =>
+const selectSearchProp = (_: WebState, props: { search: string }) =>
   props.search.toLocaleLowerCase();
 
 const computeSearchMatch = (db: DeployDatabaseRow, search: string): boolean => {
@@ -290,7 +238,7 @@ export const selectDatabasesForTableSearch = createSelector(
 export const selectDatabasesForTableSearchByEnvironmentId = createSelector(
   selectDatabasesForTable,
   selectSearchProp,
-  (_: AppState, props: { envId?: string }) => props.envId || "",
+  (_: WebState, props: { envId?: string }) => props.envId || "",
   (dbs, search, envId): DeployDatabaseRow[] => {
     if (search === "" && envId === "") {
       return dbs;
@@ -315,7 +263,7 @@ export const selectDatabasesForTableSearchByEnvironmentId = createSelector(
 
 export const selectDatabasesByEnvId = createSelector(
   selectDatabasesAsList,
-  (_: AppState, props: { envId: string }) => props.envId,
+  (_: WebState, props: { envId: string }) => props.envId,
   (dbs, envId) => {
     return dbs
       .filter((db) => db.environmentId === envId)
@@ -325,8 +273,8 @@ export const selectDatabasesByEnvId = createSelector(
 
 export const selectDatabasesByEnvIdAndType = createSelector(
   selectDatabasesByEnvId,
-  (_: AppState, props: { envId: string }) => props.envId,
-  (_: AppState, props: { types: string[] }) => props.types,
+  (_: WebState, props: { envId: string }) => props.envId,
+  (_: WebState, props: { types: string[] }) => props.types,
   (dbs, envId, types) => {
     return dbs
       .filter((db) => db.environmentId === envId)
@@ -338,7 +286,7 @@ export const selectDatabasesByEnvIdAndType = createSelector(
 export const selectDatabasesByStack = createSelector(
   selectDatabasesAsList,
   selectEnvironments,
-  (_: AppState, p: { stackId: string }) => p.stackId,
+  (_: WebState, p: { stackId: string }) => p.stackId,
   (dbs, envs, stackId) => {
     return dbs.filter((db) => {
       const env = findEnvById(envs, { id: db.environmentId });
@@ -362,7 +310,7 @@ export const fetchDatabases = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    ctx.actions.push(resetDeployDatabases());
+    yield* schema.update(schema.db.databases.reset());
   },
 );
 
@@ -443,7 +391,7 @@ export const provisionDatabaseList = thunks.create<{
 }>("database-list-provision", function* (ctx, next) {
   const { dbs, envId } = ctx.payload;
   const id = ctx.key;
-  yield* put(setLoaderStart({ id }));
+  yield* schema.update(schema.db.loaders.start({ id }));
   const group = yield* parallel(
     dbs.map((db) => {
       return () => provisionDatabase.run(provisionDatabase(mapCreatorToProvision(envId, db)));
@@ -465,21 +413,23 @@ export const provisionDatabaseList = thunks.create<{
 
     const { opCtx, dbCtx } = json;
     if (opCtx && !opCtx.json.ok) {
-      errors.push(opCtx.json.data.message);
+      errors.push(opCtx.json.error.message);
       continue;
     }
 
     if (dbCtx && !dbCtx.json.ok) {
-      errors.push(dbCtx.json.data.message);
+      errors.push(dbCtx.json.error.message);
     }
   }
 
   if (errors.length > 0) {
-    yield* put(setLoaderError({ id, message: errors.join(", ") }));
+    yield* schema.update(
+      schema.db.loaders.error({ id, message: errors.join(", ") }),
+    );
     return;
   }
 
-  yield* put(setLoaderSuccess({ id: ctx.key }));
+  yield* schema.update(schema.db.loaders.success({ id }));
   yield* next();
 });
 
@@ -487,9 +437,9 @@ export const provisionDatabase = thunks.create<
   CreateDatabaseProps,
   ThunkCtx<CreateDatabaseProps, CreateDbResult>
 >("database-provision", function* (ctx, next) {
-  yield* put(setLoaderStart({ id: ctx.key }));
+  yield* schema.update(schema.db.loaders.start({ id: ctx.key }));
 
-  const dbAlreadyExists = yield* select((s: AppState) =>
+  const dbAlreadyExists = yield* select((s: WebState) =>
     selectDatabaseByHandle(s, {
       handle: ctx.payload.handle,
       envId: ctx.payload.envId,
@@ -502,9 +452,9 @@ export const provisionDatabase = thunks.create<
     dbCtx = yield* call(() => createDatabase.run(createDatabase(ctx.payload)));
 
     if (!dbCtx.json.ok) {
-      const data = dbCtx.json.data as any;
+      const data = dbCtx.json.error as any;
       const message = data.message;
-      yield* put(setLoaderError({ id: ctx.key, message }));
+      yield* schema.update(schema.db.loaders.error({ id: ctx.key, message }));
       ctx.json = {
         error: message,
         dbId,
@@ -514,23 +464,18 @@ export const provisionDatabase = thunks.create<
       return;
     }
 
-    dbId = `${dbCtx.json.data.id}`;
+    dbId = `${dbCtx.json.value.id}`;
   }
 
   yield* next();
 
-  const dbOps = yield* select((s: AppState) =>
+  const dbOps = yield* select((s: WebState) =>
     selectOperationsByDatabaseId(s, { dbId }),
   );
   const alreadyProvisioned = dbOps.find((op) => op.type === "provision");
   if (alreadyProvisioned) {
     const message = `Database (${ctx.payload.handle}) already provisioned`;
-    yield* put(
-      setLoaderSuccess({
-        id: ctx.key,
-        message,
-      }),
-    );
+    yield* schema.update(schema.db.loaders.success({ id: ctx.key, message }));
     ctx.json = {
       error: message,
       dbId,
@@ -560,15 +505,17 @@ export const provisionDatabase = thunks.create<
   };
 
   if (!opCtx.json.ok) {
-    const data = opCtx.json.data as any;
-    yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+    const data = opCtx.json.error as any;
+    yield* schema.update(
+      schema.db.loaders.error({ id: ctx.key, message: data.message }),
+    );
     return;
   }
 
-  yield* put(
-    setLoaderSuccess({
+  yield* schema.update(
+    schema.db.loaders.success({
       id: ctx.key,
-      meta: { dbId, opId: opCtx.json.data.id },
+      meta: { dbId, opId: opCtx.json.value.id } as any,
     }),
   );
 });
@@ -643,7 +590,7 @@ export const fetchDatabaseDependents = api.get<{ id: string }>(
 
 export const selectDatabaseDependents = createSelector(
   selectDatabasesAsList,
-  (_: AppState, props: { id: string }) => props.id,
+  (_: WebState, props: { id: string }) => props.id,
   (dbs, id) =>
     dbs
       .filter((db): boolean => db.initializeFrom === id)
@@ -654,7 +601,7 @@ export const databaseEntities = {
   database: defaultEntity({
     id: "database",
     deserialize: deserializeDeployDatabase,
-    save: addDeployDatabases,
+    save: schema.db.databases.add,
   }),
 };
 
@@ -662,7 +609,7 @@ export const deprovisionDatabase = thunks.create<{
   dbId: string;
 }>("deprovision-database", function* (ctx, next) {
   const { dbId } = ctx.payload;
-  yield* select((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  yield* select((s: WebState) => selectDatabaseById(s, { id: dbId }));
 
   const deprovisionCtx = yield* call(() =>
     createDatabaseOperation.run(
@@ -674,7 +621,7 @@ export const deprovisionDatabase = thunks.create<{
   );
 
   if (!deprovisionCtx.json.ok) return;
-  const data = deprovisionCtx.json.data;
+  const data = deprovisionCtx.json.value;
   yield* call(() => waitForOperation({ id: `${data.id}` }));
   yield* next();
 });
@@ -726,7 +673,7 @@ export const restartDatabase = api.post<
     return;
   }
 
-  const opId = ctx.json.data.id;
+  const opId = ctx.json.value.id;
   ctx.loader = {
     message: `Restart database operation queued (operation ID: ${opId})`,
     meta: { opId: `${opId}` },
@@ -751,7 +698,7 @@ export const restartRecreateDatabase = api.post<
     return;
   }
 
-  const opId = ctx.json.data.id;
+  const opId = ctx.json.value.id;
   ctx.loader = {
     message: `Restart database with disk move operation queued (operation ID: ${opId})`,
     meta: { opId: `${opId}` },
@@ -777,7 +724,7 @@ export const scaleDatabase = api.post<
     return;
   }
 
-  const opId = ctx.json.data.id;
+  const opId = ctx.json.value.id;
   ctx.loader = {
     message: `Restart (and scale) database operation queued (operation ID: ${opId})`,
     meta: { opId: `${opId}` },

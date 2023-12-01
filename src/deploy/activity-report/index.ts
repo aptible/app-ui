@@ -1,13 +1,8 @@
 import { api, cacheTimer } from "@app/api";
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import { AppState, DeployActivityReport, LinkResponse } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectDeploy } from "../slice";
+import { WebState, db } from "@app/schema";
+import { DeployActivityReport, LinkResponse } from "@app/types";
 
 export interface DeployActivityReportResponse {
   id: string;
@@ -37,43 +32,14 @@ export const deserializeActivityReport = (
   };
 };
 
-export const defaultDeployActivityReport = (
-  ld: Partial<DeployActivityReport> = {},
-): DeployActivityReport => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    startsAt: now,
-    endsAt: now,
-    filename: "",
-    environmentId: "",
-    createdAt: now,
-    updatedAt: now,
-    ...ld,
-  };
-};
-
-export const DEPLOY_ACTIVITY_REPORT_NAME = "activityReports";
-const slice = createTable<DeployActivityReport>({
-  name: DEPLOY_ACTIVITY_REPORT_NAME,
-});
-const { add: addDeployActivityReports } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_ACTIVITY_REPORT_NAME],
-);
-const initActivityReport = defaultDeployActivityReport();
-const must = mustSelectEntity(initActivityReport);
-export const selectActivityReportById = must(selectors.selectById);
-export const findActivityReportById = must(selectors.findById);
-export const activityReportReducers = createReducerMap(slice);
-export const {
-  selectTableAsList: selectActivityReportsAsList,
-  selectTable: selectActivityReports,
-} = selectors;
+export const selectActivityReportById = db.activityReports.selectById;
+export const findActivityReportById = db.activityReports.findById;
+export const selectActivityReportsAsList = db.activityReports.selectTableAsList;
+export const selectActivityReports = db.activityReports.selectTable;
 
 export const selectActivityReportsByEnvId = createSelector(
   selectActivityReportsAsList,
-  (_: AppState, props: { envId: string }) => props.envId,
+  (_: WebState, props: { envId: string }) => props.envId,
   (activityReports, envId) => {
     return activityReports
       .filter((activityReport) => activityReport.environmentId === envId)
@@ -104,8 +70,7 @@ export const downloadActivityReports = api.get<
       return;
     }
 
-    const url = ctx.json.data;
-
+    const url = ctx.json.value;
     const link = document.createElement("a");
     link.download = filename;
     link.href = url;
@@ -118,6 +83,6 @@ export const activityReportEntities = {
   activity_report: defaultEntity({
     id: "activity_report",
     deserialize: deserializeActivityReport,
-    save: addDeployActivityReports,
+    save: db.activityReports.add,
   }),
 };

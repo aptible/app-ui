@@ -4,9 +4,8 @@ import {
   selectCredentialsByDatabaseId,
   selectDatabaseById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
-import { AppState, DeployDatabaseCredential } from "@app/types";
-import { useSelector } from "react-redux";
+import { useQuery, useSelector } from "@app/react";
+import { DeployDatabaseCredential } from "@app/types";
 import { Box } from "../box";
 import { IconAlertTriangle } from "../icons";
 import { Secret } from "../secret";
@@ -35,11 +34,9 @@ export const DatabaseCredentialBox = ({
   dbId,
   externalHost = "",
 }: { dbId: string; externalHost?: string }) => {
-  const creds = useSelector((s: AppState) =>
-    selectCredentialsByDatabaseId(s, { dbId }),
-  );
+  const creds = useSelector((s) => selectCredentialsByDatabaseId(s, { dbId }));
   useQuery(fetchCredentialsByDatabaseId({ dbId }));
-  const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  const db = useSelector((s) => selectDatabaseById(s, { id: dbId }));
 
   return (
     <Box>

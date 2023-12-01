@@ -5,16 +5,15 @@ import {
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
+import { useLoader, useQuery, useSelector } from "@app/react";
 import {
   createEnvUrl,
   environmentAppsUrl,
   environmentDatabasesUrl,
   stackDetailEnvsUrl,
 } from "@app/routes";
-import type { AppState, DeployEnvironment } from "@app/types";
+import type { DeployEnvironment } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
-import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonAnyOwner } from "../button";
 import { Group } from "../group";
@@ -61,9 +60,7 @@ const EnvironmentIdCell = ({ env }: EnvironmentCellProps) => {
 };
 
 const EnvironmentDatabasesCell = ({ env }: EnvironmentCellProps) => {
-  const dbs = useSelector((s: AppState) =>
-    selectDatabasesByEnvId(s, { envId: env.id }),
-  );
+  const dbs = useSelector((s) => selectDatabasesByEnvId(s, { envId: env.id }));
   return (
     <Td variant="center" className="center items-center justify-center">
       <Link to={environmentDatabasesUrl(env.id)}>
@@ -76,9 +73,7 @@ const EnvironmentDatabasesCell = ({ env }: EnvironmentCellProps) => {
 };
 
 const EnvironmentAppsCell = ({ env }: EnvironmentCellProps) => {
-  const apps = useSelector((s: AppState) =>
-    selectAppsByEnvId(s, { envId: env.id }),
-  );
+  const apps = useSelector((s) => selectAppsByEnvId(s, { envId: env.id }));
   return (
     <Td variant="center" className="center items-center justify-center">
       <Link to={environmentAppsUrl(env.id)}>
@@ -91,9 +86,7 @@ const EnvironmentAppsCell = ({ env }: EnvironmentCellProps) => {
 };
 
 const EnvironmentStackCell = ({ env }: EnvironmentCellProps) => {
-  const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: env.stackId }),
-  );
+  const stack = useSelector((s) => selectStackById(s, { id: env.stackId }));
 
   return (
     <Td className="2xl:flex-cell-md sm:flex-cell-sm">
@@ -131,7 +124,7 @@ export function EnvironmentList({
     navigate(createEnvUrl(stackId ? `stack_id=${stackId}` : ""));
   };
 
-  const envs = useSelector((s: AppState) =>
+  const envs = useSelector((s) =>
     selectEnvironmentsForTableSearch(s, { search, stackId }),
   );
   const paginated = usePaginate(envs);

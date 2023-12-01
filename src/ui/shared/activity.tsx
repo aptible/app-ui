@@ -25,16 +25,15 @@ import {
   selectServiceById,
   selectServicesByAppId,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
+import { useLoader, useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
   databaseDetailUrl,
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import type { AppState, DeployActivityRow, ResourceType } from "@app/types";
+import type { DeployActivityRow, ResourceType } from "@app/types";
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks";
 import { usePoller } from "../hooks/use-poller";
@@ -132,13 +131,9 @@ const OpResourceCell = ({ op }: OpCellProps) => {
 };
 
 const OpServiceCell = ({ serviceId }: { serviceId: string }) => {
-  const service = useSelector((s: AppState) =>
-    selectServiceById(s, { id: serviceId }),
-  );
-  const app = useSelector((s: AppState) =>
-    selectAppById(s, { id: service.appId }),
-  );
-  const db = useSelector((s: AppState) =>
+  const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
+  const app = useSelector((s) => selectAppById(s, { id: service.appId }));
+  const db = useSelector((s) =>
     selectDatabaseById(s, { id: service.databaseId }),
   );
 
@@ -159,9 +154,7 @@ const OpServiceCell = ({ serviceId }: { serviceId: string }) => {
 };
 
 export const OpEndpointCell = ({ enpId }: { enpId: string }) => {
-  const enp = useSelector((s: AppState) =>
-    selectEndpointById(s, { id: enpId }),
-  );
+  const enp = useSelector((s) => selectEndpointById(s, { id: enpId }));
   return <OpServiceCell serviceId={enp.serviceId} />;
 };
 
@@ -315,7 +308,7 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value }, { replace: true });
 
-  const ops = useSelector((s: AppState) =>
+  const ops = useSelector((s) =>
     selectActivityForTableSearch(s, {
       search,
     }),
@@ -348,7 +341,7 @@ export function ActivityByEnv({ envId }: { envId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value }, { replace: true });
 
-  const ops = useSelector((s: AppState) =>
+  const ops = useSelector((s) =>
     selectActivityForTableSearch(s, {
       search,
       envId,
@@ -369,7 +362,7 @@ export function ActivityByEnv({ envId }: { envId: string }) {
 export function ActivityByApp({ appId }: { appId: string }) {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
   const action = pollAppAndServiceOperations({ id: app.id });
   const loader = useLoader(action);
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
@@ -386,9 +379,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value }, { replace: true });
 
-  const services = useSelector((s: AppState) =>
-    selectServicesByAppId(s, { appId }),
-  );
+  const services = useSelector((s) => selectServicesByAppId(s, { appId }));
   const serviceResources = services.map((service) => {
     return {
       resourceId: service.id,
@@ -399,7 +390,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
     () => [{ resourceId: appId, resourceType: "app" }, ...serviceResources],
     [appId, ...services.map((s) => s.id)],
   );
-  const ops = useSelector((s: AppState) =>
+  const ops = useSelector((s) =>
     selectActivityForTableSearch(s, {
       search,
       resources,
@@ -422,7 +413,7 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const search = params.get("search") || "";
   const action = pollDatabaseAndServiceOperations({ id: dbId });
   const loader = useLoader(action);
-  const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  const db = useSelector((s) => selectDatabaseById(s, { id: dbId }));
   useQuery(fetchEnvironmentById({ id: db.environmentId }));
   useQuery(fetchDatabase({ id: dbId }));
 
@@ -444,7 +435,7 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
       ].filter(Boolean),
     [dbId, db.serviceId],
   );
-  const ops = useSelector((s: AppState) =>
+  const ops = useSelector((s) =>
     selectActivityForTableSearch(s, {
       search,
       resources,
@@ -481,7 +472,7 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
     () => [{ resourceId: enpId, resourceType: "vhost" as const }],
     [enpId],
   );
-  const ops = useSelector((s: AppState) =>
+  const ops = useSelector((s) =>
     selectActivityForTableSearch(s, {
       search,
       resources,

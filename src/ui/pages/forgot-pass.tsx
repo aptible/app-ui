@@ -1,8 +1,7 @@
 import { forgotPass, resetPass } from "@app/auth/pass";
-import { useLoader } from "@app/fx";
+import { useDispatch, useLoader } from "@app/react";
 import { loginUrl } from "@app/routes";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { HeroBgLayout } from "../layouts";
 import {

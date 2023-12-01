@@ -1,17 +1,8 @@
 import { api, cacheTimer } from "@app/api";
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import type {
-  AppState,
-  DeployServiceDefinition,
-  LinkResponse,
-} from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectDeploy } from "../slice";
+import { WebState, db } from "@app/schema";
+import type { DeployServiceDefinition, LinkResponse } from "@app/types";
 
 export interface DeployServiceDefinitionResponse {
   id: number;
@@ -23,21 +14,6 @@ export interface DeployServiceDefinitionResponse {
     app: LinkResponse;
   };
 }
-
-export const defaultDeployServiceDefinition = (
-  e: Partial<DeployServiceDefinition> = {},
-): DeployServiceDefinition => {
-  const now = new Date().toISOString();
-  return {
-    createdAt: now,
-    updatedAt: now,
-    id: "",
-    appId: "",
-    command: "",
-    processType: "",
-    ...e,
-  };
-};
 
 export const deserializeServiceDefinition = (
   payload: DeployServiceDefinitionResponse,
@@ -53,23 +29,12 @@ export const deserializeServiceDefinition = (
   };
 };
 
-export const DEPLOY_SERVICE_DEFINITION_NAME = "serviceDefinitions";
-const slice = createTable<DeployServiceDefinition>({
-  name: DEPLOY_SERVICE_DEFINITION_NAME,
-});
-const { add: addServiceDefinitions } = slice.actions;
-export const serviceDefinitionReducers = createReducerMap(slice);
-
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_SERVICE_DEFINITION_NAME],
-);
-export const { selectTableAsList: selectServiceDefinitionsAsList } = selectors;
-const initApp = defaultDeployServiceDefinition();
-const must = mustSelectEntity(initApp);
-export const selectServiceDefinitionById = must(selectors.selectById);
+export const selectServiceDefinitionsAsList =
+  db.serviceDefinitions.selectTableAsList;
+export const selectServiceDefinitionById = db.serviceDefinitions.selectById;
 export const selectServiceDefinitionsByAppId = createSelector(
-  selectors.selectTableAsList,
-  (_: AppState, props: { appId: string }) => props.appId,
+  db.serviceDefinitions.selectTableAsList,
+  (_: WebState, props: { appId: string }) => props.appId,
   (serviceDefinitions, appId) =>
     serviceDefinitions
       .filter((serviceDefinition) => serviceDefinition.appId === appId)
@@ -113,6 +78,6 @@ export const serviceDefinitionEntities = {
   service_definition: defaultEntity({
     id: "service_definition",
     deserialize: deserializeServiceDefinition,
-    save: addServiceDefinitions,
+    save: db.serviceDefinitions.add,
   }),
 };

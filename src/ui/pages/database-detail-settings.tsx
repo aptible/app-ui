@@ -1,7 +1,3 @@
-import { FormEvent, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
 import {
   DEFAULT_INSTANCE_CLASS,
   deprovisionDatabase,
@@ -19,16 +15,22 @@ import {
   selectServiceById,
   updateDatabase,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { databaseActivityUrl, environmentActivityUrl } from "@app/routes";
 import {
-  AppState,
   DeployDatabase,
   DeployLogDrain,
   DeployMetricDrain,
   InstanceClass,
 } from "@app/types";
-
+import { FormEvent, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import {
   Banner,
   BannerMessages,
@@ -57,7 +59,7 @@ interface DbProps {
 }
 
 const DatabaseDeprovision = ({ database }: DbProps) => {
-  const environment = useSelector((s: AppState) =>
+  const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: database.environmentId }),
   );
   const navigate = useNavigate();
@@ -112,7 +114,7 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
 };
 
 const DatabaseRestartRecreate = ({ database }: DbProps) => {
-  const environment = useSelector((s: AppState) =>
+  const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: database.environmentId }),
   );
   const navigate = useNavigate();
@@ -131,10 +133,10 @@ const DatabaseRestartRecreate = ({ database }: DbProps) => {
   };
   const invalid = !confirm;
 
-  const service = useSelector((s: AppState) =>
+  const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
   );
-  const containerProfilesForStack = useSelector((s: AppState) =>
+  const containerProfilesForStack = useSelector((s) =>
     selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
 
@@ -227,10 +229,10 @@ const DatabaseNameChange = ({ database }: DbProps) => {
     e.preventDefault();
     dispatch(action);
   };
-  const logDrains = useSelector((s: AppState) =>
+  const logDrains = useSelector((s) =>
     selectLogDrainsByEnvId(s, { envId: database.environmentId }),
   );
-  const metricDrains = useSelector((s: AppState) =>
+  const metricDrains = useSelector((s) =>
     selectMetricDrainsByEnvId(s, { envId: database.environmentId }),
   );
 
@@ -367,7 +369,7 @@ const DatabaseRestart = ({ database }: DbProps) => {
 export const DatabaseSettingsPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchDatabase({ id }));
-  const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const database = useSelector((s) => selectDatabaseById(s, { id }));
 
   return (
     <BoxGroup>

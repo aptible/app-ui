@@ -1,7 +1,5 @@
-import { useState } from "react";
-
+import { DEFAULT_INSTANCE_CLASS } from "@app/deploy";
 import {
-  DEFAULT_INSTANCE_CLASS,
   defaultDeployApp,
   defaultDeployDatabase,
   defaultDeployEndpoint,
@@ -10,7 +8,8 @@ import {
   defaultDeployOperation,
   defaultDeployService,
   defaultDeployStack,
-} from "@app/deploy";
+} from "@app/schema";
+import { useState } from "react";
 import {
   AppHeader,
   DatabaseHeader,

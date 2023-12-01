@@ -3,8 +3,8 @@ import { call, select } from "@app/fx";
 import {
   OrganizationResponse,
   selectOrganizationSelectedId,
-  setOrganizationSelected,
 } from "@app/organizations";
+import { db, schema } from "@app/schema";
 import { selectToken } from "@app/token";
 import { AuthApiError, HalEmbedded, Organization } from "@app/types";
 import { exchangeToken } from "./token";
@@ -21,7 +21,7 @@ export const fetchOrganizations = authApi.get<
     yield* next();
     if (!ctx.json.ok) return;
     const orgSelected = yield* select(selectOrganizationSelectedId);
-    const orgs = [...ctx.json.data._embedded.organizations].sort(
+    const orgs = [...ctx.json.value._embedded.organizations].sort(
       (a, b) =>
         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
     );
@@ -30,7 +30,7 @@ export const fetchOrganizations = authApi.get<
     if (!foundOrg && orgs.length > 0) {
       const org = orgs[0];
       if (!org) return;
-      ctx.actions.push(setOrganizationSelected(org.id));
+      yield* schema.update(db.organizationSelected.set(org.id));
     }
   },
 );
@@ -43,10 +43,10 @@ export const fetchReauthOrganizations = authApi.get<
   function* (ctx, next) {
     yield* next();
     if (!ctx.json.ok) return;
-    const organizations = ctx.json.data._embedded.organizations.map((o) => {
+    const organizations = ctx.json.value._embedded.organizations.map((o) => {
       return { ...o, reauth_required: true };
     });
-    ctx.json.data._embedded = {
+    ctx.json.value._embedded = {
       organizations,
     };
   },
@@ -81,7 +81,7 @@ export const createOrganization = authApi.post<
       }),
     ),
   );
-  ctx.actions.push(setOrganizationSelected(ctx.json.data.id));
+  yield* schema.update(db.organizationSelected.set(ctx.json.value.id));
 });
 
 export const updateOrganization = authApi.patch<Organization>(

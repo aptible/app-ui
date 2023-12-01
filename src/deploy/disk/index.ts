@@ -1,12 +1,7 @@
 import { api } from "@app/api";
 import { defaultEntity } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import type { AppState, DeployDisk } from "@app/types";
-import { selectDeploy } from "../slice";
+import { db } from "@app/schema";
+import type { DeployDisk } from "@app/types";
 
 interface DeployDiskResponse {
   attached: boolean;
@@ -78,47 +73,14 @@ export const deserializeDisk = (payload: DeployDiskResponse): DeployDisk => {
   };
 };
 
-export const defaultDeployDisk = (d: Partial<DeployDisk> = {}): DeployDisk => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    attached: true,
-    availabilityZone: "",
-    baselineIops: 0,
-    provisionedIops: 0,
-    createdAt: now,
-    updatedAt: now,
-    currentKmsArn: "",
-    device: "",
-    ebsVolumeId: "",
-    ebsVolumeType: "",
-    ec2InstanceId: "",
-    filesystem: "",
-    handle: "",
-    host: "",
-    size: 0,
-    keyBytes: 32,
-    ...d,
-  };
-};
-
 export const fetchDiskById = api.get<{ id: string }>("/disks/:id");
 
-export const DISK_NAME = "disks";
-const slice = createTable<DeployDisk>({ name: DISK_NAME });
-const { add: addDeployDisks } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DISK_NAME] || {},
-);
-const initImage = defaultDeployDisk();
-const must = mustSelectEntity(initImage);
-export const selectDiskById = must(selectors.selectById);
+export const selectDiskById = db.disks.selectById;
 
-export const diskReducers = createReducerMap(slice);
 export const diskEntities = {
   disk: defaultEntity({
     id: "disk",
-    save: addDeployDisks,
+    save: db.disks.add,
     deserialize: deserializeDisk,
   }),
 };

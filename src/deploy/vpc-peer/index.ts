@@ -1,13 +1,8 @@
 import { api } from "@app/api";
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import { AppState, DeployVpcPeer, LinkResponse } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectDeploy } from "../slice";
+import { WebState, db } from "@app/schema";
+import { DeployVpcPeer, LinkResponse } from "@app/types";
 
 export interface DeployVpcPeerResponse {
   id: number;
@@ -59,43 +54,15 @@ export const deserializeDeployVpcPeer = (
   };
 };
 
-export const defaultDeployVpcPeer = (
-  s: Partial<DeployVpcPeer> = {},
-): DeployVpcPeer => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    connectionId: "",
-    connectionStatus: "",
-    description: "",
-    peerAccountId: "",
-    peerVpcId: "",
-    createdAt: now,
-    updatedAt: now,
-    stackId: "",
-    ...s,
-  };
-};
-
-export const DEPLOY_VPC_PEER_NAME = "vpcPeers";
-const slice = createTable<DeployVpcPeer>({
-  name: DEPLOY_VPC_PEER_NAME,
-});
-const { add: addDeployVpcPeer } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_VPC_PEER_NAME],
-);
-const initVpcPeer = defaultDeployVpcPeer;
-const must = mustSelectEntity(initVpcPeer);
-export const selectVpcPeerById = must(selectors.selectById);
-export const { selectTable: selectVpcPeers } = selectors;
+export const selectVpcPeerById = db.vpcPeers.selectById;
+export const selectVpcPeers = db.vpcPeers.selectTable;
 export const selectVpcPeersAsList = createSelector(
-  selectors.selectTableAsList,
+  db.vpcPeers.selectTableAsList,
   (vpcPeers) => vpcPeers.sort((a, b) => a.id.localeCompare(b.id)),
 );
 export const selectVpcPeersByStackId = createSelector(
   selectVpcPeersAsList,
-  (_: AppState, props: { stackId: string }) => props.stackId,
+  (_: WebState, props: { stackId: string }) => props.stackId,
   (vpcPeers, stackId) => {
     return vpcPeers.filter((vpcPeer) => vpcPeer.stackId === stackId);
   },
@@ -105,12 +72,10 @@ export const fetchVpcPeersByStackId = api.get<{ id: string }>(
   "/stacks/:id/vpc_peers",
 );
 
-export const vpcPeerReducers = createReducerMap(slice);
-
 export const vpcPeerEntities = {
   vpc_peer: defaultEntity({
     id: "vpc_peer",
     deserialize: deserializeDeployVpcPeer,
-    save: addDeployVpcPeer,
+    save: db.vpcPeers.add,
   }),
 };

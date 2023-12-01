@@ -1,10 +1,8 @@
-import classNames from "classnames";
-
-import { StatusVariant, variantToClassName } from "@app/status-variant";
-
+import { useSelector } from "@app/react";
 import { homeUrl } from "@app/routes";
+import { StatusVariant, variantToClassName } from "@app/status-variant";
 import { selectIsUserAuthenticated } from "@app/token";
-import { useSelector } from "react-redux";
+import classNames from "classnames";
 import { Link } from "react-router-dom";
 import { IconAlertTriangle, IconCheck, IconInfo } from "./icons";
 import { LoadingSpinner } from "./loading";

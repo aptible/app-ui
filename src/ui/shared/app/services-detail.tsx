@@ -6,7 +6,7 @@ import {
   selectServicesByAppId,
   serviceCommandText,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useQuery, useSelector } from "@app/react";
 import {
   appDeployResumeUrl,
   appDetailUrl,
@@ -14,9 +14,8 @@ import {
   appServiceScalePathUrl,
   appServiceUrl,
 } from "@app/routes";
-import { AppState, DeployService, DeployServiceRow } from "@app/types";
+import { DeployService, DeployServiceRow } from "@app/types";
 import { PaginateProps, usePaginate } from "@app/ui/hooks";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { ButtonCreate, ButtonLink } from "../button";
@@ -122,9 +121,7 @@ const AppServiceByAppRow = ({
 }: {
   service: DeployServiceRow;
 }) => {
-  const app = useSelector((s: AppState) =>
-    selectAppById(s, { id: service.appId }),
-  );
+  const app = useSelector((s) => selectAppById(s, { id: service.appId }));
 
   return (
     <>
@@ -165,9 +162,7 @@ const AppServiceByOrgRow = ({
 }: {
   service: DeployServiceRow;
 }) => {
-  const app = useSelector((s: AppState) =>
-    selectAppById(s, { id: service.appId }),
-  );
+  const app = useSelector((s) => selectAppById(s, { id: service.appId }));
 
   return (
     <>
@@ -276,10 +271,8 @@ export function AppServicesByApp({
   appId: string;
 }) {
   const navigate = useNavigate();
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  const services = useSelector((s: AppState) =>
-    selectServicesByAppId(s, { appId }),
-  );
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
+  const services = useSelector((s) => selectServicesByAppId(s, { appId }));
   const onDeploy = () => {
     navigate(appDeployResumeUrl(app.id));
   };

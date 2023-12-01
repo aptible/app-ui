@@ -1,9 +1,6 @@
-import { useLoader } from "@app/fx";
-import { useDispatch, useSelector } from "react-redux";
-
 import { resendVerification } from "@app/auth";
-import { selectOrigin } from "@app/env";
-
+import { selectOrigin } from "@app/config";
+import { useDispatch, useLoader, useSelector } from "@app/react";
 import { selectCurrentUserId } from "@app/users";
 import { BannerMessages } from "../banner";
 import { Button } from "../button";

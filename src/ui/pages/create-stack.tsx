@@ -1,19 +1,18 @@
 import {
   fetchActivePlans,
   fetchPlans,
+  resetSupportTicket,
   selectFirstActivePlan,
   selectPlanByActiveId,
 } from "@app/deploy";
-import { createSupportTicket } from "@app/deploy/support";
-import { resetLoaderById } from "@app/fx";
-import { useLoader, useQuery } from "@app/fx";
+import { createSupportTicket } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
+import { useDispatch, useSelector } from "@app/react";
+import { useLoader, useQuery } from "@app/react";
 import { plansUrl, stacksUrl } from "@app/routes";
-import { AppState } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 import { stackNameRegexExplainer, stackNameValidator } from "@app/validator";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useValidator } from "../hooks";
 import {
@@ -83,7 +82,7 @@ export const CreateStackPage = () => {
   useQuery(fetchPlans());
   useQuery(fetchActivePlans({ orgId }));
 
-  const selectedPlan = useSelector((s: AppState) =>
+  const selectedPlan = useSelector((s) =>
     selectPlanByActiveId(s, { id: activePlan.planId }),
   );
   // must have a non-starter active plan or,
@@ -158,7 +157,7 @@ export const CreateStackPage = () => {
     return () => {
       // reset loader when component is unmounted because we have multiple
       // pages that use this same loader id
-      dispatch(resetLoaderById(`${createSupportTicket}`));
+      dispatch(resetSupportTicket());
     };
   }, []);
 

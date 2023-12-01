@@ -1,7 +1,3 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
 import {
   CreateDbEndpointProps,
   fetchDatabase,
@@ -10,11 +6,17 @@ import {
   provisionDatabaseEndpoint,
   selectDatabaseById,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { endpointDetailUrl } from "@app/routes";
-import { AppState } from "@app/types";
 import { ipValidator } from "@app/validator";
-
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
 import {
   Banner,
@@ -36,7 +38,7 @@ export const DatabaseCreateEndpointPage = () => {
   const navigate = useNavigate();
   const { id = "" } = useParams();
   useQuery(fetchDatabase({ id }));
-  const db = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const db = useSelector((s) => selectDatabaseById(s, { id }));
   useQuery(fetchService({ id: db.serviceId }));
 
   const [ipAllowlist, setIpAllowlist] = useState("");

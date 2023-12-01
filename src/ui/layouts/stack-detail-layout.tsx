@@ -1,5 +1,5 @@
 import { fetchStack, getStackType, selectStackById } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   stackDetailEnvsUrl,
   stackDetailHidsUrl,
@@ -9,9 +9,8 @@ import {
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
 import { capitalize } from "@app/string-utils";
-import { AppState, DeployStack } from "@app/types";
+import { DeployStack } from "@app/types";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router";
 import {
   CopyText,
@@ -77,7 +76,7 @@ function StackPageHeader() {
   }, []);
   const loader = useQuery(fetchStack({ id }));
 
-  const stack = useSelector((s: AppState) => selectStackById(s, { id }));
+  const stack = useSelector((s) => selectStackById(s, { id }));
   const crumbs = [{ name: "Stacks", to: stacksUrl() }];
 
   const tabs: TabItem[] = [

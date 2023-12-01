@@ -1,9 +1,9 @@
 import { billingApi, cacheTimer, thunks } from "@app/api";
 import { call, parallel } from "@app/fx";
+import { createSelector } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
-import { createAssign, createReducerMap } from "@app/slice-helpers";
-import { AppState, BillingDetail, LinkResponse } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
+import { db, schema } from "@app/schema";
+import { BillingDetail, LinkResponse } from "@app/types";
 import { loadStripe } from "@stripe/stripe-js/pure";
 
 export const defaultBillingDetailResponse = (
@@ -12,16 +12,6 @@ export const defaultBillingDetailResponse = (
   return {
     id: "",
     _links: { payment_method: defaultHalHref() },
-    ...bt,
-  };
-};
-
-const defaultBillingDetail = (
-  bt: Partial<BillingDetail> = {},
-): BillingDetail => {
-  return {
-    id: "",
-    paymentMethodUrl: "",
     ...bt,
   };
 };
@@ -42,16 +32,7 @@ const deserializeBillingDetail = (bt: BillingDetailResponse): BillingDetail => {
   };
 };
 
-export const BILLING_DETAIL_NAME = "billingDetail";
-const billingDetail = createAssign<BillingDetail>({
-  name: BILLING_DETAIL_NAME,
-  initialState: defaultBillingDetail(),
-});
-
-const { set: setBillingDetail } = billingDetail.actions;
-export const reducers = createReducerMap(billingDetail);
-export const selectBillingDetail = (state: AppState) =>
-  state[BILLING_DETAIL_NAME];
+export const selectBillingDetail = db.billingDetail.select;
 export const selectHasPaymentMethod = createSelector(
   selectBillingDetail,
   (bt) => bt.paymentMethodUrl !== "",
@@ -66,7 +47,9 @@ export const fetchBillingDetail = billingApi.get<
     return;
   }
 
-  ctx.actions.push(setBillingDetail(deserializeBillingDetail(ctx.json.data)));
+  yield* schema.update(
+    db.billingDetail.set(deserializeBillingDetail(ctx.json.value)),
+  );
 });
 
 export async function getStripe(stripePublishableKey: string) {
@@ -177,7 +160,7 @@ export const createSignupBillingRecords =
       if (!dtail.json.ok) {
         ctx.json = {
           ok: false,
-          data: dtail.json.data,
+          data: dtail.json.error,
         };
         return;
       }
@@ -197,7 +180,7 @@ export const createSignupBillingRecords =
         }
 
         if (!result.value.json.ok) {
-          msg.push(result.value.json.data.message);
+          msg.push(result.value.json.error.message);
         }
       }
 

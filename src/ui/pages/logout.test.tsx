@@ -1,10 +1,9 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { rest } from "msw";
-import { useDispatch } from "react-redux";
-
 import { fetchApp } from "@app/deploy";
 import { server, testApp, testEnv } from "@app/mocks";
+import { useDispatch } from "@app/react";
 import { setupIntegrationTest, sleep, waitForToken } from "@app/test";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { rest } from "msw";
 
 import { LOGIN_PATH, LOGOUT_PATH, logoutUrl } from "@app/routes";
 import { LogoutPage } from "./logout";

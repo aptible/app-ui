@@ -4,12 +4,15 @@ import {
   provisionLogDrain,
   selectEnvironmentById,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess } from "@app/fx";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useSelector,
+} from "@app/react";
 import { operationDetailUrl } from "@app/routes";
-import { AppState } from "@app/types";
 import { handleValidator, portValidator } from "@app/validator";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
@@ -125,9 +128,7 @@ export const CreateLogDrainPage = () => {
   const queryEnvId = params.get("environment_id") || "";
   const [dbId, setDbId] = useState("");
   const [envId, setEnvId] = useState(queryEnvId);
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
+  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
   const [handle, setHandle] = useState("");
   const [drainApps, setDrainApps] = useState(true);
   const [drainDatabases, setDrainDatabases] = useState(true);

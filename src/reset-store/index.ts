@@ -1,76 +1,32 @@
-import { BATCH, put, select, take } from "@app/fx";
-import type { Reducer } from "@reduxjs/toolkit";
-import type { PersistConfig } from "redux-persist";
-
-import { ENV_NAME } from "@app/env";
-import { ENTITIES_NAME } from "@app/hal";
-import { REDIRECT_NAME } from "@app/redirect-path";
-import { SIGNAL_NAME, selectSignal, setSignal } from "@app/signal";
-import { createAction } from "@app/slice-helpers";
-import { resetToken } from "@app/token";
-import type { Action, AppState } from "@app/types";
+import { resetToken } from "@app/api";
+import { createAction, select, take } from "@app/fx";
+import { WebState, db, schema } from "@app/schema";
+import { PERSIST_LOADER_ID, StoreContext } from "starfx/store";
 
 export const resetStore = createAction("RESET_STORE");
 
-const ALLOW_LIST: (keyof AppState)[] = [
-  REDIRECT_NAME,
-  ENTITIES_NAME,
-  SIGNAL_NAME,
-  ENV_NAME,
-];
-
-const keepState = (
-  state: AppState | undefined,
-): Partial<AppState> | undefined => {
-  if (!state) {
-    return state;
-  }
-
-  return ALLOW_LIST.reduce<Partial<AppState>>((acc, slice) => {
-    (acc as any)[slice] = state[slice];
-    return acc;
-  }, {});
-};
-
-export const resetReducer =
-  (rootReducer: Reducer, persistConfig: PersistConfig<any>) =>
-  (state: AppState | undefined, action: Action<any>) => {
-    let reset = false;
-    if (action.type === BATCH) {
-      const actions = (action as any).payload as Action[];
-      actions.forEach((act) => {
-        if (act.type === `${resetStore}`) {
-          reset = true;
-        }
-      });
-    } else if (action.type === `${resetStore}`) {
-      reset = true;
-    }
-
-    if (reset) {
-      const { storage, key } = persistConfig;
-      storage.removeItem(`persist:${key}`);
-      const nextState = keepState(state);
-      return rootReducer(nextState, action);
-    }
-
-    return rootReducer(state, action);
-  };
-
-function* watchResetToken() {
+function* watchResetStore() {
   while (true) {
-    yield* take(`${resetToken}`);
-    yield* put(resetStore());
+    yield* take([`${resetToken}`, `${resetStore}`]);
+    const store = yield* StoreContext;
+    const keep: (keyof WebState)[] = [
+      "redirectPath",
+      "entities",
+      "signal",
+      "env",
+    ];
+    yield* store.reset(keep);
+    yield* schema.update(db.loaders.success({ id: PERSIST_LOADER_ID }));
   }
 }
 
 function* watchSignal() {
   while (true) {
     yield* take(`${resetStore}`);
-    const signal = yield* select(selectSignal);
+    const signal = yield* select(db.signal.select);
     signal.abort("reset store");
-    yield* put(setSignal(new AbortController()));
+    yield* schema.update(db.signal.set(new AbortController()));
   }
 }
 
-export const sagas = { watchResetToken, watchSignal };
+export const sagas = { watchResetStore, watchSignal };

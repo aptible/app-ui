@@ -1,38 +1,8 @@
-import { Next, leading, select } from "@app/fx";
-
 import { authApi } from "@app/api";
+import { Next, leading, select } from "@app/fx";
 import { defaultEntity } from "@app/hal";
-import {
-  createAssign,
-  createReducerMap,
-  createTable,
-} from "@app/slice-helpers";
-import { AppState, AuthApiCtx, LinkResponse, Otp, U2fDevice } from "@app/types";
-
-const defaultOtp = (o: Partial<Otp> = {}): Otp => {
-  return {
-    id: "",
-    uri: "",
-    recoveryCodesUrl: "",
-    currentUrl: "",
-    ...o,
-  };
-};
-
-const initOtp = defaultOtp();
-export const OTP_NAME = "otp";
-const otp = createAssign({
-  name: OTP_NAME,
-  initialState: initOtp,
-});
-export const { set: setOtp } = otp.actions;
-export const selectOtp = (s: AppState) => s[OTP_NAME] || initOtp;
-
-export const U2F_DEVICES_NAME = "u2fDevices";
-const u2fDevices = createTable<U2fDevice>({ name: U2F_DEVICES_NAME });
-export const { selectTableAsList: selectU2fDevicesAsList } =
-  u2fDevices.getSelectors((s: AppState) => s[U2F_DEVICES_NAME]);
-const { add: addU2fDevice, remove: removeU2fDevices } = u2fDevices.actions;
+import { db, schema } from "@app/schema";
+import { AuthApiCtx, LinkResponse, Otp, U2fDevice } from "@app/types";
 
 interface U2fDeviceResponse {
   id: string;
@@ -54,12 +24,10 @@ const deserializeU2f = (u: U2fDeviceResponse): U2fDevice => {
   };
 };
 
-export const reducers = createReducerMap(u2fDevices, otp);
-
 export const entities = {
   u2f_device: defaultEntity({
     id: "u2f_device",
-    save: addU2fDevice,
+    save: db.u2fDevices.add,
     deserialize: deserializeU2f,
   }),
 };
@@ -82,7 +50,7 @@ export const deleteU2fDevice = authApi.delete<{ deviceId: string }>(
       return;
     }
 
-    ctx.actions.push(removeU2fDevices([deviceId]));
+    yield* schema.update(db.u2fDevices.remove([deviceId]));
   },
 );
 
@@ -123,7 +91,7 @@ export const fetchOtpCodes = authApi.get<{ otpId: string }>(
 export const setupOtp = authApi.post<SetupOtp, OtpResponse>(
   "/users/:userId/otp_configurations",
   function* onOtp(ctx, next) {
-    const curOtp = yield* select(selectOtp);
+    const curOtp = yield* select(db.otp.select);
     if (curOtp.id) {
       return;
     }
@@ -134,8 +102,8 @@ export const setupOtp = authApi.post<SetupOtp, OtpResponse>(
       return;
     }
 
-    const newOtp = deserializeOtp(ctx.json.data);
-    ctx.actions.push(setOtp(newOtp));
+    const newOtp = deserializeOtp(ctx.json.value);
+    yield* schema.update(db.otp.set(newOtp));
   },
 );
 

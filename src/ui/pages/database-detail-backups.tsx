@@ -1,8 +1,11 @@
 import { createDatabaseOperation, selectDatabaseById } from "@app/deploy";
-import { useLoader, useLoaderSuccess } from "@app/fx";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useSelector,
+} from "@app/react";
 import { databaseActivityUrl, environmentBackupsUrl } from "@app/routes";
-import { AppState } from "@app/types";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { usePaginatedBackupsByDatabaseId } from "../hooks";
 import {
@@ -20,7 +23,7 @@ export const DatabaseBackupsPage = () => {
   const navigate = useNavigate();
   const { id = "" } = useParams();
   const paginated = usePaginatedBackupsByDatabaseId(id);
-  const db = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const db = useSelector((s) => selectDatabaseById(s, { id }));
   const backupAction = createDatabaseOperation({ type: "backup", dbId: id });
   const loader = useLoader(backupAction);
 

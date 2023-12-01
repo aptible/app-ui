@@ -1,7 +1,3 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
 import {
   CreateEndpointProps,
   EndpointManagedType,
@@ -13,11 +9,17 @@ import {
   selectAppById,
   selectImageById,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { endpointDetailUrl } from "@app/routes";
-import { AppState } from "@app/types";
 import { existValidtor, ipValidator, portValidator } from "@app/validator";
-
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,
@@ -66,8 +68,8 @@ export const AppCreateEndpointPage = () => {
   const navigate = useNavigate();
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
-  const image = useSelector((s: AppState) =>
+  const app = useSelector((s) => selectAppById(s, { id }));
+  const image = useSelector((s) =>
     selectImageById(s, { id: app.currentImageId }),
   );
   useQuery(fetchImageById({ id: app.currentImageId }));

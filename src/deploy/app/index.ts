@@ -1,21 +1,16 @@
 import { api, cacheMinTimer, thunks } from "@app/api";
-import { call, poll, select } from "@app/fx";
+import { call, createAction, poll, select } from "@app/fx";
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
+import { WebState, db, schema } from "@app/schema";
 import type {
-  AppState,
   DeployApp,
   DeployOperation,
   DeployServiceResponse,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
-import { createAction, createSelector } from "@reduxjs/toolkit";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -25,12 +20,10 @@ import {
 import { DeployImageResponse } from "../image";
 import {
   DeployOperationResponse,
-  defaultDeployOperation,
   findOperationsByAppId,
   selectOperationsAsList,
   waitForOperation,
 } from "../operation";
-import { selectDeploy } from "../slice";
 
 export * from "./utils";
 
@@ -104,43 +97,11 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
   };
 };
 
-export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    handle: "",
-    gitRepo: "",
-    createdAt: now,
-    updatedAt: now,
-    deploymentMethod: "",
-    status: "pending",
-    environmentId: "",
-    currentConfigurationId: "",
-    currentImageId: "",
-    ...a,
-  };
-};
-
-export const DEPLOY_APP_NAME = "apps";
-const slice = createTable<DeployApp>({ name: DEPLOY_APP_NAME });
-export const {
-  add: addDeployApps,
-  patch: patchDeployApps,
-  reset: resetDeployApps,
-} = slice.actions;
 export const hasDeployApp = (a: DeployApp) => a.id !== "";
-export const appReducers = createReducerMap(slice);
-
-const initApp = defaultDeployApp();
-const must = mustSelectEntity(initApp);
-
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_APP_NAME],
-);
-export const selectAppById = must(selectors.selectById);
-export const { selectTable: selectApps } = selectors;
-const selectAppsAsList = selectors.selectTableAsList;
-export const findAppById = must(selectors.findById);
+export const selectAppById = db.apps.selectById;
+export const selectApps = db.apps.selectTable;
+const selectAppsAsList = db.apps.selectTableAsList;
+export const findAppById = db.apps.findById;
 
 export interface DeployAppRow extends DeployApp {
   envHandle: string;
@@ -149,7 +110,7 @@ export interface DeployAppRow extends DeployApp {
 
 export const selectAppsByEnvId = createSelector(
   selectAppsAsList,
-  (_: AppState, props: { envId: string }) => props.envId,
+  (_: WebState, props: { envId: string }) => props.envId,
   (apps, envId) => {
     return apps.filter((app) => app.environmentId === envId);
   },
@@ -157,7 +118,7 @@ export const selectAppsByEnvId = createSelector(
 
 export const selectFirstAppByEnvId = createSelector(
   selectAppsByEnvId,
-  (apps) => apps[0] || initApp,
+  (apps) => apps[0] || db.apps.empty,
 );
 
 export const selectAppsByOrgAsList = createSelector(
@@ -181,7 +142,7 @@ export const selectAppsForTable = createSelector(
       .map((app): DeployAppRow => {
         const env = findEnvById(envs, { id: app.environmentId });
         const appOps = findOperationsByAppId(ops, app.id);
-        let lastOperation = defaultDeployOperation();
+        let lastOperation = db.operations.empty;
         if (appOps.length > 0) {
           lastOperation = appOps[0];
         }
@@ -217,8 +178,8 @@ const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
 
 export const selectAppsForTableSearchByEnvironmentId = createSelector(
   selectAppsForTable,
-  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: AppState, props: { envId?: string }) => props.envId || "",
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { envId?: string }) => props.envId || "",
   (apps, search, envId): DeployAppRow[] => {
     if (search === "" && envId === "") {
       return apps;
@@ -243,7 +204,7 @@ export const selectAppsForTableSearchByEnvironmentId = createSelector(
 
 export const selectAppsForTableSearch = createSelector(
   selectAppsForTable,
-  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (apps, search): DeployAppRow[] => {
     if (search === "") {
       return apps;
@@ -274,7 +235,7 @@ export const selectAppsByEnvOnboarding = createSelector(
 export const selectAppsByStack = createSelector(
   selectAppsAsList,
   selectEnvironments,
-  (_: AppState, p: { stackId: string }) => p.stackId,
+  (_: WebState, p: { stackId: string }) => p.stackId,
   (apps, envs, stackId) => {
     return apps.filter((app) => {
       const env = findEnvById(envs, { id: app.environmentId });
@@ -298,7 +259,7 @@ export const fetchApps = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    ctx.actions.push(resetDeployApps());
+    yield* schema.update(db.apps.reset());
   },
 );
 
@@ -341,7 +302,7 @@ export const createDeployApp = api.post<CreateAppProps, DeployAppResponse>(
       return;
     }
 
-    ctx.loader = { meta: { appId: ctx.json.data.id } };
+    ctx.loader = { meta: { appId: ctx.json.value.id } };
   },
 );
 
@@ -410,7 +371,7 @@ export const appEntities = {
   app: defaultEntity({
     id: "app",
     deserialize: deserializeDeployApp,
-    save: addDeployApps,
+    save: db.apps.add,
   }),
 };
 
@@ -430,7 +391,7 @@ export const restartApp = api.post<{ id: string }, DeployOperationResponse>(
       return;
     }
 
-    const opId = ctx.json.data.id;
+    const opId = ctx.json.value.id;
     ctx.loader = {
       message: `Restart app operation queued (operation ID: ${opId})`,
       meta: { opId: `${opId}` },
@@ -442,7 +403,7 @@ export const deprovisionApp = thunks.create<{
   appId: string;
 }>("deprovision-app", function* (ctx, next) {
   const { appId } = ctx.payload;
-  yield* select((s: AppState) => selectAppById(s, { id: appId }));
+  yield* select((s: WebState) => selectAppById(s, { id: appId }));
 
   const deprovisionCtx = yield* call(() =>
     createAppOperation.run(
@@ -456,7 +417,7 @@ export const deprovisionApp = thunks.create<{
   if (!deprovisionCtx.json.ok) {
     return;
   }
-  const id = `${deprovisionCtx.json.data.id}`;
+  const id = `${deprovisionCtx.json.value.id}`;
   yield* call(() => waitForOperation({ id }));
   yield* next();
 });

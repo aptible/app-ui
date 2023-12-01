@@ -1,8 +1,12 @@
 import { createId, testServiceRails } from "@app/mocks";
-import { AppState, DeployService } from "@app/types";
+import {
+  WebState,
+  defaultDeployRelease,
+  defaultDeployService,
+} from "@app/schema";
+import { DeployService } from "@app/types";
 import { DeepPartial } from "redux";
-import { defaultDeployRelease, selectReleasesByServiceAfterDate } from ".";
-import { defaultDeployService } from "../service";
+import { selectReleasesByServiceAfterDate } from "./index";
 
 const createdAtByHours = ({ hours }: { hours: number }) => {
   const createdAt = new Date();
@@ -14,7 +18,7 @@ const testService: DeployService = defaultDeployService({
   id: testServiceRails.id.toString(),
 });
 
-const state: DeepPartial<AppState> = {
+const state: DeepPartial<WebState> = {
   services: { [testService.id]: testService },
   releases: {},
 };

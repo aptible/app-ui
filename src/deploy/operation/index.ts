@@ -1,6 +1,3 @@
-import { call, delay, leading, mdw, poll, put, select } from "@app/fx";
-import { createAction, createSelector } from "@reduxjs/toolkit";
-
 import {
   PaginateProps,
   Retryable,
@@ -9,7 +6,8 @@ import {
   combinePages,
   thunks,
 } from "@app/api";
-import { Operation } from "@app/fx";
+import { call, createAction, delay, leading, mdw, poll, select } from "@app/fx";
+import { Operation, createSelector } from "@app/fx";
 import {
   defaultEntity,
   extractIdFromLink,
@@ -20,14 +18,9 @@ import {
   databaseDetailUrl,
   endpointDetailUrl,
 } from "@app/routes";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
+import { WebState, db, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
-  AppState,
   DeployActivityRow,
   DeployOperation,
   LinkResponse,
@@ -35,7 +28,6 @@ import type {
   OperationType,
   ResourceType,
 } from "@app/types";
-import { selectDeploy } from "../slice";
 
 export interface DeployOperationResponse {
   id: number;
@@ -120,43 +112,6 @@ export const defaultOperationResponse = (
   };
 };
 
-export const defaultDeployOperation = (
-  op: Partial<DeployOperation> = {},
-): DeployOperation => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    environmentId: "",
-    codeScanResultId: "",
-    resourceId: "",
-    resourceType: "unknown",
-    type: "unknown",
-    status: "unknown",
-    createdAt: now,
-    updatedAt: now,
-    gitRef: "",
-    dockerRef: "",
-    containerCount: 0,
-    containerSize: 0,
-    diskSize: 0,
-    encryptedEnvJsonNew: "",
-    destinationRegion: "",
-    cancelled: false,
-    aborted: false,
-    automated: false,
-    immediate: false,
-    provisionedIops: 0,
-    ebsVolumeType: "",
-    encryptedStackSettings: "",
-    instanceProfile: "",
-    userName: "unknown",
-    userEmail: "",
-    env: "",
-    note: "",
-    ...op,
-  };
-};
-
 const transformOperationType = (
   type: string | undefined | null,
 ): OperationType => {
@@ -207,24 +162,11 @@ export const deserializeDeployOperation = (
   };
 };
 
-export const DEPLOY_OP_NAME = "operations";
-const slice = createTable<DeployOperation>({ name: DEPLOY_OP_NAME });
-export const { add: addDeployOperations, patch: patchDeployOperations } =
-  slice.actions;
 export const hasDeployOperation = (a: DeployOperation) => a.id !== "";
-export const opReducers = createReducerMap(slice);
-
-const initOp = defaultDeployOperation();
-const must = mustSelectEntity(initOp);
-
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_OP_NAME],
-);
-export const selectOperationById = must(selectors.selectById);
-const { selectTableAsList } = selectors;
+export const selectOperationById = db.operations.selectById;
 export const selectOperationsAsList = createSelector(
-  selectTableAsList,
-  (_: AppState, props: { limit?: number }) => props.limit,
+  db.operations.selectTableAsList,
+  (_: WebState, props: { limit?: number }) => props.limit,
   (ops, limit) =>
     ops
       .sort((a, b) => {
@@ -237,13 +179,13 @@ export const selectOperationsAsList = createSelector(
 
 export const selectOperationsByResourceId = createSelector(
   selectOperationsAsList,
-  (_: AppState, props: { resourceId: string }) => props.resourceId,
+  (_: WebState, props: { resourceId: string }) => props.resourceId,
   (ops, resourceId) => ops.filter((op) => op.resourceId === resourceId),
 );
 
 export const selectLatestProvisionOps = createSelector(
   selectOperationsAsList,
-  (_: AppState, props: { resourceIds: string[] }) => props.resourceIds,
+  (_: WebState, props: { resourceIds: string[] }) => props.resourceIds,
   (ops, resourceIds) => {
     const results: DeployOperation[] = [];
     for (let i = 0; i < resourceIds.length; i += 1) {
@@ -259,7 +201,7 @@ export const selectLatestProvisionOps = createSelector(
 
 export const selectOperationsByEnvId = createSelector(
   selectOperationsAsList,
-  (_: AppState, p: { envId: string }) => p.envId,
+  (_: WebState, p: { envId: string }) => p.envId,
   (ops, envId) => ops.filter((op) => op.environmentId === envId),
 );
 
@@ -271,7 +213,7 @@ export const findOperationsByDbId = (ops: DeployOperation[], dbId: string) =>
 
 export const selectOperationsByAppId = createSelector(
   selectOperationsAsList,
-  (_: AppState, p: { appId: string }) => p.appId,
+  (_: WebState, p: { appId: string }) => p.appId,
   findOperationsByAppId,
 );
 
@@ -280,13 +222,13 @@ export const findLatestSuccessProvisionDbOp = (ops: DeployOperation[]) =>
 
 export const selectOperationsByDatabaseId = createSelector(
   selectOperationsAsList,
-  (_: AppState, p: { dbId: string }) => p.dbId,
+  (_: WebState, p: { dbId: string }) => p.dbId,
   findOperationsByDbId,
 );
 
 export const selectLatestOpByDatabaseId = createSelector(
   selectOperationsByDatabaseId,
-  (ops) => (ops.length > 0 ? ops[0] : initOp),
+  (ops) => (ops.length > 0 ? ops[0] : db.operations.empty),
 );
 
 export const selectLatestOpByAppId = createSelector(
@@ -294,39 +236,39 @@ export const selectLatestOpByAppId = createSelector(
   (ops) =>
     ops.find((op) =>
       ["configure", "provision", "deploy", "deprovision"].includes(op.type),
-    ) || initOp,
+    ) || db.operations.empty,
 );
 
 export const selectLatestOpByResourceId = createSelector(
   selectOperationsAsList,
-  (_: AppState, p: { resourceId: string }) => p.resourceId,
-  (_: AppState, p: { resourceType: ResourceType }) => p.resourceType,
+  (_: WebState, p: { resourceId: string }) => p.resourceId,
+  (_: WebState, p: { resourceType: ResourceType }) => p.resourceType,
   (ops, resourceId, resourceType) =>
     ops.find(
       (op) =>
         op.resourceId === resourceId &&
         op.resourceType === resourceType &&
         ["configure", "provision", "deploy", "deprovision"].includes(op.type),
-    ) || initOp,
+    ) || db.operations.empty,
 );
 
 export const selectLatestProvisionOp = createSelector(
   selectOperationsByResourceId,
-  (_: AppState, p: { resourceType: ResourceType }) => p.resourceType,
+  (_: WebState, p: { resourceType: ResourceType }) => p.resourceType,
   (ops, resourceType) =>
     ops.find(
       (op) => op.type === "provision" && op.resourceType === resourceType,
-    ) || initOp,
+    ) || db.operations.empty,
 );
 
 export const selectLatestScanOp = createSelector(
   selectOperationsByAppId,
-  (ops) => ops.find((op) => op.type === "scan_code") || initOp,
+  (ops) => ops.find((op) => op.type === "scan_code") || db.operations.empty,
 );
 
 export const selectLatestConfigureOp = createSelector(
   selectOperationsByAppId,
-  (ops) => ops.find((op) => op.type === "configure") || initOp,
+  (ops) => ops.find((op) => op.type === "configure") || db.operations.empty,
 );
 
 export const findLatestDeployOp = (ops: DeployOperation[]) =>
@@ -337,7 +279,7 @@ export const findLatestDbProvisionOp = (ops: DeployOperation[]) =>
 
 export const selectLatestDeployOp = createSelector(
   selectOperationsByAppId,
-  (ops) => ops.find((op) => op.type === "deploy") || initOp,
+  (ops) => ops.find((op) => op.type === "deploy") || db.operations.empty,
 );
 
 export const findLatestSuccessDeployOp = (ops: DeployOperation[]) =>
@@ -345,7 +287,7 @@ export const findLatestSuccessDeployOp = (ops: DeployOperation[]) =>
 
 export const selectLatestSuccessDeployOpByEnvId = createSelector(
   selectOperationsByEnvId,
-  (ops) => findLatestSuccessDeployOp(ops) || initOp,
+  (ops) => findLatestSuccessDeployOp(ops) || db.operations.empty,
 );
 
 export const findLatestSuccessScanOp = (ops: DeployOperation[]) =>
@@ -353,7 +295,7 @@ export const findLatestSuccessScanOp = (ops: DeployOperation[]) =>
 
 export const selectLatestSucceessScanOp = createSelector(
   selectOperationsByAppId,
-  (ops) => findLatestSuccessScanOp(ops) || initOp,
+  (ops) => findLatestSuccessScanOp(ops) || db.operations.empty,
 );
 
 interface EnvIdProps {
@@ -450,7 +392,7 @@ export function* waitForOperation({
 }): Operation<WaitResult> {
   while (true) {
     if (skipFetch) {
-      const op = yield* select((s: AppState) => selectOperationById(s, { id }));
+      const op = yield* select((s: WebState) => selectOperationById(s, { id }));
       if (op.status === "succeeded" || op.status === "failed") {
         return op;
       }
@@ -467,7 +409,7 @@ export function* waitForOperation({
           return deserializeDeployOperation(ctx.json.value);
         }
       } else {
-        const op = yield* select((s: AppState) =>
+        const op = yield* select((s: WebState) =>
           selectOperationById(s, { id }),
         );
         // When a deprovision happens and it is successful, the API will
@@ -477,8 +419,8 @@ export function* waitForOperation({
         // This is okay because after the user refreshes the page, the
         // operation will disappear.
         if (op.type === "deprovision" && ctx.response?.status === 404) {
-          yield* put(
-            patchDeployOperations({
+          yield* schema.update(
+            db.operations.patch({
               [op.id]: { id: op.id, status: "succeeded" },
             }),
           );
@@ -495,7 +437,7 @@ export const opEntities = {
   operation: defaultEntity({
     id: "operation",
     deserialize: deserializeDeployOperation,
-    save: addDeployOperations,
+    save: db.operations.add,
   }),
 };
 

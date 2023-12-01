@@ -15,6 +15,9 @@
       "recommended": true,
       "suspicious": {
         "noExplicitAny": "off"
+      },
+      "correctness": {
+        "useYield": "off"
       }
     }
   }

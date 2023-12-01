@@ -1,15 +1,11 @@
 import { prettyDateTime } from "@app/date";
 import { selectLatestOpByResourceId } from "@app/deploy";
+import { useSelector } from "@app/react";
 import { operationDetailUrl } from "@app/routes";
+import { WebState } from "@app/schema";
 import { StatusVariant } from "@app/status-variant";
 import { capitalize } from "@app/string-utils";
-import {
-  AppState,
-  OperationStatus,
-  OperationType,
-  ResourceType,
-} from "@app/types";
-import { useSelector } from "react-redux";
+import { OperationStatus, OperationType, ResourceType } from "@app/types";
 import { Link } from "react-router-dom";
 import { Banner } from "./banner";
 
@@ -39,7 +35,7 @@ export const ActiveOperationNotice = ({
   resourceId: string;
   resourceType: Extract<ResourceType, "app" | "database">;
 }) => {
-  const operation = useSelector((s: AppState) =>
+  const operation = useSelector((s: WebState) =>
     selectLatestOpByResourceId(s, { resourceId, resourceType }),
   );
   const operationTypeAndStatusToDisplay: {

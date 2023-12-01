@@ -1,9 +1,8 @@
-import { render, screen } from "@testing-library/react";
-
 import { fetchStripeSources, fetchTrials } from "@app/billing";
-import { selectLoaderById } from "@app/fx";
 import { server, testEnv, verifiedUserHandlers } from "@app/mocks";
+import { db } from "@app/schema";
 import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
+import { render, screen } from "@testing-library/react";
 import { rest } from "msw";
 
 describe("Trial notice", () => {
@@ -44,8 +43,10 @@ describe("Trial notice", () => {
       render(<App />);
 
       await waitForData(store, (state) => {
-        const trialLoader = selectLoaderById(state, { id: `${fetchTrials}` });
-        const stripeLoader = selectLoaderById(state, {
+        const trialLoader = db.loaders.selectById(state, {
+          id: `${fetchTrials}`,
+        });
+        const stripeLoader = db.loaders.selectById(state, {
           id: `${fetchStripeSources}`,
         });
         return trialLoader.lastSuccess > 0 && stripeLoader.lastSuccess > 0;
@@ -98,8 +99,10 @@ describe("Trial notice", () => {
       render(<App />);
 
       await waitForData(store, (state) => {
-        const trialLoader = selectLoaderById(state, { id: `${fetchTrials}` });
-        const stripeLoader = selectLoaderById(state, {
+        const trialLoader = db.loaders.selectById(state, {
+          id: `${fetchTrials}`,
+        });
+        const stripeLoader = db.loaders.selectById(state, {
           id: `${fetchStripeSources}`,
         });
         return trialLoader.lastSuccess > 0 && stripeLoader.lastSuccess > 0;
@@ -159,8 +162,10 @@ describe("Trial notice", () => {
         render(<App />);
 
         await waitForData(store, (state) => {
-          const trialLoader = selectLoaderById(state, { id: `${fetchTrials}` });
-          const stripeLoader = selectLoaderById(state, {
+          const trialLoader = db.loaders.selectById(state, {
+            id: `${fetchTrials}`,
+          });
+          const stripeLoader = db.loaders.selectById(state, {
             id: `${fetchStripeSources}`,
           });
           return trialLoader.lastSuccess > 0 && stripeLoader.lastSuccess > 0;

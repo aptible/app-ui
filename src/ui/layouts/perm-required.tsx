@@ -1,11 +1,10 @@
 import { fetchCurrentToken } from "@app/auth";
 import { selectIsAccountOwner, selectUserHasPerms } from "@app/deploy";
-import { useLoader } from "@app/fx";
 import { selectOrganizationSelectedId } from "@app/organizations";
+import { useLoader, useSelector } from "@app/react";
 import { homeUrl } from "@app/routes";
-import { AppState, PermissionScope } from "@app/types";
+import { PermissionScope } from "@app/types";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { Loading } from "../shared";
 
@@ -13,9 +12,7 @@ export const AccountOwnerRequired = ({
   children,
 }: { children?: React.ReactNode }) => {
   const orgId = useSelector(selectOrganizationSelectedId);
-  const isAccountOwner = useSelector((s: AppState) =>
-    selectIsAccountOwner(s, { orgId }),
-  );
+  const isAccountOwner = useSelector((s) => selectIsAccountOwner(s, { orgId }));
 
   if (!isAccountOwner) {
     return <Navigate to={homeUrl()} />;
@@ -34,9 +31,7 @@ export const PermRequired = ({
   children?: React.ReactNode;
 }) => {
   const loader = useLoader(fetchCurrentToken);
-  const hasPerm = useSelector((s: AppState) =>
-    selectUserHasPerms(s, { envId, scope }),
-  );
+  const hasPerm = useSelector((s) => selectUserHasPerms(s, { envId, scope }));
   const navigate = useNavigate();
 
   useEffect(() => {

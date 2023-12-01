@@ -1,10 +1,8 @@
-import { useApi } from "@app/fx";
-import { selectDataById } from "@app/fx";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-
 import { fetchOperationLogs } from "@app/deploy";
-import { AppState, DeployOperation } from "@app/types";
+import { useApi, useSelector } from "@app/react";
+import { db } from "@app/schema";
+import { DeployOperation } from "@app/types";
+import { useEffect } from "react";
 
 export const LogLine = ({ text }: { text: string }) => {
   const parts = text.split("-- :");
@@ -56,8 +54,8 @@ export const LogViewerText = ({ text }: { text: string }) => {
 export const LogViewer = ({ op }: { op: DeployOperation }) => {
   const action = fetchOperationLogs({ id: op.id });
   const loader = useApi(action);
-  const data: string = useSelector((s: AppState) =>
-    selectDataById(s, { id: action.payload.key }),
+  const data: string = useSelector((s) =>
+    db.cache.selectById(s, { id: action.payload.key }),
   );
   useEffect(() => {
     if (op.status === "succeeded" || op.status === "failed") {

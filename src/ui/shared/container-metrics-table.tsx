@@ -1,6 +1,6 @@
 import { selectMetricDataAsFlatTableByContainer } from "@app/metric-tunnel";
-import { AppState, DeployContainer, MetricHorizons } from "@app/types";
-import { useSelector } from "react-redux";
+import { useSelector } from "@app/react";
+import { DeployContainer, MetricHorizons } from "@app/types";
 import { TBody, THead, Table, Td, Th, Tr } from "./table";
 
 export const ContainerMetricsDataTable = ({
@@ -12,7 +12,7 @@ export const ContainerMetricsDataTable = ({
 }) => {
   const containerIds = containers.map((container) => container.id);
 
-  const metricTableData = useSelector((s: AppState) =>
+  const metricTableData = useSelector((s) =>
     selectMetricDataAsFlatTableByContainer(s, {
       containerIds,
       metricHorizon,

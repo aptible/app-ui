@@ -1,4 +1,3 @@
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import {
   fetchInvitations,
   resetInvitation,
@@ -6,8 +5,13 @@ import {
   selectInvitationsByOrgId,
 } from "@app/invitations";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { AppState } from "@app/types";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import {
   BannerMessages,
   Button,
@@ -26,7 +30,7 @@ export const TeamPendingInvitesPage = () => {
   const dispatch = useDispatch();
   const orgId = useSelector(selectOrganizationSelectedId);
   const invites = useQuery(fetchInvitations({ orgId }));
-  const invitations = useSelector((s: AppState) =>
+  const invitations = useSelector((s) =>
     selectInvitationsByOrgId(s, { orgId }),
   );
   const onResend = (invitationId: string) => {

@@ -1,9 +1,3 @@
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { FormEvent, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
-
 import { fileDateTime, prettyDateTime } from "@app/date";
 import {
   RestoreBackupProps,
@@ -14,10 +8,18 @@ import {
   selectDatabaseById,
   selectEnvironmentById,
 } from "@app/deploy";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { databaseBackupsUrl, environmentActivityUrl } from "@app/routes";
-import { AppState } from "@app/types";
 import { handleValidator } from "@app/validator";
-
+import { FormEvent, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
 import { useValidator } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
@@ -39,13 +41,13 @@ export const BackupRestorePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id = "" } = useParams();
-  const backup = useSelector((s: AppState) => selectBackupById(s, { id }));
-  const db = useSelector((s: AppState) =>
+  const backup = useSelector((s) => selectBackupById(s, { id }));
+  const db = useSelector((s) =>
     selectDatabaseById(s, { id: backup.databaseId }),
   );
   useQuery(fetchBackup({ id }));
   useQuery(fetchDatabase({ id: backup.databaseId }));
-  const env = useSelector((s: AppState) =>
+  const env = useSelector((s) =>
     selectEnvironmentById(s, { id: backup.environmentId }),
   );
   const defaultValue = {

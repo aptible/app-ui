@@ -12,7 +12,6 @@ export default defineConfig(() => {
             chart: ["react-chartjs-2", "chart.js", "chartjs-adapter-luxon"],
             vendor: [
               "@github/webauthn-json",
-              "@reduxjs/toolkit",
               "@sentry/react",
               "@stripe/react-stripe-js",
               "@stripe/stripe-js",
@@ -20,12 +19,8 @@ export default defineConfig(() => {
               "debug",
               "react",
               "react-dom",
-              "react-redux",
               "react-router",
               "react-router-dom",
-              "redux",
-              "redux-batched-actions",
-              "redux-persist",
               "starfx",
               "qrcode.react",
             ],
@@ -44,6 +39,7 @@ export default defineConfig(() => {
       globals: true,
       environment: "jsdom",
       setupFiles: ["./src/test/setup.ts"],
+      reporters: ["basic"],
       env: {
         NODE_OPTIONS: "--no-experimental-fetch",
       },

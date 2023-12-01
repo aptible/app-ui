@@ -6,11 +6,10 @@ import {
   selectEnvironmentsCountByStack,
   selectStacksForTableSearch,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useQuery, useSelector } from "@app/react";
 import { createStackUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { AppState, DeployStack } from "@app/types";
-import { useSelector } from "react-redux";
+import { DeployStack } from "@app/types";
 import { useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
@@ -45,13 +44,13 @@ export function StacksPage() {
 
 function StackListRow({ stack }: { stack: DeployStack }) {
   const stackType = getStackType(stack);
-  const envCount = useSelector((s: AppState) =>
+  const envCount = useSelector((s) =>
     selectEnvironmentsCountByStack(s, { stackId: stack.id }),
   );
-  const appCount = useSelector((s: AppState) =>
+  const appCount = useSelector((s) =>
     selectAppsCountByStack(s, { stackId: stack.id }),
   );
-  const dbCount = useSelector((s: AppState) =>
+  const dbCount = useSelector((s) =>
     selectDatabasesCountByStack(s, { stackId: stack.id }),
   );
 
@@ -78,7 +77,7 @@ function StackList() {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
-  const stacks = useSelector((s: AppState) =>
+  const stacks = useSelector((s) =>
     selectStacksForTableSearch(s, {
       search,
     }),

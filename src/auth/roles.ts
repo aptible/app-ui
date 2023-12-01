@@ -1,5 +1,6 @@
 import { authApi } from "@app/api";
-import { RoleResponse, setCurrentUserRoleIds } from "@app/roles";
+import { RoleResponse } from "@app/roles";
+import { db, schema } from "@app/schema";
 import { HalEmbedded } from "@app/types";
 
 export const fetchRoles = authApi.get<{ orgId: string }>(
@@ -15,9 +16,8 @@ export const fetchCurrentUserRoles = authApi.get<
     return;
   }
 
-  ctx.actions.push(
-    setCurrentUserRoleIds(ctx.json.data._embedded.roles.map((r) => r.id)),
-  );
+  const ids = ctx.json.value._embedded.roles.map((r) => r.id);
+  yield* schema.update(db.currentUserRoles.set(ids));
 });
 
 export const fetchUserRoles = authApi.get<{ userId: string }>(

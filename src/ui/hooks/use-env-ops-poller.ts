@@ -3,9 +3,8 @@ import {
   fetchAllEnvOps,
   pollEnvOperations,
 } from "@app/deploy";
-import { batchActions, useLoader, useQuery } from "@app/fx";
+import { useDispatch, useLoader, useQuery } from "@app/react";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useVisibility } from "./use-visibility";
 
 export const useEnvOpsPoller = ({
@@ -25,7 +24,8 @@ export const useEnvOpsPoller = ({
   // and suspend poller when tab is inactive
   useEffect(() => {
     if (isTabActive) {
-      dispatch(batchActions([cancelEnvOperationsPoll(), pollAction]));
+      dispatch(cancelEnvOperationsPoll());
+      dispatch(pollAction);
     } else {
       dispatch(cancelEnvOperationsPoll());
     }

@@ -1,11 +1,9 @@
-import cn from "classnames";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-
 import { selectOrganizationSelected } from "@app/organizations";
+import { useSelector } from "@app/react";
 import { orgPickerUrl } from "@app/routes";
 import { selectCurrentUser } from "@app/users";
-
+import cn from "classnames";
+import { useNavigate } from "react-router";
 import { IconWorkplace } from "./icons";
 
 export const OrgPicker = () => {

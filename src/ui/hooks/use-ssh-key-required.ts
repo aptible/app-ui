@@ -1,9 +1,8 @@
-import { useCache } from "@app/fx";
+import { useCache, useSelector } from "@app/react";
 import { fetchSSHKeys } from "@app/ssh-keys";
 import { HalEmbedded } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 import { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export function useSshKeyRequired(sshKeyUrl: string) {

@@ -5,9 +5,8 @@ import {
   selectFirstEndpointByAppId,
   selectLatestDeployOp,
 } from "@app/deploy";
+import { useSelector } from "@app/react";
 import { environmentAppsUrl } from "@app/routes";
-import { AppState } from "@app/types";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { IconGitBranch, IconGlobe } from "./icons";
 import { Pill } from "./pill";
@@ -25,17 +24,13 @@ export const ResourceGroupBox = ({
   status: JSX.Element;
   handle: string;
 }) => {
-  const vhost = useSelector((s: AppState) =>
-    selectFirstEndpointByAppId(s, { appId }),
-  );
-  const deployOp = useSelector((s: AppState) =>
-    selectLatestDeployOp(s, { appId }),
-  );
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  const env = useSelector((s: AppState) =>
+  const vhost = useSelector((s) => selectFirstEndpointByAppId(s, { appId }));
+  const deployOp = useSelector((s) => selectLatestDeployOp(s, { appId }));
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
+  const env = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
-  const environment = useSelector((s: AppState) =>
+  const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
 

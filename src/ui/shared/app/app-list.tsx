@@ -11,16 +11,15 @@ import {
   selectServicesByAppId,
 } from "@app/deploy";
 import { calcMetrics } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
   environmentCreateAppUrl,
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import type { AppState, DeployApp } from "@app/types";
+import type { DeployApp } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
-import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonCreate } from "../button";
 import { Group } from "../group";
@@ -69,7 +68,7 @@ const AppIdCell = ({ app }: AppCellProps) => {
 };
 
 const AppServicesCell = ({ app }: AppCellProps) => {
-  const services = useSelector((s: AppState) =>
+  const services = useSelector((s) =>
     selectServicesByAppId(s, { appId: app.id }),
   );
   const metrics = calcMetrics(services);
@@ -84,7 +83,7 @@ const AppServicesCell = ({ app }: AppCellProps) => {
 };
 
 const AppCostCell = ({ app }: AppCellProps) => {
-  const services = useSelector((s: AppState) =>
+  const services = useSelector((s) =>
     selectServicesByAppId(s, { appId: app.id }),
   );
   const cost = services.reduce((acc, service) => {
@@ -106,7 +105,7 @@ const AppCostCell = ({ app }: AppCellProps) => {
 };
 
 export const AppLastOpCell = ({ app }: AppCellProps) => {
-  const lastOperation = useSelector((s: AppState) =>
+  const lastOperation = useSelector((s) =>
     selectLatestOpByAppId(s, { appId: app.id }),
   );
 
@@ -143,9 +142,7 @@ export const AppListByOrg = () => {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
-  const apps = useSelector((s: AppState) =>
-    selectAppsForTableSearch(s, { search }),
-  );
+  const apps = useSelector((s) => selectAppsForTableSearch(s, { search }));
   const paginated = usePaginate(apps);
 
   return (
@@ -210,7 +207,7 @@ export const AppListByEnvironment = ({
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
-  const apps = useSelector((s: AppState) =>
+  const apps = useSelector((s) =>
     selectAppsForTableSearchByEnvironmentId(s, {
       envId,
       search,
@@ -279,7 +276,7 @@ export const AppListByCertificate = ({
   certId: string;
   envId: string;
 }) => {
-  const apps = useSelector((s: AppState) =>
+  const apps = useSelector((s) =>
     selectAppsByCertId(s, {
       certId,
       envId,

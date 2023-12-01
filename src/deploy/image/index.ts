@@ -1,12 +1,7 @@
 import { api } from "@app/api";
 import { defaultEntity } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import type { AppState, DeployImage } from "@app/types";
-import { selectDeploy } from "../slice";
+import { db } from "@app/schema";
+import type { DeployImage } from "@app/types";
 
 export interface DeployImageResponse {
   id: number;
@@ -22,7 +17,7 @@ export interface DeployImageResponse {
 
 export const deserializeImage = (payload: DeployImageResponse): DeployImage => {
   if (!payload) {
-    return defaultDeployImage();
+    return db.images.empty;
   }
 
   return {
@@ -37,40 +32,14 @@ export const deserializeImage = (payload: DeployImageResponse): DeployImage => {
   };
 };
 
-export const defaultDeployImage = (
-  img: Partial<DeployImage> = {},
-): DeployImage => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    gitRepo: "",
-    gitRef: "Not used",
-    dockerRepo: "",
-    exposedPorts: [],
-    dockerRef: "",
-    createdAt: now,
-    updatedAt: now,
-    ...img,
-  };
-};
-
 export const fetchImageById = api.get<{ id: string }>("/images/:id");
 
-export const IMAGE_NAME = "images";
-const slice = createTable<DeployImage>({ name: IMAGE_NAME });
-const { add: addDeployImages } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[IMAGE_NAME] || {},
-);
-const initImage = defaultDeployImage();
-const must = mustSelectEntity(initImage);
-export const selectImageById = must(selectors.selectById);
+export const selectImageById = db.images.selectById;
 
-export const imageReducers = createReducerMap(slice);
 export const imageEntities = {
   image: defaultEntity({
     id: "image",
-    save: addDeployImages,
+    save: db.images.add,
     deserialize: deserializeImage,
   }),
 };

@@ -1,7 +1,6 @@
-import { useLoader } from "@app/fx";
 import type { LoadingState } from "@app/fx";
+import { useDispatch, useLoader, useSelector } from "@app/react";
 import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
 import { User } from "@app/types";
 import { fetchUser, selectCurrentUser, selectCurrentUserId } from "@app/users";

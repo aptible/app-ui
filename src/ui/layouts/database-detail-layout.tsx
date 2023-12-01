@@ -13,7 +13,7 @@ import {
   selectServiceById,
 } from "@app/deploy";
 import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
-import { useQuery } from "@app/fx";
+import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   databaseActivityUrl,
   databaseBackupsUrl,
@@ -26,9 +26,8 @@ import {
   environmentDatabasesUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import type { AppState, DeployDatabase, DeployService } from "@app/types";
+import type { DeployDatabase, DeployService } from "@app/types";
 import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
@@ -51,11 +50,9 @@ export function DatabaseHeader({
 }) {
   const metrics = calcMetrics([service]);
   useQuery(fetchDiskById({ id: database.diskId }));
-  const disk = useSelector((s: AppState) =>
-    selectDiskById(s, { id: database.diskId }),
-  );
+  const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
   useQuery(fetchDatabaseImages());
-  const image = useSelector((s: AppState) =>
+  const image = useSelector((s) =>
     selectDatabaseImageById(s, { id: database.databaseImageId }),
   );
   return (
@@ -115,12 +112,12 @@ function DatabasePageHeader() {
     dispatch(setResourceStats({ id, type: "database" }));
   }, []);
 
-  const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const database = useSelector((s) => selectDatabaseById(s, { id }));
   useQuery(fetchService({ id: database.serviceId }));
-  const service = useSelector((s: AppState) =>
+  const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
   );
-  const environment = useSelector((s: AppState) =>
+  const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: database.environmentId }),
   );
   const loader = useQuery(fetchDatabase({ id }));

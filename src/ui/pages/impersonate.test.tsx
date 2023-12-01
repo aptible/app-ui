@@ -1,8 +1,3 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { rest } from "msw";
-import { act } from "react-dom/test-utils";
-
 import { defaultHalHref } from "@app/hal";
 import {
   createId,
@@ -19,6 +14,10 @@ import { HOME_PATH, IMPERSONATE_PATH, impersonateUrl } from "@app/routes";
 import { setupIntegrationTest, waitForBootup } from "@app/test";
 import { TokenSuccessResponse, defaultTokenResponse } from "@app/token";
 import { UserResponse, defaultUserResponse } from "@app/users";
+import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { rest } from "msw";
+import { act } from "react-dom/test-utils";
 
 import { ImpersonatePage } from "./impersonate";
 

@@ -25,20 +25,19 @@ import {
   selectLatestDeployOp,
   selectLatestProvisionOp,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
-import { batchActions, resetLoaderById, selectLoaderById } from "@app/fx";
 import {
   deployProject,
   getDbEnvTemplateValue,
   redeployApp,
 } from "@app/projects";
+import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import {
   appDeployConfigureUrl,
   appEndpointsUrl,
   environmentAppsUrl,
 } from "@app/routes";
+import { db } from "@app/schema";
 import {
-  AppState,
   DeployApp,
   DeployDatabase,
   DeployEndpoint,
@@ -47,7 +46,6 @@ import {
 } from "@app/types";
 import cn from "classnames";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
@@ -79,12 +77,10 @@ export const AppDeployStatusPage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
   const appQuery = useQuery(fetchApp({ id: appId }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
   const envId = app.environmentId;
   const configId = app.currentConfigurationId;
-  const services = useSelector((s: AppState) =>
-    selectServicesByAppId(s, { appId }),
-  );
+  const services = useSelector((s) => selectServicesByAppId(s, { appId }));
 
   const dbs = useDbsInAppConfig({
     envId,
@@ -92,17 +88,13 @@ export const AppDeployStatusPage = () => {
   });
 
   useQuery(fetchEnvironmentById({ id: envId }));
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
+  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
 
-  const deployOp = useSelector((s: AppState) =>
+  const deployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
   const endpointQuery = useQuery(fetchEndpointsByAppId({ appId }));
-  const vhosts = useSelector((s: AppState) =>
-    selectEndpointsByAppId(s, { appId }),
-  );
+  const vhosts = useSelector((s) => selectEndpointsByAppId(s, { appId }));
   useEnvOpsPoller({ envId, appId });
   const { ops } = useProjectOps({
     envId,
@@ -116,11 +108,11 @@ export const AppDeployStatusPage = () => {
 
   const { scanOp } = useLatestCodeResults(appId);
 
-  const redeployLoader = useSelector((s: AppState) =>
-    selectLoaderById(s, { id: `${redeployApp}` }),
+  const redeployLoader = useSelector((s) =>
+    db.loaders.selectById(s, { id: `${redeployApp}` }),
   );
-  const deployProjectLoader = useSelector((s: AppState) =>
-    selectLoaderById(s, { id: `${deployProject}` }),
+  const deployProjectLoader = useSelector((s) =>
+    db.loaders.selectById(s, { id: `${deployProject}` }),
   );
 
   const gitRef = scanOp.gitRef || "main";
@@ -129,15 +121,12 @@ export const AppDeployStatusPage = () => {
       return;
     }
     dispatch(
-      batchActions([
-        resetLoaderById(`${deployProject}`),
-        redeployApp({
-          appId,
-          envId: env.id,
-          gitRef,
-          force,
-        }),
-      ]),
+      redeployApp({
+        appId,
+        envId: env.id,
+        gitRef,
+        force,
+      }),
     );
   };
 
@@ -181,7 +170,7 @@ export const AppDeployStatusPage = () => {
     );
   };
 
-  const environment = useSelector((s: AppState) =>
+  const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
 
@@ -486,7 +475,7 @@ const DatabaseStatus = ({
   db: Pick<DeployDatabase, "id" | "handle">;
   status: OperationStatus;
 }) => {
-  const provisionOp = useSelector((s: AppState) =>
+  const provisionOp = useSelector((s) =>
     selectLatestProvisionOp(s, { resourceId: db.id, resourceType: "database" }),
   );
 
@@ -501,7 +490,7 @@ const EndpointStatus = ({
   status: OperationStatus;
 }) => {
   const dispatch = useDispatch();
-  const provisionOp = useSelector((s: AppState) =>
+  const provisionOp = useSelector((s) =>
     selectLatestProvisionOp(s, {
       resourceId: endpoint.id,
       resourceType: "vhost",
@@ -535,7 +524,7 @@ const AppConfigStatus = ({
   retry: () => void;
   status: OperationStatus;
 }) => {
-  const configOp = useSelector((s: AppState) =>
+  const configOp = useSelector((s) =>
     selectLatestConfigureOp(s, { appId: app.id }),
   );
 
@@ -559,7 +548,7 @@ const AppDeployStatus = ({
   status: OperationStatus;
   retry: () => void;
 }) => {
-  const deployOp = useSelector((s: AppState) =>
+  const deployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
 
@@ -622,7 +611,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
   const dispatch = useDispatch();
   const [curServiceId, setServiceId] = useState("");
   const hasSelected = !!curServiceId;
-  const vhosts = useSelector((s: AppState) =>
+  const vhosts = useSelector((s) =>
     selectEndpointsByAppId(s, { appId: app.id }),
   );
   const action = provisionEndpoint({
@@ -666,7 +655,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
 };
 
 const VhostRow = ({ vhost }: { vhost: DeployEndpoint }) => {
-  const service = useSelector((s: AppState) =>
+  const service = useSelector((s) =>
     selectServiceById(s, { id: vhost.serviceId }),
   );
   const cmd = serviceCommandText(service);
@@ -689,13 +678,11 @@ const useDbsInAppConfig = ({
   configId,
 }: { envId: string; configId: string }) => {
   useQuery(fetchConfiguration({ id: configId }));
-  const appConfig = useSelector((s: AppState) =>
+  const appConfig = useSelector((s) =>
     selectAppConfigById(s, { id: configId }),
   );
   useQuery(fetchDatabasesByEnvId({ envId }));
-  const dbs = useSelector((s: AppState) =>
-    selectDatabasesByEnvId(s, { envId }),
-  );
+  const dbs = useSelector((s) => selectDatabasesByEnvId(s, { envId }));
 
   const envValues = Object.values(appConfig.env);
   return dbs.filter((db) => {

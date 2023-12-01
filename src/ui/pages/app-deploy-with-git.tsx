@@ -9,16 +9,15 @@ import {
   selectLatestDeployOp,
   selectLatestScanOp,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appDeployConfigureUrl,
   appDeployWithGitAddKeyUrl,
   appDeployWithGitUrl,
   createAppUrl,
 } from "@app/routes";
-import { AppState, DeployOperation } from "@app/types";
+import { DeployOperation } from "@app/types";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useSshKeyRequired } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
@@ -169,12 +168,10 @@ export const AppDeployWithGitPage = () => {
 
   const [starter, setStarter] = useState<StarterOption>(customCodeOption);
   useQuery(fetchApp({ id: appId }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
   usePollAppOperations(appId);
-  const scanOp = useSelector((s: AppState) => selectLatestScanOp(s, { appId }));
-  const deployOp = useSelector((s: AppState) =>
-    selectLatestDeployOp(s, { appId }),
-  );
+  const scanOp = useSelector((s) => selectLatestScanOp(s, { appId }));
+  const deployOp = useSelector((s) => selectLatestDeployOp(s, { appId }));
 
   let query = "";
   if (starter) {

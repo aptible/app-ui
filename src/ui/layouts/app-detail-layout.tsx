@@ -13,7 +13,7 @@ import {
   selectLatestDeployOp,
   selectServiceById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appActivityUrl,
   appConfigUrl,
@@ -25,9 +25,8 @@ import {
   environmentAppsUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import type { AppState, DeployApp } from "@app/types";
+import type { DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
@@ -43,14 +42,14 @@ import {
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function AppHeader({ app }: { app: DeployApp }) {
-  const lastDeployOp = useSelector((s: AppState) =>
+  const lastDeployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
   useQuery(fetchImageById({ id: app.currentImageId }));
-  const image = useSelector((s: AppState) =>
+  const image = useSelector((s) =>
     selectImageById(s, { id: app.currentImageId }),
   );
-  const config = useSelector((s: AppState) =>
+  const config = useSelector((s) =>
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
   const dockerImage = config.env.APTIBLE_DOCKER_IMAGE || "Dockerfile Build";
@@ -113,12 +112,10 @@ function AppPageHeader() {
 
   const loader = useQuery(fetchApp({ id }));
   useQuery(fetchServicesByAppId({ id: id }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const app = useSelector((s) => selectAppById(s, { id }));
   useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
-  const service = useSelector((s: AppState) =>
-    selectServiceById(s, { id: serviceId }),
-  );
-  const environment = useSelector((s: AppState) =>
+  const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
+  const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
 
