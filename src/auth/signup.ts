@@ -19,12 +19,12 @@ export const signup = thunks.create<CreateUserForm>(
     const id = ctx.key;
     yield* schema.update(db.loaders.start({ id }));
 
-    const userCtx = yield* call(() => createUser.run(createUser(ctx.payload)));
+    const userCtx = yield* call(createUser.run(ctx.payload));
 
     log(userCtx);
 
     if (!userCtx.json.ok) {
-      const { message, ...meta } = userCtx.json.error as any;
+      const { message, ...meta } = userCtx.json.error;
       yield* schema.update(
         db.loaders.error({
           id,
@@ -37,20 +37,18 @@ export const signup = thunks.create<CreateUserForm>(
 
     tunaEvent("nux.signup.created-user", email);
 
-    const tokenCtx = yield* call(() =>
-      createToken.run(
-        createToken({
-          username: email,
-          password,
-          otpToken: "",
-        }),
-      ),
+    const tokenCtx = yield* call(
+      createToken.run({
+        username: email,
+        password,
+        otpToken: "",
+      }),
     );
 
     log(tokenCtx);
 
     if (!tokenCtx.json.ok) {
-      const { message, ...meta } = tokenCtx.json.error as any;
+      const { message, ...meta } = tokenCtx.json.error;
       yield* schema.update(
         db.loaders.error({
           id,
@@ -64,9 +62,7 @@ export const signup = thunks.create<CreateUserForm>(
     // sometimes a user is being invited to an org and we dont want to
     // create an org or billing for that signup event.
     if (orgName !== "") {
-      const orgCtx = yield* call(() =>
-        createOrganization.run(createOrganization({ name: orgName })),
-      );
+      const orgCtx = yield* call(createOrganization.run({ name: orgName }));
 
       // hack because useLoaderSuccess expected loader.isLoader then loader.isSuccess
       yield* schema.update(db.loaders.start({ id }));
@@ -74,7 +70,7 @@ export const signup = thunks.create<CreateUserForm>(
       log(orgCtx);
 
       if (!orgCtx.json.ok) {
-        const { message, ...meta } = orgCtx.json.error as any;
+        const { message, ...meta } = orgCtx.json.error;
         yield* schema.update(
           db.loaders.error({
             id,
@@ -88,15 +84,13 @@ export const signup = thunks.create<CreateUserForm>(
       const orgId = orgCtx.json.value.id;
       tunaEvent("nux.signup.created-organization", { name: orgName, orgId });
 
-      const billsCtx = yield* call(() =>
-        createSignupBillingRecords.run(
-          createSignupBillingRecords({
-            orgId,
-            orgName,
-            contactName: name,
-            contactEmail: email,
-          }),
-        ),
+      const billsCtx = yield* call(
+        createSignupBillingRecords.run({
+          orgId,
+          orgName,
+          contactName: name,
+          contactEmail: email,
+        }),
       );
 
       if (billsCtx.json.ok) {
@@ -110,10 +104,8 @@ export const signup = thunks.create<CreateUserForm>(
       submitHubspotForm(name, email, orgName, orgId);
     }
 
-    const elevateCtx = yield* call(() =>
-      elevateToken.run(
-        elevateToken({ username: email, password, otpToken: "" }),
-      ),
+    const elevateCtx = yield* call(
+      elevateToken.run({ username: email, password, otpToken: "" }),
     );
 
     log(elevateCtx);

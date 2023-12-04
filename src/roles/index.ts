@@ -1,7 +1,15 @@
+import { authApi } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db } from "@app/schema";
-import { LinkResponse, Role, RoleType, excludesFalse } from "@app/types";
+import { WebState, db, schema } from "@app/schema";
+import {
+  HalEmbedded,
+  LinkResponse,
+  Role,
+  RoleType,
+  excludesFalse,
+} from "@app/types";
+import { UserResponse } from "@app/users";
 
 export interface RoleResponse {
   id: string;
@@ -44,14 +52,19 @@ export const deserializeRole = (role: RoleResponse): Role => {
   };
 };
 
-const deployRoles: RoleType[] = ["owner", "platform_owner", "platform_user"];
+export const selectRoleById = db.roles.selectById;
+
 export const selectRolesByOrgId = createSelector(
   db.roles.selectTableAsList,
   (_: WebState, p: { orgId: string }) => p.orgId,
   (roles, orgId) =>
     roles
       .filter((r) => r.organizationId === orgId)
-      .filter((r) => deployRoles.includes(r.type)),
+      .sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA;
+      }),
 );
 
 export const selectCurrentUserRoles = createSelector(
@@ -85,3 +98,66 @@ export const entities = {
     deserialize: deserializeRole,
   }),
 };
+
+export const fetchRoles = authApi.get<{ orgId: string }>(
+  "/organizations/:orgId/roles",
+);
+export const fetchCurrentUserRoles = authApi.get<
+  { userId: string },
+  HalEmbedded<{ roles: RoleResponse[] }>
+>("/users/:userId/roles", function* (ctx, next) {
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const ids = ctx.json.value._embedded.roles.map((r) => r.id);
+  yield* schema.update(db.currentUserRoles.set(ids));
+});
+
+export const fetchUserRoles = authApi.get<
+  { userId: string },
+  HalEmbedded<{ roles: RoleResponse[] }>
+>(["/users/:userId/roles", "user"], authApi.cache());
+
+export const fetchUsersForRole = authApi.get<
+  { roleId: string },
+  HalEmbedded<{ users: UserResponse[] }>
+>("/roles/:roleId/users", authApi.cache());
+
+export const updateRoleName = authApi.put<{ id: string; name: string }>(
+  "/roles/:id",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({ name: ctx.payload.name }),
+    });
+
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = { message: "Successfully updated role name!" };
+  },
+);
+
+export const createRoleForOrg = authApi.post<{ orgId: string; name: string }>(
+  "/organizations/:orgId/roles",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({ name: ctx.payload.name, type: "platform_user" }),
+    });
+
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = { message: `Successfully created ${ctx.payload.name} role!` };
+  },
+);
+
+export const deleteRole = authApi.delete<{ id: string }>("/roles/:id");

@@ -1,7 +1,10 @@
-import { selectIsUserAnyOwner, selectUserHasPerms } from "@app/deploy";
+import {
+  selectIsUserAnyOwner,
+  selectIsUserOwner,
+  selectUserHasPerms,
+} from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useSelector } from "@app/react";
-import { selectIsUserOwner } from "@app/roles";
 import { capitalize } from "@app/string-utils";
 import { PermissionScope } from "@app/types";
 import cn from "classnames";

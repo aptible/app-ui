@@ -1,7 +1,5 @@
 import {
   CreateSamlConfiguration,
-  FetchAllowlistMemberships,
-  FetchSamlConfigurations,
   SamlConfigurationResponse,
   UpdateSamlConfiguration,
   addAllowlistMembership,
@@ -10,7 +8,6 @@ import {
   deleteSamlConfiguration,
   fetchAllowlistMemberships,
   fetchSamlConfigurations,
-  fetchUsersForRole,
   updateSamlConfiguration,
   updateSamlHandle,
   updateSsoForOrganization,
@@ -30,11 +27,11 @@ import {
 } from "@app/react";
 import { selectRolesByOrgId } from "@app/roles";
 import { ssoUrl } from "@app/routes";
-import { HalEmbedded, Organization } from "@app/types";
-import { UserResponse, selectUsersAsList } from "@app/users";
+import { Organization } from "@app/types";
+import { selectUsersAsList } from "@app/users";
 import { existValidtor } from "@app/validator";
 import { useState } from "react";
-import { useValidator } from "../hooks";
+import { useUserIdsForRole, useValidator } from "../hooks";
 import {
   Banner,
   BannerMessages,
@@ -343,14 +340,7 @@ function SsoEdit({
 function useOrgOwnerIds(orgId: string) {
   const roles = useSelector((s) => selectRolesByOrgId(s, { orgId }));
   const ownerRole = roles.find((r) => r.type === "owner");
-  const ownersReq = useCache<HalEmbedded<{ users: UserResponse[] }>>(
-    fetchUsersForRole({ roleId: ownerRole?.id || "" }),
-  );
-  const init: string[] = [];
-  if (!ownersReq.data) return init;
-  if (typeof ownersReq.data === "string") return init;
-  const owners = ownersReq.data?._embedded.users || [];
-  return owners.map((u) => `${u.id}`);
+  return useUserIdsForRole(ownerRole?.id || "");
 }
 
 const allowlistValidators = {
@@ -358,10 +348,8 @@ const allowlistValidators = {
 };
 
 function useAllowlistMembers(orgId: string) {
-  const allowlist = useCache<FetchAllowlistMemberships>(
-    fetchAllowlistMemberships({ orgId }),
-  );
-  const ownerIds = useOrgOwnerIds(orgId);
+  const allowlist = useCache(fetchAllowlistMemberships({ orgId }));
+  const { userIds: ownerIds } = useOrgOwnerIds(orgId);
   const members = allowlist.data?._embedded.whitelist_memberships || [];
   // get relevant info from membership
   const memberUserMap = members.map((m) => {
@@ -611,7 +599,7 @@ const LoginSso = ({
 
 export const TeamSsoPage = () => {
   const org = useSelector(selectOrganizationSelected);
-  const saml = useCache<FetchSamlConfigurations>(fetchSamlConfigurations());
+  const saml = useCache(fetchSamlConfigurations());
 
   if (saml.isLoading) {
     return <Loading />;

@@ -127,6 +127,10 @@ export const selectEnvironmentsByOrg = createSelector(
   },
 );
 
+export const isPhiAllowed = (env: DeployEnvironment): boolean => {
+  return env.type === "production";
+};
+
 export const selectEnvironmentsByOrgAsList = createSelector(
   selectEnvironmentsByOrg,
   (envs) => Object.values(envs).filter(excludesFalse),

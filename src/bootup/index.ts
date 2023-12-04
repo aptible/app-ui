@@ -1,10 +1,5 @@
 import { ThunkCtx, thunks } from "@app/api";
-import {
-  fetchCurrentToken,
-  fetchCurrentUserRoles,
-  fetchOrganizations,
-  fetchRoles,
-} from "@app/auth";
+import { fetchCurrentToken, fetchOrganizations } from "@app/auth";
 import { fetchBillingDetail } from "@app/billing";
 import {
   fetchApps,
@@ -21,6 +16,7 @@ import {
 import { call, parallel, select, spawn, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
+import { fetchCurrentUserRoles, fetchRoles } from "@app/roles";
 import { db, schema } from "@app/schema";
 import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";

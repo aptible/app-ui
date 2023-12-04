@@ -34,7 +34,7 @@ export const schema = createSchema({
   theme: slice.str("light"),
   nav: slice.obj<Nav>({ collapsed: false }),
   modal: slice.obj<ModalState>({ type: ModalType.NONE, props: {} }),
-  roles: slice.table<Role>(),
+  roles: slice.table<Role>({ empty: factory.defaultRole() }),
   currentUserRoles: slice.any<string[]>([]),
   signal: slice.any(new AbortController()),
   resourceStats: slice.table<ResourceStats>(),
@@ -75,6 +75,7 @@ export const schema = createSchema({
     empty: factory.defaultDeployActivityReport(),
   }),
   images: slice.table({ empty: factory.defaultDeployImage() }),
+  memberships: slice.table({ empty: factory.defaultMembership() }),
 });
 export type WebState = typeof schema.initialState;
 export const { db } = schema;

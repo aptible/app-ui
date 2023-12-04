@@ -6,7 +6,6 @@ import {
   useSelector,
 } from "@app/react";
 import { SshKeyResponse, fetchSSHKeys, rmSSHKey } from "@app/ssh-keys";
-import { HalEmbedded } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 import {
   AddSSHKeyForm,
@@ -67,11 +66,7 @@ const sortDate = (a: { created_at: string }, b: { created_at: string }) => {
 
 export const SSHSettingsPage = () => {
   const user = useSelector(selectCurrentUser);
-  const loader = useCache<
-    HalEmbedded<{
-      ssh_keys: SshKeyResponse[];
-    }>
-  >(fetchSSHKeys({ userId: user.id }));
+  const loader = useCache(fetchSSHKeys({ userId: user.id }));
   const rmLoader = useLoader(rmSSHKey);
   const sshKeys = loader.data?._embedded?.ssh_keys || [];
 

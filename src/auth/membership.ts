@@ -1,87 +1,149 @@
-import { authApi, thunks } from "@app/api";
+import { authApi, thunkLoader, thunks } from "@app/api";
 import { selectEnv } from "@app/config";
-import { call, parallel, select } from "@app/fx";
-import { extractIdFromLink } from "@app/hal";
-import { db, schema } from "@app/schema";
-import { AuthApiCtx, AuthApiError, HalEmbedded } from "@app/types";
+import { call, createSelector, parallel, select } from "@app/fx";
+import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
+import { WebState, db } from "@app/schema";
+import { AuthApiCtx, HalEmbedded, LinkResponse, Membership } from "@app/types";
 
-export const createMembership = authApi.post<{ id: string; userUrl: string }>(
-  "/roles/:id/memberships",
-  function* (ctx, next) {
-    ctx.request = ctx.req({
-      body: JSON.stringify({ user_url: ctx.payload.userUrl }),
-    });
-    yield* next();
-  },
+export interface MembershipResponse {
+  id: string;
+  privileged: boolean;
+  created_at: string;
+  updated_at: string;
+  _links: {
+    user: LinkResponse;
+    role: LinkResponse;
+  };
+  _type: "membership";
+}
+
+export const defaultMembershipResponse = (
+  m: Partial<MembershipResponse> = {},
+): MembershipResponse => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    privileged: false,
+    created_at: now,
+    updated_at: now,
+    _links: {
+      user: defaultHalHref(),
+      role: defaultHalHref(),
+    },
+    ...m,
+    _type: "membership",
+  };
+};
+
+export const deserializeMembership = (m: MembershipResponse): Membership => {
+  return {
+    id: m.id,
+    privileged: m.privileged,
+    createdAt: m.created_at,
+    updatedAt: m.updated_at,
+    userId: extractIdFromLink(m._links.user),
+    roleId: extractIdFromLink(m._links.role),
+  };
+};
+
+export const entities = {
+  membership: defaultEntity({
+    id: "membership",
+    save: db.memberships.add,
+    deserialize: deserializeMembership,
+  }),
+};
+
+export const selectMembershipsByRoleId = createSelector(
+  db.memberships.selectTableAsList,
+  (_: WebState, p: { roleId: string }) => p.roleId,
+  (memberships, roleId) => memberships.filter((m) => m.roleId === roleId),
 );
+
+export const createMembership = authApi.post<
+  { id: string; userUrl: string },
+  MembershipResponse
+>("/roles/:id/memberships", function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify({ user_url: ctx.payload.userUrl }),
+  });
+  yield* next();
+});
+
+export const updateMembership = authApi.patch<{
+  id: string;
+  privileged: boolean;
+}>("/memberships/:id", function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify({ privileged: ctx.payload.privileged }),
+  });
+
+  yield* next();
+});
+
 export const deleteMembership = authApi.delete<{ id: string }>(
   "/memberships/:id",
 );
-const fetchMembershipsByRole = authApi.get<
+
+export const fetchMembershipsByRole = authApi.get<
   { roleId: string },
-  HalEmbedded<{ memberships: any[] }>,
-  AuthApiError
->("/roles/:roleId/memberships", authApi.cache());
+  HalEmbedded<{ memberships: MembershipResponse[] }>
+>("/roles/:roleId/memberships");
 
 export const updateUserMemberships = thunks.create<{
   userId: string;
   add: string[];
   remove: string[];
-}>("update-user-memberships", function* (ctx, next) {
-  const id = ctx.key;
-  yield* schema.update(db.loaders.start({ id }));
+}>("update-user-memberships", [
+  thunkLoader,
+  function* (ctx, next) {
+    const { userId, add, remove } = ctx.payload;
+    const env = yield* select(selectEnv);
+    const userUrl = `${env.authUrl}/users/${userId}`;
 
-  const { userId, add, remove } = ctx.payload;
-  const env = yield* select(selectEnv);
-  const userUrl = `${env.authUrl}/users/${userId}`;
-
-  const addReqs = add.map((roleId) =>
-    call(() => createMembership.run(createMembership({ userUrl, id: roleId }))),
-  );
-
-  // We have the role but in order to remove a role associated with a user
-  // we have to find the membership associated with that user and role.
-  //
-  // This is a pretty big pain since we dont have any good API endpoints
-  // to make this easy for us.  So instead we have to first fetch *all*
-  // memberships for a role and then filter by the user.
-  const rmReqs: any[] = [];
-  for (let i = 0; i < remove.length; i += 1) {
-    const memberships = yield* call(() =>
-      fetchMembershipsByRole.run(fetchMembershipsByRole({ roleId: remove[i] })),
+    const addReqs = add.map((roleId) =>
+      call(() => createMembership.run({ userUrl, id: roleId })),
     );
-    if (!memberships.json.ok) {
-      continue;
+
+    // We have the role but in order to remove a role associated with a user
+    // we have to find the membership associated with that user and role.
+    //
+    // This is a pretty big pain since we dont have any good API endpoints
+    // to make this easy for us.  So instead we have to first fetch *all*
+    // memberships for a role and then filter by the user.
+    const rmReqs: any[] = [];
+    for (let i = 0; i < remove.length; i += 1) {
+      const memberships = yield* call(() =>
+        fetchMembershipsByRole.run({ roleId: remove[i] }),
+      );
+      if (!memberships.json.ok) {
+        continue;
+      }
+
+      const membership = memberships.json.value._embedded.memberships.find(
+        (m) => userId === extractIdFromLink(m._links.user),
+      );
+      if (membership) {
+        const cl = call(() => deleteMembership.run({ id: membership.id }));
+        rmReqs.push(cl);
+      }
     }
 
-    const membership = memberships.json.value._embedded.memberships.find(
-      (m) => userId === extractIdFromLink(m._links.user),
-    );
-    const cl = call(() =>
-      deleteMembership.run(deleteMembership({ id: membership.id })),
-    );
-    rmReqs.push(cl);
-  }
+    const group = yield* parallel<AuthApiCtx>([...addReqs, ...rmReqs]);
+    const results = yield* group;
 
-  const group = yield* parallel<AuthApiCtx>([...addReqs, ...rmReqs]);
-  const results = yield* group;
+    yield* next();
 
-  yield* next();
+    const errors = results
+      .map((res) => {
+        if (!res.ok) return res.error.message;
+        if (!res.value.json.ok) return res.value.json.error.message;
+        return "";
+      })
+      .filter(Boolean);
 
-  const errors = results
-    .map((res) => {
-      if (!res.ok) return res.error.message;
-      if (!res.value.json.ok) return res.value.json.error.message;
-      return "";
-    })
-    .filter(Boolean);
-
-  if (errors.length > 0) {
-    yield* schema.update(db.loaders.error({ id, message: errors.join(", ") }));
-    return;
-  }
-
-  yield* schema.update(
-    db.loaders.success({ id, message: "Successfully updated user roles!" }),
-  );
-});
+    if (errors.length > 0) {
+      throw new Error(errors.join(","));
+    }
+  },
+]);

@@ -3,7 +3,14 @@ import { revokeTokensMdw } from "@app/auth";
 import { Next, leading, select } from "@app/fx";
 import { defaultEntity } from "@app/hal";
 import { db, schema } from "@app/schema";
-import { AuthApiCtx, LinkResponse, Otp, U2fDevice } from "@app/types";
+import {
+  AuthApiCtx,
+  HalEmbedded,
+  LinkResponse,
+  Otp,
+  U2fDevice,
+} from "@app/types";
+import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
 
 interface U2fDeviceResponse {
   id: string;
@@ -72,6 +79,12 @@ interface OtpResponse {
   };
 }
 
+interface OtpCode {
+  id: string;
+  value: string;
+  used: boolean;
+}
+
 const deserializeOtp = (data: OtpResponse): Otp => {
   return {
     id: data.id,
@@ -87,10 +100,10 @@ function* elevateAndCache(ctx: AuthApiCtx, next: Next) {
   yield* next();
 }
 
-export const fetchOtpCodes = authApi.get<{ otpId: string }>(
-  "/otp_configurations/:otpId/otp_recovery_codes",
-  elevateAndCache,
-);
+export const fetchOtpCodes = authApi.get<
+  { otpId: string },
+  HalEmbedded<{ otp_recovery_codes: OtpCode[] }>
+>("/otp_configurations/:otpId/otp_recovery_codes", elevateAndCache);
 
 export const setupOtp = authApi.post<SetupOtp, OtpResponse>(
   "/users/:userId/otp_configurations",
@@ -111,10 +124,16 @@ export const setupOtp = authApi.post<SetupOtp, OtpResponse>(
   },
 );
 
-export const fetchU2fChallenges = authApi.post<{ userId: string }>(
-  "/users/:userId/u2f_challenges",
-  elevateAndCache,
-);
+export interface U2fChallenge {
+  id: string;
+  challenge: string;
+  payload: PublicKeyCredentialCreationOptionsJSON;
+}
+
+export const fetchU2fChallenges = authApi.post<
+  { userId: string },
+  U2fChallenge
+>("/users/:userId/u2f_challenges", elevateAndCache);
 
 export const resetOtp = authApi.post<{ userId: string }>(
   "/otp/resets/new",

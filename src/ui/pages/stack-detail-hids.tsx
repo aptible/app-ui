@@ -1,5 +1,6 @@
 import { fileDate, prettyDate } from "@app/date";
 import {
+  HidsReport,
   fetchStackManagedHids,
   getStackType,
   hasDeployStack,
@@ -7,7 +8,7 @@ import {
 } from "@app/deploy";
 import { useCache, useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
-import { DeployStack, HalEmbedded, LinkResponse } from "@app/types";
+import { DeployStack } from "@app/types";
 import { useState } from "react";
 import { useParams } from "react-router";
 import {
@@ -26,19 +27,6 @@ import {
   Th,
   Tr,
 } from "../shared";
-
-interface HidsReport {
-  id: number;
-  created_at: string;
-  starts_at: string;
-  ends_at: string;
-  _links: {
-    download_csv: LinkResponse;
-    download_pdf: LinkResponse;
-  };
-}
-
-type HidsResponse = HalEmbedded<{ intrusion_detection_reports: HidsReport[] }>;
 
 const DownloadReport = ({
   url,
@@ -113,9 +101,7 @@ const ReportView = ({
 
 const ReportTable = ({ stack }: { stack: DeployStack }) => {
   const [page, setPage] = useState(1);
-  const loader = useCache<HidsResponse>(
-    fetchStackManagedHids({ id: stack.id, page }),
-  );
+  const loader = useCache(fetchStackManagedHids({ id: stack.id, page }));
 
   if (!stack.exposeIntrusionDetectionReports) {
     return (

@@ -75,7 +75,7 @@ export const createProject = thunks.create<CreateProjectProps>(
       );
 
       if (!envCtx.json.ok) {
-        const data = envCtx.json.error as any;
+        const data = envCtx.json.error;
         yield* schema.update(
           db.loaders.error({ id: ctx.key, message: data.message }),
         );
@@ -91,7 +91,7 @@ export const createProject = thunks.create<CreateProjectProps>(
     );
 
     if (!appCtx.json.ok) {
-      const data = appCtx.json.error as any;
+      const data = appCtx.json.error;
       yield* schema.update(
         db.loaders.error({
           id: ctx.key,
@@ -210,7 +210,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     );
 
     if (!configCtx.json.ok) {
-      const data = configCtx.json.error as any;
+      const data = configCtx.json.error;
       yield* schema.update(db.loaders.error({ id, message: data.message }));
       return;
     }
@@ -288,7 +288,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     );
 
     if (!deployCtx.json.ok) {
-      const data = deployCtx.json.error as any;
+      const data = deployCtx.json.error;
       yield* schema.update(db.loaders.error({ id, message: data.message }));
       return;
     }
@@ -426,7 +426,7 @@ export const redeployApp = thunks.create<{
     ),
   );
   if (!deployCtx.json.ok) {
-    const data = deployCtx.json.error as any;
+    const data = deployCtx.json.error;
     yield* schema.update(db.loaders.error({ id, message: data.message }));
     yield* next();
     return;

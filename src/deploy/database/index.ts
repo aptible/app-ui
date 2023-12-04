@@ -452,7 +452,7 @@ export const provisionDatabase = thunks.create<
     dbCtx = yield* call(() => createDatabase.run(createDatabase(ctx.payload)));
 
     if (!dbCtx.json.ok) {
-      const data = dbCtx.json.error as any;
+      const data = dbCtx.json.error;
       const message = data.message;
       yield* schema.update(schema.db.loaders.error({ id: ctx.key, message }));
       ctx.json = {
@@ -485,7 +485,7 @@ export const provisionDatabase = thunks.create<
     return;
   }
 
-  const opCtx = yield* call(() =>
+  const opCtx = yield* call(
     createDatabaseOperation.run(
       createDatabaseOperation({
         dbId,
@@ -505,7 +505,7 @@ export const provisionDatabase = thunks.create<
   };
 
   if (!opCtx.json.ok) {
-    const data = opCtx.json.error as any;
+    const data = opCtx.json.error;
     yield* schema.update(
       schema.db.loaders.error({ id: ctx.key, message: data.message }),
     );
