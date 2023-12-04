@@ -1,16 +1,16 @@
 import { prettyEnglishDateWithTime } from "@app/date";
-import { deleteBackup, selectDatabaseById } from "@app/deploy";
+import { deleteBackup } from "@app/deploy";
 import { useLoader } from "@app/fx";
 import {
   backupRestoreUrl,
   databaseDetailUrl,
   operationDetailUrl,
 } from "@app/routes";
-import { AppState, DeployBackup } from "@app/types";
+import { DeployBackup } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import cn from "classnames";
 import { ReactElement } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { BannerMessages } from "../banner";
 import { ButtonCreate, ButtonDestroy } from "../button";
@@ -19,12 +19,23 @@ import { DescBar, FilterBar, PaginateBar } from "../resource-list-view";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
 
-const BackupTypePill = ({ manual }: { manual: boolean }): ReactElement => {
+const BackupTypePill = ({
+  manual,
+  final,
+}: { manual: boolean; final: boolean }): ReactElement => {
   const className = cn(
     "rounded-full border-2",
     "text-sm font-semibold ",
     "px-2 flex justify-between items-center w-fit",
   );
+  let type = "";
+  if (final) {
+    type = "Final";
+  } else if (manual) {
+    type = "Manual";
+  } else {
+    type = "Auto";
+  }
 
   return (
     <div
@@ -35,7 +46,7 @@ const BackupTypePill = ({ manual }: { manual: boolean }): ReactElement => {
           : "bg-lime-100 text-green-400 border-lime-300",
       )}
     >
-      <div>{manual ? "Manual" : "Auto"}</div>
+      <div>{type}</div>
     </div>
   );
 };
@@ -65,14 +76,13 @@ const DeleteBackup = ({ envId, id }: { envId: string; id: string }) => {
 const BackupListRow = ({
   backup,
   showDatabase = true,
+  showFinal = false,
 }: {
   backup: DeployBackup;
   showDatabase?: boolean;
+  showFinal?: boolean;
 }) => {
   const navigate = useNavigate();
-  const db = useSelector((s: AppState) =>
-    selectDatabaseById(s, { id: backup.databaseId }),
-  );
   const createdByOpId = backup.createdFromOperationId;
   const onRestore = () => {
     navigate(backupRestoreUrl(backup.id));
@@ -92,14 +102,14 @@ const BackupListRow = ({
             className="text-black group-hover:text-indigo hover:text-indigo"
             to={databaseDetailUrl(backup.databaseId)}
           >
-            {db.handle}
+            {backup.databaseHandle}
           </Link>
         </Td>
       ) : null}
 
       <Td className="flex-1">
         <div className="text-gray-900">
-          <BackupTypePill manual={backup.manual} />
+          <BackupTypePill manual={backup.manual} final={showFinal} />
         </div>
       </Td>
 
@@ -151,9 +161,11 @@ const BackupListRow = ({
 export const DatabaseBackupsList = ({
   backups,
   showDatabase = true,
+  showFinal = false,
 }: {
   backups: DeployBackup[];
   showDatabase?: boolean;
+  showFinal?: boolean;
 }) => {
   const loader = useLoader(deleteBackup);
   const paginated = usePaginate(backups);
@@ -193,6 +205,7 @@ export const DatabaseBackupsList = ({
               key={backup.id}
               backup={backup}
               showDatabase={showDatabase}
+              showFinal={showFinal}
             />
           ))}
         </TBody>

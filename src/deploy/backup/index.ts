@@ -20,6 +20,7 @@ export interface BackupResponse {
   manual: boolean;
   size: number;
   created_at: string;
+  database_handle: string;
   _embedded: {
     copied_from?: {
       id: number;
@@ -55,6 +56,7 @@ export const defaultDeployBackup = (
     size: 0,
     manual: false,
     createdAt: now,
+    databaseHandle: "",
     ...b,
   };
 };
@@ -71,6 +73,7 @@ export const deserializeDeployBackup = (b: BackupResponse): DeployBackup => {
     databaseId: extractIdFromLink(b._links.database),
     environmentId: extractIdFromLink(b._links.account),
     createdFromOperationId: extractIdFromLink(b._links.created_from_operation),
+    databaseHandle: b.database_handle,
   };
 };
 

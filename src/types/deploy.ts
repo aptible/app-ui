@@ -484,6 +484,7 @@ export interface DeployBackup {
   copiedFromId: string;
   environmentId: string;
   databaseId: string;
+  databaseHandle: string;
   createdFromOperationId: string;
 }
 
