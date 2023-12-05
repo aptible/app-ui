@@ -164,7 +164,7 @@ const VerticalAutoscalingSection = ({
                   onKeyUp={() => setOpen(!advancedIsOpen)}
                 >
                   {advancedIsOpen ? <IconChevronDown /> : <IconChevronRight />}
-                  <p>{advancedIsOpen ? "Hide" : "Show"} Advanced settings</p>
+                  <p>{advancedIsOpen ? "Hide" : "Show"} Advanced Settings</p>
                 </div>
               </div>
             </div>
