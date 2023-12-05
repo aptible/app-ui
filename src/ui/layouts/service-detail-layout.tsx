@@ -32,6 +32,8 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  IconChevronDown,
+  IconChevronRight,
   PreCode,
   TabItem,
   listToInvertedTextColor,
@@ -85,27 +87,27 @@ export function ServiceHeader({
         </DetailInfoItem>
       </DetailInfoGrid>
       {service.command ? (
-          <div>
-            <div className="-ml-2 flex justify-between items-center">
-              <div className="flex flex-1">
-                <div
-                  className="font-semibold flex items-center cursor-pointer"
-                  onClick={() => setOpen(!isOpen)}
-                  onKeyUp={() => setOpen(!isOpen)}
-                >
-                  {isOpen ? <IconChevronDown /> : <IconChevronRight />}
-                  <p>Command</p>
-                </div>
+        <div>
+          <div className="-ml-2 flex justify-between items-center">
+            <div className="flex flex-1">
+              <div
+                className="font-semibold flex items-center cursor-pointer"
+                onClick={() => setOpen(!isOpen)}
+                onKeyUp={() => setOpen(!isOpen)}
+              >
+                {isOpen ? <IconChevronDown /> : <IconChevronRight />}
+                <p>Command</p>
               </div>
             </div>
-            {isOpen ? (
-              <PreCode
-                    segments={listToInvertedTextColor(["git clone"])}
-                    allowCopy
-                  />
-            ) : null}
           </div>
-        ) : null}
+          {isOpen ? (
+            <PreCode
+              segments={listToInvertedTextColor(["git clone"])}
+              allowCopy
+            />
+          ) : null}
+        </div>
+      ) : null}
     </DetailHeader>
   );
 }
