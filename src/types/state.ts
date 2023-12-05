@@ -163,6 +163,18 @@ export interface BillingDetail {
   paymentMethodUrl: string;
 }
 
+export interface Deployment {
+  id: string;
+  dockerImage: string;
+  gitRef: string;
+  sha: string;
+  config: DeployAppConfigEnv;
+  createdAt: string;
+  updatedAt: string;
+  appId: string;
+  operationId: string;
+}
+
 export interface AppState extends QueryState {
   env: Env;
   feedback: Feedback;
@@ -213,6 +225,7 @@ export interface AppState extends QueryState {
   backupRps: MapEntity<DeployBackupRetentionPolicy>;
   activityReports: MapEntity<DeployActivityReport>;
   images: MapEntity<DeployImage>;
+  deployments: MapEntity<Deployment>;
 }
 
 export interface DeployActivityRow extends DeployOperation {

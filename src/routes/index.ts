@@ -92,6 +92,9 @@ export const APPS_PATH = "/apps";
 export const appsUrl = () => APPS_PATH;
 export const APP_DETAIL_PATH = "/apps/:id";
 export const appDetailUrl = (id: string) => `/apps/${id}`;
+export const APP_DETAIL_DEPLOYMENTS_PATH = "/apps/:id/deployments";
+export const appDetailDeploymentsUrl = (id: string) =>
+  `/apps/${id}/deployments`;
 export const APP_SERVICES_PATH = `${APP_DETAIL_PATH}/services`;
 export const appServicesUrl = (id: string) => `${appDetailUrl(id)}/services`;
 export const APP_SERVICE_PATH = `${APP_DETAIL_PATH}/services/:serviceId`;

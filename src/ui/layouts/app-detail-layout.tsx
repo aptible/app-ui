@@ -17,6 +17,7 @@ import { useQuery } from "@app/fx";
 import {
   appActivityUrl,
   appConfigUrl,
+  appDetailDeploymentsUrl,
   appEndpointsUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
@@ -138,6 +139,7 @@ function AppPageHeader() {
         { name: "Scale", href: appServiceScalePathUrl(id, serviceId) },
       ]
     : [
+        { name: "Deployments", href: appDetailDeploymentsUrl(id) },
         { name: "Services", href: appServicesUrl(id) },
         { name: "Endpoints", href: appEndpointsUrl(id) },
         { name: "Activity", href: appActivityUrl(id) },

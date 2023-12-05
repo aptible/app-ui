@@ -3,6 +3,7 @@ import * as auth from "@app/auth";
 import * as billing from "@app/billing";
 import * as bootup from "@app/bootup";
 import * as deploy from "@app/deploy";
+import * as deployments from "@app/deployment";
 import * as env from "@app/env";
 import * as feedback from "@app/feedback";
 import * as hal from "@app/hal";
@@ -45,6 +46,7 @@ const corePackages: any[] = [
   search,
   metrics,
   billing,
+  deployments,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {

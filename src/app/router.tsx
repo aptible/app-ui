@@ -14,6 +14,7 @@ import {
   AppDeployWithGitAddKeyPage,
   AppDeployWithGitPage,
   AppDetailConfigPage,
+  AppDetailDeploymentsPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailPage,
@@ -292,6 +293,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.APP_CONFIG_PATH,
                 element: <AppDetailConfigPage />,
+              },
+              {
+                path: routes.APP_DETAIL_DEPLOYMENTS_PATH,
+                element: <AppDetailDeploymentsPage />,
               },
             ],
           },
