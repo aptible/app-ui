@@ -88,7 +88,7 @@ export function ServiceHeader({
       </DetailInfoGrid>
       {service.command ? (
         <div>
-          <div className="-ml-2 flex justify-between items-center">
+          <div className="-ml-2 flex justify-between items-center pt-1">
             <div className="flex flex-1">
               <div
                 className="font-semibold flex items-center cursor-pointer"
@@ -96,7 +96,7 @@ export function ServiceHeader({
                 onKeyUp={() => setOpen(!isOpen)}
               >
                 {isOpen ? <IconChevronDown /> : <IconChevronRight />}
-                <p>Command</p>
+                <p>Show Command</p>
               </div>
             </div>
           </div>
