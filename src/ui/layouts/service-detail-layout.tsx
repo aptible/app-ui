@@ -23,7 +23,7 @@ import type {
   DeployEnvironment,
   DeployService,
 } from "@app/types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
@@ -45,6 +45,7 @@ export function ServiceHeader({
 }: { app: DeployApp; service: DeployService; env: DeployEnvironment }) {
   const metrics = calcServiceMetrics(service);
   const { totalCPU } = calcMetrics([service]);
+  const [isOpen, setOpen] = useState(false);
 
   return (
     <DetailHeader>
@@ -82,15 +83,29 @@ export function ServiceHeader({
         <DetailInfoItem title="Cost">
           ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
         </DetailInfoItem>
-        {service.command ? (
-          <DetailInfoItem title="Command">
-            <PreCode
-              allowCopy
-              segments={listToInvertedTextColor(service.command.split(" "))}
-            />
-          </DetailInfoItem>
-        ) : null}
       </DetailInfoGrid>
+      {service.command ? (
+          <div>
+            <div className="-ml-2 flex justify-between items-center">
+              <div className="flex flex-1">
+                <div
+                  className="font-semibold flex items-center cursor-pointer"
+                  onClick={() => setOpen(!isOpen)}
+                  onKeyUp={() => setOpen(!isOpen)}
+                >
+                  {isOpen ? <IconChevronDown /> : <IconChevronRight />}
+                  <p>Command</p>
+                </div>
+              </div>
+            </div>
+            {isOpen ? (
+              <PreCode
+                    segments={listToInvertedTextColor(["git clone"])}
+                    allowCopy
+                  />
+            ) : null}
+          </div>
+        ) : null}
     </DetailHeader>
   );
 }
