@@ -52,7 +52,7 @@ export function ServiceHeader({
         title="Service Details"
         icon={
           <img
-            src="/resource-types/logo-app.png"
+            src="/resource-types/logo-service.png"
             className="w-[32px] h-[32px] mr-3"
             aria-label="App"
           />
@@ -82,12 +82,14 @@ export function ServiceHeader({
         <DetailInfoItem title="Cost">
           ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
         </DetailInfoItem>
-        {service.command ? <DetailInfoItem title="Command">
-          <PreCode
-            allowCopy
-            segments={listToInvertedTextColor(service.command.split(" "))}
-          />
-        </DetailInfoItem> : null}
+        {service.command ? (
+          <DetailInfoItem title="Command">
+            <PreCode
+              allowCopy
+              segments={listToInvertedTextColor(service.command.split(" "))}
+            />
+          </DetailInfoItem>
+        ) : null}
       </DetailInfoGrid>
     </DetailHeader>
   );
