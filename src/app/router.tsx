@@ -93,6 +93,7 @@ import {
   SSHSettingsPage,
   SearchPage,
   SecuritySettingsPage,
+  ServiceDetailLayout,
   SettingsLayout,
   SettingsPage,
   SignupPage,
@@ -224,6 +225,21 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
+        path: routes.APP_SERVICE_PATH,
+        element: <ServiceDetailLayout />,
+        children: [
+          {
+            path: routes.APP_SERVICE_METRICS_PATH,
+            element: <AppDetailServiceMetricsPage />,
+          },
+          {
+            path: routes.APP_SERVICE_SCALE_PATH,
+            element: <AppDetailServiceScalePage />,
+          },
+        ],
+      },
+
+      {
         path: routes.APPS_PATH,
         children: [
           {
@@ -238,19 +254,6 @@ export const appRoutes: RouteObject[] = [
               {
                 index: true,
                 element: <AppDetailPage />,
-              },
-              {
-                path: routes.APP_SERVICE_PATH,
-                children: [
-                  {
-                    path: routes.APP_SERVICE_METRICS_PATH,
-                    element: <AppDetailServiceMetricsPage />,
-                  },
-                  {
-                    path: routes.APP_SERVICE_SCALE_PATH,
-                    element: <AppDetailServiceScalePage />,
-                  },
-                ],
               },
               {
                 path: routes.APP_SERVICES_PATH,
