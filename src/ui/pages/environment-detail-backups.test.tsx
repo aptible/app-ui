@@ -37,10 +37,10 @@ describe("EnvironmentBackupsPage", () => {
       );
     });
 
-    const daily = await screen.findByLabelText(/Daily backups retained/);
+    const daily = await screen.findByText(/Daily backups retained/);
     expect(daily.getAttribute("value")).toEqual("1");
 
-    const monthly = await screen.findByLabelText(/Monthly backups retained/);
+    const monthly = await screen.findByText(/Monthly backups retained/);
     expect(monthly.getAttribute("value")).toEqual("5");
 
     const radio = await screen.findAllByRole("radio", { name: /Yes/ });
@@ -72,17 +72,20 @@ describe("EnvironmentBackupsPage", () => {
       );
     });
 
+    const btn = await screen.findByRole("button", { name: /Save Policy/ });
+    fireEvent.click(btn);
+
     const daily = await screen.findByLabelText(/Daily backups retained/);
     await act(async () => await userEvent.type(daily, "5"));
 
     const monthly = await screen.findByLabelText(/Monthly backups retained/);
     await act(async () => await userEvent.type(monthly, "1"));
 
-    const btn = await screen.findByRole("button", { name: /Save Policy/ });
-    fireEvent.click(btn);
-
     await screen.findByRole("button", { name: /Loading/ });
     await screen.findByRole("button", { name: /Save Policy/ });
+
+    const edit = await screen.findByRole("button", { name: /Edit Backup Retention Policy/ });
+    fireEvent.click(edit);
 
     const newDaily = await screen.findByLabelText(/Daily backups retained/);
     expect(newDaily).toHaveValue(15);

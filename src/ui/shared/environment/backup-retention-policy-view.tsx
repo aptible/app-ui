@@ -76,19 +76,19 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
         <Group>
           <Group size="xs">
             <div>
-              <strong>Daily:</strong> {backupRp.daily}
+              <strong>Daily backups retained:</strong> {backupRp.daily}
             </div>
             <div>
-              <strong>Monthly:</strong> {backupRp.monthly}
+              <strong>Monthly backups retained:</strong> {backupRp.monthly}
             </div>
             <div>
-              <strong>Yearly:</strong> {backupRp.yearly}
+              <strong>Yearly backups retained:</strong> {backupRp.yearly}
             </div>
             <div>
-              <strong>Make a Copy?:</strong> {backupRp.makeCopy ? "Yes" : "No"}
+              <strong>Copy backups to another region:</strong> {backupRp.makeCopy ? "Yes" : "No"}
             </div>
             <div>
-              <strong>Keep Final?:</strong> {backupRp.keepFinal ? "Yes" : "No"}
+              <strong>Keep final backups:</strong> {backupRp.keepFinal ? "Yes" : "No"}
             </div>
           </Group>
 
@@ -97,6 +97,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
               envId={envId}
               onClick={() => setEditing(true)}
               variant="white"
+              type="button"
             >
               <IconEdit variant="sm" className="mr-2" />
               Edit Backup Retention Policy
