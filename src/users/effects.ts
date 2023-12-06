@@ -1,8 +1,11 @@
 import { authApi, cacheShortTimer, elevetatedMdw } from "@app/api";
 import { selectOrigin } from "@app/env";
 import { Next, call, put, select } from "@app/fx";
-import { setOrganizationSelected } from "@app/organizations";
-import type { AuthApiCtx } from "@app/types";
+import {
+  selectOrganizationById,
+  setOrganizationSelected,
+} from "@app/organizations";
+import type { AppState, AuthApiCtx } from "@app/types";
 import { deserializeUser } from "./serializers";
 import { resetUsers } from "./slice";
 import type { CreateUserForm, UserResponse } from "./types";
@@ -17,8 +20,14 @@ export const fetchUser = authApi.get<UserBase, UserResponse>(
   function* (ctx, next) {
     yield* call(() => elevetatedMdw(ctx as any, next));
     if (!ctx.json.ok) return;
-    const user = deserializeUser(ctx.json.data);
+    const user = deserializeUser(ctx.json.value);
     if (user.selectedOrganizationId) {
+      const org = yield* select((s: AppState) =>
+        selectOrganizationById(s, {
+          id: user.selectedOrganizationId,
+        }),
+      );
+      if (!org) return;
       ctx.actions.push(setOrganizationSelected(user.selectedOrganizationId));
     }
   },

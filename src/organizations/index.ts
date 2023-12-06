@@ -91,6 +91,7 @@ export const reducers = createReducerMap(organizations, organizationSelected);
 const selectors = organizations.getSelectors(
   (s: AppState) => s[ORGANIZATIONS_NAME],
 );
+export const selectOrganizationById = selectors.selectById;
 export const selectOrganizationsAsList = createSelector(
   selectors.selectTable,
   (orgMap) => {
