@@ -87,6 +87,7 @@ import {
   OpDetailPage,
   OrgPickerPage,
   OtpRecoveryCodesPage,
+  OtpResetVerifyPage,
   OtpSetupPage,
   PlansPage,
   ReactRouterErrorElement,
@@ -585,6 +586,11 @@ export const appRoutes: RouteObject[] = [
         <VerifyEmailPage />
       </AuthRequired>
     ),
+  },
+
+  {
+    path: routes.OTP_RESET_VERIFY_PATH,
+    element: <OtpResetVerifyPage />,
   },
 
   {

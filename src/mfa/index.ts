@@ -1,4 +1,4 @@
-import { Next, select } from "@app/fx";
+import { Next, leading, select } from "@app/fx";
 
 import { authApi } from "@app/api";
 import { defaultEntity } from "@app/hal";
@@ -143,3 +143,29 @@ export const fetchU2fChallenges = authApi.post<{ userId: string }>(
   "/users/:userId/u2f_challenges",
   elevateAndCache,
 );
+
+export const resetOtp = authApi.post<{ userId: string }>(
+  "/otp/resets/new",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({ user_id: ctx.payload.userId }),
+    });
+    yield* next();
+  },
+);
+
+export const resetOtpVerify = authApi.post<{
+  challengeId: string;
+  verificationCode: string;
+}>(["/verifications", "otp"], { supervisor: leading }, function* (ctx, next) {
+  const { challengeId, verificationCode } = ctx.payload;
+  ctx.request = ctx.req({
+    body: JSON.stringify({
+      type: "otp_reset_challenge",
+      challenge_id: challengeId,
+      verification_code: verificationCode,
+    }),
+  });
+
+  yield* next();
+});
