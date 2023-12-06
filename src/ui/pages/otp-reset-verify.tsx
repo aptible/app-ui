@@ -1,4 +1,3 @@
-import { logout } from "@app/auth";
 import { useLoader, useLoaderSuccess } from "@app/fx";
 import { resetOtpVerify } from "@app/mfa";
 import { loginUrl } from "@app/routes";
@@ -13,12 +12,6 @@ export const OtpResetVerifyPage = () => {
   const navigate = useNavigate();
   const loader = useLoader(resetOtpVerify);
 
-  const logoutSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    dispatch(logout());
-    navigate(loginUrl());
-  };
-
   const onConfirm = () => {
     dispatch(
       resetOtpVerify({
@@ -29,7 +22,6 @@ export const OtpResetVerifyPage = () => {
   };
 
   useLoaderSuccess(loader, () => {
-    dispatch(logout());
     navigate(loginUrl());
   });
 
@@ -53,18 +45,11 @@ export const OtpResetVerifyPage = () => {
           the login page.
         </div>
 
-        <BannerMessages {...loader} />
-
-        <Button onClick={onConfirm}>Reset 2FA</Button>
-
         <Box>
-          <Button
-            onClick={logoutSubmit}
-            className="font-semibold w-full"
-            variant="white"
-          >
-            Log Out
-          </Button>
+          <Group>
+            <BannerMessages {...loader} />
+            <Button onClick={onConfirm}>Reset 2FA</Button>
+          </Group>
         </Box>
       </Group>
     </HeroBgLayout>
