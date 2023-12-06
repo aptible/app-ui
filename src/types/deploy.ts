@@ -492,6 +492,7 @@ export interface DeployBackupRetentionPolicy {
   id: string;
   daily: number;
   monthly: number;
+  yearly: number;
   makeCopy: boolean;
   keepFinal: boolean;
   environmentId: string;

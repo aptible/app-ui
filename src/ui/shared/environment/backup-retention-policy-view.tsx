@@ -48,6 +48,20 @@ const validators = {
       return `${txt} must be whole number`;
     }
   },
+  yearly: (data: UpdateBackupRp) => {
+    const txt = "Number of yearly backups";
+    const value = data.yearly;
+
+    if (isNaN(value)) {
+      return `${txt} must be a number`;
+    }
+    if (value < 0) {
+      return `${txt} must be >= 0`;
+    }
+    if (value % 1 !== 0) {
+      return `${txt} must be whole number`;
+    }
+  },
 };
 
 export const BackupRpView = ({ envId }: { envId: string }) => {
@@ -58,6 +72,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
   );
   const [daily, setDaily] = useState(backupRp.daily);
   const [monthly, setMonthly] = useState(backupRp.monthly);
+  const [yearly, setYearly] = useState(backupRp.yearly);
   const [makeCopy, setMakeCopy] = useState(backupRp.makeCopy ? "yes" : "no");
   const [keepFinal, setKeepFinal] = useState(backupRp.keepFinal ? "yes" : "no");
   const [errors, validate] = useValidator<UpdateBackupRp, typeof validators>(
@@ -66,6 +81,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
   const data: UpdateBackupRp = {
     daily,
     monthly,
+    yearly,
     makeCopy: makeCopy === "yes",
     keepFinal: keepFinal === "yes",
     id: backupRp.id,
@@ -83,6 +99,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
   const onReset = () => {
     setDaily(backupRp.daily);
     setMonthly(backupRp.monthly);
+    setYearly(backupRp.yearly);
     setMakeCopy(backupRp.makeCopy ? "yes" : "no");
     setKeepFinal(backupRp.keepFinal ? "yes" : "no");
   };
@@ -130,6 +147,24 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
               }}
             />
           </FormGroup>
+
+          <FormGroup
+            label="Yearly backups retained"
+            htmlFor="yearly"
+            feedbackMessage={errors.yearly}
+            feedbackVariant={errors.yearly ? "danger" : "info"}
+          >
+            <Input
+              id="yearly"
+              type="number"
+              value={yearly}
+              onChange={(e) => {
+                setYearly(parseInt(e.currentTarget.value));
+              }}
+            />
+          </FormGroup>
+
+          <div />
 
           <FormGroup label="Copy backups to another region" htmlFor="make-copy">
             <RadioGroup
