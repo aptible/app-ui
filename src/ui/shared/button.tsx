@@ -151,13 +151,17 @@ export const Button: FC<ButtonProps> = ({
         <button
           className={cls}
           type="reset"
-          onClick={() => setConfirmPrompted(false)}
+          onClick={(e) => {
+            e.preventDefault();
+            setConfirmPrompted(false);
+          }}
         >
           Cancel
         </button>
         <button
           {...props}
           onClick={(e) => {
+            e.preventDefault();
             setConfirmPrompted(false);
             if (props.onClick) {
               props.onClick(e);
@@ -176,7 +180,10 @@ export const Button: FC<ButtonProps> = ({
   if (requireConfirm) {
     props = {
       ...props,
-      onClick: () => setConfirmPrompted(true),
+      onClick: (e) => {
+        e.preventDefault();
+        setConfirmPrompted(true);
+      },
     };
   }
 

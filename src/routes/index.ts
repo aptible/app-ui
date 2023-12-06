@@ -28,6 +28,12 @@ export const OTP_RECOVERY_CODES_PATH = "/settings/otp-recovery-codes";
 export const otpRecoveryCodesUrl = () => OTP_RECOVERY_CODES_PATH;
 export const ADD_SECURITY_KEY_PATH = "/settings/add-security-key";
 export const addSecurityKeyUrl = () => ADD_SECURITY_KEY_PATH;
+export const OTP_RESET_VERIFY_PATH =
+  "/otp-reset-verify/:challengeId/:verificationCode";
+export const otpResetVerifyUrl = (
+  challengeId: string,
+  verificationCode: string,
+) => `/otp-reset-verify/${challengeId}/${verificationCode}`;
 
 export const TEAM_PATH = `${SETTINGS_PATH}/team`;
 export const teamUrl = () => TEAM_PATH;
