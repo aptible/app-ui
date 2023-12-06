@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
 import {
   UpdateBackupRp,
   fetchBackupRp,
@@ -9,11 +6,13 @@ import {
 } from "@app/deploy";
 import { useLoader, useQuery } from "@app/fx";
 import type { AppState } from "@app/types";
-
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Group, IconEdit } from "..";
 import { useValidator } from "../../hooks";
 import { BannerMessages } from "../banner";
 import { Box } from "../box";
-import { ButtonAdmin } from "../button";
+import { Button, ButtonAdmin } from "../button";
 import { FormGroup } from "../form-group";
 import { Input } from "../input";
 import { Radio, RadioGroup } from "../select";
@@ -65,6 +64,56 @@ const validators = {
 };
 
 export const BackupRpView = ({ envId }: { envId: string }) => {
+  useQuery(fetchBackupRp({ envId }));
+  const backupRp = useSelector((s: AppState) =>
+    selectLatestBackupRpByEnvId(s, { envId }),
+  );
+  const [editing, setEditing] = useState(false);
+
+  if (!editing) {
+    return (
+      <Box>
+        <Group>
+          <Group size="xs">
+            <div>
+              <strong>Daily:</strong> {backupRp.daily}
+            </div>
+            <div>
+              <strong>Monthly:</strong> {backupRp.monthly}
+            </div>
+            <div>
+              <strong>Yearly:</strong> {backupRp.yearly}
+            </div>
+            <div>
+              <strong>Make a Copy?:</strong> {backupRp.makeCopy ? "Yes" : "No"}
+            </div>
+            <div>
+              <strong>Keep Final?:</strong> {backupRp.keepFinal ? "Yes" : "No"}
+            </div>
+          </Group>
+
+          <div>
+            <ButtonAdmin
+              envId={envId}
+              onClick={() => setEditing(true)}
+              variant="white"
+            >
+              <IconEdit variant="sm" className="mr-2" />
+              Edit Backup Retention Policy
+            </ButtonAdmin>
+          </div>
+        </Group>
+      </Box>
+    );
+  }
+
+  return <BackupRpEditor envId={envId} onClose={() => setEditing(false)} />;
+};
+
+export const BackupRpEditor = ({
+  envId,
+  onClose,
+}: { envId: string; onClose: () => void }) => {
   const dispatch = useDispatch();
   useQuery(fetchBackupRp({ envId }));
   const backupRp = useSelector((s: AppState) =>
@@ -197,6 +246,9 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
           <ButtonAdmin type="submit" envId={envId} isLoading={loader.isLoading}>
             Save Policy
           </ButtonAdmin>
+          <Button type="button" onClick={onClose} variant="white">
+            Cancel
+          </Button>
         </div>
       </form>
     </Box>
