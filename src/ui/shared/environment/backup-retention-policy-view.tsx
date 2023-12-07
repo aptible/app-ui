@@ -136,7 +136,7 @@ export const BackupRpEditor = ({
     envId,
   };
   const action = updateBackupRp(data);
-  const loader = useLoader(action);
+  const loader = useLoader(updateBackupRp);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -158,96 +158,106 @@ export const BackupRpEditor = ({
 
   return (
     <Box>
-      <h3 className={tokens.type.h3}>Backup Retention Policy</h3>
-      <div className="mt-4">
-        Any changes made will impact <strong>all database backups</strong>{" "}
-        inside this Environment.
-      </div>
-
-      <form onSubmit={onSubmit} className="flex flex-col gap-2 mt-4">
-        <div className="grid md:grid-cols-3 col-span-1 gap-4">
-          <FormGroup
-            label="Daily backups retained"
-            htmlFor="daily"
-            feedbackMessage={errors.daily}
-            feedbackVariant={errors.daily ? "danger" : "info"}
-          >
-            <Input
-              id="daily"
-              type="number"
-              value={daily}
-              onChange={(e) => setDaily(parseInt(e.currentTarget.value))}
-            />
-          </FormGroup>
-
-          <FormGroup
-            label="Monthly backups retained"
-            htmlFor="monthly"
-            feedbackMessage={errors.monthly}
-            feedbackVariant={errors.monthly ? "danger" : "info"}
-          >
-            <Input
-              id="monthly"
-              type="number"
-              value={monthly}
-              onChange={(e) => {
-                setMonthly(parseInt(e.currentTarget.value));
-              }}
-            />
-          </FormGroup>
-
-          <FormGroup
-            label="Yearly backups retained"
-            htmlFor="yearly"
-            feedbackMessage={errors.yearly}
-            feedbackVariant={errors.yearly ? "danger" : "info"}
-          >
-            <Input
-              id="yearly"
-              type="number"
-              value={yearly}
-              onChange={(e) => {
-                setYearly(parseInt(e.currentTarget.value));
-              }}
-            />
-          </FormGroup>
-
-          <FormGroup label="Copy backups to another region" htmlFor="make-copy">
-            <RadioGroup
-              name="make-copy"
-              selected={makeCopy}
-              onSelect={(inp) => setMakeCopy(inp)}
-            >
-              <Radio value="yes">Yes</Radio>
-              <Radio value="no">No</Radio>
-            </RadioGroup>
-          </FormGroup>
-
-          <FormGroup label="Keep final backup" htmlFor="keep-final">
-            <RadioGroup
-              name="keep-final"
-              selected={keepFinal}
-              onSelect={(inp) => setKeepFinal(inp)}
-            >
-              <Radio value="yes">Yes</Radio>
-              <Radio value="no">No</Radio>
-            </RadioGroup>
-          </FormGroup>
-        </div>
-
-        <hr className="my-2" />
+      <Group>
+        <h3 className={tokens.type.h3}>Backup Retention Policy</h3>
 
         <BannerMessages {...loader} />
 
-        <div className="flex gap-2">
-          <ButtonAdmin type="submit" envId={envId} isLoading={loader.isLoading}>
-            Save Policy
-          </ButtonAdmin>
-          <Button type="button" onClick={onClose} variant="white">
-            Cancel
-          </Button>
+        <div>
+          Any changes made will impact <strong>all database backups</strong>{" "}
+          inside this Environment.
         </div>
-      </form>
+
+        <form onSubmit={onSubmit} className="flex flex-col gap-2">
+          <div className="grid md:grid-cols-3 col-span-1 gap-4">
+            <FormGroup
+              label="Daily backups retained"
+              htmlFor="daily"
+              feedbackMessage={errors.daily}
+              feedbackVariant={errors.daily ? "danger" : "info"}
+            >
+              <Input
+                id="daily"
+                type="number"
+                value={daily}
+                onChange={(e) => setDaily(parseInt(e.currentTarget.value))}
+              />
+            </FormGroup>
+
+            <FormGroup
+              label="Monthly backups retained"
+              htmlFor="monthly"
+              feedbackMessage={errors.monthly}
+              feedbackVariant={errors.monthly ? "danger" : "info"}
+            >
+              <Input
+                id="monthly"
+                type="number"
+                value={monthly}
+                onChange={(e) => {
+                  setMonthly(parseInt(e.currentTarget.value));
+                }}
+              />
+            </FormGroup>
+
+            <FormGroup
+              label="Yearly backups retained"
+              htmlFor="yearly"
+              feedbackMessage={errors.yearly}
+              feedbackVariant={errors.yearly ? "danger" : "info"}
+            >
+              <Input
+                id="yearly"
+                type="number"
+                value={yearly}
+                onChange={(e) => {
+                  setYearly(parseInt(e.currentTarget.value));
+                }}
+              />
+            </FormGroup>
+
+            <FormGroup
+              label="Copy backups to another region"
+              htmlFor="make-copy"
+            >
+              <RadioGroup
+                name="make-copy"
+                selected={makeCopy}
+                onSelect={(inp) => setMakeCopy(inp)}
+              >
+                <Radio value="yes">Yes</Radio>
+                <Radio value="no">No</Radio>
+              </RadioGroup>
+            </FormGroup>
+
+            <FormGroup label="Keep final backup" htmlFor="keep-final">
+              <RadioGroup
+                name="keep-final"
+                selected={keepFinal}
+                onSelect={(inp) => setKeepFinal(inp)}
+              >
+                <Radio value="yes">Yes</Radio>
+                <Radio value="no">No</Radio>
+              </RadioGroup>
+            </FormGroup>
+          </div>
+
+          <hr className="my-2" />
+
+          <div className="flex gap-2">
+            <ButtonAdmin
+              type="submit"
+              envId={envId}
+              isLoading={loader.isLoading}
+            >
+              Save Policy
+            </ButtonAdmin>
+            <Button type="button" onClick={onClose} variant="white">
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </Group>
     </Box>
   );
 };

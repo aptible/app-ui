@@ -160,6 +160,7 @@ export const updateBackupRp = api.post<UpdateBackupRp>(
       return;
     }
 
+    ctx.loader = { message: "Successfully updated backup retention policy!" };
     // delete old BRP since we are creating new ones
     yield* put(removeBackupRp([id]));
   },
