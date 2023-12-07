@@ -68,6 +68,7 @@ import {
   IconXCircle,
   Input,
   InputSearch,
+  KeyValueGroup,
   LogViewerText,
   Pill,
   PreCode,
@@ -250,6 +251,26 @@ const Tables = () => (
     </Table>
   </div>
 );
+
+const Data = () => {
+  return (
+    <div className="pt-8 space-y-4">
+      <h1 id="data" className={tokens.type.h1}>
+        Data
+      </h1>
+
+      <div className="w-[300px]">
+        <KeyValueGroup
+          data={[
+            { key: "Key1", value: "Value1" },
+            { key: "Key2", value: "Value2" },
+            { key: "Key3", value: "Value3" },
+          ]}
+        />
+      </div>
+    </div>
+  );
+};
 
 const Forms = () => {
   const [search, setSearch] = useState("");
@@ -787,6 +808,7 @@ export const StylesPage = () => (
       <Buttons />
       <Banners />
       <Tables />
+      <Data />
       <Forms />
       <Logs />
       <Pills />
