@@ -8,13 +8,15 @@ import { useLoader, useQuery } from "@app/fx";
 import type { AppState } from "@app/types";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Group, IconEdit } from "..";
 import { useValidator } from "../../hooks";
 import { BannerMessages } from "../banner";
 import { Box } from "../box";
 import { Button, ButtonAdmin } from "../button";
 import { FormGroup } from "../form-group";
+import { Group } from "../group";
+import { IconEdit } from "../icons";
 import { Input } from "../input";
+import { KeyValueGroup } from "../key-value";
 import { Radio, RadioGroup } from "../select";
 import { tokens } from "../tokens";
 
@@ -69,28 +71,24 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
     selectLatestBackupRpByEnvId(s, { envId }),
   );
   const [editing, setEditing] = useState(false);
+  const data = [
+    { key: "Daily backups retained", value: backupRp.daily },
+    { key: "Monthly backups retained", value: backupRp.monthly },
+    { key: "Yearly backups retained", value: backupRp.yearly },
+    {
+      key: "Copy backups to another region",
+      value: backupRp.makeCopy ? "Yes" : "No",
+    },
+    { key: "Keep final backups", value: backupRp.keepFinal ? "Yes" : "No" },
+  ];
 
   if (!editing) {
     return (
       <Box>
         <Group>
-          <Group size="xs">
-            <div>
-              <strong>Daily backups retained:</strong> {backupRp.daily}
-            </div>
-            <div>
-              <strong>Monthly backups retained:</strong> {backupRp.monthly}
-            </div>
-            <div>
-              <strong>Yearly backups retained:</strong> {backupRp.yearly}
-            </div>
-            <div>
-              <strong>Copy backups to another region:</strong> {backupRp.makeCopy ? "Yes" : "No"}
-            </div>
-            <div>
-              <strong>Keep final backups:</strong> {backupRp.keepFinal ? "Yes" : "No"}
-            </div>
-          </Group>
+          <div className="w-[300px]">
+            <KeyValueGroup data={data} />
+          </div>
 
           <div>
             <ButtonAdmin
@@ -167,7 +165,7 @@ export const BackupRpEditor = ({
       </div>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-2 mt-4">
-        <div className="grid md:grid-cols-2 col-span-1 gap-4">
+        <div className="grid md:grid-cols-3 col-span-1 gap-4">
           <FormGroup
             label="Daily backups retained"
             htmlFor="daily"
@@ -213,8 +211,6 @@ export const BackupRpEditor = ({
               }}
             />
           </FormGroup>
-
-          <div />
 
           <FormGroup label="Copy backups to another region" htmlFor="make-copy">
             <RadioGroup

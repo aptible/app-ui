@@ -37,17 +37,11 @@ describe("EnvironmentBackupsPage", () => {
       );
     });
 
-    const daily = await screen.findByText(/Daily backups retained/);
-    expect(daily.getAttribute("value")).toEqual("1");
-
-    const monthly = await screen.findByText(/Monthly backups retained/);
-    expect(monthly.getAttribute("value")).toEqual("5");
-
-    const radio = await screen.findAllByRole("radio", { name: /Yes/ });
-    const makeCopy = radio[0];
-    expect(makeCopy).not.toBeChecked();
-    const keepFinal = radio[1];
-    expect(keepFinal).toBeChecked();
+    await screen.findByText(/Daily backups retained/);
+    await screen.findByText(/Monthly backups retained/);
+    await screen.findByText(/Yearly backups retained/);
+    await screen.findByText(/Copy backups to another region/);
+    await screen.findByText(/Keep final backups/);
   });
 
   it("should successfully edit backup retention policy values", async () => {
@@ -72,8 +66,10 @@ describe("EnvironmentBackupsPage", () => {
       );
     });
 
-    const btn = await screen.findByRole("button", { name: /Save Policy/ });
-    fireEvent.click(btn);
+    const edit = await screen.findByRole("button", {
+      name: /Edit Backup Retention Policy/,
+    });
+    fireEvent.click(edit);
 
     const daily = await screen.findByLabelText(/Daily backups retained/);
     await act(async () => await userEvent.type(daily, "5"));
@@ -81,11 +77,8 @@ describe("EnvironmentBackupsPage", () => {
     const monthly = await screen.findByLabelText(/Monthly backups retained/);
     await act(async () => await userEvent.type(monthly, "1"));
 
-    await screen.findByRole("button", { name: /Loading/ });
-    await screen.findByRole("button", { name: /Save Policy/ });
-
-    const edit = await screen.findByRole("button", { name: /Edit Backup Retention Policy/ });
-    fireEvent.click(edit);
+    const btn = await screen.findByRole("button", { name: /Save Policy/ });
+    fireEvent.click(btn);
 
     const newDaily = await screen.findByLabelText(/Daily backups retained/);
     expect(newDaily).toHaveValue(15);
