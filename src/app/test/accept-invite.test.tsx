@@ -1,6 +1,5 @@
 import {
   server,
-  testEmail,
   testEnv,
   testUserVerified,
   testUserVerifiedSecond,
@@ -67,8 +66,6 @@ describe("Accept invitation flows", () => {
       const logout = await screen.findByRole("button", { name: /Logout/ });
       fireEvent.click(logout);
 
-      const email = await screen.findByRole("textbox", { name: "email" });
-      await act(() => userEvent.type(email, testEmail));
       const pass = await screen.findByLabelText("Password");
       await act(() => userEvent.type(pass, "1234"));
       const login = await screen.findByRole("button", { name: /Log In/ });
@@ -96,8 +93,6 @@ describe("Accept invitation flows", () => {
 
       render(<App />);
 
-      const email = await screen.findByRole("textbox", { name: "email" });
-      await act(() => userEvent.type(email, testEmail));
       const pass = await screen.findByLabelText("Password");
       await act(() => userEvent.type(pass, "1234"));
       const login = await screen.findByRole("button", { name: /Log In/ });
