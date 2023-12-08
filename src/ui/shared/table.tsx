@@ -51,6 +51,7 @@ export interface CellProps {
   className?: string;
   variant?: "left" | "center" | "right";
   colSpan?: number;
+  onClick?: () => void;
 }
 
 export const Td = ({
@@ -78,7 +79,12 @@ export const Td = ({
   );
 };
 
-export const Th = ({ children, className, variant = "left" }: CellProps) => {
+export const Th = ({
+  children,
+  className,
+  variant = "left",
+  onClick,
+}: CellProps) => {
   const align = () => {
     if (variant === "right") return "text-right pr-4";
     if (variant === "center") return "text-center";
@@ -92,7 +98,7 @@ export const Th = ({ children, className, variant = "left" }: CellProps) => {
   );
 
   return (
-    <th scope="col" className={classes}>
+    <th scope="col" className={classes} onClick={onClick} onKeyUp={onClick}>
       {children}
     </th>
   );

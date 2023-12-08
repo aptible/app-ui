@@ -1,5 +1,6 @@
 import { fetchServices, selectServicesForTableSearch } from "@app/deploy";
-import { AppState } from "@app/types";
+import { AppState, DeployServiceRow } from "@app/types";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery, useSelector } from "starfx/react";
 import { usePaginate } from "../hooks";
@@ -22,8 +23,11 @@ export function ServicesPage() {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
+  const [sortBy, setSortBy] = useState<keyof DeployServiceRow>("createdAt");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
   const services = useSelector((s: AppState) =>
-    selectServicesForTableSearch(s, { search }),
+    selectServicesForTableSearch(s, { search, sortBy, sortDir }),
   );
   const paginated = usePaginate(services);
 
@@ -52,7 +56,17 @@ export function ServicesPage() {
           </FilterBar>
         </Group>
 
-        <ServiceByOrgTable paginated={paginated} />
+        <ServiceByOrgTable
+          paginated={paginated}
+          onSort={(key) => {
+            if (key === sortBy) {
+              setSortDir(sortDir === "asc" ? "desc" : "asc");
+            } else {
+              setSortBy(key);
+              setSortDir("desc");
+            }
+          }}
+        />
       </Group>
     </AppSidebarLayout>
   );
