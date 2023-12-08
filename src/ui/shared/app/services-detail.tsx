@@ -16,7 +16,7 @@ import {
   databaseDetailUrl,
   databaseScaleUrl,
 } from "@app/routes";
-import { AppState, DeployService } from "@app/types";
+import { AppState, DeployService, DeployServiceRow } from "@app/types";
 import { PaginateProps, usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -150,7 +150,7 @@ function AppServiceTable({
 const ServiceOrgListRow = ({
   service,
 }: {
-  service: DeployService;
+  service: DeployServiceRow;
 }) => {
   const app = useSelector((s: AppState) =>
     selectAppById(s, { id: service.appId }),
@@ -249,9 +249,7 @@ const ServiceOrgListRow = ({
         </Td>
 
         <Td>
-          <div className={tokens.type.darker}>
-            ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
-          </div>
+          <div className={tokens.type.darker}>${service.cost.toFixed(2)}</div>
         </Td>
 
         <Td variant="right">
@@ -276,16 +274,26 @@ const ServiceOrgListRow = ({
 
 export function ServiceByOrgTable({
   paginated,
-}: { paginated: PaginateProps<DeployService> }) {
+  onSort,
+}: {
+  paginated: PaginateProps<DeployServiceRow>;
+  onSort: (sortDir: keyof DeployServiceRow) => void;
+}) {
   return (
     <Table>
       <THead>
-        <Th>Service</Th>
-        <Th>Resource</Th>
+        <Th className="cursor-pointer" onClick={() => onSort("id")}>
+          Service
+        </Th>
+        <Th className="cursor-pointer" onClick={() => onSort("resourceHandle")}>
+          Resource
+        </Th>
         <Th>Environment</Th>
         <Th>Command</Th>
         <Th>Details</Th>
-        <Th>Monthly Cost</Th>
+        <Th className="cursor-pointer" onClick={() => onSort("cost")}>
+          Monthly Cost
+        </Th>
         <Th variant="right">Actions</Th>
       </THead>
 

@@ -242,20 +242,26 @@ export const selectServicesForTable = createSelector(
         const env = findEnvById(envs, { id: service.environmentId });
         return hasDeployEnvironment(env);
       })
-      .map((op): DeployServiceRow => {
-        const env = findEnvById(envs, { id: op.environmentId });
+      .map((service): DeployServiceRow => {
+        const env = findEnvById(envs, { id: service.environmentId });
         let resourceHandle = "";
-        if (op.appId) {
-          const app = findAppById(apps, { id: op.appId });
+        if (service.appId) {
+          const app = findAppById(apps, { id: service.appId });
           resourceHandle = app.handle;
-        } else if (op.databaseId) {
-          const db = findDatabaseById(dbs, { id: op.databaseId });
+        } else if (service.databaseId) {
+          const db = findDatabaseById(dbs, { id: service.databaseId });
           resourceHandle = db.handle;
         } else {
           resourceHandle = "Unknown";
         }
 
-        return { ...op, envHandle: env.handle, resourceHandle };
+        const metrics = calcServiceMetrics(service);
+        return {
+          ...service,
+          envHandle: env.handle,
+          resourceHandle,
+          cost: (metrics.estimatedCostInDollars * 1024) / 1000,
+        };
       })
       .sort(
         (a, b) =>
@@ -266,12 +272,50 @@ export const selectServicesForTable = createSelector(
 export const selectServicesForTableSearch = createSelector(
   selectServicesForTable,
   (_: AppState, p: { search: string }) => p.search,
-  (services, search) => {
+  (_: AppState, p: { sortBy: keyof DeployServiceRow }) => p.sortBy,
+  (_: AppState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (services, search, sortBy, sortDir) => {
+    const sortFn = (a: DeployServiceRow, b: DeployServiceRow) => {
+      if (sortBy === "cost") {
+        if (sortDir === "asc") {
+          return a.cost - b.cost;
+        } else {
+          return b.cost - a.cost;
+        }
+      }
+
+      if (sortBy === "resourceHandle") {
+        if (sortDir === "asc") {
+          return a.resourceHandle.localeCompare(b.resourceHandle);
+        } else {
+          return b.resourceHandle.localeCompare(a.resourceHandle);
+        }
+      }
+
+      if (sortBy === "id") {
+        if (sortDir === "asc") {
+          return a.id.localeCompare(b.id, undefined, { numeric: true });
+        } else {
+          return b.id.localeCompare(a.id, undefined, { numeric: true });
+        }
+      }
+
+      if (sortDir === "asc") {
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      } else {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      }
+    };
+
     if (search === "") {
-      return services;
+      return [...services].sort(sortFn);
     }
 
-    return services.filter((service) => {
+    const results = services.filter((service) => {
       const envHandle = service.envHandle.toLocaleLowerCase();
       const resourceHandle = service.resourceHandle.toLocaleLowerCase();
       const id = service.id.toLocaleLowerCase();
@@ -287,6 +331,8 @@ export const selectServicesForTableSearch = createSelector(
         idMatch || envMatch || resourceHandleMatch || cmdMatch;
       return searchMatch;
     });
+
+    return results.sort(sortFn);
   },
 );
 
