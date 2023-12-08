@@ -1,3 +1,5 @@
+import { LinkResponse } from "./hal";
+
 export type ProvisionableStatus =
   | "pending"
   | "provisioning"
@@ -523,4 +525,25 @@ export interface DeployActivityReport extends Timestamps {
   endsAt: string;
   filename: string;
   environmentId: string;
+}
+
+export interface DeployServiceResponse {
+  id: number;
+  handle: string;
+  created_at: string;
+  updated_at: string;
+  docker_repo: string;
+  docker_ref: string;
+  process_type: string;
+  command: string;
+  container_count: number | null;
+  container_memory_limit_mb: number | null;
+  instance_class: InstanceClass;
+  _links: {
+    current_release: LinkResponse;
+    app?: LinkResponse;
+    database?: LinkResponse;
+    account: LinkResponse;
+  };
+  _type: "service";
 }

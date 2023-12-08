@@ -14,6 +14,7 @@ import {
   appServiceScalePathUrl,
   appServiceUrl,
   databaseDetailUrl,
+  databaseScaleUrl,
 } from "@app/routes";
 import { AppState, DeployService } from "@app/types";
 import { PaginateProps, usePaginate } from "@app/ui/hooks";
@@ -164,7 +165,7 @@ const ServiceOrgListRow = ({
   return (
     <>
       <Tr>
-        <Td className="w-[160px]">
+        <Td className="w-[180px]">
           <div className="flex items-center">
             <img
               src="/resource-types/logo-service.png"
@@ -197,16 +198,18 @@ const ServiceOrgListRow = ({
 
         <Td>
           <Group size="sm" variant="horizontal" className="items-center">
-            {cmd.length > 15 ? (
-              <>
-                <Tooltip text={cmd} fluid>
-                  <Code className="text-ellipsis">{cmd.slice(0, 15)}</Code>
-                </Tooltip>
-                <CopyTextButton text={cmd} />
-              </>
-            ) : (
-              <Code>{cmd}</Code>
-            )}
+            <div className="w-[150px]">
+              {cmd.length > 15 ? (
+                <Group variant="horizontal" size="sm">
+                  <Tooltip text={cmd} fluid>
+                    <Code className="text-ellipsis">{cmd.slice(0, 15)}</Code>
+                  </Tooltip>
+                  <CopyTextButton text={cmd} />
+                </Group>
+              ) : (
+                <Code>{cmd}</Code>
+              )}
+            </div>
           </Group>
         </Td>
 
@@ -231,7 +234,9 @@ const ServiceOrgListRow = ({
               to={appDetailUrl(service.appId)}
               className="text-black group-hover:text-indigo hover:text-indigo"
             >
-              {app.handle}
+              <span className="w-[130px] text-ellipsis inline-block whitespace-nowrap overflow-x-hidden">
+                {app.handle}
+              </span>
             </Link>
           ) : null}
           {service.databaseId ? (
@@ -239,7 +244,9 @@ const ServiceOrgListRow = ({
               to={databaseDetailUrl(service.databaseId)}
               className="text-black group-hover:text-indigo hover:text-indigo"
             >
-              {db.handle}
+              <span className="w-[130px] text-ellipsis inline-block whitespace-nowrap overflow-x-hidden">
+                {db.handle}
+              </span>
             </Link>
           ) : null}
           <div className={tokens.type["normal lighter"]}>
@@ -253,7 +260,11 @@ const ServiceOrgListRow = ({
           <ButtonLink
             className="w-15"
             size="sm"
-            to={appServiceScalePathUrl(app.id, service.id)}
+            to={
+              service.appId
+                ? appServiceScalePathUrl(app.id, service.id)
+                : databaseScaleUrl(service.databaseId)
+            }
             variant="primary"
           >
             Scale

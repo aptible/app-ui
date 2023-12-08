@@ -1,8 +1,10 @@
 import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
 import {
   call,
+  parallel,
   poll,
   put,
+  select,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
@@ -17,39 +19,38 @@ import {
 import {
   type AppState,
   type DeployService,
+  DeployServiceResponse,
+  DeployServiceRow,
   type InstanceClass,
   type LinkResponse,
   excludesFalse,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import {
+  cancelAppOpsPoll,
+  fetchAppOperations,
+  findAppById,
+  selectApps,
+} from "../app";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
-import { selectEnvironmentsByOrgAsList } from "../environment";
+import {
+  cancelDatabaseOpsPoll,
+  fetchDatabaseOperations,
+  findDatabaseById,
+  selectDatabaseById,
+  selectDatabases,
+} from "../database";
+import {
+  findEnvById,
+  hasDeployEnvironment,
+  selectEnvironmentsByOrg,
+  selectEnvironmentsByOrgAsList,
+} from "../environment";
 import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
-
-export interface DeployServiceResponse {
-  id: number;
-  handle: string;
-  created_at: string;
-  updated_at: string;
-  docker_repo: string;
-  docker_ref: string;
-  process_type: string;
-  command: string;
-  container_count: number | null;
-  container_memory_limit_mb: number | null;
-  instance_class: InstanceClass;
-  _links: {
-    current_release: LinkResponse;
-    app?: LinkResponse;
-    database?: LinkResponse;
-    account: LinkResponse;
-  };
-  _type: "service";
-}
 
 export const defaultServiceResponse = (
   s: Partial<DeployServiceResponse> = {},
@@ -230,6 +231,65 @@ export const selectServicesByOrgId = createSelector(
   },
 );
 
+export const selectServicesForTable = createSelector(
+  selectEnvironmentsByOrg,
+  selectDatabases,
+  selectApps,
+  selectServicesByOrgId,
+  (envs, dbs, apps, services) =>
+    services
+      .filter((service) => {
+        const env = findEnvById(envs, { id: service.environmentId });
+        return hasDeployEnvironment(env);
+      })
+      .map((op): DeployServiceRow => {
+        const env = findEnvById(envs, { id: op.environmentId });
+        let resourceHandle = "";
+        if (op.appId) {
+          const app = findAppById(apps, { id: op.appId });
+          resourceHandle = app.handle;
+        } else if (op.databaseId) {
+          const db = findDatabaseById(dbs, { id: op.databaseId });
+          resourceHandle = db.handle;
+        } else {
+          resourceHandle = "Unknown";
+        }
+
+        return { ...op, envHandle: env.handle, resourceHandle };
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      ),
+);
+
+export const selectServicesForTableSearch = createSelector(
+  selectServicesForTable,
+  (_: AppState, p: { search: string }) => p.search,
+  (services, search) => {
+    if (search === "") {
+      return services;
+    }
+
+    return services.filter((service) => {
+      const envHandle = service.envHandle.toLocaleLowerCase();
+      const resourceHandle = service.resourceHandle.toLocaleLowerCase();
+      const id = service.id.toLocaleLowerCase();
+      const cmd = serviceCommandText(service).toLocaleLowerCase();
+
+      const idMatch = id.includes(search);
+      const envMatch = envHandle !== "" && envHandle.includes(search);
+      const resourceHandleMatch =
+        resourceHandle !== "" && resourceHandle.includes(search);
+      const cmdMatch = cmd.includes(search);
+
+      const searchMatch =
+        idMatch || envMatch || resourceHandleMatch || cmdMatch;
+      return searchMatch;
+    });
+  },
+);
+
 export const selectServicesByEnvId = createSelector(
   selectEnvToServicesMap,
   (_: AppState, p: { envId: string }) => p.envId,
@@ -256,6 +316,14 @@ export const selectAppToServicesMap = createSelector(
     });
 
     return appToServiceMap;
+  },
+);
+
+export const selectAppByServiceId = createSelector(
+  selectServiceById,
+  selectApps,
+  (service, apps) => {
+    return findAppById(apps, { id: service.appId });
   },
 );
 
@@ -469,3 +537,52 @@ export const scaleService = api.post<
     meta: { opId: `${opId}` },
   };
 });
+
+export const pollAppAndServiceOperations = thunks.create<{ id: string }>(
+  "app-service-op-poll",
+  { supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`) },
+  function* (ctx, next) {
+    yield* put(setLoaderStart({ id: ctx.key }));
+
+    const services = yield* select((s: AppState) =>
+      selectServicesByAppId(s, {
+        appId: ctx.payload.id,
+      }),
+    );
+    const serviceOps = services.map(
+      (service) => () =>
+        fetchServiceOperations.run(fetchServiceOperations({ id: service.id })),
+    );
+    const group = yield* parallel([
+      () => fetchAppOperations.run(fetchAppOperations(ctx.payload)),
+      ...serviceOps,
+    ]);
+    yield* group;
+
+    yield* next();
+    yield* put(setLoaderSuccess({ id: ctx.key }));
+  },
+);
+
+export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
+  "db-service-op-poll",
+  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
+  function* (ctx, next) {
+    yield* put(setLoaderStart({ id: ctx.key }));
+    const db = yield* select((s: AppState) =>
+      selectDatabaseById(s, ctx.payload),
+    );
+
+    const group = yield* parallel([
+      () => fetchDatabaseOperations.run(fetchDatabaseOperations(ctx.payload)),
+      () =>
+        fetchServiceOperations.run(
+          fetchServiceOperations({ id: db.serviceId }),
+        ),
+    ]);
+    yield* group;
+
+    yield* next();
+    yield* put(setLoaderSuccess({ id: ctx.key }));
+  },
+);

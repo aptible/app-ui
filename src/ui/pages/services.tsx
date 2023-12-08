@@ -1,4 +1,5 @@
-import { fetchServices, selectServicesByOrgId } from "@app/deploy";
+import { fetchServices, selectServicesForTableSearch } from "@app/deploy";
+import { AppState } from "@app/types";
 import { useSearchParams } from "react-router-dom";
 import { useQuery, useSelector } from "starfx/react";
 import { usePaginate } from "../hooks";
@@ -21,7 +22,9 @@ export function ServicesPage() {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
-  const services = useSelector(selectServicesByOrgId);
+  const services = useSelector((s: AppState) =>
+    selectServicesForTableSearch(s, { search }),
+  );
   const paginated = usePaginate(services);
 
   return (
