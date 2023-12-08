@@ -1,6 +1,5 @@
 import { defaultAuthLoaderMeta, signup } from "@app/auth";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { fetchInvitation, selectInvitationById } from "@app/invitations";
+import { useLoader, useLoaderSuccess } from "@app/fx";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
   deployUrl,
@@ -9,18 +8,18 @@ import {
   verifyEmailRequestUrl,
 } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
-import { AppState } from "@app/types";
 import { CreateUserForm } from "@app/users";
 import { emailValidator, existValidtor, passValidator } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
-import { useValidator } from "../hooks";
+import { useInvitation, useValidator } from "../hooks";
 import { HeroBgView } from "../layouts";
 import {
   AlreadyAuthenticatedBanner,
   AptibleLogo,
+  Banner,
   BannerMessages,
   Button,
   FormGroup,
@@ -128,30 +127,19 @@ const SignupHeader = () => {
   );
 };
 
-function useInvitation(redirectPath: string) {
-  let inviteId = "";
-  let code = "";
-  if (redirectPath.includes("/claim/")) {
-    const claim = redirectPath.replace("/claim/", "");
-    [inviteId, code] = claim.split("/");
-  }
-
-  return { inviteId, code };
-}
-
 export const SignupPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const queryEmail = params.get("email") || "";
   const redirectPath = useSelector(selectRedirectPath);
-  const { inviteId, code } = useInvitation(redirectPath);
-
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
-  useQuery(fetchInvitation({ id: inviteId }));
-  const invitation = useSelector((s: AppState) =>
-    selectInvitationById(s, { id: inviteId }),
-  );
+  const { invitation, inviteId, code } = useInvitation(redirectPath);
+
+  useEffect(() => {
+    if (invitation.email === "") return;
+    setEmail(invitation.email);
+  }, [invitation.email]);
 
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -176,11 +164,6 @@ export const SignupPage = () => {
     if (!validate(data)) return;
     dispatch(action);
   };
-
-  useEffect(() => {
-    if (invitation.email === "") return;
-    setEmail(invitation.email);
-  }, [invitation.email]);
 
   useLoaderSuccess(loader, () => {
     if (inviteId) {
@@ -211,6 +194,13 @@ export const SignupPage = () => {
           <div className="mx-auto max-w-[500px] bg-white py-8 px-10 shadow rounded-lg border border-black-100">
             <form className="space-y-4" onSubmit={onSubmitForm}>
               <AlreadyAuthenticatedBanner />
+
+              {invitation.id ? (
+                <Banner variant="info">
+                  <strong>{invitation.inviterName}</strong> invited your to join{" "}
+                  <strong>{invitation.organizationName}</strong> on Aptible
+                </Banner>
+              ) : null}
 
               <FormGroup
                 label="Name"
