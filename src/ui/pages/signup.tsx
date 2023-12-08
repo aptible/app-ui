@@ -197,7 +197,7 @@ export const SignupPage = () => {
 
               {invitation.id ? (
                 <Banner variant="info">
-                  <strong>{invitation.inviterName}</strong> invited your to join{" "}
+                  <strong>{invitation.inviterName}</strong> invited you to join{" "}
                   <strong>{invitation.organizationName}</strong> on Aptible
                 </Banner>
               ) : null}
