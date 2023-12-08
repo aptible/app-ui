@@ -63,27 +63,27 @@ export function ServiceHeader({
         docsUrl="https://www.aptible.com/docs/services"
       />
 
-      <DetailInfoGrid>
+      <DetailInfoGrid columns={3}>
         <DetailInfoItem title="ID">{service.id}</DetailInfoItem>
+        <DetailInfoItem title="Container Size">
+          {metrics.containerSizeGB} GB
+        </DetailInfoItem>
         <DetailInfoItem title="Type">{service.processType}</DetailInfoItem>
         <DetailInfoItem title="App">
           <Link to={appDetailUrl(app.id)}>{app.handle}</Link>
         </DetailInfoItem>
-        <DetailInfoItem title="Environment">
-          <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
-        </DetailInfoItem>
-        <DetailInfoItem title="Container Size">
-          {metrics.containerSizeGB} GB
-        </DetailInfoItem>
-        <DetailInfoItem title="CPU Share">{totalCPU}</DetailInfoItem>
         <DetailInfoItem title="Container Count">
           {service.containerCount}
         </DetailInfoItem>
-        <DetailInfoItem title="Container Profile">
-          {metrics.containerProfile.name}
+        <DetailInfoItem title="CPU Share">{totalCPU}</DetailInfoItem>
+        <DetailInfoItem title="Environment">
+          <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
         </DetailInfoItem>
         <DetailInfoItem title="Cost">
           ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
+        </DetailInfoItem>
+        <DetailInfoItem title="Container Profile">
+          {metrics.containerProfile.name}
         </DetailInfoItem>
       </DetailInfoGrid>
       {service.command ? (
