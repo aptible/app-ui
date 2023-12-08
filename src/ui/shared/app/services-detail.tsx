@@ -253,7 +253,7 @@ const ServiceOrgListRow = ({
         </Td>
 
         <Td variant="right">
-          <div className="h-[45px] flex items-center">
+          <div className="h-[40px] flex items-center">
             <ButtonLink
               size="sm"
               to={
