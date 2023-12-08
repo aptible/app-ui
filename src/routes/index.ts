@@ -95,7 +95,7 @@ export const appDetailUrl = (id: string) => `/apps/${id}`;
 export const APP_SERVICES_PATH = `${APP_DETAIL_PATH}/services`;
 export const appServicesUrl = (id: string) => `${appDetailUrl(id)}/services`;
 export const APP_SERVICE_PATH = `${APP_DETAIL_PATH}/services/:serviceId`;
-export const appServicePathUrl = (appId: string, serviceId: string) =>
+export const appServiceUrl = (appId: string, serviceId: string) =>
   `${appDetailUrl(appId)}/services/${serviceId}`;
 export const APP_CONFIG_PATH = `${APP_DETAIL_PATH}/config`;
 export const appConfigUrl = (appId: string) => `${appDetailUrl(appId)}/config`;
@@ -146,6 +146,9 @@ export const databaseCredentialsUrl = (id: string) =>
 export const DATABASE_ENDPOINT_CREATE_PATH = `${DATABASE_DETAIL_PATH}/endpoints/create`;
 export const databaseEndpointCreateUrl = (id: string) =>
   `${databaseDetailUrl(id)}/endpoints/create`;
+
+export const SERVICES_PATH = "/services";
+export const servicesUrl = () => SERVICES_PATH;
 
 export const BACKUP_RESTORE_PATH = "/backups/:id/restore";
 export const backupRestoreUrl = (id: string) => `/backups/${id}/restore`;

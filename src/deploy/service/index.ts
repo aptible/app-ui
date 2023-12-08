@@ -14,15 +14,17 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type {
-  AppState,
-  DeployService,
-  InstanceClass,
-  LinkResponse,
+import {
+  type AppState,
+  type DeployService,
+  type InstanceClass,
+  type LinkResponse,
+  excludesFalse,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
+import { selectEnvironmentsByOrgAsList } from "../environment";
 import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
@@ -205,6 +207,26 @@ export const selectEnvToServicesMap = createSelector(
       envToServiceMap[service.environmentId]?.add(service.id);
     });
     return envToServiceMap;
+  },
+);
+
+export const selectServicesByOrgId = createSelector(
+  selectEnvToServicesMap,
+  selectEnvironmentsByOrgAsList,
+  selectServices,
+  (envToServicesMap, envs, servicesMap) => {
+    const servicesOrg = new Set<DeployService>();
+    envs.forEach((env) => {
+      const servs = envToServicesMap[env.id];
+      if (!servs) return;
+      [...servs]
+        .map((id) => servicesMap[id])
+        .filter(excludesFalse)
+        .forEach((service) => {
+          servicesOrg.add(service);
+        });
+    });
+    return [...servicesOrg];
   },
 );
 

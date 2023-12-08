@@ -3,20 +3,26 @@ import {
   calcServiceMetrics,
   fetchServicesByAppId,
   selectAppById,
+  selectDatabaseById,
   selectServicesByAppId,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
 import {
   appDeployResumeUrl,
+  appDetailUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
+  appServiceUrl,
+  databaseDetailUrl,
 } from "@app/routes";
-import { AppState, DeployApp, DeployService } from "@app/types";
-import { usePaginate } from "@app/ui/hooks";
+import { AppState, DeployService } from "@app/types";
+import { PaginateProps, usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { ButtonCreate, ButtonLink } from "../button";
+import { Code } from "../code";
+import { CopyTextButton } from "../copy";
 import { Group } from "../group";
 import { PreCode, listToInvertedTextColor } from "../pre-code";
 import {
@@ -25,16 +31,19 @@ import {
   FilterBar,
   PaginateBar,
 } from "../resource-list-view";
+import { EnvStackCell } from "../resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
-const ServiceListRow = ({
-  app,
+const AppServiceListRow = ({
   service,
 }: {
-  app: DeployApp;
   service: DeployService;
 }) => {
+  const app = useSelector((s: AppState) =>
+    selectAppById(s, { id: service.appId }),
+  );
   const metrics = calcServiceMetrics(service);
   const { totalCPU } = calcMetrics([service]);
 
@@ -112,7 +121,175 @@ const ServiceListRow = ({
   );
 };
 
-export function ServicesOverview({
+function AppServiceTable({
+  paginated,
+}: { paginated: PaginateProps<DeployService> }) {
+  return (
+    <Table>
+      <THead>
+        <Th>Service</Th>
+        <Th>Memory Limit</Th>
+        <Th>CPU Share</Th>
+        <Th>Container Count</Th>
+        <Th>Profile</Th>
+        <Th>Monthly Cost</Th>
+        <Th variant="right">Actions</Th>
+      </THead>
+
+      <TBody>
+        {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+        {paginated.data.map((service) => (
+          <AppServiceListRow key={service.id} service={service} />
+        ))}
+      </TBody>
+    </Table>
+  );
+}
+
+const ServiceOrgListRow = ({
+  service,
+}: {
+  service: DeployService;
+}) => {
+  const app = useSelector((s: AppState) =>
+    selectAppById(s, { id: service.appId }),
+  );
+  const db = useSelector((s: AppState) =>
+    selectDatabaseById(s, { id: service.databaseId }),
+  );
+  const metrics = calcServiceMetrics(service);
+  const { totalCPU } = calcMetrics([service]);
+  const cmd = service.command || "Docker CMD";
+
+  return (
+    <>
+      <Tr>
+        <Td className="w-[160px]">
+          <div className="flex items-center">
+            <img
+              src="/resource-types/logo-service.png"
+              className="w-[32px] h-[32px] mr-2 align-middle"
+              aria-label="App"
+            />
+            <div>
+              {service.appId ? (
+                <Link
+                  to={appServiceUrl(service.appId, service.id)}
+                  className="text-black group-hover:text-indigo hover:text-indigo"
+                >
+                  {service.processType}
+                </Link>
+              ) : null}
+              {service.databaseId ? (
+                <Link
+                  to={databaseDetailUrl(service.databaseId)}
+                  className="text-black group-hover:text-indigo hover:text-indigo"
+                >
+                  {service.processType}
+                </Link>
+              ) : null}
+              <div className={tokens.type["normal lighter"]}>
+                ID: {service.id}
+              </div>
+            </div>
+          </div>
+        </Td>
+
+        <Td>
+          <Group size="sm" variant="horizontal" className="items-center">
+            {cmd.length > 15 ? (
+              <>
+                <Tooltip text={cmd} fluid>
+                  <Code className="text-ellipsis">{cmd.slice(0, 15)}</Code>
+                </Tooltip>
+                <CopyTextButton text={cmd} />
+              </>
+            ) : (
+              <Code>{cmd}</Code>
+            )}
+          </Group>
+        </Td>
+
+        <Td className={tokens.type.darker}>
+          <div className={tokens.type.darker}>
+            {service.containerCount} Container
+          </div>
+          <div className={tokens.type["normal lighter"]}>
+            {metrics.containerSizeGB} GB · {totalCPU} CPU
+          </div>
+        </Td>
+
+        <Td>
+          <div className={tokens.type.darker}>
+            ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
+          </div>
+        </Td>
+
+        <Td>
+          {service.appId ? (
+            <Link
+              to={appDetailUrl(service.appId)}
+              className="text-black group-hover:text-indigo hover:text-indigo"
+            >
+              {app.handle}
+            </Link>
+          ) : null}
+          {service.databaseId ? (
+            <Link
+              to={databaseDetailUrl(service.databaseId)}
+              className="text-black group-hover:text-indigo hover:text-indigo"
+            >
+              {db.handle}
+            </Link>
+          ) : null}
+          <div className={tokens.type["normal lighter"]}>
+            {service.appId ? "App" : "Database"}
+          </div>
+        </Td>
+
+        <EnvStackCell environmentId={service.environmentId} />
+
+        <Td variant="right">
+          <ButtonLink
+            className="w-15"
+            size="sm"
+            to={appServiceScalePathUrl(app.id, service.id)}
+            variant="primary"
+          >
+            Scale
+          </ButtonLink>
+        </Td>
+      </Tr>
+    </>
+  );
+};
+
+export function ServiceByOrgTable({
+  paginated,
+}: { paginated: PaginateProps<DeployService> }) {
+  return (
+    <Table>
+      <THead>
+        <Th>Service</Th>
+        <Th>Command</Th>
+        <Th>Details</Th>
+        <Th>Monthly Cost</Th>
+        <Th>Resource</Th>
+        <Th>Environment</Th>
+        <Th variant="right">Actions</Th>
+      </THead>
+
+      <TBody>
+        {paginated.data.length === 0 ? <EmptyTr colSpan={6} /> : null}
+        {paginated.data.map((service) => (
+          <ServiceOrgListRow key={service.id} service={service} />
+        ))}
+      </TBody>
+    </Table>
+  );
+}
+
+export function AppServicesOverview({
   appId,
 }: {
   appId: string;
@@ -149,24 +326,7 @@ export function ServicesOverview({
         </FilterBar>
       </Group>
 
-      <Table>
-        <THead>
-          <Th>Service</Th>
-          <Th>Memory Limit</Th>
-          <Th>CPU Share</Th>
-          <Th>Container Count</Th>
-          <Th>Profile</Th>
-          <Th>Monthly Cost</Th>
-          <Th variant="right">Actions</Th>
-        </THead>
-
-        <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
-          {paginated.data.map((service) => (
-            <ServiceListRow key={service.id} app={app} service={service} />
-          ))}
-        </TBody>
-      </Table>
+      <AppServiceTable paginated={paginated} />
     </Group>
   );
 }
