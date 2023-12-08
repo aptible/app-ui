@@ -200,7 +200,7 @@ const ServiceOrgListRow = ({
           {service.appId ? (
             <Link
               to={appDetailUrl(service.appId)}
-              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] h-[16px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
+              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] mb-[-5px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
             >
               {app.handle}
             </Link>
@@ -208,7 +208,7 @@ const ServiceOrgListRow = ({
           {service.databaseId ? (
             <Link
               to={databaseDetailUrl(service.databaseId)}
-              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] h-[16px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
+              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] mb-[-5px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
             >
               {db.handle}
             </Link>
