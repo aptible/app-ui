@@ -17,6 +17,7 @@ import {
   AppDetailLayout,
   AppDetailPage,
   AppDetailServiceMetricsPage,
+  AppDetailServicePage,
   AppDetailServiceScalePage,
   AppDetailServicesPage,
   AppSettingsPage,
@@ -95,6 +96,7 @@ import {
   SearchPage,
   SecuritySettingsPage,
   ServiceDetailLayout,
+  ServicesPage,
   SettingsLayout,
   SettingsPage,
   SignupPage,
@@ -230,6 +232,10 @@ export const appRoutes: RouteObject[] = [
         element: <ServiceDetailLayout />,
         children: [
           {
+            index: true,
+            element: <AppDetailServicePage />,
+          },
+          {
             path: routes.APP_SERVICE_METRICS_PATH,
             element: <AppDetailServiceMetricsPage />,
           },
@@ -238,6 +244,11 @@ export const appRoutes: RouteObject[] = [
             element: <AppDetailServiceScalePage />,
           },
         ],
+      },
+
+      {
+        path: routes.SERVICES_PATH,
+        element: <ServicesPage />,
       },
 
       {

@@ -45,7 +45,6 @@ import {
   selectOperationsByDatabaseId,
   waitForOperation,
 } from "../operation";
-import { fetchServiceOperations } from "../service";
 import { selectDeploy } from "../slice";
 
 export interface DeployDatabaseResponse {
@@ -635,28 +634,6 @@ export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
 export const pollDatabaseOperations = api.get<{ id: string }>(
   ["/databases/:id/operations", "poll"],
   { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
-);
-export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
-  "db-service-op-poll",
-  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
-  function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
-    const db = yield* select((s: AppState) =>
-      selectDatabaseById(s, ctx.payload),
-    );
-
-    const group = yield* parallel([
-      () => fetchDatabaseOperations.run(fetchDatabaseOperations(ctx.payload)),
-      () =>
-        fetchServiceOperations.run(
-          fetchServiceOperations({ id: db.serviceId }),
-        ),
-    ]);
-    yield* group;
-
-    yield* next();
-    yield* put(setLoaderSuccess({ id: ctx.key }));
-  },
 );
 
 export const fetchDatabaseDependents = api.get<{ id: string }>(

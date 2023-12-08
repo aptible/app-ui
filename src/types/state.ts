@@ -218,3 +218,9 @@ export interface DeployActivityRow extends DeployOperation {
   resourceHandle: string;
   url?: string;
 }
+
+export interface DeployServiceRow extends DeployService {
+  envHandle: string;
+  resourceHandle: string;
+  url?: string;
+}

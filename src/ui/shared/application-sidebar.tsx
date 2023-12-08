@@ -12,6 +12,7 @@ import {
   environmentsUrl,
   searchUrl,
   securityDashboardUrl,
+  servicesUrl,
   stacksUrl,
   supportUrl,
 } from "@app/routes";
@@ -37,6 +38,7 @@ import {
   IconLayers,
   IconPlusCircle,
   IconSearch,
+  IconService,
   IconShield,
 } from "./icons";
 import { LinkNav } from "./link";
@@ -61,6 +63,7 @@ export const ApplicationSidebar = () => {
     { name: "Apps", to: appsUrl(), icon: <IconBox /> },
     { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },
     { name: "Endpoints", to: endpointsUrl(), icon: <IconEndpoint /> },
+    { name: "Services", to: servicesUrl(), icon: <IconService /> },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
     {

@@ -5,7 +5,6 @@ import {
   DeployEndpointResponse,
   DeployEnvironmentResponse,
   DeployMetricDrainResponse,
-  DeployServiceResponse,
   DeployStackResponse,
   defaultCertificateResponse,
   defaultDatabaseResponse,
@@ -16,6 +15,7 @@ import {
 import { defaultHalHref } from "@app/hal";
 import { RoleResponse } from "@app/roles";
 import { STATUSPAGE_URL } from "@app/system-status";
+import { DeployServiceResponse } from "@app/types";
 import { UserResponse } from "@app/users";
 import { rest } from "msw";
 import {

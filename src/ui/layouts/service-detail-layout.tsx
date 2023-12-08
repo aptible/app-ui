@@ -95,14 +95,18 @@ export function ServiceHeader({
                 onClick={() => setOpen(!isOpen)}
                 onKeyUp={() => setOpen(!isOpen)}
               >
-                {isOpen ? <IconChevronDown /> : <IconChevronRight />}
+                {isOpen ? (
+                  <IconChevronDown variant="sm" />
+                ) : (
+                  <IconChevronRight variant="sm" />
+                )}
                 <p>Show Command</p>
               </div>
             </div>
           </div>
           {isOpen ? (
             <PreCode
-              segments={listToInvertedTextColor(["git clone"])}
+              segments={listToInvertedTextColor(service.command.split(" "))}
               allowCopy
             />
           ) : null}
