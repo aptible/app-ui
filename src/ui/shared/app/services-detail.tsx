@@ -284,26 +284,26 @@ export function ServiceByOrgTable({
     <Table>
       <THead>
         <Th
-          className="cursor-pointer hover:text-black"
+          className="cursor-pointer hover:text-black group"
           onClick={() => onSort("id")}
         >
           Service{" "}
           <div className="inline-block">
             <IconChevronDown
               variant="sm"
-              className="top-1 relative opacity-50"
+              className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
             />
           </div>
         </Th>
         <Th
-          className="cursor-pointer hover:text-black"
+          className="cursor-pointer hover:text-black group"
           onClick={() => onSort("resourceHandle")}
         >
           Resource{" "}
           <div className="inline-block">
             <IconChevronDown
               variant="sm"
-              className="top-1 relative opacity-50"
+              className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
             />
           </div>
         </Th>
@@ -311,14 +311,14 @@ export function ServiceByOrgTable({
         <Th>Command</Th>
         <Th>Details</Th>
         <Th
-          className="cursor-pointer hover:text-black"
+          className="cursor-pointer hover:text-black group"
           onClick={() => onSort("cost")}
         >
           Monthly Cost{" "}
           <div className="inline-block">
             <IconChevronDown
               variant="sm"
-              className="top-1 relative opacity-50"
+              className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
             />
           </div>
         </Th>
