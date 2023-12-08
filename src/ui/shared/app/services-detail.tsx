@@ -197,6 +197,30 @@ const ServiceOrgListRow = ({
         </Td>
 
         <Td>
+          {service.appId ? (
+            <Link
+              to={appDetailUrl(service.appId)}
+              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] h-[16px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
+            >
+              {app.handle}
+            </Link>
+          ) : null}
+          {service.databaseId ? (
+            <Link
+              to={databaseDetailUrl(service.databaseId)}
+              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] h-[16px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
+            >
+              {db.handle}
+            </Link>
+          ) : null}
+          <div className={tokens.type["normal lighter"]}>
+            {service.appId ? "App" : "Database"}
+          </div>
+        </Td>
+
+        <EnvStackCell environmentId={service.environmentId} />
+
+        <Td>
           <Group size="sm" variant="horizontal" className="items-center">
             <div className="w-[150px]">
               {cmd.length > 15 ? (
@@ -228,32 +252,8 @@ const ServiceOrgListRow = ({
           </div>
         </Td>
 
-        <Td>
-          {service.appId ? (
-            <Link
-              to={appDetailUrl(service.appId)}
-              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] h-[16px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
-            >
-              {app.handle}
-            </Link>
-          ) : null}
-          {service.databaseId ? (
-            <Link
-              to={databaseDetailUrl(service.databaseId)}
-              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] h-[16px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
-            >
-              {db.handle}
-            </Link>
-          ) : null}
-          <div className={tokens.type["normal lighter"]}>
-            {service.appId ? "App" : "Database"}
-          </div>
-        </Td>
-
-        <EnvStackCell environmentId={service.environmentId} />
-
         <Td variant="right">
-          <div className="h-[45px] flex items-center">
+          <div className="h-[40px] flex items-center">
             <ButtonLink
               size="sm"
               to={
@@ -279,11 +279,11 @@ export function ServiceByOrgTable({
     <Table>
       <THead>
         <Th>Service</Th>
+        <Th>Resource</Th>
+        <Th>Environment</Th>
         <Th>Command</Th>
         <Th>Details</Th>
         <Th>Monthly Cost</Th>
-        <Th>Resource</Th>
-        <Th>Environment</Th>
         <Th variant="right">Actions</Th>
       </THead>
 
