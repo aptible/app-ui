@@ -31,7 +31,9 @@ export function ServicesPage() {
     <AppSidebarLayout>
       <Group>
         <Group size="sm">
-          <TitleBar description="Services">Services</TitleBar>
+          <TitleBar description="Services determine the number of containers of your app and the memory and CPU limits for your app.">
+            Services
+          </TitleBar>
 
           <FilterBar>
             <Group variant="horizontal" size="sm" className="items-center">
@@ -44,7 +46,7 @@ export function ServicesPage() {
             </Group>
 
             <Group variant="horizontal" size="lg" className="items-center mt-1">
-              <DescBar>{paginated.totalItems} Apps</DescBar>
+              <DescBar>{paginated.totalItems} Services</DescBar>
               <PaginateBar {...paginated} />
             </Group>
           </FilterBar>

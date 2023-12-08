@@ -232,21 +232,17 @@ const ServiceOrgListRow = ({
           {service.appId ? (
             <Link
               to={appDetailUrl(service.appId)}
-              className="text-black group-hover:text-indigo hover:text-indigo"
+              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] text-ellipsis inline-block whitespace-nowrap overflow-x-hidden"
             >
-              <span className="w-[130px] text-ellipsis inline-block whitespace-nowrap overflow-x-hidden">
-                {app.handle}
-              </span>
+              {app.handle}
             </Link>
           ) : null}
           {service.databaseId ? (
             <Link
               to={databaseDetailUrl(service.databaseId)}
-              className="text-black group-hover:text-indigo hover:text-indigo"
+              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] text-ellipsis inline-block whitespace-nowrap overflow-x-hidden"
             >
-              <span className="w-[130px] text-ellipsis inline-block whitespace-nowrap overflow-x-hidden">
-                {db.handle}
-              </span>
+              {db.handle}
             </Link>
           ) : null}
           <div className={tokens.type["normal lighter"]}>
@@ -257,18 +253,19 @@ const ServiceOrgListRow = ({
         <EnvStackCell environmentId={service.environmentId} />
 
         <Td variant="right">
-          <ButtonLink
-            className="w-15"
-            size="sm"
-            to={
-              service.appId
-                ? appServiceScalePathUrl(app.id, service.id)
-                : databaseScaleUrl(service.databaseId)
-            }
-            variant="primary"
-          >
-            Scale
-          </ButtonLink>
+          <div className="h-[45px] flex items-center">
+            <ButtonLink
+              size="sm"
+              to={
+                service.appId
+                  ? appServiceScalePathUrl(app.id, service.id)
+                  : databaseScaleUrl(service.databaseId)
+              }
+              variant="primary"
+            >
+              Scale
+            </ButtonLink>
+          </div>
         </Td>
       </Tr>
     </>
