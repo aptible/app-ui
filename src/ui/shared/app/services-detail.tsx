@@ -197,24 +197,26 @@ const ServiceOrgListRow = ({
         </Td>
 
         <Td>
-          {service.appId ? (
-            <Link
-              to={appDetailUrl(service.appId)}
-              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] mb-[-5px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
-            >
-              {app.handle}
-            </Link>
-          ) : null}
-          {service.databaseId ? (
-            <Link
-              to={databaseDetailUrl(service.databaseId)}
-              className="text-black group-hover:text-indigo hover:text-indigo w-[130px] mb-[-5px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
-            >
-              {db.handle}
-            </Link>
-          ) : null}
-          <div className={tokens.type["normal lighter"]}>
-            {service.appId ? "App" : "Database"}
+          <div className="flex flex-col gap-0">
+            {service.appId ? (
+              <Link
+                to={appDetailUrl(service.appId)}
+                className="text-black group-hover:text-indigo hover:text-indigo w-[130px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
+              >
+                {app.handle}
+              </Link>
+            ) : null}
+            {service.databaseId ? (
+              <Link
+                to={databaseDetailUrl(service.databaseId)}
+                className="text-black group-hover:text-indigo hover:text-indigo w-[130px] text-ellipsis inline-block whitespace-nowrap overflow-hidden"
+              >
+                {db.handle}
+              </Link>
+            ) : null}
+            <div className={tokens.type["normal lighter"]}>
+              {service.appId ? "App" : "Database"}
+            </div>
           </div>
         </Td>
 
