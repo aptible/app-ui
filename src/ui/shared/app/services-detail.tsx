@@ -25,6 +25,7 @@ import { ButtonCreate, ButtonLink } from "../button";
 import { Code } from "../code";
 import { CopyTextButton } from "../copy";
 import { Group } from "../group";
+import { IconChevronDown } from "../icons";
 import { PreCode, listToInvertedTextColor } from "../pre-code";
 import {
   ActionBar,
@@ -282,17 +283,44 @@ export function ServiceByOrgTable({
   return (
     <Table>
       <THead>
-        <Th className="cursor-pointer" onClick={() => onSort("id")}>
-          Service
+        <Th
+          className="cursor-pointer hover:text-black"
+          onClick={() => onSort("id")}
+        >
+          Service{" "}
+          <div className="inline-block">
+            <IconChevronDown
+              variant="sm"
+              className="top-1 relative opacity-50"
+            />
+          </div>
         </Th>
-        <Th className="cursor-pointer" onClick={() => onSort("resourceHandle")}>
-          Resource
+        <Th
+          className="cursor-pointer hover:text-black"
+          onClick={() => onSort("resourceHandle")}
+        >
+          Resource{" "}
+          <div className="inline-block">
+            <IconChevronDown
+              variant="sm"
+              className="top-1 relative opacity-50"
+            />
+          </div>
         </Th>
         <Th>Environment</Th>
         <Th>Command</Th>
         <Th>Details</Th>
-        <Th className="cursor-pointer" onClick={() => onSort("cost")}>
-          Monthly Cost
+        <Th
+          className="cursor-pointer hover:text-black"
+          onClick={() => onSort("cost")}
+        >
+          Monthly Cost{" "}
+          <div className="inline-block">
+            <IconChevronDown
+              variant="sm"
+              className="top-1 relative opacity-50"
+            />
+          </div>
         </Th>
         <Th variant="right">Actions</Th>
       </THead>
