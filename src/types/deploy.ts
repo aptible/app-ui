@@ -114,17 +114,21 @@ export interface DeployEnvironment extends Timestamps {
   type: "production" | "development";
   handle: string;
   activated: boolean;
+  sweetnessStack: string;
+  stackId: string;
+  onboardingStatus: OnboardingStatus;
+  totalAppCount: number;
+  totalDatabaseCount: number;
+}
+
+export interface DeployEnvironmentStats {
+  id: string;
   containerCount: number;
   domainCount: number;
   totalDiskSize: number;
-  totalAppCount: number;
   appContainerCount: number;
   databaseContainerCount: number;
-  totalDatabaseCount: number;
-  sweetnessStack: string;
   totalBackupSize: number;
-  stackId: string;
-  onboardingStatus: OnboardingStatus;
 }
 
 export interface DeployStack extends Timestamps {
