@@ -14,6 +14,7 @@ import type {
   DeployDisk,
   DeployEndpoint,
   DeployEnvironment,
+  DeployEnvironmentStats,
   DeployImage,
   DeployLogDrain,
   DeployMetricDrain,
@@ -190,6 +191,7 @@ export interface AppState extends QueryState {
   certificates: MapEntity<DeployCertificate>;
   endpoints: MapEntity<DeployEndpoint>;
   environments: MapEntity<DeployEnvironment>;
+  environmentStats: MapEntity<DeployEnvironmentStats>;
   serviceDefinitions: MapEntity<DeployServiceDefinition>;
   stacks: MapEntity<DeployStack>;
   disks: MapEntity<DeployDisk>;

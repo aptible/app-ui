@@ -6,6 +6,7 @@ import {
   fetchEnvironmentOperations,
   selectEndpointsByEnvironmentId,
   selectEnvironmentById,
+  selectEnvironmentStatsById,
   selectLatestSuccessDeployOpByEnvId,
   selectStackById,
 } from "@app/deploy";
@@ -16,6 +17,7 @@ import {
   AppState,
   DeployEndpoint,
   DeployEnvironment,
+  DeployEnvironmentStats,
   DeployOperation,
   DeployStack,
 } from "@app/types";
@@ -54,8 +56,10 @@ export function EnvHeader({
   latestOperation,
   stack,
   endpoints,
+  stats,
 }: {
   environment: DeployEnvironment;
+  stats: DeployEnvironmentStats;
   latestOperation: DeployOperation;
   stack: DeployStack;
   endpoints: DeployEndpoint[];
@@ -77,47 +81,24 @@ export function EnvHeader({
 
       <DetailInfoGrid columns={3}>
         <DetailInfoItem title="ID">{environment.id}</DetailInfoItem>
-        <DetailInfoItem
-          title={`${environment.totalAppCount} App${
-            environment.totalAppCount > 1 || environment.totalAppCount === 0
-              ? "s"
-              : ""
-          }`}
-        >
-          Using {environment.appContainerCount} container
-          {environment.appContainerCount > 1 ||
-            (environment.appContainerCount === 0 && "s")}
+        <DetailInfoItem title={`${environment.totalAppCount} Apps`}>
+          Using {stats.appContainerCount} containers
         </DetailInfoItem>
         <DetailInfoItem title="Backups">
-          {environment.totalBackupSize} GB
+          {stats.totalBackupSize} GB
         </DetailInfoItem>
 
         <DetailInfoItem title="Stack">{stack.name}</DetailInfoItem>
-        <DetailInfoItem
-          title={`${environment.totalDatabaseCount} Database${
-            environment.totalDatabaseCount > 1 ||
-            environment.totalDatabaseCount === 0
-              ? "s"
-              : ""
-          }`}
-        >
-          {environment.databaseContainerCount} container
-          {environment.databaseContainerCount > 0 ||
-          environment.databaseContainerCount === 0
-            ? "s"
-            : ""}{" "}
-          using {environment.totalDiskSize} GB of disk
+        <DetailInfoItem title={`${environment.totalDatabaseCount} Databases`}>
+          {stats.databaseContainerCount} containers using {stats.totalDiskSize}{" "}
+          GB of disk
         </DetailInfoItem>
         <div className="hidden md:block" />
 
         <DetailInfoItem title="Last Deployed">
           {timeAgo(latestOperation.createdAt)} by {capitalize(userName)}
         </DetailInfoItem>
-        <DetailInfoItem
-          title={`${endpoints.length} Endpoint${
-            endpoints.length > 1 || endpoints.length === 0 ? "s" : ""
-          }`}
-        >
+        <DetailInfoItem title={`${stats.domainCount} Endpoints`}>
           {endpoints.length <= 5
             ? endpoints.map((endpoint) => (
                 <EndpointList key={endpoint.id} endpoint={endpoint} />
@@ -135,16 +116,19 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     dispatch(setResourceStats({ id, type: "environment" }));
   }, []);
 
+  const loader = useQuery(fetchEnvironmentById({ id }));
   useQuery(fetchApps());
   useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
-  const loader = useQuery(fetchEnvironmentById({ id }));
 
   const latestOperation = useSelector((s: AppState) =>
     selectLatestSuccessDeployOpByEnvId(s, { envId: id }),
   );
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id }),
+  );
+  const stats = useSelector((s: AppState) =>
+    selectEnvironmentStatsById(s, { id: environment.id }),
   );
   const stack = useSelector((s: AppState) =>
     selectStackById(s, { id: environment.stackId }),
@@ -175,6 +159,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
           environment={environment}
           latestOperation={latestOperation}
           stack={stack}
+          stats={stats}
         />
       }
       title={environment.handle}

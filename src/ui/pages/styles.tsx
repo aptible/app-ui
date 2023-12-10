@@ -6,6 +6,7 @@ import {
   defaultDeployDatabase,
   defaultDeployEndpoint,
   defaultDeployEnvironment,
+  defaultDeployEnvironmentStats,
   defaultDeployOperation,
   defaultDeployService,
   defaultDeployStack,
@@ -721,15 +722,20 @@ const DetailBoxes = () => {
   const env = defaultDeployEnvironment({
     id: "123",
     stackId: stack.id,
-    appContainerCount: 4,
-    databaseContainerCount: 10,
     totalAppCount: 4,
     totalDatabaseCount: 10,
-    totalBackupSize: 1024,
   });
   const ept = defaultDeployEndpoint({
     id: "333",
     virtualDomain: "https://something.great",
+  });
+  const stats = defaultDeployEnvironmentStats({
+    containerCount: 1,
+    domainCount: 2,
+    totalDiskSize: 3,
+    appContainerCount: 4,
+    databaseContainerCount: 5,
+    totalBackupSize: 6,
   });
 
   return (
@@ -744,6 +750,7 @@ const DetailBoxes = () => {
         environment={env}
         latestOperation={op}
         endpoints={[ept]}
+        stats={stats}
       />
       <AppHeader app={app} />
       <DatabaseHeader database={db} service={service} />
