@@ -114,6 +114,8 @@ export const appEndpointCreateUrl = (id: string) =>
   `${appDetailUrl(id)}/endpoints/create`;
 export const APP_SETTINGS_PATH = `${APP_DETAIL_PATH}/settings`;
 export const appSettingsUrl = (id: string) => `${appDetailUrl(id)}/settings`;
+export const APP_DETAIL_DEPS_PATH = `${APP_DETAIL_PATH}/deps`;
+export const appDetailDepsUrl = (id: string) => `/apps/${id}/deps`;
 
 export const DATABASES_PATH = "/databases";
 export const databaseUrl = () => DATABASES_PATH;

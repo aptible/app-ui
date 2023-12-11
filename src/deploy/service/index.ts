@@ -30,6 +30,7 @@ import {
   cancelAppOpsPoll,
   fetchAppOperations,
   findAppById,
+  findAppsByIds,
   selectApps,
 } from "../app";
 import { computedCostsForContainer } from "../app/utils";
@@ -177,6 +178,7 @@ export const { selectTable: selectServices } = selectors;
 export const hasDeployService = (a: DeployService) => a.id !== "";
 export const serviceReducers = createReducerMap(slice);
 export const findServiceById = must(selectors.findById);
+export const findServicesByIds = selectors.findByIds;
 
 export const selectServicesAsList = createSelector(
   selectors.selectTableAsList,
@@ -366,6 +368,14 @@ export const selectAppByServiceId = createSelector(
   selectApps,
   (service, apps) => {
     return findAppById(apps, { id: service.appId });
+  },
+);
+
+export const selectAppsByServiceIds = createSelector(
+  selectServicesByIds,
+  selectApps,
+  (services, apps) => {
+    return findAppsByIds(apps, { ids: services.map((s) => s.appId) });
   },
 );
 
