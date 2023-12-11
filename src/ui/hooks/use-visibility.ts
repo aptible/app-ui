@@ -11,5 +11,6 @@ export function useVisibility() {
     };
   }, []);
 
-  return isHidden;
+  // we want to flip the logic so we can set value to `isTabActive`
+  return isHidden === false;
 }
