@@ -13,13 +13,6 @@ export const usePoller = ({
   const dispatch = useDispatch();
   const isTabActive = useVisibility();
 
-  useEffect(() => {
-    dispatch(batchActions([cancel, action]));
-    return () => {
-      dispatch(cancel);
-    };
-  }, [action, cancel]);
-
   // track if browser tab is active
   // and suspend poller when tab is inactive
   useEffect(() => {
@@ -28,5 +21,5 @@ export const usePoller = ({
     } else {
       dispatch(cancel);
     }
-  }, [isTabActive]);
+  }, [isTabActive, action, cancel]);
 };
