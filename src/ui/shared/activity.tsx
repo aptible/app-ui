@@ -144,6 +144,7 @@ const OpServiceCell = ({ serviceId }: { serviceId: string }) => {
   return (
     <Td>
       <Link
+        className={tokens.type["table link"]}
         to={
           service.appId
             ? appDetailUrl(service.appId)
@@ -279,7 +280,7 @@ function ActivityTable({
           <Th>Resource</Th>
           <Th>Status</Th>
           <Th>Type</Th>
-          <Th>Related</Th>
+          <Th>Related To</Th>
           <Th>Environment</Th>
           <Th>User</Th>
           <Th>Last Updated</Th>
