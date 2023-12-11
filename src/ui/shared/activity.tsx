@@ -20,10 +20,16 @@ import {
   selectActivityForTableSearch,
   selectAppById,
   selectDatabaseById,
+  selectEndpointById,
+  selectServiceById,
   selectServicesByAppId,
 } from "@app/deploy";
 import { useLoader, useQuery } from "@app/fx";
-import { operationDetailUrl } from "@app/routes";
+import {
+  appDetailUrl,
+  databaseDetailUrl,
+  operationDetailUrl,
+} from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployActivityRow, ResourceType } from "@app/types";
 import { useMemo } from "react";
@@ -124,6 +130,52 @@ const OpResourceCell = ({ op }: OpCellProps) => {
   );
 };
 
+const OpServiceCell = ({ serviceId }: { serviceId: string }) => {
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: serviceId }),
+  );
+  const app = useSelector((s: AppState) =>
+    selectAppById(s, { id: service.appId }),
+  );
+  const db = useSelector((s: AppState) =>
+    selectDatabaseById(s, { id: service.databaseId }),
+  );
+
+  return (
+    <Td>
+      <Link
+        className={tokens.type["table link"]}
+        to={
+          service.appId
+            ? appDetailUrl(service.appId)
+            : databaseDetailUrl(service.databaseId)
+        }
+      >
+        {service.appId ? app.handle : db.handle}
+      </Link>
+    </Td>
+  );
+};
+
+export const OpEndpointCell = ({ enpId }: { enpId: string }) => {
+  const enp = useSelector((s: AppState) =>
+    selectEndpointById(s, { id: enpId }),
+  );
+  return <OpServiceCell serviceId={enp.serviceId} />;
+};
+
+const OpParentResourceCell = ({ op }: OpCellProps) => {
+  if (op.resourceType === "service") {
+    return <OpServiceCell serviceId={op.resourceId} />;
+  }
+
+  if (op.resourceType === "vhost") {
+    return <OpEndpointCell enpId={op.resourceId} />;
+  }
+
+  return <Td> </Td>;
+};
+
 const OpActionsCell = ({ op }: OpCellProps) => {
   return (
     <Td>
@@ -162,6 +214,7 @@ const OpListRow = ({ op }: OpCellProps) => {
       <OpResourceCell op={op} />
       <OpStatusCell op={op} />
       <OpTypeCell op={op} />
+      <OpParentResourceCell op={op} />
       <EnvStackCell environmentId={op.environmentId} />
       <OpUserCell op={op} />
       <OpLastUpdatedCell op={op} />
@@ -227,6 +280,7 @@ function ActivityTable({
           <Th>Resource</Th>
           <Th>Status</Th>
           <Th>Type</Th>
+          <Th>Related To</Th>
           <Th>Environment</Th>
           <Th>User</Th>
           <Th>Last Updated</Th>
@@ -234,7 +288,7 @@ function ActivityTable({
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={8} /> : null}
           {paginated.data.map((op) => (
             <OpListRow op={op} key={op.id} />
           ))}
