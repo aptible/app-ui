@@ -141,7 +141,6 @@ export const selectAppById = must(selectors.selectById);
 export const { selectTable: selectApps } = selectors;
 const selectAppsAsList = selectors.selectTableAsList;
 export const findAppById = must(selectors.findById);
-export const findAppsByIds = selectors.findByIds;
 
 export interface DeployAppRow extends DeployApp {
   envHandle: string;

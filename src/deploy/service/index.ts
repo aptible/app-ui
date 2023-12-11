@@ -30,7 +30,6 @@ import {
   cancelAppOpsPoll,
   fetchAppOperations,
   findAppById,
-  findAppsByIds,
   selectApps,
 } from "../app";
 import { computedCostsForContainer } from "../app/utils";
@@ -368,14 +367,6 @@ export const selectAppByServiceId = createSelector(
   selectApps,
   (service, apps) => {
     return findAppById(apps, { id: service.appId });
-  },
-);
-
-export const selectAppsByServiceIds = createSelector(
-  selectServicesByIds,
-  selectApps,
-  (services, apps) => {
-    return findAppsByIds(apps, { ids: services.map((s) => s.appId) });
   },
 );
 

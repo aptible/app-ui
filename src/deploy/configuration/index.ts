@@ -13,7 +13,6 @@ import {
   DeployAppConfigEnv,
   DeployDatabase,
   LinkResponse,
-  MapEntity,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
 import { findAppById, selectApps } from "../app";
@@ -141,7 +140,7 @@ export const selectDepGraphDatabases = createSelector(
   selectDatabasesAsList,
   selectEndpointsAsList,
   (config, dbs) => {
-    const graphDbs: MapEntity<DepGraphDb> = {};
+    const graphDbs: Record<string, DepGraphDb> = {};
     const graph = createDepGraph(config.env);
 
     for (let i = 0; i < graph.length; i += 1) {
@@ -171,7 +170,7 @@ export const selectDepGraphApps = createSelector(
   selectServices,
   selectApps,
   (config, enps, services, apps) => {
-    const graphApps: MapEntity<DepGraphApp> = {};
+    const graphApps: Record<string, DepGraphApp> = {};
     const graph = createDepGraph(config.env);
 
     for (let i = 0; i < graph.length; i += 1) {

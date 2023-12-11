@@ -23,8 +23,8 @@ import type { AppState, DeployApp } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Code, Tooltip } from "..";
 import { ButtonCreate } from "../button";
+import { Code } from "../code";
 import { Group } from "../group";
 import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -40,6 +40,7 @@ import {
 import { EnvStackCell } from "../resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
 interface AppCellProps {
   app: DeployApp;
