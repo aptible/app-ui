@@ -142,6 +142,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     { name: "Apps", href: `/environments/${id}/apps` },
     { name: "Databases", href: `/environments/${id}/databases` },
     { name: "Integrations", href: `/environments/${id}/integrations` },
+    { name: "Endpoints", href: `/environments/${id}/endpoints` },
     { name: "Certificates", href: `/environments/${id}/certificates` },
     { name: "Activity", href: `/environments/${id}/activity` },
     { name: "Activity Reports", href: `/environments/${id}/activity_reports` },

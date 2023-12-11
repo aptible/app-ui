@@ -126,6 +126,7 @@ import {
   VerifyEmailPage,
   VerifyEmailRequired,
 } from "@app/ui";
+import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
@@ -477,6 +478,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.ENVIRONMENT_SETTINGS_PATH,
                 element: <EnvironmentSettingsPage />,
+              },
+              {
+                path: routes.ENVIRONMENT_ENDPOINTS_PATH,
+                element: <EnvironmentEndpointsPage />,
               },
             ],
           },

@@ -208,6 +208,9 @@ export const ENVIRONMENT_CREATE_CERT_PATH =
   "/environments/:id/certificates/create";
 export const environmentCreateCertUrl = (id: string) =>
   `/environments/${id}/certificates/create`;
+export const ENVIRONMENT_ENDPOINTS_PATH = "/environments/:id/endpoints";
+export const environmentEndpointsUrl = (id: string) =>
+  `/environments/${id}/endpoints`;
 
 export const environmentCreateAppUrl = (id: string) =>
   `/create/app?environment_id=${id}`;
