@@ -24,7 +24,6 @@ export const useEnvOpsPoller = ({
   // track if browser tab is active
   // and suspend poller when tab is inactive
   useEffect(() => {
-    console.log(isTabActive);
     if (isTabActive) {
       dispatch(batchActions([cancelEnvOperationsPoll(), pollAction]));
     } else {
