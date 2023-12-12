@@ -562,7 +562,6 @@ const LoginSso = ({
             <FormGroup
               htmlFor="saml-handle"
               label="SSO Login ID"
-              data-form-type="other"
               description={
                 <div>
                   Your members must enter this login ID on the{" "}
@@ -579,6 +578,7 @@ const LoginSso = ({
                 onChange={(e) => setHandle(e.currentTarget.value)}
                 id="saml-handle"
                 name="saml-handle"
+                data-form-type="other"
               />
             </FormGroup>
 
