@@ -67,7 +67,7 @@ describe("EnvironmentBackupsPage", () => {
     });
 
     const edit = await screen.findByRole("button", {
-      name: /Edit Backup Retention Policy/,
+      name: /Edit Policy/,
     });
     fireEvent.click(edit);
 

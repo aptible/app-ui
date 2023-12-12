@@ -86,7 +86,8 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
     return (
       <Box>
         <Group>
-          <div className="w-[300px]">
+          <h3 className={tokens.type.h3}>Backup Retention Policy</h3>
+          <div className="w-[260px]">
             <KeyValueGroup data={data} />
           </div>
 
@@ -98,7 +99,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
               type="button"
             >
               <IconEdit variant="sm" className="mr-2" />
-              Edit Backup Retention Policy
+              Edit Policy
             </ButtonAdmin>
           </div>
         </Group>
