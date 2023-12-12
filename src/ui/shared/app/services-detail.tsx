@@ -134,7 +134,7 @@ function AppServiceTable({
         <Th>CPU Share</Th>
         <Th>Container Count</Th>
         <Th>Profile</Th>
-        <Th>Monthly Cost</Th>
+        <Th>Est. Monthly Cost</Th>
         <Th variant="right">Actions</Th>
       </THead>
 
@@ -314,7 +314,7 @@ export function ServiceByOrgTable({
           className="cursor-pointer hover:text-black group"
           onClick={() => onSort("cost")}
         >
-          Monthly Cost{" "}
+          Est. Monthly Cost{" "}
           <div className="inline-block">
             <IconChevronDown
               variant="sm"
