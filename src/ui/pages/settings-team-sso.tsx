@@ -562,6 +562,7 @@ const LoginSso = ({
             <FormGroup
               htmlFor="saml-handle"
               label="SSO Login ID"
+              data-form-type="other"
               description={
                 <div>
                   Your members must enter this login ID on the{" "}
