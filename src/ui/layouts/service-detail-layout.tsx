@@ -79,7 +79,7 @@ export function ServiceHeader({
         <DetailInfoItem title="Environment">
           <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
         </DetailInfoItem>
-        <DetailInfoItem title="Cost">
+        <DetailInfoItem title="Est. Monthly Cost">
           ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
         </DetailInfoItem>
         <DetailInfoItem title="Container Profile">
