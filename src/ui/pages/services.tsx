@@ -6,13 +6,13 @@ import { useQuery, useSelector } from "starfx/react";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
+  AppServicesByOrg,
   DescBar,
   FilterBar,
   Group,
   InputSearch,
   LoadingBar,
   PaginateBar,
-  ServiceByOrgTable,
   TitleBar,
 } from "../shared";
 
@@ -56,7 +56,7 @@ export function ServicesPage() {
           </FilterBar>
         </Group>
 
-        <ServiceByOrgTable
+        <AppServicesByOrg
           paginated={paginated}
           onSort={(key) => {
             if (key === sortBy) {

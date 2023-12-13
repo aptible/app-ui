@@ -185,14 +185,6 @@ export const selectServicesAsList = createSelector(
   (services) => services.sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
-export const selectServicesByAppId = createSelector(
-  selectServicesAsList,
-  (_: AppState, p: { appId: string }) => p.appId,
-  (services, appId) => {
-    return services.filter((service) => service.appId === appId);
-  },
-);
-
 export const selectEnvToServicesMap = createSelector(
   selectServicesAsList,
   (services) => {
@@ -233,24 +225,23 @@ export const selectServicesByOrgId = createSelector(
 
 export const selectServicesForTable = createSelector(
   selectEnvironmentsByOrg,
-  selectDatabases,
   selectApps,
   selectServicesByOrgId,
-  (envs, dbs, apps, services) =>
+  (envs, apps, services) =>
     services
+      // making sure we have a valid environment associated with it
       .filter((service) => {
         const env = findEnvById(envs, { id: service.environmentId });
         return hasDeployEnvironment(env);
       })
+      // exclude database services since customers only know of them as App Services.
+      .filter((service) => service.appId)
       .map((service): DeployServiceRow => {
         const env = findEnvById(envs, { id: service.environmentId });
         let resourceHandle = "";
         if (service.appId) {
           const app = findAppById(apps, { id: service.appId });
           resourceHandle = app.handle;
-        } else if (service.databaseId) {
-          const db = findDatabaseById(dbs, { id: service.databaseId });
-          resourceHandle = db.handle;
         } else {
           resourceHandle = "Unknown";
         }
@@ -262,12 +253,53 @@ export const selectServicesForTable = createSelector(
           resourceHandle,
           cost: (metrics.estimatedCostInDollars * 1024) / 1000,
         };
-      })
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      ),
+      }),
 );
+
+export const selectServicesByAppId = createSelector(
+  selectServicesForTable,
+  (_: AppState, p: { appId: string }) => p.appId,
+  (services, appId) => {
+    return services.filter((service) => service.appId === appId);
+  },
+);
+
+const createServiceSortFn = (
+  sortBy: keyof DeployServiceRow,
+  sortDir: "asc" | "desc",
+) => {
+  return (a: DeployServiceRow, b: DeployServiceRow) => {
+    if (sortBy === "cost") {
+      if (sortDir === "asc") {
+        return a.cost - b.cost;
+      } else {
+        return b.cost - a.cost;
+      }
+    }
+
+    if (sortBy === "resourceHandle") {
+      if (sortDir === "asc") {
+        return a.resourceHandle.localeCompare(b.resourceHandle);
+      } else {
+        return b.resourceHandle.localeCompare(a.resourceHandle);
+      }
+    }
+
+    if (sortBy === "id") {
+      if (sortDir === "asc") {
+        return a.id.localeCompare(b.id, undefined, { numeric: true });
+      } else {
+        return b.id.localeCompare(a.id, undefined, { numeric: true });
+      }
+    }
+
+    if (sortDir === "asc") {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    } else {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  };
+};
 
 export const selectServicesForTableSearch = createSelector(
   selectServicesForTable,
@@ -275,41 +307,7 @@ export const selectServicesForTableSearch = createSelector(
   (_: AppState, p: { sortBy: keyof DeployServiceRow }) => p.sortBy,
   (_: AppState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
   (services, search, sortBy, sortDir) => {
-    const sortFn = (a: DeployServiceRow, b: DeployServiceRow) => {
-      if (sortBy === "cost") {
-        if (sortDir === "asc") {
-          return a.cost - b.cost;
-        } else {
-          return b.cost - a.cost;
-        }
-      }
-
-      if (sortBy === "resourceHandle") {
-        if (sortDir === "asc") {
-          return a.resourceHandle.localeCompare(b.resourceHandle);
-        } else {
-          return b.resourceHandle.localeCompare(a.resourceHandle);
-        }
-      }
-
-      if (sortBy === "id") {
-        if (sortDir === "asc") {
-          return a.id.localeCompare(b.id, undefined, { numeric: true });
-        } else {
-          return b.id.localeCompare(a.id, undefined, { numeric: true });
-        }
-      }
-
-      if (sortDir === "asc") {
-        return (
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
-      } else {
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      }
-    };
+    const sortFn = createServiceSortFn(sortBy, sortDir);
 
     if (search === "") {
       return [...services].sort(sortFn);
