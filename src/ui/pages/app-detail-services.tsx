@@ -2,7 +2,7 @@ import { selectAppById } from "@app/deploy";
 import { AppState } from "@app/types";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { AppServicesOverview, DetailPageSections } from "../shared";
+import { AppServicesByApp, DetailPageSections } from "../shared";
 
 export function AppDetailServicesPage() {
   const { id = "" } = useParams();
@@ -10,7 +10,7 @@ export function AppDetailServicesPage() {
 
   return (
     <DetailPageSections>
-      <AppServicesOverview appId={app.id} />
+      <AppServicesByApp appId={app.id} />
     </DetailPageSections>
   );
 }
