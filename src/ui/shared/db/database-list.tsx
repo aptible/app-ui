@@ -90,7 +90,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
     selectServiceById(s, { id: database.serviceId }),
   );
   const disk = useSelector((s: AppState) =>
-    selectDiskById(s, { id: database.id }),
+    selectDiskById(s, { id: database.diskId }),
   );
   const currentContainerProfile = getContainerProfileFromType(
     service.instanceClass,
