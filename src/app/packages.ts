@@ -17,6 +17,7 @@ import * as resetStore from "@app/reset-store";
 import * as roles from "@app/roles";
 import * as search from "@app/search";
 import * as signal from "@app/signal";
+import * as sources from "@app/source";
 import * as theme from "@app/theme";
 import * as token from "@app/token";
 import * as users from "@app/users";
@@ -45,6 +46,7 @@ const corePackages: any[] = [
   search,
   metrics,
   billing,
+  sources,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {

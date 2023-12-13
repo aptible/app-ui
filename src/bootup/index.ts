@@ -31,6 +31,7 @@ import {
   takeEvery,
 } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
+import { fetchSources } from "@app/source";
 import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";
 import { AnyAction, ApiCtx } from "@app/types";
@@ -98,6 +99,7 @@ function* onFetchResourceData() {
     () => fetchEndpoints.run(fetchEndpoints()),
     () => fetchOrgOperations.run(fetchOrgOperations({ orgId: org.id })),
     () => fetchSystemStatus.run(fetchSystemStatus()),
+    () => fetchSources.run(fetchSources()),
   ]);
   yield* group;
 }

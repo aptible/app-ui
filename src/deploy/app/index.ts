@@ -46,6 +46,7 @@ export interface DeployAppResponse {
     account: LinkResponse;
     current_configuration: LinkResponse;
     current_image: LinkResponse;
+    source: LinkResponse | null;
   };
   _embedded: {
     // TODO: fill in
@@ -73,6 +74,7 @@ export const defaultAppResponse = (
       account: { href: "" },
       current_configuration: { href: "" },
       current_image: { href: "" },
+      source: { href: "" },
       ...p._links,
     },
     _embedded: {
@@ -101,6 +103,7 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
     environmentId: extractIdFromLink(links.account),
     currentConfigurationId: extractIdFromLink(links.current_configuration),
     currentImageId: extractIdFromLink(links.current_image),
+    sourceId: extractIdFromLink(links.source),
   };
 };
 
@@ -117,6 +120,7 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
     environmentId: "",
     currentConfigurationId: "",
     currentImageId: "",
+    sourceId: "",
     ...a,
   };
 };
@@ -234,6 +238,32 @@ export const selectAppsForTableSearchByEnvironmentId = createSelector(
         }
 
         return envIdMatch;
+      }
+
+      return searchMatch;
+    });
+  },
+);
+
+export const selectAppsForTableSearchBySourceId = createSelector(
+  selectAppsForTable,
+  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: AppState, props: { sourceId: string }) => props.sourceId,
+  (apps, search, sourceId): DeployAppRow[] => {
+    if (search === "" && sourceId === "") {
+      return apps;
+    }
+
+    return apps.filter((app) => {
+      const searchMatch = computeSearchMatch(app, search);
+      const sourceIdMatch = sourceId !== "" && app.sourceId === sourceId;
+
+      if (sourceId !== "") {
+        if (search !== "") {
+          return sourceIdMatch && searchMatch;
+        }
+
+        return sourceIdMatch;
       }
 
       return searchMatch;

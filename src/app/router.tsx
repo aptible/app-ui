@@ -101,6 +101,11 @@ import {
   SettingsLayout,
   SettingsPage,
   SignupPage,
+  SourceDetailAppsPage,
+  SourceDetailLayout,
+  SourceDetailPage,
+  SourceDetailSettingsPage,
+  SourcesPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
@@ -251,6 +256,34 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.SERVICES_PATH,
         element: <ServicesPage />,
+      },
+
+      {
+        path: routes.SOURCES_PATH,
+        children: [
+          {
+            index: true,
+            element: <SourcesPage />,
+          },
+          {
+            path: routes.SOURCE_DETAIL_PATH,
+            element: <SourceDetailLayout />,
+            children: [
+              {
+                index: true,
+                element: <SourceDetailPage />,
+              },
+              {
+                path: routes.SOURCE_DETAIL_APPS_PATH,
+                element: <SourceDetailAppsPage />,
+              },
+              {
+                path: routes.SOURCE_DETAIL_SETTINGS_PATH,
+                element: <SourceDetailSettingsPage />,
+              },
+            ],
+          },
+        ],
       },
 
       {

@@ -23,6 +23,7 @@ import type {
   DeployRelease,
   DeployService,
   DeployServiceDefinition,
+  DeploySource,
   DeployStack,
   DeployVpcPeer,
   DeployVpnTunnel,
@@ -213,6 +214,7 @@ export interface AppState extends QueryState {
   backupRps: MapEntity<DeployBackupRetentionPolicy>;
   activityReports: MapEntity<DeployActivityReport>;
   images: MapEntity<DeployImage>;
+  sources: MapEntity<DeploySource>;
 }
 
 export interface DeployActivityRow extends DeployOperation {

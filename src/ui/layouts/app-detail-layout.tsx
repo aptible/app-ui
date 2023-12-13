@@ -23,12 +23,14 @@ import {
   appServicesUrl,
   appSettingsUrl,
   environmentAppsUrl,
+  sourceDetailUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
+import { fetchSourceById, selectSourceById } from "@app/source";
 import type { AppState, DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useParams } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
@@ -54,6 +56,10 @@ export function AppHeader({ app }: { app: DeployApp }) {
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
   const dockerImage = config.env.APTIBLE_DOCKER_IMAGE || "Dockerfile Build";
+  useQuery(fetchSourceById({ id: app.sourceId }));
+  const source = useSelector((s: AppState) =>
+    selectSourceById(s, { id: app.sourceId }),
+  );
 
   return (
     <DetailHeader>
@@ -71,6 +77,11 @@ export function AppHeader({ app }: { app: DeployApp }) {
 
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
+        {app.sourceId ? (
+          <DetailInfoItem title="Source">
+            <Link to={sourceDetailUrl(source.id)}>{source.name}</Link>
+          </DetailInfoItem>
+        ) : null}
         <DetailInfoItem title="Git Remote">
           <CopyText text={app.gitRepo} />
         </DetailInfoItem>

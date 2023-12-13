@@ -7,6 +7,7 @@ import {
   selectAppsByCertId,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
+  selectAppsForTableSearchBySourceId,
   selectLatestOpByAppId,
   selectServicesByAppId,
 } from "@app/deploy";
@@ -262,6 +263,69 @@ export const AppListByEnvironment = ({
             <Tr key={app.id}>
               <AppPrimaryCell app={app} />
               <AppIdCell app={app} />
+              <AppServicesCell app={app} />
+              <AppCostCell app={app} />
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
+  );
+};
+
+export const AppListBySource = ({
+  sourceId,
+}: {
+  sourceId: string;
+}) => {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+  };
+  const apps = useSelector((s: AppState) =>
+    selectAppsForTableSearchBySourceId(s, {
+      sourceId,
+      search,
+    }),
+  );
+  const paginated = usePaginate(apps);
+
+  return (
+    <Group>
+      <Group size="sm">
+        <FilterBar>
+          <div className="flex justify-between">
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
+          </div>
+
+          <Group variant="horizontal" size="lg" className="items-center mt-1">
+            <DescBar>{paginated.totalItems} Apps</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Handle</Th>
+          <Th>ID</Th>
+          <Th>Environment</Th>
+          <Th>Services</Th>
+          <Th>Est. Monthly Cost</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.map((app) => (
+            <Tr key={app.id}>
+              <AppPrimaryCell app={app} />
+              <AppIdCell app={app} />
+              <EnvStackCell environmentId={app.environmentId} />
               <AppServicesCell app={app} />
               <AppCostCell app={app} />
             </Tr>

@@ -131,6 +131,7 @@ describe("AppDeployStatusPage", () => {
             `${testEnv.apiUrl}/configurations/${testConfiguration.id}`,
           ),
           current_image: defaultHalHref(),
+          source: defaultHalHref(),
         },
         _embedded: {
           services: [testServiceRails],

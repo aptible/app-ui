@@ -431,3 +431,15 @@ export const IconLock = (props: Props) => {
     </IconStrokeBase>
   );
 };
+
+export const IconSource = (props: Props) => {
+  return (
+    <IconStrokeBase {...props} title="Source">
+      <path
+        d="M17.25 6.75L22.5 12L17.25 17.25M6.75 17.25L1.5 12L6.75 6.75M14.25 3.75L9.75 20.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </IconStrokeBase>
+  );
+};
