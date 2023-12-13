@@ -1,6 +1,5 @@
 import { prettyEnglishDateWithTime } from "@app/date";
 import {
-  DepGraphApp,
   calcServiceMetrics,
   fetchApps,
   fetchEnvironmentById,
@@ -24,7 +23,6 @@ import { usePaginate } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonCreate } from "../button";
-import { Code } from "../code";
 import { Group } from "../group";
 import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -40,7 +38,6 @@ import {
 import { EnvStackCell } from "../resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
-import { Tooltip } from "../tooltip";
 
 interface AppCellProps {
   app: DeployApp;
@@ -322,38 +319,5 @@ export const AppListByCertificate = ({
         </TBody>
       </Table>
     </Group>
-  );
-};
-
-export const AppListByApps = ({ apps }: { apps: DepGraphApp[] }) => {
-  return (
-    <Table>
-      <THead>
-        <Th>Handle</Th>
-        <Th>ID</Th>
-        <Th>Environment</Th>
-        <Th>Services</Th>
-        <Th>Est. Monthly Cost</Th>
-        <Th>Reason</Th>
-      </THead>
-
-      <TBody>
-        {apps.length === 0 ? <EmptyTr colSpan={6} /> : null}
-        {apps.map((app) => (
-          <Tr key={app.id}>
-            <AppPrimaryCell app={app} />
-            <AppIdCell app={app} />
-            <EnvStackCell environmentId={app.environmentId} />
-            <AppServicesCell app={app} />
-            <AppCostCell app={app} />
-            <Td>
-              <Tooltip variant="left" text={app.why.value} fluid>
-                <Code>{app.why.key}</Code>
-              </Tooltip>
-            </Td>
-          </Tr>
-        ))}
-      </TBody>
-    </Table>
   );
 };

@@ -15,10 +15,8 @@ import {
   LinkResponse,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
-import { findAppById, selectApps } from "../app";
 import { selectDatabasesAsList } from "../database";
-import { getEndpointUrl, selectEndpointsAsList } from "../endpoint";
-import { findServiceById, selectServices } from "../service";
+import { selectEndpointsAsList } from "../endpoint";
 import { selectDeploy } from "../slice";
 
 export interface DeployConfigurationResponse {
@@ -98,20 +96,12 @@ const selectors = slice.getSelectors(
 );
 export const selectAppConfigById = must(selectors.selectById);
 
-interface DepNodeDb {
+export interface DepNode {
   type: "db";
   key: string;
   value: string;
   refId: string;
 }
-
-interface DepNodeApp {
-  type: "app";
-  key: string;
-  value: string;
-}
-
-export type DepNode = DepNodeApp | DepNodeDb;
 
 const dbRe = new RegExp(/(\d+)\.aptible\.in\:/);
 function createDepGraph(env: DeployAppConfigEnv): DepNode[] {
@@ -124,8 +114,6 @@ function createDepGraph(env: DeployAppConfigEnv): DepNode[] {
       if (match && match.length > 1) {
         deps.push({ key, value, refId: match[1], type: "db" });
       }
-    } else if (value.includes("https://")) {
-      deps.push({ key, value, type: "app" });
     }
   });
   return deps;
@@ -163,35 +151,6 @@ export const selectDepGraphDatabases = createSelector(
 export interface DepGraphApp extends DeployApp {
   why: DepNode;
 }
-
-export const selectDepGraphApps = createSelector(
-  selectAppConfigById,
-  selectEndpointsAsList,
-  selectServices,
-  selectApps,
-  (config, enps, services, apps) => {
-    const graphApps: Record<string, DepGraphApp> = {};
-    const graph = createDepGraph(config.env);
-
-    for (let i = 0; i < graph.length; i += 1) {
-      const node = graph[i];
-      const found = enps.find((enp) => {
-        const url = getEndpointUrl(enp);
-        if (node.type !== "app") {
-          return;
-        }
-        return node.value === url;
-      });
-      if (found) {
-        const service = findServiceById(services, { id: found.serviceId });
-        const app = findAppById(apps, { id: service.appId });
-        graphApps[app.id] = { ...app, why: node };
-      }
-    }
-
-    return Object.values(graphApps);
-  },
-);
 
 export const appConfigReducers = createReducerMap(slice);
 
