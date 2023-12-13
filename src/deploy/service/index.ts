@@ -37,9 +37,7 @@ import { CONTAINER_PROFILES, GB } from "../container/utils";
 import {
   cancelDatabaseOpsPoll,
   fetchDatabaseOperations,
-  findDatabaseById,
   selectDatabaseById,
-  selectDatabases,
 } from "../database";
 import {
   findEnvById,
