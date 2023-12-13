@@ -1,16 +1,15 @@
+import { fetchReauthOrganizations, logout } from "@app/auth";
+import { refreshData } from "@app/bootup";
 import { batchActions } from "@app/fx";
 import { useQuery } from "@app/fx";
-import { useDispatch, useSelector } from "react-redux";
-
-import { fetchReauthOrganizations, logout } from "@app/auth";
 import {
   selectOrganizationSelected,
   selectOrganizationsAsList,
 } from "@app/organizations";
+import { loginUrl } from "@app/routes";
 import { Organization } from "@app/types";
 import { selectCurrentUserId, updateUserOrg } from "@app/users";
-
-import { loginUrl } from "@app/routes";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { AppSidebarLayout } from "../layouts";
 import { tokens } from "../shared";
@@ -53,7 +52,7 @@ export const OrgPickerPage = () => {
       return;
     }
 
-    dispatch(updateUserOrg({ userId, orgId }));
+    dispatch(batchActions([updateUserOrg({ userId, orgId }), refreshData()]));
   };
 
   return (

@@ -35,6 +35,7 @@ import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";
 import { AnyAction, ApiCtx } from "@app/types";
 import { fetchUser, fetchUsers, selectCurrentUserId } from "@app/users";
+import { createAction } from "@reduxjs/toolkit";
 import { REHYDRATE } from "redux-persist";
 
 export const FETCH_REQUIRED_DATA = "fetch-required-data";
@@ -107,6 +108,8 @@ function* onRefreshData() {
   yield* group;
 }
 
+export const refreshData = createAction("REFRESH_DATA");
+
 function* watchRefreshData() {
   const act = (action: AnyAction) => {
     const matched =
@@ -118,4 +121,9 @@ function* watchRefreshData() {
   yield* task;
 }
 
-export const sagas = { watchRefreshData };
+function* watchData() {
+  const task = yield* takeEvery(`${refreshData}`, onRefreshData);
+  yield* task;
+}
+
+export const sagas = { watchRefreshData, watchData };
