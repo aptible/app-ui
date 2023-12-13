@@ -127,10 +127,12 @@ describe("AppDeployStatusPage", () => {
           account: defaultHalHref(
             `${testEnv.apiUrl}/accounts/${testAccount.id}`,
           ),
+          current_deployment: defaultHalHref(),
           current_configuration: defaultHalHref(
             `${testEnv.apiUrl}/configurations/${testConfiguration.id}`,
           ),
           current_image: defaultHalHref(),
+          source: defaultHalHref(),
         },
         _embedded: {
           services: [testServiceRails],

@@ -69,7 +69,9 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_deployment: defaultHalHref(),
           current_image: defaultHalHref(),
+          source: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -80,7 +82,9 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_deployment: defaultHalHref(),
           current_image: defaultHalHref(),
+          source: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -92,6 +96,8 @@ describe("Deployments page", () => {
           ),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          source: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       }),
     ];
@@ -168,7 +174,9 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_deployment: defaultHalHref(),
           current_image: defaultHalHref(),
+          source: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -179,7 +187,9 @@ describe("Deployments page", () => {
             `${testEnv.apiUrl}/accounts/${envExpress.id}`,
           ),
           current_configuration: defaultHalHref(),
+          current_deployment: defaultHalHref(),
           current_image: defaultHalHref(),
+          source: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -191,6 +201,8 @@ describe("Deployments page", () => {
           ),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          source: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -200,6 +212,8 @@ describe("Deployments page", () => {
           account: defaultHalHref(`${testEnv.apiUrl}/accounts/${envLegacy.id}`),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          source: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       }),
     ];

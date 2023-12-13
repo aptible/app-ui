@@ -11,20 +11,23 @@ import {
   selectEnvironmentById,
   selectImageById,
   selectLatestDeployOp,
-  selectServiceById,
+  selectUserHasPerms,
 } from "@app/deploy";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appActivityUrl,
   appConfigUrl,
+  appDetailDeploymentsUrl,
+  appDetailDepsUrl,
   appEndpointsUrl,
-  appServicePathMetricsUrl,
-  appServiceScalePathUrl,
   appServicesUrl,
   appSettingsUrl,
   environmentAppsUrl,
+  // sourceDetailUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
+// import { fetchSourceById, selectSourceById } from "@app/source";
+import { fetchSourceById } from "@app/source";
 import type { DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { Outlet, useParams } from "react-router-dom";
@@ -53,6 +56,10 @@ export function AppHeader({ app }: { app: DeployApp }) {
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
   const dockerImage = config.env.APTIBLE_DOCKER_IMAGE || "Dockerfile Build";
+  useQuery(fetchSourceById({ id: app.sourceId }));
+  /* const source = useSelector((s: AppState) =>
+    selectSourceById(s, { id: app.sourceId }),
+  ); */
 
   return (
     <DetailHeader>
@@ -70,6 +77,11 @@ export function AppHeader({ app }: { app: DeployApp }) {
 
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
+        {/* app.sourceId ? (
+          <DetailInfoItem title="Source">
+            <Link to={sourceDetailUrl(source.id)}>{source.displayName}</Link>
+          </DetailInfoItem>
+        ) : null */}
         <DetailInfoItem title="Git Remote">
           <CopyText text={app.gitRepo} />
         </DetailInfoItem>
@@ -91,7 +103,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
   );
 }
 
-const AppHeartbeatNotice = ({ id }: { id: string; serviceId: string }) => {
+const AppHeartbeatNotice = ({ id }: { id: string }) => {
   const poller = useMemo(() => pollAppOperations({ id }), [id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
 
@@ -104,7 +116,7 @@ const AppHeartbeatNotice = ({ id }: { id: string; serviceId: string }) => {
 };
 
 function AppPageHeader() {
-  const { id = "", serviceId = "" } = useParams();
+  const { id = "" } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setResourceStats({ id, type: "app" }));
@@ -114,41 +126,38 @@ function AppPageHeader() {
   useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s) => selectAppById(s, { id }));
   useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
-  const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const hasSensitivePerms = useSelector((s) =>
+    selectUserHasPerms(s, { envId: app.environmentId, scope: "sensitive" }),
   );
 
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
-  if (serviceId) {
-    crumbs.push({
-      name: app.handle,
-      to: appServicesUrl(app.id),
-    });
+
+  const tabs: TabItem[] = [
+    { name: "Deployments", href: appDetailDeploymentsUrl(id) },
+    { name: "Services", href: appServicesUrl(id) },
+    { name: "Endpoints", href: appEndpointsUrl(id) },
+    { name: "Activity", href: appActivityUrl(id) },
+    { name: "Configuration", href: appConfigUrl(id) },
+  ];
+
+  if (hasSensitivePerms) {
+    tabs.push({ name: "Dependencies", href: appDetailDepsUrl(id) });
   }
 
-  const tabs: TabItem[] = serviceId
-    ? [
-        { name: "Metrics", href: appServicePathMetricsUrl(id, serviceId) },
-        { name: "Scale", href: appServiceScalePathUrl(id, serviceId) },
-      ]
-    : [
-        { name: "Services", href: appServicesUrl(id) },
-        { name: "Endpoints", href: appEndpointsUrl(id) },
-        { name: "Activity", href: appActivityUrl(id) },
-        { name: "Configuration", href: appConfigUrl(id) },
-        { name: "Settings", href: appSettingsUrl(id) },
-      ];
+  tabs.push({ name: "Settings", href: appSettingsUrl(id) });
 
   return (
     <>
-      <AppHeartbeatNotice id={id} serviceId={serviceId} />
+      <AppHeartbeatNotice id={id} />
       <DetailPageHeaderView
         {...loader}
         breadcrumbs={crumbs}
-        title={serviceId ? service.processType : app.handle}
+        title={app.handle}
         detailsBox={<AppHeader app={app} />}
         tabs={tabs}
       />

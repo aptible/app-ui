@@ -256,7 +256,7 @@ export function AppServicesByOrg({
       </THead>
 
       <TBody>
-        {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+        {paginated.data.length === 0 ? <EmptyTr colSpan={6} /> : null}
         {paginated.data.map((service) => (
           <AppServiceByOrgRow key={service.id} service={service} />
         ))}

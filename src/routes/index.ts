@@ -92,6 +92,9 @@ export const APPS_PATH = "/apps";
 export const appsUrl = () => APPS_PATH;
 export const APP_DETAIL_PATH = "/apps/:id";
 export const appDetailUrl = (id: string) => `/apps/${id}`;
+export const APP_DETAIL_DEPLOYMENTS_PATH = "/apps/:id/deployments";
+export const appDetailDeploymentsUrl = (id: string) =>
+  `/apps/${id}/deployments`;
 export const APP_SERVICES_PATH = `${APP_DETAIL_PATH}/services`;
 export const appServicesUrl = (id: string) => `${appDetailUrl(id)}/services`;
 export const APP_SERVICE_PATH = `${APP_DETAIL_PATH}/services/:serviceId`;
@@ -114,6 +117,20 @@ export const appEndpointCreateUrl = (id: string) =>
   `${appDetailUrl(id)}/endpoints/create`;
 export const APP_SETTINGS_PATH = `${APP_DETAIL_PATH}/settings`;
 export const appSettingsUrl = (id: string) => `${appDetailUrl(id)}/settings`;
+export const APP_DETAIL_DEPS_PATH = `${APP_DETAIL_PATH}/deps`;
+export const appDetailDepsUrl = (id: string) => `/apps/${id}/deps`;
+
+export const DEPLOYMENT_DETAIL_PATH = "/deployments/:id";
+export const deploymentDetailUrl = (id: string) => `/deployments/${id}`;
+export const DEPLOYMENT_DETAIL_LOGS_PATH = "/deployments/:id/logs";
+export const deploymentDetailLogsUrl = (id: string) =>
+  `/deployments/${id}/logs`;
+export const DEPLOYMENT_DETAIL_CONFIG_PATH = "/deployments/:id/config";
+export const deploymentDetailConfigUrl = (id: string) =>
+  `/deployments/${id}/config`;
+export const DEPLOYMENT_DETAIL_ROLLBACK_PATH = "/deployments/:id/rollback";
+export const deploymentDetailRollbackUrl = (id: string) =>
+  `/deployments/${id}/rollback`;
 
 export const DATABASES_PATH = "/databases";
 export const databaseUrl = () => DATABASES_PATH;
@@ -354,3 +371,16 @@ export const createLogDrainUrl = (envId = "") =>
 
 export const SUPPORT_URL = "/support";
 export const supportUrl = () => SUPPORT_URL;
+
+export const SOURCES_PATH = "/sources";
+export const sourcesUrl = () => SOURCES_PATH;
+export const SOURCE_DETAIL_PATH = "/sources/:id";
+export const sourceDetailUrl = (id: string) => `/sources/${id}`;
+export const SOURCE_DETAIL_APPS_PATH = "/sources/:id/apps";
+export const sourceDetailAppsUrl = (id: string) => `/sources/${id}/apps`;
+export const SOURCE_DETAIL_DEPLOYMENTS_PATH = "/sources/:id/deployments";
+export const sourceDetailDeploymentsUrl = (id: string) =>
+  `/sources/${id}/deployments`;
+export const SOURCE_DETAIL_SETTINGS_PATH = "/sources/:id/settings";
+export const sourceDetailSettingsUrl = (id: string) =>
+  `/sources/${id}/settings`;

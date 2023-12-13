@@ -129,6 +129,22 @@ export interface BillingDetail {
   paymentMethodUrl: string;
 }
 
+export interface Deployment {
+  id: string;
+  dockerTag: string;
+  gitHead: string;
+  dockerSha: string;
+  modifiedEnvKeys: string[];
+  gitSha: string;
+  createdAt: string;
+  updatedAt: string;
+  appId: string;
+  operationId: string;
+  configurationId: string;
+  imageId: string;
+  sourceId: string;
+}
+
 export interface DeployActivityRow extends DeployOperation {
   envHandle: string;
   resourceHandle: string;

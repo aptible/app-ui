@@ -715,6 +715,9 @@ const apiHandlers = [
       return res(ctx.status(204));
     },
   ),
+  rest.get(`${testEnv.apiUrl}/sources`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { sources: [] } }));
+  }),
 ];
 
 const billingHandlers = [

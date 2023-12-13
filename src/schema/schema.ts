@@ -75,6 +75,8 @@ export const schema = createSchema({
     empty: factory.defaultDeployActivityReport(),
   }),
   images: slice.table({ empty: factory.defaultDeployImage() }),
+  deployments: slice.table({ empty: factory.defaultDeployment() }),
+  sources: slice.table({ empty: factory.defaultDeploySource }),
 });
 export type WebState = typeof schema.initialState;
 export const { db } = schema;

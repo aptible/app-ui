@@ -14,6 +14,8 @@ import {
   AppDeployWithGitAddKeyPage,
   AppDeployWithGitPage,
   AppDetailConfigPage,
+  AppDetailDeploymentsPage,
+  AppDetailDepsPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailPage,
@@ -52,6 +54,11 @@ import {
   DatabaseSettingsPage,
   DatabasesPage,
   DeployPage,
+  DeploymentDetailConfigPage,
+  DeploymentDetailLayout,
+  DeploymentDetailLogsPage,
+  DeploymentDetailPage,
+  DeploymentDetailRollbackPage,
   DeploymentsPage,
   ElevatePage,
   ElevateRequired,
@@ -101,6 +108,12 @@ import {
   SettingsLayout,
   SettingsPage,
   SignupPage,
+  SourceDetailAppsPage,
+  SourceDetailDeploymentsPage,
+  SourceDetailLayout,
+  SourceDetailPage,
+  SourceDetailSettingsPage,
+  SourcesPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
@@ -254,6 +267,38 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
+        path: routes.SOURCES_PATH,
+        children: [
+          {
+            index: true,
+            element: <SourcesPage />,
+          },
+          {
+            path: routes.SOURCE_DETAIL_PATH,
+            element: <SourceDetailLayout />,
+            children: [
+              {
+                index: true,
+                element: <SourceDetailPage />,
+              },
+              {
+                path: routes.SOURCE_DETAIL_APPS_PATH,
+                element: <SourceDetailAppsPage />,
+              },
+              {
+                path: routes.SOURCE_DETAIL_DEPLOYMENTS_PATH,
+                element: <SourceDetailDeploymentsPage />,
+              },
+              {
+                path: routes.SOURCE_DETAIL_SETTINGS_PATH,
+                element: <SourceDetailSettingsPage />,
+              },
+            ],
+          },
+        ],
+      },
+
+      {
         path: routes.APPS_PATH,
         children: [
           {
@@ -293,7 +338,38 @@ export const appRoutes: RouteObject[] = [
                 path: routes.APP_CONFIG_PATH,
                 element: <AppDetailConfigPage />,
               },
+              {
+                path: routes.APP_DETAIL_DEPS_PATH,
+                element: <AppDetailDepsPage />,
+              },
+              {
+                path: routes.APP_DETAIL_DEPLOYMENTS_PATH,
+                element: <AppDetailDeploymentsPage />,
+              },
             ],
+          },
+        ],
+      },
+
+      {
+        path: routes.DEPLOYMENT_DETAIL_PATH,
+        element: <DeploymentDetailLayout />,
+        children: [
+          {
+            index: true,
+            element: <DeploymentDetailPage />,
+          },
+          {
+            path: routes.DEPLOYMENT_DETAIL_LOGS_PATH,
+            element: <DeploymentDetailLogsPage />,
+          },
+          {
+            path: routes.DEPLOYMENT_DETAIL_CONFIG_PATH,
+            element: <DeploymentDetailConfigPage />,
+          },
+          {
+            path: routes.DEPLOYMENT_DETAIL_ROLLBACK_PATH,
+            element: <DeploymentDetailRollbackPage />,
           },
         ],
       },

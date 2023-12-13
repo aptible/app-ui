@@ -62,6 +62,7 @@ import {
   IconService,
   IconSettings,
   IconShield,
+  IconSource,
   IconThumbsUp,
   IconTrash,
   IconX,
@@ -661,6 +662,7 @@ const Icons = () => (
         ["IconCertificate", <IconCertificate />],
         ["IconKey", <IconKey />],
         ["IconLock", <IconLock />],
+        ["IconSource", <IconSource />],
       ].map(([title, icon]) => (
         <div key={title as string}>
           <div className="inline-block -mb-1">{icon}</div>{" "}

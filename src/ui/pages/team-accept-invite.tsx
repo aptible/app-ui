@@ -85,11 +85,7 @@ function AcceptInviteView({
         in this organization.
       </p>
       <div>
-        <Button
-          className="w-full"
-          onClick={onAccept}
-          isLoading={loader.isLoading}
-        >
+        <Button onClick={onAccept} isLoading={loader.isLoading}>
           Accept Invite
         </Button>
       </div>

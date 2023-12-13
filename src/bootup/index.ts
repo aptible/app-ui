@@ -22,6 +22,7 @@ import { call, parallel, select, spawn, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { db, schema } from "@app/schema";
+import { fetchSources } from "@app/source";
 import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";
 import { ApiCtx } from "@app/types";
@@ -87,6 +88,7 @@ function* onFetchResourceData() {
     fetchEndpoints.run(),
     fetchOrgOperations.run({ orgId: org.id }),
     fetchSystemStatus.run(),
+    fetchSources.run(),
   ]);
   yield* group;
 }

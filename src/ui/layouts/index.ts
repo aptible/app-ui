@@ -13,3 +13,5 @@ export * from "./endpoint-detail-layout";
 export * from "./cert-detail-layout";
 export * from "./settings-layout";
 export * from "./service-detail-layout";
+export * from "./source-detail-layout";
+export * from "./deployment-detail-layout";

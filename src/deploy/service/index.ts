@@ -132,6 +132,7 @@ export const selectServicesByIds = db.services.selectByIds;
 export const selectServices = db.services.selectTable;
 export const hasDeployService = (a: DeployService) => a.id !== "";
 export const findServiceById = db.services.findById;
+export const findServicesByIds = db.services.findByIds;
 
 export const selectServicesAsList = createSelector(
   db.services.selectTableAsList,

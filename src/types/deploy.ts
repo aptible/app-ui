@@ -36,6 +36,8 @@ export interface DeployApp extends Provisionable, Timestamps {
   environmentId: string;
   currentConfigurationId: string;
   currentImageId: string;
+  sourceId: string;
+  currentDeploymentId: string;
 }
 
 export type InstanceClass = "t3" | "m4" | "m5" | "r4" | "r5" | "c4" | "c5";
@@ -550,4 +552,18 @@ export interface DeployServiceResponse {
     account: LinkResponse;
   };
   _type: "service";
+}
+
+export type SourceDeploymentMethod = "git" | "docker" | "unknown";
+
+export interface DeploySource {
+  id: string;
+  displayName: string;
+  deploymentMethod: SourceDeploymentMethod;
+  dockerUrl: string;
+  dockerBrowseUrl: string;
+  gitBrowseUrl: string;
+  gitUrl: string;
+  createdAt: string;
+  updatedAt: string;
 }

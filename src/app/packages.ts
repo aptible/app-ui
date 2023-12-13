@@ -4,6 +4,7 @@ import * as billing from "@app/billing";
 import * as bootup from "@app/bootup";
 import * as config from "@app/config";
 import * as deploy from "@app/deploy";
+import * as deployments from "@app/deployment";
 import * as feedback from "@app/feedback";
 import * as hal from "@app/hal";
 import * as invitations from "@app/invitations";
@@ -15,6 +16,7 @@ import * as redirectPath from "@app/redirect-path";
 import * as resetStore from "@app/reset-store";
 import * as roles from "@app/roles";
 import * as search from "@app/search";
+import * as sources from "@app/source";
 import * as theme from "@app/theme";
 import * as token from "@app/token";
 import * as users from "@app/users";
@@ -41,6 +43,8 @@ const corePackages: any[] = [
   search,
   metrics,
   billing,
+  sources,
+  deployments,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {
