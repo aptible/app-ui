@@ -27,7 +27,10 @@ export const fetchUser = authApi.get<UserBase, UserResponse>(
           id: user.selectedOrganizationId,
         }),
       );
+      // if we don't have the org in our list we can't set the org selected
       if (!org) return;
+      // if we need to reauthenticate to use that org then we can't set the org selected
+      if (org.reauthRequired) return;
       ctx.actions.push(setOrganizationSelected(user.selectedOrganizationId));
     }
   },
