@@ -29,6 +29,10 @@ export const useEnvOpsPoller = ({
     } else {
       dispatch(cancelEnvOperationsPoll());
     }
+
+    return () => {
+      dispatch(cancelEnvOperationsPoll());
+    };
   }, [isTabActive, appId, envId]);
 
   return pollLoader;
