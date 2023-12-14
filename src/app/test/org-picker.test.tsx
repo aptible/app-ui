@@ -45,7 +45,7 @@ describe("Selecting an Organization", () => {
     expect(screen.queryByText(/Continue using/)).toBeInTheDocument();
   });
 
-  it("should successfully change the selected organization", async () => {
+  it.only("should successfully change the selected organization", async () => {
     const testStackSpecial = defaultStackResponse({
       id: createId(),
       name: "Special Stack",

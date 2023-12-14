@@ -3,7 +3,7 @@ import { refreshData } from "@app/bootup";
 import { batchActions } from "@app/fx";
 import { useQuery } from "@app/fx";
 import {
-  selectOrganizationSelected,
+  selectOrganizationSelectedId,
   selectOrganizationsAsList,
 } from "@app/organizations";
 import { loginUrl, ssoUrl } from "@app/routes";
@@ -43,15 +43,15 @@ export const OrgPickerPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
-  const org = useSelector(selectOrganizationSelected);
+  const orgId = useSelector(selectOrganizationSelectedId);
   const orgs = useSelector(selectOrganizationsAsList);
   useQuery(fetchReauthOrganizations());
   const orgList = orgs.filter((o) => !o.reauthRequired);
-  const reauth = orgs.filter((o) => o.reauthRequired);
+  const reauthOrgs = orgs.filter((o) => o.reauthRequired);
   const onClick = (curOrg: Organization, reauth = false) => {
     if (reauth) {
       dispatch(
-        batchActions([updateUserOrg({ userId, orgId: org.id }), logout()]),
+        batchActions([updateUserOrg({ userId, orgId: curOrg.id }), logout()]),
       );
       // when sso is required we should send them directly to the SSO page
       if (curOrg.ssoEnforced) {
@@ -64,7 +64,10 @@ export const OrgPickerPage = () => {
 
     // when we update the user's selected org we need to refetch data
     dispatch(
-      batchActions([updateUserOrg({ userId, orgId: org.id }), refreshData()]),
+      batchActions([
+        updateUserOrg({ userId, orgId: curOrg.id }),
+        refreshData(),
+      ]),
     );
   };
 
@@ -80,17 +83,17 @@ export const OrgPickerPage = () => {
                 key={o.id}
                 onClick={() => onClick(o, false)}
                 org={o}
-                selected={org.id === o.id}
+                selected={orgId === o.id}
               />
             );
           })}
         </div>
 
-        {reauth.length > 0 ? (
+        {reauthOrgs.length > 0 ? (
           <div>
             <div>Reauthentication Required</div>
 
-            {reauth.map((o) => {
+            {reauthOrgs.map((o) => {
               return (
                 <OrgItem key={o.id} onClick={() => onClick(o, true)} org={o} />
               );
