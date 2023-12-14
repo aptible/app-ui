@@ -21,5 +21,9 @@ export const usePoller = ({
     } else {
       dispatch(cancel);
     }
+
+    return () => {
+      dispatch(cancel);
+    };
   }, [isTabActive, action, cancel]);
 };
