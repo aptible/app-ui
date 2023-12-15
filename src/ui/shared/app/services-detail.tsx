@@ -75,7 +75,9 @@ const CmdCell = ({
           {cmd.length > charLen ? (
             <Group variant="horizontal" size="sm" className="items-center">
               <Tooltip text={cmd} fluid>
-                <Code className="text-ellipsis">{cmd.slice(0, charLen)}</Code>
+                <Code className="text-ellipsis whitespace-nowrap max-w-[30ch] overflow-hidden inline-block">
+                  {cmd.slice(0, charLen)}
+                </Code>
               </Tooltip>
               <CopyTextButton text={cmd} />
             </Group>
