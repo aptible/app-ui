@@ -47,7 +47,7 @@ export function ServiceHeader({
 }: { app: DeployApp; service: DeployService; env: DeployEnvironment }) {
   const metrics = calcServiceMetrics(service);
   const { totalCPU } = calcMetrics([service]);
-  const [isOpen, setOpen] = useState(false);
+  const [isOpen, setOpen] = useState(true);
 
   return (
     <DetailHeader>
