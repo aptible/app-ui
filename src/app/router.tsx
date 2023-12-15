@@ -53,6 +53,11 @@ import {
   DatabaseSettingsPage,
   DatabasesPage,
   DeployPage,
+  DeploymentDetailConfigPage,
+  DeploymentDetailLayout,
+  DeploymentDetailLogsPage,
+  DeploymentDetailPage,
+  DeploymentDetailRollbackPage,
   DeploymentsPage,
   ElevatePage,
   ElevateRequired,
@@ -299,6 +304,29 @@ export const appRoutes: RouteObject[] = [
                 element: <AppDetailDeploymentsPage />,
               },
             ],
+          },
+        ],
+      },
+
+      {
+        path: routes.DEPLOYMENT_DETAIL_PATH,
+        element: <DeploymentDetailLayout />,
+        children: [
+          {
+            index: true,
+            element: <DeploymentDetailPage />,
+          },
+          {
+            path: routes.DEPLOYMENT_DETAIL_LOGS_PATH,
+            element: <DeploymentDetailLogsPage />,
+          },
+          {
+            path: routes.DEPLOYMENT_DETAIL_CONFIG_PATH,
+            element: <DeploymentDetailConfigPage />,
+          },
+          {
+            path: routes.DEPLOYMENT_DETAIL_ROLLBACK_PATH,
+            element: <DeploymentDetailRollbackPage />,
           },
         ],
       },

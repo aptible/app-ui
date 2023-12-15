@@ -4,17 +4,15 @@ import {
   fetchDeploymentsByAppId,
   selectDeploymentsByAppId,
 } from "@app/deployment";
-import { operationDetailUrl } from "@app/routes";
+import { deploymentDetailRollbackUrl, deploymentDetailUrl } from "@app/routes";
 import { AppState, Deployment } from "@app/types";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
 import {
-  Button,
   ButtonLink,
   Code,
   DetailPageSections,
-  Group,
   OpStatus,
   TBody,
   THead,
@@ -36,7 +34,9 @@ function DeploymentRow({ deployment }: { deployment: Deployment }) {
 
   return (
     <Tr>
-      <Td>{deployment.id}</Td>
+      <Td>
+        <Link to={deploymentDetailUrl(deployment.id)}>{deployment.id}</Link>
+      </Td>
       <Td>
         <OpStatus status={op.status} />
       </Td>
@@ -46,13 +46,9 @@ function DeploymentRow({ deployment }: { deployment: Deployment }) {
       </Td>
       <Td>{prettyDateTime(deployment.createdAt)}</Td>
       <Td variant="right">
-        <Group variant="horizontal" size="sm">
-          <Button size="sm">Config</Button>
-          <ButtonLink size="sm" to={operationDetailUrl(op.id)}>
-            Logs
-          </ButtonLink>
-          <Button size="sm">Rollback</Button>
-        </Group>
+        <ButtonLink size="sm" to={deploymentDetailRollbackUrl(deployment.id)}>
+          Rollback
+        </ButtonLink>
       </Td>
     </Tr>
   );

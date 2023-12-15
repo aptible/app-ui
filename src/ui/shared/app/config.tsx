@@ -1,10 +1,22 @@
 import { selectAppConfigById } from "@app/deploy";
-import { AppState } from "@app/types";
+import { AppState, DeployAppConfigEnv } from "@app/types";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { ButtonFullVisibility } from "../button";
 import { Group } from "../group";
 import { PreBox, TextSegment } from "../pre-code";
+
+export function configToTextSegment(config: DeployAppConfigEnv) {
+  const envs: TextSegment[] = [];
+  Object.keys(config).forEach((key) => {
+    envs.push(
+      { text: `${key}=`, className: "text-lime" },
+      { text: `${config[key]}`, className: "text-white" },
+      { text: "\n", className: "" },
+    );
+  });
+  return envs;
+}
 
 export const AppConfigView = ({
   configId,
@@ -14,14 +26,7 @@ export const AppConfigView = ({
   const config = useSelector((s: AppState) =>
     selectAppConfigById(s, { id: configId }),
   );
-  const envs: TextSegment[] = [];
-  Object.keys(config.env).forEach((key) => {
-    envs.push(
-      { text: `${key}=`, className: "text-lime" },
-      { text: `${config.env[key]}`, className: "text-white" },
-      { text: "\n", className: "" },
-    );
-  });
+  const envs = configToTextSegment(config.env);
 
   return (
     <>

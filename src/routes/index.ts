@@ -118,6 +118,18 @@ export const appEndpointCreateUrl = (id: string) =>
 export const APP_SETTINGS_PATH = `${APP_DETAIL_PATH}/settings`;
 export const appSettingsUrl = (id: string) => `${appDetailUrl(id)}/settings`;
 
+export const DEPLOYMENT_DETAIL_PATH = "/deployments/:id";
+export const deploymentDetailUrl = (id: string) => `/deployments/${id}`;
+export const DEPLOYMENT_DETAIL_LOGS_PATH = "/deployments/:id/logs";
+export const deploymentDetailLogsUrl = (id: string) =>
+  `/deployments/${id}/logs`;
+export const DEPLOYMENT_DETAIL_CONFIG_PATH = "/deployments/:id/config";
+export const deploymentDetailConfigUrl = (id: string) =>
+  `/deployments/${id}/config`;
+export const DEPLOYMENT_DETAIL_ROLLBACK_PATH = "/deployments/:id/rollback";
+export const deploymentDetailRollbackUrl = (id: string) =>
+  `/deployments/${id}/rollback`;
+
 export const DATABASES_PATH = "/databases";
 export const databaseUrl = () => DATABASES_PATH;
 export const DATABASE_DETAIL_PATH = "/databases/:id";
