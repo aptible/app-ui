@@ -1,5 +1,5 @@
 import { selectAppById } from "@app/deploy";
-import { rollbackDeployment } from "@app/deployment";
+import { rollbackDeployment, selectDeploymentById } from "@app/deployment";
 import { appActivityUrl } from "@app/routes";
 import { AppState } from "@app/types";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,8 +11,17 @@ export function DeploymentDetailRollbackPage() {
   const { id = "" } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
-  const action = rollbackDeployment({ appId: app.id, deploymentId: id });
+  const deployment = useSelector((s: AppState) =>
+    selectDeploymentById(s, { id }),
+  );
+  const app = useSelector((s: AppState) =>
+    selectAppById(s, { id: deployment.appId }),
+  );
+  const action = rollbackDeployment({
+    envId: app.environmentId,
+    appId: app.id,
+    deploymentId: id,
+  });
   const loader = useLoader(action);
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,7 +55,6 @@ export function DeploymentDetailRollbackPage() {
         <ButtonCreate
           envId={app.environmentId}
           type="submit"
-          requireConfirm
           isLoading={loader.isLoading}
           variant="delete"
           disabled={isActive}

@@ -1,4 +1,5 @@
 import { api } from "@app/api";
+import { defaultOperationResponse } from "@app/deploy";
 import { selectEnv } from "@app/env";
 import { select } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
@@ -150,12 +151,33 @@ function* mockDeployments() {
   return deployments;
 }
 
+function* mockRollbackOp(appId: string, envId: string) {
+  const env = yield* select(selectEnv);
+  const mockOp = defaultOperationResponse({
+    id: 1337,
+    type: "deploy",
+    status: "succeeded",
+    _links: {
+      resource: defaultHalHref(`${env.apiUrl}/apps/${appId}`),
+      account: defaultHalHref(`${env.apiUrl}/accounts/${envId}`),
+      code_scan_result: defaultHalHref(),
+      ephemeral_sessions: defaultHalHref(),
+      logs: defaultHalHref(),
+      ssh_portal_connections: defaultHalHref(),
+      self: defaultHalHref(),
+      user: defaultHalHref(),
+    },
+  });
+  return mockOp;
+}
+
 export const fetchDeploymentById = api.get<{ id: string }>(
   "/deployments/:id",
   function* (ctx, next) {
     const deployments = yield* mockDeployments();
     const deployment = deployments.find((d) => d.id === ctx.payload.id);
     ctx.response = new Response(JSON.stringify(deployment));
+
     yield* next();
   },
 );
@@ -165,10 +187,12 @@ export const fetchDeploymentsByAppId = api.get<{ id: string }>(
   function* (ctx, next) {
     const deployments = yield* mockDeployments();
     ctx.response = new Response(JSON.stringify({ _embedded: { deployments } }));
+
     yield* next();
   },
 );
 export const rollbackDeployment = api.post<{
+  envId: string;
   appId: string;
   deploymentId: string;
 }>(["/apps/:appId/operations", "rollback"], function* (ctx, next) {
@@ -178,6 +202,9 @@ export const rollbackDeployment = api.post<{
       deployment_id: ctx.payload.deploymentId,
     }),
   });
+
+  const op = yield* mockRollbackOp(ctx.payload.appId, ctx.payload.envId);
+  ctx.response = new Response(JSON.stringify(op));
 
   yield* next();
 
