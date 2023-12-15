@@ -93,6 +93,9 @@ describe("Accept invitation flows", () => {
 
       render(<App />);
 
+      const signup = await screen.findByRole("link", { name: /log in here/ });
+      fireEvent.click(signup);
+
       const pass = await screen.findByLabelText("Password");
       await act(() => userEvent.type(pass, "1234"));
       const login = await screen.findByRole("button", { name: /Log In/ });
@@ -125,9 +128,6 @@ describe("Accept invitation flows", () => {
       await waitForBootup(store);
 
       render(<App />);
-
-      const signup = await screen.findByRole("link", { name: /Sign up/ });
-      fireEvent.click(signup);
 
       const name = await screen.findByRole("textbox", { name: "name" });
       await act(() => userEvent.type(name, "mock name"));
