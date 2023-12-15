@@ -295,6 +295,7 @@ export const testApp = defaultAppResponse({
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testAccount.id}`),
     current_configuration: defaultHalHref(),
+    current_deployment: defaultHalHref(),
     current_image: defaultHalHref(),
   },
   _embedded: {
@@ -493,6 +494,7 @@ export const testAppDeployed = defaultAppResponse({
   _links: {
     account: defaultHalHref(`${testEnv.apiUrl}/accounts/${testEnvExpress.id}`),
     current_configuration: defaultHalHref(),
+    current_deployment: defaultHalHref(),
     current_image: defaultHalHref(),
   },
   _embedded: {
@@ -577,6 +579,7 @@ export const testAutoscalingApp = defaultAppResponse({
       `${testEnv.apiUrl}/accounts/${testAutoscalingAccount.id}`,
     ),
     current_configuration: defaultHalHref(),
+    current_deployment: defaultHalHref(),
     current_image: defaultHalHref(),
   },
   _embedded: {

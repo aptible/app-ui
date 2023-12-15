@@ -169,9 +169,9 @@ export const fetchDeploymentsByAppId = api.get<{ id: string }>(
   },
 );
 export const rollbackDeployment = api.post<{
-  id: string;
+  appId: string;
   deploymentId: string;
-}>(["/apps/:id/operations", "rollback"], function* (ctx, next) {
+}>(["/apps/:appId/operations", "rollback"], function* (ctx, next) {
   ctx.request = ctx.req({
     body: JSON.stringify({
       type: "rollback",

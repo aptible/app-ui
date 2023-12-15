@@ -1,23 +1,50 @@
-import { selectAppById, selectOperationById } from "@app/deploy";
-import { selectDeploymentById } from "@app/deployment";
+import { selectAppById } from "@app/deploy";
+import { rollbackDeployment } from "@app/deployment";
+import { appActivityUrl } from "@app/routes";
 import { AppState } from "@app/types";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import { useLoader, useLoaderSuccess } from "starfx/react";
+import { BannerMessages, ButtonCreate, Group, tokens } from "../shared";
 
 export function DeploymentDetailRollbackPage() {
   const { id = "" } = useParams();
-  const deployment = useSelector((s: AppState) =>
-    selectDeploymentById(s, { id }),
-  );
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const app = useSelector((s: AppState) => selectAppById(s, { id }));
-  const op = useSelector((s: AppState) => selectOperationById(s, { id }));
+  const action = rollbackDeployment({ appId: app.id, deploymentId: id });
+  const loader = useLoader(action);
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(action);
+  };
+  useLoaderSuccess(loader, () => {
+    navigate(appActivityUrl(app.id));
+  });
 
   return (
-    <div>
-      <h3>ROLLBACK</h3>
+    <Group>
+      <h3 className={tokens.type.h3}>ROLLBACK</h3>
+
       <div>
-        Deployment detail {deployment.id} {app.id} {op.id}
+        Rollback an App deployment to a previous source code and configuration
+        combination. This feature will reuse all the same resources that were
+        used to have a healthy App.
       </div>
-    </div>
+
+      <BannerMessages {...loader} />
+
+      <form onSubmit={onSubmit}>
+        <ButtonCreate
+          envId={app.environmentId}
+          type="submit"
+          requireConfirm
+          isLoading={loader.isLoading}
+          variant="delete"
+        >
+          Rollback
+        </ButtonCreate>
+      </form>
+    </Group>
   );
 }

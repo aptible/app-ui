@@ -45,6 +45,7 @@ export interface DeployAppResponse {
   _links: {
     account: LinkResponse;
     current_configuration: LinkResponse;
+    current_deployment: LinkResponse;
     current_image: LinkResponse;
   };
   _embedded: {
@@ -73,6 +74,7 @@ export const defaultAppResponse = (
       account: { href: "" },
       current_configuration: { href: "" },
       current_image: { href: "" },
+      current_deployment: { href: "" },
       ...p._links,
     },
     _embedded: {
@@ -100,6 +102,7 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
     status: payload.status,
     environmentId: extractIdFromLink(links.account),
     currentConfigurationId: extractIdFromLink(links.current_configuration),
+    currentDeploymentId: extractIdFromLink(links.current_deployment),
     currentImageId: extractIdFromLink(links.current_image),
   };
 };
@@ -116,6 +119,7 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
     status: "pending",
     environmentId: "",
     currentConfigurationId: "",
+    currentDeploymentId: "",
     currentImageId: "",
     ...a,
   };

@@ -127,6 +127,7 @@ describe("AppDeployStatusPage", () => {
           account: defaultHalHref(
             `${testEnv.apiUrl}/accounts/${testAccount.id}`,
           ),
+          current_deployment: defaultHalHref(),
           current_configuration: defaultHalHref(
             `${testEnv.apiUrl}/configurations/${testConfiguration.id}`,
           ),
