@@ -5,7 +5,7 @@ import {
   selectDeploymentsByAppId,
 } from "@app/deployment";
 import { deploymentDetailRollbackUrl, deploymentDetailUrl } from "@app/routes";
-import { AppState, Deployment } from "@app/types";
+import { AppState, DeployApp, Deployment } from "@app/types";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
@@ -21,7 +21,10 @@ import {
   Tr,
 } from "../shared";
 
-function DeploymentRow({ deployment }: { deployment: Deployment }) {
+function DeploymentRow({
+  app,
+  deployment,
+}: { app: DeployApp; deployment: Deployment }) {
   const op = useSelector((s: AppState) =>
     selectOperationById(s, { id: deployment.operationId }),
   );
@@ -31,6 +34,7 @@ function DeploymentRow({ deployment }: { deployment: Deployment }) {
   } else if (deployment.gitRef) {
     ref = deployment.gitRef;
   }
+  const isActive = app.currentDeploymentId === deployment.id;
 
   return (
     <Tr>
@@ -46,9 +50,11 @@ function DeploymentRow({ deployment }: { deployment: Deployment }) {
       </Td>
       <Td>{prettyDateTime(deployment.createdAt)}</Td>
       <Td variant="right">
-        <ButtonLink size="sm" to={deploymentDetailRollbackUrl(deployment.id)}>
-          Rollback
-        </ButtonLink>
+        {isActive ? null : (
+          <ButtonLink size="sm" to={deploymentDetailRollbackUrl(deployment.id)}>
+            Rollback
+          </ButtonLink>
+        )}
       </Td>
     </Tr>
   );
@@ -76,7 +82,9 @@ export function AppDetailDeploymentsPage() {
 
         <TBody>
           {deployments.map((deploy) => {
-            return <DeploymentRow key={deploy.id} deployment={deploy} />;
+            return (
+              <DeploymentRow key={deploy.id} app={app} deployment={deploy} />
+            );
           })}
         </TBody>
       </Table>

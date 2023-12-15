@@ -5,7 +5,7 @@ import { AppState } from "@app/types";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useLoader, useLoaderSuccess } from "starfx/react";
-import { BannerMessages, ButtonCreate, Group, tokens } from "../shared";
+import { Banner, BannerMessages, ButtonCreate, Group, tokens } from "../shared";
 
 export function DeploymentDetailRollbackPage() {
   const { id = "" } = useParams();
@@ -21,6 +21,7 @@ export function DeploymentDetailRollbackPage() {
   useLoaderSuccess(loader, () => {
     navigate(appActivityUrl(app.id));
   });
+  const isActive = app.currentDeploymentId === id;
 
   return (
     <Group>
@@ -32,6 +33,13 @@ export function DeploymentDetailRollbackPage() {
         used to have a healthy App.
       </div>
 
+      {isActive ? (
+        <Banner variant="error">
+          This is already the current active deployment for the App so we cannot
+          rollback.
+        </Banner>
+      ) : null}
+
       <BannerMessages {...loader} />
 
       <form onSubmit={onSubmit}>
@@ -41,6 +49,7 @@ export function DeploymentDetailRollbackPage() {
           requireConfirm
           isLoading={loader.isLoading}
           variant="delete"
+          disabled={isActive}
         >
           Rollback
         </ButtonCreate>
