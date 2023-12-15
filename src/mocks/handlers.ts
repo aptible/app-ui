@@ -171,6 +171,17 @@ const authHandlers = [
       );
     },
   ),
+  rest.get(`${testEnv.authUrl}/users/:id/u2f_devices`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { u2f_devices: [] } }));
+  }),
+  rest.get(
+    `${testEnv.authUrl}/users/:id/email_verification_challenges`,
+    (_, res, ctx) => {
+      return res(
+        ctx.json({ _embedded: { email_verification_challenges: [] } }),
+      );
+    },
+  ),
 ];
 
 export const verifiedUserHandlers = (
@@ -184,7 +195,7 @@ export const verifiedUserHandlers = (
 ) => {
   return [
     rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (_, res, ctx) => {
-      return res(ctx.json({ _embedded: [user] }));
+      return res(ctx.json({ _embedded: { users: [user] } }));
     }),
     rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
       return res(ctx.json(user));

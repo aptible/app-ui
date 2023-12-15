@@ -85,6 +85,12 @@ export const testUser = defaultUserResponse({
   email: testEmail,
   verified: false,
 });
+export const testUserNotVerified = defaultUserResponse({
+  id: testUserId,
+  name: "not-verified",
+  email: testEmail,
+  verified: false,
+});
 export const testUserVerified = defaultUserResponse({
   id: testUserId,
   name: "verified",
