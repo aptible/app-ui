@@ -65,7 +65,7 @@ const CmdCell = ({
 }: { service: DeployService; size?: "sm" | "lg" }) => {
   const cmd = serviceCommandText(service);
   const sizes = {
-    sm: 15,
+    sm: 30,
     lg: 30,
   };
   const charLen = sizes[size];
