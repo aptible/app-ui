@@ -1,5 +1,7 @@
 import { api } from "@app/api";
-import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { selectEnv } from "@app/env";
+import { select } from "@app/fx";
+import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { createReducerMap, createTable } from "@app/slice-helpers";
 import {
   AppState,
@@ -88,8 +90,15 @@ export const reducers = createReducerMap(slice);
 // const initDeployment = defaultDeployment();
 // const must = mustSelectEntity(initDeployment);
 const selectors = slice.getSelectors((s: AppState) => s[DEPLOYMENT_NAME]);
-export const selectDeploymentsByAppId = createSelector(
+const selectDeploymentsAsList = createSelector(
   selectors.selectTableAsList,
+  (deployments) =>
+    deployments.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }),
+);
+export const selectDeploymentsByAppId = createSelector(
+  selectDeploymentsAsList,
   (_: AppState, p: { appId: string }) => p.appId,
   (deployments, appId) => {
     return deployments.filter((d) => d.appId === appId);
@@ -99,10 +108,41 @@ export const selectDeploymentsByAppId = createSelector(
 export const fetchDeploymentsByAppId = api.get<{ id: string }>(
   "/apps/:id/deployments",
   function* (ctx, next) {
+    const env = yield* select(selectEnv);
     const deployments: DeploymentResponse[] = [
-      defaultDeploymentResponse({ id: "1" }),
-      defaultDeploymentResponse({ id: "2" }),
-      defaultDeploymentResponse({ id: "3" }),
+      defaultDeploymentResponse({
+        id: "1",
+        docker_image: "quay.io/aptible/cloud-ui:v154",
+        git_ref: "",
+        sha: "45d25efd1d8e",
+        config: {},
+        _links: {
+          app: defaultHalHref(`${env.apiUrl}/apps/54710`),
+          operation: defaultHalHref(`${env.apiUrl}/operations/61601979`),
+        },
+      }),
+      defaultDeploymentResponse({
+        id: "2",
+        docker_image: "quay.io/aptible/cloud-ui:v155",
+        git_ref: "",
+        sha: "bdad93b96168",
+        config: {},
+        _links: {
+          app: defaultHalHref(`${env.apiUrl}/apps/54710`),
+          operation: defaultHalHref(`${env.apiUrl}/operations/61621085`),
+        },
+      }),
+      defaultDeploymentResponse({
+        id: "3",
+        docker_image: "quay.io/aptible/cloud-ui:v156",
+        git_ref: "",
+        sha: "144f31026c89",
+        config: {},
+        _links: {
+          app: defaultHalHref(`${env.apiUrl}/apps/54710`),
+          operation: defaultHalHref(`${env.apiUrl}/operations/61668999`),
+        },
+      }),
     ];
     ctx.response = new Response(JSON.stringify({ _embedded: { deployments } }));
     yield* next();
