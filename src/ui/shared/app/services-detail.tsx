@@ -135,15 +135,24 @@ const AppServiceByAppRow = ({
         <CostCell service={service} />
 
         <Td variant="right">
-          <div className="h-[40px] flex items-center">
+          <Group size="sm" variant="horizontal">
             <ButtonLink
+              className="w-15"
+              size="sm"
+              to={appServiceUrl(service.appId, service.id)}
+              variant="primary"
+            >
+              Metrics
+            </ButtonLink>
+            <ButtonLink
+              className="w-15"
               size="sm"
               to={appServiceScalePathUrl(app.id, service.id)}
               variant="primary"
             >
               Scale
             </ButtonLink>
-          </div>
+          </Group>
         </Td>
       </Tr>
     </>
