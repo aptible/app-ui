@@ -37,21 +37,22 @@ import { Tooltip } from "../tooltip";
 const NameCell = ({ service }: { service: DeployService }) => {
   return (
     <Td className="w-[180px]">
-      <div className="flex items-center">
-        <img
-          src="/resource-types/logo-service.png"
-          className="w-[32px] h-[32px] mr-2 align-middle"
-          aria-label="App"
-        />
-        <div>
-          <Link
-            to={appServiceUrl(service.appId, service.id)}
-            className="text-black group-hover:text-indigo hover:text-indigo"
-          >
-            {service.processType}
-          </Link>
-          <div className={tokens.type["normal lighter"]}>ID: {service.id}</div>
-        </div>
+      <div className="flex">
+        <Link to={appServiceUrl(service.appId, service.id)} className="flex">
+          <img
+            src="/resource-types/logo-service.png"
+            className="w-[32px] h-[32px] mr-2 mt-1 align-middle"
+            aria-label="Service"
+          />
+          <p className="flex flex-col">
+            <span className={tokens.type["table link"]}>
+              {service.processType}
+            </span>
+            <span className={tokens.type["normal lighter"]}>
+              ID: {service.id}
+            </span>
+          </p>
+        </Link>
       </div>
     </Td>
   );
@@ -299,7 +300,7 @@ export function AppServicesByApp({
           <Th>Service</Th>
           <Th>Command</Th>
           <Th>Details</Th>
-          <Th>Estimated Monthly Cost</Th>
+          <Th>Est. Monthly Cost</Th>
           <Th variant="right">Actions</Th>
         </THead>
 
