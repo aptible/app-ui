@@ -12,6 +12,7 @@ import {
   appDetailUrl,
   appServiceScalePathUrl,
   appServiceUrl,
+  appServiceMetricsUrl,
 } from "@app/routes";
 import { AppState, DeployService, DeployServiceRow } from "@app/types";
 import { PaginateProps, usePaginate } from "@app/ui/hooks";
@@ -139,7 +140,7 @@ const AppServiceByAppRow = ({
             <ButtonLink
               className="w-15"
               size="sm"
-              to={appServiceUrl(service.appId, service.id)}
+              to={appServiceMetricsUrl(app.id, service.id)}
               variant="primary"
             >
               Metrics
