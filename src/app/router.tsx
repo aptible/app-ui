@@ -774,7 +774,7 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.TEAM_ACCEPT_INVITE_PATH,
     element: (
-      <AuthRequired>
+      <AuthRequired redirectTo={routes.signupUrl()}>
         <TeamAcceptInvitePage />
       </AuthRequired>
     ),

@@ -81,7 +81,10 @@ At the time of writing this we have 4 forced redirect components:
 - `<PaymentMethodRequired />` -> checks for a payment method
 - `<ElevateRequired />` -> checks for an elevated token in our redux store
 */
-export const AuthRequired = ({ children }: { children?: React.ReactNode }) => {
+export const AuthRequired = ({
+  children,
+  redirectTo = loginUrl(),
+}: { children?: React.ReactNode; redirectTo?: string }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const loader = useSelector((s: AppState) =>
@@ -102,7 +105,7 @@ export const AuthRequired = ({ children }: { children?: React.ReactNode }) => {
 
   if (accessToken === "" && loader.lastSuccess > 0) {
     log("user not authenticated, redirecting to login");
-    return <Navigate to={loginUrl()} replace />;
+    return <Navigate to={redirectTo} replace />;
   }
 
   if (accessToken === "") {
