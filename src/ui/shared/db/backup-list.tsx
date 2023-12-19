@@ -198,7 +198,7 @@ export const DatabaseBackupsList = ({
 
         <TBody>
           {paginated.data.length === 0 ? (
-            <EmptyTr colSpan={showDatabase ? 8 : 7} />
+            <EmptyTr colSpan={showDatabase ? 9 : 8} />
           ) : null}
           {paginated.data.map((backup) => (
             <BackupListRow
