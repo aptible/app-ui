@@ -1,4 +1,3 @@
-import { timeAgo } from "@app/date";
 import {
   fetchApps,
   fetchEndpointsByEnvironmentId,
@@ -7,18 +6,15 @@ import {
   selectEndpointsByEnvironmentId,
   selectEnvironmentById,
   selectEnvironmentStatsById,
-  selectLatestSuccessDeployOpByEnvId,
   selectStackById,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
 import { stackDetailEnvsUrl } from "@app/routes";
-import { capitalize } from "@app/string-utils";
 import {
   AppState,
   DeployEndpoint,
   DeployEnvironment,
   DeployEnvironmentStats,
-  DeployOperation,
   DeployStack,
 } from "@app/types";
 import { useDispatch, useSelector } from "react-redux";
