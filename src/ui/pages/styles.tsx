@@ -748,7 +748,6 @@ const DetailBoxes = () => {
       <EnvHeader
         stack={stack}
         environment={env}
-        latestOperation={op}
         endpoints={[ept]}
         stats={stats}
       />
