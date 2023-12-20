@@ -1,5 +1,6 @@
 import { prettyEnglishDateWithTime } from "@app/date";
 import {
+  ResourceLookup,
   cancelAppOpsPoll,
   cancelDatabaseOpsPoll,
   cancelEndpointOpsPoll,
@@ -388,12 +389,20 @@ export function ActivityByApp({ appId }: { appId: string }) {
   const services = useSelector((s: AppState) =>
     selectServicesByAppId(s, { appId }),
   );
-  const serviceIds = services.map((service) => service.id);
-  const resourceIds = [appId, ...serviceIds];
+  const serviceResources = services.map((service) => {
+    return {
+      resourceId: service.id,
+      resourceType: "service" as const,
+    };
+  });
+  const resources: ResourceLookup[] = useMemo(
+    () => [{ resourceId: appId, resourceType: "app" }, ...serviceResources],
+    [appId, ...services.map((s) => s.id)],
+  );
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds,
+      resources,
     }),
   );
 
@@ -427,14 +436,18 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value }, { replace: true });
 
-  const resourceIds = useMemo(
-    () => [dbId, db.serviceId].filter(Boolean),
+  const resources: ResourceLookup[] = useMemo(
+    () =>
+      [
+        { resourceId: dbId, resourceType: "database" as const },
+        { resourceId: db.serviceId, resourceType: "service" as const },
+      ].filter(Boolean),
     [dbId, db.serviceId],
   );
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds,
+      resources,
     }),
   );
 
@@ -464,11 +477,14 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value }, { replace: true });
 
-  const resourceIds = useMemo(() => [enpId], [enpId]);
+  const resources: ResourceLookup[] = useMemo(
+    () => [{ resourceId: enpId, resourceType: "vhost" as const }],
+    [enpId],
+  );
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds,
+      resources,
     }),
   );
 

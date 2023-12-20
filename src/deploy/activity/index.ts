@@ -5,7 +5,12 @@ import {
   databaseDetailUrl,
   environmentIntegrationsUrl,
 } from "@app/routes";
-import type { AppState, DeployActivityRow, OperationType } from "@app/types";
+import type {
+  AppState,
+  DeployActivityRow,
+  DeployOperation,
+  OperationType,
+} from "@app/types";
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
 import { findEndpointById, getEndpointUrl, selectEndpoints } from "../endpoint";
@@ -83,14 +88,36 @@ const selectActivityForTable = createSelector(
       ),
 );
 
+export type ResourceLookup = Pick<
+  DeployOperation,
+  "resourceType" | "resourceId"
+>;
+function findResourceMatch(
+  op: DeployOperation,
+  resources: ResourceLookup[],
+): boolean {
+  return Boolean(
+    resources.find(
+      (resource) =>
+        op.resourceId === resource.resourceId &&
+        op.resourceType === resource.resourceType,
+    ),
+  );
+}
+
 const denyOpTypes: OperationType[] = ["poll"];
 export const selectActivityForTableSearch = createSelector(
   selectActivityForTable,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: AppState, props: { envId?: string }) => props.envId || "",
-  (_: AppState, props: { resourceIds?: string[] }) => props.resourceIds || "",
-  (ops, search, envId, resourceIds): DeployActivityRow[] => {
-    if (search === "" && envId === "" && resourceIds.length === 0) {
+  (
+    _: AppState,
+    props: {
+      resources?: ResourceLookup[];
+    },
+  ) => props.resources || [],
+  (ops, search, envId, resources): DeployActivityRow[] => {
+    if (search === "" && envId === "" && resources.length === 0) {
       return ops.filter((op) => !denyOpTypes.includes(op.type));
     }
 
@@ -131,10 +158,10 @@ export const selectActivityForTableSearch = createSelector(
         resourceHandleMatch;
 
       const resourceIdMatch =
-        resourceIds.length !== 0 && resourceIds.includes(op.resourceId);
+        resources.length !== 0 && findResourceMatch(op, resources);
       const envIdMatch = envId !== "" && op.environmentId === envId;
 
-      if (resourceIds.length !== 0) {
+      if (resources.length !== 0) {
         if (search !== "") {
           return resourceIdMatch && searchMatch;
         }
