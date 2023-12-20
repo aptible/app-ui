@@ -126,6 +126,13 @@ const CostCell = ({ service }: { service: DeployServiceRow }) => {
   );
 };
 
+ const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const stack = useSelector((s: AppState) =>
+    selectStackById(s, { id: environment.stackId }),
+  );
+
 const AppServiceByOrgRow = ({
   service,
   verticalAutoscaling,
@@ -135,12 +142,6 @@ const AppServiceByOrgRow = ({
 }) => {
   const app = useSelector((s: AppState) =>
     selectAppById(s, { id: service.appId }),
-  );
-  const environment = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: app.environmentId }),
-  );
-  const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: environment.stackId }),
   );
 
   return (
@@ -320,7 +321,7 @@ export function AppServicesByApp({
         <TBody>
           {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
           {paginated.data.map((service) => (
-            <AppServiceByAppRow key={service.id} service={service} />
+            <AppServicesByApp key={service.id} service={service} />
           ))}
         </TBody>
       </Table>
