@@ -41,6 +41,15 @@ import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
 import { Tooltip } from "../tooltip";
 
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const stack = useSelector((s: AppState) =>
+    selectStackById(s, { id: environment.stackId }),
+  );
+  const { existingPolicy } = useServiceSizingPolicy(service.id);
+  const autoscalingEnabled = existingPolicy.scaling_enabled;
+
 const NameCell = ({ service }: { service: DeployService }) => {
   return (
     <Td className="w-[180px]">
@@ -125,13 +134,6 @@ const CostCell = ({ service }: { service: DeployServiceRow }) => {
     </Td>
   );
 };
-
- const environment = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: app.environmentId }),
-  );
-  const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: environment.stackId }),
-  );
 
 const AppServiceByOrgRow = ({
   service,
