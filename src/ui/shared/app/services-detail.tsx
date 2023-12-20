@@ -3,7 +3,9 @@ import {
   calcServiceMetrics,
   fetchServicesByAppId,
   selectAppById,
+  selectEnvironmentById,
   selectServicesByAppId,
+  selectStackById,
   serviceCommandText,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
@@ -18,6 +20,7 @@ import { AppState, DeployService, DeployServiceRow } from "@app/types";
 import {
   PaginateProps,
   usePaginate,
+  useServiceSizingPolicy,
 } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -64,11 +67,9 @@ const NameCell = ({ service }: { service: DeployService }) => {
 
 const CmdCell = ({
   service,
-  verticalAutoscaling,
   size = "sm",
 }: {
   service: DeployService;
-  verticalAutoscaling: boolean;
   size?: "sm" | "lg";
 }) => {
   const cmd = serviceCommandText(service);
@@ -127,11 +128,19 @@ const CostCell = ({ service }: { service: DeployServiceRow }) => {
 
 const AppServiceByOrgRow = ({
   service,
+  verticalAutoscaling,
 }: {
   service: DeployServiceRow;
+  verticalAutoscaling: boolean;
 }) => {
   const app = useSelector((s: AppState) =>
     selectAppById(s, { id: service.appId }),
+  );
+  const environment = useSelector((s: AppState) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const stack = useSelector((s: AppState) =>
+    selectStackById(s, { id: environment.stackId }),
   );
 
   return (
