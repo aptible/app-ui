@@ -3,9 +3,7 @@ import {
   calcServiceMetrics,
   fetchServicesByAppId,
   selectAppById,
-  selectEnvironmentById,
   selectServicesByAppId,
-  selectStackById,
   serviceCommandText,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
@@ -20,7 +18,6 @@ import { AppState, DeployService, DeployServiceRow } from "@app/types";
 import {
   PaginateProps,
   usePaginate,
-  useServiceSizingPolicy,
 } from "@app/ui/hooks";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -253,7 +250,7 @@ export function AppServicesByOrg({
           <EmptyTr colSpan={stack.verticalAutoscaling ? 8 : 7} />
         ) : null}
         {paginated.data.map((service) => (
-          <ServiceListRow
+          <AppServiceByOrgRow
             key={service.id}
             app={app}
             service={service}
