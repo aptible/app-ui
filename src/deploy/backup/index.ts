@@ -1,5 +1,5 @@
-import { api } from "@app/api";
-import { poll } from "@app/fx";
+import { PaginateProps, api } from "@app/api";
+import { addData, poll, put } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import {
   createReducerMap,
@@ -7,7 +7,7 @@ import {
   mustSelectEntity,
 } from "@app/slice-helpers";
 import { dateDescSort } from "@app/sort";
-import { AppState, DeployBackup, LinkResponse } from "@app/types";
+import { AppState, DeployBackup, HalEmbedded, LinkResponse } from "@app/types";
 import { createAction, createSelector } from "@reduxjs/toolkit";
 import { selectDatabases } from "../database";
 import { DeployOperationResponse } from "../operation";
@@ -91,6 +91,7 @@ const selectors = slice.getSelectors(
   (s: AppState) => selectDeploy(s)[DEPLOY_BACKUP_NAME],
 );
 export const selectBackupById = must(selectors.selectById);
+export const selectBackupsByIds = selectors.selectByIds;
 export const {
   selectTableAsList: selectBackupsAsList,
   selectTable: selectBackups,
@@ -139,18 +140,45 @@ export const pollDatabaseBackups = api.get<{ id: string }>(
   { supervisor: poll(10 * 1000, `${cancelPollDatabaseBackups}`) },
 );
 
+export const fetchBackupsByDatabaseId = api.get<
+  { id: string } & PaginateProps,
+  HalEmbedded<{ backups: BackupResponse[] }>
+>("/databases/:id/backups?page=:page", function* (ctx, next) {
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const ids = ctx.json.value._embedded.backups.map((bk) => `${bk.id}`);
+  const paginatedData = { ...ctx.json.value, _embedded: { backups: ids } };
+  yield* put(addData({ [ctx.key]: paginatedData }));
+});
+
 export const fetchBackup = api.get<{ id: string }>("/backups/:id");
 
-export const fetchDatabaseBackupsByEnvironment = api.get<{
-  id: string;
-  orphaned: boolean;
-}>("/accounts/:id/backups", function* (ctx, next) {
+export const fetchBackupsByEnvironmentId = api.get<
+  {
+    id: string;
+    orphaned: boolean;
+  } & PaginateProps,
+  HalEmbedded<{ backups: BackupResponse[] }>
+>("/accounts/:id/backups", function* (ctx, next) {
   if (ctx.payload.orphaned) {
     ctx.request = ctx.req({
       url: `${ctx.req().url}?orphaned=true`,
     });
   }
+
   yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const ids = ctx.json.value._embedded.backups.map((bk) => `${bk.id}`);
+  const paginatedData = { ...ctx.json.value, _embedded: { backups: ids } };
+  yield* put(addData({ [ctx.key]: paginatedData }));
 });
 export const deleteBackup = api.post<{ id: string }, DeployOperationResponse>(
   ["/backups/:id/operations", "delete"],

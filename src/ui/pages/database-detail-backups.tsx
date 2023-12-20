@@ -1,19 +1,10 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
-import {
-  cancelPollDatabaseBackups,
-  createDatabaseOperation,
-  pollDatabaseBackups,
-  selectBackupsByDatabaseId,
-  selectDatabaseById,
-} from "@app/deploy";
+import { createDatabaseOperation, selectDatabaseById } from "@app/deploy";
 import { useLoader, useLoaderSuccess } from "@app/fx";
 import { databaseActivityUrl, environmentBackupsUrl } from "@app/routes";
 import { AppState } from "@app/types";
-
-import { useMemo } from "react";
-import { usePoller } from "../hooks";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import { usePaginatedBackupsByDatabaseId } from "../hooks";
 import {
   BannerMessages,
   ButtonLink,
@@ -29,16 +20,7 @@ export const DatabaseBackupsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id = "" } = useParams();
-
-  const action = useMemo(() => pollDatabaseBackups({ id }), [id]);
-  const cancel = useMemo(() => cancelPollDatabaseBackups(), []);
-  const pollLoader = useLoader(action);
-
-  usePoller({ action, cancel });
-
-  const backups = useSelector((s: AppState) =>
-    selectBackupsByDatabaseId(s, { dbId: id }),
-  );
+  const paginated = usePaginatedBackupsByDatabaseId(id);
   const db = useSelector((s: AppState) => selectDatabaseById(s, { id }));
   const backupAction = createDatabaseOperation({ type: "backup", dbId: id });
   const loader = useLoader(backupAction);
@@ -70,12 +52,12 @@ export const DatabaseBackupsPage = () => {
           Policy
         </ButtonLink>
 
-        <LoadingSpinner show={pollLoader.isLoading} />
+        <LoadingSpinner show={paginated.isLoading} />
       </div>
 
       <BannerMessages className="my-4" {...loader} />
 
-      <DatabaseBackupsList backups={backups} showDatabase={false} />
+      <DatabaseBackupsList paginated={paginated} showDatabase={false} />
     </Group>
   );
 };

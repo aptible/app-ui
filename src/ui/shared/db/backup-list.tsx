@@ -7,7 +7,7 @@ import {
   operationDetailUrl,
 } from "@app/routes";
 import { DeployBackup } from "@app/types";
-import { usePaginate } from "@app/ui/hooks";
+import { PaginateProps } from "@app/ui/hooks";
 import cn from "classnames";
 import { ReactElement } from "react";
 import { useDispatch } from "react-redux";
@@ -159,16 +159,15 @@ const BackupListRow = ({
 };
 
 export const DatabaseBackupsList = ({
-  backups,
+  paginated,
   showDatabase = true,
   showFinal = false,
 }: {
-  backups: DeployBackup[];
+  paginated: PaginateProps<DeployBackup>;
   showDatabase?: boolean;
   showFinal?: boolean;
 }) => {
   const loader = useLoader(deleteBackup);
-  const paginated = usePaginate(backups);
 
   return (
     <Group>
