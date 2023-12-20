@@ -69,15 +69,16 @@ const CmdCell = ({
   service,
   verticalAutoscaling,
   size = "sm",
-}: { service: DeployService; size?: "sm" | "lg" }) => {
+}: {
+  service: DeployService;
+  verticalAutoscaling: boolean;
+  size?: "sm" | "lg";
+}) => {
   const cmd = serviceCommandText(service);
-  const { existingPolicy } = useServiceSizingPolicy(service.id);
-  const autoscalingEnabled = existingPolicy.scaling_enabled;
   const sizes = {
     sm: 30,
     lg: 30,
   };
-  boolean;
   const charLen = sizes[size];
   return (
     <Td>
@@ -168,15 +169,24 @@ const AppServiceByOrgRow = ({
         ) : null}
 
         <Td variant="right">
-          <div className="h-[40px] flex items-center">
+          <Group size="sm" variant="horizontal">
             <ButtonLink
+              className="w-15"
+              size="sm"
+              to={appServicePathMetricsUrl(app.id, service.id)}
+              variant="primary"
+            >
+              Metrics
+            </ButtonLink>
+            <ButtonLink
+              className="w-15"
               size="sm"
               to={appServiceScalePathUrl(app.id, service.id)}
               variant="primary"
             >
               Scale
             </ButtonLink>
-          </div>
+          </Group>
         </Td>
       </Tr>
     </>
@@ -270,12 +280,6 @@ export function AppServicesByApp({
   };
   useQuery(fetchServicesByAppId({ id: app.id }));
   const paginated = usePaginate(services);
-  const environment = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: app.environmentId }),
-  );
-  const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: environment.stackId }),
-  );
 
   return (
     <Group>
