@@ -40,7 +40,7 @@ export const ActiveOperationNotice = ({
   resourceType: Extract<ResourceType, "app" | "database">;
 }) => {
   const operation = useSelector((s: AppState) =>
-    selectLatestOpByResourceId(s, { resourceId }),
+    selectLatestOpByResourceId(s, { resourceId, resourceType }),
   );
   const operationTypeAndStatusToDisplay: {
     [key in OperationType]?: OperationStatus[];
