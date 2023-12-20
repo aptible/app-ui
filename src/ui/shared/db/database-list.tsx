@@ -31,7 +31,7 @@ import { Button, ButtonCreate } from "../button";
 import { Group } from "../group";
 import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
-import { OpStatus } from "../op-status";
+import { OpStatus } from "../operation-status";
 import {
   ActionBar,
   DescBar,
@@ -90,7 +90,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
     selectServiceById(s, { id: database.serviceId }),
   );
   const disk = useSelector((s: AppState) =>
-    selectDiskById(s, { id: database.id }),
+    selectDiskById(s, { id: database.diskId }),
   );
   const currentContainerProfile = getContainerProfileFromType(
     service.instanceClass,

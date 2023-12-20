@@ -44,7 +44,7 @@ export function useTrialNotice() {
     return { hasTrialNoPayment: false, endDate: now, expiresIn: "" };
   }
 
-  const currentTrial = trials.data?._embedded.trials.find(isActive);
+  const currentTrial = trials.data?._embedded?.trials.find(isActive);
   const hasSource = stripeSources.data?._embedded.stripe_sources.some(
     (ss) => ss.deactivated_at === null,
   );

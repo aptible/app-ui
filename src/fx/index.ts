@@ -1,17 +1,17 @@
 export {
   call,
-  fetchRetry,
   parallel,
   requestMonitor,
   createApi,
   createPipe,
   race,
   fetcher,
-  sleep,
   Ok,
   Err,
   each,
   spawn,
+  mdw,
+  sleep,
 } from "starfx";
 import { sleep } from "starfx";
 export const delay = sleep;
@@ -56,7 +56,7 @@ export type {
   Next,
   CreateActionWithPayload,
   LoaderCtx,
-  PipeCtx,
+  ThunkCtx,
   FetchJson,
   Payload,
   Action,

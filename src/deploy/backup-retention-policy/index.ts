@@ -20,6 +20,7 @@ export interface BackupRpResponse {
   id: number;
   daily: number;
   monthly: number;
+  yearly: number;
   make_copy: boolean;
   keep_final: boolean;
   created_at: string;
@@ -37,6 +38,7 @@ export const defaultBackupRpResponse = (
     id: 0,
     daily: 0,
     monthly: 0,
+    yearly: 0,
     make_copy: false,
     keep_final: false,
     created_at: now,
@@ -56,6 +58,7 @@ const defaultBackupRp = (
     id: "",
     daily: 0,
     monthly: 0,
+    yearly: 0,
     makeCopy: false,
     keepFinal: false,
     environmentId: "",
@@ -71,6 +74,7 @@ const deserializeBackupRp = (
     id: `${bk.id}`,
     daily: bk.daily,
     monthly: bk.monthly,
+    yearly: bk.yearly,
     makeCopy: bk.make_copy,
     keepFinal: bk.keep_final,
     environmentId: extractIdFromLink(bk._links.account),
@@ -126,6 +130,7 @@ export const backupRpEntities = {
 export interface UpdateBackupRp {
   daily: number;
   monthly: number;
+  yearly: number;
   keepFinal: boolean;
   makeCopy: boolean;
   envId: string;
@@ -138,11 +143,12 @@ export const fetchBackupRp = api.get<{ envId: string }>(
 export const updateBackupRp = api.post<UpdateBackupRp>(
   "/accounts/:envId/backup_retention_policies",
   function* (ctx, next) {
-    const { daily, monthly, makeCopy, keepFinal, id } = ctx.payload;
+    const { daily, monthly, yearly, makeCopy, keepFinal, id } = ctx.payload;
     ctx.request = ctx.req({
       body: JSON.stringify({
         daily,
         monthly,
+        yearly,
         make_copy: makeCopy,
         keep_final: keepFinal,
       }),
@@ -154,6 +160,7 @@ export const updateBackupRp = api.post<UpdateBackupRp>(
       return;
     }
 
+    ctx.loader = { message: "Successfully updated backup retention policy!" };
     // delete old BRP since we are creating new ones
     yield* put(removeBackupRp([id]));
   },

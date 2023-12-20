@@ -1,3 +1,4 @@
+import { defaultSamlConfigurationResponse } from "@app/auth";
 import { defaultBillingDetailResponse } from "@app/billing";
 import {
   defaultActivePlanResponse,
@@ -80,16 +81,25 @@ export const testElevatedToken = defaultTokenResponse({
 export const testEmail = "test@aptible.com";
 export const testUser = defaultUserResponse({
   id: testUserId,
+  name: "not-verified",
+  email: testEmail,
+  verified: false,
+});
+export const testUserNotVerified = defaultUserResponse({
+  id: testUserId,
+  name: "not-verified",
   email: testEmail,
   verified: false,
 });
 export const testUserVerified = defaultUserResponse({
   id: testUserId,
+  name: "verified",
   email: "test.verified@aptible.com",
   verified: true,
 });
 export const testUserVerifiedSecond = defaultUserResponse({
   id: testUserId,
+  name: "verified-2",
   email: "test.verified.2@aptible.com",
   verified: true,
 });
@@ -587,6 +597,18 @@ export const testVerifiedInvitation = defaultInvitationResponse({
   organization_name: testOrg.name,
   inviter_name: "test.owner@aptible.com",
   role_name: testRole.name,
+  _links: {
+    organization: defaultHalHref(
+      `${testEnv.authUrl}/organizations/${testOrg.id}`,
+    ),
+  },
+});
+
+export const testSaml = defaultSamlConfigurationResponse({
+  id: `${createId()}`,
+  entity_id: "fake-entity-id",
+  sign_in_url: "http://fake.url",
+  name_format: "fake-name-format",
   _links: {
     organization: defaultHalHref(
       `${testEnv.authUrl}/organizations/${testOrg.id}`,

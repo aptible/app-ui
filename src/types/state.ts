@@ -14,6 +14,7 @@ import type {
   DeployDisk,
   DeployEndpoint,
   DeployEnvironment,
+  DeployEnvironmentStats,
   DeployImage,
   DeployLogDrain,
   DeployMetricDrain,
@@ -145,35 +146,6 @@ export interface DeployAppConfig {
   appId: string;
 }
 
-export interface DeployState {
-  apps: MapEntity<DeployApp>;
-  appConfigs: MapEntity<DeployAppConfig>;
-  certificates: MapEntity<DeployCertificate>;
-  endpoints: MapEntity<DeployEndpoint>;
-  environments: MapEntity<DeployEnvironment>;
-  serviceDefinitions: MapEntity<DeployServiceDefinition>;
-  stacks: MapEntity<DeployStack>;
-  disks: MapEntity<DeployDisk>;
-  databases: MapEntity<DeployDatabase>;
-  databaseCredentials: MapEntity<DeployDatabaseCredential>;
-  databaseImages: MapEntity<DeployDatabaseImage>;
-  services: MapEntity<DeployService>;
-  logDrains: MapEntity<DeployLogDrain>;
-  metricDrains: MapEntity<DeployMetricDrain>;
-  operations: MapEntity<DeployOperation>;
-  activePlans: MapEntity<DeployActivePlan>;
-  plans: MapEntity<DeployPlan>;
-  permissions: MapEntity<Permission>;
-  releases: MapEntity<DeployRelease>;
-  containers: MapEntity<DeployContainer>;
-  vpc_peers: MapEntity<DeployVpcPeer>;
-  vpn_tunnels: MapEntity<DeployVpnTunnel>;
-  backups: MapEntity<DeployBackup>;
-  backupRps: MapEntity<DeployBackupRetentionPolicy>;
-  activityReports: MapEntity<DeployActivityReport>;
-  images: MapEntity<DeployImage>;
-}
-
 export type MetricHorizons = "1h" | "1d" | "1w";
 
 export interface ContainerMetrics {
@@ -207,7 +179,6 @@ export interface AppState extends QueryState {
   data: MapEntity<any>;
   theme: Theme;
   nav: Nav;
-  deploy: DeployState;
   modal: ModalState;
   roles: MapEntity<Role>;
   currentUserRoles: string[];
@@ -215,10 +186,44 @@ export interface AppState extends QueryState {
   resourceStats: MapEntity<ResourceStats>;
   containerMetrics: MapEntity<ContainerMetrics>;
   billingDetail: BillingDetail;
+  apps: MapEntity<DeployApp>;
+  appConfigs: MapEntity<DeployAppConfig>;
+  certificates: MapEntity<DeployCertificate>;
+  endpoints: MapEntity<DeployEndpoint>;
+  environments: MapEntity<DeployEnvironment>;
+  environmentStats: MapEntity<DeployEnvironmentStats>;
+  serviceDefinitions: MapEntity<DeployServiceDefinition>;
+  stacks: MapEntity<DeployStack>;
+  disks: MapEntity<DeployDisk>;
+  databases: MapEntity<DeployDatabase>;
+  databaseCredentials: MapEntity<DeployDatabaseCredential>;
+  databaseImages: MapEntity<DeployDatabaseImage>;
+  services: MapEntity<DeployService>;
+  logDrains: MapEntity<DeployLogDrain>;
+  metricDrains: MapEntity<DeployMetricDrain>;
+  operations: MapEntity<DeployOperation>;
+  activePlans: MapEntity<DeployActivePlan>;
+  plans: MapEntity<DeployPlan>;
+  permissions: MapEntity<Permission>;
+  releases: MapEntity<DeployRelease>;
+  containers: MapEntity<DeployContainer>;
+  vpcPeers: MapEntity<DeployVpcPeer>;
+  vpnTunnels: MapEntity<DeployVpnTunnel>;
+  backups: MapEntity<DeployBackup>;
+  backupRps: MapEntity<DeployBackupRetentionPolicy>;
+  activityReports: MapEntity<DeployActivityReport>;
+  images: MapEntity<DeployImage>;
 }
 
 export interface DeployActivityRow extends DeployOperation {
   envHandle: string;
   resourceHandle: string;
+  url?: string;
+}
+
+export interface DeployServiceRow extends DeployService {
+  envHandle: string;
+  resourceHandle: string;
+  cost: number;
   url?: string;
 }

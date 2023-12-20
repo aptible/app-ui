@@ -1,5 +1,6 @@
 import { prettyEnglishDateWithTime } from "@app/date";
 import {
+  ResourceLookup,
   cancelAppOpsPoll,
   cancelDatabaseOpsPoll,
   cancelEndpointOpsPoll,
@@ -20,10 +21,16 @@ import {
   selectActivityForTableSearch,
   selectAppById,
   selectDatabaseById,
+  selectEndpointById,
+  selectServiceById,
   selectServicesByAppId,
 } from "@app/deploy";
 import { useLoader, useQuery } from "@app/fx";
-import { operationDetailUrl } from "@app/routes";
+import {
+  appDetailUrl,
+  databaseDetailUrl,
+  operationDetailUrl,
+} from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { AppState, DeployActivityRow, ResourceType } from "@app/types";
 import { useMemo } from "react";
@@ -35,7 +42,7 @@ import { Button } from "./button";
 import { Group } from "./group";
 import { InputSearch } from "./input";
 import { LoadingSpinner } from "./loading";
-import { OpStatus } from "./op-status";
+import { OpStatus } from "./operation-status";
 import {
   DescBar,
   FilterBar,
@@ -124,6 +131,52 @@ const OpResourceCell = ({ op }: OpCellProps) => {
   );
 };
 
+const OpServiceCell = ({ serviceId }: { serviceId: string }) => {
+  const service = useSelector((s: AppState) =>
+    selectServiceById(s, { id: serviceId }),
+  );
+  const app = useSelector((s: AppState) =>
+    selectAppById(s, { id: service.appId }),
+  );
+  const db = useSelector((s: AppState) =>
+    selectDatabaseById(s, { id: service.databaseId }),
+  );
+
+  return (
+    <Td>
+      <Link
+        className={tokens.type["table link"]}
+        to={
+          service.appId
+            ? appDetailUrl(service.appId)
+            : databaseDetailUrl(service.databaseId)
+        }
+      >
+        {service.appId ? app.handle : db.handle}
+      </Link>
+    </Td>
+  );
+};
+
+export const OpEndpointCell = ({ enpId }: { enpId: string }) => {
+  const enp = useSelector((s: AppState) =>
+    selectEndpointById(s, { id: enpId }),
+  );
+  return <OpServiceCell serviceId={enp.serviceId} />;
+};
+
+const OpParentResourceCell = ({ op }: OpCellProps) => {
+  if (op.resourceType === "service") {
+    return <OpServiceCell serviceId={op.resourceId} />;
+  }
+
+  if (op.resourceType === "vhost") {
+    return <OpEndpointCell enpId={op.resourceId} />;
+  }
+
+  return <Td> </Td>;
+};
+
 const OpActionsCell = ({ op }: OpCellProps) => {
   return (
     <Td>
@@ -162,6 +215,7 @@ const OpListRow = ({ op }: OpCellProps) => {
       <OpResourceCell op={op} />
       <OpStatusCell op={op} />
       <OpTypeCell op={op} />
+      <OpParentResourceCell op={op} />
       <EnvStackCell environmentId={op.environmentId} />
       <OpUserCell op={op} />
       <OpLastUpdatedCell op={op} />
@@ -227,6 +281,7 @@ function ActivityTable({
           <Th>Resource</Th>
           <Th>Status</Th>
           <Th>Type</Th>
+          <Th>Related To</Th>
           <Th>Environment</Th>
           <Th>User</Th>
           <Th>Last Updated</Th>
@@ -234,7 +289,7 @@ function ActivityTable({
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={8} /> : null}
           {paginated.data.map((op) => (
             <OpListRow op={op} key={op.id} />
           ))}
@@ -334,12 +389,20 @@ export function ActivityByApp({ appId }: { appId: string }) {
   const services = useSelector((s: AppState) =>
     selectServicesByAppId(s, { appId }),
   );
-  const serviceIds = services.map((service) => service.id);
-  const resourceIds = [appId, ...serviceIds];
+  const serviceResources = services.map((service) => {
+    return {
+      resourceId: service.id,
+      resourceType: "service" as const,
+    };
+  });
+  const resources: ResourceLookup[] = useMemo(
+    () => [{ resourceId: appId, resourceType: "app" }, ...serviceResources],
+    [appId, ...services.map((s) => s.id)],
+  );
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds,
+      resources,
     }),
   );
 
@@ -373,14 +436,18 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value }, { replace: true });
 
-  const resourceIds = useMemo(
-    () => [dbId, db.serviceId].filter(Boolean),
+  const resources: ResourceLookup[] = useMemo(
+    () =>
+      [
+        { resourceId: dbId, resourceType: "database" as const },
+        { resourceId: db.serviceId, resourceType: "service" as const },
+      ].filter(Boolean),
     [dbId, db.serviceId],
   );
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds,
+      resources,
     }),
   );
 
@@ -410,11 +477,14 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value }, { replace: true });
 
-  const resourceIds = useMemo(() => [enpId], [enpId]);
+  const resources: ResourceLookup[] = useMemo(
+    () => [{ resourceId: enpId, resourceType: "vhost" as const }],
+    [enpId],
+  );
   const ops = useSelector((s: AppState) =>
     selectActivityForTableSearch(s, {
       search,
-      resourceIds,
+      resources,
     }),
   );
 

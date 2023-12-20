@@ -161,7 +161,7 @@ describe("Selecting an Organization", () => {
       await screen.findAllByText(/Log In/);
       expect(screen.queryAllByText(/Log In/)[0]).toBeInTheDocument();
       // it should wipe the store
-      expect(store.getState().deploy).toEqual({
+      expect(store.getState()).toMatchObject({
         activePlans: {},
         activityReports: {},
         appConfigs: {},
@@ -186,8 +186,8 @@ describe("Selecting an Organization", () => {
         serviceDefinitions: {},
         services: {},
         stacks: {},
-        vpc_peers: {},
-        vpn_tunnels: {},
+        vpcPeers: {},
+        vpnTunnels: {},
       });
     });
   });

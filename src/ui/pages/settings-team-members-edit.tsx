@@ -2,6 +2,7 @@ import { fetchUserRoles, removeUserFromOrg } from "@app/auth";
 import { updateUserMemberships } from "@app/auth/membership";
 import { selectIsAccountOwner, selectRolesEditable } from "@app/deploy";
 import { useCache, useLoader, useLoaderSuccess } from "@app/fx";
+import { resetOtp } from "@app/mfa";
 import { selectOrganizationSelected } from "@app/organizations";
 import { RoleResponse } from "@app/roles";
 import { teamMembersUrl } from "@app/routes";
@@ -89,6 +90,11 @@ export function TeamMembersEditPage() {
   useLoaderSuccess(rmLoader, () => {
     navigate(teamMembersUrl());
   });
+  const canResetOtp = isAccountOwner && user.otpEnabled;
+  const otpLoader = useLoader(resetOtp);
+  const onResetOtp = () => {
+    dispatch(resetOtp({ userId: user.id }));
+  };
 
   return (
     <Group>
@@ -133,6 +139,34 @@ export function TeamMembersEditPage() {
         </form>
       </Box>
 
+      {canResetOtp ? (
+        <Box>
+          <Group>
+            <BannerMessages {...otpLoader} />
+
+            <h3 className={tokens.type.h3}>Reset 2FA</h3>
+
+            <div>
+              Clicking reset will send {user.name} an email with a link through
+              which they can complete the reset.
+              {user.name}'s 2FA will not be reset until they click the link in
+              the email and confirm the reset.
+            </div>
+
+            <div>
+              <Button
+                variant="delete"
+                onClick={onResetOtp}
+                requireConfirm
+                isLoading={otpLoader.isLoading}
+              >
+                Reset 2FA
+              </Button>
+            </div>
+          </Group>
+        </Box>
+      ) : null}
+
       {canRemoveUser ? (
         <Box>
           <Group>
@@ -143,7 +177,12 @@ export function TeamMembersEditPage() {
             </h3>
 
             <div>
-              <Button variant="delete" onClick={onRemoveFromOrg} requireConfirm>
+              <Button
+                variant="delete"
+                onClick={onRemoveFromOrg}
+                requireConfirm
+                isLoading={rmLoader.isLoading}
+              >
                 Remove from {org.name}
               </Button>
             </div>

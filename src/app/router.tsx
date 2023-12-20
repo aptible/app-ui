@@ -1,5 +1,6 @@
 import * as routes from "@app/routes";
 import {
+  AccountOwnerRequired,
   ActivityPage,
   AddSecurityKeyPage,
   AllRequired,
@@ -17,6 +18,7 @@ import {
   AppDetailLayout,
   AppDetailPage,
   AppDetailServiceMetricsPage,
+  AppDetailServicePage,
   AppDetailServiceScalePage,
   AppDetailServicesPage,
   AppSettingsPage,
@@ -87,12 +89,15 @@ import {
   OpDetailPage,
   OrgPickerPage,
   OtpRecoveryCodesPage,
+  OtpResetVerifyPage,
   OtpSetupPage,
   PlansPage,
   ReactRouterErrorElement,
   SSHSettingsPage,
   SearchPage,
   SecuritySettingsPage,
+  ServiceDetailLayout,
+  ServicesPage,
   SettingsLayout,
   SettingsPage,
   SignupPage,
@@ -122,6 +127,7 @@ import {
   VerifyEmailPage,
   VerifyEmailRequired,
 } from "@app/ui";
+import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
@@ -224,6 +230,30 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
+        path: routes.APP_SERVICE_PATH,
+        element: <ServiceDetailLayout />,
+        children: [
+          {
+            index: true,
+            element: <AppDetailServicePage />,
+          },
+          {
+            path: routes.APP_SERVICE_METRICS_PATH,
+            element: <AppDetailServiceMetricsPage />,
+          },
+          {
+            path: routes.APP_SERVICE_SCALE_PATH,
+            element: <AppDetailServiceScalePage />,
+          },
+        ],
+      },
+
+      {
+        path: routes.SERVICES_PATH,
+        element: <ServicesPage />,
+      },
+
+      {
         path: routes.APPS_PATH,
         children: [
           {
@@ -238,19 +268,6 @@ export const appRoutes: RouteObject[] = [
               {
                 index: true,
                 element: <AppDetailPage />,
-              },
-              {
-                path: routes.APP_SERVICE_PATH,
-                children: [
-                  {
-                    path: routes.APP_SERVICE_METRICS_PATH,
-                    element: <AppDetailServiceMetricsPage />,
-                  },
-                  {
-                    path: routes.APP_SERVICE_SCALE_PATH,
-                    element: <AppDetailServiceScalePage />,
-                  },
-                ],
               },
               {
                 path: routes.APP_SERVICES_PATH,
@@ -463,6 +480,10 @@ export const appRoutes: RouteObject[] = [
                 path: routes.ENVIRONMENT_SETTINGS_PATH,
                 element: <EnvironmentSettingsPage />,
               },
+              {
+                path: routes.ENVIRONMENT_ENDPOINTS_PATH,
+                element: <EnvironmentEndpointsPage />,
+              },
             ],
           },
         ],
@@ -585,6 +606,11 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.OTP_RESET_VERIFY_PATH,
+    element: <OtpResetVerifyPage />,
+  },
+
+  {
     path: routes.VERIFY_EMAIL_REQUEST_PATH,
     element: (
       <AuthRequired>
@@ -629,7 +655,9 @@ export const appRoutes: RouteObject[] = [
     path: routes.SETTINGS_PATH,
     element: (
       <AuthRequired>
-        <SettingsLayout />
+        <VerifyEmailRequired>
+          <SettingsLayout />
+        </VerifyEmailRequired>
       </AuthRequired>
     ),
     children: [
@@ -649,9 +677,11 @@ export const appRoutes: RouteObject[] = [
     path: routes.SETTINGS_PATH,
     element: (
       <AuthRequired>
-        <ElevateRequired>
-          <SettingsLayout />
-        </ElevateRequired>
+        <VerifyEmailRequired>
+          <ElevateRequired>
+            <SettingsLayout />
+          </ElevateRequired>
+        </VerifyEmailRequired>
       </AuthRequired>
     ),
     children: [
@@ -686,95 +716,66 @@ export const appRoutes: RouteObject[] = [
     path: routes.TEAM_PATH,
     element: (
       <AuthRequired>
-        <SettingsLayout>
-          <TeamPage />
-        </SettingsLayout>
+        <VerifyEmailRequired>
+          <SettingsLayout />
+        </VerifyEmailRequired>
       </AuthRequired>
     ),
-  },
+    children: [
+      {
+        index: true,
+        element: <TeamPage />,
+      },
 
-  {
-    path: routes.TEAM_MEMBERS_PATH,
-    element: (
-      <AuthRequired>
-        <SettingsLayout>
-          <TeamMembersPage />
-        </SettingsLayout>
-      </AuthRequired>
-    ),
-  },
+      {
+        path: routes.TEAM_MEMBERS_PATH,
+        element: <TeamMembersPage />,
+      },
 
-  {
-    path: routes.TEAM_MEMBERS_EDIT_PATH,
-    element: (
-      <AuthRequired>
-        <SettingsLayout>
-          <TeamMembersEditPage />
-        </SettingsLayout>
-      </AuthRequired>
-    ),
-  },
+      {
+        path: routes.TEAM_MEMBERS_EDIT_PATH,
+        element: <TeamMembersEditPage />,
+      },
 
-  {
-    path: routes.TEAM_INVITE_PATH,
-    element: (
-      <AuthRequired>
-        <SettingsLayout>
-          <TeamInvitePage />
-        </SettingsLayout>
-      </AuthRequired>
-    ),
+      {
+        path: routes.TEAM_INVITE_PATH,
+        element: <TeamInvitePage />,
+      },
+      {
+        path: routes.TEAM_ROLES_PATH,
+        element: <TeamRolesPage />,
+      },
+
+      {
+        path: routes.TEAM_PENDING_INVITES_PATH,
+        element: <TeamPendingInvitesPage />,
+      },
+
+      {
+        path: routes.TEAM_SSO_PATH,
+        element: (
+          <AccountOwnerRequired>
+            <TeamSsoPage />
+          </AccountOwnerRequired>
+        ),
+      },
+
+      {
+        path: routes.TEAM_CONTACTS_PATH,
+        element: (
+          <AccountOwnerRequired>
+            <TeamContactsPage />
+          </AccountOwnerRequired>
+        ),
+      },
+    ],
   },
 
   {
     path: routes.TEAM_ACCEPT_INVITE_PATH,
     element: (
-      <AuthRequired>
+      <AuthRequired redirectTo={routes.signupUrl()}>
         <TeamAcceptInvitePage />
-      </AuthRequired>
-    ),
-  },
-
-  {
-    path: routes.TEAM_ROLES_PATH,
-    element: (
-      <AuthRequired>
-        <SettingsLayout>
-          <TeamRolesPage />
-        </SettingsLayout>
-      </AuthRequired>
-    ),
-  },
-
-  {
-    path: routes.TEAM_PENDING_INVITES_PATH,
-    element: (
-      <AuthRequired>
-        <SettingsLayout>
-          <TeamPendingInvitesPage />
-        </SettingsLayout>
-      </AuthRequired>
-    ),
-  },
-
-  {
-    path: routes.TEAM_SSO_PATH,
-    element: (
-      <AuthRequired>
-        <SettingsLayout>
-          <TeamSsoPage />
-        </SettingsLayout>
-      </AuthRequired>
-    ),
-  },
-
-  {
-    path: routes.TEAM_CONTACTS_PATH,
-    element: (
-      <AuthRequired>
-        <SettingsLayout>
-          <TeamContactsPage />
-        </SettingsLayout>
       </AuthRequired>
     ),
   },

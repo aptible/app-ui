@@ -1,8 +1,10 @@
 import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
 import {
   call,
+  parallel,
   poll,
   put,
+  select,
   setLoaderError,
   setLoaderStart,
   setLoaderSuccess,
@@ -14,40 +16,39 @@ import {
   createTable,
   mustSelectEntity,
 } from "@app/slice-helpers";
-import type {
-  AppState,
-  DeployService,
-  InstanceClass,
-  LinkResponse,
+import {
+  type AppState,
+  type DeployService,
+  DeployServiceResponse,
+  DeployServiceRow,
+  type InstanceClass,
+  type LinkResponse,
+  excludesFalse,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
+import {
+  cancelAppOpsPoll,
+  fetchAppOperations,
+  findAppById,
+  selectApps,
+} from "../app";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
+import {
+  cancelDatabaseOpsPoll,
+  fetchDatabaseOperations,
+  selectDatabaseById,
+} from "../database";
+import {
+  findEnvById,
+  hasDeployEnvironment,
+  selectEnvironmentsByOrg,
+  selectEnvironmentsByOrgAsList,
+} from "../environment";
 import { DeployOperationResponse } from "../operation";
 import { selectDeploy } from "../slice";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
-
-export interface DeployServiceResponse {
-  id: number;
-  handle: string;
-  created_at: string;
-  updated_at: string;
-  docker_repo: string;
-  docker_ref: string;
-  process_type: string;
-  command: string;
-  container_count: number | null;
-  container_memory_limit_mb: number | null;
-  instance_class: InstanceClass;
-  _links: {
-    current_release: LinkResponse;
-    app?: LinkResponse;
-    database?: LinkResponse;
-    account: LinkResponse;
-  };
-  _type: "service";
-}
 
 export const defaultServiceResponse = (
   s: Partial<DeployServiceResponse> = {},
@@ -95,7 +96,7 @@ export const deserializeDeployService = (
     dockerRef: payload.docker_ref,
     processType: payload.process_type,
     command: payload.command || "",
-    containerCount: payload.container_count || 1,
+    containerCount: payload.container_count ?? 0,
     containerMemoryLimitMb: payload.container_memory_limit_mb || 512,
     currentReleaseId: extractIdFromLink(links.current_release),
     instanceClass: payload.instance_class || DEFAULT_INSTANCE_CLASS,
@@ -182,14 +183,6 @@ export const selectServicesAsList = createSelector(
   (services) => services.sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
-export const selectServicesByAppId = createSelector(
-  selectServicesAsList,
-  (_: AppState, p: { appId: string }) => p.appId,
-  (services, appId) => {
-    return services.filter((service) => service.appId === appId);
-  },
-);
-
 export const selectEnvToServicesMap = createSelector(
   selectServicesAsList,
   (services) => {
@@ -205,6 +198,137 @@ export const selectEnvToServicesMap = createSelector(
       envToServiceMap[service.environmentId]?.add(service.id);
     });
     return envToServiceMap;
+  },
+);
+
+export const selectServicesByOrgId = createSelector(
+  selectEnvToServicesMap,
+  selectEnvironmentsByOrgAsList,
+  selectServices,
+  (envToServicesMap, envs, servicesMap) => {
+    const servicesOrg = new Set<DeployService>();
+    envs.forEach((env) => {
+      const servs = envToServicesMap[env.id];
+      if (!servs) return;
+      [...servs]
+        .map((id) => servicesMap[id])
+        .filter(excludesFalse)
+        .forEach((service) => {
+          servicesOrg.add(service);
+        });
+    });
+    return [...servicesOrg];
+  },
+);
+
+export const selectServicesForTable = createSelector(
+  selectEnvironmentsByOrg,
+  selectApps,
+  selectServicesByOrgId,
+  (envs, apps, services) =>
+    services
+      // making sure we have a valid environment associated with it
+      .filter((service) => {
+        const env = findEnvById(envs, { id: service.environmentId });
+        return hasDeployEnvironment(env);
+      })
+      // exclude database services since customers only know of them as App Services.
+      .filter((service) => service.appId)
+      .map((service): DeployServiceRow => {
+        const env = findEnvById(envs, { id: service.environmentId });
+        let resourceHandle = "";
+        if (service.appId) {
+          const app = findAppById(apps, { id: service.appId });
+          resourceHandle = app.handle;
+        } else {
+          resourceHandle = "Unknown";
+        }
+
+        const metrics = calcServiceMetrics(service);
+        return {
+          ...service,
+          envHandle: env.handle,
+          resourceHandle,
+          cost: (metrics.estimatedCostInDollars * 1024) / 1000,
+        };
+      }),
+);
+
+export const selectServicesByAppId = createSelector(
+  selectServicesForTable,
+  (_: AppState, p: { appId: string }) => p.appId,
+  (services, appId) => {
+    return services.filter((service) => service.appId === appId);
+  },
+);
+
+const createServiceSortFn = (
+  sortBy: keyof DeployServiceRow,
+  sortDir: "asc" | "desc",
+) => {
+  return (a: DeployServiceRow, b: DeployServiceRow) => {
+    if (sortBy === "cost") {
+      if (sortDir === "asc") {
+        return a.cost - b.cost;
+      } else {
+        return b.cost - a.cost;
+      }
+    }
+
+    if (sortBy === "resourceHandle") {
+      if (sortDir === "asc") {
+        return a.resourceHandle.localeCompare(b.resourceHandle);
+      } else {
+        return b.resourceHandle.localeCompare(a.resourceHandle);
+      }
+    }
+
+    if (sortBy === "id") {
+      if (sortDir === "asc") {
+        return a.id.localeCompare(b.id, undefined, { numeric: true });
+      } else {
+        return b.id.localeCompare(a.id, undefined, { numeric: true });
+      }
+    }
+
+    if (sortDir === "asc") {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    } else {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  };
+};
+
+export const selectServicesForTableSearch = createSelector(
+  selectServicesForTable,
+  (_: AppState, p: { search: string }) => p.search,
+  (_: AppState, p: { sortBy: keyof DeployServiceRow }) => p.sortBy,
+  (_: AppState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (services, search, sortBy, sortDir) => {
+    const sortFn = createServiceSortFn(sortBy, sortDir);
+
+    if (search === "") {
+      return [...services].sort(sortFn);
+    }
+
+    const results = services.filter((service) => {
+      const envHandle = service.envHandle.toLocaleLowerCase();
+      const resourceHandle = service.resourceHandle.toLocaleLowerCase();
+      const id = service.id.toLocaleLowerCase();
+      const cmd = serviceCommandText(service).toLocaleLowerCase();
+
+      const idMatch = id.includes(search);
+      const envMatch = envHandle !== "" && envHandle.includes(search);
+      const resourceHandleMatch =
+        resourceHandle !== "" && resourceHandle.includes(search);
+      const cmdMatch = cmd.includes(search);
+
+      const searchMatch =
+        idMatch || envMatch || resourceHandleMatch || cmdMatch;
+      return searchMatch;
+    });
+
+    return results.sort(sortFn);
   },
 );
 
@@ -234,6 +358,14 @@ export const selectAppToServicesMap = createSelector(
     });
 
     return appToServiceMap;
+  },
+);
+
+export const selectAppByServiceId = createSelector(
+  selectServiceById,
+  selectApps,
+  (service, apps) => {
+    return findAppById(apps, { id: service.appId });
   },
 );
 
@@ -388,9 +520,12 @@ export const modifyServiceSizingPolicy =
       yield* next();
 
       if (updateCtx.json.ok) {
-        yield* put(setLoaderSuccess({ id: ctx.name }));
+        yield* put(
+          setLoaderSuccess({ id: ctx.name, message: "Policy changes saved" }),
+        );
       } else {
-        yield* put(setLoaderError({ id: ctx.name }));
+        const data = updateCtx.json.data as any;
+        yield* put(setLoaderError({ id: ctx.name, message: data.message }));
       }
     },
   );
@@ -444,3 +579,52 @@ export const scaleService = api.post<
     meta: { opId: `${opId}` },
   };
 });
+
+export const pollAppAndServiceOperations = thunks.create<{ id: string }>(
+  "app-service-op-poll",
+  { supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`) },
+  function* (ctx, next) {
+    yield* put(setLoaderStart({ id: ctx.key }));
+
+    const services = yield* select((s: AppState) =>
+      selectServicesByAppId(s, {
+        appId: ctx.payload.id,
+      }),
+    );
+    const serviceOps = services.map(
+      (service) => () =>
+        fetchServiceOperations.run(fetchServiceOperations({ id: service.id })),
+    );
+    const group = yield* parallel([
+      () => fetchAppOperations.run(fetchAppOperations(ctx.payload)),
+      ...serviceOps,
+    ]);
+    yield* group;
+
+    yield* next();
+    yield* put(setLoaderSuccess({ id: ctx.key }));
+  },
+);
+
+export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
+  "db-service-op-poll",
+  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
+  function* (ctx, next) {
+    yield* put(setLoaderStart({ id: ctx.key }));
+    const db = yield* select((s: AppState) =>
+      selectDatabaseById(s, ctx.payload),
+    );
+
+    const group = yield* parallel([
+      () => fetchDatabaseOperations.run(fetchDatabaseOperations(ctx.payload)),
+      () =>
+        fetchServiceOperations.run(
+          fetchServiceOperations({ id: db.serviceId }),
+        ),
+    ]);
+    yield* group;
+
+    yield* next();
+    yield* put(setLoaderSuccess({ id: ctx.key }));
+  },
+);

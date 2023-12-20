@@ -1,10 +1,10 @@
+import { defaultSamlConfigurationResponse } from "@app/auth";
 import {
   DeployAppResponse,
   DeployDatabaseResponse,
   DeployEndpointResponse,
   DeployEnvironmentResponse,
   DeployMetricDrainResponse,
-  DeployServiceResponse,
   DeployStackResponse,
   defaultCertificateResponse,
   defaultDatabaseResponse,
@@ -15,6 +15,7 @@ import {
 import { defaultHalHref } from "@app/hal";
 import { RoleResponse } from "@app/roles";
 import { STATUSPAGE_URL } from "@app/system-status";
+import { DeployServiceResponse } from "@app/types";
 import { UserResponse } from "@app/users";
 import { rest } from "msw";
 import {
@@ -108,6 +109,79 @@ const authHandlers = [
   rest.get(`${testEnv.authUrl}/invitations/:id`, (_, res, ctx) => {
     return res(ctx.json(testVerifiedInvitation));
   }),
+  rest.get(`${testEnv.authUrl}/saml_configurations`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { saml_configurations: [] } }));
+  }),
+  rest.get(
+    `${testEnv.authUrl}/organizations/:id/whitelist_memberships`,
+    (_, res, ctx) => {
+      return res(ctx.json({ _embedded: { whitelist_memberships: [] } }));
+    },
+  ),
+  rest.post(
+    `${testEnv.authUrl}/organizations/:id/whitelist_memberships`,
+    (_, res, ctx) => {
+      return res(ctx.json({}));
+    },
+  ),
+  rest.delete(
+    `${testEnv.authUrl}/whitelist_memberships/:id`,
+    async (_, res, ctx) => {
+      return res(ctx.status(204));
+    },
+  ),
+  rest.delete(
+    `${testEnv.authUrl}/saml_configurations/:id`,
+    async (_, res, ctx) => {
+      return res(ctx.status(204));
+    },
+  ),
+  rest.patch(
+    `${testEnv.authUrl}/saml_configurations/:id`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json(
+          defaultSamlConfigurationResponse({
+            id: `${createId()}`,
+            _links: {
+              organization: defaultHalHref(
+                `${testEnv.authUrl}/organizations/${testOrg.id}`,
+              ),
+            },
+          }),
+        ),
+      );
+    },
+  ),
+  rest.post(
+    `${testEnv.authUrl}/organizations/:id/saml_configurations`,
+    async (req, res, ctx) => {
+      const orgId = req.params.id;
+      return res(
+        ctx.json(
+          defaultSamlConfigurationResponse({
+            id: `${createId()}`,
+            _links: {
+              organization: defaultHalHref(
+                `${testEnv.authUrl}/organizations/${orgId}`,
+              ),
+            },
+          }),
+        ),
+      );
+    },
+  ),
+  rest.get(`${testEnv.authUrl}/users/:id/u2f_devices`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { u2f_devices: [] } }));
+  }),
+  rest.get(
+    `${testEnv.authUrl}/users/:id/email_verification_challenges`,
+    (_, res, ctx) => {
+      return res(
+        ctx.json({ _embedded: { email_verification_challenges: [] } }),
+      );
+    },
+  ),
 ];
 
 export const verifiedUserHandlers = (
@@ -121,7 +195,7 @@ export const verifiedUserHandlers = (
 ) => {
   return [
     rest.get(`${testEnv.authUrl}/organizations/:orgId/users`, (_, res, ctx) => {
-      return res(ctx.json({ _embedded: [user] }));
+      return res(ctx.json({ _embedded: { users: [user] } }));
     }),
     rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
       return res(ctx.json(user));

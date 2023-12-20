@@ -1,13 +1,5 @@
 import { api, cacheMinTimer, thunks } from "@app/api";
-import {
-  call,
-  parallel,
-  poll,
-  put,
-  select,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
+import { call, poll, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
@@ -19,6 +11,7 @@ import type {
   AppState,
   DeployApp,
   DeployOperation,
+  DeployServiceResponse,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
@@ -37,12 +30,6 @@ import {
   selectOperationsAsList,
   waitForOperation,
 } from "../operation";
-import {
-  DeployServiceResponse,
-  fetchServiceOperations,
-  selectServiceById,
-  selectServicesByAppId,
-} from "../service";
 import { selectDeploy } from "../slice";
 
 export * from "./utils";
@@ -266,14 +253,6 @@ export const selectAppsForTableSearch = createSelector(
   },
 );
 
-export const selectAppByServiceId = createSelector(
-  selectServiceById,
-  selectApps,
-  (service, apps) => {
-    return apps[service.appId] || initApp;
-  },
-);
-
 export const selectAppsByEnvOnboarding = createSelector(
   selectEnvironments,
   selectAppsByOrgAsList,
@@ -336,32 +315,6 @@ export const pollAppOperations = api.get<AppIdProp>(
   ["/apps/:id/operations", "poll"],
   {
     supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`),
-  },
-);
-
-export const pollAppAndServiceOperations = thunks.create<AppIdProp>(
-  "app-service-op-poll",
-  { supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`) },
-  function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
-
-    const services = yield* select((s: AppState) =>
-      selectServicesByAppId(s, {
-        appId: ctx.payload.id,
-      }),
-    );
-    const serviceOps = services.map(
-      (service) => () =>
-        fetchServiceOperations.run(fetchServiceOperations({ id: service.id })),
-    );
-    const group = yield* parallel([
-      () => fetchAppOperations.run(fetchAppOperations(ctx.payload)),
-      ...serviceOps,
-    ]);
-    yield* group;
-
-    yield* next();
-    yield* put(setLoaderSuccess({ id: ctx.key }));
   },
 );
 
@@ -519,7 +472,12 @@ export const updateApp = api.put<UpdateApp>("/apps/:id", function* (ctx, next) {
     handle,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
+
   yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
 
   ctx.loader = {
     message: "Saved changes successfully!",

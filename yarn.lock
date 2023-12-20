@@ -1923,7 +1923,7 @@ __metadata:
     redux: ^4.2.1
     redux-batched-actions: ^0.5.0
     redux-persist: ^6.0.0
-    starfx: ^0.0.34
+    starfx: ^0.2.2
     tailwindcss: ^3.3.3
     typescript: ^5.2.2
     vite: ^4.4.10
@@ -2254,10 +2254,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effection@npm:3.0.0-beta.2":
-  version: 3.0.0-beta.2
-  resolution: "effection@npm:3.0.0-beta.2"
-  checksum: 78f0d2dba62f864102b698e31a32a0aeddaaf4ca10cefc39c278d4243b532f9bb6855820517ca3663a5f2ed9d34ff021cdb5cf33cb678423b96ff819de174e57
+"effection@npm:3.0.0-beta.3":
+  version: 3.0.0-beta.3
+  resolution: "effection@npm:3.0.0-beta.3"
+  checksum: dc177799bbce5ee47f67e28b93c9cf4df55ced8520cfb38ad75f0e7ded6fb1333f8ebca91d04bc04218bc4d7d295781dea125a6f781d7cb3b5d6814f67ae97ee
   languageName: node
   linkType: hard
 
@@ -4814,11 +4814,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"starfx@npm:^0.0.34":
-  version: 0.0.34
-  resolution: "starfx@npm:0.0.34"
+"starfx@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "starfx@npm:0.2.2"
   dependencies:
-    effection: 3.0.0-beta.2
+    effection: 3.0.0-beta.3
     immer: ^10.0.2
     react-redux: ^8.0.5
     redux: ^4.2.1
@@ -4827,7 +4827,7 @@ __metadata:
     robodux: ^15.0.2
   peerDependencies:
     react: ^18.2.0
-  checksum: d5275f169f2740a211f1c4d4ba97d12b321f1db91cb718763c92c252e2b5363f32c56fe438a92e6a0d86bf0d29690643a731130c6bf6b9bf65f768c2549cc7ee
+  checksum: 17abbd7c5e48e7ddfe49d7093f28541f93e05e6154d6e5673f4ca6c86a572475853cb9964e09f070063a6eaeb26101f7c69a77a697b33601cb3614f43361ae45
   languageName: node
   linkType: hard
 

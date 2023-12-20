@@ -105,7 +105,7 @@ export const defaultDeployVpnTunnel = (
   };
 };
 
-export const DEPLOY_VPN_TUNNEL_NAME = "vpn_tunnels";
+export const DEPLOY_VPN_TUNNEL_NAME = "vpnTunnels";
 const slice = createTable<DeployVpnTunnel>({
   name: DEPLOY_VPN_TUNNEL_NAME,
 });

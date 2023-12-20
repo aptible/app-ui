@@ -20,7 +20,7 @@ import * as signal from "@app/signal";
 import * as theme from "@app/theme";
 import * as token from "@app/token";
 import * as users from "@app/users";
-import { Operator } from "starfx";
+import { Callable } from "starfx";
 
 const corePackages: any[] = [
   env,
@@ -61,7 +61,7 @@ export const reducers = corePackages.reduce((acc, pkg) => {
   return { ...acc, ...pkg.reducers };
 }, {});
 
-const initialSagas: { [key: string]: Operator<any> } = {
+const initialSagas: { [key: string]: Callable<any> } = {
   api: api.bootup,
   authApi: authApi.bootup,
   metricTunnelApi: metricTunnelApi.bootup,
@@ -69,7 +69,7 @@ const initialSagas: { [key: string]: Operator<any> } = {
   billingApi: billingApi.bootup,
 };
 
-export const sagas = corePackages.reduce<{ [key: string]: Operator<any> }>(
+export const sagas = corePackages.reduce<{ [key: string]: Callable<any> }>(
   (acc, pkg) => {
     if (!pkg.sagas) {
       return acc;

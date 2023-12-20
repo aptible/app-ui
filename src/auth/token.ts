@@ -134,14 +134,16 @@ export const exchangeToken = authApi.post<
   });
 
   yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
   // `exchangeToken` is used when a new user creates an org as well as when
   // a user impersonates another user.
   // Regardless, we want to reset the store first then save the token because
   // resetStore will delete the token stored inside redux.
   ctx.actions.push(resetStore(), setLoaderSuccess({ id: AUTH_LOADER_ID }));
-  if (ctx.json.ok) {
-    tunaEvent("exchanged-token", ctx.payload);
-  }
+  tunaEvent("exchanged-token", ctx.payload);
   saveToken(ctx);
   ctx.loader = { message: "Success" };
 });

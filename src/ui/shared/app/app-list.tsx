@@ -26,7 +26,7 @@ import { ButtonCreate } from "../button";
 import { Group } from "../group";
 import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
-import { OpStatus } from "../op-status";
+import { OpStatus } from "../operation-status";
 import {
   ActionBar,
   DescBar,
@@ -65,7 +65,7 @@ const AppPrimaryCell = ({ app }: AppCellProps) => {
 };
 
 const AppIdCell = ({ app }: AppCellProps) => {
-  return <Td variant="center">{app.id}</Td>;
+  return <Td>{app.id}</Td>;
 };
 
 const AppServicesCell = ({ app }: AppCellProps) => {
@@ -175,7 +175,7 @@ export const AppListByOrg = () => {
       <Table>
         <THead>
           <Th>Handle</Th>
-          <Th variant="center">ID</Th>
+          <Th>ID</Th>
           <Th>Environment</Th>
           <Th>Services</Th>
           <Th>Est. Monthly Cost</Th>
@@ -251,7 +251,7 @@ export const AppListByEnvironment = ({
       <Table>
         <THead>
           <Th>Handle</Th>
-          <Th variant="center">ID</Th>
+          <Th>ID</Th>
           <Th>Services</Th>
           <Th>Est. Monthly Cost</Th>
         </THead>
@@ -299,7 +299,7 @@ export const AppListByCertificate = ({
       <Table>
         <THead>
           <Th>Handle</Th>
-          <Th variant="center">ID</Th>
+          <Th>ID</Th>
           <Th>Environment</Th>
           <Th>Services</Th>
           <Th>Est. Monthly Cost</Th>

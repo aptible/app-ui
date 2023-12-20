@@ -4,14 +4,12 @@ import {
   Ok,
   call,
   createApi,
-  createPipe,
   dispatchActions,
-  fetcher,
+  mdw,
   parallel,
   put,
   race,
   reduxMdw,
-  requestMonitor,
   select,
   setLoaderError,
   setLoaderStart,
@@ -22,8 +20,8 @@ import type {
   CreateActionWithPayload,
   LoaderCtx,
   Next,
-  PipeCtx,
   Result,
+  ThunkCtx as BaseThunkCtx,
 } from "@app/fx";
 import { halEntityParser } from "@app/hal";
 import { selectSignal } from "@app/signal";
@@ -42,6 +40,14 @@ import type {
   MetricTunnelCtx,
 } from "@app/types";
 import * as Sentry from "@sentry/react";
+import { createThunks } from "starfx";
+
+export interface ThunkCtx<P = any, D = any>
+  extends BaseThunkCtx<P>,
+    LoaderCtx<P> {
+  actions: Action[];
+  json: D | null;
+}
 
 type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel";
 
@@ -52,7 +58,7 @@ export function* elevetatedMdw(ctx: AuthApiCtx, next: Next) {
   yield* next();
 }
 
-function* debugMdw(ctx: PipeCtx, next: Next) {
+function* debugMdw(ctx: ThunkCtx, next: Next) {
   log(`${ctx.name}`, ctx);
   yield* next();
 }
@@ -243,58 +249,53 @@ api.use(debugMdw);
 api.use(sentryErrorHandler);
 api.use(expiredToken);
 api.use(reduxMdw());
-api.use(requestMonitor());
+api.use(mdw.api());
 api.use(aborter);
 api.use(requestApi);
 api.use(halEntityParser);
 api.use(api.routes());
 api.use(tokenMdw);
-api.use(fetcher());
+api.use(mdw.fetch());
 
 export const authApi = createApi<AuthApiCtx>();
 authApi.use(debugMdw);
 authApi.use(sentryErrorHandler);
 authApi.use(expiredToken);
 authApi.use(reduxMdw());
-authApi.use(requestMonitor());
+authApi.use(mdw.api());
 authApi.use(aborter);
 authApi.use(halEntityParser);
 authApi.use(authApi.routes());
 authApi.use(requestAuth);
 authApi.use(tokenMdw);
 authApi.use(elevatedTokenMdw);
-authApi.use(fetcher());
+authApi.use(mdw.fetch());
 
 export const billingApi = createApi<DeployApiCtx>();
 billingApi.use(debugMdw);
 billingApi.use(sentryErrorHandler);
 billingApi.use(expiredToken);
 billingApi.use(reduxMdw());
-billingApi.use(requestMonitor());
+billingApi.use(mdw.api());
 billingApi.use(aborter);
 billingApi.use(halEntityParser);
 billingApi.use(billingApi.routes());
 billingApi.use(requestBilling);
 billingApi.use(tokenMdw);
-billingApi.use(fetcher());
+billingApi.use(mdw.fetch());
 
 export const metricTunnelApi = createApi<MetricTunnelCtx>();
 metricTunnelApi.use(debugMdw);
 metricTunnelApi.use(sentryErrorHandler);
 metricTunnelApi.use(expiredToken);
 metricTunnelApi.use(reduxMdw());
-metricTunnelApi.use(requestMonitor());
+metricTunnelApi.use(mdw.api());
 metricTunnelApi.use(aborter);
 metricTunnelApi.use(metricTunnelApi.routes());
 metricTunnelApi.use(requestMetricTunnel);
 metricTunnelApi.use(aborter);
 metricTunnelApi.use(tokenMdw);
-metricTunnelApi.use(fetcher());
-
-export interface ThunkCtx<P = any, D = any> extends PipeCtx<P>, LoaderCtx<P> {
-  actions: Action[];
-  json: D | null;
-}
+metricTunnelApi.use(mdw.fetch());
 
 export interface PaginateProps {
   page: number;
@@ -322,7 +323,7 @@ export function combinePages<
     );
 
     if (!firstPage.json.ok) {
-      const message = firstPage.json.data.message;
+      const message = firstPage.json.error.message;
       yield* put(setLoaderError({ id: ctx.key, message }));
       yield* next();
       return;
@@ -330,10 +331,10 @@ export function combinePages<
 
     results = [Ok(firstPage)];
 
-    if (firstPage.json.data.current_page) {
-      const cur = firstPage.json.data.current_page;
-      const total = firstPage.json.data.total_count || 0;
-      const per = firstPage.json.data.per_page || 0;
+    if (firstPage.json.value.current_page) {
+      const cur = firstPage.json.value.current_page;
+      const total = firstPage.json.value.total_count || 0;
+      const per = firstPage.json.value.per_page || 0;
       const lastPage = Math.min(max, Math.ceil(total / per));
       const fetchAll = [];
       for (let i = cur + 1; i <= lastPage; i += 1) {
@@ -359,7 +360,7 @@ export interface Retryable {
   attempts?: number;
 }
 
-export const thunks = createPipe<ThunkCtx>();
+export const thunks = createThunks<ThunkCtx>();
 thunks.use(debugMdw);
 thunks.use(sentryErrorHandler);
 thunks.use(function* (ctx, next) {

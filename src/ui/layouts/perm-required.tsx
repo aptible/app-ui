@@ -1,12 +1,28 @@
 import { fetchCurrentToken } from "@app/auth";
-import { selectUserHasPerms } from "@app/deploy";
+import { selectIsAccountOwner, selectUserHasPerms } from "@app/deploy";
 import { useLoader } from "@app/fx";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import { homeUrl } from "@app/routes";
 import { AppState, PermissionScope } from "@app/types";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { Loading } from "../shared";
+
+export const AccountOwnerRequired = ({
+  children,
+}: { children?: React.ReactNode }) => {
+  const orgId = useSelector(selectOrganizationSelectedId);
+  const isAccountOwner = useSelector((s: AppState) =>
+    selectIsAccountOwner(s, { orgId }),
+  );
+
+  if (!isAccountOwner) {
+    return <Navigate to={homeUrl()} />;
+  }
+
+  return children ? children : <Outlet />;
+};
 
 export const PermRequired = ({
   scope,

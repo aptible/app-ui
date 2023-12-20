@@ -15,10 +15,8 @@ const testService: DeployService = defaultDeployService({
 });
 
 const state: DeepPartial<AppState> = {
-  deploy: {
-    services: { [testService.id]: testService },
-    releases: {},
-  },
+  services: { [testService.id]: testService },
+  releases: {},
 };
 
 describe("selectReleasesByServiceAfterDate", () => {
@@ -47,7 +45,7 @@ describe("selectReleasesByServiceAfterDate", () => {
     it("should return 3 releases (all three before cutoff)", () => {
       const date = createdAtByHours({ hours: -6 });
       const actual = selectReleasesByServiceAfterDate(
-        { ...state, deploy: { ...state.deploy, releases } } as any,
+        { ...state, releases } as any,
         {
           serviceId: testServiceRails.id.toString(),
           date,
@@ -58,7 +56,7 @@ describe("selectReleasesByServiceAfterDate", () => {
     it("should return 3 releases (2 out of range of createdAt, but one is overlapping)", () => {
       const date = createdAtByHours({ hours: -4 });
       const actual = selectReleasesByServiceAfterDate(
-        { ...state, deploy: { ...state.deploy, releases } } as any,
+        { ...state, releases } as any,
         {
           serviceId: testServiceRails.id.toString(),
           date,
@@ -69,7 +67,7 @@ describe("selectReleasesByServiceAfterDate", () => {
     it("should return 2 releases (1 out of range of createdAt, but one is overlapping)", () => {
       const date = createdAtByHours({ hours: -3 });
       const actual = selectReleasesByServiceAfterDate(
-        { ...state, deploy: { ...state.deploy, releases } } as any,
+        { ...state, releases } as any,
         {
           serviceId: testServiceRails.id.toString(),
           date,
@@ -80,7 +78,7 @@ describe("selectReleasesByServiceAfterDate", () => {
     it("should return 1 release (only current)", () => {
       const date = createdAtByHours({ hours: 1 });
       const actual = selectReleasesByServiceAfterDate(
-        { ...state, deploy: { ...state.deploy, releases } } as any,
+        { ...state, releases } as any,
         {
           serviceId: testServiceRails.id.toString(),
           date,

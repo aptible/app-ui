@@ -139,7 +139,7 @@ const VerticalAutoscalingSection = ({
                   onKeyUp={() => setOpen(!advancedIsOpen)}
                 >
                   {advancedIsOpen ? <IconChevronDown /> : <IconChevronRight />}
-                  <p>{advancedIsOpen ? "Hide" : "Show"} Advanced settings</p>
+                  <p>{advancedIsOpen ? "Hide" : "Show"} Advanced Settings</p>
                 </div>
               </div>
             </div>
@@ -174,7 +174,7 @@ const VerticalAutoscalingSection = ({
                   <FormGroup
                     splitWidthInputs
                     description="The minimum memory that vertical autoscaling can scale this service to"
-                    label="Minimum memory"
+                    label="Minimum Memory (MB)"
                     htmlFor="minimum-memory"
                   >
                     <Input
@@ -195,7 +195,7 @@ const VerticalAutoscalingSection = ({
                   <FormGroup
                     splitWidthInputs
                     description="The maximum memory that vertical autoscaling can scale this service to"
-                    label="Maximum memory"
+                    label="Maximum Memory (MB)"
                     htmlFor="maximum-memory"
                   >
                     <Input

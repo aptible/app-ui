@@ -28,7 +28,7 @@ export const EnvironmentBackupsPage = () => {
         does not delete the original backup.
       </Banner>
 
-      <DatabaseBackupsList backups={backups} showDatabase />
+      <DatabaseBackupsList backups={backups} showDatabase showFinal />
     </Group>
   );
 };

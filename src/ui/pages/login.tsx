@@ -14,10 +14,11 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { useValidator } from "../hooks";
+import { useInvitation, useValidator } from "../hooks";
 import { HeroBgLayout } from "../layouts";
 import {
   AlreadyAuthenticatedBanner,
+  Banner,
   BannerMessages,
   Button,
   ButtonLink,
@@ -46,8 +47,13 @@ export const LoginPage = () => {
     CreateTokenPayload,
     typeof validators
   >(validators);
-
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  const { invitation } = useInvitation(redirectPath);
+
+  useEffect(() => {
+    if (invitation.email === "") return;
+    setEmail(invitation.email);
+  }, [invitation.email]);
 
   const data = {
     username: email,
@@ -104,6 +110,13 @@ export const LoginPage = () => {
         <div className="bg-white py-8 px-10 shadow rounded-lg border border-black-100">
           <form className="space-y-4" onSubmit={onSubmit}>
             <AlreadyAuthenticatedBanner />
+
+            {invitation.id ? (
+              <Banner variant="info">
+                <strong>{invitation.inviterName}</strong> invited you to join{" "}
+                <strong>{invitation.organizationName}</strong> on Aptible
+              </Banner>
+            ) : null}
 
             <FormGroup
               label="Email"

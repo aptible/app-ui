@@ -12,14 +12,13 @@ import {
 import {
   AppState,
   DeployEnvironment,
+  DeployEnvironmentStats,
   LinkResponse,
   MapEntity,
   OnboardingStatus,
   excludesFalse,
 } from "@app/types";
-
 import { PermissionResponse } from "../permission";
-import { selectDeploy } from "../slice";
 import { hasDeployStack, selectStackById } from "../stack";
 
 export interface DeployEnvironmentResponse {
@@ -93,18 +92,26 @@ export const deserializeDeployEnvironment = (
   updatedAt: payload.updated_at,
   type: payload.type,
   activated: payload.activated,
-  containerCount: payload.container_count,
-  domainCount: payload.domain_count,
-  totalDiskSize: payload.total_disk_size,
-  totalAppCount: payload.total_app_count,
-  appContainerCount: payload.app_container_count,
-  databaseContainerCount: payload.database_container_count,
-  totalDatabaseCount: payload.total_database_count,
   sweetnessStack: payload.sweetness_stack,
-  totalBackupSize: payload.total_backup_size,
   onboardingStatus: payload.onboarding_status,
   stackId: extractIdFromLink(payload._links.stack),
+  totalAppCount: payload.total_app_count,
+  totalDatabaseCount: payload.total_database_count,
 });
+
+export const deserializeDeployEnvironmentStats = (
+  env: DeployEnvironmentResponse,
+): DeployEnvironmentStats => {
+  return {
+    id: `${env.id}`,
+    containerCount: env.container_count,
+    domainCount: env.domain_count,
+    totalDiskSize: env.total_disk_size,
+    appContainerCount: env.app_container_count,
+    databaseContainerCount: env.database_container_count,
+    totalBackupSize: env.total_backup_size,
+  };
+};
 
 export const defaultDeployEnvironment = (
   e: Partial<DeployEnvironment> = {},
@@ -118,17 +125,26 @@ export const defaultDeployEnvironment = (
     updatedAt: now,
     type: "development",
     activated: true,
+    sweetnessStack: "",
+    stackId: "",
+    onboardingStatus: "unknown",
+    totalDatabaseCount: 0,
+    totalAppCount: 0,
+    ...e,
+  };
+};
+
+export const defaultDeployEnvironmentStats = (
+  e: Partial<DeployEnvironmentStats> = {},
+): DeployEnvironmentStats => {
+  return {
+    id: "",
     containerCount: 0,
     domainCount: 0,
     totalDiskSize: 0,
-    totalAppCount: 0,
-    totalDatabaseCount: 0,
     appContainerCount: 0,
     databaseContainerCount: 0,
-    sweetnessStack: "",
     totalBackupSize: 0,
-    stackId: "",
-    onboardingStatus: "unknown",
     ...e,
   };
 };
@@ -144,7 +160,7 @@ const {
   reset: resetEnvironments,
 } = slice.actions;
 const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_ENVIRONMENT_NAME],
+  (s: AppState) => s[DEPLOY_ENVIRONMENT_NAME],
 );
 const initEnv = defaultDeployEnvironment();
 const must = mustSelectEntity(initEnv);
@@ -153,6 +169,18 @@ export const selectEnvironmentByIds = selectors.selectByIds;
 export const { selectTable: selectEnvironments } = selectors;
 const selectEnvironmentsAsList = selectors.selectTableAsList;
 export const findEnvById = must(selectors.findById);
+
+export const DEPLOY_ENVIRONMENT_STATS_NAME = "environmentStats";
+const stats = createTable<DeployEnvironmentStats>({
+  name: DEPLOY_ENVIRONMENT_STATS_NAME,
+});
+const { add: addDeployEnvironmentStats } = stats.actions;
+const statSelectors = stats.getSelectors(
+  (s: AppState) => s[DEPLOY_ENVIRONMENT_STATS_NAME],
+);
+const initEnvStats = defaultDeployEnvironmentStats();
+const mustStats = mustSelectEntity(initEnvStats);
+export const selectEnvironmentStatsById = mustStats(statSelectors.selectById);
 
 export const selectEnvironmentsByOrg = createSelector(
   selectEnvironmentsAsList,
@@ -183,7 +211,7 @@ export const envToOption = (
 };
 
 export const hasDeployEnvironment = (a: DeployEnvironment) => a.id !== "";
-export const environmentReducers = createReducerMap(slice);
+export const environmentReducers = createReducerMap(slice, stats);
 export const selectEnvironmentByName = createSelector(
   selectEnvironmentsAsList,
   (_: AppState, p: { handle: string }) => p.handle,
@@ -192,7 +220,19 @@ export const selectEnvironmentByName = createSelector(
   },
 );
 
-export const fetchEnvironmentById = api.get<{ id: string }>("/accounts/:id");
+export const fetchEnvironmentById = api.get<
+  { id: string },
+  DeployEnvironmentResponse
+>("/accounts/:id", function* (ctx, next) {
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const stats = deserializeDeployEnvironmentStats(ctx.json.value);
+  ctx.actions.push(addDeployEnvironmentStats({ [stats.id]: stats }));
+});
 
 export const fetchEnvironments = api.get(
   "/accounts?per_page=5000&no_embed=true&metrics[]=app_count&metrics[]=database_count",
@@ -375,7 +415,7 @@ export const createDeployEnvironment = api.post<
   yield* next();
   if (!ctx.json.ok) return;
 
-  ctx.loader = { meta: { id: ctx.json.data.id } };
+  ctx.loader = { meta: { id: ctx.json.value.id } };
 });
 
 export const environmentEntities = {

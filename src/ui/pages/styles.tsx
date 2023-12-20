@@ -6,6 +6,7 @@ import {
   defaultDeployDatabase,
   defaultDeployEndpoint,
   defaultDeployEnvironment,
+  defaultDeployEnvironmentStats,
   defaultDeployOperation,
   defaultDeployService,
   defaultDeployStack,
@@ -68,6 +69,7 @@ import {
   IconXCircle,
   Input,
   InputSearch,
+  KeyValueGroup,
   LogViewerText,
   Pill,
   PreCode,
@@ -250,6 +252,26 @@ const Tables = () => (
     </Table>
   </div>
 );
+
+const Data = () => {
+  return (
+    <div className="pt-8 space-y-4">
+      <h1 id="data" className={tokens.type.h1}>
+        Data
+      </h1>
+
+      <div className="w-[300px]">
+        <KeyValueGroup
+          data={[
+            { key: "Key1", value: "Value1" },
+            { key: "Key2", value: "Value2" },
+            { key: "Key3", value: "Value3" },
+          ]}
+        />
+      </div>
+    </div>
+  );
+};
 
 const Forms = () => {
   const [search, setSearch] = useState("");
@@ -700,15 +722,20 @@ const DetailBoxes = () => {
   const env = defaultDeployEnvironment({
     id: "123",
     stackId: stack.id,
-    appContainerCount: 4,
-    databaseContainerCount: 10,
     totalAppCount: 4,
     totalDatabaseCount: 10,
-    totalBackupSize: 1024,
   });
   const ept = defaultDeployEndpoint({
     id: "333",
     virtualDomain: "https://something.great",
+  });
+  const stats = defaultDeployEnvironmentStats({
+    containerCount: 1,
+    domainCount: 2,
+    totalDiskSize: 3,
+    appContainerCount: 4,
+    databaseContainerCount: 5,
+    totalBackupSize: 6,
   });
 
   return (
@@ -721,8 +748,8 @@ const DetailBoxes = () => {
       <EnvHeader
         stack={stack}
         environment={env}
-        latestOperation={op}
         endpoints={[ept]}
+        stats={stats}
       />
       <AppHeader app={app} />
       <DatabaseHeader database={db} service={service} />
@@ -787,6 +814,7 @@ export const StylesPage = () => (
       <Buttons />
       <Banners />
       <Tables />
+      <Data />
       <Forms />
       <Logs />
       <Pills />

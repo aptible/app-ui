@@ -28,6 +28,12 @@ export const OTP_RECOVERY_CODES_PATH = "/settings/otp-recovery-codes";
 export const otpRecoveryCodesUrl = () => OTP_RECOVERY_CODES_PATH;
 export const ADD_SECURITY_KEY_PATH = "/settings/add-security-key";
 export const addSecurityKeyUrl = () => ADD_SECURITY_KEY_PATH;
+export const OTP_RESET_VERIFY_PATH =
+  "/otp-reset-verify/:challengeId/:verificationCode";
+export const otpResetVerifyUrl = (
+  challengeId: string,
+  verificationCode: string,
+) => `/otp-reset-verify/${challengeId}/${verificationCode}`;
 
 export const TEAM_PATH = `${SETTINGS_PATH}/team`;
 export const teamUrl = () => TEAM_PATH;
@@ -89,7 +95,7 @@ export const appDetailUrl = (id: string) => `/apps/${id}`;
 export const APP_SERVICES_PATH = `${APP_DETAIL_PATH}/services`;
 export const appServicesUrl = (id: string) => `${appDetailUrl(id)}/services`;
 export const APP_SERVICE_PATH = `${APP_DETAIL_PATH}/services/:serviceId`;
-export const appServicePathUrl = (appId: string, serviceId: string) =>
+export const appServiceUrl = (appId: string, serviceId: string) =>
   `${appDetailUrl(appId)}/services/${serviceId}`;
 export const APP_CONFIG_PATH = `${APP_DETAIL_PATH}/config`;
 export const appConfigUrl = (appId: string) => `${appDetailUrl(appId)}/config`;
@@ -140,6 +146,9 @@ export const databaseCredentialsUrl = (id: string) =>
 export const DATABASE_ENDPOINT_CREATE_PATH = `${DATABASE_DETAIL_PATH}/endpoints/create`;
 export const databaseEndpointCreateUrl = (id: string) =>
   `${databaseDetailUrl(id)}/endpoints/create`;
+
+export const SERVICES_PATH = "/services";
+export const servicesUrl = () => SERVICES_PATH;
 
 export const BACKUP_RESTORE_PATH = "/backups/:id/restore";
 export const backupRestoreUrl = (id: string) => `/backups/${id}/restore`;
@@ -199,6 +208,9 @@ export const ENVIRONMENT_CREATE_CERT_PATH =
   "/environments/:id/certificates/create";
 export const environmentCreateCertUrl = (id: string) =>
   `/environments/${id}/certificates/create`;
+export const ENVIRONMENT_ENDPOINTS_PATH = "/environments/:id/endpoints";
+export const environmentEndpointsUrl = (id: string) =>
+  `/environments/${id}/endpoints`;
 
 export const environmentCreateAppUrl = (id: string) =>
   `/create/app?environment_id=${id}`;

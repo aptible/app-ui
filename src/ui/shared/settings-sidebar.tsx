@@ -9,6 +9,7 @@ import {
   teamContactsUrl,
   teamMembersUrl,
   teamPendingInvitesUrl,
+  teamSsoUrl,
 } from "@app/routes";
 import { AppState } from "@app/types";
 import cn from "classnames";
@@ -81,13 +82,8 @@ export function SettingsSidebar() {
         </NavLink>
 
         {isAccountOwner ? (
-          <NavLink
-            className={navLink}
-            to={url(`/organizations/${orgId}/single-sign-on`)}
-            target="_blank"
-          >
+          <NavLink className={navLink} to={teamSsoUrl()}>
             Single Sign-On
-            <IconExternalLink variant="sm" className="ml-1 opacity-60" />
           </NavLink>
         ) : (
           <span className={navLink({ isActive: false })}>

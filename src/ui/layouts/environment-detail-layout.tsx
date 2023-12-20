@@ -1,4 +1,3 @@
-import { timeAgo } from "@app/date";
 import {
   fetchApps,
   fetchEndpointsByEnvironmentId,
@@ -6,17 +5,16 @@ import {
   fetchEnvironmentOperations,
   selectEndpointsByEnvironmentId,
   selectEnvironmentById,
-  selectLatestSuccessDeployOpByEnvId,
+  selectEnvironmentStatsById,
   selectStackById,
 } from "@app/deploy";
 import { useQuery } from "@app/fx";
 import { stackDetailEnvsUrl } from "@app/routes";
-import { capitalize } from "@app/string-utils";
 import {
   AppState,
   DeployEndpoint,
   DeployEnvironment,
-  DeployOperation,
+  DeployEnvironmentStats,
   DeployStack,
 } from "@app/types";
 import { useDispatch, useSelector } from "react-redux";
@@ -51,16 +49,15 @@ const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
 
 export function EnvHeader({
   environment,
-  latestOperation,
   stack,
   endpoints,
+  stats,
 }: {
   environment: DeployEnvironment;
-  latestOperation: DeployOperation;
+  stats: DeployEnvironmentStats;
   stack: DeployStack;
   endpoints: DeployEndpoint[];
 }) {
-  const userName = latestOperation.userName.slice(0, 15);
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -75,49 +72,22 @@ export function EnvHeader({
         docsUrl="https://www.aptible.com/docs/environments"
       />
 
-      <DetailInfoGrid columns={3}>
+      <DetailInfoGrid>
         <DetailInfoItem title="ID">{environment.id}</DetailInfoItem>
-        <DetailInfoItem
-          title={`${environment.totalAppCount} App${
-            environment.totalAppCount > 1 || environment.totalAppCount === 0
-              ? "s"
-              : ""
-          }`}
-        >
-          Using {environment.appContainerCount} container
-          {environment.appContainerCount > 1 ||
-            (environment.appContainerCount === 0 && "s")}
+        <DetailInfoItem title={`${environment.totalDatabaseCount} Databases`}>
+          {stats.databaseContainerCount} containers using {stats.totalDiskSize}{" "}
+          GB of disk
         </DetailInfoItem>
-        <DetailInfoItem title="Backups">
-          {environment.totalBackupSize} GB
-        </DetailInfoItem>
-
         <DetailInfoItem title="Stack">{stack.name}</DetailInfoItem>
-        <DetailInfoItem
-          title={`${environment.totalDatabaseCount} Database${
-            environment.totalDatabaseCount > 1 ||
-            environment.totalDatabaseCount === 0
-              ? "s"
-              : ""
-          }`}
-        >
-          {environment.databaseContainerCount} container
-          {environment.databaseContainerCount > 0 ||
-          environment.databaseContainerCount === 0
-            ? "s"
-            : ""}{" "}
-          using {environment.totalDiskSize} GB of disk
-        </DetailInfoItem>
-        <div className="hidden md:block" />
 
-        <DetailInfoItem title="Last Deployed">
-          {timeAgo(latestOperation.createdAt)} by {capitalize(userName)}
+        <DetailInfoItem title="Backups">
+          {stats.totalBackupSize} GB
         </DetailInfoItem>
-        <DetailInfoItem
-          title={`${endpoints.length} Endpoint${
-            endpoints.length > 1 || endpoints.length === 0 ? "s" : ""
-          }`}
-        >
+        <DetailInfoItem title={`${environment.totalAppCount} Apps`}>
+          Using {stats.appContainerCount} containers
+        </DetailInfoItem>
+
+        <DetailInfoItem title={`${stats.domainCount} Endpoints`}>
           {endpoints.length <= 5
             ? endpoints.map((endpoint) => (
                 <EndpointList key={endpoint.id} endpoint={endpoint} />
@@ -135,16 +105,16 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     dispatch(setResourceStats({ id, type: "environment" }));
   }, []);
 
+  const loader = useQuery(fetchEnvironmentById({ id }));
   useQuery(fetchApps());
   useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
-  const loader = useQuery(fetchEnvironmentById({ id }));
 
-  const latestOperation = useSelector((s: AppState) =>
-    selectLatestSuccessDeployOpByEnvId(s, { envId: id }),
-  );
   const environment = useSelector((s: AppState) =>
     selectEnvironmentById(s, { id }),
+  );
+  const stats = useSelector((s: AppState) =>
+    selectEnvironmentStatsById(s, { id: environment.id }),
   );
   const stack = useSelector((s: AppState) =>
     selectStackById(s, { id: environment.stackId }),
@@ -158,6 +128,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     { name: "Apps", href: `/environments/${id}/apps` },
     { name: "Databases", href: `/environments/${id}/databases` },
     { name: "Integrations", href: `/environments/${id}/integrations` },
+    { name: "Endpoints", href: `/environments/${id}/endpoints` },
     { name: "Certificates", href: `/environments/${id}/certificates` },
     { name: "Activity", href: `/environments/${id}/activity` },
     { name: "Activity Reports", href: `/environments/${id}/activity_reports` },
@@ -173,8 +144,8 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
         <EnvHeader
           endpoints={endpoints}
           environment={environment}
-          latestOperation={latestOperation}
           stack={stack}
+          stats={stats}
         />
       }
       title={environment.handle}

@@ -60,13 +60,11 @@ const op3 = defaultDeployOperation({
   createdAt: dateFromToday(-1).toISOString(),
 });
 const state: DeepPartial<AppState> = {
-  deploy: {
-    operations: { [op1.id]: op1, [op2.id]: op2, [op3.id]: op3 },
-    environments: { [env1.id]: env1, [env2.id]: env2 },
-    apps: { [app1.id]: app1 },
-    databases: { [db1.id]: db1 },
-    endpoints: { [vhost1.id]: vhost1 },
-  },
+  operations: { [op1.id]: op1, [op2.id]: op2, [op3.id]: op3 },
+  environments: { [env1.id]: env1, [env2.id]: env2 },
+  apps: { [app1.id]: app1 },
+  databases: { [db1.id]: db1 },
+  endpoints: { [vhost1.id]: vhost1 },
   organizationSelected: testOrg.id,
 };
 
@@ -95,7 +93,7 @@ describe("selectActivityForTableSearch", () => {
       it("should keep only operations within resource", () => {
         const actual = selectActivityForTableSearch(state as any, {
           search: "",
-          resourceIds: [app1.id],
+          resources: [{ resourceId: app1.id, resourceType: "app" }],
         });
         expect(actual).toEqual([op1Row]);
       });

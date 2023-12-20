@@ -1,6 +1,7 @@
 import { Action, batchActions } from "@app/fx";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useVisibility } from "./use-visibility";
 
 export const usePoller = ({
   action,
@@ -10,11 +11,19 @@ export const usePoller = ({
   cancel: Action;
 }) => {
   const dispatch = useDispatch();
+  const isTabActive = useVisibility();
 
+  // track if browser tab is active
+  // and suspend poller when tab is inactive
   useEffect(() => {
-    dispatch(batchActions([cancel, action]));
+    if (isTabActive) {
+      dispatch(batchActions([cancel, action]));
+    } else {
+      dispatch(cancel);
+    }
+
     return () => {
       dispatch(cancel);
     };
-  }, [action, cancel]);
+  }, [isTabActive, action, cancel]);
 };

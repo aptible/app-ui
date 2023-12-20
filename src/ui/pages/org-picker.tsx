@@ -1,19 +1,18 @@
+import { fetchReauthOrganizations, logout } from "@app/auth";
+import { refreshData } from "@app/bootup";
 import { batchActions } from "@app/fx";
 import { useQuery } from "@app/fx";
-import { useDispatch, useSelector } from "react-redux";
-
-import { fetchReauthOrganizations, logout } from "@app/auth";
 import {
-  selectOrganizationSelected,
+  selectOrganizationSelectedId,
   selectOrganizationsAsList,
 } from "@app/organizations";
+import { loginUrl, ssoUrl } from "@app/routes";
 import { Organization } from "@app/types";
 import { selectCurrentUserId, updateUserOrg } from "@app/users";
-
-import { loginUrl } from "@app/routes";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { AppSidebarLayout } from "../layouts";
-import { tokens } from "../shared";
+import { Group, Pill, tokens } from "../shared";
 
 const OrgItem = ({
   org,
@@ -31,8 +30,11 @@ const OrgItem = ({
       role="button"
       className="my-2 p-4 border border-gray-200 rounded-lg flex items-center justify-between cursor-pointer hover:bg-black-50"
     >
-      <span>{org.name}</span>
-      <span>{selected ? "Continue using" : ""}</span>
+      <div>{org.name}</div>
+      <Group size="sm" variant="horizontal" className="items-center">
+        {org.ssoEnforced ? <Pill>SSO Enforced</Pill> : null}
+        <span>{selected ? "Continue using" : ""}</span>
+      </Group>
     </div>
   );
 };
@@ -41,19 +43,32 @@ export const OrgPickerPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
-  const org = useSelector(selectOrganizationSelected);
+  const orgId = useSelector(selectOrganizationSelectedId);
   const orgs = useSelector(selectOrganizationsAsList);
   useQuery(fetchReauthOrganizations());
   const orgList = orgs.filter((o) => !o.reauthRequired);
-  const reauth = orgs.filter((o) => o.reauthRequired);
-  const onClick = (orgId: string, reauth = false) => {
+  const reauthOrgs = orgs.filter((o) => o.reauthRequired);
+  const onClick = (curOrg: Organization, reauth = false) => {
     if (reauth) {
-      dispatch(batchActions([updateUserOrg({ userId, orgId }), logout()]));
-      navigate(loginUrl());
+      dispatch(
+        batchActions([updateUserOrg({ userId, orgId: curOrg.id }), logout()]),
+      );
+      // when sso is required we should send them directly to the SSO page
+      if (curOrg.ssoEnforced) {
+        navigate(ssoUrl());
+      } else {
+        navigate(loginUrl());
+      }
       return;
     }
 
-    dispatch(updateUserOrg({ userId, orgId }));
+    // when we update the user's selected org we need to refetch data
+    dispatch(
+      batchActions([
+        updateUserOrg({ userId, orgId: curOrg.id }),
+        refreshData(),
+      ]),
+    );
   };
 
   return (
@@ -66,25 +81,21 @@ export const OrgPickerPage = () => {
             return (
               <OrgItem
                 key={o.id}
-                onClick={() => onClick(o.id, false)}
+                onClick={() => onClick(o, false)}
                 org={o}
-                selected={org.id === o.id}
+                selected={orgId === o.id}
               />
             );
           })}
         </div>
 
-        {reauth.length > 0 ? (
+        {reauthOrgs.length > 0 ? (
           <div>
             <div>Reauthentication Required</div>
 
-            {reauth.map((o) => {
+            {reauthOrgs.map((o) => {
               return (
-                <OrgItem
-                  key={o.id}
-                  onClick={() => onClick(o.id, true)}
-                  org={o}
-                />
+                <OrgItem key={o.id} onClick={() => onClick(o, true)} org={o} />
               );
             })}
           </div>

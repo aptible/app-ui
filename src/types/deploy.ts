@@ -1,3 +1,5 @@
+import { LinkResponse } from "./hal";
+
 export type ProvisionableStatus =
   | "pending"
   | "provisioning"
@@ -112,17 +114,21 @@ export interface DeployEnvironment extends Timestamps {
   type: "production" | "development";
   handle: string;
   activated: boolean;
+  sweetnessStack: string;
+  stackId: string;
+  onboardingStatus: OnboardingStatus;
+  totalAppCount: number;
+  totalDatabaseCount: number;
+}
+
+export interface DeployEnvironmentStats {
+  id: string;
   containerCount: number;
   domainCount: number;
   totalDiskSize: number;
-  totalAppCount: number;
   appContainerCount: number;
   databaseContainerCount: number;
-  totalDatabaseCount: number;
-  sweetnessStack: string;
   totalBackupSize: number;
-  stackId: string;
-  onboardingStatus: OnboardingStatus;
 }
 
 export interface DeployStack extends Timestamps {
@@ -484,6 +490,7 @@ export interface DeployBackup {
   copiedFromId: string;
   environmentId: string;
   databaseId: string;
+  databaseHandle: string;
   createdFromOperationId: string;
 }
 
@@ -491,6 +498,7 @@ export interface DeployBackupRetentionPolicy {
   id: string;
   daily: number;
   monthly: number;
+  yearly: number;
   makeCopy: boolean;
   keepFinal: boolean;
   environmentId: string;
@@ -521,4 +529,25 @@ export interface DeployActivityReport extends Timestamps {
   endsAt: string;
   filename: string;
   environmentId: string;
+}
+
+export interface DeployServiceResponse {
+  id: number;
+  handle: string;
+  created_at: string;
+  updated_at: string;
+  docker_repo: string;
+  docker_ref: string;
+  process_type: string;
+  command: string;
+  container_count: number | null;
+  container_memory_limit_mb: number | null;
+  instance_class: InstanceClass;
+  _links: {
+    current_release: LinkResponse;
+    app?: LinkResponse;
+    database?: LinkResponse;
+    account: LinkResponse;
+  };
+  _type: "service";
 }

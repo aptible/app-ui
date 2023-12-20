@@ -85,10 +85,14 @@ export const reducers = createReducerMap(roles, userRoles);
 const { selectTable: selectRoles, selectTableAsList: selectRolesAsList } =
   roles.getSelectors((s: AppState) => s[ROLES_NAME]);
 
+const deployRoles: RoleType[] = ["owner", "platform_owner", "platform_user"];
 export const selectRolesByOrgId = createSelector(
   selectRolesAsList,
   (_: AppState, p: { orgId: string }) => p.orgId,
-  (roles, orgId) => roles.filter((r) => r.organizationId === orgId),
+  (roles, orgId) =>
+    roles
+      .filter((r) => r.organizationId === orgId)
+      .filter((r) => deployRoles.includes(r.type)),
 );
 
 export const selectCurrentUserRoleIds = (s: AppState) =>
