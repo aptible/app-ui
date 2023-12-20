@@ -300,10 +300,12 @@ export const selectLatestOpByAppId = createSelector(
 export const selectLatestOpByResourceId = createSelector(
   selectOperationsAsList,
   (_: AppState, p: { resourceId: string }) => p.resourceId,
-  (ops, resourceId) =>
+  (_: AppState, p: { resourceType: ResourceType }) => p.resourceType,
+  (ops, resourceId, resourceType) =>
     ops.find(
       (op) =>
         op.resourceId === resourceId &&
+        op.resourceType === resourceType &&
         ["configure", "provision", "deploy", "deprovision"].includes(op.type),
     ) || initOp,
 );
