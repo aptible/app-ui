@@ -1,4 +1,4 @@
-import { prettyEnglishDateWithTime } from "@app/date";
+import { prettyUTCTime } from "@app/date";
 import {
   ResourceLookup,
   cancelAppOpsPoll,
@@ -195,7 +195,7 @@ const OpActionsCell = ({ op }: OpCellProps) => {
 const OpLastUpdatedCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-      <div>{capitalize(prettyEnglishDateWithTime(op.updatedAt))}</div>
+      <div>{capitalize(prettyUTCTime(op.updatedAt))}</div>
     </Td>
   );
 };
