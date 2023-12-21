@@ -1,4 +1,4 @@
-import { prettyEnglishDateWithTime, formatDateToUTC } from "@app/date";
+import { formatDateToUTC, prettyEnglishDateWithTime } from "@app/date";
 import {
   ResourceLookup,
   cancelAppOpsPoll,
@@ -43,7 +43,6 @@ import { Group } from "./group";
 import { InputSearch } from "./input";
 import { LoadingSpinner } from "./loading";
 import { OpStatus } from "./operation-status";
-import { Tooltip } from "./tooltip";
 import {
   DescBar,
   FilterBar,
@@ -53,6 +52,7 @@ import {
 import { EnvStackCell } from "./resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "./table";
 import { tokens } from "./tokens";
+import { Tooltip } from "./tooltip";
 
 interface OpCellProps {
   op: DeployActivityRow;
@@ -198,7 +198,7 @@ const OpLastUpdatedCell = ({ op }: OpCellProps) => {
     <Td>
       <div>
         <Tooltip text={capitalize(formatDateToUTC(op.updatedAt))}>
-        {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
+          {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
         </Tooltip>
       </div>
     </Td>

@@ -1,4 +1,4 @@
-import { prettyEnglishDateWithTime, formatDateToUTC } from "@app/date";
+import { formatDateToUTC, prettyEnglishDateWithTime } from "@app/date";
 import {
   fetchOperationById,
   getResourceUrl,
