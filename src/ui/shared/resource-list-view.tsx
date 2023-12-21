@@ -43,7 +43,10 @@ export const LoadingBar = ({ isLoading = false }: { isLoading?: boolean }) => {
 };
 
 export function PaginateBar<T>(
-  paginate: Pick<PaginateProps<T>, "totalPages" | "page" | "prev" | "next">,
+  paginate: Pick<
+    PaginateProps<T>,
+    "totalPages" | "page" | "prev" | "next" | "isLoading"
+  >,
 ) {
   if (paginate.totalPages === 1) {
     return null;
@@ -80,6 +83,7 @@ export function PaginateBar<T>(
             paginate.next();
           }}
         />
+        <LoadingSpinner show={paginate?.isLoading} />
       </Group>
     </Group>
   );

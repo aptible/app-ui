@@ -49,6 +49,7 @@ const usePaginateFilters = (rowsPerPage = ITEMS_PER_PAGE) => {
 };
 
 export interface PaginateProps<T> {
+  isLoading?: boolean;
   page: number;
   totalPages: number;
   totalItems: number;
