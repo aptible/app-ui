@@ -119,7 +119,7 @@ const LineChartWrapper = ({
               maxTicksLimit: 5,
             },
             time: {
-              tooltipFormat: "MMM dd, yyyy 'at' hh:mm aaa (z)",
+              tooltipFormat: "yyyy-MM-dd'T'HH:mm:ss'Z'",
               unit: xAxisUnit,
             },
             type: "time",
