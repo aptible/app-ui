@@ -13,7 +13,6 @@ import {
   Group,
   IconEdit,
   IconPlusCircle,
-  LoadingSpinner,
 } from "../shared";
 
 export const DatabaseBackupsPage = () => {
@@ -51,8 +50,6 @@ export const DatabaseBackupsPage = () => {
           <IconEdit variant="sm" className="mr-2" /> Edit Environment Backup
           Policy
         </ButtonLink>
-
-        <LoadingSpinner show={paginated.isLoading} />
       </div>
 
       <BannerMessages className="my-4" {...loader} />
