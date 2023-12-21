@@ -1,11 +1,6 @@
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
 import {
   deprovisionEnvironment,
-  fetchDatabaseBackupsByEnvironment,
+  fetchBackupsByEnvironmentId,
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
   fetchEnvironmentById,
@@ -15,7 +10,11 @@ import {
   selectMetricDrainsByEnvId,
   updateEnvironmentName,
 } from "@app/deploy";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { AppState } from "@app/types";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router";
 
 import { environmentsUrl } from "@app/routes";
 import { handleValidator } from "@app/validator";
@@ -123,7 +122,9 @@ const EnvChangeName = ({ envId }: { envId: string }) => {
 const EnvDestroy = ({ envId }: { envId: string }) => {
   const navigate = useNavigate();
   useQuery(fetchEnvironmentById({ id: envId }));
-  useQuery(fetchDatabaseBackupsByEnvironment({ id: envId, orphaned: false }));
+  useQuery(
+    fetchBackupsByEnvironmentId({ id: envId, orphaned: false, page: 1 }),
+  );
   useQuery(fetchEnvLogDrains({ id: envId }));
   useQuery(fetchEnvMetricDrains({ id: envId }));
 
