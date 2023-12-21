@@ -1,4 +1,4 @@
-import { prettyEnglishDateWithTime } from "@app/date";
+import { prettyEnglishDateWithTime, formatDateToUTC } from "@app/date";
 import {
   ResourceLookup,
   cancelAppOpsPoll,
@@ -43,6 +43,7 @@ import { Group } from "./group";
 import { InputSearch } from "./input";
 import { LoadingSpinner } from "./loading";
 import { OpStatus } from "./operation-status";
+import { Tooltip } from "./tooltip";
 import {
   DescBar,
   FilterBar,
@@ -195,7 +196,11 @@ const OpActionsCell = ({ op }: OpCellProps) => {
 const OpLastUpdatedCell = ({ op }: OpCellProps) => {
   return (
     <Td>
-      <div>{capitalize(prettyEnglishDateWithTime(op.updatedAt))}</div>
+      <div>
+        <Tooltip text={capitalize(formatDateToUTC(op.updatedAt))}>
+        {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
+        </Tooltip>
+      </div>
     </Td>
   );
 };

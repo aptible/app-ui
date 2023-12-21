@@ -1,4 +1,4 @@
-import { prettyEnglishDateWithTime } from "@app/date";
+import { prettyEnglishDateWithTime, formatDateToUTC } from "@app/date";
 import {
   fetchOperationById,
   getResourceUrl,
@@ -19,6 +19,7 @@ import {
   DetailPageHeaderView,
   DetailTitleBar,
   OpStatus,
+  Tooltip,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
@@ -44,14 +45,18 @@ export function OpHeader({
       <DetailInfoGrid>
         <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
         <DetailInfoItem title="Created">
-          {capitalize(prettyEnglishDateWithTime(op.createdAt))}
+          <Tooltip text={capitalize(formatDateToUTC(op.createdAt))}>
+            {capitalize(prettyEnglishDateWithTime(op.createdAt))}
+          </Tooltip>
         </DetailInfoItem>
 
         <DetailInfoItem title="Status">
           <OpStatus status={op.status} />
         </DetailInfoItem>
         <DetailInfoItem title="Last Updated">
-          {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
+          <Tooltip text={capitalize(formatDateToUTC(op.updatedAt))}>
+            {capitalize(prettyEnglishDateWithTime(op.updatedAt))}
+          </Tooltip>
         </DetailInfoItem>
 
         <DetailInfoItem title="Resource">
