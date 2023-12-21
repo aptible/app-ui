@@ -90,7 +90,7 @@ export const prettyEnglishDate = (dateStr = "") => {
 };
 
 export const prettyEnglishDateWithTime = (dateStr = "") => {
-  return format(isoToDate(dateStr), "MMM dd, yyyy 'at' hh:mm a (z)");
+  return format(isoToDate(dateStr), "yyyy-MM-dd HH:mm:ss 'UTC'");
 };
 
 export const prettyDateTime = (dateStr = "") => {
