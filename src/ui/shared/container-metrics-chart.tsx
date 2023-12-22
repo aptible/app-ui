@@ -119,10 +119,10 @@ const LineChartWrapper = ({
               maxTicksLimit: 5,
             },
             time: {
-              tooltipFormat: "yyyy-MM-dd HH:mm:ss 'UTC'",
+              tooltipFormat: "yyyy-MM-dd HH:mm:ss 'UTC'x",
               unit: xAxisUnit,
               displayFormats: {
-                minute: "HH:mm:ss 'UTC'",
+                minute: "HH:mm 'UTC'x",
                 day: "MMM dd",
               },
             },
