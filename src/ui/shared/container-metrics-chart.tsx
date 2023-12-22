@@ -15,7 +15,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
-import "chartjs-adapter-date-fns";
+import "chartjs-adapter-luxon";
 import { useSelector } from "react-redux";
 import { IconInfo } from "./icons";
 import { Tooltip as AptibleTooltip } from "./tooltip";
@@ -118,11 +118,16 @@ const LineChartWrapper = ({
               autoSkip: true,
               maxTicksLimit: 5,
             },
+            adapters: {
+              date: {
+                zone: "UTC",
+              },
+            },
             time: {
               tooltipFormat: "yyyy-MM-dd HH:mm:ss 'UTC'",
               unit: xAxisUnit,
               displayFormats: {
-                minute: "HH:mm:ss 'UTC'",
+                minute: "HH:mm 'UTC'",
                 day: "MMM dd",
               },
             },
