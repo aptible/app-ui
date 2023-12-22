@@ -1,4 +1,4 @@
-import { prettyEnglishDateWithTime } from "@app/date";
+import { prettyUTCTime } from "@app/date";
 import { deleteBackup } from "@app/deploy";
 import { useLoader } from "@app/fx";
 import {
@@ -125,7 +125,7 @@ const BackupListRow = ({
 
       <Td className="flex-1 pl-4">
         <div className={tokens.type.darker}>
-          {prettyEnglishDateWithTime(backup.createdAt)}
+          {prettyUTCTime(backup.createdAt)}
         </div>
       </Td>
 

@@ -1,4 +1,4 @@
-import { prettyEnglishDate } from "@app/date";
+import { prettyUTCTime } from "@app/date";
 import {
   cancelAppOpsPoll,
   fetchApp,
@@ -84,7 +84,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
 
         <DetailInfoItem title="Last Deployed">
           {lastDeployOp
-            ? `${prettyEnglishDate(lastDeployOp.createdAt)}`
+            ? `${prettyUTCTime(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
       </DetailInfoGrid>
