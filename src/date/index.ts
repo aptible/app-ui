@@ -90,7 +90,10 @@ export const prettyEnglishDate = (dateStr = "") => {
 };
 
 export const prettyUTCTime = (dateStr = "") => {
-  return format(isoToDate(dateStr), "yyyy-MM-dd HH:mm:ss 'UTC'");
+  return `${new Date(dateStr)
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ")} UTC`;
 };
 
 export const prettyEnglishDateWithTime = (dateStr = "") => {
