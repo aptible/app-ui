@@ -1,6 +1,3 @@
-// no typedefs exist for this module, common issue apparently: https://stackoverflow.com/a/72375107
-declare module "chartjs-adapter-date-fns";
-
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
