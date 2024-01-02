@@ -188,6 +188,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.percentile}
                       min="0"
                       max="100"
+                      placeholder="0 (Min), 100 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "percentile",
@@ -209,6 +210,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.minimum_memory}
                       min="0"
                       max="784384"
+                      placeholder="0 (Min), 784384 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "minimum_memory",
@@ -230,6 +232,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.maximum_memory || ""}
                       min="0"
                       max="784384"
+                      placeholder="0 (Min), 784384 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "maximum_memory",
@@ -252,6 +255,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.mem_scale_up_threshold}
                       min="0"
                       max="1"
+                      placeholder="0 (Min), 1 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "mem_scale_up_threshold",
@@ -274,6 +278,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.mem_scale_down_threshold}
                       min="0"
                       max="1"
+                      placeholder="0 (Min), 1 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "mem_scale_down_threshold",
@@ -298,6 +303,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.mem_cpu_ratio_r_threshold}
                       min="0"
                       max="16"
+                      placeholder="0 (Min), 16 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "mem_cpu_ratio_r_threshold",
@@ -320,6 +326,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.mem_cpu_ratio_c_threshold}
                       min="0"
                       max="8"
+                      placeholder="0 (Min), 8 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "mem_cpu_ratio_c_threshold",
@@ -342,6 +349,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.metric_lookback_seconds}
                       min="0"
                       max="3600"
+                      placeholder="0 (Min), 3600 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "metric_lookback_seconds",
@@ -363,6 +371,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.post_scale_up_cooldown_seconds}
                       min="0"
                       max="3600"
+                      placeholder="0 (Min), 3600 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "post_scale_up_cooldown_seconds",
@@ -384,6 +393,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.post_scale_down_cooldown_seconds}
                       min="0"
                       max="3600"
+                      placeholder="0 (Min), 3600 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "post_scale_down_cooldown_seconds",
@@ -405,6 +415,7 @@ const VerticalAutoscalingSection = ({
                       value={nextPolicy.post_release_cooldown_seconds}
                       min="0"
                       max="3600"
+                      placeholder="0 (Min), 3600 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "post_release_cooldown_seconds",
@@ -596,6 +607,7 @@ export const AppDetailServiceScalePage = () => {
                 value={containerCount}
                 min="0"
                 max="32"
+                placeholder="0 (Min), 32 (Max)"
                 onChange={(e) =>
                   setContainerCount(parseInt(e.currentTarget.value || "0", 10))
                 }
