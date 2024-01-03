@@ -2,27 +2,27 @@
 import { DateTime } from "luxon";
 
 const isoToDate = (dateStr = "") => {
-  return DateTime.fromISO(dateStr);
+  return DateTime.fromISO(dateStr, { zone: "utc" });
 };
 
 export const prettyDate = (dateStr = "") => {
-  return isoToDate(dateStr).toLocaleString(DateTime.DATE_SHORT);
+  return isoToDate(dateStr).toFormat("yyyy-MM-dd");
 };
 
 export const prettyTime = (dateStr = "") => {
-  return isoToDate(dateStr).toLocaleString(DateTime.TIME_WITH_SHORT_OFFSET);
+  return isoToDate(dateStr).toFormat("HH:mm:ss ZZZZ");
 };
 
 export const prettyDateTime = (dateStr = "") => {
-  return isoToDate(dateStr).toFormat("M/d/yyyy, h:mm a ZZZZ");
+  return isoToDate(dateStr).toFormat("yyyy-MM-dd HH:mm:ss ZZZZ");
 };
 
 export const fileDate = (dateStr = "") => {
-  return isoToDate(dateStr).toFormat("yyyy-M-d");
+  return isoToDate(dateStr).toFormat("yyyy-MM-dd");
 };
 
 export const fileDateTime = (dateStr = "") => {
-  return isoToDate(dateStr).toFormat("yyyy-M-d-h-mm-s");
+  return isoToDate(dateStr).toFormat("yyyy-MM-dd-HH-mm-ss");
 };
 
 export const timeBetween = ({

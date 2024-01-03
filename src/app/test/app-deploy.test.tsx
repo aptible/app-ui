@@ -195,7 +195,7 @@ describe("App deploy flow", () => {
       await screen.findByRole("link", {
         name: /View Environment/,
       });
-      const status = await screen.findByText(/Deployed \d+\/\d+\/\d+/);
+      const status = await screen.findByText(/Deployed \d+-\d+-\d+/);
       expect(status).toBeInTheDocument();
 
       await screen.findByText("Initial configuration");
