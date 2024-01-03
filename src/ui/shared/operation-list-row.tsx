@@ -1,4 +1,4 @@
-import { prettyUTCTime, timeBetween } from "@app/date";
+import { prettyDateTime, timeBetween } from "@app/date";
 import { DeployOperationResponse } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
 import { OperationStatus } from "@app/types";
@@ -34,7 +34,7 @@ const OperationPrimaryCell = ({ operation }: OperationCellProps) => {
   return (
     <Td className="flex-1">
       <div className="font-base text-gray-900">
-        {prettyUTCTime(operation.created_at)}
+        {prettyDateTime(operation.created_at)}
       </div>
       <div className="font-light text-gray-500">
         Duration:{" "}

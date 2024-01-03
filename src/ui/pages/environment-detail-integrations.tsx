@@ -1,4 +1,4 @@
-import { prettyUTCTime } from "@app/date";
+import { prettyDateTime } from "@app/date";
 import {
   deprovisionLogDrain,
   deprovisionMetricDrain,
@@ -128,7 +128,7 @@ const LogDrainLastUpdatedCell = ({
       <div className="flex">
         <p className="leading-4">
           <span className={tokens.type.darker}>
-            {capitalize(prettyUTCTime(logDrain.updatedAt))}
+            {capitalize(prettyDateTime(logDrain.updatedAt))}
           </span>
         </p>
       </div>
@@ -272,7 +272,7 @@ const MetricDrainLastUpdatedCell = ({
       <div className="flex">
         <p className="leading-4">
           <span className={tokens.type.darker}>
-            {capitalize(prettyUTCTime(metricDrain.updatedAt))}
+            {prettyDateTime(metricDrain.updatedAt)}
           </span>
         </p>
       </div>

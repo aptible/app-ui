@@ -1,4 +1,29 @@
+// https://moment.github.io/luxon/#/formatting?id=table-of-tokens
 import { DateTime } from "luxon";
+
+const isoToDate = (dateStr = "") => {
+  return DateTime.fromISO(dateStr);
+};
+
+export const prettyDate = (dateStr = "") => {
+  return isoToDate(dateStr).toLocaleString(DateTime.DATE_SHORT);
+};
+
+export const fileDate = (dateStr = "") => {
+  return isoToDate(dateStr).toFormat("yyyy-MM-dd");
+};
+
+export const prettyTime = (dateStr = "") => {
+  return isoToDate(dateStr).toLocaleString(DateTime.TIME_WITH_SHORT_OFFSET);
+};
+
+export const prettyDateTime = (dateStr = "") => {
+  return isoToDate(dateStr).toFormat("yyyy-MM-dd hh:mm:ss a ZZZZ");
+};
+
+export const prettyDateTimeForBackups = (dateStr = "") => {
+  return isoToDate(dateStr).toFormat("yyyy-MM-dd-hh-mm-ss");
+};
 
 export const timeBetween = ({
   startDate,
@@ -10,38 +35,6 @@ export const timeBetween = ({
   const start = isoToDate(startDate);
   const end = isoToDate(endDate);
   return start.toRelative({ base: end }) || "";
-};
-
-const isoToDate = (dateStr = "") => {
-  return DateTime.fromISO(dateStr);
-};
-
-export const prettyEnglishDate = (dateStr = "") => {
-  return isoToDate(dateStr).toFormat("MMM dd, yyyy");
-};
-
-export const prettyUTCTime = (dateStr = "") => {
-  const clipped = new Date(dateStr)
-    .toISOString()
-    .slice(0, 19)
-    .replace("T", " ");
-  return `${clipped} UTC`;
-};
-
-export const prettyDateTime = (dateStr = "") => {
-  return isoToDate(dateStr).toFormat("yyyy-MM-dd hh:mm:ss aaa (z)");
-};
-
-export const prettyDateTimeForBackups = (dateStr = "") => {
-  return isoToDate(dateStr).toFormat("yyyy-MM-dd-hh-mm-ss");
-};
-
-export const prettyDate = (dateStr = "") => {
-  return isoToDate(dateStr).toFormat("yyyy-MM-dd");
-};
-
-export const prettyDateRelative = (dateStr = "") => {
-  return isoToDate(dateStr).toRelative();
 };
 
 export const dateFromToday = (days: number) => {

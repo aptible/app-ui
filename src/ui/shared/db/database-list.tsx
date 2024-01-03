@@ -1,4 +1,4 @@
-import { prettyUTCTime } from "@app/date";
+import { prettyDateTime } from "@app/date";
 import {
   calcMetrics,
   fetchDatabaseImages,
@@ -125,7 +125,7 @@ export const LastOpCell = ({ database }: DatabaseCellProps) => {
       <div className={tokens.type.darker} />
       <div className={tokens.type["normal lighter"]}>
         <OpStatus status={lastOperation.status} />{" "}
-        {prettyUTCTime(lastOperation.createdAt)}
+        {prettyDateTime(lastOperation.createdAt)}
       </div>
     </Td>
   );

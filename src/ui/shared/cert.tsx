@@ -1,6 +1,6 @@
 import { DeployCertificate } from "@app/types";
 
-import { prettyEnglishDate } from "@app/date";
+import { prettyDate } from "@app/date";
 import { Pill, pillStyles } from "./pill";
 import { tokens } from "./tokens";
 
@@ -26,7 +26,7 @@ export const CertValidDateRange = ({ cert }: CertProp) => {
   return (
     <div>
       <div className={tokens.type.darker}>
-        {prettyEnglishDate(cert.notBefore)} - {prettyEnglishDate(cert.notAfter)}
+        {prettyDate(cert.notBefore)} - {prettyDate(cert.notAfter)}
       </div>
       {isExpired ? <div className="text-sm text-red">Expired</div> : null}
     </div>
