@@ -1,4 +1,4 @@
-import { prettyTime } from "@app/date";
+import { prettyDateTime } from "@app/date";
 import { selectLatestOpByResourceId } from "@app/deploy";
 import { operationDetailUrl } from "@app/routes";
 import { StatusVariant } from "@app/status-variant";
@@ -72,7 +72,7 @@ export const ActiveOperationNotice = ({
         <Banner variant={operationStatusToBannerStatus(operation.status)}>
           <p>
             {capitalize(operation.status)} {gerundOfOpType}{" "}
-            <b>{resourceType}</b> ({prettyTime(operation.createdAt)}) -{" "}
+            <b>{resourceType}</b> ({prettyDateTime(operation.createdAt)}) -{" "}
             <Link
               className="text-white underline"
               to={operationDetailUrl(operation.id)}
@@ -91,7 +91,7 @@ export const ActiveOperationNotice = ({
         <Banner variant={operationStatusToBannerStatus(operation.status)}>
           <p>
             {capitalize(gerundOfOpType)} <b>{resourceType}</b> (
-            {prettyTime(operation.createdAt)}) -{" "}
+            {prettyDateTime(operation.createdAt)}) -{" "}
             <Link
               className="text-white underline"
               to={operationDetailUrl(operation.id)}

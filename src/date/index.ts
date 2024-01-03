@@ -9,20 +9,20 @@ export const prettyDate = (dateStr = "") => {
   return isoToDate(dateStr).toLocaleString(DateTime.DATE_SHORT);
 };
 
-export const fileDate = (dateStr = "") => {
-  return isoToDate(dateStr).toFormat("yyyy-MM-dd");
-};
-
 export const prettyTime = (dateStr = "") => {
   return isoToDate(dateStr).toLocaleString(DateTime.TIME_WITH_SHORT_OFFSET);
 };
 
 export const prettyDateTime = (dateStr = "") => {
-  return isoToDate(dateStr).toFormat("yyyy-MM-dd hh:mm:ss a ZZZZ");
+  return isoToDate(dateStr).toFormat("M/d/yyyy, h:mm a ZZZZ");
 };
 
-export const prettyDateTimeForBackups = (dateStr = "") => {
-  return isoToDate(dateStr).toFormat("yyyy-MM-dd-hh-mm-ss");
+export const fileDate = (dateStr = "") => {
+  return isoToDate(dateStr).toFormat("yyyy-M-d");
+};
+
+export const fileDateTime = (dateStr = "") => {
+  return isoToDate(dateStr).toFormat("yyyy-M-d-h-mm-s");
 };
 
 export const timeBetween = ({
