@@ -28,7 +28,6 @@ export default defineConfig(() => {
               "redux-persist",
               "starfx",
               "qrcode.react",
-              "luxon",
             ],
           },
         },
