@@ -51,6 +51,7 @@ export const calcMetrics = (services: DeployService[]) => {
   const totalMemoryLimit = () => {
     let total = 0;
     services.forEach((s) => {
+      if (s.containerCount === 0) return;
       total += s.containerMemoryLimitMb;
     });
     return total;
@@ -59,6 +60,7 @@ export const calcMetrics = (services: DeployService[]) => {
   const totalCPU = () => {
     let total = 0;
     services.forEach((s) => {
+      if (s.containerCount === 0) return;
       total +=
         s.containerMemoryLimitMb *
         getContainerProfileFromType(s.instanceClass).cpuShare;
