@@ -1,6 +1,6 @@
 <img src="https://user-images.githubusercontent.com/4295811/226700092-ffbd0c01-dba1-4880-8b77-a4d26e6228f0.svg"  width="64">
 
-# app-ui
+# `app-ui`
 
 Aptible's PaaS automates the work of provisioning, managing, and scaling infrastructure, so you can focus on what matters: your product.
 
@@ -27,7 +27,7 @@ yarn set version 3.6.3
 
 **3. Create `.env` file with environment variables**
 
-Add file to the root of app-ui with these variables:
+Add file to the root of `app-ui` with these variables:
 
 Production APIs:
 
@@ -54,10 +54,6 @@ VITE_METRIC_TUNNEL_URL="https://metrictunnel-sbx-main.aptible-sandbox.com"
 ```
 
 **4. Run Start Commands**
-
-```bash
-cd app-ui
-```
 
 ```bash
 yarn
