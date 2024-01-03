@@ -1,65 +1,4 @@
-import {
-  format,
-  formatDistanceStrict,
-  formatDistanceToNowStrict,
-  formatRelative,
-  parseISO,
-} from "date-fns";
-import locale from "date-fns/locale/en-US";
-
-const FormatDistanceLocale: { [key: string]: string } = {
-  lessThanXSeconds: "{{count}}s",
-  xSeconds: "{{count}}s",
-  halfAMinute: "30s",
-  lessThanXMinutes: "{{count}}min",
-  xMinutes: "{{count}}min",
-  aboutXHours: "{{count}}hr",
-  xHours: "{{count}}hr",
-  xDays: "{{count}}d",
-  aboutXWeeks: "{{count}}wk",
-  xWeeks: "{{count}}wk",
-  aboutXMonths: "{{count}}mo",
-  xMonths: "{{count}}mo",
-  aboutXYears: "{{count}}yr",
-  xYears: "{{count}}yr",
-  overXYears: "{{count}}yr",
-  almostXYears: "{{count}}yr",
-};
-
-const formatDistanceAgo = (token: string, count: string, opts: any): string => {
-  const options = opts || {};
-
-  const result = FormatDistanceLocale[token].replace("{{count}}", count);
-
-  if (options.addSuffix) {
-    if (options.comparison > 0) {
-      return `in ${result}`;
-    } else {
-      return `${result} ago`;
-    }
-  }
-
-  return result;
-};
-const formatDistance = (
-  token: string,
-  count: string,
-  _options: any,
-): string => {
-  return FormatDistanceLocale[token].replace("{{count}}", count);
-};
-
-// very heavily borrowed/taken from:
-// https://github.com/date-fns/date-fns/issues/1706#issuecomment-836601089
-export const timeAgo = (dateStr = ""): string => {
-  return formatDistanceToNowStrict(new Date(dateStr), {
-    addSuffix: true,
-    locale: {
-      ...locale,
-      formatDistance: formatDistanceAgo,
-    },
-  });
-};
+import { DateTime } from "luxon";
 
 export const timeBetween = ({
   startDate,
@@ -68,52 +7,41 @@ export const timeBetween = ({
   startDate: string;
   endDate: string;
 }): string => {
-  return formatDistanceStrict(new Date(startDate), new Date(endDate), {
-    addSuffix: true,
-    locale: {
-      ...locale,
-      formatDistance,
-    },
-  });
-};
-
-export const formatDateToUTC = (dateStr = "") => {
-  return new Date(dateStr).toISOString();
+  const start = isoToDate(startDate);
+  const end = isoToDate(endDate);
+  return start.toRelative({ base: end }) || "";
 };
 
 const isoToDate = (dateStr = "") => {
-  return parseISO(dateStr);
+  return DateTime.fromISO(dateStr);
 };
 
 export const prettyEnglishDate = (dateStr = "") => {
-  return format(isoToDate(dateStr), "MMM dd, yyyy");
+  return isoToDate(dateStr).toFormat("MMM dd, yyyy");
 };
 
 export const prettyUTCTime = (dateStr = "") => {
-  return `${new Date(dateStr)
+  const clipped = new Date(dateStr)
     .toISOString()
     .slice(0, 19)
-    .replace("T", " ")} UTC`;
-};
-
-export const prettyEnglishDateWithTime = (dateStr = "") => {
-  return format(isoToDate(dateStr), "MMM dd, yyyy 'at' hh:mm a (z)");
+    .replace("T", " ");
+  return `${clipped} UTC`;
 };
 
 export const prettyDateTime = (dateStr = "") => {
-  return format(isoToDate(dateStr), "yyyy-MM-dd hh:mm:ss aaa (z)");
+  return isoToDate(dateStr).toFormat("yyyy-MM-dd hh:mm:ss aaa (z)");
 };
 
 export const prettyDateTimeForBackups = (dateStr = "") => {
-  return format(isoToDate(dateStr), "yyyy-MM-dd-hh-mm-ss");
+  return isoToDate(dateStr).toFormat("yyyy-MM-dd-hh-mm-ss");
 };
 
 export const prettyDate = (dateStr = "") => {
-  return format(isoToDate(dateStr), "yyyy-MM-dd");
+  return isoToDate(dateStr).toFormat("yyyy-MM-dd");
 };
 
 export const prettyDateRelative = (dateStr = "") => {
-  return formatRelative(isoToDate(dateStr), new Date());
+  return isoToDate(dateStr).toRelative();
 };
 
 export const dateFromToday = (days: number) => {
@@ -126,3 +54,5 @@ export const secondsFromNow = (seconds: number) => {
   const d = new Date();
   return new Date(d.getTime() + seconds * 1000);
 };
+
+export const isBefore = (a: Date, b: Date) => a < b;
