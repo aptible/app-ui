@@ -1,4 +1,4 @@
-import { prettyUTCTime } from "@app/date";
+import { prettyDateTime } from "@app/date";
 import {
   fetchOperationById,
   getResourceUrl,
@@ -44,14 +44,14 @@ export function OpHeader({
       <DetailInfoGrid>
         <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
         <DetailInfoItem title="Created">
-          {capitalize(prettyUTCTime(op.createdAt))}
+          {prettyDateTime(op.createdAt)}
         </DetailInfoItem>
 
         <DetailInfoItem title="Status">
           <OpStatus status={op.status} />
         </DetailInfoItem>
         <DetailInfoItem title="Last Updated">
-          {capitalize(prettyUTCTime(op.updatedAt))}
+          {prettyDateTime(op.updatedAt)}
         </DetailInfoItem>
 
         <DetailInfoItem title="Resource">

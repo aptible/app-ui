@@ -10,7 +10,6 @@ export default defineConfig(() => {
         output: {
           manualChunks: {
             chart: ["react-chartjs-2", "chart.js", "chartjs-adapter-luxon"],
-            // NOTICE: do not include `date-fns` it breaks the build
             vendor: [
               "@github/webauthn-json",
               "@reduxjs/toolkit",
@@ -29,6 +28,7 @@ export default defineConfig(() => {
               "redux-persist",
               "starfx",
               "qrcode.react",
+              "luxon",
             ],
           },
         },

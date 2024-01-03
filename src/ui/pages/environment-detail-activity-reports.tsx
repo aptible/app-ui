@@ -1,4 +1,4 @@
-import { prettyEnglishDate } from "@app/date";
+import { prettyDate } from "@app/date";
 import {
   downloadActivityReports,
   fetchEnvActivityReports,
@@ -33,9 +33,9 @@ const ActivityReportListRow = ({
   const dispatch = useDispatch();
   return (
     <Tr>
-      <Td className="text-gray-900">{prettyEnglishDate(report.createdAt)}</Td>
-      <Td className="text-gray-900">{prettyEnglishDate(report.startsAt)}</Td>
-      <Td className="text-gray-900">{prettyEnglishDate(report.endsAt)}</Td>
+      <Td className="text-gray-900">{prettyDate(report.createdAt)}</Td>
+      <Td className="text-gray-900">{prettyDate(report.startsAt)}</Td>
+      <Td className="text-gray-900">{prettyDate(report.endsAt)}</Td>
       <Td variant="right">
         <ButtonIcon
           icon={<IconDownload className="-mr-1" variant="sm" />}

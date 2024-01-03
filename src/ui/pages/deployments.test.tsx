@@ -37,7 +37,7 @@ describe("Deployments page", () => {
 
     expect(await screen.findByText(testAppDeployed.handle)).toBeInTheDocument();
     const status = await screen.findByRole("status");
-    expect(status.textContent).toMatch(/Deployed 04\/08\/2023/);
+    expect(status.textContent).toMatch(/Deployed 2023-04-08/);
   });
 
   it("should show a list of apps for accounts filtered by `accounts` query param", async () => {

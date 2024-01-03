@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 
-import { prettyDateTime, prettyDateTimeForBackups } from "@app/date";
+import { fileDateTime, prettyDateTime } from "@app/date";
 import {
   RestoreBackupProps,
   fetchBackup,
@@ -71,9 +71,8 @@ export const BackupRestorePage = () => {
   }, [backup.environmentId]);
 
   useEffect(() => {
-    const tmpName = `${db.handle}-at-${prettyDateTimeForBackups(
-      backup.createdAt,
-    )}`.slice(0, 64);
+    const dt = fileDateTime(backup.createdAt);
+    const tmpName = `${db.handle}-at-${dt}`.slice(0, 64);
     setName(tmpName);
   }, [db.handle, backup.createdAt]);
 

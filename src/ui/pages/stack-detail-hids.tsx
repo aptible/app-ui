@@ -1,4 +1,4 @@
-import { prettyEnglishDate } from "@app/date";
+import { fileDate, prettyDate } from "@app/date";
 import {
   fetchStackManagedHids,
   getStackType,
@@ -85,22 +85,23 @@ const ReportView = ({
   report,
   stack,
 }: { report: HidsReport; stack: DeployStack }) => {
-  const date = prettyEnglishDate(report.created_at);
+  const date = prettyDate(report.created_at);
+  const fdate = fileDate(report.created_at);
   return (
     <Tr>
       <Td>{date}</Td>
-      <Td>{prettyEnglishDate(report.starts_at)}</Td>
-      <Td>{prettyEnglishDate(report.ends_at)}</Td>
+      <Td>{prettyDate(report.starts_at)}</Td>
+      <Td>{prettyDate(report.ends_at)}</Td>
       <Td variant="right">
         <Group variant="horizontal" size="sm">
           <DownloadReport
-            filename={`report-${stack.name}-${date}.csv`}
+            filename={`report-${stack.name}-${fdate}.csv`}
             url={report._links.download_csv.href}
           >
             CSV
           </DownloadReport>
           <DownloadReport
-            filename={`report-${stack.name}-${date}.pdf`}
+            filename={`report-${stack.name}-${fdate}.pdf`}
             url={report._links.download_pdf.href}
           >
             PDF

@@ -106,6 +106,7 @@ function findResourceMatch(
 }
 
 const denyOpTypes: OperationType[] = ["poll"];
+const staticArr: ResourceLookup[] = [];
 export const selectActivityForTableSearch = createSelector(
   selectActivityForTable,
   (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
@@ -115,7 +116,7 @@ export const selectActivityForTableSearch = createSelector(
     props: {
       resources?: ResourceLookup[];
     },
-  ) => props.resources || [],
+  ) => props.resources || staticArr,
   (ops, search, envId, resources): DeployActivityRow[] => {
     if (search === "" && envId === "" && resources.length === 0) {
       return ops.filter((op) => !denyOpTypes.includes(op.type));

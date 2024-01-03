@@ -1,4 +1,5 @@
 import { authApi } from "@app/api";
+import { isBefore } from "@app/date";
 import { selectEnv, selectOrigin } from "@app/env";
 import { select } from "@app/fx";
 import { defaultHalHref, extractIdFromLink } from "@app/hal";
@@ -13,7 +14,6 @@ import type {
   Token,
 } from "@app/types";
 import { createSelector } from "@reduxjs/toolkit";
-import { isBefore } from "date-fns";
 
 export const defaultInvitation = (i?: Partial<Invitation>): Invitation => {
   const now = new Date().toISOString();
