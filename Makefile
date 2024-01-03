@@ -5,12 +5,6 @@ help:
 	@egrep -o "^#: (.+)" [Mm]akefile  | sed 's/#: /* /'
 .PHONY: help
 
-#: init - install node dependencies
-init:
-	yarn
-	@echo "run `cp .env.example .env` and fill it in with your values"
-.PHONY: init
-
 #: start - start development server
 start:
 	yarn start
@@ -31,8 +25,8 @@ lint:
 	yarn lint
 .PHONY: lint
 
-#: pretty - run prettier to auto format code
-pretty:
+#: fmt - run prettier to auto format code
+fmt:
 	yarn fmt
 	@echo "fyi we have a git pre-commit hook that will format only changed files"
 .PHONY: pretty

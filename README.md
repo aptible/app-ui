@@ -1,7 +1,6 @@
-<br>
 <img src="https://user-images.githubusercontent.com/4295811/226700092-ffbd0c01-dba1-4880-8b77-a4d26e6228f0.svg"  width="64">
 
-# app-ui
+# `app-ui`
 
 Aptible's PaaS automates the work of provisioning, managing, and scaling infrastructure, so you can focus on what matters: your product.
 
@@ -10,68 +9,64 @@ Aptible's PaaS automates the work of provisioning, managing, and scaling infrast
 ## Getting Started
 
 **1. Install Node and Yarn**
-<br>app-ui requires node `v18.15.x` and yarn `v2+` or later.
 
-**2. Create `.env` file with environment variables**
-<br>Add file to the root of app-ui with these variables:
+Requirements:
+
+- node `v18.15.x`
+- yarn `v3.6.3`
+
+**2. Yarn setup**
+
+
 ```bash
+corepack enable
+yarn set version 3.6.3
+```
+
+[See official instructions](https://yarnpkg.com/getting-started/install)
+
+**3. Create `.env` file with environment variables**
+
+Add file to the root of `app-ui` with these variables:
+
+Production APIs:
+
+```bash
+VITE_APP_URL="http://localhost:4200"
+
 VITE_AUTH_URL="https://auth.aptible.com"
 VITE_API_URL="https://api.aptible.com"
 VITE_BILLING_URL="https://goldenboy.aptible.com"
-```
-Environment variables point to which API/Auth to use. You can optionally swap them with `*sbx-main` URLs.
-<br>Here's an example:
-```bash
-VITE_APP_URL="http://localhost:4200"
-VITE_AUTH_URL="http://localhost:4000"
-VITE_API_URL="http://localhost:4001"
-VITE_BILLING_URL="http:localhost:4005"
-VITE_LEGACY_DASHBOARD_URL="http://localhost:4200"
-VITE_METRIC_TUNNEL_URL="http://localhost:4006"
-VITE_SENTRY_DSN=""
-VITE_TUNA_ENABLED="false"
+VITE_LEGACY_DASHBOARD_URL="https://dashboard.aptible.com"
+VITE_METRIC_TUNNEL_URL="https://metrictunnel-nextgen.aptible.com"
 ```
 
-**3. Run Start Commands**
+Staging APIs:
+
 ```bash
-cd app-ui
+VITE_APP_URL="http://localhost:4200"
+
+VITE_AUTH_URL="https://auth-sbx-main.aptible-sandbox.com"
+VITE_API_URL="https://api-sbx-main.aptible-sandbox.com"
+VITE_BILLING_URL="https://goldenboy-sbx-main.aptible-sandbox.com"
+VITE_LEGACY_DASHBOARD_URL="https://dashboard-sbx-main.aptible-sandbox.com"
+VITE_METRIC_TUNNEL_URL="https://metrictunnel-sbx-main.aptible-sandbox.com"
 ```
-```bash
-yarn set version berry
-```
+
+**4. Run Start Commands**
+
 ```bash
 yarn
 ```
+
 ```bash
 yarn start
 ```
 
-**4. All done! Go to http://localhost:4200**
-<br>The web app will live update after committing changes.
+**5. All done! Go to http://localhost:4200**
+The web app will live update after committing changes.
 
 ## Troubleshooting
-
-**Yarn commands are not working**
-
-Re-run the yarn command to add dependencies
-
-```bash
-yarn
-```
-
-**After running `yarn start`, I'm stuck on a blank page that says loading...**
-
-Unset your environment variables in terminal, by running the following commands:
-
-```bash
-cd app-ui
-```
-```bash
-unset VITE_AUTH_URL
-unset VITE API URL
-unset VITE_BILLING URL
-```
-Then re-run `yarn start` and the site should load.
 
 **Why does my pull request keep failing tests?**
 
@@ -89,8 +84,8 @@ yarn fmt
 
 ## Sites
 
-- `prod` https://app.aptible.com
-- `staging` https://app-sbx-main.aptible-sandbox.com
+- [prod](https://app.aptible.com)
+- [staging](https://app-sbx-main.aptible-sandbox.com)
 
 ## Continuous Deployment
 
