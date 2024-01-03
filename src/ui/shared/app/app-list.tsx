@@ -31,7 +31,6 @@ import {
   ActionBar,
   DescBar,
   FilterBar,
-  LoadingBar,
   PaginateBar,
   TitleBar,
 } from "../resource-list-view";
@@ -162,12 +161,11 @@ export const AppListByOrg = () => {
               search={search}
               onChange={onChange}
             />
-            <LoadingBar isLoading={isLoading} />
           </Group>
 
           <Group variant="horizontal" size="lg" className="items-center mt-1">
             <DescBar>{paginated.totalItems} Apps</DescBar>
-            <PaginateBar {...paginated} />
+            <PaginateBar {...paginated} isLoading={isLoading} />
           </Group>
         </FilterBar>
       </Group>

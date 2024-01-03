@@ -77,6 +77,7 @@ export function usePaginate<T>(
     data: paginatedData,
     itemsPerPage,
     setItemsPerPage,
+    isLoading: false,
     prev: () => {
       if (page === 1) {
         return;
