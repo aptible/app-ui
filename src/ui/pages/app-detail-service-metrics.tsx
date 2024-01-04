@@ -107,7 +107,6 @@ export function AppDetailServiceMetricsPage() {
               metricNames={["cpu_pct"]}
               metricHorizon={metricHorizon}
               helpText="Total amount of CPU your container has used from the host system."
-              yAxisLabel="CPU Usage (%)"
               yAxisUnit="%"
             />
             <ContainerMetricsChart
@@ -116,7 +115,6 @@ export function AppDetailServiceMetricsPage() {
               limit={`${service.containerMemoryLimitMb} MB`}
               metricHorizon={metricHorizon}
               helpText="Total amount of memory your container has requested from the host system."
-              yAxisLabel="Memory Usage (MB)"
               yAxisUnit=" MB"
             />
             <ContainerMetricsChart
@@ -124,7 +122,6 @@ export function AppDetailServiceMetricsPage() {
               metricNames={["la"]}
               metricHorizon={metricHorizon}
               helpText="Total runnable and blocked tasks (threads) in your container."
-              yAxisLabel="Load Average (#)"
             />
           </div>
         ) : (

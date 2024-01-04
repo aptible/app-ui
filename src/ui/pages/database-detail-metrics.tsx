@@ -113,7 +113,6 @@ export function DatabaseMetricsPage() {
               metricNames={["cpu_pct"]}
               metricHorizon={metricHorizon}
               helpText="Total amount of CPU your container has used from the host system."
-              yAxisLabel="CPU Usage (%)"
               yAxisUnit="%"
             />
             <ContainerMetricsChart
@@ -122,7 +121,6 @@ export function DatabaseMetricsPage() {
               metricNames={["memory_all"]}
               metricHorizon={metricHorizon}
               helpText="Total amount of memory your container has requested from the host system."
-              yAxisLabel="Memory Usage (MB)"
               yAxisUnit=" MB"
             />
             <ContainerMetricsChart
@@ -130,7 +128,6 @@ export function DatabaseMetricsPage() {
               metricNames={["fs"]}
               metricHorizon={metricHorizon}
               helpText="Total used disk space compared to total available space. A small amount is reserved for usage by the system."
-              yAxisLabel="Disk Usage (GB)"
               yAxisUnit=" GB"
             />
             <ContainerMetricsChart
@@ -138,14 +135,12 @@ export function DatabaseMetricsPage() {
               metricNames={["iops"]}
               metricHorizon={metricHorizon}
               helpText="IO activity of your database, compared to the baseline performance of its underlying volume."
-              yAxisLabel="IOPS"
             />
             <ContainerMetricsChart
               containers={containers}
               metricNames={["la"]}
               metricHorizon={metricHorizon}
               helpText="Total runnable and blocked tasks (threads) in your container."
-              yAxisLabel="Load Average (#)"
             />
           </div>
         ) : (
