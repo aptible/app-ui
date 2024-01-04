@@ -1,10 +1,8 @@
 import { api, cacheTimer } from "@app/api";
+import { createSelector } from "@app/fx";
 import { defaultEntity } from "@app/hal";
-import { createTable } from "@app/slice-helpers";
-import { createReducerMap, mustSelectEntity } from "@app/slice-helpers";
-import { AppState, DeployDatabaseImage } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectDeploy } from "../slice";
+import { db } from "@app/schema";
+import { DeployDatabaseImage } from "@app/types";
 
 export interface DeployDatabaseImageResponse {
   id: number;
@@ -57,42 +55,10 @@ export const deserializeDeployDatabaseImage = (
   };
 };
 
-export const defaultDeployDatabaseImage = (
-  db: Partial<DeployDatabaseImage> = {},
-): DeployDatabaseImage => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    default: false,
-    description: "",
-    discoverable: false,
-    dockerRepo: "",
-    type: "",
-    version: "",
-    visible: true,
-    createdAt: now,
-    updatedAt: now,
-    ...db,
-  };
-};
-
-export const DEPLOY_DATABASE_IMAGE_NAME = "databaseImages";
-const slice = createTable<DeployDatabaseImage>({
-  name: DEPLOY_DATABASE_IMAGE_NAME,
-});
-const { add: addDeployDatabaseImages } = slice.actions;
-
 export const hasDeployDatabaseImage = (a: DeployDatabaseImage) => a.id !== "";
-export const databaseImageReducers = createReducerMap(slice);
-const initApp = defaultDeployDatabaseImage();
-const must = mustSelectEntity(initApp);
-
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_DATABASE_IMAGE_NAME],
-);
-export const selectDatabaseImageById = must(selectors.selectById);
+export const selectDatabaseImageById = db.databaseImages.selectById;
 export const selectDatabaseImagesAsList = createSelector(
-  selectors.selectTableAsList,
+  db.databaseImages.selectTableAsList,
   (imgs) =>
     imgs.sort((a, b) => {
       return b.description.localeCompare(a.description, "en", {
@@ -113,6 +79,6 @@ export const databaseImageEntities = {
   database_image: defaultEntity({
     id: "database_image",
     deserialize: deserializeDeployDatabaseImage,
-    save: addDeployDatabaseImages,
+    save: db.databaseImages.add,
   }),
 };

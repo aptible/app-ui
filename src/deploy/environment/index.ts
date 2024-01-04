@@ -1,20 +1,13 @@
-import { createSelector } from "@reduxjs/toolkit";
-
 import { api, cacheMinTimer } from "@app/api";
-import { latest, put, select } from "@app/fx";
+import { createSelector } from "@app/fx";
+import { latest, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
+import { WebState, db, schema } from "@app/schema";
 import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import {
-  AppState,
   DeployEnvironment,
   DeployEnvironmentStats,
   LinkResponse,
-  MapEntity,
   OnboardingStatus,
   excludesFalse,
 } from "@app/types";
@@ -113,74 +106,12 @@ export const deserializeDeployEnvironmentStats = (
   };
 };
 
-export const defaultDeployEnvironment = (
-  e: Partial<DeployEnvironment> = {},
-): DeployEnvironment => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    organizationId: "",
-    handle: "Unknown",
-    createdAt: now,
-    updatedAt: now,
-    type: "development",
-    activated: true,
-    sweetnessStack: "",
-    stackId: "",
-    onboardingStatus: "unknown",
-    totalDatabaseCount: 0,
-    totalAppCount: 0,
-    ...e,
-  };
-};
-
-export const defaultDeployEnvironmentStats = (
-  e: Partial<DeployEnvironmentStats> = {},
-): DeployEnvironmentStats => {
-  return {
-    id: "",
-    containerCount: 0,
-    domainCount: 0,
-    totalDiskSize: 0,
-    appContainerCount: 0,
-    databaseContainerCount: 0,
-    totalBackupSize: 0,
-    ...e,
-  };
-};
-
-export const DEPLOY_ENVIRONMENT_NAME = "environments";
-const slice = createTable<DeployEnvironment>({
-  name: DEPLOY_ENVIRONMENT_NAME,
-});
-const {
-  add: addDeployEnvironments,
-  patch: patchDeployEnvironments,
-  remove: removeEnvironments,
-  reset: resetEnvironments,
-} = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => s[DEPLOY_ENVIRONMENT_NAME],
-);
-const initEnv = defaultDeployEnvironment();
-const must = mustSelectEntity(initEnv);
-export const selectEnvironmentById = must(selectors.selectById);
-export const selectEnvironmentByIds = selectors.selectByIds;
-export const { selectTable: selectEnvironments } = selectors;
-const selectEnvironmentsAsList = selectors.selectTableAsList;
-export const findEnvById = must(selectors.findById);
-
-export const DEPLOY_ENVIRONMENT_STATS_NAME = "environmentStats";
-const stats = createTable<DeployEnvironmentStats>({
-  name: DEPLOY_ENVIRONMENT_STATS_NAME,
-});
-const { add: addDeployEnvironmentStats } = stats.actions;
-const statSelectors = stats.getSelectors(
-  (s: AppState) => s[DEPLOY_ENVIRONMENT_STATS_NAME],
-);
-const initEnvStats = defaultDeployEnvironmentStats();
-const mustStats = mustSelectEntity(initEnvStats);
-export const selectEnvironmentStatsById = mustStats(statSelectors.selectById);
+export const selectEnvironmentById = db.environments.selectById;
+export const selectEnvironmentByIds = db.environments.selectByIds;
+export const selectEnvironments = db.environments.selectTable;
+const selectEnvironmentsAsList = db.environments.selectTableAsList;
+export const findEnvById = db.environments.findById;
+export const selectEnvironmentStatsById = db.environmentStats.selectById;
 
 export const selectEnvironmentsByOrg = createSelector(
   selectEnvironmentsAsList,
@@ -189,7 +120,7 @@ export const selectEnvironmentsByOrg = createSelector(
     if (orgId === "") return {};
     return envs
       .filter((env) => env.organizationId === orgId)
-      .reduce<MapEntity<DeployEnvironment>>((acc, env) => {
+      .reduce<Record<string, DeployEnvironment>>((acc, env) => {
         acc[env.id] = env;
         return acc;
       }, {});
@@ -211,12 +142,11 @@ export const envToOption = (
 };
 
 export const hasDeployEnvironment = (a: DeployEnvironment) => a.id !== "";
-export const environmentReducers = createReducerMap(slice, stats);
 export const selectEnvironmentByName = createSelector(
   selectEnvironmentsAsList,
-  (_: AppState, p: { handle: string }) => p.handle,
+  (_: WebState, p: { handle: string }) => p.handle,
   (envs, handle) => {
-    return envs.find((e) => e.handle === handle) || initEnv;
+    return envs.find((e) => e.handle === handle) || db.environments.empty;
   },
 );
 
@@ -231,7 +161,7 @@ export const fetchEnvironmentById = api.get<
   }
 
   const stats = deserializeDeployEnvironmentStats(ctx.json.value);
-  ctx.actions.push(addDeployEnvironmentStats({ [stats.id]: stats }));
+  yield* schema.update(db.environmentStats.add({ [stats.id]: stats }));
 });
 
 export const fetchEnvironments = api.get(
@@ -244,7 +174,7 @@ export const fetchEnvironments = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    ctx.actions.push(resetEnvironments());
+    yield* schema.update(db.environments.reset());
   },
 );
 
@@ -257,7 +187,7 @@ export const deprovisionEnvironment = api.delete<{ id: string }>(
   ["/accounts/:id"],
   function* (ctx, next) {
     yield* next();
-    ctx.actions.push(removeEnvironments([ctx.payload.id]));
+    yield* schema.update(db.environments.remove([ctx.payload.id]));
   },
 );
 
@@ -293,8 +223,8 @@ const computeSearchMatch = (
 
 export const selectEnvironmentsForTableSearch = createSelector(
   selectEnvironmentsByOrgAsList,
-  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: AppState, props: { stackId?: string }) => props.stackId || "",
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { stackId?: string }) => props.stackId || "",
   (envs, search, stackId): DeployEnvironment[] => {
     if (search === "" && stackId === "") {
       return envs;
@@ -318,7 +248,7 @@ export const selectEnvironmentsForTableSearch = createSelector(
 
 export const selectEnvironmentsByStackId = createSelector(
   selectEnvironmentsAsList,
-  (_: AppState, props: { stackId?: string }) => props.stackId || "",
+  (_: WebState, props: { stackId?: string }) => props.stackId || "",
   (envs, stackId) => {
     if (stackId === "") {
       return [...envs].sort((a, b) => a.id.localeCompare(b.id));
@@ -332,8 +262,8 @@ export const selectEnvironmentsByStackId = createSelector(
 
 export const selectEnvironmentsForTableSearchByStackId = createSelector(
   selectEnvironmentsByOrgAsList,
-  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: AppState, props: { stackId?: string }) => props.stackId || "",
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { stackId?: string }) => props.stackId || "",
   (envs, search, stackId): DeployEnvironment[] => {
     if (search === "") {
       return envs;
@@ -366,7 +296,7 @@ export const updateDeployEnvironmentStatus = api.patch<EnvPatch>(
   { supervisor: latest },
   function* (ctx, next) {
     const { id, status } = ctx.payload;
-    const env = yield* select((s: AppState) =>
+    const env = yield* select((s: WebState) =>
       selectEnvironmentById(s, { id }),
     );
     if (env.onboardingStatus === status) {
@@ -375,7 +305,9 @@ export const updateDeployEnvironmentStatus = api.patch<EnvPatch>(
 
     // optimistically update status to prevent this endpoint getting hit multiple times from the
     // create project git status view
-    yield* put(patchDeployEnvironments({ [id]: { onboardingStatus: status } }));
+    yield* schema.update(
+      db.environments.patch({ [id]: { onboardingStatus: status } }),
+    );
 
     const body = {
       onboarding_status: status,
@@ -394,7 +326,7 @@ export const createDeployEnvironment = api.post<
   DeployEnvironmentResponse
 >("/accounts", function* (ctx, next) {
   const { name, stackId, orgId } = ctx.payload;
-  const stack = yield* select((s: AppState) =>
+  const stack = yield* select((s: WebState) =>
     selectStackById(s, { id: stackId }),
   );
   const body: Record<string, string> = {
@@ -422,6 +354,6 @@ export const environmentEntities = {
   account: defaultEntity({
     id: "account",
     deserialize: deserializeDeployEnvironment,
-    save: addDeployEnvironments,
+    save: db.environments.add,
   }),
 };

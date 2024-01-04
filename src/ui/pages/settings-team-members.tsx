@@ -1,11 +1,10 @@
 import { selectIsUserOwner } from "@app/deploy";
-import { useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
+import { useQuery, useSelector } from "@app/react";
 import { teamInviteUrl, teamMembersEditUrl } from "@app/routes";
-import type { AppState, User } from "@app/types";
+import type { User } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { fetchUsers, selectUsersForSearchTable } from "@app/users";
-import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ActionBar,
@@ -47,14 +46,12 @@ export const TeamMembersPage = () => {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
-  const users = useSelector((s: AppState) =>
-    selectUsersForSearchTable(s, { search }),
-  );
+  const users = useSelector((s) => selectUsersForSearchTable(s, { search }));
   const paginated = usePaginate(users);
   const onInvite = () => {
     navigate(teamInviteUrl());
   };
-  const isOwner = useSelector((s: AppState) => selectIsUserOwner(s, { orgId }));
+  const isOwner = useSelector((s) => selectIsUserOwner(s, { orgId }));
 
   return (
     <Group>

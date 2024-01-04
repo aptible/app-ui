@@ -1,6 +1,6 @@
-import { selectEnv } from "@app/env";
-import { selectDataById } from "@app/fx";
+import { selectEnv } from "@app/config";
 import { selectNav, setCollapsed } from "@app/nav";
+import { useDispatch, useSelector } from "@app/react";
 import {
   activityUrl,
   appsUrl,
@@ -16,10 +16,9 @@ import {
   stacksUrl,
   supportUrl,
 } from "@app/routes";
+import { db } from "@app/schema";
 import { SYSTEM_STATUS_ID } from "@app/system-status";
-import { AppState } from "@app/types";
 import { useLayoutEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { useTrialNotice } from "../hooks/use-trial-notice";
@@ -50,8 +49,8 @@ export const ApplicationSidebar = () => {
   const dispatch = useDispatch();
   const { collapsed } = useSelector(selectNav);
   const { hasTrialNoPayment, expiresIn } = useTrialNotice();
-  const systemStatus = useSelector((s: AppState) =>
-    selectDataById(s, { id: SYSTEM_STATUS_ID }),
+  const systemStatus = useSelector((s) =>
+    db.cache.selectById(s, { id: SYSTEM_STATUS_ID }),
   );
   const hasSystemStatus =
     systemStatus?.description && systemStatus?.indicator !== "none";

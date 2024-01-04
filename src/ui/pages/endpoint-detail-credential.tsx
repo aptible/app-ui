@@ -1,13 +1,12 @@
 import { selectEndpointById, selectServiceById } from "@app/deploy";
-import { AppState } from "@app/types";
-import { useSelector } from "react-redux";
+import { useSelector } from "@app/react";
 import { useParams } from "react-router";
 import { DatabaseCredentialBox } from "../shared";
 
 export const EndpointDetailCredentialsPage = () => {
   const { id = "" } = useParams();
-  const enp = useSelector((s: AppState) => selectEndpointById(s, { id }));
-  const service = useSelector((s: AppState) =>
+  const enp = useSelector((s) => selectEndpointById(s, { id }));
+  const service = useSelector((s) =>
     selectServiceById(s, { id: enp.serviceId }),
   );
   return (

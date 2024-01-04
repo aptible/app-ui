@@ -1,26 +1,10 @@
 import { api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
-import {
-  call,
-  put,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
+import { call } from "@app/fx";
+import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import {
-  AppState,
-  DeployLogDrain,
-  LinkResponse,
-  ProvisionableStatus,
-} from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
+import { WebState, db, schema } from "@app/schema";
+import { DeployLogDrain, LinkResponse, ProvisionableStatus } from "@app/types";
 import { DeployOperationResponse } from "../operation";
-import { selectDeploy } from "../slice";
 
 export type LogDrainType =
   | "logdna"
@@ -176,50 +160,14 @@ export const defaultLogDrainResponse = (
   };
 };
 
-export const defaultDeployLogDrain = (
-  ld: Partial<DeployLogDrain> = {},
-): DeployLogDrain => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    handle: "",
-    drainType: "",
-    drainHost: "",
-    drainPort: "",
-    drainUsername: "",
-    drainPassword: "",
-    url: "",
-    loggingToken: "",
-    drainApps: false,
-    drainProxies: false,
-    drainEphemeralSessions: false,
-    drainDatabases: false,
-    environmentId: "",
-    backendChannel: "",
-    createdAt: now,
-    updatedAt: now,
-    status: "pending",
-    ...ld,
-  };
-};
+export const selectLogDrainById = db.logDrains.selectById;
+export const findLogDrainById = db.logDrains.findById;
+export const selectLogDrainsAsList = db.logDrains.selectTableAsList;
+export const selectLogDrains = db.logDrains.selectTable;
 
-export const DEPLOY_LOG_DRAIN_NAME = "logDrains";
-const slice = createTable<DeployLogDrain>({ name: DEPLOY_LOG_DRAIN_NAME });
-const { add: addDeployLogDrains, reset: resetDeployLogDrains } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_LOG_DRAIN_NAME],
-);
-const initLogDrain = defaultDeployLogDrain();
-const must = mustSelectEntity(initLogDrain);
-export const selectLogDrainById = must(selectors.selectById);
-export const findLogDrainById = must(selectors.findById);
-export const {
-  selectTableAsList: selectLogDrainsAsList,
-  selectTable: selectLogDrains,
-} = selectors;
 export const selectLogDrainsByEnvId = createSelector(
   selectLogDrainsAsList,
-  (_: AppState, props: { envId: string }) => props.envId,
+  (_: WebState, props: { envId: string }) => props.envId,
   (logDrains, envId) => {
     return logDrains
       .filter((logDrain) => logDrain.environmentId === envId)
@@ -231,7 +179,6 @@ export const selectLogDrainsByEnvId = createSelector(
   },
 );
 export const hasDeployLogDrain = (a: DeployLogDrain) => a.id !== "";
-export const logDrainReducers = createReducerMap(slice);
 
 export const fetchLogDrains = api.get(
   "/log_drains?per_page=5000",
@@ -243,7 +190,7 @@ export const fetchLogDrains = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    ctx.actions.push(resetDeployLogDrains());
+    yield* schema.update(db.logDrains.reset());
   },
 );
 
@@ -330,35 +277,36 @@ export const createLogDrainOperation = api.post<
 export const provisionLogDrain = thunks.create<CreateLogDrainProps>(
   "create-and-provision-log-drain",
   function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
+    const id = ctx.key;
+    yield* schema.update(db.loaders.start({ id }));
 
     const mdCtx = yield* call(() =>
       createLogDrain.run(createLogDrain(ctx.payload)),
     );
     if (!mdCtx.json.ok) {
-      const data = mdCtx.json.data as any;
-      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+      const data = mdCtx.json.error as any;
+      yield* schema.update(db.loaders.error({ id, message: data.message }));
       return;
     }
 
-    const logDrainId = mdCtx.json.data.id;
+    const logDrainId = mdCtx.json.value.id;
     const opCtx = yield* call(() =>
       createLogDrainOperation.run(
         createLogDrainOperation({ id: `${logDrainId}` }),
       ),
     );
     if (!opCtx.json.ok) {
-      const data = opCtx.json.data as any;
-      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+      const data = opCtx.json.error as any;
+      yield* schema.update(db.loaders.error({ id, message: data.message }));
       return;
     }
 
     yield* next();
 
-    yield* put(
-      setLoaderSuccess({
-        id: ctx.key,
-        meta: { logDrainId, opId: `${opCtx.json.data.id}` },
+    yield* schema.update(
+      db.loaders.success({
+        id,
+        meta: { logDrainId, opId: `${opCtx.json.value.id}` } as any,
       }),
     );
   },
@@ -381,7 +329,7 @@ export const deprovisionLogDrain = api.post<
     return;
   }
 
-  const opId = ctx.json.data.id;
+  const opId = ctx.json.value.id;
   ctx.loader = {
     message: `Deprovision log drain operation queued (operation ID: ${opId})`,
     meta: { opId: `${opId}` },
@@ -406,7 +354,7 @@ export const restartLogDrain = api.post<
     return;
   }
 
-  const opId = ctx.json.data.id;
+  const opId = ctx.json.value.id;
   ctx.loader = {
     message: `Restart log drain operation queued (operation ID: ${opId})`,
     meta: { opId: `${opId}` },
@@ -417,6 +365,6 @@ export const logDrainEntities = {
   log_drain: defaultEntity({
     id: "log_drain",
     deserialize: deserializeLogDrain,
-    save: addDeployLogDrains,
+    save: db.logDrains.add,
   }),
 };

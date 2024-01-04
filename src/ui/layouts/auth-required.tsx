@@ -1,7 +1,7 @@
 import { selectBillingDetail, selectHasPaymentMethod } from "@app/billing";
 import { FETCH_REQUIRED_DATA } from "@app/bootup";
 import { createLog } from "@app/debug";
-import { selectLoaderById } from "@app/fx";
+import { useDispatch, useSelector } from "@app/react";
 import { setRedirectPath } from "@app/redirect-path";
 import {
   homeUrl,
@@ -11,11 +11,10 @@ import {
   signupUrl,
   verifyEmailRequestUrl,
 } from "@app/routes";
+import { db } from "@app/schema";
 import { selectAccessToken } from "@app/token";
-import { AppState } from "@app/types";
 import { selectCurrentUser, selectIsUserVerified } from "@app/users";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Loading } from "../shared";
 
@@ -87,8 +86,8 @@ export const AuthRequired = ({
 }: { children?: React.ReactNode; redirectTo?: string }) => {
   const location = useLocation();
   const dispatch = useDispatch();
-  const loader = useSelector((s: AppState) =>
-    selectLoaderById(s, { id: FETCH_REQUIRED_DATA }),
+  const loader = useSelector((s) =>
+    db.loaders.selectById(s, { id: FETCH_REQUIRED_DATA }),
   );
   const accessToken = useSelector(selectAccessToken);
 

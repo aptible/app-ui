@@ -1,13 +1,17 @@
 import { fetchRoles } from "@app/auth";
 import { selectRolesEditable } from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
 import { createInvitation } from "@app/invitations";
 import { selectOrganizationSelectedId } from "@app/organizations";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { teamMembersUrl, teamPendingInvitesUrl } from "@app/routes";
-import { AppState } from "@app/types";
 import { emailValidator, existValidtor } from "@app/validator";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { useValidator } from "../hooks";
 import {
@@ -36,7 +40,7 @@ export function TeamInvitePage() {
   const dispatch = useDispatch();
   const orgId = useSelector(selectOrganizationSelectedId);
   useQuery(fetchRoles({ orgId }));
-  const roles = useSelector((s: AppState) => selectRolesEditable(s, { orgId }));
+  const roles = useSelector((s) => selectRolesEditable(s, { orgId }));
   const options = [
     { value: "", label: "Select a Role" },
     ...roles.map((role) => {

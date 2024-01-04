@@ -1,15 +1,20 @@
 import { fetchUserRoles, removeUserFromOrg } from "@app/auth";
 import { updateUserMemberships } from "@app/auth/membership";
 import { selectIsAccountOwner, selectRolesEditable } from "@app/deploy";
-import { useCache, useLoader, useLoaderSuccess } from "@app/fx";
 import { resetOtp } from "@app/mfa";
 import { selectOrganizationSelected } from "@app/organizations";
+import {
+  useCache,
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useSelector,
+} from "@app/react";
 import { RoleResponse } from "@app/roles";
 import { teamMembersUrl } from "@app/routes";
-import { AppState, HalEmbedded } from "@app/types";
+import { HalEmbedded } from "@app/types";
 import { selectCurrentUser, selectUserById } from "@app/users";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import {
   BannerMessages,
@@ -35,10 +40,8 @@ export function TeamMembersEditPage() {
   const dispatch = useDispatch();
   const org = useSelector(selectOrganizationSelected);
   const currentUser = useSelector(selectCurrentUser);
-  const user = useSelector((s: AppState) => selectUserById(s, { id }));
-  const roles = useSelector((s: AppState) =>
-    selectRolesEditable(s, { orgId: org.id }),
-  );
+  const user = useSelector((s) => selectUserById(s, { id }));
+  const roles = useSelector((s) => selectRolesEditable(s, { orgId: org.id }));
   const { rolesLoader, userRoles } = useFetchUserRoles(user.id);
 
   useEffect(() => {
@@ -83,7 +86,7 @@ export function TeamMembersEditPage() {
   const onRemoveFromOrg = () => {
     dispatch(removeUserFromOrg({ orgId: org.id, userId: user.id }));
   };
-  const isAccountOwner = useSelector((s: AppState) =>
+  const isAccountOwner = useSelector((s) =>
     selectIsAccountOwner(s, { orgId: org.id }),
   );
   const canRemoveUser = isAccountOwner && user.id !== currentUser.id;

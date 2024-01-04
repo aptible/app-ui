@@ -9,12 +9,17 @@ import {
   selectAppById,
   selectAppConfigById,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { appActivityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { AppState, DeployApp } from "@app/types";
+import { DeployApp } from "@app/types";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useEnvEditor, useLatestCodeResults } from "../hooks";
 import {
@@ -37,7 +42,7 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
-  const config = useSelector((s: AppState) =>
+  const config = useSelector((s) =>
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
   const envStr = configEnvToStr(config.env);
@@ -208,7 +213,7 @@ const CodeScanView = ({ codeScan }: { codeScan: DeployCodeScanResponse }) => {
 
 export const AppDetailConfigPage = () => {
   const { id = "" } = useParams();
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const app = useSelector((s) => selectAppById(s, { id }));
   useQuery(fetchApp({ id }));
   useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
 

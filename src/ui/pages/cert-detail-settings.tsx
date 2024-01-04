@@ -1,8 +1,3 @@
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
 import {
   deleteCertificate,
   fetchEndpointsByCertId,
@@ -10,9 +5,16 @@ import {
   selectCertificateById,
   selectEndpointsByCertId,
 } from "@app/deploy";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { environmentCertificatesUrl } from "@app/routes";
-import { AppState } from "@app/types";
-
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import {
   Banner,
   BannerMessages,
@@ -27,10 +29,8 @@ const CertDelete = ({ certId }: { certId: string }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useQuery(fetchEndpointsByCertId({ certId }));
-  const cert = useSelector((s: AppState) =>
-    selectCertificateById(s, { id: certId }),
-  );
-  const endpoints = useSelector((s: AppState) =>
+  const cert = useSelector((s) => selectCertificateById(s, { id: certId }));
+  const endpoints = useSelector((s) =>
     selectEndpointsByCertId(s, {
       certId: certId,
       envId: cert.environmentId,

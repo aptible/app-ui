@@ -1,11 +1,9 @@
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
 import { checkDns, renewEndpoint, selectEndpointById } from "@app/deploy";
+import { useDispatch, useSelector } from "@app/react";
+import { useLoader, useLoaderSuccess, useQuery } from "@app/react";
 import { endpointDetailActivityUrl } from "@app/routes";
-import { AcmeChallenge, AppState } from "@app/types";
-
+import { AcmeChallenge } from "@app/types";
+import { useNavigate, useParams } from "react-router";
 import {
   Box,
   Button,
@@ -80,7 +78,7 @@ export const EndpointDetailSetupPage = () => {
   const { id = "" } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const enp = useSelector((s: AppState) => selectEndpointById(s, { id }));
+  const enp = useSelector((s) => selectEndpointById(s, { id }));
   const challenges = enp.acmeConfiguration?.challenges || [];
   const action = renewEndpoint({ id });
   const renew = () => {

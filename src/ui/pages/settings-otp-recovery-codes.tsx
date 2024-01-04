@@ -1,5 +1,5 @@
-import { useCache } from "@app/fx";
 import { fetchOtpCodes } from "@app/mfa";
+import { useCache } from "@app/react";
 import { securitySettingsUrl } from "@app/routes";
 import { HalEmbedded } from "@app/types";
 import { useCurrentUser } from "../hooks";

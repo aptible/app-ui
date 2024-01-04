@@ -2,10 +2,8 @@ import {
   fetchVpnTunnelsByStackId,
   selectVpnTunnelByStackId,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
-import { AppState } from "@app/types";
+import { useQuery, useSelector } from "@app/react";
 import classNames from "classnames";
-import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import {
@@ -24,7 +22,7 @@ import {
 export const StackDetailVpnTunnelsPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchVpnTunnelsByStackId({ id }));
-  const vpnTunnels = useSelector((s: AppState) =>
+  const vpnTunnels = useSelector((s) =>
     selectVpnTunnelByStackId(s, { stackId: id }),
   );
 

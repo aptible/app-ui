@@ -1,13 +1,10 @@
 import { authApi, cacheShortTimer, elevetatedMdw } from "@app/api";
-import { selectOrigin } from "@app/env";
-import { Next, call, put, select } from "@app/fx";
-import {
-  selectOrganizationById,
-  setOrganizationSelected,
-} from "@app/organizations";
-import type { AppState, AuthApiCtx } from "@app/types";
+import { selectOrigin } from "@app/config";
+import { Next, call, select } from "@app/fx";
+import { selectOrganizationById } from "@app/organizations";
+import { WebState, db, schema } from "@app/schema";
+import type { AuthApiCtx } from "@app/types";
 import { deserializeUser } from "./serializers";
-import { resetUsers } from "./slice";
 import type { CreateUserForm, UserResponse } from "./types";
 
 interface UserBase {
@@ -22,16 +19,18 @@ export const fetchUser = authApi.get<UserBase, UserResponse>(
     if (!ctx.json.ok) return;
     const user = deserializeUser(ctx.json.value);
     if (user.selectedOrganizationId) {
-      const org = yield* select((s: AppState) =>
+      const org = yield* select((s: WebState) =>
         selectOrganizationById(s, {
           id: user.selectedOrganizationId,
         }),
       );
       // if we don't have the org in our list we can't set the org selected
-      if (!org) return;
+      if (!org.id) return;
       // if we need to reauthenticate to use that org then we can't set the org selected
       if (org.reauthRequired) return;
-      ctx.actions.push(setOrganizationSelected(user.selectedOrganizationId));
+      yield* schema.update(
+        db.organizationSelected.set(user.selectedOrganizationId),
+      );
     }
   },
 );
@@ -45,7 +44,7 @@ export const fetchUsers = authApi.get<{ orgId: string }>(
     if (!ctx.json.ok) {
       return;
     }
-    ctx.actions.push(resetUsers());
+    yield* schema.update(db.users.reset());
   },
 );
 
@@ -131,7 +130,7 @@ export const updateUserOrg = authApi.put<{ userId: string; orgId: string }>(
         selected_organization_id: ctx.payload.orgId,
       }),
     });
-    yield* put(setOrganizationSelected(ctx.payload.orgId));
+    yield* schema.update(db.organizationSelected.set(ctx.payload.orgId));
     yield* next();
   },
 );

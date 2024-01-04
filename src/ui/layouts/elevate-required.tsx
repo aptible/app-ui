@@ -1,6 +1,6 @@
+import { useSelector } from "@app/react";
 import { elevateUrl } from "@app/routes";
 import { selectIsElevatedTokenValid } from "@app/token";
-import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router";
 import { Outlet } from "react-router-dom";
 

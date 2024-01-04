@@ -1,8 +1,3 @@
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { useEffect, useReducer, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
-
 import {
   DbCreatorProps,
   fetchDatabaseImages,
@@ -10,10 +5,17 @@ import {
   selectDatabaseImagesVisible,
   selectEnvironmentById,
 } from "@app/deploy";
-import { environmentActivityUrl, environmentDatabasesUrl } from "@app/routes";
-import { AppState } from "@app/types";
-
 import { generateHash } from "@app/id";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
+import { environmentActivityUrl, environmentDatabasesUrl } from "@app/routes";
+import { useEffect, useReducer, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
   Banner,
@@ -58,9 +60,7 @@ export const CreateDatabasePage = () => {
   const isDisabled = dbCreatorList.length === 0;
   const imgLoader = useQuery(fetchDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesVisible);
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
+  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
   const action = provisionDatabaseList({ envId, dbs: dbCreatorList });
   const loader = useLoader(action);
   useLoaderSuccess(loader, () => {

@@ -4,9 +4,8 @@ import {
   fetchEnvActivityReports,
   selectActivityReportsByEnvId,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
-import { AppState, DeployActivityReport } from "@app/types";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useQuery, useSelector } from "@app/react";
+import { DeployActivityReport } from "@app/types";
 import { useParams } from "react-router";
 import { usePaginate } from "../hooks";
 import {
@@ -59,7 +58,7 @@ const ActivityReportListRow = ({
 
 export const EnvironmentActivityReportsPage = () => {
   const { id = "" } = useParams();
-  const reports = useSelector((s: AppState) =>
+  const reports = useSelector((s) =>
     selectActivityReportsByEnvId(s, { envId: id }),
   );
   useQuery(fetchEnvActivityReports({ id }));

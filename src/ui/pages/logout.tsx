@@ -1,10 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-
 import { logout } from "@app/auth";
+import { selectLegacyDashboardUrl } from "@app/config";
+import { useDispatch, useSelector } from "@app/react";
 import { loginUrl } from "@app/routes";
-
-import { selectLegacyDashboardUrl } from "@app/env";
+import { useNavigate } from "react-router";
 import { HeroBgLayout } from "../layouts";
 import { Box, Button, IconArrowRight, tokens } from "../shared";
 

@@ -1,18 +1,16 @@
-import { Link } from "react-router-dom";
-
 import {
   hasDeployApp,
   hasDeployOperation,
   selectLatestDeployOp,
 } from "@app/deploy";
+import { useSelector } from "@app/react";
 import { appDeployResumeUrl } from "@app/routes";
-import { AppState, DeployApp } from "@app/types";
-
-import { useSelector } from "react-redux";
+import { DeployApp } from "@app/types";
+import { Link } from "react-router-dom";
 import { IconArrowRight } from "./icons";
 
 export const OnboardingLink = ({ app }: { app: DeployApp }) => {
-  const deployOp = useSelector((s: AppState) =>
+  const deployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
 

@@ -6,11 +6,9 @@ import {
   selectPlanByActiveId,
   updateActivePlan,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
+import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { billingMethodUrl, logoutUrl } from "@app/routes";
-import { AppState } from "@app/types";
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useTrialNotice } from "../hooks/use-trial-notice";
 import { HeroBgLayout } from "../layouts";
@@ -31,7 +29,7 @@ export const PlansPage = () => {
   const activePlan = useSelector(selectFirstActivePlan);
 
   const planLoader = useQuery(fetchPlans());
-  const selectedPlan = useSelector((s: AppState) =>
+  const selectedPlan = useSelector((s) =>
     selectPlanByActiveId(s, { id: activePlan.planId }),
   );
   const updatePlanLoader = useLoader(updateActivePlan);

@@ -1,28 +1,14 @@
-import { createSelector } from "@reduxjs/toolkit";
-
 import { api, cacheTimer, thunks } from "@app/api";
-import {
-  call,
-  put,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
+import { createSelector } from "@app/fx";
+import { call } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
+import { WebState, db, schema } from "@app/schema";
 import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import {
-  AppState,
   DeployMetricDrain,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
-
 import { DeployOperationResponse } from "../operation";
-import { selectDeploy } from "../slice";
 
 export type MetricDrainType =
   | "influxdb"
@@ -103,50 +89,14 @@ export const deserializeMetricDrain = (
   };
 };
 
-export const defaultDeployMetricDrain = (
-  md: Partial<DeployMetricDrain> = {},
-): DeployMetricDrain => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    handle: "",
-    drainType: "",
-    agggregatorCaCertificate: "",
-    aggregatorCaPrivateKeyBlob: "",
-    aggregatorHost: "",
-    aggregatorPortMapping: [],
-    aggregatorInstanceId: "",
-    aggregatorDockerName: "",
-    aggregatorAllocation: [],
-    drainConfiguration: {},
-    environmentId: "",
-    createdAt: now,
-    updatedAt: now,
-    status: "pending",
-    ...md,
-  };
-};
+export const selectMetricDrainById = db.metricDrains.selectById;
+export const findMetricDrainById = db.metricDrains.findById;
+export const selectMetricDrainsAsList = db.metricDrains.selectTableAsList;
+export const selectMetricDrains = db.metricDrains.selectTable;
 
-export const DEPLOY_METRIC_DRAIN_NAME = "metricDrains";
-const slice = createTable<DeployMetricDrain>({
-  name: DEPLOY_METRIC_DRAIN_NAME,
-});
-const { add: addDeployMetricDrains, reset: resetDeployMetricDrains } =
-  slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_METRIC_DRAIN_NAME],
-);
-const initMetricDrain = defaultDeployMetricDrain();
-const must = mustSelectEntity(initMetricDrain);
-export const selectMetricDrainById = must(selectors.selectById);
-export const findMetricDrainById = must(selectors.findById);
-export const {
-  selectTableAsList: selectMetricDrainsAsList,
-  selectTable: selectMetricDrains,
-} = selectors;
 export const selectMetricDrainsByEnvId = createSelector(
   selectMetricDrainsAsList,
-  (_: AppState, props: { envId: string }) => props.envId,
+  (_: WebState, props: { envId: string }) => props.envId,
   (metricDrains, envId) => {
     return metricDrains
       .filter((metricDrain) => metricDrain.environmentId === envId)
@@ -158,7 +108,6 @@ export const selectMetricDrainsByEnvId = createSelector(
   },
 );
 export const hasDeployMetricDrain = (a: DeployMetricDrain) => a.id !== "";
-export const metricDrainReducers = createReducerMap(slice);
 
 export const fetchEnvMetricDrains = api.get<{ id: string }>(
   "/accounts/:id/metric_drains",
@@ -174,7 +123,7 @@ export const fetchMetricDrains = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    ctx.actions.push(resetDeployMetricDrains());
+    yield* schema.update(db.metricDrains.reset());
   },
 );
 
@@ -286,35 +235,39 @@ export const createMetricDrainOperation = api.post<
 export const provisionMetricDrain = thunks.create<CreateMetricDrainProps>(
   "create-and-provision-metric-drain",
   function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
+    yield* schema.update(db.loaders.start({ id: ctx.key }));
 
     const mdCtx = yield* call(() =>
       createMetricDrain.run(createMetricDrain(ctx.payload)),
     );
     if (!mdCtx.json.ok) {
-      const data = mdCtx.json.data as any;
-      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+      const data = mdCtx.json.error as any;
+      yield* schema.update(
+        db.loaders.error({ id: ctx.key, message: data.message }),
+      );
       return;
     }
 
-    const metricDrainId = mdCtx.json.data.id;
+    const metricDrainId = mdCtx.json.value.id;
     const opCtx = yield* call(() =>
       createMetricDrainOperation.run(
         createMetricDrainOperation({ id: metricDrainId }),
       ),
     );
     if (!opCtx.json.ok) {
-      const data = opCtx.json.data as any;
-      yield* put(setLoaderError({ id: ctx.key, message: data.message }));
+      const data = opCtx.json.error as any;
+      yield* schema.update(
+        db.loaders.error({ id: ctx.key, message: data.message }),
+      );
       return;
     }
 
     yield* next();
 
-    yield* put(
-      setLoaderSuccess({
+    yield* schema.update(
+      db.loaders.success({
         id: ctx.key,
-        meta: { metricDrainId, opId: `${opCtx.json.data.id}` },
+        meta: { metricDrainId, opId: `${opCtx.json.value.id}` } as any,
       }),
     );
   },
@@ -338,7 +291,7 @@ export const deprovisionMetricDrain = api.post<
     return;
   }
 
-  const opId = ctx.json.data.id;
+  const opId = ctx.json.value.id;
   ctx.loader = {
     message: `Deprovision log drain operation queued (operation ID: ${opId})`,
     meta: { opId: `${opId}` },
@@ -363,7 +316,7 @@ export const restartMetricDrain = api.post<
     return;
   }
 
-  const opId = ctx.json.data.id;
+  const opId = ctx.json.value.id;
   ctx.loader = {
     message: `Restart log drain operation queued (operation ID: ${opId})`,
     meta: { opId: `${opId}` },
@@ -374,6 +327,6 @@ export const metricDrainEntities = {
   metric_drain: defaultEntity({
     id: "metric_drain",
     deserialize: deserializeMetricDrain,
-    save: addDeployMetricDrains,
+    save: db.metricDrains.add,
   }),
 };

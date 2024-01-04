@@ -72,6 +72,7 @@ describe("Verify email page", () => {
       name: /Resend Verification Email/,
     });
     fireEvent.click(el);
+    await screen.findByText(/Success! You should receive an email shortly./);
   });
 
   it("the verify email page should properly fail", async () => {

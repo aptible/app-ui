@@ -1,7 +1,6 @@
-import { useSelector } from "react-redux";
+import { selectEnv } from "@app/config";
+import { useSelector } from "@app/react";
 import { Link } from "react-router-dom";
-
-import { selectEnv } from "@app/env";
 
 const ProgressItem = ({ done = false }: { done?: boolean }) => {
   return (

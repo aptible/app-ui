@@ -7,27 +7,18 @@ import {
   selectLatestDeployOp,
   selectLatestProvisionOps,
 } from "@app/deploy";
-import { AppState } from "@app/types";
+import { useSelector } from "@app/react";
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
 
 export const useProjectOps = ({
   appId,
   envId,
 }: { appId: string; envId: string }) => {
-  const deployOp = useSelector((s: AppState) =>
-    selectLatestDeployOp(s, { appId }),
-  );
-  const configOp = useSelector((s: AppState) =>
-    selectLatestConfigureOp(s, { appId }),
-  );
+  const deployOp = useSelector((s) => selectLatestDeployOp(s, { appId }));
+  const configOp = useSelector((s) => selectLatestConfigureOp(s, { appId }));
 
-  const vhost = useSelector((s: AppState) =>
-    selectFirstEndpointByAppId(s, { appId }),
-  );
-  const dbs = useSelector((s: AppState) =>
-    selectDatabasesByEnvId(s, { envId }),
-  );
+  const vhost = useSelector((s) => selectFirstEndpointByAppId(s, { appId }));
+  const dbs = useSelector((s) => selectDatabasesByEnvId(s, { envId }));
 
   const resourceIds = useMemo(() => {
     const arr = [...dbs.map((db) => db.id)];
@@ -37,7 +28,7 @@ export const useProjectOps = ({
     return arr;
   }, [dbs, vhost]);
 
-  const provisionOps = useSelector((s: AppState) =>
+  const provisionOps = useSelector((s) =>
     selectLatestProvisionOps(s, {
       resourceIds,
     }),

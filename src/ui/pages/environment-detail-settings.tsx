@@ -10,14 +10,17 @@ import {
   selectMetricDrainsByEnvId,
   updateEnvironmentName,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
-import { AppState } from "@app/types";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router";
-
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { environmentsUrl } from "@app/routes";
 import { handleValidator } from "@app/validator";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
 import {
   Banner,
@@ -39,9 +42,7 @@ const validators = {
 
 const EnvChangeName = ({ envId }: { envId: string }) => {
   const dispatch = useDispatch();
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
+  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
 
   const [confirm, setConfirm] = useState(false);
   const [handle, setHandle] = useState<string>("");
@@ -128,18 +129,12 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
   useQuery(fetchEnvLogDrains({ id: envId }));
   useQuery(fetchEnvMetricDrains({ id: envId }));
 
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
-  const metricDrains = useSelector((s: AppState) =>
+  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
+  const metricDrains = useSelector((s) =>
     selectMetricDrainsByEnvId(s, { envId }),
   );
-  const logDrains = useSelector((s: AppState) =>
-    selectLogDrainsByEnvId(s, { envId }),
-  );
-  const backups = useSelector((s: AppState) =>
-    selectBackupsByEnvId(s, { envId }),
-  );
+  const logDrains = useSelector((s) => selectLogDrainsByEnvId(s, { envId }));
+  const backups = useSelector((s) => selectBackupsByEnvId(s, { envId }));
 
   const [confirm, setConfirm] = useState("");
   const dispatch = useDispatch();

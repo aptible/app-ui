@@ -1,9 +1,8 @@
 import { api } from "@app/api";
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { createReducerMap, createTable } from "@app/slice-helpers";
-import { AppState, DeployDatabaseCredential, LinkResponse } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectDeploy } from "../slice";
+import { WebState, db } from "@app/schema";
+import { DeployDatabaseCredential, LinkResponse } from "@app/types";
 
 interface DatabaseCredentialResponse {
   _type: "database_credential";
@@ -28,38 +27,16 @@ export const deserializeDatabaseCredential = (
   };
 };
 
-export const defaultDatabaseCredential = (
-  p: Partial<DeployDatabaseCredential> = {},
-): DeployDatabaseCredential => {
-  return {
-    id: "",
-    databaseId: "",
-    connectionUrl: "",
-    type: "",
-    default: false,
-    ...p,
-  };
-};
-
-export const DATABASE_CREDENTIALS_NAME = "databaseCredentials";
-export const slice = createTable<DeployDatabaseCredential>({
-  name: DATABASE_CREDENTIALS_NAME,
-});
-const { add: addDatabaseCredentials } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DATABASE_CREDENTIALS_NAME],
-);
 export const selectCredentialsByDatabaseId = createSelector(
-  selectors.selectTableAsList,
-  (_: AppState, p: { dbId: string }) => p.dbId,
+  db.databaseCredentials.selectTableAsList,
+  (_: WebState, p: { dbId: string }) => p.dbId,
   (creds, dbId) => creds.filter((c) => c.databaseId === dbId),
 );
-export const credReducers = createReducerMap(slice);
 
 export const credEntities = {
   database_credential: defaultEntity({
     id: "database_credential",
-    save: addDatabaseCredentials,
+    save: db.databaseCredentials.add,
     deserialize: deserializeDatabaseCredential,
   }),
 };

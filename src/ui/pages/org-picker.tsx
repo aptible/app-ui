@@ -1,15 +1,13 @@
 import { fetchReauthOrganizations, logout } from "@app/auth";
 import { refreshData } from "@app/bootup";
-import { batchActions } from "@app/fx";
-import { useQuery } from "@app/fx";
 import {
   selectOrganizationSelectedId,
   selectOrganizationsAsList,
 } from "@app/organizations";
+import { useDispatch, useQuery, useSelector } from "@app/react";
 import { loginUrl, ssoUrl } from "@app/routes";
 import { Organization } from "@app/types";
 import { selectCurrentUserId, updateUserOrg } from "@app/users";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { AppSidebarLayout } from "../layouts";
 import { Group, Pill, tokens } from "../shared";
@@ -50,9 +48,8 @@ export const OrgPickerPage = () => {
   const reauthOrgs = orgs.filter((o) => o.reauthRequired);
   const onClick = (curOrg: Organization, reauth = false) => {
     if (reauth) {
-      dispatch(
-        batchActions([updateUserOrg({ userId, orgId: curOrg.id }), logout()]),
-      );
+      dispatch(updateUserOrg({ userId, orgId: curOrg.id }));
+      dispatch(logout());
       // when sso is required we should send them directly to the SSO page
       if (curOrg.ssoEnforced) {
         navigate(ssoUrl());
@@ -63,12 +60,8 @@ export const OrgPickerPage = () => {
     }
 
     // when we update the user's selected org we need to refetch data
-    dispatch(
-      batchActions([
-        updateUserOrg({ userId, orgId: curOrg.id }),
-        refreshData(),
-      ]),
-    );
+    dispatch(updateUserOrg({ userId, orgId: curOrg.id }));
+    dispatch(refreshData());
   };
 
   return (

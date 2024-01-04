@@ -1,10 +1,8 @@
-import { useLoader, useLoaderSuccess } from "@app/fx";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
-
 import { createOrganization } from "@app/auth";
+import { useDispatch, useLoader, useLoaderSuccess } from "@app/react";
 import { homeUrl } from "@app/routes";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 
 import { Banner, Button, FormGroup, Progress } from "../shared";
 

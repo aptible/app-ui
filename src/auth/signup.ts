@@ -1,15 +1,9 @@
 import { thunks } from "@app/api";
 import { createSignupBillingRecords } from "@app/billing";
 import { createLog } from "@app/debug";
-import {
-  batchActions,
-  call,
-  put,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
+import { call } from "@app/fx";
 import { submitHubspotForm } from "@app/hubspot";
+import { db, schema } from "@app/schema";
 import { tunaEvent } from "@app/tuna";
 import { CreateUserForm, createUser } from "@app/users";
 import { AUTH_LOADER_ID, defaultAuthLoaderMeta } from "./loader";
@@ -23,16 +17,20 @@ export const signup = thunks.create<CreateUserForm>(
   function* onSignup(ctx, next) {
     const { company: orgName, name, email, password } = ctx.payload;
     const id = ctx.key;
-    yield* put(setLoaderStart({ id }));
+    yield* schema.update(db.loaders.start({ id }));
 
     const userCtx = yield* call(() => createUser.run(createUser(ctx.payload)));
 
     log(userCtx);
 
     if (!userCtx.json.ok) {
-      const { message, ...meta } = userCtx.json.data as any;
-      yield* put(
-        setLoaderError({ id, message, meta: defaultAuthLoaderMeta(meta) }),
+      const { message, ...meta } = userCtx.json.error as any;
+      yield* schema.update(
+        db.loaders.error({
+          id,
+          message,
+          meta: defaultAuthLoaderMeta(meta) as any,
+        }),
       );
       return;
     }
@@ -52,9 +50,13 @@ export const signup = thunks.create<CreateUserForm>(
     log(tokenCtx);
 
     if (!tokenCtx.json.ok) {
-      const { message, ...meta } = tokenCtx.json.data as any;
-      yield* put(
-        setLoaderError({ id, message, meta: defaultAuthLoaderMeta(meta) }),
+      const { message, ...meta } = tokenCtx.json.error as any;
+      yield* schema.update(
+        db.loaders.error({
+          id,
+          message,
+          meta: defaultAuthLoaderMeta(meta) as any,
+        }),
       );
       return;
     }
@@ -67,19 +69,23 @@ export const signup = thunks.create<CreateUserForm>(
       );
 
       // hack because useLoaderSuccess expected loader.isLoader then loader.isSuccess
-      yield* put(setLoaderStart({ id }));
+      yield* schema.update(db.loaders.start({ id }));
 
       log(orgCtx);
 
       if (!orgCtx.json.ok) {
-        const { message, ...meta } = orgCtx.json.data as any;
-        yield* put(
-          setLoaderError({ id, message, meta: defaultAuthLoaderMeta(meta) }),
+        const { message, ...meta } = orgCtx.json.error as any;
+        yield* schema.update(
+          db.loaders.error({
+            id,
+            message,
+            meta: defaultAuthLoaderMeta(meta) as any,
+          }),
         );
         return;
       }
 
-      const orgId = orgCtx.json.data.id;
+      const orgId = orgCtx.json.value.id;
       tunaEvent("nux.signup.created-organization", { name: orgName, orgId });
 
       const billsCtx = yield* call(() =>
@@ -112,20 +118,19 @@ export const signup = thunks.create<CreateUserForm>(
 
     log(elevateCtx);
 
-    yield* put(
-      batchActions([
-        setLoaderSuccess({
-          id,
-          meta: defaultAuthLoaderMeta({
-            id: `${userCtx.json.data.id}`,
-            verified: userCtx.json.data.verified,
-          }),
-        }),
-        setLoaderSuccess({
-          id: AUTH_LOADER_ID,
-        }),
-      ]),
-    );
+    ctx.actions.push({ type: "REFRESH_DATA" });
+    yield* schema.update([
+      db.loaders.success({
+        id,
+        meta: defaultAuthLoaderMeta({
+          id: `${userCtx.json.value.id}`,
+          verified: userCtx.json.value.verified,
+        }) as any,
+      }),
+      db.loaders.success({
+        id: AUTH_LOADER_ID,
+      }),
+    ]);
 
     yield* next();
   },

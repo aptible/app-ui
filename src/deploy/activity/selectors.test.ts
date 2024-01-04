@@ -1,11 +1,14 @@
 import { dateFromToday } from "@app/date";
 import { createId, testOrg } from "@app/mocks";
-import { AppState, DeepPartial } from "@app/types";
-import { defaultDeployApp } from "../app";
-import { defaultDeployDatabase } from "../database";
-import { defaultDeployEndpoint } from "../endpoint";
-import { defaultDeployEnvironment } from "../environment";
-import { defaultDeployOperation } from "../operation";
+import {
+  WebState,
+  defaultDeployApp,
+  defaultDeployDatabase,
+  defaultDeployEndpoint,
+  defaultDeployEnvironment,
+  defaultDeployOperation,
+} from "@app/schema";
+import { DeepPartial } from "@app/types";
 import { selectActivityForTableSearch } from "./index";
 
 const env1 = defaultDeployEnvironment({
@@ -59,7 +62,7 @@ const op3 = defaultDeployOperation({
   environmentId: env2.id,
   createdAt: dateFromToday(-1).toISOString(),
 });
-const state: DeepPartial<AppState> = {
+const state: DeepPartial<WebState> = {
   operations: { [op1.id]: op1, [op2.id]: op2, [op3.id]: op3 },
   environments: { [env1.id]: env1, [env2.id]: env2 },
   apps: { [app1.id]: app1 },

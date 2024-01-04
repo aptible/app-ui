@@ -1,18 +1,8 @@
 import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
+import { db } from "@app/schema";
 import { TextVal } from "@app/string-utils";
-import {
-  AppState,
-  DeployAppConfig,
-  DeployAppConfigEnv,
-  LinkResponse,
-} from "@app/types";
-import { selectDeploy } from "../slice";
+import { DeployAppConfig, DeployAppConfigEnv, LinkResponse } from "@app/types";
 
 export interface DeployConfigurationResponse {
   id: number;
@@ -47,17 +37,6 @@ export const deserializeAppConfig = (
   };
 };
 
-export const defaultDeployAppConfig = (
-  a: Partial<DeployAppConfig> = {},
-): DeployAppConfig => {
-  return {
-    id: "",
-    env: {},
-    appId: "",
-    ...a,
-  };
-};
-
 export const configEnvToStr = (env: DeployAppConfigEnv) => {
   return Object.keys(env).reduce((acc, key) => {
     const value = env[key];
@@ -81,17 +60,7 @@ export const prepareConfigEnv = (cur: DeployAppConfigEnv, next: TextVal[]) => {
   return env;
 };
 
-export const APP_CONFIG_NAME = "appConfigs";
-const slice = createTable<DeployAppConfig>({ name: APP_CONFIG_NAME });
-export const { add: addDeployAppConfigs } = slice.actions;
-const initAppConfig = defaultDeployAppConfig();
-const must = mustSelectEntity(initAppConfig);
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[APP_CONFIG_NAME],
-);
-export const selectAppConfigById = must(selectors.selectById);
-
-export const appConfigReducers = createReducerMap(slice);
+export const selectAppConfigById = db.appConfigs.selectById;
 
 export const fetchConfiguration = api.get<
   { id: string },
@@ -102,6 +71,6 @@ export const appConfigEntities = {
   configuration: defaultEntity({
     id: "configuration",
     deserialize: deserializeAppConfig,
-    save: addDeployAppConfigs,
+    save: db.appConfigs.add,
   }),
 };

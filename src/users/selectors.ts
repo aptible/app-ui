@@ -1,24 +1,15 @@
-import { mustSelectEntity } from "@app/slice-helpers";
+import { createSelector } from "@app/fx";
+import { WebState, db } from "@app/schema";
 import { selectToken } from "@app/token";
-import type { AppState } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { USERS_NAME } from "./constants";
-import { defaultUser } from "./serializers";
-import { users } from "./slice";
 
-const initUser = defaultUser();
-const selectors = users.getSelectors((state: AppState) => state[USERS_NAME]);
-export const {
-  selectTable: selectUsers,
-  selectTableAsList: selectUsersAsList,
-  selectByIds: selectUsersByIds,
-} = selectors;
-const must = mustSelectEntity(initUser);
-export const selectUserById = must(selectors.selectById);
+export const selectUsers = db.users.selectTable;
+export const selectUsersAsList = db.users.selectTableAsList;
+export const selectUsersByIds = db.users.selectByIds;
+export const selectUserById = db.users.selectById;
 
 export const selectUsersForSearchTable = createSelector(
   selectUsersAsList,
-  (_: AppState, p: { search: string }) => p.search,
+  (_: WebState, p: { search: string }) => p.search,
   (users, search) => {
     return users.filter((user) => {
       const searchLower = search.toLocaleLowerCase();
@@ -52,7 +43,7 @@ export const selectCurrentUser = createSelector(
   selectUsers,
   selectCurrentUserId,
   (curUsers, userId) => {
-    return curUsers[userId] || initUser;
+    return curUsers[userId] || db.users.empty;
   },
 );
 

@@ -1,6 +1,7 @@
+import { selectEnv } from "@app/config";
 import { selectIsAccountOwner } from "@app/deploy";
-import { selectEnv } from "@app/env";
 import { selectOrganizationSelectedId } from "@app/organizations";
+import { useSelector } from "@app/react";
 import {
   plansUrl,
   securitySettingsUrl,
@@ -11,9 +12,7 @@ import {
   teamPendingInvitesUrl,
   teamSsoUrl,
 } from "@app/routes";
-import { AppState } from "@app/types";
 import cn from "classnames";
-import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { IconExternalLink, IconLock } from "./icons";
 import { tokens } from "./tokens";
@@ -28,9 +27,7 @@ export function SettingsSidebar() {
   const env = useSelector(selectEnv);
   const url = (slug: string) => `${env.legacyDashboardUrl}${slug}`;
   const orgId = useSelector(selectOrganizationSelectedId);
-  const isAccountOwner = useSelector((s: AppState) =>
-    selectIsAccountOwner(s, { orgId }),
-  );
+  const isAccountOwner = useSelector((s) => selectIsAccountOwner(s, { orgId }));
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });

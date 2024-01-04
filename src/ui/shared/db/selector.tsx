@@ -2,8 +2,7 @@ import {
   selectDatabasesByEnvId,
   selectDatabasesByEnvIdAndType,
 } from "@app/deploy";
-import { AppState } from "@app/types";
-import { useSelector } from "react-redux";
+import { useSelector } from "@app/react";
 import { Select, SelectOption } from "../select";
 
 export const DbSelector = ({
@@ -23,7 +22,7 @@ export const DbSelector = ({
   className?: string;
   dbTypeFilters?: string[];
 }) => {
-  const dbs = useSelector((s: AppState) =>
+  const dbs = useSelector((s) =>
     dbTypeFilters.length > 0
       ? selectDatabasesByEnvIdAndType(s, { envId, types: dbTypeFilters })
       : selectDatabasesByEnvId(s, { envId }),

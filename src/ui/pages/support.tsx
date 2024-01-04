@@ -1,13 +1,13 @@
 import {
   createSupportTicket,
   queryAlgoliaApi,
+  resetSupportTicket,
   uploadAttachment,
 } from "@app/deploy/support";
-import { resetLoaderById, useLoader, useQuery } from "@app/fx";
+import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { tunaEvent } from "@app/tuna";
 import { selectCurrentUser } from "@app/users";
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { AppSidebarLayout } from "../layouts";
 import {
   Banner,
@@ -145,7 +145,7 @@ export const SupportPage = () => {
     return () => {
       // reset loader when component is unmounted because we have multiple
       // pages that use this same loader id
-      dispatch(resetLoaderById(`${createSupportTicket}`));
+      dispatch(resetSupportTicket());
     };
   }, []);
 

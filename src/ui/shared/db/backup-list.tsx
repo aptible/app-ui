@@ -1,6 +1,6 @@
 import { prettyDateTime } from "@app/date";
 import { deleteBackup } from "@app/deploy";
-import { useLoader } from "@app/fx";
+import { useDispatch, useLoader } from "@app/react";
 import {
   backupRestoreUrl,
   databaseDetailUrl,
@@ -10,7 +10,6 @@ import { DeployBackup } from "@app/types";
 import { PaginateProps } from "@app/ui/hooks";
 import cn from "classnames";
 import { ReactElement } from "react";
-import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { BannerMessages } from "../banner";
 import { ButtonCreate, ButtonDestroy } from "../button";

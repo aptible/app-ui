@@ -1,6 +1,6 @@
-import { Action, batchActions } from "@app/fx";
+import { Action } from "@app/fx";
+import { useDispatch } from "@app/react";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { useVisibility } from "./use-visibility";
 
 export const usePoller = ({
@@ -17,7 +17,8 @@ export const usePoller = ({
   // and suspend poller when tab is inactive
   useEffect(() => {
     if (isTabActive) {
-      dispatch(batchActions([cancel, action]));
+      dispatch(cancel);
+      dispatch(action);
     } else {
       dispatch(cancel);
     }

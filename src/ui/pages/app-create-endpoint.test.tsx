@@ -1,13 +1,5 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router";
-
-import {
-  defaultDeployCertificate,
-  defaultEndpointResponse,
-  selectEndpointById,
-} from "@app/deploy";
+import { defaultEndpointResponse, selectEndpointById } from "@app/deploy";
+import { defaultHalHref } from "@app/hal";
 import {
   createId,
   server,
@@ -17,21 +9,23 @@ import {
   testEnv,
   verifiedUserHandlers,
 } from "@app/mocks";
+import { useSelector } from "@app/react";
 import {
   APP_ENDPOINTS_PATH,
   ENDPOINT_DETAIL_PATH,
   appEndpointsUrl,
 } from "@app/routes";
+import { defaultDeployCertificate } from "@app/schema";
 import { setupIntegrationTest, waitForBootup } from "@app/test";
-import { AppState } from "@app/types";
-
-import { defaultHalHref } from "@app/hal";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
+import { useParams } from "react-router";
 import { AppCreateEndpointPage } from "./app-create-endpoint";
 
 const TestDetailPage = () => {
   const { id = "" } = useParams();
-  const enp = useSelector((s: AppState) => selectEndpointById(s, { id }));
+  const enp = useSelector((s) => selectEndpointById(s, { id }));
   return (
     <div>
       <div>Endpoint detail page</div>

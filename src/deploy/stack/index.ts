@@ -1,21 +1,15 @@
 import { PaginateProps, api, cacheMinTimer, cacheShortTimer } from "@app/api";
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
+import { WebState, db, schema } from "@app/schema";
 import type {
-  AppState,
   ContainerProfileData,
   DeployStack,
   InstanceClass,
   LinkResponse,
 } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
 import { CONTAINER_PROFILES } from "../container/utils";
-import { selectDeploy } from "../slice";
 
 export interface DeployStackResponse {
   id: number;
@@ -97,48 +91,10 @@ export const deserializeDeployStack = (
   };
 };
 
-export const defaultDeployStack = (
-  s: Partial<DeployStack> = {},
-): DeployStack => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    organizationId: "",
-    name: "",
-    region: "",
-    default: false,
-    public: false,
-    createdAt: now,
-    updatedAt: now,
-    outboundIpAddresses: [],
-    memoryLimits: false,
-    cpuLimits: false,
-    intrusionDetection: false,
-    exposeIntrusionDetectionReports: false,
-    allowCInstanceProfile: false,
-    allowMInstanceProfile: false,
-    allowRInstanceProfile: false,
-    allowTInstanceProfile: false,
-    allowGranularContainerSizes: false,
-    verticalAutoscaling: false,
-    ...s,
-  };
-};
-
-export const DEPLOY_STACK_NAME = "stacks";
-const slice = createTable<DeployStack>({
-  name: DEPLOY_STACK_NAME,
-});
-const { add: addDeployStacks, reset: resetDeployStacks } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_STACK_NAME],
-);
-const initStack = defaultDeployStack();
-const must = mustSelectEntity(initStack);
-export const selectStackById = must(selectors.selectById);
-export const { selectTable: selectStacks } = selectors;
+export const selectStackById = db.stacks.selectById;
+export const selectStacks = db.stacks.selectTable;
 const selectStacksAsList = createSelector(
-  selectors.selectTableAsList,
+  db.stacks.selectTableAsList,
   (stacks) => {
     return stacks.sort((a, b) => a.name.localeCompare(b.name));
   },
@@ -167,7 +123,7 @@ export const selectStacksAsOptions = createSelector(
 
 export const selectStacksByOrgAsOptions = createSelector(
   selectStacksByOrgAsList,
-  (_: AppState, p: { orgId: string }) => p.orgId,
+  (_: WebState, p: { orgId: string }) => p.orgId,
   (stacks, orgId) => {
     return stacks
       .filter(
@@ -191,7 +147,7 @@ export const selectDefaultStack = createSelector(
       return defaultPrivateStack;
     }
 
-    return defaultPublicStack || initStack;
+    return defaultPublicStack || db.stacks.empty;
   },
 );
 
@@ -214,7 +170,7 @@ export const hasDeployStack = (s: DeployStack) => s.id !== "";
 
 export const selectStacksForTableSearch = createSelector(
   selectStacksByOrgAsList,
-  (_: AppState, p: { search: string }) => p.search,
+  (_: WebState, p: { search: string }) => p.search,
   (stacks, search) => {
     if (search === "") {
       return stacks;
@@ -269,8 +225,6 @@ export const selectContainerProfilesForStack = createSelector(
   },
 );
 
-export const stackReducers = createReducerMap(slice);
-
 export const fetchStacks = api.get(
   "/stacks?per_page=5000",
   {
@@ -281,7 +235,7 @@ export const fetchStacks = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    ctx.actions.push(resetDeployStacks());
+    yield* schema.update(db.stacks.reset());
   },
 );
 
@@ -297,6 +251,6 @@ export const stackEntities = {
   stack: defaultEntity({
     id: "stack",
     deserialize: deserializeDeployStack,
-    save: addDeployStacks,
+    save: db.stacks.add,
   }),
 };

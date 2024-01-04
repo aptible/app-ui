@@ -187,6 +187,8 @@ describe("AppDetailServiceScalePage", () => {
           fireEvent.click(autoscaleBtn);
 
           expect(autoscaleBtn).toBeDisabled();
+
+          await screen.findByText(/Policy changes saved/);
         });
       });
     });

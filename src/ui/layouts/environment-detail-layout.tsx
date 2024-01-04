@@ -8,16 +8,14 @@ import {
   selectEnvironmentStatsById,
   selectStackById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useDispatch, useQuery, useSelector } from "@app/react";
 import { stackDetailEnvsUrl } from "@app/routes";
 import {
-  AppState,
   DeployEndpoint,
   DeployEnvironment,
   DeployEnvironmentStats,
   DeployStack,
 } from "@app/types";
-import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams, useSearchParams } from "react-router-dom";
 
 import { setResourceStats } from "@app/search";
@@ -110,16 +108,14 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
   useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
 
-  const environment = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id }),
-  );
-  const stats = useSelector((s: AppState) =>
+  const environment = useSelector((s) => selectEnvironmentById(s, { id }));
+  const stats = useSelector((s) =>
     selectEnvironmentStatsById(s, { id: environment.id }),
   );
-  const stack = useSelector((s: AppState) =>
+  const stack = useSelector((s) =>
     selectStackById(s, { id: environment.stackId }),
   );
-  const endpoints = useSelector((s: AppState) =>
+  const endpoints = useSelector((s) =>
     selectEndpointsByEnvironmentId(s, { envId: environment.id }),
   );
   const crumbs = [{ name: stack.name, to: stackDetailEnvsUrl(stack.id) }];

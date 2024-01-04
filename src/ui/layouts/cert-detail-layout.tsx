@@ -5,16 +5,15 @@ import {
   selectCertificateById,
   selectEnvironmentById,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
+import { useLoader, useQuery, useSelector } from "@app/react";
 import {
   certDetailAppsUrl,
   certDetailEndpointsUrl,
   certDetailSettingsUrl,
   environmentCertificatesUrl,
 } from "@app/routes";
-import type { AppState, DeployCertificate } from "@app/types";
+import type { DeployCertificate } from "@app/types";
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
@@ -72,9 +71,9 @@ function CertPageHeader() {
   const action = useMemo(() => pollCert({ id }), [id]);
   const cancel = useMemo(() => cancelPollCert(), []);
   usePoller({ action, cancel });
-  const cert = useSelector((s: AppState) => selectCertificateById(s, { id }));
+  const cert = useSelector((s) => selectCertificateById(s, { id }));
   useQuery(fetchEnvironmentById({ id: cert.environmentId }));
-  const env = useSelector((s: AppState) =>
+  const env = useSelector((s) =>
     selectEnvironmentById(s, { id: cert.environmentId }),
   );
   const loader = useLoader(action);

@@ -1,7 +1,3 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { rest } from "msw";
-
 import {
   server,
   stacksWithResources,
@@ -14,6 +10,9 @@ import {
 } from "@app/mocks";
 import { loginUrl } from "@app/routes";
 import { setupAppIntegrationTest } from "@app/test";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { rest } from "msw";
 
 describe("Login page", () => {
   describe("after successful login", () => {

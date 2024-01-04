@@ -1,12 +1,11 @@
 import { selectAppById } from "@app/deploy";
-import { AppState } from "@app/types";
-import { useSelector } from "react-redux";
+import { useSelector } from "@app/react";
 import { useParams } from "react-router-dom";
 import { AppServicesByApp, DetailPageSections } from "../shared";
 
 export function AppDetailServicesPage() {
   const { id = "" } = useParams();
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const app = useSelector((s) => selectAppById(s, { id }));
 
   return (
     <DetailPageSections>

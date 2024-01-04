@@ -15,7 +15,8 @@ import {
   selectServiceById,
 } from "@app/deploy";
 import { formatDatabaseType } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useQuery } from "@app/react";
+import { useSelector } from "@app/react";
 import {
   databaseDetailUrl,
   databaseScaleUrl,
@@ -23,10 +24,9 @@ import {
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import type { AppState, DeployDatabase } from "@app/types";
-import { usePaginate } from "@app/ui/hooks";
-import { useSelector } from "react-redux";
+import type { DeployDatabase } from "@app/types";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { usePaginate } from "../../hooks";
 import { Button, ButtonCreate } from "../button";
 import { Group } from "../group";
 import { IconPlusCircle } from "../icons";
@@ -51,7 +51,7 @@ interface DatabaseCellProps {
 export const DatabaseItemView = ({
   database,
 }: { database: DeployDatabase }) => {
-  const image = useSelector((s: AppState) =>
+  const image = useSelector((s) =>
     selectDatabaseImageById(s, { id: database.databaseImageId }),
   );
   return (
@@ -86,12 +86,10 @@ const DatabaseIdCell = ({ database }: DatabaseCellProps) => {
 };
 
 const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
-  const service = useSelector((s: AppState) =>
+  const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
   );
-  const disk = useSelector((s: AppState) =>
-    selectDiskById(s, { id: database.diskId }),
-  );
+  const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
   const currentContainerProfile = getContainerProfileFromType(
     service.instanceClass,
   );
@@ -109,7 +107,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
 };
 
 export const LastOpCell = ({ database }: DatabaseCellProps) => {
-  const lastOperation = useSelector((s: AppState) =>
+  const lastOperation = useSelector((s) =>
     selectLatestOpByDatabaseId(s, { dbId: database.id }),
   );
   return (
@@ -132,14 +130,12 @@ export const LastOpCell = ({ database }: DatabaseCellProps) => {
 };
 
 const DatabaseDiskSizeCell = ({ database }: DatabaseCellProps) => {
-  const disk = useSelector((s: AppState) =>
-    selectDiskById(s, { id: database.diskId }),
-  );
+  const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
   return <Td className="text-gray-900">{disk.size} GB</Td>;
 };
 
 const DatabaseContainerSizeCell = ({ database }: DatabaseCellProps) => {
-  const service = useSelector((s: AppState) =>
+  const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
   );
   const metrics = calcMetrics([service]);
@@ -172,7 +168,7 @@ export const DatabaseListByOrg = () => {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
-  const dbs = useSelector((s: AppState) =>
+  const dbs = useSelector((s) =>
     selectDatabasesForTableSearch(s, {
       search,
     }),
@@ -249,7 +245,7 @@ export const DatabaseListByEnvironment = ({
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
-  const dbs = useSelector((s: AppState) =>
+  const dbs = useSelector((s) =>
     selectDatabasesForTableSearchByEnvironmentId(s, {
       envId,
       search,

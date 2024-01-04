@@ -1,7 +1,6 @@
-import { useSelector } from "react-redux";
-
 import { selectServicesByAppId, serviceCommandText } from "@app/deploy";
-import { AppState, DeployApp, DeployService } from "@app/types";
+import { useSelector } from "@app/react";
+import { DeployApp, DeployService } from "@app/types";
 
 import { Radio, RadioGroup } from "../select";
 
@@ -24,7 +23,7 @@ export const CreateAppEndpointSelector = ({
   onSelect: (id: string) => void;
   disabled?: (service: DeployService) => boolean;
 }) => {
-  const services = useSelector((s: AppState) =>
+  const services = useSelector((s) =>
     selectServicesByAppId(s, { appId: app.id }),
   );
 

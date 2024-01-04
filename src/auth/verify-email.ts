@@ -1,7 +1,7 @@
 import { authApi } from "@app/api";
-import { leading, put } from "@app/fx";
+import { leading } from "@app/fx";
+import { db, schema } from "@app/schema";
 import { AuthApiCtx } from "@app/types";
-import { patchUsers } from "@app/users";
 
 interface VerifyEmail {
   userId: string;
@@ -28,7 +28,9 @@ export const verifyEmail = authApi.post<VerifyEmail>(
       return;
     }
 
-    yield* put(patchUsers({ [userId]: { id: userId, verified: true } }));
+    yield* schema.update(
+      db.users.patch({ [userId]: { id: userId, verified: true } }),
+    );
   },
 );
 
@@ -44,7 +46,14 @@ export const resendVerification = authApi.post<ResendVerification>(
     ctx.request = ctx.req({
       body: JSON.stringify({ origin }),
     });
+
     yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = { message: "Success! You should receive an email shortly." };
   },
 );
 

@@ -1,13 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-
-import {
-  ResponseComposition,
-  RestContext,
-  RestHandler,
-  RestRequest,
-  rest,
-} from "msw";
-
+import { defaultHalHref } from "@app/hal";
 import {
   createId,
   server,
@@ -16,9 +7,15 @@ import {
   testEnv,
   testPlan,
 } from "@app/mocks";
-import { setupIntegrationTest } from "@app/test";
-
-import { defaultHalHref } from "@app/hal";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
+import { fireEvent, render, screen } from "@testing-library/react";
+import {
+  ResponseComposition,
+  RestContext,
+  RestHandler,
+  RestRequest,
+  rest,
+} from "msw";
 import { PlansPage } from "./plans";
 
 const commonFail = async (
@@ -141,24 +138,26 @@ describe("Plans page", () => {
   });
 
   it("errors on active plan load failure", async () => {
-    const { TestProvider } = setupIntegrationTest();
+    server.use(rest.get(`${testEnv.apiUrl}/active_plans*`, commonFail));
+    const { TestProvider, store } = setupIntegrationTest();
+    await waitForBootup(store);
     render(
       <TestProvider>
         <PlansPage />
       </TestProvider>,
     );
-    server.use(rest.get(`${testEnv.apiUrl}/active_plans*`, commonFail));
     await screen.findByText(/mock error message/);
   });
 
   it("errors on plans list load failure", async () => {
-    const { TestProvider } = setupIntegrationTest();
+    server.use(rest.get(`${testEnv.apiUrl}/plans*`, commonFail));
+    const { TestProvider, store } = setupIntegrationTest();
+    await waitForBootup(store);
     render(
       <TestProvider>
         <PlansPage />
       </TestProvider>,
     );
-    server.use(rest.get(`${testEnv.apiUrl}/plans*`, commonFail));
     await screen.findByText(/mock error message/);
   });
 });

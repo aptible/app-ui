@@ -1,6 +1,5 @@
-import { useSelector } from "react-redux";
-
 import { selectOrganizationSelected } from "@app/organizations";
+import { useSelector } from "@app/react";
 
 import { AppSidebarLayout } from "../layouts";
 import { ActivityByOrg } from "../shared";

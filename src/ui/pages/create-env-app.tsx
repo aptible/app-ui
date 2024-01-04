@@ -6,8 +6,8 @@ import {
   selectEnvironmentById,
   selectStackById,
 } from "@app/deploy";
-import { useApi, useLoaderSuccess, useQuery } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
+import { useApi, useLoaderSuccess, useQuery, useSelector } from "@app/react";
 import {
   appDeployGetStartedUrl,
   createAppUrl,
@@ -16,10 +16,8 @@ import {
   environmentDetailUrl,
   stackDetailUrl,
 } from "@app/routes";
-import { AppState } from "@app/types";
 import { handleRegexExplainer, handleValidator } from "@app/validator";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 import { AppSidebarLayout } from "../layouts";
@@ -42,12 +40,8 @@ export const CreateAppPage = () => {
   const [params] = useSearchParams();
   const envId = params.get("environment_id") || "";
   useQuery(fetchEnvironmentById({ id: envId }));
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
-  const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: env.stackId }),
-  );
+  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
+  const stack = useSelector((s) => selectStackById(s, { id: env.stackId }));
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
   const thunk = useApi(createDeployApp({ name, envId: env.id }));

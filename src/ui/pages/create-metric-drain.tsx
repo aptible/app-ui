@@ -1,7 +1,3 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
-
 import {
   CreateMetricDrainProps,
   MetricDrainType,
@@ -9,11 +5,17 @@ import {
   provisionMetricDrain,
   selectEnvironmentById,
 } from "@app/deploy";
-
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { operationDetailUrl } from "@app/routes";
-import { AppState } from "@app/types";
 import { handleValidator, portValidator } from "@app/validator";
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
@@ -99,9 +101,7 @@ export const CreateMetricDrainPage = () => {
   const queryEnvId = params.get("environment_id") || "";
   const [envId, setEnvId] = useState(queryEnvId);
   useQuery(fetchDatabasesByEnvId({ envId }));
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
+  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
   const [dbId, setDbId] = useState("");
   const [handle, setHandle] = useState("");
   const [apiKey, setApiKey] = useState("");

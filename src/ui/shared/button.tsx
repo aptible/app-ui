@@ -1,11 +1,11 @@
 import { selectIsUserAnyOwner, selectUserHasPerms } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
+import { useSelector } from "@app/react";
 import { selectIsUserOwner } from "@app/roles";
 import { capitalize } from "@app/string-utils";
-import { AppState, PermissionScope } from "@app/types";
+import { PermissionScope } from "@app/types";
 import cn from "classnames";
 import { ButtonHTMLAttributes, FC, useState } from "react";
-import { useSelector } from "react-redux";
 import { Link, LinkProps } from "react-router-dom";
 import { Group } from "./group";
 import { IconExternalLink } from "./icons";
@@ -205,9 +205,7 @@ const ButtonPermission = ({
   children,
   ...props
 }: { scope: PermissionScope; envId: string } & ButtonProps) => {
-  const hasPerm = useSelector((s: AppState) =>
-    selectUserHasPerms(s, { scope, envId }),
-  );
+  const hasPerm = useSelector((s) => selectUserHasPerms(s, { scope, envId }));
 
   if (hasPerm) {
     return <Button {...props}>{children}</Button>;
@@ -262,9 +260,7 @@ export const ButtonAnyOwner = ({ children, ...props }: ButtonProps) => {
 
 export const ButtonOrgOwner = ({ children, ...props }: ButtonProps) => {
   const orgId = useSelector(selectOrganizationSelectedId);
-  const isUserOwner = useSelector((s: AppState) =>
-    selectIsUserOwner(s, { orgId }),
-  );
+  const isUserOwner = useSelector((s) => selectIsUserOwner(s, { orgId }));
 
   if (isUserOwner) {
     return <Button {...props}>{children}</Button>;

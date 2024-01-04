@@ -1,3 +1,4 @@
+import { useSelector } from "@app/react";
 import {
   impersonateUrl,
   logoutUrl,
@@ -6,7 +7,6 @@ import {
 } from "@app/routes";
 import { selectIsAuthWithSso } from "@app/token";
 import { selectCanImpersonate } from "@app/users";
-import { useSelector } from "react-redux";
 import { useCurrentUser } from "../hooks";
 import { IconKey, IconLogout, IconSettings } from "./icons";
 import { IconAlertCircle } from "./icons";

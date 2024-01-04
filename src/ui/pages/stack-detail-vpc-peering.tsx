@@ -1,8 +1,7 @@
 import { fetchVpcPeersByStackId, selectVpcPeersByStackId } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useQuery, useSelector } from "@app/react";
 import { capitalize } from "@app/string-utils";
-import type { AppState, DeployVpcPeer } from "@app/types";
-import { useSelector } from "react-redux";
+import type { DeployVpcPeer } from "@app/types";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { usePaginate } from "../hooks";
@@ -41,7 +40,7 @@ const VPCPeerStatusPill = ({
 export const StackDetailVpcPeeringPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchVpcPeersByStackId({ id }));
-  const vpcPeers = useSelector((s: AppState) =>
+  const vpcPeers = useSelector((s) =>
     selectVpcPeersByStackId(s, { stackId: id }),
   );
   const paginated = usePaginate(vpcPeers);

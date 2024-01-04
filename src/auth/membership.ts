@@ -1,15 +1,8 @@
 import { authApi, thunks } from "@app/api";
-import { selectEnv } from "@app/env";
-import {
-  call,
-  parallel,
-  put,
-  select,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
+import { selectEnv } from "@app/config";
+import { call, parallel, select } from "@app/fx";
 import { extractIdFromLink } from "@app/hal";
+import { db, schema } from "@app/schema";
 import { AuthApiCtx, AuthApiError, HalEmbedded } from "@app/types";
 
 export const createMembership = authApi.post<{ id: string; userUrl: string }>(
@@ -36,7 +29,7 @@ export const updateUserMemberships = thunks.create<{
   remove: string[];
 }>("update-user-memberships", function* (ctx, next) {
   const id = ctx.key;
-  yield* put(setLoaderStart({ id }));
+  yield* schema.update(db.loaders.start({ id }));
 
   const { userId, add, remove } = ctx.payload;
   const env = yield* select(selectEnv);
@@ -61,7 +54,7 @@ export const updateUserMemberships = thunks.create<{
       continue;
     }
 
-    const membership = memberships.json.data._embedded.memberships.find(
+    const membership = memberships.json.value._embedded.memberships.find(
       (m) => userId === extractIdFromLink(m._links.user),
     );
     const cl = call(() =>
@@ -78,17 +71,17 @@ export const updateUserMemberships = thunks.create<{
   const errors = results
     .map((res) => {
       if (!res.ok) return res.error.message;
-      if (!res.value.json.ok) return res.value.json.data.message;
+      if (!res.value.json.ok) return res.value.json.error.message;
       return "";
     })
     .filter(Boolean);
 
   if (errors.length > 0) {
-    yield* put(setLoaderError({ id, message: errors.join(", ") }));
+    yield* schema.update(db.loaders.error({ id, message: errors.join(", ") }));
     return;
   }
 
-  yield* put(
-    setLoaderSuccess({ id, message: "Successfully updated user roles!" }),
+  yield* schema.update(
+    db.loaders.success({ id, message: "Successfully updated user roles!" }),
   );
 });

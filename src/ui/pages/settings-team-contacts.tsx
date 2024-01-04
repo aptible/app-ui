@@ -1,10 +1,9 @@
 import { updateOrganization } from "@app/auth";
 import { selectOrganizationSelected } from "@app/organizations";
+import { useDispatch, useLoader, useSelector } from "@app/react";
 import { Organization } from "@app/types";
 import { emailValidator, existValidtor } from "@app/validator";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useLoader } from "starfx/react";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,

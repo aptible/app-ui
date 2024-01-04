@@ -1,13 +1,8 @@
 import { api } from "@app/api";
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import { AppState, DeployVpnTunnel, LinkResponse } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectDeploy } from "../slice";
+import { WebState, db } from "@app/schema";
+import { DeployVpnTunnel, LinkResponse } from "@app/types";
 
 export interface DeployVpnTunnelResponse {
   id: number;
@@ -80,50 +75,15 @@ export const deserializeDeployVpnTunnel = (
   };
 };
 
-export const defaultDeployVpnTunnel = (
-  s: Partial<DeployVpnTunnel> = {},
-): DeployVpnTunnel => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    handle: "",
-    phase1Alg: "",
-    phase1DhGroup: "",
-    phase1Lifetime: "",
-    phase2Alg: "",
-    phase2DhGroup: "",
-    phase2Lifetime: "",
-    ourGateway: "",
-    ourNetworks: [],
-    peerGateway: "",
-    peerNetworks: [],
-    perfectForwardSecrecy: "",
-    createdAt: now,
-    updatedAt: now,
-    stackId: "",
-    ...s,
-  };
-};
-
-export const DEPLOY_VPN_TUNNEL_NAME = "vpnTunnels";
-const slice = createTable<DeployVpnTunnel>({
-  name: DEPLOY_VPN_TUNNEL_NAME,
-});
-const { add: addDeployVpnTunnel } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_VPN_TUNNEL_NAME],
-);
-const initVpnTunnel = defaultDeployVpnTunnel;
-const must = mustSelectEntity(initVpnTunnel);
-export const selectVpnTunnelById = must(selectors.selectById);
-export const { selectTable: selectVpnTunnel } = selectors;
+export const selectVpnTunnelById = db.vpnTunnels.selectById;
+export const selectVpnTunnel = db.vpnTunnels.selectTable;
 export const selectVpnTunnelsAsList = createSelector(
-  selectors.selectTableAsList,
+  db.vpnTunnels.selectTableAsList,
   (vpnTunnels) => vpnTunnels.sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 export const selectVpnTunnelByStackId = createSelector(
   selectVpnTunnelsAsList,
-  (_: AppState, props: { stackId: string }) => props.stackId,
+  (_: WebState, props: { stackId: string }) => props.stackId,
   (vpnTunnels, stackId) => {
     return vpnTunnels.filter((vpnTunnel) => vpnTunnel.stackId === stackId);
   },
@@ -133,12 +93,10 @@ export const fetchVpnTunnelsByStackId = api.get<{ id: string }>(
   "/stacks/:id/vpn_tunnels",
 );
 
-export const vpnTunnelReducers = createReducerMap(slice);
-
 export const vpnTunnelEntities = {
   vpn_tunnel: defaultEntity({
     id: "vpn_tunnel",
     deserialize: deserializeDeployVpnTunnel,
-    save: addDeployVpnTunnel,
+    save: db.vpnTunnels.add,
   }),
 };

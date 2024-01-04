@@ -1,19 +1,12 @@
 import { createRoot } from "react-dom/client";
-import { PersistGate } from "redux-persist/integration/react";
-
-import { bootup } from "@app/bootup";
-import { Loading } from "@app/ui";
-
 import { App } from "./app";
-import { rootEntities } from "./packages";
 import { setupStore } from "./store";
 
 export function init() {
-  const { store, persistor } = setupStore({
-    initState: { entities: rootEntities },
+  const store = setupStore({
+    logs: import.meta.env.VITE_DEBUG === "true",
   });
-  (window as any).reduxStore = store;
-  store.dispatch(bootup());
+  (window as any).store = store;
 
   const container = document.getElementById("app");
   if (!container) {
@@ -21,9 +14,5 @@ export function init() {
   }
   const root = createRoot(container);
 
-  root.render(
-    <PersistGate loading={<Loading />} persistor={persistor}>
-      <App store={store} />
-    </PersistGate>,
-  );
+  root.render(<App store={store} />);
 }

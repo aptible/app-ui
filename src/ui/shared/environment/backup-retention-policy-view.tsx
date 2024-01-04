@@ -4,10 +4,8 @@ import {
   selectLatestBackupRpByEnvId,
   updateBackupRp,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
-import type { AppState } from "@app/types";
+import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useValidator } from "../../hooks";
 import { BannerMessages } from "../banner";
 import { Box } from "../box";
@@ -67,7 +65,7 @@ const validators = {
 
 export const BackupRpView = ({ envId }: { envId: string }) => {
   useQuery(fetchBackupRp({ envId }));
-  const backupRp = useSelector((s: AppState) =>
+  const backupRp = useSelector((s) =>
     selectLatestBackupRpByEnvId(s, { envId }),
   );
   const [editing, setEditing] = useState(false);
@@ -116,7 +114,7 @@ export const BackupRpEditor = ({
 }: { envId: string; onClose: () => void }) => {
   const dispatch = useDispatch();
   useQuery(fetchBackupRp({ envId }));
-  const backupRp = useSelector((s: AppState) =>
+  const backupRp = useSelector((s) =>
     selectLatestBackupRpByEnvId(s, { envId }),
   );
   const [daily, setDaily] = useState(backupRp.daily);

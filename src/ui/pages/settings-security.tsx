@@ -4,17 +4,21 @@ import {
   revokeEmailVerification,
 } from "@app/auth";
 import { prettyDateTime } from "@app/date";
-import { useCache, useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import { deleteU2fDevice, fetchU2fDevices } from "@app/mfa";
 import {
-  deleteU2fDevice,
-  fetchU2fDevices,
-  selectU2fDevicesAsList,
-} from "@app/mfa";
+  useCache,
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import {
   addSecurityKeyUrl,
   otpRecoveryCodesUrl,
   otpSetupUrl,
 } from "@app/routes";
+import { db } from "@app/schema";
 import { HalEmbedded } from "@app/types";
 import {
   rmOtp,
@@ -24,7 +28,6 @@ import {
 } from "@app/users";
 import { emailValidator } from "@app/validator";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useCurrentUser } from "../hooks";
 import {
   Banner,
@@ -309,7 +312,7 @@ const SecurityKeys = () => {
   const dispatch = useDispatch();
   const [user, loader] = useCurrentUser();
   useQuery(fetchU2fDevices({ userId: user.id }));
-  const devices = useSelector(selectU2fDevicesAsList);
+  const devices = useSelector(db.u2fDevices.selectTableAsList);
   const onRemove = (deviceId: string) => {
     dispatch(deleteU2fDevice({ deviceId }));
   };

@@ -1,10 +1,9 @@
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-
 import { selectUserHasPerms } from "@app/deploy";
+import { useSelector } from "@app/react";
 import { homeUrl } from "@app/routes";
-import { AppState, PermissionScope } from "@app/types";
+import { PermissionScope } from "@app/types";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 
 export const usePermsRequired = ({
   scope,
@@ -14,9 +13,7 @@ export const usePermsRequired = ({
   envId: string;
 }) => {
   const navigate = useNavigate();
-  const hasPerms = useSelector((s: AppState) =>
-    selectUserHasPerms(s, { scope, envId }),
-  );
+  const hasPerms = useSelector((s) => selectUserHasPerms(s, { scope, envId }));
   useEffect(() => {
     if (!hasPerms) {
       navigate(homeUrl());

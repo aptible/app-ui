@@ -1,12 +1,11 @@
-import { createSelector } from "@reduxjs/toolkit";
-
+import { createSelector } from "@app/fx";
 import {
   appDetailUrl,
   databaseDetailUrl,
   environmentIntegrationsUrl,
 } from "@app/routes";
+import { WebState } from "@app/schema";
 import type {
-  AppState,
   DeployActivityRow,
   DeployOperation,
   OperationType,
@@ -109,10 +108,10 @@ const denyOpTypes: OperationType[] = ["poll"];
 const staticArr: ResourceLookup[] = [];
 export const selectActivityForTableSearch = createSelector(
   selectActivityForTable,
-  (_: AppState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: AppState, props: { envId?: string }) => props.envId || "",
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { envId?: string }) => props.envId || "",
   (
-    _: AppState,
+    _: WebState,
     props: {
       resources?: ResourceLookup[];
     },

@@ -1,37 +1,25 @@
-import {
-  batchActions,
-  parallel,
-  put,
-  select,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
-
 import { authApi, thunks } from "@app/api";
+import { parallel, put, select } from "@app/fx";
 import { resetStore } from "@app/reset-store";
-import {
-  resetElevatedToken,
-  selectElevatedToken,
-  selectToken,
-} from "@app/token";
+import { db, schema } from "@app/schema";
+import { selectToken } from "@app/token";
 
 export const deleteToken = authApi.delete<{ id: string }>("/tokens/:id");
 
 export const logout = thunks.create("logout", function* (ctx, next) {
-  yield* put(setLoaderStart({ id: ctx.name }));
+  yield* schema.update(db.loaders.start({ id: ctx.name }));
   const token = yield* select(selectToken);
-  const elevatedToken = yield* select(selectElevatedToken);
+  const elevatedToken = yield* select(db.elevatedToken.select);
   const group = yield* parallel([
     () => deleteToken.run(deleteToken({ id: token.tokenId })),
     () => deleteToken.run(deleteToken({ id: elevatedToken.tokenId })),
   ]);
   yield* group;
   yield* next();
-  yield* put(
-    batchActions([
-      resetStore(),
-      resetElevatedToken(),
-      setLoaderSuccess({ id: ctx.name }),
-    ]),
-  );
+
+  yield* put(resetStore());
+  yield* schema.update([
+    db.elevatedToken.reset(),
+    db.loaders.success({ id: ctx.name }),
+  ]);
 });

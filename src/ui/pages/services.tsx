@@ -1,8 +1,8 @@
 import { fetchServices, selectServicesForTableSearch } from "@app/deploy";
-import { AppState, DeployServiceRow } from "@app/types";
+import { useQuery, useSelector } from "@app/react";
+import { DeployServiceRow } from "@app/types";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useQuery, useSelector } from "starfx/react";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
@@ -26,7 +26,7 @@ export function ServicesPage() {
   const [sortBy, setSortBy] = useState<keyof DeployServiceRow>("createdAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
-  const services = useSelector((s: AppState) =>
+  const services = useSelector((s) =>
     selectServicesForTableSearch(s, { search, sortBy, sortDir }),
   );
   const paginated = usePaginate(services);

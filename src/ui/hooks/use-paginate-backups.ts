@@ -3,9 +3,9 @@ import {
   fetchBackupsByEnvironmentId,
   selectBackupsByIds,
 } from "@app/deploy";
-import { AppState, DeployBackup, HalEmbedded } from "@app/types";
+import { useCache, useSelector } from "@app/react";
+import { DeployBackup, HalEmbedded } from "@app/types";
 import { useState } from "react";
-import { useCache, useSelector } from "starfx/react";
 import { PaginateProps } from "./use-paginate";
 
 export function usePaginatedBackupsByDatabaseId(dbId: string) {
@@ -27,9 +27,7 @@ function usePaginatedBackups(
 ): PaginateProps<DeployBackup> & { isLoading: boolean } {
   const cache = useCache<HalEmbedded<{ backups: string[] }>>(action);
   const backupIds = cache.data?._embedded.backups || [];
-  const backups = useSelector((s: AppState) =>
-    selectBackupsByIds(s, { ids: backupIds }),
-  );
+  const backups = useSelector((s) => selectBackupsByIds(s, { ids: backupIds }));
 
   const itemsPerPage = cache.data?.per_page || 40;
   const totalItems = cache.data?.total_count || 0;

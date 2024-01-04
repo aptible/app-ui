@@ -1,85 +1,85 @@
-import { BATCH, Operation, prepareStore } from "@app/fx";
-import { configureStore } from "@reduxjs/toolkit";
-import type { Middleware, Store } from "@reduxjs/toolkit";
-import debug from "debug";
-import { persistReducer, persistStore } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
+import { bootup } from "@app/bootup";
+import { WebState, db, schema } from "@app/schema";
+import { Callable, LogContext, Operation, each, log, parallel } from "starfx";
+import {
+  PERSIST_LOADER_ID,
+  configureStore,
+  createBatchMdw,
+  createLocalStorageAdapter,
+  createPersistor,
+  persistStoreMdw,
+  take,
+} from "starfx/store";
+import { rootEntities, tasks } from "./packages";
 
-import { FEEDBACK_NAME } from "@app/feedback";
-import { parallel } from "@app/fx";
-import { NAV_NAME } from "@app/nav";
-import { REDIRECT_NAME } from "@app/redirect-path";
-import { resetReducer } from "@app/reset-store";
-import { RESOURCE_STATS_NAME } from "@app/search";
-import { THEME_NAME } from "@app/theme";
-import { ELEVATED_TOKEN_NAME } from "@app/token";
-import type { AppState } from "@app/types";
+export function setupStore({
+  logs = true,
+  initialState = {},
+}: { logs?: boolean; initialState?: Partial<WebState> }) {
+  const persistor = createPersistor<WebState>({
+    adapter: createLocalStorageAdapter(),
+    allowlist: ["theme", "nav", "redirectPath", "feedback", "resourceStats"],
+  });
 
-import { reducers, tasks } from "./packages";
-import { sentryErrorReporter } from "./sentry";
+  const store = configureStore<WebState>({
+    initialState: {
+      ...schema.initialState,
+      entities: rootEntities,
+      ...initialState,
+    },
+    middleware: [createBatchMdw(queueMicrotask), persistStoreMdw(persistor)],
+  });
 
-interface Props {
-  initState?: Partial<AppState>;
-}
-
-interface AppStore<State> {
-  store: Store<State>;
-  persistor: any;
-}
-
-export const persistConfig = {
-  key: "root",
-  storage,
-  whitelist: [
-    ELEVATED_TOKEN_NAME,
-    THEME_NAME,
-    NAV_NAME,
-    REDIRECT_NAME,
-    FEEDBACK_NAME,
-    RESOURCE_STATS_NAME,
-  ],
-};
-
-const log = debug("redux");
-
-export function setupStore({ initState }: Props): AppStore<AppState> {
-  const middleware: Middleware[] = [];
-
-  if (import.meta.env.VITE_DEBUG === "true") {
-    const logger = (_: any) => (next: any) => (action: any) => {
-      if (action.type === BATCH) {
-        action.payload.forEach((act: any) => log("ACTION", act));
-      } else {
-        log("ACTION", action);
+  const tsks: Callable<unknown>[] = [];
+  if (logs) {
+    // listen to starfx logger for all log events
+    tsks.push(function* logger(): Operation<void> {
+      const ctx = yield* LogContext;
+      for (const event of yield* each(ctx)) {
+        if (event.type.startsWith("error:")) {
+          console.error(event.payload);
+        } else if (event.type === "action") {
+          console.log(event.payload);
+        }
+        yield* each.next();
       }
-      next(action);
-    };
-    middleware.push(logger);
+    });
+    // log all actions dispatched
+    tsks.push(function* logActions(): Operation<void> {
+      while (true) {
+        const action = yield* take("*");
+        yield* log({ type: "action", payload: action });
+      }
+    });
   }
+  tsks.push(...tasks, bootup.run());
 
-  middleware.push(sentryErrorReporter);
-  const { fx, reducer } = prepareStore({
-    reducers,
-  });
-
-  middleware.push(fx.middleware as any);
-  // we need this baseReducer so we can wipe the localStorage cache as well as
-  // reset the store when a user logs out
-  const baseReducer = resetReducer(reducer, persistConfig);
-  const persistedReducer = persistReducer(persistConfig, baseReducer);
-
-  const store = configureStore({
-    preloadedState: initState,
-    reducer: persistedReducer,
-    devTools: import.meta.env.DEV,
-    middleware: middleware,
-  });
-  const persistor = persistStore(store);
-
-  fx.run(function* (): Operation<void> {
-    const group = yield* parallel(tasks);
+  store.run(function* (): Operation<void> {
+    yield* persistor.rehydrate();
+    yield* schema.update(db.loaders.success({ id: PERSIST_LOADER_ID }));
+    const group = yield* parallel(tsks);
     yield* group;
   });
 
-  return { store, persistor };
+  return store;
+}
+
+// persistor makes things more complicated for our tests so we are deliberately
+// choosing to not include it for our tests.
+export function setupTestStore(initialState: Partial<WebState>) {
+  const store = configureStore<WebState>({
+    initialState: {
+      ...schema.initialState,
+      entities: rootEntities,
+      ...initialState,
+    },
+    middleware: [createBatchMdw(queueMicrotask)],
+  });
+
+  store.run(function* (): Operation<void> {
+    const group = yield* parallel([...tasks, bootup.run()]);
+    yield* group;
+  });
+
+  return store;
 }

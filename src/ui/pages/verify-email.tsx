@@ -1,11 +1,10 @@
 import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";
-import { useLoader } from "@app/fx";
+import { useDispatch, useLoader, useSelector } from "@app/react";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import { getStartedUrl, homeUrl, loginUrl } from "@app/routes";
 import { selectJwtToken } from "@app/token";
 import { selectCurrentUser } from "@app/users";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { HeroBgLayout } from "../layouts";

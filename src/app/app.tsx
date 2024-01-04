@@ -1,8 +1,13 @@
-import type { AppState } from "@app/types";
-import { CookieNotice, ModalPortal, StandaloneErrorBoundary } from "@app/ui";
-import type { Store } from "@reduxjs/toolkit";
+import { FxStore } from "@app/fx";
+import { PersistGate, Provider } from "@app/react";
+import { WebState, db } from "@app/schema";
+import {
+  CookieNotice,
+  Loading,
+  ModalPortal,
+  StandaloneErrorBoundary,
+} from "@app/ui";
 import { StrictMode } from "react";
-import { Provider } from "react-redux";
 import { RouterProvider } from "react-router";
 import { router } from "./router";
 
@@ -18,11 +23,13 @@ export const AppRouter = () => {
   );
 };
 
-export const App = ({ store }: { store: Store<AppState> }) => {
+export const App = ({ store }: { store: FxStore<WebState> }) => {
   return (
     <StrictMode>
       <Provider store={store}>
-        <AppRouter />
+        <PersistGate loader={db.loaders} loading={<Loading />}>
+          <AppRouter />
+        </PersistGate>
       </Provider>
     </StrictMode>
   );

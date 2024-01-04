@@ -1,24 +1,17 @@
-import { createAssign, createReducerMap } from "@app/slice-helpers";
-import { AppState, Feedback } from "@app/types";
+import { thunks } from "@app/api";
+import { WebState, db, schema } from "@app/schema";
+import { Feedback } from "@app/types";
 
-export const createFeedback = (e: Partial<Feedback> = {}): Feedback => {
-  return {
-    preDeploySurveyAnswered: false,
-    freeformFeedbackGiven: false,
-    ...e,
-  };
-};
-
-export const FEEDBACK_NAME = "feedback";
-const feedback = createAssign<Feedback>({
-  name: FEEDBACK_NAME,
-  initialState: createFeedback(),
-});
-
-export const { set: setFeedback, reset: resetFeedback } = feedback.actions;
-export const reducers = createReducerMap(feedback);
-export const selectFeedback = (state: AppState) => state[FEEDBACK_NAME];
-export const selectPreDeploySurveyAnswered = (state: AppState) =>
+export const selectFeedback = db.feedback.select;
+export const selectPreDeploySurveyAnswered = (state: WebState) =>
   selectFeedback(state).preDeploySurveyAnswered;
-export const selectFreeformFeedbackGiven = (state: AppState) =>
+export const selectFreeformFeedbackGiven = (state: WebState) =>
   selectFeedback(state).freeformFeedbackGiven;
+
+export const setFeedback = thunks.create<Feedback>(
+  "set-feedback",
+  function* (ctx, next) {
+    yield* schema.update(db.feedback.set(ctx.payload));
+    yield* next();
+  },
+);

@@ -13,11 +13,16 @@ import {
   selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
-import { useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { databaseActivityUrl } from "@app/routes";
-import { AppState, InstanceClass } from "@app/types";
+import { InstanceClass } from "@app/types";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
 import {
@@ -60,19 +65,17 @@ export const DatabaseScalePage = () => {
   const [diskValue, setDiskValue] = useState<number>(10);
 
   useQuery(fetchDatabase({ id }));
-  const database = useSelector((s: AppState) => selectDatabaseById(s, { id }));
+  const database = useSelector((s) => selectDatabaseById(s, { id }));
   const serviceLoader = useQuery(fetchService({ id: database.serviceId }));
   useQuery(fetchDiskById({ id: database.diskId }));
-  const disk = useSelector((s: AppState) =>
-    selectDiskById(s, { id: database.diskId }),
-  );
-  const service = useSelector((s: AppState) =>
+  const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
+  const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
   );
-  const environment = useSelector((s: AppState) =>
+  const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: database.environmentId }),
   );
-  const containerProfilesForStack = useSelector((s: AppState) =>
+  const containerProfilesForStack = useSelector((s) =>
     selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
 

@@ -1,40 +1,6 @@
-import type { QueryState } from "starfx";
+import type { DeployOperation, DeployService, Timestamps } from "./deploy";
 
-import type {
-  DeployActivePlan,
-  DeployActivityReport,
-  DeployApp,
-  DeployBackup,
-  DeployBackupRetentionPolicy,
-  DeployCertificate,
-  DeployContainer,
-  DeployDatabase,
-  DeployDatabaseCredential,
-  DeployDatabaseImage,
-  DeployDisk,
-  DeployEndpoint,
-  DeployEnvironment,
-  DeployEnvironmentStats,
-  DeployImage,
-  DeployLogDrain,
-  DeployMetricDrain,
-  DeployOperation,
-  DeployPlan,
-  DeployRelease,
-  DeployService,
-  DeployServiceDefinition,
-  DeployStack,
-  DeployVpcPeer,
-  DeployVpnTunnel,
-  Permission,
-  Timestamps,
-} from "./deploy";
-import type { EntityMap } from "./hal";
-import type { MapEntity } from "./helpers";
-import type { Invitation } from "./invitations";
-import type { ModalState } from "./modal";
-
-export interface Env {
+export interface Config {
   isProduction: boolean;
   isDev: boolean;
   appUrl: string;
@@ -161,58 +127,6 @@ export interface ContainerMetrics {
 export interface BillingDetail {
   id: string;
   paymentMethodUrl: string;
-}
-
-export interface AppState extends QueryState {
-  env: Env;
-  feedback: Feedback;
-  users: MapEntity<User>;
-  token: Token;
-  elevatedToken: Token;
-  invitations: MapEntity<Invitation>;
-  entities: EntityMap;
-  redirectPath: string;
-  organizationSelected: string;
-  organizations: MapEntity<Organization>;
-  u2fDevices: MapEntity<U2fDevice>;
-  otp: Otp;
-  data: MapEntity<any>;
-  theme: Theme;
-  nav: Nav;
-  modal: ModalState;
-  roles: MapEntity<Role>;
-  currentUserRoles: string[];
-  signal: AbortController;
-  resourceStats: MapEntity<ResourceStats>;
-  containerMetrics: MapEntity<ContainerMetrics>;
-  billingDetail: BillingDetail;
-  apps: MapEntity<DeployApp>;
-  appConfigs: MapEntity<DeployAppConfig>;
-  certificates: MapEntity<DeployCertificate>;
-  endpoints: MapEntity<DeployEndpoint>;
-  environments: MapEntity<DeployEnvironment>;
-  environmentStats: MapEntity<DeployEnvironmentStats>;
-  serviceDefinitions: MapEntity<DeployServiceDefinition>;
-  stacks: MapEntity<DeployStack>;
-  disks: MapEntity<DeployDisk>;
-  databases: MapEntity<DeployDatabase>;
-  databaseCredentials: MapEntity<DeployDatabaseCredential>;
-  databaseImages: MapEntity<DeployDatabaseImage>;
-  services: MapEntity<DeployService>;
-  logDrains: MapEntity<DeployLogDrain>;
-  metricDrains: MapEntity<DeployMetricDrain>;
-  operations: MapEntity<DeployOperation>;
-  activePlans: MapEntity<DeployActivePlan>;
-  plans: MapEntity<DeployPlan>;
-  permissions: MapEntity<Permission>;
-  releases: MapEntity<DeployRelease>;
-  containers: MapEntity<DeployContainer>;
-  vpcPeers: MapEntity<DeployVpcPeer>;
-  vpnTunnels: MapEntity<DeployVpnTunnel>;
-  backups: MapEntity<DeployBackup>;
-  backupRps: MapEntity<DeployBackupRetentionPolicy>;
-  activityReports: MapEntity<DeployActivityReport>;
-  images: MapEntity<DeployImage>;
 }
 
 export interface DeployActivityRow extends DeployOperation {

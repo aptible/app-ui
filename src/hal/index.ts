@@ -1,9 +1,6 @@
-import { Next, Operation, select } from "@app/fx";
-
-import { createAssign, createReducerMap } from "@app/slice-helpers";
+import { Next, Operation, StoreUpdater, select } from "@app/fx";
+import { WebState, db, schema } from "@app/schema";
 import type {
-  Action,
-  AppState,
   DeployApiCtx,
   EmbeddedMap,
   EntityMap,
@@ -74,13 +71,7 @@ export function extractResourceNameFromLink(
   return transformResourceName(res[res.length - 2]);
 }
 
-export const ENTITIES_NAME = "entities";
-const entities = createAssign<EntityMap>({
-  name: ENTITIES_NAME,
-  initialState: {},
-});
-export const reducers = createReducerMap(entities);
-const selectEntities = (state: AppState) => state[ENTITIES_NAME] || {};
+const selectEntities = db.entities.selectTable;
 
 export function defaultEntity<E = any>(e: EmbeddedMap<E>): EmbeddedMap<E> {
   return e;
@@ -92,14 +83,15 @@ export function* halEntityParser(
 ): Operation<any> {
   yield* next();
 
-  if (!ctx.json.ok) {
+  const result = ctx.json;
+  if (!result.ok) {
     return;
   }
 
   const entityMap: EntityMap = yield* select(selectEntities);
-  const { data } = ctx.json;
+  const { value } = result;
 
-  const actions: Action<any>[] = [];
+  const updaters: StoreUpdater<WebState>[] = [];
   const store: { [key: string]: IdEntity[] } = {};
 
   const parser = (
@@ -132,7 +124,7 @@ export function* halEntityParser(
     });
   };
 
-  parser(data);
+  parser(value);
 
   Object.keys(store).forEach((key) => {
     const entity = entityMap[key];
@@ -150,10 +142,8 @@ export function* halEntityParser(
       return acc;
     }, {});
 
-    actions.push(entity.save(dataObj));
+    updaters.push(entity.save(dataObj));
   });
 
-  if (actions.length > 0) {
-    ctx.actions.push(...actions);
-  }
+  yield* schema.update(updaters);
 }

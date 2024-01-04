@@ -1,7 +1,6 @@
-import { select } from "@app/fx";
-
 import { authApi } from "@app/api";
-import { selectOrigin } from "@app/env";
+import { selectOrigin } from "@app/config";
+import { select } from "@app/fx";
 
 export const forgotPass = authApi.post<{ email: string }>(
   "/password/resets/new",

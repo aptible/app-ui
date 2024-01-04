@@ -17,11 +17,17 @@ import {
   selectServiceById,
   selectStackById,
 } from "@app/deploy";
-import { useCache, useLoader, useLoaderSuccess, useQuery } from "@app/fx";
+import {
+  useCache,
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { appActivityUrl } from "@app/routes";
-import { AppState, HalEmbedded, InstanceClass } from "@app/types";
+import { HalEmbedded, InstanceClass } from "@app/types";
 import { SyntheticEvent, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
 import {
@@ -102,9 +108,7 @@ const VerticalAutoscalingSection = ({
   const changesExist = getChangesExist();
 
   const modifyLoader = useLoader(modifyServiceSizingPolicy);
-  const stack = useSelector((s: AppState) =>
-    selectStackById(s, { id: stackId }),
-  );
+  const stack = useSelector((s) => selectStackById(s, { id: stackId }));
   useLoaderSuccess(modifyLoader, () => policy.trigger());
 
   const [errors, validate] = useValidator<
@@ -459,18 +463,16 @@ export const AppDetailServiceScalePage = () => {
   const [containerProfileType, setContainerProfileType] =
     useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
   const [containerSize, setContainerSize] = useState<number>(512);
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
+  const app = useSelector((s) => selectAppById(s, { id }));
   useQuery(fetchService({ id: serviceId }));
-  const service = useSelector((s: AppState) =>
-    selectServiceById(s, { id: serviceId }),
-  );
-  const environment = useSelector((s: AppState) =>
+  const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
+  const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
-  const stack = useSelector((s: AppState) =>
+  const stack = useSelector((s) =>
     selectStackById(s, { id: environment.stackId }),
   );
-  const containerProfilesForStack = useSelector((s: AppState) =>
+  const containerProfilesForStack = useSelector((s) =>
     selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
 

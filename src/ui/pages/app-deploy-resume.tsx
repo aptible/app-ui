@@ -9,14 +9,13 @@ import {
   selectFirstAppByEnvId,
 } from "@app/deploy";
 import { hasDeployOperation, selectLatestDeployOp } from "@app/deploy";
+import { useDispatch, useSelector } from "@app/react";
 import {
   appDeployConfigureUrl,
   appDeployStatusUrl,
   appDeployWithGitUrl,
 } from "@app/routes";
-import { AppState } from "@app/types";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import { useLatestCodeResults } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
@@ -25,14 +24,12 @@ import { Loading } from "../shared";
 export const AppDeployResumeWithEnvPage = () => {
   const { envId = "" } = useParams();
   const dispatch = useDispatch();
-  const env = useSelector((s: AppState) =>
-    selectEnvironmentById(s, { id: envId }),
-  );
+  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
   const navigate = useNavigate();
   // just guessing which app to use to detect current status
-  const app = useSelector((s: AppState) => selectFirstAppByEnvId(s, { envId }));
+  const app = useSelector((s) => selectFirstAppByEnvId(s, { envId }));
   const { appOps, scanOp } = useLatestCodeResults(app.id);
-  const deployOp = useSelector((s: AppState) =>
+  const deployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
 
@@ -72,15 +69,13 @@ export const AppDeployResumeWithEnvPage = () => {
 export const AppDeployResumePage = () => {
   const { appId = "" } = useParams();
   const dispatch = useDispatch();
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  const env = useSelector((s: AppState) =>
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
+  const env = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
   const navigate = useNavigate();
   const { appOps, scanOp } = useLatestCodeResults(appId);
-  const deployOp = useSelector((s: AppState) =>
-    selectLatestDeployOp(s, { appId }),
-  );
+  const deployOp = useSelector((s) => selectLatestDeployOp(s, { appId }));
 
   useEffect(() => {
     dispatch(fetchApp({ id: appId }));

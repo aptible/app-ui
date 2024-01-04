@@ -1,47 +1,13 @@
-import {
-  appRoutes,
-  persistConfig,
-  reducers,
-  rootEntities,
-  tasks,
-} from "@app/app";
+import { appRoutes } from "@app/app";
+import { setupTestStore } from "@app/app";
 import { bootup } from "@app/bootup";
-import { hasDeployEnvironment, selectEnvironmentById } from "@app/deploy";
-import { parallel, prepareStore, selectLoaderById } from "@app/fx";
+import { hasDeployEnvironment } from "@app/deploy";
+import { FxStore } from "@app/fx";
 import { testEnv } from "@app/mocks";
-import { resetReducer } from "@app/reset-store";
-import type { AppState } from "@app/types";
-import { Store, configureStore } from "@reduxjs/toolkit";
+import { Provider } from "@app/react";
+import { WebState, db } from "@app/schema";
 import { waitFor } from "@testing-library/react";
-import { Provider } from "react-redux";
 import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
-import { REHYDRATE } from "redux-persist";
-
-export const setupTestStore = (
-  initState: Partial<AppState> = {},
-): { store: Store<AppState> } => {
-  const middleware = [];
-  const { fx, reducer } = prepareStore({
-    reducers: reducers,
-  });
-
-  middleware.push(fx.middleware as any);
-  const baseReducer = resetReducer(reducer, persistConfig);
-
-  const store = configureStore({
-    preloadedState: { ...initState, entities: rootEntities },
-    reducer: baseReducer,
-    devTools: false,
-    middleware: middleware,
-  });
-
-  fx.run(function* (): any {
-    const group = yield* parallel(tasks);
-    yield* group;
-  });
-
-  return { store: store as any };
-};
 
 /**
  * This function helps simulate booting the entire app as if it were
@@ -57,7 +23,7 @@ export const setupAppIntegrationTest = (
     initEntries = [],
   }: Partial<{
     routes: RouteObject[];
-    initState: Partial<AppState>;
+    initState: Partial<WebState>;
     initEntries: string[];
   }> = {
     routes: appRoutes,
@@ -66,15 +32,13 @@ export const setupAppIntegrationTest = (
   },
 ) => {
   const router = createMemoryRouter(routes, { initialEntries: initEntries });
-  const { store } = setupTestStore({
+  const store = setupTestStore({
     ...initState,
     env: {
       ...testEnv,
       ...initState.env,
     },
   });
-  store.dispatch(bootup());
-  store.dispatch({ type: REHYDRATE });
   const App = () => {
     return (
       <Provider store={store}>
@@ -93,20 +57,18 @@ export const setupIntegrationTest = (
     additionalRoutes = [],
   }: {
     path?: string;
-    initState?: Partial<AppState>;
+    initState?: Partial<WebState>;
     initEntries?: string[];
     additionalRoutes?: RouteObject[];
   } = { path: "/", initState: {}, initEntries: ["/"], additionalRoutes: [] },
 ) => {
-  const { store } = setupTestStore({
+  const store = setupTestStore({
     ...initState,
     env: {
       ...testEnv,
       ...initState.env,
     },
   });
-  store.dispatch(bootup());
-  store.dispatch({ type: REHYDRATE });
 
   const TestProvider = ({ children }: { children: React.ReactNode }) => {
     const router = createMemoryRouter(
@@ -129,8 +91,8 @@ export const setupIntegrationTest = (
 };
 
 export const waitForData = (
-  store: Store<AppState>,
-  predicate: (s: AppState) => boolean,
+  store: FxStore<WebState>,
+  predicate: (s: WebState) => boolean,
   msg = "",
 ) =>
   waitFor(() => {
@@ -139,20 +101,20 @@ export const waitForData = (
     }
   });
 
-export const waitForBootup = (store: Store<AppState>) =>
+export const waitForBootup = (store: FxStore<WebState>) =>
   waitForData(
     store,
-    (state) => selectLoaderById(state, { id: `${bootup}` }).isSuccess,
+    (state) => db.loaders.selectById(state, { id: `${bootup}` }).isSuccess,
   );
 
-export const waitForToken = (store: Store<AppState>) =>
+export const waitForToken = (store: FxStore<WebState>) =>
   waitForData(store, (state) => state.token.accessToken !== "");
 
 // we need to wait for accounts so we can do permission checks
-export const waitForEnv = (store: Store<AppState>, envId: string | number) =>
+export const waitForEnv = (store: FxStore<WebState>, envId: string | number) =>
   waitForData(store, (state) => {
     return hasDeployEnvironment(
-      selectEnvironmentById(state, { id: `${envId}` }),
+      db.environments.selectById(state, { id: `${envId}` }),
     );
   });
 

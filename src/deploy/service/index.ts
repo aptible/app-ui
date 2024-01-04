@@ -1,23 +1,15 @@
 import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
 import {
   call,
+  createAction,
+  createSelector,
   parallel,
   poll,
-  put,
   select,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
 } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
+import { WebState, db, schema } from "@app/schema";
 import {
-  createAction,
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import {
-  type AppState,
   type DeployService,
   DeployServiceResponse,
   DeployServiceRow,
@@ -25,7 +17,6 @@ import {
   type LinkResponse,
   excludesFalse,
 } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
 import {
   cancelAppOpsPoll,
   fetchAppOperations,
@@ -46,7 +37,6 @@ import {
   selectEnvironmentsByOrgAsList,
 } from "../environment";
 import { DeployOperationResponse } from "../operation";
-import { selectDeploy } from "../slice";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
 
@@ -105,30 +95,6 @@ export const deserializeDeployService = (
   };
 };
 
-export const defaultDeployService = (
-  s: Partial<DeployService> = {},
-): DeployService => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    appId: "",
-    databaseId: "",
-    environmentId: "",
-    handle: "",
-    dockerRef: "",
-    dockerRepo: "",
-    processType: "",
-    command: "",
-    containerCount: 0,
-    containerMemoryLimitMb: 0,
-    currentReleaseId: "",
-    instanceClass: DEFAULT_INSTANCE_CLASS,
-    createdAt: now,
-    updatedAt: now,
-    ...s,
-  };
-};
-
 export const serviceCommandText = (service: DeployService) => {
   return service.processType === "cmd" ? "Docker CMD" : service.command;
 };
@@ -161,25 +127,14 @@ export const calcServiceMetrics = (service: DeployService) => {
   };
 };
 
-export const DEPLOY_SERVICE_NAME = "services";
-const slice = createTable<DeployService>({
-  name: DEPLOY_SERVICE_NAME,
-});
-const { add: addDeployServices, reset: resetDeployServices } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_SERVICE_NAME],
-);
-const initService = defaultDeployService();
-const must = mustSelectEntity(initService);
-export const selectServiceById = must(selectors.selectById);
-export const selectServicesByIds = selectors.selectByIds;
-export const { selectTable: selectServices } = selectors;
+export const selectServiceById = db.services.selectById;
+export const selectServicesByIds = db.services.selectByIds;
+export const selectServices = db.services.selectTable;
 export const hasDeployService = (a: DeployService) => a.id !== "";
-export const serviceReducers = createReducerMap(slice);
-export const findServiceById = must(selectors.findById);
+export const findServiceById = db.services.findById;
 
 export const selectServicesAsList = createSelector(
-  selectors.selectTableAsList,
+  db.services.selectTableAsList,
   (services) => services.sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
@@ -256,7 +211,7 @@ export const selectServicesForTable = createSelector(
 
 export const selectServicesByAppId = createSelector(
   selectServicesForTable,
-  (_: AppState, p: { appId: string }) => p.appId,
+  (_: WebState, p: { appId: string }) => p.appId,
   (services, appId) => {
     return services.filter((service) => service.appId === appId);
   },
@@ -301,9 +256,9 @@ const createServiceSortFn = (
 
 export const selectServicesForTableSearch = createSelector(
   selectServicesForTable,
-  (_: AppState, p: { search: string }) => p.search,
-  (_: AppState, p: { sortBy: keyof DeployServiceRow }) => p.sortBy,
-  (_: AppState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (_: WebState, p: { search: string }) => p.search,
+  (_: WebState, p: { sortBy: keyof DeployServiceRow }) => p.sortBy,
+  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
   (services, search, sortBy, sortDir) => {
     const sortFn = createServiceSortFn(sortBy, sortDir);
 
@@ -334,7 +289,7 @@ export const selectServicesForTableSearch = createSelector(
 
 export const selectServicesByEnvId = createSelector(
   selectEnvToServicesMap,
-  (_: AppState, p: { envId: string }) => p.envId,
+  (_: WebState, p: { envId: string }) => p.envId,
   (envToServicesMap, envId) => {
     return envToServicesMap[envId] || new Set<string>();
   },
@@ -381,7 +336,7 @@ export const fetchServices = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    ctx.actions.push(resetDeployServices());
+    yield* schema.update(db.services.reset());
   },
 );
 
@@ -490,7 +445,7 @@ export const modifyServiceSizingPolicy =
   thunks.create<ServiceSizingPolicyEditProps>(
     "modify-service-sizing-policy",
     function* (ctx, next) {
-      yield* put(setLoaderStart({ id: ctx.name }));
+      yield* schema.update(db.loaders.start({ id: ctx.name }));
       const nextPolicy = ctx.payload;
       let updateCtx;
       if (nextPolicy.scaling_enabled) {
@@ -520,12 +475,14 @@ export const modifyServiceSizingPolicy =
       yield* next();
 
       if (updateCtx.json.ok) {
-        yield* put(
-          setLoaderSuccess({ id: ctx.name, message: "Policy changes saved" }),
+        yield* schema.update(
+          db.loaders.success({ id: ctx.name, message: "Policy changes saved" }),
         );
       } else {
-        const data = updateCtx.json.data as any;
-        yield* put(setLoaderError({ id: ctx.name, message: data.message }));
+        const data = updateCtx.json.error as Error;
+        yield* schema.update(
+          db.loaders.error({ id: ctx.name, message: data.message }),
+        );
       }
     },
   );
@@ -543,7 +500,7 @@ export const serviceEntities = {
   service: defaultEntity({
     id: "service",
     deserialize: deserializeDeployService,
-    save: addDeployServices,
+    save: db.services.add,
   }),
 };
 
@@ -573,7 +530,7 @@ export const scaleService = api.post<
     return;
   }
 
-  const opId = ctx.json.data.id;
+  const opId = ctx.json.value.id;
   ctx.loader = {
     message: `Scale service operation queued (operation ID: ${opId})`,
     meta: { opId: `${opId}` },
@@ -584,9 +541,9 @@ export const pollAppAndServiceOperations = thunks.create<{ id: string }>(
   "app-service-op-poll",
   { supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`) },
   function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
+    yield* schema.update(db.loaders.start({ id: ctx.key }));
 
-    const services = yield* select((s: AppState) =>
+    const services = yield* select((s: WebState) =>
       selectServicesByAppId(s, {
         appId: ctx.payload.id,
       }),
@@ -602,7 +559,7 @@ export const pollAppAndServiceOperations = thunks.create<{ id: string }>(
     yield* group;
 
     yield* next();
-    yield* put(setLoaderSuccess({ id: ctx.key }));
+    yield* schema.update(db.loaders.success({ id: ctx.key }));
   },
 );
 
@@ -610,8 +567,8 @@ export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
   "db-service-op-poll",
   { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
   function* (ctx, next) {
-    yield* put(setLoaderStart({ id: ctx.key }));
-    const db = yield* select((s: AppState) =>
+    yield* schema.update(db.loaders.start({ id: ctx.key }));
+    const dbb = yield* select((s: WebState) =>
       selectDatabaseById(s, ctx.payload),
     );
 
@@ -619,12 +576,12 @@ export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
       () => fetchDatabaseOperations.run(fetchDatabaseOperations(ctx.payload)),
       () =>
         fetchServiceOperations.run(
-          fetchServiceOperations({ id: db.serviceId }),
+          fetchServiceOperations({ id: dbb.serviceId }),
         ),
     ]);
     yield* group;
 
     yield* next();
-    yield* put(setLoaderSuccess({ id: ctx.key }));
+    yield* schema.update(db.loaders.success({ id: ctx.key }));
   },
 );

@@ -15,7 +15,7 @@ import {
   selectEndpointsForTableSearch,
   selectServiceById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
   appEndpointCreateUrl,
@@ -24,9 +24,8 @@ import {
   endpointDetailSetupUrl,
   endpointDetailUrl,
 } from "@app/routes";
-import { AppState, DeployEndpoint } from "@app/types";
+import { DeployEndpoint } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button, ButtonCreate } from "../button";
@@ -73,7 +72,7 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
   const acmeSetup = () => {
     navigate(endpointDetailSetupUrl(endpoint.id));
   };
-  const service = useSelector((s: AppState) =>
+  const service = useSelector((s) =>
     selectServiceById(s, { id: endpoint.serviceId }),
   );
 
@@ -200,7 +199,7 @@ export function EndpointsByOrg() {
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch }, { replace: true });
   };
-  const endpoints = useSelector((s: AppState) =>
+  const endpoints = useSelector((s) =>
     selectEndpointsForTableSearch(s, { search }),
   );
 
@@ -221,7 +220,7 @@ export function EndpointsByEnv({ envId }: { envId: string }) {
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch }, { replace: true });
   };
-  const endpoints = useSelector((s: AppState) =>
+  const endpoints = useSelector((s) =>
     selectEndpointsByEnvIdForTableSearch(s, { search, envId }),
   );
 
@@ -237,8 +236,8 @@ export function EndpointsByApp({ appId }: { appId: string }) {
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch }, { replace: true });
   };
-  const app = useSelector((s: AppState) => selectAppById(s, { id: appId }));
-  const endpoints = useSelector((s: AppState) =>
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
+  const endpoints = useSelector((s) =>
     selectEndpointsByAppIdForTableSearch(s, { search, appId }),
   );
   const action = (
@@ -268,10 +267,10 @@ export function EndpointsByDatabase({ dbId }: { dbId: string }) {
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch }, { replace: true });
   };
-  const endpoints = useSelector((s: AppState) =>
+  const endpoints = useSelector((s) =>
     selectEndpointsByDbIdForTableSearch(s, { search, dbId }),
   );
-  const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
+  const db = useSelector((s) => selectDatabaseById(s, { id: dbId }));
   const navigate = useNavigate();
   const action = (
     <ButtonCreate
@@ -299,7 +298,7 @@ export function EndpointsByCert({ certId }: { certId: string }) {
     setParams({ search: nextSearch }, { replace: true });
   };
   useQuery(fetchCertificateById({ certId }));
-  const endpoints = useSelector((s: AppState) =>
+  const endpoints = useSelector((s) =>
     selectEndpointsByCertIdForTableSearch(s, { search, certId }),
   );
 
@@ -317,8 +316,8 @@ export function EndpointsByDbService({
   const onChange = (nextSearch: string) => {
     setParams({ search: nextSearch }, { replace: true });
   };
-  const db = useSelector((s: AppState) => selectDatabaseById(s, { id: dbId }));
-  const endpoints = useSelector((s: AppState) =>
+  const db = useSelector((s) => selectDatabaseById(s, { id: dbId }));
+  const endpoints = useSelector((s) =>
     selectEndpointsByServiceId(s, { serviceId, search }),
   );
   const navigate = useNavigate();

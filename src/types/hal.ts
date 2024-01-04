@@ -1,3 +1,4 @@
+import { AnyState, IdProp } from "starfx";
 import type { MapEntity } from "./helpers";
 
 export interface LinkResponse {
@@ -14,14 +15,14 @@ export interface HalEmbedded<E> {
   current_page?: number;
 }
 
-interface Action<P> {
+/* interface Action<P> {
   type: string;
   payload?: P;
-}
+} */
 
 export interface EmbeddedMap<E = any> {
   id: string;
-  save: (p: MapEntity<E>) => Action<MapEntity<E>>;
+  save: (p: Record<IdProp, E>) => (s: AnyState) => void; //Action<MapEntity<E>>;
   deserialize: (...args: any[]) => E;
 }
 

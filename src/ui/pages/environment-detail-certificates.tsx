@@ -3,14 +3,13 @@ import {
   selectAppsByCertId,
   selectCertificatesByEnvId,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useQuery, useSelector } from "@app/react";
 import {
   appEndpointsUrl,
   certDetailUrl,
   environmentCreateCertUrl,
 } from "@app/routes";
-import type { AppState, DeployCertificate } from "@app/types";
-import { useSelector } from "react-redux";
+import type { DeployCertificate } from "@app/types";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { usePaginate } from "../hooks";
@@ -89,7 +88,7 @@ const CertificateIssuerCell = ({
 const CertificateServicesCell = ({
   certificate,
 }: { certificate: DeployCertificate }) => {
-  const appsForCertificate = useSelector((s: AppState) =>
+  const appsForCertificate = useSelector((s) =>
     selectAppsByCertId(s, {
       certId: certificate.id,
       envId: certificate.environmentId,
@@ -133,7 +132,7 @@ export const EnvironmentCertificatesPage = () => {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   useQuery(fetchAllCertsByEnvId({ id }));
-  const certificates = useSelector((s: AppState) =>
+  const certificates = useSelector((s) =>
     selectCertificatesByEnvId(s, { envId: id }),
   );
   const createCert = () => {

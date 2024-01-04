@@ -1,21 +1,15 @@
 import { api } from "@app/api";
 import { selectHasPaymentMethod } from "@app/billing";
+import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
+import { db, defaultPlan, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import {
-  AppState,
   DeployActivePlan,
   DeployPlan,
   LinkResponse,
   PlanName,
 } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectDeploy } from "../slice";
 
 export interface DeployPlanResponse {
   id: number;
@@ -63,30 +57,6 @@ export interface DeployActivePlanResponse {
   };
   _type: "active_plan";
 }
-
-export const defaultPlan = (c: Partial<DeployPlan> = {}): DeployPlan => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    automatedBackupLimitPerDb: 0,
-    complianceDashboardAccess: false,
-    containerMemoryLimit: 0,
-    costCents: 0,
-    cpuAllowedProfiles: 0,
-    createdAt: now,
-    diskLimit: 0,
-    environmentLimit: undefined,
-    ephemeralSessionLimit: 0,
-    includedContainerMb: 0,
-    includedDiskGb: 0,
-    includedVhosts: 0,
-    manualBackupLimitPerDb: 0,
-    name: "none",
-    updatedAt: now,
-    vhostLimit: 0,
-    ...c,
-  };
-};
 
 export const defaultActivePlanResponse = (
   c: Partial<DeployActivePlanResponse> = {},
@@ -147,34 +117,6 @@ export const defaultPlanResponse = (
   };
 };
 
-export const defaultActivePlan = (
-  c: Partial<DeployActivePlan> = {},
-): DeployActivePlan => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    automatedBackupLimitPerDb: 0,
-    availablePlans: ["starter", "growth", "scale"],
-    complianceDashboardAccess: false,
-    containerMemoryLimit: 0,
-    costCents: 0,
-    cpuAllowedProfiles: 0,
-    createdAt: now,
-    diskLimit: 0,
-    environmentLimit: undefined,
-    ephemeralSessionLimit: 0,
-    includedContainerMb: 0,
-    includedDiskGb: 0,
-    includedVhosts: 0,
-    manualBackupLimitPerDb: 0,
-    organizationId: "",
-    updatedAt: now,
-    vhostLimit: 0,
-    planId: "",
-    ...c,
-  };
-};
-
 export const deserializePlan = (payload: DeployPlanResponse): DeployPlan => {
   return {
     id: `${payload.id}`,
@@ -225,25 +167,13 @@ export const deserializeActivePlan = (
   };
 };
 
-export const DEPLOY_PLAN_NAME = "plans";
-const planSlice = createTable<DeployPlan>({ name: DEPLOY_PLAN_NAME });
-const { add: addPlans } = planSlice.actions;
-
-const planSelectors = planSlice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_PLAN_NAME],
-);
-
-const initPlan = defaultPlan();
-const mustPlan = mustSelectEntity(initPlan);
-
 // You probably want to use `selectPlanByActiveId` instead
-const selectPlanById = mustPlan(planSelectors.selectById);
-export const planReducers = createReducerMap(planSlice);
+const selectPlanById = db.plans.selectById;
 
 // when there is no active plan that means we should assume
 // the user is on a legacy "enterprise" plan
 export const selectPlanByActiveId = createSelector(
-  planSelectors.selectTableAsList,
+  db.plans.selectTableAsList,
   selectPlanById,
   selectHasPaymentMethod,
   (plans, planById, hasPaymentMethod) => {
@@ -252,18 +182,18 @@ export const selectPlanByActiveId = createSelector(
     }
 
     if (!hasPaymentMethod) {
-      return initPlan;
+      return db.plans.empty;
     }
 
     // if user has payment method and no active plan that means they are
     // legacy enterprise
     const enterprise = plans.find((p) => p.name === "enterprise");
-    return enterprise || initPlan;
+    return enterprise || db.plans.empty;
   },
 );
 
 export const selectPlansForView = createSelector(
-  planSelectors.selectTableAsList,
+  db.plans.selectTableAsList,
   (plans) => {
     const init: Record<PlanName, DeployPlan> = {
       none: defaultPlan({ name: "none" }),
@@ -280,30 +210,13 @@ export const selectPlansForView = createSelector(
   },
 );
 
-export const DEPLOY_ACTIVE_PLAN_NAME = "activePlans";
-const activePlanSlice = createTable<DeployActivePlan>({
-  name: DEPLOY_ACTIVE_PLAN_NAME,
-});
-const { add: addActivePlans, remove: removeActivePlans } =
-  activePlanSlice.actions;
-
-const initActivePlan = defaultActivePlan();
-const mustActivePlan = mustSelectEntity(initActivePlan);
-
-const activePlanSelectors = activePlanSlice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_ACTIVE_PLAN_NAME],
-);
-export const selectActivePlanById = mustActivePlan(
-  activePlanSelectors.selectById,
-);
-export const { selectTableAsList: selectActivePlansAsList } =
-  activePlanSelectors;
-export const activePlanReducers = createReducerMap(activePlanSlice);
+export const selectActivePlanById = db.activePlans.selectById;
+export const selectActivePlansAsList = db.activePlans.selectTableAsList;
 export const selectFirstActivePlan = createSelector(
   selectActivePlansAsList,
   (activePlans) => {
     if (activePlans.length === 0) {
-      return initActivePlan;
+      return db.activePlans.empty;
     }
 
     return activePlans[0];
@@ -338,7 +251,7 @@ export const updateActivePlan = api.put<UpdateActivePlan>(
       return;
     }
 
-    ctx.actions.push(removeActivePlans([ctx.payload.id]));
+    yield* schema.update(db.activePlans.remove([ctx.payload.id]));
     const name = capitalize(ctx.payload.name);
     ctx.loader = {
       message: `Successfully updated plan to ${name}.`,
@@ -350,7 +263,7 @@ export const planEntities = {
   plan: defaultEntity({
     id: "plan",
     deserialize: deserializePlan,
-    save: addPlans,
+    save: db.plans.add,
   }),
 };
 
@@ -358,6 +271,6 @@ export const activePlanEntities = {
   active_plan: defaultEntity({
     id: "active_plan",
     deserialize: deserializeActivePlan,
-    save: addActivePlans,
+    save: db.activePlans.add,
   }),
 };

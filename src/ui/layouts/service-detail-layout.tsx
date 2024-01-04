@@ -7,7 +7,7 @@ import {
   selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
-import { useQuery } from "@app/fx";
+import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
   appServicePathMetricsUrl,
@@ -17,14 +17,8 @@ import {
   environmentDetailUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import type {
-  AppState,
-  DeployApp,
-  DeployEnvironment,
-  DeployService,
-} from "@app/types";
+import type { DeployApp, DeployEnvironment, DeployService } from "@app/types";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
   DetailHeader,
@@ -125,11 +119,9 @@ function ServicePageHeader() {
 
   const loader = useQuery(fetchApp({ id }));
   useQuery(fetchServicesByAppId({ id: id }));
-  const app = useSelector((s: AppState) => selectAppById(s, { id }));
-  const service = useSelector((s: AppState) =>
-    selectServiceById(s, { id: serviceId }),
-  );
-  const environment = useSelector((s: AppState) =>
+  const app = useSelector((s) => selectAppById(s, { id }));
+  const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
+  const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
 

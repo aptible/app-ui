@@ -18,11 +18,11 @@ import {
   defaultStackResponse,
 } from "@app/deploy";
 import { defaultCodeScanResponse } from "@app/deploy/code-scan-result";
-import { createEnv } from "@app/env";
 import { defaultHalHref } from "@app/hal";
 import { defaultInvitationResponse } from "@app/invitations";
 import { defaultOrgResponse } from "@app/organizations";
 import { defaultRoleResponse } from "@app/roles";
+import { defaultConfig } from "@app/schema";
 import { defaultSshKeyResponse } from "@app/ssh-keys";
 import { defaultTokenResponse } from "@app/token";
 import { defaultUserResponse } from "@app/users";
@@ -39,7 +39,7 @@ export const createText = (mixin: string, id: string | number = "1") => {
   return `test-${mixin}-${id}`;
 };
 
-export const testEnv = createEnv({
+export const testEnv = defaultConfig({
   origin: "app",
   authUrl: "https://auth.aptible-test.com",
   apiUrl: "https://api.aptible-test.com",

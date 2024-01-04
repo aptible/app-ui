@@ -15,7 +15,8 @@ import {
   selectImageById,
   selectServiceById,
 } from "@app/deploy";
-import { useLoader, useQuery } from "@app/fx";
+import { useLoader, useQuery } from "@app/react";
+import { useDispatch, useSelector } from "@app/react";
 import {
   appEndpointsUrl,
   databaseEndpointsUrl,
@@ -26,14 +27,12 @@ import {
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
 import type {
-  AppState,
   DeployApp,
   DeployDatabase,
   DeployEndpoint,
   DeployService,
 } from "@app/types";
 import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
@@ -59,7 +58,7 @@ export function EndpointAppHeaderInfo({
   service,
 }: { enp: DeployEndpoint; app: DeployApp; service: DeployService }) {
   const txt = getEndpointText(enp);
-  const image = useSelector((s: AppState) =>
+  const image = useSelector((s) =>
     selectImageById(s, { id: app.currentImageId }),
   );
   const portTxt = getContainerPort(enp, image.exposedPorts);
@@ -164,9 +163,7 @@ function EndpointAppHeader({
   meta: Record<string, any>;
 }) {
   useQuery(fetchApp({ id: service.appId }));
-  const app = useSelector((s: AppState) =>
-    selectAppById(s, { id: service.appId }),
-  );
+  const app = useSelector((s) => selectAppById(s, { id: service.appId }));
   useQuery(fetchImageById({ id: app.currentImageId }));
   const url = appEndpointsUrl(app.id);
   const tabs: TabItem[] = [
@@ -219,7 +216,7 @@ function EndpointDatabaseHeader({
   meta: Record<string, any>;
 }) {
   useQuery(fetchDatabase({ id: service.databaseId }));
-  const db = useSelector((s: AppState) =>
+  const db = useSelector((s) =>
     selectDatabaseById(s, { id: service.databaseId }),
   );
   const url = databaseEndpointsUrl(db.id);
@@ -252,12 +249,12 @@ function EndpointPageHeader() {
   const cancel = useMemo(() => cancelFetchEndpointPoll(), []);
   const loader = useLoader(action);
   usePoller({ action, cancel });
-  const enp = useSelector((s: AppState) => selectEndpointById(s, { id }));
+  const enp = useSelector((s) => selectEndpointById(s, { id }));
   useEffect(() => {
     dispatch(setResourceStats({ id, type: "endpoint" }));
   }, []);
   useQuery(fetchService({ id: enp.serviceId }));
-  const service = useSelector((s: AppState) =>
+  const service = useSelector((s) =>
     selectServiceById(s, { id: enp.serviceId }),
   );
 

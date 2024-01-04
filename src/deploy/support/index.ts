@@ -1,6 +1,6 @@
 import { api, thunks } from "@app/api";
-
-import { call, put, setLoaderStart, setLoaderSuccess } from "@app/fx";
+import { call } from "@app/fx";
+import { db, schema } from "@app/schema";
 
 interface SupportTicketProps {
   email: string;
@@ -32,7 +32,7 @@ export const createSupportTicket = api.post<SupportTicketProps>(
 
     if (!ctx.json.ok) {
       ctx.loader = {
-        message: `Error! Unable to create the support ticket: ${ctx.json.data.message}`,
+        message: `Error! Unable to create the support ticket: ${ctx.json.error.message}`,
       };
       return;
     }
@@ -41,6 +41,14 @@ export const createSupportTicket = api.post<SupportTicketProps>(
       message:
         "Request submitted successfully! Check your email for confirmation.",
     };
+  },
+);
+
+export const resetSupportTicket = thunks.create(
+  "reset-support-ticket",
+  function* (_, next) {
+    yield* schema.update(db.loaders.resetByIds([`${createSupportTicket}`]));
+    yield* next();
   },
 );
 
@@ -55,7 +63,7 @@ export const queryAlgoliaApi = thunks.create<{
     return;
   }
 
-  yield* put(setLoaderStart({ id: ctx.key }));
+  yield* schema.update(db.loaders.start({ id: ctx.key }));
   const resp = yield* call(() =>
     fetch(
       "https://6C0QTHJH2V-dsn.algolia.net/1/indexes/docs/query?x-algolia-api-key=b14dbd7f78ae21d0a844c64cecc52cf5&x-algolia-application-id=6C0QTHJH2V",
@@ -72,7 +80,9 @@ export const queryAlgoliaApi = thunks.create<{
     ),
   );
   const data = yield* call(() => resp.json());
-  yield* put(setLoaderSuccess({ id: ctx.key, meta: { hits: data.hits } }));
+  yield* schema.update(
+    db.loaders.success({ id: ctx.key, meta: { hits: data.hits } as any }),
+  );
   yield* next();
 });
 
@@ -94,16 +104,16 @@ export const uploadAttachment = api.post<AttachmentProps>(
 
     if (!ctx.json.ok) {
       ctx.loader = {
-        message: `Error! Unable to create the support ticket: ${ctx.json.data.message}`,
+        message: `Error! Unable to create the support ticket: ${ctx.json.error.message}`,
       };
       return;
     }
     ctx.payload.callback({
-      token: `${ctx.json.data.token}`,
+      token: `${ctx.json.value.token}`,
       filename: `${ctx.payload.attachment.name}`,
     });
     ctx.loader = {
-      message: ctx.json.data.message,
+      message: ctx.json.value.message,
     };
   },
 );

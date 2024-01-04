@@ -1,18 +1,20 @@
-import { useLoader, useLoaderSuccess } from "@app/fx";
-import cn from "classnames";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-
 import {
   deprovisionEndpoint,
   getEndpointUrl,
   selectEndpointById,
 } from "@app/deploy";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useSelector,
+} from "@app/react";
 import { endpointsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { AppState, DeployEndpoint, ProvisionableStatus } from "@app/types";
-
+import { DeployEndpoint, ProvisionableStatus } from "@app/types";
+import cn from "classnames";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { Box } from "../box";
 import { ButtonDestroy } from "../button";
 import { ExternalLink } from "../external-link";
@@ -110,9 +112,7 @@ export const EndpointDeprovision = ({
   useLoaderSuccess(loader, () => {
     navigate(endpointsUrl());
   });
-  const enp = useSelector((s: AppState) =>
-    selectEndpointById(s, { id: endpointId }),
-  );
+  const enp = useSelector((s) => selectEndpointById(s, { id: endpointId }));
   const url = getEndpointUrl(enp);
   const invalid = confirm !== url;
 

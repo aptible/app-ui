@@ -5,11 +5,10 @@ import {
   hasDeployStack,
   selectStackById,
 } from "@app/deploy";
-import { useCache } from "@app/fx";
+import { useCache, useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
-import { AppState, DeployStack, HalEmbedded, LinkResponse } from "@app/types";
+import { DeployStack, HalEmbedded, LinkResponse } from "@app/types";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import {
   Banner,
@@ -179,7 +178,7 @@ const ReportTable = ({ stack }: { stack: DeployStack }) => {
 
 export const StackDetailHidsPage = () => {
   const { id = "" } = useParams();
-  const stack = useSelector((s: AppState) => selectStackById(s, { id }));
+  const stack = useSelector((s) => selectStackById(s, { id }));
   const displayNotice =
     hasDeployStack(stack) && getStackType(stack) === "shared";
 

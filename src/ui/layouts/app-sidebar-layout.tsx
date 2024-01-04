@@ -1,5 +1,5 @@
 import { selectNav } from "@app/nav";
-import { useSelector } from "react-redux";
+import { useSelector } from "@app/react";
 import { Outlet } from "react-router";
 import { ApplicationSidebar, Footer } from "../shared";
 

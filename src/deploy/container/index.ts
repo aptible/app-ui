@@ -1,20 +1,9 @@
 import { api } from "@app/api";
 import { secondsFromNow } from "@app/date";
+import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import {
-  createReducerMap,
-  createTable,
-  mustSelectEntity,
-} from "@app/slice-helpers";
-import {
-  AppState,
-  DeployContainer,
-  HalEmbedded,
-  LinkResponse,
-} from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectDeploy } from "../slice";
-
+import { WebState, db } from "@app/schema";
+import { DeployContainer, HalEmbedded, LinkResponse } from "@app/types";
 export * from "./utils";
 
 export interface DeployContainerResponse {
@@ -83,45 +72,13 @@ export const deserializeDeployContainer = (
   };
 };
 
-export const defaultDeployContainer = (
-  c: Partial<DeployContainer> = {},
-): DeployContainer => {
-  const now = new Date().toISOString();
-  return {
-    id: "",
-    awsInstanceId: "",
-    dockerName: "",
-    host: "",
-    layer: "",
-    memoryLimit: 0,
-    port: 0,
-    portMapping: [],
-    status: "",
-    createdAt: now,
-    updatedAt: now,
-    releaseId: "",
-    ...c,
-  };
-};
-
-export const DEPLOY_CONTAINER_NAME = "containers";
-const slice = createTable<DeployContainer>({
-  name: DEPLOY_CONTAINER_NAME,
-});
-const { add: addDeployContainers } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => selectDeploy(s)[DEPLOY_CONTAINER_NAME],
-);
-const initContainer = defaultDeployContainer();
-const must = mustSelectEntity(initContainer);
-export const selectContainerById = must(selectors.selectById);
-export const selectContainerByIds = selectors.selectByIds;
-export const { selectTableAsList: selectContainerAsList } = selectors;
-export const containerReducers = createReducerMap(slice);
+export const selectContainerById = db.containers.selectById;
+export const selectContainerByIds = db.containers.selectByIds;
+export const selectContainersAsList = db.containers.selectTableAsList;
 
 export const selectContainersByReleaseId = createSelector(
-  selectContainerAsList,
-  (_: AppState, props: { releaseId: string }) => props.releaseId,
+  selectContainersAsList,
+  (_: WebState, props: { releaseId: string }) => props.releaseId,
   (containers, releaseId) => {
     return containers
       .filter((container) => container.releaseId === releaseId)
@@ -134,9 +91,9 @@ export const selectContainersByReleaseId = createSelector(
 );
 
 export const selectContainersByReleaseIdByLayerType = createSelector(
-  selectContainerAsList,
-  (_: AppState, props: { releaseId: string }) => props.releaseId,
-  (_: AppState, props: { layers: string[] }) => props.layers,
+  selectContainersAsList,
+  (_: WebState, props: { releaseId: string }) => props.releaseId,
+  (_: WebState, props: { layers: string[] }) => props.layers,
   (containers, releaseId, layers) => {
     return containers
       .filter(
@@ -152,9 +109,9 @@ export const selectContainersByReleaseIdByLayerType = createSelector(
 );
 
 export const selectContainersByReleaseIdsByLayerType = createSelector(
-  selectContainerAsList,
-  (_: AppState, props: { releaseIds: string[] }) => props.releaseIds,
-  (_: AppState, props: { layers: string[] }) => props.layers,
+  selectContainersAsList,
+  (_: WebState, props: { releaseIds: string[] }) => props.releaseIds,
+  (_: WebState, props: { layers: string[] }) => props.layers,
   (containers, releaseIds, layers) => {
     return containers
       .filter(
@@ -172,8 +129,8 @@ export const selectContainersByReleaseIdsByLayerType = createSelector(
 
 export const selectContainersByCurrentReleaseAndHorizon = createSelector(
   selectContainersByReleaseIdsByLayerType,
-  (_: AppState, p: { currentReleaseId: string }) => p.currentReleaseId,
-  (_: AppState, p: { horizonInSeconds: number }) => p.horizonInSeconds,
+  (_: WebState, p: { currentReleaseId: string }) => p.currentReleaseId,
+  (_: WebState, p: { horizonInSeconds: number }) => p.horizonInSeconds,
   (containers, currentReleaseId, horizonInSeconds) => {
     return containers.filter((container) => {
       const isContainerInMetricHorizon =
@@ -196,7 +153,7 @@ export const fetchContainersByReleaseIdWithDeleted = api.get<
 export const containerEntities = {
   container: defaultEntity({
     id: "container",
-    save: addDeployContainers,
+    save: db.containers.add,
     deserialize: deserializeDeployContainer,
   }),
 };

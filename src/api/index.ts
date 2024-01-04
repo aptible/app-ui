@@ -1,19 +1,18 @@
+import { selectEnv } from "@app/config";
 import { createLog } from "@app/debug";
-import { selectEnv } from "@app/env";
 import {
   Ok,
   call,
   createApi,
+  createThunks,
   dispatchActions,
   mdw,
   parallel,
   put,
   race,
-  reduxMdw,
   select,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
+  storeMdw,
+  takeEvery,
   timer,
 } from "@app/fx";
 import type {
@@ -24,12 +23,8 @@ import type {
   ThunkCtx as BaseThunkCtx,
 } from "@app/fx";
 import { halEntityParser } from "@app/hal";
-import { selectSignal } from "@app/signal";
-import {
-  resetToken,
-  selectAccessToken,
-  selectElevatedAccessToken,
-} from "@app/token";
+import { db, schema } from "@app/schema";
+import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
 import type {
   Action,
   ApiCtx,
@@ -40,7 +35,6 @@ import type {
   MetricTunnelCtx,
 } from "@app/types";
 import * as Sentry from "@sentry/react";
-import { createThunks } from "starfx";
 
 export interface ThunkCtx<P = any, D = any>
   extends BaseThunkCtx<P>,
@@ -52,16 +46,6 @@ export interface ThunkCtx<P = any, D = any>
 type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel";
 
 const log = createLog("fx");
-
-export function* elevetatedMdw(ctx: AuthApiCtx, next: Next) {
-  ctx.elevated = true;
-  yield* next();
-}
-
-function* debugMdw(ctx: ThunkCtx, next: Next) {
-  log(`${ctx.name}`, ctx);
-  yield* next();
-}
 
 const ignoreErrs: RegExp[] = [
   /failed to fetch/i,
@@ -87,6 +71,31 @@ function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
       contexts: { extras: { queryCtx: JSON.stringify(ctx) } },
     });
   }
+}
+
+function* debugMdw(ctx: ThunkCtx, next: Next) {
+  log(`${ctx.name}`, ctx);
+  yield* next();
+}
+
+export const thunks = createThunks<ThunkCtx>({ supervisor: takeEvery });
+thunks.use(debugMdw);
+thunks.use(sentryErrorHandler);
+thunks.use(function* (ctx, next) {
+  ctx.json = null;
+  yield* next();
+});
+thunks.use(dispatchActions);
+thunks.use(thunks.routes());
+
+export const resetToken = thunks.create("reset-token", function* (_, next) {
+  yield* schema.update(db.token.reset());
+  yield* next();
+});
+
+export function* elevetatedMdw(ctx: AuthApiCtx, next: Next) {
+  ctx.elevated = true;
+  yield* next();
 }
 
 function* getApiBaseUrl(endpoint: EndpointUrl) {
@@ -222,7 +231,7 @@ function* expiredToken(ctx: ApiCtx, next: Next) {
 }
 
 function* aborter(ctx: ApiCtx, next: Next) {
-  const signal = yield* select(selectSignal);
+  const signal = yield* select(db.signal.select);
   const aborted = () =>
     new Promise<void>((resolve) => {
       signal.signal.addEventListener("abort", () => {
@@ -244,11 +253,13 @@ export const cacheTimer = () => timer(5 * MINUTES);
 export const cacheMinTimer = () => timer(60 * SECONDS);
 export const cacheShortTimer = () => timer(5 * SECONDS);
 
-export const api = createApi<DeployApiCtx>();
+export const api = createApi<DeployApiCtx>(
+  createThunks({ supervisor: takeEvery }),
+);
 api.use(debugMdw);
 api.use(sentryErrorHandler);
 api.use(expiredToken);
-api.use(reduxMdw());
+api.use(storeMdw(db));
 api.use(mdw.api());
 api.use(aborter);
 api.use(requestApi);
@@ -257,11 +268,13 @@ api.use(api.routes());
 api.use(tokenMdw);
 api.use(mdw.fetch());
 
-export const authApi = createApi<AuthApiCtx>();
+export const authApi = createApi<AuthApiCtx>(
+  createThunks({ supervisor: takeEvery }),
+);
 authApi.use(debugMdw);
 authApi.use(sentryErrorHandler);
 authApi.use(expiredToken);
-authApi.use(reduxMdw());
+authApi.use(storeMdw(db));
 authApi.use(mdw.api());
 authApi.use(aborter);
 authApi.use(halEntityParser);
@@ -271,11 +284,13 @@ authApi.use(tokenMdw);
 authApi.use(elevatedTokenMdw);
 authApi.use(mdw.fetch());
 
-export const billingApi = createApi<DeployApiCtx>();
+export const billingApi = createApi<DeployApiCtx>(
+  createThunks({ supervisor: takeEvery }),
+);
 billingApi.use(debugMdw);
 billingApi.use(sentryErrorHandler);
 billingApi.use(expiredToken);
-billingApi.use(reduxMdw());
+billingApi.use(storeMdw(db));
 billingApi.use(mdw.api());
 billingApi.use(aborter);
 billingApi.use(halEntityParser);
@@ -284,11 +299,13 @@ billingApi.use(requestBilling);
 billingApi.use(tokenMdw);
 billingApi.use(mdw.fetch());
 
-export const metricTunnelApi = createApi<MetricTunnelCtx>();
+export const metricTunnelApi = createApi<MetricTunnelCtx>(
+  createThunks({ supervisor: takeEvery }),
+);
 metricTunnelApi.use(debugMdw);
 metricTunnelApi.use(sentryErrorHandler);
 metricTunnelApi.use(expiredToken);
-metricTunnelApi.use(reduxMdw());
+metricTunnelApi.use(storeMdw(db));
 metricTunnelApi.use(mdw.api());
 metricTunnelApi.use(aborter);
 metricTunnelApi.use(metricTunnelApi.routes());
@@ -316,7 +333,7 @@ export function combinePages<
 ) {
   function* paginator(ctx: ThunkCtx, next: Next) {
     let results: Result<DeployApiCtx>[] = [];
-    yield* put(setLoaderStart({ id: ctx.key }));
+    yield* schema.update(db.loaders.start({ id: ctx.key }));
 
     const firstPage: DeployApiCtx<HalEmbedded<any>> = yield* call(() =>
       actionFn.run(actionFn({ ...ctx.payload, page: 1 })),
@@ -324,7 +341,7 @@ export function combinePages<
 
     if (!firstPage.json.ok) {
       const message = firstPage.json.error.message;
-      yield* put(setLoaderError({ id: ctx.key, message }));
+      yield* schema.update(db.loaders.error({ id: ctx.key, message }));
       yield* next();
       return;
     }
@@ -349,7 +366,7 @@ export function combinePages<
     }
 
     ctx.json = { data: results };
-    yield* put(setLoaderSuccess({ id: ctx.key }));
+    yield* schema.update(db.loaders.success({ id: ctx.key }));
     yield* next();
   }
 
@@ -359,13 +376,3 @@ export function combinePages<
 export interface Retryable {
   attempts?: number;
 }
-
-export const thunks = createThunks<ThunkCtx>();
-thunks.use(debugMdw);
-thunks.use(sentryErrorHandler);
-thunks.use(function* (ctx, next) {
-  ctx.json = null;
-  yield* next();
-});
-thunks.use(dispatchActions);
-thunks.use(thunks.routes());

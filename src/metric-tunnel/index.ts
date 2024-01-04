@@ -7,21 +7,10 @@ import {
   selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
-import {
-  call,
-  delay,
-  leading,
-  parallel,
-  put,
-  select,
-  selectLoaders,
-  setLoaderError,
-  setLoaderStart,
-  setLoaderSuccess,
-} from "@app/fx";
-import { createReducerMap, createTable } from "@app/slice-helpers";
-import { AppState, ContainerMetrics, MetricHorizons } from "@app/types";
-import { createSelector } from "@reduxjs/toolkit";
+import { call, delay, leading, parallel, select } from "@app/fx";
+import { createSelector } from "@app/fx";
+import { WebState, db, schema } from "@app/schema";
+import { ContainerMetrics, MetricHorizons } from "@app/types";
 
 export const metricHorizonAsSeconds = (metricHorizon: MetricHorizons) =>
   ({
@@ -131,19 +120,11 @@ export const deserializeContainerMetricsResponse = ({
   return result;
 };
 
-const METRIC_TUNNEL_CONTAINER_METRICS = "containerMetrics";
-const slice = createTable<ContainerMetrics>({
-  name: METRIC_TUNNEL_CONTAINER_METRICS,
-});
-export const { add: addContainerMetrics } = slice.actions;
-const selectors = slice.getSelectors(
-  (s: AppState) => s[METRIC_TUNNEL_CONTAINER_METRICS],
-);
-// TODO - come back for must() if needed
-const { selectTableAsList: selectContainerMetricsAsList } = selectors;
+export const selectContainerMetricsAsList =
+  db.containerMetrics.selectTableAsList;
 export const selectMetricsByContainer = createSelector(
   selectContainerMetricsAsList,
-  (_: AppState, p: { containerId: string }) => p.containerId,
+  (_: WebState, p: { containerId: string }) => p.containerId,
   (containerMetrics, containerId) =>
     containerMetrics.find(
       (containerMetric) => containerMetric.containerId === containerId,
@@ -152,9 +133,9 @@ export const selectMetricsByContainer = createSelector(
 
 export const selectMetricsByMetricContainerHorizon = createSelector(
   selectContainerMetricsAsList,
-  (_: AppState, p: { containerId: string }) => p.containerId,
-  (_: AppState, p: { metricName: string }) => p.metricName,
-  (_: AppState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
+  (_: WebState, p: { containerId: string }) => p.containerId,
+  (_: WebState, p: { metricName: string }) => p.metricName,
+  (_: WebState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
   (containerMetrics, containerId, metricName, metricHorizon) =>
     containerMetrics.find(
       (containerMetric) =>
@@ -166,8 +147,8 @@ export const selectMetricsByMetricContainerHorizon = createSelector(
 
 export const selectMetricDataAsFlatTableByContainer = createSelector(
   selectContainerMetricsAsList,
-  (_: AppState, p: { containerIds: string[] }) => p.containerIds,
-  (_: AppState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
+  (_: WebState, p: { containerIds: string[] }) => p.containerIds,
+  (_: WebState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
   (containerMetrics, containerIds, metricHorizon): FlatTableOfMetricsData => {
     const result: FlatTableOfMetricsData = {
       time: [],
@@ -192,9 +173,9 @@ export const selectMetricDataAsFlatTableByContainer = createSelector(
 
 export const selectMetricDataByChart = createSelector(
   selectContainerMetricsAsList,
-  (_: AppState, p: { containerIds: string[] }) => p.containerIds,
-  (_: AppState, p: { metricNames: string[] }) => p.metricNames,
-  (_: AppState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
+  (_: WebState, p: { containerIds: string[] }) => p.containerIds,
+  (_: WebState, p: { metricNames: string[] }) => p.metricNames,
+  (_: WebState, p: { metricHorizon: MetricHorizons }) => p.metricHorizon,
   (
     containerMetrics,
     containerIds,
@@ -254,8 +235,6 @@ export const selectMetricDataByChart = createSelector(
   },
 );
 
-export const reducers = createReducerMap(slice);
-
 const getUtc = (): number => {
   return Date.now();
 };
@@ -269,11 +248,8 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
   function* (ctx, next) {
     const key = metricsKey(ctx.payload.serviceId, ctx.payload.metricHorizon);
     const id = `${ctx.key}-${ctx.payload.containerId}-${ctx.payload.metricName}-${key}`;
-    yield* put(
-      setLoaderStart({
-        id,
-      }),
-    );
+    yield* schema.update(db.loaders.start({ id }));
+
     yield* next();
 
     if (!ctx.json.ok) {
@@ -281,16 +257,14 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
     }
 
     const containerMetrics = deserializeContainerMetricsResponse({
-      payload: ctx.json.data,
+      payload: ctx.json.value,
       ...ctx.payload,
     });
 
-    yield* put(addContainerMetrics(containerMetrics));
-    yield* put(
-      setLoaderSuccess({
-        id,
-      }),
-    );
+    yield* schema.update([
+      db.containerMetrics.add(containerMetrics),
+      db.loaders.success({ id }),
+    ]);
   },
 );
 
@@ -298,18 +272,19 @@ export const fetchContainersByServiceId = thunks.create<{ serviceId: string }>(
   "fetch-containers-by-service-id",
   function* (ctx, next) {
     const { serviceId } = ctx.payload;
-    yield* put(setLoaderStart({ id: ctx.key }));
+    const id = ctx.key;
+    yield* schema.update(db.loaders.start({ id }));
     const releaseCtx = yield* call(() =>
       fetchReleasesByServiceWithDeleted.run(
         fetchReleasesByServiceWithDeleted({ serviceId: ctx.payload.serviceId }),
       ),
     );
     if (!releaseCtx.json.ok) {
-      yield* put(setLoaderError({ id: ctx.key }));
+      yield* schema.update(db.loaders.error({ id }));
       yield* next();
       return releaseCtx;
     }
-    const releases = yield* select((s: AppState) =>
+    const releases = yield* select((s: WebState) =>
       selectReleasesByServiceAfterDate(s, {
         serviceId,
         date: dateFromToday(-7).toISOString(),
@@ -326,7 +301,7 @@ export const fetchContainersByServiceId = thunks.create<{ serviceId: string }>(
     const group = yield* parallel(fx);
     yield* group;
 
-    yield* put(setLoaderSuccess({ id: ctx.key }));
+    yield* schema.update(db.loaders.success({ id }));
     yield* next();
   },
 );
@@ -338,15 +313,16 @@ export const fetchMetricByServiceId = thunks.create<{
   metricHorizon: MetricHorizons;
   metricName: MetricName;
 }>("fetch-metric-by-service-id", function* (ctx, next) {
-  yield* put(setLoaderStart({ id: ctx.key }));
+  const id = ctx.key;
+  yield* schema.update(db.loaders.start({ id }));
   const { serviceId, metricHorizon, metricName } = ctx.payload;
-  const service = yield* select((s: AppState) =>
+  const service = yield* select((s: WebState) =>
     selectServiceById(s, { id: serviceId }),
   );
 
   // we always go back exactly one week, though it might be a bit too far for some that way
   // we do not have to refetch this if the component state changes as this is fairly expensive
-  const releases = yield* select((s: AppState) =>
+  const releases = yield* select((s: WebState) =>
     selectReleasesByServiceAfterDate(s, {
       serviceId,
       date: dateFromToday(-7).toISOString(),
@@ -356,7 +332,7 @@ export const fetchMetricByServiceId = thunks.create<{
 
   const layersToSearchForContainers = ["app", "database"];
   const horizonInSeconds = metricHorizonAsSeconds(metricHorizon);
-  const containers = yield* select((s: AppState) =>
+  const containers = yield* select((s: WebState) =>
     selectContainersByCurrentReleaseAndHorizon(s, {
       layers: layersToSearchForContainers,
       releaseIds,
@@ -399,7 +375,7 @@ export const fetchMetricByServiceId = thunks.create<{
     yield* delay(250);
   }
 
-  yield* put(setLoaderSuccess({ id: ctx.key }));
+  yield* schema.update(db.loaders.start({ id }));
   yield* next();
 });
 
@@ -408,9 +384,9 @@ export const metricsKey = (serviceId: string, metricHorizon: string) => {
 };
 
 export const selectMetricsLoaded = createSelector(
-  selectLoaders,
-  (_: AppState, p: { serviceId: string }) => p.serviceId,
-  (_: AppState, p: { metricHorizon: string }) => p.metricHorizon,
+  db.loaders.selectTable,
+  (_: WebState, p: { serviceId: string }) => p.serviceId,
+  (_: WebState, p: { metricHorizon: string }) => p.metricHorizon,
   (loaders, serviceId, metricHorizon) => {
     const lds = Object.keys(loaders);
     const loaded = lds.filter((key) => {
@@ -436,7 +412,8 @@ export const fetchAllMetricsByServiceId = thunks.create<{
   },
   function* (ctx, next) {
     const { serviceId, metrics, metricHorizon } = ctx.payload;
-    yield* put(setLoaderStart({ id: ctx.key }));
+    const id = ctx.key;
+    yield* schema.update(db.loaders.start({ id }));
 
     yield* call(() =>
       fetchContainersByServiceId.run(fetchContainersByServiceId({ serviceId })),
@@ -457,7 +434,7 @@ export const fetchAllMetricsByServiceId = thunks.create<{
     const group = yield* parallel(fx);
     yield* group;
 
-    yield* put(setLoaderSuccess({ id: ctx.key }));
+    yield* schema.update(db.loaders.success({ id }));
     yield* next();
   },
 );
