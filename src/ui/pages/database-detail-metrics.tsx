@@ -138,7 +138,7 @@ export function DatabaseMetricsPage() {
               metricNames={["iops"]}
               metricHorizon={metricHorizon}
               helpText="IO activity of your database, compared to the baseline performance of its underlying volume."
-              yAxisLabel="IOPS (#)"
+              yAxisLabel="IOPS"
             />
             <ContainerMetricsChart
               containers={containers}
