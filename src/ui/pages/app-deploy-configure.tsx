@@ -16,11 +16,7 @@ import { DeployCodeScanResponse } from "@app/deploy";
 import { selectLoaderById } from "@app/fx";
 import { useQuery } from "@app/fx";
 import { idCreator } from "@app/id";
-import {
-  DB_ENV_TEMPLATE_KEY,
-  deployProject,
-  getDbEnvTemplateValue,
-} from "@app/projects";
+import { DB_ENV_TEMPLATE_KEY, deployProject } from "@app/projects";
 import { appDeployGetStartedUrl, appDeployStatusUrl } from "@app/routes";
 import { parseText } from "@app/string-utils";
 import { AppState } from "@app/types";
@@ -48,6 +44,7 @@ import {
   DbValidatorError,
   ExternalLink,
   FormGroup,
+  Group,
   IconChevronDown,
   IconChevronRight,
   IconPlusCircle,
@@ -132,33 +129,6 @@ export const AppDeployConfigurePage = () => {
     dbSelectorReducer,
     {},
   );
-
-  // rehydrate already existing databases
-  // this allows us to trigger a provision operation if we failed to do so
-  useEffect(() => {
-    if (existingDbs.length > 0) {
-      const envList = parseText(envs, () => ({}));
-      existingDbs.forEach((db) => {
-        const img = dbImages.find((i) => i.id === db.databaseImageId);
-        if (!img) return;
-        const env = envList.find(
-          (e) => e.value === getDbEnvTemplateValue(db.handle),
-        );
-        if (!env) return;
-        dbCreatorDispatch({
-          type: "add",
-          payload: {
-            env: env.key.replace(DB_ENV_TEMPLATE_KEY, ""),
-            id: `${createId()}`,
-            imgId: img.id,
-            name: db.handle,
-            dbType: img.type || "",
-            enableBackups: db.enableBackups,
-          },
-        });
-      });
-    }
-  }, [existingDbs, dbImages]);
 
   useEffect(() => {
     if (serviceDefinitions.length === 0) {
@@ -248,7 +218,7 @@ export const AppDeployConfigurePage = () => {
       />
 
       <Box className="w-full max-w-[700px] mx-auto">
-        <div className="mb-4">
+        <div>
           {codeScan.isInitialLoading ? (
             <Loading text="Loading code scan results..." />
           ) : (
@@ -257,117 +227,123 @@ export const AppDeployConfigurePage = () => {
         </div>
 
         <form onSubmit={onSubmit}>
-          <FormGroup
-            label=""
-            description={
-              envList.some((e) => e.key.includes(DB_ENV_TEMPLATE_KEY))
-                ? "We have detected existing databases inside your App config.  Be sure you didn't already create the databases you require."
-                : ""
-            }
-            htmlFor="databases"
-            feedbackVariant={dbErrors ? "danger" : "info"}
-            feedbackMessage={dbErrors.map((e) => e.message).join(". ")}
-          >
-            <div className="flex flex-col gap-4">
-              <Loading
-                text="Loading databases..."
-                isLoading={dbsQuery.isInitialLoading}
-              />
-              {existingDbs.length > 0 ? (
-                <DatabaseExistingForm
-                  envId={app.environmentId}
-                  dbMap={dbExistingMap}
-                  dbDispatch={dbExistingDispatch}
+          <Group>
+            {envList.some((e) => e.key.includes(DB_ENV_TEMPLATE_KEY)) ? (
+              <Banner variant="warning">
+                We have detected existing databases inside your App's config. Be
+                sure you didn't already create the databases you require.
+              </Banner>
+            ) : null}
+
+            <FormGroup
+              label=""
+              htmlFor="databases"
+              feedbackVariant={dbErrors ? "danger" : "info"}
+              feedbackMessage={dbErrors.map((e) => e.message).join(". ")}
+            >
+              <Group>
+                <Loading
+                  text="Loading databases..."
                   isLoading={dbsQuery.isInitialLoading}
                 />
-              ) : null}
+                {existingDbs.length > 0 ? (
+                  <DatabaseExistingForm
+                    envId={app.environmentId}
+                    dbMap={dbExistingMap}
+                    dbDispatch={dbExistingDispatch}
+                    isLoading={dbsQuery.isInitialLoading}
+                  />
+                ) : null}
 
-              <DatabaseCreatorForm
-                dbImages={dbImages}
-                namePrefix={app.handle}
-                dbMap={dbCreatorMap}
-                dbDispatch={dbCreatorDispatch}
-                isLoading={imgLoader.isInitialLoading}
-                showEnv
-              />
-            </div>
-          </FormGroup>
+                <DatabaseCreatorForm
+                  dbImages={dbImages}
+                  namePrefix={app.handle}
+                  dbMap={dbCreatorMap}
+                  dbDispatch={dbCreatorDispatch}
+                  isLoading={imgLoader.isInitialLoading}
+                  showEnv
+                />
+              </Group>
+            </FormGroup>
 
-          <hr className="my-4" />
+            <hr />
 
-          <FormGroup
-            label="Environment Variables"
-            htmlFor="envs"
-            feedbackVariant={envErrors.length > 0 ? "danger" : "info"}
-            feedbackMessage={envErrors.map((e) => e.message).join(". ")}
-            description="Add any additional required variables, such as API keys, KNOWN_HOSTS setting, etc. Each line is a separate variable in format: ENV_VAR=VALUE. Multiline values are supported but must be wrapped in double-quotes."
-          >
-            <textarea
-              id="envs"
-              name="envs"
-              className={tokens.type.textarea}
-              value={envs}
-              onChange={(e) => setEnvs(e.currentTarget.value)}
-            />
-          </FormGroup>
-
-          <hr className="my-4" />
-
-          {codeScan.data?.procfile_present ? (
-            <div className="mb-4">
-              <Banner variant="info">
-                <span>Your code has a </span>
-                <ExternalLink
-                  href="https://aptible.com/docs/procfiles"
-                  variant="info"
-                >
-                  Procfile
-                </ExternalLink>
-                <span>
-                  , which will be used to determine your app's services and
-                  commands.
-                </span>
-              </Banner>
-            </div>
-          ) : null}
-
-          <FormGroup
-            label="Service and Commands"
-            htmlFor="commands"
-            feedbackVariant="info"
-            description="This is optional if you already have a Dockerfile or Procfile in your code repository.  Each line is a separate service and command in format: NAME=COMMAND (e.g. web=bundle exec rails server)."
-          >
-            {showServiceCommands ? (
-              <textarea
-                name="commands"
-                className={tokens.type.textarea}
-                value={cmds}
-                onChange={(e) => setCmds(e.currentTarget.value)}
-                disabled={codeScan.data?.procfile_present}
-              />
-            ) : null}
-          </FormGroup>
-
-          {showServiceCommands ? null : (
-            <Button
-              onClick={() => setShowServiceCommands(true)}
-              variant="secondary"
-              disabled={codeScan.data?.procfile_present}
+            <FormGroup
+              label="Environment Variables"
+              htmlFor="envs"
+              feedbackVariant={envErrors.length > 0 ? "danger" : "info"}
+              feedbackMessage={envErrors.map((e) => e.message).join(". ")}
+              description="Add any additional required variables, such as API keys, KNOWN_HOSTS setting, etc. Each line is a separate variable in format: ENV_VAR=VALUE. Multiline values are supported but must be wrapped in double-quotes."
             >
-              <IconPlusCircle color="#fff" className="mr-2" variant="sm" />
-              Configure
+              <textarea
+                id="envs"
+                name="envs"
+                className={tokens.type.textarea}
+                value={envs}
+                onChange={(e) => setEnvs(e.currentTarget.value)}
+              />
+            </FormGroup>
+
+            <hr />
+
+            {codeScan.data?.procfile_present ? (
+              <div>
+                <Banner variant="info">
+                  <span>Your code has a </span>
+                  <ExternalLink
+                    href="https://aptible.com/docs/procfiles"
+                    variant="info"
+                  >
+                    Procfile
+                  </ExternalLink>
+                  <span>
+                    , which will be used to determine your app's services and
+                    commands.
+                  </span>
+                </Banner>
+              </div>
+            ) : null}
+
+            <FormGroup
+              label="Service and Commands"
+              htmlFor="commands"
+              feedbackVariant="info"
+              description="This is optional if you already have a Dockerfile or Procfile in your code repository.  Each line is a separate service and command in format: NAME=COMMAND (e.g. web=bundle exec rails server)."
+            >
+              {showServiceCommands ? (
+                <textarea
+                  name="commands"
+                  className={tokens.type.textarea}
+                  value={cmds}
+                  onChange={(e) => setCmds(e.currentTarget.value)}
+                  disabled={codeScan.data?.procfile_present}
+                />
+              ) : null}
+            </FormGroup>
+
+            {showServiceCommands ? null : (
+              <div>
+                <Button
+                  onClick={() => setShowServiceCommands(true)}
+                  variant="secondary"
+                  disabled={codeScan.data?.procfile_present}
+                >
+                  <IconPlusCircle color="#fff" className="mr-2" variant="sm" />
+                  Configure
+                </Button>
+              </div>
+            )}
+
+            <hr />
+
+            <Button
+              type="submit"
+              className="w-full"
+              isLoading={loader.isLoading}
+            >
+              Save & Deploy
             </Button>
-          )}
-
-          <hr className="my-4" />
-
-          <Button
-            type="submit"
-            className="w-full mt-4"
-            isLoading={loader.isLoading}
-          >
-            Save & Deploy
-          </Button>
+          </Group>
         </form>
       </Box>
       <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
