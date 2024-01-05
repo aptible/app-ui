@@ -341,7 +341,7 @@ export const AppCreateEndpointPage = () => {
         <FormGroup
           label="Custom Container Port"
           htmlFor="port"
-          description={`Deploy will deliver HTTP traffic to your app on port (${portText}).`}
+          description={`Aptible will deliver HTTP traffic to your app on port (${portText}).`}
           feedbackMessage={errors.port}
           feedbackVariant={errors.port ? "danger" : "info"}
         >
