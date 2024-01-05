@@ -76,14 +76,10 @@ function useServiceSizingPolicy(service_id: string) {
 
   const policies = policy.data?._embedded?.service_sizing_policies || [];
   const existingPolicy = useMemo(() => {
-    let policy;
-    if (policies[0] === undefined) {
-      policy = { service_id };
-    } else {
-      policy = policies[0];
-      policy.service_id = service_id;
+    if (policies.length === 0) {
+      return defaultServiceSizingPolicyResponse({ service_id });
     }
-    return defaultServiceSizingPolicyResponse(policy);
+    return defaultServiceSizingPolicyResponse({ ...policies[0], service_id });
   }, [policies.length, policies[0]?.id, policies[0]?.service_id]);
 
   return { policy, existingPolicy };
