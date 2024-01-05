@@ -14,16 +14,16 @@ describe("configEnvToStr", () => {
   describe("basic", () => {
     it("should match expectations", () => {
       const envObj: DeployAppConfigEnv = {
-        ONE: 1,
+        ONE: "one",
         TWO: "some string",
         MULTI: "A multiline\nstring to test\nwhat happens",
-        ZETA: true,
+        ZETA: "true",
         WRAPPED: '"what happens now?"',
       };
       const expected = `MULTI="A multiline
 string to test
 what happens"
-ONE=1
+ONE=one
 TWO=some string
 WRAPPED="what happens now?"
 ZETA=true`;

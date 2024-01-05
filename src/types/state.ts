@@ -35,6 +35,15 @@ export interface ResourceStats extends AbstractResourceItem {
   lastAccessed: string;
 }
 
+export interface DeployAppConfigEnv {
+  [key: string]: string | null;
+}
+export interface DeployAppConfig {
+  id: string;
+  env: DeployAppConfigEnv;
+  appId: string;
+}
+
 export type MetricHorizons = "1h" | "1d" | "1w";
 
 export interface ContainerMetrics {

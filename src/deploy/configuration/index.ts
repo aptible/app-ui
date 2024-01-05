@@ -6,7 +6,7 @@ import { DeployAppConfig, DeployAppConfigEnv, LinkResponse } from "@app/types";
 
 export interface DeployConfigurationResponse {
   id: number;
-  env: { [key: string]: string | number | boolean };
+  env: { [key: string]: string | null };
   _links: {
     resource: LinkResponse;
   };
