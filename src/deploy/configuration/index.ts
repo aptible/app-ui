@@ -41,7 +41,7 @@ export const configEnvToStr = (env: DeployAppConfigEnv): string => {
   return Object.keys(env)
     .sort((a, b) => a.localeCompare(b))
     .reduce((acc, key) => {
-      let value = env[key];
+      let value = String.raw`${env[key]}`;
       const prev = acc ? `${acc}\n` : "";
       if (typeof value === "string" && value.includes("\n")) {
         value = `"${value}"`;

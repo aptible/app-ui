@@ -1,6 +1,10 @@
 import { TextVal } from "@app/string-utils";
 import { DeployAppConfigEnv } from "@app/types";
-import { configEnvToStr, configStrToEnvList } from "./index";
+import {
+  configEnvListToEnv,
+  configEnvToStr,
+  configStrToEnvList,
+} from "./index";
 
 function defaultTextVal(key: string, value: string): TextVal {
   return {
@@ -9,6 +13,31 @@ function defaultTextVal(key: string, value: string): TextVal {
     meta: {},
   };
 }
+
+function symmertic(expected: DeployAppConfigEnv): DeployAppConfigEnv {
+  const str = configEnvToStr(expected);
+  const envList = configStrToEnvList(str);
+  const actual = configEnvListToEnv({}, envList);
+  return actual;
+}
+
+describe("symmetric", () => {
+  it("should match expectations", () => {
+    const expected = {
+      ONE: "ONE",
+      MULTI: "A multiline\nstring to test\nwhat happens",
+      JSON: JSON.stringify({
+        app: "nice",
+        num: 1,
+        bool: true,
+        arr: ["1", "2"],
+      }),
+      ESCNEWLINE: "escaped-newline\\n",
+    };
+    const actual = symmertic(expected);
+    expect(actual).toEqual(expected);
+  });
+});
 
 describe("configEnvToStr", () => {
   describe("basic", () => {

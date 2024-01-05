@@ -120,7 +120,7 @@ export const parseText = <
         // closing double-quote
         if (foundQuote) {
           value += char;
-          submit();
+          foundQuote = false;
           continue;
         } else {
           // we found a double-quote so record it so we can detect
