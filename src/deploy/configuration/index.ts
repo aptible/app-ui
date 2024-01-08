@@ -55,8 +55,8 @@ export const configStrToEnvList = (text: string): TextVal[] => {
 };
 
 export const configEnvListToEnv = (
-  cur: DeployAppConfigEnv,
   next: TextVal[],
+  cur: DeployAppConfigEnv = {},
 ): DeployAppConfigEnv => {
   const env: DeployAppConfigEnv = {};
   // the way to "remove" env vars from config is to set them as empty

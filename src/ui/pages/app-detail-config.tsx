@@ -47,7 +47,7 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
   );
   const envStr = configEnvToStr(config.env);
   const { envs, envList, setEnvs, errors, validate } = useEnvEditor(envStr);
-  const finalEnv = configEnvListToEnv(config.env, envList);
+  const finalEnv = configEnvListToEnv(envList, config.env);
 
   const action = createAppOperation({
     appId: app.id,

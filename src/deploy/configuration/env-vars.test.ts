@@ -17,7 +17,7 @@ function defaultTextVal(key: string, value: string): TextVal {
 function symmertic(expected: DeployAppConfigEnv): DeployAppConfigEnv {
   const str = configEnvToStr(expected);
   const envList = configStrToEnvList(str);
-  const actual = configEnvListToEnv({}, envList);
+  const actual = configEnvListToEnv(envList);
   return actual;
 }
 
@@ -166,7 +166,7 @@ USERNAME=therealnerdybeast@example.tld
 
   it("should match expectations", () => {
     const envList = configStrToEnvList(envBasic);
-    const env = configEnvListToEnv({}, envList);
+    const env = configEnvListToEnv(envList);
     expect(env.BASIC).toEqual("basic");
     expect(env.AFTER_LINE).toEqual("after_line");
     expect(env.EMPTY).toEqual("");
@@ -232,7 +232,7 @@ STRING"`;
 
   it("should match expectations", () => {
     const envList = configStrToEnvList(envMultiline);
-    const env = configEnvListToEnv({}, envList);
+    const env = configEnvListToEnv(envList);
     expect(env.BASIC).toEqual("basic");
     expect(env.AFTER_LINE).toEqual("after_line");
     expect(env.EMPTY).toEqual("");
