@@ -71,7 +71,7 @@ export const CookieNotice = () => {
   return (
     <div>
       {showNotice && (
-        <div className="sm:fixed bottom-5 right-5 w-96 px-8 py-8 z-100 bg-white border border-gray-200 rounded-lg">
+        <div className="sm:fixed bottom-5 right-5 w-96 px-8 py-8 z-50 bg-white border border-gray-200 rounded-lg">
           <p className="text-sm">
             This site uses cookies to store information on your computer. Some
             are essential to make our site work; others help us improve the user
