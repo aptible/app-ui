@@ -73,6 +73,7 @@ export const SSHSettingsPage = () => {
     }>
   >(fetchSSHKeys({ userId: user.id }));
   const rmLoader = useLoader(rmSSHKey);
+  const sshKeys = loader.data?._embedded?.ssh_keys || [];
 
   return (
     <Group>
@@ -85,7 +86,7 @@ export const SSHSettingsPage = () => {
       <Group>
         <BannerMessages {...rmLoader} />
         {loader.isInitialLoading ? <Loading /> : null}
-        {loader.data?._embedded?.ssh_keys.sort(sortDate).map((ssh) => {
+        {sshKeys.sort(sortDate).map((ssh) => {
           return (
             <SshItem key={ssh.id} ssh={ssh} onDelete={() => loader.trigger()} />
           );
