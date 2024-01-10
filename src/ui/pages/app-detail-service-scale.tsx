@@ -435,9 +435,11 @@ const VerticalAutoscalingSection = ({
                       }
                     />
                   </FormGroup>
+                  <h2 className="text-md text-gray-500">General Settings</h2>
                   <FormGroup
                     splitWidthInputs
-                    label="Reset to Default Advanced Settings"
+                    label="Reset Advanced Settings to Defaults"
+                    description="This will restore settings to their default values."
                     htmlFor="reset-button"
                   >
                     <div id="reset-button">

@@ -440,19 +440,11 @@ export const updateServiceSizingPoliciesByServiceId = api.put<
 export const deleteServiceSizingPoliciesByServiceId = api.delete<{
   service_id: string;
 }>(["/services/:service_id/service_sizing_policy"], function* (ctx, next) {
-  yield* schema.update(db.loaders.start({ id: ctx.name }));
   yield* next();
-
-  if (ctx.json.ok) {
-    yield* schema.update(
-      db.loaders.success({ id: ctx.name, message: "Policy changes saved" }),
-    );
-  } else {
-    const data = ctx.json.error as Error;
-    yield* schema.update(
-      db.loaders.error({ id: ctx.name, message: data.message }),
-    );
+  if (!ctx.json.ok) {
+    return;
   }
+  ctx.loader = { message: "Policy changes saved" };
 });
 
 export const modifyServiceSizingPolicy =
@@ -464,15 +456,11 @@ export const modifyServiceSizingPolicy =
       let updateCtx;
       if (nextPolicy.id === undefined) {
         updateCtx = yield* call(() =>
-          createServiceSizingPoliciesByServiceId.run(
-            createServiceSizingPoliciesByServiceId(nextPolicy),
-          ),
+          createServiceSizingPoliciesByServiceId.run(nextPolicy),
         );
       } else {
         updateCtx = yield* call(() =>
-          updateServiceSizingPoliciesByServiceId.run(
-            updateServiceSizingPoliciesByServiceId(nextPolicy),
-          ),
+          updateServiceSizingPoliciesByServiceId.run(nextPolicy),
         );
       }
 
