@@ -44,9 +44,8 @@ export function useTrialNotice() {
   }
 
   const currentTrial = trials.data?._embedded?.trials.find(isActive);
-  const hasSource = stripeSources.data?._embedded.stripe_sources.some(
-    (ss) => ss.deactivated_at === null,
-  );
+  const sources = stripeSources.data?._embedded?.stripe_sources || [];
+  const hasSource = sources.some((ss) => ss.deactivated_at === null);
   const startDate = currentTrial?.range_begin ? currentTrial.range_begin : now;
   const endDate = currentTrial?.range_end ? currentTrial.range_end : now;
 
