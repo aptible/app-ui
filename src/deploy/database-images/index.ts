@@ -60,7 +60,7 @@ export const selectDatabaseImageById = db.databaseImages.selectById;
 export const selectDatabaseImagesAsList = createSelector(
   db.databaseImages.selectTableAsList,
   (imgs) =>
-    imgs.sort((a, b) => {
+    [...imgs].sort((a, b) => {
       return b.description.localeCompare(a.description, "en", {
         numeric: true,
       });

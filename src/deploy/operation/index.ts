@@ -168,7 +168,7 @@ export const selectOperationsAsList = createSelector(
   db.operations.selectTableAsList,
   (_: WebState, props: { limit?: number }) => props.limit,
   (ops, limit) =>
-    ops
+    [...ops]
       .sort((a, b) => {
         return (
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()

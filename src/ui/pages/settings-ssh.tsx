@@ -86,7 +86,7 @@ export const SSHSettingsPage = () => {
       <Group>
         <BannerMessages {...rmLoader} />
         {loader.isInitialLoading ? <Loading /> : null}
-        {sshKeys.sort(sortDate).map((ssh) => {
+        {[...sshKeys].sort(sortDate).map((ssh) => {
           return (
             <SshItem key={ssh.id} ssh={ssh} onDelete={() => loader.trigger()} />
           );

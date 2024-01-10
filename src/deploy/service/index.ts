@@ -135,7 +135,7 @@ export const findServiceById = db.services.findById;
 
 export const selectServicesAsList = createSelector(
   db.services.selectTableAsList,
-  (services) => services.sort((a, b) => a.handle.localeCompare(b.handle)),
+  (services) => [...services].sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
 export const selectEnvToServicesMap = createSelector(
