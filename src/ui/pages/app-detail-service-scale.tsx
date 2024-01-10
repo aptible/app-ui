@@ -441,7 +441,11 @@ const VerticalAutoscalingSection = ({
                     htmlFor="reset-button"
                   >
                     <div id="reset-button">
-                      <ButtonIcon icon={<IconRefresh variant="sm" />} variant="white" onClick={resetAdvancedSettings}>
+                      <ButtonIcon
+                        icon={<IconRefresh variant="sm" />}
+                        variant="white"
+                        onClick={resetAdvancedSettings}
+                      >
                         Reset to Defaults
                       </ButtonIcon>
                     </div>
