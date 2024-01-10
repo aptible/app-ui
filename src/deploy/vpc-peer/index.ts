@@ -58,7 +58,7 @@ export const selectVpcPeerById = db.vpcPeers.selectById;
 export const selectVpcPeers = db.vpcPeers.selectTable;
 export const selectVpcPeersAsList = createSelector(
   db.vpcPeers.selectTableAsList,
-  (vpcPeers) => vpcPeers.sort((a, b) => a.id.localeCompare(b.id)),
+  (vpcPeers) => [...vpcPeers].sort((a, b) => a.id.localeCompare(b.id)),
 );
 export const selectVpcPeersByStackId = createSelector(
   selectVpcPeersAsList,

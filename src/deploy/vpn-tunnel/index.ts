@@ -79,7 +79,8 @@ export const selectVpnTunnelById = db.vpnTunnels.selectById;
 export const selectVpnTunnel = db.vpnTunnels.selectTable;
 export const selectVpnTunnelsAsList = createSelector(
   db.vpnTunnels.selectTableAsList,
-  (vpnTunnels) => vpnTunnels.sort((a, b) => a.handle.localeCompare(b.handle)),
+  (vpnTunnels) =>
+    [...vpnTunnels].sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 export const selectVpnTunnelByStackId = createSelector(
   selectVpnTunnelsAsList,

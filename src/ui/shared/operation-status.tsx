@@ -10,7 +10,7 @@ export const resolveOperationStatuses = (
   // sort the statuses from least recent to most recent
   // this allows us to return-early with the proper time in which the states
   // were first determined
-  const statuses = stats.sort(
+  const statuses = [...stats].sort(
     (a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
   );
 

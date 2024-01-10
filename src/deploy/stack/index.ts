@@ -96,7 +96,7 @@ export const selectStacks = db.stacks.selectTable;
 const selectStacksAsList = createSelector(
   db.stacks.selectTableAsList,
   (stacks) => {
-    return stacks.sort((a, b) => a.name.localeCompare(b.name));
+    return [...stacks].sort((a, b) => a.name.localeCompare(b.name));
   },
 );
 export const selectStacksByOrgAsList = createSelector(
