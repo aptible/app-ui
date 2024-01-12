@@ -19,10 +19,11 @@ export function OrgSsoRequired() {
 
   return (
     <Banner variant="error">
+      <div>SSO Login Required</div>
       <div>Organization {org.name} requires SSO!</div>
       <div>
         <Link to={ssoDirectUrl(org.id)} className="text-white underline">
-          Please log in using SSO.
+          Login
         </Link>
       </div>
     </Banner>
