@@ -42,6 +42,7 @@ import {
 } from "./icons";
 import { LinkNav } from "./link";
 import { OrgPicker } from "./org-picker";
+import { OrgSsoRequired } from "./org-sso-required";
 import { UserMenu } from "./user-menu";
 
 export const ApplicationSidebar = () => {
@@ -133,9 +134,11 @@ export const ApplicationSidebar = () => {
             ))}
           </nav>
 
+          {!collapsed ? <OrgSsoRequired /> : null}
+
           {hasTrialNoPayment && !collapsed ? (
             <Banner variant="error" className="mt-2">
-              <div>Trial expires in {expiresIn}.</div>
+              <div>Trial expires {expiresIn}.</div>
               <div>
                 <Link to={billingMethodUrl()} className="text-white underline">
                   Add payment

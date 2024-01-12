@@ -80,7 +80,7 @@ export const SsoDirectPage = () => {
 
 export const SsoFailurePage = () => {
   const [params] = useSearchParams();
-  const message = params.get("message");
+  const message = params.getAll("message");
 
   return (
     <HeroBgLayout>
@@ -89,7 +89,7 @@ export const SsoFailurePage = () => {
           We could not process your Single Sign-On login
         </h1>
         <Banner variant="error" className="my-6">
-          {message}
+          {message.join(" ")}
         </Banner>
       </div>
 

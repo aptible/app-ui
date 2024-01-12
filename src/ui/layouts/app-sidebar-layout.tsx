@@ -1,7 +1,7 @@
 import { selectNav } from "@app/nav";
 import { useSelector } from "@app/react";
 import { Outlet } from "react-router";
-import { ApplicationSidebar, Footer } from "../shared";
+import { ApplicationSidebar, Footer, Group } from "../shared";
 
 interface Props {
   children?: React.ReactNode;
@@ -32,10 +32,10 @@ export function AppSidebarLayout({
         style={{ marginLeft: collapsedOffset * 3.5 }}
       >
         <main className={`h-full flex flex-col ${padding ? "py-4 px-7" : ""}`}>
-          <div className="flex-1">
-            {header ? <div className="mb-4">{header}</div> : null}
+          <Group>
+            {header ? header : null}
             {children ? children : <Outlet />}
-          </div>
+          </Group>
           <Footer />
         </main>
       </div>
