@@ -138,7 +138,7 @@ export const ApplicationSidebar = () => {
 
           {hasTrialNoPayment && !collapsed ? (
             <Banner variant="error" className="mt-2">
-              <div>Trial expires in {expiresIn}.</div>
+              <div>Trial expires {expiresIn}.</div>
               <div>
                 <Link to={billingMethodUrl()} className="text-white underline">
                   Add payment

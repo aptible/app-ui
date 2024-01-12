@@ -34,7 +34,7 @@ export const timeBetween = ({
 }): string => {
   const start = isoToDate(startDate);
   const end = isoToDate(endDate);
-  return start.toRelative({ base: end }) || "";
+  return end.toRelative({ base: start }) || "";
 };
 
 export const dateFromToday = (days: number) => {
