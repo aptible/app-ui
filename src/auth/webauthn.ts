@@ -6,6 +6,7 @@ import type {
   PublicKeyCredentialWithAttestationJSON,
 } from "@github/webauthn-json";
 import { create, get } from "@github/webauthn-json";
+import { revokeTokensMdw } from "./token";
 
 const log = createLog("webauthn");
 
@@ -64,12 +65,15 @@ interface CreateWebauthnDeviceProps {
 
 export const createWebauthnDevice = authApi.post<CreateWebauthnDeviceProps>(
   "/users/:userId/u2f_devices",
-  function* (ctx, next) {
-    ctx.elevated = true;
-    const { u2f, name } = ctx.payload;
-    ctx.request = ctx.req({
-      body: JSON.stringify({ u2f, name, version: "WEBAUTHN" }),
-    });
-    yield* next();
-  },
+  [
+    function* (ctx, next) {
+      ctx.elevated = true;
+      const { u2f, name } = ctx.payload;
+      ctx.request = ctx.req({
+        body: JSON.stringify({ u2f, name, version: "WEBAUTHN" }),
+      });
+      yield* next();
+    },
+    revokeTokensMdw,
+  ],
 );

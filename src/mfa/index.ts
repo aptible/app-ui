@@ -1,4 +1,5 @@
 import { authApi } from "@app/api";
+import { revokeTokensMdw } from "@app/auth";
 import { Next, leading, select } from "@app/fx";
 import { defaultEntity } from "@app/hal";
 import { db, schema } from "@app/schema";
@@ -42,16 +43,19 @@ export const fetchU2fDevices = authApi.get<{ userId: string }>(
 
 export const deleteU2fDevice = authApi.delete<{ deviceId: string }>(
   "/u2f_devices/:deviceId",
-  function* (ctx, next) {
-    ctx.elevated = true;
-    const { deviceId } = ctx.payload;
-    yield* next();
-    if (!ctx.json.ok) {
-      return;
-    }
+  [
+    function* (ctx, next) {
+      ctx.elevated = true;
+      const { deviceId } = ctx.payload;
+      yield* next();
+      if (!ctx.json.ok) {
+        return;
+      }
 
-    yield* schema.update(db.u2fDevices.remove([deviceId]));
-  },
+      yield* schema.update(db.u2fDevices.remove([deviceId]));
+    },
+    revokeTokensMdw,
+  ],
 );
 
 interface SetupOtp {
@@ -125,15 +129,18 @@ export const resetOtp = authApi.post<{ userId: string }>(
 export const resetOtpVerify = authApi.post<{
   challengeId: string;
   verificationCode: string;
-}>(["/verifications", "otp"], { supervisor: leading }, function* (ctx, next) {
-  const { challengeId, verificationCode } = ctx.payload;
-  ctx.request = ctx.req({
-    body: JSON.stringify({
-      type: "otp_reset_challenge",
-      challenge_id: challengeId,
-      verification_code: verificationCode,
-    }),
-  });
+}>(["/verifications", "otp"], { supervisor: leading }, [
+  function* (ctx, next) {
+    const { challengeId, verificationCode } = ctx.payload;
+    ctx.request = ctx.req({
+      body: JSON.stringify({
+        type: "otp_reset_challenge",
+        challenge_id: challengeId,
+        verification_code: verificationCode,
+      }),
+    });
 
-  yield* next();
-});
+    yield* next();
+  },
+  revokeTokensMdw,
+]);

@@ -376,3 +376,22 @@ export function combinePages<
 export interface Retryable {
   attempts?: number;
 }
+
+type ElevatedPostCtx = AuthApiCtx<
+  any,
+  { userId: string; [key: string]: string | number | boolean }
+>;
+
+export function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
+  const { userId, ...payload } = ctx.payload;
+  ctx.elevated = true;
+  ctx.request = ctx.req({
+    body: JSON.stringify(payload),
+  });
+  yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  ctx.loader = { message: "Saved changes successfully!" };
+}
