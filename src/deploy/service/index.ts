@@ -439,7 +439,13 @@ export const updateServiceSizingPoliciesByServiceId = api.put<
 
 export const deleteServiceSizingPoliciesByServiceId = api.delete<{
   service_id: string;
-}>("/services/:service_id/service_sizing_policy");
+}>(["/services/:service_id/service_sizing_policy"], function* (ctx, next) {
+  yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+  ctx.loader = { message: "Policy changes saved" };
+});
 
 export const modifyServiceSizingPolicy =
   thunks.create<ServiceSizingPolicyEditProps>(
@@ -448,27 +454,13 @@ export const modifyServiceSizingPolicy =
       yield* schema.update(db.loaders.start({ id: ctx.name }));
       const nextPolicy = ctx.payload;
       let updateCtx;
-      if (nextPolicy.scaling_enabled) {
-        if (nextPolicy.id === undefined) {
-          updateCtx = yield* call(() =>
-            createServiceSizingPoliciesByServiceId.run(
-              createServiceSizingPoliciesByServiceId(nextPolicy),
-            ),
-          );
-        } else {
-          updateCtx = yield* call(() =>
-            updateServiceSizingPoliciesByServiceId.run(
-              updateServiceSizingPoliciesByServiceId(nextPolicy),
-            ),
-          );
-        }
+      if (nextPolicy.id === undefined) {
+        updateCtx = yield* call(() =>
+          createServiceSizingPoliciesByServiceId.run(nextPolicy),
+        );
       } else {
         updateCtx = yield* call(() =>
-          deleteServiceSizingPoliciesByServiceId.run(
-            deleteServiceSizingPoliciesByServiceId({
-              service_id: `${nextPolicy.service_id}`,
-            }),
-          ),
+          updateServiceSizingPoliciesByServiceId.run(nextPolicy),
         );
       }
 

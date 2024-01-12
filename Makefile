@@ -28,8 +28,7 @@ lint:
 #: fmt - run prettier to auto format code
 fmt:
 	yarn fmt
-	@echo "fyi we have a git pre-commit hook that will format only changed files"
-.PHONY: pretty
+.PHONY: fmt
 
 #: test - runs vitest on codebase
 test:

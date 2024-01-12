@@ -31,8 +31,10 @@ import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
 import {
+  ButtonIcon,
   IconChevronDown,
   IconChevronRight,
+  IconRefresh,
   Radio,
   RadioGroup,
 } from "../shared";
@@ -121,6 +123,15 @@ const VerticalAutoscalingSection = ({
     value: ServiceSizingPolicyEditProps[K],
   ) => {
     setNextPolicy({ ...nextPolicy, [key]: value });
+  };
+  const resetAdvancedSettings = () => {
+    setNextPolicy(
+      defaultServiceSizingPolicyResponse({
+        id: nextPolicy.id,
+        service_id: nextPolicy.service_id,
+        scaling_enabled: nextPolicy.scaling_enabled,
+      }),
+    );
   };
 
   const [advancedIsOpen, setOpen] = useState(false);
@@ -423,6 +434,23 @@ const VerticalAutoscalingSection = ({
                         )
                       }
                     />
+                  </FormGroup>
+                  <h2 className="text-md text-gray-500">General Settings</h2>
+                  <FormGroup
+                    splitWidthInputs
+                    label="Reset Advanced Settings to Defaults"
+                    description="This will restore settings to their default values."
+                    htmlFor="reset-button"
+                  >
+                    <div id="reset-button">
+                      <ButtonIcon
+                        icon={<IconRefresh variant="sm" />}
+                        variant="white"
+                        onClick={resetAdvancedSettings}
+                      >
+                        Reset to Defaults
+                      </ButtonIcon>
+                    </div>
                   </FormGroup>
                 </div>
               </div>
