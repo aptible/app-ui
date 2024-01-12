@@ -1,3 +1,4 @@
+import { addOtp } from "@app/auth";
 import { setupOtp } from "@app/mfa";
 import {
   useDispatch,
@@ -7,7 +8,7 @@ import {
 } from "@app/react";
 import { securitySettingsUrl } from "@app/routes";
 import { db } from "@app/schema";
-import { addOtp, selectCurrentUserId } from "@app/users";
+import { selectCurrentUserId } from "@app/users";
 import QRCode from "qrcode.react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";

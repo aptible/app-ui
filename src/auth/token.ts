@@ -1,6 +1,6 @@
 import { authApi, thunks } from "@app/api";
 import { selectEnv } from "@app/config";
-import { put, select } from "@app/fx";
+import { Next, put, select } from "@app/fx";
 import { resetStore } from "@app/reset-store";
 import { db, schema } from "@app/schema";
 import {
@@ -172,3 +172,14 @@ export const revokeAllTokens = authApi.post(
     ctx.loader = { message: "Success!" };
   },
 );
+
+export function* revokeTokensMdw(ctx: AuthApiCtx, next: Next) {
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  yield* put(revokeAllTokens());
+  const msg = ctx.loader?.message || "Success!";
+  ctx.loader = { message: `${msg} All other sessions have been logged out.` };
+  yield* next();
+}

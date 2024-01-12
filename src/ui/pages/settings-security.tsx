@@ -2,7 +2,9 @@ import {
   fetchEmailVerificationPending,
   revokeAllTokens,
   revokeEmailVerification,
+  rmOtp,
 } from "@app/auth";
+import { updatePassword } from "@app/auth";
 import { prettyDateTime } from "@app/date";
 import { deleteU2fDevice, fetchU2fDevices } from "@app/mfa";
 import {
@@ -20,12 +22,7 @@ import {
 } from "@app/routes";
 import { db } from "@app/schema";
 import { HalEmbedded } from "@app/types";
-import {
-  rmOtp,
-  selectCurrentUserId,
-  updateEmail,
-  updatePassword,
-} from "@app/users";
+import { selectCurrentUserId, updateEmail } from "@app/users";
 import { emailValidator } from "@app/validator";
 import { useState } from "react";
 import { useCurrentUser } from "../hooks";
@@ -95,6 +92,7 @@ const ChangePassword = () => {
     setError("");
   });
 
+  const isDisabled = pass === "";
   const groupVariant = error ? "danger" : "info";
 
   return (
@@ -137,7 +135,7 @@ const ChangePassword = () => {
         <Button
           className="w-fit"
           type="submit"
-          disabled={pass === ""}
+          disabled={isDisabled}
           isLoading={loader.isLoading}
         >
           Change Password

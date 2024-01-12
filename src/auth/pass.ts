@@ -1,6 +1,7 @@
-import { authApi } from "@app/api";
+import { authApi, elevatedUpdate } from "@app/api";
 import { selectOrigin } from "@app/config";
 import { select } from "@app/fx";
+import { revokeTokensMdw } from "./token";
 
 export const forgotPass = authApi.post<{ email: string }>(
   "/password/resets/new",
@@ -22,7 +23,7 @@ export const forgotPass = authApi.post<{ email: string }>(
 
     if (!ctx.json.ok) {
       ctx.loader = {
-        message: `Error! Unable to submit request to reset your password: ${ctx.json.data.message}
+        message: `Error! Unable to submit request to reset your password: ${ctx.json.error.message}
         `,
       };
       return;
@@ -55,4 +56,15 @@ export const resetPass = authApi.post<ResetPass>(
 
     yield* next();
   },
+);
+
+interface UpdatePassword {
+  userId: string;
+  type: "update-password";
+  password: string;
+}
+
+export const updatePassword = authApi.patch<UpdatePassword>(
+  ["/users/:userId", "pass"],
+  [elevatedUpdate, revokeTokensMdw],
 );

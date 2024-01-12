@@ -1,9 +1,13 @@
-import { authApi, cacheShortTimer, elevetatedMdw } from "@app/api";
+import {
+  authApi,
+  cacheShortTimer,
+  elevatedUpdate,
+  elevetatedMdw,
+} from "@app/api";
 import { selectOrigin } from "@app/config";
-import { Next, call, select } from "@app/fx";
+import { call, select } from "@app/fx";
 import { selectOrganizationById } from "@app/organizations";
 import { WebState, db, schema } from "@app/schema";
-import type { AuthApiCtx } from "@app/types";
 import { deserializeUser } from "./serializers";
 import type { CreateUserForm, UserResponse } from "./types";
 
@@ -60,43 +64,6 @@ export const createUser = authApi.post<CreateUserForm, UserResponse>(
   },
 );
 
-interface UpdatePassword extends UserBase {
-  type: "update-password";
-  password: string;
-}
-
-interface AddOtp extends UserBase {
-  type: "otp";
-  otp_enabled: true;
-  current_otp_configuration: string;
-  current_otp_configuration_id: string;
-  otp_token: string;
-}
-
-interface RemoveOtp extends UserBase {
-  type: "otp";
-  otp_enabled: false;
-}
-
-type ElevatedPostCtx = AuthApiCtx<
-  any,
-  { userId: string; [key: string]: string | number | boolean }
->;
-
-function* elevatedUpdate(ctx: ElevatedPostCtx, next: Next) {
-  const { userId, ...payload } = ctx.payload;
-  ctx.elevated = true;
-  ctx.request = ctx.req({
-    body: JSON.stringify(payload),
-  });
-  yield* next();
-  if (!ctx.json.ok) {
-    return;
-  }
-
-  ctx.loader = { message: "Saved changes successfully!" };
-}
-
 export const updateUserName = authApi.patch<{ userId: string; name: string }>(
   ["/users/:userId", "name"],
   function* (ctx, next) {
@@ -107,19 +74,6 @@ export const updateUserName = authApi.patch<{ userId: string; name: string }>(
     if (!ctx.json.ok) return;
     ctx.loader = { message: "Successfully updated your name!" };
   },
-);
-
-export const updatePassword = authApi.patch<UpdatePassword>(
-  ["/users/:userId", "pass"],
-  elevatedUpdate,
-);
-export const addOtp = authApi.patch<AddOtp>(
-  ["/users/:userId", "addotp"],
-  elevatedUpdate,
-);
-export const rmOtp = authApi.patch<RemoveOtp>(
-  ["/users/:userId", "rmotp"],
-  elevatedUpdate,
 );
 
 export const updateUserOrg = authApi.put<{ userId: string; orgId: string }>(
