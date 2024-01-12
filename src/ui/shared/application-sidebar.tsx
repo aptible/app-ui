@@ -21,7 +21,6 @@ import { SYSTEM_STATUS_ID } from "@app/system-status";
 import { useLayoutEffect } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { OrgSsoRequired } from ".";
 import { useTrialNotice } from "../hooks/use-trial-notice";
 import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
 import { Banner } from "./banner";
@@ -43,6 +42,7 @@ import {
 } from "./icons";
 import { LinkNav } from "./link";
 import { OrgPicker } from "./org-picker";
+import { OrgSsoRequired } from "./org-sso-required";
 import { UserMenu } from "./user-menu";
 
 export const ApplicationSidebar = () => {
