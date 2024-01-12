@@ -21,6 +21,7 @@ import { SYSTEM_STATUS_ID } from "@app/system-status";
 import { useLayoutEffect } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import { OrgSsoRequired } from ".";
 import { useTrialNotice } from "../hooks/use-trial-notice";
 import { AptibleLogo, AptibleLogoOnly } from "./aptible-logo";
 import { Banner } from "./banner";
@@ -132,6 +133,8 @@ export const ApplicationSidebar = () => {
               <LinkNav key={item.name} {...item} hideName={collapsed} />
             ))}
           </nav>
+
+          {!collapsed ? <OrgSsoRequired /> : null}
 
           {hasTrialNoPayment && !collapsed ? (
             <Banner variant="error" className="mt-2">
