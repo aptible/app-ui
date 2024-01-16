@@ -1,7 +1,11 @@
 import { prettyDate } from "@app/date";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useDispatch, useLoader, useSelector } from "@app/react";
-import { createRoleForOrg, selectRolesByOrgId } from "@app/roles";
+import {
+  createRoleForOrg,
+  roleTypeFormat,
+  selectRolesByOrgId,
+} from "@app/roles";
 import { roleDetailUrl } from "@app/routes";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -9,6 +13,7 @@ import {
   BannerMessages,
   Box,
   ButtonOrgOwner,
+  FormGroup,
   Group,
   IconPlusCircle,
   Input,
@@ -34,20 +39,22 @@ const CreateRole = ({ orgId }: { orgId: string }) => {
       <BannerMessages {...loader} />
 
       <form onSubmit={onCreateRole}>
-        <Group variant="horizontal">
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.currentTarget.value)}
-            placeholder="Enter role name"
-            name="role-name"
-            id="role-name"
-          />
-
-          <ButtonOrgOwner type="submit" disabled={trimmedName === ""}>
-            <IconPlusCircle variant="sm" className="mr-2" /> New Role
-          </ButtonOrgOwner>
-        </Group>
+        <FormGroup label="New Role" htmlFor="role-name">
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.currentTarget.value)}
+              placeholder="Enter role name"
+              name="role-name"
+              id="role-name"
+              className="flex-1"
+            />
+            <ButtonOrgOwner type="submit" disabled={trimmedName === ""}>
+              <IconPlusCircle variant="sm" className="mr-2" /> Save Role
+            </ButtonOrgOwner>
+          </div>
+        </FormGroup>
       </form>
     </Group>
   );
@@ -59,7 +66,9 @@ export const TeamRolesPage = () => {
 
   return (
     <Group>
-      <TitleBar description="Role management">Roles</TitleBar>
+      <TitleBar description="Roles define the level of access users have within your team">
+        Roles
+      </TitleBar>
 
       <Box>
         <CreateRole orgId={orgId} />
@@ -78,7 +87,7 @@ export const TeamRolesPage = () => {
               <Td>
                 <Link to={roleDetailUrl(role.id)}> {role.name}</Link>
               </Td>
-              <Td>{role.type}</Td>
+              <Td>{roleTypeFormat(role)}</Td>
               <Td>{prettyDate(role.createdAt)}</Td>
             </Tr>
           ))}

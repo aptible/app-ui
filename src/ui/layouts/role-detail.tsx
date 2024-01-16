@@ -1,6 +1,6 @@
 import { prettyDate } from "@app/date";
 import { useSelector } from "@app/react";
-import { selectRoleById } from "@app/roles";
+import { roleTypeFormat, selectRoleById } from "@app/roles";
 import {
   roleDetailEnvironmentsUrl,
   roleDetailMembersUrl,
@@ -23,20 +23,13 @@ export function RoleHeader({ role }: { role: Role }) {
     <DetailHeader>
       <DetailTitleBar
         title="Role Details"
-        icon={
-          <img
-            src="/resource-types/logo-app.png"
-            className="w-[32px] h-[32px] mr-3"
-            aria-label="App"
-          />
-        }
         docsUrl="https://www.aptible.com/docs/access-permissions"
       />
 
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{role.id}</DetailInfoItem>
         <DetailInfoItem title="Name">{role.name}</DetailInfoItem>
-        <DetailInfoItem title="Type">{role.type}</DetailInfoItem>
+        <DetailInfoItem title="Type">{roleTypeFormat(role)}</DetailInfoItem>
         <DetailInfoItem title="Created At">
           {prettyDate(role.createdAt)}
         </DetailInfoItem>

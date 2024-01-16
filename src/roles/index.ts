@@ -2,6 +2,7 @@ import { authApi } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { WebState, db, schema } from "@app/schema";
+import { titleCase } from "@app/string-utils";
 import {
   HalEmbedded,
   LinkResponse,
@@ -50,6 +51,10 @@ export const deserializeRole = (role: RoleResponse): Role => {
     updatedAt: role.updated_at,
     organizationId: extractIdFromLink(role._links.organization),
   };
+};
+
+export const roleTypeFormat = (role: Role): string => {
+  return titleCase(role.type);
 };
 
 export const selectRoleById = db.roles.selectById;

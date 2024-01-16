@@ -77,7 +77,7 @@ function MemberRow({
       <Td>{user.email}</Td>
       <Td variant="center">{user.otpEnabled ? "Enabled" : "Disabled"}</Td>
       <Td variant="center">{prettyDate(membership.createdAt)}</Td>
-      <Td variant="center">
+      <Td>
         <CheckBox
           label=""
           checked={membership.privileged}
@@ -205,7 +205,7 @@ export function RoleDetailMembersPage() {
             <Th>Email</Th>
             <Th variant="center">MFA Status</Th>
             <Th variant="center">Date Added</Th>
-            <Th variant="center">Role Admin</Th>
+            <Th>Role Admin</Th>
             <Th variant="right">Actions</Th>
           </THead>
 

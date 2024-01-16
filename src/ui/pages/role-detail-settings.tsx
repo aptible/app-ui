@@ -129,7 +129,7 @@ function RoleDelete({ role, canManage }: { role: Role; canManage: boolean }) {
             isLoading={loader.isLoading}
           >
             <IconTrash color="#FFF" className="mr-2" />
-            Delete Permenantly
+            Delete Role
           </Button>
         </Group>
       </Group>
@@ -149,7 +149,7 @@ export function RoleDetailSettingsPage() {
 
   return (
     <RoleDetailLayout>
-      <Group>
+      <Group className="mt-4">
         <Box>
           <RoleNameChange role={role} canManage={canManage} />
         </Box>

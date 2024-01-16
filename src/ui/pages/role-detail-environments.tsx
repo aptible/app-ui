@@ -219,6 +219,7 @@ export function RoleDetailEnvironmentsPage() {
           onChange={onChange}
         />
         <Group>
+          {envs.length === 0 ? <div>No environments exist.</div> : null}
           {envs.map((env) => {
             return <RoleEnvEditor key={env.id} env={env} roleId={id} />;
           })}

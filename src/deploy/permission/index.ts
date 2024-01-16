@@ -220,6 +220,5 @@ export const deletePerm = api.delete<{ id: string }>(
     }
 
     yield* schema.update(db.permissions.remove([ctx.payload.id]));
-    ctx.loader = { message: "Successfully updated permissions!" };
   },
 );

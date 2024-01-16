@@ -470,7 +470,7 @@ describe("Role Detail - Settings", () => {
       });
       await act(() => userEvent.type(inp, testRole.name));
       const btn = await screen.findByRole("button", {
-        name: /Delete Permenantly/,
+        name: /Delete Role/,
       });
       fireEvent.click(btn);
       await screen.findByRole("heading", { name: /Roles/ });
@@ -562,7 +562,7 @@ describe("Role Detail - Settings", () => {
       });
       await act(() => userEvent.type(inp, testRole.name));
       const btn = await screen.findByRole("button", {
-        name: /Delete Permenantly/,
+        name: /Delete Role/,
       });
       fireEvent.click(btn);
 
@@ -626,7 +626,7 @@ describe("Role Detail - Settings", () => {
       });
       await act(() => userEvent.type(inp, testRole.name));
       const btn = await screen.findByRole("button", {
-        name: /Delete Permenantly/,
+        name: /Delete Role/,
       });
       expect(btn).toBeDisabled();
     });

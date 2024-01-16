@@ -72,7 +72,7 @@ export function TeamInvitePage() {
     <Group>
       <Breadcrumbs
         crumbs={[
-          { name: "Team Members", to: teamMembersUrl() },
+          { name: "Members", to: teamMembersUrl() },
           { name: "Invite", to: null },
         ]}
       />
