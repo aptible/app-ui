@@ -67,7 +67,7 @@ describe("Role Settings", () => {
       });
       await act(() => userEvent.type(input, "my-role"));
 
-      const btn = await screen.findByRole("button", { name: /New Role/ });
+      const btn = await screen.findByRole("button", { name: /Save Role/ });
       expect(btn).not.toBeDisabled();
       fireEvent.click(btn);
 
@@ -94,7 +94,7 @@ describe("Role Settings", () => {
       });
       await act(() => userEvent.type(input, "my-role"));
 
-      const btn = await screen.findByRole("button", { name: /New Role/ });
+      const btn = await screen.findByRole("button", { name: /Save Role/ });
       expect(btn).toBeDisabled();
     });
   });
@@ -118,7 +118,7 @@ describe("Role Settings", () => {
       });
       await act(() => userEvent.type(input, "my-role"));
 
-      const btn = await screen.findByRole("button", { name: /New Role/ });
+      const btn = await screen.findByRole("button", { name: /Save Role/ });
       expect(btn).toBeDisabled();
     });
   });

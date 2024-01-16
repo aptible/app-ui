@@ -211,7 +211,7 @@ export function RoleDetailMembersPage() {
 
           <TBody>
             {paginated.data.length === 0 ? (
-              <EmptyTr colSpan={5}>
+              <EmptyTr colSpan={6}>
                 {role.name} currently has no members.
               </EmptyTr>
             ) : null}
