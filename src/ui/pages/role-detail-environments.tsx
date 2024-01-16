@@ -1,3 +1,4 @@
+import { fetchMembershipsByRole } from "@app/auth";
 import {
   addPerm,
   deletePerm,
@@ -8,6 +9,7 @@ import {
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useDispatch, useLoader, useSelector } from "@app/react";
+import { useQuery } from "@app/react";
 import { environmentDetailUrl } from "@app/routes";
 import { defaultPermission } from "@app/schema";
 import { DeployEnvironment, Permission, PermissionScope } from "@app/types";
@@ -197,6 +199,7 @@ export function RoleDetailEnvironmentsPage() {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
+  useQuery(fetchMembershipsByRole({ roleId: id }));
   const allEnvs = useSelector(selectEnvironmentsByOrgAsList);
   const envs = allEnvs.filter((env) => {
     const srch = search.toLocaleLowerCase();

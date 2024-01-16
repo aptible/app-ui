@@ -62,8 +62,11 @@ export const selectIsPlatformOwner = createSelector(
 export const selectIsRoleAdmin = createSelector(
   selectMembershipsByRoleId,
   (_: WebState, p: { userId: string }) => p.userId,
-  (memberships, userId) =>
-    memberships.filter((m) => m.userId === userId).some((m) => m.privileged),
+  (memberships, userId) => {
+    return memberships
+      .filter((m) => m.userId === userId)
+      .some((m) => m.privileged);
+  },
 );
 
 export const selectRolesEditable = createSelector(

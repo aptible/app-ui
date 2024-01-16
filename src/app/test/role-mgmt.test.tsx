@@ -12,6 +12,7 @@ import {
 } from "@app/mocks";
 import {
   roleDetailEnvironmentsUrl,
+  roleDetailSettingsUrl,
   roleDetailUrl,
   teamRolesUrl,
 } from "@app/routes";
@@ -31,11 +32,6 @@ describe("Role Settings", () => {
           );
         },
       ),
-      rest.get(`${testEnv.authUrl}/users/:userId/roles`, (_, res, ctx) => {
-        return res(
-          ctx.json({ _embedded: { roles: [testRoleOwner, testRole] } }),
-        );
-      }),
       ...verifiedUserHandlers(),
     );
 
@@ -416,20 +412,223 @@ describe("Role Detail - Environments", () => {
 
 describe("Role Detail - Settings", () => {
   describe("As an Organization owner", () => {
-    it("should let me change name", () => {});
+    it("should let me change name", async () => {
+      server.use(
+        rest.get(
+          `${testEnv.authUrl}/organizations/:orgId/roles`,
+          (_, res, ctx) => {
+            return res(
+              ctx.json({ _embedded: { roles: [testRoleOwner, testRole] } }),
+            );
+          },
+        ),
+        ...verifiedUserHandlers({ role: testRoleOwner }),
+      );
 
-    it("should let me delete the role", () => {});
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [roleDetailSettingsUrl(testRole.id)],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      const inp = await screen.findByRole("textbox", { name: /name/ });
+      await act(() => userEvent.clear(inp));
+      await act(() => userEvent.type(inp, "new name"));
+      const btn = await screen.findByRole("button", { name: /Save/ });
+      fireEvent.click(btn);
+      await screen.findByText(/Successfully updated role name!/);
+      expect(
+        screen.queryByText(/Successfully updated role name!/),
+      ).toBeInTheDocument();
+    });
+
+    it("should let me delete the role", async () => {
+      server.use(
+        rest.get(
+          `${testEnv.authUrl}/organizations/:orgId/roles`,
+          (_, res, ctx) => {
+            return res(
+              ctx.json({ _embedded: { roles: [testRoleOwner, testRole] } }),
+            );
+          },
+        ),
+        ...verifiedUserHandlers({ role: testRoleOwner }),
+      );
+
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [roleDetailSettingsUrl(testRole.id)],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      const inp = await screen.findByRole("textbox", {
+        name: /delete-confirm/,
+      });
+      await act(() => userEvent.type(inp, testRole.name));
+      const btn = await screen.findByRole("button", {
+        name: /Delete Permenantly/,
+      });
+      fireEvent.click(btn);
+      await screen.findByRole("heading", { name: /Roles/ });
+      expect(screen.queryByRole("heading", { name: /Roles/ }));
+    });
   });
 
   describe("As a Role admin", () => {
-    it("should let me change name", () => {});
+    it("should let me change name", async () => {
+      server.use(
+        rest.get(
+          `${testEnv.authUrl}/roles/:roleId/memberships`,
+          (_, res, ctx) => {
+            return res(
+              ctx.json({
+                _embedded: {
+                  memberships: [testUserMembershipPrivileged],
+                },
+              }),
+            );
+          },
+        ),
+        rest.get(
+          `${testEnv.authUrl}/organizations/:orgId/roles`,
+          (_, res, ctx) => {
+            return res(
+              ctx.json({ _embedded: { roles: [testRoleOwner, testRole] } }),
+            );
+          },
+        ),
+        ...verifiedUserHandlers({ role: testRole }),
+      );
 
-    it("should let me delete the role", () => {});
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [roleDetailSettingsUrl(testRole.id)],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      const inp = await screen.findByRole("textbox", { name: /name/ });
+      await act(() => userEvent.clear(inp));
+      await act(() => userEvent.type(inp, "new name"));
+      const btn = await screen.findByRole("button", { name: /Save/ });
+      fireEvent.click(btn);
+      expect(btn).not.toBeDisabled();
+      await screen.findByText(/Successfully updated role name!/);
+      expect(
+        screen.queryByText(/Successfully updated role name!/),
+      ).toBeInTheDocument();
+    });
+
+    it("should let me delete the role", async () => {
+      server.use(
+        rest.get(
+          `${testEnv.authUrl}/roles/:roleId/memberships`,
+          (_, res, ctx) => {
+            return res(
+              ctx.json({
+                _embedded: {
+                  memberships: [testUserMembershipPrivileged],
+                },
+              }),
+            );
+          },
+        ),
+        rest.get(
+          `${testEnv.authUrl}/organizations/:orgId/roles`,
+          (_, res, ctx) => {
+            return res(
+              ctx.json({ _embedded: { roles: [testRoleOwner, testRole] } }),
+            );
+          },
+        ),
+        ...verifiedUserHandlers({ role: testRole }),
+      );
+
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [roleDetailSettingsUrl(testRole.id)],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      const inp = await screen.findByRole("textbox", {
+        name: /delete-confirm/,
+      });
+      await act(() => userEvent.type(inp, testRole.name));
+      const btn = await screen.findByRole("button", {
+        name: /Delete Permenantly/,
+      });
+      fireEvent.click(btn);
+
+      await screen.findByRole("heading", { name: /Roles/ });
+      expect(screen.queryByRole("heading", { name: /Roles/ }));
+    });
   });
 
   describe("As a non-admin Org user", () => {
-    it("should **not** let me change name", () => {});
+    it("should let me change name", async () => {
+      server.use(
+        rest.get(
+          `${testEnv.authUrl}/organizations/:orgId/roles`,
+          (_, res, ctx) => {
+            return res(
+              ctx.json({ _embedded: { roles: [testRoleOwner, testRole] } }),
+            );
+          },
+        ),
+        ...verifiedUserHandlers({ role: testRole }),
+      );
 
-    it("should **not** let me delete the role", () => {});
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [roleDetailSettingsUrl(testRole.id)],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      const inp = await screen.findByRole("textbox", { name: /name/ });
+      await act(() => userEvent.clear(inp));
+      await act(() => userEvent.type(inp, "new name"));
+      const btn = await screen.findByRole("button", { name: /Save/ });
+      expect(btn).toBeDisabled();
+    });
+
+    it("should let me delete the role", async () => {
+      server.use(
+        rest.get(
+          `${testEnv.authUrl}/organizations/:orgId/roles`,
+          (_, res, ctx) => {
+            return res(
+              ctx.json({ _embedded: { roles: [testRoleOwner, testRole] } }),
+            );
+          },
+        ),
+        ...verifiedUserHandlers({ role: testRole }),
+      );
+
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [roleDetailSettingsUrl(testRole.id)],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      const inp = await screen.findByRole("textbox", {
+        name: /delete-confirm/,
+      });
+      await act(() => userEvent.type(inp, testRole.name));
+      const btn = await screen.findByRole("button", {
+        name: /Delete Permenantly/,
+      });
+      expect(btn).toBeDisabled();
+    });
   });
 });

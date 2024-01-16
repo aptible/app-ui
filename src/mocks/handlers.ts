@@ -83,6 +83,15 @@ const authHandlers = [
   rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { roles: [testRole] } }));
   }),
+  rest.put(`${testEnv.authUrl}/roles/:roleId`, async (req, res, ctx) => {
+    const data = await req.json();
+    return res(
+      ctx.json(defaultRoleResponse({ id: req.params.roleId, ...data })),
+    );
+  }),
+  rest.delete(`${testEnv.authUrl}/roles/:roleId`, (_, res, ctx) => {
+    return res(ctx.status(204));
+  }),
   rest.get(`${testEnv.authUrl}/roles/:roleId/memberships`, (_, res, ctx) => {
     return res(
       ctx.json({

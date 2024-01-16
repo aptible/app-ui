@@ -1,7 +1,17 @@
-import { useDispatch, useLoader, useSelector } from "@app/react";
+import { fetchMembershipsByRole } from "@app/auth";
+import { selectCanUserManageRole } from "@app/deploy";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { deleteRole, selectRoleById, updateRoleName } from "@app/roles";
 import { teamRolesUrl } from "@app/routes";
 import { Role } from "@app/types";
+import { selectCurrentUserId } from "@app/users";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { RoleDetailLayout } from "../layouts";
@@ -16,11 +26,14 @@ import {
   Input,
 } from "../shared";
 
-function RoleNameChange({ role }: { role: Role }) {
+function RoleNameChange({
+  role,
+  canManage,
+}: { role: Role; canManage: boolean }) {
   const dispatch = useDispatch();
   const [name, setName] = useState(role.name);
   const loader = useLoader(updateRoleName);
-  const isDisabled = name === role.name;
+  const isDisabled = !canManage || name === role.name;
   const onSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     dispatch(updateRoleName({ id: role.id, name }));
@@ -67,7 +80,7 @@ function RoleNameChange({ role }: { role: Role }) {
   );
 }
 
-function RoleDelete({ role }: { role: Role }) {
+function RoleDelete({ role, canManage }: { role: Role; canManage: boolean }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
@@ -76,9 +89,13 @@ function RoleDelete({ role }: { role: Role }) {
   const onSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     dispatch(action);
-    navigate(teamRolesUrl());
   };
-  const isDisabled = role.name !== deleteConfirm;
+
+  useLoaderSuccess(loader, () => {
+    navigate(teamRolesUrl());
+  });
+
+  const isDisabled = !canManage || role.name !== deleteConfirm;
 
   return (
     <form onSubmit={onSubmit}>
@@ -112,7 +129,7 @@ function RoleDelete({ role }: { role: Role }) {
             isLoading={loader.isLoading}
           >
             <IconTrash color="#FFF" className="mr-2" />
-            Delete Permentantly
+            Delete Permenantly
           </Button>
         </Group>
       </Group>
@@ -123,15 +140,22 @@ function RoleDelete({ role }: { role: Role }) {
 export function RoleDetailSettingsPage() {
   const { id = "" } = useParams();
   const role = useSelector((s) => selectRoleById(s, { id }));
+  const userId = useSelector(selectCurrentUserId);
+  const orgId = useSelector(selectOrganizationSelectedId);
+  useQuery(fetchMembershipsByRole({ roleId: id }));
+  const canManage = useSelector((s) =>
+    selectCanUserManageRole(s, { roleId: id, userId, orgId }),
+  );
+
   return (
     <RoleDetailLayout>
       <Group>
         <Box>
-          <RoleNameChange role={role} />
+          <RoleNameChange role={role} canManage={canManage} />
         </Box>
 
         <Box>
-          <RoleDelete role={role} />
+          <RoleDelete role={role} canManage={canManage} />
         </Box>
       </Group>
     </RoleDetailLayout>
