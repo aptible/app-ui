@@ -1,3 +1,4 @@
+import { prettyDateTime } from "@app/date";
 import {
   DEFAULT_INSTANCE_CLASS,
   ServiceSizingPolicyEditProps,
@@ -657,10 +658,10 @@ export const AppDetailServiceScalePage = () => {
             <strong>
               {lastScaleComplete ? "Last Scale" : "Scale in Progress"}:
             </strong>{" "}
-            {lastScaleOp.createdAt} from {olderScaleOp.containerCount} x{" "}
-            {olderScaleOp.containerSize} MB containers to{" "}
-            {lastScaleOp.containerCount} x {lastScaleOp.containerSize} MB
-            containers
+            {prettyDateTime(lastScaleOp.createdAt)} from{" "}
+            {olderScaleOp.containerCount} x {olderScaleOp.containerSize} MB
+            containers to {lastScaleOp.containerCount} x{" "}
+            {lastScaleOp.containerSize} MB containers
           </Fragment>
         ) : (
           "Never Scaled"
