@@ -14,6 +14,7 @@ import {
   selectAppById,
   selectContainerProfilesForStack,
   selectEnvironmentById,
+  selectNonFailedScaleOps,
   selectServiceById,
   selectStackById,
 } from "@app/deploy";
@@ -26,11 +27,13 @@ import {
   useSelector,
 } from "@app/react";
 import { appActivityUrl } from "@app/routes";
-import { HalEmbedded, InstanceClass } from "@app/types";
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import { DeployOperation, HalEmbedded, InstanceClass } from "@app/types";
+import { Fragment, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { createSelector } from "starfx/store";
 import { useValidator } from "../hooks";
 import {
+  Banner,
   ButtonIcon,
   IconChevronDown,
   IconChevronRight,
@@ -68,6 +71,54 @@ const policyValidators = {
 type AppScaleProps = {
   containerCount: number;
 };
+
+type LastScaleOperation = Pick<
+  DeployOperation,
+  "createdAt" | "containerCount" | "containerSize" | "status"
+>;
+
+const selectLastTwoScaleOps = createSelector(
+  selectNonFailedScaleOps,
+  (ops: LastScaleOperation[]) => {
+    let lastOp = ops[0];
+    if (lastOp == null) {
+      return ops;
+    }
+
+    // Remove the first operation so it's not considered when finding the past scale values
+    // Append an artificial operaiton with the default values for when a service is created
+    const opsWithDefault = ops.slice(1).concat({
+      containerCount: 1,
+      containerSize: 1024,
+      createdAt: "",
+      status: "succeeded",
+    });
+
+    // Copy the operations to avoid mutating the original
+    lastOp = { ...lastOp };
+    const oldOp = { ...opsWithDefault[0] };
+
+    // Scale operations don't have to have both a container count and size so
+    // we'll have to search past operations to find the last operation that
+    // modified each attribute
+    if (oldOp.containerCount == null) {
+      oldOp.containerCount =
+        opsWithDefault.find((op) => op.containerCount != null)
+          ?.containerCount || 0;
+    }
+
+    if (oldOp.containerSize == null) {
+      oldOp.containerSize =
+        opsWithDefault.find((op) => op.containerSize != null)?.containerSize ||
+        0;
+    }
+
+    lastOp.containerCount ||= oldOp.containerCount;
+    lastOp.containerSize ||= oldOp.containerSize;
+
+    return [lastOp, oldOp];
+  },
+);
 
 function useServiceSizingPolicy(service_id: string) {
   const policy = useCache<
@@ -499,6 +550,10 @@ export const AppDetailServiceScalePage = () => {
   const containerProfilesForStack = useSelector((s) =>
     selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
+  const [lastScaleOp, olderScaleOp]: LastScaleOperation[] = useSelector((s) =>
+    selectLastTwoScaleOps(s, { serviceId }),
+  );
+  const lastScaleComplete = lastScaleOp?.status === "succeeded";
 
   const action = scaleService({
     id: serviceId,
@@ -594,6 +649,23 @@ export const AppDetailServiceScalePage = () => {
 
   return (
     <div className="flex flex-col gap-4">
+      <Banner
+        variant={lastScaleComplete || !lastScaleOp ? "default" : "progress"}
+      >
+        {lastScaleOp ? (
+          <Fragment>
+            <strong>
+              {lastScaleComplete ? "Last Scale" : "Scale in Progress"}:
+            </strong>{" "}
+            {lastScaleOp.createdAt} from {olderScaleOp.containerCount} x{" "}
+            {olderScaleOp.containerSize} MB containers to{" "}
+            {lastScaleOp.containerCount} x {lastScaleOp.containerSize} MB
+            containers
+          </Fragment>
+        ) : (
+          "Never Scaled"
+        )}
+      </Banner>
       <VerticalAutoscalingSection id={serviceId} stackId={stack.id} />
       <Box>
         <form onSubmit={onSubmitForm}>

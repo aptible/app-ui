@@ -205,11 +205,25 @@ export const selectOperationsByEnvId = createSelector(
   (ops, envId) => ops.filter((op) => op.environmentId === envId),
 );
 
+export const findOperationsByServiceId = (
+  ops: DeployOperation[],
+  serviceId: string,
+) =>
+  ops.filter(
+    (op) => op.resourceType === "service" && op.resourceId === serviceId,
+  );
+
 export const findOperationsByAppId = (ops: DeployOperation[], appId: string) =>
   ops.filter((op) => op.resourceType === "app" && op.resourceId === appId);
 
 export const findOperationsByDbId = (ops: DeployOperation[], dbId: string) =>
   ops.filter((op) => op.resourceType === "database" && op.resourceId === dbId);
+
+export const selectOperationsByServiceId = createSelector(
+  selectOperationsAsList,
+  (_: WebState, p: { serviceId: string }) => p.serviceId,
+  findOperationsByServiceId,
+);
 
 export const selectOperationsByAppId = createSelector(
   selectOperationsAsList,
@@ -259,6 +273,11 @@ export const selectLatestProvisionOp = createSelector(
     ops.find(
       (op) => op.type === "provision" && op.resourceType === resourceType,
     ) || db.operations.empty,
+);
+
+export const selectNonFailedScaleOps = createSelector(
+  selectOperationsByServiceId,
+  (ops) => ops.filter((op) => op.type === "scale" && op.status !== "failed"),
 );
 
 export const selectLatestScanOp = createSelector(
