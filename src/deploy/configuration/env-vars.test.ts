@@ -26,6 +26,8 @@ describe("symmetric", () => {
     const expected = {
       ONE: "ONE",
       MULTI: "A multiline\nstring to test\nwhat happens",
+      APOSTROPHE: "It's apostrophe time",
+      APOSTROPHE_WRAPPED: `"It's wrapped apostrophe time"`,
       JSON: JSON.stringify({
         app: "nice",
         num: 1,
@@ -33,6 +35,7 @@ describe("symmetric", () => {
         arr: ["1", "2"],
       }),
       ESCNEWLINE: "escaped-newline\\n",
+      WRAPPED: '"That is a wrap"',
     };
     const actual = symmertic(expected);
     expect(actual).toEqual(expected);
