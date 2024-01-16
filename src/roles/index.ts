@@ -36,8 +36,8 @@ export const defaultRoleResponse = (
     _links: {
       organization: defaultHalHref(),
     },
-    _type: "role",
     ...r,
+    _type: "role",
   };
 };
 
@@ -57,14 +57,15 @@ export const selectRoleById = db.roles.selectById;
 export const selectRolesByOrgId = createSelector(
   db.roles.selectTableAsList,
   (_: WebState, p: { orgId: string }) => p.orgId,
-  (roles, orgId) =>
-    roles
+  (roles, orgId) => {
+    return roles
       .filter((r) => r.organizationId === orgId)
       .sort((a, b) => {
         const dateA = new Date(a.createdAt).getTime();
         const dateB = new Date(b.createdAt).getTime();
         return dateB - dateA;
-      }),
+      });
+  },
 );
 
 export const selectCurrentUserRoles = createSelector(

@@ -30,8 +30,8 @@ export const defaultPermissionResponse = (
       account: defaultHalHref(),
       role: defaultHalHref(),
     },
-    _type: "permission",
     ...r,
+    _type: "permission",
   };
 };
 
@@ -62,7 +62,8 @@ export const selectIsPlatformOwner = createSelector(
 export const selectIsRoleAdmin = createSelector(
   selectMembershipsByRoleId,
   (_: WebState, p: { userId: string }) => p.userId,
-  (memberships, userId) => memberships.some((m) => m.userId === userId),
+  (memberships, userId) =>
+    memberships.filter((m) => m.userId === userId).some((m) => m.privileged),
 );
 
 export const selectRolesEditable = createSelector(
@@ -92,7 +93,9 @@ export const selectIsUserOwner = createSelector(
 export const selectCanUserManageRole = createSelector(
   selectIsUserOwner,
   selectIsRoleAdmin,
-  (isOwner, isRoleAdmin) => isOwner || isRoleAdmin,
+  (isOwner, isRoleAdmin) => {
+    return isOwner || isRoleAdmin;
+  },
 );
 
 export const selectIsUserAnyOwner = createSelector(
@@ -194,7 +197,14 @@ export const addPerm = api.post<{
       scope: ctx.payload.scope,
     }),
   });
+
   yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  ctx.loader = { message: "Successfully updated permissions!" };
 });
 
 export const deletePerm = api.delete<{ id: string }>(
@@ -207,5 +217,6 @@ export const deletePerm = api.delete<{ id: string }>(
     }
 
     yield* schema.update(db.permissions.remove([ctx.payload.id]));
+    ctx.loader = { message: "Successfully updated permissions!" };
   },
 );

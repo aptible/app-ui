@@ -1,4 +1,7 @@
-import { defaultSamlConfigurationResponse } from "@app/auth";
+import {
+  defaultMembershipResponse,
+  defaultSamlConfigurationResponse,
+} from "@app/auth";
 import { defaultBillingDetailResponse } from "@app/billing";
 import {
   defaultActivePlanResponse,
@@ -103,6 +106,12 @@ export const testUserVerifiedSecond = defaultUserResponse({
   email: "test.verified.2@aptible.com",
   verified: true,
 });
+export const testUserExtra = defaultUserResponse({
+  id: createId(),
+  name: "extra-1",
+  email: "test.extra.1@aptible.com",
+  verified: true,
+});
 
 export const testSshKey = defaultSshKeyResponse({ id: `${createId()}` });
 
@@ -169,6 +178,24 @@ export const testRole = defaultRoleResponse({
   type: "platform_user",
   _links: {
     organization: defaultHalHref(testOrg.id),
+  },
+});
+
+export const testUserMembership = defaultMembershipResponse({
+  id: `${createId()}`,
+  privileged: false,
+  _links: {
+    user: defaultHalHref(`${testEnv.authUrl}/users/${testUserVerified.id}`),
+    role: defaultHalHref(`${testEnv.authUrl}/roles/${testRole.id}`),
+  },
+});
+
+export const testUserMembershipPrivileged = defaultMembershipResponse({
+  id: `${createId()}`,
+  privileged: true,
+  _links: {
+    user: defaultHalHref(`${testEnv.authUrl}/users/${testUserVerified.id}`),
+    role: defaultHalHref(`${testEnv.authUrl}/roles/${testRole.id}`),
   },
 });
 

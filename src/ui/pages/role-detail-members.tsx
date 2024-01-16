@@ -167,6 +167,7 @@ export function RoleDetailMembersPage() {
                 <Group variant="horizontal" size="sm">
                   <Group variant="horizontal" size="sm">
                     <Select
+                      ariaLabel="add-existing-user"
                       options={userOpts}
                       onSelect={onSelect}
                       value={existingUserId}

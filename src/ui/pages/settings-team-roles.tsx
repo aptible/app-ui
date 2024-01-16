@@ -40,6 +40,8 @@ const CreateRole = ({ orgId }: { orgId: string }) => {
             value={name}
             onChange={(e) => setName(e.currentTarget.value)}
             placeholder="Enter role name"
+            name="role-name"
+            id="role-name"
           />
 
           <ButtonOrgOwner type="submit" disabled={trimmedName === ""}>
