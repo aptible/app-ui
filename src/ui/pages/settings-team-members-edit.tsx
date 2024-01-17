@@ -1,4 +1,4 @@
-import { fetchUserRoles, removeUserFromOrg } from "@app/auth";
+import { removeUserFromOrg } from "@app/auth";
 import { updateUserMemberships } from "@app/auth/membership";
 import { selectIsAccountOwner, selectRolesEditable } from "@app/deploy";
 import { resetOtp } from "@app/mfa";
@@ -10,9 +10,8 @@ import {
   useLoaderSuccess,
   useSelector,
 } from "@app/react";
-import { RoleResponse } from "@app/roles";
+import { fetchUserRoles } from "@app/roles";
 import { teamMembersUrl } from "@app/routes";
-import { HalEmbedded } from "@app/types";
 import { selectCurrentUser, selectUserById } from "@app/users";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -27,9 +26,7 @@ import {
 } from "../shared";
 
 function useFetchUserRoles(userId: string) {
-  const rolesLoader = useCache<HalEmbedded<{ roles: RoleResponse[] }>>(
-    fetchUserRoles({ userId: userId }),
-  );
+  const rolesLoader = useCache(fetchUserRoles({ userId: userId }));
   const userRoles = rolesLoader.data?._embedded?.roles.map((r) => r.id) || [];
   return { rolesLoader, userRoles };
 }
@@ -103,7 +100,7 @@ export function TeamMembersEditPage() {
     <Group>
       <Breadcrumbs
         crumbs={[
-          { name: "Team Members", to: teamMembersUrl() },
+          { name: "Members", to: teamMembersUrl() },
           { name: `Edit ${user.name}`, to: null },
         ]}
       />

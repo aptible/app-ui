@@ -3,8 +3,23 @@ import { call, parallel } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
 import { db, schema } from "@app/schema";
-import { BillingDetail, LinkResponse } from "@app/types";
+import { BillingDetail, HalEmbedded, LinkResponse } from "@app/types";
 import { loadStripe } from "@stripe/stripe-js/pure";
+
+export interface StripeSourceResponse {
+  id: string;
+  deactivated_at: string | null;
+  description: string;
+  stripe_token_id: string;
+  stripe_type: string;
+  stripe_metadata: Record<string, any> | null;
+}
+
+export interface TrialResponse {
+  id: string;
+  range_begin: string;
+  range_end: string;
+}
 
 export const defaultBillingDetailResponse = (
   bt: Partial<BillingDetailResponse> = {},
@@ -80,12 +95,18 @@ export const createStripeSource = billingApi.post<StripeSourceProps>(
   },
 );
 
-export const fetchStripeSources = billingApi.get<{ id: string }>(
+export const fetchStripeSources = billingApi.get<
+  { id: string },
+  HalEmbedded<{ stripe_sources: StripeSourceResponse[] }>
+>(
   "/billing_details/:id/stripe_sources",
   { supervisor: cacheTimer() },
   billingApi.cache(),
 );
-export const fetchTrials = billingApi.get<{ id: string }>(
+export const fetchTrials = billingApi.get<
+  { id: string },
+  HalEmbedded<{ trials: TrialResponse[] }>
+>(
   "/billing_details/:id/trials",
   { supervisor: cacheTimer() },
   billingApi.cache(),

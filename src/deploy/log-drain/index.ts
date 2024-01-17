@@ -284,7 +284,7 @@ export const provisionLogDrain = thunks.create<CreateLogDrainProps>(
       createLogDrain.run(createLogDrain(ctx.payload)),
     );
     if (!mdCtx.json.ok) {
-      const data = mdCtx.json.error as any;
+      const data = mdCtx.json.error;
       yield* schema.update(db.loaders.error({ id, message: data.message }));
       return;
     }
@@ -296,7 +296,7 @@ export const provisionLogDrain = thunks.create<CreateLogDrainProps>(
       ),
     );
     if (!opCtx.json.ok) {
-      const data = opCtx.json.error as any;
+      const data = opCtx.json.error;
       yield* schema.update(db.loaders.error({ id, message: data.message }));
       return;
     }

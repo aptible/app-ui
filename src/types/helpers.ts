@@ -22,3 +22,8 @@ export interface ActionWithPayload<P = any, T extends string = string>
 export interface MapEntity<E> {
   [key: string]: E | undefined;
 }
+
+export interface Timestamps {
+  createdAt: string;
+  updatedAt: string;
+}

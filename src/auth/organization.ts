@@ -6,7 +6,7 @@ import {
 } from "@app/organizations";
 import { db, schema } from "@app/schema";
 import { selectToken } from "@app/token";
-import { AuthApiError, HalEmbedded, Organization } from "@app/types";
+import { HalEmbedded, Organization } from "@app/types";
 import { exchangeToken } from "./token";
 
 export const fetchOrganizations = authApi.get<
@@ -56,33 +56,32 @@ interface CreateOrg {
   name: string;
 }
 
-export const createOrganization = authApi.post<
-  CreateOrg,
-  OrganizationResponse,
-  AuthApiError
->("/organizations", function* onCreateOrg(ctx, next) {
-  const { name } = ctx.payload;
-  ctx.request = ctx.req({
-    body: JSON.stringify({ name }),
-  });
-  yield* next();
-  const token = yield* select(selectToken);
-  if (!ctx.json.ok) {
-    return;
-  }
+export const createOrganization = authApi.post<CreateOrg, OrganizationResponse>(
+  "/organizations",
+  function* onCreateOrg(ctx, next) {
+    const { name } = ctx.payload;
+    ctx.request = ctx.req({
+      body: JSON.stringify({ name }),
+    });
+    yield* next();
+    const token = yield* select(selectToken);
+    if (!ctx.json.ok) {
+      return;
+    }
 
-  yield* call(() =>
-    exchangeToken.run(
-      exchangeToken({
-        actorToken: token.accessToken,
-        subjectToken: token.userUrl,
-        subjectTokenType: "aptible:user:href",
-        scope: "manage",
-      }),
-    ),
-  );
-  yield* schema.update(db.organizationSelected.set(ctx.json.value.id));
-});
+    yield* call(() =>
+      exchangeToken.run(
+        exchangeToken({
+          actorToken: token.accessToken,
+          subjectToken: token.userUrl,
+          subjectTokenType: "aptible:user:href",
+          scope: "manage",
+        }),
+      ),
+    );
+    yield* schema.update(db.organizationSelected.set(ctx.json.value.id));
+  },
+);
 
 export const updateOrganization = authApi.patch<Organization>(
   "/organizations/:id",

@@ -1,4 +1,7 @@
-import { defaultSamlConfigurationResponse } from "@app/auth";
+import {
+  defaultMembershipResponse,
+  defaultSamlConfigurationResponse,
+} from "@app/auth";
 import {
   DeployAppResponse,
   DeployDatabaseResponse,
@@ -11,9 +14,10 @@ import {
   defaultLogDrainResponse,
   defaultMetricDrainResponse,
   defaultOperationResponse,
+  defaultPermissionResponse,
 } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
-import { RoleResponse } from "@app/roles";
+import { RoleResponse, defaultRoleResponse } from "@app/roles";
 import { STATUSPAGE_URL } from "@app/system-status";
 import { DeployServiceResponse } from "@app/types";
 import { UserResponse } from "@app/users";
@@ -46,6 +50,7 @@ import {
   testStack,
   testToken,
   testUser,
+  testUserMembership,
   testUserVerified,
   testVerifiedInvitation,
 } from "./data";
@@ -78,6 +83,63 @@ const authHandlers = [
   rest.get(`${testEnv.authUrl}/organizations/:orgId/roles`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { roles: [testRole] } }));
   }),
+  rest.put(`${testEnv.authUrl}/roles/:roleId`, async (req, res, ctx) => {
+    const data = await req.json();
+    return res(
+      ctx.json(defaultRoleResponse({ id: req.params.roleId, ...data })),
+    );
+  }),
+  rest.delete(`${testEnv.authUrl}/roles/:roleId`, (_, res, ctx) => {
+    return res(ctx.status(204));
+  }),
+  rest.get(`${testEnv.authUrl}/roles/:roleId/memberships`, (_, res, ctx) => {
+    return res(
+      ctx.json({
+        _embedded: {
+          memberships: [testUserMembership],
+        },
+      }),
+    );
+  }),
+  rest.post(
+    `${testEnv.authUrl}/roles/:roleId/memberships`,
+    async (req, res, ctx) => {
+      const roleId = req.params.roleId;
+      const data = await req.json();
+      return res(
+        ctx.json(
+          defaultMembershipResponse({
+            id: `${createId()}`,
+            _links: {
+              user: defaultHalHref(data.user_url),
+              role: defaultHalHref(`${testEnv.authUrl}/roles/${roleId}`),
+            },
+          }),
+        ),
+      );
+    },
+  ),
+  rest.get(`${testEnv.authUrl}/roles/:roleId/users`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { users: [testUserVerified] } }));
+  }),
+  rest.post(
+    `${testEnv.authUrl}/organizations/:orgId/roles`,
+    async (req, res, ctx) => {
+      const data = await req.json();
+      return res(
+        ctx.json(
+          defaultRoleResponse({
+            ...data,
+            _links: {
+              organization: defaultHalHref(
+                `${testEnv.authUrl}/organizations/${testOrg.id}`,
+              ),
+            },
+          }),
+        ),
+      );
+    },
+  ),
   rest.patch(`${testEnv.authUrl}/organizations/:id`, async (req, res, ctx) => {
     const data = await req.json();
     return res(ctx.json({ ...testOrg, ...data }));
@@ -713,6 +775,26 @@ const apiHandlers = [
     `${testEnv.apiUrl}/services/:id/service_sizing_policy`,
     async (_, res, ctx) => {
       return res(ctx.status(204));
+    },
+  ),
+  rest.post(
+    `${testEnv.apiUrl}/accounts/:envId/permissions`,
+    async (req, res, ctx) => {
+      const data = await req.json();
+      return res(
+        ctx.json(
+          defaultPermissionResponse({
+            id: createId(),
+            _links: {
+              account: defaultHalHref(
+                `${testEnv.authUrl}/accounts/${req.params.envId}`,
+              ),
+              role: defaultHalHref(`${testEnv.authUrl}/roles/${data.role}`),
+            },
+            ...data,
+          }),
+        ),
+      );
     },
   ),
 ];

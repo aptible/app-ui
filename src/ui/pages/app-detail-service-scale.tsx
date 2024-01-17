@@ -2,7 +2,6 @@ import { prettyDateTime } from "@app/date";
 import {
   DEFAULT_INSTANCE_CLASS,
   ServiceSizingPolicyEditProps,
-  ServiceSizingPolicyResponse,
   cancelServicesOpsPoll,
   defaultServiceSizingPolicyResponse,
   exponentialContainerSizesByProfile,
@@ -30,7 +29,7 @@ import {
   useSelector,
 } from "@app/react";
 import { appActivityUrl } from "@app/routes";
-import { DeployOperation, HalEmbedded, InstanceClass } from "@app/types";
+import { DeployOperation, InstanceClass } from "@app/types";
 import { Fragment, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { createSelector } from "starfx/store";
@@ -124,11 +123,9 @@ const selectLastTwoScaleOps = createSelector(
 );
 
 function useServiceSizingPolicy(service_id: string) {
-  const policy = useCache<
-    HalEmbedded<{
-      service_sizing_policies: ServiceSizingPolicyResponse[];
-    }>
-  >(fetchServiceSizingPoliciesByServiceId({ service_id }));
+  const policy = useCache(
+    fetchServiceSizingPoliciesByServiceId({ service_id }),
+  );
 
   const policies = policy.data?._embedded?.service_sizing_policies || [];
   const existingPolicy = useMemo(() => {

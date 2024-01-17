@@ -5,7 +5,6 @@ import {
   call,
   createApi,
   createThunks,
-  dispatchActions,
   mdw,
   parallel,
   put,
@@ -73,6 +72,8 @@ function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   }
 }
 
+export const thunkLoader = storeMdw.loader(schema.db.loaders);
+
 function* debugMdw(ctx: ThunkCtx, next: Next) {
   log(`${ctx.name}`, ctx);
   yield* next();
@@ -85,7 +86,7 @@ thunks.use(function* (ctx, next) {
   ctx.json = null;
   yield* next();
 });
-thunks.use(dispatchActions);
+thunks.use(storeMdw.actions);
 thunks.use(thunks.routes());
 
 export const resetToken = thunks.create("reset-token", function* (_, next) {
@@ -259,7 +260,7 @@ export const api = createApi<DeployApiCtx>(
 api.use(debugMdw);
 api.use(sentryErrorHandler);
 api.use(expiredToken);
-api.use(storeMdw(db));
+api.use(storeMdw.store(db));
 api.use(mdw.api());
 api.use(aborter);
 api.use(requestApi);
@@ -274,7 +275,7 @@ export const authApi = createApi<AuthApiCtx>(
 authApi.use(debugMdw);
 authApi.use(sentryErrorHandler);
 authApi.use(expiredToken);
-authApi.use(storeMdw(db));
+authApi.use(storeMdw.store(db));
 authApi.use(mdw.api());
 authApi.use(aborter);
 authApi.use(halEntityParser);
@@ -290,7 +291,7 @@ export const billingApi = createApi<DeployApiCtx>(
 billingApi.use(debugMdw);
 billingApi.use(sentryErrorHandler);
 billingApi.use(expiredToken);
-billingApi.use(storeMdw(db));
+billingApi.use(storeMdw.store(db));
 billingApi.use(mdw.api());
 billingApi.use(aborter);
 billingApi.use(halEntityParser);
@@ -305,7 +306,7 @@ export const metricTunnelApi = createApi<MetricTunnelCtx>(
 metricTunnelApi.use(debugMdw);
 metricTunnelApi.use(sentryErrorHandler);
 metricTunnelApi.use(expiredToken);
-metricTunnelApi.use(storeMdw(db));
+metricTunnelApi.use(storeMdw.store(db));
 metricTunnelApi.use(mdw.api());
 metricTunnelApi.use(aborter);
 metricTunnelApi.use(metricTunnelApi.routes());

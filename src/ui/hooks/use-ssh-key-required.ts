@@ -1,6 +1,5 @@
 import { useCache, useSelector } from "@app/react";
 import { fetchSSHKeys } from "@app/ssh-keys";
-import { HalEmbedded } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,9 +7,7 @@ import { useNavigate } from "react-router-dom";
 export function useSshKeyRequired(sshKeyUrl: string) {
   const navigate = useNavigate();
   const user = useSelector(selectCurrentUser);
-  const query = useCache<HalEmbedded<{ ssh_keys: any[] }>>(
-    fetchSSHKeys({ userId: user.id }),
-  );
+  const query = useCache(fetchSSHKeys({ userId: user.id }));
 
   const prev = useRef(query);
   useEffect(() => {

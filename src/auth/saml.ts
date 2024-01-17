@@ -1,6 +1,6 @@
 import { authApi } from "@app/api";
 import { defaultHalHref } from "@app/hal";
-import { AuthApiError, HalEmbedded, LinkResponse } from "@app/types";
+import { HalEmbedded, LinkResponse } from "@app/types";
 
 export interface SamlConfigurationResponse {
   id: string;
@@ -54,8 +54,7 @@ export type FetchSamlConfigurations = HalEmbedded<{
 
 export const fetchSamlConfigurations = authApi.get<
   never,
-  FetchSamlConfigurations,
-  AuthApiError
+  FetchSamlConfigurations
 >("/saml_configurations", authApi.cache());
 
 export interface AllowlistMemberships {
@@ -152,14 +151,12 @@ export type FetchAllowlistMemberships = HalEmbedded<{
 
 export const fetchAllowlistMemberships = authApi.get<
   { orgId: string },
-  FetchAllowlistMemberships,
-  AuthApiError
+  FetchAllowlistMemberships
 >("/organizations/:orgId/whitelist_memberships", authApi.cache());
 
 export const addAllowlistMembership = authApi.post<
   { orgId: string; userId: string },
-  AllowlistMemberships,
-  AuthApiError
+  AllowlistMemberships
 >("/organizations/:orgId/whitelist_memberships", function* (ctx, next) {
   ctx.request = ctx.req({
     body: JSON.stringify({

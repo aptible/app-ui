@@ -13,6 +13,7 @@ import {
   type DeployService,
   DeployServiceResponse,
   DeployServiceRow,
+  HalEmbedded,
   type InstanceClass,
   type LinkResponse,
   excludesFalse,
@@ -400,9 +401,14 @@ export const defaultServiceSizingPolicyResponse = (
   };
 };
 
-export const fetchServiceSizingPoliciesByServiceId = api.get<{
-  service_id: string;
-}>(
+export const fetchServiceSizingPoliciesByServiceId = api.get<
+  {
+    service_id: string;
+  },
+  HalEmbedded<{
+    service_sizing_policies: ServiceSizingPolicyResponse[];
+  }>
+>(
   "/services/:service_id/service_sizing_policies",
   { supervisor: cacheShortTimer() },
   api.cache(),

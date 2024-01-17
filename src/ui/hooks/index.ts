@@ -11,3 +11,4 @@ export * from "./use-env-editor";
 export * from "./use-paginate";
 export * from "./use-invitation";
 export * from "./use-paginate-backups";
+export * from "./use-users-for-role";

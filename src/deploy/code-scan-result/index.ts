@@ -38,7 +38,7 @@ export const defaultCodeScanResponse = (
   };
 };
 
-export const fetchCodeScanResult = api.get<{ id: string }>(
-  "/code_scan_results/:id",
-  api.cache(),
-);
+export const fetchCodeScanResult = api.get<
+  { id: string },
+  DeployCodeScanResponse
+>("/code_scan_results/:id", api.cache());

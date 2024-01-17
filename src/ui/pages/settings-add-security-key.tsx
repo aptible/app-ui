@@ -9,7 +9,6 @@ import {
 } from "@app/react";
 import { securitySettingsUrl } from "@app/routes";
 import { selectCurrentUserId } from "@app/users";
-import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
@@ -22,18 +21,12 @@ import {
   Input,
 } from "../shared";
 
-interface U2fChallenge {
-  id: string;
-  challenge: string;
-  payload: PublicKeyCredentialCreationOptionsJSON;
-}
-
 export const AddSecurityKeyPage = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const userId = useSelector(selectCurrentUserId);
-  const challenge = useCache<U2fChallenge>(fetchU2fChallenges({ userId }));
+  const challenge = useCache(fetchU2fChallenges({ userId }));
   const dispatch = useDispatch();
   const loader = useLoader(createWebauthnDevice);
   const [loading, setLoading] = useState(false);

@@ -28,6 +28,7 @@ import {
   DeployVpcPeer,
   DeployVpnTunnel,
   Invitation,
+  Membership,
   ModalType,
   Organization,
   Otp,
@@ -750,5 +751,18 @@ export const defaultRole = (r: Partial<Role> = {}): Role => {
     createdAt: now,
     updatedAt: now,
     ...r,
+  };
+};
+
+export const defaultMembership = (m: Partial<Membership> = {}): Membership => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    userId: "",
+    roleId: "",
+    privileged: false,
+    createdAt: now,
+    updatedAt: now,
+    ...m,
   };
 };

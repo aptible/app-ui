@@ -1,7 +1,6 @@
 import { fetchOtpCodes } from "@app/mfa";
 import { useCache } from "@app/react";
 import { securitySettingsUrl } from "@app/routes";
-import { HalEmbedded } from "@app/types";
 import { useCurrentUser } from "../hooks";
 import {
   BannerMessages,
@@ -13,18 +12,9 @@ import {
   PreCode,
 } from "../shared";
 
-interface OtpCode {
-  id: string;
-  value: string;
-  used: boolean;
-}
-type OtpResponse = HalEmbedded<{ otp_recovery_codes: OtpCode[] }>;
-
 export const OtpRecoveryCodesPage = () => {
   const [user] = useCurrentUser();
-  const loader = useCache<OtpResponse>(
-    fetchOtpCodes({ otpId: user.currentOtpId }),
-  );
+  const loader = useCache(fetchOtpCodes({ otpId: user.currentOtpId }));
   const codes = loader.data?._embedded?.otp_recovery_codes || [];
 
   return (

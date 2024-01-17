@@ -1,26 +1,4 @@
-import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
-
-type AuthErrorType =
-  | "otp_token_required"
-  | "unprocessable_entity"
-  | "invalid_credentials"
-  | "invalid_email"
-  | "unsupported_grant_type"
-  | "access_denied"
-  | "invalid_scope"
-  | "";
-
-export interface AuthLoaderMeta {
-  error: AuthErrorType;
-  code: number;
-  exception_context: {
-    u2f?: {
-      payload: CredentialRequestOptionsJSON["publicKey"];
-    };
-  };
-  verified: boolean;
-  id: string;
-}
+import { AuthErrorType, AuthLoaderMeta } from "@app/types";
 
 export const AUTH_LOADER_ID = "auth";
 

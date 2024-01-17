@@ -1,7 +1,7 @@
 import { authApi } from "@app/api";
 import { leading } from "@app/fx";
 import { db, schema } from "@app/schema";
-import { AuthApiCtx } from "@app/types";
+import { AuthApiCtx, HalEmbedded } from "@app/types";
 
 interface VerifyEmail {
   userId: string;
@@ -57,7 +57,16 @@ export const resendVerification = authApi.post<ResendVerification>(
   },
 );
 
-export const fetchEmailVerificationPending = authApi.get<{ userId: string }>(
+interface EmailVerificationChallenge {
+  email: string;
+  expires_at: string;
+  id: string;
+}
+
+export const fetchEmailVerificationPending = authApi.get<
+  { userId: string },
+  HalEmbedded<{ email_verification_challenges: EmailVerificationChallenge[] }>
+>(
   "/users/:userId/email_verification_challenges",
   function* onResendVerification(ctx, next) {
     ctx.elevated = true;

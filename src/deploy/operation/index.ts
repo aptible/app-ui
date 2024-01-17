@@ -312,7 +312,7 @@ export const selectLatestSuccessDeployOpByEnvId = createSelector(
 export const findLatestSuccessScanOp = (ops: DeployOperation[]) =>
   ops.find((op) => op.type === "scan_code" && op.status === "succeeded");
 
-export const selectLatestSucceessScanOp = createSelector(
+export const selectLatestSuccessScanOp = createSelector(
   selectOperationsByAppId,
   (ops) => findLatestSuccessScanOp(ops) || db.operations.empty,
 );
@@ -351,7 +351,7 @@ export const pollOrgOperations = api.get<{ orgId: string }>(
   { supervisor: poll(10 * 1000, `${cancelOrgOperationsPoll}`) },
 );
 
-export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
+export const fetchOperationLogs = api.get<{ id: string } & Retryable>(
   "/operations/:id/logs",
   [
     function* (ctx, next) {
@@ -366,20 +366,20 @@ export const fetchOperationLogs = api.get<{ id: string } & Retryable, string>(
 
       const url = ctx.json.value;
       const response = yield* call(() => fetch(url));
-      const data = yield* call(() => response.text());
+      const message = yield* call(() => response.text());
 
       if (!response.ok) {
         ctx.json = {
           ok: false,
-          data,
-          error: data,
+          data: { message },
+          error: { message },
         };
         return;
       }
       // overwrite the URL provided by the API with the actual logs
       // so we can just fetch the data in a single endpoint
-      ctx.json.value = data;
-      ctx.json.data = data;
+      ctx.json.value = message;
+      ctx.json.data = message;
     },
     mdw.fetchRetry(),
   ],

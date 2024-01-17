@@ -1,6 +1,6 @@
 import { type WebState, db } from "@app/schema";
 import { useEffect, useRef } from "react";
-import { LoaderState } from "starfx";
+import { LoaderState, ThunkAction } from "starfx";
 import {
   type TypedUseSelectorHook,
   useDispatch,
@@ -16,11 +16,6 @@ export {
 
 type ActionFn<P = any> = (p: P) => { toString: () => string };
 type ActionFnSimple = () => { toString: () => string };
-
-interface ThunkAction<P = any> {
-  type: string;
-  payload: { key: string; options: P };
-}
 
 export interface UseApiProps<P = any> extends LoaderState {
   trigger: (p: P) => void;
@@ -82,9 +77,9 @@ export function useQuery<P = any, A extends ThunkAction = ThunkAction<P>>(
   return api;
 }
 
-export function useCache<D = any, A extends ThunkAction = ThunkAction>(
-  action: A,
-): UseCacheResult<D, A> {
+export function useCache<P = any, ApiSuccess = any>(
+  action: ThunkAction<P, ApiSuccess>,
+): UseCacheResult<typeof action.payload._result, ThunkAction<P, ApiSuccess>> {
   const id = action.payload.key;
   const data: any = useSelector((s: WebState) =>
     db.cache.selectById(s, { id }),
