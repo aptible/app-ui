@@ -6,6 +6,7 @@ import { WebState, db, schema } from "@app/schema";
 import type {
   ContainerProfileData,
   DeployStack,
+  HalEmbedded,
   InstanceClass,
   LinkResponse,
 } from "@app/types";
@@ -241,7 +242,23 @@ export const fetchStacks = api.get(
 
 export const fetchStack = api.get<{ id: string }>("/stacks/:id");
 
-export const fetchStackManagedHids = api.get<{ id: string } & PaginateProps>(
+export interface HidsReport {
+  id: number;
+  created_at: string;
+  starts_at: string;
+  ends_at: string;
+  _links: {
+    download_csv: LinkResponse;
+    download_pdf: LinkResponse;
+  };
+}
+
+type HidsResponse = HalEmbedded<{ intrusion_detection_reports: HidsReport[] }>;
+
+export const fetchStackManagedHids = api.get<
+  { id: string } & PaginateProps,
+  HidsResponse
+>(
   "/stacks/:id/intrusion_detection_reports?page=:page&per_page=10",
   { supervisor: cacheShortTimer() },
   api.cache(),

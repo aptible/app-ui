@@ -1,4 +1,5 @@
 import { LinkResponse } from "./hal";
+import { Timestamps } from "./helpers";
 
 export type ProvisionableStatus =
   | "pending"
@@ -12,11 +13,6 @@ export type ProvisionableStatus =
 
 export interface Provisionable {
   status: ProvisionableStatus;
-}
-
-export interface Timestamps {
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface DeployImage extends Timestamps {
@@ -550,4 +546,14 @@ export interface DeployServiceResponse {
     account: LinkResponse;
   };
   _type: "service";
+}
+
+export interface DeployAppConfigEnv {
+  [key: string]: string | number | boolean;
+}
+
+export interface DeployAppConfig {
+  id: string;
+  env: DeployAppConfigEnv;
+  appId: string;
 }

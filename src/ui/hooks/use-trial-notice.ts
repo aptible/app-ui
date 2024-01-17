@@ -1,26 +1,11 @@
 import {
+  TrialResponse,
   fetchStripeSources,
   fetchTrials,
   selectBillingDetail,
 } from "@app/billing";
 import { timeBetween } from "@app/date";
 import { useCache, useSelector } from "@app/react";
-import { HalEmbedded } from "@app/types";
-
-interface StripeSourceResponse {
-  id: string;
-  deactivated_at: string | null;
-  description: string;
-  stripe_token_id: string;
-  stripe_type: string;
-  stripe_metadata: Record<string, any> | null;
-}
-
-interface TrialResponse {
-  id: string;
-  range_begin: string;
-  range_end: string;
-}
 
 const isActive = (trial: TrialResponse) => {
   const now = new Date();
@@ -31,12 +16,8 @@ const isActive = (trial: TrialResponse) => {
 
 export function useTrialNotice() {
   const billingDetail = useSelector(selectBillingDetail);
-  const trials = useCache<HalEmbedded<{ trials: TrialResponse[] }>>(
-    fetchTrials({ id: billingDetail.id }),
-  );
-  const stripeSources = useCache<
-    HalEmbedded<{ stripe_sources: StripeSourceResponse[] }>
-  >(fetchStripeSources({ id: billingDetail.id }));
+  const trials = useCache(fetchTrials({ id: billingDetail.id }));
+  const stripeSources = useCache(fetchStripeSources({ id: billingDetail.id }));
   const now = new Date().toISOString();
 
   if (!trials.lastSuccess || !stripeSources.lastSuccess) {

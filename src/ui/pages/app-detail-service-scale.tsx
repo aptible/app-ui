@@ -1,7 +1,6 @@
 import {
   DEFAULT_INSTANCE_CLASS,
   ServiceSizingPolicyEditProps,
-  ServiceSizingPolicyResponse,
   defaultServiceSizingPolicyResponse,
   exponentialContainerSizesByProfile,
   fetchApp,
@@ -26,7 +25,7 @@ import {
   useSelector,
 } from "@app/react";
 import { appActivityUrl } from "@app/routes";
-import { HalEmbedded, InstanceClass } from "@app/types";
+import { InstanceClass } from "@app/types";
 import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
@@ -70,11 +69,9 @@ type AppScaleProps = {
 };
 
 function useServiceSizingPolicy(service_id: string) {
-  const policy = useCache<
-    HalEmbedded<{
-      service_sizing_policies: ServiceSizingPolicyResponse[];
-    }>
-  >(fetchServiceSizingPoliciesByServiceId({ service_id }));
+  const policy = useCache(
+    fetchServiceSizingPoliciesByServiceId({ service_id }),
+  );
 
   const policies = policy.data?._embedded?.service_sizing_policies || [];
   const existingPolicy = useMemo(() => {

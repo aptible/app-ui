@@ -9,7 +9,7 @@ import {
   selectToken,
 } from "@app/token";
 import { tunaEvent, tunaIdentify } from "@app/tuna";
-import { AuthApiCtx, AuthApiError, Token } from "@app/types";
+import { AuthApiCtx, Token } from "@app/types";
 import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 
 const setToken = thunks.create<Token>("set-token", function* (ctx, next) {
@@ -31,20 +31,18 @@ function* saveToken(ctx: AuthApiCtx<any, TokenSuccessResponse>) {
   ctx.actions.push(setToken(curToken));
 }
 
-export const fetchCurrentToken = authApi.get<
-  never,
-  TokenSuccessResponse,
-  AuthApiError
->("/current_token", function* onFetchToken(ctx, next) {
-  ctx.noToken = true;
-  yield* next();
-  yield* saveToken(ctx);
-});
+export const fetchCurrentToken = authApi.get<never, TokenSuccessResponse>(
+  "/current_token",
+  function* onFetchToken(ctx, next) {
+    ctx.noToken = true;
+    yield* next();
+    yield* saveToken(ctx);
+  },
+);
 
 export const createToken = authApi.post<
   CreateTokenPayload,
-  TokenSuccessResponse,
-  AuthApiError
+  TokenSuccessResponse
 >("/tokens", function* onCreateToken(ctx, next) {
   ctx.request = ctx.req({
     body: JSON.stringify({
@@ -107,48 +105,47 @@ export interface ExchangeToken {
   ssoOrganization?: string;
 }
 
-export const exchangeToken = authApi.post<
-  ExchangeToken,
-  TokenSuccessResponse,
-  AuthApiError
->("exchange-token", function* onExchangeToken(ctx, next) {
-  const {
-    actorToken,
-    subjectToken,
-    subjectTokenType,
-    scope,
-    ssoOrganization = "",
-  } = ctx.payload;
-  ctx.request = ctx.req({
-    url: "/tokens",
-    method: "POST",
-    body: JSON.stringify({
-      expires_in: 86090,
-      _source: "app-ui",
-      grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
-      actor_token_type: "urn:ietf:params:oauth:token-type:jwt",
-      actor_token: actorToken,
-      subject_token_type: subjectTokenType,
-      subject_token: subjectToken,
-      scope: scope,
-      sso_organization: ssoOrganization,
-    }),
-  });
+export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
+  "exchange-token",
+  function* onExchangeToken(ctx, next) {
+    const {
+      actorToken,
+      subjectToken,
+      subjectTokenType,
+      scope,
+      ssoOrganization = "",
+    } = ctx.payload;
+    ctx.request = ctx.req({
+      url: "/tokens",
+      method: "POST",
+      body: JSON.stringify({
+        expires_in: 86090,
+        _source: "app-ui",
+        grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
+        actor_token_type: "urn:ietf:params:oauth:token-type:jwt",
+        actor_token: actorToken,
+        subject_token_type: subjectTokenType,
+        subject_token: subjectToken,
+        scope: scope,
+        sso_organization: ssoOrganization,
+      }),
+    });
 
-  yield* next();
+    yield* next();
 
-  if (!ctx.json.ok) {
-    return;
-  }
-  // `exchangeToken` is used when a new user creates an org as well as when
-  // a user impersonates another user.
-  // Regardless, we want to reset the store first then save the token because
-  // resetStore will delete the token stored inside redux.
-  const curToken = deserializeToken(ctx.json.value);
-  yield* put([resetStore(), setToken(curToken), { type: "REFRESH_DATA" }]);
-  ctx.loader = { message: "Success" };
-  tunaEvent("exchanged-token", ctx.payload);
-});
+    if (!ctx.json.ok) {
+      return;
+    }
+    // `exchangeToken` is used when a new user creates an org as well as when
+    // a user impersonates another user.
+    // Regardless, we want to reset the store first then save the token because
+    // resetStore will delete the token stored inside redux.
+    const curToken = deserializeToken(ctx.json.value);
+    yield* put([resetStore(), setToken(curToken), { type: "REFRESH_DATA" }]);
+    ctx.loader = { message: "Success" };
+    tunaEvent("exchanged-token", ctx.payload);
+  },
+);
 
 export const revokeAllTokens = authApi.post(
   "/tokens/revoke_all_accessible",

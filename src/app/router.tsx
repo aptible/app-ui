@@ -93,6 +93,10 @@ import {
   OtpSetupPage,
   PlansPage,
   ReactRouterErrorElement,
+  RoleDetailEnvironmentsPage,
+  RoleDetailMembersPage,
+  RoleDetailPage,
+  RoleDetailSettingsPage,
   SSHSettingsPage,
   SearchPage,
   SecuritySettingsPage,
@@ -778,6 +782,33 @@ export const appRoutes: RouteObject[] = [
         <TeamAcceptInvitePage />
       </AuthRequired>
     ),
+  },
+
+  {
+    path: routes.ROLE_DETAIL_PATH,
+    element: (
+      <AuthRequired>
+        <SettingsLayout />
+      </AuthRequired>
+    ),
+    children: [
+      {
+        index: true,
+        element: <RoleDetailPage />,
+      },
+      {
+        path: routes.ROLE_DETAIL_MEMBERS_PATH,
+        element: <RoleDetailMembersPage />,
+      },
+      {
+        path: routes.ROLE_DETAIL_ENVIRONMENTS_PATH,
+        element: <RoleDetailEnvironmentsPage />,
+      },
+      {
+        path: routes.ROLE_DETAIL_SETTINGS_PATH,
+        element: <RoleDetailSettingsPage />,
+      },
+    ],
   },
 
   {

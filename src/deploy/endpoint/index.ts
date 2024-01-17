@@ -566,7 +566,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
       certId = payload.certId;
 
       if (!certId && payload.cert && payload.privKey) {
-        const certCtx = yield* call(() =>
+        const certCtx = yield* call(
           createCertificate.run(
             createCertificate({
               envId: payload.envId,
@@ -576,7 +576,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
           ),
         );
         if (!certCtx.json.ok) {
-          const data = certCtx.json.error as any;
+          const data = certCtx.json.error;
           yield* schema.update(
             db.loaders.error({ id: ctx.key, message: data.message }),
           );
@@ -603,7 +603,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
 
     yield* next();
 
-    const opCtx = yield* call(() =>
+    const opCtx = yield* call(
       createEndpointOperation.run(
         createEndpointOperation({
           endpointId: `${result.value.id}`,
@@ -613,7 +613,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
     );
 
     if (!opCtx.json.ok) {
-      const data = opCtx.json.error as any;
+      const data = opCtx.json.error;
       yield* schema.update(
         db.loaders.error({ id: ctx.key, message: data.message }),
       );
@@ -658,7 +658,7 @@ export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
 
     yield* next();
 
-    const opCtx = yield* call(() =>
+    const opCtx = yield* call(
       createEndpointOperation.run(
         createEndpointOperation({
           endpointId: `${result.value.id}`,
@@ -668,7 +668,7 @@ export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
     );
 
     if (!opCtx.json.ok) {
-      const data = opCtx.json.error as any;
+      const data = opCtx.json.error;
       yield* schema.update(
         db.loaders.error({ id: ctx.key, message: data.message }),
       );
@@ -766,7 +766,7 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       certId = `${certCtx.json.value.id}`;
     }
 
-    const patchCtx = yield* call(() =>
+    const patchCtx = yield* call(
       patchEndpoint.run(
         patchEndpoint({
           id: ctx.payload.id,
@@ -783,7 +783,7 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       return;
     }
 
-    const opCtx = yield* call(() =>
+    const opCtx = yield* call(
       createEndpointOperation.run(
         createEndpointOperation({
           endpointId: ctx.payload.id,
@@ -793,7 +793,7 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
     );
 
     if (!opCtx.json.ok) {
-      const data = opCtx.json.error as any;
+      const data = opCtx.json.error;
       yield* schema.update(
         db.loaders.error({ id: ctx.key, message: data.message }),
       );

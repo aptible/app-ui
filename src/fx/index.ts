@@ -28,7 +28,6 @@ export {
   latest,
   leading,
   storeMdw,
-  dispatchActions,
   createSelector,
   PERSIST_LOADER_ID,
 } from "starfx/store";

@@ -1,3 +1,5 @@
+import { api } from "@app/api";
+import { selectMembershipsByRoleId } from "@app/auth";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import {
@@ -5,7 +7,7 @@ import {
   selectCurrentUserRolesByOrgId,
   selectRolesByOrgId,
 } from "@app/roles";
-import { WebState, db } from "@app/schema";
+import { WebState, db, schema } from "@app/schema";
 import { LinkResponse, Permission, PermissionScope } from "@app/types";
 
 export interface PermissionResponse {
@@ -28,8 +30,8 @@ export const defaultPermissionResponse = (
       account: defaultHalHref(),
       role: defaultHalHref(),
     },
-    _type: "permission",
     ...r,
+    _type: "permission",
   };
 };
 
@@ -57,6 +59,16 @@ export const selectIsPlatformOwner = createSelector(
   (roles) => roles.some((r) => r.type === "platform_owner"),
 );
 
+export const selectIsRoleAdmin = createSelector(
+  selectMembershipsByRoleId,
+  (_: WebState, p: { userId: string }) => p.userId,
+  (memberships, userId) => {
+    return memberships
+      .filter((m) => m.userId === userId)
+      .some((m) => m.privileged);
+  },
+);
+
 export const selectRolesEditable = createSelector(
   selectRolesByOrgId,
   selectIsAccountOwner,
@@ -79,6 +91,14 @@ export const selectIsUserOwner = createSelector(
   selectIsAccountOwner,
   selectIsPlatformOwner,
   (isAccountOwner, isPlatformOwner) => isAccountOwner || isPlatformOwner,
+);
+
+export const selectCanUserManageRole = createSelector(
+  selectIsUserOwner,
+  selectIsRoleAdmin,
+  (isOwner, isRoleAdmin) => {
+    return isOwner || isRoleAdmin;
+  },
 );
 
 export const selectIsUserAnyOwner = createSelector(
@@ -168,3 +188,37 @@ export const permissionEntities = {
     deserialize: deserializePermission,
   }),
 };
+
+export const addPerm = api.post<{
+  envId: string;
+  roleId: string;
+  scope: PermissionScope;
+}>("/accounts/:envId/permissions", function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify({
+      role: ctx.payload.roleId,
+      scope: ctx.payload.scope,
+    }),
+  });
+
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  ctx.loader = { message: "Successfully updated permissions!" };
+});
+
+export const deletePerm = api.delete<{ id: string }>(
+  "/permissions/:id",
+  function* (ctx, next) {
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* schema.update(db.permissions.remove([ctx.payload.id]));
+  },
+);

@@ -21,7 +21,6 @@ import {
   otpSetupUrl,
 } from "@app/routes";
 import { db } from "@app/schema";
-import { HalEmbedded } from "@app/types";
 import { selectCurrentUserId, updateEmail } from "@app/users";
 import { emailValidator } from "@app/validator";
 import { useState } from "react";
@@ -145,21 +144,13 @@ const ChangePassword = () => {
   );
 };
 
-interface EmailVerificationChallenge {
-  email: string;
-  expires_at: string;
-  id: string;
-}
-
 const ChangeEmail = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
   const [email, setEmail] = useState<string>("");
   const loader = useLoader(updateEmail);
   const [error, setError] = useState("");
-  const pending = useCache<
-    HalEmbedded<{ email_verification_challenges: EmailVerificationChallenge[] }>
-  >(fetchEmailVerificationPending({ userId }));
+  const pending = useCache(fetchEmailVerificationPending({ userId }));
   const revokeLoader = useLoader(revokeEmailVerification);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {

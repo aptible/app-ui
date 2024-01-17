@@ -49,6 +49,17 @@ export const TEAM_PENDING_INVITES_PATH = "/settings/team/pending-invites";
 export const teamPendingInvitesUrl = () => TEAM_PENDING_INVITES_PATH;
 export const TEAM_ROLES_PATH = "/settings/team/roles";
 export const teamRolesUrl = () => TEAM_ROLES_PATH;
+
+export const ROLE_DETAIL_PATH = "/roles/:id";
+export const roleDetailUrl = (id: string) => `/roles/${id}`;
+export const ROLE_DETAIL_MEMBERS_PATH = "/roles/:id/members";
+export const roleDetailMembersUrl = (id: string) => `/roles/${id}/members`;
+export const ROLE_DETAIL_ENVIRONMENTS_PATH = "/roles/:id/environments";
+export const roleDetailEnvironmentsUrl = (id: string) =>
+  `/roles/${id}/environments`;
+export const ROLE_DETAIL_SETTINGS_PATH = "/roles/:id/settings";
+export const roleDetailSettingsUrl = (id: string) => `/roles/${id}/settings`;
+
 export const TEAM_MEMBERS_EDIT_PATH = "/settings/team/members/:id";
 export const teamMembersEditUrl = (id: string) =>
   `/settings/team/members/${id}`;
