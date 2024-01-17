@@ -1,4 +1,4 @@
-interface Props extends React.SVGProps<SVGSVGElement> {
+export interface IconProps extends React.SVGProps<SVGSVGElement> {
   color?: string;
   variant?: "base" | "sm" | "lg";
 }
@@ -9,7 +9,7 @@ const IconStrokeBase = ({
   variant = "base",
   title = "icon",
   ...rest
-}: Props & { title: string }) => {
+}: IconProps & { title: string }) => {
   const size = (() => {
     if (variant === "sm") return 16;
     if (variant === "lg") return 32;
@@ -35,7 +35,7 @@ const IconStrokeBase = ({
   );
 };
 
-export const IconArrowRight = (props: Props) => {
+export const IconArrowRight = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Next">
       <line x1="5" y1="12" x2="19" y2="12" />
@@ -44,7 +44,7 @@ export const IconArrowRight = (props: Props) => {
   );
 };
 
-export const IconArrowLeft = (props: Props) => {
+export const IconArrowLeft = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Prev">
       <line x1="19" y1="12" x2="5" y2="12" />
@@ -53,7 +53,7 @@ export const IconArrowLeft = (props: Props) => {
   );
 };
 
-export const IconEdit = (props: Props) => {
+export const IconEdit = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Edit">
       <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
@@ -61,7 +61,7 @@ export const IconEdit = (props: Props) => {
   );
 };
 
-export const IconChevronUp = (props: Props) => {
+export const IconChevronUp = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Up">
       <polyline points="18 15 12 9 6 15" />
@@ -69,7 +69,7 @@ export const IconChevronUp = (props: Props) => {
   );
 };
 
-export const IconChevronRight = (props: Props) => {
+export const IconChevronRight = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Right">
       <polyline points="9 18 15 12 9 6" />
@@ -77,7 +77,7 @@ export const IconChevronRight = (props: Props) => {
   );
 };
 
-export const IconChevronDown = (props: Props) => {
+export const IconChevronDown = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Down">
       <polyline points="6 9 12 15 18 9" />
@@ -85,7 +85,7 @@ export const IconChevronDown = (props: Props) => {
   );
 };
 
-export const IconCylinder = (props: Props) => {
+export const IconCylinder = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Databases">
       <path d="M20.8846 5.94231C20.8846 8.39554 16.9065 10.3846 12 10.3846C7.09354 10.3846 3.11538 8.39554 3.11538 5.94231M20.8846 5.94231C20.8846 3.48908 16.9065 1.5 12 1.5C7.09354 1.5 3.11538 3.48908 3.11538 5.94231M20.8846 5.94231V18.0577C20.8846 20.5109 16.9065 22.5 12 22.5C7.09354 22.5 3.11538 20.5109 3.11538 18.0577V5.94231M20.8846 5.94231V9.98077M3.11538 5.94231V9.98077M20.8846 9.98077V14.0192C20.8846 16.4725 16.9065 18.4615 12 18.4615C7.09354 18.4615 3.11538 16.4725 3.11538 14.0192V9.98077M20.8846 9.98077C20.8846 12.434 16.9065 14.4231 12 14.4231C7.09354 14.4231 3.11538 12.434 3.11538 9.98077" />
@@ -93,7 +93,7 @@ export const IconCylinder = (props: Props) => {
   );
 };
 
-export const IconTrash = (props: Props) => {
+export const IconTrash = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Delete">
       <path d="M10 11V17M14 11V17M4 7H20M19 7L18.133 19.142C18.0971 19.6466 17.8713 20.1188 17.5011 20.4636C17.1309 20.8083 16.6439 21 16.138 21H7.862C7.35614 21 6.86907 20.8083 6.49889 20.4636C6.1287 20.1188 5.90292 19.6466 5.867 19.142L5 7H19ZM15 7V4C15 3.73478 14.8946 3.48043 14.7071 3.29289C14.5196 3.10536 14.2652 3 14 3H10C9.73478 3 9.48043 3.10536 9.29289 3.29289C9.10536 3.48043 9 3.73478 9 4V7H15Z" />
@@ -101,7 +101,7 @@ export const IconTrash = (props: Props) => {
   );
 };
 
-export const IconBox = (props: Props) => {
+export const IconBox = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Apps">
       <path d="M22.1538 6.92308L12 1L1.84615 6.92308M22.1538 6.92308L12 12.8462M22.1538 6.92308V17.0769L12 23M1.84615 6.92308L12 12.8462M1.84615 6.92308V17.0769L12 23M12 12.8462V23" />
@@ -109,7 +109,7 @@ export const IconBox = (props: Props) => {
   );
 };
 
-export const IconSettings = (props: Props) => {
+export const IconSettings = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Settings">
       <circle cx="12" cy="12" r="3" />
@@ -118,7 +118,7 @@ export const IconSettings = (props: Props) => {
   );
 };
 
-export const IconUserCircle = (props: Props) => {
+export const IconUserCircle = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Profile">
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -127,7 +127,7 @@ export const IconUserCircle = (props: Props) => {
   );
 };
 
-export const IconSearch = (props: Props) => {
+export const IconSearch = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Search">
       <circle cx="11" cy="11" r="8" />
@@ -136,7 +136,7 @@ export const IconSearch = (props: Props) => {
   );
 };
 
-export const IconCheck = (props: Props) => {
+export const IconCheck = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Check">
       <polyline points="20 6 9 17 4 12" />
@@ -144,7 +144,7 @@ export const IconCheck = (props: Props) => {
   );
 };
 
-export const IconCheckCircle = (props: Props) => {
+export const IconCheckCircle = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Check">
       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -156,7 +156,7 @@ export const IconCheckCircle = (props: Props) => {
   );
 };
 
-export const IconPlusCircle = (props: Props) => {
+export const IconPlusCircle = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="New">
       <circle cx="12" cy="12" r="10" />
@@ -166,7 +166,7 @@ export const IconPlusCircle = (props: Props) => {
   );
 };
 
-export const IconX = (props: Props) => {
+export const IconX = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Remove">
       <line x1="18" y1="6" x2="6" y2="18" />
@@ -175,7 +175,7 @@ export const IconX = (props: Props) => {
   );
 };
 
-export const IconXCircle = (props: Props) => {
+export const IconXCircle = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Remove">
       <circle cx="12" cy="12" r="10" />
@@ -185,7 +185,7 @@ export const IconXCircle = (props: Props) => {
   );
 };
 
-export const IconAlertCircle = (props: Props) => {
+export const IconAlertCircle = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Alert">
       <circle cx="12" cy="12" r="10" />
@@ -195,7 +195,7 @@ export const IconAlertCircle = (props: Props) => {
   );
 };
 
-export const IconAlertTriangle = (props: Props) => {
+export const IconAlertTriangle = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Alert">
       <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
@@ -205,7 +205,7 @@ export const IconAlertTriangle = (props: Props) => {
   );
 };
 
-export const IconLayers = (props: Props) => {
+export const IconLayers = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Stacks">
       <polygon points="12 2 2 7 12 12 22 7 12 2" />
@@ -215,7 +215,7 @@ export const IconLayers = (props: Props) => {
   );
 };
 
-export const IconLogout = (props: Props) => {
+export const IconLogout = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Logout">
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -225,7 +225,7 @@ export const IconLogout = (props: Props) => {
   );
 };
 
-export const IconGitBranch = (props: Props) => {
+export const IconGitBranch = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Git Branch">
       <line x1="6" y1="3" x2="6" y2="15" />
@@ -236,7 +236,7 @@ export const IconGitBranch = (props: Props) => {
   );
 };
 
-export const IconInfo = (props: Props) => {
+export const IconInfo = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Info">
       <circle cx="12" cy="12" r="10" />
@@ -246,7 +246,7 @@ export const IconInfo = (props: Props) => {
   );
 };
 
-export const IconCreditCard = (props: Props) => {
+export const IconCreditCard = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Billing">
       <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
@@ -255,7 +255,7 @@ export const IconCreditCard = (props: Props) => {
   );
 };
 
-export const IconGlobe = (props: Props) => {
+export const IconGlobe = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Environments">
       <circle cx="12" cy="12" r="10" />
@@ -265,7 +265,7 @@ export const IconGlobe = (props: Props) => {
   );
 };
 
-export const IconEllipsis = (props: Props) => {
+export const IconEllipsis = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="More">
       <circle cx="12" cy="12" r="1" />
@@ -275,7 +275,7 @@ export const IconEllipsis = (props: Props) => {
   );
 };
 
-export const IconExternalLink = (props: Props) => {
+export const IconExternalLink = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="External Link">
       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -285,7 +285,7 @@ export const IconExternalLink = (props: Props) => {
   );
 };
 
-export const IconCopy = (props: Props) => {
+export const IconCopy = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Copy">
       <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
@@ -294,7 +294,7 @@ export const IconCopy = (props: Props) => {
   );
 };
 
-export const IconDownload = (props: Props) => {
+export const IconDownload = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Download">
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -304,7 +304,7 @@ export const IconDownload = (props: Props) => {
   );
 };
 
-export const IconThumbsUp = (props: Props) => {
+export const IconThumbsUp = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Thumbs Up">
       <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
@@ -312,7 +312,7 @@ export const IconThumbsUp = (props: Props) => {
   );
 };
 
-export const IconRefresh = (props: Props) => {
+export const IconRefresh = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Refresh">
       <polyline points="23 4 23 10 17 10" />
@@ -322,7 +322,7 @@ export const IconRefresh = (props: Props) => {
   );
 };
 
-export const IconHeart = (props: Props) => {
+export const IconHeart = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Activity">
       <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
@@ -330,7 +330,7 @@ export const IconHeart = (props: Props) => {
   );
 };
 
-export const IconCloud = (props: Props) => {
+export const IconCloud = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Deployments">
       <path d="M12.006 16.6069V8.97256M12.006 8.97256L15.3908 12.3656M12.006 8.97256L8.62126 12.3656M6.08268 20C4.87481 20.0013 3.70603 19.5709 2.78625 18.7861C1.86647 18.0012 1.25594 16.9134 1.06431 15.7179C0.872685 14.5224 1.11251 13.2975 1.74072 12.2634C2.36892 11.2292 3.34435 10.4534 4.49184 10.0753C4.19703 8.56106 4.50172 6.99124 5.3414 5.69827C6.18108 4.40531 7.48981 3.49073 8.99044 3.1482C10.4911 2.80568 12.0658 3.06211 13.3811 3.86319C14.6964 4.66428 15.6491 5.9471 16.0373 7.44003C16.6375 7.24433 17.2804 7.22079 17.8933 7.37205C18.5062 7.52331 19.0647 7.84335 19.5057 8.29603C19.9467 8.7487 20.2527 9.31597 20.389 9.93377C20.5254 10.5516 20.4867 11.1953 20.2773 11.7922C21.2009 12.1459 21.972 12.8125 22.4566 13.6764C22.9412 14.5403 23.1089 15.5471 22.9305 16.522C22.7522 17.4969 22.239 18.3784 21.4801 19.0137C20.7211 19.649 19.7643 19.9979 18.7756 20H6.08268Z" />
@@ -338,7 +338,7 @@ export const IconCloud = (props: Props) => {
   );
 };
 
-export const IconHamburger = (props: Props) => {
+export const IconHamburger = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Menu">
       <path d="M3.75 6.75H20.25M3.75 12H20.25M3.75 17.25H20.25" />
@@ -346,7 +346,7 @@ export const IconHamburger = (props: Props) => {
   );
 };
 
-export const IconWorkplace = (props: Props) => {
+export const IconWorkplace = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Organization">
       <path d="M3.75 21H20.25M4.5 3H19.5M5.25 3V21M18.75 3V21M9 6.75H10.5M9 9.75H10.5M9 12.75H10.5M13.5 6.75H15M13.5 9.75H15M13.5 12.75H15M9 21V17.625C9 17.004 9.504 16.5 10.125 16.5H13.875C14.496 16.5 15 17.004 15 17.625V21" />
@@ -354,7 +354,7 @@ export const IconWorkplace = (props: Props) => {
   );
 };
 
-export const IconMetrics = (props: Props) => {
+export const IconMetrics = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Metrics">
       <path d="M16 8V16M12 11V16M8 14V16M6 20H18C18.5304 20 19.0391 19.7893 19.4142 19.4142C19.7893 19.0391 20 18.5304 20 18V6C20 5.46957 19.7893 4.96086 19.4142 4.58579C19.0391 4.21071 18.5304 4 18 4H6C5.46957 4 4.96086 4.21071 4.58579 4.58579C4.21071 4.96086 4 5.46957 4 6V18C4 18.5304 4.21071 19.0391 4.58579 19.4142C4.96086 19.7893 5.46957 20 6 20Z" />
@@ -362,7 +362,7 @@ export const IconMetrics = (props: Props) => {
   );
 };
 
-export const IconShield = (props: Props) => {
+export const IconShield = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Security & Compliance">
       <path d="M8.66667 12.2455L10.8889 14.5082L15.3333 9.9828M21.5756 5.4393C18.0623 5.62927 14.6186 4.39237 12 2C9.38141 4.39237 5.93767 5.62927 2.42445 5.4393C2.14171 6.55381 1.99909 7.70036 2 8.85145C2 15.1768 6.24889 20.493 12 22C17.7511 20.493 22 15.178 22 8.85145C22 7.67259 21.8522 6.52992 21.5756 5.4393Z" />
@@ -370,7 +370,7 @@ export const IconShield = (props: Props) => {
   );
 };
 
-export const IconEndpoint = (props: Props) => {
+export const IconEndpoint = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Endpoints">
       <path d="M21.1538 12.9231C21.1538 17.9786 17.0555 22.0769 12 22.0769C6.94447 22.0769 2.84615 17.9786 2.84615 12.9231C2.84615 7.86754 6.94447 3.76923 12 3.76923C17.0555 3.76923 21.1538 7.86754 21.1538 12.9231Z" />
@@ -381,7 +381,7 @@ export const IconEndpoint = (props: Props) => {
   );
 };
 
-export const IconService = (props: Props) => {
+export const IconService = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Services">
       <path d="M10.3636 22.3636L1.63637 13.6364C1.20238 13.2024 0.958566 12.6138 0.958566 12C0.958567 11.3862 1.20238 10.7976 1.63637 10.3636L10.3636 1.63636C10.7976 1.20237 11.3863 0.95856 12 0.95856C12.6138 0.95856 13.2024 1.20237 13.6364 1.63636L22.3636 10.3636C22.7976 10.7976 23.0414 11.3862 23.0414 12C23.0414 12.6138 22.7976 13.2024 22.3636 13.6364L13.6364 22.3636C13.2024 22.7976 12.6138 23.0414 12 23.0414C11.3863 23.0414 10.7976 22.7976 10.3636 22.3636Z" />
@@ -390,7 +390,7 @@ export const IconService = (props: Props) => {
   );
 };
 
-export const IconCertificate = (props: Props) => {
+export const IconCertificate = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Certificates">
       <path
@@ -407,7 +407,7 @@ export const IconCertificate = (props: Props) => {
   );
 };
 
-export const IconKey = (props: Props) => {
+export const IconKey = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="CLI SSO Token">
       <path
@@ -419,7 +419,7 @@ export const IconKey = (props: Props) => {
   );
 };
 
-export const IconLock = (props: Props) => {
+export const IconLock = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Restricted">
       <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
