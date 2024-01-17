@@ -530,7 +530,6 @@ const VerticalAutoscalingSection = ({
 };
 
 const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
-  const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
   const [lastScaleOp, olderScaleOp]: LastScaleOperation[] = useSelector((s) =>
     selectLastTwoScaleOps(s, { serviceId }),
   );
