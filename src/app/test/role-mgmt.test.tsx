@@ -183,7 +183,7 @@ describe("Role Detail - Members", () => {
       );
 
       const btn = await screen.findByRole("button", {
-        name: /Add Existing User/,
+        name: /Add User/,
       });
       fireEvent.click(btn);
 
@@ -247,7 +247,7 @@ describe("Role Detail - Members", () => {
       );
 
       const btn = await screen.findByRole("button", {
-        name: /Add Existing User/,
+        name: /Add User/,
       });
       fireEvent.click(btn);
 
@@ -290,7 +290,7 @@ describe("Role Detail - Members", () => {
         screen.queryByText(`${testUserExtra.email}`),
       ).not.toBeInTheDocument();
 
-      expect(screen.queryByText(/Add Existing User/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Add User/)).not.toBeInTheDocument();
     });
   });
 });
@@ -436,7 +436,7 @@ describe("Role Detail - Settings", () => {
       const inp = await screen.findByRole("textbox", { name: /name/ });
       await act(() => userEvent.clear(inp));
       await act(() => userEvent.type(inp, "new name"));
-      const btn = await screen.findByRole("button", { name: /Save/ });
+      const btn = await screen.findByRole("button", { name: /Save Changes/ });
       fireEvent.click(btn);
       await screen.findByText(/Successfully updated role name!/);
       expect(
@@ -515,7 +515,7 @@ describe("Role Detail - Settings", () => {
       const inp = await screen.findByRole("textbox", { name: /name/ });
       await act(() => userEvent.clear(inp));
       await act(() => userEvent.type(inp, "new name"));
-      const btn = await screen.findByRole("button", { name: /Save/ });
+      const btn = await screen.findByRole("button", { name: /Save Changes/ });
       fireEvent.click(btn);
       expect(btn).not.toBeDisabled();
       await screen.findByText(/Successfully updated role name!/);
@@ -596,7 +596,7 @@ describe("Role Detail - Settings", () => {
       const inp = await screen.findByRole("textbox", { name: /name/ });
       await act(() => userEvent.clear(inp));
       await act(() => userEvent.type(inp, "new name"));
-      const btn = await screen.findByRole("button", { name: /Save/ });
+      const btn = await screen.findByRole("button", { name: /Save Changes/ });
       expect(btn).toBeDisabled();
     });
 

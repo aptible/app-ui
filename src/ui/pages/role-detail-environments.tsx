@@ -51,7 +51,7 @@ function ScopeToggle({
         disabled={disabled}
       />
       <Tooltip text={description} autoSizeWidth variant="left">
-        <IconInfo variant="sm" />
+        <IconInfo variant="sm" className="opacity-50 hover:opacity-100" />
       </Tooltip>
     </Group>
   );
@@ -212,7 +212,7 @@ export function RoleDetailEnvironmentsPage() {
 
   return (
     <RoleDetailLayout>
-      <Group className="mt-2">
+      <Group className="mt-4">
         <InputSearch
           placeholder="Search..."
           search={search}

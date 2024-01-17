@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import {
   BannerMessages,
   Box,
+  ButtonLink,
   ButtonOrgOwner,
   FormGroup,
   Group,
@@ -79,6 +80,7 @@ export const TeamRolesPage = () => {
           <Td>Role</Td>
           <Td>Type</Td>
           <Td>Created At</Td>
+          <Td variant="center">Actions</Td>
         </THead>
 
         <TBody>
@@ -89,6 +91,9 @@ export const TeamRolesPage = () => {
               </Td>
               <Td>{roleTypeFormat(role)}</Td>
               <Td>{prettyDate(role.createdAt)}</Td>
+              <Td variant="center">
+                <ButtonLink to={roleDetailUrl(role.id)}>Edit</ButtonLink>
+              </Td>
             </Tr>
           ))}
         </TBody>

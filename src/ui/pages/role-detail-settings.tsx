@@ -69,7 +69,7 @@ function RoleNameChange({
             isLoading={loader.isLoading}
             disabled={isDisabled}
           >
-            Save
+            Save Changes
           </Button>
           <Button variant="white" onClick={onReset}>
             Cancel

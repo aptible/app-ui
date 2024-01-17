@@ -118,7 +118,7 @@ export function RoleDetailMembersPage() {
 
   const allUsers = useSelector(selectUsersAsList);
   const userOpts = [
-    { label: "Select User", value: "" },
+    { label: "Select Existing User", value: "" },
     ...allUsers
       .filter((user) => {
         return !userIds.includes(user.id);
@@ -159,7 +159,7 @@ export function RoleDetailMembersPage() {
 
   return (
     <RoleDetailLayout>
-      <Group className="mt-2">
+      <Group className="mt-4">
         <Group size="sm">
           <FilterBar>
             {canManage ? (
@@ -177,7 +177,7 @@ export function RoleDetailMembersPage() {
                       isLoading={loader.isLoading}
                       disabled={userOpts.length === 1}
                     >
-                      Add Existing User
+                      Add User
                     </Button>
                   </Group>
 

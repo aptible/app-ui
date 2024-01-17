@@ -100,7 +100,7 @@ export function TeamMembersEditPage() {
     <Group>
       <Breadcrumbs
         crumbs={[
-          { name: "Team Members", to: teamMembersUrl() },
+          { name: "Members", to: teamMembersUrl() },
           { name: `Edit ${user.name}`, to: null },
         ]}
       />
