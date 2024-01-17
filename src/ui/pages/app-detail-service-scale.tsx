@@ -3,6 +3,7 @@ import {
   DEFAULT_INSTANCE_CLASS,
   ServiceSizingPolicyEditProps,
   ServiceSizingPolicyResponse,
+  cancelServicesOpsPoll,
   defaultServiceSizingPolicyResponse,
   exponentialContainerSizesByProfile,
   fetchApp,
@@ -11,6 +12,7 @@ import {
   getContainerProfileFromType,
   hourlyAndMonthlyCostsForContainers,
   modifyServiceSizingPolicy,
+  pollServiceOperations,
   scaleService,
   selectAppById,
   selectContainerProfilesForStack,
@@ -32,7 +34,7 @@ import { DeployOperation, HalEmbedded, InstanceClass } from "@app/types";
 import { Fragment, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { createSelector } from "starfx/store";
-import { useValidator } from "../hooks";
+import { usePoller, useValidator } from "../hooks";
 import {
   Banner,
   ButtonIcon,
@@ -527,6 +529,44 @@ const VerticalAutoscalingSection = ({
   );
 };
 
+const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
+  const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
+  const [lastScaleOp, olderScaleOp]: LastScaleOperation[] = useSelector((s) =>
+    selectLastTwoScaleOps(s, { serviceId }),
+  );
+  const lastScaleComplete = lastScaleOp?.status === "succeeded";
+  const action = pollServiceOperations({ id: serviceId });
+  const loader = useLoader(action);
+
+  const poller = useMemo(() => action, [serviceId]);
+  const cancel = useMemo(() => cancelServicesOpsPoll(), []);
+  usePoller({ action: poller, cancel });
+
+  if (loader.isInitialLoading) {
+    return null;
+  }
+
+  return (
+    <Banner
+      variant={lastScaleComplete || !lastScaleOp ? "default" : "progress"}
+    >
+      {lastScaleOp ? (
+        <Fragment>
+          <strong>
+            {lastScaleComplete ? "Last Scale" : "Scale in Progress"}:
+          </strong>{" "}
+          {prettyDateTime(lastScaleOp.createdAt)} from{" "}
+          {olderScaleOp.containerCount} x {olderScaleOp.containerSize} MB
+          containers to {lastScaleOp.containerCount} x{" "}
+          {lastScaleOp.containerSize} MB containers
+        </Fragment>
+      ) : (
+        "Never Scaled"
+      )}
+    </Banner>
+  );
+};
+
 export const AppDetailServiceScalePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -551,10 +591,6 @@ export const AppDetailServiceScalePage = () => {
   const containerProfilesForStack = useSelector((s) =>
     selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
-  const [lastScaleOp, olderScaleOp]: LastScaleOperation[] = useSelector((s) =>
-    selectLastTwoScaleOps(s, { serviceId }),
-  );
-  const lastScaleComplete = lastScaleOp?.status === "succeeded";
 
   const action = scaleService({
     id: serviceId,
@@ -650,23 +686,7 @@ export const AppDetailServiceScalePage = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <Banner
-        variant={lastScaleComplete || !lastScaleOp ? "default" : "progress"}
-      >
-        {lastScaleOp ? (
-          <Fragment>
-            <strong>
-              {lastScaleComplete ? "Last Scale" : "Scale in Progress"}:
-            </strong>{" "}
-            {prettyDateTime(lastScaleOp.createdAt)} from{" "}
-            {olderScaleOp.containerCount} x {olderScaleOp.containerSize} MB
-            containers to {lastScaleOp.containerCount} x{" "}
-            {lastScaleOp.containerSize} MB containers
-          </Fragment>
-        ) : (
-          "Never Scaled"
-        )}
-      </Banner>
+      <LastScaleBanner serviceId={serviceId} />
       <VerticalAutoscalingSection id={serviceId} stackId={stack.id} />
       <Box>
         <form onSubmit={onSubmitForm}>
