@@ -80,7 +80,7 @@ export const TeamRolesPage = () => {
           <Td>Role</Td>
           <Td>Type</Td>
           <Td>Created At</Td>
-          <Td variant="center">Actions</Td>
+          <Td variant="right">Actions</Td>
         </THead>
 
         <TBody>
@@ -91,8 +91,10 @@ export const TeamRolesPage = () => {
               </Td>
               <Td>{roleTypeFormat(role)}</Td>
               <Td>{prettyDate(role.createdAt)}</Td>
-              <Td variant="center">
-                <ButtonLink to={roleDetailUrl(role.id)}>Edit</ButtonLink>
+              <Td variant="right">
+                <ButtonLink to={roleDetailUrl(role.id)} size="sm">
+                  Edit
+                </ButtonLink>
               </Td>
             </Tr>
           ))}
