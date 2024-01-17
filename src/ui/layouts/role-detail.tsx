@@ -29,7 +29,7 @@ export function RoleHeader({ role }: { role: Role }) {
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{role.id}</DetailInfoItem>
         <DetailInfoItem title="Type">{roleTypeFormat(role)}</DetailInfoItem>
-        <DetailInfoItem title="Created At">
+        <DetailInfoItem title="Created Date">
           {prettyDate(role.createdAt)}
         </DetailInfoItem>
       </DetailInfoGrid>
