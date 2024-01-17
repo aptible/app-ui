@@ -479,7 +479,8 @@ const VerticalAutoscalingSection = ({
 };
 
 const getScaleText = (op: DeployOperation) =>
-  `${op.containerCount} x ${op.containerSize} MB ${
+  `${op.containerCount} x ${op.containerSize / 1024} GB ${
+    getContainerProfileFromType(op.instanceProfile as InstanceClass).name ||
     op.instanceProfile
   } container${op.containerCount === 1 ? "" : "s"}`;
 

@@ -360,6 +360,9 @@ const _selectPreviousServiceScale = createSelector(
   },
 );
 
+// selectServiceById expects the id prop whereas selectNonFailedScaleOps expects
+// serviceId. Both of these should be the same value so accept serviceId and
+// pass it in as both id and serviceId.
 export const selectPreviousServiceScale = (
   state: Parameters<typeof _selectPreviousServiceScale>[0],
   { serviceId }: { serviceId: string },
