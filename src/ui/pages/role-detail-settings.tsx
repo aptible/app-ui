@@ -1,13 +1,7 @@
 import { fetchMembershipsByRole } from "@app/auth";
 import { selectCanUserManageRole } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import {
-  useDispatch,
-  useLoader,
-  useLoaderSuccess,
-  useQuery,
-  useSelector,
-} from "@app/react";
+import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { deleteRole, selectRoleById, updateRoleName } from "@app/roles";
 import { teamRolesUrl } from "@app/routes";
 import { Role } from "@app/types";
@@ -89,11 +83,8 @@ function RoleDelete({ role, canManage }: { role: Role; canManage: boolean }) {
   const onSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     dispatch(action);
-  };
-
-  useLoaderSuccess(loader, () => {
     navigate(teamRolesUrl());
-  });
+  };
 
   const isDisabled = !canManage || role.name !== deleteConfirm;
 

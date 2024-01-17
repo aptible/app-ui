@@ -166,4 +166,15 @@ export const createRoleForOrg = authApi.post<{ orgId: string; name: string }>(
   },
 );
 
-export const deleteRole = authApi.delete<{ id: string }>("/roles/:id");
+export const deleteRole = authApi.delete<{ id: string }>(
+  "/roles/:id",
+  function* (ctx, next) {
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* schema.update(db.roles.remove([ctx.payload.id]));
+  },
+);
