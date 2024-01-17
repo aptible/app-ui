@@ -18,7 +18,7 @@ import {
   databaseDetailUrl,
   endpointDetailUrl,
 } from "@app/routes";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, db, defaultDeployOperation, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
   DeployActivityRow,
@@ -160,6 +160,16 @@ export const deserializeDeployOperation = (
     env: payload.env,
     note: payload.note,
   };
+};
+
+// Search an array of operations for the first that has the specified attribute
+// If none are found, use the value from the defaultDeployOperation
+export const findOperationValue = <K extends keyof DeployOperation>(
+  ops: DeployOperation[],
+  attr: K,
+) => {
+  const op = ops.find((op) => op[attr] != null);
+  return op == null ? defaultDeployOperation()[attr] : op[attr];
 };
 
 export const hasDeployOperation = (a: DeployOperation) => a.id !== "";
