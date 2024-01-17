@@ -16,7 +16,6 @@ import {
   ButtonOrgOwner,
   FormGroup,
   Group,
-  IconPlusCircle,
   Input,
   TBody,
   THead,
@@ -24,6 +23,7 @@ import {
   Td,
   TitleBar,
   Tr,
+  tokens,
 } from "../shared";
 
 const CreateRole = ({ orgId }: { orgId: string }) => {
@@ -52,7 +52,7 @@ const CreateRole = ({ orgId }: { orgId: string }) => {
               className="flex-1"
             />
             <ButtonOrgOwner type="submit" disabled={trimmedName === ""}>
-              <IconPlusCircle variant="sm" className="mr-2" /> Save Role
+              Save Role
             </ButtonOrgOwner>
           </div>
         </FormGroup>
@@ -79,7 +79,7 @@ export const TeamRolesPage = () => {
         <THead>
           <Td>Role</Td>
           <Td>Type</Td>
-          <Td>Created At</Td>
+          <Td>Created Date</Td>
           <Td variant="right">Actions</Td>
         </THead>
 
@@ -87,7 +87,13 @@ export const TeamRolesPage = () => {
           {roles.map((role) => (
             <Tr key={role.id}>
               <Td>
-                <Link to={roleDetailUrl(role.id)}> {role.name}</Link>
+                <Link
+                  className={`${tokens.type["table link"]}`}
+                  to={roleDetailUrl(role.id)}
+                >
+                  {" "}
+                  {role.name}
+                </Link>
               </Td>
               <Td>{roleTypeFormat(role)}</Td>
               <Td>{prettyDate(role.createdAt)}</Td>
