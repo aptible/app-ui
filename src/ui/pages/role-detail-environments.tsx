@@ -69,7 +69,9 @@ function RoleEnvEditor({
   );
   const addLoader = useLoader(addPerm);
   const delLoader = useLoader(deletePerm);
-  const perms = useSelector((s) => selectPermsByAccount(s, { envId: env.id }));
+  const perms = useSelector((s) =>
+    selectPermsByAccount(s, { envId: env.id, roleId }),
+  );
   const permSet: Record<PermissionScope, Permission> = {
     admin: defaultPermission({ scope: "admin" }),
     read: defaultPermission({ scope: "read" }),
@@ -201,14 +203,16 @@ export function RoleDetailEnvironmentsPage() {
   };
   useQuery(fetchMembershipsByRole({ roleId: id }));
   const allEnvs = useSelector(selectEnvironmentsByOrgAsList);
-  const envs = allEnvs.filter((env) => {
-    const srch = search.toLocaleLowerCase();
-    const handle = env.handle.toLocaleLowerCase();
+  const envs = allEnvs
+    .filter((env) => {
+      const srch = search.toLocaleLowerCase();
+      const handle = env.handle.toLocaleLowerCase();
 
-    const idMatch = env.id === srch;
-    const handleMatch = handle.includes(srch);
-    return handleMatch || idMatch;
-  });
+      const idMatch = env.id === srch;
+      const handleMatch = handle.includes(srch);
+      return handleMatch || idMatch;
+    })
+    .sort((a, b) => a.handle.localeCompare(b.handle));
 
   return (
     <RoleDetailLayout>
