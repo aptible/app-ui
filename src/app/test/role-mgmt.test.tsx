@@ -2,6 +2,8 @@ import {
   server,
   stacksWithResources,
   testAccount,
+  testAccountOther,
+  testDestroyAccount,
   testEnv,
   testRole,
   testRoleOwner,
@@ -313,11 +315,14 @@ describe("Role Detail - Environments", () => {
     await screen.findByText(`${testAccount.handle}`);
 
     const checkDeploy = await screen.findByLabelText(/Deploy/);
-    expect(checkDeploy).toBeChecked();
     const checkBasic = await screen.findByLabelText(/Basic Visibility/);
-    expect(checkBasic).toBeChecked();
     const checkAdmin = await screen.findByLabelText(/Environment Admin/);
+    const checkDestroy = await screen.findByLabelText(/Destruction/);
+
+    expect(checkDeploy).toBeChecked();
+    expect(checkBasic).toBeChecked();
     expect(checkAdmin).not.toBeChecked();
+    expect(checkDestroy).not.toBeChecked();
   });
 
   describe("As an Organization owner", () => {

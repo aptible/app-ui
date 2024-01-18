@@ -181,6 +181,15 @@ export const testRole = defaultRoleResponse({
   },
 });
 
+export const testRoleOther = defaultRoleResponse({
+  id: `${createId()}`,
+  name: "Other",
+  type: "platform_user",
+  _links: {
+    organization: defaultHalHref(testOrg.id),
+  },
+});
+
 export const testUserMembership = defaultMembershipResponse({
   id: `${createId()}`,
   privileged: false,
@@ -226,6 +235,16 @@ export const testAccount = defaultEnvResponse({
             `${testEnv.apiUrl}/accounts/${testAccountId}`,
           ),
           role: defaultHalHref(`${testEnv.apiUrl}/roles/${testRole.id}`),
+        },
+      }),
+      defaultPermissionResponse({
+        id: `${createId()}`,
+        scope: "destroy",
+        _links: {
+          account: defaultHalHref(
+            `${testEnv.apiUrl}/accounts/${testAccountId}`,
+          ),
+          role: defaultHalHref(`${testEnv.apiUrl}/roles/${testRoleOther.id}`),
         },
       }),
     ],
