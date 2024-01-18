@@ -485,8 +485,10 @@ const getScaleText = (op: DeployOperation) =>
   } container${op.containerCount === 1 ? "" : "s"}`;
 
 const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
-  const current = useSelector((s) => selectServiceScale(s, { serviceId }));
-  const prev = useSelector((s) => selectPreviousServiceScale(s, { serviceId }));
+  const current = useSelector((s) => selectServiceScale(s, { id: serviceId }));
+  const prev = useSelector((s) =>
+    selectPreviousServiceScale(s, { id: serviceId }),
+  );
   const neverScaled = current.status === "unknown";
   const currentComplete = current.status === "succeeded";
   const action = pollServiceOperations({ id: serviceId });

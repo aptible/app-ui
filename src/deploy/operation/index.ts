@@ -231,7 +231,7 @@ export const findOperationsByDbId = (ops: DeployOperation[], dbId: string) =>
 
 export const selectOperationsByServiceId = createSelector(
   selectOperationsAsList,
-  (_: WebState, p: { serviceId: string }) => p.serviceId,
+  (_: WebState, p: { id: string }) => p.id,
   findOperationsByServiceId,
 );
 

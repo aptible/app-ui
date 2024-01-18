@@ -336,16 +336,15 @@ const scaleAttrs: (keyof DeployOperation)[] = [
   "instanceProfile",
 ];
 
-const _selectPreviousServiceScale = createSelector(
+export const selectPreviousServiceScale = createSelector(
   selectServiceById,
   selectNonFailedScaleOps,
   (service, ops) => {
-    // If the values aren't found among the operations, then get them from the
-    // service itself
+    // If the values aren't found among the operations use the following default values
     const pastOps = ops.slice(1).concat(
       defaultDeployOperation({
-        containerCount: service.containerCount,
-        containerSize: service.containerMemoryLimitMb,
+        containerCount: 1,
+        containerSize: 1024,
         instanceProfile: service.instanceClass,
       }),
     );
@@ -359,14 +358,6 @@ const _selectPreviousServiceScale = createSelector(
     return prev;
   },
 );
-
-// selectServiceById expects the id prop whereas selectNonFailedScaleOps expects
-// serviceId. Both of these should be the same value so accept serviceId and
-// pass it in as both id and serviceId.
-export const selectPreviousServiceScale = (
-  state: Parameters<typeof _selectPreviousServiceScale>[0],
-  { serviceId }: { serviceId: string },
-) => _selectPreviousServiceScale(state, { id: serviceId, serviceId });
 
 export const selectServiceScale = createSelector(
   selectNonFailedScaleOps,
