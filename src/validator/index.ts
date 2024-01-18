@@ -1,4 +1,4 @@
-const IP_WHITELIST_MAX_SIZE = 25;
+const IP_WHITELIST_MAX_SIZE = 50;
 // inlined from: https://github.com/sindresorhus/ip-regex/blob/main/index.js
 const v4 =
   "(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)){3}";
