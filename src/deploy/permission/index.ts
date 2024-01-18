@@ -116,6 +116,12 @@ export const selectPermsByAccount = createSelector(
   },
 );
 
+export const selectPermsByAccountAndRole = createSelector(
+  selectPermsByAccount,
+  (_: WebState, p: { roleId: string }) => p.roleId,
+  (perms, roleId) => perms.filter((p) => p.roleId === roleId),
+);
+
 /*
  * This is where most of the business logic lives for determining
  * if a user has permissions to do something based on the `scope`
