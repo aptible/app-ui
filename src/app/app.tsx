@@ -26,7 +26,7 @@ export const AppRouter = () => {
 export const App = ({ store }: { store: FxStore<WebState> }) => {
   return (
     <StrictMode>
-      <Provider schema={schema as any} store={store}>
+      <Provider schema={schema} store={store}>
         <PersistGate loader={schema.loaders} loading={<Loading />}>
           <AppRouter />
         </PersistGate>

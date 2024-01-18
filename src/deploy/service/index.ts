@@ -8,7 +8,7 @@ import {
   select,
 } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, schema, defaultDeployOperation } from "@app/schema";
+import { WebState, defaultDeployOperation, schema } from "@app/schema";
 import {
   DeployOperation,
   type DeployService,

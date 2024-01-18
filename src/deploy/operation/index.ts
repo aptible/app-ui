@@ -18,7 +18,7 @@ import {
   databaseDetailUrl,
   endpointDetailUrl,
 } from "@app/routes";
-import { WebState, schema, defaultDeployOperation } from "@app/schema";
+import { WebState, defaultDeployOperation, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
   DeployActivityRow,

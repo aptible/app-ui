@@ -41,7 +41,7 @@ export const setupAppIntegrationTest = (
   });
   const App = () => {
     return (
-      <Provider schema={schema as any} store={store}>
+      <Provider schema={schema} store={store}>
         <RouterProvider router={router} />
       </Provider>
     );
@@ -82,7 +82,7 @@ export const setupIntegrationTest = (
       { initialEntries: initEntries, initialIndex: 0 },
     );
     return (
-      <Provider schema={schema as any} store={store}>
+      <Provider schema={schema} store={store}>
         <RouterProvider router={router} />
       </Provider>
     );
