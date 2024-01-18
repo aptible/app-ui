@@ -72,7 +72,7 @@ function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   }
 }
 
-export const thunkLoader = storeMdw.loader(schema.db.loaders);
+export const thunkLoader = storeMdw.loader(schema.loaders);
 
 function* debugMdw(ctx: ThunkCtx, next: Next) {
   log(`${ctx.name}`, ctx);

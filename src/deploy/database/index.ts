@@ -139,10 +139,10 @@ export interface DeployDatabaseRow extends DeployDatabase {
 }
 
 export const hasDeployDatabase = (a: DeployDatabase) => a.id !== "";
-export const selectDatabaseById = schema.db.databases.selectById;
-export const selectDatabasesAsList = schema.db.databases.selectTableAsList;
-export const selectDatabases = schema.db.databases.selectTable;
-export const findDatabaseById = schema.db.databases.findById;
+export const selectDatabaseById = schema.databases.selectById;
+export const selectDatabasesAsList = schema.databases.selectTableAsList;
+export const selectDatabases = schema.databases.selectTable;
+export const findDatabaseById = schema.databases.findById;
 
 export const selectDatabaseByHandle = createSelector(
   selectDatabasesAsList,
@@ -153,7 +153,7 @@ export const selectDatabaseByHandle = createSelector(
       return db.environmentId === envId && db.handle === handle;
     });
 
-    return dbFound || schema.db.databases.empty;
+    return dbFound || schema.databases.empty;
   },
 );
 
@@ -310,7 +310,7 @@ export const fetchDatabases = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    yield* schema.update(schema.db.databases.reset());
+    yield* schema.update(schema.databases.reset());
   },
 );
 
@@ -371,16 +371,16 @@ interface CreateDbResult {
 
 export const mapCreatorToProvision = (
   envId: string,
-  db: DbCreatorProps,
+  dbi: DbCreatorProps,
 ): CreateDatabaseProps => {
-  const handle = db.name.toLocaleLowerCase();
-  const dbType = db.dbType;
-  const enableBackups = db.enableBackups;
+  const handle = dbi.name.toLocaleLowerCase();
+  const dbType = dbi.dbType;
+  const enableBackups = dbi.enableBackups;
   return {
     handle,
     type: dbType,
     envId,
-    databaseImageId: db.imgId,
+    databaseImageId: dbi.imgId,
     enableBackups,
   };
 };
@@ -391,7 +391,7 @@ export const provisionDatabaseList = thunks.create<{
 }>("database-list-provision", function* (ctx, next) {
   const { dbs, envId } = ctx.payload;
   const id = ctx.key;
-  yield* schema.update(schema.db.loaders.start({ id }));
+  yield* schema.update(schema.loaders.start({ id }));
   const group = yield* parallel(
     dbs.map((db) => {
       return () => provisionDatabase.run(provisionDatabase(mapCreatorToProvision(envId, db)));
@@ -424,12 +424,12 @@ export const provisionDatabaseList = thunks.create<{
 
   if (errors.length > 0) {
     yield* schema.update(
-      schema.db.loaders.error({ id, message: errors.join(", ") }),
+      schema.loaders.error({ id, message: errors.join(", ") }),
     );
     return;
   }
 
-  yield* schema.update(schema.db.loaders.success({ id }));
+  yield* schema.update(schema.loaders.success({ id }));
   yield* next();
 });
 
@@ -437,7 +437,7 @@ export const provisionDatabase = thunks.create<
   CreateDatabaseProps,
   ThunkCtx<CreateDatabaseProps, CreateDbResult>
 >("database-provision", function* (ctx, next) {
-  yield* schema.update(schema.db.loaders.start({ id: ctx.key }));
+  yield* schema.update(schema.loaders.start({ id: ctx.key }));
 
   const dbAlreadyExists = yield* select((s: WebState) =>
     selectDatabaseByHandle(s, {
@@ -454,7 +454,7 @@ export const provisionDatabase = thunks.create<
     if (!dbCtx.json.ok) {
       const data = dbCtx.json.error;
       const message = data.message;
-      yield* schema.update(schema.db.loaders.error({ id: ctx.key, message }));
+      yield* schema.update(schema.loaders.error({ id: ctx.key, message }));
       ctx.json = {
         error: message,
         dbId,
@@ -475,7 +475,7 @@ export const provisionDatabase = thunks.create<
   const alreadyProvisioned = dbOps.find((op) => op.type === "provision");
   if (alreadyProvisioned) {
     const message = `Database (${ctx.payload.handle}) already provisioned`;
-    yield* schema.update(schema.db.loaders.success({ id: ctx.key, message }));
+    yield* schema.update(schema.loaders.success({ id: ctx.key, message }));
     ctx.json = {
       error: message,
       dbId,
@@ -507,13 +507,13 @@ export const provisionDatabase = thunks.create<
   if (!opCtx.json.ok) {
     const data = opCtx.json.error;
     yield* schema.update(
-      schema.db.loaders.error({ id: ctx.key, message: data.message }),
+      schema.loaders.error({ id: ctx.key, message: data.message }),
     );
     return;
   }
 
   yield* schema.update(
-    schema.db.loaders.success({
+    schema.loaders.success({
       id: ctx.key,
       meta: { dbId, opId: opCtx.json.value.id } as any,
     }),
@@ -601,7 +601,7 @@ export const databaseEntities = {
   database: defaultEntity({
     id: "database",
     deserialize: deserializeDeployDatabase,
-    save: schema.db.databases.add,
+    save: schema.databases.add,
   }),
 };
 

@@ -5,7 +5,7 @@ import { hasDeployEnvironment } from "@app/deploy";
 import { FxStore } from "@app/fx";
 import { testEnv } from "@app/mocks";
 import { Provider } from "@app/react";
-import { WebState, db } from "@app/schema";
+import { WebState, db, schema } from "@app/schema";
 import { waitFor } from "@testing-library/react";
 import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
 
@@ -41,7 +41,7 @@ export const setupAppIntegrationTest = (
   });
   const App = () => {
     return (
-      <Provider store={store}>
+      <Provider schema={schema as any} store={store}>
         <RouterProvider router={router} />
       </Provider>
     );
@@ -82,7 +82,7 @@ export const setupIntegrationTest = (
       { initialEntries: initEntries, initialIndex: 0 },
     );
     return (
-      <Provider store={store}>
+      <Provider schema={schema as any} store={store}>
         <RouterProvider router={router} />
       </Provider>
     );

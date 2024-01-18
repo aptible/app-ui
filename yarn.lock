@@ -1907,7 +1907,7 @@ __metadata:
     react-dom: ^18.2.0
     react-router: ^6.16.0
     react-router-dom: ^6.16.0
-    starfx: ^0.4.1
+    starfx: ^0.5.0
     tailwindcss: ^3.3.3
     typescript: ^5.2.2
     vite: ^4.4.10
@@ -2971,13 +2971,6 @@ __metadata:
   version: 10.0.3
   resolution: "immer@npm:10.0.3"
   checksum: 76acabe6f40e752028313762ba477a5d901e57b669f3b8fb406b87b9bb9b14e663a6fbbf5a6d1ab323737dd38f4b2494a4e28002045b88948da8dbf482309f28
-  languageName: node
-  linkType: hard
-
-"immer@npm:^9.0.7":
-  version: 9.0.21
-  resolution: "immer@npm:9.0.21"
-  checksum: 70e3c274165995352f6936695f0ef4723c52c92c92dd0e9afdfe008175af39fa28e76aafb3a2ca9d57d1fb8f796efc4dd1e1cc36f18d33fa5b74f3dfb0375432
   languageName: node
   linkType: hard
 
@@ -4435,24 +4428,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux-batched-actions@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "redux-batched-actions@npm:0.5.0"
-  peerDependencies:
-    redux: ">=1.0.0"
-  checksum: 76d3219ad2d319305b15b76ff120e4339aba1e42b01119205f0e5542db11a6de23c91282837274246f38ac085419e30ddc078bb93604abfbe827eec8c0449443
-  languageName: node
-  linkType: hard
-
-"redux@npm:^4.2.1":
-  version: 4.2.1
-  resolution: "redux@npm:4.2.1"
-  dependencies:
-    "@babel/runtime": ^7.9.2
-  checksum: f63b9060c3a1d930ae775252bb6e579b42415aee7a23c4114e21a0b4ba7ec12f0ec76936c00f546893f06e139819f0e2855e0d55ebfce34ca9c026241a6950dd
-  languageName: node
-  linkType: hard
-
 "regenerator-runtime@npm:^0.14.0":
   version: 0.14.0
   resolution: "regenerator-runtime@npm:0.14.0"
@@ -4485,7 +4460,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reselect@npm:>=4.0.0, reselect@npm:^4.1.8":
+"reselect@npm:^4.1.8":
   version: 4.1.8
   resolution: "reselect@npm:4.1.8"
   checksum: a4ac87cedab198769a29be92bc221c32da76cfdad6911eda67b4d3e7136dca86208c3b210e31632eae31ebd2cded18596f0dd230d3ccc9e978df22f233b5583e
@@ -4550,16 +4525,6 @@ __metadata:
   bin:
     rimraf: bin.js
   checksum: 87f4164e396f0171b0a3386cc1877a817f572148ee13a7e113b238e48e8a9f2f31d009a92ec38a591ff1567d9662c6b67fd8818a2dbbaed74bc26a87a2a4a9a0
-  languageName: node
-  linkType: hard
-
-"robodux@npm:^15.0.2":
-  version: 15.0.2
-  resolution: "robodux@npm:15.0.2"
-  dependencies:
-    immer: ^9.0.7
-    reselect: ">=4.0.0"
-  checksum: 8dbce4e62a3172835badcb394ee13d7fc0f154d0ef2eb729306a8c1fe9137bb39fb67e61b238f4bac35fbd4d6572bea08f9693f1578a35f9c011572aade087a7
   languageName: node
   linkType: hard
 
@@ -4785,20 +4750,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"starfx@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "starfx@npm:0.4.1"
+"starfx@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "starfx@npm:0.5.0"
   dependencies:
     effection: 3.0.0-beta.3
     immer: ^10.0.2
     react-redux: ^8.0.5
-    redux: ^4.2.1
-    redux-batched-actions: ^0.5.0
     reselect: ^4.1.8
-    robodux: ^15.0.2
   peerDependencies:
     react: ^18.2.0
-  checksum: 5693163580b16bc84d286bfbec89fa0713f4bbd8f05922bb17ae07d99f96e604a8808b4ea2c4ab6f2938843a48e2be90f141bb1be70106132486c367e196964a
+  checksum: 0f7c485391a1fd8ebcca685e72edb477642bed3dde08b8b6de9d291df26396a25088485028f645eda26268de0b0d8b12ea2499b48ec1806f6ccf8e31241d4c05
   languageName: node
   linkType: hard
 

@@ -83,11 +83,11 @@ export const selectAllResourcesAsList = createSelector(
       });
     });
 
-    dbs.forEach((db) => {
+    dbs.forEach((dbi) => {
       resources.push({
         type: "database",
-        id: db.id,
-        data: db,
+        id: dbi.id,
+        data: dbi,
       });
     });
 

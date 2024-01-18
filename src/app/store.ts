@@ -1,6 +1,4 @@
 import { bootup } from "@app/bootup";
-import { WebState, db, schema } from "@app/schema";
-import { Callable, LogContext, Operation, each, log, parallel } from "starfx";
 import {
   PERSIST_LOADER_ID,
   configureStore,
@@ -9,7 +7,14 @@ import {
   createPersistor,
   persistStoreMdw,
   take,
-} from "starfx/store";
+} from "@app/fx";
+import {
+  WebState,
+  db,
+  initialState as schemaInitialState,
+  schema,
+} from "@app/schema";
+import { Callable, LogContext, Operation, each, log, parallel } from "starfx";
 import { rootEntities, tasks } from "./packages";
 
 export function setupStore({
@@ -23,7 +28,7 @@ export function setupStore({
 
   const store = configureStore<WebState>({
     initialState: {
-      ...schema.initialState,
+      ...schemaInitialState,
       entities: rootEntities,
       ...initialState,
     },
@@ -69,7 +74,7 @@ export function setupStore({
 export function setupTestStore(initialState: Partial<WebState>) {
   const store = configureStore<WebState>({
     initialState: {
-      ...schema.initialState,
+      ...schemaInitialState,
       entities: rootEntities,
       ...initialState,
     },

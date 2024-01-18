@@ -6,7 +6,6 @@ import {
 import { useDispatch, useSelector } from "@app/react";
 import { useEffect } from "react";
 import { useParams } from "react-router";
-import { batchActions } from "redux-batched-actions";
 import { LogViewer } from "../shared";
 
 const cancel = cancelOpByIdPoll();
@@ -17,7 +16,8 @@ export const OpDetailPage = () => {
   const action = pollOperationById({ id });
 
   useEffect(() => {
-    dispatch(batchActions([cancel, action]));
+    dispatch(cancel);
+    dispatch(action);
     return () => {
       dispatch(cancel);
     };

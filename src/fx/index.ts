@@ -14,22 +14,27 @@ export {
   sleep,
   createThunks,
   log,
+  timer,
+  poll,
+  takeEvery,
+  put,
+  take,
+  latest,
+  leading,
 } from "starfx";
 import { sleep } from "starfx";
 export const delay = sleep;
 
 export {
-  timer,
-  poll,
-  takeEvery,
-  put,
   select,
-  take,
-  latest,
-  leading,
   storeMdw,
   createSelector,
   PERSIST_LOADER_ID,
+  configureStore,
+  createBatchMdw,
+  createLocalStorageAdapter,
+  createPersistor,
+  persistStoreMdw,
 } from "starfx/store";
 export type { StoreUpdater, FxStore } from "starfx/store";
 import { defaultLoaderItem } from "starfx/store";
