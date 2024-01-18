@@ -5,7 +5,7 @@ import {
   isPhiAllowed,
   selectCanUserManageRole,
   selectEnvironmentsByOrgAsList,
-  selectPermsByAccount,
+  selectPermsByAccountAndRole,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useDispatch, useLoader, useSelector } from "@app/react";
@@ -70,7 +70,7 @@ function RoleEnvEditor({
   const addLoader = useLoader(addPerm);
   const delLoader = useLoader(deletePerm);
   const perms = useSelector((s) =>
-    selectPermsByAccount(s, { envId: env.id, roleId }),
+    selectPermsByAccountAndRole(s, { envId: env.id, roleId }),
   );
   const permSet: Record<PermissionScope, Permission> = {
     admin: defaultPermission({ scope: "admin" }),

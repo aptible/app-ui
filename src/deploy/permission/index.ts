@@ -111,12 +111,15 @@ export const selectIsUserAnyOwner = createSelector(
 export const selectPermsByAccount = createSelector(
   selectPermissionsAsList,
   (_: WebState, p: { envId: string }) => p.envId,
-  (_: WebState, p: { roleId: string }) => p.roleId,
-  (perms, envId, roleId) => {
-    return perms.filter(
-      (p) => p.environmentId === envId && p.roleId === roleId,
-    );
+  (perms, envId) => {
+    return perms.filter((p) => p.environmentId === envId);
   },
+);
+
+export const selectPermsByAccountAndRole = createSelector(
+  selectPermsByAccount,
+  (_: WebState, p: { roleId: string }) => p.roleId,
+  (perms, roleId) => perms.filter((p) => p.roleId === roleId),
 );
 
 /*
