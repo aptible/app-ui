@@ -16,7 +16,7 @@ import {
   stacksUrl,
   supportUrl,
 } from "@app/routes";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { SYSTEM_STATUS_ID } from "@app/system-status";
 import { useLayoutEffect } from "react";
 import { useNavigate } from "react-router";
@@ -51,7 +51,7 @@ export const ApplicationSidebar = () => {
   const { collapsed } = useSelector(selectNav);
   const { hasTrialNoPayment, expiresIn } = useTrialNotice();
   const systemStatus = useSelector((s) =>
-    db.cache.selectById(s, { id: SYSTEM_STATUS_ID }),
+    schema.cache.selectById(s, { id: SYSTEM_STATUS_ID }),
   );
   const hasSystemStatus =
     systemStatus?.description && systemStatus?.indicator !== "none";

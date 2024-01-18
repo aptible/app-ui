@@ -7,7 +7,7 @@ import {
   selectCurrentUserRolesByOrgId,
   selectRolesByOrgId,
 } from "@app/roles";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { LinkResponse, Permission, PermissionScope } from "@app/types";
 
 export interface PermissionResponse {
@@ -46,8 +46,8 @@ export const deserializePermission = (
   };
 };
 
-export const selectPermissions = db.permissions.selectTable;
-export const selectPermissionsAsList = db.permissions.selectTableAsList;
+export const selectPermissions = schema.permissions.selectTable;
+export const selectPermissionsAsList = schema.permissions.selectTableAsList;
 
 export const selectIsAccountOwner = createSelector(
   selectCurrentUserRolesByOrgId,
@@ -190,7 +190,7 @@ export const selectUserHasPerms = createSelector(
 export const permissionEntities = {
   permission: defaultEntity({
     id: "permission",
-    save: db.permissions.add,
+    save: schema.permissions.add,
     deserialize: deserializePermission,
   }),
 };
@@ -273,6 +273,6 @@ export const deletePerm = api.delete<RmPermProps>(
       return;
     }
 
-    yield* schema.update(db.permissions.remove([ctx.payload.id]));
+    yield* schema.update(schema.permissions.remove([ctx.payload.id]));
   },
 );

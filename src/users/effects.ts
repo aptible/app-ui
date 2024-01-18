@@ -7,7 +7,7 @@ import {
 import { selectOrigin } from "@app/config";
 import { call, select } from "@app/fx";
 import { selectOrganizationById } from "@app/organizations";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { deserializeUser } from "./serializers";
 import type { CreateUserForm, UserResponse } from "./types";
 
@@ -33,7 +33,7 @@ export const fetchUser = authApi.get<UserBase, UserResponse>(
       // if we need to reauthenticate to use that org then we can't set the org selected
       if (org.reauthRequired) return;
       yield* schema.update(
-        db.organizationSelected.set(user.selectedOrganizationId),
+        schema.organizationSelected.set(user.selectedOrganizationId),
       );
     }
   },
@@ -48,7 +48,7 @@ export const fetchUsers = authApi.get<{ orgId: string }>(
     if (!ctx.json.ok) {
       return;
     }
-    yield* schema.update(db.users.reset());
+    yield* schema.update(schema.users.reset());
   },
 );
 
@@ -84,7 +84,7 @@ export const updateUserOrg = authApi.put<{ userId: string; orgId: string }>(
         selected_organization_id: ctx.payload.orgId,
       }),
     });
-    yield* schema.update(db.organizationSelected.set(ctx.payload.orgId));
+    yield* schema.update(schema.organizationSelected.set(ctx.payload.orgId));
     yield* next();
   },
 );

@@ -2,7 +2,7 @@ import { PaginateProps, api, cacheMinTimer, cacheShortTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import type {
   ContainerProfileData,
   DeployStack,
@@ -92,10 +92,10 @@ export const deserializeDeployStack = (
   };
 };
 
-export const selectStackById = db.stacks.selectById;
-export const selectStacks = db.stacks.selectTable;
+export const selectStackById = schema.stacks.selectById;
+export const selectStacks = schema.stacks.selectTable;
 const selectStacksAsList = createSelector(
-  db.stacks.selectTableAsList,
+  schema.stacks.selectTableAsList,
   (stacks) => {
     return [...stacks].sort((a, b) => a.name.localeCompare(b.name));
   },
@@ -148,7 +148,7 @@ export const selectDefaultStack = createSelector(
       return defaultPrivateStack;
     }
 
-    return defaultPublicStack || db.stacks.empty;
+    return defaultPublicStack || schema.stacks.empty;
   },
 );
 
@@ -236,7 +236,7 @@ export const fetchStacks = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    yield* schema.update(db.stacks.reset());
+    yield* schema.update(schema.stacks.reset());
   },
 );
 
@@ -268,6 +268,6 @@ export const stackEntities = {
   stack: defaultEntity({
     id: "stack",
     deserialize: deserializeDeployStack,
-    save: db.stacks.add,
+    save: schema.stacks.add,
   }),
 };

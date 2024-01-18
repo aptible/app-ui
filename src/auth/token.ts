@@ -2,7 +2,7 @@ import { authApi, thunks } from "@app/api";
 import { selectEnv } from "@app/config";
 import { Next, put, select } from "@app/fx";
 import { resetStore } from "@app/reset-store";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 import {
   TokenSuccessResponse,
   deserializeToken,
@@ -13,7 +13,7 @@ import { AuthApiCtx, Token } from "@app/types";
 import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 
 const setToken = thunks.create<Token>("set-token", function* (ctx, next) {
-  yield* schema.update(db.token.set(ctx.payload));
+  yield* schema.update(schema.token.set(ctx.payload));
   yield* next();
 });
 
@@ -93,7 +93,7 @@ export const elevateToken = authApi.post<ElevateToken, TokenSuccessResponse>(
 
     tunaEvent("elevated-token", ctx.payload.username);
     const curToken = deserializeToken(ctx.json.value);
-    yield* schema.update(db.elevatedToken.set(curToken));
+    yield* schema.update(schema.elevatedToken.set(curToken));
   },
 );
 
@@ -152,7 +152,7 @@ export const revokeAllTokens = authApi.post(
   function* onRevokeAll(ctx, next) {
     const env = yield* select(selectEnv);
     const token = yield* select(selectToken);
-    const elevated = yield* select(db.elevatedToken.select);
+    const elevated = yield* select(schema.elevatedToken.select);
     ctx.request = ctx.req({
       body: JSON.stringify({
         except_tokens: [

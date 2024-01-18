@@ -1,7 +1,7 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { DeployRelease, LinkResponse } from "@app/types";
 
 export interface DeployReleaseResponse {
@@ -50,9 +50,9 @@ export const deserializeDeployRelease = (
   };
 };
 
-export const selectReleaseById = db.releases.selectById;
-export const selectReleaseByIds = db.releases.selectByIds;
-export const selectReleaseAsList = db.releases.selectTableAsList;
+export const selectReleaseById = schema.releases.selectById;
+export const selectReleaseByIds = schema.releases.selectByIds;
+export const selectReleaseAsList = schema.releases.selectTableAsList;
 export const selectReleasesByService = createSelector(
   selectReleaseAsList,
   (_: WebState, p: { serviceId: string }) => p.serviceId,
@@ -104,7 +104,7 @@ export const fetchReleasesByServiceWithDeleted = api.get<{ serviceId: string }>(
 export const releaseEntities = {
   release: defaultEntity({
     id: "release",
-    save: db.releases.add,
+    save: schema.releases.add,
     deserialize: deserializeDeployRelease,
   }),
 };

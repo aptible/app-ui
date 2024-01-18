@@ -2,7 +2,7 @@ import { PaginateProps, api } from "@app/api";
 import { poll } from "@app/fx";
 import { createAction, createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { dateDescSort } from "@app/sort";
 import { DeployBackup, HalEmbedded, LinkResponse } from "@app/types";
 import { selectDatabases } from "../database";
@@ -52,10 +52,10 @@ export const deserializeDeployBackup = (b: BackupResponse): DeployBackup => {
   };
 };
 
-export const selectBackupById = db.backups.selectById;
-export const selectBackupsByIds = db.backups.selectByIds;
-export const selectBackupsAsList = db.backups.selectTableAsList;
-export const selectBackups = db.backups.selectTable;
+export const selectBackupById = schema.backups.selectById;
+export const selectBackupsByIds = schema.backups.selectByIds;
+export const selectBackupsAsList = schema.backups.selectTableAsList;
+export const selectBackups = schema.backups.selectTable;
 
 export const selectBackupsByEnvId = createSelector(
   selectBackupsAsList,
@@ -87,7 +87,7 @@ export const backupEntities = {
   backup: defaultEntity({
     id: "backup",
     deserialize: deserializeDeployBackup,
-    save: db.backups.add,
+    save: schema.backups.add,
   }),
 };
 
@@ -112,7 +112,7 @@ export const fetchBackupsByDatabaseId = api.get<
 
   const ids = ctx.json.value._embedded.backups.map((bk) => `${bk.id}`);
   const paginatedData = { ...ctx.json.value, _embedded: { backups: ids } };
-  yield* schema.update(db.cache.add({ [ctx.key]: paginatedData }));
+  yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
 });
 
 export const fetchBackup = api.get<{ id: string }>("/backups/:id");
@@ -138,7 +138,7 @@ export const fetchBackupsByEnvironmentId = api.get<
 
   const ids = ctx.json.value._embedded.backups.map((bk) => `${bk.id}`);
   const paginatedData = { ...ctx.json.value, _embedded: { backups: ids } };
-  yield* schema.update(db.cache.add({ [ctx.key]: paginatedData }));
+  yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
 });
 export const deleteBackup = api.post<{ id: string }, DeployOperationResponse>(
   ["/backups/:id/operations", "delete"],
@@ -158,7 +158,7 @@ export const deleteBackup = api.post<{ id: string }, DeployOperationResponse>(
       message: `Backup operation queued (operation ID: ${opId})`,
       meta: { opId: `${opId}` },
     };
-    yield* schema.update(db.backups.remove([ctx.payload.id]));
+    yield* schema.update(schema.backups.remove([ctx.payload.id]));
   },
 );
 

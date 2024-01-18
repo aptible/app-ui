@@ -17,7 +17,7 @@ import { idCreator } from "@app/id";
 import { DB_ENV_TEMPLATE_KEY, deployProject } from "@app/projects";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import { appDeployGetStartedUrl, appDeployStatusUrl } from "@app/routes";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { parseText } from "@app/string-utils";
 import { Reducer, useEffect, useReducer, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -63,7 +63,7 @@ export const AppDeployConfigurePage = () => {
   const queryEnvsStr = searchParams.get("envs") || "";
 
   const loader = useSelector((s) =>
-    db.loaders.selectById(s, { id: `${deployProject}` }),
+    schema.loaders.selectById(s, { id: `${deployProject}` }),
   );
 
   useQuery(fetchApp({ id: appId }));

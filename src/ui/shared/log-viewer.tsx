@@ -1,6 +1,6 @@
 import { fetchOperationLogs } from "@app/deploy";
 import { useApi, useSelector } from "@app/react";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { DeployOperation } from "@app/types";
 import { useEffect } from "react";
 
@@ -55,7 +55,7 @@ export const LogViewer = ({ op }: { op: DeployOperation }) => {
   const action = fetchOperationLogs({ id: op.id });
   const loader = useApi(action);
   const data: string = useSelector((s) =>
-    db.cache.selectById(s, { id: action.payload.key }),
+    schema.cache.selectById(s, { id: action.payload.key }),
   );
   useEffect(() => {
     if (op.status === "succeeded" || op.status === "failed") {

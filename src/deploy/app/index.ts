@@ -3,7 +3,7 @@ import { call, createAction, poll, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import type {
   DeployApp,
   DeployAppConfigEnv,
@@ -99,10 +99,10 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
 };
 
 export const hasDeployApp = (a: DeployApp) => a.id !== "";
-export const selectAppById = db.apps.selectById;
-export const selectApps = db.apps.selectTable;
-const selectAppsAsList = db.apps.selectTableAsList;
-export const findAppById = db.apps.findById;
+export const selectAppById = schema.apps.selectById;
+export const selectApps = schema.apps.selectTable;
+const selectAppsAsList = schema.apps.selectTableAsList;
+export const findAppById = schema.apps.findById;
 
 export interface DeployAppRow extends DeployApp {
   envHandle: string;
@@ -119,7 +119,7 @@ export const selectAppsByEnvId = createSelector(
 
 export const selectFirstAppByEnvId = createSelector(
   selectAppsByEnvId,
-  (apps) => apps[0] || db.apps.empty,
+  (apps) => apps[0] || schema.apps.empty,
 );
 
 export const selectAppsByOrgAsList = createSelector(
@@ -143,7 +143,7 @@ export const selectAppsForTable = createSelector(
       .map((app): DeployAppRow => {
         const env = findEnvById(envs, { id: app.environmentId });
         const appOps = findOperationsByAppId(ops, app.id);
-        let lastOperation = db.operations.empty;
+        let lastOperation = schema.operations.empty;
         if (appOps.length > 0) {
           lastOperation = appOps[0];
         }
@@ -260,7 +260,7 @@ export const fetchApps = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    yield* schema.update(db.apps.reset());
+    yield* schema.update(schema.apps.reset());
   },
 );
 
@@ -372,7 +372,7 @@ export const appEntities = {
   app: defaultEntity({
     id: "app",
     deserialize: deserializeDeployApp,
-    save: db.apps.add,
+    save: schema.apps.add,
   }),
 };
 

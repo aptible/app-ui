@@ -1,6 +1,6 @@
 import { thunks } from "@app/api";
 import { call } from "@app/fx";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 
 interface StatusResp {
   status: { description: string; indicator: string };
@@ -14,7 +14,7 @@ export const fetchSystemStatus = thunks.create(
   function* (_, next) {
     const resp = yield* call(() => fetch(STATUSPAGE_URL));
     const json: StatusResp = yield* call(() => resp.json());
-    yield* schema.update(db.cache.add({ [SYSTEM_STATUS_ID]: json.status }));
+    yield* schema.update(schema.cache.add({ [SYSTEM_STATUS_ID]: json.status }));
     yield* next();
   },
 );

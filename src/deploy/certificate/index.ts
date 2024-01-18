@@ -3,7 +3,7 @@ import { prettyDateTime } from "@app/date";
 import { leading, poll } from "@app/fx";
 import { createAction, createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { DeployCertificate, LinkResponse } from "@app/types";
 
 interface DeployCertificateResponse {
@@ -108,8 +108,8 @@ export const deserializeCertificate = (
   };
 };
 
-export const selectCertificateById = db.certificates.selectById;
-export const selectCertificatesAsList = db.certificates.selectTableAsList;
+export const selectCertificateById = schema.certificates.selectById;
+export const selectCertificatesAsList = schema.certificates.selectTableAsList;
 export const hasDeployCertificate = (a: DeployCertificate) => a.id !== "";
 
 export const selectCertificatesByEnvId = createSelector(
@@ -158,7 +158,7 @@ export const fetchAllCertsByEnvId = thunks.create<{ id: string }>(
 export const removeDeployCertificates = thunks.create<string[]>(
   "remove-certs",
   function* (ctx, next) {
-    yield* schema.update(db.certificates.remove(ctx.payload));
+    yield* schema.update(schema.certificates.remove(ctx.payload));
     yield* next();
   },
 );
@@ -187,7 +187,7 @@ export const certificateEntities = {
   certificate: defaultEntity({
     id: "certificate",
     deserialize: deserializeCertificate,
-    save: db.certificates.add,
+    save: schema.certificates.add,
   }),
 };
 

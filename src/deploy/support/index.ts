@@ -1,6 +1,6 @@
 import { api, thunks } from "@app/api";
 import { call } from "@app/fx";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 
 interface SupportTicketProps {
   email: string;
@@ -47,7 +47,7 @@ export const createSupportTicket = api.post<SupportTicketProps>(
 export const resetSupportTicket = thunks.create(
   "reset-support-ticket",
   function* (_, next) {
-    yield* schema.update(db.loaders.resetByIds([`${createSupportTicket}`]));
+    yield* schema.update(schema.loaders.resetByIds([`${createSupportTicket}`]));
     yield* next();
   },
 );
@@ -63,7 +63,7 @@ export const queryAlgoliaApi = thunks.create<{
     return;
   }
 
-  yield* schema.update(db.loaders.start({ id: ctx.key }));
+  yield* schema.update(schema.loaders.start({ id: ctx.key }));
   const resp = yield* call(() =>
     fetch(
       "https://6C0QTHJH2V-dsn.algolia.net/1/indexes/docs/query?x-algolia-api-key=b14dbd7f78ae21d0a844c64cecc52cf5&x-algolia-application-id=6C0QTHJH2V",
@@ -81,7 +81,7 @@ export const queryAlgoliaApi = thunks.create<{
   );
   const data = yield* call(() => resp.json());
   yield* schema.update(
-    db.loaders.success({ id: ctx.key, meta: { hits: data.hits } as any }),
+    schema.loaders.success({ id: ctx.key, meta: { hits: data.hits } as any }),
   );
   yield* next();
 });

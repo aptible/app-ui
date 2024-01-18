@@ -22,7 +22,7 @@ import type {
   ThunkCtx as BaseThunkCtx,
 } from "@app/fx";
 import { halEntityParser } from "@app/hal";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 import { selectAccessToken, selectElevatedAccessToken } from "@app/token";
 import type {
   Action,
@@ -90,7 +90,7 @@ thunks.use(storeMdw.actions);
 thunks.use(thunks.routes());
 
 export const resetToken = thunks.create("reset-token", function* (_, next) {
-  yield* schema.update(db.token.reset());
+  yield* schema.update(schema.token.reset());
   yield* next();
 });
 
@@ -232,7 +232,7 @@ function* expiredToken(ctx: ApiCtx, next: Next) {
 }
 
 function* aborter(ctx: ApiCtx, next: Next) {
-  const signal = yield* select(db.signal.select);
+  const signal = yield* select(schema.signal.select);
   const aborted = () =>
     new Promise<void>((resolve) => {
       signal.signal.addEventListener("abort", () => {
@@ -260,7 +260,7 @@ export const api = createApi<DeployApiCtx>(
 api.use(debugMdw);
 api.use(sentryErrorHandler);
 api.use(expiredToken);
-api.use(storeMdw.store(db));
+api.use(storeMdw.store(schema));
 api.use(mdw.api());
 api.use(aborter);
 api.use(requestApi);
@@ -275,7 +275,7 @@ export const authApi = createApi<AuthApiCtx>(
 authApi.use(debugMdw);
 authApi.use(sentryErrorHandler);
 authApi.use(expiredToken);
-authApi.use(storeMdw.store(db));
+authApi.use(storeMdw.store(schema));
 authApi.use(mdw.api());
 authApi.use(aborter);
 authApi.use(halEntityParser);
@@ -291,7 +291,7 @@ export const billingApi = createApi<DeployApiCtx>(
 billingApi.use(debugMdw);
 billingApi.use(sentryErrorHandler);
 billingApi.use(expiredToken);
-billingApi.use(storeMdw.store(db));
+billingApi.use(storeMdw.store(schema));
 billingApi.use(mdw.api());
 billingApi.use(aborter);
 billingApi.use(halEntityParser);
@@ -306,7 +306,7 @@ export const metricTunnelApi = createApi<MetricTunnelCtx>(
 metricTunnelApi.use(debugMdw);
 metricTunnelApi.use(sentryErrorHandler);
 metricTunnelApi.use(expiredToken);
-metricTunnelApi.use(storeMdw.store(db));
+metricTunnelApi.use(storeMdw.store(schema));
 metricTunnelApi.use(mdw.api());
 metricTunnelApi.use(aborter);
 metricTunnelApi.use(metricTunnelApi.routes());
@@ -334,7 +334,7 @@ export function combinePages<
 ) {
   function* paginator(ctx: ThunkCtx, next: Next) {
     let results: Result<DeployApiCtx>[] = [];
-    yield* schema.update(db.loaders.start({ id: ctx.key }));
+    yield* schema.update(schema.loaders.start({ id: ctx.key }));
 
     const firstPage: DeployApiCtx<HalEmbedded<any>> = yield* call(() =>
       actionFn.run(actionFn({ ...ctx.payload, page: 1 })),
@@ -342,7 +342,7 @@ export function combinePages<
 
     if (!firstPage.json.ok) {
       const message = firstPage.json.error.message;
-      yield* schema.update(db.loaders.error({ id: ctx.key, message }));
+      yield* schema.update(schema.loaders.error({ id: ctx.key, message }));
       yield* next();
       return;
     }
@@ -367,7 +367,7 @@ export function combinePages<
     }
 
     ctx.json = { data: results };
-    yield* schema.update(db.loaders.success({ id: ctx.key }));
+    yield* schema.update(schema.loaders.success({ id: ctx.key }));
     yield* next();
   }
 

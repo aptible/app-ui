@@ -10,7 +10,6 @@ import {
 } from "@app/fx";
 import {
   WebState,
-  db,
   initialState as schemaInitialState,
   schema,
 } from "@app/schema";
@@ -61,7 +60,7 @@ export function setupStore({
 
   store.run(function* (): Operation<void> {
     yield* persistor.rehydrate();
-    yield* schema.update(db.loaders.success({ id: PERSIST_LOADER_ID }));
+    yield* schema.update(schema.loaders.success({ id: PERSIST_LOADER_ID }));
     const group = yield* parallel(tsks);
     yield* group;
   });

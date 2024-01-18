@@ -1,6 +1,6 @@
 import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { TextVal } from "@app/string-utils";
 import { DeployAppConfig, DeployAppConfigEnv, LinkResponse } from "@app/types";
 import { parse } from "dotenv";
@@ -79,7 +79,7 @@ export const configEnvListToEnv = (
   return env;
 };
 
-export const selectAppConfigById = db.appConfigs.selectById;
+export const selectAppConfigById = schema.appConfigs.selectById;
 
 export const fetchConfiguration = api.get<
   { id: string },
@@ -90,6 +90,6 @@ export const appConfigEntities = {
   configuration: defaultEntity({
     id: "configuration",
     deserialize: deserializeAppConfig,
-    save: db.appConfigs.add,
+    save: schema.appConfigs.add,
   }),
 };

@@ -1,6 +1,6 @@
 import { authApi } from "@app/api";
 import { leading } from "@app/fx";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 import { AuthApiCtx, HalEmbedded } from "@app/types";
 
 interface VerifyEmail {
@@ -29,7 +29,7 @@ export const verifyEmail = authApi.post<VerifyEmail>(
     }
 
     yield* schema.update(
-      db.users.patch({ [userId]: { id: userId, verified: true } }),
+      schema.users.patch({ [userId]: { id: userId, verified: true } }),
     );
   },
 );

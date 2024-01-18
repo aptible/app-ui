@@ -11,7 +11,7 @@ import {
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
   DeployApiCtx,
@@ -178,7 +178,7 @@ export const selectDatabasesForTable = createSelector(
       .map((dbb): DeployDatabaseRow => {
         const env = findEnvById(envs, { id: dbb.environmentId });
         const dbOps = findOperationsByDbId(ops, dbb.id);
-        let lastOperation = db.operations.empty;
+        let lastOperation = schema.operations.empty;
         if (dbOps.length > 0) {
           lastOperation = dbOps[0];
         }

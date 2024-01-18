@@ -1,6 +1,6 @@
 import { api } from "@app/api";
 import { defaultEntity } from "@app/hal";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import type { DeployImage } from "@app/types";
 
 export interface DeployImageResponse {
@@ -17,7 +17,7 @@ export interface DeployImageResponse {
 
 export const deserializeImage = (payload: DeployImageResponse): DeployImage => {
   if (!payload) {
-    return db.images.empty;
+    return schema.images.empty;
   }
 
   return {
@@ -34,12 +34,12 @@ export const deserializeImage = (payload: DeployImageResponse): DeployImage => {
 
 export const fetchImageById = api.get<{ id: string }>("/images/:id");
 
-export const selectImageById = db.images.selectById;
+export const selectImageById = schema.images.selectById;
 
 export const imageEntities = {
   image: defaultEntity({
     id: "image",
-    save: db.images.add,
+    save: schema.images.add,
     deserialize: deserializeImage,
   }),
 };

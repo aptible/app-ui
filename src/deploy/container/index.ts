@@ -2,7 +2,7 @@ import { api } from "@app/api";
 import { secondsFromNow } from "@app/date";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { DeployContainer, HalEmbedded, LinkResponse } from "@app/types";
 export * from "./utils";
 
@@ -72,9 +72,9 @@ export const deserializeDeployContainer = (
   };
 };
 
-export const selectContainerById = db.containers.selectById;
-export const selectContainerByIds = db.containers.selectByIds;
-export const selectContainersAsList = db.containers.selectTableAsList;
+export const selectContainerById = schema.containers.selectById;
+export const selectContainerByIds = schema.containers.selectByIds;
+export const selectContainersAsList = schema.containers.selectTableAsList;
 
 export const selectContainersByReleaseId = createSelector(
   selectContainersAsList,
@@ -153,7 +153,7 @@ export const fetchContainersByReleaseIdWithDeleted = api.get<
 export const containerEntities = {
   container: defaultEntity({
     id: "container",
-    save: db.containers.add,
+    save: schema.containers.add,
     deserialize: deserializeDeployContainer,
   }),
 };

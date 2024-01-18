@@ -1,7 +1,7 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { DeployDatabaseCredential, LinkResponse } from "@app/types";
 
 interface DatabaseCredentialResponse {
@@ -28,7 +28,7 @@ export const deserializeDatabaseCredential = (
 };
 
 export const selectCredentialsByDatabaseId = createSelector(
-  db.databaseCredentials.selectTableAsList,
+  schema.databaseCredentials.selectTableAsList,
   (_: WebState, p: { dbId: string }) => p.dbId,
   (creds, dbId) => creds.filter((c) => c.databaseId === dbId),
 );
@@ -36,7 +36,7 @@ export const selectCredentialsByDatabaseId = createSelector(
 export const credEntities = {
   database_credential: defaultEntity({
     id: "database_credential",
-    save: db.databaseCredentials.add,
+    save: schema.databaseCredentials.add,
     deserialize: deserializeDatabaseCredential,
   }),
 };
@@ -49,7 +49,7 @@ export const fetchCredentialsByDatabaseId = api.get<{ dbId: string }>(
 // we have to take original credential URL and replace it with vhost information:
 //   - postgresql://<user>:<pass>@<host>:<port>/db
 // <host>: comes from vhost.external_host
-// <port>: comes from db.port_mapping which is [number1, number2][]
+// <port>: comes from schema.port_mapping which is [number1, number2][]
 //   where `number1` is from the connectionUrl and `number2` is what we need to replace it with
 export const connectionUrlRewrite = (
   connUrl: string,

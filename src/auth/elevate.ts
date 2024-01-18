@@ -1,6 +1,6 @@
 import { ThunkCtx, thunks } from "@app/api";
 import { call } from "@app/fx";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 import { defaultAuthLoaderMeta } from "./loader";
 import { ElevateToken, elevateToken } from "./token";
@@ -11,7 +11,7 @@ export const elevate = thunks.create<ElevateToken>(
   function* onElevate(ctx: ThunkCtx<ElevateToken>, next) {
     // use ctx.name not ctx.key (this is important for webauthn!)
     const id = ctx.name;
-    yield* schema.update(db.loaders.start({ id }));
+    yield* schema.update(schema.loaders.start({ id }));
     const tokenCtx = yield* call(() =>
       elevateToken.run(elevateToken(ctx.payload)),
     );
@@ -20,7 +20,7 @@ export const elevate = thunks.create<ElevateToken>(
       const { message, error, code, exception_context } = tokenCtx.json
         .data as any;
       yield* schema.update(
-        db.loaders.error({
+        schema.loaders.error({
           id,
           message,
           meta: defaultAuthLoaderMeta({
@@ -33,7 +33,7 @@ export const elevate = thunks.create<ElevateToken>(
       return;
     }
 
-    yield* schema.update(db.loaders.success({ id }));
+    yield* schema.update(schema.loaders.success({ id }));
     yield* next();
   },
 );
@@ -50,16 +50,16 @@ export const elevateWebauthn = thunks.create<
     return;
   }
   const id = ctx.key;
-  yield* schema.update(db.loaders.start({ id }));
+  yield* schema.update(schema.loaders.start({ id }));
 
   try {
     const u2f = yield* call(() => webauthnGet(webauthn.payload));
     yield* call(() => elevate.run(elevate({ ...props, u2f })));
     yield* next();
-    yield* schema.update(db.loaders.success({ id }));
+    yield* schema.update(schema.loaders.success({ id }));
   } catch (err) {
     yield* schema.update(
-      db.loaders.error({
+      schema.loaders.error({
         id,
         message: (err as Error).message,
         // auth loader type sets this expectation

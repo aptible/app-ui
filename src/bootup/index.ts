@@ -17,7 +17,7 @@ import { call, parallel, select, spawn, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchCurrentUserRoles, fetchRoles } from "@app/roles";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";
 import { ApiCtx } from "@app/types";
@@ -27,17 +27,17 @@ export const FETCH_REQUIRED_DATA = "fetch-required-data";
 
 export const bootup = thunks.create("bootup", function* onBootup(ctx, next) {
   const id = ctx.name;
-  yield* schema.update(db.loaders.start({ id }));
+  yield* schema.update(schema.loaders.start({ id }));
 
   yield* call(() => fetchCurrentToken.run(fetchCurrentToken()));
   const token: string = yield* select(selectAccessToken);
   if (!token) {
     yield* schema.update([
-      db.loaders.success({
+      schema.loaders.success({
         id: FETCH_REQUIRED_DATA,
         message: "no token found",
       }),
-      db.loaders.success({
+      schema.loaders.success({
         id,
         message: "no token found",
       }),
@@ -49,12 +49,12 @@ export const bootup = thunks.create("bootup", function* onBootup(ctx, next) {
   const task = yield* spawn(onFetchRequiredData);
   yield* call(onFetchResourceData);
   yield* task;
-  yield* schema.update(db.loaders.success({ id }));
+  yield* schema.update(schema.loaders.success({ id }));
   yield* next();
 });
 
 function* onFetchRequiredData() {
-  yield* schema.update(db.loaders.start({ id: FETCH_REQUIRED_DATA }));
+  yield* schema.update(schema.loaders.start({ id: FETCH_REQUIRED_DATA }));
   const org = yield* select(selectOrganizationSelected);
   const userId = yield* select(selectCurrentUserId);
   const group = yield* parallel<ApiCtx>([
@@ -62,7 +62,7 @@ function* onFetchRequiredData() {
     fetchBillingDetail.run({ id: org.billingDetailId }),
   ]);
   yield* group;
-  yield* schema.update(db.loaders.success({ id: FETCH_REQUIRED_DATA }));
+  yield* schema.update(schema.loaders.success({ id: FETCH_REQUIRED_DATA }));
 }
 
 function* onFetchResourceData() {

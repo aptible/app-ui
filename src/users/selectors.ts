@@ -1,11 +1,11 @@
 import { createSelector } from "@app/fx";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { selectToken } from "@app/token";
 
-export const selectUsers = db.users.selectTable;
-export const selectUsersAsList = db.users.selectTableAsList;
-export const selectUsersByIds = db.users.selectByIds;
-export const selectUserById = db.users.selectById;
+export const selectUsers = schema.users.selectTable;
+export const selectUsersAsList = schema.users.selectTableAsList;
+export const selectUsersByIds = schema.users.selectByIds;
+export const selectUserById = schema.users.selectById;
 
 export const selectUsersForSearchTable = createSelector(
   selectUsersAsList,
@@ -43,7 +43,7 @@ export const selectCurrentUser = createSelector(
   selectUsers,
   selectCurrentUserId,
   (curUsers, userId) => {
-    return curUsers[userId] || db.users.empty;
+    return curUsers[userId] || schema.users.empty;
   },
 );
 

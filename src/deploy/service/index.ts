@@ -8,7 +8,7 @@ import {
   select,
 } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db, defaultDeployOperation, schema } from "@app/schema";
+import { WebState, schema, defaultDeployOperation } from "@app/schema";
 import {
   DeployOperation,
   type DeployService,
@@ -133,14 +133,14 @@ export const calcServiceMetrics = (service: DeployService) => {
   };
 };
 
-export const selectServiceById = db.services.selectById;
-export const selectServicesByIds = db.services.selectByIds;
-export const selectServices = db.services.selectTable;
+export const selectServiceById = schema.services.selectById;
+export const selectServicesByIds = schema.services.selectByIds;
+export const selectServices = schema.services.selectTable;
 export const hasDeployService = (a: DeployService) => a.id !== "";
-export const findServiceById = db.services.findById;
+export const findServiceById = schema.services.findById;
 
 export const selectServicesAsList = createSelector(
-  db.services.selectTableAsList,
+  schema.services.selectTableAsList,
   (services) => [...services].sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
@@ -386,7 +386,7 @@ export const fetchServices = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    yield* schema.update(db.services.reset());
+    yield* schema.update(schema.services.reset());
   },
 );
 
@@ -506,7 +506,7 @@ export const modifyServiceSizingPolicy =
   thunks.create<ServiceSizingPolicyEditProps>(
     "modify-service-sizing-policy",
     function* (ctx, next) {
-      yield* schema.update(db.loaders.start({ id: ctx.name }));
+      yield* schema.update(schema.loaders.start({ id: ctx.name }));
       const nextPolicy = ctx.payload;
       let updateCtx;
       if (nextPolicy.id === undefined) {
@@ -523,12 +523,15 @@ export const modifyServiceSizingPolicy =
 
       if (updateCtx.json.ok) {
         yield* schema.update(
-          db.loaders.success({ id: ctx.name, message: "Policy changes saved" }),
+          schema.loaders.success({
+            id: ctx.name,
+            message: "Policy changes saved",
+          }),
         );
       } else {
         const data = updateCtx.json.error as Error;
         yield* schema.update(
-          db.loaders.error({ id: ctx.name, message: data.message }),
+          schema.loaders.error({ id: ctx.name, message: data.message }),
         );
       }
     },
@@ -547,7 +550,7 @@ export const serviceEntities = {
   service: defaultEntity({
     id: "service",
     deserialize: deserializeDeployService,
-    save: db.services.add,
+    save: schema.services.add,
   }),
 };
 
@@ -588,7 +591,7 @@ export const pollAppAndServiceOperations = thunks.create<{ id: string }>(
   "app-service-op-poll",
   { supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`) },
   function* (ctx, next) {
-    yield* schema.update(db.loaders.start({ id: ctx.key }));
+    yield* schema.update(schema.loaders.start({ id: ctx.key }));
 
     const services = yield* select((s: WebState) =>
       selectServicesByAppId(s, {
@@ -606,7 +609,7 @@ export const pollAppAndServiceOperations = thunks.create<{ id: string }>(
     yield* group;
 
     yield* next();
-    yield* schema.update(db.loaders.success({ id: ctx.key }));
+    yield* schema.update(schema.loaders.success({ id: ctx.key }));
   },
 );
 
@@ -614,7 +617,7 @@ export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
   "db-service-op-poll",
   { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
   function* (ctx, next) {
-    yield* schema.update(db.loaders.start({ id: ctx.key }));
+    yield* schema.update(schema.loaders.start({ id: ctx.key }));
     const dbb = yield* select((s: WebState) =>
       selectDatabaseById(s, ctx.payload),
     );
@@ -629,6 +632,6 @@ export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
     yield* group;
 
     yield* next();
-    yield* schema.update(db.loaders.success({ id: ctx.key }));
+    yield* schema.update(schema.loaders.success({ id: ctx.key }));
   },
 );

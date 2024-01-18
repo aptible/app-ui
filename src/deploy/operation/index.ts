@@ -18,7 +18,7 @@ import {
   databaseDetailUrl,
   endpointDetailUrl,
 } from "@app/routes";
-import { WebState, db, defaultDeployOperation, schema } from "@app/schema";
+import { WebState, schema, defaultDeployOperation } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
   DeployActivityRow,
@@ -173,9 +173,9 @@ export const findOperationValue = <K extends keyof DeployOperation>(
 };
 
 export const hasDeployOperation = (a: DeployOperation) => a.id !== "";
-export const selectOperationById = db.operations.selectById;
+export const selectOperationById = schema.operations.selectById;
 export const selectOperationsAsList = createSelector(
-  db.operations.selectTableAsList,
+  schema.operations.selectTableAsList,
   (_: WebState, props: { limit?: number }) => props.limit,
   (ops, limit) =>
     [...ops]
@@ -252,7 +252,7 @@ export const selectOperationsByDatabaseId = createSelector(
 
 export const selectLatestOpByDatabaseId = createSelector(
   selectOperationsByDatabaseId,
-  (ops) => (ops.length > 0 ? ops[0] : db.operations.empty),
+  (ops) => (ops.length > 0 ? ops[0] : schema.operations.empty),
 );
 
 export const selectLatestOpByAppId = createSelector(
@@ -260,7 +260,7 @@ export const selectLatestOpByAppId = createSelector(
   (ops) =>
     ops.find((op) =>
       ["configure", "provision", "deploy", "deprovision"].includes(op.type),
-    ) || db.operations.empty,
+    ) || schema.operations.empty,
 );
 
 export const selectLatestOpByResourceId = createSelector(
@@ -273,7 +273,7 @@ export const selectLatestOpByResourceId = createSelector(
         op.resourceId === resourceId &&
         op.resourceType === resourceType &&
         ["configure", "provision", "deploy", "deprovision"].includes(op.type),
-    ) || db.operations.empty,
+    ) || schema.operations.empty,
 );
 
 export const selectLatestProvisionOp = createSelector(
@@ -282,7 +282,7 @@ export const selectLatestProvisionOp = createSelector(
   (ops, resourceType) =>
     ops.find(
       (op) => op.type === "provision" && op.resourceType === resourceType,
-    ) || db.operations.empty,
+    ) || schema.operations.empty,
 );
 
 export const selectNonFailedScaleOps = createSelector(
@@ -292,12 +292,12 @@ export const selectNonFailedScaleOps = createSelector(
 
 export const selectLatestScanOp = createSelector(
   selectOperationsByAppId,
-  (ops) => ops.find((op) => op.type === "scan_code") || db.operations.empty,
+  (ops) => ops.find((op) => op.type === "scan_code") || schema.operations.empty,
 );
 
 export const selectLatestConfigureOp = createSelector(
   selectOperationsByAppId,
-  (ops) => ops.find((op) => op.type === "configure") || db.operations.empty,
+  (ops) => ops.find((op) => op.type === "configure") || schema.operations.empty,
 );
 
 export const findLatestDeployOp = (ops: DeployOperation[]) =>
@@ -308,7 +308,7 @@ export const findLatestDbProvisionOp = (ops: DeployOperation[]) =>
 
 export const selectLatestDeployOp = createSelector(
   selectOperationsByAppId,
-  (ops) => ops.find((op) => op.type === "deploy") || db.operations.empty,
+  (ops) => ops.find((op) => op.type === "deploy") || schema.operations.empty,
 );
 
 export const findLatestSuccessDeployOp = (ops: DeployOperation[]) =>
@@ -316,7 +316,7 @@ export const findLatestSuccessDeployOp = (ops: DeployOperation[]) =>
 
 export const selectLatestSuccessDeployOpByEnvId = createSelector(
   selectOperationsByEnvId,
-  (ops) => findLatestSuccessDeployOp(ops) || db.operations.empty,
+  (ops) => findLatestSuccessDeployOp(ops) || schema.operations.empty,
 );
 
 export const findLatestSuccessScanOp = (ops: DeployOperation[]) =>
@@ -324,7 +324,7 @@ export const findLatestSuccessScanOp = (ops: DeployOperation[]) =>
 
 export const selectLatestSuccessScanOp = createSelector(
   selectOperationsByAppId,
-  (ops) => findLatestSuccessScanOp(ops) || db.operations.empty,
+  (ops) => findLatestSuccessScanOp(ops) || schema.operations.empty,
 );
 
 interface EnvIdProps {
@@ -449,7 +449,7 @@ export function* waitForOperation({
         // operation will disappear.
         if (op.type === "deprovision" && ctx.response?.status === 404) {
           yield* schema.update(
-            db.operations.patch({
+            schema.operations.patch({
               [op.id]: { id: op.id, status: "succeeded" },
             }),
           );
@@ -466,7 +466,7 @@ export const opEntities = {
   operation: defaultEntity({
     id: "operation",
     deserialize: deserializeDeployOperation,
-    save: db.operations.add,
+    save: schema.operations.add,
   }),
 };
 

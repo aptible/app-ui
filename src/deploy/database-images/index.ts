@@ -1,7 +1,7 @@
 import { api, cacheTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity } from "@app/hal";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { DeployDatabaseImage } from "@app/types";
 
 export interface DeployDatabaseImageResponse {
@@ -56,9 +56,9 @@ export const deserializeDeployDatabaseImage = (
 };
 
 export const hasDeployDatabaseImage = (a: DeployDatabaseImage) => a.id !== "";
-export const selectDatabaseImageById = db.databaseImages.selectById;
+export const selectDatabaseImageById = schema.databaseImages.selectById;
 export const selectDatabaseImagesAsList = createSelector(
-  db.databaseImages.selectTableAsList,
+  schema.databaseImages.selectTableAsList,
   (imgs) =>
     [...imgs].sort((a, b) => {
       return b.description.localeCompare(a.description, "en", {
@@ -79,6 +79,6 @@ export const databaseImageEntities = {
   database_image: defaultEntity({
     id: "database_image",
     deserialize: deserializeDeployDatabaseImage,
-    save: db.databaseImages.add,
+    save: schema.databaseImages.add,
   }),
 };

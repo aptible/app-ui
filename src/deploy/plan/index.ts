@@ -2,7 +2,7 @@ import { api } from "@app/api";
 import { selectHasPaymentMethod } from "@app/billing";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { db, defaultPlan, schema } from "@app/schema";
+import { defaultPlan, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import {
   DeployActivePlan,
@@ -168,12 +168,12 @@ export const deserializeActivePlan = (
 };
 
 // You probably want to use `selectPlanByActiveId` instead
-const selectPlanById = db.plans.selectById;
+const selectPlanById = schema.plans.selectById;
 
 // when there is no active plan that means we should assume
 // the user is on a legacy "enterprise" plan
 export const selectPlanByActiveId = createSelector(
-  db.plans.selectTableAsList,
+  schema.plans.selectTableAsList,
   selectPlanById,
   selectHasPaymentMethod,
   (plans, planById, hasPaymentMethod) => {
@@ -182,18 +182,18 @@ export const selectPlanByActiveId = createSelector(
     }
 
     if (!hasPaymentMethod) {
-      return db.plans.empty;
+      return schema.plans.empty;
     }
 
     // if user has payment method and no active plan that means they are
     // legacy enterprise
     const enterprise = plans.find((p) => p.name === "enterprise");
-    return enterprise || db.plans.empty;
+    return enterprise || schema.plans.empty;
   },
 );
 
 export const selectPlansForView = createSelector(
-  db.plans.selectTableAsList,
+  schema.plans.selectTableAsList,
   (plans) => {
     const init: Record<PlanName, DeployPlan> = {
       none: defaultPlan({ name: "none" }),
@@ -210,13 +210,13 @@ export const selectPlansForView = createSelector(
   },
 );
 
-export const selectActivePlanById = db.activePlans.selectById;
-export const selectActivePlansAsList = db.activePlans.selectTableAsList;
+export const selectActivePlanById = schema.activePlans.selectById;
+export const selectActivePlansAsList = schema.activePlans.selectTableAsList;
 export const selectFirstActivePlan = createSelector(
   selectActivePlansAsList,
   (activePlans) => {
     if (activePlans.length === 0) {
-      return db.activePlans.empty;
+      return schema.activePlans.empty;
     }
 
     return activePlans[0];
@@ -251,7 +251,7 @@ export const updateActivePlan = api.put<UpdateActivePlan>(
       return;
     }
 
-    yield* schema.update(db.activePlans.remove([ctx.payload.id]));
+    yield* schema.update(schema.activePlans.remove([ctx.payload.id]));
     const name = capitalize(ctx.payload.name);
     ctx.loader = {
       message: `Successfully updated plan to ${name}.`,
@@ -263,7 +263,7 @@ export const planEntities = {
   plan: defaultEntity({
     id: "plan",
     deserialize: deserializePlan,
-    save: db.plans.add,
+    save: schema.plans.add,
   }),
 };
 
@@ -271,6 +271,6 @@ export const activePlanEntities = {
   active_plan: defaultEntity({
     id: "active_plan",
     deserialize: deserializeActivePlan,
-    save: db.activePlans.add,
+    save: schema.activePlans.add,
   }),
 };

@@ -78,4 +78,7 @@ export const [schema, initialState] = createSchema({
   memberships: slice.table({ empty: factory.defaultMembership() }),
 });
 export type WebState = typeof initialState;
-export const db = schema;
+/**
+ * @deprecated Use {@link schema} instead
+ */
+// export const db = schema;
