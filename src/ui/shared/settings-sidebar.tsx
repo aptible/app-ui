@@ -10,7 +10,6 @@ import {
   teamContactsUrl,
   teamMembersUrl,
   teamPendingInvitesUrl,
-  teamRolesUrl,
   teamSsoUrl,
 } from "@app/routes";
 import cn from "classnames";
