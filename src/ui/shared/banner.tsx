@@ -25,7 +25,7 @@ const VariantIcon = ({ variant = "info" }: { variant: StatusVariant }) => {
   }
 
   if (variant === "progress") {
-    return <LoadingSpinner color="#fff" />;
+    return <LoadingSpinner color="#fff" variant="base" />;
   }
 
   return <IconInfo />;

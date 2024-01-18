@@ -1,6 +1,8 @@
+import { prettyDateTime } from "@app/date";
 import {
   DEFAULT_INSTANCE_CLASS,
   ServiceSizingPolicyEditProps,
+  cancelServicesOpsPoll,
   defaultServiceSizingPolicyResponse,
   exponentialContainerSizesByProfile,
   fetchApp,
@@ -9,11 +11,14 @@ import {
   getContainerProfileFromType,
   hourlyAndMonthlyCostsForContainers,
   modifyServiceSizingPolicy,
+  pollServiceOperations,
   scaleService,
   selectAppById,
   selectContainerProfilesForStack,
   selectEnvironmentById,
+  selectPreviousServiceScale,
   selectServiceById,
+  selectServiceScale,
   selectStackById,
 } from "@app/deploy";
 import {
@@ -25,11 +30,12 @@ import {
   useSelector,
 } from "@app/react";
 import { appActivityUrl } from "@app/routes";
-import { InstanceClass } from "@app/types";
+import { DeployOperation, InstanceClass } from "@app/types";
 import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { useValidator } from "../hooks";
+import { usePoller, useValidator } from "../hooks";
 import {
+  Banner,
   ButtonIcon,
   IconChevronDown,
   IconChevronRight,
@@ -472,6 +478,47 @@ const VerticalAutoscalingSection = ({
   );
 };
 
+const getScaleText = (op: DeployOperation) =>
+  `${op.containerCount} x ${op.containerSize / 1024} GB ${
+    getContainerProfileFromType(op.instanceProfile as InstanceClass).name ||
+    op.instanceProfile
+  } container${op.containerCount === 1 ? "" : "s"}`;
+
+const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
+  const current = useSelector((s) => selectServiceScale(s, { id: serviceId }));
+  const prev = useSelector((s) =>
+    selectPreviousServiceScale(s, { id: serviceId }),
+  );
+  const neverScaled = current.status === "unknown";
+  const currentComplete = current.status === "succeeded";
+  const action = pollServiceOperations({ id: serviceId });
+  const loader = useLoader(action);
+
+  const poller = useMemo(() => action, [serviceId]);
+  const cancel = useMemo(() => cancelServicesOpsPoll(), []);
+  usePoller({ action: poller, cancel });
+
+  if (loader.isInitialLoading) {
+    return null;
+  }
+
+  return (
+    <Banner variant={currentComplete || neverScaled ? "default" : "progress"}>
+      {neverScaled ? (
+        "Never Scaled"
+      ) : (
+        <>
+          <strong>
+            {currentComplete ? "Last Scale" : "Scale in Progress"}:
+          </strong>{" "}
+          {prettyDateTime(current.createdAt)} from {getScaleText(prev)} to{" "}
+          {getScaleText(current)}
+        </>
+      )}
+    </Banner>
+  );
+};
+
 export const AppDetailServiceScalePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -591,6 +638,7 @@ export const AppDetailServiceScalePage = () => {
 
   return (
     <div className="flex flex-col gap-4">
+      <LastScaleBanner serviceId={serviceId} />
       <VerticalAutoscalingSection id={serviceId} stackId={stack.id} />
       <Box>
         <form onSubmit={onSubmitForm}>

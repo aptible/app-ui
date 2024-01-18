@@ -8,8 +8,9 @@ import {
   select,
 } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, db, defaultDeployOperation, schema } from "@app/schema";
 import {
+  DeployOperation,
   type DeployService,
   DeployServiceResponse,
   DeployServiceRow,
@@ -37,7 +38,11 @@ import {
   selectEnvironmentsByOrg,
   selectEnvironmentsByOrgAsList,
 } from "../environment";
-import { DeployOperationResponse } from "../operation";
+import {
+  DeployOperationResponse,
+  findOperationValue,
+  selectNonFailedScaleOps,
+} from "../operation";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
 
@@ -322,6 +327,50 @@ export const selectAppByServiceId = createSelector(
   selectApps,
   (service, apps) => {
     return findAppById(apps, { id: service.appId });
+  },
+);
+
+const scaleAttrs: (keyof DeployOperation)[] = [
+  "containerCount",
+  "containerSize",
+  "instanceProfile",
+];
+
+export const selectPreviousServiceScale = createSelector(
+  selectServiceById,
+  selectNonFailedScaleOps,
+  (service, ops) => {
+    // If the values aren't found among the operations use the following default values
+    const pastOps = ops.slice(1).concat(
+      defaultDeployOperation({
+        containerCount: 1,
+        containerSize: 1024,
+        instanceProfile: service.instanceClass,
+      }),
+    );
+
+    const prev: DeployOperation = { ...pastOps[0] };
+
+    scaleAttrs.forEach((attr) => {
+      (prev as any)[attr] = findOperationValue(pastOps, attr);
+    });
+
+    return prev;
+  },
+);
+
+export const selectServiceScale = createSelector(
+  selectNonFailedScaleOps,
+  selectPreviousServiceScale,
+  (ops, prevOp) => {
+    const lastOps = ops.slice(0, 1).concat(prevOp);
+    const current: DeployOperation = { ...lastOps[0] };
+
+    scaleAttrs.forEach((attr) => {
+      (current as any)[attr] = findOperationValue(lastOps, attr);
+    });
+
+    return current;
   },
 );
 

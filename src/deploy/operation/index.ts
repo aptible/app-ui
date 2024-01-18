@@ -18,7 +18,7 @@ import {
   databaseDetailUrl,
   endpointDetailUrl,
 } from "@app/routes";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, db, defaultDeployOperation, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
   DeployActivityRow,
@@ -162,6 +162,16 @@ export const deserializeDeployOperation = (
   };
 };
 
+// Search an array of operations for the first that has the specified attribute
+// If none are found, use the value from the defaultDeployOperation
+export const findOperationValue = <K extends keyof DeployOperation>(
+  ops: DeployOperation[],
+  attr: K,
+) => {
+  const op = ops.find((op) => op[attr] != null);
+  return op == null ? defaultDeployOperation()[attr] : op[attr];
+};
+
 export const hasDeployOperation = (a: DeployOperation) => a.id !== "";
 export const selectOperationById = db.operations.selectById;
 export const selectOperationsAsList = createSelector(
@@ -205,11 +215,25 @@ export const selectOperationsByEnvId = createSelector(
   (ops, envId) => ops.filter((op) => op.environmentId === envId),
 );
 
+export const findOperationsByServiceId = (
+  ops: DeployOperation[],
+  serviceId: string,
+) =>
+  ops.filter(
+    (op) => op.resourceType === "service" && op.resourceId === serviceId,
+  );
+
 export const findOperationsByAppId = (ops: DeployOperation[], appId: string) =>
   ops.filter((op) => op.resourceType === "app" && op.resourceId === appId);
 
 export const findOperationsByDbId = (ops: DeployOperation[], dbId: string) =>
   ops.filter((op) => op.resourceType === "database" && op.resourceId === dbId);
+
+export const selectOperationsByServiceId = createSelector(
+  selectOperationsAsList,
+  (_: WebState, p: { id: string }) => p.id,
+  findOperationsByServiceId,
+);
 
 export const selectOperationsByAppId = createSelector(
   selectOperationsAsList,
@@ -259,6 +283,11 @@ export const selectLatestProvisionOp = createSelector(
     ops.find(
       (op) => op.type === "provision" && op.resourceType === resourceType,
     ) || db.operations.empty,
+);
+
+export const selectNonFailedScaleOps = createSelector(
+  selectOperationsByServiceId,
+  (ops) => ops.filter((op) => op.type === "scale" && op.status !== "failed"),
 );
 
 export const selectLatestScanOp = createSelector(
