@@ -1,8 +1,9 @@
 import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { db } from "@app/schema";
-import { TextVal, parseText } from "@app/string-utils";
+import { TextVal } from "@app/string-utils";
 import { DeployAppConfig, DeployAppConfigEnv, LinkResponse } from "@app/types";
+import { parse } from "dotenv";
 
 export interface DeployConfigurationResponse {
   id: number;
@@ -51,7 +52,13 @@ export const configEnvToStr = (env: DeployAppConfigEnv): string => {
 };
 
 export const configStrToEnvList = (text: string): TextVal[] => {
-  return parseText(text, () => ({}));
+  // return parseText(text, () => ({}));
+  const items: TextVal[] = [];
+  const output = parse(text);
+  Object.keys(output).forEach((key) => {
+    items.push({ key, value: output[key], meta: {} });
+  });
+  return items;
 };
 
 export const configEnvListToEnv = (
