@@ -1,4 +1,4 @@
-import { api } from "@app/api";
+import { api, thunks } from "@app/api";
 import { selectMembershipsByRoleId } from "@app/auth";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
@@ -195,28 +195,76 @@ export const permissionEntities = {
   }),
 };
 
-export const addPerm = api.post<{
+interface AddPermProps {
   envId: string;
   roleId: string;
   scope: PermissionScope;
-}>("/accounts/:envId/permissions", function* (ctx, next) {
-  ctx.request = ctx.req({
-    body: JSON.stringify({
-      role: ctx.payload.roleId,
-      scope: ctx.payload.scope,
-    }),
-  });
+}
 
-  yield* next();
+interface RmPermProps {
+  id: string;
+}
 
-  if (!ctx.json.ok) {
-    return;
-  }
+type UpdatePermProps =
+  | { type: "add"; payload: AddPermProps }
+  | { type: "rm"; payload: RmPermProps };
 
-  ctx.loader = { message: "Successfully updated permissions!" };
-});
+export const updatePerm = thunks.create<UpdatePermProps>(
+  "update-perms",
+  function* (ctx, next) {
+    const { type, payload } = ctx.payload;
+    const id = ctx.name;
+    yield* schema.update(db.loaders.start({ id }));
 
-export const deletePerm = api.delete<{ id: string }>(
+    if (type === "add") {
+      const addCtx = yield* addPerm.run(payload);
+      if (addCtx.json.ok) {
+        yield* schema.update(
+          db.loaders.success({
+            id,
+            message: "Successfully updated permissions!",
+          }),
+        );
+      } else {
+        yield* schema.update(
+          db.loaders.error({ id, message: addCtx.json.error.message }),
+        );
+      }
+    } else {
+      const rmCtx = yield* deletePerm.run(payload);
+      if (rmCtx.json.ok) {
+        yield* schema.update(
+          db.loaders.success({
+            id,
+            message: "Successfully updated permissions!",
+          }),
+        );
+      } else {
+        yield* schema.update(
+          db.loaders.error({ id, message: rmCtx.json.error.message }),
+        );
+      }
+    }
+
+    yield* next();
+  },
+);
+
+export const addPerm = api.post<AddPermProps>(
+  "/accounts/:envId/permissions",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({
+        role: ctx.payload.roleId,
+        scope: ctx.payload.scope,
+      }),
+    });
+
+    yield* next();
+  },
+);
+
+export const deletePerm = api.delete<RmPermProps>(
   "/permissions/:id",
   function* (ctx, next) {
     yield* next();

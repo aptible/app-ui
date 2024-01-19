@@ -63,6 +63,40 @@ export const Banner = ({
   );
 };
 
+export const BannerMessagesBasic = ({
+  isSuccess,
+  isError,
+  message,
+  className,
+}: {
+  isSuccess: boolean;
+  isError: boolean;
+  message: string;
+  className?: string;
+}) => {
+  if (!message) return null;
+
+  if (isSuccess) {
+    return (
+      <div className={`flex items-center text-green-300 ${className}`}>
+        <IconCheck color="#4D9279" />
+        {message}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className={`flex items-center text-red-300 ${className}`}>
+        <IconAlertTriangle color="#C76464" />
+        {message}
+      </div>
+    );
+  }
+
+  return null;
+};
+
 export const BannerMessages = ({
   isSuccess,
   isError,
