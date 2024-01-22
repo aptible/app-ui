@@ -5,7 +5,6 @@ import {
   defaultDeployService,
 } from "@app/schema";
 import { DeployService } from "@app/types";
-import { DeepPartial } from "redux";
 import { selectReleasesByServiceAfterDate } from "./index";
 
 const createdAtByHours = ({ hours }: { hours: number }) => {
@@ -17,6 +16,10 @@ const createdAtByHours = ({ hours }: { hours: number }) => {
 const testService: DeployService = defaultDeployService({
   id: testServiceRails.id.toString(),
 });
+
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
 
 const state: DeepPartial<WebState> = {
   services: { [testService.id]: testService },

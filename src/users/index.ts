@@ -1,5 +1,5 @@
 import { defaultEntity } from "@app/hal";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { deserializeUser } from "./serializers";
 
 export * from "./serializers";
@@ -10,7 +10,7 @@ export * from "./effects";
 export const entities = {
   user: defaultEntity({
     id: "user",
-    save: db.users.add,
+    save: schema.users.add,
     deserialize: deserializeUser,
   }),
 };

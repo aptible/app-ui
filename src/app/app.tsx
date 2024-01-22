@@ -1,6 +1,6 @@
 import { FxStore } from "@app/fx";
 import { PersistGate, Provider } from "@app/react";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import {
   CookieNotice,
   Loading,
@@ -26,8 +26,8 @@ export const AppRouter = () => {
 export const App = ({ store }: { store: FxStore<WebState> }) => {
   return (
     <StrictMode>
-      <Provider store={store}>
-        <PersistGate loader={db.loaders} loading={<Loading />}>
+      <Provider schema={schema} store={store}>
+        <PersistGate loading={<Loading />}>
           <AppRouter />
         </PersistGate>
       </Provider>

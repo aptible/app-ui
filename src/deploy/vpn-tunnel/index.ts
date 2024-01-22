@@ -1,7 +1,7 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { DeployVpnTunnel, LinkResponse } from "@app/types";
 
 export interface DeployVpnTunnelResponse {
@@ -75,10 +75,10 @@ export const deserializeDeployVpnTunnel = (
   };
 };
 
-export const selectVpnTunnelById = db.vpnTunnels.selectById;
-export const selectVpnTunnel = db.vpnTunnels.selectTable;
+export const selectVpnTunnelById = schema.vpnTunnels.selectById;
+export const selectVpnTunnel = schema.vpnTunnels.selectTable;
 export const selectVpnTunnelsAsList = createSelector(
-  db.vpnTunnels.selectTableAsList,
+  schema.vpnTunnels.selectTableAsList,
   (vpnTunnels) =>
     [...vpnTunnels].sort((a, b) => a.handle.localeCompare(b.handle)),
 );
@@ -98,6 +98,6 @@ export const vpnTunnelEntities = {
   vpn_tunnel: defaultEntity({
     id: "vpn_tunnel",
     deserialize: deserializeDeployVpnTunnel,
-    save: db.vpnTunnels.add,
+    save: schema.vpnTunnels.add,
   }),
 };

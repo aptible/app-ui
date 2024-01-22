@@ -3,7 +3,7 @@ import { selectEnv } from "@app/config";
 import { call, createAction, poll, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import type {
   AcmeConfiguration,
   AcmeStatus,
@@ -138,10 +138,10 @@ export const deserializeDeployEndpoint = (
   };
 };
 
-export const selectEndpointById = db.endpoints.selectById;
-export const findEndpointById = db.endpoints.findById;
-export const selectEndpoints = db.endpoints.selectTable;
-export const selectEndpointsAsList = db.endpoints.selectTableAsList;
+export const selectEndpointById = schema.endpoints.selectById;
+export const findEndpointById = schema.endpoints.findById;
+export const selectEndpoints = schema.endpoints.selectTable;
+export const selectEndpointsAsList = schema.endpoints.selectTableAsList;
 export const hasDeployEndpoint = (a: DeployEndpoint) => a.id !== "";
 
 export const selectEndpointsByAppId = createSelector(
@@ -158,7 +158,7 @@ export const selectFirstEndpointByAppId = createSelector(
   selectEndpointsByAppId,
   (endpoints) => {
     if (endpoints.length === 0) {
-      return db.endpoints.empty;
+      return schema.endpoints.empty;
     }
 
     return endpoints[0];
@@ -401,7 +401,7 @@ export const fetchEndpoints = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    yield* schema.update(db.endpoints.reset());
+    yield* schema.update(schema.endpoints.reset());
   },
 );
 
@@ -424,7 +424,7 @@ export const endpointEntities = {
   vhost: defaultEntity({
     id: "vhost",
     deserialize: deserializeDeployEndpoint,
-    save: db.endpoints.add,
+    save: schema.endpoints.add,
   }),
 };
 
@@ -518,7 +518,7 @@ export const deleteEndpoint = api.delete<{ id: string }>(
   "/vhosts/:id",
   function* (ctx, next) {
     yield* next();
-    yield* schema.update(db.endpoints.remove([ctx.payload.id]));
+    yield* schema.update(schema.endpoints.remove([ctx.payload.id]));
   },
 );
 
@@ -558,7 +558,7 @@ export const deprovisionEndpoint = api.post<
 export const provisionEndpoint = thunks.create<CreateEndpointProps>(
   "provision-endpoint",
   function* (ctx, next) {
-    yield* schema.update(db.loaders.start({ id: ctx.key }));
+    yield* schema.update(schema.loaders.start({ id: ctx.key }));
 
     let certId = "";
     const payload = ctx.payload;
@@ -578,7 +578,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
         if (!certCtx.json.ok) {
           const data = certCtx.json.error;
           yield* schema.update(
-            db.loaders.error({ id: ctx.key, message: data.message }),
+            schema.loaders.error({ id: ctx.key, message: data.message }),
           );
           return;
         }
@@ -593,7 +593,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
     const result = endpointCtx.json;
     if (!result.ok) {
       yield* schema.update(
-        db.loaders.error({
+        schema.loaders.error({
           id: ctx.key,
           message: result.error.message,
         }),
@@ -615,7 +615,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
     if (!opCtx.json.ok) {
       const data = opCtx.json.error;
       yield* schema.update(
-        db.loaders.error({ id: ctx.key, message: data.message }),
+        schema.loaders.error({ id: ctx.key, message: data.message }),
       );
       return;
     }
@@ -625,7 +625,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
       opCtx,
     };
     yield* schema.update(
-      db.loaders.success({
+      schema.loaders.success({
         id: ctx.key,
         meta: {
           endpointId: result.value.id,
@@ -639,7 +639,7 @@ export const provisionEndpoint = thunks.create<CreateEndpointProps>(
 export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
   "provision-db-endpoint",
   function* (ctx, next) {
-    yield* schema.update(db.loaders.start({ id: ctx.key }));
+    yield* schema.update(schema.loaders.start({ id: ctx.key }));
 
     const endpointCtx = yield* call(() =>
       createDatabaseEndpoint.run(createDatabaseEndpoint(ctx.payload)),
@@ -648,7 +648,7 @@ export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
     const result = endpointCtx.json;
     if (!result.ok) {
       yield* schema.update(
-        db.loaders.error({
+        schema.loaders.error({
           id: ctx.key,
           message: result.error.message,
         }),
@@ -670,7 +670,7 @@ export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
     if (!opCtx.json.ok) {
       const data = opCtx.json.error;
       yield* schema.update(
-        db.loaders.error({ id: ctx.key, message: data.message }),
+        schema.loaders.error({ id: ctx.key, message: data.message }),
       );
       return;
     }
@@ -680,7 +680,7 @@ export const provisionDatabaseEndpoint = thunks.create<CreateDbEndpointProps>(
       opCtx,
     };
     yield* schema.update(
-      db.loaders.success({
+      schema.loaders.success({
         id: ctx.key,
         meta: {
           endpointId: result.value.id,
@@ -743,7 +743,7 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
   "update-endpoint",
   function* (ctx, next) {
     const id = ctx.name;
-    yield* schema.update(db.loaders.start({ id }));
+    yield* schema.update(schema.loaders.start({ id }));
 
     let certId = ctx.payload.certId;
     if (!certId && ctx.payload.cert && ctx.payload.privKey) {
@@ -758,7 +758,7 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       );
       if (!certCtx.json.ok) {
         yield* schema.update(
-          db.loaders.error({ id, message: certCtx.json.error.message }),
+          schema.loaders.error({ id, message: certCtx.json.error.message }),
         );
         return;
       }
@@ -778,7 +778,10 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
     );
     if (!patchCtx.json.ok) {
       yield* schema.update(
-        db.loaders.error({ id: ctx.key, message: patchCtx.json.error.message }),
+        schema.loaders.error({
+          id: ctx.key,
+          message: patchCtx.json.error.message,
+        }),
       );
       return;
     }
@@ -795,13 +798,13 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
     if (!opCtx.json.ok) {
       const data = opCtx.json.error;
       yield* schema.update(
-        db.loaders.error({ id: ctx.key, message: data.message }),
+        schema.loaders.error({ id: ctx.key, message: data.message }),
       );
       return;
     }
 
     yield* schema.update(
-      db.loaders.success({
+      schema.loaders.success({
         id,
         meta: { opId: opCtx.json.value.id } as any,
         message: "Success!",
@@ -830,7 +833,7 @@ export const checkDns = thunks.create<{ from: string; to: string }>(
   "check-dns",
   function* (ctx, next) {
     const { from, to } = ctx.payload;
-    yield* schema.update(db.loaders.start({ id: ctx.key }));
+    yield* schema.update(schema.loaders.start({ id: ctx.key }));
     // we add a random number to the google request so the browser
     // doesn't cache the response
     const rand = Math.floor(Math.random() * 10000);
@@ -850,7 +853,7 @@ export const checkDns = thunks.create<{ from: string; to: string }>(
 
     if (data.Status !== 0) {
       yield* schema.update(
-        db.loaders.success({ id: ctx.key, meta: { success } as any }),
+        schema.loaders.success({ id: ctx.key, meta: { success } as any }),
       );
     }
 
@@ -859,7 +862,7 @@ export const checkDns = thunks.create<{ from: string; to: string }>(
     });
 
     yield* schema.update(
-      db.loaders.success({ id: ctx.key, meta: { success } as any }),
+      schema.loaders.success({ id: ctx.key, meta: { success } as any }),
     );
     yield* next();
   },

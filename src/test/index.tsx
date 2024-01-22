@@ -5,7 +5,7 @@ import { hasDeployEnvironment } from "@app/deploy";
 import { FxStore } from "@app/fx";
 import { testEnv } from "@app/mocks";
 import { Provider } from "@app/react";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { waitFor } from "@testing-library/react";
 import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
 
@@ -41,7 +41,7 @@ export const setupAppIntegrationTest = (
   });
   const App = () => {
     return (
-      <Provider store={store}>
+      <Provider schema={schema} store={store}>
         <RouterProvider router={router} />
       </Provider>
     );
@@ -82,7 +82,7 @@ export const setupIntegrationTest = (
       { initialEntries: initEntries, initialIndex: 0 },
     );
     return (
-      <Provider store={store}>
+      <Provider schema={schema} store={store}>
         <RouterProvider router={router} />
       </Provider>
     );
@@ -104,7 +104,7 @@ export const waitForData = (
 export const waitForBootup = (store: FxStore<WebState>) =>
   waitForData(
     store,
-    (state) => db.loaders.selectById(state, { id: `${bootup}` }).isSuccess,
+    (state) => schema.loaders.selectById(state, { id: `${bootup}` }).isSuccess,
   );
 
 export const waitForToken = (store: FxStore<WebState>) =>
@@ -114,7 +114,7 @@ export const waitForToken = (store: FxStore<WebState>) =>
 export const waitForEnv = (store: FxStore<WebState>, envId: string | number) =>
   waitForData(store, (state) => {
     return hasDeployEnvironment(
-      db.environments.selectById(state, { id: `${envId}` }),
+      schema.environments.selectById(state, { id: `${envId}` }),
     );
   });
 

@@ -9,7 +9,7 @@ import {
 } from "@app/deploy";
 import { call, delay, leading, parallel, select } from "@app/fx";
 import { createSelector } from "@app/fx";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { ContainerMetrics, MetricHorizons } from "@app/types";
 
 export const metricHorizonAsSeconds = (metricHorizon: MetricHorizons) =>
@@ -121,7 +121,7 @@ export const deserializeContainerMetricsResponse = ({
 };
 
 export const selectContainerMetricsAsList =
-  db.containerMetrics.selectTableAsList;
+  schema.containerMetrics.selectTableAsList;
 export const selectMetricsByContainer = createSelector(
   selectContainerMetricsAsList,
   (_: WebState, p: { containerId: string }) => p.containerId,
@@ -248,7 +248,7 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
   function* (ctx, next) {
     const key = metricsKey(ctx.payload.serviceId, ctx.payload.metricHorizon);
     const id = `${ctx.key}-${ctx.payload.containerId}-${ctx.payload.metricName}-${key}`;
-    yield* schema.update(db.loaders.start({ id }));
+    yield* schema.update(schema.loaders.start({ id }));
 
     yield* next();
 
@@ -262,8 +262,8 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
     });
 
     yield* schema.update([
-      db.containerMetrics.add(containerMetrics),
-      db.loaders.success({ id }),
+      schema.containerMetrics.add(containerMetrics),
+      schema.loaders.success({ id }),
     ]);
   },
 );
@@ -273,14 +273,14 @@ export const fetchContainersByServiceId = thunks.create<{ serviceId: string }>(
   function* (ctx, next) {
     const { serviceId } = ctx.payload;
     const id = ctx.key;
-    yield* schema.update(db.loaders.start({ id }));
+    yield* schema.update(schema.loaders.start({ id }));
     const releaseCtx = yield* call(() =>
       fetchReleasesByServiceWithDeleted.run(
         fetchReleasesByServiceWithDeleted({ serviceId: ctx.payload.serviceId }),
       ),
     );
     if (!releaseCtx.json.ok) {
-      yield* schema.update(db.loaders.error({ id }));
+      yield* schema.update(schema.loaders.error({ id }));
       yield* next();
       return releaseCtx;
     }
@@ -301,7 +301,7 @@ export const fetchContainersByServiceId = thunks.create<{ serviceId: string }>(
     const group = yield* parallel(fx);
     yield* group;
 
-    yield* schema.update(db.loaders.success({ id }));
+    yield* schema.update(schema.loaders.success({ id }));
     yield* next();
   },
 );
@@ -314,7 +314,7 @@ export const fetchMetricByServiceId = thunks.create<{
   metricName: MetricName;
 }>("fetch-metric-by-service-id", function* (ctx, next) {
   const id = ctx.key;
-  yield* schema.update(db.loaders.start({ id }));
+  yield* schema.update(schema.loaders.start({ id }));
   const { serviceId, metricHorizon, metricName } = ctx.payload;
   const service = yield* select((s: WebState) =>
     selectServiceById(s, { id: serviceId }),
@@ -375,7 +375,7 @@ export const fetchMetricByServiceId = thunks.create<{
     yield* delay(250);
   }
 
-  yield* schema.update(db.loaders.start({ id }));
+  yield* schema.update(schema.loaders.start({ id }));
   yield* next();
 });
 
@@ -384,7 +384,7 @@ export const metricsKey = (serviceId: string, metricHorizon: string) => {
 };
 
 export const selectMetricsLoaded = createSelector(
-  db.loaders.selectTable,
+  schema.loaders.selectTable,
   (_: WebState, p: { serviceId: string }) => p.serviceId,
   (_: WebState, p: { metricHorizon: string }) => p.metricHorizon,
   (loaders, serviceId, metricHorizon) => {
@@ -413,7 +413,7 @@ export const fetchAllMetricsByServiceId = thunks.create<{
   function* (ctx, next) {
     const { serviceId, metrics, metricHorizon } = ctx.payload;
     const id = ctx.key;
-    yield* schema.update(db.loaders.start({ id }));
+    yield* schema.update(schema.loaders.start({ id }));
 
     yield* call(() =>
       fetchContainersByServiceId.run(fetchContainersByServiceId({ serviceId })),
@@ -434,7 +434,7 @@ export const fetchAllMetricsByServiceId = thunks.create<{
     const group = yield* parallel(fx);
     yield* group;
 
-    yield* schema.update(db.loaders.success({ id }));
+    yield* schema.update(schema.loaders.success({ id }));
     yield* next();
   },
 );

@@ -1,7 +1,7 @@
 import { authApi } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { titleCase } from "@app/string-utils";
 import {
   HalEmbedded,
@@ -57,10 +57,10 @@ export const roleTypeFormat = (role: Role): string => {
   return titleCase(role.type);
 };
 
-export const selectRoleById = db.roles.selectById;
+export const selectRoleById = schema.roles.selectById;
 
 export const selectRolesByOrgId = createSelector(
-  db.roles.selectTableAsList,
+  schema.roles.selectTableAsList,
   (_: WebState, p: { orgId: string }) => p.orgId,
   (roles, orgId) => {
     return roles
@@ -74,8 +74,8 @@ export const selectRolesByOrgId = createSelector(
 );
 
 export const selectCurrentUserRoles = createSelector(
-  db.roles.selectTable,
-  db.currentUserRoles.select,
+  schema.roles.selectTable,
+  schema.currentUserRoles.select,
   (roles, roleIds) => roleIds.map((id) => roles[id]).filter(excludesFalse),
 );
 
@@ -100,7 +100,7 @@ export const selectIsUserAnyOwner = createSelector(
 export const entities = {
   role: defaultEntity({
     id: "role",
-    save: db.roles.add,
+    save: schema.roles.add,
     deserialize: deserializeRole,
   }),
 };
@@ -119,7 +119,7 @@ export const fetchCurrentUserRoles = authApi.get<
   }
 
   const ids = ctx.json.value._embedded.roles.map((r) => r.id);
-  yield* schema.update(db.currentUserRoles.set(ids));
+  yield* schema.update(schema.currentUserRoles.set(ids));
 });
 
 export const fetchUserRoles = authApi.get<
@@ -175,6 +175,6 @@ export const deleteRole = authApi.delete<{ id: string }>(
       return;
     }
 
-    yield* schema.update(db.roles.remove([ctx.payload.id]));
+    yield* schema.update(schema.roles.remove([ctx.payload.id]));
   },
 );

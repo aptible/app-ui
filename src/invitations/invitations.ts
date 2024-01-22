@@ -4,7 +4,7 @@ import { isBefore } from "@app/date";
 import { select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { selectToken } from "@app/token";
 import type {
   HalEmbedded,
@@ -47,9 +47,9 @@ export function deserializeInvitation(i: InvitationResponse): Invitation {
   };
 }
 
-export const selectInvitationById = db.invitations.selectById;
+export const selectInvitationById = schema.invitations.selectById;
 export const selectInvitationsByOrgId = createSelector(
-  db.invitations.selectTableAsList,
+  schema.invitations.selectTableAsList,
   (_: WebState, p: { orgId: string }) => p.orgId,
   (invitations, orgId) =>
     invitations.filter((inv) => inv.organizationId === orgId),
@@ -76,7 +76,7 @@ export const fetchInvitations = authApi.get<
     return acc;
   }, {});
 
-  yield* schema.update(db.invitations.set(invitationsMap));
+  yield* schema.update(schema.invitations.set(invitationsMap));
 });
 
 export const fetchInvitation = authApi.get<{ id: string }, InvitationResponse>(
@@ -95,7 +95,7 @@ export const fetchInvitation = authApi.get<{ id: string }, InvitationResponse>(
     const { value } = ctx.json;
 
     yield* schema.update(
-      db.invitations.add({ [value.id]: deserializeInvitation(value) }),
+      schema.invitations.add({ [value.id]: deserializeInvitation(value) }),
     );
   },
 );

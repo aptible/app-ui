@@ -2,7 +2,7 @@ import { authApi } from "@app/api";
 import { revokeTokensMdw } from "@app/auth";
 import { Next, leading, select } from "@app/fx";
 import { defaultEntity } from "@app/hal";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 import {
   AuthApiCtx,
   HalEmbedded,
@@ -35,7 +35,7 @@ const deserializeU2f = (u: U2fDeviceResponse): U2fDevice => {
 export const entities = {
   u2f_device: defaultEntity({
     id: "u2f_device",
-    save: db.u2fDevices.add,
+    save: schema.u2fDevices.add,
     deserialize: deserializeU2f,
   }),
 };
@@ -59,7 +59,7 @@ export const deleteU2fDevice = authApi.delete<{ deviceId: string }>(
         return;
       }
 
-      yield* schema.update(db.u2fDevices.remove([deviceId]));
+      yield* schema.update(schema.u2fDevices.remove([deviceId]));
     },
     revokeTokensMdw,
   ],
@@ -108,7 +108,7 @@ export const fetchOtpCodes = authApi.get<
 export const setupOtp = authApi.post<SetupOtp, OtpResponse>(
   "/users/:userId/otp_configurations",
   function* onOtp(ctx, next) {
-    const curOtp = yield* select(db.otp.select);
+    const curOtp = yield* select(schema.otp.select);
     if (curOtp.id) {
       return;
     }
@@ -120,7 +120,7 @@ export const setupOtp = authApi.post<SetupOtp, OtpResponse>(
     }
 
     const newOtp = deserializeOtp(ctx.json.value);
-    yield* schema.update(db.otp.set(newOtp));
+    yield* schema.update(schema.otp.set(newOtp));
   },
 );
 

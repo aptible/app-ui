@@ -3,7 +3,7 @@ import { createSelector } from "@app/fx";
 import { latest, select } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import {
   DeployEnvironment,
   DeployEnvironmentStats,
@@ -106,12 +106,12 @@ export const deserializeDeployEnvironmentStats = (
   };
 };
 
-export const selectEnvironmentById = db.environments.selectById;
-export const selectEnvironmentByIds = db.environments.selectByIds;
-export const selectEnvironments = db.environments.selectTable;
-const selectEnvironmentsAsList = db.environments.selectTableAsList;
-export const findEnvById = db.environments.findById;
-export const selectEnvironmentStatsById = db.environmentStats.selectById;
+export const selectEnvironmentById = schema.environments.selectById;
+export const selectEnvironmentByIds = schema.environments.selectByIds;
+export const selectEnvironments = schema.environments.selectTable;
+const selectEnvironmentsAsList = schema.environments.selectTableAsList;
+export const findEnvById = schema.environments.findById;
+export const selectEnvironmentStatsById = schema.environmentStats.selectById;
 
 export const selectEnvironmentsByOrg = createSelector(
   selectEnvironmentsAsList,
@@ -150,7 +150,7 @@ export const selectEnvironmentByName = createSelector(
   selectEnvironmentsAsList,
   (_: WebState, p: { handle: string }) => p.handle,
   (envs, handle) => {
-    return envs.find((e) => e.handle === handle) || db.environments.empty;
+    return envs.find((e) => e.handle === handle) || schema.environments.empty;
   },
 );
 
@@ -165,7 +165,7 @@ export const fetchEnvironmentById = api.get<
   }
 
   const stats = deserializeDeployEnvironmentStats(ctx.json.value);
-  yield* schema.update(db.environmentStats.add({ [stats.id]: stats }));
+  yield* schema.update(schema.environmentStats.add({ [stats.id]: stats }));
 });
 
 export const fetchEnvironments = api.get(
@@ -178,7 +178,7 @@ export const fetchEnvironments = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    yield* schema.update(db.environments.reset());
+    yield* schema.update(schema.environments.reset());
   },
 );
 
@@ -191,7 +191,7 @@ export const deprovisionEnvironment = api.delete<{ id: string }>(
   ["/accounts/:id"],
   function* (ctx, next) {
     yield* next();
-    yield* schema.update(db.environments.remove([ctx.payload.id]));
+    yield* schema.update(schema.environments.remove([ctx.payload.id]));
   },
 );
 
@@ -310,7 +310,7 @@ export const updateDeployEnvironmentStatus = api.patch<EnvPatch>(
     // optimistically update status to prevent this endpoint getting hit multiple times from the
     // create project git status view
     yield* schema.update(
-      db.environments.patch({ [id]: { onboardingStatus: status } }),
+      schema.environments.patch({ [id]: { onboardingStatus: status } }),
     );
 
     const body = {
@@ -358,6 +358,6 @@ export const environmentEntities = {
   account: defaultEntity({
     id: "account",
     deserialize: deserializeDeployEnvironment,
-    save: db.environments.add,
+    save: schema.environments.add,
   }),
 };

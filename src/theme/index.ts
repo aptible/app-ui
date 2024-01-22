@@ -1,3 +1,3 @@
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 
-export const selectTheme = db.theme.select;
+export const selectTheme = schema.theme.select;

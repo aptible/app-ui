@@ -20,7 +20,7 @@ import {
   otpRecoveryCodesUrl,
   otpSetupUrl,
 } from "@app/routes";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { selectCurrentUserId, updateEmail } from "@app/users";
 import { emailValidator } from "@app/validator";
 import { useState } from "react";
@@ -301,7 +301,7 @@ const SecurityKeys = () => {
   const dispatch = useDispatch();
   const [user, loader] = useCurrentUser();
   useQuery(fetchU2fDevices({ userId: user.id }));
-  const devices = useSelector(db.u2fDevices.selectTableAsList);
+  const devices = useSelector(schema.u2fDevices.selectTableAsList);
   const onRemove = (deviceId: string) => {
     dispatch(deleteU2fDevice({ deviceId }));
   };

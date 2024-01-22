@@ -2,7 +2,7 @@ import { api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import { call } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { DeployLogDrain, LinkResponse, ProvisionableStatus } from "@app/types";
 import { DeployOperationResponse } from "../operation";
 
@@ -160,10 +160,10 @@ export const defaultLogDrainResponse = (
   };
 };
 
-export const selectLogDrainById = db.logDrains.selectById;
-export const findLogDrainById = db.logDrains.findById;
-export const selectLogDrainsAsList = db.logDrains.selectTableAsList;
-export const selectLogDrains = db.logDrains.selectTable;
+export const selectLogDrainById = schema.logDrains.selectById;
+export const findLogDrainById = schema.logDrains.findById;
+export const selectLogDrainsAsList = schema.logDrains.selectTableAsList;
+export const selectLogDrains = schema.logDrains.selectTable;
 
 export const selectLogDrainsByEnvId = createSelector(
   selectLogDrainsAsList,
@@ -190,7 +190,7 @@ export const fetchLogDrains = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    yield* schema.update(db.logDrains.reset());
+    yield* schema.update(schema.logDrains.reset());
   },
 );
 
@@ -278,14 +278,14 @@ export const provisionLogDrain = thunks.create<CreateLogDrainProps>(
   "create-and-provision-log-drain",
   function* (ctx, next) {
     const id = ctx.key;
-    yield* schema.update(db.loaders.start({ id }));
+    yield* schema.update(schema.loaders.start({ id }));
 
     const mdCtx = yield* call(() =>
       createLogDrain.run(createLogDrain(ctx.payload)),
     );
     if (!mdCtx.json.ok) {
       const data = mdCtx.json.error;
-      yield* schema.update(db.loaders.error({ id, message: data.message }));
+      yield* schema.update(schema.loaders.error({ id, message: data.message }));
       return;
     }
 
@@ -297,14 +297,14 @@ export const provisionLogDrain = thunks.create<CreateLogDrainProps>(
     );
     if (!opCtx.json.ok) {
       const data = opCtx.json.error;
-      yield* schema.update(db.loaders.error({ id, message: data.message }));
+      yield* schema.update(schema.loaders.error({ id, message: data.message }));
       return;
     }
 
     yield* next();
 
     yield* schema.update(
-      db.loaders.success({
+      schema.loaders.success({
         id,
         meta: { logDrainId, opId: `${opCtx.json.value.id}` } as any,
       }),
@@ -365,6 +365,6 @@ export const logDrainEntities = {
   log_drain: defaultEntity({
     id: "log_drain",
     deserialize: deserializeLogDrain,
-    save: db.logDrains.add,
+    save: schema.logDrains.add,
   }),
 };

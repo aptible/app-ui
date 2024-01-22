@@ -3,7 +3,7 @@ import { createSignupBillingRecords } from "@app/billing";
 import { createLog } from "@app/debug";
 import { call } from "@app/fx";
 import { submitHubspotForm } from "@app/hubspot";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 import { tunaEvent } from "@app/tuna";
 import { CreateUserForm, createUser } from "@app/users";
 import { AUTH_LOADER_ID, defaultAuthLoaderMeta } from "./loader";
@@ -17,7 +17,7 @@ export const signup = thunks.create<CreateUserForm>(
   function* onSignup(ctx, next) {
     const { company: orgName, name, email, password } = ctx.payload;
     const id = ctx.key;
-    yield* schema.update(db.loaders.start({ id }));
+    yield* schema.update(schema.loaders.start({ id }));
 
     const userCtx = yield* call(createUser.run(ctx.payload));
 
@@ -26,7 +26,7 @@ export const signup = thunks.create<CreateUserForm>(
     if (!userCtx.json.ok) {
       const { message, ...meta } = userCtx.json.error;
       yield* schema.update(
-        db.loaders.error({
+        schema.loaders.error({
           id,
           message,
           meta: defaultAuthLoaderMeta(meta) as any,
@@ -50,7 +50,7 @@ export const signup = thunks.create<CreateUserForm>(
     if (!tokenCtx.json.ok) {
       const { message, ...meta } = tokenCtx.json.error;
       yield* schema.update(
-        db.loaders.error({
+        schema.loaders.error({
           id,
           message,
           meta: defaultAuthLoaderMeta(meta) as any,
@@ -65,14 +65,14 @@ export const signup = thunks.create<CreateUserForm>(
       const orgCtx = yield* call(createOrganization.run({ name: orgName }));
 
       // hack because useLoaderSuccess expected loader.isLoader then loader.isSuccess
-      yield* schema.update(db.loaders.start({ id }));
+      yield* schema.update(schema.loaders.start({ id }));
 
       log(orgCtx);
 
       if (!orgCtx.json.ok) {
         const { message, ...meta } = orgCtx.json.error;
         yield* schema.update(
-          db.loaders.error({
+          schema.loaders.error({
             id,
             message,
             meta: defaultAuthLoaderMeta(meta) as any,
@@ -112,14 +112,14 @@ export const signup = thunks.create<CreateUserForm>(
 
     ctx.actions.push({ type: "REFRESH_DATA" });
     yield* schema.update([
-      db.loaders.success({
+      schema.loaders.success({
         id,
         meta: defaultAuthLoaderMeta({
           id: `${userCtx.json.value.id}`,
           verified: userCtx.json.value.verified,
         }) as any,
       }),
-      db.loaders.success({
+      schema.loaders.success({
         id: AUTH_LOADER_ID,
       }),
     ]);

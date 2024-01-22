@@ -1,7 +1,7 @@
 import { thunks } from "@app/api";
 import { createLog } from "@app/debug";
 import { call } from "@app/fx";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 import { AUTH_LOADER_ID, defaultAuthLoaderMeta } from "./loader";
 import { CreateTokenPayload, createToken, elevateToken } from "./token";
@@ -14,7 +14,7 @@ export const login = thunks.create<CreateTokenPayload>(
   function* onLogin(ctx, next) {
     // use ctx.name not ctx.key (this is important for webauthn!)
     const id = ctx.name;
-    yield* schema.update(db.loaders.start({ id }));
+    yield* schema.update(schema.loaders.start({ id }));
     const tokenCtx = yield* call(() =>
       createToken.run(createToken(ctx.payload)),
     );
@@ -23,7 +23,7 @@ export const login = thunks.create<CreateTokenPayload>(
       const { error, code, exception_context, message } = tokenCtx.json
         .error as any;
       yield* schema.update(
-        db.loaders.error({
+        schema.loaders.error({
           id,
           message,
           meta: defaultAuthLoaderMeta({
@@ -48,8 +48,8 @@ export const login = thunks.create<CreateTokenPayload>(
 
     ctx.actions.push({ type: "REFRESH_DATA" });
     yield* schema.update([
-      db.loaders.success({ id }),
-      db.loaders.success({ id: AUTH_LOADER_ID }),
+      schema.loaders.success({ id }),
+      schema.loaders.success({ id: AUTH_LOADER_ID }),
     ]);
   },
 );
@@ -74,7 +74,7 @@ export const loginWebauthn = thunks.create<
   } catch (err) {
     console.error(err);
     yield* schema.update(
-      db.loaders.error({
+      schema.loaders.error({
         id,
         message: (err as Error).message,
         // auth loader type sets this expectation

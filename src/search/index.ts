@@ -8,7 +8,7 @@ import {
   selectStacksByOrgAsList,
 } from "@app/deploy";
 import { createSelector, select } from "@app/fx";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import {
   AbstractResourceItem,
   DeployApp,
@@ -83,11 +83,11 @@ export const selectAllResourcesAsList = createSelector(
       });
     });
 
-    dbs.forEach((db) => {
+    dbs.forEach((dbi) => {
       resources.push({
         type: "database",
-        id: db.id,
-        data: db,
+        id: dbi.id,
+        data: dbi,
       });
     });
 
@@ -131,8 +131,8 @@ export const selectResourcesForSearch = createSelector(
   },
 );
 
-export const selectResourceStatsAsList = db.resourceStats.selectTableAsList;
-export const selectResourceStatsById = db.resourceStats.selectById;
+export const selectResourceStatsAsList = schema.resourceStats.selectTableAsList;
+export const selectResourceStatsById = schema.resourceStats.selectById;
 
 export const selectResourcesByLastAccessed = createSelector(
   selectResourceStatsAsList,
@@ -182,13 +182,13 @@ export const setResourceStats = thunks.create<
   const now = new Date().toISOString();
   if (!resource) {
     yield* schema.update(
-      db.resourceStats.add({
+      schema.resourceStats.add({
         [id]: { ...ctx.payload, count: 1, lastAccessed: now },
       }),
     );
   } else {
     yield* schema.update(
-      db.resourceStats.patch({
+      schema.resourceStats.patch({
         [id]: {
           count: resource.count + 1,
           lastAccessed: now,

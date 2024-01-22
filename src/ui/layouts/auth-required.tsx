@@ -11,7 +11,7 @@ import {
   signupUrl,
   verifyEmailRequestUrl,
 } from "@app/routes";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { selectAccessToken } from "@app/token";
 import { selectCurrentUser, selectIsUserVerified } from "@app/users";
 import { useEffect } from "react";
@@ -87,7 +87,7 @@ export const AuthRequired = ({
   const location = useLocation();
   const dispatch = useDispatch();
   const loader = useSelector((s) =>
-    db.loaders.selectById(s, { id: FETCH_REQUIRED_DATA }),
+    schema.loaders.selectById(s, { id: FETCH_REQUIRED_DATA }),
   );
   const accessToken = useSelector(selectAccessToken);
 

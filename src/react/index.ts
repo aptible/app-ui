@@ -1,4 +1,4 @@
-import { type WebState, db } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { useEffect, useRef } from "react";
 import { LoaderState, ThunkAction } from "starfx";
 import {
@@ -42,7 +42,7 @@ interface UseCacheResult<D = any, A extends ThunkAction = ThunkAction>
 
 export function useLoader(action: ThunkAction | ActionFn) {
   const id = typeof action === "function" ? `${action}` : action.payload.key;
-  return useSelector((s: WebState) => db.loaders.selectById(s, { id }));
+  return useSelector((s: WebState) => schema.loaders.selectById(s, { id }));
 }
 
 export function useApi<P = any, A extends ThunkAction = ThunkAction<P>>(
@@ -82,7 +82,7 @@ export function useCache<P = any, ApiSuccess = any>(
 ): UseCacheResult<typeof action.payload._result, ThunkAction<P, ApiSuccess>> {
   const id = action.payload.key;
   const data: any = useSelector((s: WebState) =>
-    db.cache.selectById(s, { id }),
+    schema.cache.selectById(s, { id }),
   );
   const query = useQuery(action);
   return { ...query, data: data || null };

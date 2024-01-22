@@ -1,6 +1,6 @@
 import { api } from "@app/api";
 import { defaultEntity } from "@app/hal";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import type { DeployDisk } from "@app/types";
 
 interface DeployDiskResponse {
@@ -75,12 +75,12 @@ export const deserializeDisk = (payload: DeployDiskResponse): DeployDisk => {
 
 export const fetchDiskById = api.get<{ id: string }>("/disks/:id");
 
-export const selectDiskById = db.disks.selectById;
+export const selectDiskById = schema.disks.selectById;
 
 export const diskEntities = {
   disk: defaultEntity({
     id: "disk",
-    save: db.disks.add,
+    save: schema.disks.add,
     deserialize: deserializeDisk,
   }),
 };

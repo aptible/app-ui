@@ -2,7 +2,7 @@ import { billingApi, cacheTimer, thunks } from "@app/api";
 import { call, parallel } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 import { BillingDetail, HalEmbedded, LinkResponse } from "@app/types";
 import { loadStripe } from "@stripe/stripe-js/pure";
 
@@ -47,7 +47,7 @@ const deserializeBillingDetail = (bt: BillingDetailResponse): BillingDetail => {
   };
 };
 
-export const selectBillingDetail = db.billingDetail.select;
+export const selectBillingDetail = schema.billingDetail.select;
 export const selectHasPaymentMethod = createSelector(
   selectBillingDetail,
   (bt) => bt.paymentMethodUrl !== "",
@@ -63,7 +63,7 @@ export const fetchBillingDetail = billingApi.get<
   }
 
   yield* schema.update(
-    db.billingDetail.set(deserializeBillingDetail(ctx.json.value)),
+    schema.billingDetail.set(deserializeBillingDetail(ctx.json.value)),
   );
 });
 

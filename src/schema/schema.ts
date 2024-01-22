@@ -13,9 +13,9 @@ import {
 import { createSchema, slice } from "starfx/store";
 import * as factory from "./factory";
 
-export const schema = createSchema({
+export const [schema, initialState] = createSchema({
   cache: slice.table(),
-  loaders: slice.loader(),
+  loaders: slice.loader<any>(),
   env: slice.obj(factory.defaultConfig()),
   feedback: slice.obj<Feedback>({
     preDeploySurveyAnswered: false,
@@ -77,5 +77,8 @@ export const schema = createSchema({
   images: slice.table({ empty: factory.defaultDeployImage() }),
   memberships: slice.table({ empty: factory.defaultMembership() }),
 });
-export type WebState = typeof schema.initialState;
-export const { db } = schema;
+export type WebState = typeof initialState;
+/**
+ * @deprecated Use {@link schema} instead
+ */
+// export const db = schema;

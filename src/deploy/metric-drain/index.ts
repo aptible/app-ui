@@ -2,7 +2,7 @@ import { api, cacheTimer, thunks } from "@app/api";
 import { createSelector } from "@app/fx";
 import { call } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import {
   DeployMetricDrain,
   LinkResponse,
@@ -89,10 +89,10 @@ export const deserializeMetricDrain = (
   };
 };
 
-export const selectMetricDrainById = db.metricDrains.selectById;
-export const findMetricDrainById = db.metricDrains.findById;
-export const selectMetricDrainsAsList = db.metricDrains.selectTableAsList;
-export const selectMetricDrains = db.metricDrains.selectTable;
+export const selectMetricDrainById = schema.metricDrains.selectById;
+export const findMetricDrainById = schema.metricDrains.findById;
+export const selectMetricDrainsAsList = schema.metricDrains.selectTableAsList;
+export const selectMetricDrains = schema.metricDrains.selectTable;
 
 export const selectMetricDrainsByEnvId = createSelector(
   selectMetricDrainsAsList,
@@ -123,7 +123,7 @@ export const fetchMetricDrains = api.get(
     if (!ctx.json.ok) {
       return;
     }
-    yield* schema.update(db.metricDrains.reset());
+    yield* schema.update(schema.metricDrains.reset());
   },
 );
 
@@ -235,7 +235,7 @@ export const createMetricDrainOperation = api.post<
 export const provisionMetricDrain = thunks.create<CreateMetricDrainProps>(
   "create-and-provision-metric-drain",
   function* (ctx, next) {
-    yield* schema.update(db.loaders.start({ id: ctx.key }));
+    yield* schema.update(schema.loaders.start({ id: ctx.key }));
 
     const mdCtx = yield* call(() =>
       createMetricDrain.run(createMetricDrain(ctx.payload)),
@@ -243,7 +243,7 @@ export const provisionMetricDrain = thunks.create<CreateMetricDrainProps>(
     if (!mdCtx.json.ok) {
       const data = mdCtx.json.error as any;
       yield* schema.update(
-        db.loaders.error({ id: ctx.key, message: data.message }),
+        schema.loaders.error({ id: ctx.key, message: data.message }),
       );
       return;
     }
@@ -257,7 +257,7 @@ export const provisionMetricDrain = thunks.create<CreateMetricDrainProps>(
     if (!opCtx.json.ok) {
       const data = opCtx.json.error as any;
       yield* schema.update(
-        db.loaders.error({ id: ctx.key, message: data.message }),
+        schema.loaders.error({ id: ctx.key, message: data.message }),
       );
       return;
     }
@@ -265,7 +265,7 @@ export const provisionMetricDrain = thunks.create<CreateMetricDrainProps>(
     yield* next();
 
     yield* schema.update(
-      db.loaders.success({
+      schema.loaders.success({
         id: ctx.key,
         meta: { metricDrainId, opId: `${opCtx.json.value.id}` } as any,
       }),
@@ -327,6 +327,6 @@ export const metricDrainEntities = {
   metric_drain: defaultEntity({
     id: "metric_drain",
     deserialize: deserializeMetricDrain,
-    save: db.metricDrains.add,
+    save: schema.metricDrains.add,
   }),
 };

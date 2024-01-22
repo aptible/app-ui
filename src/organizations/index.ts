@@ -1,6 +1,6 @@
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { LinkResponse, Organization, excludesFalse } from "@app/types";
 
 export interface OrganizationResponse {
@@ -61,9 +61,9 @@ export const defaultOrgResponse = (
   };
 };
 
-export const selectOrganizationById = db.organizations.selectById;
+export const selectOrganizationById = schema.organizations.selectById;
 export const selectOrganizationsAsList = createSelector(
-  db.organizations.selectTable,
+  schema.organizations.selectTable,
   (orgMap) => {
     return Object.values(orgMap)
       .filter(excludesFalse)
@@ -73,7 +73,7 @@ export const selectOrganizationsAsList = createSelector(
       );
   },
 );
-export const selectOrganizationSelectedId = db.organizationSelected.select;
+export const selectOrganizationSelectedId = schema.organizationSelected.select;
 export const hasOrganization = (o: Organization): boolean => !!o.id;
 
 export const selectOrganizationSelected = createSelector(
@@ -81,10 +81,10 @@ export const selectOrganizationSelected = createSelector(
   selectOrganizationSelectedId,
   (orgs, id): Organization => {
     if (orgs.length === 0) {
-      return db.organizations.empty;
+      return schema.organizations.empty;
     }
     if (!id) {
-      return db.organizations.empty;
+      return schema.organizations.empty;
     }
 
     const org = orgs.find((o) => o.id === id);
@@ -92,7 +92,7 @@ export const selectOrganizationSelected = createSelector(
       return org;
     }
 
-    return db.organizations.empty;
+    return schema.organizations.empty;
   },
 );
 
@@ -118,7 +118,7 @@ function deserializeOrganization(o: OrganizationResponse): Organization {
 export const entities = {
   organization: defaultEntity({
     id: "organization",
-    save: db.organizations.add,
+    save: schema.organizations.add,
     deserialize: deserializeOrganization,
   }),
 };

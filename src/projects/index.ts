@@ -22,7 +22,7 @@ import {
   waitForOperation,
 } from "@app/deploy";
 import { Operation, call, parallel, put, select } from "@app/fx";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { TextVal } from "@app/string-utils";
 import { DeployApp } from "@app/types";
 
@@ -42,18 +42,18 @@ export const getDbEnvTemplateValue = (dbHandle: string) => `{{${dbHandle}}}`;
 export const createProject = thunks.create<CreateProjectProps>(
   "create-project",
   function* (ctx, next) {
-    yield* schema.update(db.loaders.start({ id: ctx.key }));
+    yield* schema.update(schema.loaders.start({ id: ctx.key }));
 
     if (!ctx.payload.stackId) {
       yield* schema.update(
-        db.loaders.error({ id: ctx.key, message: "stack cannot be empty" }),
+        schema.loaders.error({ id: ctx.key, message: "stack cannot be empty" }),
       );
       return;
     }
 
     if (!ctx.payload.name) {
       yield* schema.update(
-        db.loaders.error({ id: ctx.key, message: "name cannot be empty" }),
+        schema.loaders.error({ id: ctx.key, message: "name cannot be empty" }),
       );
       return;
     }
@@ -77,7 +77,7 @@ export const createProject = thunks.create<CreateProjectProps>(
       if (!envCtx.json.ok) {
         const data = envCtx.json.error;
         yield* schema.update(
-          db.loaders.error({ id: ctx.key, message: data.message }),
+          schema.loaders.error({ id: ctx.key, message: data.message }),
         );
         return;
       }
@@ -93,7 +93,7 @@ export const createProject = thunks.create<CreateProjectProps>(
     if (!appCtx.json.ok) {
       const data = appCtx.json.error;
       yield* schema.update(
-        db.loaders.error({
+        schema.loaders.error({
           id: ctx.key,
           message: data.message,
           meta: { envId } as any,
@@ -106,7 +106,7 @@ export const createProject = thunks.create<CreateProjectProps>(
     const appId = appCtx.json.value.id;
 
     yield* schema.update(
-      db.loaders.success({
+      schema.loaders.success({
         id: ctx.key,
         meta: { envId, appId } as any,
       }),
@@ -148,7 +148,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
   function* (ctx, next) {
     const { appId, envId, dbs, envs, cmds, gitRef, curEnvs } = ctx.payload;
     const id = ctx.name;
-    yield* schema.update(db.loaders.start({ id }));
+    yield* schema.update(schema.loaders.start({ id }));
 
     const app: DeployApp = yield* select((s: WebState) =>
       selectAppById(s, { id: appId }),
@@ -156,14 +156,14 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     if (!hasDeployApp(app)) {
       const message = `no app found with id ${appId}, cannot deploy project`;
       log(message);
-      yield* schema.update(db.loaders.error({ id, message }));
+      yield* schema.update(schema.loaders.error({ id, message }));
       return;
     }
 
     if (!envId) {
       const message = "envId cannot be empty, cannot deploy project";
       log(message);
-      yield* schema.update(db.loaders.error({ id, message }));
+      yield* schema.update(schema.loaders.error({ id, message }));
       return;
     }
 
@@ -194,7 +194,9 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     const env = configEnvListToEnv(envs, curEnvs);
     // we want to also inject the db env vars with placeholders
     dbs.forEach((db) => {
-      env[`${db.env}${DB_ENV_TEMPLATE_KEY}`] = getDbEnvTemplateValue(db.name);
+      env[`${schema.env}${DB_ENV_TEMPLATE_KEY}`] = getDbEnvTemplateValue(
+        db.name,
+      );
     });
 
     // Trigger configure operation now so we can store the env vars
@@ -211,7 +213,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
 
     if (!configCtx.json.ok) {
       const data = configCtx.json.error;
-      yield* schema.update(db.loaders.error({ id, message: data.message }));
+      yield* schema.update(schema.loaders.error({ id, message: data.message }));
       return;
     }
 
@@ -242,21 +244,21 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       if (!json) continue;
 
       if (json.error) {
-        yield* schema.update(db.loaders.error({ id, message: json.error }));
+        yield* schema.update(schema.loaders.error({ id, message: json.error }));
         continue;
       }
 
       const { opCtx, dbCtx, dbId } = json;
       if (opCtx && !opCtx.json.ok) {
         yield* schema.update(
-          db.loaders.error({ id, message: opCtx.json.error.message }),
+          schema.loaders.error({ id, message: opCtx.json.error.message }),
         );
         continue;
       }
 
       if (dbCtx && !dbCtx.json.ok) {
         yield* schema.update(
-          db.loaders.error({ id, message: dbCtx.json.error.message }),
+          schema.loaders.error({ id, message: dbCtx.json.error.message }),
         );
         continue;
       }
@@ -289,12 +291,12 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
 
     if (!deployCtx.json.ok) {
       const data = deployCtx.json.error;
-      yield* schema.update(db.loaders.error({ id, message: data.message }));
+      yield* schema.update(schema.loaders.error({ id, message: data.message }));
       return;
     }
 
     yield* next();
-    yield* schema.update(db.loaders.success({ id }));
+    yield* schema.update(schema.loaders.success({ id }));
   },
 );
 
@@ -388,7 +390,7 @@ export const updateEnvWithDbUrls = thunks.create<{
     }),
   );
 
-  yield* schema.update(db.loaders.success({ id }));
+  yield* schema.update(schema.loaders.success({ id }));
   yield* next();
   ctx.json = { message: "success" };
 });
@@ -399,16 +401,16 @@ export const redeployApp = thunks.create<{
   gitRef: string;
   force: boolean;
 }>("redeploy-app", function* (ctx, next) {
-  yield* schema.update(db.loaders.resetByIds([`${deployProject}`]));
+  yield* schema.update(schema.loaders.resetByIds([`${deployProject}`]));
   const id = ctx.name;
-  yield* schema.update(db.loaders.start({ id }));
+  yield* schema.update(schema.loaders.start({ id }));
   const result = yield* call(() =>
     updateEnvWithDbUrls.run(updateEnvWithDbUrls(ctx.payload)),
   );
 
   if (result.json.message !== "success") {
     yield* schema.update(
-      db.loaders.error({ id, message: result.json.message }),
+      schema.loaders.error({ id, message: result.json.message }),
     );
     yield* next();
 
@@ -427,12 +429,12 @@ export const redeployApp = thunks.create<{
   );
   if (!deployCtx.json.ok) {
     const data = deployCtx.json.error;
-    yield* schema.update(db.loaders.error({ id, message: data.message }));
+    yield* schema.update(schema.loaders.error({ id, message: data.message }));
     yield* next();
     return;
   }
 
   yield* schema.update(
-    db.loaders.success({ id, message: "Redeploy initiated" }),
+    schema.loaders.success({ id, message: "Redeploy initiated" }),
   );
 });

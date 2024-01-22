@@ -4,7 +4,7 @@ import {
   OrganizationResponse,
   selectOrganizationSelectedId,
 } from "@app/organizations";
-import { db, schema } from "@app/schema";
+import { schema } from "@app/schema";
 import { selectToken } from "@app/token";
 import { HalEmbedded, Organization } from "@app/types";
 import { exchangeToken } from "./token";
@@ -30,7 +30,7 @@ export const fetchOrganizations = authApi.get<
     if (!foundOrg && orgs.length > 0) {
       const org = orgs[0];
       if (!org) return;
-      yield* schema.update(db.organizationSelected.set(org.id));
+      yield* schema.update(schema.organizationSelected.set(org.id));
     }
   },
 );
@@ -79,7 +79,7 @@ export const createOrganization = authApi.post<CreateOrg, OrganizationResponse>(
         }),
       ),
     );
-    yield* schema.update(db.organizationSelected.set(ctx.json.value.id));
+    yield* schema.update(schema.organizationSelected.set(ctx.json.value.id));
   },
 );
 

@@ -1,6 +1,6 @@
 import { createSelector } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { LinkResponse, Token } from "@app/types";
 import { JwtToken, defaultJWTToken, parseJwt } from "./jwt-parser";
 
@@ -66,14 +66,14 @@ const findJwtToken = (curToken: Token): JwtToken => {
 };
 const hasExpired = (curToken: JwtToken) => unixNow() > curToken.exp;
 
-export const selectToken = db.token.select;
+export const selectToken = schema.token.select;
 export const selectAccessToken = (state: WebState) =>
-  db.token.select(state).accessToken;
+  schema.token.select(state).accessToken;
 export const selectActorUrl = (state: WebState) =>
-  db.token.select(state).actorUrl;
+  schema.token.select(state).actorUrl;
 export const selectUserUrl = (state: WebState) =>
-  db.token.select(state).userUrl;
-export const selectJwtToken = createSelector(db.token.select, findJwtToken);
+  schema.token.select(state).userUrl;
+export const selectJwtToken = createSelector(schema.token.select, findJwtToken);
 export const selectIsTokenValid = createSelector(
   selectJwtToken,
   (jwtToken) => jwtToken.scope !== "" && !hasExpired(jwtToken),
@@ -91,7 +91,7 @@ export const selectIsImpersonated = (state: WebState) => {
 export const selectIsUserAuthenticated = selectIsTokenValid;
 
 export const selectJwtElevatedToken = createSelector(
-  db.elevatedToken.select,
+  schema.elevatedToken.select,
   findJwtToken,
 );
 export const selectIsElevatedTokenValid = createSelector(
@@ -99,4 +99,4 @@ export const selectIsElevatedTokenValid = createSelector(
   (jwtToken) => jwtToken.scope === "elevated" && !hasExpired(jwtToken),
 );
 export const selectElevatedAccessToken = (state: WebState) =>
-  db.elevatedToken.select(state).accessToken;
+  schema.elevatedToken.select(state).accessToken;

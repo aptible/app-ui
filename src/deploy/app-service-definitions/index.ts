@@ -1,7 +1,7 @@
 import { api, cacheTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import type { DeployServiceDefinition, LinkResponse } from "@app/types";
 
 export interface DeployServiceDefinitionResponse {
@@ -30,10 +30,10 @@ export const deserializeServiceDefinition = (
 };
 
 export const selectServiceDefinitionsAsList =
-  db.serviceDefinitions.selectTableAsList;
-export const selectServiceDefinitionById = db.serviceDefinitions.selectById;
+  schema.serviceDefinitions.selectTableAsList;
+export const selectServiceDefinitionById = schema.serviceDefinitions.selectById;
 export const selectServiceDefinitionsByAppId = createSelector(
-  db.serviceDefinitions.selectTableAsList,
+  schema.serviceDefinitions.selectTableAsList,
   (_: WebState, props: { appId: string }) => props.appId,
   (serviceDefinitions, appId) =>
     serviceDefinitions
@@ -78,6 +78,6 @@ export const serviceDefinitionEntities = {
   service_definition: defaultEntity({
     id: "service_definition",
     deserialize: deserializeServiceDefinition,
-    save: db.serviceDefinitions.add,
+    save: schema.serviceDefinitions.add,
   }),
 };

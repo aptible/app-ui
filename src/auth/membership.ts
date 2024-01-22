@@ -2,7 +2,7 @@ import { authApi, thunkLoader, thunks } from "@app/api";
 import { selectEnv } from "@app/config";
 import { call, createSelector, parallel, select } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { AuthApiCtx, HalEmbedded, LinkResponse, Membership } from "@app/types";
 
 export interface MembershipResponse {
@@ -49,13 +49,13 @@ export const deserializeMembership = (m: MembershipResponse): Membership => {
 export const entities = {
   membership: defaultEntity({
     id: "membership",
-    save: db.memberships.add,
+    save: schema.memberships.add,
     deserialize: deserializeMembership,
   }),
 };
 
 export const selectMembershipsByRoleId = createSelector(
-  db.memberships.selectTableAsList,
+  schema.memberships.selectTableAsList,
   (_: WebState, p: { roleId: string }) => p.roleId,
   (memberships, roleId) => memberships.filter((m) => m.roleId === roleId),
 );

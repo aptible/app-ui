@@ -1,5 +1,5 @@
 import { Next, Operation, StoreUpdater, select } from "@app/fx";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import type {
   DeployApiCtx,
   EmbeddedMap,
@@ -71,7 +71,7 @@ export function extractResourceNameFromLink(
   return transformResourceName(res[res.length - 2]);
 }
 
-const selectEntities = db.entities.selectTable;
+const selectEntities = schema.entities.selectTable;
 
 export function defaultEntity<E = any>(e: EmbeddedMap<E>): EmbeddedMap<E> {
   return e;

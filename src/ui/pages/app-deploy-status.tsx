@@ -36,7 +36,7 @@ import {
   appEndpointsUrl,
   environmentAppsUrl,
 } from "@app/routes";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import {
   DeployApp,
   DeployDatabase,
@@ -109,10 +109,10 @@ export const AppDeployStatusPage = () => {
   const { scanOp } = useLatestCodeResults(appId);
 
   const redeployLoader = useSelector((s) =>
-    db.loaders.selectById(s, { id: `${redeployApp}` }),
+    schema.loaders.selectById(s, { id: `${redeployApp}` }),
   );
   const deployProjectLoader = useSelector((s) =>
-    db.loaders.selectById(s, { id: `${deployProject}` }),
+    schema.loaders.selectById(s, { id: `${deployProject}` }),
   );
 
   const gitRef = scanOp.gitRef || "main";

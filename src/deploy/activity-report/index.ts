@@ -1,7 +1,7 @@
 import { api, cacheTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { DeployActivityReport, LinkResponse } from "@app/types";
 
 export interface DeployActivityReportResponse {
@@ -32,10 +32,11 @@ export const deserializeActivityReport = (
   };
 };
 
-export const selectActivityReportById = db.activityReports.selectById;
-export const findActivityReportById = db.activityReports.findById;
-export const selectActivityReportsAsList = db.activityReports.selectTableAsList;
-export const selectActivityReports = db.activityReports.selectTable;
+export const selectActivityReportById = schema.activityReports.selectById;
+export const findActivityReportById = schema.activityReports.findById;
+export const selectActivityReportsAsList =
+  schema.activityReports.selectTableAsList;
+export const selectActivityReports = schema.activityReports.selectTable;
 
 export const selectActivityReportsByEnvId = createSelector(
   selectActivityReportsAsList,
@@ -83,6 +84,6 @@ export const activityReportEntities = {
   activity_report: defaultEntity({
     id: "activity_report",
     deserialize: deserializeActivityReport,
-    save: db.activityReports.add,
+    save: schema.activityReports.add,
   }),
 };

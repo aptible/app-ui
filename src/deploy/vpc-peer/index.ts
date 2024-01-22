@@ -1,7 +1,7 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { DeployVpcPeer, LinkResponse } from "@app/types";
 
 export interface DeployVpcPeerResponse {
@@ -54,10 +54,10 @@ export const deserializeDeployVpcPeer = (
   };
 };
 
-export const selectVpcPeerById = db.vpcPeers.selectById;
-export const selectVpcPeers = db.vpcPeers.selectTable;
+export const selectVpcPeerById = schema.vpcPeers.selectById;
+export const selectVpcPeers = schema.vpcPeers.selectTable;
 export const selectVpcPeersAsList = createSelector(
-  db.vpcPeers.selectTableAsList,
+  schema.vpcPeers.selectTableAsList,
   (vpcPeers) => [...vpcPeers].sort((a, b) => a.id.localeCompare(b.id)),
 );
 export const selectVpcPeersByStackId = createSelector(
@@ -76,6 +76,6 @@ export const vpcPeerEntities = {
   vpc_peer: defaultEntity({
     id: "vpc_peer",
     deserialize: deserializeDeployVpcPeer,
-    save: db.vpcPeers.add,
+    save: schema.vpcPeers.add,
   }),
 };

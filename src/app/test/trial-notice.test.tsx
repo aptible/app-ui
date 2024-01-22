@@ -1,6 +1,6 @@
 import { fetchStripeSources, fetchTrials } from "@app/billing";
 import { server, testEnv, verifiedUserHandlers } from "@app/mocks";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { render, screen } from "@testing-library/react";
 import { rest } from "msw";
@@ -43,10 +43,10 @@ describe("Trial notice", () => {
       render(<App />);
 
       await waitForData(store, (state) => {
-        const trialLoader = db.loaders.selectById(state, {
+        const trialLoader = schema.loaders.selectById(state, {
           id: `${fetchTrials}`,
         });
-        const stripeLoader = db.loaders.selectById(state, {
+        const stripeLoader = schema.loaders.selectById(state, {
           id: `${fetchStripeSources}`,
         });
         return trialLoader.lastSuccess > 0 && stripeLoader.lastSuccess > 0;
@@ -99,10 +99,10 @@ describe("Trial notice", () => {
       render(<App />);
 
       await waitForData(store, (state) => {
-        const trialLoader = db.loaders.selectById(state, {
+        const trialLoader = schema.loaders.selectById(state, {
           id: `${fetchTrials}`,
         });
-        const stripeLoader = db.loaders.selectById(state, {
+        const stripeLoader = schema.loaders.selectById(state, {
           id: `${fetchStripeSources}`,
         });
         return trialLoader.lastSuccess > 0 && stripeLoader.lastSuccess > 0;
@@ -162,10 +162,10 @@ describe("Trial notice", () => {
         render(<App />);
 
         await waitForData(store, (state) => {
-          const trialLoader = db.loaders.selectById(state, {
+          const trialLoader = schema.loaders.selectById(state, {
             id: `${fetchTrials}`,
           });
-          const stripeLoader = db.loaders.selectById(state, {
+          const stripeLoader = schema.loaders.selectById(state, {
             id: `${fetchStripeSources}`,
           });
           return trialLoader.lastSuccess > 0 && stripeLoader.lastSuccess > 0;

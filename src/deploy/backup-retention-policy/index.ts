@@ -1,7 +1,7 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { DeployBackupRetentionPolicy, LinkResponse } from "@app/types";
 
 export interface BackupRpResponse {
@@ -54,9 +54,9 @@ const deserializeBackupRp = (
 };
 
 export const hasDeployBackupRp = (rp: DeployBackupRetentionPolicy) => !!rp.id;
-export const selectBackupRpById = db.backupRps.selectById;
+export const selectBackupRpById = schema.backupRps.selectById;
 export const selectLatestBackupRpByEnvId = createSelector(
-  db.backupRps.selectTableAsList,
+  schema.backupRps.selectTableAsList,
   (_: WebState, p: { envId: string }) => p.envId,
   (brps, envId) => {
     const bb = brps
@@ -68,7 +68,7 @@ export const selectLatestBackupRpByEnvId = createSelector(
       });
 
     if (bb.length === 0) {
-      return db.backupRps.empty;
+      return schema.backupRps.empty;
     }
 
     return bb[0];
@@ -79,7 +79,7 @@ export const backupRpEntities = {
   backup_retention_policy: defaultEntity({
     id: "backup_retention_policy",
     deserialize: deserializeBackupRp,
-    save: db.backupRps.add,
+    save: schema.backupRps.add,
   }),
 };
 
@@ -118,6 +118,6 @@ export const updateBackupRp = api.post<UpdateBackupRp>(
 
     ctx.loader = { message: "Successfully updated backup retention policy!" };
     // delete old BRP since we are creating new ones
-    yield* schema.update(db.backupRps.remove([id]));
+    yield* schema.update(schema.backupRps.remove([id]));
   },
 );

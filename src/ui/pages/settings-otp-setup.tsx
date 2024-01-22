@@ -7,7 +7,7 @@ import {
   useSelector,
 } from "@app/react";
 import { securitySettingsUrl } from "@app/routes";
-import { db } from "@app/schema";
+import { schema } from "@app/schema";
 import { selectCurrentUserId } from "@app/users";
 import QRCode from "qrcode.react";
 import { useEffect, useState } from "react";
@@ -29,7 +29,7 @@ export const OtpSetupPage = () => {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
   const otpLoader = useLoader(setupOtp);
-  const otp = useSelector(db.otp.select);
+  const otp = useSelector(schema.otp.select);
   const [error, setError] = useState("");
   const [mfa, setMFA] = useState("");
   const [secret, setSecret] = useState("");
