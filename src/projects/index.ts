@@ -2,6 +2,7 @@ import { thunks } from "@app/api";
 import { createLog } from "@app/debug";
 import {
   DbCreatorProps,
+  configEnvListToEnv,
   createAppOperation,
   createDeployApp,
   createDeployEnvironment,
@@ -13,7 +14,6 @@ import {
   hasDeployApp,
   hasDeployEnvironment,
   mapCreatorToProvision,
-  prepareConfigEnv,
   provisionDatabase,
   selectAppById,
   selectDatabasesByEnvId,
@@ -191,7 +191,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     );
     yield* group;
 
-    const env = prepareConfigEnv(curEnvs, envs);
+    const env = configEnvListToEnv(envs, curEnvs);
     // we want to also inject the db env vars with placeholders
     dbs.forEach((db) => {
       env[`${db.env}${DB_ENV_TEMPLATE_KEY}`] = getDbEnvTemplateValue(db.name);

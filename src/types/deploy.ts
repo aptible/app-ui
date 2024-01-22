@@ -549,7 +549,7 @@ export interface DeployServiceResponse {
 }
 
 export interface DeployAppConfigEnv {
-  [key: string]: string | number | boolean;
+  [key: string]: string | null;
 }
 
 export interface DeployAppConfig {

@@ -21,7 +21,7 @@ describe("parseText", () => {
         expect(actual).toEqual([
           defaultTextVal("DEBUG", "true"),
           defaultTextVal("WOW", "very nice"),
-          defaultTextVal("SOMETHING", '"do you even?"'),
+          defaultTextVal("SOMETHING", "do you even?"),
           defaultTextVal("NO", "1"),
         ]);
       });
@@ -77,7 +77,7 @@ going and it should work"
         defaultTextVal("DEBUG", "true"),
         defaultTextVal(
           "MULTI",
-          '"This is a multiline\ncomment. I can keep\ngoing and it should work"',
+          "This is a multiline\ncomment. I can keep\ngoing and it should work",
         ),
         defaultTextVal("SANDWICH", "ok"),
       ]);

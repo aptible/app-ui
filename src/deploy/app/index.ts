@@ -6,6 +6,7 @@ import { selectOrganizationSelectedId } from "@app/organizations";
 import { WebState, db, schema } from "@app/schema";
 import type {
   DeployApp,
+  DeployAppConfigEnv,
   DeployOperation,
   DeployServiceResponse,
   LinkResponse,
@@ -321,7 +322,7 @@ interface DeployAppOpProps {
 interface ConfigAppOpProps {
   type: "configure";
   appId: string;
-  env: { [key: string]: string };
+  env: DeployAppConfigEnv;
 }
 
 interface DeprovisionAppOpProps {
