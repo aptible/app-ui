@@ -44,7 +44,7 @@ export const configEnvToStr = (env: DeployAppConfigEnv): string => {
     .reduce((acc, key) => {
       let value = String.raw`${env[key]}`;
       const prev = acc ? `${acc}\n` : "";
-      if (typeof value === "string" && value.includes("\n")) {
+      if (value.includes("\n")) {
         value = `"${value}"`;
       }
       return `${prev}${key}=${value}`;
@@ -52,7 +52,6 @@ export const configEnvToStr = (env: DeployAppConfigEnv): string => {
 };
 
 export const configStrToEnvList = (text: string): TextVal[] => {
-  // return parseText(text, () => ({}));
   const items: TextVal[] = [];
   const output = parse(text);
   Object.keys(output).forEach((key) => {
