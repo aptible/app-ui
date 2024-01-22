@@ -194,9 +194,7 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     const env = configEnvListToEnv(envs, curEnvs);
     // we want to also inject the db env vars with placeholders
     dbs.forEach((db) => {
-      env[`${schema.env}${DB_ENV_TEMPLATE_KEY}`] = getDbEnvTemplateValue(
-        db.name,
-      );
+      env[`${db.env}${DB_ENV_TEMPLATE_KEY}`] = getDbEnvTemplateValue(db.name);
     });
 
     // Trigger configure operation now so we can store the env vars

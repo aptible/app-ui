@@ -1,4 +1,4 @@
-import { Reducer, useEffect } from "react";
+import { Reducer, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { DbCreatorProps } from "@app/deploy";
@@ -202,9 +202,17 @@ export const DatabaseCreatorForm = ({
   showEnv: boolean;
 } & DbFormProps<DbCreatorProps>) => {
   const [searchParams] = useSearchParams();
+  const [queryProcessed, setQueryProcessed] = useState(false);
   const queryDbsStr = searchParams.get("dbs") || "";
+  // for some reason this selector gets recomputed incorrectly and adds
+  // extra databases incorrectly
+  const dbImgIds = [...dbImages]
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .map((i) => i.id)
+    .join("-");
   // prefill databases based on query params
   useEffect(() => {
+    if (queryProcessed) return;
     if (!queryDbsStr) return;
     if (!namePrefix) return;
     if (dbImages.length === 0) return;
@@ -228,8 +236,9 @@ export const DatabaseCreatorForm = ({
           enableBackups: true,
         },
       });
+      setQueryProcessed(true);
     });
-  }, [queryDbsStr, dbImages, namePrefix]);
+  }, [queryDbsStr, dbImgIds, namePrefix]);
 
   const onClick = () => {
     const payload: DbCreatorProps = {
