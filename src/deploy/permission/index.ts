@@ -214,34 +214,34 @@ export const updatePerm = thunks.create<UpdatePermProps>(
   function* (ctx, next) {
     const { type, payload } = ctx.payload;
     const id = ctx.name;
-    yield* schema.update(db.loaders.start({ id }));
+    yield* schema.update(schema.loaders.start({ id }));
 
     if (type === "add") {
       const addCtx = yield* addPerm.run(payload);
       if (addCtx.json.ok) {
         yield* schema.update(
-          db.loaders.success({
+          schema.loaders.success({
             id,
             message: "Successfully updated permissions!",
           }),
         );
       } else {
         yield* schema.update(
-          db.loaders.error({ id, message: addCtx.json.error.message }),
+          schema.loaders.error({ id, message: addCtx.json.error.message }),
         );
       }
     } else {
       const rmCtx = yield* deletePerm.run(payload);
       if (rmCtx.json.ok) {
         yield* schema.update(
-          db.loaders.success({
+          schema.loaders.success({
             id,
             message: "Successfully updated permissions!",
           }),
         );
       } else {
         yield* schema.update(
-          db.loaders.error({ id, message: rmCtx.json.error.message }),
+          schema.loaders.error({ id, message: rmCtx.json.error.message }),
         );
       }
     }
