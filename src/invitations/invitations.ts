@@ -54,6 +54,12 @@ export const selectInvitationsByOrgId = createSelector(
   (invitations, orgId) =>
     invitations.filter((inv) => inv.organizationId === orgId),
 );
+export const selectInvitationsByEmail = createSelector(
+  db.invitations.selectTableAsList,
+  (_: WebState, p: { email: string }) => p.email,
+  (invitations, email) =>
+    invitations.filter((inv) => inv.email === email),
+);
 
 export const fetchInvitations = authApi.get<
   { orgId: string },
