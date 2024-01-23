@@ -42,7 +42,7 @@ import {
 } from "./icons";
 import { LinkNav } from "./link";
 import { OrgPicker } from "./org-picker";
-import { OrgSsoRequired } from "./org-sso-required";
+import { OrgRequirements } from "./org-requirements";
 import { UserMenu } from "./user-menu";
 
 export const ApplicationSidebar = () => {
@@ -134,7 +134,7 @@ export const ApplicationSidebar = () => {
             ))}
           </nav>
 
-          {!collapsed ? <OrgSsoRequired /> : null}
+          {!collapsed ? <OrgRequirements /> : null}
 
           {hasTrialNoPayment && !collapsed ? (
             <Banner variant="error" className="mt-2">
