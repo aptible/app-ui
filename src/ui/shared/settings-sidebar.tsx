@@ -10,6 +10,7 @@ import {
   teamContactsUrl,
   teamMembersUrl,
   teamPendingInvitesUrl,
+  teamRolesUrl,
   teamSsoUrl,
 } from "@app/routes";
 import cn from "classnames";
@@ -69,12 +70,8 @@ export function SettingsSidebar() {
           Pending Invites
         </NavLink>
 
-        <NavLink
-          className={navLink}
-          to={url(`/organizations/${orgId}/roles`)}
-          target="_blank"
-        >
-          Roles <IconExternalLink variant="sm" className="ml-1 opacity-60" />
+        <NavLink className={navLink} to={teamRolesUrl()}>
+          Roles
         </NavLink>
 
         {isAccountOwner ? (
