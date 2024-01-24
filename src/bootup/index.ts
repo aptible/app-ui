@@ -13,14 +13,13 @@ import {
   fetchServices,
   fetchStacks,
 } from "@app/deploy";
-import { call, parallel, select, spawn, takeEvery } from "@app/fx";
+import { call, parallel, select, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchCurrentUserRoles, fetchRoles } from "@app/roles";
 import { schema } from "@app/schema";
 import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";
-import { ApiCtx } from "@app/types";
 import { fetchUser, fetchUsers, selectCurrentUserId } from "@app/users";
 
 export const FETCH_REQUIRED_DATA = "fetch-required-data";
@@ -45,23 +44,20 @@ export const bootup = thunks.create("bootup", function* onBootup(ctx, next) {
     return;
   }
 
-  yield* fetchOrganizations.run();
-  const task = yield* spawn(onFetchRequiredData);
-  yield* call(onFetchResourceData);
-  yield* task;
+  yield* onRefreshData();
   yield* schema.update(schema.loaders.success({ id }));
   yield* next();
 });
 
 function* onFetchRequiredData() {
   yield* schema.update(schema.loaders.start({ id: FETCH_REQUIRED_DATA }));
-  const org = yield* select(selectOrganizationSelected);
+
   const userId = yield* select(selectCurrentUserId);
-  const group = yield* parallel<ApiCtx>([
-    fetchUser.run({ userId }),
-    fetchBillingDetail.run({ id: org.billingDetailId }),
-  ]);
-  yield* group;
+  yield* fetchOrganizations.run();
+  yield* fetchUser.run({ userId });
+  const org = yield* select(selectOrganizationSelected);
+  yield* fetchBillingDetail.run({ id: org.billingDetailId });
+
   yield* schema.update(schema.loaders.success({ id: FETCH_REQUIRED_DATA }));
 }
 
@@ -88,9 +84,8 @@ function* onFetchResourceData() {
 }
 
 function* onRefreshData() {
-  yield* fetchOrganizations.run();
-  const group = yield* parallel([onFetchRequiredData, onFetchResourceData]);
-  yield* group;
+  yield* onFetchRequiredData();
+  yield* onFetchResourceData();
 }
 
 export const refreshData = createAction("REFRESH_DATA");
