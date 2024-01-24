@@ -10,7 +10,7 @@ import { Organization } from "@app/types";
 import { selectCurrentUserId, updateUserOrg } from "@app/users";
 import { useNavigate } from "react-router";
 import { AppSidebarLayout } from "../layouts";
-import { Group, Pill, tokens } from "../shared";
+import { CopyText, Group, Pill, tokens } from "../shared";
 
 const OrgItem = ({
   org,
@@ -26,9 +26,15 @@ const OrgItem = ({
       onClick={onClick}
       onKeyUp={onClick}
       role="button"
-      className="my-2 p-4 border border-gray-200 rounded-lg flex items-center justify-between cursor-pointer hover:bg-black-50"
+      className="my-2 py-2 px-4 border border-gray-200 rounded-lg flex items-center justify-between cursor-pointer hover:bg-black-50"
     >
-      <div>{org.name}</div>
+      <div>
+        <div>{org.name}</div>
+        <div className="text-gray-500 text-sm flex flex-row gap-1">
+          ID:
+          <CopyText text={org.id} />
+        </div>
+      </div>
       <Group size="sm" variant="horizontal" className="items-center">
         {org.ssoEnforced ? <Pill>SSO Enforced</Pill> : null}
         <span>{selected ? "Continue using" : ""}</span>
