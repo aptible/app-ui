@@ -45,7 +45,7 @@ export const SupportPage = () => {
   // Local State
   const [formState, setFormState] = useState<SupportForm>({
     email: user.email || "",
-    name: user.name ? user.name === 'Aptible' ? "" : user.name : "",
+    name: user.name ? (user.name === "Aptible" ? "" : user.name) : "",
     description: "",
     subject: "",
     attachments: [],
@@ -93,7 +93,7 @@ export const SupportPage = () => {
     if (user.name) {
       setFormState((prevFormState) => ({
         ...prevFormState,
-        name: user.name === 'Aptible' ? "" : user.name,
+        name: user.name === "Aptible" ? "" : user.name,
       }));
     }
   }, [user.email, user.name]);
@@ -117,7 +117,7 @@ export const SupportPage = () => {
     );
     setFormState({
       email: user.email || "",
-      name: user.name ? user.name === 'Aptible' ? "" : user.name : "",
+      name: user.name ? (user.name === "Aptible" ? "" : user.name) : "",
       description: "",
       subject: "",
       attachments: [],
