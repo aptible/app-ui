@@ -149,8 +149,6 @@ export const SupportPage = () => {
     };
   }, []);
 
-  console.log(user, formState)
-
   return (
     <AppSidebarLayout>
       <TitleBar description="A real person will respond to tickets submitted through this form.">
