@@ -1,8 +1,4 @@
-import {
-  createStripeSource,
-  getStripe,
-  selectBillingDetail,
-} from "@app/billing";
+import { addCreditCard, getStripe, selectBillingDetail } from "@app/billing";
 import { selectEnv } from "@app/config";
 import {
   fetchActivePlans,
@@ -76,7 +72,7 @@ const CreditCardForm = () => {
   const [nameOnCard, setNameOnCard] = useState("");
   const [zipcode, setZipcode] = useState("");
   const [error, setError] = useState("");
-  const loader = useLoader(createStripeSource);
+  const loader = useLoader(addCreditCard);
   const [loading, setLoading] = useState(false);
   const [errors, validate] = useValidator<FormProps, typeof validators>(
     validators,
@@ -115,7 +111,7 @@ const CreditCardForm = () => {
     }
 
     const stripeTokenId = token.token?.id || "";
-    dispatch(createStripeSource({ id: billingDetail.id, stripeTokenId }));
+    dispatch(addCreditCard({ id: billingDetail.id, stripeTokenId }));
     return stripeTokenId;
   }
 

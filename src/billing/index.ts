@@ -1,5 +1,6 @@
 import { billingApi, cacheTimer, thunks } from "@app/api";
-import { call, parallel } from "@app/fx";
+import { selectEnv } from "@app/config";
+import { call, parallel, select, storeMdw } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
 import { schema } from "@app/schema";
@@ -77,23 +78,45 @@ interface StripeSourceProps {
   stripeTokenId: string;
 }
 
-export const createStripeSource = billingApi.post<StripeSourceProps>(
-  "/billing_details/:id/stripe_sources",
-  function* (ctx, next) {
-    const body = {
-      stripe_token_id: ctx.payload.stripeTokenId,
-    };
-    ctx.request = ctx.req({
-      body: JSON.stringify(body),
-    });
-    yield* next();
-    if (!ctx.json.ok) {
-      return;
-    }
-
-    ctx.loader = { message: "Successfully added stripe payment method!" };
-  },
+export const addCreditCard = thunks.create<StripeSourceProps>(
+  "add-credit-card",
+  [
+    storeMdw.loader(schema.loaders),
+    function* (ctx, next) {
+      const config = yield* select(selectEnv);
+      const ssCtx = yield* createStripeSource.run(ctx.payload);
+      if (!ssCtx.json.ok) {
+        throw ssCtx.json.error;
+      }
+      const updatePaymentCtx = yield* updatePaymentMethod.run({
+        id: ctx.payload.id,
+        paymentMethodUrl: `${config.billingUrl}/stripe_sources/${ssCtx.json.value.id}`,
+      });
+      if (!updatePaymentCtx.json.ok) {
+        throw updatePaymentCtx.json.error;
+      }
+      yield* next();
+    },
+  ],
 );
+
+export const createStripeSource = billingApi.post<
+  StripeSourceProps,
+  StripeSourceResponse
+>("/billing_details/:id/stripe_sources", function* (ctx, next) {
+  const body = {
+    stripe_token_id: ctx.payload.stripeTokenId,
+  };
+  ctx.request = ctx.req({
+    body: JSON.stringify(body),
+  });
+  yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  ctx.loader = { message: "Successfully added stripe payment method!" };
+});
 
 export const fetchStripeSources = billingApi.get<
   { id: string },
@@ -124,6 +147,18 @@ export const createBillingDetail = billingApi.post<{
     }),
   });
 
+  yield* next();
+});
+
+export const updatePaymentMethod = billingApi.patch<{
+  id: string;
+  paymentMethodUrl: string;
+}>("/billing_details/:id", function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify({
+      payment_method: ctx.payload.paymentMethodUrl,
+    }),
+  });
   yield* next();
 });
 
