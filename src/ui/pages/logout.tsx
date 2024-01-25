@@ -1,6 +1,5 @@
 import { logout } from "@app/auth";
-import { selectLegacyDashboardUrl } from "@app/config";
-import { useDispatch, useSelector } from "@app/react";
+import { useDispatch } from "@app/react";
 import { loginUrl, securitySettingsUrl } from "@app/routes";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
