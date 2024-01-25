@@ -10,7 +10,6 @@ import { Box, Button, IconArrowRight, tokens } from "../shared";
 export const LogoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const legacyUrl = useSelector(selectLegacyDashboardUrl);
 
   const logoutSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
