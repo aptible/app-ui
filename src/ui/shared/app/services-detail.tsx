@@ -1,8 +1,10 @@
 import {
   calcMetrics,
   calcServiceMetrics,
+  fetchServiceSizingPoliciesByEnvironmentId,
   fetchServicesByAppId,
   selectAppById,
+  selectAutoscalingEnabledByServiceId,
   selectServicesByAppId,
   serviceCommandText,
 } from "@app/deploy";
@@ -22,7 +24,8 @@ import { ButtonCreate, ButtonLink } from "../button";
 import { Code } from "../code";
 import { CopyTextButton } from "../copy";
 import { Group } from "../group";
-import { IconChevronDown } from "../icons";
+import { IconCheckCircle, IconChevronDown } from "../icons";
+import { Pill, pillStyles } from "../pill";
 import {
   ActionBar,
   DescBar,
@@ -116,6 +119,23 @@ const CostCell = ({ service }: { service: DeployServiceRow }) => {
   );
 };
 
+const AutoscaleCell = ({ service }: { service: DeployServiceRow }) => {
+  const enabled = useSelector((s) =>
+    selectAutoscalingEnabledByServiceId(s, { id: service.id }),
+  );
+  const style = enabled ? pillStyles.success : "";
+  const text = enabled ? "Enabled" : "Disabled";
+  const icon = enabled ? <IconCheckCircle variant="sm" /> : null;
+
+  return (
+    <Td>
+      <Pill className={style} icon={icon}>
+        {text}
+      </Pill>
+    </Td>
+  );
+};
+
 const AppServiceByAppRow = ({
   service,
 }: {
@@ -131,6 +151,7 @@ const AppServiceByAppRow = ({
         <CmdCell service={service} size="lg" />
         <DetailsCell service={service} />
         <CostCell service={service} />
+        <AutoscaleCell service={service} />
 
         <Td variant="right">
           <Group size="sm" variant="horizontal">
@@ -277,6 +298,9 @@ export function AppServicesByApp({
     navigate(appDeployResumeUrl(app.id));
   };
   useQuery(fetchServicesByAppId({ id: app.id }));
+  useQuery(
+    fetchServiceSizingPoliciesByEnvironmentId({ id: app.environmentId }),
+  );
   const paginated = usePaginate(services);
 
   return (
@@ -306,6 +330,7 @@ export function AppServicesByApp({
           <Th>Command</Th>
           <Th>Details</Th>
           <Th>Est. Monthly Cost</Th>
+          <Th>Autoscaling</Th>
           <Th variant="right">Actions</Th>
         </THead>
 
