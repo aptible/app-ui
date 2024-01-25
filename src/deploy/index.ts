@@ -4,6 +4,7 @@ export * from "./environment";
 export * from "./endpoint";
 export * from "./database";
 export * from "./service";
+export * from "./service-sizing-policy";
 export * from "./log-drain";
 export * from "./database-images";
 export * from "./metric-drain";

@@ -41,6 +41,7 @@ export interface DeployService extends Timestamps {
   appId: string;
   databaseId: string;
   environmentId: string;
+  serviceSizingPolicyId: string;
   handle: string;
   dockerRepo: string;
   dockerRef: string;
@@ -544,6 +545,7 @@ export interface DeployServiceResponse {
     app?: LinkResponse;
     database?: LinkResponse;
     account: LinkResponse;
+    service_sizing_policy?: LinkResponse;
   };
   _type: "service";
 }
@@ -556,4 +558,22 @@ export interface DeployAppConfig {
   id: string;
   env: DeployAppConfigEnv;
   appId: string;
+}
+
+export interface DeployServiceSizingPolicy extends Timestamps {
+  id: string;
+  environmentId: string;
+  scalingEnabled: boolean;
+  defaultPolicy: boolean;
+  metricLookbackSeconds: number;
+  percentile: number;
+  postScaleUpCooldownSeconds: number;
+  postScaleDownCooldownSeconds: number;
+  postReleaseCooldownSeconds: number;
+  memCpuRatioRThreshold: number;
+  memCpuRatioCThreshold: number;
+  memScaleUpThreshold: number;
+  memScaleDownThreshold: number;
+  minimumMemory: number;
+  maximumMemory: number | null;
 }

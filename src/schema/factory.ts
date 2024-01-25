@@ -24,6 +24,7 @@ import {
   DeployRelease,
   DeployService,
   DeployServiceDefinition,
+  DeployServiceSizingPolicy,
   DeployStack,
   DeployVpcPeer,
   DeployVpnTunnel,
@@ -325,6 +326,7 @@ export const defaultDeployService = (
     appId: "",
     databaseId: "",
     environmentId: "",
+    serviceSizingPolicyId: "",
     handle: "",
     dockerRef: "",
     dockerRepo: "",
@@ -636,6 +638,32 @@ export const defaultDeployImage = (
     createdAt: now,
     updatedAt: now,
     ...img,
+  };
+};
+
+export const defaultServiceSizingPolicy = (
+  m: Partial<DeployServiceSizingPolicy> = {},
+): DeployServiceSizingPolicy => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    environmentId: "",
+    scalingEnabled: false,
+    defaultPolicy: false,
+    metricLookbackSeconds: 300,
+    percentile: 99,
+    postScaleUpCooldownSeconds: 60,
+    postScaleDownCooldownSeconds: 300,
+    postReleaseCooldownSeconds: 300,
+    memCpuRatioRThreshold: 4,
+    memCpuRatioCThreshold: 2,
+    memScaleUpThreshold: 0.9,
+    memScaleDownThreshold: 0.75,
+    minimumMemory: 2048,
+    maximumMemory: null,
+    createdAt: now,
+    updatedAt: now,
+    ...m,
   };
 };
 

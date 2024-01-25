@@ -20,6 +20,7 @@ import { permissionEntities } from "./permission";
 import { activePlanEntities, planEntities } from "./plan";
 import { releaseEntities } from "./release";
 import { serviceEntities } from "./service";
+import { serviceSizingPolicyEntities } from "./service-sizing-policy";
 import { stackEntities } from "./stack";
 import { vpcPeerEntities } from "./vpc-peer";
 import { vpnTunnelEntities } from "./vpn-tunnel";
@@ -51,4 +52,5 @@ export const entities = {
   ...activityReportEntities,
   ...imageEntities,
   ...diskEntities,
+  ...serviceSizingPolicyEntities,
 };
