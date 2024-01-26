@@ -164,7 +164,7 @@ describe("AppDetailServiceScalePage", () => {
           });
 
           await screen.findByText(
-            /Automatically scale your services by regularly revieweing recent CPU and RAM/,
+            /Automatically scale your services by regularly reviewing recent CPU and RAM/,
           );
 
           const btns = screen.getAllByRole("button", {

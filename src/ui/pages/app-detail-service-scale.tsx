@@ -151,7 +151,7 @@ const VerticalAutoscalingSection = ({
           <BannerMessages {...modifyLoader} />
           <FormGroup
             splitWidthInputs
-            description="Automatically scale your services by regularly revieweing recent CPU and RAM utilization and scaling to the optimal configuration."
+            description="Automatically scale your services by regularly reviewing recent CPU and RAM utilization and scaling to the optimal configuration."
             label="Vertical Autoscaling"
             htmlFor="vertical-autoscaling"
           >
