@@ -4,7 +4,7 @@ import {
   fetchServiceSizingPoliciesByEnvironmentId,
   fetchServicesByAppId,
   selectAppById,
-  selectAutoscalingEnabledByServiceId,
+  selectAutoscalingEnabledById,
   selectServicesByAppId,
   serviceCommandText,
 } from "@app/deploy";
@@ -24,7 +24,7 @@ import { ButtonCreate, ButtonLink } from "../button";
 import { Code } from "../code";
 import { CopyTextButton } from "../copy";
 import { Group } from "../group";
-import { IconCheckCircle, IconChevronDown } from "../icons";
+import { IconChevronDown, IconInfo } from "../icons";
 import { Pill, pillStyles } from "../pill";
 import {
   ActionBar,
@@ -111,27 +111,48 @@ const DetailsCell = ({ service }: { service: DeployService }) => {
   );
 };
 
-const CostCell = ({ service }: { service: DeployServiceRow }) => {
+const CostCell = ({
+  service,
+  evaluateAutoscaling = false,
+}: { service: DeployServiceRow; evaluateAutoscaling?: boolean }) => {
+  const hideCost =
+    evaluateAutoscaling &&
+    useSelector((s) =>
+      selectAutoscalingEnabledById(s, { id: service.serviceSizingPolicyId }),
+    );
+
   return (
     <Td>
-      <div className={tokens.type.darker}>${service.cost.toFixed(2)}</div>
+      <div className={tokens.type.darker}>
+        {hideCost ? (
+          <Group variant="horizontal" size="sm" className="items-center">
+            <div>Unavailable</div>
+            <Tooltip
+              fluid
+              className="inline-block"
+              text="Cost cannot be estimated when autoscaling is enabled."
+            >
+              <IconInfo variant="sm" className="opacity-50 hover:opacity-100" />
+            </Tooltip>
+          </Group>
+        ) : (
+          `$${service.cost.toFixed(2)}`
+        )}
+      </div>
     </Td>
   );
 };
 
 const AutoscaleCell = ({ service }: { service: DeployServiceRow }) => {
   const enabled = useSelector((s) =>
-    selectAutoscalingEnabledByServiceId(s, { id: service.id }),
+    selectAutoscalingEnabledById(s, { id: service.serviceSizingPolicyId }),
   );
   const style = enabled ? pillStyles.success : "";
   const text = enabled ? "Enabled" : "Disabled";
-  const icon = enabled ? <IconCheckCircle variant="sm" /> : null;
 
   return (
     <Td>
-      <Pill className={style} icon={icon}>
-        {text}
-      </Pill>
+      <Pill className={style}>{text}</Pill>
     </Td>
   );
 };
@@ -150,7 +171,7 @@ const AppServiceByAppRow = ({
 
         <CmdCell service={service} size="lg" />
         <DetailsCell service={service} />
-        <CostCell service={service} />
+        <CostCell service={service} evaluateAutoscaling />
         <AutoscaleCell service={service} />
 
         <Td variant="right">

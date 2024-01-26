@@ -92,7 +92,6 @@ export const serviceSizingPolicyEntities = {
 
 export const selectServiceSizingPolicyById =
   schema.serviceSizingPolicies.selectById;
-
 export const selectServiceSizingPolicyByServiceId = createSelector(
   selectServiceById,
   schema.serviceSizingPolicies.selectTableAsList,
@@ -101,6 +100,10 @@ export const selectServiceSizingPolicyByServiceId = createSelector(
     schema.serviceSizingPolicies.empty,
 );
 
+export const selectAutoscalingEnabledById = createSelector(
+  selectServiceSizingPolicyById,
+  (policy) => policy.scalingEnabled,
+);
 export const selectAutoscalingEnabledByServiceId = createSelector(
   selectServiceSizingPolicyByServiceId,
   (policy) => policy.scalingEnabled,
