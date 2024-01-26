@@ -5,7 +5,9 @@ import {
   fetchServicesByAppId,
   selectAppById,
   selectAutoscalingEnabledById,
+  selectEnvironmentById,
   selectServicesByAppId,
+  selectStackById,
   serviceCommandText,
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
@@ -16,7 +18,7 @@ import {
   appServiceScalePathUrl,
   appServiceUrl,
 } from "@app/routes";
-import { DeployService, DeployServiceRow } from "@app/types";
+import { DeployService, DeployServiceRow, DeployStack } from "@app/types";
 import { PaginateProps, usePaginate } from "@app/ui/hooks";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -159,43 +161,46 @@ const AutoscaleCell = ({ service }: { service: DeployServiceRow }) => {
 
 const AppServiceByAppRow = ({
   service,
+  stack,
 }: {
   service: DeployServiceRow;
+  stack: DeployStack;
 }) => {
   const app = useSelector((s) => selectAppById(s, { id: service.appId }));
 
   return (
-    <>
-      <Tr>
-        <NameCell service={service} />
+    <Tr>
+      <NameCell service={service} />
 
-        <CmdCell service={service} size="lg" />
-        <DetailsCell service={service} />
-        <CostCell service={service} evaluateAutoscaling />
-        <AutoscaleCell service={service} />
+      <CmdCell service={service} size="lg" />
+      <DetailsCell service={service} />
+      <CostCell
+        service={service}
+        evaluateAutoscaling={stack.verticalAutoscaling}
+      />
+      {stack.verticalAutoscaling ? <AutoscaleCell service={service} /> : null}
 
-        <Td variant="right">
-          <Group size="sm" variant="horizontal">
-            <ButtonLink
-              className="w-15"
-              size="sm"
-              to={appServicePathMetricsUrl(app.id, service.id)}
-              variant="primary"
-            >
-              Metrics
-            </ButtonLink>
-            <ButtonLink
-              className="w-15"
-              size="sm"
-              to={appServiceScalePathUrl(app.id, service.id)}
-              variant="primary"
-            >
-              Scale
-            </ButtonLink>
-          </Group>
-        </Td>
-      </Tr>
-    </>
+      <Td variant="right">
+        <Group size="sm" variant="horizontal">
+          <ButtonLink
+            className="w-15"
+            size="sm"
+            to={appServicePathMetricsUrl(app.id, service.id)}
+            variant="primary"
+          >
+            Metrics
+          </ButtonLink>
+          <ButtonLink
+            className="w-15"
+            size="sm"
+            to={appServiceScalePathUrl(app.id, service.id)}
+            variant="primary"
+          >
+            Scale
+          </ButtonLink>
+        </Group>
+      </Td>
+    </Tr>
   );
 };
 
@@ -315,6 +320,12 @@ export function AppServicesByApp({
   const navigate = useNavigate();
   const app = useSelector((s) => selectAppById(s, { id: appId }));
   const services = useSelector((s) => selectServicesByAppId(s, { appId }));
+  const environment = useSelector((s) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  const stack = useSelector((s) =>
+    selectStackById(s, { id: environment.stackId }),
+  );
   const onDeploy = () => {
     navigate(appDeployResumeUrl(app.id));
   };
@@ -351,14 +362,20 @@ export function AppServicesByApp({
           <Th>Command</Th>
           <Th>Details</Th>
           <Th>Est. Monthly Cost</Th>
-          <Th>Autoscaling</Th>
+          {stack.verticalAutoscaling ? <Th>Autoscaling</Th> : null}
           <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.length === 0 ? (
+            <EmptyTr colSpan={stack.verticalAutoscaling ? 6 : 5} />
+          ) : null}
           {paginated.data.map((service) => (
-            <AppServiceByAppRow key={service.id} service={service} />
+            <AppServiceByAppRow
+              key={service.id}
+              service={service}
+              stack={stack}
+            />
           ))}
         </TBody>
       </Table>
