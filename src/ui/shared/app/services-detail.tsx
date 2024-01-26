@@ -25,7 +25,7 @@ import { Code } from "../code";
 import { CopyTextButton } from "../copy";
 import { Group } from "../group";
 import { IconChevronDown, IconInfo } from "../icons";
-import { Pill, pillStyles } from "../pill";
+import { Pill } from "../pill";
 import {
   ActionBar,
   DescBar,
@@ -147,12 +147,12 @@ const AutoscaleCell = ({ service }: { service: DeployServiceRow }) => {
   const enabled = useSelector((s) =>
     selectAutoscalingEnabledById(s, { id: service.serviceSizingPolicyId }),
   );
-  const style = enabled ? pillStyles.success : "";
+  const variant = enabled ? "success" : "default";
   const text = enabled ? "Enabled" : "Disabled";
 
   return (
     <Td>
-      <Pill className={style}>{text}</Pill>
+      <Pill variant={variant}>{text}</Pill>
     </Td>
   );
 };

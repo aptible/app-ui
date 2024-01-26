@@ -1,7 +1,7 @@
 import { DeployCertificate } from "@app/types";
 
 import { prettyDate } from "@app/date";
-import { Pill, pillStyles } from "./pill";
+import { Pill } from "./pill";
 import { tokens } from "./tokens";
 
 interface CertProp {
@@ -10,7 +10,7 @@ interface CertProp {
 
 export const CertTrustedPill = ({ cert }: CertProp) => {
   return (
-    <Pill className={cert.trusted ? pillStyles.success : pillStyles.error}>
+    <Pill variant={cert.trusted ? "success" : "error"}>
       {cert.trusted ? "Trusted" : "Untrusted"}
     </Pill>
   );
@@ -18,7 +18,7 @@ export const CertTrustedPill = ({ cert }: CertProp) => {
 
 export const CertManagedHTTPSPill = ({ cert }: CertProp) => {
   if (!cert.acme) return null;
-  return <Pill className={pillStyles.success}>Managed HTTPS</Pill>;
+  return <Pill variant="success">Managed HTTPS</Pill>;
 };
 
 export const CertValidDateRange = ({ cert }: CertProp) => {

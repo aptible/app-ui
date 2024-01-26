@@ -35,38 +35,38 @@ import {
   IconPlusCircle,
   PaginateBar,
   Pill,
+  PillVariant,
   TBody,
   THead,
   Table,
   Td,
   Th,
   Tr,
-  pillStyles,
   tokens,
 } from "../shared";
 
 const DrainStatusPill = ({
   drain,
 }: { drain: DeployLogDrain | DeployMetricDrain }) => {
-  let pillClass = pillStyles.progress;
+  let pillVariant: PillVariant = "progress";
   if (
     drain.status === "pending" ||
     drain.status === "provisioning" ||
     drain.status === "deprovisioning"
   ) {
-    pillClass = pillStyles.pending;
+    pillVariant = "pending";
   }
   if (drain.status === "provisioned") {
-    pillClass = pillStyles.success;
+    pillVariant = "success";
   }
   if (
     drain.status === "deprovision_failed" ||
     drain.status === "provision_failed"
   ) {
-    pillClass = pillStyles.error;
+    pillVariant = "error";
   }
 
-  return <Pill className={pillClass}>{capitalize(drain.status)}</Pill>;
+  return <Pill variant={pillVariant}>{capitalize(drain.status)}</Pill>;
 };
 
 const LogDrainPrimaryCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {

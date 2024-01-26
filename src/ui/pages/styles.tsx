@@ -87,7 +87,6 @@ import {
   Tooltip,
   Tr,
   listToTextColor,
-  pillStyles,
   tokens,
 } from "../shared";
 
@@ -564,16 +563,16 @@ const Pills = () => (
         </Pill>
       </div>
       <div className="mt-4">
-        <Pill className={pillStyles.error}>Error Pill</Pill>
+        <Pill variant="error">Error Pill</Pill>
       </div>
       <div className="mt-4">
-        <Pill className={pillStyles.pending}>Pending Pill</Pill>
+        <Pill variant="pending">Pending Pill</Pill>
       </div>
       <div className="mt-4">
-        <Pill className={pillStyles.progress}>Progress Pill</Pill>
+        <Pill variant="progress">Progress Pill</Pill>
       </div>
       <div className="mt-4">
-        <Pill className={pillStyles.success}>Success Pill</Pill>
+        <Pill variant="success">Success Pill</Pill>
       </div>
     </div>
   </div>
