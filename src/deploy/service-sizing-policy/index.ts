@@ -111,7 +111,7 @@ export const selectAutoscalingEnabledByServiceId = createSelector(
 
 export const fetchServiceSizingPoliciesByEnvironmentId = api.get<{
   id: string;
-}>("/accounts/:id/service_sizing_policies");
+}>("/accounts/:id/service_sizing_policies", { supervisor: cacheShortTimer() });
 export const fetchServiceSizingPoliciesByServiceId = api.get<{
   serviceId: string;
 }>("/services/:serviceId/service_sizing_policies", {
