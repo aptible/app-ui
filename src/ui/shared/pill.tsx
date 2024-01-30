@@ -3,19 +3,52 @@ import { OperationStatus } from "@app/types";
 import cn from "classnames";
 import { IconCheck, IconInfo, IconSettings, IconX } from "./icons";
 
+// TODO: Add support for StatusVariant | "pending"
+export type PillVariant =
+  | "default"
+  | "pending"
+  | "progress"
+  | "success"
+  | "error";
+
+const pillStyles = {
+  pending: "text-brown border-brown bg-orange-100",
+  error: "text-red border-red-300 bg-red-100",
+  progress: "text-indigo border-indigo-300 bg-indigo-100",
+  success: "text-forest border-lime-300 bg-lime-100",
+};
+
+const variantToClassName = (variant: PillVariant) => {
+  switch (variant) {
+    case "pending":
+      return pillStyles.pending;
+    case "progress":
+      return pillStyles.progress;
+    case "success":
+      return pillStyles.success;
+    case "error":
+      return pillStyles.error;
+    default:
+      return "";
+  }
+};
+
 export const Pill = ({
   children,
   className = "",
+  variant = "default",
   icon = null,
 }: {
   children: React.ReactNode;
   className?: string;
+  variant?: PillVariant;
   icon?: React.ReactNode;
 }) => {
   const defaultClassName = cn(
     "rounded-full border-2",
     "text-sm font-semibold text-black-500",
     "px-2 flex gap-2 justify-between items-center w-fit",
+    variantToClassName(variant),
   );
   return (
     <div className={`${defaultClassName} ${className}`}>
@@ -23,13 +56,6 @@ export const Pill = ({
       <div>{children}</div>
     </div>
   );
-};
-
-export const pillStyles = {
-  pending: "text-brown border-brown bg-orange-100",
-  error: "text-red border-red-300 bg-red-100",
-  progress: "text-indigo border-indigo-300 bg-indigo-100",
-  success: "text-forest border-lime-300 bg-lime-100",
 };
 
 export const StatusPill = ({

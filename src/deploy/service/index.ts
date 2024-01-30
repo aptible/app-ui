@@ -1,12 +1,5 @@
 import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
-import {
-  call,
-  createAction,
-  createSelector,
-  parallel,
-  poll,
-  select,
-} from "@app/fx";
+import { createAction, createSelector, parallel, poll, select } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { WebState, defaultDeployOperation, schema } from "@app/schema";
 import {
@@ -14,9 +7,7 @@ import {
   type DeployService,
   DeployServiceResponse,
   DeployServiceRow,
-  HalEmbedded,
   type InstanceClass,
-  type LinkResponse,
   excludesFalse,
 } from "@app/types";
 import {
@@ -62,15 +53,16 @@ export const defaultServiceResponse = (
     instance_class: DEFAULT_INSTANCE_CLASS,
     created_at: now,
     updated_at: now,
+    _type: "service",
+    ...s,
     _links: {
       current_release: defaultHalHref(),
       app: defaultHalHref(),
       database: defaultHalHref(),
       account: defaultHalHref(),
+      service_sizing_policy: defaultHalHref(),
       ...s._links,
     },
-    _type: "service",
-    ...s,
   };
 };
 
@@ -81,12 +73,14 @@ export const deserializeDeployService = (
   const appId = extractIdFromLink(links.app);
   const databaseId = extractIdFromLink(links.database);
   const environmentId = extractIdFromLink(links.account);
+  const serviceSizingPolicyId = extractIdFromLink(links.service_sizing_policy);
 
   return {
     id: `${payload.id}`,
     appId,
     databaseId,
     environmentId,
+    serviceSizingPolicyId,
     handle: payload.handle,
     dockerRepo: payload.docker_repo,
     dockerRef: payload.docker_ref,
@@ -397,145 +391,6 @@ export const fetchServicesByAppId = api.get<{ id: string }>(
   "/apps/:id/services",
   { supervisor: cacheShortTimer() },
 );
-
-export interface ServiceSizingPolicyResponse {
-  id: number | undefined;
-  service_id: string;
-  scaling_enabled: boolean;
-  default_policy: boolean;
-  metric_lookback_seconds: number;
-  percentile: number;
-  post_scale_up_cooldown_seconds: number;
-  post_scale_down_cooldown_seconds: number;
-  post_release_cooldown_seconds: number;
-  mem_cpu_ratio_r_threshold: number;
-  mem_cpu_ratio_c_threshold: number;
-  mem_scale_up_threshold: number;
-  mem_scale_down_threshold: number;
-  minimum_memory: number;
-  maximum_memory: number | string;
-  created_at: string;
-  updated_at: string;
-  _links: {
-    account: LinkResponse;
-  };
-  _type: "service_sizing_policy";
-}
-
-export const defaultServiceSizingPolicyResponse = (
-  s: Partial<ServiceSizingPolicyResponse>,
-): ServiceSizingPolicyResponse => {
-  const now = new Date().toISOString();
-  return {
-    id: undefined,
-    service_id: "",
-    scaling_enabled: false,
-    default_policy: false,
-    metric_lookback_seconds: 300,
-    percentile: 99,
-    post_scale_up_cooldown_seconds: 60,
-    post_scale_down_cooldown_seconds: 300,
-    post_release_cooldown_seconds: 300,
-    mem_cpu_ratio_r_threshold: 4,
-    mem_cpu_ratio_c_threshold: 2,
-    mem_scale_up_threshold: 0.9,
-    mem_scale_down_threshold: 0.75,
-    minimum_memory: 2048,
-    maximum_memory: "",
-    created_at: now,
-    updated_at: now,
-    _links: { account: defaultHalHref() },
-    _type: "service_sizing_policy",
-    ...s,
-  };
-};
-
-export const fetchServiceSizingPoliciesByServiceId = api.get<
-  {
-    service_id: string;
-  },
-  HalEmbedded<{
-    service_sizing_policies: ServiceSizingPolicyResponse[];
-  }>
->(
-  "/services/:service_id/service_sizing_policies",
-  { supervisor: cacheShortTimer() },
-  api.cache(),
-);
-
-export type ServiceSizingPolicyEditProps = ServiceSizingPolicyResponse;
-
-const maybeRemoveMaximumMemory = (payload: ServiceSizingPolicyEditProps) => {
-  if (payload.maximum_memory === 0) {
-    payload.maximum_memory = "";
-  }
-  return payload;
-};
-
-export const createServiceSizingPoliciesByServiceId = api.post<
-  ServiceSizingPolicyEditProps,
-  ServiceSizingPolicyResponse
->(["/services/:service_id/service_sizing_policies"], function* (ctx, next) {
-  ctx.request = ctx.req({
-    body: JSON.stringify(maybeRemoveMaximumMemory(ctx.payload)),
-  });
-  yield* next();
-});
-
-export const updateServiceSizingPoliciesByServiceId = api.put<
-  ServiceSizingPolicyEditProps,
-  ServiceSizingPolicyResponse
->(["/services/:service_id/service_sizing_policies"], function* (ctx, next) {
-  ctx.request = ctx.req({
-    body: JSON.stringify(maybeRemoveMaximumMemory(ctx.payload)),
-  });
-  yield* next();
-});
-
-export const deleteServiceSizingPoliciesByServiceId = api.delete<{
-  service_id: string;
-}>(["/services/:service_id/service_sizing_policy"], function* (ctx, next) {
-  yield* next();
-  if (!ctx.json.ok) {
-    return;
-  }
-  ctx.loader = { message: "Policy changes saved" };
-});
-
-export const modifyServiceSizingPolicy =
-  thunks.create<ServiceSizingPolicyEditProps>(
-    "modify-service-sizing-policy",
-    function* (ctx, next) {
-      yield* schema.update(schema.loaders.start({ id: ctx.name }));
-      const nextPolicy = ctx.payload;
-      let updateCtx;
-      if (nextPolicy.id === undefined) {
-        updateCtx = yield* call(() =>
-          createServiceSizingPoliciesByServiceId.run(nextPolicy),
-        );
-      } else {
-        updateCtx = yield* call(() =>
-          updateServiceSizingPoliciesByServiceId.run(nextPolicy),
-        );
-      }
-
-      yield* next();
-
-      if (updateCtx.json.ok) {
-        yield* schema.update(
-          schema.loaders.success({
-            id: ctx.name,
-            message: "Policy changes saved",
-          }),
-        );
-      } else {
-        const data = updateCtx.json.error as Error;
-        yield* schema.update(
-          schema.loaders.error({ id: ctx.name, message: data.message }),
-        );
-      }
-    },
-  );
 
 export const fetchServiceOperations = api.get<{ id: string }>(
   "/services/:id/operations",

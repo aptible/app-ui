@@ -21,7 +21,6 @@ import {
   Td,
   Th,
   Tr,
-  pillStyles,
   tokens,
 } from "../shared";
 
@@ -30,11 +29,8 @@ const VPCPeerStatusPill = ({
 }: {
   vpcPeer: DeployVpcPeer;
 }) => {
-  const cls =
-    vpcPeer.connectionStatus === "active"
-      ? pillStyles.success
-      : pillStyles.error;
-  return <Pill className={cls}>{capitalize(vpcPeer.connectionStatus)}</Pill>;
+  const variant = vpcPeer.connectionStatus === "active" ? "success" : "error";
+  return <Pill variant={variant}>{capitalize(vpcPeer.connectionStatus)}</Pill>;
 };
 
 export const StackDetailVpcPeeringPage = () => {

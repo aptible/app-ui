@@ -3,7 +3,6 @@ import {
   DEFAULT_INSTANCE_CLASS,
   ServiceSizingPolicyEditProps,
   cancelServicesOpsPoll,
-  defaultServiceSizingPolicyResponse,
   exponentialContainerSizesByProfile,
   fetchApp,
   fetchService,
@@ -19,10 +18,10 @@ import {
   selectPreviousServiceScale,
   selectServiceById,
   selectServiceScale,
+  selectServiceSizingPolicyByServiceId,
   selectStackById,
 } from "@app/deploy";
 import {
-  useCache,
   useDispatch,
   useLoader,
   useLoaderSuccess,
@@ -30,6 +29,7 @@ import {
   useSelector,
 } from "@app/react";
 import { appActivityUrl } from "@app/routes";
+import { schema } from "@app/schema";
 import { DeployOperation, InstanceClass } from "@app/types";
 import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -64,7 +64,7 @@ const validators = {
 
 const policyValidators = {
   ratios: (data: ServiceSizingPolicyEditProps) => {
-    if (data.mem_cpu_ratio_r_threshold < data.mem_cpu_ratio_c_threshold) {
+    if (data.memCpuRatioRThreshold < data.memCpuRatioCThreshold) {
       return "Ratio for R must be larger than ratio for C";
     }
   },
@@ -74,34 +74,21 @@ type AppScaleProps = {
   containerCount: number;
 };
 
-function useServiceSizingPolicy(service_id: string) {
-  const policy = useCache(
-    fetchServiceSizingPoliciesByServiceId({ service_id }),
-  );
-
-  const policies = policy.data?._embedded?.service_sizing_policies || [];
-  const existingPolicy = useMemo(() => {
-    if (policies.length === 0) {
-      return defaultServiceSizingPolicyResponse({ service_id });
-    }
-    return defaultServiceSizingPolicyResponse({ ...policies[0], service_id });
-  }, [policies.length, policies[0]?.id, policies[0]?.service_id]);
-
-  return { policy, existingPolicy };
-}
-
 const VerticalAutoscalingSection = ({
-  id,
+  serviceId,
   stackId,
-}: { id: string; stackId: string }) => {
+}: { serviceId: string; stackId: string }) => {
   const dispatch = useDispatch();
-  const { policy, existingPolicy } = useServiceSizingPolicy(id);
+  useQuery(fetchServiceSizingPoliciesByServiceId({ serviceId }));
+  const existingPolicy = useSelector((s) =>
+    selectServiceSizingPolicyByServiceId(s, { id: serviceId }),
+  );
   const [nextPolicy, setNextPolicy] = useState(existingPolicy);
   useEffect(() => {
     setNextPolicy(existingPolicy);
-  }, [existingPolicy]);
+  }, [existingPolicy.id]);
   const getChangesExist = () => {
-    if (!nextPolicy.scaling_enabled && !existingPolicy.scaling_enabled) {
+    if (!nextPolicy.scalingEnabled && !existingPolicy.scalingEnabled) {
       return false;
     }
     return existingPolicy !== nextPolicy;
@@ -110,7 +97,6 @@ const VerticalAutoscalingSection = ({
 
   const modifyLoader = useLoader(modifyServiceSizingPolicy);
   const stack = useSelector((s) => selectStackById(s, { id: stackId }));
-  useLoaderSuccess(modifyLoader, () => policy.trigger());
 
   const [errors, validate] = useValidator<
     ServiceSizingPolicyEditProps,
@@ -119,7 +105,7 @@ const VerticalAutoscalingSection = ({
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
     if (!validate(nextPolicy)) return;
-    dispatch(modifyServiceSizingPolicy(nextPolicy));
+    dispatch(modifyServiceSizingPolicy({ ...nextPolicy, serviceId }));
   };
   const updatePolicy = <K extends keyof ServiceSizingPolicyEditProps>(
     key: K,
@@ -128,13 +114,11 @@ const VerticalAutoscalingSection = ({
     setNextPolicy({ ...nextPolicy, [key]: value });
   };
   const resetAdvancedSettings = () => {
-    setNextPolicy(
-      defaultServiceSizingPolicyResponse({
-        id: nextPolicy.id,
-        service_id: nextPolicy.service_id,
-        scaling_enabled: nextPolicy.scaling_enabled,
-      }),
-    );
+    setNextPolicy({
+      ...schema.serviceSizingPolicies.empty,
+      id: nextPolicy.id,
+      scalingEnabled: nextPolicy.scalingEnabled,
+    });
   };
 
   const [advancedIsOpen, setOpen] = useState(false);
@@ -157,9 +141,9 @@ const VerticalAutoscalingSection = ({
           >
             <RadioGroup
               name="vertical-autoscaling"
-              selected={nextPolicy.scaling_enabled ? "enabled" : "disabled"}
+              selected={nextPolicy.scalingEnabled ? "enabled" : "disabled"}
               onSelect={(e) => {
-                updatePolicy("scaling_enabled", e === "enabled");
+                updatePolicy("scalingEnabled", e === "enabled");
                 if (e === "disabled") {
                   setOpen(false);
                 }
@@ -221,13 +205,13 @@ const VerticalAutoscalingSection = ({
                       id="minimum-memory"
                       name="minimum-memory"
                       type="number"
-                      value={nextPolicy.minimum_memory}
+                      value={nextPolicy.minimumMemory}
                       min="0"
                       max="784384"
                       placeholder="0 (Min), 784384 (Max)"
                       onChange={(e) =>
                         updatePolicy(
-                          "minimum_memory",
+                          "minimumMemory",
                           parseInt(e.currentTarget.value, 10),
                         )
                       }
@@ -243,13 +227,13 @@ const VerticalAutoscalingSection = ({
                       id="maximum-memory"
                       name="maximum-memory"
                       type="number"
-                      value={nextPolicy.maximum_memory || ""}
+                      value={nextPolicy.maximumMemory || ""}
                       min="0"
                       max="784384"
                       placeholder="0 (Min), 784384 (Max)"
                       onChange={(e) =>
                         updatePolicy(
-                          "maximum_memory",
+                          "maximumMemory",
                           parseInt(e.currentTarget.value, 10),
                         )
                       }
@@ -266,13 +250,13 @@ const VerticalAutoscalingSection = ({
                       name="memory-scale-up"
                       type="number"
                       step="0.01"
-                      value={nextPolicy.mem_scale_up_threshold}
+                      value={nextPolicy.memScaleUpThreshold}
                       min="0"
                       max="1"
                       placeholder="0 (Min), 1 (Max)"
                       onChange={(e) =>
                         updatePolicy(
-                          "mem_scale_up_threshold",
+                          "memScaleUpThreshold",
                           Number(parseFloat(e.currentTarget.value).toFixed(2)),
                         )
                       }
@@ -289,13 +273,13 @@ const VerticalAutoscalingSection = ({
                       name="memory-scale-down"
                       type="number"
                       step="0.01"
-                      value={nextPolicy.mem_scale_down_threshold}
+                      value={nextPolicy.memScaleDownThreshold}
                       min="0"
                       max="1"
                       placeholder="0 (Min), 1 (Max)"
                       onChange={(e) =>
                         updatePolicy(
-                          "mem_scale_down_threshold",
+                          "memScaleDownThreshold",
                           Number(parseFloat(e.currentTarget.value).toFixed(2)),
                         )
                       }
@@ -314,13 +298,13 @@ const VerticalAutoscalingSection = ({
                       name="r-ratio"
                       type="number"
                       step="0.1"
-                      value={nextPolicy.mem_cpu_ratio_r_threshold}
+                      value={nextPolicy.memCpuRatioRThreshold}
                       min="0"
                       max="16"
                       placeholder="0 (Min), 16 (Max)"
                       onChange={(e) =>
                         updatePolicy(
-                          "mem_cpu_ratio_r_threshold",
+                          "memCpuRatioRThreshold",
                           Number(parseFloat(e.currentTarget.value).toFixed(1)),
                         )
                       }
@@ -337,13 +321,13 @@ const VerticalAutoscalingSection = ({
                       name="c-ratio"
                       type="number"
                       step="0.01"
-                      value={nextPolicy.mem_cpu_ratio_c_threshold}
+                      value={nextPolicy.memCpuRatioCThreshold}
                       min="0"
                       max="8"
                       placeholder="0 (Min), 8 (Max)"
                       onChange={(e) =>
                         updatePolicy(
-                          "mem_cpu_ratio_c_threshold",
+                          "memCpuRatioCThreshold",
                           Number(parseFloat(e.currentTarget.value).toFixed(2)),
                         )
                       }
@@ -360,13 +344,13 @@ const VerticalAutoscalingSection = ({
                       id="lookback-interval"
                       name="lookback-interval"
                       type="number"
-                      value={nextPolicy.metric_lookback_seconds}
+                      value={nextPolicy.metricLookbackSeconds}
                       min="0"
                       max="3600"
                       placeholder="0 (Min), 3600 (Max)"
                       onChange={(e) =>
                         updatePolicy(
-                          "metric_lookback_seconds",
+                          "metricLookbackSeconds",
                           parseInt(e.currentTarget.value, 10),
                         )
                       }
@@ -382,13 +366,13 @@ const VerticalAutoscalingSection = ({
                       id="scale-up-cooldown"
                       name="scale-up-cooldown"
                       type="number"
-                      value={nextPolicy.post_scale_up_cooldown_seconds}
+                      value={nextPolicy.postScaleUpCooldownSeconds}
                       min="0"
                       max="3600"
                       placeholder="0 (Min), 3600 (Max)"
                       onChange={(e) =>
                         updatePolicy(
-                          "post_scale_up_cooldown_seconds",
+                          "postScaleUpCooldownSeconds",
                           parseInt(e.currentTarget.value, 10),
                         )
                       }
@@ -404,13 +388,13 @@ const VerticalAutoscalingSection = ({
                       id="scale-down-cooldown"
                       name="scale-down-cooldown"
                       type="number"
-                      value={nextPolicy.post_scale_down_cooldown_seconds}
+                      value={nextPolicy.postScaleDownCooldownSeconds}
                       min="0"
                       max="3600"
                       placeholder="0 (Min), 3600 (Max)"
                       onChange={(e) =>
                         updatePolicy(
-                          "post_scale_down_cooldown_seconds",
+                          "postScaleDownCooldownSeconds",
                           parseInt(e.currentTarget.value, 10),
                         )
                       }
@@ -426,13 +410,13 @@ const VerticalAutoscalingSection = ({
                       id="release-cooldown"
                       name="release-cooldown"
                       type="number"
-                      value={nextPolicy.post_release_cooldown_seconds}
+                      value={nextPolicy.postReleaseCooldownSeconds}
                       min="0"
                       max="3600"
                       placeholder="0 (Min), 3600 (Max)"
                       onChange={(e) =>
                         updatePolicy(
-                          "post_release_cooldown_seconds",
+                          "postReleaseCooldownSeconds",
                           parseInt(e.currentTarget.value, 10),
                         )
                       }
@@ -639,7 +623,7 @@ export const AppDetailServiceScalePage = () => {
   return (
     <div className="flex flex-col gap-4">
       <LastScaleBanner serviceId={serviceId} />
-      <VerticalAutoscalingSection id={serviceId} stackId={stack.id} />
+      <VerticalAutoscalingSection serviceId={serviceId} stackId={stack.id} />
       <Box>
         <form onSubmit={onSubmitForm}>
           <div className="flex flex-col gap-2">
