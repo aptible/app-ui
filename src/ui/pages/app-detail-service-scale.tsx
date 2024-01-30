@@ -206,9 +206,9 @@ const VerticalAutoscalingSection = ({
                       name="minimum-memory"
                       type="number"
                       value={nextPolicy.minimumMemory}
-                      min="0"
+                      min="512"
                       max="784384"
-                      placeholder="0 (Min), 784384 (Max)"
+                      placeholder="512 (Min), 784384 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "minimumMemory",
@@ -228,9 +228,9 @@ const VerticalAutoscalingSection = ({
                       name="maximum-memory"
                       type="number"
                       value={nextPolicy.maximumMemory || ""}
-                      min="0"
+                      min="512"
                       max="784384"
-                      placeholder="0 (Min), 784384 (Max)"
+                      placeholder="512 (Min), 784384 (Max)"
                       onChange={(e) =>
                         updatePolicy(
                           "maximumMemory",
