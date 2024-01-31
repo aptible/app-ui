@@ -24,6 +24,8 @@ import {
   TitleBar,
   Tr,
   tokens,
+  Pill,
+  PillVariant,
 } from "../shared";
 
 const CreateRole = ({ orgId }: { orgId: string }) => {
@@ -78,8 +80,8 @@ export const TeamRolesPage = () => {
       <Table>
         <THead>
           <Td>Role</Td>
-          <Td>Type</Td>
-          <Td>Created Date</Td>
+          <Td>Members</Td>
+          <Td>Environments and Permissions</Td>
           <Td variant="right">Actions</Td>
         </THead>
 
@@ -94,9 +96,20 @@ export const TeamRolesPage = () => {
                   {" "}
                   {role.name}
                 </Link>
+                <div className="text-gray-500 text-sm">Created: {prettyDate(role.createdAt)}</div>
+                  <Pill>Custom</Pill>
               </Td>
-              <Td>{roleTypeFormat(role)}</Td>
-              <Td>{prettyDate(role.createdAt)}</Td>
+              <Td>Angela Champion, Charles Byram</Td>
+              <Td>
+                <Link
+                  className={`${tokens.type["table link"]}`}
+                  to={roleDetailUrl(role.id)}
+                >
+                  {" "}
+                  {role.name}
+                </Link>
+                <div className="text-gray-500 text-sm">Full Visibility, Environment Admin</div>
+              </Td>
               <Td variant="right">
                 <ButtonLink to={roleDetailUrl(role.id)} size="sm">
                   Edit
