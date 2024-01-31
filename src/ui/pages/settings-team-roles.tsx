@@ -109,21 +109,21 @@ export const TeamRolesPage = () => {
                 </div>
               </Td>
               <Td className="align-baseline">
-                <div className="text-black mb-2 pb-2 border-b border-gray-200 last:border-0 last:mb-0 last:pb-0">
+                <div className="text-black mb-2 pb-2 border-b border-gray-200 last:border-0 last:mb-0">
                   Environment Name
                   <div className="text-gray-500 text-sm">
                     Full Visibility, Environment Admin, Destruction, Ops, Basic
                     Visibility, Sensitive Access, Deployment, Tunnel
                   </div>
                 </div>
-                <div className="text-black mb-2 pb-2 border-b border-gray-200 last:border-0 last:mb-0 last:pb-0">
+                <div className="text-black mb-2 pb-2 border-b border-gray-200 last:border-0 last:mb-0">
                   Environment Name
                   <div className="text-gray-500 text-sm">
                     Full Visibility, Environment Admin, Destruction, Ops, Basic
                     Visibility, Sensitive Access, Deployment, Tunnel
                   </div>
                 </div>
-                <div className="text-black mb-2 pb-2 border-b border-gray-200 last:border-0 last:mb-0 last:pb-0">
+                <div className="text-black mb-2 pb-2 border-b border-gray-200 last:border-0 last:mb-0">
                   Environment Name
                   <div className="text-gray-500 text-sm">
                     Full Visibility, Environment Admin, Destruction, Ops, Basic
