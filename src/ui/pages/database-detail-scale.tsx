@@ -1,6 +1,6 @@
 import {
   DEFAULT_INSTANCE_CLASS,
-  exponentialContainerSizesByProfile,
+  containerSizesByProfile,
   fetchDatabase,
   fetchDiskById,
   fetchService,
@@ -157,7 +157,7 @@ export const DatabaseScalePage = () => {
     },
   );
 
-  const containerSizeOptions = exponentialContainerSizesByProfile(
+  const containerSizeOptions = containerSizesByProfile(
     containerProfileType,
   ).map((containerSizeOption) => {
     return {
