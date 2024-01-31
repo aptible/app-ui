@@ -12,17 +12,21 @@ const getContainerSizesByProfile = (profile: InstanceClass): number[] => {
     r4: [0.5, 1, 2, 4, 7, 15, 30, 60, 150, 240],
     r5: [0.5, 1, 2, 4, 7, 15, 30, 60, 150, 240, 368, 496, 752],
     c4: [0.5, 1, 2, 4, 7, 15, 30],
-    c5: [0.5, 1, 2, 4, 7, 15, 30, 60, 150, 240, 254, 382]
+    c5: [0.5, 1, 2, 4, 7, 15, 30, 60, 150, 240, 254, 382],
   };
   return sizeMap[profile].map((size: number) => size * GB);
 };
 
 export const containerSizesByProfile = (profile: InstanceClass): number[] => {
   const profileSizes = getContainerSizesByProfile(profile);
-  return profileSizes.filter((size: number) => size >= CONTAINER_PROFILES[profile].minimumContainerSize);
+  return profileSizes.filter(
+    (size: number) => size >= CONTAINER_PROFILES[profile].minimumContainerSize,
+  );
 };
 
-export const getContainerProfileFromType = (containerProfile: InstanceClass): ContainerProfileData => {
+export const getContainerProfileFromType = (
+  containerProfile: InstanceClass,
+): ContainerProfileData => {
   if (!CONTAINER_PROFILES[containerProfile]) {
     return {
       name: "",
