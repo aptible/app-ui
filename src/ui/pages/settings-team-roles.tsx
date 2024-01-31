@@ -99,15 +99,9 @@ export const TeamRolesPage = () => {
                 <div className="text-gray-500 text-sm">Created: {prettyDate(role.createdAt)}</div>
                   <Pill>Custom</Pill>
               </Td>
-              <Td>Angela Champion, Charles Byram</Td>
+              <Td className="text-black">Angela Champion, Charles Byram</Td>
               <Td>
-                <Link
-                  className={`${tokens.type["table link"]}`}
-                  to={roleDetailUrl(role.id)}
-                >
-                  {" "}
-                  {role.name}
-                </Link>
+                <div className="text-black">Environment Name</div>
                 <div className="text-gray-500 text-sm">Full Visibility, Environment Admin</div>
               </Td>
               <Td variant="right">
