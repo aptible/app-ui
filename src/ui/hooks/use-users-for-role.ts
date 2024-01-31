@@ -6,6 +6,6 @@ export function useUserIdsForRole(roleId: string) {
   const init = { trigger: ownersReq.trigger, userIds: [] };
   if (!ownersReq.data) return init;
   if (typeof ownersReq.data === "string") return init;
-  const owners = ownersReq.data?._embedded.users || [];
+  const owners = ownersReq.data?._embedded?.users || [];
   return { trigger: ownersReq.trigger, userIds: owners.map((u) => `${u.id}`) };
 }
