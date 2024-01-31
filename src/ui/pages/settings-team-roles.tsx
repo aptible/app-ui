@@ -17,6 +17,8 @@ import {
   FormGroup,
   Group,
   Input,
+  Pill,
+  PillVariant,
   TBody,
   THead,
   Table,
@@ -24,8 +26,6 @@ import {
   TitleBar,
   Tr,
   tokens,
-  Pill,
-  PillVariant,
 } from "../shared";
 
 const CreateRole = ({ orgId }: { orgId: string }) => {
@@ -88,21 +88,48 @@ export const TeamRolesPage = () => {
         <TBody>
           {roles.map((role) => (
             <Tr key={role.id}>
-              <Td>
+              <Td className="align-baseline">
                 <Link
                   className={`${tokens.type["table link"]}`}
                   to={roleDetailUrl(role.id)}
                 >
                   {" "}
-                  {role.name}
+                  <span className="text-base font-semibold">{role.name}</span>
                 </Link>
-                <div className="text-gray-500 text-sm">Created: {prettyDate(role.createdAt)}</div>
-                  <Pill>Custom</Pill>
+                <div className="text-gray-500 text-sm">
+                  Created: {prettyDate(role.createdAt)}
+                </div>
+                <Pill>Custom</Pill>
               </Td>
-              <Td className="text-black">Angela Champion, Charles Byram</Td>
-              <Td>
-                <div className="text-black">Environment Name</div>
-                <div className="text-gray-500 text-sm">Full Visibility, Environment Admin</div>
+              <Td className="align-baseline">
+                <div className="text-black max-w-[50ch]">
+                  Angela Champion, Charles Byram, Danny Vega, Alison Tafel,
+                  Kevin Horst, Kyle Coughlin, Angela Champion, Charles Byram,
+                  Danny Vega, Alison Tafel, Kevin Horst, Kyle Coughlin
+                </div>
+              </Td>
+              <Td className="align-baseline">
+                <div className="text-black mb-2">
+                  Environment Name
+                  <div className="text-gray-500 text-sm">
+                    Full Visibility, Environment Admin, Destruction, Ops, Basic
+                    Visibility, Sensitive Access, Deployment, Tunnel
+                  </div>
+                </div>
+                <div className="text-black mb-2">
+                  Environment Name
+                  <div className="text-gray-500 text-sm">
+                    Full Visibility, Environment Admin, Destruction, Ops, Basic
+                    Visibility, Sensitive Access, Deployment, Tunnel
+                  </div>
+                </div>
+                <div className="text-black mb-2">
+                  Environment Name
+                  <div className="text-gray-500 text-sm">
+                    Full Visibility, Environment Admin, Destruction, Ops, Basic
+                    Visibility, Sensitive Access, Deployment, Tunnel
+                  </div>
+                </div>
               </Td>
               <Td variant="right">
                 <ButtonLink to={roleDetailUrl(role.id)} size="sm">
