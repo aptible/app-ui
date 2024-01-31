@@ -175,7 +175,7 @@ export const SupportPage = () => {
                     <Input
                       className="flex w-full"
                       name="email"
-                      type="string"
+                      type="email"
                       value={formState.email}
                       onChange={(e) =>
                         setFormState({
