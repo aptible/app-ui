@@ -21,9 +21,13 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
         {crumbs.map((crumb, idx) => (
           <span key={`${crumb.name}-${idx}`}>
             {crumb.to === null ? (
-              <span className="text-xl font-semibold break-words">
+              <NavLink
+                className="text-xl text-black hover:text-indigo font-semibold break-words"
+                to={crumb.to}
+              >
+                {" "}
                 {crumb.name}
-              </span>
+              </NavLink>
             ) : (
               <span className={idx === 0 ? "" : ""}>
                 <NavLink className={navLink} to={crumb.to}>
