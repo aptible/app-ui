@@ -22,7 +22,7 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
           <span key={`${crumb.name}-${idx}`}>
             {crumb.to === null ? (
               <NavLink
-                className="text-xl text-black hover:text-indigo font-semibold break-words"
+                className="text-xl text-black focus:text-black hover:text-indigo font-semibold break-words"
                 to={crumb.to}
               >
                 {" "}
