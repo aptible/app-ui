@@ -122,3 +122,8 @@ export function nameValidator(name: string) {
     return 'Cannot have symbols in name';
   }
 }
+
+// Sanitizes inputs and removes harmful characters as they are inputs. Example <
+export function sanitizeInput(input: any) {
+  return input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}

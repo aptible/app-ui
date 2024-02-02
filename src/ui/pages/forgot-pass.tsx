@@ -14,6 +14,7 @@ import {
   Input,
   tokens,
 } from "../shared";
+import { sanitizeInput } from "@app/validator";
 
 export const ForgotPassPage = () => {
   const dispatch = useDispatch();
@@ -45,7 +46,7 @@ export const ForgotPassPage = () => {
                 type="email"
                 name="email"
                 value={email}
-                onChange={(e) => setEmail(e.currentTarget.value)}
+                onChange={(e) => setEmail(sanitizeInput(e.currentTarget.value))}
                 placeholder="Enter your email"
                 className="w-full"
               />

@@ -1,6 +1,6 @@
 import { useDispatch, useLoader, useSelector } from "@app/react";
 import { selectCurrentUser, updateUserName } from "@app/users";
-import { nameValidator, existValidtor } from "@app/validator";
+import { nameValidator, existValidtor, sanitizeInput } from "@app/validator";
 import { useEffect, useState } from "react";
 import {
   BannerMessages,
@@ -83,9 +83,9 @@ export function SettingsProfilePage() {
                 name="name"
                 value={name}
                 onChange={(e) => {
-                  setName(e.currentTarget.value)
+                  setName(sanitizeInput(e.currentTarget.value))
                   validate({
-                    name: e.currentTarget.value
+                    name: sanitizeInput(e.currentTarget.value)
                   })
                 }}
               />

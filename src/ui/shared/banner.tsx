@@ -110,11 +110,11 @@ export const BannerMessages = ({
   isWarning?: boolean;
   message: string;
   className?: string;
-  meta?: any
+  meta?: any;
 }) => {
   if (!message) return null;
 
-  if (isSuccess || meta.fakeTrue) {
+  if (isSuccess || meta?.fakeTrue) {
     return (
       <Banner className={className} variant="success">
         {message}

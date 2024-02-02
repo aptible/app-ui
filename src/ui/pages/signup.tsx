@@ -14,7 +14,7 @@ import {
 } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 import { CreateUserForm } from "@app/users";
-import { emailValidator, existValidtor, passValidator, nameValidator } from "@app/validator";
+import { emailValidator, existValidtor, passValidator, nameValidator, sanitizeInput } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
@@ -220,7 +220,7 @@ export const SignupPage = () => {
                   required={true}
                   value={name}
                   className="w-full"
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setName(sanitizeInput(e.target.value))}
                 />
               </FormGroup>
 
@@ -239,7 +239,7 @@ export const SignupPage = () => {
                     required={true}
                     value={company}
                     className="w-full"
-                    onChange={(e) => setCompany(e.target.value)}
+                    onChange={(e) => setCompany(sanitizeInput(e.target.value))}
                   />
                 </FormGroup>
               )}
@@ -257,7 +257,7 @@ export const SignupPage = () => {
                   autoComplete="email"
                   required={true}
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(sanitizeInput(e.target.value))}
                   className="w-full"
                 />
               </FormGroup>
