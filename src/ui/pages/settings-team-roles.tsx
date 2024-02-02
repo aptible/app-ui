@@ -1,10 +1,7 @@
 import { prettyDate } from "@app/date";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useDispatch, useLoader, useSelector } from "@app/react";
-import {
-  createRoleForOrg,
-  selectRolesByOrgId,
-} from "@app/roles";
+import { createRoleForOrg, selectRolesByOrgId } from "@app/roles";
 import { roleDetailUrl } from "@app/routes";
 import { useState } from "react";
 import { Link } from "react-router-dom";
