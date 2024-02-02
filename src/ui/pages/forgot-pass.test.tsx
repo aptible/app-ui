@@ -28,12 +28,32 @@ describe("ForgotPassPage", () => {
 
     const alert = await screen.findByRole("status");
     expect(alert.textContent).toMatch(
-      /Success! Check your email to change your password./,
+      /If an Aptible account exists for that email address, we will email you instructions for resetting your password./,
     );
     expect(
       btn,
       "when already reset password the btn should be disabled",
     ).toBeDisabled();
+  });
+
+  it("should hide a User not found email", async () => {
+    const { TestProvider } = setupIntegrationTest();
+    render(
+      <TestProvider>
+        <ForgotPassPage />
+      </TestProvider>,
+    );
+
+    const btn = await screen.findByRole("button");
+    const email = await screen.findByRole("textbox", { name: "email" });
+    await act(() => userEvent.type(email, "abc@abc.com"));
+
+    fireEvent.click(btn);
+
+    const alert = await screen.findByRole("status");
+    expect(alert.textContent).toMatch(
+      /If an Aptible account exists for that email address, we will email you instructions for resetting your password./,
+    );
   });
 });
 

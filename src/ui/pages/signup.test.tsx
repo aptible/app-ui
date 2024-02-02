@@ -26,6 +26,86 @@ describe("Signup page", () => {
     expect(el.textContent).toEqual("Create Account");
   });
 
+  it("should sanitize inputs", async () => {
+    server.use(
+      rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
+        return res(ctx.status(401));
+      }),
+    );
+    const { App } = setupAppIntegrationTest({
+      initEntries: [signupUrl()],
+    });
+    render(<App />);
+
+    const name = await screen.findByRole("textbox", { name: "name" });
+    await act(() => userEvent.type(name, "<test>!#@"));
+    const company = await screen.findByRole("textbox", { name: "company" });
+    await act(() => userEvent.type(company, "<>> #!abc"));
+    const email = await screen.findByRole("textbox", { name: "email" });
+    await act(() => userEvent.type(email, testEmail));
+    const pass = await screen.findByLabelText("password");
+    await act(() => userEvent.type(pass, "Aptible!1234"));
+
+    expect(name).toHaveValue("&lt;test&gt;!#@");
+    expect(company).toHaveValue("&lt;&gt;&gt; #!abc");
+  });
+
+  it("should *not* allow symbols in Name", async () => {
+    server.use(
+      rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
+        return res(ctx.status(401));
+      }),
+    );
+    const { App } = setupAppIntegrationTest({
+      initEntries: [signupUrl()],
+    });
+    render(<App />);
+
+    const name = await screen.findByRole("textbox", { name: "name" });
+    await act(() => userEvent.type(name, "@"));
+    const company = await screen.findByRole("textbox", { name: "company" });
+    await act(() => userEvent.type(company, "test"));
+    const email = await screen.findByRole("textbox", { name: "email" });
+    await act(() => userEvent.type(email, testEmail));
+    const pass = await screen.findByLabelText("password");
+    await act(() => userEvent.type(pass, "Aptible!1234"));
+
+    const el = await screen.findByRole("button", { name: "Create Account" });
+    fireEvent.click(el);
+
+    expect(
+      await screen.findByText("Cannot have symbols in name"),
+    ).toBeInTheDocument();
+  });
+
+  it("should *not* allow symbols in Company", async () => {
+    server.use(
+      rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
+        return res(ctx.status(401));
+      }),
+    );
+    const { App } = setupAppIntegrationTest({
+      initEntries: [signupUrl()],
+    });
+    render(<App />);
+
+    const name = await screen.findByRole("textbox", { name: "name" });
+    await act(() => userEvent.type(name, "test"));
+    const company = await screen.findByRole("textbox", { name: "company" });
+    await act(() => userEvent.type(company, "@"));
+    const email = await screen.findByRole("textbox", { name: "email" });
+    await act(() => userEvent.type(email, testEmail));
+    const pass = await screen.findByLabelText("password");
+    await act(() => userEvent.type(pass, "Aptible!1234"));
+
+    const el = await screen.findByRole("button", { name: "Create Account" });
+    fireEvent.click(el);
+
+    expect(
+      await screen.findByText("Cannot have symbols in name"),
+    ).toBeInTheDocument();
+  });
+
   it("after successful signup, redirects to verify page", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {

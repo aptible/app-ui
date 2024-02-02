@@ -25,7 +25,7 @@ export const forgotPass = authApi.post<{ email: string }>(
         ctx.loader = {
           message:
             "If an Aptible account exists for that email address, we will email you instructions for resetting your password.",
-          meta: { fakeTrue: true },
+          meta: { fakeSuccess: true },
         };
       } else {
         ctx.loader = {
