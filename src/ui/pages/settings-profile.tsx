@@ -1,5 +1,6 @@
 import { useDispatch, useLoader, useSelector } from "@app/react";
 import { selectCurrentUser, updateUserName } from "@app/users";
+import { nameValidator, existValidtor } from "@app/validator";
 import { useEffect, useState } from "react";
 import {
   BannerMessages,
@@ -11,6 +12,7 @@ import {
   Input,
   tokens,
 } from "../shared";
+import { useValidator } from "../hooks";
 
 export function SettingsProfilePage() {
   const dispatch = useDispatch();
@@ -22,7 +24,17 @@ export function SettingsProfilePage() {
     name,
   };
   const action = updateUserName(data);
-  const isDisabled = name === user.name;
+  const validators = {
+    name: (props: UpdateNameForm) => existValidtor(props.name, "Name") || nameValidator(props.name),
+  };
+  const [errors, validate] = useValidator<UpdateNameForm, typeof validators>(
+    validators,
+  );
+  const isDisabled = name === user.name || !!errors.name;
+
+  interface UpdateNameForm {
+    name: string;
+  }
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,6 +42,7 @@ export function SettingsProfilePage() {
       return;
     }
 
+    if (!validate(data)) return;
     dispatch(action);
   };
 
@@ -61,13 +74,20 @@ export function SettingsProfilePage() {
           <Group>
             <BannerMessages {...loader} />
 
-            <FormGroup label="Name" htmlFor="name">
+            <FormGroup label="Name" htmlFor="name"
+              feedbackMessage={errors.name}
+              feedbackVariant={errors.name ? "danger" : "info"}>
               <Input
                 type="text"
                 id="name"
                 name="name"
                 value={name}
-                onChange={(e) => setName(e.currentTarget.value)}
+                onChange={(e) => {
+                  setName(e.currentTarget.value)
+                  validate({
+                    name: e.currentTarget.value
+                  })
+                }}
               />
             </FormGroup>
 

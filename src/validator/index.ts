@@ -114,3 +114,11 @@ export function emailValidator(email: string) {
 export function existValidtor(val: string, name: string) {
   if (val === "") return `${name} must not be empty`;
 }
+
+export function nameValidator(name: string) {
+  const regex = /^[a-zA-Z0-9\s]+$/;
+  
+  if (!regex.test(name)) {
+    return 'Cannot have symbols in name';
+  }
+}

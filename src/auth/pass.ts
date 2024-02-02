@@ -22,7 +22,7 @@ export const forgotPass = authApi.post<{ email: string }>(
     yield* next();
 
     ctx.loader = {
-      message: "If this is a valid email, you will recieve an email with instructions.",
+      message: "If an Aptible account exists for that email address, we will email you instructions for resetting your password.",
     };
   },
 );
