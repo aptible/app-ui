@@ -3,7 +3,6 @@ import { selectOrganizationSelectedId } from "@app/organizations";
 import { useDispatch, useLoader, useSelector } from "@app/react";
 import {
   createRoleForOrg,
-  roleTypeFormat,
   selectRolesByOrgId,
 } from "@app/roles";
 import { roleDetailUrl } from "@app/routes";
@@ -18,7 +17,6 @@ import {
   Group,
   Input,
   Pill,
-  PillVariant,
   TBody,
   THead,
   Table,
