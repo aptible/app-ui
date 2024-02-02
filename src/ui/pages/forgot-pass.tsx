@@ -37,7 +37,7 @@ export const ForgotPassPage = () => {
 
       <Box>
         <Group>
-          <BannerMessages {...loader} isSuccess={true} />
+          <BannerMessages {...loader} />
 
           <form onSubmit={onSubmit}>
             <FormGroup label="Email" htmlFor="email">

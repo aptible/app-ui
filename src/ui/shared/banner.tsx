@@ -103,16 +103,18 @@ export const BannerMessages = ({
   isWarning,
   message,
   className,
+  meta
 }: {
   isSuccess: boolean;
   isError: boolean;
   isWarning?: boolean;
   message: string;
   className?: string;
+  meta?: any
 }) => {
   if (!message) return null;
 
-  if (isSuccess) {
+  if (isSuccess || meta.fakeTrue) {
     return (
       <Banner className={className} variant="success">
         {message}
