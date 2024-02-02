@@ -1,6 +1,7 @@
 import { forgotPass, resetPass } from "@app/auth/pass";
 import { useDispatch, useLoader } from "@app/react";
 import { loginUrl } from "@app/routes";
+import { sanitizeInput } from "@app/validator";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { HeroBgLayout } from "../layouts";
@@ -14,7 +15,6 @@ import {
   Input,
   tokens,
 } from "../shared";
-import { sanitizeInput } from "@app/validator";
 
 export const ForgotPassPage = () => {
   const dispatch = useDispatch();

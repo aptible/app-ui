@@ -14,7 +14,13 @@ import {
 } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 import { CreateUserForm } from "@app/users";
-import { emailValidator, existValidtor, passValidator, nameValidator, sanitizeInput } from "@app/validator";
+import {
+  emailValidator,
+  existValidtor,
+  nameValidator,
+  passValidator,
+  sanitizeInput,
+} from "@app/validator";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
@@ -33,12 +39,15 @@ import {
 } from "../shared";
 
 const validators = {
-  name: (props: CreateUserForm) => existValidtor(props.name, "Name") || nameValidator(props.name),
+  name: (props: CreateUserForm) =>
+    existValidtor(props.name, "Name") || nameValidator(props.name),
   company: (props: CreateUserForm) => {
     if (props.challenge_token !== "") {
       return;
     }
-    return existValidtor(props.company, "Company") || nameValidator(props.company);
+    return (
+      existValidtor(props.company, "Company") || nameValidator(props.company)
+    );
   },
   email: (props: CreateUserForm) => emailValidator(props.email),
   pass: (props: CreateUserForm) => passValidator(props.password),

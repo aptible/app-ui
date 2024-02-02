@@ -117,9 +117,9 @@ export function existValidtor(val: string, name: string) {
 
 export function nameValidator(name: string) {
   const regex = /^[a-zA-Z0-9\s]+$/;
-  
+
   if (!regex.test(name)) {
-    return 'Cannot have symbols in name';
+    return "Cannot have symbols in name";
   }
 }
 

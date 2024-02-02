@@ -103,7 +103,7 @@ export const BannerMessages = ({
   isWarning,
   message,
   className,
-  meta
+  meta,
 }: {
   isSuccess: boolean;
   isError: boolean;

@@ -1,7 +1,8 @@
 import { useDispatch, useLoader, useSelector } from "@app/react";
 import { selectCurrentUser, updateUserName } from "@app/users";
-import { nameValidator, existValidtor, sanitizeInput } from "@app/validator";
+import { existValidtor, nameValidator, sanitizeInput } from "@app/validator";
 import { useEffect, useState } from "react";
+import { useValidator } from "../hooks";
 import {
   BannerMessages,
   Box,
@@ -12,7 +13,6 @@ import {
   Input,
   tokens,
 } from "../shared";
-import { useValidator } from "../hooks";
 
 export function SettingsProfilePage() {
   const dispatch = useDispatch();
@@ -25,7 +25,8 @@ export function SettingsProfilePage() {
   };
   const action = updateUserName(data);
   const validators = {
-    name: (props: UpdateNameForm) => existValidtor(props.name, "Name") || nameValidator(props.name),
+    name: (props: UpdateNameForm) =>
+      existValidtor(props.name, "Name") || nameValidator(props.name),
   };
   const [errors, validate] = useValidator<UpdateNameForm, typeof validators>(
     validators,
@@ -74,19 +75,22 @@ export function SettingsProfilePage() {
           <Group>
             <BannerMessages {...loader} />
 
-            <FormGroup label="Name" htmlFor="name"
+            <FormGroup
+              label="Name"
+              htmlFor="name"
               feedbackMessage={errors.name}
-              feedbackVariant={errors.name ? "danger" : "info"}>
+              feedbackVariant={errors.name ? "danger" : "info"}
+            >
               <Input
                 type="text"
                 id="name"
                 name="name"
                 value={name}
                 onChange={(e) => {
-                  setName(sanitizeInput(e.currentTarget.value))
+                  setName(sanitizeInput(e.currentTarget.value));
                   validate({
-                    name: sanitizeInput(e.currentTarget.value)
-                  })
+                    name: sanitizeInput(e.currentTarget.value),
+                  });
                 }}
               />
             </FormGroup>

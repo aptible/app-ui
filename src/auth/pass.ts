@@ -21,11 +21,12 @@ export const forgotPass = authApi.post<{ email: string }>(
     yield* next();
 
     if (!ctx.json.ok) {
-      if (ctx.json.error.error === 'invalid_email') {
+      if (ctx.json.error.error === "invalid_email") {
         ctx.loader = {
-          message: "If an Aptible account exists for that email address, we will email you instructions for resetting your password.",
+          message:
+            "If an Aptible account exists for that email address, we will email you instructions for resetting your password.",
           meta: { fakeTrue: true },
-        }
+        };
       } else {
         ctx.loader = {
           message: `Error! Unable to submit request to reset your password: ${ctx.json.error.message}
@@ -36,7 +37,8 @@ export const forgotPass = authApi.post<{ email: string }>(
     }
 
     ctx.loader = {
-      message: "If an Aptible account exists for that email address, we will email you instructions for resetting your password.",
+      message:
+        "If an Aptible account exists for that email address, we will email you instructions for resetting your password.",
     };
   },
 );
