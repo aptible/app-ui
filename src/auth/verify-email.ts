@@ -14,6 +14,7 @@ export const verifyEmail = authApi.post<VerifyEmail>(
   { supervisor: leading },
   function* onVerifyEmail(ctx: AuthApiCtx<any, VerifyEmail>, next) {
     const { challengeId, verificationCode, userId } = ctx.payload;
+    ctx.elevated = true;
     ctx.request = ctx.req({
       body: JSON.stringify({
         type: "email_verification_challenge",

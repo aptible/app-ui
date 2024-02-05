@@ -152,6 +152,7 @@ export const resetOtpVerify = authApi.post<{
 }>(["/verifications", "otp"], { supervisor: leading }, [
   function* (ctx, next) {
     const { challengeId, verificationCode } = ctx.payload;
+    ctx.elevated = true;
     ctx.request = ctx.req({
       body: JSON.stringify({
         type: "otp_reset_challenge",
