@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { setupIntegrationTest } from "@app/test";
 import { SettingsProfilePage } from "./settings-profile";
 
-describe("ForgotPassPage", () => {
+describe("SettingsProfilePage", () => {
   it("should hide sanitize name input", async () => {
     const { TestProvider } = setupIntegrationTest();
     render(

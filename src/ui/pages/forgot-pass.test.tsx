@@ -1,10 +1,11 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { testEmail } from "@app/mocks";
+import { testEmail, server, testEnv } from "@app/mocks";
 import { RESET_PASSWORD_PATH, resetPassVerifyUrl } from "@app/routes";
 import { setupIntegrationTest } from "@app/test";
 import { ForgotPassPage, ForgotPassVerifyPage } from "./forgot-pass";
+import { rest } from "msw";
 
 describe("ForgotPassPage", () => {
   it("should allow user to request a password reset", async () => {
@@ -37,6 +38,11 @@ describe("ForgotPassPage", () => {
   });
 
   it("should hide a User not found email", async () => {
+    server.use(
+      rest.post(`${testEnv.authUrl}/password/resets/new`, (_, res, ctx) => {
+        return res(ctx.status(400), ctx.json({ error: 'invalid_email', ok: false })); 
+      }),
+    );
     const { TestProvider } = setupIntegrationTest();
     render(
       <TestProvider>
