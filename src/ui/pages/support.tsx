@@ -156,7 +156,7 @@ export const SupportPage = () => {
       </TitleBar>
 
       <div className="flex flex-row gap-10">
-        <Box className="mt-4 w-full">
+        <Box className="w-full">
           <div className="mb-4">
             Please enter the details of your request. A member of our support
             staff will respond as soon as possible. Be sure to include relevant
