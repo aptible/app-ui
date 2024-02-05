@@ -45,7 +45,6 @@ export const resetPass = authApi.post<ResetPass>(
   ["/verifications", "pass"],
   function* (ctx, next) {
     const { challengeId, password, verificationCode } = ctx.payload;
-    ctx.elevated = true;
     ctx.request = ctx.req({
       body: JSON.stringify({
         type: "password_reset_challenge",
