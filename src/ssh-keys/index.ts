@@ -45,6 +45,7 @@ export const addSSHKey = authApi.post<{
     name: ctx.payload.name,
     ssh_public_key: ctx.payload.key,
   };
+  ctx.elevated = true;
   ctx.request = ctx.req({
     body: JSON.stringify(body),
   });

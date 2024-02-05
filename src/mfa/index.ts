@@ -108,6 +108,7 @@ export const fetchOtpCodes = authApi.get<
 export const setupOtp = authApi.post<SetupOtp, OtpResponse>(
   "/users/:userId/otp_configurations",
   function* onOtp(ctx, next) {
+    ctx.elevated = true;
     const curOtp = yield* select(schema.otp.select);
     if (curOtp.id) {
       return;
