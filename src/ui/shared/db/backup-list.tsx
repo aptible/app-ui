@@ -44,7 +44,7 @@ const BackupTypePill = ({
           ? "bg-indigo-100 text-indigo-400 border-indigo-300"
           : "bg-lime-100 text-green-400 border-lime-300",
         final
-          ? "!bg-indigo-100 !text-indigo-400 !border-indigo-300"
+          ? "!bg-orange-100 !text-brown !border-brown"
           : "bg-indigo-100 text-green-400 border-indigo-300",
       )}
     >
