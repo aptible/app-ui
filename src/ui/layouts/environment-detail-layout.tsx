@@ -31,15 +31,6 @@ import {
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
-const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
-  endpoint.type === "tcp" ? (
-    <div>{endpoint.externalHost}</div>
-  ) : (
-    <p key={endpoint.id}>
-      <EndpointUrl enp={endpoint} />
-    </p>
-  );
-
 export function EnvHeader({
   environment,
   stack,
@@ -83,7 +74,7 @@ export function EnvHeader({
         <DetailInfoItem title={`${stats.domainCount} Endpoints`}>
           {endpoints.length <= 5
             ? endpoints.map((endpoint) => (
-                <EndpointList key={endpoint.id} endpoint={endpoint} />
+                <EndpointUrl key={endpoint.id} enp={endpoint} />
               ))
             : null}
         </DetailInfoItem>
