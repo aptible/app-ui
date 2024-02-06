@@ -899,7 +899,7 @@ export const getContainerPort = (
   return enp.containerPort || `Default (${port})`;
 };
 
-export const getEndpointUrl = (enp?: DeployEndpoint) => {
+export const getEndpointDisplayHost = (enp?: DeployEndpoint) => {
   if (!enp) return "Unknown";
 
   if (!hasDeployEndpoint(enp)) {
@@ -911,10 +911,20 @@ export const getEndpointUrl = (enp?: DeployEndpoint) => {
   }
 
   if (enp.default) {
-    return `https://${enp.virtualDomain}`
+    return enp.virtualDomain
   }
 
   return enp.externalHost;
+}
+
+export const getEndpointUrl = (enp?: DeployEndpoint) => {
+  if (!enp) return "Unknown";
+
+  if (!hasDeployEndpoint(enp)) {
+    return "Unknown";
+  }
+
+  return enp.virtualDomain || enp.externalHost;
 };
 
 export const getEndpointText = (enp: DeployEndpoint) => {
@@ -922,6 +932,7 @@ export const getEndpointText = (enp: DeployEndpoint) => {
     url: getEndpointUrl(enp),
     placement: getPlacement(enp),
     ipAllowlist: getIpAllowlistText(enp),
+    hostname: getEndpointDisplayHost(enp),
   };
 };
 

@@ -87,6 +87,9 @@ export function EndpointAppHeaderInfo({
         <DetailInfoItem title="Hostname">
           <CopyText text={enp.externalHost} />
         </DetailInfoItem>
+        <DetailInfoItem title="Type">
+          <Code>{enp.type}</Code>
+        </DetailInfoItem>
 
         <DetailInfoItem title="Resource">
           <Link to={appEndpointsUrl(app.id)}>{app.handle}</Link>

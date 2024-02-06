@@ -80,6 +80,10 @@ export const EndpointStatusPill = ({
   );
 };
 
+const isWildcard = (url: string) => {
+  return url.startsWith("*");
+}
+
 export function EndpointUrl({ enp }: { enp: DeployEndpoint }) {
   const url = getEndpointUrl(enp);
 
@@ -87,15 +91,19 @@ export function EndpointUrl({ enp }: { enp: DeployEndpoint }) {
     return <p className="text-gray-500">Pending</p>;
   }
 
-  return (
-    <ExternalLink
-      className="text-black group-hover:text-indigo hover:text-indigo"
-      href={url}
-      variant="default"
-    >
-      {url}
-    </ExternalLink>
-  );
+  if (!isWildcard(url) && (enp.type === "http" || enp.type === "http_proxy_protocol")) {
+    return (
+      <ExternalLink
+        className="text-black group-hover:text-indigo hover:text-indigo"
+        href={`https://${url}`}
+        variant="default"
+      >
+        {url}
+      </ExternalLink>
+    );
+  }
+
+  return <p>{url}</p>
 }
 
 export const EndpointDeprovision = ({
