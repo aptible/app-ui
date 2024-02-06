@@ -911,11 +911,11 @@ export const getEndpointDisplayHost = (enp?: DeployEndpoint) => {
   }
 
   if (enp.default) {
-    return enp.virtualDomain
+    return enp.virtualDomain;
   }
 
   return enp.externalHost;
-}
+};
 
 export const getEndpointUrl = (enp?: DeployEndpoint) => {
   if (!enp) return "Unknown";
