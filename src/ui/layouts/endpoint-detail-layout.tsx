@@ -81,11 +81,11 @@ export function EndpointAppHeaderInfo({
         <DetailInfoItem title="URL">
           <div className="flex flex-row items-center gap-2">
             <EndpointUrl enp={enp} />
-            <CopyTextButton text={getEndpointUrl(enp)} />
+            <CopyTextButton text={txt.url} />
           </div>
         </DetailInfoItem>
         <DetailInfoItem title="Hostname">
-          <CopyText text={enp.externalHost} />
+          <CopyText text={txt.hostname} />
         </DetailInfoItem>
         <DetailInfoItem title="Type">
           <Code>{enp.type}</Code>

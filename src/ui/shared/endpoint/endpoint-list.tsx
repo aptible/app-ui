@@ -81,11 +81,11 @@ const EndpointRow = ({ endpoint }: { endpoint: DeployEndpointRow }) => {
       <Td>
         <div className="flex flex-row items-center gap-2">
           <EndpointItemView endpoint={endpoint} />
-          <CopyTextButton text={getEndpointUrl(endpoint)} />
+          <CopyTextButton text={txt.url} />
         </div>
       </Td>
       <Td>
-        <CopyText text={endpoint.externalHost} />
+        <CopyText text={txt.hostname} />
       </Td>
       <Td>
         {endpoint.resourceType === "app" ? (
