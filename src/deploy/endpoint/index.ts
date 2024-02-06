@@ -900,21 +900,21 @@ export const getContainerPort = (
 };
 
 export const getEndpointUrl = (enp?: DeployEndpoint) => {
-  if (!enp) return "";
+  if (!enp) return "Unknown";
 
   if (!hasDeployEndpoint(enp)) {
-    return enp.id;
+    return "Unknown";
   }
 
   if (enp.status === "provisioning") {
     return "Provisioning";
   }
 
-  if (enp.type === "tcp") {
-    return enp.externalHost;
+  if (enp.default) {
+    return `https://${enp.virtualDomain}`
   }
 
-  return `https://${enp.virtualDomain}`;
+  return enp.externalHost;
 };
 
 export const getEndpointText = (enp: DeployEndpoint) => {

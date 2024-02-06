@@ -81,21 +81,19 @@ export const EndpointStatusPill = ({
 };
 
 export function EndpointUrl({ enp }: { enp: DeployEndpoint }) {
+  const url = getEndpointUrl(enp);
+
   if (enp.status === "provisioning") {
     return <p className="text-gray-500">Pending</p>;
-  }
-
-  if (enp.type === "tcp") {
-    return <span>{enp.externalHost}</span>;
   }
 
   return (
     <ExternalLink
       className="text-black group-hover:text-indigo hover:text-indigo"
-      href={`https://${enp.virtualDomain}`}
+      href={url}
       variant="default"
     >
-      https://{enp.virtualDomain}
+      {url}
     </ExternalLink>
   );
 }
