@@ -22,7 +22,20 @@ export function setupStore({
 }: { logs?: boolean; initialState?: Partial<WebState> }) {
   const persistor = createPersistor<WebState>({
     adapter: createLocalStorageAdapter(),
-    allowlist: ["theme", "nav", "redirectPath", "feedback", "resourceStats"],
+    allowlist: [
+      "theme",
+      "nav",
+      "redirectPath",
+      "feedback",
+      "resourceStats",
+      "organizations",
+      "stacks",
+      "environments",
+      "apps",
+      "databases",
+      "services",
+      "endpoints",
+    ],
   });
 
   const store = configureStore<WebState>({
