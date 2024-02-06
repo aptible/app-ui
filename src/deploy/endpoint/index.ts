@@ -899,11 +899,13 @@ export const getContainerPort = (
   return enp.containerPort || `Default (${port})`;
 };
 
+const emptyEndpointName = "New Endpoint";
+
 export const getEndpointDisplayHost = (enp?: DeployEndpoint) => {
-  if (!enp) return "Unknown";
+  if (!enp) return emptyEndpointName;
 
   if (!hasDeployEndpoint(enp)) {
-    return "Unknown";
+    return emptyEndpointName;
   }
 
   if (enp.status === "provisioning") {
@@ -918,13 +920,13 @@ export const getEndpointDisplayHost = (enp?: DeployEndpoint) => {
 };
 
 export const getEndpointUrl = (enp?: DeployEndpoint) => {
-  if (!enp) return "Unknown";
+  if (!enp) return emptyEndpointName;
 
   if (!hasDeployEndpoint(enp)) {
-    return "Unknown";
+    return emptyEndpointName;
   }
 
-  return enp.virtualDomain || enp.externalHost;
+  return enp.virtualDomain || enp.externalHost || emptyEndpointName;
 };
 
 export const getEndpointText = (enp: DeployEndpoint) => {
