@@ -8,6 +8,7 @@ import {
 import { useSelector } from "@app/react";
 import { environmentAppsUrl } from "@app/routes";
 import { Link } from "react-router-dom";
+import { EndpointUrl } from "./endpoint";
 import { IconGitBranch, IconGlobe } from "./icons";
 import { Pill } from "./pill";
 import { StatusBox } from "./status-box";
@@ -50,13 +51,7 @@ export const ResourceGroupBox = ({
             <h4 className={`break-words ${tokens.type.h4}`}>{handle}</h4>
             <p className="text-black-500 text-sm pb-1">
               {hasDeployEndpoint(vhost) && vhost.status === "provisioned" ? (
-                <a
-                  href={`https://${vhost.virtualDomain}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  https://{vhost.virtualDomain}
-                </a>
+                <EndpointUrl enp={vhost} />
               ) : (
                 "Pending HTTP Endpoint"
               )}

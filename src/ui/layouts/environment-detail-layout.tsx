@@ -26,6 +26,7 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  EndpointUrl,
   TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
@@ -35,13 +36,7 @@ const EndpointList = ({ endpoint }: { endpoint: DeployEndpoint }) =>
     <div>{endpoint.externalHost}</div>
   ) : (
     <p key={endpoint.id}>
-      <a
-        href={`https://${endpoint.virtualDomain}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {endpoint.virtualDomain}
-      </a>
+      <EndpointUrl enp={endpoint} />
     </p>
   );
 
