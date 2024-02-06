@@ -1,6 +1,7 @@
 import { forgotPass, resetPass } from "@app/auth/pass";
 import { useDispatch, useLoader } from "@app/react";
 import { loginUrl } from "@app/routes";
+import { sanitizeInput } from "@app/validator";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { HeroBgLayout } from "../layouts";
@@ -37,7 +38,10 @@ export const ForgotPassPage = () => {
 
       <Box>
         <Group>
-          <BannerMessages {...loader} />
+          <BannerMessages
+            {...loader}
+            isSuccess={loader.meta.fakeSuccess || loader.isSuccess}
+          />
 
           <form onSubmit={onSubmit}>
             <FormGroup label="Email" htmlFor="email">
@@ -45,7 +49,7 @@ export const ForgotPassPage = () => {
                 type="email"
                 name="email"
                 value={email}
-                onChange={(e) => setEmail(e.currentTarget.value)}
+                onChange={(e) => setEmail(sanitizeInput(e.currentTarget.value))}
                 placeholder="Enter your email"
                 className="w-full"
               />

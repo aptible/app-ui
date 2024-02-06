@@ -114,3 +114,16 @@ export function emailValidator(email: string) {
 export function existValidtor(val: string, name: string) {
   if (val === "") return `${name} must not be empty`;
 }
+
+export function nameValidator(name: string) {
+  const regex = /^[a-zA-Z0-9\s]+$/;
+
+  if (!regex.test(name)) {
+    return "Cannot have symbols in name";
+  }
+}
+
+// Sanitizes inputs and removes harmful characters as they are inputs. Example <
+export function sanitizeInput(input: any) {
+  return input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
