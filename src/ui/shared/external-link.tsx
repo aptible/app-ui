@@ -12,12 +12,12 @@ const variantToLinks = (variant: StatusVariant): string => {
 export const ExternalLink = ({
   href,
   children,
-  variant,
+  variant = "default",
   className = "",
 }: {
   href: string;
   children: React.ReactNode;
-  variant: StatusVariant;
+  variant?: StatusVariant;
   className?: string;
 }) => {
   const linkClasses = variantToLinks(variant);

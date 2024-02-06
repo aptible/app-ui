@@ -1,6 +1,6 @@
 import { api, cacheMinTimer } from "@app/api";
 import { createSelector } from "@app/fx";
-import { latest, select } from "@app/fx";
+import { select, takeLatest } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { WebState, schema } from "@app/schema";
@@ -297,7 +297,7 @@ interface EnvPatch {
 
 export const updateDeployEnvironmentStatus = api.patch<EnvPatch>(
   "/accounts/:id",
-  { supervisor: latest },
+  { supervisor: takeLatest },
   function* (ctx, next) {
     const { id, status } = ctx.payload;
     const env = yield* select((s: WebState) =>

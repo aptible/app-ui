@@ -33,8 +33,8 @@ import {
 import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import {
   appDeployConfigureUrl,
+  appDetailUrl,
   appEndpointsUrl,
-  environmentAppsUrl,
 } from "@app/routes";
 import { schema } from "@app/schema";
 import {
@@ -63,12 +63,10 @@ import {
   IconChevronRight,
   Loading,
   LogViewer,
-  PreCode,
   ProgressProject,
   ResourceGroupBox,
   StatusBox,
   StatusPill,
-  listToInvertedTextColor,
   resolveOperationStatuses,
   tokens,
 } from "../shared";
@@ -105,8 +103,7 @@ export const AppDeployStatusPage = () => {
   useQuery(fetchAllEnvOps({ envId }));
   // we only need to poll for the latest operations
   const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
-
-  const { scanOp } = useLatestCodeResults(appId);
+  const { gitRef } = useLatestCodeResults(appId);
 
   const redeployLoader = useSelector((s) =>
     schema.loaders.selectById(s, { id: `${redeployApp}` }),
@@ -115,7 +112,6 @@ export const AppDeployStatusPage = () => {
     schema.loaders.selectById(s, { id: `${deployProject}` }),
   );
 
-  const gitRef = scanOp.gitRef || "main";
   const redeploy = (force: boolean) => {
     if (redeployLoader.isLoading) {
       return;
@@ -167,18 +163,6 @@ export const AppDeployStatusPage = () => {
         <h1 className={tokens.type.h1}>Deploying your Code</h1>
         <p className="my-4 text-gray-600">Deployment is in progress...</p>
       </div>
-    );
-  };
-
-  const environment = useSelector((s) =>
-    selectEnvironmentById(s, { id: app.environmentId }),
-  );
-
-  const viewProject = () => {
-    return (
-      <ButtonLink to={environmentAppsUrl(environment.id)} className="mt-4 mb-2">
-        View Environment <IconArrowRight variant="sm" className="ml-2" />
-      </ButtonLink>
     );
   };
 
@@ -283,18 +267,9 @@ export const AppDeployStatusPage = () => {
         ) : null}
 
         <StatusBox>
-          <h4 className={tokens.type.h4}>How to deploy changes</h4>
-          <p className="mb-2 text-black-500">
-            Commit changes to your local git repo and push to the Aptible git
-            server.
-          </p>
-          <PreCode
-            segments={listToInvertedTextColor(["git push aptible", "main"])}
-            allowCopy
-          />
-          <hr />
-
-          {viewProject()}
+          <ButtonLink to={appDetailUrl(app.id)}>
+            View App <IconArrowRight variant="sm" className="ml-2" />
+          </ButtonLink>
 
           <ButtonLink
             to={appDeployConfigureUrl(appId)}

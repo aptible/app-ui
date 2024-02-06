@@ -103,6 +103,7 @@ export * from "./app-deploy-get-started";
 export * from "./app-deploy-resume";
 export * from "./app-deploy-status";
 export * from "./app-deploy-with-git";
+export * from "./app-deploy-with-github";
 export * from "./app-deploy-configure";
 export * from "./create-env-app";
 export * from "./get-started";

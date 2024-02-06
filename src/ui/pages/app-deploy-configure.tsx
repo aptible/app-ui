@@ -68,7 +68,8 @@ export const AppDeployConfigurePage = () => {
 
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s) => selectAppById(s, { id: appId }));
-  const { scanOp, codeScan } = useLatestCodeResults(appId);
+  console.log("WTF M8");
+  const { gitRef, codeScan } = useLatestCodeResults(appId);
   const dbsQuery = useQuery(
     fetchDatabasesByEnvId({ envId: app.environmentId }),
   );
@@ -187,7 +188,7 @@ export const AppDeployConfigurePage = () => {
         envs: envList,
         curEnvs: appConfig.env,
         cmds: cmdList,
-        gitRef: scanOp.gitRef || "main",
+        gitRef,
       }),
     );
 

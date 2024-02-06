@@ -168,8 +168,8 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
 };
 
 const CodeScanInfo = ({ appId }: { appId: string }) => {
-  const { codeScan, scanOp } = useLatestCodeResults(appId);
-  if (!hasDeployOperation(scanOp)) {
+  const { codeScan, op } = useLatestCodeResults(appId);
+  if (!hasDeployOperation(op)) {
     return (
       <div>
         Code scan information is only available for <Code>git push</Code>{" "}

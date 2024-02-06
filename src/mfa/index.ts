@@ -1,6 +1,6 @@
 import { authApi } from "@app/api";
 import { revokeTokensMdw } from "@app/auth";
-import { Next, leading, select } from "@app/fx";
+import { Next, select, takeLeading } from "@app/fx";
 import { defaultEntity } from "@app/hal";
 import { schema } from "@app/schema";
 import {
@@ -149,7 +149,7 @@ export const resetOtp = authApi.post<{ userId: string }>(
 export const resetOtpVerify = authApi.post<{
   challengeId: string;
   verificationCode: string;
-}>(["/verifications", "otp"], { supervisor: leading }, [
+}>(["/verifications", "otp"], { supervisor: takeLeading }, [
   function* (ctx, next) {
     const { challengeId, verificationCode } = ctx.payload;
     ctx.request = ctx.req({

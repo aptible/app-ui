@@ -90,8 +90,7 @@ function* onRefreshData() {
 
 export const refreshData = createAction("REFRESH_DATA");
 function* watchRefreshData() {
-  const task = yield* takeEvery(`${refreshData}`, onRefreshData);
-  yield* task;
+  yield* takeEvery(`${refreshData}`, onRefreshData);
 }
 
 export const sagas = { watchRefreshData };

@@ -13,6 +13,7 @@ import {
   AppDeployStatusPage,
   AppDeployWithGitAddKeyPage,
   AppDeployWithGitPage,
+  AppDeployWithGithubPage,
   AppDetailConfigPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
@@ -560,6 +561,10 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.APP_DEPLOY_WITH_GIT_PATH,
         element: <AppDeployWithGitPage />,
+      },
+      {
+        path: routes.APP_DEPLOY_WITH_GITHUB_PATH,
+        element: <AppDeployWithGithubPage />,
       },
       {
         path: routes.APP_DEPLOY_WITH_GIT_ADD_KEY_PATH,

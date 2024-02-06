@@ -287,6 +287,9 @@ export const appDeployGetStartedUrl = (appId: string) =>
 
 export const APP_DEPLOY_WITH_GIT_PATH = "/apps/:appId/git";
 export const appDeployWithGitUrl = (appId: string) => `/apps/${appId}/git`;
+export const APP_DEPLOY_WITH_GITHUB_PATH = "/apps/:appId/github";
+export const appDeployWithGithubUrl = (appId: string) =>
+  `/apps/${appId}/github`;
 
 export const APP_DEPLOY_WITH_GIT_ADD_KEY_PATH = "/apps/:appId/git/ssh";
 export const appDeployWithGitAddKeyUrl = (appId: string) => {
