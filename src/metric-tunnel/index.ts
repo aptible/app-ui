@@ -7,7 +7,7 @@ import {
   selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
-import { call, delay, leading, parallel, select } from "@app/fx";
+import { call, delay, parallel, select, takeLeading } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { WebState, schema } from "@app/schema";
 import { ContainerMetrics, MetricHorizons } from "@app/types";
@@ -408,7 +408,7 @@ export const fetchAllMetricsByServiceId = thunks.create<{
 }>(
   "fetch-all-metrics-by-service-id",
   {
-    supervisor: leading,
+    supervisor: takeLeading,
   },
   function* (ctx, next) {
     const { serviceId, metrics, metricHorizon } = ctx.payload;

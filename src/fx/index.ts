@@ -13,15 +13,16 @@ export {
   mdw,
   sleep,
   createThunks,
-  log,
   timer,
   poll,
   takeEvery,
   put,
   take,
-  latest,
-  leading,
+  takeLeading,
+  takeLatest,
+  API_ACTION_PREFIX,
 } from "starfx";
+export type { Callable } from "starfx";
 import { sleep } from "starfx";
 export const delay = sleep;
 

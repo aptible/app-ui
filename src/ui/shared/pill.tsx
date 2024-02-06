@@ -38,11 +38,13 @@ export const Pill = ({
   className = "",
   variant = "default",
   icon = null,
+  title = "",
 }: {
   children: React.ReactNode;
   className?: string;
   variant?: PillVariant;
   icon?: React.ReactNode;
+  title?: string;
 }) => {
   const defaultClassName = cn(
     "rounded-full border-2",
@@ -53,7 +55,7 @@ export const Pill = ({
   return (
     <div className={`${defaultClassName} ${className}`}>
       {icon}
-      <div>{children}</div>
+      <div title={title}>{children}</div>
     </div>
   );
 };

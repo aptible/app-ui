@@ -1,10 +1,14 @@
 import { bootup } from "@app/bootup";
 import {
+  API_ACTION_PREFIX,
+  Callable,
+  Operation,
   PERSIST_LOADER_ID,
   configureStore,
   createBatchMdw,
   createLocalStorageAdapter,
   createPersistor,
+  parallel,
   persistStoreMdw,
   take,
 } from "@app/fx";
@@ -13,7 +17,6 @@ import {
   initialState as schemaInitialState,
   schema,
 } from "@app/schema";
-import { Callable, LogContext, Operation, each, log, parallel } from "starfx";
 import { rootEntities, tasks } from "./packages";
 
 export function setupStore({
@@ -36,23 +39,13 @@ export function setupStore({
 
   const tsks: Callable<unknown>[] = [];
   if (logs) {
-    // listen to starfx logger for all log events
-    tsks.push(function* logger(): Operation<void> {
-      const ctx = yield* LogContext;
-      for (const event of yield* each(ctx)) {
-        if (event.type.startsWith("error:")) {
-          console.error(event.payload);
-        } else if (event.type === "action") {
-          console.log(event.payload);
-        }
-        yield* each.next();
-      }
-    });
-    // log all actions dispatched
     tsks.push(function* logActions(): Operation<void> {
       while (true) {
         const action = yield* take("*");
-        yield* log({ type: "action", payload: action });
+        if (action.type === `${API_ACTION_PREFIX}store`) {
+          continue;
+        }
+        console.log(action);
       }
     });
   }
@@ -69,7 +62,7 @@ export function setupStore({
 }
 
 // persistor makes things more complicated for our tests so we are deliberately
-// choosing to not include it for our tests.
+// choosing to not include it for testing.
 export function setupTestStore(initialState: Partial<WebState>) {
   const store = configureStore<WebState>({
     initialState: {

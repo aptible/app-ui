@@ -12,8 +12,8 @@ import { hasDeployOperation, selectLatestDeployOp } from "@app/deploy";
 import { useDispatch, useSelector } from "@app/react";
 import {
   appDeployConfigureUrl,
+  appDeployGetStartedUrl,
   appDeployStatusUrl,
-  appDeployWithGitUrl,
 } from "@app/routes";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -28,7 +28,7 @@ export const AppDeployResumeWithEnvPage = () => {
   const navigate = useNavigate();
   // just guessing which app to use to detect current status
   const app = useSelector((s) => selectFirstAppByEnvId(s, { envId }));
-  const { appOps, scanOp } = useLatestCodeResults(app.id);
+  const { appOps, op } = useLatestCodeResults(app.id);
   const deployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
@@ -52,12 +52,12 @@ export const AppDeployResumeWithEnvPage = () => {
     // TODO: this probably needs reworked
     if (hasDeployOperation(deployOp)) {
       navigate(appDeployStatusUrl(app.id));
-    } else if (hasDeployOperation(scanOp) && scanOp.status === "succeeded") {
+    } else if (hasDeployOperation(op) && op.status === "succeeded") {
       navigate(appDeployConfigureUrl(app.id));
     } else {
-      navigate(appDeployWithGitUrl(app.id));
+      navigate(appDeployGetStartedUrl(app.id));
     }
-  }, [env.id, app.id, appOps, deployOp, scanOp]);
+  }, [env.id, app.id, appOps, deployOp, op]);
 
   return (
     <AppSidebarLayout>
@@ -74,7 +74,7 @@ export const AppDeployResumePage = () => {
     selectEnvironmentById(s, { id: app.environmentId }),
   );
   const navigate = useNavigate();
-  const { appOps, scanOp } = useLatestCodeResults(appId);
+  const { appOps, op } = useLatestCodeResults(appId);
   const deployOp = useSelector((s) => selectLatestDeployOp(s, { appId }));
 
   useEffect(() => {
@@ -96,12 +96,12 @@ export const AppDeployResumePage = () => {
     // TODO: this probably needs reworked
     if (hasDeployOperation(deployOp)) {
       navigate(appDeployStatusUrl(app.id), { replace: true });
-    } else if (hasDeployOperation(scanOp) && scanOp.status === "succeeded") {
+    } else if (hasDeployOperation(op) && op.status === "succeeded") {
       navigate(appDeployConfigureUrl(app.id), { replace: true });
     } else {
-      navigate(appDeployWithGitUrl(app.id), { replace: true });
+      navigate(appDeployGetStartedUrl(app.id), { replace: true });
     }
-  }, [env.id, app.id, appOps, deployOp, scanOp]);
+  }, [env.id, app.id, appOps, deployOp, op]);
 
   return (
     <AppSidebarLayout>

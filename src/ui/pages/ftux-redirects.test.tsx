@@ -15,7 +15,7 @@ import { rest } from "msw";
 
 describe("CreateProjectFromAppSetupPage", () => {
   describe("when there are no operations", () => {
-    it("should redirect to code push page", async () => {
+    it("should redirect to getting started page", async () => {
       const app = defaultAppResponse({
         id: createId(),
         handle: testAccount.handle,
@@ -42,7 +42,7 @@ describe("CreateProjectFromAppSetupPage", () => {
 
       render(<App />);
 
-      const txt = await screen.findByText("Push your code to Aptible");
+      const txt = await screen.findByText(/Deploy with Git Push/);
       expect(txt).toBeInTheDocument();
     });
   });

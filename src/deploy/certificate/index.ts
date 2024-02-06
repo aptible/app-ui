@@ -1,6 +1,6 @@
 import { PaginateProps, api, combinePages, thunks } from "@app/api";
 import { prettyDateTime } from "@app/date";
-import { leading, poll } from "@app/fx";
+import { poll, takeLeading } from "@app/fx";
 import { createAction, createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
@@ -151,7 +151,7 @@ export const fetchCertificatesByEnvironmentId = api.get<
 
 export const fetchAllCertsByEnvId = thunks.create<{ id: string }>(
   "fetch-all-certs-by-env",
-  { supervisor: leading },
+  { supervisor: takeLeading },
   combinePages(fetchCertificatesByEnvironmentId),
 );
 
