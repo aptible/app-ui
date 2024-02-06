@@ -48,6 +48,7 @@ import {
   IconEndpoint,
   IconExternalLink,
   IconGitBranch,
+  IconGithub,
   IconGlobe,
   IconHamburger,
   IconHeart,
@@ -660,6 +661,7 @@ const Icons = () => (
         ["IconCertificate", <IconCertificate />],
         ["IconKey", <IconKey />],
         ["IconLock", <IconLock />],
+        ["IconGithub", <IconGithub />],
       ].map(([title, icon]) => (
         <div key={title as string}>
           <div className="inline-block -mb-1">{icon}</div>{" "}
