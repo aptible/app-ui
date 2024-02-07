@@ -487,7 +487,7 @@ const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
   }
 
   return (
-    <Banner variant={currentComplete || neverScaled ? "default" : "progress"}>
+    <Banner variant={currentComplete || neverScaled ? "info" : "progress"}>
       {neverScaled ? (
         "Never Scaled"
       ) : (
