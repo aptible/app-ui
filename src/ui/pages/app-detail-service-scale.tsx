@@ -37,6 +37,7 @@ import { usePoller, useValidator } from "../hooks";
 import {
   Banner,
   ButtonIcon,
+  ButtonLinkDocs,
   IconChevronDown,
   IconChevronRight,
   IconRefresh,
@@ -131,7 +132,10 @@ const VerticalAutoscalingSection = ({
     <Box>
       <form onSubmit={onSubmitForm}>
         <div className="flex flex-col gap-4">
-          <h1 className="text-lg text-gray-500">Autoscale</h1>
+          <div className="flex justify-between items-start">
+            <h1 className="text-lg text-gray-500">Autoscale</h1>
+            <ButtonLinkDocs href="https://aptible.notion.site/Vertical-Autoscaler-d33817b4e1584e2e8a8a86edc507756a" />
+          </div>
           <BannerMessages {...modifyLoader} />
           <FormGroup
             splitWidthInputs
@@ -628,7 +632,7 @@ export const AppDetailServiceScalePage = () => {
         <form onSubmit={onSubmitForm}>
           <div className="flex flex-col gap-2">
             {stack.verticalAutoscaling ? (
-              <h1 className="text-lg text-gray-500">Manual Scale</h1>
+              <h1 className="text-lg text-gray-500 mb-4">Manual Scale</h1>
             ) : null}
             <FormGroup
               splitWidthInputs
