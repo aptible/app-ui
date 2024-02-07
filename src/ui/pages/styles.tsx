@@ -145,9 +145,6 @@ const Banners = () => (
     <h1 id="banners" className={tokens.type.h1}>
       Banners
     </h1>
-    <Banner className="mt-2" variant="default">
-      Default banner
-    </Banner>
     <Banner className="mt-2" variant="success">
       Success banner
     </Banner>
