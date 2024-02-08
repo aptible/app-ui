@@ -27,7 +27,6 @@ import {
   BannerMessages,
   Box,
   Button,
-  ButtonLinkDocs,
   ButtonSensitive,
   Code,
   FormGroup,
@@ -38,7 +37,7 @@ import {
   tokens,
 } from "../shared";
 
-const EnvEditor = ({ app }: { app: DeployApp }) => {
+export const EnvEditor = ({ app }: { app: DeployApp }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
