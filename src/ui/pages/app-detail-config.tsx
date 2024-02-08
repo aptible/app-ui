@@ -1,13 +1,11 @@
 import {
   DeployCodeScanResponse,
   configEnvListToEnv,
-  configEnvToStr,
   createAppOperation,
   fetchApp,
   fetchConfiguration,
   hasDeployOperation,
   selectAppById,
-  selectAppConfigById,
 } from "@app/deploy";
 import {
   useDispatch,
@@ -19,7 +17,7 @@ import {
 import { appActivityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { DeployApp } from "@app/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useEnvEditor, useLatestCodeResults } from "../hooks";
 import {
@@ -30,6 +28,7 @@ import {
   ButtonLinkDocs,
   ButtonSensitive,
   Code,
+  ExternalLink,
   FormGroup,
   Group,
   IconEdit,
@@ -42,17 +41,13 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
-  const config = useSelector((s) =>
-    selectAppConfigById(s, { id: app.currentConfigurationId }),
-  );
-  const envStr = configEnvToStr(config.env);
-  const { envs, envList, setEnvs, errors, validate } = useEnvEditor(envStr);
-  const finalEnv = configEnvListToEnv(envList, config.env);
+  const { envs, envList, setEnvs, errors, validate } = useEnvEditor("");
+  const partialEnv = configEnvListToEnv(envList);
 
   const action = createAppOperation({
     appId: app.id,
     type: "configure",
-    env: finalEnv,
+    env: partialEnv,
   });
   const loader = useLoader(action);
 
@@ -72,12 +67,8 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
 
   const onReset = () => {
     setEditing(false);
-    setEnvs(envStr);
+    setEnvs("");
   };
-
-  useEffect(() => {
-    setEnvs(envStr);
-  }, [envStr]);
 
   if (!editing) {
     return (
@@ -94,6 +85,20 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
     );
   }
 
+  const desc = (
+    <p>
+      Add any additional required variables, such as API keys, KNOWN_HOSTS
+      setting, etc. We use{" "}
+      <ExternalLink variant="info" href="https://github.com/motdotla/dotenv">
+        dotenv
+      </ExternalLink>{" "}
+      to parse the textarea. Each line is a separate variable in format:{" "}
+      <Code>ENV_VAR="VALUE"</Code>. If you want to delete an environment
+      variable, set it to empty: <Code>ENV_VAR=""</Code>. If you have an
+      environment variable that spans multiple lines then wrap in double quotes.
+    </p>
+  );
+
   return (
     <form onSubmit={onSubmit}>
       <Group>
@@ -102,7 +107,7 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
           htmlFor="envs"
           feedbackVariant={errors.length > 0 ? "danger" : "info"}
           feedbackMessage={errors.map((e) => e.message).join(". ")}
-          description="Add any additional required variables, such as API keys, KNOWN_HOSTS setting, etc. Each line is a separate variable in format: ENV_VAR=VALUE. Multiline values are supported but must be wrapped in double-quotes."
+          description={desc}
         >
           <textarea
             id="envs"
