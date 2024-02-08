@@ -229,16 +229,6 @@ export const AppDetailConfigPage = () => {
         </Group>
       </Box>
 
-      <Box>
-        <Group size="sm">
-          <div className="flex items-center justify-between">
-            <h3 className={tokens.type.h3}>Edit Environment Variables</h3>
-            <ButtonLinkDocs href="https://www.aptible.com/docs/configuration" />
-          </div>
-          <EnvEditor app={app} />
-        </Group>
-      </Box>
-
       <CodeScanInfo appId={app.id} />
     </Group>
   );
