@@ -86,17 +86,30 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
   }
 
   const desc = (
-    <p>
-      Add any additional required variables, such as API keys, KNOWN_HOSTS
-      setting, etc. We use{" "}
-      <ExternalLink variant="info" href="https://github.com/motdotla/dotenv">
-        dotenv
-      </ExternalLink>{" "}
-      to parse the textarea. Each line is a separate variable in format:{" "}
-      <Code>ENV_VAR="VALUE"</Code>. If you want to delete an environment
-      variable, set it to empty: <Code>ENV_VAR=""</Code>. If you have an
-      environment variable that spans multiple lines then wrap in double quotes.
-    </p>
+    <div>
+      <p>
+        Specify any ENV variables you wish to add or modify, one per line. We
+        use{" "}
+        <ExternalLink variant="info" href="https://github.com/motdotla/dotenv">
+          dotenv
+        </ExternalLink>{" "}
+        to parse these variables.
+      </p>
+      <ol>
+        <li>
+          Each line corresponds to a separate variable with the format{" "}
+          <Code>ENV_VAR=value</Code>.
+        </li>
+        <li>
+          If you want to delete an environment variable, set it to an empty
+          string, with or without double quotes: <Code>ENV_VAR=""</Code>.
+        </li>
+        <li>
+          Multi-line environment variables may be set by wrapping in double
+          quotes.
+        </li>
+      </ol>
+    </div>
   );
 
   return (
