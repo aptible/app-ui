@@ -106,6 +106,9 @@ export const DatabaseScalePage = () => {
   }, [disk.size]);
 
   useLoaderSuccess(loader, () => {
+    // this is a little bit of a hack because of the way we update our loader
+    // when service data gets loaded.  We only want to redirect when the loader
+    // is successful AND we have a valid operation ID in the loader response.
     if (loader.meta.opId) {
       navigate(databaseActivityUrl(database.id));
     }
