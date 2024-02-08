@@ -12,8 +12,8 @@ import { hasDeployOperation, selectLatestDeployOp } from "@app/deploy";
 import { useDispatch, useSelector } from "@app/react";
 import {
   appDeployConfigureUrl,
+  appDeployGetStartedUrl,
   appDeployStatusUrl,
-  appDeployWithGitUrl,
 } from "@app/routes";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -55,7 +55,7 @@ export const AppDeployResumeWithEnvPage = () => {
     } else if (hasDeployOperation(op) && op.status === "succeeded") {
       navigate(appDeployConfigureUrl(app.id));
     } else {
-      navigate(appDeployWithGitUrl(app.id));
+      navigate(appDeployGetStartedUrl(app.id));
     }
   }, [env.id, app.id, appOps, deployOp, op]);
 
@@ -99,7 +99,7 @@ export const AppDeployResumePage = () => {
     } else if (hasDeployOperation(op) && op.status === "succeeded") {
       navigate(appDeployConfigureUrl(app.id), { replace: true });
     } else {
-      navigate(appDeployWithGitUrl(app.id), { replace: true });
+      navigate(appDeployGetStartedUrl(app.id), { replace: true });
     }
   }, [env.id, app.id, appOps, deployOp, op]);
 
