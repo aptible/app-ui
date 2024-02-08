@@ -85,7 +85,7 @@ export const AppCreateEndpointPage = () => {
   const [certId, setCertId] = useState("");
   const [privKey, setPrivKey] = useState("");
   const portText = getContainerPort(
-    { containerPort: port },
+    { containerPort: port, containerPorts: [] },
     image.exposedPorts,
   );
   const [usingNewCert, setUsingNewCert] = useState(false);
