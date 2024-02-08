@@ -106,7 +106,9 @@ export const DatabaseScalePage = () => {
   }, [disk.size]);
 
   useLoaderSuccess(loader, () => {
-    navigate(databaseActivityUrl(database.id));
+    if (loader.meta.opId) {
+      navigate(databaseActivityUrl(database.id));
+    }
   });
 
   const changesExist =

@@ -565,7 +565,9 @@ export const AppDetailServiceScalePage = () => {
     service.containerMemoryLimitMb !== containerSize;
 
   useLoaderSuccess(loader, () => {
-    navigate(appActivityUrl(app.id));
+    if (loader.meta.opId) {
+      navigate(appActivityUrl(app.id));
+    }
   });
 
   const currentContainerProfile = getContainerProfileFromType(
