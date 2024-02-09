@@ -22,6 +22,7 @@ import { useNavigate, useParams } from "react-router";
 import { useEnvEditor, useLatestCodeResults } from "../hooks";
 import {
   AppConfigView,
+  Banner,
   BannerMessages,
   Box,
   Button,
@@ -95,7 +96,7 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
         </ExternalLink>{" "}
         to parse these variables.
       </p>
-      <ol>
+      <ol className="list-disc list-inside">
         <li>
           Each line corresponds to a separate variable with the format{" "}
           <Code>ENV_VAR=value</Code>.
@@ -115,6 +116,15 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
   return (
     <form onSubmit={onSubmit}>
       <Group>
+        <Banner variant="warning">
+          Warning: This UI uses dotenv to parse ENV variables. Dotenv parsing
+          differs slightly from shell, so if you're most familiar with setting
+          ENV variables in shell, e.g. via the <Code>aptible config:set</Code>{" "}
+          CLI command, note that this parser may behave differently with
+          multi-line variables or special characters. We recommend first setting
+          variables on a staging app or a different ENV key within a production
+          app if unsure how the variable will be parsed.
+        </Banner>
         <FormGroup
           label="Environment Variables"
           htmlFor="envs"
@@ -132,6 +142,8 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
         </FormGroup>
 
         <hr />
+
+        <PreText text={JSON.stringify(partialEnv, null, 2)} />
 
         <Group variant="horizontal">
           <ButtonSensitive
