@@ -23,13 +23,6 @@ export const validateEnvs = (items: TextVal[]): ValidatorError[] => {
         message: `${item.key} does not match regex: /[a-zA-Z_]+[a-zA-Z0-9_]*/`,
       });
     }
-
-    if (item.value === "") {
-      errors.push({
-        item,
-        message: `${item.key} is blank, either provide a value or remove the environment variable`,
-      });
-    }
   };
 
   items.forEach(validate);

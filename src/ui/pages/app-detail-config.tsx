@@ -1,13 +1,11 @@
 import {
   DeployCodeScanResponse,
   configEnvListToEnv,
-  configEnvToStr,
   createAppOperation,
   fetchApp,
   fetchConfiguration,
   hasDeployOperation,
   selectAppById,
-  selectAppConfigById,
 } from "@app/deploy";
 import {
   useDispatch,
@@ -19,17 +17,19 @@ import {
 import { appActivityUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import { DeployApp } from "@app/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useEnvEditor, useLatestCodeResults } from "../hooks";
 import {
   AppConfigView,
+  Banner,
   BannerMessages,
   Box,
   Button,
   ButtonLinkDocs,
   ButtonSensitive,
   Code,
+  ExternalLink,
   FormGroup,
   Group,
   IconEdit,
@@ -42,17 +42,13 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
-  const config = useSelector((s) =>
-    selectAppConfigById(s, { id: app.currentConfigurationId }),
-  );
-  const envStr = configEnvToStr(config.env);
-  const { envs, envList, setEnvs, errors, validate } = useEnvEditor(envStr);
-  const finalEnv = configEnvListToEnv(envList, config.env);
+  const { envs, envList, setEnvs, errors, validate } = useEnvEditor("");
+  const partialEnv = configEnvListToEnv(envList);
 
   const action = createAppOperation({
     appId: app.id,
     type: "configure",
-    env: finalEnv,
+    env: partialEnv,
   });
   const loader = useLoader(action);
 
@@ -72,12 +68,8 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
 
   const onReset = () => {
     setEditing(false);
-    setEnvs(envStr);
+    setEnvs("");
   };
-
-  useEffect(() => {
-    setEnvs(envStr);
-  }, [envStr]);
 
   if (!editing) {
     return (
@@ -94,15 +86,51 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
     );
   }
 
+  const desc = (
+    <div>
+      <p>
+        Specify any ENV variables you wish to add or modify, one per line. We
+        use{" "}
+        <ExternalLink variant="info" href="https://github.com/motdotla/dotenv">
+          dotenv
+        </ExternalLink>{" "}
+        to parse these variables.
+      </p>
+      <ol className="list-disc list-inside">
+        <li>
+          Each line corresponds to a separate variable with the format{" "}
+          <Code>ENV_VAR="value"</Code> or <Code>ENV_VAR='value'</Code>.
+        </li>
+        <li>
+          If you want to delete an environment variable, set it to an empty
+          string, with or without double quotes: <Code>ENV_VAR=""</Code>.
+        </li>
+        <li>
+          Multi-line environment variables may be set by wrapping in double
+          quotes.
+        </li>
+      </ol>
+    </div>
+  );
+
   return (
     <form onSubmit={onSubmit}>
       <Group>
+        <Banner variant="warning">
+          Warning: This UI uses dotenv to parse ENV variables. Dotenv parsing
+          differs slightly from shell, so if you're most familiar with setting
+          ENV variables in shell, e.g. via the <Code>aptible config:set</Code>{" "}
+          CLI command, note that this parser may behave differently with
+          multi-line variables or special characters. We recommend first setting
+          variables on a staging app or a different ENV key within a production
+          app if unsure how the variable will be parsed.
+        </Banner>
         <FormGroup
           label="Environment Variables"
           htmlFor="envs"
           feedbackVariant={errors.length > 0 ? "danger" : "info"}
           feedbackMessage={errors.map((e) => e.message).join(". ")}
-          description="Add any additional required variables, such as API keys, KNOWN_HOSTS setting, etc. Each line is a separate variable in format: ENV_VAR=VALUE. Multiline values are supported but must be wrapped in double-quotes."
+          description={desc}
         >
           <textarea
             id="envs"
@@ -114,6 +142,9 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
         </FormGroup>
 
         <hr />
+
+        <div className={tokens.type.h4}>Preview</div>
+        <PreText text={JSON.stringify(partialEnv, null, 2)} />
 
         <Group variant="horizontal">
           <ButtonSensitive

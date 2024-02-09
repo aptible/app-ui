@@ -66,43 +66,6 @@ describe("AppDeployConfigurePage", () => {
     expect(btn).not.toBeInTheDocument();
   });
 
-  it("should display error when validating environment variables", async () => {
-    const handlers = stacksWithResources({
-      apps: [testApp],
-    });
-    server.use(...handlers);
-
-    const { TestProvider, store } = setupIntegrationTest({
-      path: APP_DEPLOY_CONFIGURE_PATH,
-      initEntries: [
-        appDeployConfigureUrl(
-          `${testApp.id}`,
-          "dbs=database_url:postgres:14&envs=DEBUG:1,APP",
-        ),
-      ],
-    });
-
-    await waitForBootup(store);
-
-    render(
-      <TestProvider>
-        <AppDeployConfigurePage />
-      </TestProvider>,
-    );
-
-    const envTxtArea = await screen.findByLabelText("Environment Variables");
-    expect(envTxtArea.textContent).toBe("DEBUG=1\nAPP=");
-    await screen.findByText("postgres v14");
-
-    const btn = await screen.findByRole("button", { name: "Save & Deploy" });
-    fireEvent.click(btn);
-
-    const text = await screen.findByText(
-      /APP is blank, either provide a value or remove the environment variable/,
-    );
-    expect(text).toBeInTheDocument();
-  });
-
   it("should display error when validating database environment variables", async () => {
     const handlers = stacksWithResources({
       apps: [testApp],
