@@ -543,7 +543,7 @@ export const AppDetailServiceScalePage = () => {
     if (!validate({ containerCount })) return;
     dispatch(action);
   };
-  const loader = useLoader(action);
+  const loader = useLoader(scaleService);
 
   useEffect(() => {
     setContainerCount(service.containerCount);

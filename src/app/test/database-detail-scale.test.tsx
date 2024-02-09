@@ -6,6 +6,7 @@ import {
   stacksWithResources,
   testAccount,
   testDatabasePostgres,
+  testDisk,
   testEnv,
   testServicePostgres,
   verifiedUserHandlers,
@@ -28,18 +29,37 @@ import { rest } from "msw";
 
 describe("DatabaseScalePage", () => {
   it("should successfully show database scale page happy path", async () => {
+    let counterService = 0;
+    let counterDisk = 0;
+
     server.use(
-      ...verifiedUserHandlers(),
-      ...stacksWithResources({
-        accounts: [testAccount],
-        databases: [testDatabasePostgres],
-        services: [testServicePostgres],
+      rest.get(`${testEnv.apiUrl}/services/:id`, (_, res, ctx) => {
+        counterService += 1;
+        if (counterService === 1) {
+          return res(ctx.json(testServicePostgres));
+        }
+        return res(
+          ctx.json({ ...testServicePostgres, container_memory_limit_mb: 2048 }),
+        );
+      }),
+      rest.get(`${testEnv.apiUrl}/disks/:id`, async (_, res, ctx) => {
+        counterDisk += 1;
+        if (counterDisk <= 2) {
+          return res(ctx.json(testDisk));
+        }
+        return res(ctx.json({ ...testDisk, size: 20 }));
       }),
       rest.get(`${testEnv.apiUrl}/operations/:id/logs`, (_, res, ctx) => {
         return res(ctx.text("/mock"));
       }),
       rest.get(`${testEnv.apiUrl}/mock`, (_, res, ctx) => {
         return res(ctx.text("complete"));
+      }),
+      ...verifiedUserHandlers(),
+      ...stacksWithResources({
+        accounts: [testAccount],
+        databases: [testDatabasePostgres],
+        services: [],
       }),
     );
     const { App, store } = setupAppIntegrationTest({
@@ -81,6 +101,18 @@ describe("DatabaseScalePage", () => {
     expect(
       await screen.findByText(/Operations show real-time/),
     ).toBeInTheDocument();
+
+    // This is to prevent a regression where a use navigates back to the
+    // scale page only to be immediately redirected to the activity page
+    const scaleBtn = await screen.findByRole("link", { name: /Scale/ });
+    fireEvent.click(scaleBtn);
+    const cs = await screen.findByLabelText(/Memory per Container/);
+    expect(cs).toHaveValue("2048");
+    const ds = await screen.findByLabelText(/Disk Size/);
+    expect(ds).toHaveValue(20);
+    expect(
+      screen.queryByText(/Operations show real-time/),
+    ).not.toBeInTheDocument();
   });
 
   describe("when changing container profile", () => {

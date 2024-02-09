@@ -91,7 +91,7 @@ export const DatabaseScalePage = () => {
     if (!validate({ diskSize: diskValue })) return;
     dispatch(action);
   };
-  const loader = useLoader(action);
+  const loader = useLoader(scaleDatabase);
 
   useEffect(() => {
     setContainerSize(service.containerMemoryLimitMb);

@@ -765,6 +765,16 @@ const apiHandlers = [
       return res(ctx.json(testAutoscalingPolicy));
     },
   ),
+  rest.get(
+    `${testEnv.apiUrl}/accounts/19/service_sizing_policies`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json({
+          _embedded: { service_sizing_policies: [testAutoscalingPolicy] },
+        }),
+      );
+    },
+  ),
   rest.post(
     `${testEnv.apiUrl}/services/:id/service_sizing_policies`,
     async (_, res, ctx) => {

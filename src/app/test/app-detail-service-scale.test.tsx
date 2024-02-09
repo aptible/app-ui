@@ -1,7 +1,3 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
-
-import userEvent from "@testing-library/user-event";
-
 import { hasDeployApp, selectAppById } from "@app/deploy";
 import {
   server,
@@ -19,18 +15,38 @@ import {
 } from "@app/mocks";
 import { appServiceScalePathUrl } from "@app/routes";
 import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 
 describe("AppDetailServiceScalePage", () => {
   it("should successfully show app service scale page happy path", async () => {
+    let counter = 0;
     server.use(
-      ...verifiedUserHandlers(),
-      ...stacksWithResources({ accounts: [testAccount], apps: [testApp] }),
+      rest.get(`${testEnv.apiUrl}/services/:id`, (_, res, ctx) => {
+        counter += 1;
+        if (counter === 1) {
+          return res(ctx.json(testServiceRails));
+        }
+        return res(
+          ctx.json({
+            ...testServiceRails,
+            container_count: 2,
+            container_memory_limit_mb: 2048,
+          }),
+        );
+      }),
       rest.get(`${testEnv.apiUrl}/operations/:id/logs`, (_, res, ctx) => {
         return res(ctx.text("/mock"));
       }),
       rest.get(`${testEnv.apiUrl}/mock`, (_, res, ctx) => {
         return res(ctx.text("complete"));
+      }),
+      ...verifiedUserHandlers(),
+      ...stacksWithResources({
+        accounts: [testAccount],
+        apps: [testApp],
+        services: [testServiceRails],
       }),
     );
     const { App, store } = setupAppIntegrationTest({
@@ -66,6 +82,19 @@ describe("AppDetailServiceScalePage", () => {
     expect(
       await screen.findByText(/Operations show real-time/),
     ).toBeInTheDocument();
+
+    // This is to prevent a regression where a use navigates back to the
+    // scale page only to be immediately redirected to the activity page
+    const serviceBtns = await screen.findAllByRole("link", {
+      name: /Services/,
+    });
+    fireEvent.click(serviceBtns[1]);
+    const scaleBtn = await screen.findAllByRole("link", { name: /Scale/ });
+    fireEvent.click(scaleBtn[1]);
+    await screen.findByText(/Last Scale/);
+    expect(
+      screen.queryByText(/Operations show real-time/),
+    ).not.toBeInTheDocument();
   });
 
   describe("when changing container profile", () => {
