@@ -144,7 +144,11 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
         <hr />
 
         <div className={tokens.type.h4}>Preview</div>
-        <PreText text={JSON.stringify(partialEnv, null, 2)} />
+        <PreText
+          className="max-w-screen-md"
+          allowCopy={false}
+          text={JSON.stringify(partialEnv, null, 2)}
+        />
 
         <Group variant="horizontal">
           <ButtonSensitive

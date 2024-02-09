@@ -29,9 +29,9 @@ export const PreText = ({
   allowCopy = true,
 }: { className?: string; allowCopy?: boolean; text: string }) => {
   return (
-    <div>
+    <div className="relative">
       <pre
-        className={`p-4 rounded-lg text-sm pr-14 bg-black text-lime ${className}`}
+        className={`p-4 rounded-lg text-sm pr-14 bg-black text-lime overflow-x-scroll ${className}`}
       >
         {text}
       </pre>
