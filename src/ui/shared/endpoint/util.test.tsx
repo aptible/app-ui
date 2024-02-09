@@ -63,7 +63,7 @@ describe("EndpointUrl", () => {
   });
 
   describe("when tls endpoint", () => {
-    it("should include a link and https protocol", async () => {
+    it("should not include a link", async () => {
       const enp = defaultDeployEndpoint({
         id: `${createId()}`,
         type: "tls",
@@ -71,9 +71,8 @@ describe("EndpointUrl", () => {
       });
       render(<EndpointUrl enp={enp} />);
       const el = screen.queryByRole("link");
-      expect(el).toBeInTheDocument();
-      expect(el?.getAttribute("href")).toEqual("https://external.aptible");
-      expect(screen.queryByText(/external.aptible/)).toBeInTheDocument();
+      expect(el).not.toBeInTheDocument();
+      expect(screen.queryByText("external.aptible")).toBeInTheDocument();
     });
   });
 });

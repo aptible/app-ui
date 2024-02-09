@@ -93,9 +93,7 @@ export function EndpointUrl({ enp }: { enp: DeployEndpoint }) {
 
   if (
     !isWildcard(url) &&
-    (enp.type === "http" ||
-      enp.type === "http_proxy_protocol" ||
-      enp.type === "tls")
+    (enp.type === "http" || enp.type === "http_proxy_protocol")
   ) {
     return (
       <ExternalLink
