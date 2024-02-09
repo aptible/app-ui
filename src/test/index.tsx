@@ -39,6 +39,7 @@ export const setupAppIntegrationTest = (
       ...initState.env,
     },
   });
+  store.run(bootup.run());
   const App = () => {
     return (
       <Provider schema={schema} store={store}>
@@ -69,6 +70,7 @@ export const setupIntegrationTest = (
       ...initState.env,
     },
   });
+  store.run(bootup.run());
 
   const TestProvider = ({ children }: { children: React.ReactNode }) => {
     const router = createMemoryRouter(

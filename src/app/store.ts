@@ -81,7 +81,7 @@ export function setupTestStore(initialState: Partial<WebState>) {
   });
 
   store.run(function* (): Operation<void> {
-    const group = yield* parallel([...tasks, bootup.run()]);
+    const group = yield* parallel(tasks);
     yield* group;
   });
 
