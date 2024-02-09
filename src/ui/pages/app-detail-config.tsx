@@ -99,7 +99,7 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
       <ol className="list-disc list-inside">
         <li>
           Each line corresponds to a separate variable with the format{" "}
-          <Code>ENV_VAR=value</Code>.
+          <Code>ENV_VAR="value"</Code> or <Code>ENV_VAR='value'</Code>.
         </li>
         <li>
           If you want to delete an environment variable, set it to an empty
@@ -143,6 +143,7 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
 
         <hr />
 
+        <div className={tokens.type.h4}>Preview</div>
         <PreText text={JSON.stringify(partialEnv, null, 2)} />
 
         <Group variant="horizontal">
