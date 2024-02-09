@@ -145,7 +145,7 @@ const EnvEditor = ({ app }: { app: DeployApp }) => {
 
         <div className={tokens.type.h4}>Preview</div>
         <PreText
-          className="max-w-screen-sm"
+          className="max-w-screen-md"
           allowCopy={false}
           text={JSON.stringify(partialEnv, null, 2)}
         />
