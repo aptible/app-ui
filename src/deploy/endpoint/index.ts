@@ -888,13 +888,16 @@ export const isRequiresCert = (enp: DeployEndpoint) => {
 };
 
 export const getContainerPort = (
-  enp: Pick<DeployEndpoint, "containerPort">,
+  enp: Pick<DeployEndpoint, "containerPort" | "containerPorts">,
   exposedPorts: number[],
 ) => {
   let port = "Unknown";
   if (exposedPorts.length > 0) {
     const ports = [...exposedPorts].sort();
     port = `${ports[0]}`;
+  }
+  if (enp.containerPorts.length > 0) {
+    return enp.containerPorts.join(",");
   }
   return enp.containerPort || `Default (${port})`;
 };
