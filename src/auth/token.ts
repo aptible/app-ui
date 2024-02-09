@@ -150,6 +150,7 @@ export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
 export const revokeAllTokens = authApi.post(
   "/tokens/revoke_all_accessible",
   function* onRevokeAll(ctx, next) {
+    ctx.elevated = true;
     const env = yield* select(selectEnv);
     const token = yield* select(selectToken);
     const elevated = yield* select(schema.elevatedToken.select);
