@@ -902,22 +902,34 @@ export const getContainerPort = (
   return enp.containerPort || `Default (${port})`;
 };
 
-export const getEndpointUrl = (enp?: DeployEndpoint) => {
-  if (!enp) return "";
+const emptyEndpointName = "New Endpoint";
+
+export const getEndpointDisplayHost = (enp?: DeployEndpoint) => {
+  if (!enp) return emptyEndpointName;
 
   if (!hasDeployEndpoint(enp)) {
-    return enp.id;
+    return emptyEndpointName;
   }
 
   if (enp.status === "provisioning") {
     return "Provisioning";
   }
 
-  if (enp.type === "tcp") {
-    return enp.externalHost;
+  if (enp.default) {
+    return enp.virtualDomain;
   }
 
-  return `https://${enp.virtualDomain}`;
+  return enp.externalHost;
+};
+
+export const getEndpointUrl = (enp?: DeployEndpoint) => {
+  if (!enp) return emptyEndpointName;
+
+  if (!hasDeployEndpoint(enp)) {
+    return emptyEndpointName;
+  }
+
+  return enp.virtualDomain || enp.externalHost || emptyEndpointName;
 };
 
 export const getEndpointText = (enp: DeployEndpoint) => {
@@ -925,6 +937,7 @@ export const getEndpointText = (enp: DeployEndpoint) => {
     url: getEndpointUrl(enp),
     placement: getPlacement(enp),
     ipAllowlist: getIpAllowlistText(enp),
+    hostname: getEndpointDisplayHost(enp),
   };
 };
 

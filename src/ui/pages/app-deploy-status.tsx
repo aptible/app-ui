@@ -7,6 +7,7 @@ import {
   fetchDatabasesByEnvId,
   fetchEndpointsByAppId,
   fetchEnvironmentById,
+  getEndpointUrl,
   pollEnvOperations,
   provisionEndpoint,
   selectAppById,
@@ -662,7 +663,7 @@ const VhostRow = ({ vhost }: { vhost: DeployEndpoint }) => {
   return (
     <div>
       <div className="gap-1 py-2">
-        <p className="font-semibold">{vhost.virtualDomain}</p>
+        <p className="font-semibold">{getEndpointUrl(vhost)}</p>
         <p className="text-gray-500">Service: {service.processType}</p>
         <p className="text-gray-500">
           Command: <Code>{cmd}</Code>
