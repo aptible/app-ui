@@ -70,7 +70,6 @@ export const AppDeployConfigurePage = () => {
 
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s) => selectAppById(s, { id: appId }));
-  console.log("WTF M8");
   const { gitRef, codeScan } = useLatestCodeResults(appId);
   const dbsQuery = useQuery(
     fetchDatabasesByEnvId({ envId: app.environmentId }),

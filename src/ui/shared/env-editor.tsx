@@ -5,18 +5,15 @@ import { DeployApp, DeployAppConfigEnv } from "@app/types";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useEnvEditor } from "../hooks";
-import {
-  Banner,
-  Button,
-  ButtonSensitive,
-  Code,
-  ExternalLink,
-  FormGroup,
-  Group,
-  IconEdit,
-  PreText,
-  tokens,
-} from "../shared";
+import { Banner } from "./banner";
+import { Button, ButtonSensitive } from "./button";
+import { Code } from "./code";
+import { ExternalLink } from "./external-link";
+import { FormGroup } from "./form-group";
+import { Group } from "./group";
+import { IconEdit } from "./icons";
+import { PreText } from "./pre-code";
+import { tokens } from "./tokens";
 
 export const EnvEditor = ({ app }: { app: DeployApp }) => {
   const dispatch = useDispatch();
