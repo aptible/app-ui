@@ -7,7 +7,7 @@ import {
 } from "@app/deploy";
 import { hasDeployOperation, selectLatestDeployOp } from "@app/deploy";
 import { useDispatch, useQuery, useSelector } from "@app/react";
-import { appDeployConfigureUrl, appDeployWithGitAddKeyUrl } from "@app/routes";
+import { appDeployConfigureUrl, appDeployGetStartedUrl } from "@app/routes";
 import { DeployApp, DeployOperation } from "@app/types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -180,9 +180,9 @@ const AppAutoDeployGuide = ({ app }: { app: DeployApp }) => {
           We require your Aptible username and password to deploy your App. To
           add GitHub secrets to your repo or organization,{" "}
           <ExternalLink href="https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions">
-            read this guide on GitHub.
+            read this guide on GitHub
           </ExternalLink>
-          Further, we recommend creating a robot user, adding it to your
+          . Further, we recommend creating a robot user, adding it to your
           Organization, restricting its permissions, and adding that username
           and password to GitHub.{" "}
           <ExternalLink href="https://www.aptible.com/docs/ci-deploy-user">
@@ -225,7 +225,7 @@ export const AppDeployWithGithubPage = () => {
 
       <ProgressProject
         cur={2}
-        prev={appDeployWithGitAddKeyUrl(appId)}
+        prev={appDeployGetStartedUrl(appId)}
         next={appDeployConfigureUrl(appId)}
       />
 

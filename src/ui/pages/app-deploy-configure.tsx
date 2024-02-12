@@ -1,5 +1,6 @@
 import {
   DbCreatorProps,
+  configEnvListToEnv,
   configEnvToStr,
   fetchApp,
   fetchConfiguration,
@@ -40,6 +41,7 @@ import {
   DbSelector,
   DbSelectorAction,
   DbValidatorError,
+  EnvEditorFormInput,
   ExternalLink,
   FormGroup,
   Group,
@@ -97,6 +99,7 @@ export const AppDeployConfigurePage = () => {
     validate: validateEnvs,
     errors: envErrors,
   } = useEnvEditor(existingEnvStr);
+  const previewEnv = configEnvListToEnv(envList);
 
   useEffect(() => {
     setEnvs(existingEnvStr);
@@ -267,21 +270,12 @@ export const AppDeployConfigurePage = () => {
 
             <hr />
 
-            <FormGroup
-              label="Environment Variables"
-              htmlFor="envs"
-              feedbackVariant={envErrors.length > 0 ? "danger" : "info"}
-              feedbackMessage={envErrors.map((e) => e.message).join(". ")}
-              description="Add any additional required variables, such as API keys, KNOWN_HOSTS setting, etc. Each line is a separate variable in format: ENV_VAR=VALUE. Multiline values are supported but must be wrapped in double-quotes."
-            >
-              <textarea
-                id="envs"
-                name="envs"
-                className={tokens.type.textarea}
-                value={envs}
-                onChange={(e) => setEnvs(e.currentTarget.value)}
-              />
-            </FormGroup>
+            <EnvEditorFormInput
+              envs={envs}
+              setEnvs={setEnvs}
+              errors={envErrors}
+              previewEnv={previewEnv}
+            />
 
             <hr />
 

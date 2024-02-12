@@ -40,17 +40,40 @@ export const HelpTextAccordion = ({
   );
 };
 
-export const CreateProjectFooter = () => {
+export const DeployAppFooter = () => {
   return (
     <div>
       <h4 className={`${tokens.type.h4} py-4`}>How It Works</h4>
       <hr className="my-1" />
 
       <div>
-        <HelpTextAccordion title="How do I deploy an App?">
+        <HelpTextAccordion title="How do I deploy an App with GitHub?">
           <p className="mb-2">
-            Click <strong>Get Started</strong> and we'll guide you through each
-            step:
+            Click <strong>Deploy from GitHub</strong> and we'll guide you
+            through each step:
+          </p>
+          <ol className="list-decimal list-inside">
+            <li>Sign up for an Aptible account</li>
+            <li>Create an environment</li>
+            <li>
+              Add our{" "}
+              <ExternalLink href="https://github.com/marketplace/actions/deploy-to-aptible">
+                GitHub Action
+              </ExternalLink>{" "}
+              to your repository
+            </li>
+            <li>Push your changes to GitHub</li>
+            <li>
+              Configure your App (e.g. databases, environment variables,
+              services and commands)
+            </li>
+            <li>Save and deploy</li>
+          </ol>
+        </HelpTextAccordion>
+        <HelpTextAccordion title="How do I deploy an App with Git Push?">
+          <p className="mb-2">
+            Click <strong>Deploy with Git Push</strong> and we'll guide you
+            through each step:
           </p>
           <ol className="list-decimal list-inside">
             <li>Sign up for an Aptible account</li>

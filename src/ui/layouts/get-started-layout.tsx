@@ -1,20 +1,12 @@
-import { selectPreDeploySurveyAnswered } from "@app/feedback";
 import { useSelector } from "@app/react";
 import { selectIsUserAuthenticated } from "@app/token";
-import {
-  Box,
-  CreateProjectFooter,
-  FreeFormSurvey,
-  Group,
-  tokens,
-} from "../shared";
+import { Box, DeployAppFooter, Group, tokens } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 import { HeroBgLayout } from "./hero-bg-layout";
 
 export const GetStartedLayout = ({
   children,
 }: { children: React.ReactNode }) => {
-  const preDeploySurveyAnswered = useSelector(selectPreDeploySurveyAnswered);
   const isUserAuthenticated = useSelector(selectIsUserAuthenticated);
   const Wrapper = isUserAuthenticated ? AppSidebarLayout : HeroBgLayout;
 
@@ -33,17 +25,10 @@ export const GetStartedLayout = ({
 
           <Box className="w-full mx-auto">
             <Group>{children}</Group>
-
-            {!preDeploySurveyAnswered && (
-              <>
-                <hr className="h-px mt-6 mb-4 bg-gray-200 border-0 dark:bg-gray-700" />
-                <FreeFormSurvey />
-              </>
-            )}
           </Box>
 
           <div className="mt-6 w-full mx-auto">
-            <CreateProjectFooter />
+            <DeployAppFooter />
           </div>
         </div>
       </div>
