@@ -179,9 +179,11 @@ describe("AppDeployConfigurePage", () => {
       </TestProvider>,
     );
 
+    await screen.findAllByText(/Your code has a/);
     const banner = await screen.findAllByRole("status");
     expect(banner[0].textContent).toMatch(/Your code has a Dockerfile/);
-    expect(banner[1].textContent).toMatch(/Your code has a Procfile/);
+    expect(banner[1].textContent).toMatch(/This UI uses dotenv/);
+    expect(banner[2].textContent).toMatch(/Your code has a Procfile/);
     const btn = await screen.findByRole("button", { name: /Configure/ });
     expect(btn).toBeDisabled();
   });

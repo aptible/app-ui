@@ -94,6 +94,9 @@ describe("App deploy flow", () => {
       // go to next page
       fireEvent.click(appBtn);
 
+      const pushBtn = await screen.findByText(/Deploy with Git Push/);
+      fireEvent.click(pushBtn);
+
       await screen.findByText(/Paste Public SSH Key/);
       const keyTextArea = await screen.findByLabelText(
         "Step 2. Paste Public SSH Key",
@@ -103,7 +106,6 @@ describe("App deploy flow", () => {
       const keyBtn = await screen.findByRole("button", { name: /Save Key/ });
       fireEvent.click(keyBtn);
 
-      // push your code page
       await screen.findByText(/Push your code to Aptible/);
       expect(true).toBe(true);
     });
@@ -165,14 +167,20 @@ describe("App deploy flow", () => {
       // go to next page
       fireEvent.click(appBtn);
 
+      const pushBtn = await screen.findByRole("link", {
+        name: /Deploy with Git Push/,
+      });
+      fireEvent.click(pushBtn);
+
       // push your code page
       await screen.findByText(/Push your code to Aptible/);
 
       // settings page
       await screen.findByText(/Configure your App/);
 
-      const banner = await screen.findByRole("status");
-      expect(banner.textContent).toMatch(/Your code has a Dockerfile/);
+      await screen.findByText(/Your code has a/);
+      const banner = await screen.findAllByRole("status");
+      expect(banner[0].textContent).toMatch(/Your code has a Dockerfile/);
 
       const dbBtn = await screen.findByRole("button", {
         name: /New Database/,
@@ -193,7 +201,7 @@ describe("App deploy flow", () => {
 
       // status page
       await screen.findByRole("link", {
-        name: /View Environment/,
+        name: /View App/,
       });
       const status = await screen.findByText(/Deployed \d+-\d+-\d+/);
       expect(status).toBeInTheDocument();
