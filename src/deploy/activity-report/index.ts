@@ -1,8 +1,8 @@
-import { api, cacheTimer } from "@app/api";
+import { PaginateProps, api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
-import { DeployActivityReport, LinkResponse } from "@app/types";
+import { DeployActivityReport, HalEmbedded, LinkResponse } from "@app/types";
 
 export interface DeployActivityReportResponse {
   id: string;
@@ -33,6 +33,7 @@ export const deserializeActivityReport = (
 };
 
 export const selectActivityReportById = schema.activityReports.selectById;
+export const selectActivityReportsByIds = schema.activityReports.selectByIds;
 export const findActivityReportById = schema.activityReports.findById;
 export const selectActivityReportsAsList =
   schema.activityReports.selectTableAsList;
@@ -51,12 +52,24 @@ export const selectActivityReportsByEnvId = createSelector(
       });
   },
 );
-export const fetchEnvActivityReports = api.get<{ id: string }>(
-  "/accounts/:id/activity_reports",
-  {
-    supervisor: cacheTimer(),
-  },
-);
+
+export const fetchEnvActivityReports = api.get<
+  { id: string } & PaginateProps,
+  HalEmbedded<{ activity_reports: DeployActivityReport[] }>
+>("/accounts/:id/activity_reports?page=:page", function* (ctx, next) {
+  yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const ids = ctx.json.value._embedded.activity_reports.map((ac) => `${ac.id}`);
+  const paginatedData = {
+    ...ctx.json.value,
+    _embedded: { activity_reports: ids },
+  };
+  yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
+});
+
 export const downloadActivityReports = api.get<
   { id: string; filename: string },
   string
