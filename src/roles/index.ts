@@ -77,6 +77,22 @@ export const selectRolesByOrgId = createSelector(
   },
 );
 
+export const selectRolesWithDetailByOrgId = createSelector(
+  schema.roles.selectTableAsList,
+  (_: WebState, p: { orgId: string }) => p.orgId,
+  (roles, orgId) => {
+    // console.log(roles, orgId)
+    return []
+  //   roles
+  //     .filter((r) => r.organizationId === orgId)
+  //     .sort((a, b) => {
+  //       const dateA = new Date(a.createdAt).getTime();
+  //       const dateB = new Date(b.createdAt).getTime();
+  //       return dateB - dateA;
+  //     });
+  },
+)
+
 export const selectCurrentUserRoles = createSelector(
   schema.roles.selectTable,
   schema.currentUserRoles.select,
