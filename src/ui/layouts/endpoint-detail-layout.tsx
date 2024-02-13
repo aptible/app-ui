@@ -198,9 +198,9 @@ function EndpointAppHeader({
         tabs={tabs}
         breadcrumbs={[
           { name: `${app.handle}`, to: serviceUrl },
-          { name: `${app.handle} endpoints`, to: endpointUrl },
+          { name: "Endpoints", to: endpointUrl },
         ]}
-        title={`Endpoint: ${enp.id}`}
+        title={`ID: ${enp.id}`}
         lastBreadcrumbTo={endpointDetailUrl(enp.id)}
         detailsBox={
           <EndpointAppHeaderInfo enp={enp} app={app} service={service} />
@@ -246,9 +246,9 @@ function EndpointDatabaseHeader({
       tabs={tabs}
       breadcrumbs={[
         { name: db.handle, to: dbUrl },
-        { name: `${db.handle} endpoints`, to: endpointsUrl },
+        { name: "Endpoints", to: endpointsUrl },
       ]}
-      title={`Endpoint: ${enp.id}`}
+      title={`ID: ${enp.id}`}
       lastBreadcrumbTo={endpointDetailUrl(enp.id)}
       detailsBox={<EndpointDatabaseHeaderInfo enp={enp} db={db} />}
     />
