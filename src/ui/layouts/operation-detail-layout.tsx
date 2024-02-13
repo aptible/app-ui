@@ -8,7 +8,7 @@ import {
 } from "@app/deploy";
 import { useSelector } from "@app/react";
 import { useQuery } from "@app/react";
-import { activityUrl } from "@app/routes";
+import { activityUrl, operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { DeployOperation } from "@app/types";
 import { Link, Outlet, useParams } from "react-router-dom";
@@ -82,6 +82,7 @@ function OpPageHeader() {
       {...loader}
       breadcrumbs={[{ name: "Activity", to: activityUrl() }]}
       title={`Operation: ${op.id}`}
+      lastBreadcrumbTo={operationDetailUrl(op.id)}
       detailsBox={<OpHeader op={op} resourceHandle={resourceHandle} />}
     />
   );

@@ -9,7 +9,7 @@ import {
   selectStackById,
 } from "@app/deploy";
 import { useDispatch, useQuery, useSelector } from "@app/react";
-import { stackDetailEnvsUrl } from "@app/routes";
+import { environmentDetailUrl, stackDetailEnvsUrl } from "@app/routes";
 import {
   DeployEndpoint,
   DeployEnvironment,
@@ -146,6 +146,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
       }
       title={environment.handle}
       tabs={tabs}
+      lastBreadcrumbTo={environmentDetailUrl(environment.id)}
     />
   );
 }

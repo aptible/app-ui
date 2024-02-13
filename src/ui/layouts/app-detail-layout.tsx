@@ -17,6 +17,7 @@ import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appActivityUrl,
   appConfigUrl,
+  appDetailUrl,
   appEndpointsUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
@@ -151,6 +152,7 @@ function AppPageHeader() {
         title={serviceId ? service.processType : app.handle}
         detailsBox={<AppHeader app={app} />}
         tabs={tabs}
+        lastBreadcrumbTo={appDetailUrl(app.id)}
       />
     </>
   );

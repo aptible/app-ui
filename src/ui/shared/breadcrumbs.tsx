@@ -18,29 +18,28 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
   return (
     <nav aria-label="Breadcrumb">
       <div>
-        {crumbs.map((crumb, idx) => (
-          <span key={`${crumb.name}-${idx}`}>
-            {crumb.to === null ? (
-              <NavLink
-                className="text-xl text-black focus:text-black hover:text-indigo font-semibold break-words"
-                to={crumb.to}
-              >
-                {" "}
-                {crumb.name}
-              </NavLink>
-            ) : (
-              <span className={idx === 0 ? "" : ""}>
-                <NavLink className={navLink} to={crumb.to}>
-                  {" "}
+        {crumbs.map((crumb, idx) => {
+          // console.log(idx !== crumbs.length - 1, idx, crumbs.length)
+          return (
+            <span key={`${crumb.name}-${idx}`}>
+              {crumb.to === null ? (
+                <span className="text-xl font-semibold break-words">
                   {crumb.name}
-                </NavLink>
-                <span className="text-xl text-gray-500 break-words">
-                  {idx !== crumbs.length && " / "}
                 </span>
-              </span>
-            )}
-          </span>
-        ))}
+              ) : (
+                <span className={idx === 0 ? "" : ""}>
+                  <NavLink className={navLink} to={crumb.to}>
+                    {" "}
+                    {crumb.name}
+                  </NavLink>
+                  <span className="text-xl text-gray-500 break-words">
+                    {idx !== crumbs.length - 1 && " / "}
+                  </span>
+                </span>
+              )}
+            </span>
+          );
+        })}
       </div>
     </nav>
   );
