@@ -173,7 +173,7 @@ function EndpointAppHeader({
     { name: "Activity", href: endpointDetailActivityUrl(enp.id) },
     { name: "Settings", href: endpointDetailSettingsUrl(enp.id) },
   ];
-  if (enp.acme) {
+  if (enp.acme && enp.status === "provisioned") {
     tabs.push({ name: "ACME Configure", href: endpointDetailSetupUrl(enp.id) });
   }
 
