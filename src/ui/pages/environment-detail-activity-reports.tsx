@@ -1,13 +1,9 @@
 import { prettyDate } from "@app/date";
-import {
-  downloadActivityReports,
-  fetchEnvActivityReports,
-  selectActivityReportsByEnvId,
-} from "@app/deploy";
-import { useDispatch, useQuery, useSelector } from "@app/react";
+import { downloadActivityReports } from "@app/deploy";
+import { useDispatch } from "@app/react";
 import { DeployActivityReport } from "@app/types";
 import { useParams } from "react-router";
-import { usePaginate } from "../hooks";
+import { usePaginatedActivityReportsByEnvId } from "../hooks";
 import {
   ButtonIcon,
   DescBar,
@@ -58,11 +54,7 @@ const ActivityReportListRow = ({
 
 export const EnvironmentActivityReportsPage = () => {
   const { id = "" } = useParams();
-  const reports = useSelector((s) =>
-    selectActivityReportsByEnvId(s, { envId: id }),
-  );
-  useQuery(fetchEnvActivityReports({ id }));
-  const paginated = usePaginate(reports);
+  const paginated = usePaginatedActivityReportsByEnvId(id);
 
   return (
     <Group>
