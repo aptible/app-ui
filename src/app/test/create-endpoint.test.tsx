@@ -86,7 +86,7 @@ describe("Create Endpoint flow", () => {
       const btn = await screen.findByRole("button", { name: /Save Endpoint/ });
       fireEvent.click(btn);
 
-      await screen.findByText(`Endpoint: ${testEndpoint.id}`);
+      await screen.findByText(`ID: ${testEndpoint.id}`);
     });
   });
 });
