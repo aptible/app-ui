@@ -3,6 +3,7 @@ import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   stackDetailEnvsUrl,
   stackDetailHidsUrl,
+  stackDetailUrl,
   stackDetailVpcPeeringsUrl,
   stackDetailVpnTunnelsUrl,
   stacksUrl,
@@ -96,6 +97,7 @@ function StackPageHeader() {
       title={stack.name}
       detailsBox={<StackHeader stack={stack} />}
       tabs={tabs}
+      lastBreadcrumbTo={stackDetailUrl(stack.id)}
     />
   );
 }

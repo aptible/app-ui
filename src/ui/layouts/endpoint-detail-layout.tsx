@@ -19,11 +19,14 @@ import { useLoader, useQuery } from "@app/react";
 import { useDispatch, useSelector } from "@app/react";
 import {
   appEndpointsUrl,
+  appServicesUrl,
+  databaseDetailUrl,
   databaseEndpointsUrl,
   endpointDetailActivityUrl,
   endpointDetailCredentialsUrl,
   endpointDetailSettingsUrl,
   endpointDetailSetupUrl,
+  endpointDetailUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
 import type {
@@ -168,7 +171,8 @@ function EndpointAppHeader({
   useQuery(fetchApp({ id: service.appId }));
   const app = useSelector((s) => selectAppById(s, { id: service.appId }));
   useQuery(fetchImageById({ id: app.currentImageId }));
-  const url = appEndpointsUrl(app.id);
+  const serviceUrl = appServicesUrl(app.id);
+  const endpointUrl = appEndpointsUrl(app.id);
   const tabs: TabItem[] = [
     { name: "Activity", href: endpointDetailActivityUrl(enp.id) },
     { name: "Settings", href: endpointDetailSettingsUrl(enp.id) },
@@ -195,8 +199,12 @@ function EndpointAppHeader({
         message={message}
         meta={meta}
         tabs={tabs}
-        breadcrumbs={[{ name: app.handle, to: url }]}
-        title={`Endpoint: ${enp.id}`}
+        breadcrumbs={[
+          { name: `${app.handle}`, to: serviceUrl },
+          { name: "Endpoints", to: endpointUrl },
+        ]}
+        title={`ID: ${enp.id}`}
+        lastBreadcrumbTo={endpointDetailUrl(enp.id)}
         detailsBox={
           <EndpointAppHeaderInfo enp={enp} app={app} service={service} />
         }
@@ -222,7 +230,8 @@ function EndpointDatabaseHeader({
   const db = useSelector((s) =>
     selectDatabaseById(s, { id: service.databaseId }),
   );
-  const url = databaseEndpointsUrl(db.id);
+  const dbUrl = databaseDetailUrl(db.id);
+  const endpointsUrl = databaseEndpointsUrl(db.id);
   const tabs: TabItem[] = [
     { name: "Activity", href: endpointDetailActivityUrl(enp.id) },
     {
@@ -238,8 +247,12 @@ function EndpointDatabaseHeader({
       message={message}
       meta={meta}
       tabs={tabs}
-      breadcrumbs={[{ name: db.handle, to: url }]}
-      title={`Endpoint: ${enp.id}`}
+      breadcrumbs={[
+        { name: db.handle, to: dbUrl },
+        { name: "Endpoints", to: endpointsUrl },
+      ]}
+      title={`ID: ${enp.id}`}
+      lastBreadcrumbTo={endpointDetailUrl(enp.id)}
       detailsBox={<EndpointDatabaseHeaderInfo enp={enp} db={db} />}
     />
   );

@@ -19,6 +19,7 @@ import {
   databaseBackupsUrl,
   databaseClusterUrl,
   databaseCredentialsUrl,
+  databaseDetailUrl,
   databaseEndpointsUrl,
   databaseMetricsUrl,
   databaseScaleUrl,
@@ -146,6 +147,7 @@ function DatabasePageHeader() {
         title={database ? database.handle : "Loading..."}
         detailsBox={<DatabaseHeader database={database} service={service} />}
         tabs={tabs}
+        lastBreadcrumbTo={databaseDetailUrl(database.id)}
       />
     </>
   );

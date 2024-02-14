@@ -5,6 +5,7 @@ import {
   roleDetailEnvironmentsUrl,
   roleDetailMembersUrl,
   roleDetailSettingsUrl,
+  roleDetailUrl,
   teamRolesUrl,
 } from "@app/routes";
 import type { Role } from "@app/types";
@@ -59,6 +60,7 @@ function RolePageHeader() {
       title={role.name}
       detailsBox={<RoleHeader role={role} />}
       tabs={tabs}
+      lastBreadcrumbTo={roleDetailUrl(role.id)}
     />
   );
 }

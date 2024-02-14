@@ -12,6 +12,7 @@ import {
   appDetailUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
+  appServiceUrl,
   appServicesUrl,
   environmentAppsUrl,
   environmentDetailUrl,
@@ -147,6 +148,7 @@ function ServicePageHeader() {
         <ServiceHeader app={app} service={service} env={environment} />
       }
       tabs={tabs}
+      lastBreadcrumbTo={appServiceUrl(app.id, service.id)}
     />
   );
 }

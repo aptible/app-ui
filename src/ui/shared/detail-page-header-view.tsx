@@ -16,6 +16,7 @@ interface HeaderProps {
   isError: boolean;
   message: string;
   meta: Record<string, any>;
+  lastBreadcrumbTo?: string;
 }
 
 const DetailErrorBox = ({
@@ -55,6 +56,7 @@ export const DetailPageHeaderView = ({
   isError,
   message,
   meta,
+  lastBreadcrumbTo,
 }: HeaderProps) => {
   if (isError) {
     return <DetailErrorBox message={message} meta={meta} />;
@@ -63,9 +65,15 @@ export const DetailPageHeaderView = ({
   return (
     <div className="flex flex-col">
       <div className="pb-[11px]">
-        {breadcrumbs && (
-          <Breadcrumbs crumbs={[...breadcrumbs, { to: null, name: title }]} />
-        )}
+        {breadcrumbs ? (
+          lastBreadcrumbTo ? (
+            <Breadcrumbs
+              crumbs={[...breadcrumbs, { to: lastBreadcrumbTo, name: title }]}
+            />
+          ) : (
+            <Breadcrumbs crumbs={[...breadcrumbs, { to: null, name: title }]} />
+          )
+        ) : null}
       </div>
 
       <div className="flex items-center">
