@@ -5,16 +5,16 @@ import {
   selectAppById,
   selectEnvironmentById,
 } from "@app/deploy";
-import { hasDeployOperation, selectLatestDeployOp } from "@app/deploy";
+import { selectLatestDeployOp } from "@app/deploy";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import { appDeployConfigureUrl, appDeployGetStartedUrl } from "@app/routes";
-import { DeployApp, DeployOperation } from "@app/types";
+import { DeployApp } from "@app/types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { AppSidebarLayout } from "../layouts";
 import {
-  Banner,
   Box,
+  ButtonLink,
   Code,
   ExternalLink,
   Group,
@@ -40,36 +40,6 @@ const usePollAppOperations = (appId: string) => {
   }, [appId]);
 
   return appOps;
-};
-
-const OpResult = ({ op }: { op: DeployOperation }) => {
-  const postfix = `operation: ${op.id}`;
-  if (op.status === "failed") {
-    return (
-      <Banner variant="error">
-        {op.type} operation failed, {postfix}
-      </Banner>
-    );
-  }
-  if (op.status === "succeeded") {
-    return (
-      <Banner variant="success">
-        {op.type} success, {postfix}
-      </Banner>
-    );
-  }
-  if (op.status === "running") {
-    return (
-      <Banner variant="info">
-        {op.type} detected (running), {postfix}
-      </Banner>
-    );
-  }
-  return (
-    <Banner variant="info">
-      {op.type} detected (queued), {postfix}
-    </Banner>
-  );
 };
 
 type DeployTypeGha = "main" | "master" | "release" | "manual";
@@ -234,21 +204,9 @@ export const AppDeployWithGithubPage = () => {
 
         <hr className="my-4" />
 
-        <Group>
-          {hasDeployOperation(deployOp) ? (
-            <OpResult op={deployOp} />
-          ) : (
-            <Banner variant="info">
-              Waiting for a deployment from your GitHub repo to continue ...
-            </Banner>
-          )}
-
-          <Banner variant="info">
-            Deploying a new App from GitHub might fail if you need environment
-            variables or a database. But don't worry, the next step will let you
-            configure those options and then re-deploy for you.
-          </Banner>
-        </Group>
+        <ButtonLink to={appDeployConfigureUrl(app.id)}>
+          Configure
+        </ButtonLink>
       </Box>
       <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </AppSidebarLayout>

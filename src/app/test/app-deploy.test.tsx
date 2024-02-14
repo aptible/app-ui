@@ -173,7 +173,8 @@ describe("App deploy flow", () => {
       fireEvent.click(pushBtn);
 
       // push your code page
-      await screen.findByText(/Push your code to Aptible/);
+      const configBtn = await screen.findByRole("link", { name: /Configure/ });
+      fireEvent.click(configBtn);
 
       // settings page
       await screen.findByText(/Configure your App/);
