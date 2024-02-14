@@ -196,7 +196,10 @@ export const AppDeployStatusPage = () => {
           <StatusBox>
             <WaitForGitPush>
               We will provision your databases and set everything else up while
-              we wait.
+              we wait for your code. If you require your databases to be
+              privisioned before the app is deployed, we recommend waiting to
+              push your code until the databses have been successfully
+              provisioned.
             </WaitForGitPush>
           </StatusBox>
         )}
