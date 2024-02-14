@@ -59,6 +59,7 @@ import {
   CopyTextButton,
   CreateAppEndpointSelector,
   ExternalLink,
+  Group,
   IconArrowRight,
   IconChevronDown,
   IconChevronRight,
@@ -195,11 +196,18 @@ export const AppDeployStatusPage = () => {
         {hasDeployOperation(deployOp) ? null : (
           <StatusBox>
             <WaitForGitPush>
-              We will provision your databases and set everything else up while
-              we wait for your code. If you require your databases to be
-              privisioned before the app is deployed, we recommend waiting to
-              push your code until the databses have been successfully
-              provisioned.
+              <Group size="sm">
+                <p>
+                  We will provision your databases and set everything else up
+                  while we wait for your code.
+                </p>
+
+                <p>
+                  If you require your databases to be privisioned before the app
+                  is deployed, we recommend waiting to push your code until the
+                  databses have been successfully provisioned.
+                </p>
+              </Group>
             </WaitForGitPush>
           </StatusBox>
         )}
