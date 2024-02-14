@@ -6,14 +6,12 @@ import {
   appDeployWithGitUrl,
   createAppUrl,
 } from "@app/routes";
-import { DeployOperation } from "@app/types";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSshKeyRequired } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
   AddSSHKeyForm,
-  Banner,
   Box,
   ButtonLink,
   Code,

@@ -51,6 +51,7 @@ import { Link } from "react-router-dom";
 import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
+  Banner,
   BannerMessages,
   Button,
   ButtonLink,
@@ -191,6 +192,15 @@ export const AppDeployStatusPage = () => {
           )}
         </ResourceGroupBox>
 
+        {hasDeployOperation(deployOp) ? null : (
+          <StatusBox>
+            <WaitForGitPush>
+              We will provision your databases and set everything else up while
+              we wait.
+            </WaitForGitPush>
+          </StatusBox>
+        )}
+
         {deployProjectLoader.isError ? (
           <StatusBox>
             <h4 className={tokens.type.h4}>Error!</h4>
@@ -284,6 +294,27 @@ export const AppDeployStatusPage = () => {
     </AppSidebarLayout>
   );
 };
+
+function WaitForGitPush({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <div>
+        <h4 className={tokens.type.h4}>Push your code to Aptible or GitHub</h4>
+        <p>{children}</p>
+      </div>
+
+      <hr className="my-4" />
+
+      <Banner variant="info">
+        Waiting on your git push to deploy your App...
+      </Banner>
+    </>
+  );
+}
 
 const createReadableResourceName = (
   op: DeployOperation,

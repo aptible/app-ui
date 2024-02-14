@@ -276,21 +276,25 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       ),
     );
 
-    const deployCtx = yield* call(() =>
-      createAppOperation.run(
-        createAppOperation({
-          type: "deploy",
-          appId,
-          envId,
-          gitRef,
-        }),
-      ),
-    );
+    if (gitRef) {
+      const deployCtx = yield* call(() =>
+        createAppOperation.run(
+          createAppOperation({
+            type: "deploy",
+            appId,
+            envId,
+            gitRef,
+          }),
+        ),
+      );
 
-    if (!deployCtx.json.ok) {
-      const data = deployCtx.json.error;
-      yield* schema.update(schema.loaders.error({ id, message: data.message }));
-      return;
+      if (!deployCtx.json.ok) {
+        const data = deployCtx.json.error;
+        yield* schema.update(
+          schema.loaders.error({ id, message: data.message }),
+        );
+        return;
+      }
     }
 
     yield* next();
