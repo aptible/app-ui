@@ -223,7 +223,7 @@ describe("App deploy - git push flow", () => {
       const keyBtn = await screen.findByRole("button", { name: /Save Key/ });
       fireEvent.click(keyBtn);
 
-      await screen.findByText(/Push your code to Aptible/);
+      await screen.findByText(/Add Aptible's git remote to your Repo/);
       expect(true).toBe(true);
     });
   });
@@ -290,7 +290,8 @@ describe("App deploy - git push flow", () => {
       fireEvent.click(pushBtn);
 
       // push your code page
-      await screen.findByText(/Push your code to Aptible/);
+      const configBtn = await screen.findByRole("link", { name: /Configure/ });
+      fireEvent.click(configBtn);
 
       // settings page
       await screen.findByText(/Configure your App/);

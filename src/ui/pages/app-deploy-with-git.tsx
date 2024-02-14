@@ -1,57 +1,29 @@
-import {
-  cancelAppOpsPoll,
-  fetchApp,
-  pollAppOperations,
-  selectAppById,
-} from "@app/deploy";
-import {
-  hasDeployOperation,
-  selectLatestDeployOp,
-  selectLatestScanOp,
-} from "@app/deploy";
-import { useDispatch, useQuery, useSelector } from "@app/react";
+import { fetchApp, selectAppById } from "@app/deploy";
+import { useQuery, useSelector } from "@app/react";
 import {
   appDeployConfigureUrl,
   appDeployWithGitAddKeyUrl,
   appDeployWithGitUrl,
   createAppUrl,
 } from "@app/routes";
-import { DeployOperation } from "@app/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSshKeyRequired } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
   AddSSHKeyForm,
-  Banner,
   Box,
+  ButtonLink,
   Code,
   ExternalLink,
-  IconInfo,
   PreBox,
   PreCode,
   ProgressProject,
   Select,
   SelectOption,
-  Tooltip,
   listToInvertedTextColor,
   tokens,
 } from "../shared";
-
-const usePollAppOperations = (appId: string) => {
-  const dispatch = useDispatch();
-  const appOps = useQuery(pollAppOperations({ id: appId }));
-  useEffect(() => {
-    const cancel = () => dispatch(cancelAppOpsPoll());
-    cancel();
-    dispatch(pollAppOperations({ id: appId }));
-    return () => {
-      cancel();
-    };
-  }, [appId]);
-
-  return appOps;
-};
 
 export const AppDeployWithGitAddKeyPage = () => {
   const { appId = "" } = useParams();
@@ -75,36 +47,6 @@ export const AppDeployWithGitAddKeyPage = () => {
       </Box>
       <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </AppSidebarLayout>
-  );
-};
-
-const OpResult = ({ op }: { op: DeployOperation }) => {
-  const postfix = `operation: ${op.id}`;
-  if (op.status === "failed") {
-    return (
-      <Banner variant="error">
-        {op.type} operation failed, {postfix}
-      </Banner>
-    );
-  }
-  if (op.status === "succeeded") {
-    return (
-      <Banner variant="success">
-        {op.type} success, {postfix}
-      </Banner>
-    );
-  }
-  if (op.status === "running") {
-    return (
-      <Banner variant="info">
-        {op.type} detected (running), {postfix}
-      </Banner>
-    );
-  }
-  return (
-    <Banner variant="info">
-      {op.type} detected (queued), {postfix}
-    </Banner>
   );
 };
 
@@ -162,16 +104,12 @@ const starterTemplateOptions: StarterOption[] = [
 ];
 
 export const AppDeployWithGitPage = () => {
-  const navigate = useNavigate();
   const { appId = "" } = useParams();
   useSshKeyRequired(appDeployWithGitAddKeyUrl(appId));
 
   const [starter, setStarter] = useState<StarterOption>(customCodeOption);
   useQuery(fetchApp({ id: appId }));
   const app = useSelector((s) => selectAppById(s, { id: appId }));
-  usePollAppOperations(appId);
-  const scanOp = useSelector((s) => selectLatestScanOp(s, { appId }));
-  const deployOp = useSelector((s) => selectLatestDeployOp(s, { appId }));
 
   let query = "";
   if (starter) {
@@ -182,16 +120,12 @@ export const AppDeployWithGitPage = () => {
     query = new URLSearchParams(queryRaw).toString();
   }
 
-  useEffect(() => {
-    if (scanOp && scanOp.status === "succeeded") {
-      navigate(appDeployConfigureUrl(appId, query));
-    }
-  }, [scanOp]);
-
   return (
     <AppSidebarLayout>
       <div className="text-center mt-10">
-        <h1 className={tokens.type.h1}>Push your code to Aptible</h1>
+        <h1 className={tokens.type.h1}>
+          Add Aptible's git remote to your Repo
+        </h1>
         <p className="my-4 text-gray-600">
           We will look for a Dockerfile or generate one for you to deploy your
           app.
@@ -289,46 +223,11 @@ export const AppDeployWithGitPage = () => {
           </div>
         ) : null}
 
-        <div className="mt-4">
-          <div className="flex flex-row items-center">
-            <h4 className={tokens.type.h4}>
-              Push your code to our scan branch
-            </h4>
-            <Tooltip
-              fluid
-              text="If your local branch is named master, push to master:aptible-scan"
-            >
-              <IconInfo
-                className="opacity-50 hover:opacity-100 ml-1"
-                variant="sm"
-              />
-            </Tooltip>
-          </div>
-          <PreCode
-            segments={listToInvertedTextColor([
-              "git push aptible",
-              "main:aptible-scan",
-            ])}
-            allowCopy
-          />
-        </div>
-
         <hr className="my-4" />
 
-        {hasDeployOperation(deployOp) ? (
-          <div className="text-black-900 mb-4">
-            We detected an app deployment, did you push to the{" "}
-            <Code>aptible-scan</Code> branch?
-          </div>
-        ) : null}
-
-        {hasDeployOperation(scanOp) ? (
-          <OpResult op={scanOp} />
-        ) : (
-          <Banner variant="info">
-            Waiting on your git push to continue...
-          </Banner>
-        )}
+        <ButtonLink to={appDeployConfigureUrl(app.id, query)}>
+          Configure
+        </ButtonLink>
       </Box>
       <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </AppSidebarLayout>

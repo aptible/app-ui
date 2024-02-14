@@ -34,7 +34,7 @@ export const useLatestCodeResults = (appId: string) => {
       id: op.codeScanResultId,
     }),
   );
-  const gitRef = op.gitRef || "main";
+  const gitRef = hasDeployOperation(op) ? op.gitRef || "main" : "";
 
   return { op, gitRef, codeScan, appOps };
 };

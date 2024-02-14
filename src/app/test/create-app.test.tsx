@@ -71,8 +71,8 @@ describe("Create App flow", () => {
       });
       fireEvent.click(pushBtn);
 
-      // push your code page
-      await screen.findByText(/Push your code to Aptible/);
+      const configBtn = await screen.findByRole("link", { name: /Configure/ });
+      fireEvent.click(configBtn);
 
       // configure page
       await screen.findByText(/Configure your App/);

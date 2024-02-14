@@ -47,68 +47,7 @@ describe("CreateProjectFromAppSetupPage", () => {
     });
   });
 
-  describe("when there is just a scan operation", () => {
-    it("should redirect to settings page", async () => {
-      const app = defaultAppResponse({
-        id: createId(),
-        handle: testAccount.handle,
-        _links: {
-          account: defaultHalHref(
-            `${testEnv.apiUrl}/accounts/${testAccount.id}`,
-          ),
-          current_configuration: defaultHalHref(),
-          current_image: defaultHalHref(),
-        },
-      });
-      const scanOp = defaultOperationResponse({
-        id: createId(),
-        type: "scan_code",
-        status: "succeeded",
-        _links: {
-          code_scan_result: {
-            href: `${testEnv.apiUrl}/code_scan_results/${createId()}`,
-          },
-          resource: {
-            href: `${testEnv.apiUrl}/apps/${app.id}`,
-          },
-          ephemeral_sessions: defaultHalHref(),
-          self: defaultHalHref(),
-          account: app._links.account,
-          ssh_portal_connections: defaultHalHref(),
-          user: defaultHalHref(),
-          logs: defaultHalHref(),
-        },
-      });
-
-      server.use(
-        ...verifiedUserHandlers(),
-        ...stacksWithResources({
-          accounts: [testAccount],
-          apps: [app],
-        }),
-        rest.get(`${testEnv.apiUrl}/apps/:id/operations`, (_, res, ctx) => {
-          return res(
-            ctx.json({
-              _embedded: {
-                operations: [scanOp],
-              },
-            }),
-          );
-        }),
-      );
-
-      const { App } = setupAppIntegrationTest({
-        initEntries: [appDeployResumeUrl(`${app.id}`)],
-      });
-
-      render(<App />);
-
-      const txt = await screen.findByText("Configure your App");
-      expect(txt).toBeInTheDocument();
-    });
-  });
-
-  describe("when there is just an app deploy operation", () => {
+  describe("when there is just an app configure operation", () => {
     it("should redirect to status page", async () => {
       const app = defaultAppResponse({
         id: createId(),
@@ -123,7 +62,7 @@ describe("CreateProjectFromAppSetupPage", () => {
       });
       const op = defaultOperationResponse({
         id: createId(),
-        type: "deploy",
+        type: "configure",
         status: "succeeded",
         _links: {
           code_scan_result: defaultHalHref(),
