@@ -72,30 +72,30 @@ export const TeamRolesPage = () => {
   const roles = useSelector((s) => selectRolesByOrgId(s, { orgId }));
   const allEnvs = useSelector(selectEnvironmentsByOrgAsList);
   const allPerms = useSelector(selectAllPermissions);
-  
-  // console.log(allPerms)
-  let permsByRoleId = allPerms.reduce<{ [key: string]: object }>((acc, perm) => {
-    let retObj = {...acc}
 
-    if (!retObj[perm.roleId]) retObj[perm.roleId] = {}
-    
-    if (!retObj[perm.roleId][perm.environmentId]) retObj[perm.roleId][perm.environmentId] = []
+  let allEnvsObj = allEnvs.reduce((acc, env) => {
+    let retObj = { ...acc }
 
-    // retObj[perm.roleId] = [...retObj[perm.roleId], perm]
+    if (!retObj[env.id]) retObj[env.id] = env
 
     return retObj
   }, {})
-  // console.log(permsByRoleId)
-  // let rolesWithEnvironments = roles.reduce<{ [key: string]: object }>((acc, role) => {
-  //   let retObj = { ...acc }
 
-  //   if (!retObj[role.id]) {
-  //     retObj[role.id] = { ...allEnvs }
-  //   }
 
-  //   return retObj
-  // }, {})
-  // console.log(rolesWithEnvironments)
+  let permsByRoleId = allPerms.reduce<{ [key: string]: object }>((acc, perm) => {
+    let retObj = { ...acc }
+
+    if (!retObj[perm.roleId]) retObj[perm.roleId] = {}
+
+    if (!retObj[perm.roleId][perm.environmentId]) {
+      retObj[perm.roleId][perm.environmentId] = [{ ...perm, handle: allEnvsObj[perm.environmentId].handle }]
+    }
+    else if (retObj[perm.roleId][perm.environmentId]) {
+      retObj[perm.roleId][perm.environmentId] = [...retObj[perm.roleId][perm.environmentId], perm]
+    }
+
+    return retObj
+  }, {})
 
   let initialAccordionState = roles.reduce<{ [key: string]: boolean }>((acc, role) => {
     acc[role.id] = false;
@@ -111,6 +111,7 @@ export const TeamRolesPage = () => {
   }
 
   const [rolesOpen, setRolesOpen] = useState<RolesOpenState>({})
+  const [allEnvOpen, setAllEnvOpen] = useState<RolesOpenState>({})
   return (
     <Group>
       <TitleBar description="Roles define the level of access users have within your team">
@@ -135,7 +136,7 @@ export const TeamRolesPage = () => {
         <TBody>
           {roles.map((role) => {
             let numbOfEnvsWithPerms = permsByRoleId[role.id] ? Object.keys(permsByRoleId[role.id]).length : 0
-
+            let environmentsWithPerms = permsByRoleId[role.id]
             return (
               <Tr key={role.id}>
                 <Td className="align-baseline">
@@ -158,16 +159,34 @@ export const TeamRolesPage = () => {
                   <div>
                     <div>{`${numbOfEnvsWithPerms} / ${allEnvs.length}`} Environments</div>
                     <Button variant="white" size="sm" onClick={() => {
+                      setRolesOpen({})
+                      setAllEnvOpen({ ...allEnvOpen, [role.id]: !allEnvOpen[role.id] })
+                    }}>{allEnvOpen[role.id] ? 'Hide All' : 'Show All'}</Button>
+
+                    <Button variant="white" size="sm" onClick={() => {
+                      setAllEnvOpen({})
                       setRolesOpen({ ...rolesOpen, [role.id]: !rolesOpen[role.id] })
-                    }}>{rolesOpen[role.id] ? 'Hide All' : 'Show All'}</Button>
+                    }}>{rolesOpen[role.id] ? 'Hide Permissions' : 'Show Permissions'}</Button>
 
+                    {allEnvOpen[role.id] ? allEnvs.sort((a, b) => { 
+                      if (environmentsWithPerms[a.id] && !environmentsWithPerms[b.id]) return -1
+                      if (environmentsWithPerms[b.id] && !environmentsWithPerms[a.id]) return 1
+                      if (environmentsWithPerms[a.id] && environmentsWithPerms[b.id]) return 0
+                      
+                      if (environmentsWithPerms[a.id]?.length > environmentsWithPerms[b.id]?.length) return -1
+                      if (environmentsWithPerms[a.id]?.length < environmentsWithPerms[b.id]?.length) return 1
+                      if (environmentsWithPerms[a.id]?.length === environmentsWithPerms[b.id]?.length) return 0
+                    }).map((env, i) => {
+                      return <AllRoleEnvironmentRow env={env} role={role} key={i} />
+                    }) : null}
 
-                    {/* TODO: Create array.filter to only show relevant environments w/ permissions */}
-                    {/* TODO: Add a button to show ALL environemtns and environments w/ only permissions (default) */}
-
-
-                    {rolesOpen[role.id] ? allEnvs.map((env, i) => {
-                      return <RoleEnvironmentRow env={env} role={role} key={i} />
+                    {rolesOpen[role.id] ? Object.keys(environmentsWithPerms).map((env, i) => {
+                      return <RoleEnvironmentRow
+                        env={environmentsWithPerms[env]}
+                        envHandle={environmentsWithPerms[env][0].handle}
+                        role={role}
+                        key={i}
+                      />
                     }) : null}
                   </div>
                 </Td>
@@ -196,12 +215,38 @@ export const RoleMembershipRow = ({ role }: { role: any }) => {
   )
 }
 
-export const RoleEnvironmentRow = ({ env, role }: { env: any, role: any }) => {
+export const RoleEnvironmentRow = ({ env, role, envHandle }: { env: any, role: any, envHandle: string }) => {
+  const perms = env
+
+  const permSet = {
+    admin: 'Environment Admin',
+    read: 'Full Visibility',
+    basic_read: "Basic Visibility",
+    deploy: "Deployment",
+    destroy: "Destruction",
+    observability: "Ops",
+    sensitive: "Sensitive Access",
+    tunnel: "Tunnel"
+  };
+
+  const objectNames = perms.map(obj => permSet[obj.scope as keyof typeof permSet]).join(", ");
+
+  return (
+    <div className="text-black mb-2 pb-2 pt-2 border-b border-gray-200 last:border-0 last:mb-0">
+      {env.handle || envHandle}
+      <div className="text-gray-500 text-sm">
+        {perms.length ?
+          <div>{objectNames}</div>
+          : 'No Access'}
+      </div>
+    </div>
+  )
+}
+export const AllRoleEnvironmentRow = ({ env, role }: { env: any, role: any }) => {
   const roleId = role.id
   const perms = useSelector((s) =>
     selectPermsByAccountAndRole(s, { envId: env.id, roleId }),
   );
-
 
   const permSet = {
     admin: 'Environment Admin',
