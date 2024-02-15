@@ -162,9 +162,7 @@ const AppAutoDeployGuide = ({ app }: { app: DeployApp }) => {
       </div>
 
       <div>
-        <h4 className={tokens.type.h4}>
-          4. Commit your changes and push to GitHub
-        </h4>
+        <h4 className={tokens.type.h4}>4. Commit your changes</h4>
       </div>
     </Group>
   );
@@ -187,7 +185,7 @@ export const AppDeployWithGithubPage = () => {
   return (
     <AppSidebarLayout>
       <div className="text-center mt-10">
-        <h1 className={tokens.type.h1}>Push your code to GitHub</h1>
+        <h1 className={tokens.type.h1}>Add our GitHub Action to your Repo</h1>
         <p className="my-4 text-gray-600">
           Add a GitHub Workflow to your repo to deploy an App on Aptible.
         </p>
@@ -202,9 +200,10 @@ export const AppDeployWithGithubPage = () => {
       <Box className="w-full max-w-[700px] mx-auto">
         <AppAutoDeployGuide app={app} />
 
-        <hr className="my-4" />
-
-        <ButtonLink to={appDeployConfigureUrl(app.id)}>Configure</ButtonLink>
+        <div>
+          <h4 className={tokens.type.h4}>5. Configure your App</h4>
+          <ButtonLink to={appDeployConfigureUrl(app.id)}>Configure</ButtonLink>
+        </div>
       </Box>
       <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </AppSidebarLayout>

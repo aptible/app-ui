@@ -220,9 +220,7 @@ export const AppDeployConfigurePage = () => {
 
       <Box className="w-full max-w-[700px] mx-auto">
         <div>
-          {codeScan.isInitialLoading ? (
-            <Loading text="Loading code scan results..." />
-          ) : (
+          {codeScan.isInitialLoading ? null : (
             <CodeScanInfo codeScan={codeScan.data} />
           )}
         </div>
