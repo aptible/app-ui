@@ -374,7 +374,7 @@ function WaitForGitPush({
     <>
       <div>
         <h4 className={tokens.type.h4}>Push your code to Aptible or GitHub</h4>
-        <p>{children}</p>
+        <div>{children}</div>
       </div>
 
       <hr className="my-4" />

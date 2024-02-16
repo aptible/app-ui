@@ -106,7 +106,7 @@ describe("App deploy flow", () => {
       const keyBtn = await screen.findByRole("button", { name: /Save Key/ });
       fireEvent.click(keyBtn);
 
-      await screen.findByText(/Push your code to Aptible/);
+      await screen.findByText(/Add Aptible's git remote to your Repo/);
       expect(true).toBe(true);
     });
   });
