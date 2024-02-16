@@ -63,12 +63,16 @@ import {
   IconArrowRight,
   IconChevronDown,
   IconChevronRight,
+  IconInfo,
   Loading,
   LogViewer,
+  PreCode,
   ProgressProject,
   ResourceGroupBox,
   StatusBox,
   StatusPill,
+  Tooltip,
+  listToInvertedTextColor,
   resolveOperationStatuses,
   tokens,
 } from "../shared";
@@ -202,11 +206,66 @@ export const AppDeployStatusPage = () => {
                   while we wait for your code.
                 </p>
 
-                <p>
+                <Banner variant="warning">
                   If you require your databases to be privisioned before the app
                   is deployed, we recommend waiting to push your code until the
                   databses have been successfully provisioned.
-                </p>
+                </Banner>
+
+                <div>
+                  <div className="flex flex-row items-center">
+                    <h4 className={tokens.type.h4}>Deploy from GitHub</h4>
+                    <Tooltip
+                      fluid
+                      text="If your local branch is named master, push to master"
+                    >
+                      <IconInfo
+                        className="opacity-50 hover:opacity-100 ml-1"
+                        variant="sm"
+                      />
+                    </Tooltip>
+                  </div>
+                  <PreCode
+                    segments={listToInvertedTextColor([
+                      "git push origin",
+                      "main",
+                    ])}
+                    allowCopy
+                  />
+                </div>
+
+                <p className="font-bold">- OR -</p>
+
+                <div>
+                  <div className="flex flex-row items-center">
+                    <h4 className={tokens.type.h4}>Deploy with Git Push</h4>
+                    <Tooltip
+                      fluid
+                      text="If your local branch is named master, push to master"
+                    >
+                      <IconInfo
+                        className="opacity-50 hover:opacity-100 ml-1"
+                        variant="sm"
+                      />
+                    </Tooltip>
+                  </div>
+                  <Group size="sm">
+                    <PreCode
+                      segments={listToInvertedTextColor([
+                        "git remote add aptible",
+                        app.gitRepo,
+                      ])}
+                      allowCopy
+                    />
+                    <PreCode
+                      segments={listToInvertedTextColor([
+                        "git push aptible",
+                        "main",
+                      ])}
+                      allowCopy
+                    />
+                  </Group>
+                </div>
               </Group>
             </WaitForGitPush>
           </StatusBox>
