@@ -34,7 +34,7 @@ export interface DeployApp extends Provisionable, Timestamps {
   currentImageId: string;
 }
 
-export type InstanceClass = "t3" | "m4" | "m5" | "r4" | "r5" | "c4" | "c5";
+export type InstanceClass = "m4" | "m5" | "r4" | "r5" | "c4" | "c5";
 
 export interface DeployService extends Timestamps {
   id: string;
@@ -503,7 +503,6 @@ export interface DeployBackupRetentionPolicy {
 }
 
 export const containerProfileKeys: InstanceClass[] = [
-  "t3",
   "m4",
   "m5",
   "r4",

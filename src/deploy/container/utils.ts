@@ -4,14 +4,6 @@ export const GB = 1024;
 export const CONTAINER_PROFILES: {
   [profile in InstanceClass]: ContainerProfileData;
 } = {
-  t3: {
-    name: "Economy (T)",
-    costPerContainerHourInCents: 3.5,
-    cpuShare: 0.5 / GB,
-    minimumContainerSize: GB / 4,
-    maximumContainerSize: 27 * GB,
-    maximumContainerCount: 32,
-  },
   m4: {
     name: "General Purpose (M) - Legacy",
     costPerContainerHourInCents: 8,
@@ -41,7 +33,7 @@ export const CONTAINER_PROFILES: {
     costPerContainerHourInCents: 5,
     cpuShare: 0.125 / GB,
     minimumContainerSize: 4 * GB,
-    maximumContainerSize: 653 * GB,
+    maximumContainerSize: 752 * GB,
     maximumContainerCount: 32,
   },
   c4: {
@@ -57,7 +49,7 @@ export const CONTAINER_PROFILES: {
     costPerContainerHourInCents: 10,
     cpuShare: 0.5 / GB,
     minimumContainerSize: 2 * GB,
-    maximumContainerSize: 163 * GB,
+    maximumContainerSize: 368 * GB,
     maximumContainerCount: 32,
   },
 };

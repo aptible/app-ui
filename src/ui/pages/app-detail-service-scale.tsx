@@ -3,7 +3,7 @@ import {
   DEFAULT_INSTANCE_CLASS,
   ServiceSizingPolicyEditProps,
   cancelServicesOpsPoll,
-  exponentialContainerSizesByProfile,
+  containerSizesByProfile,
   fetchApp,
   fetchService,
   fetchServiceSizingPoliciesByServiceId,
@@ -596,7 +596,7 @@ export const AppDetailServiceScalePage = () => {
     },
   );
 
-  const memoryContainerOptions = exponentialContainerSizesByProfile(
+  const memoryContainerOptions = containerSizesByProfile(
     containerProfileType,
   ).map((containerSizeOption) => {
     return {

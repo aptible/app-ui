@@ -1,36 +1,29 @@
 import { ContainerProfileData, DeployService, InstanceClass } from "@app/types";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
 
-const ABSOLUTE_MAX_CONTAINER_SIZE_IN_GB = 653;
-const getContainerSizes = () => {
-  const containerSizes = [GB / 4, GB / 2]; // Container sizes start at 512?
-
-  for (let i = 1; i <= ABSOLUTE_MAX_CONTAINER_SIZE_IN_GB; i++) {
-    containerSizes.push(GB * i);
-  }
-  return containerSizes;
+type SizeMap = {
+  [key in InstanceClass]: number[];
 };
 
-export const LINEAR_CONTAINER_SIZES = getContainerSizes();
-export const EXPONENTIAL_CONTAINER_SIZES = [
-  GB / 2,
-  GB,
-  2 * GB,
-  4 * GB,
-  7 * GB,
-  15 * GB,
-  30 * GB,
-  60 * GB,
-  150 * GB,
-  240 * GB,
-];
+const getContainerSizesByProfile = (profile: InstanceClass): number[] => {
+  const sizeMap: SizeMap = {
+    m4: [0.5, 1, 2, 4, 7, 15, 30, 60, 150, 240],
+    m5: [0.5, 1, 2, 4, 7, 15, 30, 60, 150, 240],
+    r4: [0.5, 1, 2, 4, 7, 15, 30, 60, 150, 240],
+    r5: [0.5, 1, 2, 4, 7, 15, 30, 60, 150, 240, 368, 496, 752],
+    c4: [0.5, 1, 2, 4, 7, 15, 30],
+    c5: [0.5, 1, 2, 4, 7, 15, 30, 60, 150, 240, 368],
+  };
+  return sizeMap[profile].map((size: number) => size * GB);
+};
 
-export const exponentialContainerSizesByProfile = (
-  profile: InstanceClass,
-): number[] =>
-  EXPONENTIAL_CONTAINER_SIZES.filter(
-    (size) => size >= CONTAINER_PROFILES[profile].minimumContainerSize,
+export const containerSizesByProfile = (profile: InstanceClass): number[] => {
+  const profileSizes = getContainerSizesByProfile(profile);
+  return profileSizes.filter(
+    (size: number) => size >= CONTAINER_PROFILES[profile].minimumContainerSize,
   );
+};
+
 export const getContainerProfileFromType = (
   containerProfile: InstanceClass,
 ): ContainerProfileData => {

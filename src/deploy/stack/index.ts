@@ -218,10 +218,6 @@ export const selectContainerProfilesForStack = createSelector(
       containerProfiles.r5 = CONTAINER_PROFILES.r5;
     }
 
-    if (stack.allowTInstanceProfile) {
-      containerProfiles.t3 = CONTAINER_PROFILES.t3;
-    }
-
     return containerProfiles;
   },
 );
