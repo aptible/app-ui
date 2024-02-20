@@ -37,6 +37,7 @@ export * from "./app-detail-endpoints";
 export * from "./app-detail-services";
 export * from "./app-detail-settings";
 export * from "./app-detail-service";
+export * from "./app-detail-ci-cd";
 export * from "./databases";
 export * from "./database-detail-activity";
 export * from "./database-detail-backups";
