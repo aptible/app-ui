@@ -197,25 +197,29 @@ export const TeamRolesPage = () => {
                       {allEnvOpen[role.id] ? "Hide All" : "Show All"}
                     </Button>
 
-                    <Button
-                      variant="white"
-                      size="sm"
-                      onClick={() => {
-                        setAllEnvOpen({});
-                        setRolesOpen({
-                          ...rolesOpen,
-                          [role.id]: !rolesOpen[role.id],
-                        });
-                      }}
-                    >
-                      {rolesOpen[role.id]
-                        ? "Hide Permissions"
-                        : "Show Permissions"}
-                    </Button>
+                    {environmentsWithPerms && (
+                      <Button
+                        variant="white"
+                        size="sm"
+                        onClick={() => {
+                          setAllEnvOpen({});
+                          setRolesOpen({
+                            ...rolesOpen,
+                            [role.id]: !rolesOpen[role.id],
+                          });
+                        }}
+                      >
+                        {rolesOpen[role.id]
+                          ? "Hide Permissions"
+                          : "Show Permissions"}
+                      </Button>
+                    )}
 
                     {allEnvOpen[role.id]
                       ? allEnvs
                           .sort((a, b) => {
+                            if (!environmentsWithPerms) return 0;
+
                             if (
                               environmentsWithPerms[a.id] &&
                               !environmentsWithPerms[b.id]
@@ -261,7 +265,7 @@ export const TeamRolesPage = () => {
                           })
                       : null}
 
-                    {rolesOpen[role.id]
+                    {rolesOpen[role.id] && environmentsWithPerms
                       ? Object.keys(environmentsWithPerms).map((env, i) => {
                           return (
                             <RoleEnvironmentRow
