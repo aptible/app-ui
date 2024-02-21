@@ -197,6 +197,7 @@ export const TeamRolesPage = () => {
                       Environments
                     </div>
                     <Button
+                      className="mb-4"
                       variant="white"
                       size="sm"
                       onClick={() => {
@@ -343,7 +344,7 @@ export const RoleEnvironmentRow = ({
     .join(", ");
 
   return (
-    <div className="text-black mb-2 pb-2 pt-2 border-b border-gray-200 last:border-0 last:mb-0">
+    <div className="text-black mb-2 pb-2 border-b border-gray-200 last:border-0 last:mb-0">
       {env.handle || envHandle}
       <div className="text-gray-500 text-sm">
         {perms.length ? <div>{objectNames}</div> : "No Access"}
@@ -376,7 +377,7 @@ export const AllRoleEnvironmentRow = ({
     .join(", ");
 
   return (
-    <div className="text-black mb-2 pb-2 pt-2 border-b border-gray-200 last:border-0 last:mb-0">
+    <div className="text-black mb-2 pb-2 border-b border-gray-200 last:border-0 last:mb-0">
       {env.handle}
       <div className="text-gray-500 text-sm">
         {perms.length ? <div>{objectNames}</div> : "No Access"}
