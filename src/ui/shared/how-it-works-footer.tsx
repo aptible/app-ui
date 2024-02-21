@@ -62,12 +62,11 @@ export const DeployAppFooter = () => {
               </ExternalLink>{" "}
               to your repository
             </li>
-            <li>Push your changes to GitHub</li>
             <li>
               Configure your App (e.g. databases, environment variables,
               services and commands)
             </li>
-            <li>Save and deploy</li>
+            <li>Push your changes to GitHub</li>
           </ol>
         </HelpTextAccordion>
         <HelpTextAccordion title="How do I deploy an App with Git Push?">
@@ -81,13 +80,12 @@ export const DeployAppFooter = () => {
             <li>Create an environment</li>
             <li>Deploy a starter template or your own custom code</li>
             <li>
-              Push your code to Aptible using <Code>git push</Code>
-            </li>
-            <li>
               Configure your App (e.g. databases, environment variables,
               services and commands)
             </li>
-            <li>Save and deploy</li>
+            <li>
+              Push your code to Aptible using <Code>git push</Code>
+            </li>
           </ol>
         </HelpTextAccordion>
         <HelpTextAccordion title="Is my App a good fit for Aptible?">

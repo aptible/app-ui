@@ -128,17 +128,15 @@ export const AppAutoDeployGuide = ({ app }: { app: DeployApp }) => {
       <div>
         <h4 className={tokens.type.h4}>3. Add secrets to GitHub repository</h4>
         <p>
-          We require your Aptible username and password to deploy your App. To
-          add GitHub secrets to your repo or organization,{" "}
+          We require your Aptible username and password to deploy your App.{" "}
           <ExternalLink href="https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions">
-            read this guide on GitHub
-          </ExternalLink>
-          . Further, we recommend creating a robot user, adding it to your
-          Organization, restricting its permissions, and adding that username
-          and password to GitHub.{" "}
+            Add GitHub secrets
+          </ExternalLink>{" "}
+          to your repo or organization. Additionally, we recommend{" "}
           <ExternalLink href="https://www.aptible.com/docs/ci-deploy-user">
-            Learn more
+            creating a robot user
           </ExternalLink>
+          .
         </p>
       </div>
     </Group>

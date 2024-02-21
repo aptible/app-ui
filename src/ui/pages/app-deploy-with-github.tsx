@@ -45,8 +45,10 @@ export const AppDeployWithGithubPage = () => {
         <AppAutoDeployGuide app={app} />
 
         <div className="mt-4">
-          <h4 className={tokens.type.h4}>4. Configure your App</h4>
-          <ButtonLink to={appDeployConfigureUrl(app.id)}>Configure</ButtonLink>
+          <hr />
+          <ButtonLink to={appDeployConfigureUrl(app.id)} className="mt-4">
+            Configure App
+          </ButtonLink>
         </div>
       </Box>
 
