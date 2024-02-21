@@ -31,7 +31,7 @@ export const AppDeployWithGithubPage = () => {
       <div className="text-center mt-10">
         <h1 className={tokens.type.h1}>Add our GitHub Action to your Repo</h1>
         <p className="my-4 text-gray-600">
-          Add a GitHub Workflow to your repo to deploy an App on Aptible.
+          Add a GitHub Workflow to deploy your app.
         </p>
       </div>
 
