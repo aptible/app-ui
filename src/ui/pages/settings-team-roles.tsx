@@ -190,9 +190,9 @@ export const TeamRolesPage = () => {
                 <Td className="align-baseline">
                   <RoleMembershipRow role={role} />
                 </Td>
-                <Td className="min-w-[75ch]">
+                <Td className="min-w-[75ch] align-baseline">
                   <div>
-                    <div>
+                    <div className="mb-2">
                       {`${numbOfEnvsWithPerms} / ${allEnvs.length}`}{" "}
                       Environments
                     </div>
