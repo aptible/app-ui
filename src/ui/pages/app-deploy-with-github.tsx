@@ -44,11 +44,12 @@ export const AppDeployWithGithubPage = () => {
       <Box className="w-full max-w-[700px] mx-auto">
         <AppAutoDeployGuide app={app} />
 
-        <div>
+        <div className="mt-4">
           <h4 className={tokens.type.h4}>4. Configure your App</h4>
           <ButtonLink to={appDeployConfigureUrl(app.id)}>Configure</ButtonLink>
         </div>
       </Box>
+
       <div className="bg-[url('/background-pattern-v2.png')] bg-no-repeat bg-cover bg-center absolute w-full h-full top-0 left-0 z-[-999]" />
     </AppSidebarLayout>
   );

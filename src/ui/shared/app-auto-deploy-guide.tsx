@@ -141,12 +141,6 @@ export const AppAutoDeployGuide = ({ app }: { app: DeployApp }) => {
           </ExternalLink>
         </p>
       </div>
-
-      <div>
-        <h4 className={tokens.type.h4}>
-          4. Commit your changes and push to GitHub
-        </h4>
-      </div>
     </Group>
   );
 };

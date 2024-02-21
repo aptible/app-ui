@@ -36,7 +36,16 @@ export function AppDetailCiCdGuidePage() {
 
       <Group className="mt-4">
         <Tabs tabs={tabs} />
+
         <AppAutoDeployGuide app={app} />
+
+        <div>
+          <h4 className={tokens.type.h4}>4. Push code to GitHub</h4>
+        </div>
+
+        <div>
+          <h4 className={tokens.type.h4}>5. Trigger deployment</h4>
+        </div>
       </Group>
     </Box>
   );
