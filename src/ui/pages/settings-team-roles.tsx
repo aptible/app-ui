@@ -160,6 +160,15 @@ export const TeamRolesPage = () => {
               ? Object.keys(permsByRoleId[role.id]).length
               : 0;
             const environmentsWithPerms = permsByRoleId[role.id];
+
+            let defaultPill = false;
+            if (
+              role.type === "owner" ||
+              role.type === "platform_owner" ||
+              role.type === "compliance_owner"
+            ) {
+              defaultPill = true;
+            }
             return (
               <Tr key={role.id}>
                 <Td className="align-baseline">
@@ -172,7 +181,11 @@ export const TeamRolesPage = () => {
                   <div className="text-gray-500 text-sm">
                     Created: {prettyDate(role.createdAt)}
                   </div>
-                  <Pill>Custom</Pill>
+                  {defaultPill ? (
+                    <Pill variant="progress">Default</Pill>
+                  ) : (
+                    <Pill>Custom</Pill>
+                  )}
                 </Td>
                 <Td className="align-baseline">
                   <RoleMembershipRow role={role} />
