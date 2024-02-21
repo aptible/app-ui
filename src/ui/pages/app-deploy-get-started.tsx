@@ -9,7 +9,7 @@ export const AppDeployGetStartedPage = () => {
   return (
     <GetStartedLayout>
       <ButtonLink to={appDeployWithGithubUrl(appId)}>
-        <IconGithub variant="sm" className="mr-1" /> Deploy from Github
+        <IconGithub variant="sm" className="mr-1" /> Deploy from GitHub
       </ButtonLink>
       <ButtonLink to={appDeployWithGitUrl(appId)}>
         Deploy with Git Push

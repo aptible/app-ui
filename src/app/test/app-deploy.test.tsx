@@ -18,7 +18,124 @@ import { getStartedUrl } from "@app/routes";
 import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 import { deserializeToken } from "@app/token";
 
-describe("App deploy flow", () => {
+describe("App deploy - github action flow", () => {
+  it("should successfully provision resources within an environment", async () => {
+    server.use(
+      rest.get(`${testEnv.apiUrl}/apps/:id`, (_, res, ctx) => {
+        return res(
+          ctx.json({
+            ...testApp,
+            _links: {
+              account: defaultHalHref(
+                `${testEnv.apiUrl}/accounts/${testAccount.id}`,
+              ),
+              current_configuration: defaultHalHref(
+                `${testEnv.apiUrl}/configurations/${testConfiguration.id}`,
+              ),
+            },
+          }),
+        );
+      }),
+      ...verifiedUserHandlers({ role: testRoleOwner }),
+    );
+    const { App, store } = setupAppIntegrationTest({
+      initEntries: [getStartedUrl()],
+    });
+
+    await waitForBootup(store);
+
+    render(<App />);
+
+    // deploy code landing page
+    const el = await screen.findByRole("link", {
+      name: /Get Started/,
+    });
+    // go to next page
+    fireEvent.click(el);
+
+    // create environment page
+    const nameInput = await screen.findByRole("textbox", { name: "name" });
+    await act(() => userEvent.type(nameInput, "test-project"));
+
+    const btn = await screen.findByRole("button", {
+      name: /Create Environment/,
+    });
+    // go to next page
+    fireEvent.click(btn);
+
+    // create app page
+    await screen.findByText(/test-account/);
+    const appNameInput = await screen.findByRole("textbox", { name: "name" });
+    await act(() => userEvent.type(appNameInput, "test-project"));
+
+    const appBtn = await screen.findByRole("button", {
+      name: /Create App/,
+    });
+    // go to next page
+    fireEvent.click(appBtn);
+
+    const pushBtn = await screen.findByRole("link", {
+      name: /Deploy from GitHub/,
+    });
+    fireEvent.click(pushBtn);
+
+    // push your code page
+    await screen.findByText(/Push your code to GitHub/);
+
+    // settings page
+    await screen.findByText(/Configure your App/);
+
+    // await screen.findByText(/Your code has a/);
+    // const banner = await screen.findAllByRole("status");
+    // expect(banner[0].textContent).toMatch(/Your code has a Dockerfile/);
+
+    const dbBtn = await screen.findByRole("button", {
+      name: /New Database/,
+    });
+    fireEvent.click(dbBtn);
+
+    const dbSelector = await screen.findByRole("combobox");
+    userEvent.selectOptions(dbSelector, "postgres v14");
+    const dbEnvVar = await screen.findByRole("textbox", { name: "envvar" });
+    expect(dbEnvVar).toHaveDisplayValue("DATABASE_URL");
+
+    const saveBtn = await screen.findByRole("button", {
+      name: /Save & Deploy/,
+    });
+
+    // go to next page
+    fireEvent.click(saveBtn);
+
+    // status page
+    await screen.findByRole("link", {
+      name: /View App/,
+    });
+    const status = await screen.findByText(/Deployed \d+-\d+-\d+/);
+    expect(status).toBeInTheDocument();
+
+    await screen.findByText("Initial configuration");
+    await screen.findByText("Database provision test-app-1-postgres");
+    await screen.findByText("App deployment");
+    let ops = await screen.findAllByText("DONE");
+    expect(ops.length).toEqual(3);
+
+    // create https endpoint
+    await screen.findByText(/Which service needs an/);
+
+    const vhostSelector = await screen.findAllByRole("radio");
+    fireEvent.click(vhostSelector[0]);
+    const httpBtn = await screen.findByRole("button", {
+      name: "Create Endpoint",
+    });
+    fireEvent.click(httpBtn);
+
+    await screen.findByText("HTTPS endpoint provision");
+    ops = await screen.findAllByText("DONE");
+    expect(ops.length).toEqual(4);
+  });
+});
+
+describe("App deploy - git push flow", () => {
   describe("existing user *without* ssh keys", () => {
     it("should ask user to add SSH keys before proceeding", async () => {
       server.use(
