@@ -1,7 +1,19 @@
-import { appDeployWithGitUrl } from "@app/routes";
-import { Navigate, useParams } from "react-router";
+import { appDeployWithGitUrl, appDeployWithGithubUrl } from "@app/routes";
+import { useParams } from "react-router";
+import { GetStartedLayout } from "../layouts";
+import { ButtonLink, IconGithub } from "../shared";
 
 export const AppDeployGetStartedPage = () => {
   const { appId = "" } = useParams();
-  return <Navigate to={appDeployWithGitUrl(appId)} replace />;
+
+  return (
+    <GetStartedLayout>
+      <ButtonLink to={appDeployWithGithubUrl(appId)}>
+        <IconGithub variant="sm" className="mr-1" /> Deploy from GitHub
+      </ButtonLink>
+      <ButtonLink to={appDeployWithGitUrl(appId)}>
+        Deploy with Git Push
+      </ButtonLink>
+    </GetStartedLayout>
+  );
 };

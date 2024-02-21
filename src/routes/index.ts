@@ -125,6 +125,11 @@ export const appEndpointCreateUrl = (id: string) =>
   `${appDetailUrl(id)}/endpoints/create`;
 export const APP_SETTINGS_PATH = `${APP_DETAIL_PATH}/settings`;
 export const appSettingsUrl = (id: string) => `${appDetailUrl(id)}/settings`;
+export const APP_CICD_PATH = `${APP_DETAIL_PATH}/ci-cd`;
+export const appCiCdUrl = (id: string) => `${appDetailUrl(id)}/ci-cd`;
+export const APP_CICD_GITHUB_PATH = `${APP_DETAIL_PATH}/ci-cd/github`;
+export const appCiCdGithubUrl = (id: string) =>
+  `${appDetailUrl(id)}/ci-cd/github`;
 
 export const DATABASES_PATH = "/databases";
 export const databaseUrl = () => DATABASES_PATH;
@@ -287,6 +292,9 @@ export const appDeployGetStartedUrl = (appId: string) =>
 
 export const APP_DEPLOY_WITH_GIT_PATH = "/apps/:appId/git";
 export const appDeployWithGitUrl = (appId: string) => `/apps/${appId}/git`;
+export const APP_DEPLOY_WITH_GITHUB_PATH = "/apps/:appId/github";
+export const appDeployWithGithubUrl = (appId: string) =>
+  `/apps/${appId}/github`;
 
 export const APP_DEPLOY_WITH_GIT_ADD_KEY_PATH = "/apps/:appId/git/ssh";
 export const appDeployWithGitAddKeyUrl = (appId: string) => {

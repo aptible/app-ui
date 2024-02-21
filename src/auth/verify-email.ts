@@ -1,5 +1,5 @@
 import { authApi } from "@app/api";
-import { leading } from "@app/fx";
+import { takeLeading } from "@app/fx";
 import { schema } from "@app/schema";
 import { AuthApiCtx, HalEmbedded } from "@app/types";
 
@@ -11,7 +11,7 @@ interface VerifyEmail {
 
 export const verifyEmail = authApi.post<VerifyEmail>(
   "/verifications",
-  { supervisor: leading },
+  { supervisor: takeLeading },
   function* onVerifyEmail(ctx: AuthApiCtx<any, VerifyEmail>, next) {
     const { challengeId, verificationCode, userId } = ctx.payload;
     ctx.request = ctx.req({

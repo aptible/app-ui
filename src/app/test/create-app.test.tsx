@@ -66,10 +66,15 @@ describe("Create App flow", () => {
       // go to next page
       fireEvent.click(btn);
 
-      // push your code page
-      await screen.findByText(/Push your code to Aptible/);
+      const pushBtn = await screen.findByRole("link", {
+        name: /Deploy with Git Push/,
+      });
+      fireEvent.click(pushBtn);
 
-      // settings page
+      const configBtn = await screen.findByRole("link", { name: /Configure/ });
+      fireEvent.click(configBtn);
+
+      // configure page
       await screen.findByText(/Configure your App/);
 
       const dbBtn = await screen.findByRole("button", {
@@ -95,7 +100,7 @@ describe("Create App flow", () => {
 
       // status page
       await screen.findByRole("link", {
-        name: /View Environment/,
+        name: /View App/,
       });
       const status = await screen.findByText(/Deployed \d+-\d+-\d+/);
       expect(status).toBeInTheDocument();

@@ -13,6 +13,9 @@ import {
   AppDeployStatusPage,
   AppDeployWithGitAddKeyPage,
   AppDeployWithGitPage,
+  AppDeployWithGithubPage,
+  AppDetailCiCdGuidePage,
+  AppDetailCiCdPage,
   AppDetailConfigPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
@@ -297,6 +300,14 @@ export const appRoutes: RouteObject[] = [
                 path: routes.APP_CONFIG_PATH,
                 element: <AppDetailConfigPage />,
               },
+              {
+                path: routes.APP_CICD_PATH,
+                element: <AppDetailCiCdPage />,
+              },
+              {
+                path: routes.APP_CICD_GITHUB_PATH,
+                element: <AppDetailCiCdGuidePage />,
+              },
             ],
           },
         ],
@@ -560,6 +571,10 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.APP_DEPLOY_WITH_GIT_PATH,
         element: <AppDeployWithGitPage />,
+      },
+      {
+        path: routes.APP_DEPLOY_WITH_GITHUB_PATH,
+        element: <AppDeployWithGithubPage />,
       },
       {
         path: routes.APP_DEPLOY_WITH_GIT_ADD_KEY_PATH,

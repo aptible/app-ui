@@ -7,14 +7,11 @@ import {
   selectAppById,
   selectEnvironmentById,
   selectFirstAppByEnvId,
+  selectLatestConfigureOp,
 } from "@app/deploy";
-import { hasDeployOperation, selectLatestDeployOp } from "@app/deploy";
+import { hasDeployOperation } from "@app/deploy";
 import { useDispatch, useSelector } from "@app/react";
-import {
-  appDeployConfigureUrl,
-  appDeployStatusUrl,
-  appDeployWithGitUrl,
-} from "@app/routes";
+import { appDeployGetStartedUrl, appDeployStatusUrl } from "@app/routes";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useLatestCodeResults } from "../hooks";
@@ -28,9 +25,9 @@ export const AppDeployResumeWithEnvPage = () => {
   const navigate = useNavigate();
   // just guessing which app to use to detect current status
   const app = useSelector((s) => selectFirstAppByEnvId(s, { envId }));
-  const { appOps, scanOp } = useLatestCodeResults(app.id);
-  const deployOp = useSelector((s) =>
-    selectLatestDeployOp(s, { appId: app.id }),
+  const { appOps, op } = useLatestCodeResults(app.id);
+  const configureOp = useSelector((s) =>
+    selectLatestConfigureOp(s, { appId: app.id }),
   );
 
   useEffect(() => {
@@ -49,15 +46,12 @@ export const AppDeployResumeWithEnvPage = () => {
       return;
     }
 
-    // TODO: this probably needs reworked
-    if (hasDeployOperation(deployOp)) {
+    if (hasDeployOperation(configureOp)) {
       navigate(appDeployStatusUrl(app.id));
-    } else if (hasDeployOperation(scanOp) && scanOp.status === "succeeded") {
-      navigate(appDeployConfigureUrl(app.id));
     } else {
-      navigate(appDeployWithGitUrl(app.id));
+      navigate(appDeployGetStartedUrl(app.id));
     }
-  }, [env.id, app.id, appOps, deployOp, scanOp]);
+  }, [env.id, app.id, appOps, configureOp, op]);
 
   return (
     <AppSidebarLayout>
@@ -74,8 +68,8 @@ export const AppDeployResumePage = () => {
     selectEnvironmentById(s, { id: app.environmentId }),
   );
   const navigate = useNavigate();
-  const { appOps, scanOp } = useLatestCodeResults(appId);
-  const deployOp = useSelector((s) => selectLatestDeployOp(s, { appId }));
+  const { appOps, op } = useLatestCodeResults(appId);
+  const configureOp = useSelector((s) => selectLatestConfigureOp(s, { appId }));
 
   useEffect(() => {
     dispatch(fetchApp({ id: appId }));
@@ -93,15 +87,12 @@ export const AppDeployResumePage = () => {
       return;
     }
 
-    // TODO: this probably needs reworked
-    if (hasDeployOperation(deployOp)) {
+    if (hasDeployOperation(configureOp)) {
       navigate(appDeployStatusUrl(app.id), { replace: true });
-    } else if (hasDeployOperation(scanOp) && scanOp.status === "succeeded") {
-      navigate(appDeployConfigureUrl(app.id), { replace: true });
     } else {
-      navigate(appDeployWithGitUrl(app.id), { replace: true });
+      navigate(appDeployGetStartedUrl(app.id), { replace: true });
     }
-  }, [env.id, app.id, appOps, deployOp, scanOp]);
+  }, [env.id, app.id, appOps, op, configureOp]);
 
   return (
     <AppSidebarLayout>

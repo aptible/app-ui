@@ -6,7 +6,15 @@ import {
   combinePages,
   thunks,
 } from "@app/api";
-import { call, createAction, delay, leading, mdw, poll, select } from "@app/fx";
+import {
+  call,
+  createAction,
+  delay,
+  mdw,
+  poll,
+  select,
+  takeLeading,
+} from "@app/fx";
 import { Operation, createSelector } from "@app/fx";
 import {
   defaultEntity,
@@ -311,6 +319,13 @@ export const selectLatestDeployOp = createSelector(
   (ops) => ops.find((op) => op.type === "deploy") || schema.operations.empty,
 );
 
+export const selectLatestDeployOpWithCodeScan = createSelector(
+  selectOperationsByAppId,
+  (ops) =>
+    ops.find((op) => op.type === "deploy" && op.codeScanResultId !== "") ||
+    schema.operations.empty,
+);
+
 export const findLatestSuccessDeployOp = (ops: DeployOperation[]) =>
   ops.find((op) => op.type === "deploy" && op.status === "succeeded");
 
@@ -335,7 +350,7 @@ interface EnvOpProps extends PaginateProps, EnvIdProps {}
 
 export const fetchEnvOperations = api.get<EnvOpProps>(
   "/accounts/:envId/operations?page=:page&per_page=250",
-  { supervisor: leading },
+  { supervisor: takeLeading },
 );
 
 export const fetchAllEnvOps = thunks.create<EnvIdProps>(
@@ -352,7 +367,7 @@ export const pollEnvOperations = api.get<EnvIdProps>(
 
 export const fetchOrgOperations = api.get<{ orgId: string }>(
   "/organizations/:orgId/operations?per_page=250",
-  { supervisor: leading },
+  { supervisor: takeLeading },
 );
 
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");

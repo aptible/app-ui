@@ -16,6 +16,7 @@ import {
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appActivityUrl,
+  appCiCdUrl,
   appConfigUrl,
   appDetailUrl,
   appEndpointsUrl,
@@ -140,6 +141,7 @@ function AppPageHeader() {
         { name: "Endpoints", href: appEndpointsUrl(id) },
         { name: "Activity", href: appActivityUrl(id) },
         { name: "Configuration", href: appConfigUrl(id) },
+        { name: "CI/CD", href: appCiCdUrl(id) },
         { name: "Settings", href: appSettingsUrl(id) },
       ];
 

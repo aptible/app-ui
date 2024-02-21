@@ -11,8 +11,7 @@ import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
 
 /**
  * This function helps simulate booting the entire app as if it were
- * the browser.  All of redux, redux-saga, and redux-persist are loaded
- * and configured.
+ * the browser.
  *
  * We also dispatch the `bootup()` saga which fetches a bunch of data.
  */

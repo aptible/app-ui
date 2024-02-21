@@ -65,7 +65,10 @@ export const ResourceGroupBox = ({
             <Link to={environmentAppsUrl(environment.id)}>{env.handle}</Link>
           </Pill>
 
-          <Pill icon={<IconGitBranch color="#595E63" variant="sm" />}>
+          <Pill
+            icon={<IconGitBranch color="#595E63" variant="sm" />}
+            title={deployOp.gitRef}
+          >
             {deployOp.gitRef.slice(0, 7) || "Pending"}
           </Pill>
         </div>

@@ -49,3 +49,9 @@ export const secondsFromNow = (seconds: number) => {
 };
 
 export const isBefore = (a: Date, b: Date) => a < b;
+
+export function findLatestDate<M extends { createdAt: string }>(a: M, b: M) {
+  const aDate = new Date(a.createdAt).getTime();
+  const bDate = new Date(b.createdAt).getTime();
+  return aDate > bDate ? a : b;
+}

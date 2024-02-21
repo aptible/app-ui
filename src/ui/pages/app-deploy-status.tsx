@@ -34,8 +34,8 @@ import {
 import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import {
   appDeployConfigureUrl,
+  appDetailUrl,
   appEndpointsUrl,
-  environmentAppsUrl,
 } from "@app/routes";
 import { schema } from "@app/schema";
 import {
@@ -52,6 +52,7 @@ import { Link } from "react-router-dom";
 import { useEnvOpsPoller, useLatestCodeResults, useProjectOps } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
+  Banner,
   BannerMessages,
   Button,
   ButtonLink,
@@ -59,9 +60,11 @@ import {
   CopyTextButton,
   CreateAppEndpointSelector,
   ExternalLink,
+  Group,
   IconArrowRight,
   IconChevronDown,
   IconChevronRight,
+  IconInfo,
   Loading,
   LogViewer,
   PreCode,
@@ -69,6 +72,7 @@ import {
   ResourceGroupBox,
   StatusBox,
   StatusPill,
+  Tooltip,
   listToInvertedTextColor,
   resolveOperationStatuses,
   tokens,
@@ -106,8 +110,7 @@ export const AppDeployStatusPage = () => {
   useQuery(fetchAllEnvOps({ envId }));
   // we only need to poll for the latest operations
   const { isInitialLoading } = useQuery(pollEnvOperations({ envId }));
-
-  const { scanOp } = useLatestCodeResults(appId);
+  const { gitRef } = useLatestCodeResults(appId);
 
   const redeployLoader = useSelector((s) =>
     schema.loaders.selectById(s, { id: `${redeployApp}` }),
@@ -116,7 +119,6 @@ export const AppDeployStatusPage = () => {
     schema.loaders.selectById(s, { id: `${deployProject}` }),
   );
 
-  const gitRef = scanOp.gitRef || "main";
   const redeploy = (force: boolean) => {
     if (redeployLoader.isLoading) {
       return;
@@ -171,18 +173,6 @@ export const AppDeployStatusPage = () => {
     );
   };
 
-  const environment = useSelector((s) =>
-    selectEnvironmentById(s, { id: app.environmentId }),
-  );
-
-  const viewProject = () => {
-    return (
-      <ButtonLink to={environmentAppsUrl(environment.id)} className="mt-4 mb-2">
-        View Environment <IconArrowRight variant="sm" className="ml-2" />
-      </ButtonLink>
-    );
-  };
-
   return (
     <AppSidebarLayout className="mb-8">
       {header()}
@@ -207,6 +197,74 @@ export const AppDeployStatusPage = () => {
             />
           )}
         </ResourceGroupBox>
+
+        {hasDeployOperation(deployOp) ? null : (
+          <StatusBox>
+            <WaitForGitPush>
+              <Group size="sm">
+                <Banner variant="warning">
+                  If you require databases, please wait to push your code until
+                  databases are provisioned.
+                </Banner>
+
+                <div>
+                  <div className="flex flex-row items-center">
+                    <h4 className={tokens.type.h4}>Deploy from GitHub</h4>
+                    <Tooltip
+                      fluid
+                      text="If your local branch is named master, push to master"
+                    >
+                      <IconInfo
+                        className="opacity-50 hover:opacity-100 ml-1"
+                        variant="sm"
+                      />
+                    </Tooltip>
+                  </div>
+                  <PreCode
+                    segments={listToInvertedTextColor([
+                      "git push origin",
+                      "main",
+                    ])}
+                    allowCopy
+                  />
+                </div>
+
+                <p className="font-bold">- OR -</p>
+
+                <div>
+                  <div className="flex flex-row items-center">
+                    <h4 className={tokens.type.h4}>Deploy with Git Push</h4>
+                    <Tooltip
+                      fluid
+                      text="If your local branch is named master, push to master"
+                    >
+                      <IconInfo
+                        className="opacity-50 hover:opacity-100 ml-1"
+                        variant="sm"
+                      />
+                    </Tooltip>
+                  </div>
+                  <Group size="sm">
+                    <PreCode
+                      segments={listToInvertedTextColor([
+                        "git remote add aptible",
+                        app.gitRepo,
+                      ])}
+                      allowCopy
+                    />
+                    <PreCode
+                      segments={listToInvertedTextColor([
+                        "git push aptible",
+                        "main",
+                      ])}
+                      allowCopy
+                    />
+                  </Group>
+                </div>
+              </Group>
+            </WaitForGitPush>
+          </StatusBox>
+        )}
 
         {deployProjectLoader.isError ? (
           <StatusBox>
@@ -284,18 +342,9 @@ export const AppDeployStatusPage = () => {
         ) : null}
 
         <StatusBox>
-          <h4 className={tokens.type.h4}>How to deploy changes</h4>
-          <p className="mb-2 text-black-500">
-            Commit changes to your local git repo and push to the Aptible git
-            server.
-          </p>
-          <PreCode
-            segments={listToInvertedTextColor(["git push aptible", "main"])}
-            allowCopy
-          />
-          <hr />
-
-          {viewProject()}
+          <ButtonLink to={appDetailUrl(app.id)}>
+            View App <IconArrowRight variant="sm" className="ml-2" />
+          </ButtonLink>
 
           <ButtonLink
             to={appDeployConfigureUrl(appId)}
@@ -310,6 +359,27 @@ export const AppDeployStatusPage = () => {
     </AppSidebarLayout>
   );
 };
+
+function WaitForGitPush({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <div>
+        <h4 className={tokens.type.h4}>Push your code to Aptible or GitHub</h4>
+        <div>{children}</div>
+      </div>
+
+      <hr className="my-4" />
+
+      <Banner variant="info">
+        Waiting on your git push to deploy your App...
+      </Banner>
+    </>
+  );
+}
 
 const createReadableResourceName = (
   op: DeployOperation,

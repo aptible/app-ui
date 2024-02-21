@@ -63,3 +63,6 @@ export * from "./container-metrics-chart";
 export * from "./container-metrics-table";
 export * from "./key-value";
 export * from "./org-requirements";
+export * from "./survey";
+export * from "./env-editor";
+export * from "./app-auto-deploy-guide";
