@@ -177,7 +177,7 @@ export const TeamRolesPage = () => {
                 <Td className="align-baseline">
                   <RoleMembershipRow role={role} />
                 </Td>
-                <Td className="align-baseline">
+                <Td className="min-w-[75ch]">
                   <div>
                     <div>
                       {`${numbOfEnvsWithPerms} / ${allEnvs.length}`}{" "}
@@ -197,28 +197,26 @@ export const TeamRolesPage = () => {
                       {allEnvOpen[role.id] ? "Hide All" : "Show All"}
                     </Button>
 
-                    {environmentsWithPerms && (
-                      <Button
-                        variant="white"
-                        size="sm"
-                        onClick={() => {
-                          setAllEnvOpen({});
-                          setRolesOpen({
-                            ...rolesOpen,
-                            [role.id]: !rolesOpen[role.id],
-                          });
-                        }}
-                      >
-                        {rolesOpen[role.id]
-                          ? "Hide Permissions"
-                          : "Show Permissions"}
-                      </Button>
-                    )}
+                    {environmentsWithPerms && <Button
+                      variant="white"
+                      size="sm"
+                      onClick={() => {
+                        setAllEnvOpen({});
+                        setRolesOpen({
+                          ...rolesOpen,
+                          [role.id]: !rolesOpen[role.id],
+                        });
+                      }}
+                    >
+                      {rolesOpen[role.id]
+                        ? "Hide Permissions"
+                        : "Show Permissions"}
+                    </Button>}
 
                     {allEnvOpen[role.id]
                       ? allEnvs
                           .sort((a, b) => {
-                            if (!environmentsWithPerms) return 0;
+                            if (!environmentsWithPerms) return 0
 
                             if (
                               environmentsWithPerms[a.id] &&
@@ -254,25 +252,25 @@ export const TeamRolesPage = () => {
 
                             return 0;
                           })
-                          .map((env, i) => {
+                          .map((env) => {
                             return (
                               <AllRoleEnvironmentRow
                                 env={env}
                                 role={role}
-                                key={role.id}
+                                key={env.id}
                               />
                             );
                           })
                       : null}
 
                     {rolesOpen[role.id] && environmentsWithPerms
-                      ? Object.keys(environmentsWithPerms).map((env, i) => {
+                      ? Object.keys(environmentsWithPerms).map((env) => {
                           return (
                             <RoleEnvironmentRow
                               env={environmentsWithPerms[env]}
                               envHandle={environmentsWithPerms[env][0].handle}
                               role={role}
-                              key={role.id}
+                              key={env}
                             />
                           );
                         })
@@ -300,7 +298,7 @@ export const RoleMembershipRow = ({ role }: { role: any }) => {
     [];
   const userNames = members.map((obj) => obj.name).join(", ");
   return (
-    <div className="max-w-[50ch]">
+    <div className="max-w-[40ch]">
       {members?.length ? userNames : "No users"}
     </div>
   );
