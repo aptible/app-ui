@@ -26,6 +26,7 @@ export type RoleType =
   | "platform_user"
   | "compliance_user"
   | "compliance_owner";
+
 export interface Role extends Timestamps {
   id: string;
   name: string;
