@@ -79,15 +79,14 @@ describe("App deploy - github action flow", () => {
     });
     fireEvent.click(pushBtn);
 
-    // push your code page
-    await screen.findByText(/Push your code to GitHub/);
+    await screen.findByText(/Add our GitHub Action to your Repo/);
+
+    // github page
+    const configBtn = await screen.findByRole("link", { name: /Configure/ });
+    fireEvent.click(configBtn);
 
     // settings page
     await screen.findByText(/Configure your App/);
-
-    // await screen.findByText(/Your code has a/);
-    // const banner = await screen.findAllByRole("status");
-    // expect(banner[0].textContent).toMatch(/Your code has a Dockerfile/);
 
     const dbBtn = await screen.findByRole("button", {
       name: /New Database/,
