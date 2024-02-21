@@ -197,7 +197,8 @@ export const TeamRolesPage = () => {
                       {allEnvOpen[role.id] ? "Hide All" : "Show All"}
                     </Button>
 
-                    {environmentsWithPerms && (
+                    {/* Leaving functionality for this in just incase we want to reuse this */}
+                    {/* {environmentsWithPerms && (
                       <Button
                         variant="white"
                         size="sm"
@@ -213,7 +214,7 @@ export const TeamRolesPage = () => {
                           ? "Hide Permissions"
                           : "Show Permissions"}
                       </Button>
-                    )}
+                    )} */}
 
                     {allEnvOpen[role.id]
                       ? allEnvs
