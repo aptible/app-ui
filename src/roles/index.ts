@@ -77,21 +77,34 @@ export const selectRolesByOrgId = createSelector(
   },
 );
 
-export const selectRolesWithDetailByOrgId = createSelector(
+export const selectRolesByOrgIdWithSearch = createSelector(
   schema.roles.selectTableAsList,
   (_: WebState, p: { orgId: string }) => p.orgId,
-  (roles, orgId) => {
-    // console.log(roles, orgId)
-    return []
-  //   roles
-  //     .filter((r) => r.organizationId === orgId)
-  //     .sort((a, b) => {
-  //       const dateA = new Date(a.createdAt).getTime();
-  //       const dateB = new Date(b.createdAt).getTime();
-  //       return dateB - dateA;
-  //     });
+  (_: WebState, p: { search: string }) => p.search.toLocaleLowerCase(),
+  (roles, orgId, search) => {
+    if (!search || search === "") {
+      return roles
+        .filter((r) => r.organizationId === orgId)
+        .sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return dateB - dateA;
+        });
+    } else {
+      return roles
+        .filter(
+          (r) =>
+            r.organizationId === orgId &&
+            r.name.toLowerCase().includes(search.toLowerCase()),
+        )
+        .sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return dateB - dateA;
+        });
+    }
   },
-)
+);
 
 export const selectCurrentUserRoles = createSelector(
   schema.roles.selectTable,

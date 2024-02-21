@@ -111,7 +111,7 @@ export const selectIsUserAnyOwner = createSelector(
 export const selectAllPermissions = createSelector(
   selectPermissionsAsList,
   (perms) => {
-    return perms
+    return perms;
   },
 );
 
