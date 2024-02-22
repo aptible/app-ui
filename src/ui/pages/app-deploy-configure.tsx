@@ -225,6 +225,11 @@ export const AppDeployConfigurePage = () => {
           )}
         </div>
 
+        <FormGroup
+          label="Databases"
+          description="Aptible automatically handles configuring and managing databases for Elasticsearch, InfluxDB, MySQL, PostgreSQL, Redis and more."
+        ></FormGroup>
+
         <form onSubmit={onSubmit}>
           <Group>
             {envList.some((e) => e.key.includes(DB_ENV_TEMPLATE_KEY)) ? (
