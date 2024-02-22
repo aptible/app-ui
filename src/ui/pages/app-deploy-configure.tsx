@@ -227,8 +227,9 @@ export const AppDeployConfigurePage = () => {
 
         <FormGroup
           label="Databases"
+          htmlFor="databases"
           description="Aptible automatically handles configuring and managing databases for Elasticsearch, InfluxDB, MySQL, PostgreSQL, Redis and more."
-        ></FormGroup>
+        />
 
         <form onSubmit={onSubmit}>
           <Group>
