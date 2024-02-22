@@ -375,7 +375,7 @@ export const fetchMetricByServiceId = thunks.create<{
     yield* delay(250);
   }
 
-  yield* schema.update(schema.loaders.start({ id }));
+  yield* schema.update(schema.loaders.success({ id }));
   yield* next();
 });
 
