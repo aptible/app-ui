@@ -42,7 +42,7 @@ export function setupStore({
     tsks.push(function* logActions(): Operation<void> {
       while (true) {
         const action = yield* take("*");
-        if (action.type === `${API_ACTION_PREFIX}store`) {
+        if (action.type === "store") {
           continue;
         }
         console.log(action);

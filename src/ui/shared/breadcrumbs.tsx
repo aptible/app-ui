@@ -19,7 +19,6 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
     <nav aria-label="Breadcrumb">
       <div>
         {crumbs.map((crumb, idx) => {
-          // console.log(idx !== crumbs.length - 1, idx, crumbs.length)
           return (
             <span key={`${crumb.name}-${idx}`}>
               {crumb.to === null ? (

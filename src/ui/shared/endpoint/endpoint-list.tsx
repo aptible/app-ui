@@ -202,7 +202,6 @@ export function EndpointsByOrg() {
   const endpoints = useSelector((s) =>
     selectEndpointsForTableSearch(s, { search }),
   );
-  console.log(endpoints);
 
   return (
     <EndpointList

@@ -109,7 +109,7 @@ export const ApplicationSidebar = () => {
             </Link>
           </div>
 
-          <LoadingSpinner show={isLoading} />
+          <LoadingSpinner show={!collapsed && isLoading} />
         </div>
 
         {collapsed ? null : (
@@ -139,6 +139,7 @@ export const ApplicationSidebar = () => {
             {navigation.map((item) => (
               <LinkNav key={item.name} {...item} hideName={collapsed} />
             ))}
+            <LoadingSpinner show={collapsed && isLoading} className="p-2" />
           </nav>
 
           {!collapsed ? <OrgRequirements /> : null}
