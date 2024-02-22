@@ -225,6 +225,14 @@ export const AppDeployConfigurePage = () => {
           )}
         </div>
 
+        <div className="mb-2">
+          <div className="text-md font-semibold text-gray-900">Databases</div>
+          <div className="text-black-500">
+            Aptible automatically handles configuring and managing databases for
+            Elasticsearch, InfluxDB, MySQL, PostgreSQL, Redis and more.
+          </div>
+        </div>
+
         <form onSubmit={onSubmit}>
           <Group>
             {envList.some((e) => e.key.includes(DB_ENV_TEMPLATE_KEY)) ? (

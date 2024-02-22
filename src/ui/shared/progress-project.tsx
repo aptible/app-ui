@@ -33,11 +33,11 @@ export const ProgressProject = ({
   const progress = <div className="flex items-center">{steps}</div>;
 
   if (env.isProduction && cur !== -1) {
-    return <div className="my-6 flex justify-center">{progress}</div>;
+    return <div className="mb-4 flex justify-center">{progress}</div>;
   }
 
   return (
-    <div className="my-6 flex justify-center">
+    <div className="mb-4 flex justify-center">
       {progress}
       <div className="ml-4">
         {prev ? (
