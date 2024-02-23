@@ -269,7 +269,7 @@ function ActivityTable({
               <span className="inline-block">
                 <Tooltip text="Refresh">
                   <IconRefresh
-                    className="inline-block -mt-1 opacity-50 hover:opacity-100"
+                    className="inline-block -mt-1 ml-1 opacity-50 hover:opacity-100"
                     variant="sm"
                   />
                 </Tooltip>
