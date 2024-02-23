@@ -1,5 +1,4 @@
 import { selectEnv } from "@app/config";
-import { selectIsAnyLoading } from "@app/loaders";
 import { selectNav, setCollapsed } from "@app/nav";
 import { useDispatch, useSelector } from "@app/react";
 import {
@@ -42,7 +41,6 @@ import {
   IconShield,
 } from "./icons";
 import { LinkNav } from "./link";
-import { LoadingSpinner } from "./loading";
 import { OrgPicker } from "./org-picker";
 import { OrgRequirements } from "./org-requirements";
 import { UserMenu } from "./user-menu";
@@ -57,7 +55,6 @@ export const ApplicationSidebar = () => {
   );
   const hasSystemStatus =
     systemStatus?.description && systemStatus?.indicator !== "none";
-  const isLoading = useSelector(selectIsAnyLoading);
 
   const navigate = useNavigate();
   const navigation = [
@@ -102,14 +99,10 @@ export const ApplicationSidebar = () => {
           <IconHamburger color="#888C90" />
         </button>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center flex-shrink-0 pl-4">
-            <Link to={environmentsUrl()}>
-              {collapsed ? <AptibleLogoOnly /> : <AptibleLogo />}
-            </Link>
-          </div>
-
-          <LoadingSpinner show={!collapsed && isLoading} />
+        <div className="flex items-center flex-shrink-0 pl-4">
+          <Link to={environmentsUrl()}>
+            {collapsed ? <AptibleLogoOnly /> : <AptibleLogo />}
+          </Link>
         </div>
 
         {collapsed ? null : (
@@ -139,7 +132,6 @@ export const ApplicationSidebar = () => {
             {navigation.map((item) => (
               <LinkNav key={item.name} {...item} hideName={collapsed} />
             ))}
-            <LoadingSpinner show={collapsed && isLoading} className="p-2" />
           </nav>
 
           {!collapsed ? <OrgRequirements /> : null}

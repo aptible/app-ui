@@ -1,4 +1,5 @@
 import { bootup } from "@app/bootup";
+import { createLog } from "@app/debug";
 import {
   Callable,
   Operation,
@@ -17,7 +18,6 @@ import {
   schema,
 } from "@app/schema";
 import { rootEntities, tasks } from "./packages";
-import { createLog } from "@app/debug";
 
 const log = createLog("fx");
 
