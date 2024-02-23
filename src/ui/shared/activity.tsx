@@ -263,7 +263,7 @@ function ActivityTable({
           </Group>
 
           <Group variant="horizontal" size="lg" className="items-center mt-1">
-            <DescBar>{paginated.totalItems} Operations</DescBar>
+            <DescBar>{paginated.totalItems} Operations<span>, Updated Now <a className="text-gray-500 underline hover:text-indigo cursor-pointer">Refresh</a></span></DescBar>
             <PaginateBar {...paginated} />
           </Group>
         </FilterBar>
