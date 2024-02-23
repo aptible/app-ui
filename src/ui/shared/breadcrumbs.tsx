@@ -10,6 +10,9 @@ export type Crumb = {
 const navLink = ({ isActive }: { isActive: boolean }) =>
   cn(
     "text-xl",
+    "text-gray-900",
+    "focus:text-gray-900",
+    "font-semibold",
     { [tokens.type.link]: !isActive },
     { [tokens.type.link]: isActive },
   );
@@ -32,7 +35,7 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
                     {" "}
                     {crumb.name}
                   </NavLink>
-                  <span className="text-xl text-gray-500 break-words">
+                  <span className="text-xl text-gray-400 break-words">
                     {idx !== crumbs.length - 1 && " / "}
                   </span>
                 </span>
