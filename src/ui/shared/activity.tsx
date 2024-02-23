@@ -37,6 +37,7 @@ import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks";
 import { usePoller } from "../hooks/use-poller";
+import { IconRefresh, Tooltip } from "../shared";
 import { Button } from "./button";
 import { Group } from "./group";
 import { InputSearch } from "./input";
@@ -263,7 +264,17 @@ function ActivityTable({
           </Group>
 
           <Group variant="horizontal" size="lg" className="items-center mt-1">
-            <DescBar>{paginated.totalItems} Operations<span>, Updated Now <a className="text-gray-500 underline hover:text-indigo cursor-pointer">Refresh</a></span></DescBar>
+            <DescBar>
+              {paginated.totalItems} Operations, Updated Now{" "}
+              <span className="inline-block">
+                <Tooltip text="Refresh">
+                  <IconRefresh
+                    className="inline-block -mt-1 opacity-50 hover:opacity-100"
+                    variant="sm"
+                  />
+                </Tooltip>
+              </span>
+            </DescBar>
             <PaginateBar {...paginated} />
           </Group>
         </FilterBar>
