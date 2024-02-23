@@ -36,16 +36,19 @@ export function EnvHeader({
   stack,
   endpoints,
   stats,
+  isLoading,
 }: {
   environment: DeployEnvironment;
   stats: DeployEnvironmentStats;
   stack: DeployStack;
   endpoints: DeployEndpoint[];
+  isLoading: boolean;
 }) {
   return (
     <DetailHeader>
       <DetailTitleBar
         title="Environment Details"
+        isLoading={isLoading}
         icon={
           <img
             src={"/resource-types/logo-environment.png"}
@@ -124,6 +127,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
       breadcrumbs={crumbs}
       detailsBox={
         <EnvHeader
+          isLoading={loader.isLoading}
           endpoints={endpoints}
           environment={environment}
           stack={stack}

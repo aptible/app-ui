@@ -39,7 +39,13 @@ export function ServiceHeader({
   app,
   service,
   env,
-}: { app: DeployApp; service: DeployService; env: DeployEnvironment }) {
+  isLoading,
+}: {
+  app: DeployApp;
+  service: DeployService;
+  env: DeployEnvironment;
+  isLoading: boolean;
+}) {
   const metrics = calcServiceMetrics(service);
   const { totalCPU } = calcMetrics([service]);
   const [isOpen, setOpen] = useState(true);
@@ -48,6 +54,7 @@ export function ServiceHeader({
     <DetailHeader>
       <DetailTitleBar
         title="Service Details"
+        isLoading={isLoading}
         icon={
           <img
             src="/resource-types/logo-service.png"
@@ -145,7 +152,12 @@ function ServicePageHeader() {
       breadcrumbs={crumbs}
       title={serviceId ? service.processType : app.handle}
       detailsBox={
-        <ServiceHeader app={app} service={service} env={environment} />
+        <ServiceHeader
+          app={app}
+          service={service}
+          env={environment}
+          isLoading={loader.isLoading}
+        />
       }
       tabs={tabs}
       lastBreadcrumbTo={appServiceUrl(app.id, service.id)}

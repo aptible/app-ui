@@ -43,7 +43,10 @@ import {
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
-export function AppHeader({ app }: { app: DeployApp }) {
+export function AppHeader({
+  app,
+  isLoading,
+}: { app: DeployApp; isLoading: boolean }) {
   const lastDeployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
@@ -60,6 +63,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
     <DetailHeader>
       <DetailTitleBar
         title="App Details"
+        isLoading={isLoading}
         icon={
           <img
             src="/resource-types/logo-app.png"
@@ -152,7 +156,7 @@ function AppPageHeader() {
         {...loader}
         breadcrumbs={crumbs}
         title={serviceId ? service.processType : app.handle}
-        detailsBox={<AppHeader app={app} />}
+        detailsBox={<AppHeader app={app} isLoading={loader.isLoading} />}
         tabs={tabs}
         lastBreadcrumbTo={appDetailUrl(app.id)}
       />

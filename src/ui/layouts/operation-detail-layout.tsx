@@ -25,13 +25,15 @@ import { AppSidebarLayout } from "./app-sidebar-layout";
 export function OpHeader({
   op,
   resourceHandle,
-}: { op: DeployOperation; resourceHandle: string }) {
+  isLoading,
+}: { op: DeployOperation; resourceHandle: string; isLoading: boolean }) {
   const url = getResourceUrl(op);
 
   return (
     <DetailHeader>
       <DetailTitleBar
         title="Operation Details"
+        isLoading={isLoading}
         icon={
           <img
             src={"/resource-types/logo-activity.png"}
@@ -83,7 +85,13 @@ function OpPageHeader() {
       breadcrumbs={[{ name: "Activity", to: activityUrl() }]}
       title={`Operation: ${op.id}`}
       lastBreadcrumbTo={operationDetailUrl(op.id)}
-      detailsBox={<OpHeader op={op} resourceHandle={resourceHandle} />}
+      detailsBox={
+        <OpHeader
+          op={op}
+          resourceHandle={resourceHandle}
+          isLoading={loader.isLoading}
+        />
+      }
     />
   );
 }

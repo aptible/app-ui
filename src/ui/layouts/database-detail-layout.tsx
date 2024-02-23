@@ -45,9 +45,11 @@ import { AppSidebarLayout } from "./app-sidebar-layout";
 export function DatabaseHeader({
   database,
   service,
+  isLoading,
 }: {
   database: DeployDatabase;
   service: DeployService;
+  isLoading: boolean;
 }) {
   const metrics = calcMetrics([service]);
   useQuery(fetchDiskById({ id: database.diskId }));
@@ -145,7 +147,13 @@ function DatabasePageHeader() {
         {...loader}
         breadcrumbs={crumbs}
         title={database ? database.handle : "Loading..."}
-        detailsBox={<DatabaseHeader database={database} service={service} />}
+        detailsBox={
+          <DatabaseHeader
+            database={database}
+            service={service}
+            isLoading={loader.isLoading}
+          />
+        }
         tabs={tabs}
         lastBreadcrumbTo={databaseDetailUrl(database.id)}
       />

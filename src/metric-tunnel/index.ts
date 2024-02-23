@@ -253,6 +253,9 @@ export const fetchMetricTunnelDataForContainer = metricTunnelApi.get<
     yield* next();
 
     if (!ctx.json.ok) {
+      yield* schema.update(
+        schema.loaders.error({ id, message: ctx.json.error.message }),
+      );
       return;
     }
 

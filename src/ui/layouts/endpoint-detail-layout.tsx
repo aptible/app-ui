@@ -59,7 +59,13 @@ export function EndpointAppHeaderInfo({
   enp,
   app,
   service,
-}: { enp: DeployEndpoint; app: DeployApp; service: DeployService }) {
+  isLoading,
+}: {
+  enp: DeployEndpoint;
+  app: DeployApp;
+  service: DeployService;
+  isLoading: boolean;
+}) {
   const txt = getEndpointText(enp);
   const image = useSelector((s) =>
     selectImageById(s, { id: app.currentImageId }),
@@ -70,6 +76,7 @@ export function EndpointAppHeaderInfo({
     <DetailHeader>
       <DetailTitleBar
         title="Endpoint Details"
+        isLoading={isLoading}
         icon={
           <img
             src={"/resource-types/logo-vhost.png"}
@@ -117,12 +124,14 @@ export function EndpointAppHeaderInfo({
 export function EndpointDatabaseHeaderInfo({
   enp,
   db,
-}: { enp: DeployEndpoint; db: DeployDatabase }) {
+  isLoading,
+}: { enp: DeployEndpoint; db: DeployDatabase; isLoading: boolean }) {
   const txt = getEndpointText(enp);
   return (
     <DetailHeader>
       <DetailTitleBar
         title="Endpoint Details"
+        isLoading={isLoading}
         icon={
           <img
             src={"/resource-types/logo-vhost.png"}
@@ -161,12 +170,14 @@ function EndpointAppHeader({
   isError,
   message,
   meta,
+  isLoading,
 }: {
   enp: DeployEndpoint;
   service: DeployService;
   isError: boolean;
   message: string;
   meta: Record<string, any>;
+  isLoading: boolean;
 }) {
   useQuery(fetchApp({ id: service.appId }));
   const app = useSelector((s) => selectAppById(s, { id: service.appId }));
@@ -206,7 +217,12 @@ function EndpointAppHeader({
         title={`ID: ${enp.id}`}
         lastBreadcrumbTo={endpointDetailUrl(enp.id)}
         detailsBox={
-          <EndpointAppHeaderInfo enp={enp} app={app} service={service} />
+          <EndpointAppHeaderInfo
+            enp={enp}
+            app={app}
+            service={service}
+            isLoading={isLoading}
+          />
         }
       />
     </>
@@ -219,12 +235,14 @@ function EndpointDatabaseHeader({
   isError,
   message,
   meta,
+  isLoading,
 }: {
   enp: DeployEndpoint;
   service: DeployService;
   isError: boolean;
   message: string;
   meta: Record<string, any>;
+  isLoading: boolean;
 }) {
   useQuery(fetchDatabase({ id: service.databaseId }));
   const db = useSelector((s) =>
@@ -253,7 +271,9 @@ function EndpointDatabaseHeader({
       ]}
       title={`ID: ${enp.id}`}
       lastBreadcrumbTo={endpointDetailUrl(enp.id)}
-      detailsBox={<EndpointDatabaseHeaderInfo enp={enp} db={db} />}
+      detailsBox={
+        <EndpointDatabaseHeaderInfo enp={enp} db={db} isLoading={isLoading} />
+      }
     />
   );
 }
