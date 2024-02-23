@@ -35,7 +35,7 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
                     {" "}
                     {crumb.name}
                   </NavLink>
-                  <span className="text-xl text-gray-500 break-words">
+                  <span className="text-xl text-gray-400 break-words">
                     {idx !== crumbs.length - 1 && " / "}
                   </span>
                 </span>
