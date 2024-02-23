@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
-
-import { Group, LoadingSpinner } from ".";
 import { ActionList, ActionListView } from "./action-list-view";
 import { Box } from "./box";
 import { Breadcrumbs, Crumb } from "./breadcrumbs";
 import { ButtonLinkDocs } from "./button";
+import { Group } from "./group";
 import { IconAlertTriangle } from "./icons";
+import { LoadingSpinner } from "./loading";
 import { TabItem, Tabs } from "./tabs";
 
 interface HeaderProps {
