@@ -17,6 +17,9 @@ import {
   schema,
 } from "@app/schema";
 import { rootEntities, tasks } from "./packages";
+import { createLog } from "@app/debug";
+
+const log = createLog("fx");
 
 export function setupStore({
   logs = true,
@@ -44,7 +47,7 @@ export function setupStore({
         if (action.type === "store") {
           continue;
         }
-        console.log(action);
+        log(action);
       }
     });
   }
