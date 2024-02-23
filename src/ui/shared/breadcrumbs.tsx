@@ -10,6 +10,9 @@ export type Crumb = {
 const navLink = ({ isActive }: { isActive: boolean }) =>
   cn(
     "text-xl",
+    "text-gray-900",
+    "focus:text-gray-900",
+    "font-semibold",
     { [tokens.type.link]: !isActive },
     { [tokens.type.link]: isActive },
   );
