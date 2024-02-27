@@ -11,6 +11,7 @@ import {
   selectEnvironmentById,
   selectImageById,
   selectLatestDeployOp,
+  selectUserHasPerms,
 } from "@app/deploy";
 import { findLoaderComposite } from "@app/loaders";
 import { useDispatch, useQuery, useSelector } from "@app/react";
@@ -129,16 +130,25 @@ function AppPageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
+  const hasConfigAccess = useSelector((s) =>
+    selectUserHasPerms(s, { envId: app.environmentId, scope: "read" }),
+  );
 
   const tabs: TabItem[] = [
     { name: "Services", href: appServicesUrl(id) },
     { name: "Endpoints", href: appEndpointsUrl(id) },
     { name: "Activity", href: appActivityUrl(id) },
     { name: "Configuration", href: appConfigUrl(id) },
-    { name: "Dependencies", href: appDetailDepsUrl(id) },
+  ];
+
+  if (hasConfigAccess) {
+    tabs.push({ name: "Dependencies", href: appDetailDepsUrl(id) });
+  }
+
+  tabs.push(
     { name: "CI/CD", href: appCiCdUrl(id) },
     { name: "Settings", href: appSettingsUrl(id) },
-  ];
+  );
 
   return (
     <>
