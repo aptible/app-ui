@@ -17,6 +17,7 @@ import {
   AppDetailCiCdGuidePage,
   AppDetailCiCdPage,
   AppDetailConfigPage,
+  AppDetailDepsPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
   AppDetailPage,
@@ -307,6 +308,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.APP_CICD_GITHUB_PATH,
                 element: <AppDetailCiCdGuidePage />,
+              },
+              {
+                path: routes.APP_DETAIL_DEPS_PATH,
+                element: <AppDetailDepsPage />,
               },
             ],
           },

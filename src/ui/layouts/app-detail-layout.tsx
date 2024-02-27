@@ -11,7 +11,6 @@ import {
   selectEnvironmentById,
   selectImageById,
   selectLatestDeployOp,
-  selectServiceById,
 } from "@app/deploy";
 import { findLoaderComposite } from "@app/loaders";
 import { useDispatch, useQuery, useSelector } from "@app/react";
@@ -19,10 +18,9 @@ import {
   appActivityUrl,
   appCiCdUrl,
   appConfigUrl,
+  appDetailDepsUrl,
   appDetailUrl,
   appEndpointsUrl,
-  appServicePathMetricsUrl,
-  appServiceScalePathUrl,
   appServicesUrl,
   appSettingsUrl,
   environmentAppsUrl,
@@ -98,7 +96,7 @@ export function AppHeader({
   );
 }
 
-const AppHeartbeatNotice = ({ id }: { id: string; serviceId: string }) => {
+const AppHeartbeatNotice = ({ id }: { id: string }) => {
   const poller = useMemo(() => pollAppOperations({ id }), [id]);
   const cancel = useMemo(() => cancelAppOpsPoll(), []);
 
@@ -111,7 +109,7 @@ const AppHeartbeatNotice = ({ id }: { id: string; serviceId: string }) => {
 };
 
 function AppPageHeader() {
-  const { id = "", serviceId = "" } = useParams();
+  const { id = "" } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setResourceStats({ id, type: "app" }));
@@ -123,7 +121,6 @@ function AppPageHeader() {
   const loaderConfig = useQuery(
     fetchConfiguration({ id: app.currentConfigurationId }),
   );
-  const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
@@ -132,34 +129,24 @@ function AppPageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
-  if (serviceId) {
-    crumbs.push({
-      name: app.handle,
-      to: appServicesUrl(app.id),
-    });
-  }
 
-  const tabs: TabItem[] = serviceId
-    ? [
-        { name: "Metrics", href: appServicePathMetricsUrl(id, serviceId) },
-        { name: "Scale", href: appServiceScalePathUrl(id, serviceId) },
-      ]
-    : [
-        { name: "Services", href: appServicesUrl(id) },
-        { name: "Endpoints", href: appEndpointsUrl(id) },
-        { name: "Activity", href: appActivityUrl(id) },
-        { name: "Configuration", href: appConfigUrl(id) },
-        { name: "CI/CD", href: appCiCdUrl(id) },
-        { name: "Settings", href: appSettingsUrl(id) },
-      ];
+  const tabs: TabItem[] = [
+    { name: "Services", href: appServicesUrl(id) },
+    { name: "Endpoints", href: appEndpointsUrl(id) },
+    { name: "Activity", href: appActivityUrl(id) },
+    { name: "Configuration", href: appConfigUrl(id) },
+    { name: "Dependencies", href: appDetailDepsUrl(id) },
+    { name: "CI/CD", href: appCiCdUrl(id) },
+    { name: "Settings", href: appSettingsUrl(id) },
+  ];
 
   return (
     <>
-      <AppHeartbeatNotice id={id} serviceId={serviceId} />
+      <AppHeartbeatNotice id={id} />
       <DetailPageHeaderView
         {...loader}
         breadcrumbs={crumbs}
-        title={serviceId ? service.processType : app.handle}
+        title={app.handle}
         detailsBox={<AppHeader app={app} isLoading={loader.isLoading} />}
         tabs={tabs}
         lastBreadcrumbTo={appDetailUrl(app.id)}

@@ -2,8 +2,17 @@ import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
 import { TextVal } from "@app/string-utils";
-import { DeployAppConfig, DeployAppConfigEnv, LinkResponse } from "@app/types";
+import {
+  DeployApp,
+  DeployAppConfig,
+  DeployAppConfigEnv,
+  DeployDatabase,
+  LinkResponse,
+} from "@app/types";
 import { parse } from "dotenv";
+import { createSelector } from "starfx/store";
+import { selectDatabasesAsList } from "../database";
+import { selectEndpointsAsList } from "../endpoint";
 
 export interface DeployConfigurationResponse {
   id: number;
@@ -79,6 +88,62 @@ export const configEnvListToEnv = (
 };
 
 export const selectAppConfigById = schema.appConfigs.selectById;
+
+export interface DepNode {
+  type: "db";
+  key: string;
+  value: string;
+  refId: string;
+}
+
+const dbRe = new RegExp(/(\d+)\.aptible\.in\:/);
+function createDepGraph(env: DeployAppConfigEnv): DepNode[] {
+  const deps: DepNode[] = [];
+  Object.keys(env).forEach((key) => {
+    const value = env[key];
+    if (typeof value !== "string") return;
+    if (value.includes("aptible.in")) {
+      const match = dbRe.exec(value);
+      if (match && match.length > 1) {
+        deps.push({ key, value, refId: match[1], type: "db" });
+      }
+    }
+  });
+  return deps;
+}
+
+export interface DepGraphDb extends DeployDatabase {
+  why: DepNode;
+}
+
+export const selectDepGraphDatabases = createSelector(
+  selectAppConfigById,
+  selectDatabasesAsList,
+  selectEndpointsAsList,
+  (config, dbs) => {
+    const graphDbs: Record<string, DepGraphDb> = {};
+    const graph = createDepGraph(config.env);
+
+    for (let i = 0; i < graph.length; i += 1) {
+      const node = graph[i];
+      const found = dbs.find((db) => {
+        if (node.type !== "db") {
+          return false;
+        }
+        return node.refId === db.id;
+      });
+      if (found) {
+        graphDbs[found.id] = { ...found, why: node };
+      }
+    }
+
+    return Object.values(graphDbs);
+  },
+);
+
+export interface DepGraphApp extends DeployApp {
+  why: DepNode;
+}
 
 export const fetchConfiguration = api.get<
   { id: string },
