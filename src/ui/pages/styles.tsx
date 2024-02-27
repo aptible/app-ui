@@ -741,16 +741,17 @@ const DetailBoxes = () => {
         Detail Boxes
       </h1>
 
-      <StackHeader stack={stack} />
+      <StackHeader stack={stack} isLoading={false} />
       <EnvHeader
         stack={stack}
         environment={env}
         endpoints={[ept]}
         stats={stats}
+        isLoading={false}
       />
-      <AppHeader app={app} />
-      <DatabaseHeader database={db} service={service} />
-      <OpHeader op={op} resourceHandle={app.handle} />
+      <AppHeader app={app} isLoading={false} />
+      <DatabaseHeader database={db} service={service} isLoading={false} />
+      <OpHeader op={op} resourceHandle={app.handle} isLoading={false} />
     </div>
   );
 };

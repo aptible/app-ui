@@ -26,12 +26,16 @@ import {
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
-export function StackHeader({ stack }: { stack: DeployStack }) {
+export function StackHeader({
+  stack,
+  isLoading,
+}: { stack: DeployStack; isLoading: boolean }) {
   const stackType = getStackType(stack);
   return (
     <DetailHeader>
       <DetailTitleBar
         title="Stack Details"
+        isLoading={isLoading}
         icon={
           <img
             alt="Stack icon"
@@ -95,7 +99,7 @@ function StackPageHeader() {
       {...loader}
       breadcrumbs={crumbs}
       title={stack.name}
-      detailsBox={<StackHeader stack={stack} />}
+      detailsBox={<StackHeader stack={stack} isLoading={loader.isLoading} />}
       tabs={tabs}
       lastBreadcrumbTo={stackDetailUrl(stack.id)}
     />

@@ -13,6 +13,7 @@ import {
   selectServiceById,
 } from "@app/deploy";
 import { CONTAINER_PROFILES } from "@app/deploy/container/utils";
+import { findLoaderComposite } from "@app/loaders";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   databaseActivityUrl,
@@ -45,9 +46,11 @@ import { AppSidebarLayout } from "./app-sidebar-layout";
 export function DatabaseHeader({
   database,
   service,
+  isLoading,
 }: {
   database: DeployDatabase;
   service: DeployService;
+  isLoading: boolean;
 }) {
   const metrics = calcMetrics([service]);
   useQuery(fetchDiskById({ id: database.diskId }));
@@ -60,6 +63,7 @@ export function DatabaseHeader({
     <DetailHeader>
       <DetailTitleBar
         title="Database Details"
+        isLoading={isLoading}
         icon={
           <img
             src={`/database-types/logo-${database.type}.png`}
@@ -114,14 +118,15 @@ function DatabasePageHeader() {
   }, []);
 
   const database = useSelector((s) => selectDatabaseById(s, { id }));
-  useQuery(fetchService({ id: database.serviceId }));
   const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
   );
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: database.environmentId }),
   );
-  const loader = useQuery(fetchDatabase({ id }));
+  const loaderDb = useQuery(fetchDatabase({ id }));
+  const loaderService = useQuery(fetchService({ id: database.serviceId }));
+  const loader = findLoaderComposite([loaderDb, loaderService]);
 
   const crumbs = [
     { name: environment.handle, to: environmentDatabasesUrl(environment.id) },
@@ -145,7 +150,13 @@ function DatabasePageHeader() {
         {...loader}
         breadcrumbs={crumbs}
         title={database ? database.handle : "Loading..."}
-        detailsBox={<DatabaseHeader database={database} service={service} />}
+        detailsBox={
+          <DatabaseHeader
+            database={database}
+            service={service}
+            isLoading={loader.isLoading}
+          />
+        }
         tabs={tabs}
         lastBreadcrumbTo={databaseDetailUrl(database.id)}
       />

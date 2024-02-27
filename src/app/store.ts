@@ -1,6 +1,6 @@
 import { bootup } from "@app/bootup";
+import { createLog } from "@app/debug";
 import {
-  API_ACTION_PREFIX,
   Callable,
   Operation,
   PERSIST_LOADER_ID,
@@ -18,6 +18,8 @@ import {
   schema,
 } from "@app/schema";
 import { rootEntities, tasks } from "./packages";
+
+const log = createLog("fx");
 
 export function setupStore({
   logs = true,
@@ -42,10 +44,10 @@ export function setupStore({
     tsks.push(function* logActions(): Operation<void> {
       while (true) {
         const action = yield* take("*");
-        if (action.type === `${API_ACTION_PREFIX}store`) {
+        if (action.type === "store") {
           continue;
         }
-        console.log(action);
+        log(action);
       }
     });
   }

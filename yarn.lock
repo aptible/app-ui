@@ -1907,7 +1907,7 @@ __metadata:
     react-dom: ^18.2.0
     react-router: ^6.16.0
     react-router-dom: ^6.16.0
-    starfx: ^0.6.0
+    starfx: ^0.7.1
     tailwindcss: ^3.3.3
     typescript: ^5.2.2
     vite: ^4.4.10
@@ -4750,9 +4750,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"starfx@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "starfx@npm:0.6.0"
+"starfx@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "starfx@npm:0.7.1"
   dependencies:
     effection: 3.0.0-beta.3
     immer: ^10.0.2
@@ -4760,7 +4760,7 @@ __metadata:
     reselect: ^4.1.8
   peerDependencies:
     react: ^18.2.0
-  checksum: 3eb007954c99fe6d14900d74e961f9b554dc40bbbd0f8e5fd61bf56f35288916d4c586c4451d813cbc03175ede2a4573ddb1f6caec9dea13843bf308b1e1ca8e
+  checksum: 6a2310d72d871bb9f93032843d7d41877291e98dfce22e466f8658db19e0a7260ba67f023fe0b16fcc7c63f6236b45d831818c4a17678fd180acf85d50d5cd67
   languageName: node
   linkType: hard
 

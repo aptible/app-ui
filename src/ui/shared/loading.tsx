@@ -1,4 +1,4 @@
-import { IconProps, IconRefresh } from "./icons";
+import { IconProps } from "./icons";
 
 export interface LoadingSpinnerProps extends IconProps {
   show?: boolean;
@@ -17,13 +17,17 @@ export const Loading = ({
 };
 
 export const LoadingSpinner = ({
-  color = "#111920",
   show = true,
-  variant = "sm",
+  className = "",
 }: LoadingSpinnerProps) => {
-  return show ? (
-    <div className="animate-spin-slow 5s">
-      <IconRefresh color={color} variant={variant} />
+  if (!show) return null;
+  return (
+    <div className={className}>
+      <img
+        alt="loading spinner"
+        src="/loader.png"
+        className="w-[20px] h-[20px] animate-spin"
+      />
     </div>
-  ) : null;
+  );
 };

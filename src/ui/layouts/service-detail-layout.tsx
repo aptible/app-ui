@@ -7,6 +7,7 @@ import {
   selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
+import { findLoaderComposite } from "@app/loaders";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
@@ -39,7 +40,13 @@ export function ServiceHeader({
   app,
   service,
   env,
-}: { app: DeployApp; service: DeployService; env: DeployEnvironment }) {
+  isLoading,
+}: {
+  app: DeployApp;
+  service: DeployService;
+  env: DeployEnvironment;
+  isLoading: boolean;
+}) {
   const metrics = calcServiceMetrics(service);
   const { totalCPU } = calcMetrics([service]);
   const [isOpen, setOpen] = useState(true);
@@ -48,6 +55,7 @@ export function ServiceHeader({
     <DetailHeader>
       <DetailTitleBar
         title="Service Details"
+        isLoading={isLoading}
         icon={
           <img
             src="/resource-types/logo-service.png"
@@ -118,13 +126,14 @@ function ServicePageHeader() {
     dispatch(setResourceStats({ id, type: "app" }));
   }, []);
 
-  const loader = useQuery(fetchApp({ id }));
-  useQuery(fetchServicesByAppId({ id: id }));
+  const loaderApp = useQuery(fetchApp({ id }));
+  const loaderServices = useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s) => selectAppById(s, { id }));
   const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
+  const loader = findLoaderComposite([loaderApp, loaderServices]);
 
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
@@ -145,7 +154,12 @@ function ServicePageHeader() {
       breadcrumbs={crumbs}
       title={serviceId ? service.processType : app.handle}
       detailsBox={
-        <ServiceHeader app={app} service={service} env={environment} />
+        <ServiceHeader
+          app={app}
+          service={service}
+          env={environment}
+          isLoading={loader.isLoading}
+        />
       }
       tabs={tabs}
       lastBreadcrumbTo={appServiceUrl(app.id, service.id)}

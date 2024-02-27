@@ -18,8 +18,9 @@ import {
 } from "@app/types";
 import { Outlet, useParams, useSearchParams } from "react-router-dom";
 
+import { findLoaderComposite } from "@app/loaders";
 import { setResourceStats } from "@app/search";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   DetailHeader,
   DetailInfoGrid,
@@ -36,16 +37,19 @@ export function EnvHeader({
   stack,
   endpoints,
   stats,
+  isLoading,
 }: {
   environment: DeployEnvironment;
   stats: DeployEnvironmentStats;
   stack: DeployStack;
   endpoints: DeployEndpoint[];
+  isLoading: boolean;
 }) {
   return (
     <DetailHeader>
       <DetailTitleBar
         title="Environment Details"
+        isLoading={isLoading}
         icon={
           <img
             src={"/resource-types/logo-environment.png"}
@@ -89,10 +93,14 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     dispatch(setResourceStats({ id, type: "environment" }));
   }, []);
 
-  const loader = useQuery(fetchEnvironmentById({ id }));
-  useQuery(fetchApps());
-  useQuery(fetchEndpointsByEnvironmentId({ id }));
+  const loaderEnv = useQuery(fetchEnvironmentById({ id }));
+  const loaderApps = useQuery(fetchApps());
+  const loaderEndpoints = useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
+  const loader = useMemo(
+    () => findLoaderComposite([loaderEnv, loaderApps, loaderEndpoints]),
+    [loaderEnv, loaderApps, loaderEndpoints],
+  );
 
   const environment = useSelector((s) => selectEnvironmentById(s, { id }));
   const stats = useSelector((s) =>
@@ -124,6 +132,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
       breadcrumbs={crumbs}
       detailsBox={
         <EnvHeader
+          isLoading={loader.isLoading}
           endpoints={endpoints}
           environment={environment}
           stack={stack}

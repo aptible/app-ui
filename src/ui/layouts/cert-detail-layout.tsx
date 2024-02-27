@@ -30,11 +30,15 @@ import {
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
-function CertHeader({ cert }: { cert: DeployCertificate }) {
+function CertHeader({
+  cert,
+  isLoading,
+}: { cert: DeployCertificate; isLoading: boolean }) {
   return (
     <DetailHeader>
       <DetailTitleBar
         title="Certificate Details"
+        isLoading={isLoading}
         icon={
           <img
             src={"/resource-types/logo-vhost.png"}
@@ -91,7 +95,7 @@ function CertPageHeader() {
       {...loader}
       breadcrumbs={crumbs}
       title={cert.commonName}
-      detailsBox={<CertHeader cert={cert} />}
+      detailsBox={<CertHeader cert={cert} isLoading={loader.isLoading} />}
       tabs={tabs}
     />
   );

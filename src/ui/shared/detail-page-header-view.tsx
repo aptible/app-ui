@@ -1,10 +1,11 @@
 import { ReactNode } from "react";
-
 import { ActionList, ActionListView } from "./action-list-view";
 import { Box } from "./box";
 import { Breadcrumbs, Crumb } from "./breadcrumbs";
 import { ButtonLinkDocs } from "./button";
+import { Group } from "./group";
 import { IconAlertTriangle } from "./icons";
+import { LoadingSpinner } from "./loading";
 import { TabItem, Tabs } from "./tabs";
 
 interface HeaderProps {
@@ -99,13 +100,20 @@ export function DetailTitleBar({
   title,
   icon,
   docsUrl = "",
-}: { title: string; icon?: JSX.Element; docsUrl?: string }) {
+  isLoading = false,
+}: {
+  title: string;
+  icon?: JSX.Element;
+  docsUrl?: string;
+  isLoading?: boolean;
+}) {
   return (
     <div className="flex justify-between items-center">
-      <div className="flex items-center">
-        {icon ? <div className="w-[32px] h-[32px] mr-3">{icon}</div> : null}
+      <Group size="sm" variant="horizontal" className="items-center">
+        {icon ? <div className="w-[32px] h-[32px]">{icon}</div> : null}
         <h1 className="text-lg text-gray-500">{title}</h1>
-      </div>
+        <LoadingSpinner show={isLoading} />
+      </Group>
 
       {docsUrl ? <ButtonLinkDocs href={docsUrl} /> : null}
     </div>

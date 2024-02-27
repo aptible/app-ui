@@ -13,6 +13,7 @@ import {
   selectLatestDeployOp,
   selectServiceById,
 } from "@app/deploy";
+import { findLoaderComposite } from "@app/loaders";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appActivityUrl,
@@ -43,7 +44,10 @@ import {
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
-export function AppHeader({ app }: { app: DeployApp }) {
+export function AppHeader({
+  app,
+  isLoading,
+}: { app: DeployApp; isLoading: boolean }) {
   const lastDeployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
@@ -60,6 +64,7 @@ export function AppHeader({ app }: { app: DeployApp }) {
     <DetailHeader>
       <DetailTitleBar
         title="App Details"
+        isLoading={isLoading}
         icon={
           <img
             src="/resource-types/logo-app.png"
@@ -112,14 +117,17 @@ function AppPageHeader() {
     dispatch(setResourceStats({ id, type: "app" }));
   }, []);
 
-  const loader = useQuery(fetchApp({ id }));
-  useQuery(fetchServicesByAppId({ id: id }));
+  const loaderApp = useQuery(fetchApp({ id }));
+  const loaderServices = useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s) => selectAppById(s, { id }));
-  useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
+  const loaderConfig = useQuery(
+    fetchConfiguration({ id: app.currentConfigurationId }),
+  );
   const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
+  const loader = findLoaderComposite([loaderApp, loaderServices, loaderConfig]);
 
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
@@ -152,7 +160,7 @@ function AppPageHeader() {
         {...loader}
         breadcrumbs={crumbs}
         title={serviceId ? service.processType : app.handle}
-        detailsBox={<AppHeader app={app} />}
+        detailsBox={<AppHeader app={app} isLoading={loader.isLoading} />}
         tabs={tabs}
         lastBreadcrumbTo={appDetailUrl(app.id)}
       />
