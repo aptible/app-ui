@@ -2,12 +2,15 @@ import { prettyDateTime } from "@app/date";
 import {
   fetchOperationById,
   getResourceUrl,
+  pollOperationById,
   prettyResourceType,
   selectOperationById,
   selectResourceNameByOperationId,
 } from "@app/deploy";
+import { findLoaderComposite } from "@app/loaders";
 import { useSelector } from "@app/react";
 import { useQuery } from "@app/react";
+import { useLoader } from "@app/react";
 import { activityUrl, operationDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { DeployOperation } from "@app/types";
@@ -77,11 +80,13 @@ function OpPageHeader() {
   const resourceHandle = useSelector((s) =>
     selectResourceNameByOperationId(s, { id: op.id }),
   );
-  const loader = useQuery(fetchOperationById({ id }));
+  const loaderOp = useQuery(fetchOperationById({ id }));
+  const pollLoader = useLoader(pollOperationById({ id: op.id }));
+  const loader = findLoaderComposite([loaderOp, pollLoader]);
 
   return (
     <DetailPageHeaderView
-      {...loader}
+      {...loaderOp}
       breadcrumbs={[{ name: "Activity", to: activityUrl() }]}
       title={`Operation: ${op.id}`}
       lastBreadcrumbTo={operationDetailUrl(op.id)}
