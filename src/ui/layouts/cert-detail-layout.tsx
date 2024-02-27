@@ -38,6 +38,7 @@ function CertHeader({
     <DetailHeader>
       <DetailTitleBar
         title="Certificate Details"
+        isLoading={isLoading}
         icon={
           <img
             src={"/resource-types/logo-vhost.png"}

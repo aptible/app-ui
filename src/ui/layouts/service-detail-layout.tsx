@@ -7,6 +7,7 @@ import {
   selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
+import { findLoaderComposite } from "@app/loaders";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
@@ -125,13 +126,14 @@ function ServicePageHeader() {
     dispatch(setResourceStats({ id, type: "app" }));
   }, []);
 
-  const loader = useQuery(fetchApp({ id }));
-  useQuery(fetchServicesByAppId({ id: id }));
+  const loaderApp = useQuery(fetchApp({ id }));
+  const loaderServices = useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s) => selectAppById(s, { id }));
   const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
+  const loader = findLoaderComposite([loaderApp, loaderServices]);
 
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },

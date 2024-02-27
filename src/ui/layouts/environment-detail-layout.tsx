@@ -18,8 +18,9 @@ import {
 } from "@app/types";
 import { Outlet, useParams, useSearchParams } from "react-router-dom";
 
+import { findLoaderComposite } from "@app/loaders";
 import { setResourceStats } from "@app/search";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   DetailHeader,
   DetailInfoGrid,
@@ -92,10 +93,14 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     dispatch(setResourceStats({ id, type: "environment" }));
   }, []);
 
-  const loader = useQuery(fetchEnvironmentById({ id }));
-  useQuery(fetchApps());
-  useQuery(fetchEndpointsByEnvironmentId({ id }));
+  const loaderEnv = useQuery(fetchEnvironmentById({ id }));
+  const loaderApps = useQuery(fetchApps());
+  const loaderEndpoints = useQuery(fetchEndpointsByEnvironmentId({ id }));
   useQuery(fetchEnvironmentOperations({ id }));
+  const loader = useMemo(
+    () => findLoaderComposite([loaderEnv, loaderApps, loaderEndpoints]),
+    [loaderEnv, loaderApps, loaderEndpoints],
+  );
 
   const environment = useSelector((s) => selectEnvironmentById(s, { id }));
   const stats = useSelector((s) =>
