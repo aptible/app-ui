@@ -12,7 +12,6 @@ import {
 import { parse } from "dotenv";
 import { createSelector } from "starfx/store";
 import { selectDatabasesAsList } from "../database";
-import { selectEndpointsAsList } from "../endpoint";
 
 export interface DeployConfigurationResponse {
   id: number;
@@ -119,7 +118,6 @@ export interface DepGraphDb extends DeployDatabase {
 export const selectDepGraphDatabases = createSelector(
   selectAppConfigById,
   selectDatabasesAsList,
-  selectEndpointsAsList,
   (config, dbs) => {
     const graphDbs: Record<string, DepGraphDb> = {};
     const graph = createDepGraph(config.env);
