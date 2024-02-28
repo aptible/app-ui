@@ -189,7 +189,7 @@ export const RoleMembershipRow = ({ role }: { role: any }) => {
     [];
   const userNames = members.map((obj) => obj.name).join(", ");
   return (
-    <div className="max-w-[50ch]">
+    <div>
       {members?.length ? userNames : "No users"}
     </div>
   );
