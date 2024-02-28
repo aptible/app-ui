@@ -188,9 +188,5 @@ export const RoleMembershipRow = ({ role }: { role: any }) => {
     useCache(fetchUsersForRole({ roleId: role.id }))?.data?._embedded?.users ||
     [];
   const userNames = members.map((obj) => obj.name).join(", ");
-  return (
-    <div>
-      {members?.length ? userNames : "No users"}
-    </div>
-  );
+  return <div>{members?.length ? userNames : "No users"}</div>;
 };
