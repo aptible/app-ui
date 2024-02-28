@@ -162,9 +162,15 @@ export const RoleTableRow = ({
       </Td>
       <Td className="min-w-[45ch] align-baseline">
         <div>
-          <Link to={roleDetailEnvironmentsUrl(role.id)}>
-            {`${numbOfEnvsWithPerms} / ${envs.length}`} Environments
-          </Link>
+          {role.type === "owner" ? (
+            "All Environments and Billing"
+          ) : role.type === "platform_owner" ? (
+            "All Environments"
+          ) : (
+            <Link to={roleDetailEnvironmentsUrl(role.id)}>
+              {`${numbOfEnvsWithPerms} / ${envs.length} Environments`}
+            </Link>
+          )}
         </div>
       </Td>
       <Td variant="right">
