@@ -2,7 +2,6 @@ import { prettyDate } from "@app/date";
 import {
   selectEnvironmentsByOrgAsList,
   selectFormattedPermissionsByRoleAndAccount,
-  selectPermsByAccountAndRole,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useCache, useDispatch, useLoader, useSelector } from "@app/react";
@@ -161,7 +160,7 @@ export const RoleTableRow = ({
       <Td className="align-baseline">
         <RoleMembershipRow role={role} />
       </Td>
-      <Td className="min-w-[75ch] align-baseline">
+      <Td className="min-w-[45ch] align-baseline">
         <div>
           <Link to={roleDetailEnvironmentsUrl(role.id)}>
             {`${numbOfEnvsWithPerms} / ${envs.length}`} Environments
@@ -184,73 +183,8 @@ export const RoleMembershipRow = ({ role }: { role: any }) => {
     [];
   const userNames = members.map((obj) => obj.name).join(", ");
   return (
-    <div className="max-w-[40ch]">
+    <div className="max-w-[50ch]">
       {members?.length ? userNames : "No users"}
-    </div>
-  );
-};
-
-export const RoleEnvironmentRow = ({
-  env,
-  role,
-  envHandle,
-}: { env: any; role: any; envHandle: string }) => {
-  const perms = env;
-
-  const permSet = {
-    admin: "Environment Admin",
-    read: "Full Visibility",
-    basic_read: "Basic Visibility",
-    deploy: "Deployment",
-    destroy: "Destruction",
-    observability: "Ops",
-    sensitive: "Sensitive Access",
-    tunnel: "Tunnel",
-  };
-
-  const objectNames = perms
-    .map((obj: { scope: string }) => permSet[obj.scope as keyof typeof permSet])
-    .join(", ");
-
-  return (
-    <div className="text-black mb-2 pb-2 border-b border-gray-200 last:border-0 last:mb-0">
-      {env.handle || envHandle}
-      <div className="text-gray-500 text-sm">
-        {perms.length ? <div>{objectNames}</div> : "No Access"}
-      </div>
-    </div>
-  );
-};
-export const AllRoleEnvironmentRow = ({
-  env,
-  role,
-}: { env: any; role: any }) => {
-  const roleId = role.id;
-  const perms = useSelector((s) =>
-    selectPermsByAccountAndRole(s, { envId: env.id, roleId }),
-  );
-
-  const permSet = {
-    admin: "Environment Admin",
-    read: "Full Visibility",
-    basic_read: "Basic Visibility",
-    deploy: "Deployment",
-    destroy: "Destruction",
-    observability: "Ops",
-    sensitive: "Sensitive Access",
-    tunnel: "Tunnel",
-  };
-
-  const objectNames = perms
-    .map((obj) => permSet[obj.scope as keyof typeof permSet])
-    .join(", ");
-
-  return (
-    <div className="text-black mb-2 pb-2 border-b border-gray-200 last:border-0 last:mb-0">
-      {env.handle}
-      <div className="text-gray-500 text-sm">
-        {perms.length ? <div>{objectNames}</div> : "No Access"}
-      </div>
     </div>
   );
 };
