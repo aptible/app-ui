@@ -1,20 +1,19 @@
 import { prettyDate } from "@app/date";
 import {
-  selectAllPermissions,
   selectEnvironmentsByOrgAsList,
+  selectFormattedPermissionsByRoleAndAccount,
   selectPermsByAccountAndRole,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useCache, useDispatch, useLoader, useSelector } from "@app/react";
 import { createRoleForOrg, selectRolesByOrgIdWithSearch } from "@app/roles";
 import { fetchUsersForRole } from "@app/roles";
-import { roleDetailUrl } from "@app/routes";
-import { useEffect, useState } from "react";
+import { roleDetailEnvironmentsUrl, roleDetailUrl } from "@app/routes";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   BannerMessages,
   Box,
-  Button,
   ButtonLink,
   ButtonOrgOwner,
   FormGroup,
@@ -77,58 +76,11 @@ export const TeamRolesPage = () => {
     selectRolesByOrgIdWithSearch(s, { orgId, search }),
   );
   const allEnvs = useSelector(selectEnvironmentsByOrgAsList);
-  const allPerms = useSelector(selectAllPermissions);
 
-  const allEnvsObj = allEnvs.reduce<{ [key: string]: { [key: string]: any } }>(
-    (acc, env) => {
-      const retObj: { [key: string]: any } = { ...acc };
-
-      if (!retObj[env.id]) retObj[env.id] = env;
-
-      return retObj;
-    },
-    {},
+  const perms = useSelector((s) =>
+    selectFormattedPermissionsByRoleAndAccount(s, { envs: allEnvs }),
   );
 
-  const permsByRoleId = allPerms.reduce<{
-    [key: string]: { [key: string]: any };
-  }>((acc, perm) => {
-    const retObj: { [key: string]: any } = { ...acc };
-
-    if (!retObj[perm.roleId]) retObj[perm.roleId] = {};
-
-    if (!retObj[perm.roleId][perm.environmentId]) {
-      retObj[perm.roleId][perm.environmentId] = [
-        { ...perm, handle: allEnvsObj[perm.environmentId].handle },
-      ];
-    } else if (retObj[perm.roleId][perm.environmentId]) {
-      retObj[perm.roleId][perm.environmentId] = [
-        ...retObj[perm.roleId][perm.environmentId],
-        perm,
-      ];
-    }
-
-    return retObj;
-  }, {});
-
-  const initialAccordionState = roles.reduce<{ [key: string]: boolean }>(
-    (acc, role) => {
-      acc[role.id] = false;
-      return acc;
-    },
-    {},
-  );
-
-  useEffect(() => {
-    setRolesOpen(initialAccordionState);
-  }, [roles]);
-
-  interface RolesOpenState {
-    [key: string]: boolean;
-  }
-
-  const [rolesOpen, setRolesOpen] = useState<RolesOpenState>({});
-  const [allEnvOpen, setAllEnvOpen] = useState<RolesOpenState>({});
   return (
     <Group>
       <TitleBar description="Roles define the level of access users have within your team">
@@ -150,161 +102,78 @@ export const TeamRolesPage = () => {
         <THead>
           <Td>Role</Td>
           <Td>Members</Td>
-          <Td>Environments and Permissions</Td>
+          <Td>Environments with permissions</Td>
           <Td variant="right">Actions</Td>
         </THead>
 
         <TBody>
           {roles.map((role) => {
-            const numbOfEnvsWithPerms = permsByRoleId[role.id]
-              ? Object.keys(permsByRoleId[role.id]).length
-              : 0;
-            const environmentsWithPerms = permsByRoleId[role.id];
-
-            let defaultPill = false;
-            if (
-              role.type === "owner" ||
-              role.type === "platform_owner" ||
-              role.type === "compliance_owner"
-            ) {
-              defaultPill = true;
-            }
             return (
-              <Tr key={role.id}>
-                <Td className="align-baseline">
-                  <Link
-                    className={`${tokens.type["table link"]}`}
-                    to={roleDetailUrl(role.id)}
-                  >
-                    <span className="text-base font-semibold">{role.name}</span>
-                  </Link>
-                  <div className="text-gray-500 text-sm">
-                    Created: {prettyDate(role.createdAt)}
-                  </div>
-                  {defaultPill ? (
-                    <Pill variant="progress">Default</Pill>
-                  ) : (
-                    <Pill>Custom</Pill>
-                  )}
-                </Td>
-                <Td className="align-baseline">
-                  <RoleMembershipRow role={role} />
-                </Td>
-                <Td className="min-w-[75ch] align-baseline">
-                  <div>
-                    <div className="mb-2">
-                      {`${numbOfEnvsWithPerms} / ${allEnvs.length}`}{" "}
-                      Environments
-                    </div>
-                    <Button
-                      className="mb-4"
-                      variant="white"
-                      size="sm"
-                      onClick={() => {
-                        setRolesOpen({});
-                        setAllEnvOpen({
-                          ...allEnvOpen,
-                          [role.id]: !allEnvOpen[role.id],
-                        });
-                      }}
-                    >
-                      {allEnvOpen[role.id] ? "Hide All" : "Show All"}
-                    </Button>
-
-                    {/* Leaving functionality for this in just incase we want to reuse this */}
-                    {/* {environmentsWithPerms && (
-                      <Button
-                        variant="white"
-                        size="sm"
-                        onClick={() => {
-                          setAllEnvOpen({});
-                          setRolesOpen({
-                            ...rolesOpen,
-                            [role.id]: !rolesOpen[role.id],
-                          });
-                        }}
-                      >
-                        {rolesOpen[role.id]
-                          ? "Hide Permissions"
-                          : "Show Permissions"}
-                      </Button>
-                    )} */}
-
-                    {allEnvOpen[role.id]
-                      ? allEnvs
-                          .sort((a, b) => {
-                            if (!environmentsWithPerms) return 0;
-
-                            if (
-                              environmentsWithPerms[a.id] &&
-                              !environmentsWithPerms[b.id]
-                            )
-                              return -1;
-                            if (
-                              environmentsWithPerms[b.id] &&
-                              !environmentsWithPerms[a.id]
-                            )
-                              return 1;
-                            if (
-                              environmentsWithPerms[a.id] &&
-                              environmentsWithPerms[b.id]
-                            )
-                              return 0;
-
-                            if (
-                              environmentsWithPerms[a.id]?.length >
-                              environmentsWithPerms[b.id]?.length
-                            )
-                              return -1;
-                            if (
-                              environmentsWithPerms[a.id]?.length <
-                              environmentsWithPerms[b.id]?.length
-                            )
-                              return 1;
-                            if (
-                              environmentsWithPerms[a.id]?.length ===
-                              environmentsWithPerms[b.id]?.length
-                            )
-                              return 0;
-
-                            return 0;
-                          })
-                          .map((env) => {
-                            return (
-                              <AllRoleEnvironmentRow
-                                env={env}
-                                role={role}
-                                key={env.id}
-                              />
-                            );
-                          })
-                      : null}
-
-                    {rolesOpen[role.id] && environmentsWithPerms
-                      ? Object.keys(environmentsWithPerms).map((env) => {
-                          return (
-                            <RoleEnvironmentRow
-                              env={environmentsWithPerms[env]}
-                              envHandle={environmentsWithPerms[env][0].handle}
-                              role={role}
-                              key={env}
-                            />
-                          );
-                        })
-                      : null}
-                  </div>
-                </Td>
-                <Td variant="right">
-                  <ButtonLink to={roleDetailUrl(role.id)} size="sm">
-                    Edit
-                  </ButtonLink>
-                </Td>
-              </Tr>
+              <RoleTableRow
+                role={role}
+                perms={perms}
+                envs={allEnvs}
+                key={role.id}
+              />
             );
           })}
         </TBody>
       </Table>
     </Group>
+  );
+};
+
+export const RoleTableRow = ({
+  role,
+  perms,
+  envs,
+}: { role: any; perms: any; envs: any }) => {
+  const numbOfEnvsWithPerms = perms[role.id]
+    ? Object.keys(perms[role.id]).length
+    : 0;
+
+  let defaultPill = false;
+  if (
+    role.type === "owner" ||
+    role.type === "platform_owner" ||
+    role.type === "compliance_owner"
+  ) {
+    defaultPill = true;
+  }
+  return (
+    <Tr key={role.id}>
+      <Td className="align-baseline">
+        <Link
+          className={`${tokens.type["table link"]}`}
+          to={roleDetailUrl(role.id)}
+        >
+          <span className="text-base font-semibold">{role.name}</span>
+        </Link>
+        <div className="text-gray-500 text-sm">
+          Created: {prettyDate(role.createdAt)}
+        </div>
+        {defaultPill ? (
+          <Pill variant="progress">Default</Pill>
+        ) : (
+          <Pill>Custom</Pill>
+        )}
+      </Td>
+      <Td className="align-baseline">
+        <RoleMembershipRow role={role} />
+      </Td>
+      <Td className="min-w-[75ch] align-baseline">
+        <div>
+          <Link to={roleDetailEnvironmentsUrl(role.id)}>
+            {`${numbOfEnvsWithPerms} / ${envs.length}`} Environments
+          </Link>
+        </div>
+      </Td>
+      <Td variant="right">
+        <ButtonLink to={roleDetailUrl(role.id)} size="sm">
+          Edit
+        </ButtonLink>
+      </Td>
+    </Tr>
   );
 };
 

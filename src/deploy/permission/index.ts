@@ -123,9 +123,42 @@ export const selectPermsByAccount = createSelector(
   },
 );
 
+export const selectFormattedPermissionsByRoleAndAccount = createSelector(
+  selectPermissionsAsList,
+  (_: WebState, p: { envs: any }) => p.envs,
+  (perms, envs) => {
+    const allEnvsObj = envs.reduce((acc: any, env: any) => {
+      const retObj: { [key: string]: any } = { ...acc };
+      if (!retObj[env.id]) retObj[env.id] = env;
+      return retObj;
+    }, {});
+
+    const permsByRoleId = perms.reduce<{
+      [key: string]: { [key: string]: any };
+    }>((acc, perm) => {
+      const retObj: { [key: string]: any } = { ...acc };
+      if (!retObj[perm.roleId]) retObj[perm.roleId] = {};
+      if (!retObj[perm.roleId][perm.environmentId]) {
+        retObj[perm.roleId][perm.environmentId] = [
+          { ...perm, handle: allEnvsObj[perm.environmentId].handle },
+        ];
+      } else if (retObj[perm.roleId][perm.environmentId]) {
+        retObj[perm.roleId][perm.environmentId] = [
+          ...retObj[perm.roleId][perm.environmentId],
+          perm,
+        ];
+      }
+
+      return retObj;
+    }, {});
+
+    return permsByRoleId;
+  },
+);
+
 export const selectPermsByAccountAndRole = createSelector(
   selectPermsByAccount,
-  (_: WebState, p: { roleId: string }) => p.roleId,
+  (_: WebState, p: { roleId: any }) => p.roleId,
   (perms, roleId) => perms.filter((p) => p.roleId === roleId),
 );
 
