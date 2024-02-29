@@ -47,7 +47,7 @@ const selectActivityForTable = createSelector(
           const db = findDatabaseById(dbs, { id: op.resourceId });
           resourceHandle =
             op.diskSize && op.containerSize
-              ? `${db.handle} (${op.diskSize} MB Disk - ${op.containerSize} MB Memory)`
+              ? `${db.handle} (${op.diskSize} GB Disk - ${op.containerSize} MB Memory)`
               : db.handle;
         } else if (op.resourceType === "service") {
           const service = findServiceById(services, { id: op.resourceId });
