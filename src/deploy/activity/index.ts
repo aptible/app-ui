@@ -47,7 +47,7 @@ const selectActivityForTable = createSelector(
           const db = findDatabaseById(dbs, { id: op.resourceId });
           resourceHandle =
             op.diskSize && op.containerSize
-              ? `${db.handle} (${op.diskSize} GB Disk - ${op.containerSize} GB Memory)`
+              ? `${db.handle} (${op.diskSize} GB Disk - ${op.containerSize} MB Memory)`
               : db.handle;
         } else if (op.resourceType === "service") {
           const service = findServiceById(services, { id: op.resourceId });
@@ -60,7 +60,7 @@ const selectActivityForTable = createSelector(
           }
           resourceHandle =
             op.containerCount && op.containerSize
-              ? `${service.processType} (${op.containerCount} Container(s) - ${op.containerSize} GB Memory)`
+              ? `${service.processType} (${op.containerCount} Container(s) - ${op.containerSize} MB Memory)`
               : service.processType;
           return { ...op, envHandle: env.handle, resourceHandle, url };
         } else if (op.resourceType === "log_drain") {
