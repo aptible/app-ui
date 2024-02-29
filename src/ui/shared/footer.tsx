@@ -1,5 +1,5 @@
 import { SyntheticEvent, useState } from "react";
-import { IconChevronDown, IconChevronUp, IconExternalLink } from "./icons";
+import { IconExternalLink } from "./icons";
 
 export const Footer = () => {
   return (
