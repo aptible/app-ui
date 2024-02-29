@@ -146,6 +146,8 @@ export interface DeployStack extends Timestamps {
   allowGranularContainerSizes: boolean;
   verticalAutoscaling: boolean;
   organizationId: string;
+  internalDomain: string;
+  defaultDomain: string;
 }
 
 export type OperationStatus =
