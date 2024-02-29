@@ -31,6 +31,8 @@ export interface DeployStackResponse {
   allow_r_instance_profile: boolean;
   allow_granular_container_sizes: boolean;
   vertical_autoscaling: boolean;
+  internal_domain: string;
+  default_domain: string;
   _links: {
     organization: LinkResponse;
   };
@@ -60,6 +62,8 @@ export const defaultStackResponse = (
     allow_t_instance_profile: true,
     allow_granular_container_sizes: true,
     vertical_autoscaling: false,
+    internal_domain: "aptible.in",
+    default_domain: "on-aptible.com",
     _links: { organization: { href: "" } },
     _type: "stack",
     ...s,
@@ -89,6 +93,8 @@ export const deserializeDeployStack = (
     allowGranularContainerSizes: payload.allow_granular_container_sizes,
     verticalAutoscaling: payload.vertical_autoscaling,
     organizationId: extractIdFromLink(payload._links.organization),
+    internalDomain: payload.internal_domain,
+    defaultDomain: payload.default_domain,
   };
 };
 

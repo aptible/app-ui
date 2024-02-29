@@ -2,12 +2,16 @@ import {
   CreateEndpointProps,
   EndpointManagedType,
   fetchApp,
+  fetchEnvironmentById,
   fetchImageById,
+  fetchStack,
   getContainerPort,
   parseIpStr,
   provisionEndpoint,
   selectAppById,
+  selectEnvironmentById,
   selectImageById,
+  selectStackById,
 } from "@app/deploy";
 import {
   useDispatch,
@@ -69,10 +73,16 @@ export const AppCreateEndpointPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
   const app = useSelector((s) => selectAppById(s, { id }));
+  useQuery(fetchImageById({ id: app.currentImageId }));
   const image = useSelector((s) =>
     selectImageById(s, { id: app.currentImageId }),
   );
-  useQuery(fetchImageById({ id: app.currentImageId }));
+  useQuery(fetchEnvironmentById({ id: app.environmentId }));
+  const env = useSelector((s) =>
+    selectEnvironmentById(s, { id: app.environmentId }),
+  );
+  useQuery(fetchStack({ id: env.stackId }));
+  const stack = useSelector((s) => selectStackById(s, { id: env.stackId }));
 
   const [serviceId, setServiceId] = useState("");
   const [port, setPort] = useState("");
@@ -148,7 +158,7 @@ export const AppCreateEndpointPage = () => {
 
   const options: SelectOption[] = [
     {
-      label: `Use app-${app.id}.on-aptible.com default endpoint`,
+      label: `Use app-${app.id}.${stack.defaultDomain} default endpoint`,
       value: "default",
     },
     { label: "Use a custom domain with Managed HTTPS", value: "managed" },
