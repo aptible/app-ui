@@ -1,4 +1,3 @@
-import { SyntheticEvent, useState } from "react";
 import { IconExternalLink } from "./icons";
 
 export const Footer = () => {
