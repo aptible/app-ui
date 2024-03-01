@@ -23,8 +23,18 @@ import {
   IconInfo,
   TabItem,
   Tooltip,
+  getStackImg,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
+
+const getStackTitle = (stack: DeployStack) => {
+  const stackType = getStackType(stack);
+  if (stackType === "self_hosted") {
+    return `${capitalize(stackType)} (${stack.awsAccountId})`;
+  }
+
+  return capitalize(stackType);
+};
 
 export function StackHeader({
   stack,
@@ -36,16 +46,7 @@ export function StackHeader({
       <DetailTitleBar
         title="Stack Details"
         isLoading={isLoading}
-        icon={
-          <img
-            alt="Stack icon"
-            src={
-              stackType === "dedicated"
-                ? "/resource-types/logo-dedicated-stack.png"
-                : "/resource-types/logo-stack.png"
-            }
-          />
-        }
+        icon={<img alt="Stack icon" src={getStackImg(stackType)} />}
         docsUrl="https://aptible.com/docs/stacks"
       />
 
@@ -54,7 +55,7 @@ export function StackHeader({
         <DetailInfoItem title="Memory Management">
           {stack.memoryLimits ? "Enabled" : "Disabled"}
         </DetailInfoItem>
-        <DetailInfoItem title="Tenancy">{capitalize(stackType)}</DetailInfoItem>
+        <DetailInfoItem title="Tenancy">{getStackTitle(stack)}</DetailInfoItem>
         <DetailInfoItem title="">
           <Tooltip text="When sharing outbound IP addresses with vendors/partners for whitelisting, make sure to add all the provided IP addresses to the whitelist.">
             <IconInfo

@@ -33,6 +33,8 @@ export interface DeployStackResponse {
   vertical_autoscaling: boolean;
   internal_domain: string;
   default_domain: string;
+  self_hosted: boolean;
+  aws_account_id: string;
   _links: {
     organization: LinkResponse;
   };
@@ -64,6 +66,8 @@ export const defaultStackResponse = (
     vertical_autoscaling: false,
     internal_domain: "aptible.in",
     default_domain: "on-aptible.com",
+    self_hosted: false,
+    aws_account_id: "",
     _links: { organization: { href: "" } },
     _type: "stack",
     ...s,
@@ -95,6 +99,8 @@ export const deserializeDeployStack = (
     organizationId: extractIdFromLink(payload._links.organization),
     internalDomain: payload.internal_domain,
     defaultDomain: payload.default_domain,
+    selfHosted: payload.self_hosted,
+    awsAccountId: payload.aws_account_id,
   };
 };
 
@@ -158,7 +164,7 @@ export const selectDefaultStack = createSelector(
   },
 );
 
-export type StackType = "shared" | "dedicated";
+export type StackType = "shared" | "dedicated" | "self_hosted";
 /*
  * A stack with no organization id could be a coordinator or a shared stack
  * A stack with public set to true could be a shared stack, but is never a coordinator
@@ -170,6 +176,9 @@ export type StackType = "shared" | "dedicated";
  *  - Stacks that have no org id and are not public, but you have an account on
  */
 export const getStackType = (stack: DeployStack): StackType => {
+  if (stack.selfHosted) {
+    return "self_hosted";
+  }
   return stack.organizationId === "" ? "shared" : "dedicated";
 };
 
