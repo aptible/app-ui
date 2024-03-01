@@ -12,6 +12,7 @@ import {
 import { parse } from "dotenv";
 import { createSelector } from "starfx/store";
 import { selectDatabasesAsList } from "../database";
+import { selectStackByAppId } from "..";
 
 export interface DeployConfigurationResponse {
   id: number;
@@ -95,17 +96,14 @@ export interface DepNode {
   refId: string;
 }
 
-const dbRe = new RegExp(/(\d+)\.aptible\.in\:/);
-function createDepGraph(env: DeployAppConfigEnv): DepNode[] {
+function createDepGraph(env: DeployAppConfigEnv, aptibleDbRe: RegExp): DepNode[] {
   const deps: DepNode[] = [];
   Object.keys(env).forEach((key) => {
     const value = env[key];
     if (typeof value !== "string") return;
-    if (value.includes("aptible.in")) {
-      const match = dbRe.exec(value);
-      if (match && match.length > 1) {
-        deps.push({ key, value, refId: match[1], type: "db" });
-      }
+    const match = aptibleDbRe.exec(value);
+    if (match && match.length > 1) {
+      deps.push({ key, value, refId: match[1], type: "db" });
     }
   });
   return deps;
@@ -116,11 +114,13 @@ export interface DepGraphDb extends DeployDatabase {
 }
 
 export const selectDepGraphDatabases = createSelector(
+  selectStackByAppId,
   selectAppConfigById,
   selectDatabasesAsList,
-  (config, dbs) => {
+  (stack, config, dbs) => {
     const graphDbs: Record<string, DepGraphDb> = {};
-    const graph = createDepGraph(config.env);
+    const dbRe = new RegExp(/(\d+)\.aptible\.in\:/);
+    const graph = createDepGraph(config.env, dbRe);
 
     for (let i = 0; i < graph.length; i += 1) {
       const node = graph[i];

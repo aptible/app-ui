@@ -12,6 +12,7 @@ import type {
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
+import { findStackById, selectStacks } from "..";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -261,6 +262,22 @@ export const fetchApps = api.get(
       return;
     }
     yield* schema.update(schema.apps.reset());
+  },
+);
+
+export const selectEnvironmentByAppId = createSelector(
+  selectEnvironments,
+  selectAppById,
+  (envs, app) => {
+    return findEnvById(envs, { id: app.environmentId });
+  },
+);
+
+export const selectStackByAppId = createSelector(
+  selectStacks,
+  selectEnvironmentByAppId,
+  (stacks, env) => {
+    return findStackById(stacks, { id: env.stackId });
   },
 );
 

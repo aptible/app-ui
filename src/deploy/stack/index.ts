@@ -98,6 +98,7 @@ export const deserializeDeployStack = (
   };
 };
 
+export const findStackById = schema.stacks.findById;
 export const selectStackById = schema.stacks.selectById;
 export const selectStacks = schema.stacks.selectTable;
 const selectStacksAsList = createSelector(
