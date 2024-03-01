@@ -13,9 +13,7 @@ export const AppDetailDepsPage = () => {
   useQuery(fetchApp({ id }));
   const app = useSelector((s) => selectAppById(s, { id }));
   useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
-  const dbs = useSelector((s) =>
-    selectDepGraphDatabases(s, { id: app.currentConfigurationId }),
-  );
+  const dbs = useSelector((s) => selectDepGraphDatabases(s, { id: app.id }));
 
   return (
     <Group>

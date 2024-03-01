@@ -1,7 +1,7 @@
 import { api } from "@app/api";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
-import { TextVal } from "@app/string-utils";
+import { TextVal, escapeRegExp } from "@app/string-utils";
 import {
   DeployApp,
   DeployAppConfig,
@@ -11,8 +11,8 @@ import {
 } from "@app/types";
 import { parse } from "dotenv";
 import { createSelector } from "starfx/store";
+import { selectAppById, selectStackByAppId } from "../app";
 import { selectDatabasesAsList } from "../database";
-import { selectStackByAppId } from "..";
 
 export interface DeployConfigurationResponse {
   id: number;
@@ -89,6 +89,13 @@ export const configEnvListToEnv = (
 
 export const selectAppConfigById = schema.appConfigs.selectById;
 
+export const selectAppConfigByAppId = createSelector(
+  schema.appConfigs.selectTable,
+  selectAppById,
+  (configs, app) =>
+    schema.appConfigs.findById(configs, { id: app.currentConfigurationId }),
+);
+
 export interface DepNode {
   type: "db";
   key: string;
@@ -96,7 +103,10 @@ export interface DepNode {
   refId: string;
 }
 
-function createDepGraph(env: DeployAppConfigEnv, aptibleDbRe: RegExp): DepNode[] {
+function createDepGraph(
+  env: DeployAppConfigEnv,
+  aptibleDbRe: RegExp,
+): DepNode[] {
   const deps: DepNode[] = [];
   Object.keys(env).forEach((key) => {
     const value = env[key];
@@ -115,11 +125,12 @@ export interface DepGraphDb extends DeployDatabase {
 
 export const selectDepGraphDatabases = createSelector(
   selectStackByAppId,
-  selectAppConfigById,
+  selectAppConfigByAppId,
   selectDatabasesAsList,
   (stack, config, dbs) => {
     const graphDbs: Record<string, DepGraphDb> = {};
-    const dbRe = new RegExp(/(\d+)\.aptible\.in\:/);
+    const domain = escapeRegExp(stack.internalDomain);
+    const dbRe = new RegExp(`(\\d+)\\.${domain}\\:`);
     const graph = createDepGraph(config.env, dbRe);
 
     for (let i = 0; i < graph.length; i += 1) {

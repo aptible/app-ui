@@ -12,7 +12,6 @@ import type {
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
-import { findStackById, selectStacks } from "..";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -26,6 +25,7 @@ import {
   selectOperationsAsList,
   waitForOperation,
 } from "../operation";
+import { findStackById, selectStacks } from "../stack";
 
 export * from "./utils";
 
