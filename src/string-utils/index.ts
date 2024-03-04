@@ -60,6 +60,11 @@ export interface ValidatorError {
   message: string;
 }
 
+// https://stackoverflow.com/a/6969486
+export function escapeRegExp(str: string) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 const stripQuote = (value: string) => {
   let str = value;
   if (str.startsWith('"') || str.startsWith("'")) {

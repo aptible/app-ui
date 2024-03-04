@@ -1,5 +1,6 @@
 import { prettyDateTime } from "@app/date";
 import {
+  DepGraphDb,
   calcMetrics,
   fetchDatabaseImages,
   fetchDatabases,
@@ -28,6 +29,7 @@ import type { DeployDatabase } from "@app/types";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { usePaginate } from "../../hooks";
 import { Button, ButtonCreate } from "../button";
+import { Code } from "../code";
 import { Group } from "../group";
 import { IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -43,6 +45,7 @@ import {
 import { EnvStackCell } from "../resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
 interface DatabaseCellProps {
   database: DeployDatabase;
@@ -302,5 +305,44 @@ export const DatabaseListByEnvironment = ({
         </TBody>
       </Table>
     </Group>
+  );
+};
+
+export const DatabaseListByDatabases = ({
+  databases,
+}: {
+  databases: DepGraphDb[];
+}) => {
+  return (
+    <Table>
+      <THead>
+        <Th>Handle</Th>
+        <Th>ID</Th>
+        <Th>Environment</Th>
+        <Th>Disk Size</Th>
+        <Th>Container Size</Th>
+        <Th>Est. Monthly Cost</Th>
+        <Th>Reason</Th>
+      </THead>
+
+      <TBody>
+        {databases.length === 0 ? <EmptyTr colSpan={6} /> : null}
+        {databases.map((db) => (
+          <Tr key={db.id}>
+            <DatabasePrimaryCell database={db} />
+            <DatabaseIdCell database={db} />
+            <EnvStackCell environmentId={db.environmentId} />
+            <DatabaseDiskSizeCell database={db} />
+            <DatabaseContainerSizeCell database={db} />
+            <DatabaseCostCell database={db} />
+            <Td>
+              <Tooltip variant="left" text={db.why.value} fluid>
+                <Code>{db.why.key}</Code>
+              </Tooltip>
+            </Td>
+          </Tr>
+        ))}
+      </TBody>
+    </Table>
   );
 };
