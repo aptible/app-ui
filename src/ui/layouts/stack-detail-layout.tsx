@@ -27,7 +27,7 @@ import {
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
-const getStackTitle = (stack: DeployStack) => {
+const getStackTypeTitle = (stack: DeployStack) => {
   const stackType = getStackType(stack);
   if (stackType === "self_hosted") {
     return `${capitalize(stackType)} (${stack.awsAccountId})`;
@@ -55,7 +55,9 @@ export function StackHeader({
         <DetailInfoItem title="Memory Management">
           {stack.memoryLimits ? "Enabled" : "Disabled"}
         </DetailInfoItem>
-        <DetailInfoItem title="Tenancy">{getStackTitle(stack)}</DetailInfoItem>
+        <DetailInfoItem title="Tenancy">
+          {getStackTypeTitle(stack)}
+        </DetailInfoItem>
         <DetailInfoItem title="">
           <Tooltip text="When sharing outbound IP addresses with vendors/partners for whitelisting, make sure to add all the provided IP addresses to the whitelist.">
             <IconInfo
