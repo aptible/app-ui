@@ -30,7 +30,7 @@ import { AppSidebarLayout } from "./app-sidebar-layout";
 const getStackTypeTitle = (stack: DeployStack) => {
   const stackType = getStackType(stack);
   if (stackType === "self_hosted") {
-    return `${capitalize(stackType)} (${stack.awsAccountId})`;
+    return `Self-Hosted (${stack.awsAccountId})`;
   }
 
   return capitalize(stackType);
