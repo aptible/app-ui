@@ -10,12 +10,12 @@ import {
   Role,
   U2fDevice,
 } from "@app/types";
-import { createSchema, slice } from "starfx/store";
+import { createSchema, slice } from "starfx";
 import * as factory from "./factory";
 
 export const [schema, initialState] = createSchema({
   cache: slice.table(),
-  loaders: slice.loader<any>(),
+  loaders: slice.loaders<any>(),
   env: slice.obj(factory.defaultConfig()),
   feedback: slice.obj<Feedback>({
     preDeploySurveyAnswered: false,

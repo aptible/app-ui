@@ -10,7 +10,6 @@ import {
   put,
   race,
   select,
-  storeMdw,
   takeEvery,
   timer,
 } from "@app/fx";
@@ -72,7 +71,7 @@ function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   }
 }
 
-export const thunkLoader = storeMdw.loader(schema.loaders);
+export const thunkLoader = mdw.loader(schema);
 
 function* debugMdw(ctx: ThunkCtx, next: Next) {
   log(`${ctx.name}`, ctx);
@@ -86,7 +85,7 @@ thunks.use(function* (ctx, next) {
   ctx.json = null;
   yield* next();
 });
-thunks.use(storeMdw.actions);
+thunks.use(mdw.actions);
 thunks.use(thunks.routes());
 
 export const resetToken = thunks.create("reset-token", function* (_, next) {
@@ -243,7 +242,7 @@ function* aborter(ctx: ApiCtx, next: Next) {
     signal: signal.signal,
   });
 
-  yield* race({ next, aborted });
+  yield* race([call(next), call(aborted)]);
 }
 
 const MS = 1000;
@@ -260,8 +259,7 @@ export const api = createApi<DeployApiCtx>(
 api.use(debugMdw);
 api.use(sentryErrorHandler);
 api.use(expiredToken);
-api.use(storeMdw.store(schema));
-api.use(mdw.api());
+api.use(mdw.api({ schema }));
 api.use(aborter);
 api.use(requestApi);
 api.use(halEntityParser);
@@ -275,8 +273,7 @@ export const authApi = createApi<AuthApiCtx>(
 authApi.use(debugMdw);
 authApi.use(sentryErrorHandler);
 authApi.use(expiredToken);
-authApi.use(storeMdw.store(schema));
-authApi.use(mdw.api());
+authApi.use(mdw.api({ schema }));
 authApi.use(aborter);
 authApi.use(halEntityParser);
 authApi.use(authApi.routes());
@@ -291,8 +288,7 @@ export const billingApi = createApi<DeployApiCtx>(
 billingApi.use(debugMdw);
 billingApi.use(sentryErrorHandler);
 billingApi.use(expiredToken);
-billingApi.use(storeMdw.store(schema));
-billingApi.use(mdw.api());
+billingApi.use(mdw.api({ schema }));
 billingApi.use(aborter);
 billingApi.use(halEntityParser);
 billingApi.use(billingApi.routes());
@@ -306,8 +302,7 @@ export const metricTunnelApi = createApi<MetricTunnelCtx>(
 metricTunnelApi.use(debugMdw);
 metricTunnelApi.use(sentryErrorHandler);
 metricTunnelApi.use(expiredToken);
-metricTunnelApi.use(storeMdw.store(schema));
-metricTunnelApi.use(mdw.api());
+metricTunnelApi.use(mdw.api({ schema }));
 metricTunnelApi.use(aborter);
 metricTunnelApi.use(metricTunnelApi.routes());
 metricTunnelApi.use(requestMetricTunnel);
