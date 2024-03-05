@@ -6,7 +6,13 @@ import {
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { useParams } from "react-router";
-import { DatabaseListByDatabases, Group, tokens } from "../shared";
+import {
+  Banner,
+  DatabaseListByDatabases,
+  Group,
+  PermissionGate,
+  tokens,
+} from "../shared";
 
 export const AppDetailDepsPage = () => {
   const { id = "" } = useParams();
@@ -16,9 +22,15 @@ export const AppDetailDepsPage = () => {
   const dbs = useSelector((s) => selectDepGraphDatabases(s, { id: app.id }));
 
   return (
-    <Group>
-      <h3 className={tokens.type.h3}>Databases</h3>
-      <DatabaseListByDatabases databases={dbs} />
-    </Group>
+    <PermissionGate scope="read" envId={app.environmentId}>
+      <Group>
+        <Banner variant="info">
+          BETA - Dependencies are database connections derived from
+          configuration data (environment variables).
+        </Banner>
+        <h3 className={tokens.type.h3}>Databases</h3>
+        <DatabaseListByDatabases databases={dbs} />
+      </Group>
+    </PermissionGate>
   );
 };
