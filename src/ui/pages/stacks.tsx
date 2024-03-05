@@ -1,6 +1,6 @@
 import {
   fetchStacks,
-  getStackType,
+  getStackTypeTitle,
   selectAppsCountByStack,
   selectDatabasesCountByStack,
   selectEnvironmentsCountByStack,
@@ -8,7 +8,6 @@ import {
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { createStackUrl } from "@app/routes";
-import { capitalize } from "@app/string-utils";
 import { DeployStack } from "@app/types";
 import { useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks";
@@ -43,7 +42,6 @@ export function StacksPage() {
 }
 
 function StackListRow({ stack }: { stack: DeployStack }) {
-  const stackType = getStackType(stack);
   const envCount = useSelector((s) =>
     selectEnvironmentsCountByStack(s, { stackId: stack.id }),
   );
@@ -61,7 +59,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
       </Td>
       <Td>{stack.id}</Td>
       <Td>{stack.region}</Td>
-      <Td>{capitalize(stackType)}</Td>
+      <Td>{getStackTypeTitle(stack)}</Td>
       <Td>{stack.memoryLimits ? "Memory" : ""}</Td>
       <Td variant="center">{envCount}</Td>
       <Td variant="center">{appCount}</Td>

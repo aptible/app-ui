@@ -148,6 +148,8 @@ export interface DeployStack extends Timestamps {
   organizationId: string;
   internalDomain: string;
   defaultDomain: string;
+  selfHosted: boolean;
+  awsAccountId: string;
 }
 
 export type OperationStatus =

@@ -233,6 +233,8 @@ export const defaultDeployStack = (
     verticalAutoscaling: false,
     internalDomain: "aptible.in",
     defaultDomain: "on-aptible.com",
+    selfHosted: false,
+    awsAccountId: "",
     ...s,
   };
 };

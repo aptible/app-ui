@@ -1,4 +1,9 @@
-import { fetchStack, getStackType, selectStackById } from "@app/deploy";
+import {
+  fetchStack,
+  getStackType,
+  getStackTypeTitle,
+  selectStackById,
+} from "@app/deploy";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   stackDetailEnvsUrl,
@@ -9,7 +14,6 @@ import {
   stacksUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import { capitalize } from "@app/string-utils";
 import { DeployStack } from "@app/types";
 import { useEffect } from "react";
 import { Outlet, useParams } from "react-router";
@@ -23,6 +27,7 @@ import {
   IconInfo,
   TabItem,
   Tooltip,
+  getStackImg,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
@@ -36,16 +41,7 @@ export function StackHeader({
       <DetailTitleBar
         title="Stack Details"
         isLoading={isLoading}
-        icon={
-          <img
-            alt="Stack icon"
-            src={
-              stackType === "dedicated"
-                ? "/resource-types/logo-dedicated-stack.png"
-                : "/resource-types/logo-stack.png"
-            }
-          />
-        }
+        icon={<img alt="Stack icon" src={getStackImg(stackType)} />}
         docsUrl="https://aptible.com/docs/stacks"
       />
 
@@ -54,7 +50,9 @@ export function StackHeader({
         <DetailInfoItem title="Memory Management">
           {stack.memoryLimits ? "Enabled" : "Disabled"}
         </DetailInfoItem>
-        <DetailInfoItem title="Tenancy">{capitalize(stackType)}</DetailInfoItem>
+        <DetailInfoItem title="Tenancy">
+          {getStackTypeTitle(stack)}
+        </DetailInfoItem>
         <DetailInfoItem title="">
           <Tooltip text="When sharing outbound IP addresses with vendors/partners for whitelisting, make sure to add all the provided IP addresses to the whitelist.">
             <IconInfo
