@@ -17,8 +17,7 @@ export const elevate = thunks.create<ElevateToken>(
     );
 
     if (!tokenCtx.json.ok) {
-      const { message, error, code, exception_context } = tokenCtx.json
-        .data as any;
+      const { message, error, code, exception_context } = tokenCtx.json.error;
       yield* schema.update(
         schema.loaders.error({
           id,

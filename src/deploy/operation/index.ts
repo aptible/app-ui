@@ -396,7 +396,6 @@ export const fetchOperationLogs = api.get<{ id: string } & Retryable>(
       if (!response.ok) {
         ctx.json = {
           ok: false,
-          data: { message },
           error: { message },
         };
         return;
@@ -404,7 +403,6 @@ export const fetchOperationLogs = api.get<{ id: string } & Retryable>(
       // overwrite the URL provided by the API with the actual logs
       // so we can just fetch the data in a single endpoint
       ctx.json.value = message;
-      ctx.json.data = message;
     },
     mdw.fetchRetry(),
   ],
