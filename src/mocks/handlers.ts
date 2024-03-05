@@ -311,6 +311,9 @@ export const stacksWithResources = (
     rest.get(`${testEnv.apiUrl}/stacks`, (_, res, ctx) => {
       return res(ctx.json({ _embedded: { stacks } }));
     }),
+    rest.get(`${testEnv.apiUrl}/stacks/:id`, (req, res, ctx) => {
+      return res(ctx.json(stacks.find((s) => `${s.id}` === req.params.id)));
+    }),
     rest.get(`${testEnv.apiUrl}/accounts`, (_, res, ctx) => {
       return res(ctx.json({ _embedded: { accounts } }));
     }),
