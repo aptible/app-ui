@@ -1,6 +1,10 @@
 import { schema } from "@app/schema";
-import { LoaderState, LoadingStatus } from "starfx";
-import { createSelector, defaultLoader } from "starfx/store";
+import {
+  LoaderState,
+  LoadingStatus,
+  createSelector,
+  defaultLoader,
+} from "starfx";
 
 export const selectIsAnyLoading = createSelector(
   schema.loaders.selectTableAsList,

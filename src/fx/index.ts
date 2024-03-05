@@ -1,11 +1,9 @@
 export {
   call,
   parallel,
-  requestMonitor,
   createApi,
   createPipe,
   race,
-  fetcher,
   Ok,
   Err,
   each,
@@ -21,14 +19,7 @@ export {
   takeLeading,
   takeLatest,
   API_ACTION_PREFIX,
-} from "starfx";
-export type { Callable } from "starfx";
-import { sleep } from "starfx";
-export const delay = sleep;
-
-export {
   select,
-  storeMdw,
   createSelector,
   PERSIST_LOADER_ID,
   configureStore,
@@ -36,9 +27,11 @@ export {
   createLocalStorageAdapter,
   createPersistor,
   persistStoreMdw,
-} from "starfx/store";
-export type { StoreUpdater, FxStore } from "starfx/store";
-import { defaultLoaderItem } from "starfx/store";
+  StoreContext,
+} from "starfx";
+export type { Callable, StoreUpdater, FxStore } from "starfx";
+import { defaultLoaderItem, sleep } from "starfx";
+export const delay = sleep;
 export const defaultLoadingItem = defaultLoaderItem;
 
 export function createAction(actionType: string): () => Action;

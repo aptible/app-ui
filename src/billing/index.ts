@@ -1,6 +1,6 @@
 import { billingApi, cacheTimer, thunks } from "@app/api";
 import { selectEnv } from "@app/config";
-import { call, parallel, select, storeMdw } from "@app/fx";
+import { call, mdw, parallel, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
 import { schema } from "@app/schema";
@@ -81,7 +81,7 @@ interface StripeSourceProps {
 export const addCreditCard = thunks.create<StripeSourceProps>(
   "add-credit-card",
   [
-    storeMdw.loader(schema.loaders),
+    mdw.loader(schema),
     function* (ctx, next) {
       const config = yield* select(selectEnv);
       const ssCtx = yield* createStripeSource.run(ctx.payload);
