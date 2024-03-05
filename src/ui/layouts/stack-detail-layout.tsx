@@ -1,4 +1,9 @@
-import { fetchStack, getStackType, selectStackById } from "@app/deploy";
+import {
+  fetchStack,
+  getStackType,
+  getStackTypeTitle,
+  selectStackById,
+} from "@app/deploy";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   stackDetailEnvsUrl,
@@ -9,7 +14,6 @@ import {
   stacksUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import { capitalize } from "@app/string-utils";
 import { DeployStack } from "@app/types";
 import { useEffect } from "react";
 import { Outlet, useParams } from "react-router";
@@ -26,15 +30,6 @@ import {
   getStackImg,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
-
-const getStackTypeTitle = (stack: DeployStack) => {
-  const stackType = getStackType(stack);
-  if (stackType === "self_hosted") {
-    return `Self-Hosted (${stack.awsAccountId})`;
-  }
-
-  return capitalize(stackType);
-};
 
 export function StackHeader({
   stack,

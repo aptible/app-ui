@@ -3,6 +3,7 @@ import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { WebState, schema } from "@app/schema";
+import { capitalize } from "@app/string-utils";
 import type {
   ContainerProfileData,
   DeployStack,
@@ -281,4 +282,13 @@ export const stackEntities = {
     deserialize: deserializeDeployStack,
     save: schema.stacks.add,
   }),
+};
+
+export const getStackTypeTitle = (stack: DeployStack) => {
+  const stackType = getStackType(stack);
+  if (stackType === "self_hosted") {
+    return `Self-Hosted (${stack.awsAccountId})`;
+  }
+
+  return capitalize(stackType);
 };
