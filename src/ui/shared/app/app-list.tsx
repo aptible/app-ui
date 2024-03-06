@@ -1,5 +1,6 @@
 import { prettyDateTime } from "@app/date";
 import {
+  DeployAppRow,
   calcServiceMetrics,
   fetchApps,
   fetchEnvironmentById,
@@ -20,10 +21,11 @@ import {
 import { capitalize } from "@app/string-utils";
 import type { DeployApp } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
+import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonCreate } from "../button";
 import { Group } from "../group";
-import { IconPlusCircle } from "../icons";
+import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { OpStatus } from "../operation-status";
 import {
@@ -134,6 +136,15 @@ export const AppLastOpCell = ({ app }: AppCellProps) => {
   );
 };
 
+const SortIcon = () => (
+  <div className="inline-block">
+    <IconChevronDown
+      variant="sm"
+      className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
+    />
+  </div>
+);
+
 export const AppListByOrg = () => {
   const { isLoading } = useQuery(fetchApps());
   useQuery(fetchEnvironments());
@@ -142,8 +153,20 @@ export const AppListByOrg = () => {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
-  const apps = useSelector((s) => selectAppsForTableSearch(s, { search }));
+  const [sortBy, setSortBy] = useState<keyof DeployAppRow>("createdAt");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const apps = useSelector((s) =>
+    selectAppsForTableSearch(s, { search, sortBy, sortDir }),
+  );
   const paginated = usePaginate(apps);
+  const onSort = (key: keyof DeployAppRow) => {
+    if (key === sortBy) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(key);
+      setSortDir("desc");
+    }
+  };
 
   return (
     <Group>
@@ -171,11 +194,36 @@ export const AppListByOrg = () => {
 
       <Table>
         <THead>
-          <Th>Handle</Th>
-          <Th>ID</Th>
-          <Th>Environment</Th>
-          <Th>Services</Th>
-          <Th>Est. Monthly Cost</Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("handle")}
+          >
+            Handle <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("id")}
+          >
+            ID <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("envHandle")}
+          >
+            Environment <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("totalServices")}
+          >
+            Services <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("cost")}
+          >
+            Est. Monthly Cost <SortIcon />
+          </Th>
         </THead>
 
         <TBody>
@@ -207,13 +255,25 @@ export const AppListByEnvironment = ({
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
+  const [sortBy, setSortBy] = useState<keyof DeployAppRow>("createdAt");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const apps = useSelector((s) =>
     selectAppsForTableSearchByEnvironmentId(s, {
       envId,
       search,
+      sortBy,
+      sortDir,
     }),
   );
   const paginated = usePaginate(apps);
+  const onSort = (key: keyof DeployAppRow) => {
+    if (key === sortBy) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(key);
+      setSortDir("desc");
+    }
+  };
 
   const onCreate = () => {
     navigate(environmentCreateAppUrl(envId));
@@ -247,10 +307,30 @@ export const AppListByEnvironment = ({
 
       <Table>
         <THead>
-          <Th>Handle</Th>
-          <Th>ID</Th>
-          <Th>Services</Th>
-          <Th>Est. Monthly Cost</Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("handle")}
+          >
+            Handle <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("id")}
+          >
+            ID <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("totalServices")}
+          >
+            Services <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("cost")}
+          >
+            Est. Monthly Cost <SortIcon />
+          </Th>
         </THead>
 
         <TBody>

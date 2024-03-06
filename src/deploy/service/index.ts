@@ -3,6 +3,7 @@ import { createAction, createSelector, parallel, poll, select } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { WebState, defaultDeployOperation, schema } from "@app/schema";
 import {
+  ContainerProfileData,
   DeployOperation,
   type DeployService,
   DeployServiceResponse,
@@ -11,10 +12,12 @@ import {
   excludesFalse,
 } from "@app/types";
 import {
+  DeployAppRow,
   cancelAppOpsPoll,
   fetchAppOperations,
   findAppById,
   selectApps,
+  selectAppsByOrgAsList,
 } from "../app";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
@@ -26,13 +29,16 @@ import {
 import {
   findEnvById,
   hasDeployEnvironment,
+  selectEnvironments,
   selectEnvironmentsByOrg,
   selectEnvironmentsByOrgAsList,
 } from "../environment";
 import {
   DeployOperationResponse,
   findOperationValue,
+  findOperationsByAppId,
   selectNonFailedScaleOps,
+  selectOperationsAsList,
 } from "../operation";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
@@ -99,6 +105,49 @@ export const serviceCommandText = (service: DeployService) => {
   return service.processType === "cmd" ? "Docker CMD" : service.command;
 };
 
+export const getContainerProfileFromType = (
+  containerProfile: InstanceClass,
+): ContainerProfileData => {
+  if (!CONTAINER_PROFILES[containerProfile]) {
+    return {
+      name: "",
+      costPerContainerHourInCents: 0,
+      cpuShare: 0,
+      minimumContainerSize: 0,
+      maximumContainerSize: 0,
+      maximumContainerCount: 0,
+    };
+  }
+  return CONTAINER_PROFILES[containerProfile];
+};
+
+export const calcMetrics = (services: DeployService[]) => {
+  const totalMemoryLimit = () => {
+    let total = 0;
+    services.forEach((s) => {
+      if (s.containerCount === 0) return;
+      total += s.containerMemoryLimitMb;
+    });
+    return total;
+  };
+
+  const totalCPU = () => {
+    let total = 0;
+    services.forEach((s) => {
+      if (s.containerCount === 0) return;
+      total +=
+        s.containerMemoryLimitMb *
+        getContainerProfileFromType(s.instanceClass).cpuShare;
+    });
+    return total;
+  };
+
+  return {
+    totalCPU: totalCPU(),
+    totalMemoryLimit: totalMemoryLimit(),
+  };
+};
+
 export const calcServiceMetrics = (service: DeployService) => {
   const containerProfile =
     CONTAINER_PROFILES[service.instanceClass || DEFAULT_INSTANCE_CLASS];
@@ -132,6 +181,7 @@ export const selectServicesByIds = schema.services.selectByIds;
 export const selectServices = schema.services.selectTable;
 export const hasDeployService = (a: DeployService) => a.id !== "";
 export const findServiceById = schema.services.findById;
+export const findServicesByIds = schema.services.findByIds;
 
 export const selectServicesAsList = createSelector(
   schema.services.selectTableAsList,
@@ -316,14 +366,6 @@ export const selectAppToServicesMap = createSelector(
   },
 );
 
-export const selectAppByServiceId = createSelector(
-  selectServiceById,
-  selectApps,
-  (service, apps) => {
-    return findAppById(apps, { id: service.appId });
-  },
-);
-
 const scaleAttrs: (keyof DeployOperation)[] = [
   "containerCount",
   "containerSize",
@@ -365,6 +407,173 @@ export const selectServiceScale = createSelector(
     });
 
     return current;
+  },
+);
+
+export const selectAppByServiceId = createSelector(
+  selectServiceById,
+  selectApps,
+  (service, apps) => {
+    return findAppById(apps, { id: service.appId });
+  },
+);
+
+export const selectAppsForTable = createSelector(
+  selectAppsByOrgAsList,
+  selectEnvironments,
+  selectOperationsAsList,
+  selectServicesAsList,
+  (apps, envs, ops, services) =>
+    apps
+      .map((app): DeployAppRow => {
+        const env = findEnvById(envs, { id: app.environmentId });
+        const appOps = findOperationsByAppId(ops, app.id);
+        let lastOperation = schema.operations.empty;
+        if (appOps.length > 0) {
+          lastOperation = appOps[0];
+        }
+        const appServices = services.filter((s) => s.appId === app.id);
+        const cost = appServices.reduce((acc, service) => {
+          const mm = calcServiceMetrics(service);
+          return acc + (mm.estimatedCostInDollars * 1024) / 1000;
+        }, 0);
+        const metrics = calcMetrics(services);
+
+        return {
+          ...app,
+          ...metrics,
+          envHandle: env.handle,
+          lastOperation,
+          cost,
+          totalServices: appServices.length,
+        };
+      })
+      .sort((a, b) => a.handle.localeCompare(b.handle)),
+);
+
+const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
+  const handle = app.handle.toLocaleLowerCase();
+  const envHandle = app.envHandle.toLocaleLowerCase();
+
+  let lastOpUser = "";
+  let lastOpType = "";
+  let lastOpStatus = "";
+  if (app.lastOperation) {
+    lastOpUser = app.lastOperation.userName.toLocaleLowerCase();
+    lastOpType = app.lastOperation.type.toLocaleLowerCase();
+    lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
+  }
+
+  const handleMatch = handle.includes(search);
+  const envMatch = envHandle.includes(search);
+  const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
+  const opMatch = lastOpType !== "" && lastOpType.includes(search);
+  const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
+  const idMatch = search === app.id;
+
+  return (
+    handleMatch || envMatch || opMatch || opStatusMatch || userMatch || idMatch
+  );
+};
+
+const createAppSortFn = (
+  sortBy: keyof DeployAppRow,
+  sortDir: "asc" | "desc",
+) => {
+  return (a: DeployAppRow, b: DeployAppRow) => {
+    if (sortBy === "cost") {
+      if (sortDir === "asc") {
+        return a.cost - b.cost;
+      } else {
+        return b.cost - a.cost;
+      }
+    }
+
+    if (sortBy === "handle") {
+      if (sortDir === "asc") {
+        return a.handle.localeCompare(b.handle);
+      } else {
+        return b.handle.localeCompare(a.handle);
+      }
+    }
+
+    if (sortBy === "id") {
+      if (sortDir === "asc") {
+        return a.id.localeCompare(b.id, undefined, { numeric: true });
+      } else {
+        return b.id.localeCompare(a.id, undefined, { numeric: true });
+      }
+    }
+
+    if (sortBy === "totalServices") {
+      if (sortDir === "asc") {
+        return a.totalServices - b.totalServices;
+      } else {
+        return b.totalServices - a.totalServices;
+      }
+    }
+
+    if (sortBy === "envHandle") {
+      if (sortDir === "asc") {
+        return a.envHandle.localeCompare(b.envHandle);
+      } else {
+        return b.envHandle.localeCompare(a.envHandle);
+      }
+    }
+
+    if (sortDir === "asc") {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    } else {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  };
+};
+
+export const selectAppsForTableSearchByEnvironmentId = createSelector(
+  selectAppsForTable,
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { envId?: string }) => props.envId || "",
+  (_: WebState, p: { sortBy: keyof DeployAppRow }) => p.sortBy,
+  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (apps, search, envId, sortBy, sortDir): DeployAppRow[] => {
+    const sortFn = createAppSortFn(sortBy, sortDir);
+
+    if (search === "" && envId === "") {
+      return [...apps].sort(sortFn);
+    }
+
+    const results = apps.filter((app) => {
+      const searchMatch = computeSearchMatch(app, search);
+      const envIdMatch = envId !== "" && app.environmentId === envId;
+
+      if (envId !== "") {
+        if (search !== "") {
+          return envIdMatch && searchMatch;
+        }
+
+        return envIdMatch;
+      }
+
+      return searchMatch;
+    });
+
+    return results.sort(sortFn);
+  },
+);
+
+export const selectAppsForTableSearch = createSelector(
+  selectAppsForTable,
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, p: { sortBy: keyof DeployAppRow }) => p.sortBy,
+  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (apps, search, sortBy, sortDir): DeployAppRow[] => {
+    const sortFn = createAppSortFn(sortBy, sortDir);
+
+    if (search === "") {
+      return [...apps].sort(sortFn);
+    }
+
+    return apps.filter((app) => computeSearchMatch(app, search)).sort(sortFn);
   },
 );
 

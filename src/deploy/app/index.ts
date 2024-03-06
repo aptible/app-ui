@@ -19,12 +19,7 @@ import {
   selectEnvironmentsByOrg,
 } from "../environment";
 import { DeployImageResponse } from "../image";
-import {
-  DeployOperationResponse,
-  findOperationsByAppId,
-  selectOperationsAsList,
-  waitForOperation,
-} from "../operation";
+import { DeployOperationResponse, waitForOperation } from "../operation";
 import { findStackById, selectStacks } from "../stack";
 
 export * from "./utils";
@@ -108,6 +103,10 @@ export const findAppById = schema.apps.findById;
 export interface DeployAppRow extends DeployApp {
   envHandle: string;
   lastOperation: DeployOperation;
+  cost: number;
+  totalCPU: number;
+  totalMemoryLimit: number;
+  totalServices: number;
 }
 
 export const selectAppsByEnvId = createSelector(
@@ -132,87 +131,6 @@ export const selectAppsByOrgAsList = createSelector(
       const env = findEnvById(envs, { id: app.environmentId });
       return hasDeployEnvironment(env);
     });
-  },
-);
-
-export const selectAppsForTable = createSelector(
-  selectAppsByOrgAsList,
-  selectEnvironments,
-  selectOperationsAsList,
-  (apps, envs, ops) =>
-    apps
-      .map((app): DeployAppRow => {
-        const env = findEnvById(envs, { id: app.environmentId });
-        const appOps = findOperationsByAppId(ops, app.id);
-        let lastOperation = schema.operations.empty;
-        if (appOps.length > 0) {
-          lastOperation = appOps[0];
-        }
-        return { ...app, envHandle: env.handle, lastOperation };
-      })
-      .sort((a, b) => a.handle.localeCompare(b.handle)),
-);
-
-const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
-  const handle = app.handle.toLocaleLowerCase();
-  const envHandle = app.envHandle.toLocaleLowerCase();
-
-  let lastOpUser = "";
-  let lastOpType = "";
-  let lastOpStatus = "";
-  if (app.lastOperation) {
-    lastOpUser = app.lastOperation.userName.toLocaleLowerCase();
-    lastOpType = app.lastOperation.type.toLocaleLowerCase();
-    lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
-  }
-
-  const handleMatch = handle.includes(search);
-  const envMatch = envHandle.includes(search);
-  const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
-  const opMatch = lastOpType !== "" && lastOpType.includes(search);
-  const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
-  const idMatch = search === app.id;
-
-  return (
-    handleMatch || envMatch || opMatch || opStatusMatch || userMatch || idMatch
-  );
-};
-
-export const selectAppsForTableSearchByEnvironmentId = createSelector(
-  selectAppsForTable,
-  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: WebState, props: { envId?: string }) => props.envId || "",
-  (apps, search, envId): DeployAppRow[] => {
-    if (search === "" && envId === "") {
-      return apps;
-    }
-
-    return apps.filter((app) => {
-      const searchMatch = computeSearchMatch(app, search);
-      const envIdMatch = envId !== "" && app.environmentId === envId;
-
-      if (envId !== "") {
-        if (search !== "") {
-          return envIdMatch && searchMatch;
-        }
-
-        return envIdMatch;
-      }
-
-      return searchMatch;
-    });
-  },
-);
-
-export const selectAppsForTableSearch = createSelector(
-  selectAppsForTable,
-  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (apps, search): DeployAppRow[] => {
-    if (search === "") {
-      return apps;
-    }
-
-    return apps.filter((app) => computeSearchMatch(app, search));
   },
 );
 

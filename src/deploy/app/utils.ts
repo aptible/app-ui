@@ -1,4 +1,4 @@
-import { ContainerProfileData, DeployService, InstanceClass } from "@app/types";
+import { ContainerProfileData, InstanceClass } from "@app/types";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
 
 type SizeMap = {
@@ -22,49 +22,6 @@ export const containerSizesByProfile = (profile: InstanceClass): number[] => {
   return profileSizes.filter(
     (size: number) => size >= CONTAINER_PROFILES[profile].minimumContainerSize,
   );
-};
-
-export const getContainerProfileFromType = (
-  containerProfile: InstanceClass,
-): ContainerProfileData => {
-  if (!CONTAINER_PROFILES[containerProfile]) {
-    return {
-      name: "",
-      costPerContainerHourInCents: 0,
-      cpuShare: 0,
-      minimumContainerSize: 0,
-      maximumContainerSize: 0,
-      maximumContainerCount: 0,
-    };
-  }
-  return CONTAINER_PROFILES[containerProfile];
-};
-
-export const calcMetrics = (services: DeployService[]) => {
-  const totalMemoryLimit = () => {
-    let total = 0;
-    services.forEach((s) => {
-      if (s.containerCount === 0) return;
-      total += s.containerMemoryLimitMb;
-    });
-    return total;
-  };
-
-  const totalCPU = () => {
-    let total = 0;
-    services.forEach((s) => {
-      if (s.containerCount === 0) return;
-      total +=
-        s.containerMemoryLimitMb *
-        getContainerProfileFromType(s.instanceClass).cpuShare;
-    });
-    return total;
-  };
-
-  return {
-    totalCPU: totalCPU(),
-    totalMemoryLimit: totalMemoryLimit(),
-  };
 };
 
 export const hoursPerMonth = 731;
