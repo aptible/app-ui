@@ -20,7 +20,7 @@ export const signup = thunks.create<CreateUserForm>(
       name,
       email,
       password,
-      challenge_token
+      challenge_token,
     } = ctx.payload;
     const id = ctx.key;
     yield* schema.update(schema.loaders.start({ id }));
