@@ -20,7 +20,7 @@ export const signup = thunks.create<CreateUserForm>(
     yield* schema.update(schema.loaders.start({ id }));
 
     let userCtx;
-    if (challenge_token == "") {
+    if (challenge_token === "") {
       userCtx = yield* call(createUserViaClaim.run(ctx.payload));
     } else {
       userCtx = yield* call(createUser.run(ctx.payload));
