@@ -6,7 +6,7 @@ import {
   selectAppById,
   selectAutoscalingEnabledById,
   selectEnvironmentById,
-  selectServicesByAppId,
+  selectServiceRowsByAppId,
   selectStackById,
   serviceCommandText,
 } from "@app/deploy";
@@ -319,7 +319,7 @@ export function AppServicesByApp({
 }) {
   const navigate = useNavigate();
   const app = useSelector((s) => selectAppById(s, { id: appId }));
-  const services = useSelector((s) => selectServicesByAppId(s, { appId }));
+  const services = useSelector((s) => selectServiceRowsByAppId(s, { appId }));
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
