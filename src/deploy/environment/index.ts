@@ -12,7 +12,12 @@ import {
   excludesFalse,
 } from "@app/types";
 import { PermissionResponse } from "../permission";
-import { hasDeployStack, selectStackById } from "../stack";
+import {
+  findStackById,
+  hasDeployStack,
+  selectStackById,
+  selectStacks,
+} from "../stack";
 
 export interface DeployEnvironmentResponse {
   id: number;
@@ -225,28 +230,99 @@ const computeSearchMatch = (
   return handleMatch || idMatch;
 };
 
-export const selectEnvironmentsForTableSearch = createSelector(
-  selectEnvironmentsByOrgAsList,
-  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: WebState, props: { stackId?: string }) => props.stackId || "",
-  (envs, search, stackId): DeployEnvironment[] => {
-    if (search === "" && stackId === "") {
-      return envs;
+const createEnvSortFn = (
+  sortBy: keyof DeployEnvironmentRow,
+  sortDir: "asc" | "desc",
+) => {
+  return (a: DeployEnvironmentRow, b: DeployEnvironmentRow) => {
+    if (sortBy === "handle") {
+      if (sortDir === "asc") {
+        return a.handle.localeCompare(b.handle);
+      } else {
+        return b.handle.localeCompare(a.handle);
+      }
     }
 
-    return envs
-      .filter((env) => {
-        const searchMatch = computeSearchMatch(env, search);
-        const stackIdMatch = stackId !== "" && env.stackId === stackId;
-        if (stackId !== "") {
-          if (search !== "") {
-            return stackIdMatch && searchMatch;
-          }
-          return stackIdMatch;
+    if (sortBy === "stackName") {
+      if (sortDir === "asc") {
+        return a.stackName.localeCompare(b.stackName);
+      } else {
+        return b.stackName.localeCompare(a.stackName);
+      }
+    }
+
+    if (sortBy === "id") {
+      if (sortDir === "asc") {
+        return a.id.localeCompare(b.id, undefined, { numeric: true });
+      } else {
+        return b.id.localeCompare(a.id, undefined, { numeric: true });
+      }
+    }
+
+    if (sortBy === "totalAppCount") {
+      if (sortDir === "asc") {
+        return a.totalAppCount - b.totalAppCount;
+      } else {
+        return b.totalAppCount - a.totalAppCount;
+      }
+    }
+
+    if (sortBy === "totalDatabaseCount") {
+      if (sortDir === "asc") {
+        return a.totalDatabaseCount - b.totalDatabaseCount;
+      } else {
+        return b.totalDatabaseCount - a.totalDatabaseCount;
+      }
+    }
+
+    if (sortDir === "asc") {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    } else {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  };
+};
+
+export interface DeployEnvironmentRow extends DeployEnvironment {
+  stackName: string;
+}
+
+export const selectEnvironmentsForTable = createSelector(
+  selectEnvironmentsByOrgAsList,
+  selectStacks,
+  (envs, stacks): DeployEnvironmentRow[] =>
+    envs.map((env) => {
+      const stack = findStackById(stacks, { id: env.stackId });
+      return { ...env, stackName: stack.name };
+    }),
+);
+
+export const selectEnvironmentsForTableSearch = createSelector(
+  selectEnvironmentsForTable,
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { stackId?: string }) => props.stackId || "",
+  (_: WebState, p: { sortBy: keyof DeployEnvironmentRow }) => p.sortBy,
+  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (envs, search, stackId, sortBy, sortDir): DeployEnvironmentRow[] => {
+    const sortFn = createEnvSortFn(sortBy, sortDir);
+
+    if (search === "" && stackId === "") {
+      return [...envs].sort(sortFn);
+    }
+
+    const results = envs.filter((env) => {
+      const searchMatch = computeSearchMatch(env, search);
+      const stackIdMatch = stackId !== "" && env.stackId === stackId;
+      if (stackId !== "") {
+        if (search !== "") {
+          return stackIdMatch && searchMatch;
         }
-        return searchMatch;
-      })
-      .sort((a, b) => a.handle.localeCompare(b.handle));
+        return stackIdMatch;
+      }
+      return searchMatch;
+    });
+
+    return results.sort(sortFn);
   },
 );
 
