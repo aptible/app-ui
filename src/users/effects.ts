@@ -64,6 +64,18 @@ export const createUser = authApi.post<CreateUserForm, UserResponse>(
   },
 );
 
+export const createUserViaClaim = authApi.post<CreateUserForm, UserResponse>(
+  "/claims/:user",
+  function* onCreateUserViaClaim(ctx, next) {
+    const origin = yield* select(selectOrigin);
+    ctx.request = ctx.req({
+      body: JSON.stringify({ ...ctx.payload, origin }),
+    });
+
+    yield* next();
+  },
+);
+
 export const updateUserName = authApi.patch<{ userId: string; name: string }>(
   ["/users/:userId", "name"],
   function* (ctx, next) {
