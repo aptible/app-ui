@@ -15,7 +15,13 @@ const log = createLog("signup");
 export const signup = thunks.create<CreateUserForm>(
   "signup",
   function* onSignup(ctx, next) {
-    const { company: orgName, name, email, password, challenge_token } = ctx.payload;
+    const {
+      company: orgName,
+      name,
+      email,
+      password,
+      challenge_token
+    } = ctx.payload;
     const id = ctx.key;
     yield* schema.update(schema.loaders.start({ id }));
 
