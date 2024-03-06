@@ -225,28 +225,77 @@ const computeSearchMatch = (
   return handleMatch || idMatch;
 };
 
+const createEnvSortFn = (
+  sortBy: keyof DeployEnvironment,
+  sortDir: "asc" | "desc",
+) => {
+  return (a: DeployEnvironment, b: DeployEnvironment) => {
+    if (sortBy === "handle") {
+      if (sortDir === "asc") {
+        return a.handle.localeCompare(b.handle);
+      } else {
+        return b.handle.localeCompare(a.handle);
+      }
+    }
+
+    if (sortBy === "id") {
+      if (sortDir === "asc") {
+        return a.id.localeCompare(b.id, undefined, { numeric: true });
+      } else {
+        return b.id.localeCompare(a.id, undefined, { numeric: true });
+      }
+    }
+
+    if (sortBy === "totalAppCount") {
+      if (sortDir === "asc") {
+        return a.totalAppCount - b.totalAppCount;
+      } else {
+        return b.totalAppCount - a.totalAppCount;
+      }
+    }
+
+    if (sortBy === "totalDatabaseCount") {
+      if (sortDir === "asc") {
+        return a.totalDatabaseCount - b.totalDatabaseCount;
+      } else {
+        return b.totalDatabaseCount - a.totalDatabaseCount;
+      }
+    }
+
+    if (sortDir === "asc") {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    } else {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  };
+};
+
 export const selectEnvironmentsForTableSearch = createSelector(
   selectEnvironmentsByOrgAsList,
   (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: WebState, props: { stackId?: string }) => props.stackId || "",
-  (envs, search, stackId): DeployEnvironment[] => {
+  (_: WebState, p: { sortBy: keyof DeployEnvironment }) => p.sortBy,
+  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (envs, search, stackId, sortBy, sortDir): DeployEnvironment[] => {
+    const sortFn = createEnvSortFn(sortBy, sortDir);
+
     if (search === "" && stackId === "") {
-      return envs;
+      return [...envs].sort(sortFn);
     }
 
-    return envs
-      .filter((env) => {
-        const searchMatch = computeSearchMatch(env, search);
-        const stackIdMatch = stackId !== "" && env.stackId === stackId;
-        if (stackId !== "") {
-          if (search !== "") {
-            return stackIdMatch && searchMatch;
-          }
-          return stackIdMatch;
+    const results = envs.filter((env) => {
+      const searchMatch = computeSearchMatch(env, search);
+      const stackIdMatch = stackId !== "" && env.stackId === stackId;
+      if (stackId !== "") {
+        if (search !== "") {
+          return stackIdMatch && searchMatch;
         }
-        return searchMatch;
-      })
-      .sort((a, b) => a.handle.localeCompare(b.handle));
+        return stackIdMatch;
+      }
+      return searchMatch;
+    });
+
+    return results.sort(sortFn);
   },
 );
 
