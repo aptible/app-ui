@@ -12,7 +12,12 @@ import {
   excludesFalse,
 } from "@app/types";
 import { PermissionResponse } from "../permission";
-import { hasDeployStack, selectStackById } from "../stack";
+import {
+  findStackById,
+  hasDeployStack,
+  selectStackById,
+  selectStacks,
+} from "../stack";
 
 export interface DeployEnvironmentResponse {
   id: number;
@@ -226,15 +231,23 @@ const computeSearchMatch = (
 };
 
 const createEnvSortFn = (
-  sortBy: keyof DeployEnvironment,
+  sortBy: keyof DeployEnvironmentRow,
   sortDir: "asc" | "desc",
 ) => {
-  return (a: DeployEnvironment, b: DeployEnvironment) => {
+  return (a: DeployEnvironmentRow, b: DeployEnvironmentRow) => {
     if (sortBy === "handle") {
       if (sortDir === "asc") {
         return a.handle.localeCompare(b.handle);
       } else {
         return b.handle.localeCompare(a.handle);
+      }
+    }
+
+    if (sortBy === "stackName") {
+      if (sortDir === "asc") {
+        return a.stackName.localeCompare(b.stackName);
+      } else {
+        return b.stackName.localeCompare(a.stackName);
       }
     }
 
@@ -270,13 +283,27 @@ const createEnvSortFn = (
   };
 };
 
-export const selectEnvironmentsForTableSearch = createSelector(
+export interface DeployEnvironmentRow extends DeployEnvironment {
+  stackName: string;
+}
+
+export const selectEnvironmentsForTable = createSelector(
   selectEnvironmentsByOrgAsList,
+  selectStacks,
+  (envs, stacks): DeployEnvironmentRow[] =>
+    envs.map((env) => {
+      const stack = findStackById(stacks, { id: env.stackId });
+      return { ...env, stackName: stack.name };
+    }),
+);
+
+export const selectEnvironmentsForTableSearch = createSelector(
+  selectEnvironmentsForTable,
   (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: WebState, props: { stackId?: string }) => props.stackId || "",
-  (_: WebState, p: { sortBy: keyof DeployEnvironment }) => p.sortBy,
+  (_: WebState, p: { sortBy: keyof DeployEnvironmentRow }) => p.sortBy,
   (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
-  (envs, search, stackId, sortBy, sortDir): DeployEnvironment[] => {
+  (envs, search, stackId, sortBy, sortDir): DeployEnvironmentRow[] => {
     const sortFn = createEnvSortFn(sortBy, sortDir);
 
     if (search === "" && stackId === "") {

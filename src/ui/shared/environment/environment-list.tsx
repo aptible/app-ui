@@ -1,4 +1,5 @@
 import {
+  DeployEnvironmentRow,
   fetchEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
@@ -126,7 +127,7 @@ export function EnvironmentList({
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const { isLoading } = useLoader(fetchEnvironments());
-  const [sortBy, setSortBy] = useState<keyof DeployEnvironment>("createdAt");
+  const [sortBy, setSortBy] = useState<keyof DeployEnvironmentRow>("createdAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
@@ -140,7 +141,7 @@ export function EnvironmentList({
     selectEnvironmentsForTableSearch(s, { search, stackId, sortBy, sortDir }),
   );
   const paginated = usePaginate(envs);
-  const onSort = (key: keyof DeployEnvironment) => {
+  const onSort = (key: keyof DeployEnvironmentRow) => {
     if (key === sortBy) {
       setSortDir(sortDir === "asc" ? "desc" : "asc");
     } else {
@@ -201,7 +202,7 @@ export function EnvironmentList({
           </Th>
           <Th
             className="cursor-pointer hover:text-black group"
-            onClick={() => onSort("stackId")}
+            onClick={() => onSort("stackName")}
           >
             Stack <SortIcon />
           </Th>
