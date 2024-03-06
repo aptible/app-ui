@@ -218,7 +218,7 @@ export function EnvironmentList({
             onClick={() => onSort("totalDatabaseCount")}
             variant="center"
           >
-            Database <SortIcon />
+            Databases <SortIcon />
           </Th>
         </THead>
 
