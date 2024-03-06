@@ -30,8 +30,6 @@ import {
 } from "../environment";
 import {
   DeployOperationResponse,
-  findOperationsByDbId,
-  selectOperationsAsList,
   selectOperationsByDatabaseId,
   waitForOperation,
 } from "../operation";
@@ -136,6 +134,9 @@ export const deserializeDeployDatabase = (
 export interface DeployDatabaseRow extends DeployDatabase {
   envHandle: string;
   lastOperation: DeployOperation;
+  cost: number;
+  diskSize: number;
+  containerSize: number;
 }
 
 export const hasDeployDatabase = (a: DeployDatabase) => a.id !== "";
@@ -167,24 +168,6 @@ export const selectDatabasesByOrgAsList = createSelector(
       return hasDeployEnvironment(env);
     });
   },
-);
-
-export const selectDatabasesForTable = createSelector(
-  selectDatabasesByOrgAsList,
-  selectEnvironments,
-  selectOperationsAsList,
-  (dbs, envs, ops) =>
-    dbs
-      .map((dbb): DeployDatabaseRow => {
-        const env = findEnvById(envs, { id: dbb.environmentId });
-        const dbOps = findOperationsByDbId(ops, dbb.id);
-        let lastOperation = schema.operations.empty;
-        if (dbOps.length > 0) {
-          lastOperation = dbOps[0];
-        }
-        return { ...dbb, envHandle: env.handle, lastOperation };
-      })
-      .sort((a, b) => a.handle.localeCompare(b.handle)),
 );
 
 export const selectDatabasesByEnvId = createSelector(

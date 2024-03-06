@@ -63,6 +63,6 @@ export const hourlyAndMonthlyCostsForContainers = (
   }
   return {
     pricePerHour,
-    pricePerMonth: pricePerMonth.toFixed(2),
+    pricePerMonth: pricePerMonth,
   };
 };

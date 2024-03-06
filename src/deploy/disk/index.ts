@@ -76,6 +76,8 @@ export const deserializeDisk = (payload: DeployDiskResponse): DeployDisk => {
 export const fetchDiskById = api.get<{ id: string }>("/disks/:id");
 
 export const selectDiskById = schema.disks.selectById;
+export const selectDisks = schema.disks.selectTable;
+export const findDiskById = schema.disks.findById;
 
 export const diskEntities = {
   disk: defaultEntity({

@@ -4,20 +4,29 @@ import { createSelector } from "starfx";
 import {
   DeployAppRow,
   findAppById,
+  hourlyAndMonthlyCostsForContainers,
   selectApps,
   selectAppsByOrgAsList,
 } from "../app";
-import { DeployDatabaseRow, selectDatabasesForTable } from "../database";
+import { DeployDatabaseRow, selectDatabasesByOrgAsList } from "../database";
+import { findDiskById, selectDisks } from "../disk";
 import {
   findEnvById,
   hasDeployEnvironment,
   selectEnvironments,
   selectEnvironmentsByOrg,
 } from "../environment";
-import { findOperationsByAppId, selectOperationsAsList } from "../operation";
+import {
+  findOperationsByAppId,
+  findOperationsByDbId,
+  selectOperationsAsList,
+} from "../operation";
 import {
   calcMetrics,
   calcServiceMetrics,
+  findServiceById,
+  getContainerProfileFromType,
+  selectServices,
   selectServicesAsList,
   selectServicesByOrgId,
   serviceCommandText,
@@ -332,15 +341,118 @@ const computeSearchMatchDb = (
   );
 };
 
+const createDatabaseSortFn = (
+  sortBy: keyof DeployDatabaseRow,
+  sortDir: "asc" | "desc",
+) => {
+  return (a: DeployDatabaseRow, b: DeployDatabaseRow) => {
+    if (sortBy === "cost") {
+      if (sortDir === "asc") {
+        return a.cost - b.cost;
+      } else {
+        return b.cost - a.cost;
+      }
+    }
+
+    if (sortBy === "handle") {
+      if (sortDir === "asc") {
+        return a.handle.localeCompare(b.handle);
+      } else {
+        return b.handle.localeCompare(a.handle);
+      }
+    }
+
+    if (sortBy === "id") {
+      if (sortDir === "asc") {
+        return a.id.localeCompare(b.id, undefined, { numeric: true });
+      } else {
+        return b.id.localeCompare(a.id, undefined, { numeric: true });
+      }
+    }
+
+    if (sortBy === "diskSize") {
+      if (sortDir === "asc") {
+        return a.diskSize - b.diskSize;
+      } else {
+        return b.diskSize - a.diskSize;
+      }
+    }
+
+    if (sortBy === "containerSize") {
+      if (sortDir === "asc") {
+        return a.containerSize - b.containerSize;
+      } else {
+        return b.containerSize - a.containerSize;
+      }
+    }
+
+    if (sortBy === "envHandle") {
+      if (sortDir === "asc") {
+        return a.envHandle.localeCompare(b.envHandle);
+      } else {
+        return b.envHandle.localeCompare(a.envHandle);
+      }
+    }
+
+    if (sortDir === "asc") {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    } else {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  };
+};
+
+export const selectDatabasesForTable = createSelector(
+  selectDatabasesByOrgAsList,
+  selectEnvironments,
+  selectOperationsAsList,
+  selectDisks,
+  selectServices,
+  (dbs, envs, ops, disks, services) =>
+    dbs
+      .map((dbb): DeployDatabaseRow => {
+        const env = findEnvById(envs, { id: dbb.environmentId });
+        const dbOps = findOperationsByDbId(ops, dbb.id);
+        let lastOperation = schema.operations.empty;
+        if (dbOps.length > 0) {
+          lastOperation = dbOps[0];
+        }
+        const disk = findDiskById(disks, { id: dbb.diskId });
+        const service = findServiceById(services, { id: dbb.serviceId });
+        const currentContainerProfile = getContainerProfileFromType(
+          service.instanceClass,
+        );
+        const { pricePerMonth: cost } = hourlyAndMonthlyCostsForContainers(
+          service.containerCount,
+          currentContainerProfile,
+          service.containerMemoryLimitMb,
+          disk.size,
+        );
+        const metrics = calcMetrics([service]);
+        return {
+          ...dbb,
+          envHandle: env.handle,
+          lastOperation,
+          diskSize: disk.size,
+          cost,
+          containerSize: metrics.totalMemoryLimit / 1024,
+        };
+      })
+      .sort((a, b) => a.handle.localeCompare(b.handle)),
+);
+
 export const selectDatabasesForTableSearch = createSelector(
   selectDatabasesForTable,
   selectSearchProp,
-  (dbs, search): DeployDatabaseRow[] => {
+  (_: WebState, p: { sortBy: keyof DeployDatabaseRow }) => p.sortBy,
+  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (dbs, search, sortBy, sortDir): DeployDatabaseRow[] => {
+    const sortFn = createDatabaseSortFn(sortBy, sortDir);
     if (search === "") {
-      return dbs;
+      return [...dbs].sort(sortFn);
     }
 
-    return dbs.filter((db) => computeSearchMatchDb(db, search));
+    return dbs.filter((db) => computeSearchMatchDb(db, search)).sort(sortFn);
   },
 );
 
