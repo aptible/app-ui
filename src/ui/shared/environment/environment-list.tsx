@@ -2,6 +2,7 @@ import {
   fetchEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
+  selectEnvironmentStatsById,
   selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
@@ -9,6 +10,7 @@ import { useLoader, useQuery, useSelector } from "@app/react";
 import {
   createEnvUrl,
   environmentAppsUrl,
+  environmentBackupsUrl,
   environmentDatabasesUrl,
   stackDetailEnvsUrl,
 } from "@app/routes";
@@ -59,6 +61,22 @@ const EnvironmentIdCell = ({ env }: EnvironmentCellProps) => {
   return <Td>{env.id}</Td>;
 };
 
+const EnvironmentAppsCell = ({ env }: EnvironmentCellProps) => {
+  const apps = useSelector((s) => selectAppsByEnvId(s, { envId: env.id }));
+  return (
+    <Td
+      variant="center"
+      className="center items-center justify-center min-w-[9ch]"
+    >
+      <Link to={environmentAppsUrl(env.id)}>
+        <div className={`${tokens.type["table link"]} text-center`}>
+          {apps.length}
+        </div>
+      </Link>
+    </Td>
+  );
+};
+
 const EnvironmentDatabasesCell = ({ env }: EnvironmentCellProps) => {
   const dbs = useSelector((s) => selectDatabasesByEnvId(s, { envId: env.id }));
   return (
@@ -72,13 +90,15 @@ const EnvironmentDatabasesCell = ({ env }: EnvironmentCellProps) => {
   );
 };
 
-const EnvironmentAppsCell = ({ env }: EnvironmentCellProps) => {
-  const apps = useSelector((s) => selectAppsByEnvId(s, { envId: env.id }));
+const EnvironmentBackupsCell = ({ env }: EnvironmentCellProps) => {
+  const environments = useSelector((s) =>
+    selectEnvironmentStatsById(s, { envId: env.id }),
+  );
   return (
     <Td variant="center" className="center items-center justify-center">
-      <Link to={environmentAppsUrl(env.id)}>
+      <Link to={environmentBackupsUrl(env.id)}>
         <div className={`${tokens.type["table link"]} text-center`}>
-          {apps.length}
+          {environments.totalBackupSize} GB
         </div>
       </Link>
     </Td>
@@ -171,7 +191,8 @@ export function EnvironmentList({
           <Th>ID</Th>
           <Th>Stack</Th>
           <Th variant="center">Apps</Th>
-          <Th variant="center">Database</Th>
+          <Th variant="center">Databases</Th>
+          <Th variant="center">Backups</Th>
         </THead>
 
         <TBody>
@@ -183,6 +204,7 @@ export function EnvironmentList({
               <EnvironmentStackCell env={env} />
               <EnvironmentAppsCell env={env} />
               <EnvironmentDatabasesCell env={env} />
+              <EnvironmentBackupsCell env={env} />
             </Tr>
           ))}
         </TBody>
