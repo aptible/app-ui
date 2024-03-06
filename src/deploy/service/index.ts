@@ -7,18 +7,9 @@ import {
   DeployOperation,
   type DeployService,
   DeployServiceResponse,
-  DeployServiceRow,
   type InstanceClass,
   excludesFalse,
 } from "@app/types";
-import {
-  DeployAppRow,
-  cancelAppOpsPoll,
-  fetchAppOperations,
-  findAppById,
-  selectApps,
-  selectAppsByOrgAsList,
-} from "../app";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
 import {
@@ -26,19 +17,11 @@ import {
   fetchDatabaseOperations,
   selectDatabaseById,
 } from "../database";
-import {
-  findEnvById,
-  hasDeployEnvironment,
-  selectEnvironments,
-  selectEnvironmentsByOrg,
-  selectEnvironmentsByOrgAsList,
-} from "../environment";
+import { selectEnvironmentsByOrgAsList } from "../environment";
 import {
   DeployOperationResponse,
   findOperationValue,
-  findOperationsByAppId,
   selectNonFailedScaleOps,
-  selectOperationsAsList,
 } from "../operation";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
@@ -226,117 +209,6 @@ export const selectServicesByOrgId = createSelector(
   },
 );
 
-export const selectServicesForTable = createSelector(
-  selectEnvironmentsByOrg,
-  selectApps,
-  selectServicesByOrgId,
-  (envs, apps, services) =>
-    services
-      // making sure we have a valid environment associated with it
-      .filter((service) => {
-        const env = findEnvById(envs, { id: service.environmentId });
-        return hasDeployEnvironment(env);
-      })
-      // exclude database services since customers only know of them as App Services.
-      .filter((service) => service.appId)
-      .map((service): DeployServiceRow => {
-        const env = findEnvById(envs, { id: service.environmentId });
-        let resourceHandle = "";
-        if (service.appId) {
-          const app = findAppById(apps, { id: service.appId });
-          resourceHandle = app.handle;
-        } else {
-          resourceHandle = "Unknown";
-        }
-
-        const metrics = calcServiceMetrics(service);
-        return {
-          ...service,
-          envHandle: env.handle,
-          resourceHandle,
-          cost: (metrics.estimatedCostInDollars * 1024) / 1000,
-        };
-      }),
-);
-
-export const selectServicesByAppId = createSelector(
-  selectServicesForTable,
-  (_: WebState, p: { appId: string }) => p.appId,
-  (services, appId) => {
-    return services.filter((service) => service.appId === appId);
-  },
-);
-
-const createServiceSortFn = (
-  sortBy: keyof DeployServiceRow,
-  sortDir: "asc" | "desc",
-) => {
-  return (a: DeployServiceRow, b: DeployServiceRow) => {
-    if (sortBy === "cost") {
-      if (sortDir === "asc") {
-        return a.cost - b.cost;
-      } else {
-        return b.cost - a.cost;
-      }
-    }
-
-    if (sortBy === "resourceHandle") {
-      if (sortDir === "asc") {
-        return a.resourceHandle.localeCompare(b.resourceHandle);
-      } else {
-        return b.resourceHandle.localeCompare(a.resourceHandle);
-      }
-    }
-
-    if (sortBy === "id") {
-      if (sortDir === "asc") {
-        return a.id.localeCompare(b.id, undefined, { numeric: true });
-      } else {
-        return b.id.localeCompare(a.id, undefined, { numeric: true });
-      }
-    }
-
-    if (sortDir === "asc") {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    } else {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    }
-  };
-};
-
-export const selectServicesForTableSearch = createSelector(
-  selectServicesForTable,
-  (_: WebState, p: { search: string }) => p.search,
-  (_: WebState, p: { sortBy: keyof DeployServiceRow }) => p.sortBy,
-  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
-  (services, search, sortBy, sortDir) => {
-    const sortFn = createServiceSortFn(sortBy, sortDir);
-
-    if (search === "") {
-      return [...services].sort(sortFn);
-    }
-
-    const results = services.filter((service) => {
-      const envHandle = service.envHandle.toLocaleLowerCase();
-      const resourceHandle = service.resourceHandle.toLocaleLowerCase();
-      const id = service.id.toLocaleLowerCase();
-      const cmd = serviceCommandText(service).toLocaleLowerCase();
-
-      const idMatch = id.includes(search);
-      const envMatch = envHandle !== "" && envHandle.includes(search);
-      const resourceHandleMatch =
-        resourceHandle !== "" && resourceHandle.includes(search);
-      const cmdMatch = cmd.includes(search);
-
-      const searchMatch =
-        idMatch || envMatch || resourceHandleMatch || cmdMatch;
-      return searchMatch;
-    });
-
-    return results.sort(sortFn);
-  },
-);
-
 export const selectServicesByEnvId = createSelector(
   selectEnvToServicesMap,
   (_: WebState, p: { envId: string }) => p.envId,
@@ -407,173 +279,6 @@ export const selectServiceScale = createSelector(
     });
 
     return current;
-  },
-);
-
-export const selectAppByServiceId = createSelector(
-  selectServiceById,
-  selectApps,
-  (service, apps) => {
-    return findAppById(apps, { id: service.appId });
-  },
-);
-
-export const selectAppsForTable = createSelector(
-  selectAppsByOrgAsList,
-  selectEnvironments,
-  selectOperationsAsList,
-  selectServicesAsList,
-  (apps, envs, ops, services) =>
-    apps
-      .map((app): DeployAppRow => {
-        const env = findEnvById(envs, { id: app.environmentId });
-        const appOps = findOperationsByAppId(ops, app.id);
-        let lastOperation = schema.operations.empty;
-        if (appOps.length > 0) {
-          lastOperation = appOps[0];
-        }
-        const appServices = services.filter((s) => s.appId === app.id);
-        const cost = appServices.reduce((acc, service) => {
-          const mm = calcServiceMetrics(service);
-          return acc + (mm.estimatedCostInDollars * 1024) / 1000;
-        }, 0);
-        const metrics = calcMetrics(services);
-
-        return {
-          ...app,
-          ...metrics,
-          envHandle: env.handle,
-          lastOperation,
-          cost,
-          totalServices: appServices.length,
-        };
-      })
-      .sort((a, b) => a.handle.localeCompare(b.handle)),
-);
-
-const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
-  const handle = app.handle.toLocaleLowerCase();
-  const envHandle = app.envHandle.toLocaleLowerCase();
-
-  let lastOpUser = "";
-  let lastOpType = "";
-  let lastOpStatus = "";
-  if (app.lastOperation) {
-    lastOpUser = app.lastOperation.userName.toLocaleLowerCase();
-    lastOpType = app.lastOperation.type.toLocaleLowerCase();
-    lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
-  }
-
-  const handleMatch = handle.includes(search);
-  const envMatch = envHandle.includes(search);
-  const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
-  const opMatch = lastOpType !== "" && lastOpType.includes(search);
-  const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
-  const idMatch = search === app.id;
-
-  return (
-    handleMatch || envMatch || opMatch || opStatusMatch || userMatch || idMatch
-  );
-};
-
-const createAppSortFn = (
-  sortBy: keyof DeployAppRow,
-  sortDir: "asc" | "desc",
-) => {
-  return (a: DeployAppRow, b: DeployAppRow) => {
-    if (sortBy === "cost") {
-      if (sortDir === "asc") {
-        return a.cost - b.cost;
-      } else {
-        return b.cost - a.cost;
-      }
-    }
-
-    if (sortBy === "handle") {
-      if (sortDir === "asc") {
-        return a.handle.localeCompare(b.handle);
-      } else {
-        return b.handle.localeCompare(a.handle);
-      }
-    }
-
-    if (sortBy === "id") {
-      if (sortDir === "asc") {
-        return a.id.localeCompare(b.id, undefined, { numeric: true });
-      } else {
-        return b.id.localeCompare(a.id, undefined, { numeric: true });
-      }
-    }
-
-    if (sortBy === "totalServices") {
-      if (sortDir === "asc") {
-        return a.totalServices - b.totalServices;
-      } else {
-        return b.totalServices - a.totalServices;
-      }
-    }
-
-    if (sortBy === "envHandle") {
-      if (sortDir === "asc") {
-        return a.envHandle.localeCompare(b.envHandle);
-      } else {
-        return b.envHandle.localeCompare(a.envHandle);
-      }
-    }
-
-    if (sortDir === "asc") {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    } else {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    }
-  };
-};
-
-export const selectAppsForTableSearchByEnvironmentId = createSelector(
-  selectAppsForTable,
-  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: WebState, props: { envId?: string }) => props.envId || "",
-  (_: WebState, p: { sortBy: keyof DeployAppRow }) => p.sortBy,
-  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
-  (apps, search, envId, sortBy, sortDir): DeployAppRow[] => {
-    const sortFn = createAppSortFn(sortBy, sortDir);
-
-    if (search === "" && envId === "") {
-      return [...apps].sort(sortFn);
-    }
-
-    const results = apps.filter((app) => {
-      const searchMatch = computeSearchMatch(app, search);
-      const envIdMatch = envId !== "" && app.environmentId === envId;
-
-      if (envId !== "") {
-        if (search !== "") {
-          return envIdMatch && searchMatch;
-        }
-
-        return envIdMatch;
-      }
-
-      return searchMatch;
-    });
-
-    return results.sort(sortFn);
-  },
-);
-
-export const selectAppsForTableSearch = createSelector(
-  selectAppsForTable,
-  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: WebState, p: { sortBy: keyof DeployAppRow }) => p.sortBy,
-  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
-  (apps, search, sortBy, sortDir): DeployAppRow[] => {
-    const sortFn = createAppSortFn(sortBy, sortDir);
-
-    if (search === "") {
-      return [...apps].sort(sortFn);
-    }
-
-    return apps.filter((app) => computeSearchMatch(app, search)).sort(sortFn);
   },
 );
 
@@ -651,30 +356,10 @@ export const scaleService = api.post<
   };
 });
 
-export const pollAppAndServiceOperations = thunks.create<{ id: string }>(
-  "app-service-op-poll",
-  { supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`) },
-  function* (ctx, next) {
-    yield* schema.update(schema.loaders.start({ id: ctx.key }));
-
-    const services = yield* select((s: WebState) =>
-      selectServicesByAppId(s, {
-        appId: ctx.payload.id,
-      }),
-    );
-    const serviceOps = services.map(
-      (service) => () =>
-        fetchServiceOperations.run(fetchServiceOperations({ id: service.id })),
-    );
-    const group = yield* parallel([
-      () => fetchAppOperations.run(fetchAppOperations(ctx.payload)),
-      ...serviceOps,
-    ]);
-    yield* group;
-
-    yield* next();
-    yield* schema.update(schema.loaders.success({ id: ctx.key }));
-  },
+export const selectServicesByAppId = createSelector(
+  selectServicesAsList,
+  (_: WebState, p: { appId: string }) => p.appId,
+  (services, appId) => services.filter((s) => s.appId === appId),
 );
 
 export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(

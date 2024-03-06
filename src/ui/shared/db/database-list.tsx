@@ -1,6 +1,7 @@
 import { prettyDateTime } from "@app/date";
 import {
   DepGraphDb,
+  DeployDatabaseRow,
   calcMetrics,
   fetchDatabaseImages,
   fetchDatabases,
@@ -26,12 +27,13 @@ import {
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { DeployDatabase } from "@app/types";
+import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { usePaginate } from "../../hooks";
 import { Button, ButtonCreate } from "../button";
 import { Code } from "../code";
 import { Group } from "../group";
-import { IconPlusCircle } from "../icons";
+import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { OpStatus } from "../operation-status";
 import {
@@ -104,7 +106,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   );
   return (
     <Td>
-      <div className={tokens.type.darker}>${currentPrice}</div>
+      <div className={tokens.type.darker}>${currentPrice.toFixed(2)}</div>
     </Td>
   );
 };
@@ -162,6 +164,15 @@ const DatabaseActionsCell = ({ database }: DatabaseCellProps) => {
   );
 };
 
+const SortIcon = () => (
+  <div className="inline-block">
+    <IconChevronDown
+      variant="sm"
+      className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
+    />
+  </div>
+);
+
 export const DatabaseListByOrg = () => {
   const { isLoading } = useQuery(fetchDatabases());
   useQuery(fetchEnvironments());
@@ -171,12 +182,24 @@ export const DatabaseListByOrg = () => {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
+  const [sortBy, setSortBy] = useState<keyof DeployDatabaseRow>("createdAt");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const dbs = useSelector((s) =>
     selectDatabasesForTableSearch(s, {
       search,
+      sortBy,
+      sortDir,
     }),
   );
   const paginated = usePaginate(dbs);
+  const onSort = (key: keyof DeployDatabaseRow) => {
+    if (key === sortBy) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(key);
+      setSortDir("desc");
+    }
+  };
 
   return (
     <Group>
@@ -204,12 +227,42 @@ export const DatabaseListByOrg = () => {
 
       <Table>
         <THead>
-          <Th>Handle</Th>
-          <Th>ID</Th>
-          <Th>Environment</Th>
-          <Th>Disk Size</Th>
-          <Th>Container Size</Th>
-          <Th>Est. Monthly Cost</Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("handle")}
+          >
+            Handle <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("id")}
+          >
+            ID <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("envHandle")}
+          >
+            Environment <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("diskSize")}
+          >
+            Disk Size <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("containerSize")}
+          >
+            Container Size <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("cost")}
+          >
+            Est. Monthly Cost <SortIcon />
+          </Th>
           <Th variant="right">Actions</Th>
         </THead>
 
