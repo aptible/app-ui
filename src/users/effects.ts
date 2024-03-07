@@ -64,9 +64,9 @@ export const createUser = authApi.post<CreateUserForm, UserResponse>(
   },
 );
 
-export const createUserViaClaim = authApi.post<CreateUserForm, UserResponse>(
-  "/claims/:user",
-  function* onCreateUserViaClaim(ctx, next) {
+export const checkClaim = authApi.post<CreateUserForm, UserResponse>(
+  "/claims/user",
+  function* onCheckClaim(ctx, next) {
     const origin = yield* select(selectOrigin);
     ctx.request = ctx.req({
       body: JSON.stringify({ ...ctx.payload, origin }),
