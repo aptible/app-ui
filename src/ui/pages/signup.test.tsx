@@ -211,13 +211,13 @@ describe("Signup page", () => {
         );
       }),
     );
-  
+
     const { App } = setupAppIntegrationTest({
       initEntries: [signupUrl()],
     });
-  
+
     render(<App />);
-  
+
     const name = await screen.findByRole("textbox", { name: "name" });
     await act(() => userEvent.type(name, "mock name"));
     const company = await screen.findByRole("textbox", { name: "company" });
@@ -226,10 +226,10 @@ describe("Signup page", () => {
     await act(async () => userEvent.type(email, testEmail));
     const pass = await screen.findByLabelText("password");
     await act(() => userEvent.type(pass, "Aptible!1234"));
-  
+
     const btn = await screen.findByRole("button", { name: /Create Account/ });
     fireEvent.click(btn);
-  
+
     expect(await screen.findByText("mock error message")).toBeInTheDocument();
   });
 
