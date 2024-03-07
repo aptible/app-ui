@@ -123,10 +123,10 @@ export const fetchBackupsByEnvironmentId = api.get<
     orphaned: boolean;
   } & PaginateProps,
   HalEmbedded<{ backups: BackupResponse[] }>
->("/accounts/:id/backups", function* (ctx, next) {
+>("/accounts/:id/backups?page=:page", function* (ctx, next) {
   if (ctx.payload.orphaned) {
     ctx.request = ctx.req({
-      url: `${ctx.req().url}?orphaned=true`,
+      url: `${ctx.req().url}&orphaned=true`,
     });
   }
 
