@@ -30,8 +30,6 @@ import {
 } from "../environment";
 import {
   DeployOperationResponse,
-  findOperationsByDbId,
-  selectOperationsAsList,
   selectOperationsByDatabaseId,
   waitForOperation,
 } from "../operation";
@@ -136,6 +134,9 @@ export const deserializeDeployDatabase = (
 export interface DeployDatabaseRow extends DeployDatabase {
   envHandle: string;
   lastOperation: DeployOperation;
+  cost: number;
+  diskSize: number;
+  containerSize: number;
 }
 
 export const hasDeployDatabase = (a: DeployDatabase) => a.id !== "";
@@ -165,98 +166,6 @@ export const selectDatabasesByOrgAsList = createSelector(
     return dbs.filter((db) => {
       const env = findEnvById(envs, { id: db.environmentId });
       return hasDeployEnvironment(env);
-    });
-  },
-);
-
-export const selectDatabasesForTable = createSelector(
-  selectDatabasesByOrgAsList,
-  selectEnvironments,
-  selectOperationsAsList,
-  (dbs, envs, ops) =>
-    dbs
-      .map((dbb): DeployDatabaseRow => {
-        const env = findEnvById(envs, { id: dbb.environmentId });
-        const dbOps = findOperationsByDbId(ops, dbb.id);
-        let lastOperation = schema.operations.empty;
-        if (dbOps.length > 0) {
-          lastOperation = dbOps[0];
-        }
-        return { ...dbb, envHandle: env.handle, lastOperation };
-      })
-      .sort((a, b) => a.handle.localeCompare(b.handle)),
-);
-
-const selectSearchProp = (_: WebState, props: { search: string }) =>
-  props.search.toLocaleLowerCase();
-
-const computeSearchMatch = (db: DeployDatabaseRow, search: string): boolean => {
-  const handle = db.handle.toLocaleLowerCase();
-  const envHandle = db.envHandle.toLocaleLowerCase();
-  const dbType = db.type.toLocaleLowerCase();
-
-  let lastOpUser = "";
-  let lastOpType = "";
-  let lastOpStatus = "";
-  if (db.lastOperation) {
-    lastOpUser = db.lastOperation.userName.toLocaleLowerCase();
-    lastOpType = db.lastOperation.type.toLocaleLowerCase();
-    lastOpStatus = db.lastOperation.status.toLocaleLowerCase();
-  }
-
-  const handleMatch = handle.includes(search);
-  const envMatch = envHandle.includes(search);
-  const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
-  const opMatch = lastOpType !== "" && lastOpType.includes(search);
-  const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
-  const dbTypeMatch = dbType.includes(search);
-  const idMatch = search === db.id;
-
-  return (
-    handleMatch ||
-    dbTypeMatch ||
-    envMatch ||
-    opMatch ||
-    opStatusMatch ||
-    userMatch ||
-    idMatch
-  );
-};
-
-export const selectDatabasesForTableSearch = createSelector(
-  selectDatabasesForTable,
-  selectSearchProp,
-  (dbs, search): DeployDatabaseRow[] => {
-    if (search === "") {
-      return dbs;
-    }
-
-    return dbs.filter((db) => computeSearchMatch(db, search));
-  },
-);
-
-export const selectDatabasesForTableSearchByEnvironmentId = createSelector(
-  selectDatabasesForTable,
-  selectSearchProp,
-  (_: WebState, props: { envId?: string }) => props.envId || "",
-  (dbs, search, envId): DeployDatabaseRow[] => {
-    if (search === "" && envId === "") {
-      return dbs;
-    }
-
-    return dbs.filter((db) => {
-      const searchMatch = computeSearchMatch(db, search);
-      const envIdMatch = envId !== "" && db.environmentId === envId;
-
-      if (envId !== "") {
-        if (search !== "") {
-          return envIdMatch && searchMatch;
-        }
-
-        return envIdMatch;
-      }
-
-      return searchMatch;
     });
   },
 );

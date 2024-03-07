@@ -9,7 +9,7 @@ describe("hourlyAndMonthlyCostsForContainers", () => {
       1024,
     );
     expect(pricePerHour).toBe("0.08");
-    expect(pricePerMonth).toBe("116.96");
+    expect(pricePerMonth).toBe(116.96);
   });
   it("should test for regular r series container profile", () => {
     const { pricePerHour, pricePerMonth } = hourlyAndMonthlyCostsForContainers(
@@ -18,7 +18,7 @@ describe("hourlyAndMonthlyCostsForContainers", () => {
       1024,
     );
     expect(pricePerHour).toBe("0.05");
-    expect(pricePerMonth).toBe("73.10");
+    expect(pricePerMonth).toBe(73.1);
   });
   it("should test for regular m series container profile with disks", () => {
     const { pricePerHour, pricePerMonth } = hourlyAndMonthlyCostsForContainers(
@@ -28,6 +28,6 @@ describe("hourlyAndMonthlyCostsForContainers", () => {
       500,
     );
     expect(pricePerHour).toBe("0.05");
-    expect(pricePerMonth).toBe("173.10");
+    expect(pricePerMonth).toBe(173.1);
   });
 });

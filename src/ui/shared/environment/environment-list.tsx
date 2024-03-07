@@ -1,4 +1,5 @@
 import {
+  DeployEnvironmentRow,
   fetchEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
@@ -14,10 +15,11 @@ import {
 } from "@app/routes";
 import type { DeployEnvironment } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
+import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonAnyOwner } from "../button";
 import { Group } from "../group";
-import { IconPlusCircle } from "../icons";
+import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import {
   ActionBar,
@@ -108,6 +110,15 @@ const EnvironmentStackCell = ({ env }: EnvironmentCellProps) => {
   );
 };
 
+const SortIcon = () => (
+  <div className="inline-block">
+    <IconChevronDown
+      variant="sm"
+      className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
+    />
+  </div>
+);
+
 export function EnvironmentList({
   stackId = "",
   showTitle = true,
@@ -116,6 +127,8 @@ export function EnvironmentList({
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const { isLoading } = useLoader(fetchEnvironments());
+  const [sortBy, setSortBy] = useState<keyof DeployEnvironmentRow>("createdAt");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
@@ -125,9 +138,17 @@ export function EnvironmentList({
   };
 
   const envs = useSelector((s) =>
-    selectEnvironmentsForTableSearch(s, { search, stackId }),
+    selectEnvironmentsForTableSearch(s, { search, stackId, sortBy, sortDir }),
   );
   const paginated = usePaginate(envs);
+  const onSort = (key: keyof DeployEnvironmentRow) => {
+    if (key === sortBy) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(key);
+      setSortDir("desc");
+    }
+  };
 
   return (
     <Group>
@@ -167,11 +188,38 @@ export function EnvironmentList({
 
       <Table>
         <THead>
-          <Th>Environment</Th>
-          <Th>ID</Th>
-          <Th>Stack</Th>
-          <Th variant="center">Apps</Th>
-          <Th variant="center">Database</Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("handle")}
+          >
+            Environment <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("id")}
+          >
+            ID <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("stackName")}
+          >
+            Stack <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("totalAppCount")}
+            variant="center"
+          >
+            Apps <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("totalDatabaseCount")}
+            variant="center"
+          >
+            Databases <SortIcon />
+          </Th>
         </THead>
 
         <TBody>
