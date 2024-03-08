@@ -79,7 +79,7 @@ const authHandlers = [
         exception_context: {},
         error: "use_invitation",
         message: "mock error message",
-      })
+      }),
     );
   }),
   rest.post(`${testEnv.authUrl}/users`, (_, res, ctx) => {
