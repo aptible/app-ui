@@ -9,6 +9,7 @@ export type AuthErrorType =
   | "unsupported_grant_type"
   | "access_denied"
   | "invalid_scope"
+  | "use_invitation"
   | "";
 
 export interface AuthLoaderMeta {
