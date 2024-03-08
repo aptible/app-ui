@@ -70,6 +70,7 @@ describe("Deployments page", () => {
           ),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -81,6 +82,7 @@ describe("Deployments page", () => {
           ),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -92,6 +94,7 @@ describe("Deployments page", () => {
           ),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       }),
     ];
@@ -169,6 +172,7 @@ describe("Deployments page", () => {
           ),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -180,6 +184,7 @@ describe("Deployments page", () => {
           ),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -191,6 +196,7 @@ describe("Deployments page", () => {
           ),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -200,6 +206,7 @@ describe("Deployments page", () => {
           account: defaultHalHref(`${testEnv.apiUrl}/accounts/${envLegacy.id}`),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       }),
     ];

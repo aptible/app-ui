@@ -32,6 +32,7 @@ export interface DeployApp extends Provisionable, Timestamps {
   environmentId: string;
   currentConfigurationId: string;
   currentImageId: string;
+  currentDeploymentId: string;
 }
 
 export type InstanceClass = "m4" | "m5" | "r4" | "r5" | "c4" | "c5";

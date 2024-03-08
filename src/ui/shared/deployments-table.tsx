@@ -1,27 +1,21 @@
 import { prettyDateTime } from "@app/date";
 import { selectAppById, selectOperationById } from "@app/deploy";
 import { useSelector } from "@app/react";
-import {
-  appDetailUrl,
-  deploymentDetailRollbackUrl,
-  deploymentDetailUrl,
-} from "@app/routes";
+import { appDetailUrl, deploymentDetailUrl } from "@app/routes";
 import { DeployApp, Deployment } from "@app/types";
 import { Link } from "react-router-dom";
-import { ButtonLink } from "./button";
 import { Code } from "./code";
 import { OpStatus } from "./operation-status";
 import { TBody, THead, Table, Td, Tr } from "./table";
 
 function DeploymentRow({
-  app,
   deployment,
 }: { app: DeployApp; deployment: Deployment }) {
   const op = useSelector((s) =>
     selectOperationById(s, { id: deployment.operationId }),
   );
   const ref = deployment.dockerTag || deployment.gitHead;
-  const isActive = app.currentDeploymentId === deployment.id;
+  // const isActive = app.currentDeploymentId === deployment.id;
 
   return (
     <Tr>
@@ -36,13 +30,6 @@ function DeploymentRow({
         <Code>{ref}</Code>
       </Td>
       <Td>{prettyDateTime(deployment.createdAt)}</Td>
-      <Td variant="right">
-        {isActive ? null : (
-          <ButtonLink size="sm" to={deploymentDetailRollbackUrl(deployment.id)}>
-            Rollback
-          </ButtonLink>
-        )}
-      </Td>
     </Tr>
   );
 }
@@ -59,7 +46,6 @@ export function DeploymentsTable({
         <Td>Type</Td>
         <Td>Ref</Td>
         <Td>Date</Td>
-        <Td variant="right">Actions</Td>
       </THead>
 
       <TBody>

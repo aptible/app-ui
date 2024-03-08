@@ -74,6 +74,7 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
     status: "pending",
     environmentId: "",
     currentConfigurationId: "",
+    currentDeploymentId: "",
     currentImageId: "",
     ...a,
   };

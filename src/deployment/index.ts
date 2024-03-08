@@ -1,7 +1,7 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, db } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import { Deployment, LinkResponse } from "@app/types";
 
 export interface DeploymentResponse {
@@ -71,9 +71,9 @@ export const deserializeDeployment = (
   };
 };
 
-export const selectDeploymentById = db.deployments.selectById;
+export const selectDeploymentById = schema.deployments.selectById;
 const selectDeploymentsAsList = createSelector(
-  db.deployments.selectTableAsList,
+  schema.deployments.selectTableAsList,
   (deployments) =>
     deployments.sort((a, b) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -127,7 +127,7 @@ export const rollbackDeployment = api.post<{
 export const entities = {
   deployment: defaultEntity({
     id: "deployment",
-    save: db.deployments.add,
+    save: schema.deployments.add,
     deserialize: deserializeDeployment,
   }),
 };

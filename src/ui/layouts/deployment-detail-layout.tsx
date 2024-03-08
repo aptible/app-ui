@@ -12,7 +12,6 @@ import {
   appDetailUrl,
   deploymentDetailConfigUrl,
   deploymentDetailLogsUrl,
-  deploymentDetailRollbackUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { DeployApp, DeployOperation, Deployment } from "@app/types";
@@ -82,7 +81,6 @@ function DeploymentPageHeader() {
   const tabs: TabItem[] = [
     { name: "Logs", href: deploymentDetailLogsUrl(id) },
     { name: "Configuration", href: deploymentDetailConfigUrl(id) },
-    { name: "Rollback", href: deploymentDetailRollbackUrl(id) },
   ];
 
   return (

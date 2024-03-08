@@ -1,4 +1,5 @@
 import {
+  configEnvToStr,
   fetchConfiguration,
   selectAppById,
   selectAppConfigById,
@@ -8,14 +9,7 @@ import { useQuery, useSelector } from "@app/react";
 import { Deployment } from "@app/types";
 import { useState } from "react";
 import { useParams } from "react-router";
-import {
-  Box,
-  ButtonFullVisibility,
-  Group,
-  PreBox,
-  configToTextSegment,
-  tokens,
-} from "../shared";
+import { Box, ButtonFullVisibility, Group, PreBox, tokens } from "../shared";
 
 const ConfigView = ({
   deployment,
@@ -26,7 +20,7 @@ const ConfigView = ({
   const config = useSelector((s) =>
     selectAppConfigById(s, { id: deployment.configurationId }),
   );
-  const envs = configToTextSegment(config.env);
+  const envStr = configEnvToStr(config.env);
 
   return (
     <>
@@ -41,7 +35,10 @@ const ConfigView = ({
               Hide
             </ButtonFullVisibility>
           </div>
-          <PreBox allowCopy segments={envs} />
+          <PreBox
+            allowCopy
+            segments={[{ text: envStr, className: "text-white" }]}
+          />
         </Group>
       ) : (
         <div>

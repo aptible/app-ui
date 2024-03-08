@@ -65,3 +65,4 @@ export * from "./org-requirements";
 export * from "./survey";
 export * from "./env-editor";
 export * from "./app-auto-deploy-guide";
+export * from "./deployments-table";

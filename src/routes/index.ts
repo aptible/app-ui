@@ -132,6 +132,18 @@ export const appCiCdGithubUrl = (id: string) =>
   `${appDetailUrl(id)}/ci-cd/github`;
 export const APP_DETAIL_DEPS_PATH = `${APP_DETAIL_PATH}/deps`;
 export const appDetailDepsUrl = (id: string) => `/apps/${id}/deps`;
+export const APP_DETAIL_DEPLOYMENTS_PATH = "/apps/:id/deployments";
+export const appDetailDeploymentsUrl = (id: string) =>
+  `/apps/${id}/deployments`;
+
+export const DEPLOYMENT_DETAIL_PATH = "/deployments/:id";
+export const deploymentDetailUrl = (id: string) => `/deployments/${id}`;
+export const DEPLOYMENT_DETAIL_LOGS_PATH = "/deployments/:id/logs";
+export const deploymentDetailLogsUrl = (id: string) =>
+  `/deployments/${id}/logs`;
+export const DEPLOYMENT_DETAIL_CONFIG_PATH = "/deployments/:id/config";
+export const deploymentDetailConfigUrl = (id: string) =>
+  `/deployments/${id}/config`;
 
 export const DATABASES_PATH = "/databases";
 export const databaseUrl = () => DATABASES_PATH;
