@@ -36,7 +36,7 @@ export const ElevatePage = () => {
   const navigate = useNavigate();
   const user = useSelector(selectCurrentUser);
   const [params] = useSearchParams();
-  const redirect = params.get("redirect");
+  const redirect = params.get("redirect") || "";
 
   const [otpToken, setOtpToken] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -57,7 +57,11 @@ export const ElevatePage = () => {
   const webauthnLoader = useLoader(webauthnAction);
 
   useLoaderSuccess(loader, () => {
-    navigate(redirect || homeUrl());
+    if (/^\/\w+/.test(redirect)) {
+      navigate(redirect);
+    } else {
+      navigate(homeUrl());
+    }
     dispatch(resetRedirectPath());
   });
 
