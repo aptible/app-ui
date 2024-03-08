@@ -183,3 +183,8 @@ export const parseText = <
 
   return items;
 };
+
+export const allowLocalUrls = (url: string) => {
+  if (url === "/") return true;
+  return /^\/\w./.test(url);
+};

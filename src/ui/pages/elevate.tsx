@@ -12,6 +12,7 @@ import {
 } from "@app/react";
 import { resetRedirectPath } from "@app/redirect-path";
 import { forgotPassUrl, homeUrl } from "@app/routes";
+import { allowLocalUrls } from "@app/string-utils";
 import { selectCurrentUser } from "@app/users";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -57,7 +58,7 @@ export const ElevatePage = () => {
   const webauthnLoader = useLoader(webauthnAction);
 
   useLoaderSuccess(loader, () => {
-    if (/^\/\w+/.test(redirect)) {
+    if (allowLocalUrls(redirect)) {
       navigate(redirect);
     } else {
       navigate(homeUrl());
