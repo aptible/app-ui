@@ -71,8 +71,16 @@ const authHandlers = [
   rest.put(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
     return res(ctx.json(testUser));
   }),
-  rest.post(`${testEnv.authUrl}/claim/user`, (_, res, ctx) => {
-    return res(ctx.json(testUser));
+  rest.post(`${testEnv.authUrl}/claims/user`, (_, res, ctx) => {
+    return res(
+      ctx.status(400),
+      ctx.json({
+        code: 400,
+        exception_context: {},
+        error: "use_invitation",
+        message: "mock error message",
+      })
+    );
   }),
   rest.post(`${testEnv.authUrl}/users`, (_, res, ctx) => {
     return res(ctx.json(testUser));

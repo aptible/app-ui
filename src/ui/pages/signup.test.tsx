@@ -197,15 +197,15 @@ describe("Signup page", () => {
   it("errors properly when claim fails (check claim)", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
-        return res(ctx.status(401));
+        return res(ctx.status(400));
       }),
       rest.post(`${testEnv.authUrl}/claim/users`, (_, res, ctx) => {
         return res(
-          ctx.status(401),
+          ctx.status(400),
           ctx.json({
-            code: 401,
+            code: 400,
             exception_context: {},
-            error: "invalid_credentials",
+            error: "use_invitation",
             message: "mock error message",
           }),
         );

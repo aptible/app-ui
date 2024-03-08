@@ -12,7 +12,8 @@ export const isAuthenticationError = (error: AuthErrorType) => {
     error === "invalid_email" ||
     error === "unsupported_grant_type" ||
     error === "access_denied" ||
-    error === "invalid_scope"
+    error === "invalid_scope" ||
+    error === "use_invitation"
   );
 };
 
