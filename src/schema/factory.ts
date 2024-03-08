@@ -28,6 +28,7 @@ import {
   DeployStack,
   DeployVpcPeer,
   DeployVpnTunnel,
+  Deployment,
   Invitation,
   Membership,
   ModalType,
@@ -796,5 +797,25 @@ export const defaultMembership = (m: Partial<Membership> = {}): Membership => {
     createdAt: now,
     updatedAt: now,
     ...m,
+  };
+};
+
+export const defaultDeployment = (a: Partial<Deployment> = {}): Deployment => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    modifiedEnvKeys: [],
+    dockerTag: "",
+    dockerSha: "",
+    gitHead: "",
+    gitSha: "",
+    createdAt: now,
+    updatedAt: now,
+    appId: "",
+    operationId: "",
+    imageId: "",
+    configurationId: "",
+    sourceId: "",
+    ...a,
   };
 };
