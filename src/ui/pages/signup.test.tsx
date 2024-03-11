@@ -199,7 +199,7 @@ describe("Signup page", () => {
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
         return res(ctx.status(400));
       }),
-      rest.post(`${testEnv.authUrl}/claim/users`, (_, res, ctx) => {
+      rest.post(`${testEnv.authUrl}/claims/user`, (_, res, ctx) => {
         return res(
           ctx.status(400),
           ctx.json({
