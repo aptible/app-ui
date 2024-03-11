@@ -7,6 +7,9 @@ describe("isLocalPath", () => {
     expect(isLocalPath("/settings/security")).toBe(true);
     expect(isLocalPath("/")).toBe(true);
     expect(isLocalPath("/apps")).toBe(true);
+    expect(isLocalPath("/apps/1234")).toBe(true);
+    expect(isLocalPath("/apps/1234/services")).toBe(true);
+    expect(isLocalPath("/apps?query=string")).toBe(true);
   });
 
   it("should reject remote urls", () => {
