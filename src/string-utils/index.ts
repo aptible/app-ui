@@ -184,7 +184,7 @@ export const parseText = <
   return items;
 };
 
-export const allowLocalUrls = (url: string) => {
+export const isLocalPath = (url: string): boolean => {
   if (url === "/") return true;
-  return /^\/\w./.test(url);
+  return /^\/\w+/.test(url);
 };
