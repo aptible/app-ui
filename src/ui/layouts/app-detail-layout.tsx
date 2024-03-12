@@ -19,6 +19,7 @@ import {
   appActivityUrl,
   appCiCdUrl,
   appConfigUrl,
+  appDetailDeploymentsUrl,
   appDetailDepsUrl,
   appDetailUrl,
   appEndpointsUrl,
@@ -136,6 +137,7 @@ function AppPageHeader() {
 
   const tabs: TabItem[] = [
     { name: "Services", href: appServicesUrl(id) },
+    { name: "Deployments", href: appDetailDeploymentsUrl(id) },
     { name: "Endpoints", href: appEndpointsUrl(id) },
     { name: "Activity", href: appActivityUrl(id) },
     { name: "Configuration", href: appConfigUrl(id) },

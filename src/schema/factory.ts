@@ -805,18 +805,19 @@ export const defaultDeployment = (a: Partial<Deployment> = {}): Deployment => {
   const now = new Date().toISOString();
   return {
     id: "",
-    modifiedEnvKeys: [],
-    dockerTag: "",
-    dockerSha: "",
-    gitHead: "",
-    gitSha: "",
+    dockerImage: "",
+    status: "",
+    gitRepositoryUrl: "",
+    gitRef: "",
+    gitCommitSha: "",
+    gitCommitUrl: "",
+    gitCommitMessage: "",
     createdAt: now,
     updatedAt: now,
     appId: "",
     operationId: "",
     imageId: "",
     configurationId: "",
-    sourceId: "",
     ...a,
   };
 };

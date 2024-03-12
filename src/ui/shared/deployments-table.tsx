@@ -1,12 +1,49 @@
 import { prettyDateTime } from "@app/date";
-import { selectAppById, selectOperationById } from "@app/deploy";
+import { selectOperationById } from "@app/deploy";
 import { useSelector } from "@app/react";
-import { appDetailUrl, deploymentDetailUrl } from "@app/routes";
+import { deploymentDetailUrl } from "@app/routes";
+import { prettyGitSha } from "@app/string-utils";
 import { DeployApp, Deployment } from "@app/types";
 import { Link } from "react-router-dom";
-import { Code } from "./code";
+import { ExternalLink } from ".";
 import { OpStatus } from "./operation-status";
 import { TBody, THead, Table, Td, Tr } from "./table";
+
+function getRefText(deployment: Deployment): string {
+  if (deployment.dockerImage) {
+    return deployment.dockerImage;
+  }
+
+  if (deployment.gitRef) {
+    return `${deployment.gitRef} (${prettyGitSha(deployment.gitCommitSha)})`;
+  }
+
+  return deployment.gitCommitSha;
+}
+
+function SourceRef({ deployment }: { deployment: Deployment }) {
+  const ref = getRefText(deployment);
+
+  if (deployment.gitRepositoryUrl) {
+    return (
+      <ExternalLink href={deployment.gitRepositoryUrl}>{ref}</ExternalLink>
+    );
+  }
+
+  return <span>{ref}</span>;
+}
+
+function GitMetadata({ deployment }: { deployment: Deployment }) {
+  if (!deployment.gitCommitUrl) {
+    return <span>deployment.gitCommitMessage</span>;
+  }
+
+  return (
+    <ExternalLink href={deployment.gitCommitUrl}>
+      {deployment.gitCommitMessage}
+    </ExternalLink>
+  );
+}
 
 function DeploymentRow({
   deployment,
@@ -14,7 +51,6 @@ function DeploymentRow({
   const op = useSelector((s) =>
     selectOperationById(s, { id: deployment.operationId }),
   );
-  const ref = deployment.dockerTag || deployment.gitHead;
   // const isActive = app.currentDeploymentId === deployment.id;
 
   return (
@@ -25,9 +61,11 @@ function DeploymentRow({
       <Td>
         <OpStatus status={op.status} />
       </Td>
-      <Td>{op.type}</Td>
       <Td>
-        <Code>{ref}</Code>
+        <SourceRef deployment={deployment} />
+      </Td>
+      <Td>
+        <GitMetadata deployment={deployment} />
       </Td>
       <Td>{prettyDateTime(deployment.createdAt)}</Td>
     </Tr>
@@ -43,8 +81,8 @@ export function DeploymentsTable({
       <THead>
         <Td>ID</Td>
         <Td>Status</Td>
-        <Td>Type</Td>
-        <Td>Ref</Td>
+        <Td>Source</Td>
+        <Td>Message</Td>
         <Td>Date</Td>
       </THead>
 
@@ -53,57 +91,6 @@ export function DeploymentsTable({
           return (
             <DeploymentRow key={deploy.id} app={app} deployment={deploy} />
           );
-        })}
-      </TBody>
-    </Table>
-  );
-}
-
-function SourceDeploymentRow({ deployment }: { deployment: Deployment }) {
-  const op = useSelector((s) =>
-    selectOperationById(s, { id: deployment.operationId }),
-  );
-  const app = useSelector((s) => selectAppById(s, { id: deployment.appId }));
-  const ref = deployment.dockerTag || deployment.gitHead;
-
-  return (
-    <Tr>
-      <Td>
-        <Link to={appDetailUrl(app.id)}>{app.handle}</Link>
-      </Td>
-      <Td>
-        <Link to={deploymentDetailUrl(deployment.id)}>{deployment.id}</Link>
-      </Td>
-      <Td>
-        <OpStatus status={op.status} />
-      </Td>
-      <Td>{op.type}</Td>
-      <Td>
-        <Code>{ref}</Code>
-      </Td>
-      <Td>{prettyDateTime(deployment.createdAt)}</Td>
-    </Tr>
-  );
-}
-
-export function DeploymentsTableBySource({
-  deployments,
-}: { deployments: Deployment[] }) {
-  return (
-    <Table>
-      <THead>
-        <Td>App</Td>
-        <Td>ID</Td>
-        <Td>Status</Td>
-        <Td>Type</Td>
-        <Td>Source Ref</Td>
-        <Td>Date</Td>
-        <Td variant="right">Actions</Td>
-      </THead>
-
-      <TBody>
-        {deployments.map((deploy) => {
-          return <SourceDeploymentRow key={deploy.id} deployment={deploy} />;
         })}
       </TBody>
     </Table>

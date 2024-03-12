@@ -6,11 +6,13 @@ import { Deployment, LinkResponse } from "@app/types";
 
 export interface DeploymentResponse {
   id: string;
-  modified_env_keys: string[];
-  docker_tag: string;
-  git_head: string;
-  docker_sha: string;
-  git_sha: string;
+  status: string;
+  docker_image: string;
+  git_repository_url: string;
+  git_ref: string;
+  git_commit_sha: string;
+  git_commit_url: string;
+  git_commit_message: string;
   created_at: string;
   updated_at: string;
   _links: {
@@ -18,7 +20,6 @@ export interface DeploymentResponse {
     operation: LinkResponse;
     configuration: LinkResponse;
     image: LinkResponse;
-    source: LinkResponse;
   };
   _type: "deployment";
 }
@@ -29,17 +30,18 @@ export const defaultDeploymentResponse = (
   const now = new Date().toISOString();
   return {
     id: "",
-    modified_env_keys: [],
-    docker_tag: "",
-    git_head: "",
-    docker_sha: "",
-    git_sha: "",
+    status: "",
+    docker_image: "",
+    git_repository_url: "",
+    git_ref: "",
+    git_commit_sha: "",
+    git_commit_url: "",
+    git_commit_message: "",
     created_at: now,
     updated_at: now,
     _links: {
       app: defaultHalHref(),
       operation: defaultHalHref(),
-      source: defaultHalHref(),
       configuration: defaultHalHref(),
       image: defaultHalHref(),
       ...p._links,
@@ -56,18 +58,19 @@ export const deserializeDeployment = (
 
   return {
     id: `${payload.id}`,
-    modifiedEnvKeys: payload.modified_env_keys,
-    dockerTag: payload.docker_tag,
-    dockerSha: payload.docker_sha,
-    gitHead: payload.git_head,
-    gitSha: payload.git_sha,
+    dockerImage: payload.docker_image,
+    status: payload.status,
+    gitRepositoryUrl: payload.git_repository_url,
+    gitRef: payload.git_ref,
+    gitCommitSha: payload.git_commit_sha,
+    gitCommitUrl: payload.git_commit_url,
+    gitCommitMessage: payload.git_commit_message,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     appId: extractIdFromLink(links.app),
     operationId: extractIdFromLink(links.operation),
     imageId: extractIdFromLink(links.image),
     configurationId: extractIdFromLink(links.configuration),
-    sourceId: extractIdFromLink(links.source),
   };
 };
 
@@ -94,13 +97,35 @@ export const selectDeploymentsBySourceId = createSelector(
   },
 );
 
+const mockDeployments = [
+  defaultDeploymentResponse({
+    id: "1",
+    docker_image: "",
+    git_repository_url: "https://github.com/aptible/app-ui",
+    git_ref: "v3",
+    git_commit_message: "fix(backup): pass page to fetch request (#754)",
+    git_commit_sha: "a947a95a92e7a7a4db7fe01c28346281c128b859",
+    git_commit_url:
+      "https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859",
+    _links: {
+      app: defaultHalHref("https://api.aptible.com/apps/19"),
+      operation: defaultHalHref("https://api.aptible.com/operations/1397"),
+      configuration: defaultHalHref(),
+      image: defaultHalHref(),
+    },
+  }),
+];
+
 export const fetchDeploymentById = api.get<{ id: string }>("/deployments/:id");
 
 export const fetchDeploymentsByAppId = api.get<{ id: string }>(
   "/apps/:id/deployments",
-);
-export const fetchDeploymentsBySourceId = api.get<{ id: string }>(
-  "/sources/:id/deployments",
+  function* (ctx, next) {
+    ctx.response = new Response(
+      JSON.stringify({ _embedded: { deployments: mockDeployments } }),
+    );
+    yield* next();
+  },
 );
 
 export const rollbackDeployment = api.post<{

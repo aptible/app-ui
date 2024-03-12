@@ -67,16 +67,17 @@ export interface DeployServiceRow extends DeployService {
 
 export interface Deployment {
   id: string;
-  dockerTag: string;
-  gitHead: string;
-  dockerSha: string;
-  modifiedEnvKeys: string[];
-  gitSha: string;
+  dockerImage: string;
+  status: string;
+  gitRepositoryUrl: string;
+  gitRef: string;
+  gitCommitSha: string;
+  gitCommitUrl: string;
+  gitCommitMessage: string;
   createdAt: string;
   updatedAt: string;
-  appId: string;
   operationId: string;
+  appId: string;
   configurationId: string;
   imageId: string;
-  sourceId: string;
 }

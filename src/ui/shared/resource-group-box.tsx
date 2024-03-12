@@ -7,6 +7,7 @@ import {
 } from "@app/deploy";
 import { useSelector } from "@app/react";
 import { environmentAppsUrl } from "@app/routes";
+import { prettyGitSha } from "@app/string-utils";
 import { Link } from "react-router-dom";
 import { EndpointUrl } from "./endpoint";
 import { IconGitBranch, IconGlobe } from "./icons";
@@ -69,7 +70,7 @@ export const ResourceGroupBox = ({
             icon={<IconGitBranch color="#595E63" variant="sm" />}
             title={deployOp.gitRef}
           >
-            {deployOp.gitRef.slice(0, 7) || "Pending"}
+            {prettyGitSha(deployOp.gitRef) || "Pending"}
           </Pill>
         </div>
       </div>
