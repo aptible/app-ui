@@ -9,41 +9,49 @@ import { useSelector } from "@app/react";
 import { deploymentDetailUrl } from "@app/routes";
 import { DeployApp, Deployment } from "@app/types";
 import { Link } from "react-router-dom";
-import { tokens } from ".";
 import { ButtonLink } from "./button";
-import { Code } from "./code";
 import { ExternalLink } from "./external-link";
 import { OpStatus } from "./operation-status";
 import { EmptyTr, TBody, THead, Table, Td, Tr } from "./table";
+import { tokens } from "./tokens";
 
-export function SourceName({ deployment }: { deployment: Deployment }) {
+export function SourceName({
+  app,
+  deployment,
+}: { app: DeployApp; deployment: Deployment }) {
   if (deployment.dockerImage) {
     const repoName = getRegistryParts(deployment.dockerImage).name;
     if (deployment.dockerRepositoryUrl) {
       return (
-        <ExternalLink href={deployment.dockerRepositoryUrl}>
-          <Code>{repoName}</Code>
+        <ExternalLink
+          href={deployment.dockerRepositoryUrl}
+          className={tokens.type["table link"]}
+        >
+          {repoName}
         </ExternalLink>
       );
     }
-    return <Code>{repoName}</Code>;
+    return repoName;
   }
 
   const repoName = getRepoNameFromUrl(deployment.gitRepositoryUrl);
   if (deployment.gitRepositoryUrl) {
     return (
-      <ExternalLink href={deployment.gitRepositoryUrl}>
-        <Code>{repoName}</Code>
+      <ExternalLink
+        href={deployment.gitRepositoryUrl}
+        className={tokens.type["table link"]}
+      >
+        {repoName}
       </ExternalLink>
     );
   }
 
-  return <Code>{repoName}</Code>;
+  return repoName || app.gitRepo;
 }
 
 export function GitMetadata({ deployment }: { deployment: Deployment }) {
   if (!deployment.gitCommitUrl) {
-    return <span>deployment.gitCommitMessage</span>;
+    return <span>{deployment.gitCommitMessage}</span>;
   }
 
   return (
@@ -57,6 +65,7 @@ export function GitMetadata({ deployment }: { deployment: Deployment }) {
 }
 
 function DeploymentRow({
+  app,
   deployment,
 }: { app: DeployApp; deployment: Deployment }) {
   const op = useSelector((s) =>
@@ -78,7 +87,7 @@ function DeploymentRow({
         <OpStatus status={op.status} />
       </Td>
       <Td>
-        <SourceName deployment={deployment} />
+        <SourceName app={app} deployment={deployment} />
       </Td>
       <Td>{getTagText(deployment)}</Td>
       <Td>

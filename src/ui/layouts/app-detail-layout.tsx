@@ -90,37 +90,35 @@ export function AppHeader({
 
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
-        <DetailInfoItem title="Last Deployed">
-          {lastDeployOp
-            ? `${prettyDateTime(lastDeployOp.createdAt)}`
-            : "Unknown"}
+        <DetailInfoItem title="Git Ref">
+          <CopyText text={gitRef}>
+            <Code>{prettyGitSha(gitRef)}</Code>
+          </CopyText>
         </DetailInfoItem>
 
         {deployment.id ? (
           <>
             <DetailInfoItem title="Source">
-              <SourceName deployment={deployment} />
+              <SourceName app={app} deployment={deployment} />
             </DetailInfoItem>
-            <DetailInfoItem title="Git">
-              <GitMetadata deployment={deployment} />
-            </DetailInfoItem>
+            {deployment.gitCommitMessage ? (
+              <DetailInfoItem title="Git">
+                <GitMetadata deployment={deployment} />
+              </DetailInfoItem>
+            ) : null}
             <DetailInfoItem title="Tag">
               <Code>{getTagText(deployment)}</Code>
             </DetailInfoItem>
           </>
         ) : null}
 
-        <DetailInfoItem title="Git Ref">
-          <CopyText text={gitRef}>
-            <Code>{prettyGitSha(gitRef)}</Code>
-          </CopyText>
+        <DetailInfoItem title="Last Deployed">
+          {lastDeployOp
+            ? `${prettyDateTime(lastDeployOp.createdAt)}`
+            : "Unknown"}
         </DetailInfoItem>
         <DetailInfoItem title="Docker Image">
           <CopyText text={`${dockerImage}`} />
-        </DetailInfoItem>
-
-        <DetailInfoItem title="Git Remote">
-          <CopyText text={app.gitRepo} />
         </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>

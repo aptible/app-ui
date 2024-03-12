@@ -66,15 +66,17 @@ export function DeploymentHeader({
         </DetailInfoItem>
 
         <DetailInfoItem title="Source">
-          <SourceName deployment={deployment} />
+          <SourceName app={app} deployment={deployment} />
         </DetailInfoItem>
         <DetailInfoItem title="Tag">
           <Code>{getTagText(deployment)}</Code>
         </DetailInfoItem>
 
-        <DetailInfoItem title="Git">
-          <GitMetadata deployment={deployment} />
-        </DetailInfoItem>
+        {deployment.gitCommitMessage ? (
+          <DetailInfoItem title="Git">
+            <GitMetadata deployment={deployment} />
+          </DetailInfoItem>
+        ) : null}
         <DetailInfoItem title="User">
           {op.userName}
           <div className="text-gray-500">Note: {op.note || "N/A"}</div>

@@ -108,11 +108,11 @@ export function getTagText(deployment: Deployment): string {
     return `${deployment.gitRef} (${prettyGitSha(deployment.gitCommitSha)})`;
   }
 
-  return deployment.gitCommitSha;
+  return prettyGitSha(deployment.gitCommitSha);
 }
 
 export function getRepoNameFromUrl(url: string): string {
-  return url.replace("https://", "") || "unknown";
+  return url.replace("https://", "");
 }
 
 const mockDeployments = [
