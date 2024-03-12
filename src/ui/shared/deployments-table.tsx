@@ -1,39 +1,46 @@
 import { prettyDateTime } from "@app/date";
 import { selectOperationById } from "@app/deploy";
+import {
+  getRegistryParts,
+  getRepoNameFromUrl,
+  getTagText,
+} from "@app/deployment";
 import { useSelector } from "@app/react";
 import { deploymentDetailUrl } from "@app/routes";
-import { prettyGitSha } from "@app/string-utils";
 import { DeployApp, Deployment } from "@app/types";
 import { Link } from "react-router-dom";
-import { ExternalLink } from ".";
+import { ButtonLink } from "./button";
+import { Code } from "./code";
+import { ExternalLink } from "./external-link";
 import { OpStatus } from "./operation-status";
-import { TBody, THead, Table, Td, Tr } from "./table";
+import { EmptyTr, TBody, THead, Table, Td, Tr } from "./table";
 
-function getRefText(deployment: Deployment): string {
+export function SourceName({ deployment }: { deployment: Deployment }) {
   if (deployment.dockerImage) {
-    return deployment.dockerImage;
+    const repoName = getRegistryParts(deployment.dockerImage).name;
+    if (deployment.dockerRepositoryUrl) {
+      return (
+        <ExternalLink href={deployment.dockerRepositoryUrl}>
+          <Code>{repoName}</Code>
+        </ExternalLink>
+      );
+    }
+    return <Code>{repoName}</Code>;
   }
 
-  if (deployment.gitRef) {
-    return `${deployment.gitRef} (${prettyGitSha(deployment.gitCommitSha)})`;
-  }
-
-  return deployment.gitCommitSha;
-}
-
-function SourceRef({ deployment }: { deployment: Deployment }) {
-  const ref = getRefText(deployment);
-
+  const repoName = getRepoNameFromUrl(deployment.gitRepositoryUrl);
   if (deployment.gitRepositoryUrl) {
     return (
-      <ExternalLink href={deployment.gitRepositoryUrl}>{ref}</ExternalLink>
+      <ExternalLink href={deployment.gitRepositoryUrl}>
+        <Code>{repoName}</Code>
+      </ExternalLink>
     );
   }
 
-  return <span>{ref}</span>;
+  return <Code>{repoName}</Code>;
 }
 
-function GitMetadata({ deployment }: { deployment: Deployment }) {
+export function GitMetadata({ deployment }: { deployment: Deployment }) {
   if (!deployment.gitCommitUrl) {
     return <span>deployment.gitCommitMessage</span>;
   }
@@ -62,12 +69,23 @@ function DeploymentRow({
         <OpStatus status={op.status} />
       </Td>
       <Td>
-        <SourceRef deployment={deployment} />
+        <SourceName deployment={deployment} />
       </Td>
+      <Td>{getTagText(deployment)}</Td>
       <Td>
         <GitMetadata deployment={deployment} />
       </Td>
       <Td>{prettyDateTime(deployment.createdAt)}</Td>
+      <Td variant="right">
+        <ButtonLink
+          to={deploymentDetailUrl(deployment.id)}
+          size="sm"
+          className="w-15"
+          variant="primary"
+        >
+          View
+        </ButtonLink>
+      </Td>
     </Tr>
   );
 }
@@ -82,11 +100,16 @@ export function DeploymentsTable({
         <Td>ID</Td>
         <Td>Status</Td>
         <Td>Source</Td>
+        <Td>Tag</Td>
         <Td>Message</Td>
         <Td>Date</Td>
+        <Td variant="right">Actions</Td>
       </THead>
 
       <TBody>
+        {deployments.length === 0 ? (
+          <EmptyTr colSpan={7}>No deployments found</EmptyTr>
+        ) : null}
         {deployments.map((deploy) => {
           return (
             <DeploymentRow key={deploy.id} app={app} deployment={deploy} />

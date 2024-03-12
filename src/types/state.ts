@@ -68,6 +68,7 @@ export interface DeployServiceRow extends DeployService {
 export interface Deployment {
   id: string;
   dockerImage: string;
+  dockerRepositoryUrl: string;
   status: string;
   gitRepositoryUrl: string;
   gitRef: string;

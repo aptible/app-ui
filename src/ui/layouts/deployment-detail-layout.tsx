@@ -5,7 +5,11 @@ import {
   selectAppById,
   selectOperationById,
 } from "@app/deploy";
-import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
+import {
+  fetchDeploymentById,
+  getTagText,
+  selectDeploymentById,
+} from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailDeploymentsUrl,
@@ -17,12 +21,15 @@ import { capitalize } from "@app/string-utils";
 import type { DeployApp, DeployOperation, Deployment } from "@app/types";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
+  Code,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  GitMetadata,
   OpStatus,
+  SourceName,
   TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
@@ -54,9 +61,19 @@ export function DeploymentHeader({
         <DetailInfoItem title="Status">
           <OpStatus status={op.status} />
         </DetailInfoItem>
-
         <DetailInfoItem title="App">
           <Link to={appDetailUrl(app.id)}>{app.handle}</Link>
+        </DetailInfoItem>
+
+        <DetailInfoItem title="Source">
+          <SourceName deployment={deployment} />
+        </DetailInfoItem>
+        <DetailInfoItem title="Tag">
+          <Code>{getTagText(deployment)}</Code>
+        </DetailInfoItem>
+
+        <DetailInfoItem title="Git">
+          <GitMetadata deployment={deployment} />
         </DetailInfoItem>
         <DetailInfoItem title="User">
           {op.userName}

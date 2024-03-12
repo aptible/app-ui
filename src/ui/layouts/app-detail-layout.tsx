@@ -13,6 +13,7 @@ import {
   selectLatestDeployOp,
   selectUserHasPerms,
 } from "@app/deploy";
+import { getTagText } from "@app/deployment";
 import { findLoaderComposite } from "@app/loaders";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
@@ -27,19 +28,24 @@ import {
   appSettingsUrl,
   environmentAppsUrl,
 } from "@app/routes";
+import { schema } from "@app/schema";
 import { setResourceStats } from "@app/search";
+import { prettyGitSha } from "@app/string-utils";
 import type { DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
+  Code,
   CopyText,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  GitMetadata,
+  SourceName,
   TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
@@ -58,7 +64,14 @@ export function AppHeader({
   const config = useSelector((s) =>
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
-  const dockerImage = config.env.APTIBLE_DOCKER_IMAGE || "Dockerfile Build";
+  const deployment = useSelector((s) =>
+    schema.deployments.selectById(s, { id: app.currentDeploymentId }),
+  );
+  const gitRef = deployment.gitCommitSha || image.gitRef;
+  const dockerImage =
+    deployment.dockerImage ||
+    config.env.APTIBLE_DOCKER_IMAGE ||
+    "Dockerfile Build";
 
   return (
     <DetailHeader>
@@ -77,21 +90,37 @@ export function AppHeader({
 
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
-        <DetailInfoItem title="Git Remote">
-          <CopyText text={app.gitRepo} />
+        <DetailInfoItem title="Last Deployed">
+          {lastDeployOp
+            ? `${prettyDateTime(lastDeployOp.createdAt)}`
+            : "Unknown"}
         </DetailInfoItem>
 
+        {deployment.id ? (
+          <>
+            <DetailInfoItem title="Source">
+              <SourceName deployment={deployment} />
+            </DetailInfoItem>
+            <DetailInfoItem title="Git">
+              <GitMetadata deployment={deployment} />
+            </DetailInfoItem>
+            <DetailInfoItem title="Tag">
+              <Code>{getTagText(deployment)}</Code>
+            </DetailInfoItem>
+          </>
+        ) : null}
+
         <DetailInfoItem title="Git Ref">
-          <CopyText text={image.gitRef} />
+          <CopyText text={gitRef}>
+            <Code>{prettyGitSha(gitRef)}</Code>
+          </CopyText>
         </DetailInfoItem>
         <DetailInfoItem title="Docker Image">
           <CopyText text={`${dockerImage}`} />
         </DetailInfoItem>
 
-        <DetailInfoItem title="Last Deployed">
-          {lastDeployOp
-            ? `${prettyDateTime(lastDeployOp.createdAt)}`
-            : "Unknown"}
+        <DetailInfoItem title="Git Remote">
+          <CopyText text={app.gitRepo} />
         </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>

@@ -806,6 +806,7 @@ export const defaultDeployment = (a: Partial<Deployment> = {}): Deployment => {
   return {
     id: "",
     dockerImage: "",
+    dockerRepositoryUrl: "",
     status: "",
     gitRepositoryUrl: "",
     gitRef: "",
