@@ -9,6 +9,7 @@ import { useSelector } from "@app/react";
 import { deploymentDetailUrl } from "@app/routes";
 import { DeployApp, Deployment } from "@app/types";
 import { Link } from "react-router-dom";
+import { tokens } from ".";
 import { ButtonLink } from "./button";
 import { Code } from "./code";
 import { ExternalLink } from "./external-link";
@@ -46,7 +47,10 @@ export function GitMetadata({ deployment }: { deployment: Deployment }) {
   }
 
   return (
-    <ExternalLink href={deployment.gitCommitUrl}>
+    <ExternalLink
+      href={deployment.gitCommitUrl}
+      className={tokens.type["table link"]}
+    >
       {deployment.gitCommitMessage}
     </ExternalLink>
   );
@@ -63,7 +67,12 @@ function DeploymentRow({
   return (
     <Tr>
       <Td>
-        <Link to={deploymentDetailUrl(deployment.id)}>{deployment.id}</Link>
+        <Link
+          to={deploymentDetailUrl(deployment.id)}
+          className={tokens.type["table link"]}
+        >
+          {deployment.id}
+        </Link>
       </Td>
       <Td>
         <OpStatus status={op.status} />
