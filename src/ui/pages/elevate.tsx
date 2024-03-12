@@ -12,6 +12,7 @@ import {
 } from "@app/react";
 import { resetRedirectPath } from "@app/redirect-path";
 import { forgotPassUrl, homeUrl } from "@app/routes";
+import { isLocalPath } from "@app/string-utils";
 import { selectCurrentUser } from "@app/users";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -36,7 +37,7 @@ export const ElevatePage = () => {
   const navigate = useNavigate();
   const user = useSelector(selectCurrentUser);
   const [params] = useSearchParams();
-  const redirect = params.get("redirect");
+  const redirect = params.get("redirect") || "";
 
   const [otpToken, setOtpToken] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -57,7 +58,11 @@ export const ElevatePage = () => {
   const webauthnLoader = useLoader(webauthnAction);
 
   useLoaderSuccess(loader, () => {
-    navigate(redirect || homeUrl());
+    if (isLocalPath(redirect)) {
+      navigate(redirect);
+    } else {
+      navigate(homeUrl());
+    }
     dispatch(resetRedirectPath());
   });
 
