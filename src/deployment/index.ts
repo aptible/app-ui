@@ -166,7 +166,6 @@ const mockDeployments = [
     },
   }),
 ];
-console.log(mockDeployments);
 
 export const fetchDeploymentById = api.get<{ id: string }>(
   "/deployments/:id",
