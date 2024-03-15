@@ -34,7 +34,9 @@ import {
   testConfiguration,
   testDatabaseId,
   testDatabaseOp,
-  testDeployment,
+  testDeploymentDocker,
+  testDeploymentEmpty,
+  testDeploymentGit,
   testDisk,
   testEndpoint,
   testEnterprisePlan,
@@ -812,10 +814,20 @@ const apiHandlers = [
     },
   ),
   rest.get(`${testEnv.apiUrl}/apps/:id/deployments`, async (_, res, ctx) => {
-    return res(ctx.json({ _embedded: { deployments: testDeployment } }));
+    return res(
+      ctx.json({
+        _embedded: {
+          deployments: [
+            testDeploymentEmpty,
+            testDeploymentGit,
+            testDeploymentDocker,
+          ],
+        },
+      }),
+    );
   }),
   rest.get(`${testEnv.apiUrl}/deployments/:id`, async (_, res, ctx) => {
-    return res(ctx.json(testDeployment));
+    return res(ctx.json(testDeploymentGit));
   }),
 ];
 
