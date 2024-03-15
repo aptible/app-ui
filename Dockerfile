@@ -1,11 +1,11 @@
 FROM node:18.16-slim AS builder
 
-ARG VITE_APP_URL=https://app.aptible.com
-ARG VITE_AUTH_URL=https://auth.aptible.com
-ARG VITE_BILLING_URL=https://goldenboy.aptible.com
-ARG VITE_API_URL=https://api.aptible.com
+ARG VITE_APP_URL=https://app-sbx-eabruzzese.aptible-sandbox.com
+ARG VITE_AUTH_URL=https://app-68953.on-aptible.com
+ARG VITE_BILLING_URL=https://goldenboy-sbx-eabruzzese.aptible-sandbox.com
+ARG VITE_API_URL=https://app-68952.on-aptible.com
 ARG VITE_LEGACY_DASHBOARD_URL=https://dashboard.aptible.com
-ARG VITE_METRIC_TUNNEL_URL=https://metrictunnel.aptible.com
+ARG VITE_METRIC_TUNNEL_URL=https://metrictunnel-sbx-eabruzzese.aptible-sandbox.com
 ARG VITE_ORIGIN=app
 ARG VITE_TUNA_ENABLED=false
 ARG NODE_ENV=production

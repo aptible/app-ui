@@ -1,19 +1,42 @@
 import { prettyDateTime } from "@app/date";
-import { selectOperationById } from "@app/deploy";
-import {
-  getRegistryParts,
-  getRepoNameFromUrl,
-  getTagText,
-} from "@app/deployment";
+import { selectImageById, selectOperationById } from "@app/deploy";
+import { getRegistryParts, getRepoNameFromUrl } from "@app/deployment";
 import { useSelector } from "@app/react";
 import { deploymentDetailUrl } from "@app/routes";
+import { prettyGitSha } from "@app/string-utils";
 import { DeployApp, Deployment } from "@app/types";
 import { Link } from "react-router-dom";
 import { ButtonLink } from "./button";
+import { Code } from "./code";
 import { ExternalLink } from "./external-link";
 import { OpStatus } from "./operation-status";
 import { EmptyTr, TBody, THead, Table, Td, Tr } from "./table";
 import { tokens } from "./tokens";
+
+export function DeploymentTagText({ deployment }: { deployment: Deployment }) {
+  if (deployment.dockerImage) {
+    return getRegistryParts(deployment.dockerImage).tag;
+  }
+
+  return deployment.gitRef ? <Code>{deployment.gitRef}</Code> : null;
+}
+
+export function DeploymentGitSha({ deployment }: { deployment: Deployment }) {
+  const image = useSelector((s) =>
+    selectImageById(s, { id: deployment.imageId }),
+  );
+  const gitRef = deployment.gitCommitSha || image.gitRef;
+
+  if (deployment.gitCommitUrl) {
+    return (
+      <ExternalLink href={deployment.gitCommitUrl}>
+        {prettyGitSha(gitRef)}
+      </ExternalLink>
+    );
+  }
+
+  return <Code>{prettyGitSha(gitRef)}</Code>;
+}
 
 export function SourceName({
   app,
@@ -23,10 +46,7 @@ export function SourceName({
     const repoName = getRegistryParts(deployment.dockerImage).name;
     if (deployment.dockerRepositoryUrl) {
       return (
-        <ExternalLink
-          href={deployment.dockerRepositoryUrl}
-          className={tokens.type["table link"]}
-        >
+        <ExternalLink href={deployment.dockerRepositoryUrl}>
           {repoName}
         </ExternalLink>
       );
@@ -37,12 +57,7 @@ export function SourceName({
   const repoName = getRepoNameFromUrl(deployment.gitRepositoryUrl);
   if (deployment.gitRepositoryUrl) {
     return (
-      <ExternalLink
-        href={deployment.gitRepositoryUrl}
-        className={tokens.type["table link"]}
-      >
-        {repoName}
-      </ExternalLink>
+      <ExternalLink href={deployment.gitRepositoryUrl}>{repoName}</ExternalLink>
     );
   }
 
@@ -55,10 +70,7 @@ export function GitMetadata({ deployment }: { deployment: Deployment }) {
   }
 
   return (
-    <ExternalLink
-      href={deployment.gitCommitUrl}
-      className={tokens.type["table link"]}
-    >
+    <ExternalLink href={deployment.gitCommitUrl}>
       {deployment.gitCommitMessage}
     </ExternalLink>
   );
@@ -89,7 +101,12 @@ function DeploymentRow({
       <Td>
         <SourceName app={app} deployment={deployment} />
       </Td>
-      <Td>{getTagText(deployment)}</Td>
+      <Td>
+        <DeploymentTagText deployment={deployment} />
+      </Td>
+      <Td>
+        <DeploymentGitSha deployment={deployment} />
+      </Td>
       <Td>
         <GitMetadata deployment={deployment} />
       </Td>
@@ -119,6 +136,7 @@ export function DeploymentsTable({
         <Td>Status</Td>
         <Td>Source</Td>
         <Td>Tag</Td>
+        <Td>Commit</Td>
         <Td>Message</Td>
         <Td>Date</Td>
         <Td variant="right">Actions</Td>

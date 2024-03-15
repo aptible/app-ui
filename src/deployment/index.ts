@@ -2,19 +2,18 @@ import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
-import { prettyGitSha } from "@app/string-utils";
 import { Deployment, LinkResponse } from "@app/types";
 
 export interface DeploymentResponse {
   id: string;
   status: string;
-  docker_image: string;
-  docker_repository_url: string;
-  git_repository_url: string;
-  git_ref: string;
-  git_commit_sha: string;
-  git_commit_url: string;
-  git_commit_message: string;
+  docker_image: string | null;
+  docker_repository_url: string | null;
+  git_repository_url: string | null;
+  git_ref: string | null;
+  git_commit_sha: string | null;
+  git_commit_url: string | null;
+  git_commit_message: string | null;
   created_at: string;
   updated_at: string;
   _links: {
@@ -61,14 +60,14 @@ export const deserializeDeployment = (
 
   return {
     id: `${payload.id}`,
-    dockerImage: payload.docker_image,
-    dockerRepositoryUrl: payload.docker_repository_url,
     status: payload.status,
-    gitRepositoryUrl: payload.git_repository_url,
-    gitRef: payload.git_ref,
-    gitCommitSha: payload.git_commit_sha,
-    gitCommitUrl: payload.git_commit_url,
-    gitCommitMessage: payload.git_commit_message,
+    dockerImage: payload.docker_image || "",
+    dockerRepositoryUrl: payload.docker_repository_url || "",
+    gitRepositoryUrl: payload.git_repository_url || "",
+    gitRef: payload.git_ref || "",
+    gitCommitSha: payload.git_commit_sha || "",
+    gitCommitUrl: payload.git_commit_url || "",
+    gitCommitMessage: payload.git_commit_message || "",
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     appId: extractIdFromLink(links.app),
@@ -97,18 +96,6 @@ export const selectDeploymentsByAppId = createSelector(
 export function getRegistryParts(url: string): { name: string; tag: string } {
   const [name, tag] = url.split(":");
   return { name, tag };
-}
-
-export function getTagText(deployment: Deployment): string {
-  if (deployment.dockerImage) {
-    return getRegistryParts(deployment.dockerImage).tag;
-  }
-
-  if (deployment.gitRef) {
-    return `${deployment.gitRef} (${prettyGitSha(deployment.gitCommitSha)})`;
-  }
-
-  return prettyGitSha(deployment.gitCommitSha);
 }
 
 export function getRepoNameFromUrl(url: string): string {
@@ -166,25 +153,26 @@ const mockDeployments = [
     },
   }),
 ];
+console.log(mockDeployments);
 
 export const fetchDeploymentById = api.get<{ id: string }>(
   "/deployments/:id",
-  function* (ctx, next) {
+  /* function* (ctx, next) {
     ctx.response = new Response(
       JSON.stringify(mockDeployments.find((d) => d.id === ctx.payload.id)),
     );
     yield* next();
-  },
+  }, */
 );
 
 export const fetchDeploymentsByAppId = api.get<{ id: string }>(
   "/apps/:id/deployments",
-  function* (ctx, next) {
+  /* function* (ctx, next) {
     ctx.response = new Response(
       JSON.stringify({ _embedded: { deployments: mockDeployments } }),
     );
     yield* next();
-  },
+  }, */
 );
 
 export const rollbackDeployment = api.post<{

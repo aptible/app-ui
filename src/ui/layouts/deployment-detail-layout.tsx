@@ -5,11 +5,7 @@ import {
   selectAppById,
   selectOperationById,
 } from "@app/deploy";
-import {
-  fetchDeploymentById,
-  getTagText,
-  selectDeploymentById,
-} from "@app/deployment";
+import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailDeploymentsUrl,
@@ -21,7 +17,7 @@ import { capitalize } from "@app/string-utils";
 import type { DeployApp, DeployOperation, Deployment } from "@app/types";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
-  Code,
+  DeploymentTagText,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -69,7 +65,7 @@ export function DeploymentHeader({
           <SourceName app={app} deployment={deployment} />
         </DetailInfoItem>
         <DetailInfoItem title="Tag">
-          <Code>{getTagText(deployment)}</Code>
+          <DeploymentTagText deployment={deployment} />
         </DetailInfoItem>
 
         {deployment.gitCommitMessage ? (

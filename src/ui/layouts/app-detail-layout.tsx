@@ -9,11 +9,9 @@ import {
   selectAppById,
   selectAppConfigById,
   selectEnvironmentById,
-  selectImageById,
   selectLatestDeployOp,
   selectUserHasPerms,
 } from "@app/deploy";
-import { getTagText } from "@app/deployment";
 import { findLoaderComposite } from "@app/loaders";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
@@ -30,15 +28,15 @@ import {
 } from "@app/routes";
 import { schema } from "@app/schema";
 import { setResourceStats } from "@app/search";
-import { prettyGitSha } from "@app/string-utils";
 import type { DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
-  Code,
   CopyText,
+  DeploymentGitSha,
+  DeploymentTagText,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -58,16 +56,12 @@ export function AppHeader({
     selectLatestDeployOp(s, { appId: app.id }),
   );
   useQuery(fetchImageById({ id: app.currentImageId }));
-  const image = useSelector((s) =>
-    selectImageById(s, { id: app.currentImageId }),
-  );
   const config = useSelector((s) =>
     selectAppConfigById(s, { id: app.currentConfigurationId }),
   );
   const deployment = useSelector((s) =>
     schema.deployments.selectById(s, { id: app.currentDeploymentId }),
   );
-  const gitRef = deployment.gitCommitSha || image.gitRef;
   const dockerImage =
     deployment.dockerImage ||
     config.env.APTIBLE_DOCKER_IMAGE ||
@@ -91,9 +85,7 @@ export function AppHeader({
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
         <DetailInfoItem title="Git Ref">
-          <CopyText text={gitRef}>
-            <Code>{prettyGitSha(gitRef)}</Code>
-          </CopyText>
+          <DeploymentGitSha deployment={deployment} />
         </DetailInfoItem>
 
         {deployment.id ? (
@@ -102,12 +94,12 @@ export function AppHeader({
               <SourceName app={app} deployment={deployment} />
             </DetailInfoItem>
             {deployment.gitCommitMessage ? (
-              <DetailInfoItem title="Git">
+              <DetailInfoItem title="Commit Message">
                 <GitMetadata deployment={deployment} />
               </DetailInfoItem>
             ) : null}
             <DetailInfoItem title="Tag">
-              <Code>{getTagText(deployment)}</Code>
+              <DeploymentTagText deployment={deployment} />
             </DetailInfoItem>
           </>
         ) : null}
