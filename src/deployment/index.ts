@@ -102,77 +102,9 @@ export function getRepoNameFromUrl(url: string): string {
   return url.replace("https://", "");
 }
 
-const mockDeployments = [
-  defaultDeploymentResponse({
-    id: "1",
-    docker_image: "",
-    git_repository_url: "https://github.com/aptible/app-ui",
-    git_ref: "v3",
-    git_commit_message: "fix(backup): pass page to fetch request (#754)",
-    git_commit_sha: "a947a95a92e7a7a4db7fe01c28346281c128b859",
-    git_commit_url:
-      "https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859",
-    _links: {
-      app: defaultHalHref("https://api.aptible.com/apps/19"),
-      operation: defaultHalHref("https://api.aptible.com/operations/1397"),
-      configuration: defaultHalHref(),
-      image: defaultHalHref(),
-    },
-  }),
-  defaultDeploymentResponse({
-    id: "2",
-    docker_image: "",
-    git_repository_url: "https://github.com/aptible/app-ui",
-    git_ref: "v2",
-    git_commit_message: "fix(elevate): only permit local redirects (#757)",
-    git_commit_sha: "830d3c0866df582b6db0290f97d02123f762b9c3",
-    git_commit_url:
-      "https://github.com/aptible/app-ui/commit/830d3c0866df582b6db0290f97d02123f762b9c3",
-    _links: {
-      app: defaultHalHref("https://api.aptible.com/apps/19"),
-      operation: defaultHalHref("https://api.aptible.com/operations/1397"),
-      configuration: defaultHalHref(),
-      image: defaultHalHref(),
-    },
-  }),
-  defaultDeploymentResponse({
-    id: "3",
-    docker_image: "quay.io/aptible/cloud-ui:latest",
-    docker_repository_url: "https://quay.io/repository/aptible/cloud-ui",
-    git_repository_url: "https://github.com/aptible/app-ui",
-    git_ref: "v1",
-    git_commit_message: "chore: make databases column name plural (#753)",
-    git_commit_sha: "0ee984d4260aa5e50e32d2a701859b4886e3557b",
-    git_commit_url:
-      "https://github.com/aptible/app-ui/commit/0ee984d4260aa5e50e32d2a701859b4886e3557b",
-    _links: {
-      app: defaultHalHref("https://api.aptible.com/apps/19"),
-      operation: defaultHalHref("https://api.aptible.com/operations/1397"),
-      configuration: defaultHalHref(),
-      image: defaultHalHref(),
-    },
-  }),
-];
-console.log(mockDeployments);
-
-export const fetchDeploymentById = api.get<{ id: string }>(
-  "/deployments/:id",
-  /* function* (ctx, next) {
-    ctx.response = new Response(
-      JSON.stringify(mockDeployments.find((d) => d.id === ctx.payload.id)),
-    );
-    yield* next();
-  }, */
-);
-
+export const fetchDeploymentById = api.get<{ id: string }>("/deployments/:id");
 export const fetchDeploymentsByAppId = api.get<{ id: string }>(
   "/apps/:id/deployments",
-  /* function* (ctx, next) {
-    ctx.response = new Response(
-      JSON.stringify({ _embedded: { deployments: mockDeployments } }),
-    );
-    yield* next();
-  }, */
 );
 
 export const rollbackDeployment = api.post<{

@@ -21,6 +21,7 @@ import {
   defaultStackResponse,
 } from "@app/deploy";
 import { defaultCodeScanResponse } from "@app/deploy/code-scan-result";
+import { defaultDeploymentResponse } from "@app/deployment";
 import { defaultHalHref } from "@app/hal";
 import { defaultInvitationResponse } from "@app/invitations";
 import { defaultOrgResponse } from "@app/organizations";
@@ -662,5 +663,56 @@ export const testSaml = defaultSamlConfigurationResponse({
     organization: defaultHalHref(
       `${testEnv.authUrl}/organizations/${testOrg.id}`,
     ),
+  },
+});
+
+export const testDeploymentGit = defaultDeploymentResponse({
+  id: "3",
+  docker_image: "",
+  git_repository_url: "https://github.com/aptible/app-ui",
+  git_ref: "v3",
+  git_commit_message: "fix(backup): pass page to fetch request (#754)",
+  git_commit_sha: "a947a95a92e7a7a4db7fe01c28346281c128b859",
+  git_commit_url:
+    "https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859",
+  _links: {
+    app: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
+    operation: defaultHalHref(),
+    configuration: defaultHalHref(),
+    image: defaultHalHref(),
+  },
+});
+
+export const testDeploymentDocker = defaultDeploymentResponse({
+  id: "2",
+  docker_image: "quay.io/aptible/cloud-ui:v200",
+  docker_repository_url: "https://quay.io/repositories/aptible/cloud-ui",
+  git_repository_url: "https://github.com/aptible/app-ui",
+  git_ref: "v3",
+  git_commit_message: "fix(backup): pass page to fetch request (#754)",
+  git_commit_sha: "a947a95a92e7a7a4db7fe01c28346281c128b859",
+  git_commit_url:
+    "https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859",
+  _links: {
+    app: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
+    operation: defaultHalHref(),
+    configuration: defaultHalHref(),
+    image: defaultHalHref(),
+  },
+});
+
+export const testDeploymentEmpty = defaultDeploymentResponse({
+  id: "1",
+  docker_image: "",
+  git_repository_url: "",
+  git_ref: "",
+  git_commit_message: "",
+  git_commit_sha: "",
+  git_commit_url: "",
+  _links: {
+    app: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
+    operation: defaultHalHref(),
+    configuration: defaultHalHref(),
+    image: defaultHalHref(),
   },
 });

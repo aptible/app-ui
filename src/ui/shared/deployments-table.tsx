@@ -14,11 +14,15 @@ import { EmptyTr, TBody, THead, Table, Td, Tr } from "./table";
 import { tokens } from "./tokens";
 
 export function DeploymentTagText({ deployment }: { deployment: Deployment }) {
-  if (deployment.dockerImage) {
-    return getRegistryParts(deployment.dockerImage).tag;
+  if (deployment.gitRef) {
+    return <Code>{deployment.gitRef}</Code>;
   }
 
-  return deployment.gitRef ? <Code>{deployment.gitRef}</Code> : null;
+  if (deployment.dockerImage) {
+    return <Code>{getRegistryParts(deployment.dockerImage).tag}</Code>;
+  }
+
+  return null;
 }
 
 export function DeploymentGitSha({ deployment }: { deployment: Deployment }) {
@@ -42,6 +46,17 @@ export function SourceName({
   app,
   deployment,
 }: { app: DeployApp; deployment: Deployment }) {
+  if (deployment.gitRepositoryUrl) {
+    const repoName = getRepoNameFromUrl(deployment.gitRepositoryUrl);
+    return (
+      <ExternalLink href={deployment.gitRepositoryUrl}>{repoName}</ExternalLink>
+    );
+  }
+
+  if (app.gitRepo) {
+    return app.gitRepo;
+  }
+
   if (deployment.dockerImage) {
     const repoName = getRegistryParts(deployment.dockerImage).name;
     if (deployment.dockerRepositoryUrl) {
@@ -54,26 +69,16 @@ export function SourceName({
     return repoName;
   }
 
-  const repoName = getRepoNameFromUrl(deployment.gitRepositoryUrl);
-  if (deployment.gitRepositoryUrl) {
-    return (
-      <ExternalLink href={deployment.gitRepositoryUrl}>{repoName}</ExternalLink>
-    );
-  }
-
-  return repoName || app.gitRepo;
+  return "";
 }
 
 export function GitMetadata({ deployment }: { deployment: Deployment }) {
-  if (!deployment.gitCommitUrl) {
-    return <span>{deployment.gitCommitMessage}</span>;
+  const msg = deployment.gitCommitMessage;
+  if (msg.length > 72) {
+    return `${msg.slice(0, 72)}...`;
   }
 
-  return (
-    <ExternalLink href={deployment.gitCommitUrl}>
-      {deployment.gitCommitMessage}
-    </ExternalLink>
-  );
+  return deployment.gitCommitMessage;
 }
 
 function DeploymentRow({

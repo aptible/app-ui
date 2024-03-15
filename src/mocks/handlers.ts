@@ -34,6 +34,7 @@ import {
   testConfiguration,
   testDatabaseId,
   testDatabaseOp,
+  testDeployment,
   testDisk,
   testEndpoint,
   testEnterprisePlan,
@@ -810,6 +811,12 @@ const apiHandlers = [
       );
     },
   ),
+  rest.get(`${testEnv.apiUrl}/apps/:id/deployments`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { deployments: testDeployment } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/deployments/:id`, async (_, res, ctx) => {
+    return res(ctx.json(testDeployment));
+  }),
 ];
 
 const billingHandlers = [

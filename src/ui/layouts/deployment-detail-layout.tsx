@@ -17,6 +17,8 @@ import { capitalize } from "@app/string-utils";
 import type { DeployApp, DeployOperation, Deployment } from "@app/types";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
+  CopyText,
+  DeploymentGitSha,
   DeploymentTagText,
   DetailHeader,
   DetailInfoGrid,
@@ -64,15 +66,23 @@ export function DeploymentHeader({
         <DetailInfoItem title="Source">
           <SourceName app={app} deployment={deployment} />
         </DetailInfoItem>
+        {deployment.gitCommitMessage ? (
+          <DetailInfoItem title="Commit Message">
+            <GitMetadata deployment={deployment} />
+          </DetailInfoItem>
+        ) : null}
         <DetailInfoItem title="Tag">
           <DeploymentTagText deployment={deployment} />
         </DetailInfoItem>
 
-        {deployment.gitCommitMessage ? (
-          <DetailInfoItem title="Git">
-            <GitMetadata deployment={deployment} />
-          </DetailInfoItem>
-        ) : null}
+        <DetailInfoItem title="Git Ref">
+          <DeploymentGitSha deployment={deployment} />
+        </DetailInfoItem>
+
+        <DetailInfoItem title="Docker Image">
+          <CopyText text={`${deployment.dockerImage}`} />
+        </DetailInfoItem>
+
         <DetailInfoItem title="User">
           {op.userName}
           <div className="text-gray-500">Note: {op.note || "N/A"}</div>
