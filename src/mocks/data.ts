@@ -666,7 +666,7 @@ export const testSaml = defaultSamlConfigurationResponse({
   },
 });
 
-const deployDate = new Date("2023-12-17T03:24:00").toISOString();
+const deployDate = new Date("2023-12-17T00:00:00Z").toISOString();
 
 export const testDeploymentGit = defaultDeploymentResponse({
   id: "3",
