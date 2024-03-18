@@ -71,6 +71,9 @@ const authHandlers = [
   rest.put(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
     return res(ctx.json(testUser));
   }),
+  rest.post(`${testEnv.authUrl}/claims/user`, (_, res, ctx) => {
+    return res(ctx.json({}));
+  }),
   rest.post(`${testEnv.authUrl}/users`, (_, res, ctx) => {
     return res(ctx.json(testUser));
   }),

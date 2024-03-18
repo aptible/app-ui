@@ -194,6 +194,45 @@ describe("Signup page", () => {
     expect(await screen.findByText("Check your Email")).toBeInTheDocument();
   });
 
+  it("errors properly when claim fails (check claim)", async () => {
+    server.use(
+      rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
+        return res(ctx.status(400));
+      }),
+      rest.post(`${testEnv.authUrl}/claims/user`, (_, res, ctx) => {
+        return res(
+          ctx.status(400),
+          ctx.json({
+            code: 400,
+            exception_context: {},
+            error: "use_invitation",
+            message: "mock error message",
+          }),
+        );
+      }),
+    );
+
+    const { App } = setupAppIntegrationTest({
+      initEntries: [signupUrl()],
+    });
+
+    render(<App />);
+
+    const name = await screen.findByRole("textbox", { name: "name" });
+    await act(() => userEvent.type(name, "mock name"));
+    const company = await screen.findByRole("textbox", { name: "company" });
+    await act(() => userEvent.type(company, "mock company"));
+    const email = await screen.findByRole("textbox", { name: "email" });
+    await act(async () => userEvent.type(email, testEmail));
+    const pass = await screen.findByLabelText("password");
+    await act(() => userEvent.type(pass, "Aptible!1234"));
+
+    const btn = await screen.findByRole("button", { name: /Create Account/ });
+    fireEvent.click(btn);
+
+    expect(await screen.findByText("mock error message")).toBeInTheDocument();
+  });
+
   it("errors properly when signup fails (create user)", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {

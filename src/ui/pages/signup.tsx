@@ -42,7 +42,7 @@ const validators = {
   name: (props: CreateUserForm) =>
     existValidtor(props.name, "Name") || nameValidator(props.name),
   company: (props: CreateUserForm) => {
-    if (props.challenge_token !== "") {
+    if (props.challengeToken !== "") {
       return;
     }
     return (
@@ -167,7 +167,7 @@ export const SignupPage = () => {
     name,
     email,
     password,
-    challenge_token: code,
+    challengeToken: code,
   };
   const action = signup(data);
   const loader = useLoader(action);

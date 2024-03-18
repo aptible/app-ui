@@ -5,7 +5,7 @@ import { call } from "@app/fx";
 import { submitHubspotForm } from "@app/hubspot";
 import { schema } from "@app/schema";
 import { tunaEvent } from "@app/tuna";
-import { CreateUserForm, createUser } from "@app/users";
+import { CreateUserForm, checkClaim, createUser } from "@app/users";
 import { AUTH_LOADER_ID, defaultAuthLoaderMeta } from "./loader";
 import { createOrganization } from "./organization";
 import { createToken, elevateToken } from "./token";
@@ -15,9 +15,34 @@ const log = createLog("signup");
 export const signup = thunks.create<CreateUserForm>(
   "signup",
   function* onSignup(ctx, next) {
-    const { company: orgName, name, email, password } = ctx.payload;
+    const {
+      company: orgName,
+      name,
+      email,
+      password,
+      challengeToken,
+    } = ctx.payload;
     const id = ctx.key;
     yield* schema.update(schema.loaders.start({ id }));
+
+    let claimCtx;
+    if (challengeToken === "") {
+      claimCtx = yield* call(checkClaim.run(ctx.payload));
+    }
+
+    log(claimCtx);
+
+    if (claimCtx && !claimCtx.json.ok) {
+      const { message, ...meta } = claimCtx.json.error;
+      yield* schema.update(
+        schema.loaders.error({
+          id,
+          message,
+          meta: defaultAuthLoaderMeta(meta) as any,
+        }),
+      );
+      return;
+    }
 
     const userCtx = yield* call(createUser.run(ctx.payload));
 
