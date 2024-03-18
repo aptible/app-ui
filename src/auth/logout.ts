@@ -21,5 +21,6 @@ export const logout = thunks.create("logout", function* (ctx, next) {
   yield* schema.update([
     schema.elevatedToken.reset(),
     schema.loaders.success({ id: ctx.name }),
+    schema.redirectPath.reset(),
   ]);
 });
