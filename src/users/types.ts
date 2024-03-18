@@ -32,5 +32,5 @@ export interface CreateUserForm {
   name: string;
   email: string;
   password: string;
-  challenge_token: string;
+  challengeToken: string;
 }
