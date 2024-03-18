@@ -1,9 +1,16 @@
-import { server, stacksWithResources, testApp, verifiedUserHandlers } from "@app/mocks";
 import {
+  server,
+  stacksWithResources,
+  testApp,
+  verifiedUserHandlers,
+} from "@app/mocks";
+import {
+  APP_DETAIL_DEPLOYMENTS_PATH,
   appDetailDeploymentsUrl,
 } from "@app/routes";
-import { setupAppIntegrationTest, waitForBootup } from "@app/test";
+import { setupIntegrationTest, waitForBootup } from "@app/test";
 import { render, screen } from "@testing-library/react";
+import { AppDetailDeploymentsPage } from "./app-detail-deployments";
 
 describe("App Detail Deployments page", () => {
   it("should render deployments with proper fallbacks", async () => {
@@ -11,12 +18,15 @@ describe("App Detail Deployments page", () => {
       ...stacksWithResources({ apps: [testApp] }),
       ...verifiedUserHandlers(),
     );
-    const { store, App } = setupAppIntegrationTest({
+    const { store, TestProvider } = setupIntegrationTest({
       initEntries: [appDetailDeploymentsUrl(`${testApp.id}`)],
+      path: APP_DETAIL_DEPLOYMENTS_PATH,
     });
     await waitForBootup(store);
     const { container } = render(
-      <App />
+      <TestProvider>
+        <AppDetailDeploymentsPage />
+      </TestProvider>,
     );
 
     await screen.findAllByRole("link", { name: "a947a95" });
