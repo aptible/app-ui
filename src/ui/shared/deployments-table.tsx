@@ -1,7 +1,5 @@
 import { prettyDateTime } from "@app/date";
-import { selectImageById, selectOperationById } from "@app/deploy";
 import { getRegistryParts, getRepoNameFromUrl } from "@app/deployment";
-import { useSelector } from "@app/react";
 import { deploymentDetailUrl } from "@app/routes";
 import { prettyGitSha } from "@app/string-utils";
 import { DeployApp, Deployment } from "@app/types";
@@ -26,16 +24,16 @@ export function DeploymentTagText({ deployment }: { deployment: Deployment }) {
 }
 
 export function DeploymentGitSha({ deployment }: { deployment: Deployment }) {
-  const image = useSelector((s) =>
-    selectImageById(s, { id: deployment.imageId }),
-  );
-  const gitRef = deployment.gitCommitSha || image.gitRef;
+  const gitRef = deployment.gitCommitSha;
+  if (!gitRef) return null;
 
   if (deployment.gitCommitUrl) {
     return (
-      <ExternalLink href={deployment.gitCommitUrl}>
-        {prettyGitSha(gitRef)}
-      </ExternalLink>
+      <Code>
+        <ExternalLink href={deployment.gitCommitUrl}>
+          {prettyGitSha(gitRef)}
+        </ExternalLink>
+      </Code>
     );
   }
 
@@ -69,27 +67,22 @@ export function SourceName({
     return repoName;
   }
 
-  return "";
+  return "Aptible Git Deployment";
 }
 
 export function GitMetadata({ deployment }: { deployment: Deployment }) {
   const msg = deployment.gitCommitMessage;
   if (msg.length > 72) {
-    return `${msg.slice(0, 72)}...`;
+    return <span title={msg}>{`${msg.slice(0, 72)}...`}</span>;
   }
 
-  return deployment.gitCommitMessage;
+  return <span>{deployment.gitCommitMessage}</span>;
 }
 
 function DeploymentRow({
   app,
   deployment,
 }: { app: DeployApp; deployment: Deployment }) {
-  const op = useSelector((s) =>
-    selectOperationById(s, { id: deployment.operationId }),
-  );
-  // const isActive = app.currentDeploymentId === deployment.id;
-
   return (
     <Tr>
       <Td>
@@ -101,7 +94,7 @@ function DeploymentRow({
         </Link>
       </Td>
       <Td>
-        <OpStatus status={op.status} />
+        <OpStatus status={deployment.status} />
       </Td>
       <Td>
         <SourceName app={app} deployment={deployment} />

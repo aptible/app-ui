@@ -5,7 +5,11 @@ import {
   selectAppById,
   selectOperationById,
 } from "@app/deploy";
-import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
+import {
+  fetchDeploymentById,
+  getDockerImageName,
+  selectDeploymentById,
+} from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailDeploymentsUrl,
@@ -17,7 +21,6 @@ import { capitalize } from "@app/string-utils";
 import type { DeployApp, DeployOperation, Deployment } from "@app/types";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
-  CopyText,
   DeploymentGitSha,
   DeploymentTagText,
   DetailHeader,
@@ -80,7 +83,7 @@ export function DeploymentHeader({
         </DetailInfoItem>
 
         <DetailInfoItem title="Docker Image">
-          <CopyText text={`${deployment.dockerImage}`} />
+          {getDockerImageName(deployment)}
         </DetailInfoItem>
 
         <DetailInfoItem title="User">

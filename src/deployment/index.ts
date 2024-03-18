@@ -2,7 +2,7 @@ import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
-import { Deployment, LinkResponse } from "@app/types";
+import { Deployment, LinkResponse, OperationStatus } from "@app/types";
 
 export interface DeploymentResponse {
   id: string;
@@ -14,6 +14,7 @@ export interface DeploymentResponse {
   git_commit_sha: string | null;
   git_commit_url: string | null;
   git_commit_message: string | null;
+  git_commit_date: string | null;
   created_at: string;
   updated_at: string;
   _links: {
@@ -39,6 +40,7 @@ export const defaultDeploymentResponse = (
     git_commit_sha: "",
     git_commit_url: "",
     git_commit_message: "",
+    git_commit_date: "",
     created_at: now,
     updated_at: now,
     _links: {
@@ -60,7 +62,7 @@ export const deserializeDeployment = (
 
   return {
     id: `${payload.id}`,
-    status: payload.status,
+    status: payload.status as OperationStatus,
     dockerImage: payload.docker_image || "",
     dockerRepositoryUrl: payload.docker_repository_url || "",
     gitRepositoryUrl: payload.git_repository_url || "",
@@ -68,6 +70,7 @@ export const deserializeDeployment = (
     gitCommitSha: payload.git_commit_sha || "",
     gitCommitUrl: payload.git_commit_url || "",
     gitCommitMessage: payload.git_commit_message || "",
+    gitCommitDate: payload.git_commit_date,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     appId: extractIdFromLink(links.app),
@@ -99,34 +102,18 @@ export function getRegistryParts(url: string): { name: string; tag: string } {
 }
 
 export function getRepoNameFromUrl(url: string): string {
-  return url.replace("https://", "");
+  const parsed = new URL(url);
+  return `${parsed.hostname}${parsed.pathname}`;
+}
+
+export function getDockerImageName(deployment: Deployment): string {
+  return deployment.dockerImage || "Dockerfile Build";
 }
 
 export const fetchDeploymentById = api.get<{ id: string }>("/deployments/:id");
 export const fetchDeploymentsByAppId = api.get<{ id: string }>(
   "/apps/:id/deployments",
 );
-
-export const rollbackDeployment = api.post<{
-  envId: string;
-  appId: string;
-  deploymentId: string;
-}>(["/apps/:appId/operations", "rollback"], function* (ctx, next) {
-  ctx.request = ctx.req({
-    body: JSON.stringify({
-      type: "deploy",
-      deployment_id: ctx.payload.deploymentId,
-    }),
-  });
-
-  yield* next();
-
-  if (!ctx.json.ok) {
-    return;
-  }
-
-  ctx.loader = { message: "Rollback initiated" };
-});
 
 export const entities = {
   deployment: defaultEntity({

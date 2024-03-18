@@ -1,0 +1,1375 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`App Detail Deployments page > should render deployments with proper fallbacks 1`] = `
+<div>
+  <div
+    class="flex h-full "
+  >
+    <div
+      class="flex flex-col fixed inset-y-0 w-64"
+      style="width: 224px;"
+    >
+      <div
+        class="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white"
+      >
+        <div
+          class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto"
+        >
+          <button
+            aria-label="Collapse Menu"
+            class="absolute top-4 right-4 hover:cursor-pointer"
+            type="button"
+          >
+            <svg
+              fill="none"
+              height="24"
+              stroke="#888C90"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <title>
+                Menu
+              </title>
+              <path
+                d="M3.75 6.75H20.25M3.75 12H20.25M3.75 17.25H20.25"
+              />
+            </svg>
+          </button>
+          <div
+            class="flex items-center flex-shrink-0 pl-4"
+          >
+            <a
+              href="/environments"
+            >
+              <svg
+                fill="none"
+                viewBox="0 0 87 18"
+                width="100"
+              >
+                <title>
+                  Aptible Logo
+                </title>
+                <path
+                  d="M27.818 0.00649058L22.2769 14.5705H24.8263L26.0482 11.1273H32.2002L33.4213 14.5705H35.9707L30.4531 0.00649058H27.818ZM26.7439 9.11196L29.1246 2.22708H29.1657L31.5264 9.11196H26.7439ZM42.7631 3.87569C41.0789 3.87569 40.0248 4.6505 39.4559 5.38312H39.4147V4.16127H37.1808V18H39.4147V13.3284H39.4559C40.0257 14.1032 41.0789 14.8756 42.7631 14.8756C45.5014 14.8756 47.5456 12.7994 47.5456 9.37564C47.5465 5.95429 45.5014 3.87569 42.7631 3.87569ZM42.341 13.1239C40.5502 13.1239 39.4349 11.6774 39.4349 9.37564C39.4349 7.05364 40.5502 5.62895 42.341 5.62895C44.2795 5.62895 45.3126 7.33922 45.3126 9.37564C45.3126 11.4121 44.2795 13.1239 42.341 13.1239ZM51.9547 4.16127H53.9789V5.91211H51.9547V11.5549C51.9547 12.7378 52.5447 12.8797 53.9789 12.7986V14.5503C53.5366 14.6517 53.049 14.7125 52.4591 14.7125C50.6918 14.7125 49.7208 13.9377 49.7208 11.739V5.91292H48.1633V4.16127H49.7208V0.881907H51.9547V4.16127ZM55.9308 4.16127H58.1437V14.5705H55.9308V4.16127ZM58.2914 1.21212C58.2914 1.88146 57.73 2.42423 57.0377 2.42423C56.3454 2.42423 55.7839 1.88146 55.7839 1.21212C55.7839 0.542775 56.3445 0 57.0369 0C57.73 0 58.2914 0.542775 58.2914 1.21212ZM65.9079 3.87082C64.2438 3.87082 63.1906 4.62535 62.6208 5.41963H62.5797V0.00162264H60.3667V14.5657H62.5797V13.3625H62.6208C63.1906 14.0756 64.2438 14.8699 65.9079 14.8699C68.6663 14.8699 70.7114 12.7937 70.7114 9.36996C70.7114 5.94861 68.6663 3.87082 65.9079 3.87082ZM65.5168 13.1134C63.705 13.1134 62.5898 11.6668 62.5898 9.36509C62.5898 7.04309 63.705 5.61841 65.5168 5.61841C67.4554 5.61841 68.4884 7.32867 68.4884 9.36509C68.4884 11.4015 67.4554 13.1134 65.5168 13.1134ZM72.5031 0.00162264H74.737V14.5657H72.5031V0.00162264ZM81.86 13.1191C79.9005 13.1191 78.7416 11.6725 78.7416 9.92166H87.0001C87.0001 6.21473 85.2948 3.87163 81.8189 3.87163C78.5729 3.87163 76.5278 5.99162 76.5278 9.37158C76.5278 12.6307 78.5729 14.8715 81.9213 14.8715C84.683 14.8715 86.2859 13.3641 86.8314 11.3885H84.6184C84.4305 12.0189 83.692 13.1191 81.86 13.1191ZM81.8172 5.56243C83.6081 5.56243 84.7888 6.72343 84.7888 8.33228H78.7399C78.7399 6.72343 80.0264 5.56243 81.8172 5.56243Z"
+                  fill="#0A1B2B"
+                />
+                <path
+                  clip-rule="evenodd"
+                  d="M17.7612 8.67888V5.20733L12.4328 0H8.88062H8.88056H5.29507L0 5.20733V8.67888L8.88059 2.79603e-05L17.7612 8.67888ZM12.4329 14.754H9.76873V6.79925V3.3277L12.4329 5.93137L17.7613 11.1387V14.6102L12.4329 9.40291V14.754ZM5.32835 14.754H7.99253V6.79928L7.99256 6.79925V3.3277L7.99253 3.32773V3.3277L5.32835 5.93137V5.93139L0 11.1387V14.6102L5.32835 9.40294V14.754Z"
+                  fill="#E09600"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </a>
+          </div>
+          <div
+            class="mt-4 px-3"
+          >
+            <div
+              class="border border-gray-200 bg-white rounded-lg cursor-pointer px-2 py-1 flex items-center hover:bg-black-50"
+              role="button"
+            >
+              <svg
+                class="p-1 mr-2 border border-black-100 rounded-md"
+                fill="none"
+                height="32"
+                stroke="#111920"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="32"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <title>
+                  Organization
+                </title>
+                <path
+                  d="M3.75 21H20.25M4.5 3H19.5M5.25 3V21M18.75 3V21M9 6.75H10.5M9 9.75H10.5M9 12.75H10.5M13.5 6.75H15M13.5 9.75H15M13.5 12.75H15M9 21V17.625C9 17.004 9.504 16.5 10.125 16.5H13.875C14.496 16.5 15 17.004 15 17.625V21"
+                />
+              </svg>
+              <div>
+                <div
+                  class="text-black"
+                >
+                  test-org-1
+                </div>
+                <div
+                  class="text-gray-500 text-sm"
+                >
+                  verified
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mt-2 px-3"
+          >
+            <div
+              class="border border-gray-200 bg-white rounded-lg px-2 py-1 flex items-center justify-between h-[36px] cursor-pointer hover:bg-black-50"
+            >
+              <div
+                class="flex items-center"
+              >
+                <svg
+                  fill="none"
+                  height="16"
+                  stroke="#888C90"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <title>
+                    Search
+                  </title>
+                  <circle
+                    cx="11"
+                    cy="11"
+                    r="8"
+                  />
+                  <line
+                    x1="21"
+                    x2="16.65"
+                    y1="21"
+                    y2="16.65"
+                  />
+                </svg>
+                 
+                <div
+                  class="ml-2 text-black-300"
+                >
+                  Search...
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mt-2 flex-1 px-2"
+          >
+            <nav
+              class="bg-white"
+            >
+              <a
+                class="block p-2 rounded-md hover:no-underline hover:bg-black-50 hover:text-black text-black-500"
+                href="/stacks"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="mr-3"
+                  >
+                    <svg
+                      fill="none"
+                      height="24"
+                      stroke="#111920"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Stacks
+                      </title>
+                      <polygon
+                        points="12 2 2 7 12 12 22 7 12 2"
+                      />
+                      <polyline
+                        points="2 17 12 22 22 17"
+                      />
+                      <polyline
+                        points="2 12 12 17 22 12"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    Stacks
+                  </div>
+                </div>
+              </a>
+              <a
+                class="block p-2 rounded-md hover:no-underline hover:bg-black-50 hover:text-black text-black-500"
+                href="/environments"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="mr-3"
+                  >
+                    <svg
+                      fill="none"
+                      height="24"
+                      stroke="#111920"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Environments
+                      </title>
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                      />
+                      <line
+                        x1="2"
+                        x2="22"
+                        y1="12"
+                        y2="12"
+                      />
+                      <path
+                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    Environments
+                  </div>
+                </div>
+              </a>
+              <a
+                aria-current="page"
+                class="block p-2 rounded-md hover:no-underline bg-off-white font-semibold text-black"
+                href="/apps"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="mr-3"
+                  >
+                    <svg
+                      fill="none"
+                      height="24"
+                      stroke="#111920"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Apps
+                      </title>
+                      <path
+                        d="M22.1538 6.92308L12 1L1.84615 6.92308M22.1538 6.92308L12 12.8462M22.1538 6.92308V17.0769L12 23M1.84615 6.92308L12 12.8462M1.84615 6.92308V17.0769L12 23M12 12.8462V23"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    Apps
+                  </div>
+                </div>
+              </a>
+              <a
+                class="block p-2 rounded-md hover:no-underline hover:bg-black-50 hover:text-black text-black-500"
+                href="/databases"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="mr-3"
+                  >
+                    <svg
+                      fill="none"
+                      height="24"
+                      stroke="#111920"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Databases
+                      </title>
+                      <path
+                        d="M20.8846 5.94231C20.8846 8.39554 16.9065 10.3846 12 10.3846C7.09354 10.3846 3.11538 8.39554 3.11538 5.94231M20.8846 5.94231C20.8846 3.48908 16.9065 1.5 12 1.5C7.09354 1.5 3.11538 3.48908 3.11538 5.94231M20.8846 5.94231V18.0577C20.8846 20.5109 16.9065 22.5 12 22.5C7.09354 22.5 3.11538 20.5109 3.11538 18.0577V5.94231M20.8846 5.94231V9.98077M3.11538 5.94231V9.98077M20.8846 9.98077V14.0192C20.8846 16.4725 16.9065 18.4615 12 18.4615C7.09354 18.4615 3.11538 16.4725 3.11538 14.0192V9.98077M20.8846 9.98077C20.8846 12.434 16.9065 14.4231 12 14.4231C7.09354 14.4231 3.11538 12.434 3.11538 9.98077"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    Databases
+                  </div>
+                </div>
+              </a>
+              <a
+                class="block p-2 rounded-md hover:no-underline hover:bg-black-50 hover:text-black text-black-500"
+                href="/endpoints"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="mr-3"
+                  >
+                    <svg
+                      fill="none"
+                      height="24"
+                      stroke="#111920"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Endpoints
+                      </title>
+                      <path
+                        d="M21.1538 12.9231C21.1538 17.9786 17.0555 22.0769 12 22.0769C6.94447 22.0769 2.84615 17.9786 2.84615 12.9231C2.84615 7.86754 6.94447 3.76923 12 3.76923C17.0555 3.76923 21.1538 7.86754 21.1538 12.9231Z"
+                      />
+                      <circle
+                        cx="12"
+                        cy="3.69231"
+                        fill="white"
+                        r="2.69231"
+                      />
+                      <circle
+                        cx="20.3077"
+                        cy="17.5385"
+                        fill="white"
+                        r="2.69231"
+                      />
+                      <circle
+                        cx="3.69231"
+                        cy="17.5385"
+                        fill="white"
+                        r="2.69231"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    Endpoints
+                  </div>
+                </div>
+              </a>
+              <a
+                class="block p-2 rounded-md hover:no-underline hover:bg-black-50 hover:text-black text-black-500"
+                href="/services"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="mr-3"
+                  >
+                    <svg
+                      fill="none"
+                      height="24"
+                      stroke="#111920"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Services
+                      </title>
+                      <path
+                        d="M10.3636 22.3636L1.63637 13.6364C1.20238 13.2024 0.958566 12.6138 0.958566 12C0.958567 11.3862 1.20238 10.7976 1.63637 10.3636L10.3636 1.63636C10.7976 1.20237 11.3863 0.95856 12 0.95856C12.6138 0.95856 13.2024 1.20237 13.6364 1.63636L22.3636 10.3636C22.7976 10.7976 23.0414 11.3862 23.0414 12C23.0414 12.6138 22.7976 13.2024 22.3636 13.6364L13.6364 22.3636C13.2024 22.7976 12.6138 23.0414 12 23.0414C11.3863 23.0414 10.7976 22.7976 10.3636 22.3636Z"
+                      />
+                      <path
+                        d="M14.2145 9.2182L17.4545 11.9455L14.2145 14.6727M9.78546 14.6727L6.54546 11.9455L9.78546 9.2182"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    Services
+                  </div>
+                </div>
+              </a>
+              <a
+                class="block p-2 rounded-md hover:no-underline hover:bg-black-50 hover:text-black text-black-500"
+                href="/deployments"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="mr-3"
+                  >
+                    <svg
+                      fill="none"
+                      height="24"
+                      stroke="#111920"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Deployments
+                      </title>
+                      <path
+                        d="M12.006 16.6069V8.97256M12.006 8.97256L15.3908 12.3656M12.006 8.97256L8.62126 12.3656M6.08268 20C4.87481 20.0013 3.70603 19.5709 2.78625 18.7861C1.86647 18.0012 1.25594 16.9134 1.06431 15.7179C0.872685 14.5224 1.11251 13.2975 1.74072 12.2634C2.36892 11.2292 3.34435 10.4534 4.49184 10.0753C4.19703 8.56106 4.50172 6.99124 5.3414 5.69827C6.18108 4.40531 7.48981 3.49073 8.99044 3.1482C10.4911 2.80568 12.0658 3.06211 13.3811 3.86319C14.6964 4.66428 15.6491 5.9471 16.0373 7.44003C16.6375 7.24433 17.2804 7.22079 17.8933 7.37205C18.5062 7.52331 19.0647 7.84335 19.5057 8.29603C19.9467 8.7487 20.2527 9.31597 20.389 9.93377C20.5254 10.5516 20.4867 11.1953 20.2773 11.7922C21.2009 12.1459 21.972 12.8125 22.4566 13.6764C22.9412 14.5403 23.1089 15.5471 22.9305 16.522C22.7522 17.4969 22.239 18.3784 21.4801 19.0137C20.7211 19.649 19.7643 19.9979 18.7756 20H6.08268Z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    Deployments
+                  </div>
+                </div>
+              </a>
+              <a
+                class="block p-2 rounded-md hover:no-underline hover:bg-black-50 hover:text-black text-black-500"
+                href="/activity"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="mr-3"
+                  >
+                    <svg
+                      fill="none"
+                      height="24"
+                      stroke="#111920"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Activity
+                      </title>
+                      <polyline
+                        points="22 12 18 12 15 21 9 3 6 12 2 12"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    Activity
+                  </div>
+                </div>
+              </a>
+              <a
+                class="block p-2 rounded-md hover:no-underline hover:bg-black-50 hover:text-black text-black-500"
+                href="https://dashboard.aptible-test.com/controls"
+              >
+                <div
+                  class="flex items-center"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="mr-3"
+                  >
+                    <svg
+                      fill="none"
+                      height="24"
+                      stroke="#111920"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        Security & Compliance
+                      </title>
+                      <path
+                        d="M8.66667 12.2455L10.8889 14.5082L15.3333 9.9828M21.5756 5.4393C18.0623 5.62927 14.6186 4.39237 12 2C9.38141 4.39237 5.93767 5.62927 2.42445 5.4393C2.14171 6.55381 1.99909 7.70036 2 8.85145C2 15.1768 6.24889 20.493 12 22C17.7511 20.493 22 15.178 22 8.85145C22 7.67259 21.8522 6.52992 21.5756 5.4393Z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    Security & Compliance
+                  </div>
+                </div>
+              </a>
+            </nav>
+          </div>
+        </div>
+        <div
+          class="px-2 w-full"
+        >
+          <div
+            class="ml-0"
+          >
+            <button
+              class="w-full mb-4 flex items-center justify-center px-4 py-2 text-base font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md"
+              type="button"
+            >
+              <svg
+                fill="none"
+                height="24"
+                stroke="#111920"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <title>
+                  New
+                </title>
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <line
+                  x1="12"
+                  x2="12"
+                  y1="8"
+                  y2="16"
+                />
+                <line
+                  x1="8"
+                  x2="16"
+                  y1="12"
+                  y2="12"
+                />
+              </svg>
+              <span
+                class="pl-2"
+              >
+                Deploy
+              </span>
+            </button>
+          </div>
+          <div
+            class="w-full mb-2"
+          >
+            <a
+              class="block p-2 rounded-md hover:no-underline hover:bg-black-50 hover:text-black text-black-500"
+              href="/settings"
+            >
+              <div
+                class="flex items-center"
+              >
+                <div
+                  aria-hidden="true"
+                  class="mr-3"
+                >
+                  <svg
+                    fill="none"
+                    height="24"
+                    stroke="#111920"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <title>
+                      Settings
+                    </title>
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="3"
+                    />
+                    <path
+                      d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  Settings
+                </div>
+              </div>
+            </a>
+            <a
+              class="block p-2 rounded-md hover:no-underline hover:bg-black-50 hover:text-black text-black-500"
+              href="/logout"
+            >
+              <div
+                class="flex items-center"
+              >
+                <div
+                  aria-hidden="true"
+                  class="mr-3"
+                >
+                  <svg
+                    fill="none"
+                    height="24"
+                    stroke="#111920"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <title>
+                      Logout
+                    </title>
+                    <path
+                      d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                    />
+                    <polyline
+                      points="16 17 21 12 16 7"
+                    />
+                    <line
+                      x1="21"
+                      x2="9"
+                      y1="12"
+                      y2="12"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  Logout
+                </div>
+              </div>
+            </a>
+          </div>
+          <div
+            class="mb-6 mt-4 flex justify-between text-sm text-black-500"
+          >
+            <a
+              class="text-black-500 hover:text-indigo px-2"
+              href="https://aptible.com/docs"
+            >
+              DOCS
+            </a>
+            <a
+              class="text-black-500 hover:text-indigo px-2"
+              href="/support"
+            >
+              SUPPORT
+            </a>
+            <a
+              class="text-black-500 hover:text-indigo px-2"
+              href="https://www.aptible.com/docs/cli"
+            >
+              INSTALL CLI
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="h-full w-full"
+      style="margin-left: 224px;"
+    >
+      <main
+        class="h-full flex flex-col py-4 px-7"
+      >
+        <div
+          class="flex gap-4 flex-col "
+        >
+          <div
+            class="flex flex-col"
+          >
+            <div
+              class="pb-[11px]"
+            >
+              <nav
+                aria-label="Breadcrumb"
+              >
+                <div>
+                  <span>
+                    <span
+                      class=""
+                    >
+                      <a
+                        class="text-xl text-gray-900 focus:text-gray-900 font-semibold font-medium text-sm text-gray-500 hover:text-indigo"
+                        href="/environments//apps"
+                      >
+                         
+                        Unknown
+                      </a>
+                      <span
+                        class="text-xl text-gray-400 break-words"
+                      >
+                         / 
+                      </span>
+                    </span>
+                  </span>
+                  <span>
+                    <span
+                      class=""
+                    >
+                      <a
+                        aria-current="page"
+                        class="text-xl text-gray-900 focus:text-gray-900 font-semibold font-medium text-sm text-gray-500 hover:text-indigo"
+                        href="/apps/25"
+                      >
+                         
+                        test-app-1
+                      </a>
+                      <span
+                        class="text-xl text-gray-400 break-words"
+                      />
+                    </span>
+                  </span>
+                </div>
+              </nav>
+            </div>
+            <div
+              class="flex items-center"
+            />
+            <div>
+              <div
+                class="bg-white p-7 shadow border border-black-100 rounded-lg flex flex-col gap-3"
+              >
+                <div
+                  class="flex justify-between items-center"
+                >
+                  <div
+                    class="flex gap-2 flex-row items-center"
+                  >
+                    <div
+                      class="w-[32px] h-[32px]"
+                    >
+                      <img
+                        aria-label="App"
+                        class="w-[32px] h-[32px] mr-3"
+                        src="/resource-types/logo-app.png"
+                      />
+                    </div>
+                    <h1
+                      class="text-lg text-gray-500"
+                    >
+                      App Details
+                    </h1>
+                  </div>
+                  <a
+                    class="ml-5 w-fit flex items-center justify-center px-3 py-2 text-sm leading-4 font-medium border border-black-100 font-bold shadow-sm text-black bg-white hover:bg-black-100 hover:border-black-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black-200 rounded-md hover:no-underline cursor-pointer"
+                    href="https://www.aptible.com/docs/apps"
+                    target="_blank"
+                  >
+                    View Docs
+                    <svg
+                      class="inline ml-1 h-5 mt-0"
+                      fill="none"
+                      height="16"
+                      stroke="#111920"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="16"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title>
+                        External Link
+                      </title>
+                      <path
+                        d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                      />
+                      <polyline
+                        points="15 3 21 3 21 9"
+                      />
+                      <line
+                        x1="10"
+                        x2="21"
+                        y1="14"
+                        y2="3"
+                      />
+                    </svg>
+                  </a>
+                </div>
+                <div
+                  class="grid md:grid-cols-2 grid-cols-1 gap-4"
+                >
+                  <div>
+                    <h3
+                      class="text-base font-semibold text-gray-900"
+                    >
+                      ID
+                    </h3>
+                    <div
+                      class="break-all"
+                    >
+                      25
+                    </div>
+                  </div>
+                  <div>
+                    <h3
+                      class="text-base font-semibold text-gray-900"
+                    >
+                      Git Ref
+                    </h3>
+                    <div
+                      class="break-all"
+                    />
+                  </div>
+                  <div>
+                    <h3
+                      class="text-base font-semibold text-gray-900"
+                    >
+                      Source
+                    </h3>
+                    <div
+                      class="break-all"
+                    >
+                      Aptible Git Deployment
+                    </div>
+                  </div>
+                  <div>
+                    <h3
+                      class="text-base font-semibold text-gray-900"
+                    >
+                      Tag
+                    </h3>
+                    <div
+                      class="break-all"
+                    />
+                  </div>
+                  <div>
+                    <h3
+                      class="text-base font-semibold text-gray-900"
+                    >
+                      Last Deployed
+                    </h3>
+                    <div
+                      class="break-all"
+                    >
+                      2024-03-18 14:27:49 UTC
+                    </div>
+                  </div>
+                  <div>
+                    <h3
+                      class="text-base font-semibold text-gray-900"
+                    >
+                      Docker Image
+                    </h3>
+                    <div
+                      class="break-all"
+                    >
+                      Dockerfile Build
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="pt-4"
+            >
+              <nav
+                aria-label="Tabs"
+                class="flex space-x-8 bg-white border-black-100 border-b"
+              >
+                <a
+                  class="flex items-center font-normal text-base text-gray-500 hover:text-gray-700 border-transparent  hover:border-gray-300 focus:text-black whitespace-nowrap pb-3 px-1 border-b-3 hover:no-underline"
+                  href="/apps/25/services"
+                >
+                  Services
+                </a>
+                <a
+                  aria-current="page"
+                  class="flex items-center font-semibold text-black border-orange-400 focus:text-black whitespace-nowrap pb-3 px-1 border-b-3 hover:no-underline"
+                  href="/apps/25/deployments"
+                >
+                  Deployments
+                </a>
+                <a
+                  class="flex items-center font-normal text-base text-gray-500 hover:text-gray-700 border-transparent  hover:border-gray-300 focus:text-black whitespace-nowrap pb-3 px-1 border-b-3 hover:no-underline"
+                  href="/apps/25/endpoints"
+                >
+                  Endpoints
+                </a>
+                <a
+                  class="flex items-center font-normal text-base text-gray-500 hover:text-gray-700 border-transparent  hover:border-gray-300 focus:text-black whitespace-nowrap pb-3 px-1 border-b-3 hover:no-underline"
+                  href="/apps/25/activity"
+                >
+                  Activity
+                </a>
+                <a
+                  class="flex items-center font-normal text-base text-gray-500 hover:text-gray-700 border-transparent  hover:border-gray-300 focus:text-black whitespace-nowrap pb-3 px-1 border-b-3 hover:no-underline"
+                  href="/apps/25/config"
+                >
+                  Configuration
+                </a>
+                <a
+                  class="flex items-center font-normal text-base text-gray-500 hover:text-gray-700 border-transparent  hover:border-gray-300 focus:text-black whitespace-nowrap pb-3 px-1 border-b-3 hover:no-underline"
+                  href="/apps/25/ci-cd"
+                >
+                  CI/CD
+                </a>
+                <a
+                  class="flex items-center font-normal text-base text-gray-500 hover:text-gray-700 border-transparent  hover:border-gray-300 focus:text-black whitespace-nowrap pb-3 px-1 border-b-3 hover:no-underline"
+                  href="/apps/25/settings"
+                >
+                  Settings
+                </a>
+              </nav>
+            </div>
+          </div>
+          <div
+            class="flex flex-col"
+          >
+            <div
+              class="overflow-x-scroll w-full shadow ring-1 ring-black ring-opacity-5 rounded-lg"
+            >
+              <div
+                class="min-w-[600px]"
+              >
+                <table
+                  class="table-auto w-full divide-y divide-gray-300"
+                >
+                  <thead
+                    class="bg-gray-50"
+                  >
+                    <tr>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        ID
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        Status
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        Source
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        Tag
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        Commit
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        Message
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        Date
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-right pr-4 flex gap-2 justify-end"
+                        colspan="1"
+                      >
+                        Actions
+                      </td>
+                    </tr>
+                  </thead>
+                  <tbody
+                    class="divide-y divide-gray-200 bg-white"
+                  >
+                    <tr
+                      class="group hover:bg-gray-50 "
+                    >
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <a
+                          class="text-black group-hover:text-indigo hover:text-indigo"
+                          href="/deployments/1"
+                        >
+                          1
+                        </a>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <span
+                          class="font-semibold text-red"
+                        >
+                          FAILED
+                        </span>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        Aptible Git Deployment
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      />
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      />
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <span />
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        2023-12-17 08:24:00 UTC
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-right pr-4 flex gap-2 justify-end"
+                        colspan="1"
+                      >
+                        <a
+                          class="w-15 flex items-center justify-center px-3 py-2 text-sm leading-4 font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md hover:no-underline cursor-pointer"
+                          href="/deployments/1"
+                        >
+                          View
+                        </a>
+                      </td>
+                    </tr>
+                    <tr
+                      class="group hover:bg-gray-50 "
+                    >
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <a
+                          class="text-black group-hover:text-indigo hover:text-indigo"
+                          href="/deployments/2"
+                        >
+                          2
+                        </a>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <span
+                          class="font-semibold text-forest"
+                        >
+                          DONE
+                        </span>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <a
+                          class=" "
+                          href="https://github.com/aptible/app-ui"
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          github.com/aptible/app-ui
+                        </a>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <code
+                          class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                        >
+                          v3
+                        </code>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <code
+                          class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                        >
+                          <a
+                            class=" "
+                            href="https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859"
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            a947a95
+                          </a>
+                        </code>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <span>
+                          fix(backup): pass page to fetch request (#754)
+                        </span>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        2023-12-17 08:24:00 UTC
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-right pr-4 flex gap-2 justify-end"
+                        colspan="1"
+                      >
+                        <a
+                          class="w-15 flex items-center justify-center px-3 py-2 text-sm leading-4 font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md hover:no-underline cursor-pointer"
+                          href="/deployments/2"
+                        >
+                          View
+                        </a>
+                      </td>
+                    </tr>
+                    <tr
+                      class="group hover:bg-gray-50 "
+                    >
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <a
+                          class="text-black group-hover:text-indigo hover:text-indigo"
+                          href="/deployments/3"
+                        >
+                          3
+                        </a>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <span
+                          class="font-semibold text-black"
+                        >
+                          PENDING
+                        </span>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <a
+                          class=" "
+                          href="https://github.com/aptible/app-ui"
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          github.com/aptible/app-ui
+                        </a>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <code
+                          class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                        >
+                          v3
+                        </code>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <code
+                          class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                        >
+                          <a
+                            class=" "
+                            href="https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859"
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            a947a95
+                          </a>
+                        </code>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        <span>
+                          fix(backup): pass page to fetch request (#754)
+                        </span>
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                        colspan="1"
+                      >
+                        2023-12-17 08:24:00 UTC
+                      </td>
+                      <td
+                        class="text-sm text-gray-500 pl-4 py-3 break-words text-right pr-4 flex gap-2 justify-end"
+                        colspan="1"
+                      >
+                        <a
+                          class="w-15 flex items-center justify-center px-3 py-2 text-sm leading-4 font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md hover:no-underline cursor-pointer"
+                          href="/deployments/3"
+                        >
+                          View
+                        </a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class="flex border-t border-black-100 py-4 mt-7"
+          >
+            <p
+              class="grow text-gray-500 text-sm uppercase"
+            >
+              Aptible, Inc. © 
+              2024
+            </p>
+            <div
+              class="flex md:flex-row flex-col"
+            >
+              <a
+                class="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase hidden md:block"
+                href="https://github.com/aptible/app-ui"
+                rel="noreferrer"
+                target="_blank"
+              >
+                GitHub Repo
+                 
+                <svg
+                  class="inline h-4 -ml-1 -mt-1 opacity-60"
+                  fill="none"
+                  height="24"
+                  stroke="#111920"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <title>
+                    External Link
+                  </title>
+                  <path
+                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                  />
+                  <polyline
+                    points="15 3 21 3 21 9"
+                  />
+                  <line
+                    x1="10"
+                    x2="21"
+                    y1="14"
+                    y2="3"
+                  />
+                </svg>
+              </a>
+              <a
+                class="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase hidden md:block"
+                href="https://www.aptible.com/changelog"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Changelog
+                 
+                <svg
+                  class="inline h-4 -ml-1 -mt-1 opacity-60"
+                  fill="none"
+                  height="24"
+                  stroke="#111920"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <title>
+                    External Link
+                  </title>
+                  <path
+                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                  />
+                  <polyline
+                    points="15 3 21 3 21 9"
+                  />
+                  <line
+                    x1="10"
+                    x2="21"
+                    y1="14"
+                    y2="3"
+                  />
+                </svg>
+              </a>
+              <a
+                class="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase hidden md:block"
+                href="https://dashboard.aptible.com/login"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Legacy Dashboard
+                 
+                <svg
+                  class="inline h-4 -ml-1 -mt-1 opacity-60"
+                  fill="none"
+                  height="24"
+                  stroke="#111920"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <title>
+                    External Link
+                  </title>
+                  <path
+                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                  />
+                  <polyline
+                    points="15 3 21 3 21 9"
+                  />
+                  <line
+                    x1="10"
+                    x2="21"
+                    y1="14"
+                    y2="3"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+`;

@@ -1,4 +1,4 @@
-import type { DeployOperation, DeployService } from "./deploy";
+import type { DeployOperation, DeployService, OperationStatus } from "./deploy";
 
 export interface Config {
   isProduction: boolean;
@@ -67,7 +67,7 @@ export interface DeployServiceRow extends DeployService {
 
 export interface Deployment {
   id: string;
-  status: string;
+  status: OperationStatus;
   dockerImage: string;
   dockerRepositoryUrl: string;
   gitRepositoryUrl: string;
@@ -75,6 +75,7 @@ export interface Deployment {
   gitCommitSha: string;
   gitCommitUrl: string;
   gitCommitMessage: string;
+  gitCommitDate: string | null;
   createdAt: string;
   updatedAt: string;
   operationId: string;

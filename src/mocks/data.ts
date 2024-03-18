@@ -666,6 +666,8 @@ export const testSaml = defaultSamlConfigurationResponse({
   },
 });
 
+const deployDate = new Date("2023-12-17T03:24:00").toISOString();
+
 export const testDeploymentGit = defaultDeploymentResponse({
   id: "3",
   docker_image: "",
@@ -675,9 +677,13 @@ export const testDeploymentGit = defaultDeploymentResponse({
   git_commit_sha: "a947a95a92e7a7a4db7fe01c28346281c128b859",
   git_commit_url:
     "https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859",
+  created_at: deployDate,
+  status: "pending",
   _links: {
     app: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
-    operation: defaultHalHref(),
+    operation: defaultHalHref(
+      `${testEnv.apiUrl}/operations/${testAppDeployOperation.id}`,
+    ),
     configuration: defaultHalHref(),
     image: defaultHalHref(),
   },
@@ -693,9 +699,13 @@ export const testDeploymentDocker = defaultDeploymentResponse({
   git_commit_sha: "a947a95a92e7a7a4db7fe01c28346281c128b859",
   git_commit_url:
     "https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859",
+  status: "succeeded",
+  created_at: deployDate,
   _links: {
     app: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
-    operation: defaultHalHref(),
+    operation: defaultHalHref(
+      `${testEnv.apiUrl}/operations/${testAppDeployOperation.id}`,
+    ),
     configuration: defaultHalHref(),
     image: defaultHalHref(),
   },
@@ -709,9 +719,13 @@ export const testDeploymentEmpty = defaultDeploymentResponse({
   git_commit_message: "",
   git_commit_sha: "",
   git_commit_url: "",
+  status: "failed",
+  created_at: deployDate,
   _links: {
     app: defaultHalHref(`${testEnv.apiUrl}/apps/${testApp.id}`),
-    operation: defaultHalHref(),
+    operation: defaultHalHref(
+      `${testEnv.apiUrl}/operations/${testAppDeployOperation.id}`,
+    ),
     configuration: defaultHalHref(),
     image: defaultHalHref(),
   },

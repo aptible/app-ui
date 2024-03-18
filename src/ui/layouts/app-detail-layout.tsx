@@ -3,15 +3,14 @@ import {
   cancelAppOpsPoll,
   fetchApp,
   fetchConfiguration,
-  fetchImageById,
   fetchServicesByAppId,
   pollAppOperations,
   selectAppById,
-  selectAppConfigById,
   selectEnvironmentById,
   selectLatestDeployOp,
   selectUserHasPerms,
 } from "@app/deploy";
+import { fetchDeploymentById, getDockerImageName } from "@app/deployment";
 import { findLoaderComposite } from "@app/loaders";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
@@ -34,7 +33,6 @@ import { Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
-  CopyText,
   DeploymentGitSha,
   DeploymentTagText,
   DetailHeader,
@@ -55,17 +53,11 @@ export function AppHeader({
   const lastDeployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
-  useQuery(fetchImageById({ id: app.currentImageId }));
-  const config = useSelector((s) =>
-    selectAppConfigById(s, { id: app.currentConfigurationId }),
-  );
+  useQuery(fetchDeploymentById({ id: app.currentDeploymentId }));
   const deployment = useSelector((s) =>
     schema.deployments.selectById(s, { id: app.currentDeploymentId }),
   );
-  const dockerImage =
-    deployment.dockerImage ||
-    config.env.APTIBLE_DOCKER_IMAGE ||
-    "Dockerfile Build";
+  const dockerImage = getDockerImageName(deployment);
 
   return (
     <DetailHeader>
@@ -88,30 +80,24 @@ export function AppHeader({
           <DeploymentGitSha deployment={deployment} />
         </DetailInfoItem>
 
-        {deployment.id ? (
-          <>
-            <DetailInfoItem title="Source">
-              <SourceName app={app} deployment={deployment} />
-            </DetailInfoItem>
-            {deployment.gitCommitMessage ? (
-              <DetailInfoItem title="Commit Message">
-                <GitMetadata deployment={deployment} />
-              </DetailInfoItem>
-            ) : null}
-            <DetailInfoItem title="Tag">
-              <DeploymentTagText deployment={deployment} />
-            </DetailInfoItem>
-          </>
+        <DetailInfoItem title="Source">
+          <SourceName app={app} deployment={deployment} />
+        </DetailInfoItem>
+        {deployment.gitCommitMessage ? (
+          <DetailInfoItem title="Commit Message">
+            <GitMetadata deployment={deployment} />
+          </DetailInfoItem>
         ) : null}
+        <DetailInfoItem title="Tag">
+          <DeploymentTagText deployment={deployment} />
+        </DetailInfoItem>
 
         <DetailInfoItem title="Last Deployed">
           {lastDeployOp
             ? `${prettyDateTime(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
-        <DetailInfoItem title="Docker Image">
-          <CopyText text={`${dockerImage}`} />
-        </DetailInfoItem>
+        <DetailInfoItem title="Docker Image">{dockerImage}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
