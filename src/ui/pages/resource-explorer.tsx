@@ -3,7 +3,6 @@ import { capitalize } from "@app/string-utils";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
-  Box,
   Button,
   FilterBar,
   Group,
