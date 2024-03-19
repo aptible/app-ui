@@ -189,6 +189,7 @@ function NodeViewer({
             <div
               key={found.id}
               onClick={() => onClick(nId)}
+              onKeyUp={() => onClick(nId)}
               className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
             >
               <div className="grow">{found.handle}</div>
@@ -212,6 +213,7 @@ function NodeViewer({
             <div
               key={found.id}
               onClick={() => onClick(nId)}
+              onKeyUp={() => onClick(nId)}
               className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
             >
               <div className="grow">{found.handle}</div>
