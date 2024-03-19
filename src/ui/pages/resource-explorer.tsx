@@ -350,7 +350,7 @@ export function ResourceExplorerPage() {
           </Table>
         </div>
 
-        <div className="bg-white shadow border border-black-100 rounded-lg flex-1 flex items-stretch">
+        <div className="bg-white shadow border border-black-100 rounded-lg flex-1 flex items-stretch overflow-hidden">
           {selected ? (
             <NodeViewer
               node={selected}
