@@ -177,52 +177,58 @@ function NodeViewer({
 }) {
   return (
     <div className="flex flex-row w-full">
-      <div className="flex-1 border-r border-black-100">
-        <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100">
-          <h3 className={tokens.type.h3}>Required Connections</h3>
+      <div className="flex flex-col w-full">
+        <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100 flex flex-row gap-4">
+          <h3 className={tokens.type.h3}>{node.handle}</h3>
         </div>
-        {node.dependsOn.map((nId) => {
-          const found = nodes.find((n) => nId === n.id);
-          if (!found) return null;
-          return (
-            <div
-              key={found.id}
-              onClick={() => onClick(nId)}
-              onKeyUp={() => onClick(nId)}
-              className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
-            >
-              <div className="grow">{found.handle}</div>
-              <IconChevronRight
-                variant="sm"
-                className="ml-2 group-hover:opacity-100 opacity-50"
-              />
+        <div className="flex flex-row w-full h-full">
+          <div className="flex-1 border-r border-black-100">
+            <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100 text-sm text-gray-500">
+              Required Connections
             </div>
-          );
-        })}
-      </div>
-
-      <div className="flex-1">
-        <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100">
-          <h3 className={tokens.type.h3}>Dependencies</h3>
+            {node.dependsOn.map((nId) => {
+              const found = nodes.find((n) => nId === n.id);
+              if (!found) return null;
+              return (
+                <div
+                  key={found.id}
+                  onClick={() => onClick(nId)}
+                  onKeyUp={() => onClick(nId)}
+                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
+                >
+                  <div className="grow text-sm">{found.handle}</div>
+                  <IconChevronRight
+                    variant="sm"
+                    className="ml-2 group-hover:opacity-100 opacity-50"
+                  />
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex-1">
+            <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100 text-sm text-gray-500">
+              Dependencies
+            </div>
+            {node.dependsOnMe.map((nId) => {
+              const found = nodes.find((n) => nId === n.id);
+              if (!found) return null;
+              return (
+                <div
+                  key={found.id}
+                  onClick={() => onClick(nId)}
+                  onKeyUp={() => onClick(nId)}
+                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
+                >
+                  <div className="grow text-sm">{found.handle}</div>
+                  <IconChevronRight
+                    variant="sm"
+                    className="ml-2 group-hover:opacity-100 opacity-50"
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
-        {node.dependsOnMe.map((nId) => {
-          const found = nodes.find((n) => nId === n.id);
-          if (!found) return null;
-          return (
-            <div
-              key={found.id}
-              onClick={() => onClick(nId)}
-              onKeyUp={() => onClick(nId)}
-              className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
-            >
-              <div className="grow">{found.handle}</div>
-              <IconChevronRight
-                variant="sm"
-                className="ml-2 group-hover:opacity-100 opacity-50"
-              />
-            </div>
-          );
-        })}
       </div>
     </div>
   );
