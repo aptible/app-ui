@@ -33,6 +33,7 @@ export interface DeployApp extends Provisionable, Timestamps {
   currentConfigurationId: string;
   currentImageId: string;
   currentDeploymentId: string;
+  currentSourceId: string;
 }
 
 export type InstanceClass = "m4" | "m5" | "r4" | "r5" | "c4" | "c5";
@@ -580,4 +581,11 @@ export interface DeployServiceSizingPolicy extends Timestamps {
   memScaleDownThreshold: number;
   minimumMemory: number;
   maximumMemory: number | null;
+}
+
+export interface DeploySource {
+  id: string;
+  displayName: string;
+  createdAt: string;
+  updatedAt: string;
 }

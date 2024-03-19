@@ -42,6 +42,7 @@ export interface DeployAppResponse {
     current_configuration: LinkResponse;
     current_deployment: LinkResponse;
     current_image: LinkResponse;
+    current_source: LinkResponse;
   };
   _embedded: {
     // TODO: fill in
@@ -70,6 +71,7 @@ export const defaultAppResponse = (
       current_configuration: { href: "" },
       current_deployment: { href: "" },
       current_image: { href: "" },
+      current_source: { href: "" },
       ...p._links,
     },
     _embedded: {
@@ -99,6 +101,7 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
     currentConfigurationId: extractIdFromLink(links.current_configuration),
     currentDeploymentId: extractIdFromLink(links.current_deployment) || "1",
     currentImageId: extractIdFromLink(links.current_image),
+    currentSourceId: extractIdFromLink(links.current_source),
   };
 };
 
