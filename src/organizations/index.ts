@@ -1,3 +1,4 @@
+import { selectEnv } from "@app/config";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
@@ -93,6 +94,17 @@ export const selectOrganizationSelected = createSelector(
     }
 
     return schema.organizations.empty;
+  },
+);
+
+export const selectHasBetaFeatures = createSelector(
+  selectOrganizationSelectedId,
+  selectEnv,
+  (orgId, config) => {
+    if (config.isDev) {
+      return true;
+    }
+    return ["df0ee681-9e02-4c28-8916-3b215d539b08"].includes(orgId);
   },
 );
 

@@ -12,6 +12,7 @@ import {
 } from "@app/deploy";
 import { fetchDeploymentById, getDockerImageName } from "@app/deployment";
 import { findLoaderComposite } from "@app/loaders";
+import { selectHasBetaFeatures } from "@app/organizations";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appActivityUrl,
@@ -139,14 +140,19 @@ function AppPageHeader() {
   const hasConfigAccess = useSelector((s) =>
     selectUserHasPerms(s, { envId: app.environmentId, scope: "read" }),
   );
+  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
 
-  const tabs: TabItem[] = [
-    { name: "Services", href: appServicesUrl(id) },
-    { name: "Deployments", href: appDetailDeploymentsUrl(id) },
+  const tabs: TabItem[] = [{ name: "Services", href: appServicesUrl(id) }];
+
+  if (hasBetaFeatures) {
+    tabs.push({ name: "Deployments", href: appDetailDeploymentsUrl(id) });
+  }
+
+  tabs.push(
     { name: "Endpoints", href: appEndpointsUrl(id) },
     { name: "Activity", href: appActivityUrl(id) },
     { name: "Configuration", href: appConfigUrl(id) },
-  ];
+  );
 
   if (hasConfigAccess) {
     tabs.push({ name: "Dependencies", href: appDetailDepsUrl(id) });
