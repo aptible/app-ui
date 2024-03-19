@@ -1,4 +1,5 @@
 import { appDetailUrl, databaseDetailUrl } from "@app/routes";
+import { capitalize } from "@app/string-utils";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
@@ -7,6 +8,7 @@ import {
   FilterBar,
   Group,
   IconChevronDown,
+  IconChevronRight,
   InputSearch,
   TBody,
   THead,
@@ -149,11 +151,11 @@ function ResourceRow({
   isSelected: boolean;
 }) {
   return (
-    <Tr className={isSelected ? "bg-indigo-100" : ""}>
+    <Tr className={isSelected ? "bg-off-white" : ""}>
       <Td>
         <HandleCell node={node} />
       </Td>
-      <Td>{node.resourceType}</Td>
+      <Td>{capitalize(node.resourceType)}</Td>
       <Td variant="center">{node.dependsOn.length}</Td>
       <Td variant="center">{node.dependsOnMe.length}</Td>
       <Td variant="right">
@@ -175,39 +177,53 @@ function NodeViewer({
   onClick: (id: string) => void;
 }) {
   return (
-    <Group variant="horizontal">
-      <Group className="flex-1">
-        <h3 className={tokens.type.h3}>Depends On</h3>
+    <div className="flex flex-row w-full">
+      <div className="flex-1 border-r border-black-100">
+        <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100">
+          <h3 className={tokens.type.h3}>Required Connections</h3>
+        </div>
         {node.dependsOn.map((nId) => {
           const found = nodes.find((n) => nId === n.id);
           if (!found) return null;
           return (
-            <Group key={found.id} variant="horizontal" className="items-center">
-              <div>{found.handle}</div>
-              <Button size="xs" onClick={() => onClick(nId)}>
-                View
-              </Button>
-            </Group>
+            <div
+              key={found.id}
+              onClick={() => onClick(nId)}
+              className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
+            >
+              <div className="grow">{found.handle}</div>
+              <IconChevronRight
+                variant="sm"
+                className="ml-2 group-hover:opacity-100 opacity-50"
+              />
+            </div>
           );
         })}
-      </Group>
+      </div>
 
-      <Group className="flex-1">
-        <h3 className={tokens.type.h3}>Depends On Me</h3>
+      <div className="flex-1">
+        <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100">
+          <h3 className={tokens.type.h3}>Dependencies</h3>
+        </div>
         {node.dependsOnMe.map((nId) => {
           const found = nodes.find((n) => nId === n.id);
           if (!found) return null;
           return (
-            <Group key={found.id} variant="horizontal" className="items-center">
-              <div>{found.handle}</div>
-              <Button size="xs" onClick={() => onClick(nId)}>
-                View
-              </Button>
-            </Group>
+            <div
+              key={found.id}
+              onClick={() => onClick(nId)}
+              className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
+            >
+              <div className="grow">{found.handle}</div>
+              <IconChevronRight
+                variant="sm"
+                className="ml-2 group-hover:opacity-100 opacity-50"
+              />
+            </div>
           );
         })}
-      </Group>
-    </Group>
+      </div>
+    </div>
   );
 }
 
@@ -307,14 +323,14 @@ export function ResourceExplorerPage() {
                 onClick={() => onSort("dependsOn")}
                 variant="center"
               >
-                Depends On <SortIcon />
+                Required Connections <SortIcon />
               </Th>
               <Th
                 className="cursor-pointer hover:text-black group"
                 onClick={() => onSort("dependsOnMe")}
                 variant="center"
               >
-                Depends On Me <SortIcon />
+                Dependencies <SortIcon />
               </Th>
               <Th variant="right">Actions</Th>
             </THead>
@@ -332,7 +348,7 @@ export function ResourceExplorerPage() {
           </Table>
         </div>
 
-        <Box className="flex-1">
+        <div className="bg-white shadow border border-black-100 rounded-lg flex-1 flex items-stretch">
           {selected ? (
             <NodeViewer
               node={selected}
@@ -340,9 +356,11 @@ export function ResourceExplorerPage() {
               onClick={(id: string) => setSelectedId(id)}
             />
           ) : (
-            <div>Select a node to view</div>
+            <div className="p-7">
+              Choose a resource to view its dependencies.
+            </div>
           )}
-        </Box>
+        </div>
       </Group>
     </Group>
   );
