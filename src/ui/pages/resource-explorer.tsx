@@ -134,10 +134,21 @@ function HandleCell({ node }: { node: ResourceNode }) {
   }
 
   if (node.resourceType === "database") {
-    return <Link to={databaseDetailUrl(node.id)}>{node.handle}</Link>;
+    return (
+      <Link
+        to={databaseDetailUrl(node.id)}
+        className={tokens.type["table link"]}
+      >
+        {node.handle}
+      </Link>
+    );
   }
 
-  return <Link to={appDetailUrl(node.id)}>{node.handle}</Link>;
+  return (
+    <Link to={appDetailUrl(node.id)} className={tokens.type["table link"]}>
+      {node.handle}
+    </Link>
+  );
 }
 
 function ResourceRow({
@@ -150,7 +161,7 @@ function ResourceRow({
   isSelected: boolean;
 }) {
   return (
-    <Tr className={isSelected ? "bg-off-white" : ""}>
+    <Tr className={isSelected ? "bg-off-white hover:bg-off-white" : ""}>
       <Td>
         <HandleCell node={node} />
       </Td>
@@ -159,7 +170,7 @@ function ResourceRow({
       <Td variant="center">{node.dependsOnMe.length}</Td>
       <Td variant="right">
         <Button size="sm" onClick={() => onClick(node.id)}>
-          View
+          Explore
         </Button>
       </Td>
     </Tr>
@@ -179,12 +190,14 @@ function NodeViewer({
     <div className="flex flex-row w-full">
       <div className="flex flex-col w-full">
         <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100 flex flex-row gap-4">
-          <h3 className={tokens.type.h3}>{node.handle}</h3>
+          <h3 className={tokens.type.h3}>
+            <HandleCell node={node} />
+          </h3>
         </div>
         <div className="flex flex-row w-full h-full">
           <div className="flex-1 border-r border-black-100">
             <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100 text-sm text-gray-500">
-              Required Connections
+              {node.dependsOn.length} Required Connections
             </div>
             {node.dependsOn.map((nId) => {
               const found = nodes.find((n) => nId === n.id);
@@ -207,7 +220,7 @@ function NodeViewer({
           </div>
           <div className="flex-1">
             <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100 text-sm text-gray-500">
-              Dependencies
+              {node.dependsOnMe.length} Dependencies
             </div>
             {node.dependsOnMe.map((nId) => {
               const found = nodes.find((n) => nId === n.id);
@@ -363,8 +376,12 @@ export function ResourceExplorerPage() {
               onClick={(id: string) => setSelectedId(id)}
             />
           ) : (
-            <div className="p-7">
-              Choose a resource to view its dependencies.
+            <div className="py-16 px-4 text-center w-full flex items-center flex-col gap-4">
+              <h2 className={tokens.type.h2}>How It Works</h2>
+              <div>
+                Click <strong>Explore</strong> on a resource to see its required
+                connections and dependencies.
+              </div>
             </div>
           )}
         </div>
