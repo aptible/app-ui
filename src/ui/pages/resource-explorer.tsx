@@ -6,6 +6,7 @@ import {
   Button,
   FilterBar,
   Group,
+  IconCheck,
   IconChevronDown,
   IconChevronRight,
   InputSearch,
@@ -168,7 +169,12 @@ function ResourceRow({
         <div className="text-gray-500">{capitalize(node.resourceType)}</div>
       </Td>
       <Td>
-        <Pill variant="success">Deployed</Pill>
+        <Pill
+          variant="success"
+          icon={<IconCheck color="#00633F" className="-mr-1" variant="sm" />}
+        >
+          1h ago
+        </Pill>
       </Td>
       <Td variant="center">{node.dependsOn.length}</Td>
       <Td variant="center">{node.dependsOnMe.length}</Td>
@@ -347,7 +353,7 @@ export function ResourceExplorerPage() {
               >
                 Resource <SortIcon />
               </Th>
-              <Th>Status</Th>
+              <Th>Deploy Status</Th>
               <Th
                 className="cursor-pointer hover:text-black group"
                 onClick={() => onSort("dependsOn")}
