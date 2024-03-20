@@ -179,7 +179,7 @@ function ResourceRow({
       <Td variant="center">{node.dependsOn.length}</Td>
       <Td variant="center">{node.dependsOnMe.length}</Td>
       <Td variant="right">
-        <Button size="sm" onClick={() => onClick(node.id)}>
+        <Button size="sm" className="mt-1" onClick={() => onClick(node.id)}>
           Explore
         </Button>
       </Td>
