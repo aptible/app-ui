@@ -12,7 +12,6 @@ import {
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import {
-  appDeployResumeUrl,
   appDetailUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
@@ -20,20 +19,14 @@ import {
 } from "@app/routes";
 import { DeployService, DeployServiceRow, DeployStack } from "@app/types";
 import { PaginateProps, usePaginate } from "@app/ui/hooks";
-import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import { ButtonCreate, ButtonLink } from "../button";
+import { ButtonLink } from "../button";
 import { Code } from "../code";
 import { CopyTextButton } from "../copy";
 import { Group } from "../group";
 import { IconChevronDown, IconInfo } from "../icons";
 import { Pill } from "../pill";
-import {
-  ActionBar,
-  DescBar,
-  FilterBar,
-  PaginateBar,
-} from "../resource-list-view";
+import { DescBar, FilterBar, PaginateBar } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
@@ -317,7 +310,6 @@ export function AppServicesByApp({
 }: {
   appId: string;
 }) {
-  const navigate = useNavigate();
   const app = useSelector((s) => selectAppById(s, { id: appId }));
   const services = useSelector((s) => selectServiceRowsByAppId(s, { appId }));
   const environment = useSelector((s) =>
@@ -326,9 +318,6 @@ export function AppServicesByApp({
   const stack = useSelector((s) =>
     selectStackById(s, { id: environment.stackId }),
   );
-  const onDeploy = () => {
-    navigate(appDeployResumeUrl(app.id));
-  };
   useQuery(fetchServicesByAppId({ id: app.id }));
   useQuery(
     fetchServiceSizingPoliciesByEnvironmentId({ id: app.environmentId }),
@@ -339,16 +328,6 @@ export function AppServicesByApp({
     <Group>
       <Group size="sm">
         <FilterBar>
-          <ActionBar>
-            <ButtonCreate
-              className="w-fit"
-              envId={app.environmentId}
-              onClick={onDeploy}
-            >
-              Deployment Monitor
-            </ButtonCreate>
-          </ActionBar>
-
           <Group variant="horizontal" size="lg" className="items-center">
             <DescBar>{paginated.totalItems} Services</DescBar>
             <PaginateBar {...paginated} />

@@ -188,3 +188,7 @@ export const isLocalPath = (url: string): boolean => {
   if (url === "/") return true;
   return /^\/\w+/.test(url);
 };
+
+export const prettyGitSha = (shasum: string): string => {
+  return shasum.slice(0, 7);
+};

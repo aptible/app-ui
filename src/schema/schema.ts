@@ -79,5 +79,6 @@ export const [schema, initialState] = createSchema({
   serviceSizingPolicies: slice.table({
     empty: factory.defaultServiceSizingPolicy(),
   }),
+  deployments: slice.table({ empty: factory.defaultDeployment() }),
 });
 export type WebState = typeof initialState;

@@ -25,6 +25,7 @@ describe("CreateProjectFromAppSetupPage", () => {
           ),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       });
 
@@ -58,6 +59,7 @@ describe("CreateProjectFromAppSetupPage", () => {
           ),
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
+          current_deployment: defaultHalHref(),
         },
       });
       const op = defaultOperationResponse({
