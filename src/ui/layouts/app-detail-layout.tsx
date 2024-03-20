@@ -3,22 +3,22 @@ import {
   cancelAppOpsPoll,
   fetchApp,
   fetchConfiguration,
-  fetchImageById,
   fetchServicesByAppId,
   pollAppOperations,
   selectAppById,
-  selectAppConfigById,
   selectEnvironmentById,
-  selectImageById,
   selectLatestDeployOp,
   selectUserHasPerms,
 } from "@app/deploy";
+import { fetchDeploymentById, getDockerImageName } from "@app/deployment";
 import { findLoaderComposite } from "@app/loaders";
+import { selectHasBetaFeatures } from "@app/organizations";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appActivityUrl,
   appCiCdUrl,
   appConfigUrl,
+  appDetailDeploymentsUrl,
   appDetailDepsUrl,
   appDetailUrl,
   appEndpointsUrl,
@@ -26,6 +26,7 @@ import {
   appSettingsUrl,
   environmentAppsUrl,
 } from "@app/routes";
+import { schema } from "@app/schema";
 import { setResourceStats } from "@app/search";
 import type { DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
@@ -33,12 +34,15 @@ import { Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
-  CopyText,
+  DeploymentGitSha,
+  DeploymentTagText,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  GitMetadata,
+  SourceName,
   TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
@@ -50,14 +54,11 @@ export function AppHeader({
   const lastDeployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
-  useQuery(fetchImageById({ id: app.currentImageId }));
-  const image = useSelector((s) =>
-    selectImageById(s, { id: app.currentImageId }),
+  useQuery(fetchDeploymentById({ id: app.currentDeploymentId }));
+  const deployment = useSelector((s) =>
+    schema.deployments.selectById(s, { id: app.currentDeploymentId }),
   );
-  const config = useSelector((s) =>
-    selectAppConfigById(s, { id: app.currentConfigurationId }),
-  );
-  const dockerImage = config.env.APTIBLE_DOCKER_IMAGE || "Dockerfile Build";
+  const dockerImage = getDockerImageName(deployment);
 
   return (
     <DetailHeader>
@@ -76,15 +77,20 @@ export function AppHeader({
 
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
-        <DetailInfoItem title="Git Remote">
-          <CopyText text={app.gitRepo} />
+        <DetailInfoItem title="Git Ref">
+          <DeploymentGitSha deployment={deployment} />
         </DetailInfoItem>
 
-        <DetailInfoItem title="Git Ref">
-          <CopyText text={image.gitRef} />
+        <DetailInfoItem title="Source">
+          <SourceName app={app} deployment={deployment} />
         </DetailInfoItem>
-        <DetailInfoItem title="Docker Image">
-          <CopyText text={`${dockerImage}`} />
+        {deployment.gitCommitMessage ? (
+          <DetailInfoItem title="Commit Message">
+            <GitMetadata deployment={deployment} />
+          </DetailInfoItem>
+        ) : null}
+        <DetailInfoItem title="Tag">
+          <DeploymentTagText deployment={deployment} />
         </DetailInfoItem>
 
         <DetailInfoItem title="Last Deployed">
@@ -92,6 +98,7 @@ export function AppHeader({
             ? `${prettyDateTime(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
+        <DetailInfoItem title="Docker Image">{dockerImage}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -133,13 +140,19 @@ function AppPageHeader() {
   const hasConfigAccess = useSelector((s) =>
     selectUserHasPerms(s, { envId: app.environmentId, scope: "read" }),
   );
+  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
 
-  const tabs: TabItem[] = [
-    { name: "Services", href: appServicesUrl(id) },
+  const tabs: TabItem[] = [{ name: "Services", href: appServicesUrl(id) }];
+
+  if (hasBetaFeatures) {
+    tabs.push({ name: "Deployments", href: appDetailDeploymentsUrl(id) });
+  }
+
+  tabs.push(
     { name: "Endpoints", href: appEndpointsUrl(id) },
     { name: "Activity", href: appActivityUrl(id) },
     { name: "Configuration", href: appConfigUrl(id) },
-  ];
+  );
 
   if (hasConfigAccess) {
     tabs.push({ name: "Dependencies", href: appDetailDepsUrl(id) });

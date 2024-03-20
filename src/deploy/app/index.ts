@@ -40,6 +40,7 @@ export interface DeployAppResponse {
   _links: {
     account: LinkResponse;
     current_configuration: LinkResponse;
+    current_deployment: LinkResponse;
     current_image: LinkResponse;
   };
   _embedded: {
@@ -67,6 +68,7 @@ export const defaultAppResponse = (
     _links: {
       account: { href: "" },
       current_configuration: { href: "" },
+      current_deployment: { href: "" },
       current_image: { href: "" },
       ...p._links,
     },
@@ -95,6 +97,7 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
     status: payload.status,
     environmentId: extractIdFromLink(links.account),
     currentConfigurationId: extractIdFromLink(links.current_configuration),
+    currentDeploymentId: extractIdFromLink(links.current_deployment) || "1",
     currentImageId: extractIdFromLink(links.current_image),
   };
 };

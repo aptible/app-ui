@@ -17,6 +17,7 @@ import {
   AppDetailCiCdGuidePage,
   AppDetailCiCdPage,
   AppDetailConfigPage,
+  AppDetailDeploymentsPage,
   AppDetailDepsPage,
   AppDetailEndpointsPage,
   AppDetailLayout,
@@ -56,6 +57,9 @@ import {
   DatabaseSettingsPage,
   DatabasesPage,
   DeployPage,
+  DeploymentDetailConfigPage,
+  DeploymentDetailLogsPage,
+  DeploymentDetailPage,
   DeploymentsPage,
   ElevatePage,
   ElevateRequired,
@@ -136,6 +140,7 @@ import {
   VerifyEmailPage,
   VerifyEmailRequired,
 } from "@app/ui";
+import { DeploymentDetailLayout } from "@app/ui/layouts/deployment-detail-layout";
 import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
@@ -323,7 +328,30 @@ export const appRoutes: RouteObject[] = [
                 path: routes.APP_DETAIL_DEPS_PATH,
                 element: <AppDetailDepsPage />,
               },
+              {
+                path: routes.APP_DETAIL_DEPLOYMENTS_PATH,
+                element: <AppDetailDeploymentsPage />,
+              },
             ],
+          },
+        ],
+      },
+
+      {
+        path: routes.DEPLOYMENT_DETAIL_PATH,
+        element: <DeploymentDetailLayout />,
+        children: [
+          {
+            index: true,
+            element: <DeploymentDetailPage />,
+          },
+          {
+            path: routes.DEPLOYMENT_DETAIL_LOGS_PATH,
+            element: <DeploymentDetailLogsPage />,
+          },
+          {
+            path: routes.DEPLOYMENT_DETAIL_CONFIG_PATH,
+            element: <DeploymentDetailConfigPage />,
           },
         ],
       },

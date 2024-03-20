@@ -8,10 +8,13 @@ const copy = async (text: string) => {
   await navigator.clipboard.writeText(text);
 };
 
-export const CopyText = ({ text }: { text: string }) => {
+export const CopyText = ({
+  text,
+  children,
+}: { text: string; children?: React.ReactNode }) => {
   return (
     <div className="flex items-center gap-2">
-      <div>{text}</div>
+      <div>{children ? children : text}</div>
       <CopyTextButton text={text} />
     </div>
   );
