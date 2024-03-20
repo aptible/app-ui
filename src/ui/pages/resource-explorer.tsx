@@ -9,6 +9,8 @@ import {
   IconChevronDown,
   IconChevronRight,
   InputSearch,
+  Pill,
+  PillVariant,
   TBody,
   THead,
   Table,
@@ -164,8 +166,11 @@ function ResourceRow({
     <Tr className={isSelected ? "bg-off-white hover:bg-off-white" : ""}>
       <Td>
         <HandleCell node={node} />
+        <div className="text-gray-500">{capitalize(node.resourceType)}</div>
       </Td>
-      <Td>{capitalize(node.resourceType)}</Td>
+      <Td>
+        <Pill variant="success">Deployed</Pill>
+      </Td>
       <Td variant="center">{node.dependsOn.length}</Td>
       <Td variant="center">{node.dependsOnMe.length}</Td>
       <Td variant="right">
@@ -343,7 +348,7 @@ export function ResourceExplorerPage() {
               >
                 Resource <SortIcon />
               </Th>
-              <Th>Type</Th>
+              <Th>Status</Th>
               <Th
                 className="cursor-pointer hover:text-black group"
                 onClick={() => onSort("dependsOn")}
