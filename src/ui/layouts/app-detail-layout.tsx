@@ -93,12 +93,15 @@ export function AppHeader({
           <DeploymentTagText deployment={deployment} />
         </DetailInfoItem>
 
+        <DetailInfoItem title="Created">
+          {prettyDateTime(app.createdAt)}
+        </DetailInfoItem>
+        <DetailInfoItem title="Docker Image">{dockerImage}</DetailInfoItem>
         <DetailInfoItem title="Last Deployed">
           {lastDeployOp
             ? `${prettyDateTime(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
-        <DetailInfoItem title="Docker Image">{dockerImage}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
