@@ -193,6 +193,9 @@ function NodeViewer({
           <h3 className={tokens.type.h3}>
             <HandleCell node={node} />
           </h3>
+          <span className="text-gray-500 text-sm items-center flex">
+            {capitalize(node.resourceType)}
+          </span>
         </div>
         <div className="flex flex-row w-full h-full">
           <div className="flex-1 border-r border-black-100">
