@@ -330,7 +330,10 @@ export function ResourceExplorerPage() {
         </FilterBar>
       </Group>
 
-      <Group variant="horizontal">
+      <Group
+        variant="horizontal"
+        className="flex-col flex-col-reverse lg:flex-row"
+      >
         <div className="flex-1">
           <Table>
             <THead>
