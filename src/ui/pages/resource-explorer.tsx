@@ -10,7 +10,6 @@ import {
   IconChevronRight,
   InputSearch,
   Pill,
-  PillVariant,
   TBody,
   THead,
   Table,
