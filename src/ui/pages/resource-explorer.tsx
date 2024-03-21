@@ -200,7 +200,7 @@ function NodeViewer({
             {capitalize(node.resourceType)}
           </span>
         </div>
-        <div className="flex flex-row w-full h-full">
+        <div className="flex flex-row w-full h-full mb-[-1px]">
           <div className="flex-1 border-r border-black-100">
             <div className="py-3 px-4 bg-gray-50 border-b border-black-100 text-sm text-gray-500">
               {node.dependsOn.length} Required Connections
@@ -213,7 +213,7 @@ function NodeViewer({
                   key={found.id}
                   onClick={() => onClick(nId)}
                   onKeyUp={() => onClick(nId)}
-                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 last:border-0 py-3 px-4"
+                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
                 >
                   <div className="grow text-sm">{found.handle}</div>
                   <IconChevronRight
@@ -236,7 +236,7 @@ function NodeViewer({
                   key={found.id}
                   onClick={() => onClick(nId)}
                   onKeyUp={() => onClick(nId)}
-                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 last:border-0 py-3 px-4"
+                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
                 >
                   <div className="grow text-sm">{found.handle}</div>
                   <IconChevronRight
