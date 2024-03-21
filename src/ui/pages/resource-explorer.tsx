@@ -6,7 +6,6 @@ import {
   Button,
   FilterBar,
   Group,
-  IconCheck,
   IconChevronDown,
   IconChevronRight,
   InputSearch,
