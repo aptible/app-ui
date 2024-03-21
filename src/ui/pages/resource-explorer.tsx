@@ -211,7 +211,7 @@ function NodeViewer({
         <div className="flex flex-row w-full h-full mb-[-1px]">
           <div className="flex-1 border-r border-black-100">
             <div className="py-3 px-4 bg-gray-50 border-b border-black-100 text-sm text-gray-500">
-              {node.dependsOn.length} Required Connections
+              {node.dependsOn.length} Downstream Resources
             </div>
             {node.dependsOn.map((nId) => {
               const found = nodes.find((n) => nId === n.id);
@@ -224,6 +224,7 @@ function NodeViewer({
                   className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
                 >
                   <div className="grow text-sm">{found.handle}</div>
+                  <Pill variant="success">Healthy</Pill>
                   <IconChevronRight
                     variant="sm"
                     className="ml-2 group-hover:opacity-100 opacity-50"
@@ -234,7 +235,7 @@ function NodeViewer({
           </div>
           <div className="flex-1">
             <div className="py-3 px-4 bg-gray-50 border-b border-black-100 text-sm text-gray-500">
-              {node.dependsOnMe.length} Dependencies
+              {node.dependsOnMe.length} Upstream Resources
             </div>
             {node.dependsOnMe.map((nId) => {
               const found = nodes.find((n) => nId === n.id);
@@ -247,6 +248,7 @@ function NodeViewer({
                   className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
                 >
                   <div className="grow text-sm">{found.handle}</div>
+                  <Pill variant="success">Healthy</Pill>
                   <IconChevronRight
                     variant="sm"
                     className="ml-2 group-hover:opacity-100 opacity-50"
@@ -356,14 +358,14 @@ export function ResourceExplorerPage() {
                 onClick={() => onSort("dependsOn")}
                 variant="center"
               >
-                Required Connections <SortIcon />
+                Downstream Resources <SortIcon />
               </Th>
               <Th
                 className="cursor-pointer hover:text-black group"
                 onClick={() => onSort("dependsOnMe")}
                 variant="center"
               >
-                Dependencies <SortIcon />
+                Upstream Resources <SortIcon />
               </Th>
               <Th>Status</Th>
               <Th>Last Deploy</Th>
