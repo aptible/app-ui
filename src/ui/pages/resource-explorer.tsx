@@ -10,7 +10,6 @@ import {
   IconChevronDown,
   IconChevronRight,
   InputSearch,
-  Pill,
   TBody,
   THead,
   Table,
@@ -166,18 +165,13 @@ function ResourceRow({
     <Tr className={isSelected ? "bg-off-white hover:bg-off-white" : ""}>
       <Td>
         <HandleCell node={node} />
-        <div className="text-gray-500">{capitalize(node.resourceType)}</div>
       </Td>
-      <Td>
-        <Pill
-          variant="success"
-          icon={<IconCheck color="#00633F" className="-mr-1" variant="sm" />}
-        >
-          1h ago
-        </Pill>
-      </Td>
+      <Td>{capitalize(node.resourceType)}</Td>
       <Td variant="center">{node.dependsOn.length}</Td>
       <Td variant="center">{node.dependsOnMe.length}</Td>
+      <Td>
+        <span className="font-semibold text-forest">DONE</span> 5m ago
+      </Td>
       <Td variant="right">
         <Button size="sm" className="mt-1" onClick={() => onClick(node.id)}>
           Explore
@@ -209,7 +203,7 @@ function NodeViewer({
         </div>
         <div className="flex flex-row w-full h-full">
           <div className="flex-1 border-r border-black-100">
-            <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100 text-sm text-gray-500">
+            <div className="py-3 px-4 bg-gray-50 border-b border-black-100 text-sm text-gray-500">
               {node.dependsOn.length} Required Connections
             </div>
             {node.dependsOn.map((nId) => {
@@ -220,7 +214,7 @@ function NodeViewer({
                   key={found.id}
                   onClick={() => onClick(nId)}
                   onKeyUp={() => onClick(nId)}
-                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
+                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 last:border-0 py-3 px-4"
                 >
                   <div className="grow text-sm">{found.handle}</div>
                   <IconChevronRight
@@ -232,7 +226,7 @@ function NodeViewer({
             })}
           </div>
           <div className="flex-1">
-            <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100 text-sm text-gray-500">
+            <div className="py-3 px-4 bg-gray-50 border-b border-black-100 text-sm text-gray-500">
               {node.dependsOnMe.length} Dependencies
             </div>
             {node.dependsOnMe.map((nId) => {
@@ -243,7 +237,7 @@ function NodeViewer({
                   key={found.id}
                   onClick={() => onClick(nId)}
                   onKeyUp={() => onClick(nId)}
-                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
+                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 last:border-0 py-3 px-4"
                 >
                   <div className="grow text-sm">{found.handle}</div>
                   <IconChevronRight
@@ -340,10 +334,7 @@ export function ResourceExplorerPage() {
         </FilterBar>
       </Group>
 
-      <Group
-        variant="horizontal"
-        className="flex-col flex-col-reverse lg:flex-row"
-      >
+      <Group variant="horizontal" className="flex-col flex-col-reverse">
         <div className="flex-1">
           <Table>
             <THead>
@@ -353,7 +344,7 @@ export function ResourceExplorerPage() {
               >
                 Resource <SortIcon />
               </Th>
-              <Th>Deploy Status</Th>
+              <Th>Type</Th>
               <Th
                 className="cursor-pointer hover:text-black group"
                 onClick={() => onSort("dependsOn")}
@@ -368,6 +359,7 @@ export function ResourceExplorerPage() {
               >
                 Dependencies <SortIcon />
               </Th>
+              <Th>Deployment Status</Th>
               <Th variant="right">Actions</Th>
             </THead>
 
