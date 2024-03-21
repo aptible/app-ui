@@ -9,6 +9,7 @@ import {
   IconChevronDown,
   IconChevronRight,
   InputSearch,
+  Pill,
   TBody,
   THead,
   Table,
@@ -168,6 +169,9 @@ function ResourceRow({
       </Td>
       <Td variant="center">{node.dependsOn.length}</Td>
       <Td variant="center">{node.dependsOnMe.length}</Td>
+      <Td>
+        <Pill variant="success">Healthy</Pill>
+      </Td>
       <Td>
         <span className="font-semibold text-forest">DONE</span> 5m ago
       </Td>
@@ -361,7 +365,8 @@ export function ResourceExplorerPage() {
               >
                 Dependencies <SortIcon />
               </Th>
-              <Th>Deployment Status</Th>
+              <Th>Status</Th>
+              <Th>Last Deploy</Th>
               <Th>Infrastructure</Th>
               <Th variant="right">Actions</Th>
             </THead>
