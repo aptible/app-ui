@@ -164,12 +164,16 @@ function ResourceRow({
     <Tr className={isSelected ? "bg-off-white hover:bg-off-white" : ""}>
       <Td>
         <HandleCell node={node} />
+        <div>{capitalize(node.resourceType)}</div>
       </Td>
-      <Td>{capitalize(node.resourceType)}</Td>
       <Td variant="center">{node.dependsOn.length}</Td>
       <Td variant="center">{node.dependsOnMe.length}</Td>
       <Td>
         <span className="font-semibold text-forest">DONE</span> 5m ago
+      </Td>
+      <Td>
+        <div className="text-gray-900">sbx-main</div>
+        <div>Shared Stack (us-east-1)</div>
       </Td>
       <Td variant="right">
         <Button size="sm" className="mt-1" onClick={() => onClick(node.id)}>
@@ -343,7 +347,6 @@ export function ResourceExplorerPage() {
               >
                 Resource <SortIcon />
               </Th>
-              <Th>Type</Th>
               <Th
                 className="cursor-pointer hover:text-black group"
                 onClick={() => onSort("dependsOn")}
@@ -359,6 +362,7 @@ export function ResourceExplorerPage() {
                 Dependencies <SortIcon />
               </Th>
               <Th>Deployment Status</Th>
+              <Th>Infrastructure</Th>
               <Th variant="right">Actions</Th>
             </THead>
 
