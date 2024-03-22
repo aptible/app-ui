@@ -403,8 +403,8 @@ export function ResourceExplorerPage() {
             <div className="py-16 px-4 text-center w-full flex items-center flex-col gap-4">
               <h2 className={tokens.type.h2}>How It Works</h2>
               <div>
-                Click <strong>Explore</strong> on a resource to see its required
-                connections and dependencies.
+                Click <strong>Explore</strong> on a resource to view its
+                Upstream and Downstream dependencies.
               </div>
             </div>
           )}
