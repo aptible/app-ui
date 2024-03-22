@@ -9,6 +9,7 @@ import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { HeroBgLayout } from "../layouts";
 import {
+  Banner,
   Box,
   Button,
   CheckBox,
@@ -89,8 +90,15 @@ export const HostingPage = () => {
       <Group className="items-center">
         <h1 className={`${tokens.type.h1} text-center`}>Choose an Option</h1>
 
+        {selfHostedChecked ? (
+          <Banner variant="success" className="w-full">
+            Successfully added to Early Access! Someone from Aptible will reach
+            out to connect.
+          </Banner>
+        ) : null}
+
         <div className="grid grid-cols-2 gap-4">
-          <Box>
+          <Box className="hover:bg-orange-100 hover:border-orange-500">
             <Group className="items-center justify-between h-full">
               <Code className="text-forest bg-lime-100 pt-1 px-2">
                 AVAILABLE NOW
@@ -109,7 +117,7 @@ export const HostingPage = () => {
               <img src="/aptible-hosted-img.png" aria-label="Aptible-Hosted" />
             </Group>
           </Box>
-          <Box>
+          <Box className="hover:bg-orange-100 hover:border-orange-500">
             <Group className="items-center justify-between h-full">
               <Code className="text-maroon-500 bg-maroon-100 pt-1 px-2">
                 COMING SOON

@@ -10,7 +10,6 @@ import {
   deploymentsUrl,
   endpointsUrl,
   environmentsUrl,
-  hostingUrl,
   searchUrl,
   securityDashboardUrl,
   servicesUrl,
