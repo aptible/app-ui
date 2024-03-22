@@ -88,6 +88,9 @@ export const verifyEmailUrl = (
   verificationCode: string,
 ) => `/verify/${verificationId}/${verificationCode}`;
 
+export const HOSTING_PATH = "/hosting";
+export const hostingUrl = () => HOSTING_PATH;
+
 export const PLANS_PATH = "/plans";
 export const plansUrl = () => PLANS_PATH;
 

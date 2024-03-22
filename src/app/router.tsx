@@ -85,6 +85,7 @@ import {
   ForgotPassVerifyPage,
   GetStartedPage,
   HomePage,
+  HostingPage,
   ImpersonatePage,
   LoginPage,
   LogoutPage,
@@ -621,6 +622,15 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.VERIFY_EMAIL_REQUEST_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailPage />
+      </AuthRequired>
+    ),
+  },
+
+  {
     path: routes.VERIFY_EMAIL_PATH,
     element: (
       <AuthRequired>
@@ -635,10 +645,10 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.VERIFY_EMAIL_REQUEST_PATH,
+    path: routes.HOSTING_PATH,
     element: (
       <AuthRequired>
-        <VerifyEmailPage />
+        <HostingPage />
       </AuthRequired>
     ),
   },

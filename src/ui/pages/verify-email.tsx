@@ -1,7 +1,6 @@
 import { fetchCurrentToken, logout, verifyEmail } from "@app/auth";
 import { useDispatch, useLoader, useSelector } from "@app/react";
-import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
-import { getStartedUrl, homeUrl, loginUrl } from "@app/routes";
+import { hostingUrl, loginUrl } from "@app/routes";
 import { selectJwtToken } from "@app/token";
 import { selectCurrentUser } from "@app/users";
 import { useEffect } from "react";
@@ -25,7 +24,6 @@ export const VerifyEmailPage = () => {
   const { verificationId = "", verificationCode = "" } = useParams();
   const navigate = useNavigate();
   const verifyEmailLoader = useLoader(verifyEmail);
-  const redirectPath = useSelector(selectRedirectPath);
 
   const logoutSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -50,8 +48,7 @@ export const VerifyEmailPage = () => {
   // and fetching users (where we determine if the user is verified).
   useEffect(() => {
     if (verifyEmailLoader.status === "success" && user.verified) {
-      navigate(redirectPath || getStartedUrl());
-      dispatch(resetRedirectPath());
+      navigate(hostingUrl());
     }
   }, [verifyEmailLoader.status]);
 
@@ -72,7 +69,7 @@ export const VerifyEmailPage = () => {
         {loader.lastSuccess !== 0 && user.verified ? (
           <Banner variant="success">
             You are verified!{" "}
-            <Link to={homeUrl()} className="text-white underline">
+            <Link to={hostingUrl()} className="text-white underline">
               Continue to dashboard
             </Link>
           </Banner>

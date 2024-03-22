@@ -11,6 +11,8 @@ import debug from "debug";
  * // or localStorage.debug = 'app:projects'; to only see those log statements
  *
  * And then refresh the page.
+ *
+ * If you do not see logging statements, ensure your browser console is configureed to show "verbose" logs.
  */
 export const createLog = (namespace: string) => {
   return debug(`app:${namespace}`);
