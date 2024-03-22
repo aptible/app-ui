@@ -211,7 +211,7 @@ function NodeViewer({
         <div className="flex flex-row w-full h-full mb-[-1px]">
           <div className="flex-1 border-r border-black-100">
             <div className="py-3 px-4 bg-gray-50 border-b border-black-100 text-sm text-gray-500">
-              {node.dependsOn.length} Downstream Resources
+              {node.dependsOn.length} Upstream Resources
             </div>
             {node.dependsOn.map((nId) => {
               const found = nodes.find((n) => nId === n.id);
@@ -235,7 +235,7 @@ function NodeViewer({
           </div>
           <div className="flex-1">
             <div className="py-3 px-4 bg-gray-50 border-b border-black-100 text-sm text-gray-500">
-              {node.dependsOnMe.length} Upstream Resources
+              {node.dependsOnMe.length} Downstream Resources
             </div>
             {node.dependsOnMe.map((nId) => {
               const found = nodes.find((n) => nId === n.id);
@@ -358,14 +358,14 @@ export function ResourceExplorerPage() {
                 onClick={() => onSort("dependsOn")}
                 variant="center"
               >
-                Downstream Resources <SortIcon />
+                Upstream Resources <SortIcon />
               </Th>
               <Th
                 className="cursor-pointer hover:text-black group"
                 onClick={() => onSort("dependsOnMe")}
                 variant="center"
               >
-                Upstream Resources <SortIcon />
+                Downstream Resources <SortIcon />
               </Th>
               <Th>Status</Th>
               <Th>Last Deploy</Th>
