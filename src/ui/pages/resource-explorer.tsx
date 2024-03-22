@@ -224,6 +224,9 @@ function NodeViewer({
                   className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
                 >
                   <div className="grow text-sm">{found.handle}</div>
+                  <span className="text-gray-500 text-sm mr-3">
+                    {capitalize(node.resourceType)}
+                  </span>
                   <Pill variant="success">Healthy</Pill>
                   <IconChevronRight
                     variant="sm"
@@ -248,6 +251,9 @@ function NodeViewer({
                   className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
                 >
                   <div className="grow text-sm">{found.handle}</div>
+                  <span className="text-gray-500 text-sm mr-3">
+                    {capitalize(node.resourceType)}
+                  </span>
                   <Pill variant="success">Healthy</Pill>
                   <IconChevronRight
                     variant="sm"
