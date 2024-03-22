@@ -1,7 +1,7 @@
 import { fetchEnvironments, selectEnvironments } from "@app/deploy";
 import { useDispatch, useLoader, useSelector } from "@app/react";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
-import { environmentsUrl, logoutUrl } from "@app/routes";
+import { environmentsUrl, getStartedUrl, logoutUrl } from "@app/routes";
 import { tunaEvent } from "@app/tuna";
 import { selectCurrentUser } from "@app/users";
 import { useEffect, useState } from "react";
@@ -35,7 +35,6 @@ export const HostingPage = () => {
   const environmentsLoader = useLoader(fetchEnvironments);
   const environments = useSelector(selectEnvironments);
   const redirectPath = useSelector(selectRedirectPath);
-  const nextUrl = redirectPath || environmentsUrl();
 
   const [selfHostedChecked, setSelfHostedChecked] = useState(false);
   const hasEnvironments = Object.keys(environments).length > 0;
@@ -43,12 +42,13 @@ export const HostingPage = () => {
   const deployNowClick = (event: React.SyntheticEvent) => {
     event.preventDefault();
     hostingTunaEvent("aptible_hosted");
-    navigate(nextUrl);
+    navigate(redirectPath || getStartedUrl());
+    dispatch(resetRedirectPath());
   };
 
   useEffect(() => {
     if (hasEnvironments) {
-      navigate(nextUrl);
+      navigate(redirectPath || environmentsUrl());
       dispatch(resetRedirectPath());
     }
   }, [hasEnvironments]);
