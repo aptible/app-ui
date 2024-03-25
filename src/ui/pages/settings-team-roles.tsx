@@ -6,7 +6,7 @@ import {
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useCache, useDispatch, useLoader, useSelector } from "@app/react";
 import { createRoleForOrg, selectRolesByOrgIdWithSearch } from "@app/roles";
-import { fetchUsersForRole } from "@app/roles";
+import { fetchUsersForRole, fetchUsersForRolesByOrgId } from "@app/roles";
 import { roleDetailEnvironmentsUrl, roleDetailUrl } from "@app/routes";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -80,6 +80,8 @@ export const TeamRolesPage = () => {
     selectFormattedPermissionsByRoleAndAccount(s, { envs: allEnvs }),
   );
 
+  const members = useCache(fetchUsersForRolesByOrgId({ orgId: orgId }))?.data?._embedded || [];
+
   return (
     <Group>
       <TitleBar description="Roles define the level of access users have within your team">
@@ -113,6 +115,7 @@ export const TeamRolesPage = () => {
                 perms={perms}
                 envs={allEnvs}
                 key={role.id}
+                members={members}
               />
             );
           })}
@@ -126,7 +129,8 @@ export const RoleTableRow = ({
   role,
   perms,
   envs,
-}: { role: any; perms: any; envs: any }) => {
+  members
+}: { role: any; perms: any; envs: any, members: any }) => {
   const numbOfEnvsWithPerms = perms[role.id]
     ? Object.keys(perms[role.id]).length
     : 0;
@@ -158,7 +162,7 @@ export const RoleTableRow = ({
         )}
       </Td>
       <Td className="align-baseline">
-        <RoleMembershipRow role={role} />
+        <RoleMembershipRow role={role} members={members}/>
       </Td>
       <Td className="min-w-[45ch] align-baseline">
         <div>
@@ -182,11 +186,10 @@ export const RoleTableRow = ({
   );
 };
 
-export const RoleMembershipRow = ({ role }: { role: any }) => {
-  // This makes a call per role, which is how deploy-ui did is. I am open to better suggestions.
-  const members =
-    useCache(fetchUsersForRole({ roleId: role.id }))?.data?._embedded?.users ||
-    [];
-  const userNames = members.map((obj) => obj.name).join(", ");
-  return <div>{members?.length ? userNames : "No users"}</div>;
+export const RoleMembershipRow = ({ role, members }: { role: any, members: any }) => {
+  const memberList = members[role.id]?.memberships || []
+  const userNames = memberList.map((obj) => obj?._embedded?.user?.name).join(", ");
+  return <div>
+    {memberList?.length ? userNames : "No users"}
+  </div>;
 };

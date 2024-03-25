@@ -165,6 +165,12 @@ export const fetchUsersForRole = authApi.get<
   HalEmbedded<{ users: UserResponse[] }>
 >("/roles/:roleId/users", authApi.cache());
 
+export const fetchUsersForRolesByOrgId = authApi.get<
+  { orgId: string },
+  HalEmbedded<{ users: UserResponse[] }>
+>("/organizations/:orgId/roles/memberships", authApi.cache());
+
+
 export const updateRoleName = authApi.put<{ id: string; name: string }>(
   "/roles/:id",
   function* (ctx, next) {
