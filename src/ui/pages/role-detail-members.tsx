@@ -39,7 +39,7 @@ import {
   FilterBar,
   FormGroup,
   Group,
-  IconPlusCircle,
+  // IconPlusCircle,
   Input,
   PaginateBar,
   Select,
@@ -164,7 +164,6 @@ export function RoleDetailMembersPage() {
     if (!validate(data)) {
       return;
     }
-    console.log(data);
     dispatch(action);
   };
 
@@ -227,13 +226,17 @@ export function RoleDetailMembersPage() {
                         <Input
                           id="email"
                           name="email"
-                          placeholder="Email"
+                          placeholder="Email..."
                           value={email}
                           onChange={(e) => setEmail(e.currentTarget.value)}
                         />
                       </FormGroup>
-                      <Button type="submit" isLoading={inviteLoader.isLoading}>
-                        <IconPlusCircle variant="sm" className="mr-2" />
+                      <Button
+                        type="submit"
+                        name="inviteUser"
+                        isLoading={inviteLoader.isLoading}
+                      >
+                        {/* <IconPlusCircle variant="sm" className="mr-2" /> */}
                         Invite New User
                       </Button>
                     </Group>
