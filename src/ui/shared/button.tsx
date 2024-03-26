@@ -1,4 +1,5 @@
 import {
+  selectCanUserManageRole,
   selectIsUserAnyOwner,
   selectIsUserOwner,
   selectUserHasPerms,
@@ -254,6 +255,30 @@ export const ButtonAnyOwner = ({ children, ...props }: ButtonProps) => {
 
   return (
     <Tooltip text="You do not have a valid role type (platform_owner, owner) to access this resource">
+      <Button {...props} disabled>
+        {children}
+      </Button>
+    </Tooltip>
+  );
+};
+
+export const ButtonCanManageRole = ({
+  children,
+  userId,
+  roleId,
+  orgId,
+  ...props
+}: ButtonProps & { userId: string; roleId: string; orgId: string }) => {
+  const canManageRole = useSelector((s) =>
+    selectCanUserManageRole(s, { userId, roleId, orgId }),
+  );
+
+  if (canManageRole) {
+    return <Button {...props}>{children}</Button>;
+  }
+
+  return (
+    <Tooltip text="You are not an owner or role admin">
       <Button {...props} disabled>
         {children}
       </Button>

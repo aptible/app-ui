@@ -30,7 +30,7 @@ import {
   ActionBar,
   BannerMessages,
   Button,
-  ButtonAnyOwner,
+  ButtonCanManageRole,
   CheckBox,
   DescBar,
   EmptyTr,
@@ -181,10 +181,15 @@ export function RoleDetailMembersPage() {
                     </Button>
                   </Group>
 
-                  <ButtonAnyOwner onClick={onInvite}>
+                  <ButtonCanManageRole
+                    onClick={onInvite}
+                    roleId={id}
+                    userId={userId}
+                    orgId={orgId}
+                  >
                     <IconPlusCircle variant="sm" className="mr-2" />
                     Invite New User
-                  </ButtonAnyOwner>
+                  </ButtonCanManageRole>
                 </Group>
               </ActionBar>
             ) : null}
