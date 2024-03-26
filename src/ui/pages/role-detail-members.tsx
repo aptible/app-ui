@@ -238,16 +238,6 @@ export function RoleDetailMembersPage() {
                       </Button>
                     </Group>
                   </form>
-
-                  {/* <ButtonCanManageRole
-                    onClick={onInvite}
-                    roleId={id}
-                    userId={userId}
-                    orgId={orgId}
-                  >
-                    <IconPlusCircle variant="sm" className="mr-2" />
-                    Invite New User
-                  </ButtonCanManageRole> */}
                 </Group>
               </ActionBar>
             ) : null}
