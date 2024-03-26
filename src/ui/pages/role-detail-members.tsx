@@ -6,6 +6,7 @@ import {
 } from "@app/auth";
 import { prettyDate } from "@app/date";
 import { selectCanUserManageRole } from "@app/deploy";
+import { createInvitation } from "@app/invitations";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   useDispatch,
@@ -15,28 +16,31 @@ import {
   useSelector,
 } from "@app/react";
 import { selectRoleById } from "@app/roles";
-import { teamInviteUrl } from "@app/routes";
+import { teamPendingInvitesUrl } from "@app/routes";
 import { Membership } from "@app/types";
 import {
   selectCurrentUserId,
   selectUserById,
   selectUsersAsList,
 } from "@app/users";
+import { emailValidator, existValidtor } from "@app/validator";
 import { ChangeEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { usePaginate, useUserIdsForRole } from "../hooks";
+import { useValidator } from "../hooks";
 import { RoleDetailLayout } from "../layouts";
 import {
   ActionBar,
   BannerMessages,
   Button,
-  ButtonCanManageRole,
   CheckBox,
   DescBar,
   EmptyTr,
   FilterBar,
+  FormGroup,
   Group,
   IconPlusCircle,
+  Input,
   PaginateBar,
   Select,
   SelectOption,
@@ -136,9 +140,38 @@ export function RoleDetailMembersPage() {
     selectCanUserManageRole(s, { roleId: id, userId, orgId }),
   );
 
-  const onInvite = () => {
-    navigate(teamInviteUrl());
+  interface FormData {
+    email: string;
+    roleId: string;
+  }
+
+  const validators = {
+    email: (data: FormData) => emailValidator(data.email),
+    role: (data: FormData) => existValidtor(data.roleId, "role"),
   };
+
+  const [email, setEmail] = useState("");
+  const data = { email, roleId: id };
+  const action = createInvitation(data);
+  const inviteLoader = useLoader(action);
+
+  const [errors, validate] = useValidator<FormData, typeof validators>(
+    validators,
+  );
+
+  const onInvite = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!validate(data)) {
+      return;
+    }
+    console.log(data);
+    dispatch(action);
+  };
+
+  useLoaderSuccess(inviteLoader, () => {
+    navigate(teamPendingInvitesUrl());
+  });
+
   const [existingUserId, setExistingUserId] = useState("");
   const onSelect = (opt: SelectOption) => {
     setExistingUserId(opt.value);
@@ -181,7 +214,32 @@ export function RoleDetailMembersPage() {
                     </Button>
                   </Group>
 
-                  <ButtonCanManageRole
+                  <form onSubmit={onInvite}>
+                    <Group variant="horizontal" size="sm">
+                      <BannerMessages {...inviteLoader} />
+
+                      <FormGroup
+                        label=""
+                        htmlFor="email"
+                        feedbackMessage={errors.email}
+                        feedbackVariant={errors.email ? "danger" : "info"}
+                      >
+                        <Input
+                          id="email"
+                          name="email"
+                          placeholder="Email"
+                          value={email}
+                          onChange={(e) => setEmail(e.currentTarget.value)}
+                        />
+                      </FormGroup>
+                      <Button type="submit" isLoading={inviteLoader.isLoading}>
+                        <IconPlusCircle variant="sm" className="mr-2" />
+                        Invite New User
+                      </Button>
+                    </Group>
+                  </form>
+
+                  {/* <ButtonCanManageRole
                     onClick={onInvite}
                     roleId={id}
                     userId={userId}
@@ -189,7 +247,7 @@ export function RoleDetailMembersPage() {
                   >
                     <IconPlusCircle variant="sm" className="mr-2" />
                     Invite New User
-                  </ButtonCanManageRole>
+                  </ButtonCanManageRole> */}
                 </Group>
               </ActionBar>
             ) : null}
