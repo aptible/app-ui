@@ -7,7 +7,7 @@ import {
 } from "@app/react";
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import {
-  deployUrl,
+  homeUrl,
   loginUrl,
   teamAcceptInviteUrl,
   verifyEmailRequestUrl,
@@ -189,8 +189,7 @@ export const SignupPage = () => {
     // if the api returns with a user.verified = true, skip email request page
     // this can happen in development when ENV['DISABLE_EMAIL_VERIFICATION']=1
     if (meta.verified) {
-      navigate(redirectPath || deployUrl());
-      dispatch(resetRedirectPath());
+      navigate(homeUrl());
       return;
     }
     navigate(verifyEmailRequestUrl());

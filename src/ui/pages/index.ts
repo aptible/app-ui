@@ -68,6 +68,7 @@ export * from "./forgot-pass";
 export * from "./billing-method";
 export * from "./impersonate";
 export * from "./plans";
+export * from "./hosting";
 export * from "./sso";
 export * from "./activity";
 export * from "./deployments";

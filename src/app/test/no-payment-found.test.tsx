@@ -37,9 +37,9 @@ describe("Payment page takeover", () => {
 
       render(<App />);
 
-      await screen.findByRole("heading", { name: /Environments/ });
+      await screen.findByRole("heading", { name: "Choose an Option" });
       expect(
-        screen.queryByRole("heading", { name: /Environments/ }),
+        screen.queryByRole("heading", { name: "Choose an Option" }),
       ).toBeInTheDocument();
     });
 

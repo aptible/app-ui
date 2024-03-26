@@ -3,16 +3,47 @@ import { ExternalLink } from "./external-link";
 import { IconChevronDown, IconChevronRight } from "./icons";
 import { tokens } from "./tokens";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+export interface HelpTextAccordionProps {
+  title: string;
+  children: React.ReactNode;
+  onChange?: (open: boolean) => void | null;
+  onOpen?: () => void | null;
+  onClose?: () => void | null;
+}
 
 export const HelpTextAccordion = ({
   title,
   children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) => {
+  onChange,
+  onOpen,
+  onClose,
+}: HelpTextAccordionProps) => {
+  const hasOpened = useRef(false);
   const [isOpen, setOpen] = useState(false);
+
+  useEffect(() => {
+    // Skip inital passes so that we only trigger onClose if the user manually
+    // closes the accordion. React.StrictMode makes this awkward because each
+    // component is mounted twice so we can't simply skip the first trigger.
+    if (isOpen) {
+      hasOpened.current = true;
+    }
+
+    if (!hasOpened.current) {
+      return;
+    }
+
+    onChange?.(isOpen);
+
+    if (isOpen) {
+      onOpen?.();
+    } else {
+      onClose?.();
+    }
+  }, [isOpen]);
+
   return (
     <>
       <div className="py-4">
