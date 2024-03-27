@@ -21,7 +21,7 @@ export function SourceHeader({ source }: { source: DeploySource }) {
         title="Source Details"
         icon={
           <img
-            src="/resource-types/logo-app.png"
+            src="/resource-types/logo-source.png"
             className="w-[32px] h-[32px] mr-3"
             aria-label="App"
           />

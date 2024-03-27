@@ -61,7 +61,7 @@ export function SourcesPage() {
                       className="flex items-center"
                     >
                       <img
-                        src={"/resource-types/logo-git.png"}
+                        src={"/resource-types/logo-source.png"}
                         className="w-[32px] h-[32px] mr-2 align-middle"
                         aria-label="Git Source"
                       />
