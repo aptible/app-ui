@@ -6,6 +6,7 @@ import { DeploySource } from "@app/types";
 interface DeploySourceResponse {
   id: string;
   display_name: string;
+  url: string;
   created_at: string;
   updated_at: string;
   _type: "source";
@@ -18,6 +19,7 @@ export const defaultDeploySourceResponse = (
   return {
     id: "",
     display_name: "",
+    url: "",
     created_at: now,
     updated_at: now,
     ...r,
@@ -29,6 +31,7 @@ const deserializeDeploySource = (r: DeploySourceResponse): DeploySource => {
   return {
     id: r.id,
     displayName: r.display_name || "Unknown",
+    url: r.url,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   };
@@ -36,7 +39,9 @@ const deserializeDeploySource = (r: DeploySourceResponse): DeploySource => {
 
 export const hasDeploySource = (a: DeploySource) => a.id !== "";
 
+export const findSourceById = schema.sources.findById;
 export const selectSourceById = schema.sources.selectById;
+export const selectSources = schema.sources.selectTable;
 export const selectSourcesAsList = schema.sources.selectTableAsList;
 
 export const fetchSources = api.get("/sources");

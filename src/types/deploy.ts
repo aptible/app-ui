@@ -586,6 +586,7 @@ export interface DeployServiceSizingPolicy extends Timestamps {
 export interface DeploySource {
   id: string;
   displayName: string;
+  url: string;
   createdAt: string;
   updatedAt: string;
 }

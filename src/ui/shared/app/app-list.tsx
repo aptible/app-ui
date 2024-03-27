@@ -1,18 +1,21 @@
 import { prettyDateTime } from "@app/date";
 import {
   DeployAppRow,
+  calcMetrics,
   calcServiceMetrics,
   fetchApps,
   fetchEnvironmentById,
   fetchEnvironments,
+  fetchImageById,
   selectAppsByCertId,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
   selectAppsForTableSearchBySourceId,
+  selectImageById,
   selectLatestOpByAppId,
   selectServicesByAppId,
 } from "@app/deploy";
-import { calcMetrics } from "@app/deploy";
+import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
@@ -25,6 +28,7 @@ import { usePaginate } from "@app/ui/hooks";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonCreate } from "../button";
+import { Code } from "../code";
 import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -40,6 +44,7 @@ import {
 import { EnvStackCell } from "../resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
 interface AppCellProps {
   app: DeployApp;
@@ -400,6 +405,56 @@ export const AppListByCertificate = ({
   );
 };
 
+const AppListBySourceRow = ({ app }: { app: DeployApp }) => {
+  useQuery(fetchDeploymentById({ id: app.currentDeploymentId }));
+  const currentDeployment = useSelector((s) =>
+    selectDeploymentById(s, { id: app.currentDeploymentId }),
+  );
+  const gitRef = currentDeployment.gitRef;
+  const gitCommitSha = currentDeployment.gitCommitSha?.slice(0, 7);
+  const gitCommitMessage = currentDeployment.gitCommitMessage;
+  const gitCommitFirstLine = gitCommitMessage.trim().split("\n")[0];
+
+  useQuery(fetchImageById({ id: app.currentImageId }));
+  const currentImage = useSelector((s) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+  const dockerImage = currentDeployment.dockerImage || currentImage.dockerRepo;
+  const imageDigest = (currentImage.dockerRef || "deadbeef")
+    .replace("sha256:", "")
+    .slice(0, 7);
+
+  return (
+    <Tr>
+      <AppPrimaryCell app={app} />
+      <AppIdCell app={app} />
+      <Td>
+        <div className="flex items-center gap-2">
+          <Code>{gitRef}</Code>
+          {gitRef && gitCommitSha && gitRef !== gitCommitSha ? (
+            <>
+              {" "}
+              @ <Code>{gitCommitSha}</Code>
+            </>
+          ) : null}
+        </div>
+      </Td>
+      <Td>
+        <Tooltip text={gitCommitMessage} fluid>
+          <p className="leading-8 text-ellipsis whitespace-nowrap max-w-[30ch] overflow-hidden inline-block">
+            {gitCommitFirstLine}
+            {gitCommitMessage.length > gitCommitFirstLine.length ? " ..." : ""}
+          </p>
+        </Tooltip>
+      </Td>
+      <Td>
+        <Code>{dockerImage}</Code> @ <Code>sha256:{imageDigest}</Code>
+      </Td>
+      <Td>{prettyDateTime(currentDeployment.createdAt)}</Td>
+    </Tr>
+  );
+};
+
 export const AppListBySource = ({
   sourceId,
 }: {
@@ -441,21 +496,16 @@ export const AppListBySource = ({
         <THead>
           <Th>Handle</Th>
           <Th>ID</Th>
-          <Th>Environment</Th>
-          <Th>Services</Th>
-          <Th>Est. Monthly Cost</Th>
+          <Th>Git Ref</Th>
+          <Th>Commit Message</Th>
+          <Th>Docker Image</Th>
+          <Th>Last Deployed</Th>
         </THead>
 
         <TBody>
           {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
           {paginated.data.map((app) => (
-            <Tr key={app.id}>
-              <AppPrimaryCell app={app} />
-              <AppIdCell app={app} />
-              <EnvStackCell environmentId={app.environmentId} />
-              <AppServicesCell app={app} />
-              <AppCostCell app={app} />
-            </Tr>
+            <AppListBySourceRow app={app} key={app.id} />
           ))}
         </TBody>
       </Table>

@@ -1,8 +1,10 @@
+import { prettyDateTime } from "@app/date";
 import { useQuery, useSelector } from "@app/react";
 import { sourceDetailAppsUrl, sourcesUrl } from "@app/routes";
 import { fetchSourceById, selectSourceById } from "@app/source";
 import { DeploySource } from "@app/types";
 import { Outlet, useParams } from "react-router";
+import { Link } from "react-router-dom";
 import {
   CopyText,
   DetailHeader,
@@ -33,6 +35,19 @@ export function SourceHeader({ source }: { source: DeploySource }) {
         <DetailInfoItem title="ID">{source.id}</DetailInfoItem>
         <DetailInfoItem title="Name">
           <CopyText text={source.displayName} />
+        </DetailInfoItem>
+        <DetailInfoItem title="Created">
+          {prettyDateTime(source.createdAt)}
+        </DetailInfoItem>
+        <DetailInfoItem title="Repository URL">
+          {(source.url?.match(/^https?:\/\//) && (
+            <Link to={source.url} target="_blank">
+              <CopyText text={source.url} />
+            </Link>
+          )) || <CopyText text={source.url} />}
+        </DetailInfoItem>
+        <DetailInfoItem title="Last Deployed">
+          {prettyDateTime(source.createdAt)}
         </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>

@@ -1,7 +1,10 @@
+import { selectAppsCountBySource } from "@app/deploy";
+import { useSelector } from "@app/react";
 import { sourceDetailUrl } from "@app/routes";
 import { fetchSources, selectSourcesAsList } from "@app/source";
+import { DeploySource } from "@app/types";
 import { Link } from "react-router-dom";
-import { useQuery, useSelector } from "starfx/react";
+import { useQuery } from "starfx/react";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
@@ -19,6 +22,28 @@ import {
   TitleBar,
   Tr,
 } from "../shared";
+
+function SourceListRow({ source }: { source: DeploySource }) {
+  const appCount = useSelector((s) =>
+    selectAppsCountBySource(s, { sourceId: source.id }),
+  );
+
+  return (
+    <Tr key={source.id}>
+      <Td>
+        <Link to={sourceDetailUrl(source.id)} className="flex items-center">
+          <img
+            src={"/resource-types/logo-source.png"}
+            className="w-[32px] h-[32px] mr-2 align-middle"
+            aria-label="Git Source"
+          />
+          {source.displayName}
+        </Link>
+      </Td>
+      <Td>{appCount}</Td>
+    </Tr>
+  );
+}
 
 export function SourcesPage() {
   const { isLoading } = useQuery(fetchSources());
@@ -48,29 +73,14 @@ export function SourcesPage() {
         <Table>
           <THead>
             <Th>Name</Th>
+            <Th>Apps</Th>
           </THead>
 
           <TBody>
             {paginated.data.length === 0 ? <EmptyTr colSpan={3} /> : null}
-            {paginated.data.map((source) => {
-              return (
-                <Tr key={source.id}>
-                  <Td>
-                    <Link
-                      to={sourceDetailUrl(source.id)}
-                      className="flex items-center"
-                    >
-                      <img
-                        src={"/resource-types/logo-source.png"}
-                        className="w-[32px] h-[32px] mr-2 align-middle"
-                        aria-label="Git Source"
-                      />
-                      {source.displayName}
-                    </Link>
-                  </Td>
-                </Tr>
-              );
-            })}
+            {paginated.data.map((source) => (
+              <SourceListRow source={source} key={source.id} />
+            ))}
           </TBody>
         </Table>
       </Group>

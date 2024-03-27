@@ -833,6 +833,7 @@ export const defaultDeploySource = (
   return {
     id: "",
     displayName: "Unknown",
+    url: "",
     createdAt: now,
     updatedAt: now,
     ...s,

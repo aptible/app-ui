@@ -4,6 +4,7 @@ import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { WebState, schema } from "@app/schema";
+import { findSourceById, selectSources } from "@app/source";
 import type {
   DeployApp,
   DeployAppConfigEnv,
@@ -177,6 +178,23 @@ export const selectAppsByStack = createSelector(
 
 export const selectAppsCountByStack = createSelector(
   selectAppsByStack,
+  (apps) => apps.length,
+);
+
+export const selectAppsBySource = createSelector(
+  selectAppsAsList,
+  selectSources,
+  (_: WebState, p: { sourceId: string }) => p.sourceId,
+  (apps, sources, sourceId) => {
+    return apps.filter((app) => {
+      const source = findSourceById(sources, { id: app.currentSourceId });
+      return source.id === sourceId;
+    });
+  },
+);
+
+export const selectAppsCountBySource = createSelector(
+  selectAppsBySource,
   (apps) => apps.length,
 );
 
