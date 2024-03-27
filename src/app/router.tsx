@@ -102,6 +102,7 @@ import {
   OtpSetupPage,
   PlansPage,
   ReactRouterErrorElement,
+  ResourceExplorerPage,
   RoleDetailEnvironmentsPage,
   RoleDetailMembersPage,
   RoleDetailPage,
@@ -265,6 +266,15 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.SERVICES_PATH,
         element: <ServicesPage />,
+      },
+
+      {
+        path: routes.RESOURCE_EXPLORER_URL,
+        element: (
+          <AppSidebarLayout>
+            <ResourceExplorerPage />
+          </AppSidebarLayout>
+        ),
       },
 
       {

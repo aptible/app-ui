@@ -1,0 +1,415 @@
+import { appDetailUrl, databaseDetailUrl } from "@app/routes";
+import { capitalize } from "@app/string-utils";
+import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import {
+  Button,
+  FilterBar,
+  Group,
+  IconChevronDown,
+  IconChevronRight,
+  InputSearch,
+  Pill,
+  TBody,
+  THead,
+  Table,
+  Td,
+  Th,
+  TitleBar,
+  Tr,
+  tokens,
+} from "../shared";
+
+interface ResourceNode {
+  resourceType: "app" | "database" | "external";
+  handle: string;
+  id: string;
+  dependsOn: string[];
+}
+
+interface ResourceNodeComputed extends ResourceNode {
+  dependsOnMe: string[];
+}
+
+const nodes: ResourceNode[] = [
+  {
+    resourceType: "app",
+    handle: "auth-api-us-east-1",
+    id: "63799",
+    dependsOn: ["118912", "auth-api-pg"],
+  },
+  {
+    resourceType: "external",
+    handle: "auth-api-pg",
+    id: "auth-api-pg",
+    dependsOn: [],
+  },
+  {
+    resourceType: "database",
+    handle: "auth-api-redis",
+    id: "118912",
+    dependsOn: [],
+  },
+  {
+    resourceType: "app",
+    handle: "billing-api",
+    id: "9234",
+    dependsOn: ["11681", "63799"],
+  },
+  {
+    resourceType: "database",
+    handle: "pg-billing",
+    id: "11681",
+    dependsOn: [],
+  },
+  {
+    resourceType: "app",
+    handle: "deploy-api",
+    id: "63798",
+    dependsOn: ["118918", "deploy-api-pg", "63799"],
+  },
+  {
+    resourceType: "external",
+    handle: "deploy-api-pg",
+    id: "deploy-api-pg",
+    dependsOn: [],
+  },
+  {
+    resourceType: "database",
+    handle: "deploy-api-redis",
+    id: "118918",
+    dependsOn: [],
+  },
+  {
+    resourceType: "app",
+    handle: "metrictunnel",
+    id: "5415",
+    dependsOn: ["118918", "metrictunnel-influxdb"],
+  },
+  {
+    resourceType: "external",
+    handle: "metrictunnel-influxdb",
+    id: "metrictunnel-influxdb",
+    dependsOn: [],
+  },
+  {
+    resourceType: "app",
+    handle: "deploy-ui",
+    id: "35007",
+    dependsOn: ["63799", "9234", "63798", "5415"],
+  },
+  {
+    resourceType: "app",
+    handle: "app-ui",
+    id: "54710",
+    dependsOn: ["63799", "9234", "63798", "5415"],
+  },
+];
+
+function computeNodes(nodes: ResourceNode[]): ResourceNodeComputed[] {
+  const map: { [key: string]: Set<string> } = {};
+  nodes.forEach((node) => {
+    node.dependsOn.forEach((nId) => {
+      if (!map[nId]) {
+        map[nId] = new Set<string>();
+      }
+      map[nId].add(node.id);
+    });
+  });
+
+  return nodes.map((n) => {
+    let dependsOnMe: string[] = [];
+    if (map[n.id]) {
+      dependsOnMe = [...map[n.id]];
+    }
+    return {
+      ...n,
+      dependsOnMe,
+    };
+  });
+}
+
+function HandleCell({ node }: { node: ResourceNode }) {
+  if (node.resourceType === "external") {
+    return <span>{node.handle}</span>;
+  }
+
+  if (node.resourceType === "database") {
+    return (
+      <Link
+        to={databaseDetailUrl(node.id)}
+        className={tokens.type["table link"]}
+      >
+        {node.handle}
+      </Link>
+    );
+  }
+
+  return (
+    <Link to={appDetailUrl(node.id)} className={tokens.type["table link"]}>
+      {node.handle}
+    </Link>
+  );
+}
+
+function ResourceRow({
+  node,
+  onClick,
+  isSelected,
+}: {
+  node: ResourceNodeComputed;
+  onClick: (id: string) => void;
+  isSelected: boolean;
+}) {
+  return (
+    <Tr className={isSelected ? "bg-off-white hover:bg-off-white" : ""}>
+      <Td>
+        <HandleCell node={node} />
+        <div>{capitalize(node.resourceType)}</div>
+      </Td>
+      <Td variant="center">{node.dependsOn.length}</Td>
+      <Td variant="center">{node.dependsOnMe.length}</Td>
+      <Td>
+        <Pill variant="success">Healthy</Pill>
+      </Td>
+      <Td>
+        <span className="font-semibold text-forest">DONE</span> 5m ago
+      </Td>
+      <Td>
+        <div className="text-gray-900">sbx-main</div>
+        <div>Shared Stack (us-east-1)</div>
+      </Td>
+      <Td variant="right">
+        <Button size="sm" className="mt-1" onClick={() => onClick(node.id)}>
+          Explore
+        </Button>
+      </Td>
+    </Tr>
+  );
+}
+
+function NodeViewer({
+  node,
+  nodes,
+  onClick,
+}: {
+  node: ResourceNodeComputed;
+  nodes: ResourceNodeComputed[];
+  onClick: (id: string) => void;
+}) {
+  return (
+    <div className="flex flex-row w-full">
+      <div className="flex flex-col w-full">
+        <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100 flex flex-row gap-4">
+          <h3 className={tokens.type.h3}>
+            <HandleCell node={node} />
+          </h3>
+          <span className="text-gray-500 text-sm items-center flex">
+            {capitalize(node.resourceType)}
+          </span>
+        </div>
+        <div className="flex flex-row w-full h-full mb-[-1px]">
+          <div className="flex-1 border-r border-black-100">
+            <div className="py-3 px-4 bg-gray-50 border-b border-black-100 text-sm text-gray-500">
+              {node.dependsOn.length} Upstream Resources
+            </div>
+            {node.dependsOn.map((nId) => {
+              const found = nodes.find((n) => nId === n.id);
+              if (!found) return null;
+              return (
+                <div
+                  key={found.id}
+                  onClick={() => onClick(nId)}
+                  onKeyUp={() => onClick(nId)}
+                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
+                >
+                  <div className="grow text-sm">{found.handle}</div>
+                  <span className="text-gray-500 text-sm mr-3">
+                    {capitalize(node.resourceType)}
+                  </span>
+                  <Pill variant="success">Healthy</Pill>
+                  <IconChevronRight
+                    variant="sm"
+                    className="ml-2 group-hover:opacity-100 opacity-50"
+                  />
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex-1">
+            <div className="py-3 px-4 bg-gray-50 border-b border-black-100 text-sm text-gray-500">
+              {node.dependsOnMe.length} Downstream Resources
+            </div>
+            {node.dependsOnMe.map((nId) => {
+              const found = nodes.find((n) => nId === n.id);
+              if (!found) return null;
+              return (
+                <div
+                  key={found.id}
+                  onClick={() => onClick(nId)}
+                  onKeyUp={() => onClick(nId)}
+                  className="group hover:bg-gray-50 cursor-pointer flex items-center border-b border-black-100 py-3 px-4"
+                >
+                  <div className="grow text-sm">{found.handle}</div>
+                  <span className="text-gray-500 text-sm mr-3">
+                    {capitalize(node.resourceType)}
+                  </span>
+                  <Pill variant="success">Healthy</Pill>
+                  <IconChevronRight
+                    variant="sm"
+                    className="ml-2 group-hover:opacity-100 opacity-50"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const SortIcon = () => (
+  <div className="inline-block">
+    <IconChevronDown
+      variant="sm"
+      className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
+    />
+  </div>
+);
+
+function sorter(sortBy: keyof ResourceNodeComputed, sortDir: "asc" | "desc") {
+  return (a: ResourceNodeComputed, b: ResourceNodeComputed) => {
+    if (sortBy === "dependsOnMe") {
+      if (sortDir === "asc") {
+        return a.dependsOnMe.length - b.dependsOnMe.length;
+      } else {
+        return b.dependsOnMe.length - a.dependsOnMe.length;
+      }
+    }
+
+    if (sortBy === "dependsOn") {
+      if (sortDir === "asc") {
+        return a.dependsOn.length - b.dependsOn.length;
+      } else {
+        return b.dependsOn.length - a.dependsOn.length;
+      }
+    }
+
+    if (sortDir === "asc") {
+      return a.handle.localeCompare(b.handle);
+    } else {
+      return b.handle.localeCompare(a.handle);
+    }
+  };
+}
+
+export function ResourceExplorerPage() {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+  };
+  const [sortBy, setSortBy] = useState<keyof ResourceNodeComputed>("handle");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const computed = computeNodes(nodes)
+    .filter((n) => {
+      if (search === "") return true;
+      const handle = n.handle.toLocaleLowerCase();
+      const srch = search.toLocaleLowerCase();
+      return handle.includes(srch);
+    })
+    .sort(sorter(sortBy, sortDir));
+  const [selectedId, setSelectedId] = useState("");
+  const selected = computed.find((node) => node.id === selectedId);
+  const onSort = (key: keyof ResourceNodeComputed) => {
+    if (key === sortBy) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(key);
+      setSortDir("desc");
+    }
+  };
+
+  return (
+    <Group>
+      <Group size="sm">
+        <TitleBar description="Learn how your resources are connected to each other.">
+          Resource Explorer
+        </TitleBar>
+
+        <FilterBar>
+          <Group variant="horizontal" size="sm" className="items-center">
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Group variant="horizontal" className="flex-col flex-col-reverse">
+        <div className="flex-1">
+          <Table>
+            <THead>
+              <Th
+                className="cursor-pointer hover:text-black group"
+                onClick={() => onSort("handle")}
+              >
+                Resource <SortIcon />
+              </Th>
+              <Th
+                className="cursor-pointer hover:text-black group"
+                onClick={() => onSort("dependsOn")}
+                variant="center"
+              >
+                Upstream Resources <SortIcon />
+              </Th>
+              <Th
+                className="cursor-pointer hover:text-black group"
+                onClick={() => onSort("dependsOnMe")}
+                variant="center"
+              >
+                Downstream Resources <SortIcon />
+              </Th>
+              <Th>Status</Th>
+              <Th>Last Deploy</Th>
+              <Th>Infrastructure</Th>
+              <Th variant="right">Actions</Th>
+            </THead>
+
+            <TBody>
+              {computed.map((node) => (
+                <ResourceRow
+                  key={node.id}
+                  node={node}
+                  onClick={(id: string) => setSelectedId(id)}
+                  isSelected={node.id === selectedId}
+                />
+              ))}
+            </TBody>
+          </Table>
+        </div>
+
+        <div className="bg-white shadow border border-black-100 rounded-lg flex-1 flex items-stretch overflow-hidden">
+          {selected ? (
+            <NodeViewer
+              node={selected}
+              nodes={computed}
+              onClick={(id: string) => setSelectedId(id)}
+            />
+          ) : (
+            <div className="py-16 px-4 text-center w-full flex items-center flex-col gap-4">
+              <h2 className={tokens.type.h2}>How It Works</h2>
+              <div>
+                Click <strong>Explore</strong> on a resource to view its
+                Upstream and Downstream dependencies.
+              </div>
+            </div>
+          )}
+        </div>
+      </Group>
+    </Group>
+  );
+}
