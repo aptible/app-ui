@@ -32,7 +32,7 @@ describe("Role Detail Members Page as a Role Admin", () => {
       ...verifiedUserHandlers({ role: testRole }),
       ...stacksWithResources({ accounts: [testAccount] }),
       rest.post(
-        `${testEnv.apiUrl}/roles/:roleId/invitations`,
+        `${testEnv.apiUrl}/roles/${testRole.id}/invitations`,
         (_, res, ctx) => {
           return res(
             ctx.json({
