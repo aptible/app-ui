@@ -390,3 +390,10 @@ export const createLogDrainUrl = (envId = "") =>
 
 export const SUPPORT_URL = "/support";
 export const supportUrl = () => SUPPORT_URL;
+
+export const SOURCES_PATH = "/sources";
+export const sourcesUrl = () => SOURCES_PATH;
+export const SOURCE_DETAIL_PATH = "/sources/:id";
+export const sourceDetailUrl = (id: string) => `/sources/${id}`;
+export const SOURCE_DETAIL_APPS_PATH = "/sources/:id/apps";
+export const sourceDetailAppsUrl = (id: string) => `/sources/${id}/apps`;

@@ -4,6 +4,7 @@ import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { WebState, schema } from "@app/schema";
+import { findSourceById, selectSources } from "@app/source";
 import type {
   DeployApp,
   DeployAppConfigEnv,
@@ -42,6 +43,7 @@ export interface DeployAppResponse {
     current_configuration: LinkResponse;
     current_deployment: LinkResponse;
     current_image: LinkResponse;
+    current_source: LinkResponse;
   };
   _embedded: {
     // TODO: fill in
@@ -70,6 +72,7 @@ export const defaultAppResponse = (
       current_configuration: { href: "" },
       current_deployment: { href: "" },
       current_image: { href: "" },
+      current_source: { href: "" },
       ...p._links,
     },
     _embedded: {
@@ -99,6 +102,7 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
     currentConfigurationId: extractIdFromLink(links.current_configuration),
     currentDeploymentId: extractIdFromLink(links.current_deployment) || "1",
     currentImageId: extractIdFromLink(links.current_image),
+    currentSourceId: extractIdFromLink(links.current_source),
   };
 };
 
@@ -174,6 +178,23 @@ export const selectAppsByStack = createSelector(
 
 export const selectAppsCountByStack = createSelector(
   selectAppsByStack,
+  (apps) => apps.length,
+);
+
+export const selectAppsBySource = createSelector(
+  selectAppsAsList,
+  selectSources,
+  (_: WebState, p: { sourceId: string }) => p.sourceId,
+  (apps, sources, sourceId) => {
+    return apps.filter((app) => {
+      const source = findSourceById(sources, { id: app.currentSourceId });
+      return source.id === sourceId;
+    });
+  },
+);
+
+export const selectAppsCountBySource = createSelector(
+  selectAppsBySource,
   (apps) => apps.length,
 );
 
