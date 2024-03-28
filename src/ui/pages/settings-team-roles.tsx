@@ -1,14 +1,15 @@
 import { prettyDate } from "@app/date";
-import { selectOrganizationSelectedId } from "@app/organizations";
-import { useDispatch, useLoader, useSelector } from "@app/react";
 import {
-  createRoleForOrg,
-  roleTypeFormat,
-  selectRolesByOrgId,
-} from "@app/roles";
-import { roleDetailUrl } from "@app/routes";
+  selectEnvironmentsByOrgAsList,
+  selectFormattedPermissionsByRoleAndAccount,
+} from "@app/deploy";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { useCache, useDispatch, useLoader, useSelector } from "@app/react";
+import { createRoleForOrg, selectRolesByOrgIdWithSearch } from "@app/roles";
+import { fetchUsersForRole, fetchUsersForRolesByOrgId } from "@app/roles";
+import { roleDetailEnvironmentsUrl, roleDetailUrl } from "@app/routes";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   BannerMessages,
   Box,
@@ -17,6 +18,8 @@ import {
   FormGroup,
   Group,
   Input,
+  InputSearch,
+  Pill,
   TBody,
   THead,
   Table,
@@ -62,8 +65,22 @@ const CreateRole = ({ orgId }: { orgId: string }) => {
 };
 
 export const TeamRolesPage = () => {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+  };
   const orgId = useSelector(selectOrganizationSelectedId);
-  const roles = useSelector((s) => selectRolesByOrgId(s, { orgId }));
+  const roles = useSelector((s) =>
+    selectRolesByOrgIdWithSearch(s, { orgId, search }),
+  );
+  const allEnvs = useSelector(selectEnvironmentsByOrgAsList);
+
+  const perms = useSelector((s) =>
+    selectFormattedPermissionsByRoleAndAccount(s, { envs: allEnvs }),
+  );
+
+  const members = useCache(fetchUsersForRolesByOrgId({ orgId: orgId }))?.data?._embedded || [];
 
   return (
     <Group>
@@ -75,37 +92,104 @@ export const TeamRolesPage = () => {
         <CreateRole orgId={orgId} />
       </Box>
 
+      <InputSearch
+        placeholder="Search roles..."
+        search={search}
+        onChange={onChange}
+      />
+
+      <div className="text-gray-500">{`${roles.length} Roles`}</div>
       <Table>
         <THead>
           <Td>Role</Td>
-          <Td>Type</Td>
-          <Td>Created Date</Td>
+          <Td>Members</Td>
+          <Td>Environments with permissions</Td>
           <Td variant="right">Actions</Td>
         </THead>
 
         <TBody>
-          {roles.map((role) => (
-            <Tr key={role.id}>
-              <Td>
-                <Link
-                  className={`${tokens.type["table link"]}`}
-                  to={roleDetailUrl(role.id)}
-                >
-                  {" "}
-                  {role.name}
-                </Link>
-              </Td>
-              <Td>{roleTypeFormat(role)}</Td>
-              <Td>{prettyDate(role.createdAt)}</Td>
-              <Td variant="right">
-                <ButtonLink to={roleDetailUrl(role.id)} size="sm">
-                  Edit
-                </ButtonLink>
-              </Td>
-            </Tr>
-          ))}
+          {roles.map((role) => {
+            return (
+              <RoleTableRow
+                role={role}
+                perms={perms}
+                envs={allEnvs}
+                key={role.id}
+                members={members}
+              />
+            );
+          })}
         </TBody>
       </Table>
     </Group>
   );
+};
+
+export const RoleTableRow = ({
+  role,
+  perms,
+  envs,
+  members
+}: { role: any; perms: any; envs: any, members: any }) => {
+  const numbOfEnvsWithPerms = perms[role.id]
+    ? Object.keys(perms[role.id]).length
+    : 0;
+
+  let defaultPill = false;
+  if (
+    role.type === "owner" ||
+    role.type === "platform_owner" ||
+    role.type === "compliance_owner"
+  ) {
+    defaultPill = true;
+  }
+  return (
+    <Tr key={role.id}>
+      <Td className="align-baseline">
+        <Link
+          className={`${tokens.type["table link"]}`}
+          to={roleDetailUrl(role.id)}
+        >
+          <span className="text-base font-semibold">{role.name}</span>
+        </Link>
+        <div className="text-gray-500 text-sm">
+          Created: {prettyDate(role.createdAt)}
+        </div>
+        {defaultPill ? (
+          <Pill variant="progress">Default</Pill>
+        ) : (
+          <Pill>Custom</Pill>
+        )}
+      </Td>
+      <Td className="align-baseline">
+        <RoleMembershipRow role={role} members={members}/>
+      </Td>
+      <Td className="min-w-[45ch] align-baseline">
+        <div>
+          {role.type === "owner" ? (
+            "All Environments and Billing"
+          ) : role.type === "platform_owner" ? (
+            "All Environments"
+          ) : (
+            <Link to={roleDetailEnvironmentsUrl(role.id)}>
+              {`${numbOfEnvsWithPerms} / ${envs.length} Environments`}
+            </Link>
+          )}
+        </div>
+      </Td>
+      <Td variant="right">
+        <ButtonLink to={roleDetailUrl(role.id)} size="sm">
+          Edit
+        </ButtonLink>
+      </Td>
+    </Tr>
+  );
+};
+
+export const RoleMembershipRow = ({ role, members }: { role: any, members: any }) => {
+  const memberList = members[role.id]?.memberships || []
+  const userNames = memberList.map((obj) => obj?._embedded?.user?.name).join(", ");
+  return <div>
+    {memberList?.length ? userNames : "No users"}
+  </div>;
 };

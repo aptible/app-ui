@@ -73,6 +73,35 @@ export const selectRolesByOrgId = createSelector(
   },
 );
 
+export const selectRolesByOrgIdWithSearch = createSelector(
+  schema.roles.selectTableAsList,
+  (_: WebState, p: { orgId: string }) => p.orgId,
+  (_: WebState, p: { search: string }) => p.search.toLocaleLowerCase(),
+  (roles, orgId, search) => {
+    if (!search || search === "") {
+      return roles
+        .filter((r) => r.organizationId === orgId)
+        .sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return dateB - dateA;
+        });
+    } else {
+      return roles
+        .filter(
+          (r) =>
+            r.organizationId === orgId &&
+            r.name.toLowerCase().includes(search.toLowerCase()),
+        )
+        .sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return dateB - dateA;
+        });
+    }
+  },
+);
+
 export const selectCurrentUserRoles = createSelector(
   schema.roles.selectTable,
   schema.currentUserRoles.select,
@@ -131,6 +160,12 @@ export const fetchUsersForRole = authApi.get<
   { roleId: string },
   HalEmbedded<{ users: UserResponse[] }>
 >("/roles/:roleId/users", authApi.cache());
+
+export const fetchUsersForRolesByOrgId = authApi.get<
+  { orgId: string },
+  HalEmbedded<{ users: UserResponse[] }>
+>("/organizations/:orgId/roles/memberships", authApi.cache());
+
 
 export const updateRoleName = authApi.put<{ id: string; name: string }>(
   "/roles/:id",
