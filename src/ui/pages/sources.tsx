@@ -14,6 +14,7 @@ import {
   Group,
   LoadingBar,
   PaginateBar,
+  SourceLogo,
   TBody,
   THead,
   Table,
@@ -21,6 +22,7 @@ import {
   Th,
   TitleBar,
   Tr,
+  tokens,
 } from "../shared";
 
 function SourceListRow({ source }: { source: DeploySource }) {
@@ -32,12 +34,13 @@ function SourceListRow({ source }: { source: DeploySource }) {
     <Tr key={source.id}>
       <Td>
         <Link to={sourceDetailUrl(source.id)} className="flex items-center">
-          <img
-            src={"/resource-types/logo-source.png"}
+          <SourceLogo
+            source={source}
             className="w-[32px] h-[32px] mr-2 align-middle"
-            aria-label="Git Source"
           />
-          {source.displayName}
+          <p className={`${tokens.type["table link"]} leading-8`}>
+            {source.displayName}
+          </p>
         </Link>
       </Td>
       <Td>{appCount}</Td>
