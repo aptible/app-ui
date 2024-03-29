@@ -141,7 +141,7 @@ export const exchangeToken = authApi.post<ExchangeToken, TokenSuccessResponse>(
     // Regardless, we want to reset the store first then save the token because
     // resetStore will delete the token stored inside redux.
     const curToken = deserializeToken(ctx.json.value);
-    yield* put([resetStore(), setToken(curToken), { type: "REFRESH_DATA" }]);
+    // yield* put([resetStore(), setToken(curToken), { type: "REFRESH_DATA" }]);
     ctx.loader = { message: "Success" };
     tunaEvent("exchanged-token", ctx.payload);
   },

@@ -390,3 +390,6 @@ export const createLogDrainUrl = (envId = "") =>
 
 export const SUPPORT_URL = "/support";
 export const supportUrl = () => SUPPORT_URL;
+
+export const TEAM_SCIM_PATH = "/settings/team/scim";
+export const teamScimUrl = () => TEAM_SCIM_PATH;
