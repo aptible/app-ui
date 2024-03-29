@@ -1,5 +1,6 @@
 import { selectEnv } from "@app/config";
 import { selectNav, setCollapsed } from "@app/nav";
+import { selectHasBetaFeatures } from "@app/organizations";
 import { useDispatch, useSelector } from "@app/react";
 import {
   activityUrl,
@@ -57,7 +58,7 @@ export const ApplicationSidebar = () => {
   );
   const hasSystemStatus =
     systemStatus?.description && systemStatus?.indicator !== "none";
-
+  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
   const navigate = useNavigate();
   const navigation = [
     { name: "Stacks", to: stacksUrl(), icon: <IconLayers /> },
@@ -66,7 +67,12 @@ export const ApplicationSidebar = () => {
     { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },
     { name: "Endpoints", to: endpointsUrl(), icon: <IconEndpoint /> },
     { name: "Services", to: servicesUrl(), icon: <IconService /> },
-    { name: "Sources", to: sourcesUrl(), icon: <IconSource /> },
+    {
+      name: "Sources",
+      to: sourcesUrl(),
+      icon: <IconSource />,
+      hidden: !hasBetaFeatures,
+    },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
     {
@@ -132,9 +138,12 @@ export const ApplicationSidebar = () => {
 
         <div className="mt-2 flex-1 px-2">
           <nav className="bg-white">
-            {navigation.map((item) => (
-              <LinkNav key={item.name} {...item} hideName={collapsed} />
-            ))}
+            {navigation.map(
+              (item) =>
+                item.hidden || (
+                  <LinkNav key={item.name} {...item} hideName={collapsed} />
+                ),
+            )}
           </nav>
 
           {!collapsed ? <OrgRequirements /> : null}
