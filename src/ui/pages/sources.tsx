@@ -43,7 +43,9 @@ function SourceListRow({ source }: { source: DeploySource }) {
           </p>
         </Link>
       </Td>
-      <Td>{appCount}</Td>
+      <Td variant="center" className="center items-center justify-center">
+        <div className="text-center">{appCount}</div>
+      </Td>
     </Tr>
   );
 }
@@ -76,7 +78,7 @@ export function SourcesPage() {
         <Table>
           <THead>
             <Th>Name</Th>
-            <Th>Apps</Th>
+            <Th variant="center">Apps</Th>
           </THead>
 
           <TBody>
