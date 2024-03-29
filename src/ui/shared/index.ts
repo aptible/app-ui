@@ -67,3 +67,5 @@ export * from "./env-editor";
 export * from "./app-auto-deploy-guide";
 export * from "./deployments-table";
 export * from "./source";
+export * from "./git";
+export * from "./docker";

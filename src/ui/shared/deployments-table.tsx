@@ -6,17 +6,22 @@ import {
   selectDeploymentsBySourceId,
 } from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
-import { appDetailUrl, deploymentDetailUrl } from "@app/routes";
-import { fetchDeploymentsBySourceId } from "@app/source";
+import {
+  appDetailUrl,
+  deploymentDetailUrl,
+  sourceDetailUrl,
+} from "@app/routes";
+import { fetchDeploymentsBySourceId, selectSourceById } from "@app/source";
 import { prettyGitSha } from "@app/string-utils";
 import { DeployApp, Deployment } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { Group } from "@app/ui/shared/group";
-import { Tooltip } from "@app/ui/shared/tooltip";
 import { Link } from "react-router-dom";
 import { ButtonLink } from "./button";
 import { Code } from "./code";
-import { ExternalLink, OptionalExternalLink } from "./external-link";
+import { DockerImage } from "./docker";
+import { ExternalLink } from "./external-link";
+import { GitCommitMessage, GitRef } from "./git";
 import { OpStatus } from "./operation-status";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "./table";
 import { tokens } from "./tokens";
@@ -93,6 +98,13 @@ function DeploymentRow({
   app,
   deployment,
 }: { app: DeployApp; deployment: Deployment }) {
+  const image = useSelector((s) =>
+    selectImageById(s, { id: deployment.imageId }),
+  );
+  const source = useSelector((s) =>
+    selectSourceById(s, { id: deployment.sourceId }),
+  );
+
   return (
     <Tr>
       <Td>
@@ -107,16 +119,31 @@ function DeploymentRow({
         <OpStatus status={deployment.status} />
       </Td>
       <Td>
-        <SourceName app={app} deployment={deployment} />
+        {(source.id && (
+          <Link
+            to={sourceDetailUrl(deployment.sourceId)}
+            className={tokens.type["table link"]}
+          >
+            {source.displayName}
+          </Link>
+        )) || <em>Not Provided</em>}
       </Td>
       <Td>
-        <DeploymentTagText deployment={deployment} />
+        <GitRef
+          gitRef={deployment.gitRef}
+          commitSha={deployment.gitCommitSha}
+          commitUrl={deployment.gitCommitUrl}
+        />
       </Td>
       <Td>
-        <DeploymentGitSha deployment={deployment} />
+        <GitCommitMessage message={deployment.gitCommitMessage} />
       </Td>
       <Td>
-        <GitMetadata deployment={deployment} />
+        <DockerImage
+          image={deployment.dockerImage || image.dockerRepo}
+          digest={image.dockerRef}
+          repoUrl={deployment.dockerRepositoryUrl}
+        />
       </Td>
       <Td>{prettyDateTime(deployment.createdAt)}</Td>
       <Td variant="right">
@@ -143,9 +170,9 @@ export function DeploymentsTable({
         <Td>ID</Td>
         <Td>Status</Td>
         <Td>Source</Td>
-        <Td>Tag</Td>
-        <Td>Commit</Td>
-        <Td>Message</Td>
+        <Td>Git Ref</Td>
+        <Td>Commit Message</Td>
+        <Td>Docker Image</Td>
         <Td>Date</Td>
         <Td variant="right">Actions</Td>
       </THead>
@@ -163,97 +190,6 @@ export function DeploymentsTable({
     </Table>
   );
 }
-
-const AppCell = ({ app }: { app: DeployApp }) => {
-  return (
-    <Td className="flex-1">
-      <Link to={appDetailUrl(app.id)} className="flex">
-        <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
-      </Link>
-    </Td>
-  );
-};
-
-const GitRefCell = ({
-  gitRef,
-  commitSha,
-  commitUrl,
-}: { gitRef: string | null; commitSha: string; commitUrl?: string }) => {
-  const ref = gitRef?.trim() || "";
-  const sha = commitSha.trim().slice(0, 7);
-  const url = commitUrl || "";
-
-  if (!sha) {
-    return (
-      <Td>
-        <em>Not Provided</em>
-      </Td>
-    );
-  }
-
-  return (
-    <Td>
-      <Code>{ref || sha}</Code>
-      {ref && sha && ref !== sha ? (
-        <>
-          {" "}
-          @{" "}
-          <Code>
-            <OptionalExternalLink
-              href={url}
-              linkIf={!!url.match(/^https?:\/\//)}
-            >
-              {sha}
-            </OptionalExternalLink>
-          </Code>
-        </>
-      ) : null}
-    </Td>
-  );
-};
-
-const GitCommitMessageCell = ({ message }: { message: string }) => {
-  if (!message) {
-    return (
-      <Td>
-        <em>Not Provided</em>
-      </Td>
-    );
-  }
-
-  const firstLine = message.trim().split("\n")[0];
-
-  return (
-    <Td>
-      <Tooltip text={message} fluid>
-        <p className="leading-8 text-ellipsis whitespace-nowrap max-w-[30ch] overflow-hidden inline-block">
-          {firstLine}
-          {message.length > firstLine.length ? " ..." : ""}
-        </p>
-      </Tooltip>
-    </Td>
-  );
-};
-
-const DockerImageCell = ({
-  image,
-  digest,
-  repoUrl,
-}: { image: string; digest: string; repoUrl?: string }) => {
-  const shortDigest = digest.replace("sha256:", "").slice(0, 11);
-  const url = repoUrl || "";
-
-  return (
-    <Td>
-      <Code>
-        <OptionalExternalLink href={url} linkIf={!!url.match(/^https?:\/\//)}>
-          {image}
-        </OptionalExternalLink>
-      </Code>{" "}
-      @ <Code>sha256:{shortDigest}</Code>
-    </Td>
-  );
-};
 
 export function DeploymentSourceRow({
   deployment,
@@ -278,18 +214,30 @@ export function DeploymentSourceRow({
       <Td>
         <OpStatus status={deployment.status} />
       </Td>
-      <AppCell app={app} />
-      <GitRefCell
-        gitRef={deployment.gitRef}
-        commitSha={deployment.gitCommitSha}
-        commitUrl={deployment.gitCommitUrl}
-      />
-      <GitCommitMessageCell message={deployment.gitCommitMessage} />
-      <DockerImageCell
-        image={deployment.dockerImage || currentImage.dockerRepo}
-        digest={currentImage.dockerRef}
-        repoUrl={deployment.dockerRepositoryUrl}
-      />
+      <Td className="flex-1">
+        <Link to={appDetailUrl(app.id)} className="flex">
+          <p className={`${tokens.type["table link"]} leading-8`}>
+            {app.handle}
+          </p>
+        </Link>
+      </Td>
+      <Td>
+        <GitRef
+          gitRef={deployment.gitRef}
+          commitSha={deployment.gitCommitSha}
+          commitUrl={deployment.gitCommitUrl}
+        />
+      </Td>
+      <Td>
+        <GitCommitMessage message={deployment.gitCommitMessage} />
+      </Td>
+      <Td>
+        <DockerImage
+          image={deployment.dockerImage || currentImage.dockerRepo}
+          digest={currentImage.dockerRef}
+          repoUrl={deployment.dockerRepositoryUrl}
+        />
+      </Td>
       <Td>{prettyDateTime(deployment.createdAt)}</Td>
       <Td variant="right">
         <ButtonLink
