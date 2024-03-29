@@ -16,6 +16,7 @@ import {
   teamPendingInvitesUrl,
   teamRolesUrl,
   teamSsoUrl,
+  teamScimUrl,
 } from "@app/routes";
 import cn from "classnames";
 import { NavLink } from "react-router-dom";
@@ -103,6 +104,19 @@ export function SettingsSidebar() {
         ) : (
           <span className={navLink({ isActive: false })}>
             Single Sign-On
+            <Tooltip text="Must be account owner" fluid>
+              <IconLock variant="sm" className="ml-1 opacity-60" />
+            </Tooltip>
+          </span>
+        )}
+
+        {isAccountOwner ? (
+          <NavLink className={navLink} to={teamScimUrl()}>
+            SCIM
+          </NavLink>
+        ) : (
+          <span className={navLink({ isActive: false })}>
+            SCIM
             <Tooltip text="Must be account owner" fluid>
               <IconLock variant="sm" className="ml-1 opacity-60" />
             </Tooltip>

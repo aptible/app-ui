@@ -143,6 +143,7 @@ import {
   TeamPendingInvitesPage,
   TeamRolesCreatePage,
   TeamRolesPage,
+  TeamsScimPage,
   TeamSsoPage,
   VerifyEmailPage,
   VerifyEmailRequired,
@@ -893,6 +894,15 @@ export const appRoutes: RouteObject[] = [
         element: (
           <AccountOwnerRequired>
             <TeamSsoPage />
+          </AccountOwnerRequired>
+        ),
+      },
+
+      {
+        path: routes.TEAM_SCIM_PATH,
+        element: (
+          <AccountOwnerRequired>
+            <TeamsScimPage />
           </AccountOwnerRequired>
         ),
       },
