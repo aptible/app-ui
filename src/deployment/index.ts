@@ -22,6 +22,7 @@ export interface DeploymentResponse {
     operation: LinkResponse;
     configuration: LinkResponse;
     image: LinkResponse;
+    source: LinkResponse;
   };
   _type: "deployment";
 }
@@ -48,6 +49,7 @@ export const defaultDeploymentResponse = (
       operation: defaultHalHref(),
       configuration: defaultHalHref(),
       image: defaultHalHref(),
+      source: defaultHalHref(),
       ...p._links,
     },
     ...p,
@@ -77,6 +79,7 @@ export const deserializeDeployment = (
     operationId: extractIdFromLink(links.operation),
     imageId: extractIdFromLink(links.image),
     configurationId: extractIdFromLink(links.configuration),
+    sourceId: extractIdFromLink(links.source),
   };
 };
 

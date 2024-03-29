@@ -822,6 +822,7 @@ export const defaultDeployment = (a: Partial<Deployment> = {}): Deployment => {
     operationId: "",
     imageId: "",
     configurationId: "",
+    sourceId: "",
     ...a,
   };
 };
