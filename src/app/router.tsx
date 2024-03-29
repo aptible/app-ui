@@ -115,6 +115,7 @@ import {
   SettingsPage,
   SignupPage,
   SourceDetailAppsPage,
+  SourceDetailDeploymentsPage,
   SourceDetailLayout,
   SourceDetailPage,
   SourcesPage,
@@ -289,6 +290,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.SOURCE_DETAIL_APPS_PATH,
                 element: <SourceDetailAppsPage />,
+              },
+              {
+                path: routes.SOURCE_DETAIL_DEPLOYMENTS_PATH,
+                element: <SourceDetailDeploymentsPage />,
               },
             ],
           },

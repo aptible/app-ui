@@ -98,6 +98,13 @@ export const selectDeploymentsByAppId = createSelector(
     return deployments.filter((d) => d.appId === appId);
   },
 );
+export const selectDeploymentsBySourceId = createSelector(
+  selectDeploymentsAsList,
+  (_: WebState, p: { sourceId: string }) => p.sourceId,
+  (deployments, sourceId): Deployment[] => {
+    return deployments.filter((d) => d.sourceId === sourceId);
+  },
+);
 
 export function getRegistryParts(url: string): { name: string; tag: string } {
   const [name, tag] = url.split(":");
