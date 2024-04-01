@@ -18,6 +18,7 @@ import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchCurrentUserRoles, fetchRoles } from "@app/roles";
 import { schema } from "@app/schema";
+import { fetchSources } from "@app/source";
 import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";
 import { fetchUser, fetchUsers, selectCurrentUserId } from "@app/users";
@@ -79,6 +80,7 @@ function* onFetchResourceData() {
     fetchEndpoints.run(),
     fetchOrgOperations.run({ orgId: org.id }),
     fetchSystemStatus.run(),
+    fetchSources.run(),
   ]);
   yield* group;
 }

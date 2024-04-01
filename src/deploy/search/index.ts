@@ -302,6 +302,32 @@ export const selectAppsForTableSearch = createSelector(
   },
 );
 
+export const selectAppsForTableSearchBySourceId = createSelector(
+  selectAppsForTable,
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, props: { sourceId: string }) => props.sourceId,
+  (apps, search, sourceId): DeployAppRow[] => {
+    if (search === "" && sourceId === "") {
+      return apps;
+    }
+
+    return apps.filter((app) => {
+      const searchMatch = computeSearchMatch(app, search);
+      const sourceIdMatch = sourceId !== "" && app.currentSourceId === sourceId;
+
+      if (sourceId !== "") {
+        if (search !== "") {
+          return sourceIdMatch && searchMatch;
+        }
+
+        return sourceIdMatch;
+      }
+
+      return searchMatch;
+    });
+  },
+);
+
 const selectSearchProp = (_: WebState, props: { search: string }) =>
   props.search.toLocaleLowerCase();
 

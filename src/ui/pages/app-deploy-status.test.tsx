@@ -132,6 +132,7 @@ describe("AppDeployStatusPage", () => {
           ),
           current_image: defaultHalHref(),
           current_deployment: defaultHalHref(),
+          current_source: defaultHalHref(),
         },
         _embedded: {
           services: [testServiceRails],

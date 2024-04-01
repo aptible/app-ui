@@ -1,17 +1,21 @@
 import { prettyDateTime } from "@app/date";
 import {
   DeployAppRow,
+  calcMetrics,
   calcServiceMetrics,
   fetchApps,
   fetchEnvironmentById,
   fetchEnvironments,
+  fetchImageById,
   selectAppsByCertId,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
+  selectAppsForTableSearchBySourceId,
+  selectImageById,
   selectLatestOpByAppId,
   selectServicesByAppId,
 } from "@app/deploy";
-import { calcMetrics } from "@app/deploy";
+import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
@@ -24,6 +28,8 @@ import { usePaginate } from "@app/ui/hooks";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonCreate } from "../button";
+import { Code } from "../code";
+import { OptionalExternalLink } from "../external-link";
 import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -39,6 +45,7 @@ import {
 import { EnvStackCell } from "../resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
 interface AppCellProps {
   app: DeployApp;
@@ -392,6 +399,158 @@ export const AppListByCertificate = ({
               <AppServicesCell app={app} />
               <AppCostCell app={app} />
             </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
+  );
+};
+
+const GitRefCell = ({
+  gitRef,
+  commitSha,
+  commitUrl,
+}: { gitRef: string | null; commitSha: string; commitUrl?: string }) => {
+  const ref = gitRef?.trim() || "";
+  const sha = commitSha.trim().slice(0, 7);
+  const url = commitUrl || "";
+
+  return (
+    <Td>
+      <Code>{ref || sha}</Code>
+      {ref && sha && ref !== sha ? (
+        <>
+          {" "}
+          @{" "}
+          <Code>
+            <OptionalExternalLink
+              href={url}
+              linkIf={!!url.match(/^https?:\/\//)}
+            >
+              {sha}
+            </OptionalExternalLink>
+          </Code>
+        </>
+      ) : null}
+    </Td>
+  );
+};
+const GitCommitMessageCell = ({ message }: { message: string }) => {
+  const firstLine = message.trim().split("\n")[0];
+  return (
+    <Td>
+      <Tooltip text={message} fluid>
+        <p className="leading-8 text-ellipsis whitespace-nowrap max-w-[30ch] overflow-hidden inline-block">
+          {firstLine}
+          {message.length > firstLine.length ? " ..." : ""}
+        </p>
+      </Tooltip>
+    </Td>
+  );
+};
+
+const DockerImageCell = ({
+  image,
+  digest,
+  repoUrl,
+}: { image: string; digest: string; repoUrl?: string }) => {
+  const shortDigest = digest.replace("sha256:", "").slice(0, 11);
+  const url = repoUrl || "";
+
+  return (
+    <Td>
+      <Code>
+        <OptionalExternalLink href={url} linkIf={!!url.match(/^https?:\/\//)}>
+          {image}
+        </OptionalExternalLink>
+      </Code>{" "}
+      @ <Code>sha256:{shortDigest}</Code>
+    </Td>
+  );
+};
+
+const AppListBySourceRow = ({ app }: { app: DeployApp }) => {
+  useQuery(fetchDeploymentById({ id: app.currentDeploymentId }));
+  const deployment = useSelector((s) =>
+    selectDeploymentById(s, { id: app.currentDeploymentId }),
+  );
+
+  useQuery(fetchImageById({ id: app.currentImageId }));
+  const currentImage = useSelector((s) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+
+  return (
+    <Tr>
+      <AppPrimaryCell app={app} />
+      <AppIdCell app={app} />
+      <GitRefCell
+        gitRef={deployment.gitRef}
+        commitSha={deployment.gitCommitSha}
+        commitUrl={deployment.gitCommitUrl}
+      />
+      <GitCommitMessageCell message={deployment.gitCommitMessage} />
+      <DockerImageCell
+        image={deployment.dockerImage || currentImage.dockerRepo}
+        digest={currentImage.dockerRef}
+        repoUrl={deployment.dockerRepositoryUrl}
+      />
+      <Td>{prettyDateTime(deployment.createdAt)}</Td>
+    </Tr>
+  );
+};
+
+export const AppListBySource = ({
+  sourceId,
+}: {
+  sourceId: string;
+}) => {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+  };
+  const apps = useSelector((s) =>
+    selectAppsForTableSearchBySourceId(s, {
+      sourceId,
+      search,
+    }),
+  );
+  const paginated = usePaginate(apps);
+
+  return (
+    <Group>
+      <Group size="sm">
+        <FilterBar>
+          <div className="flex justify-between">
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
+          </div>
+
+          <Group variant="horizontal" size="lg" className="items-center mt-1">
+            <DescBar>{paginated.totalItems} Apps</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Handle</Th>
+          <Th>ID</Th>
+          <Th>Git Ref</Th>
+          <Th>Commit Message</Th>
+          <Th>Docker Image</Th>
+          <Th>Last Deployed</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.map((app) => (
+            <AppListBySourceRow app={app} key={app.id} />
           ))}
         </TBody>
       </Table>
