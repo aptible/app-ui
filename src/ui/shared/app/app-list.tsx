@@ -19,6 +19,7 @@ import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
+  deploymentDetailUrl,
   environmentCreateAppUrl,
   operationDetailUrl,
 } from "@app/routes";
@@ -27,7 +28,7 @@ import type { DeployApp } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ButtonCreate } from "../button";
+import { ButtonCreate, ButtonLink } from "../button";
 import { DockerImage } from "../docker";
 import { GitCommitMessage, GitRef } from "../git";
 import { Group } from "../group";
@@ -438,6 +439,16 @@ const AppListBySourceRow = ({ app }: { app: DeployApp }) => {
         />
       </Td>
       <Td>{prettyDateTime(deployment.createdAt)}</Td>
+      <Td variant="right">
+        <ButtonLink
+          to={deploymentDetailUrl(deployment.id)}
+          size="sm"
+          className="w-15"
+          variant="primary"
+        >
+          View
+        </ButtonLink>
+      </Td>
     </Tr>
   );
 };
@@ -487,6 +498,7 @@ export const AppListBySource = ({
           <Th>Commit Message</Th>
           <Th>Docker Image</Th>
           <Th>Last Deployed</Th>
+          <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
