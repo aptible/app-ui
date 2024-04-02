@@ -86,7 +86,9 @@ export function AppHeader({
         </DetailInfoItem>
         {deployment.gitCommitMessage ? (
           <DetailInfoItem title="Commit Message">
-            <div className="max-h-[21px]"><GitMetadata deployment={deployment} /></div>
+            <div className="max-h-[21px]">
+              <GitMetadata deployment={deployment} />
+            </div>
           </DetailInfoItem>
         ) : null}
         <DetailInfoItem title="Tag">
