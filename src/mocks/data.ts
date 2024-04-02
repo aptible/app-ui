@@ -689,6 +689,7 @@ export const testDeploymentGit = defaultDeploymentResponse({
     ),
     configuration: defaultHalHref(),
     image: defaultHalHref(),
+    source: defaultHalHref(),
   },
 });
 
@@ -711,6 +712,7 @@ export const testDeploymentDocker = defaultDeploymentResponse({
     ),
     configuration: defaultHalHref(),
     image: defaultHalHref(),
+    source: defaultHalHref(),
   },
 });
 
@@ -731,5 +733,6 @@ export const testDeploymentEmpty = defaultDeploymentResponse({
     ),
     configuration: defaultHalHref(),
     image: defaultHalHref(),
+    source: defaultHalHref(),
   },
 });

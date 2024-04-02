@@ -1,6 +1,10 @@
 import { prettyDateTime } from "@app/date";
 import { useQuery, useSelector } from "@app/react";
-import { sourceDetailAppsUrl, sourcesUrl } from "@app/routes";
+import {
+  sourceDetailAppsUrl,
+  sourceDetailDeploymentsUrl,
+  sourcesUrl,
+} from "@app/routes";
 import { fetchSourceById, selectSourceById } from "@app/source";
 import { DeploySource } from "@app/types";
 import { Outlet, useParams } from "react-router";
@@ -57,7 +61,10 @@ function SourcePageHeader() {
 
   const crumbs = [{ name: "Sources", to: sourcesUrl() }];
 
-  const tabs: TabItem[] = [{ name: "Apps", href: sourceDetailAppsUrl(id) }];
+  const tabs: TabItem[] = [
+    { name: "Apps", href: sourceDetailAppsUrl(id) },
+    { name: "Deployments", href: sourceDetailDeploymentsUrl(id) },
+  ];
 
   return (
     <DetailPageHeaderView

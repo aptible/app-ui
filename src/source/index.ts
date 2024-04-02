@@ -46,6 +46,9 @@ export const selectSourcesAsList = schema.sources.selectTableAsList;
 
 export const fetchSources = api.get("/sources");
 export const fetchSourceById = api.get<{ id: string }>("/sources/:id");
+export const fetchDeploymentsBySourceId = api.get<{ id: string }>(
+  "/sources/:id/deployments",
+);
 
 export const entities = {
   source: defaultEntity({

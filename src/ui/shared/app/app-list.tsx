@@ -19,6 +19,7 @@ import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
+  deploymentDetailUrl,
   environmentCreateAppUrl,
   operationDetailUrl,
 } from "@app/routes";
@@ -27,9 +28,9 @@ import type { DeployApp } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ButtonCreate } from "../button";
-import { Code } from "../code";
-import { OptionalExternalLink } from "../external-link";
+import { ButtonCreate, ButtonLink } from "../button";
+import { DockerImage } from "../docker";
+import { GitCommitMessage, GitRef } from "../git";
 import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -45,7 +46,6 @@ import {
 import { EnvStackCell } from "../resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
-import { Tooltip } from "../tooltip";
 
 interface AppCellProps {
   app: DeployApp;
@@ -406,69 +406,6 @@ export const AppListByCertificate = ({
   );
 };
 
-const GitRefCell = ({
-  gitRef,
-  commitSha,
-  commitUrl,
-}: { gitRef: string | null; commitSha: string; commitUrl?: string }) => {
-  const ref = gitRef?.trim() || "";
-  const sha = commitSha.trim().slice(0, 7);
-  const url = commitUrl || "";
-
-  return (
-    <Td>
-      <Code>{ref || sha}</Code>
-      {ref && sha && ref !== sha ? (
-        <>
-          {" "}
-          @{" "}
-          <Code>
-            <OptionalExternalLink
-              href={url}
-              linkIf={!!url.match(/^https?:\/\//)}
-            >
-              {sha}
-            </OptionalExternalLink>
-          </Code>
-        </>
-      ) : null}
-    </Td>
-  );
-};
-const GitCommitMessageCell = ({ message }: { message: string }) => {
-  const firstLine = message.trim().split("\n")[0];
-  return (
-    <Td>
-      <Tooltip text={message} fluid>
-        <p className="leading-8 text-ellipsis whitespace-nowrap max-w-[30ch] overflow-hidden inline-block">
-          {firstLine}
-          {message.length > firstLine.length ? " ..." : ""}
-        </p>
-      </Tooltip>
-    </Td>
-  );
-};
-
-const DockerImageCell = ({
-  image,
-  digest,
-  repoUrl,
-}: { image: string; digest: string; repoUrl?: string }) => {
-  const shortDigest = digest.replace("sha256:", "").slice(0, 11);
-  const url = repoUrl || "";
-
-  return (
-    <Td>
-      <Code>
-        <OptionalExternalLink href={url} linkIf={!!url.match(/^https?:\/\//)}>
-          {image}
-        </OptionalExternalLink>
-      </Code>{" "}
-      @ <Code>sha256:{shortDigest}</Code>
-    </Td>
-  );
-};
-
 const AppListBySourceRow = ({ app }: { app: DeployApp }) => {
   useQuery(fetchDeploymentById({ id: app.currentDeploymentId }));
   const deployment = useSelector((s) =>
@@ -484,18 +421,34 @@ const AppListBySourceRow = ({ app }: { app: DeployApp }) => {
     <Tr>
       <AppPrimaryCell app={app} />
       <AppIdCell app={app} />
-      <GitRefCell
-        gitRef={deployment.gitRef}
-        commitSha={deployment.gitCommitSha}
-        commitUrl={deployment.gitCommitUrl}
-      />
-      <GitCommitMessageCell message={deployment.gitCommitMessage} />
-      <DockerImageCell
-        image={deployment.dockerImage || currentImage.dockerRepo}
-        digest={currentImage.dockerRef}
-        repoUrl={deployment.dockerRepositoryUrl}
-      />
+      <Td>
+        <GitRef
+          gitRef={deployment.gitRef}
+          commitSha={deployment.gitCommitSha}
+          commitUrl={deployment.gitCommitUrl}
+        />
+      </Td>
+      <Td>
+        <GitCommitMessage message={deployment.gitCommitMessage} />
+      </Td>
+      <Td>
+        <DockerImage
+          image={deployment.dockerImage || currentImage.dockerRepo}
+          digest={currentImage.dockerRef}
+          repoUrl={deployment.dockerRepositoryUrl}
+        />
+      </Td>
       <Td>{prettyDateTime(deployment.createdAt)}</Td>
+      <Td variant="right">
+        <ButtonLink
+          to={deploymentDetailUrl(deployment.id)}
+          size="sm"
+          className="w-15"
+          variant="primary"
+        >
+          View
+        </ButtonLink>
+      </Td>
     </Tr>
   );
 };
@@ -545,6 +498,7 @@ export const AppListBySource = ({
           <Th>Commit Message</Th>
           <Th>Docker Image</Th>
           <Th>Last Deployed</Th>
+          <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>

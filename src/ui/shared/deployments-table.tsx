@@ -1,14 +1,29 @@
 import { prettyDateTime } from "@app/date";
-import { getRegistryParts, getRepoNameFromUrl } from "@app/deployment";
-import { deploymentDetailUrl } from "@app/routes";
+import { fetchImageById, selectAppById, selectImageById } from "@app/deploy";
+import {
+  getRegistryParts,
+  getRepoNameFromUrl,
+  selectDeploymentsBySourceId,
+} from "@app/deployment";
+import { useQuery, useSelector } from "@app/react";
+import {
+  appDetailUrl,
+  deploymentDetailUrl,
+  sourceDetailUrl,
+} from "@app/routes";
+import { fetchDeploymentsBySourceId, selectSourceById } from "@app/source";
 import { prettyGitSha } from "@app/string-utils";
 import { DeployApp, Deployment } from "@app/types";
+import { usePaginate } from "@app/ui/hooks";
+import { Group } from "@app/ui/shared/group";
 import { Link } from "react-router-dom";
 import { ButtonLink } from "./button";
 import { Code } from "./code";
+import { DockerImage } from "./docker";
 import { ExternalLink } from "./external-link";
+import { GitCommitMessage, GitRef } from "./git";
 import { OpStatus } from "./operation-status";
-import { EmptyTr, TBody, THead, Table, Td, Tr } from "./table";
+import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "./table";
 import { tokens } from "./tokens";
 
 export function DeploymentTagText({ deployment }: { deployment: Deployment }) {
@@ -83,6 +98,13 @@ function DeploymentRow({
   app,
   deployment,
 }: { app: DeployApp; deployment: Deployment }) {
+  const image = useSelector((s) =>
+    selectImageById(s, { id: deployment.imageId }),
+  );
+  const source = useSelector((s) =>
+    selectSourceById(s, { id: deployment.sourceId }),
+  );
+
   return (
     <Tr>
       <Td>
@@ -97,16 +119,31 @@ function DeploymentRow({
         <OpStatus status={deployment.status} />
       </Td>
       <Td>
-        <SourceName app={app} deployment={deployment} />
+        {(source.id && (
+          <Link
+            to={sourceDetailUrl(deployment.sourceId)}
+            className={tokens.type["table link"]}
+          >
+            {source.displayName}
+          </Link>
+        )) || <em>Not Provided</em>}
       </Td>
       <Td>
-        <DeploymentTagText deployment={deployment} />
+        <GitRef
+          gitRef={deployment.gitRef}
+          commitSha={deployment.gitCommitSha}
+          commitUrl={deployment.gitCommitUrl}
+        />
       </Td>
       <Td>
-        <DeploymentGitSha deployment={deployment} />
+        <GitCommitMessage message={deployment.gitCommitMessage} />
       </Td>
       <Td>
-        <GitMetadata deployment={deployment} />
+        <DockerImage
+          image={deployment.dockerImage || image.dockerRepo}
+          digest={image.dockerRef}
+          repoUrl={deployment.dockerRepositoryUrl}
+        />
       </Td>
       <Td>{prettyDateTime(deployment.createdAt)}</Td>
       <Td variant="right">
@@ -133,9 +170,9 @@ export function DeploymentsTable({
         <Td>ID</Td>
         <Td>Status</Td>
         <Td>Source</Td>
-        <Td>Tag</Td>
-        <Td>Commit</Td>
-        <Td>Message</Td>
+        <Td>Git Ref</Td>
+        <Td>Commit Message</Td>
+        <Td>Docker Image</Td>
         <Td>Date</Td>
         <Td variant="right">Actions</Td>
       </THead>
@@ -151,5 +188,104 @@ export function DeploymentsTable({
         })}
       </TBody>
     </Table>
+  );
+}
+
+export function DeploymentSourceRow({
+  deployment,
+}: { deployment: Deployment }) {
+  const app = useSelector((s) => selectAppById(s, { id: deployment.appId }));
+
+  useQuery(fetchImageById({ id: app.currentImageId }));
+  const currentImage = useSelector((s) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+
+  return (
+    <Tr>
+      <Td>
+        <Link
+          to={deploymentDetailUrl(deployment.id)}
+          className={tokens.type["table link"]}
+        >
+          {deployment.id}
+        </Link>
+      </Td>
+      <Td>
+        <OpStatus status={deployment.status} />
+      </Td>
+      <Td className="flex-1">
+        <Link to={appDetailUrl(app.id)} className="flex">
+          <p className={`${tokens.type["table link"]} leading-8`}>
+            {app.handle}
+          </p>
+        </Link>
+      </Td>
+      <Td>
+        <GitRef
+          gitRef={deployment.gitRef}
+          commitSha={deployment.gitCommitSha}
+          commitUrl={deployment.gitCommitUrl}
+        />
+      </Td>
+      <Td>
+        <GitCommitMessage message={deployment.gitCommitMessage} />
+      </Td>
+      <Td>
+        <DockerImage
+          image={deployment.dockerImage || currentImage.dockerRepo}
+          digest={currentImage.dockerRef}
+          repoUrl={deployment.dockerRepositoryUrl}
+        />
+      </Td>
+      <Td>{prettyDateTime(deployment.createdAt)}</Td>
+      <Td variant="right">
+        <ButtonLink
+          to={deploymentDetailUrl(deployment.id)}
+          size="sm"
+          className="w-15"
+          variant="primary"
+        >
+          View
+        </ButtonLink>
+      </Td>
+    </Tr>
+  );
+}
+
+export function DeploymentsTableBySource({ sourceId }: { sourceId: string }) {
+  useQuery(fetchDeploymentsBySourceId({ id: sourceId }));
+  const deployments = useSelector((s) =>
+    selectDeploymentsBySourceId(s, { sourceId }),
+  );
+  const paginated = usePaginate(deployments);
+
+  return (
+    <Group>
+      <Table>
+        <THead>
+          <Th>ID</Th>
+          <Th>Status</Th>
+          <Th>App</Th>
+          <Th>Git Ref</Th>
+          <Th>Commit Message</Th>
+          <Th>Docker Image</Th>
+          <Th>Date</Th>
+          <Th variant="right">Actions</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={8} /> : null}
+          {paginated.data.map((deployment) => {
+            return (
+              <DeploymentSourceRow
+                key={deployment.id}
+                deployment={deployment}
+              />
+            );
+          })}
+        </TBody>
+      </Table>
+    </Group>
   );
 }

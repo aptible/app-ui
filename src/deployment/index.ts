@@ -22,6 +22,7 @@ export interface DeploymentResponse {
     operation: LinkResponse;
     configuration: LinkResponse;
     image: LinkResponse;
+    source: LinkResponse;
   };
   _type: "deployment";
 }
@@ -48,6 +49,7 @@ export const defaultDeploymentResponse = (
       operation: defaultHalHref(),
       configuration: defaultHalHref(),
       image: defaultHalHref(),
+      source: defaultHalHref(),
       ...p._links,
     },
     ...p,
@@ -77,6 +79,7 @@ export const deserializeDeployment = (
     operationId: extractIdFromLink(links.operation),
     imageId: extractIdFromLink(links.image),
     configurationId: extractIdFromLink(links.configuration),
+    sourceId: extractIdFromLink(links.source),
   };
 };
 
@@ -93,6 +96,13 @@ export const selectDeploymentsByAppId = createSelector(
   (_: WebState, p: { appId: string }) => p.appId,
   (deployments, appId) => {
     return deployments.filter((d) => d.appId === appId);
+  },
+);
+export const selectDeploymentsBySourceId = createSelector(
+  selectDeploymentsAsList,
+  (_: WebState, p: { sourceId: string }) => p.sourceId,
+  (deployments, sourceId): Deployment[] => {
+    return deployments.filter((d) => d.sourceId === sourceId);
   },
 );
 

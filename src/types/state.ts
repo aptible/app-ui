@@ -82,4 +82,5 @@ export interface Deployment {
   appId: string;
   configurationId: string;
   imageId: string;
+  sourceId: string;
 }

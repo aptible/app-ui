@@ -65,19 +65,19 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  Tag
+                  Git Ref
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  Commit
+                  Commit Message
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  Message
+                  Docker Image
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
@@ -124,21 +124,33 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  Aptible Git Deployment
+                  <em>
+                    Not Provided
+                  </em>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
-                />
-                <td
-                  class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
-                  colspan="1"
-                />
+                >
+                  <em>
+                    Not Provided
+                  </em>
+                </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  <span />
+                  <em>
+                    Not Provided
+                  </em>
+                </td>
+                <td
+                  class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                  colspan="1"
+                >
+                  <em>
+                    Unknown
+                  </em>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
@@ -186,49 +198,86 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  <a
-                    class=" "
-                    href="https://github.com/aptible/app-ui"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    github.com/aptible/app-ui
-                  </a>
+                  <em>
+                    Not Provided
+                  </em>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  <code
-                    class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                  <div
+                    class="inline-block"
                   >
-                    v3
-                  </code>
-                </td>
-                <td
-                  class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
-                  colspan="1"
-                >
-                  <code
-                    class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
-                  >
-                    <a
-                      class=" "
-                      href="https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859"
-                      rel="noreferrer"
-                      target="_blank"
+                    <code
+                      class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
                     >
-                      a947a95
-                    </a>
-                  </code>
+                      v3
+                    </code>
+                     
+                    @
+                     
+                    <code
+                      class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                    >
+                      <a
+                        class=" "
+                        href="https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        a947a95
+                      </a>
+                    </code>
+                  </div>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  <span>
-                    fix(backup): pass page to fetch request (#754)
-                  </span>
+                  <div
+                    class="inline-block"
+                  >
+                    <div
+                      class="tooltip relative "
+                    >
+                      <div
+                        class="cursor-pointer"
+                      >
+                        <p
+                          class="leading-8 text-ellipsis whitespace-nowrap max-w-[30ch] overflow-hidden inline-block"
+                        >
+                          fix(backup): pass page to fetch request (#754)
+                        </p>
+                      </div>
+                      <div
+                        class="tooltip-top z-50 left-0 top-0 shadow absolute rounded-md px-3 py-2 bg-black text-white w-[60vw] md:w-max"
+                      >
+                        fix(backup): pass page to fetch request (#754)
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td
+                  class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                  colspan="1"
+                >
+                  <div
+                    class="inline-block"
+                  >
+                    <code
+                      class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                    >
+                      <a
+                        class=" "
+                        href="https://quay.io/repositories/aptible/cloud-ui"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        quay.io/aptible/cloud-ui:v200
+                      </a>
+                    </code>
+                  </div>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
@@ -276,49 +325,73 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  <a
-                    class=" "
-                    href="https://github.com/aptible/app-ui"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    github.com/aptible/app-ui
-                  </a>
+                  <em>
+                    Not Provided
+                  </em>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  <code
-                    class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                  <div
+                    class="inline-block"
                   >
-                    v3
-                  </code>
-                </td>
-                <td
-                  class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
-                  colspan="1"
-                >
-                  <code
-                    class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
-                  >
-                    <a
-                      class=" "
-                      href="https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859"
-                      rel="noreferrer"
-                      target="_blank"
+                    <code
+                      class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
                     >
-                      a947a95
-                    </a>
-                  </code>
+                      v3
+                    </code>
+                     
+                    @
+                     
+                    <code
+                      class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                    >
+                      <a
+                        class=" "
+                        href="https://github.com/aptible/app-ui/commit/a947a95a92e7a7a4db7fe01c28346281c128b859"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        a947a95
+                      </a>
+                    </code>
+                  </div>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  <span>
-                    fix(backup): pass page to fetch request (#754)
-                  </span>
+                  <div
+                    class="inline-block"
+                  >
+                    <div
+                      class="tooltip relative "
+                    >
+                      <div
+                        class="cursor-pointer"
+                      >
+                        <p
+                          class="leading-8 text-ellipsis whitespace-nowrap max-w-[30ch] overflow-hidden inline-block"
+                        >
+                          fix(backup): pass page to fetch request (#754)
+                        </p>
+                      </div>
+                      <div
+                        class="tooltip-top z-50 left-0 top-0 shadow absolute rounded-md px-3 py-2 bg-black text-white w-[60vw] md:w-max"
+                      >
+                        fix(backup): pass page to fetch request (#754)
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td
+                  class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
+                  colspan="1"
+                >
+                  <em>
+                    Unknown
+                  </em>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"

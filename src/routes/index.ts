@@ -397,3 +397,6 @@ export const SOURCE_DETAIL_PATH = "/sources/:id";
 export const sourceDetailUrl = (id: string) => `/sources/${id}`;
 export const SOURCE_DETAIL_APPS_PATH = "/sources/:id/apps";
 export const sourceDetailAppsUrl = (id: string) => `/sources/${id}/apps`;
+export const SOURCE_DETAIL_DEPLOYMENTS_PATH = "/sources/:id/deployments";
+export const sourceDetailDeploymentsUrl = (id: string) =>
+  `/sources/${id}/deployments`;
