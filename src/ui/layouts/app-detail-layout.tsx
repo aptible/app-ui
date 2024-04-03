@@ -108,7 +108,9 @@ export function AppHeader({
           )}
         </DetailInfoItem>
         <DetailInfoItem title="Commit Message">
-          <GitCommitMessage message={deployment.gitCommitMessage} />
+          <div className="max-h-[21px]">
+            <GitCommitMessage message={deployment.gitCommitMessage} />
+          </div>
         </DetailInfoItem>
 
         <DetailInfoItem title="Created">
