@@ -362,8 +362,8 @@ const VerticalAutoscalingSection = ({
                   </FormGroup>
                   <FormGroup
                     splitWidthInputs
-                    description="The number of seconds to wait after an automated scale up to potentially take another action"
-                    label="Post Scale Up Cooldown"
+                    description="The number of seconds to wait after an automated scale to potentially scale up"
+                    label="Scale Up Cooldown"
                     htmlFor="scale-up-cooldown"
                   >
                     <Input
@@ -384,8 +384,8 @@ const VerticalAutoscalingSection = ({
                   </FormGroup>
                   <FormGroup
                     splitWidthInputs
-                    description="The number of seconds to wait after an automated scale down to potentially take another action"
-                    label="Post Scale Down Cooldown"
+                    description="The number of seconds to wait after an automated scale to potentially scale down"
+                    label="Scale Down Cooldown"
                     htmlFor="scale-down-cooldown"
                   >
                     <Input
