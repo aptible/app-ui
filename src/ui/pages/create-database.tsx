@@ -29,6 +29,7 @@ import {
   dbSelectorReducer,
   validateDbName,
 } from "../shared";
+import { EnvSelectorPage } from "./create-env-app";
 
 const validateDbs = (items: DbCreatorProps[]): DbValidatorError[] => {
   const errors: DbValidatorError[] = [];
@@ -47,7 +48,7 @@ const validateDbs = (items: DbCreatorProps[]): DbValidatorError[] => {
 export const CreateDatabasePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const envId = params.get("environment_id") || "";
   const [dbErrors, setDbErrors] = useState<DbValidatorError[]>([]);
   const [dbCreatorMap, dbCreatorDispatch] = useReducer<DbCreatorReducer>(
@@ -92,6 +93,19 @@ export const CreateDatabasePage = () => {
     setDbErrors([]);
     dispatch(action);
   };
+
+  if (!envId) {
+    return (
+      <EnvSelectorPage
+        onSuccess={(p) => {
+          setParams(
+            { stack_id: p.stackId, environment_id: p.envId },
+            { replace: true },
+          );
+        }}
+      />
+    );
+  }
 
   return (
     <EnvironmentDetailLayout>

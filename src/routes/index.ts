@@ -251,7 +251,8 @@ export const environmentCreateDbUrl = (id: string) =>
   `/create/db?environment_id=${id}`;
 
 export const CREATE_DB_PATH = "/create/db";
-export const createDbUrl = () => `${CREATE_DB_PATH}`;
+export const createDbUrl = (envId?: string) =>
+  `${CREATE_DB_PATH}${envId ? `?environment_id=${envId}` : ""}`;
 
 export const ERROR_PATH = "/error";
 
