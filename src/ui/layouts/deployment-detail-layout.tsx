@@ -46,7 +46,7 @@ export function DeploymentHeader({
         title="Deployment Details"
         icon={
           <img
-            src={"/resource-types/logo-activity.png"}
+            src={"/resource-types/logo-deployments.png"}
             className="w-[32px] h-[32px] mr-3"
             aria-label="Deployment"
           />
