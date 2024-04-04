@@ -259,7 +259,9 @@ export const CreateEnvironmentPage = () => {
   );
 };
 
-export const EnvSelectorPage = () => {
+export const EnvSelectorPage = ({
+  onSuccess,
+}: { onSuccess?: (p: { stackId: string; envId: string }) => void }) => {
   const [params] = useSearchParams();
   const queryStackId = params.get("stack_id") || "";
   const defaultStack = useSelector(selectDefaultStack);
@@ -280,7 +282,11 @@ export const EnvSelectorPage = () => {
   }, [stackId]);
 
   const onSubmit = () => {
-    navigate(createAppUrl(`stack_id=${stackId}&environment_id=${envId}`));
+    if (onSuccess) {
+      onSuccess({ stackId, envId });
+    } else {
+      navigate(createAppUrl(`stack_id=${stackId}&environment_id=${envId}`));
+    }
   };
 
   return (
