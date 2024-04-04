@@ -59,12 +59,16 @@ export const roleTypeFormat = (role: Role): string => {
 
 export const selectRoleById = schema.roles.selectById;
 
+export const ignoreComplianceRoles = (r: Role) =>
+  r.type !== "compliance_user" && r.type !== "compliance_owner";
+
 export const selectRolesByOrgId = createSelector(
   schema.roles.selectTableAsList,
   (_: WebState, p: { orgId: string }) => p.orgId,
   (roles, orgId) => {
     return roles
       .filter((r) => r.organizationId === orgId)
+      .filter(ignoreComplianceRoles)
       .sort((a, b) => {
         const dateA = new Date(a.createdAt).getTime();
         const dateB = new Date(b.createdAt).getTime();
