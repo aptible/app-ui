@@ -1,34 +1,35 @@
 import { prettyDateTime } from "@app/date";
 import {
   fetchApp,
+  fetchImageById,
   fetchOperationById,
   selectAppById,
+  selectImageById,
   selectOperationById,
 } from "@app/deploy";
-import {
-  fetchDeploymentById,
-  getDockerImageName,
-  selectDeploymentById,
-} from "@app/deployment";
+import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
+import { selectHasBetaFeatures } from "@app/organizations";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailDeploymentsUrl,
   appDetailUrl,
   deploymentDetailConfigUrl,
   deploymentDetailLogsUrl,
+  sourceDetailUrl,
 } from "@app/routes";
+import { selectSourceById } from "@app/source";
 import { capitalize } from "@app/string-utils";
 import type { DeployApp, DeployOperation, Deployment } from "@app/types";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
-  DeploymentGitSha,
-  DeploymentTagText,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
-  GitMetadata,
+  DockerImage,
+  GitCommitMessage,
+  GitRef,
   OpStatus,
   SourceName,
   TabItem,
@@ -40,6 +41,15 @@ export function DeploymentHeader({
   app,
   op,
 }: { deployment: Deployment; app: DeployApp; op: DeployOperation }) {
+  useQuery(fetchImageById({ id: deployment.imageId }));
+  const image = useSelector((s) =>
+    selectImageById(s, { id: deployment.imageId }),
+  );
+  const source = useSelector((s) =>
+    selectSourceById(s, { id: deployment.sourceId }),
+  );
+  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
+
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -55,37 +65,43 @@ export function DeploymentHeader({
 
       <DetailInfoGrid>
         <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
+        <DetailInfoItem title="Source">
+          {hasBetaFeatures && source.id ? (
+            <Link to={sourceDetailUrl(source.id)}>{source.displayName}</Link>
+          ) : (
+            <SourceName app={app} deployment={deployment} />
+          )}
+        </DetailInfoItem>
+
+        <DetailInfoItem title="App">
+          <Link to={appDetailUrl(app.id)}>{app.handle}</Link>
+        </DetailInfoItem>
+        <DetailInfoItem title="Git Ref">
+          <GitRef
+            gitRef={deployment.gitRef}
+            commitSha={deployment.gitCommitSha}
+            commitUrl={deployment.gitCommitUrl}
+          />
+        </DetailInfoItem>
+
         <DetailInfoItem title="Created">
           {capitalize(prettyDateTime(deployment.createdAt))}
+        </DetailInfoItem>
+        <DetailInfoItem title="Commit Message">
+          <div className="max-h-[21px]">
+            <GitCommitMessage message={deployment.gitCommitMessage} />
+          </div>
         </DetailInfoItem>
 
         <DetailInfoItem title="Status">
           <OpStatus status={op.status} />
         </DetailInfoItem>
-        <DetailInfoItem title="App">
-          <Link to={appDetailUrl(app.id)}>{app.handle}</Link>
-        </DetailInfoItem>
-
-        <DetailInfoItem title="Source">
-          <SourceName app={app} deployment={deployment} />
-        </DetailInfoItem>
-        {deployment.gitCommitMessage ? (
-          <DetailInfoItem title="Commit Message">
-            <div className="max-h-[21px]">
-              <GitMetadata deployment={deployment} />
-            </div>
-          </DetailInfoItem>
-        ) : null}
-        <DetailInfoItem title="Tag">
-          <DeploymentTagText deployment={deployment} />
-        </DetailInfoItem>
-
-        <DetailInfoItem title="Git Ref">
-          <DeploymentGitSha deployment={deployment} />
-        </DetailInfoItem>
-
         <DetailInfoItem title="Docker Image">
-          {getDockerImageName(deployment)}
+          <DockerImage
+            image={deployment.dockerImage}
+            digest={image.dockerRef}
+            repoUrl={deployment.dockerRepositoryUrl}
+          />
         </DetailInfoItem>
 
         <DetailInfoItem title="User">
