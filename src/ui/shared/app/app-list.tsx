@@ -19,6 +19,7 @@ import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
+  deployUrl,
   deploymentDetailUrl,
   environmentCreateAppUrl,
   operationDetailUrl,
@@ -183,14 +184,22 @@ export const AppListByOrg = () => {
         </TitleBar>
 
         <FilterBar>
-          <Group variant="horizontal" size="sm" className="items-center">
-            <InputSearch
-              placeholder="Search..."
-              search={search}
-              onChange={onChange}
-            />
-            <LoadingBar isLoading={isLoading} />
-          </Group>
+          <div className="flex justify-between">
+            <Group variant="horizontal" size="sm" className="items-center">
+              <InputSearch
+                placeholder="Search..."
+                search={search}
+                onChange={onChange}
+              />
+              <LoadingBar isLoading={isLoading} />
+            </Group>
+
+            <ActionBar>
+              <ButtonLink to={deployUrl()}>
+                <IconPlusCircle variant="sm" className="mr-2" /> New App
+              </ButtonLink>
+            </ActionBar>
+          </div>
 
           <Group variant="horizontal" size="lg" className="items-center mt-1">
             <DescBar>{paginated.totalItems} Apps</DescBar>
