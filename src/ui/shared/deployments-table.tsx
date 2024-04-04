@@ -196,9 +196,9 @@ export function DeploymentSourceRow({
 }: { deployment: Deployment }) {
   const app = useSelector((s) => selectAppById(s, { id: deployment.appId }));
 
-  useQuery(fetchImageById({ id: app.currentImageId }));
-  const currentImage = useSelector((s) =>
-    selectImageById(s, { id: app.currentImageId }),
+  useQuery(fetchImageById({ id: deployment.imageId }));
+  const image = useSelector((s) =>
+    selectImageById(s, { id: deployment.imageId }),
   );
 
   return (
@@ -233,8 +233,8 @@ export function DeploymentSourceRow({
       </Td>
       <Td>
         <DockerImage
-          image={deployment.dockerImage || currentImage.dockerRepo}
-          digest={currentImage.dockerRef}
+          image={deployment.dockerImage}
+          digest={image.dockerRef}
           repoUrl={deployment.dockerRepositoryUrl}
         />
       </Td>
