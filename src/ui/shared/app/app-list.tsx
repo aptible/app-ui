@@ -511,7 +511,7 @@ export const AppListBySource = ({
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
           {paginated.data.map((app) => (
             <AppListBySourceRow app={app} key={app.id} />
           ))}
