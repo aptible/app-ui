@@ -114,7 +114,7 @@ export const deserializeDeployEnvironmentStats = (
 export const selectEnvironmentById = schema.environments.selectById;
 export const selectEnvironmentByIds = schema.environments.selectByIds;
 export const selectEnvironments = schema.environments.selectTable;
-const selectEnvironmentsAsList = schema.environments.selectTableAsList;
+export const selectEnvironmentsAsList = schema.environments.selectTableAsList;
 export const findEnvById = schema.environments.findById;
 export const selectEnvironmentStatsById = schema.environmentStats.selectById;
 
