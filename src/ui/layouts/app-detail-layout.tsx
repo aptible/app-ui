@@ -2,7 +2,6 @@ import { prettyDateTime } from "@app/date";
 import {
   cancelAppOpsPoll,
   fetchApp,
-  fetchConfiguration,
   fetchImageById,
   fetchServicesByAppId,
   pollAppOperations,
@@ -155,13 +154,10 @@ function AppPageHeader() {
   const loaderApp = useQuery(fetchApp({ id }));
   const loaderServices = useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s) => selectAppById(s, { id }));
-  const loaderConfig = useQuery(
-    fetchConfiguration({ id: app.currentConfigurationId }),
-  );
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
-  const loader = findLoaderComposite([loaderApp, loaderServices, loaderConfig]);
+  const loader = findLoaderComposite([loaderApp, loaderServices]);
 
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
