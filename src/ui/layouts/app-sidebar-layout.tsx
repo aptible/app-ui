@@ -32,7 +32,7 @@ export function AppSidebarLayout({
         style={{ marginLeft: collapsedOffset * 3.5 }}
       >
         <main className={`h-full flex flex-col ${padding ? "py-4 px-7" : ""}`}>
-          <Group>
+          <Group className="grow">
             {header ? header : null}
             {children ? children : <Outlet />}
           </Group>

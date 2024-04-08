@@ -1,3 +1,8 @@
+import { elementToString } from "@app/string-utils";
+import { ReactNode } from "react";
+
+export const iconToDataUri = (icon: ReactNode) => `data:image/svg+xml;utf8,${encodeURIComponent(elementToString(icon))}`
+
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
   color?: string;
   variant?: "base" | "sm" | "lg";

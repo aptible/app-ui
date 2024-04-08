@@ -390,3 +390,5 @@ export const supportUrl = () => SUPPORT_URL;
 
 export const RESOURCE_EXPLORER_URL = "/explore";
 export const resourceExplorerUrl = () => RESOURCE_EXPLORER_URL;
+export const RESOURCE_GRAPH_URL = "/explore/graph";
+export const resourceGraphUrl = () => RESOURCE_GRAPH_URL;

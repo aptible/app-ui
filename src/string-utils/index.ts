@@ -1,3 +1,7 @@
+import { ReactNode } from "react";
+import { flushSync } from "react-dom";
+import { createRoot } from "react-dom/client";
+
 export const capitalize = (s: string) => {
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
@@ -192,3 +196,12 @@ export const isLocalPath = (url: string): boolean => {
 export const prettyGitSha = (shasum: string): string => {
   return shasum.slice(0, 7);
 };
+
+// Created to reuse icons as svg data strings
+// https://react.dev/reference/react-dom/server/renderToString#removing-rendertostring-from-the-client-code
+export const elementToString = (el: ReactNode): string => {
+  const div = document.createElement('div');
+  const root = createRoot(div);
+  flushSync(() => root.render(el))
+  return div.innerHTML
+}

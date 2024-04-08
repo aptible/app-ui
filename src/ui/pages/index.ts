@@ -112,6 +112,7 @@ export * from "./create-env-app";
 export * from "./get-started";
 export * from "./otp-reset-verify";
 export * from "./resource-explorer";
+export * from "./resource-graph";
 export * from "./deployment-detail";
 export * from "./deployment-detail-logs";
 export * from "./deployment-detail-config";

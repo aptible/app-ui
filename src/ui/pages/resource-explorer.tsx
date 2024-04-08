@@ -1,9 +1,10 @@
 import { appDetailUrl, databaseDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Button,
+  CytoscapeGraph,
   FilterBar,
   Group,
   IconChevronDown,
@@ -19,6 +20,7 @@ import {
   Tr,
   tokens,
 } from "../shared";
+import cytoscape from "cytoscape";
 
 interface ResourceNode {
   resourceType: "app" | "database" | "external";
@@ -198,7 +200,7 @@ function NodeViewer({
   onClick: (id: string) => void;
 }) {
   return (
-    <div className="flex flex-row w-full">
+    <div className="flex flex-row w-full bg-white shadow border border-black-100 rounded-lg">
       <div className="flex flex-col w-full">
         <div className="py-3 px-4 bg-gray-50 border-b last:border-black-100 flex flex-row gap-4">
           <h3 className={tokens.type.h3}>
@@ -267,6 +269,77 @@ function NodeViewer({
       </div>
     </div>
   );
+}
+
+const GraphViewer = ({
+  node,
+  nodes,
+  onClick
+}: {
+  node: ResourceNode,
+  nodes: ResourceNode[],
+  onClick: (id: string) => void;
+}) => {
+  const [cy, setCy] = useState<cytoscape.Core>()
+  const [layout, setLayout] = useState<cytoscape.Layouts>()
+
+  useEffect(() => {
+    if (cy == null) {
+      return
+    }
+
+    cy.add(nodes.flatMap((node) => [
+      {
+        data: {
+          id: node.id,
+          label: node.handle
+        },
+        classes: ['hidden', node.resourceType, 'healthy']
+      },
+      ...(node.dependsOn.map((targetId) => ({
+        data: {
+          id: `${node.id}-${targetId}`,
+          source: node.id,
+          target: targetId
+        }
+      })))
+    ]));
+
+    setLayout(cy.layout({
+      name: 'klay',
+      animate: 'end',
+      nodeDimensionsIncludeLabels: true
+    } as any));
+  }, [cy]);
+
+  useEffect(() => {
+    if (cy == null) {
+      return
+    }
+
+    // Hide everything
+    cy.nodes().addClass('hidden')
+
+    // Show the selected node and the things it's connected to
+    const graphNode = cy.getElementById(node.id)
+    graphNode.removeClass('hidden')
+    graphNode.neighborhood().removeClass('hidden')
+
+    cy.ready(() => layout?.run())
+  }, [cy, node])
+
+  useEffect(() => {
+    layout?.run();
+  }, [layout])
+
+  return (
+    <Group variant="horizontal" className="h-96 w-full">
+      <Group className="p-4">
+        <Button variant="white" onClick={() => layout?.run()}>Center View</Button>
+      </Group>
+      <CytoscapeGraph className="grow" onClient={setCy} />
+    </Group>
+  )
 }
 
 const SortIcon = () => (
@@ -392,11 +465,11 @@ export function ResourceExplorerPage() {
           </Table>
         </div>
 
-        <div className="bg-white shadow border border-black-100 rounded-lg flex-1 flex items-stretch overflow-hidden">
+        <div className="flex-1 flex items-stretch overflow-hidden">
           {selected ? (
-            <NodeViewer
+            <GraphViewer
               node={selected}
-              nodes={computed}
+              nodes={nodes}
               onClick={(id: string) => setSelectedId(id)}
             />
           ) : (
