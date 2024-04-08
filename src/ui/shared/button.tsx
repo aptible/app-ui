@@ -14,7 +14,7 @@ import { Link, LinkProps } from "react-router-dom";
 import { Group } from "./group";
 import { IconExternalLink } from "./icons";
 import { tokens } from "./tokens";
-import { Tooltip } from "./tooltip";
+import { Tooltip, TooltipProps } from "./tooltip";
 
 export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 type Shape = "button" | "pill";
@@ -207,8 +207,13 @@ const ButtonPermission = ({
   scope,
   envId,
   children,
+  tooltipProps,
   ...props
-}: { scope: PermissionScope; envId: string } & ButtonProps) => {
+}: {
+  scope: PermissionScope;
+  envId: string;
+  tooltipProps?: Partial<TooltipProps>;
+} & ButtonProps) => {
   const hasPerm = useSelector((s) => selectUserHasPerms(s, { scope, envId }));
 
   if (hasPerm) {
@@ -217,6 +222,7 @@ const ButtonPermission = ({
 
   return (
     <Tooltip
+      {...tooltipProps}
       text={`You do not have "${capitalize(
         scope,
       )}" permissions for this environment (id:${envId})`}
@@ -232,9 +238,15 @@ const createButtonPermission = (
   scope: PermissionScope,
   creatorProps: ButtonProps = {},
 ) => {
-  return ({ envId, children, ...props }: { envId: string } & ButtonProps) => {
+  return ({
+    envId,
+    children,
+    tooltipProps,
+    ...props
+  }: { envId: string; tooltipProps?: Partial<TooltipProps> } & ButtonProps) => {
     return (
       <ButtonPermission
+        tooltipProps={tooltipProps}
         scope={scope}
         envId={envId}
         {...creatorProps}
@@ -246,7 +258,11 @@ const createButtonPermission = (
   };
 };
 
-export const ButtonAnyOwner = ({ children, ...props }: ButtonProps) => {
+export const ButtonAnyOwner = ({
+  children,
+  tooltipProps,
+  ...props
+}: ButtonProps & { tooltipProps?: Partial<TooltipProps> }) => {
   const isUserOwner = useSelector(selectIsUserAnyOwner);
 
   if (isUserOwner) {
@@ -254,7 +270,10 @@ export const ButtonAnyOwner = ({ children, ...props }: ButtonProps) => {
   }
 
   return (
-    <Tooltip text="You do not have a valid role type (platform_owner, owner) to access this resource">
+    <Tooltip
+      {...tooltipProps}
+      text="You do not have a valid role type (platform_owner, owner) to access this resource"
+    >
       <Button {...props} disabled>
         {children}
       </Button>
@@ -267,8 +286,14 @@ export const ButtonCanManageRole = ({
   userId,
   roleId,
   orgId,
+  tooltipProps,
   ...props
-}: ButtonProps & { userId: string; roleId: string; orgId: string }) => {
+}: ButtonProps & {
+  userId: string;
+  roleId: string;
+  orgId: string;
+  tooltipProps?: Partial<TooltipProps>;
+}) => {
   const canManageRole = useSelector((s) =>
     selectCanUserManageRole(s, { userId, roleId, orgId }),
   );
@@ -278,7 +303,7 @@ export const ButtonCanManageRole = ({
   }
 
   return (
-    <Tooltip text="You are not an owner or role admin">
+    <Tooltip {...tooltipProps} text="You are not an owner or role admin">
       <Button {...props} disabled>
         {children}
       </Button>
@@ -286,7 +311,11 @@ export const ButtonCanManageRole = ({
   );
 };
 
-export const ButtonOrgOwner = ({ children, ...props }: ButtonProps) => {
+export const ButtonOrgOwner = ({
+  children,
+  tooltipProps,
+  ...props
+}: ButtonProps & { tooltipProps?: Partial<TooltipProps> }) => {
   const orgId = useSelector(selectOrganizationSelectedId);
   const isUserOwner = useSelector((s) => selectIsUserOwner(s, { orgId }));
 
@@ -295,7 +324,10 @@ export const ButtonOrgOwner = ({ children, ...props }: ButtonProps) => {
   }
 
   return (
-    <Tooltip text="You do not have a valid role type (platform_owner, owner) to access this resource">
+    <Tooltip
+      {...tooltipProps}
+      text="You do not have a valid role type (platform_owner, owner) to access this resource"
+    >
       <Button {...props} disabled>
         {children}
       </Button>

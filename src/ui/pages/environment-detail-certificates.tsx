@@ -146,7 +146,12 @@ export const EnvironmentCertificatesPage = () => {
       <FilterBar>
         <div className="mb-1">
           <ActionBar>
-            <ButtonSensitive className="w-fit" envId={id} onClick={createCert}>
+            <ButtonSensitive
+              className="w-fit"
+              envId={id}
+              onClick={createCert}
+              tooltipProps={{ variant: "left", autoSizeWidth: true }}
+            >
               <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
             </ButtonSensitive>
           </ActionBar>

@@ -307,7 +307,11 @@ export const AppListByEnvironment = ({
             />
 
             <ActionBar>
-              <ButtonCreate envId={envId} onClick={onCreate}>
+              <ButtonCreate
+                envId={envId}
+                onClick={onCreate}
+                tooltipProps={{ variant: "left", autoSizeWidth: true }}
+              >
                 <IconPlusCircle variant="sm" />{" "}
                 <div className="ml-2">New App</div>
               </ButtonCreate>
