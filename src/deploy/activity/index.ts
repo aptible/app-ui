@@ -105,7 +105,13 @@ const denyOpTypes: OperationType[] = ["poll"];
 export const selectActivityByIdsForTable = createSelector(
   selectActivityForTable,
   (_: WebState, p: { ids: string[] }) => p.ids,
-  (ops, opIds) => ops.filter((op) => opIds.includes(op.id)),
+  (ops, opIds) => {
+    // hack: return all operations for org id
+    if (opIds.length === 0) {
+      return ops;
+    }
+    return ops.filter((op) => opIds.includes(op.id));
+  },
 );
 
 export const selectActivityForTableSearch = createSelector(

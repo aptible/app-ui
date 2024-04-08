@@ -1,6 +1,5 @@
 import { prettyDateTime } from "@app/date";
 import {
-  ResourceLookup,
   cancelAppOpsPoll,
   cancelDatabaseOpsPoll,
   cancelEndpointOpsPoll,
@@ -9,7 +8,6 @@ import {
   fetchApp,
   fetchDatabase,
   fetchEnvironmentById,
-  fetchOrgOperations,
   fetchServicesByAppId,
   getResourceUrl,
   pollAppAndServiceOperations,
@@ -18,12 +16,10 @@ import {
   pollEnvOperations,
   pollOrgOperations,
   prettyResourceType,
-  selectActivityForTableSearch,
   selectAppById,
   selectDatabaseById,
   selectEndpointById,
   selectServiceById,
-  selectServicesByAppId,
 } from "@app/deploy";
 import { useLoader, useQuery, useSelector } from "@app/react";
 import {
@@ -35,7 +31,14 @@ import { capitalize } from "@app/string-utils";
 import type { DeployActivityRow, ResourceType } from "@app/types";
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { usePaginate } from "../hooks";
+import {
+  PaginateProps,
+  usePaginatedOpsByAppId,
+  usePaginatedOpsByDatabaseId,
+  usePaginatedOpsByEndpointId,
+  usePaginatedOpsByEnvId,
+  usePaginatedOpsByOrgId,
+} from "../hooks";
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
 import { Group } from "./group";
@@ -218,19 +221,19 @@ const OpListRow = ({ op }: OpCellProps) => {
 };
 
 function ActivityTable({
-  ops,
-  search,
-  onChange,
+  paginated,
   showTitle = true,
   isLoading = false,
 }: {
-  ops: DeployActivityRow[];
-  search: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  paginated: PaginateProps<DeployActivityRow> & { isLoading: boolean };
   showTitle?: boolean;
   isLoading?: boolean;
 }) {
-  const paginated = usePaginate(ops);
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+
   return (
     <Group>
       <Group size="sm">
@@ -293,78 +296,47 @@ function ActivityTable({
 }
 
 export function ActivityByOrg({ orgId }: { orgId: string }) {
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
-  const loader = useLoader(pollOrgOperations);
-  useQuery(fetchOrgOperations({ orgId }));
-
   const poller = useMemo(() => pollOrgOperations({ orgId }), [orgId]);
   const cancel = useMemo(() => cancelOrgOperationsPoll(), []);
   usePoller({
     action: poller,
     cancel,
   });
-
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value }, { replace: true });
-
-  const ops = useSelector((s) =>
-    selectActivityForTableSearch(s, {
-      search,
-    }),
-  );
+  const loader = useLoader(pollOrgOperations);
+  const paginated = usePaginatedOpsByOrgId(orgId);
 
   return (
     <ActivityTable
-      ops={ops}
-      onChange={onChange}
+      paginated={paginated}
       isLoading={loader.isLoading}
-      search={search}
       showTitle
     />
   );
 }
 
 export function ActivityByEnv({ envId }: { envId: string }) {
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
-  const loader = useLoader(pollEnvOperations);
   useQuery(fetchEnvironmentById({ id: envId }));
-
   const poller = useMemo(() => pollEnvOperations({ envId }), [envId]);
   const cancel = useMemo(() => cancelEnvOperationsPoll(), []);
   usePoller({
     action: poller,
     cancel,
   });
-
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value }, { replace: true });
-
-  const ops = useSelector((s) =>
-    selectActivityForTableSearch(s, {
-      search,
-      envId,
-    }),
-  );
+  const loader = useLoader(pollEnvOperations);
+  const paginated = usePaginatedOpsByEnvId(envId);
 
   return (
     <ActivityTable
-      ops={ops}
-      onChange={onChange}
+      paginated={paginated}
       isLoading={loader.isLoading}
-      search={search}
       showTitle={false}
     />
   );
 }
 
 export function ActivityByApp({ appId }: { appId: string }) {
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
   const app = useSelector((s) => selectAppById(s, { id: appId }));
   const action = pollAppAndServiceOperations({ id: app.id });
-  const loader = useLoader(action);
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
   useQuery(fetchApp({ id: appId }));
   useQuery(fetchServicesByAppId({ id: appId }));
@@ -375,44 +347,20 @@ export function ActivityByApp({ appId }: { appId: string }) {
     action: poller,
     cancel,
   });
-
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value }, { replace: true });
-
-  const services = useSelector((s) => selectServicesByAppId(s, { appId }));
-  const serviceResources = services.map((service) => {
-    return {
-      resourceId: service.id,
-      resourceType: "service" as const,
-    };
-  });
-  const resources: ResourceLookup[] = useMemo(
-    () => [{ resourceId: appId, resourceType: "app" }, ...serviceResources],
-    [appId, ...services.map((s) => s.id)],
-  );
-  const ops = useSelector((s) =>
-    selectActivityForTableSearch(s, {
-      search,
-      resources,
-    }),
-  );
+  const loader = useLoader(action);
+  const paginated = usePaginatedOpsByAppId(appId);
 
   return (
     <ActivityTable
-      ops={ops}
-      onChange={onChange}
+      paginated={paginated}
       isLoading={loader.isLoading}
-      search={search}
       showTitle={false}
     />
   );
 }
 
 export function ActivityByDatabase({ dbId }: { dbId: string }) {
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
   const action = pollDatabaseAndServiceOperations({ id: dbId });
-  const loader = useLoader(action);
   const db = useSelector((s) => selectDatabaseById(s, { id: dbId }));
   useQuery(fetchEnvironmentById({ id: db.environmentId }));
   useQuery(fetchDatabase({ id: dbId }));
@@ -423,67 +371,32 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
     action: poller,
     cancel,
   });
-
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value }, { replace: true });
-
-  const resources: ResourceLookup[] = useMemo(
-    () =>
-      [
-        { resourceId: dbId, resourceType: "database" as const },
-        { resourceId: db.serviceId, resourceType: "service" as const },
-      ].filter(Boolean),
-    [dbId, db.serviceId],
-  );
-  const ops = useSelector((s) =>
-    selectActivityForTableSearch(s, {
-      search,
-      resources,
-    }),
-  );
+  const loader = useLoader(action);
+  const paginated = usePaginatedOpsByDatabaseId(dbId);
 
   return (
     <ActivityTable
-      ops={ops}
-      onChange={onChange}
+      paginated={paginated}
       isLoading={loader.isLoading}
-      search={search}
       showTitle={false}
     />
   );
 }
 
 export function ActivityByEndpoint({ enpId }: { enpId: string }) {
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
-  const loader = useLoader(pollEndpointOperations);
-
   const poller = useMemo(() => pollEndpointOperations({ id: enpId }), [enpId]);
   const cancel = useMemo(() => cancelEndpointOpsPoll(), []);
   usePoller({
     action: poller,
     cancel,
   });
-
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value }, { replace: true });
-
-  const resources: ResourceLookup[] = [
-    { resourceId: enpId, resourceType: "vhost" as const },
-  ];
-  const ops = useSelector((s) =>
-    selectActivityForTableSearch(s, {
-      search,
-      resources,
-    }),
-  );
+  const loader = useLoader(pollEndpointOperations);
+  const paginated = usePaginatedOpsByEndpointId(enpId);
 
   return (
     <ActivityTable
-      ops={ops}
-      onChange={onChange}
+      paginated={paginated}
       isLoading={loader.isLoading}
-      search={search}
       showTitle={false}
     />
   );

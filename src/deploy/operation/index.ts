@@ -415,11 +415,6 @@ export const pollEnvOperations = api.get<EnvIdProps>(
   { supervisor: poll(10 * 1000, `${cancelEnvOperationsPoll}`) },
 );
 
-export const fetchOrgOperations = api.get<{ orgId: string }>(
-  "/organizations/:orgId/operations?per_page=250",
-  { supervisor: takeLeading },
-);
-
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
 export const pollOrgOperations = api.get<{ orgId: string }>(
   "/organizations/:orgId/operations",
@@ -446,10 +441,20 @@ function* paginateOps(
   yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
 }
 
+export const fetchOperationsByOrgId = api.get<{ id: string } & PaginateProps>(
+  "/organizations/:orgId/operations?per_page=250&page=:page",
+  { supervisor: takeLeading },
+  paginateOps,
+);
+
 export const fetchOperationsByEnvId = api.get<
   { id: string } & PaginateProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
->("/accounts/:id/operations", paginateOps);
+>(
+  "/accounts/:id/operations?page=:page",
+  { supervisor: cacheTimer() },
+  paginateOps,
+);
 
 export const fetchOperationsByAppId = api.get<
   { id: string } & PaginateProps,

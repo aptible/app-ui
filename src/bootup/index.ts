@@ -9,7 +9,7 @@ import {
   fetchEnvironments,
   fetchLogDrains,
   fetchMetricDrains,
-  fetchOrgOperations,
+  fetchOperationsByOrgId,
   fetchServices,
   fetchStacks,
 } from "@app/deploy";
@@ -78,7 +78,7 @@ function* onFetchResourceData() {
     fetchMetricDrains.run(),
     fetchServices.run(),
     fetchEndpoints.run(),
-    fetchOrgOperations.run({ orgId: org.id }),
+    fetchOperationsByOrgId.run({ id: org.id, page: 1 }),
     fetchSystemStatus.run(),
     fetchSources.run(),
   ]);

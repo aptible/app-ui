@@ -3,13 +3,21 @@ import {
   fetchOperationsByDatabaseId,
   fetchOperationsByEndpointId,
   fetchOperationsByEnvId,
+  fetchOperationsByOrgId,
   fetchOperationsByServiceId,
+  selectActivityForTableSearch,
 } from "@app/deploy";
 import { useCache, useSelector } from "@app/react";
-import { schema } from "@app/schema";
-import { DeployOperation, HalEmbedded } from "@app/types";
+import { DeployActivityRow, HalEmbedded } from "@app/types";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { PaginateProps } from "./use-paginate";
+
+export function usePaginatedOpsByOrgId(orgId: string) {
+  const [page, setPage] = useState(1);
+  const action = fetchOperationsByOrgId({ id: orgId, page });
+  return usePaginatedOperations(action, page, setPage);
+}
 
 export function usePaginatedOpsByEnvId(envId: string) {
   const [page, setPage] = useState(1);
@@ -45,11 +53,17 @@ function usePaginatedOperations(
   action: any,
   page: number,
   setPage: (n: number) => void,
-): PaginateProps<DeployOperation> & { isLoading: boolean } {
+): PaginateProps<DeployActivityRow> & { isLoading: boolean } {
+  const [params] = useSearchParams();
+  const search = params.get("search") || "";
+
   const cache = useCache<HalEmbedded<{ operations: string[] }>>(action);
   const opIds = cache.data?._embedded.operations || [];
   const operations = useSelector((s) =>
-    schema.operations.selectByIds(s, { ids: opIds }),
+    selectActivityForTableSearch(s, {
+      search,
+      ids: opIds,
+    }),
   );
 
   const itemsPerPage = cache.data?.per_page || 40;
