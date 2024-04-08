@@ -1,6 +1,6 @@
 import { fetchStripeSources, fetchTrials } from "@app/billing";
 import { server, testEnv, verifiedUserHandlers } from "@app/mocks";
-import { environmentsUrl } from "@app/routes";
+import { stacksUrl } from "@app/routes";
 import { schema } from "@app/schema";
 import { setupAppIntegrationTest, waitForBootup, waitForData } from "@app/test";
 import { render, screen } from "@testing-library/react";
@@ -36,7 +36,7 @@ describe("Trial notice", () => {
       );
 
       const { App, store } = setupAppIntegrationTest({
-        initEntries: [environmentsUrl()],
+        initEntries: [stacksUrl()],
       });
 
       await waitForBootup(store);
@@ -92,7 +92,7 @@ describe("Trial notice", () => {
       );
 
       const { App, store } = setupAppIntegrationTest({
-        initEntries: [environmentsUrl()],
+        initEntries: [stacksUrl()],
       });
 
       await waitForBootup(store);
@@ -155,7 +155,7 @@ describe("Trial notice", () => {
         );
 
         const { App, store } = setupAppIntegrationTest({
-          initEntries: [environmentsUrl()],
+          initEntries: [stacksUrl()],
         });
 
         await waitForBootup(store);
@@ -219,7 +219,7 @@ describe("Trial notice", () => {
         );
 
         const { App, store } = setupAppIntegrationTest({
-          initEntries: [environmentsUrl()],
+          initEntries: [stacksUrl()],
         });
 
         await waitForBootup(store);
@@ -266,7 +266,7 @@ describe("Trial notice", () => {
         );
 
         const { App, store } = setupAppIntegrationTest({
-          initEntries: [environmentsUrl()],
+          initEntries: [stacksUrl()],
         });
 
         await waitForBootup(store);

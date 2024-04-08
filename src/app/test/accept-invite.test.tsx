@@ -26,7 +26,7 @@ describe("Accept invitation flows", () => {
 
       const btn = await screen.findByRole("button", { name: /Accept Invite/ });
       fireEvent.click(btn);
-      await screen.findByRole("heading", { name: "Choose an Option" });
+      await screen.findByRole("heading", { name: /Environments/ });
     });
   });
 
@@ -73,7 +73,7 @@ describe("Accept invitation flows", () => {
 
       const btn = await screen.findByRole("button", { name: /Accept Invite/ });
       fireEvent.click(btn);
-      await screen.findByRole("heading", { name: "Choose an Option" });
+      await screen.findByRole("heading", { name: /Environments/ });
     });
   });
 
@@ -103,7 +103,7 @@ describe("Accept invitation flows", () => {
 
       const btn = await screen.findByRole("button", { name: /Accept Invite/ });
       fireEvent.click(btn);
-      await screen.findByRole("heading", { name: "Choose an Option" });
+      await screen.findByRole("heading", { name: /Environments/ });
     });
   });
 
@@ -142,7 +142,7 @@ describe("Accept invitation flows", () => {
 
       const btn = await screen.findByRole("button", { name: /Accept Invite/ });
       fireEvent.click(btn);
-      await screen.findByRole("heading", { name: "Choose an Option" });
+      await screen.findByRole("heading", { name: /Environments/ });
     });
   });
 });

@@ -177,11 +177,7 @@ export const appRoutes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: (
-          <NewUserToOnboarding>
-            <HomePage />
-          </NewUserToOnboarding>
-        ),
+        element: <HomePage />,
       },
 
       {
@@ -516,7 +512,11 @@ export const appRoutes: RouteObject[] = [
         children: [
           {
             index: true,
-            element: <EnvironmentsPage />,
+            element: (
+              <NewUserToOnboarding>
+                <EnvironmentsPage />
+              </NewUserToOnboarding>
+            ),
           },
 
           {

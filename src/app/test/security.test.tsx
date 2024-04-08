@@ -104,6 +104,6 @@ describe("Settings", () => {
 
     render(<App />);
 
-    await screen.findByRole("heading", { name: "Choose an Option" });
+    await screen.findByRole("heading", { name: /Environments/ });
   });
 });
