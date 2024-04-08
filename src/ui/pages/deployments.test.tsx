@@ -71,6 +71,7 @@ describe("Deployments page", () => {
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
           current_deployment: defaultHalHref(),
+          current_source: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -83,6 +84,7 @@ describe("Deployments page", () => {
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
           current_deployment: defaultHalHref(),
+          current_source: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -95,6 +97,7 @@ describe("Deployments page", () => {
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
           current_deployment: defaultHalHref(),
+          current_source: defaultHalHref(),
         },
       }),
     ];
@@ -173,6 +176,7 @@ describe("Deployments page", () => {
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
           current_deployment: defaultHalHref(),
+          current_source: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -185,6 +189,7 @@ describe("Deployments page", () => {
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
           current_deployment: defaultHalHref(),
+          current_source: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -197,6 +202,7 @@ describe("Deployments page", () => {
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
           current_deployment: defaultHalHref(),
+          current_source: defaultHalHref(),
         },
       }),
       defaultAppResponse({
@@ -207,6 +213,7 @@ describe("Deployments page", () => {
           current_configuration: defaultHalHref(),
           current_image: defaultHalHref(),
           current_deployment: defaultHalHref(),
+          current_source: defaultHalHref(),
         },
       }),
     ];

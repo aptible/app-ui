@@ -89,6 +89,7 @@ import {
   ForgotPassVerifyPage,
   GetStartedPage,
   HomePage,
+  HostingPage,
   ImpersonatePage,
   LoginPage,
   LogoutPage,
@@ -115,6 +116,11 @@ import {
   SettingsLayout,
   SettingsPage,
   SignupPage,
+  SourceDetailAppsPage,
+  SourceDetailDeploymentsPage,
+  SourceDetailLayout,
+  SourceDetailPage,
+  SourcesPage,
   SsoDirectPage,
   SsoFailurePage,
   SsoLoginPage,
@@ -266,6 +272,34 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.SERVICES_PATH,
         element: <ServicesPage />,
+      },
+
+      {
+        path: routes.SOURCES_PATH,
+        children: [
+          {
+            index: true,
+            element: <SourcesPage />,
+          },
+          {
+            path: routes.SOURCE_DETAIL_PATH,
+            element: <SourceDetailLayout />,
+            children: [
+              {
+                index: true,
+                element: <SourceDetailPage />,
+              },
+              {
+                path: routes.SOURCE_DETAIL_APPS_PATH,
+                element: <SourceDetailAppsPage />,
+              },
+              {
+                path: routes.SOURCE_DETAIL_DEPLOYMENTS_PATH,
+                element: <SourceDetailDeploymentsPage />,
+              },
+            ],
+          },
+        ],
       },
 
       {
@@ -669,6 +703,15 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.VERIFY_EMAIL_REQUEST_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailPage />
+      </AuthRequired>
+    ),
+  },
+
+  {
     path: routes.VERIFY_EMAIL_PATH,
     element: (
       <AuthRequired>
@@ -683,10 +726,10 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
-    path: routes.VERIFY_EMAIL_REQUEST_PATH,
+    path: routes.HOSTING_PATH,
     element: (
       <AuthRequired>
-        <VerifyEmailPage />
+        <HostingPage />
       </AuthRequired>
     ),
   },

@@ -1,4 +1,5 @@
 import { StatusVariant } from "@app/status-variant";
+import { ComponentProps } from "react";
 
 const variantToLinks = (variant: StatusVariant): string => {
   switch (variant) {
@@ -31,4 +32,12 @@ export const ExternalLink = ({
       {children}
     </a>
   );
+};
+
+export const OptionalExternalLink = (
+  props: ComponentProps<typeof ExternalLink> & { linkIf?: boolean },
+) => {
+  const { linkIf, children, ...rest } = props;
+
+  return linkIf ? <ExternalLink {...rest}>{children}</ExternalLink> : children;
 };

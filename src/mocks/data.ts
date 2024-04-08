@@ -344,6 +344,7 @@ export const testApp = defaultAppResponse({
     current_configuration: defaultHalHref(),
     current_deployment: defaultHalHref(),
     current_image: defaultHalHref(),
+    current_source: defaultHalHref(),
   },
   _embedded: {
     current_image: null,
@@ -543,6 +544,7 @@ export const testAppDeployed = defaultAppResponse({
     current_configuration: defaultHalHref(),
     current_deployment: defaultHalHref(),
     current_image: defaultHalHref(),
+    current_source: defaultHalHref(),
   },
   _embedded: {
     services: [],
@@ -628,6 +630,7 @@ export const testAutoscalingApp = defaultAppResponse({
     current_configuration: defaultHalHref(),
     current_deployment: defaultHalHref(),
     current_image: defaultHalHref(),
+    current_source: defaultHalHref(),
   },
   _embedded: {
     current_image: null,
@@ -686,6 +689,7 @@ export const testDeploymentGit = defaultDeploymentResponse({
     ),
     configuration: defaultHalHref(),
     image: defaultHalHref(),
+    source: defaultHalHref(),
   },
 });
 
@@ -708,6 +712,7 @@ export const testDeploymentDocker = defaultDeploymentResponse({
     ),
     configuration: defaultHalHref(),
     image: defaultHalHref(),
+    source: defaultHalHref(),
   },
 });
 
@@ -728,5 +733,6 @@ export const testDeploymentEmpty = defaultDeploymentResponse({
     ),
     configuration: defaultHalHref(),
     image: defaultHalHref(),
+    source: defaultHalHref(),
   },
 });

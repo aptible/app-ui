@@ -88,6 +88,9 @@ export const verifyEmailUrl = (
   verificationCode: string,
 ) => `/verify/${verificationId}/${verificationCode}`;
 
+export const HOSTING_PATH = "/hosting";
+export const hostingUrl = () => HOSTING_PATH;
+
 export const PLANS_PATH = "/plans";
 export const plansUrl = () => PLANS_PATH;
 
@@ -248,7 +251,8 @@ export const environmentCreateDbUrl = (id: string) =>
   `/create/db?environment_id=${id}`;
 
 export const CREATE_DB_PATH = "/create/db";
-export const createDbUrl = () => `${CREATE_DB_PATH}`;
+export const createDbUrl = (envId?: string) =>
+  `${CREATE_DB_PATH}${envId ? `?environment_id=${envId}` : ""}`;
 
 export const ERROR_PATH = "/error";
 
@@ -387,6 +391,16 @@ export const createLogDrainUrl = (envId = "") =>
 
 export const SUPPORT_URL = "/support";
 export const supportUrl = () => SUPPORT_URL;
+
+export const SOURCES_PATH = "/sources";
+export const sourcesUrl = () => SOURCES_PATH;
+export const SOURCE_DETAIL_PATH = "/sources/:id";
+export const sourceDetailUrl = (id: string) => `/sources/${id}`;
+export const SOURCE_DETAIL_APPS_PATH = "/sources/:id/apps";
+export const sourceDetailAppsUrl = (id: string) => `/sources/${id}/apps`;
+export const SOURCE_DETAIL_DEPLOYMENTS_PATH = "/sources/:id/deployments";
+export const sourceDetailDeploymentsUrl = (id: string) =>
+  `/sources/${id}/deployments`;
 
 export const RESOURCE_EXPLORER_URL = "/explore";
 export const resourceExplorerUrl = () => RESOURCE_EXPLORER_URL;

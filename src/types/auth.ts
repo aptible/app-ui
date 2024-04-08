@@ -20,7 +20,12 @@ export interface Token {
   actorUrl: string;
 }
 
-export type RoleType = "owner" | "platform_owner" | "platform_user";
+export type RoleType =
+  | "owner"
+  | "platform_owner"
+  | "platform_user"
+  | "compliance_user"
+  | "compliance_owner";
 export interface Role extends Timestamps {
   id: string;
   name: string;

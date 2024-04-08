@@ -74,7 +74,10 @@ export const TeamMembersPage = () => {
                   csv={() => generateMembersCsv(users)}
                   title={`aptible_${org.name.toLocaleLowerCase()}_members`}
                 />
-                <ButtonAnyOwner onClick={onInvite}>
+                <ButtonAnyOwner
+                  onClick={onInvite}
+                  tooltipProps={{ variant: "left", autoSizeWidth: true }}
+                >
                   <IconPlusCircle variant="sm" className="mr-2" />
                   Invite User
                 </ButtonAnyOwner>

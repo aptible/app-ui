@@ -1,3 +1,4 @@
+import { prettyDateTime } from "@app/date";
 import { fetchDatabaseImages, formatDatabaseType } from "@app/deploy";
 import {
   calcMetrics,
@@ -93,6 +94,9 @@ export function DatabaseHeader({
         </DetailInfoItem>
         <DetailInfoItem title="Profile">
           {CONTAINER_PROFILES[service.instanceClass].name}
+        </DetailInfoItem>
+        <DetailInfoItem title="Created">
+          {prettyDateTime(database.createdAt)}
         </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>

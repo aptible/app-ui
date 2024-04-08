@@ -2,15 +2,16 @@ import { prettyDateTime } from "@app/date";
 import {
   cancelAppOpsPoll,
   fetchApp,
-  fetchConfiguration,
+  fetchImageById,
   fetchServicesByAppId,
   pollAppOperations,
   selectAppById,
   selectEnvironmentById,
+  selectImageById,
   selectLatestDeployOp,
   selectUserHasPerms,
 } from "@app/deploy";
-import { fetchDeploymentById, getDockerImageName } from "@app/deployment";
+import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { findLoaderComposite } from "@app/loaders";
 import { selectHasBetaFeatures } from "@app/organizations";
 import { useDispatch, useQuery, useSelector } from "@app/react";
@@ -25,23 +26,24 @@ import {
   appServicesUrl,
   appSettingsUrl,
   environmentAppsUrl,
+  sourceDetailUrl,
 } from "@app/routes";
-import { schema } from "@app/schema";
 import { setResourceStats } from "@app/search";
+import { fetchSourceById, selectSourceById } from "@app/source";
 import type { DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
-  DeploymentGitSha,
-  DeploymentTagText,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
-  GitMetadata,
+  DockerImage,
+  GitCommitMessage,
+  GitRef,
   SourceName,
   TabItem,
 } from "../shared";
@@ -54,11 +56,23 @@ export function AppHeader({
   const lastDeployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
+
+  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
+
   useQuery(fetchDeploymentById({ id: app.currentDeploymentId }));
   const deployment = useSelector((s) =>
-    schema.deployments.selectById(s, { id: app.currentDeploymentId }),
+    selectDeploymentById(s, { id: app.currentDeploymentId }),
   );
-  const dockerImage = getDockerImageName(deployment);
+
+  useQuery(fetchImageById({ id: app.currentImageId }));
+  const image = useSelector((s) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+
+  useQuery(fetchSourceById({ id: app.currentSourceId }));
+  const source = useSelector((s) =>
+    selectSourceById(s, { id: app.currentSourceId }),
+  );
 
   return (
     <DetailHeader>
@@ -78,27 +92,41 @@ export function AppHeader({
       <DetailInfoGrid>
         <DetailInfoItem title="ID">{app.id}</DetailInfoItem>
         <DetailInfoItem title="Git Ref">
-          <DeploymentGitSha deployment={deployment} />
+          <GitRef
+            gitRef={deployment.gitRef}
+            commitSha={deployment.gitCommitSha}
+            commitUrl={deployment.gitCommitUrl}
+          />
         </DetailInfoItem>
 
         <DetailInfoItem title="Source">
-          <SourceName app={app} deployment={deployment} />
+          {hasBetaFeatures && source.id ? (
+            <Link to={sourceDetailUrl(source.id)}>{source.displayName}</Link>
+          ) : (
+            <SourceName app={app} deployment={deployment} />
+          )}
         </DetailInfoItem>
-        {deployment.gitCommitMessage ? (
-          <DetailInfoItem title="Commit Message">
-            <GitMetadata deployment={deployment} />
-          </DetailInfoItem>
-        ) : null}
-        <DetailInfoItem title="Tag">
-          <DeploymentTagText deployment={deployment} />
+        <DetailInfoItem title="Commit Message">
+          <div className="max-h-[21px]">
+            <GitCommitMessage message={deployment.gitCommitMessage} />
+          </div>
         </DetailInfoItem>
 
+        <DetailInfoItem title="Created">
+          {prettyDateTime(app.createdAt)}
+        </DetailInfoItem>
+        <DetailInfoItem title="Docker Image">
+          <DockerImage
+            image={deployment.dockerImage}
+            digest={image.dockerRef}
+            repoUrl={deployment.dockerRepositoryUrl}
+          />
+        </DetailInfoItem>
         <DetailInfoItem title="Last Deployed">
           {lastDeployOp
             ? `${prettyDateTime(lastDeployOp.createdAt)}`
             : "Unknown"}
         </DetailInfoItem>
-        <DetailInfoItem title="Docker Image">{dockerImage}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -126,13 +154,10 @@ function AppPageHeader() {
   const loaderApp = useQuery(fetchApp({ id }));
   const loaderServices = useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s) => selectAppById(s, { id }));
-  const loaderConfig = useQuery(
-    fetchConfiguration({ id: app.currentConfigurationId }),
-  );
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
-  const loader = findLoaderComposite([loaderApp, loaderServices, loaderConfig]);
+  const loader = findLoaderComposite([loaderApp, loaderServices]);
 
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },

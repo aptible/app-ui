@@ -1,20 +1,26 @@
 import { prettyDateTime } from "@app/date";
 import {
   DeployAppRow,
+  calcMetrics,
   calcServiceMetrics,
   fetchApps,
   fetchEnvironmentById,
   fetchEnvironments,
+  fetchImageById,
   selectAppsByCertId,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
+  selectAppsForTableSearchBySourceId,
+  selectImageById,
   selectLatestOpByAppId,
   selectServicesByAppId,
 } from "@app/deploy";
-import { calcMetrics } from "@app/deploy";
+import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
+  deployUrl,
+  deploymentDetailUrl,
   environmentCreateAppUrl,
   operationDetailUrl,
 } from "@app/routes";
@@ -23,7 +29,9 @@ import type { DeployApp } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ButtonCreate } from "../button";
+import { ButtonCreate, ButtonLink } from "../button";
+import { DockerImage } from "../docker";
+import { GitCommitMessage, GitRef } from "../git";
 import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -176,14 +184,22 @@ export const AppListByOrg = () => {
         </TitleBar>
 
         <FilterBar>
-          <Group variant="horizontal" size="sm" className="items-center">
-            <InputSearch
-              placeholder="Search..."
-              search={search}
-              onChange={onChange}
-            />
-            <LoadingBar isLoading={isLoading} />
-          </Group>
+          <div className="flex justify-between">
+            <Group variant="horizontal" size="sm" className="items-center">
+              <InputSearch
+                placeholder="Search..."
+                search={search}
+                onChange={onChange}
+              />
+              <LoadingBar isLoading={isLoading} />
+            </Group>
+
+            <ActionBar>
+              <ButtonLink to={deployUrl()}>
+                <IconPlusCircle variant="sm" className="mr-2" /> New App
+              </ButtonLink>
+            </ActionBar>
+          </div>
 
           <Group variant="horizontal" size="lg" className="items-center mt-1">
             <DescBar>{paginated.totalItems} Apps</DescBar>
@@ -291,7 +307,11 @@ export const AppListByEnvironment = ({
             />
 
             <ActionBar>
-              <ButtonCreate envId={envId} onClick={onCreate}>
+              <ButtonCreate
+                envId={envId}
+                onClick={onCreate}
+                tooltipProps={{ variant: "left", autoSizeWidth: true }}
+              >
                 <IconPlusCircle variant="sm" />{" "}
                 <div className="ml-2">New App</div>
               </ButtonCreate>
@@ -392,6 +412,112 @@ export const AppListByCertificate = ({
               <AppServicesCell app={app} />
               <AppCostCell app={app} />
             </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Group>
+  );
+};
+
+const AppListBySourceRow = ({ app }: { app: DeployApp }) => {
+  useQuery(fetchDeploymentById({ id: app.currentDeploymentId }));
+  const deployment = useSelector((s) =>
+    selectDeploymentById(s, { id: app.currentDeploymentId }),
+  );
+
+  useQuery(fetchImageById({ id: app.currentImageId }));
+  const currentImage = useSelector((s) =>
+    selectImageById(s, { id: app.currentImageId }),
+  );
+
+  return (
+    <Tr>
+      <AppPrimaryCell app={app} />
+      <AppIdCell app={app} />
+      <Td>
+        <GitRef
+          gitRef={deployment.gitRef}
+          commitSha={deployment.gitCommitSha}
+          commitUrl={deployment.gitCommitUrl}
+        />
+      </Td>
+      <Td>
+        <GitCommitMessage message={deployment.gitCommitMessage} />
+      </Td>
+      <Td>
+        <DockerImage
+          image={deployment.dockerImage || currentImage.dockerRepo}
+          digest={currentImage.dockerRef}
+          repoUrl={deployment.dockerRepositoryUrl}
+        />
+      </Td>
+      <Td>{prettyDateTime(deployment.createdAt)}</Td>
+      <Td variant="right">
+        <ButtonLink
+          to={deploymentDetailUrl(deployment.id)}
+          size="sm"
+          className="w-15"
+          variant="primary"
+        >
+          View
+        </ButtonLink>
+      </Td>
+    </Tr>
+  );
+};
+
+export const AppListBySource = ({
+  sourceId,
+}: {
+  sourceId: string;
+}) => {
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+  };
+  const apps = useSelector((s) =>
+    selectAppsForTableSearchBySourceId(s, {
+      sourceId,
+      search,
+    }),
+  );
+  const paginated = usePaginate(apps);
+
+  return (
+    <Group>
+      <Group size="sm">
+        <FilterBar>
+          <div className="flex justify-between">
+            <InputSearch
+              placeholder="Search..."
+              search={search}
+              onChange={onChange}
+            />
+          </div>
+
+          <Group variant="horizontal" size="lg" className="items-center mt-1">
+            <DescBar>{paginated.totalItems} Apps</DescBar>
+            <PaginateBar {...paginated} />
+          </Group>
+        </FilterBar>
+      </Group>
+
+      <Table>
+        <THead>
+          <Th>Handle</Th>
+          <Th>ID</Th>
+          <Th>Git Ref</Th>
+          <Th>Commit Message</Th>
+          <Th>Docker Image</Th>
+          <Th>Last Deployed</Th>
+          <Th variant="right">Actions</Th>
+        </THead>
+
+        <TBody>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+          {paginated.data.map((app) => (
+            <AppListBySourceRow app={app} key={app.id} />
           ))}
         </TBody>
       </Table>

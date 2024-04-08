@@ -25,6 +25,7 @@ import {
   DeployService,
   DeployServiceDefinition,
   DeployServiceSizingPolicy,
+  DeploySource,
   DeployStack,
   DeployVpcPeer,
   DeployVpnTunnel,
@@ -76,6 +77,7 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
     currentConfigurationId: "",
     currentDeploymentId: "",
     currentImageId: "",
+    currentSourceId: "",
     ...a,
   };
 };
@@ -820,6 +822,21 @@ export const defaultDeployment = (a: Partial<Deployment> = {}): Deployment => {
     operationId: "",
     imageId: "",
     configurationId: "",
+    sourceId: "",
     ...a,
+  };
+};
+
+export const defaultDeploySource = (
+  s: Partial<DeploySource> = {},
+): DeploySource => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    displayName: "Unknown",
+    url: "",
+    createdAt: now,
+    updatedAt: now,
+    ...s,
   };
 };

@@ -20,6 +20,7 @@ import { formatDatabaseType } from "@app/deploy";
 import { useQuery } from "@app/react";
 import { useSelector } from "@app/react";
 import {
+  createDbUrl,
   databaseDetailUrl,
   databaseScaleUrl,
   environmentCreateDbUrl,
@@ -30,7 +31,7 @@ import type { DeployDatabase } from "@app/types";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { usePaginate } from "../../hooks";
-import { Button, ButtonCreate } from "../button";
+import { Button, ButtonCreate, ButtonLink } from "../button";
 import { Code } from "../code";
 import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
@@ -209,14 +210,22 @@ export const DatabaseListByOrg = () => {
         </TitleBar>
 
         <FilterBar>
-          <Group variant="horizontal" size="sm" className="items-center">
-            <InputSearch
-              placeholder="Search..."
-              search={search}
-              onChange={onChange}
-            />
-            <LoadingBar isLoading={isLoading} />
-          </Group>
+          <div className="flex justify-between">
+            <Group variant="horizontal" size="sm" className="items-center">
+              <InputSearch
+                placeholder="Search..."
+                search={search}
+                onChange={onChange}
+              />
+              <LoadingBar isLoading={isLoading} />
+            </Group>
+
+            <ActionBar>
+              <ButtonLink to={createDbUrl()}>
+                <IconPlusCircle variant="sm" className="mr-2" /> New Database
+              </ButtonLink>
+            </ActionBar>
+          </div>
 
           <Group variant="horizontal" size="lg" className="items-center mt-1">
             <DescBar>{paginated.totalItems} Databases</DescBar>
