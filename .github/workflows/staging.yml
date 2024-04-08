@@ -45,6 +45,7 @@ jobs:
           app: 'app-ui-sbx-main'
           environment: 'sbx-main'
           docker_img: 'quay.io/aptible/cloud-ui:sbx-main'
+          docker_repository_url: https://quay.io/repository/aptible/cloud-ui
           username: ${{ secrets.APTIBLE_ROBOT_USERNAME }}
           password: ${{ secrets.APTIBLE_ROBOT_PASSWORD }}
           private_registry_username:  ${{ secrets.DOCKER_USERNAME }}
