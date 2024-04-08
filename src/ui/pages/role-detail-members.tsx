@@ -236,7 +236,6 @@ export function RoleDetailMembersPage() {
                         name="inviteUser"
                         isLoading={inviteLoader.isLoading}
                       >
-                        {/* <IconPlusCircle variant="sm" className="mr-2" /> */}
                         Invite New User
                       </Button>
                     </Group>

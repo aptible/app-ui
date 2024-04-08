@@ -172,7 +172,10 @@ export function EnvironmentList({
             </Group>
 
             <ActionBar>
-              <ButtonAnyOwner onClick={onCreate}>
+              <ButtonAnyOwner
+                onClick={onCreate}
+                tooltipProps={{ variant: "left", autoSizeWidth: true }}
+              >
                 <IconPlusCircle variant="sm" className="mr-2" />
                 New Environment
               </ButtonAnyOwner>
