@@ -2,7 +2,7 @@ import {
   fetchApps,
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
-  fetchEnvironmentOperations,
+  fetchOperationsByEnvId,
   selectEndpointsByEnvironmentId,
   selectEnvironmentById,
   selectEnvironmentStatsById,
@@ -96,7 +96,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
   const loaderEnv = useQuery(fetchEnvironmentById({ id }));
   const loaderApps = useQuery(fetchApps());
   const loaderEndpoints = useQuery(fetchEndpointsByEnvironmentId({ id }));
-  useQuery(fetchEnvironmentOperations({ id }));
+  useQuery(fetchOperationsByEnvId({ id, page: 1 }));
   const loader = useMemo(
     () => findLoaderComposite([loaderEnv, loaderApps, loaderEndpoints]),
     [loaderEnv, loaderApps, loaderEndpoints],

@@ -468,10 +468,9 @@ export function ActivityByEndpoint({ enpId }: { enpId: string }) {
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
     setParams({ search: ev.currentTarget.value }, { replace: true });
 
-  const resources: ResourceLookup[] = useMemo(
-    () => [{ resourceId: enpId, resourceType: "vhost" as const }],
-    [enpId],
-  );
+  const resources: ResourceLookup[] = [
+    { resourceId: enpId, resourceType: "vhost" as const },
+  ];
   const ops = useSelector((s) =>
     selectActivityForTableSearch(s, {
       search,

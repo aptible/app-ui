@@ -1,13 +1,5 @@
-import { ThunkCtx, api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
-import {
-  FetchJson,
-  Payload,
-  call,
-  createAction,
-  parallel,
-  poll,
-  select,
-} from "@app/fx";
+import { ThunkCtx, api, cacheMinTimer, thunks } from "@app/api";
+import { FetchJson, Payload, call, parallel, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
@@ -479,18 +471,6 @@ export const createDatabaseOperation = api.post<
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield* next();
 });
-
-export const fetchDatabaseOperations = api.get<{ id: string }>(
-  "/databases/:id/operations",
-  { supervisor: cacheTimer() },
-  api.cache(),
-);
-
-export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
-export const pollDatabaseOperations = api.get<{ id: string }>(
-  ["/databases/:id/operations", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
-);
 
 export const fetchDatabaseDependents = api.get<{ id: string }>(
   "/databases/:id/dependents",

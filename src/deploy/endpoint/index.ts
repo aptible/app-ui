@@ -413,13 +413,6 @@ export const pollFetchEndpoint = api.get<{ id: string }>(
   { supervisor: poll(5 * 1000, `${cancelFetchEndpointPoll}`) },
 );
 
-export const cancelEndpointOpsPoll = createAction("cancel-enp-ops-poll");
-export const pollEndpointOperations = api.get<{ id: string }>(
-  ["/vhosts/:id/operations", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelEndpointOpsPoll}`) },
-  api.cache(),
-);
-
 export const endpointEntities = {
   vhost: defaultEntity({
     id: "vhost",
