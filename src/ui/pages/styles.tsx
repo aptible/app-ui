@@ -42,6 +42,7 @@ import {
   IconCopy,
   IconCreditCard,
   IconCylinder,
+  IconDiff,
   IconDownload,
   IconEdit,
   IconEllipsis,
@@ -52,11 +53,13 @@ import {
   IconGlobe,
   IconHamburger,
   IconHeart,
+  IconHome,
   IconInfo,
   IconKey,
   IconLayers,
   IconLock,
   IconLogout,
+  IconMap,
   IconPlusCircle,
   IconRefresh,
   IconSearch,
@@ -659,6 +662,9 @@ const Icons = () => (
         ["IconKey", <IconKey />],
         ["IconLock", <IconLock />],
         ["IconGithub", <IconGithub />],
+        ["IconDiff", <IconDiff />],
+        ["IconMap", <IconMap />],
+        ["IconHome", <IconHome />],
       ].map(([title, icon]) => (
         <div key={title as string}>
           <div className="inline-block -mb-1">{icon}</div>{" "}

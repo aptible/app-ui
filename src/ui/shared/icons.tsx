@@ -455,3 +455,72 @@ export const IconSource = (props: IconProps) => {
     </IconStrokeBase>
   );
 };
+
+export const IconDiff = (props: IconProps) => {
+  return (
+    <IconStrokeBase {...props} title="Diff">
+      <path
+        d="M3 3.25L3 20.75C3 21.44 3.6048 22 4.35 22L19.65 22C20.3952 22 21 21.44 21 20.75L21 3.25C21 2.56 20.3952 2 19.65 2L4.35 2C3.6048 2 3 2.56 3 3.25Z"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M15.25 9.25L8.75 9.25M12 12.5L12 6"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M8.75 17L15.25 17"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </IconStrokeBase>
+  );
+};
+
+export const IconMap = (props: IconProps) => {
+  return (
+    <IconStrokeBase {...props} title="Map">
+      <path
+        d="M1 6V22L8 18L16 22L23 18V2L16 6L8 2L1 6Z"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M8 2V18"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M16 6V22"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </IconStrokeBase>
+  );
+};
+
+export const IconHome = (props: IconProps) => {
+  return (
+    <IconStrokeBase {...props} title="Home">
+      <path
+        d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M9 22V12H15V22"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </IconStrokeBase>
+  );
+};
