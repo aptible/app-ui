@@ -1,5 +1,6 @@
 import {
   configEnvToStr,
+  fetchApp,
   fetchConfiguration,
   selectAppById,
   selectAppConfigById,
@@ -58,7 +59,8 @@ const ConfigView = ({
 export function DeploymentDetailConfigPage() {
   const { id = "" } = useParams();
   const deployment = useSelector((s) => selectDeploymentById(s, { id }));
-  const app = useSelector((s) => selectAppById(s, { id }));
+  useQuery(fetchApp({ id: deployment.appId }));
+  const app = useSelector((s) => selectAppById(s, { id: deployment.appId }));
 
   return (
     <Box>
