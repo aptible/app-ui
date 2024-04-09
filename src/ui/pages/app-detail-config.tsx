@@ -103,8 +103,8 @@ const CodeScanView = ({ codeScan }: { codeScan: DeployCodeScanResponse }) => {
 
 export const AppDetailConfigPage = () => {
   const { id = "" } = useParams();
-  const app = useSelector((s) => selectAppById(s, { id }));
   useQuery(fetchApp({ id }));
+  const app = useSelector((s) => selectAppById(s, { id }));
   useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
 
   return (
