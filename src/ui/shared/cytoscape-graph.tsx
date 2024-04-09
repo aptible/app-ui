@@ -18,7 +18,7 @@ const appIconUri = iconToDataUri(<IconBox {...iconProps} />)
 const databaseIconUri = iconToDataUri(<IconCylinder {...iconProps} />)
 const externalIconUri = iconToDataUri(<IconGlobe {...iconProps} />)
 
-const defautlClassName = "border border-gray-200 rounded-md shadow-sm bg-[url('/chart-pattern.png')]"
+const defautlClassName = "relative border border-gray-200 rounded-md shadow-sm bg-[url('/chart-pattern.png')]"
 const defaultStyle: cytoscape.Stylesheet[] = [ // the stylesheet for the graph
   {
     selector: 'node',
@@ -46,6 +46,15 @@ const defaultStyle: cytoscape.Stylesheet[] = [ // the stylesheet for the graph
     selector: ':parent',
     style: {
       'background-color': '#eee'
+    }
+  },
+
+  {
+    selector: 'node:selected',
+    style: {
+      "border-style": 'solid',
+      "border-color": '#111920',
+      "border-width": 3
     }
   },
 
@@ -125,7 +134,7 @@ export interface CytoscapeGraphProps extends Omit<React.JSX.IntrinsicElements["d
 }
 
 export const CytoscapeGraph = (props: CytoscapeGraphProps) => {
-  const { onClient, className, ...divProps } = props;
+  const { onClient, className, children, ...divProps } = props;
   const cyDom = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -139,5 +148,8 @@ export const CytoscapeGraph = (props: CytoscapeGraphProps) => {
     }
   }, [])
 
-  return <div ref={cyDom} className={`${defautlClassName} ${className}`} {...divProps} />
+  return <div className={`${defautlClassName} ${className}`} {...divProps}>
+    <div ref={cyDom} className="relative w-full h-full" />
+    {children}
+  </div>
 }

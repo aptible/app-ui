@@ -1,21 +1,23 @@
 import cytoscape from "cytoscape";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
-  Button,
+  Box,
   ButtonIcon,
   CytoscapeGraph,
-  FormGroup,
   Group,
   IconBox,
   IconCylinder,
+  IconEyeClosed,
+  IconFit,
   IconGlobe,
   IconProps,
   IconRefresh,
-  Select,
+  IconTarget,
   iconToDataUri,
 } from "../shared";
+import { appDetailUrl, databaseDetailUrl } from "@app/routes";
 
 interface ResourceNode {
   resourceType: "app" | "database" | "external";
@@ -130,11 +132,14 @@ export function ResourceGraphPage() {
   const [cy, setCy] = useState<cytoscape.Core>();
   const [layouts, setLayouts] = useState<Record<string, cytoscape.Layouts>>({})
   const [selectedLayoutId, setSelectedLayoutId] = useState<string>('cose-bilkent')
-  const selectedLayout = layouts[selectedLayoutId]
+  const selectedLayout: cytoscape.Layouts | undefined = layouts[selectedLayoutId]
   const layoutOptions = Object.keys(layouts).map ((k) => ({
     label: k,
     value: k
   }));
+
+  const [selectedGraphNode, setSelectedGraphNode] = useState<cytoscape.NodeSingular>()
+  const selectedNode = nodes.find((n) => n.id === selectedGraphNode?.id())
 
   useEffect(() => {
     if (cy == null) {
@@ -215,23 +220,76 @@ export function ResourceGraphPage() {
         nodeDimensionsIncludeLabels: true
       } as any)
     });
+
+    cy.on('select', 'node', (e) => {
+      setSelectedGraphNode(e.target)
+      e.cy.animate({
+        center: {
+          eles: e.target
+        }
+      });
+    });
+
+    cy.on('unselect', (e) => {
+      setSelectedGraphNode(undefined)
+    })
   }, [cy])
 
   useEffect(() => {
     selectedLayout?.run();
   }, [selectedLayout]);
 
+  useEffect(() => {
+    setSelectedId(selectedGraphNode?.id() || '')
+  }, [selectedGraphNode])
+
+  const onCenter = () => {
+    const selectedNode = cy?.nodes(':selected')[0]
+
+    cy?.animate({
+      center: {
+        eles: selectedNode as any,
+      },
+      zoom: 1.5
+    });
+  }
+
+  let selectedUrl = null;
+  if (selected?.resourceType == 'app') {
+    selectedUrl = appDetailUrl(selectedId)
+  }
+  if (selected?.resourceType == 'database') {
+    selectedUrl = databaseDetailUrl(selectedId)
+  }
+
   return (
-    <Group variant="horizontal" className="grow">
-      <CytoscapeGraph className="grow" onClient={setCy} />
-      <Group className="w-72 p-4 border border-gray-200 rounded-md shadow-sm">
-        <FormGroup htmlFor="" label="Layout">
-          <Select options={layoutOptions} onSelect={(o) => setSelectedLayoutId(o.value)} />
-        </FormGroup>
-        <ButtonIcon variant="white" icon={<IconRefresh />} onClick={() => selectedLayout.run()}>Shuffle</ButtonIcon>
-        <Button variant="white" onClick={() => cy?.nodes(':parent')?.toggleClass('invisible-parent')}>Toggle Groups</Button>
-        <Button variant="white" onClick={() => cy?.fit(undefined, 10)}>Fit</Button>
+    <CytoscapeGraph className="grow" onClient={setCy}>
+      {
+        selected == null ?
+        null :
+        <Box className="absolute right-4 top-4">
+          <Group>
+            <div><b>Type:</b> {selected.resourceType}</div>
+            <div><b>Name:</b> {selected.handle}</div>
+            {
+              selectedUrl == null ?
+              null :
+              <Link to={selectedUrl}>Details</Link>
+            }
+          </Group>
+        </Box>
+      }
+
+      <Group className="flex-col-reverse absolute right-4 bottom-4">
+        <ButtonIcon icon={<IconRefresh variant="sm" />} variant="white" onClick={() => selectedLayout?.run()} />
+        <ButtonIcon icon={<IconEyeClosed variant="sm" />} variant="white" onClick={() => cy?.nodes(':parent')?.toggleClass('invisible-parent')} />
+        <ButtonIcon icon={<IconFit variant="sm" />} onClick={() => cy?.animate({ fit: { padding: 10 } as any })} />
+        {
+          selectedGraphNode == null ?
+          null :
+          <ButtonIcon icon={<IconTarget variant="sm" />} onClick={onCenter} />
+        }
       </Group>
-    </Group>
+    </CytoscapeGraph>
   )
 }
