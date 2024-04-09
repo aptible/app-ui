@@ -74,31 +74,29 @@ const state: DeepPartial<WebState> = {
 const op1Row = { ...op1, envHandle: env1.handle, resourceHandle: app1.handle };
 const op2Row = { ...op2, envHandle: env2.handle, resourceHandle: db1.handle };
 const op3Row = { ...op3, envHandle: env2.handle, resourceHandle: vhost1.id };
+const ops = [op1, op2, op3];
+const opIds = ops.map((op) => op.id);
 
 describe("selectActivityForTableSearch", () => {
   describe("when search is empty", () => {
     it("should return latest operations", () => {
-      const actual = selectActivityForTableSearch(state as any, { search: "" });
+      const actual = selectActivityForTableSearch(state as any, {
+        search: "",
+        ids: opIds,
+      });
       expect(actual).toEqual([op2Row, op3Row, op1Row]);
     });
 
     describe("when filtering by `envId`", () => {
       it("should keep only operations within an environment", () => {
+        const ids = ops
+          .filter((op) => op.environmentId === env2.id)
+          .map((op) => op.id);
         const actual = selectActivityForTableSearch(state as any, {
           search: "",
-          envId: env2.id,
+          ids,
         });
         expect(actual).toEqual([op2Row, op3Row]);
-      });
-    });
-
-    describe("when filtering by `resourceId`", () => {
-      it("should keep only operations within resource", () => {
-        const actual = selectActivityForTableSearch(state as any, {
-          search: "",
-          resources: [{ resourceId: app1.id, resourceType: "app" }],
-        });
-        expect(actual).toEqual([op1Row]);
       });
     });
   });
@@ -107,15 +105,19 @@ describe("selectActivityForTableSearch", () => {
     it("should perform a grep across data properties", () => {
       const actual = selectActivityForTableSearch(state as any, {
         search: "app",
+        ids: opIds,
       });
       expect(actual).toEqual([op2Row, op1Row]);
     });
 
     describe("when filtering by `envId`", () => {
       it("should keep only operations within an environment", () => {
+        const ids = ops
+          .filter((op) => op.environmentId === env2.id)
+          .map((op) => op.id);
         const actual = selectActivityForTableSearch(state as any, {
           search: "app",
-          envId: env2.id,
+          ids,
         });
         expect(actual).toEqual([op2Row]);
       });
@@ -126,6 +128,7 @@ describe("selectActivityForTableSearch", () => {
     it("should find all operations within that environment", () => {
       const actual = selectActivityForTableSearch(state as any, {
         search: "your-env",
+        ids: opIds,
       });
       expect(actual).toEqual([op2Row, op3Row]);
     });
