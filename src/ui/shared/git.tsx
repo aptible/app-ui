@@ -35,7 +35,7 @@ export const GitRef = ({
               <IconCommit
                 color="#595E63"
                 variant="sm"
-                className="inline h-5 mb-0 mr-1"
+                className="inline mr-1"
               />
               {sha}
             </OptionalExternalLink>
