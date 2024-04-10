@@ -39,6 +39,7 @@ import {
   IconChevronRight,
   IconChevronUp,
   IconCloud,
+  IconCommit,
   IconCopy,
   IconCreditCard,
   IconCylinder,
@@ -673,6 +674,7 @@ const Icons = () => (
         ["IconEyeOpen", <IconEyeOpen />],
         ["IconEyeClosed", <IconEyeClosed />],
         ["IconTarget", <IconTarget />],
+        ["IconCommit", <IconCommit />],
       ].map(([title, icon]) => (
         <div key={title as string}>
           <div className="inline-block -mb-1">{icon}</div>{" "}

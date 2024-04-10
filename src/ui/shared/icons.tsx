@@ -619,3 +619,28 @@ export const IconTarget = (props: IconProps) => {
     </IconStrokeBase>
   );
 };
+
+export const IconCommit = (props: IconProps) => {
+  return (
+    <IconStrokeBase {...props} title="Commit">
+      <path
+        d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M1.05 12H7"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M17.01 12H22.96"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </IconStrokeBase>
+  );
+};
