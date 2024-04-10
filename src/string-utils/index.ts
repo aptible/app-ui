@@ -200,8 +200,8 @@ export const prettyGitSha = (shasum: string): string => {
 // Created to reuse icons as svg data strings
 // https://react.dev/reference/react-dom/server/renderToString#removing-rendertostring-from-the-client-code
 export const elementToString = (el: ReactNode): string => {
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   const root = createRoot(div);
-  flushSync(() => root.render(el))
-  return div.innerHTML
-}
+  flushSync(() => root.render(el));
+  return div.innerHTML;
+};

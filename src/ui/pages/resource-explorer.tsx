@@ -1,5 +1,6 @@
 import { appDetailUrl, databaseDetailUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
+import cytoscape from "cytoscape";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
@@ -20,7 +21,6 @@ import {
   Tr,
   tokens,
 } from "../shared";
-import cytoscape from "cytoscape";
 
 interface ResourceNode {
   resourceType: "app" | "database" | "external";
@@ -274,73 +274,79 @@ function NodeViewer({
 const GraphViewer = ({
   node,
   nodes,
-  onClick
+  onClick,
 }: {
-  node: ResourceNode,
-  nodes: ResourceNode[],
+  node: ResourceNode;
+  nodes: ResourceNode[];
   onClick: (id: string) => void;
 }) => {
-  const [cy, setCy] = useState<cytoscape.Core>()
-  const [layout, setLayout] = useState<cytoscape.Layouts>()
+  const [cy, setCy] = useState<cytoscape.Core>();
+  const [layout, setLayout] = useState<cytoscape.Layouts>();
 
   useEffect(() => {
     if (cy == null) {
-      return
+      return;
     }
 
-    cy.add(nodes.flatMap((node) => [
-      {
-        data: {
-          id: node.id,
-          label: node.handle
+    cy.add(
+      nodes.flatMap((node) => [
+        {
+          data: {
+            id: node.id,
+            label: node.handle,
+          },
+          classes: ["hidden", node.resourceType, "healthy"],
         },
-        classes: ['hidden', node.resourceType, 'healthy']
-      },
-      ...(node.dependsOn.map((targetId) => ({
-        data: {
-          id: `${node.id}-${targetId}`,
-          source: node.id,
-          target: targetId
-        }
-      })))
-    ]));
+        ...node.dependsOn.map((targetId) => ({
+          data: {
+            id: `${node.id}-${targetId}`,
+            source: node.id,
+            target: targetId,
+          },
+        })),
+      ]),
+    );
 
-    setLayout(cy.layout({
-      name: 'klay',
-      animate: 'end',
-      nodeDimensionsIncludeLabels: true
-    } as any));
+    setLayout(
+      cy.layout({
+        name: "klay",
+        animate: "end",
+        nodeDimensionsIncludeLabels: true,
+      } as any),
+    );
   }, [cy]);
 
   useEffect(() => {
     if (cy == null) {
-      return
+      return;
     }
 
     // Hide everything
-    cy.nodes().addClass('hidden')
+    cy.nodes().addClass("hidden");
 
     // Show the selected node and the things it's connected to
-    const graphNode = cy.getElementById(node.id)
-    graphNode.removeClass('hidden')
-    graphNode.neighborhood().removeClass('hidden')
+    const graphNode = cy.getElementById(node.id);
+    graphNode.removeClass("hidden");
+    graphNode.neighborhood().removeClass("hidden");
 
-    cy.ready(() => layout?.run())
-  }, [cy, node])
+    cy.ready(() => layout?.run());
+  }, [cy, node]);
 
   useEffect(() => {
     layout?.run();
-  }, [layout])
+  }, [layout]);
 
   return (
     <Group variant="horizontal" className="h-96 w-full">
       <Group className="p-4">
-        <Button variant="white" onClick={() => layout?.run()}>Center View</Button>
+        <Button variant="white" onClick={() => layout?.run()}>
+          Center View
+        </Button>
       </Group>
       <CytoscapeGraph className="grow" onClient={setCy} />
     </Group>
-  )
-}
+  );
+};
 
 const SortIcon = () => (
   <div className="inline-block">
