@@ -1,6 +1,7 @@
 import { Tooltip } from "@app/ui/shared/tooltip";
 import { Code } from "./code";
 import { OptionalExternalLink } from "./external-link";
+import { IconCommit } from "./icons";
 
 export const GitRef = ({
   gitRef,
@@ -31,6 +32,11 @@ export const GitRef = ({
               href={url}
               linkIf={!!url.match(/^https?:\/\//)}
             >
+              <IconCommit
+                color="#595E63"
+                variant="sm"
+                className="inline mr-1"
+              />
               {sha}
             </OptionalExternalLink>
           </Code>

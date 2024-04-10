@@ -59,7 +59,7 @@ export function SourcesPage() {
     <AppSidebarLayout>
       <Group>
         <Group size="sm">
-          <TitleBar description="Sources are where your App deployments originate from">
+          <TitleBar description="Sources connect apps with code repositories to show you what's deployed where.">
             Sources
           </TitleBar>
 
