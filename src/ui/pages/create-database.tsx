@@ -1,10 +1,12 @@
 import {
   DbCreatorProps,
   fetchDatabaseImages,
+  fetchOperationsByEnvId,
   provisionDatabaseList,
   selectDatabaseImagesVisible,
   selectEnvironmentById,
 } from "@app/deploy";
+import { clearTimers } from "@app/fx";
 import { generateHash } from "@app/id";
 import {
   useDispatch,
@@ -65,6 +67,7 @@ export const CreateDatabasePage = () => {
   const action = provisionDatabaseList({ envId, dbs: dbCreatorList });
   const loader = useLoader(action);
   useLoaderSuccess(loader, () => {
+    // dispatch(clearTimers(fetchOperationsByEnvId({ id: envId, page: 1 })));
     navigate(environmentActivityUrl(envId));
   });
 
