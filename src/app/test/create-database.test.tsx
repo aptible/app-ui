@@ -116,7 +116,7 @@ describe("Create Database flow", () => {
   });
 
   describe("when a duplicate db handle already exists in a different environment", () => {
-    it.only("should create a new database and not try to re-provision that database", async () => {
+    it("should create a new database and not try to re-provision that database", async () => {
       const dupeId = createId();
       const testDupeDatabaseOp = defaultOperationResponse({
         id: createId(),
