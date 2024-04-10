@@ -1,3 +1,4 @@
+import { selectDeploymentsAsList } from "@app/deployment";
 import { WebState, schema } from "@app/schema";
 import { DeployServiceRow } from "@app/types";
 import { createSelector } from "starfx";
@@ -148,15 +149,16 @@ export const selectAppsForTable = createSelector(
   selectEnvironments,
   selectOperationsAsList,
   selectServicesAsList,
-  (apps, envs, ops, services) =>
+  selectDeploymentsAsList,
+  (apps, envs, ops, services, deployments) =>
     apps
       .map((app): DeployAppRow => {
         const env = findEnvById(envs, { id: app.environmentId });
         const appOps = findOperationsByAppId(ops, app.id);
-        let lastOperation = schema.operations.empty;
-        if (appOps.length > 0) {
-          lastOperation = appOps[0];
-        }
+        const lastOperation = appOps?.[0] || schema.operations.empty;
+        const currentDeployment = deployments.find(
+          (d) => d.id === app.currentDeploymentId,
+        );
         const appServices = services.filter((s) => s.appId === app.id);
         const cost = appServices.reduce((acc, service) => {
           const mm = calcServiceMetrics(service);
@@ -169,6 +171,10 @@ export const selectAppsForTable = createSelector(
           ...metrics,
           envHandle: env.handle,
           lastOperation,
+          gitRef: currentDeployment?.gitRef || "",
+          gitCommitSha: currentDeployment?.gitCommitSha || "",
+          dockerImageName: currentDeployment?.dockerImage || "",
+          lastDeployed: currentDeployment?.createdAt || "",
           cost,
           totalServices: appServices.length,
         };
@@ -177,6 +183,9 @@ export const selectAppsForTable = createSelector(
 );
 
 const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
+  const gitRef = app.gitRef.toLocaleLowerCase();
+  const gitCommitSha = app.gitCommitSha.toLocaleLowerCase();
+  const dockerImageName = app.dockerImageName.toLocaleLowerCase();
   const handle = app.handle.toLocaleLowerCase();
   const envHandle = app.envHandle.toLocaleLowerCase();
 
@@ -189,6 +198,9 @@ const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
     lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
   }
 
+  const gitRefMatch = gitRef.includes(search);
+  const gitCommitShaMatch = gitCommitSha.includes(search);
+  const dockerImageNameMatch = dockerImageName.includes(search);
   const handleMatch = handle.includes(search);
   const envMatch = envHandle.includes(search);
   const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
@@ -197,7 +209,15 @@ const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
   const idMatch = search === app.id;
 
   return (
-    handleMatch || envMatch || opMatch || opStatusMatch || userMatch || idMatch
+    gitRefMatch ||
+    gitCommitShaMatch ||
+    dockerImageNameMatch ||
+    handleMatch ||
+    envMatch ||
+    opMatch ||
+    opStatusMatch ||
+    userMatch ||
+    idMatch
   );
 };
 
@@ -219,6 +239,24 @@ const createAppSortFn = (
         return a.handle.localeCompare(b.handle);
       } else {
         return b.handle.localeCompare(a.handle);
+      }
+    }
+
+    if (sortBy === "gitRef") {
+      const aRefOrSha = [a.gitRef, a.gitCommitSha].join("@");
+      const bRefOrSha = [b.gitRef, b.gitCommitSha].join("@");
+      if (sortDir === "asc") {
+        return aRefOrSha.localeCompare(bRefOrSha);
+      } else {
+        return bRefOrSha.localeCompare(aRefOrSha);
+      }
+    }
+
+    if (sortBy === "dockerImageName") {
+      if (sortDir === "asc") {
+        return a.dockerImageName.localeCompare(b.dockerImageName);
+      } else {
+        return b.dockerImageName.localeCompare(a.dockerImageName);
       }
     }
 

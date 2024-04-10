@@ -114,7 +114,11 @@ export const findAppById = schema.apps.findById;
 
 export interface DeployAppRow extends DeployApp {
   envHandle: string;
+  gitRef: string;
+  gitCommitSha: string;
+  dockerImageName: string;
   lastOperation: DeployOperation;
+  lastDeployed: string;
   cost: number;
   totalCPU: number;
   totalMemoryLimit: number;

@@ -84,7 +84,7 @@ export const deserializeDeployment = (
 };
 
 export const selectDeploymentById = schema.deployments.selectById;
-const selectDeploymentsAsList = createSelector(
+export const selectDeploymentsAsList = createSelector(
   schema.deployments.selectTableAsList,
   (deployments) =>
     deployments.sort((a, b) => {
