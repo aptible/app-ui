@@ -344,12 +344,16 @@ export const selectAppsForTableSearchBySourceId = createSelector(
   selectAppsForTable,
   (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: WebState, props: { sourceId: string }) => props.sourceId,
-  (apps, search, sourceId): DeployAppRow[] => {
+  (_: WebState, p: { sortBy: keyof DeployAppRow }) => p.sortBy,
+  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (apps, search, sourceId, sortBy, sortDir): DeployAppRow[] => {
+    const sortFn = createAppSortFn(sortBy, sortDir);
+
     if (search === "" && sourceId === "") {
-      return apps;
+      return [...apps].sort(sortFn);
     }
 
-    return apps.filter((app) => {
+    const results = apps.filter((app) => {
       const searchMatch = computeSearchMatch(app, search);
       const sourceIdMatch = sourceId !== "" && app.currentSourceId === sourceId;
 
@@ -363,6 +367,8 @@ export const selectAppsForTableSearchBySourceId = createSelector(
 
       return searchMatch;
     });
+
+    return results.sort(sortFn);
   },
 );
 
