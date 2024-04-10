@@ -436,8 +436,8 @@ function* paginateOps(
 }
 
 export const fetchOperationsByOrgId = api.get<{ id: string } & PaginateProps>(
-  "/organizations/:orgId/operations?per_page=250&page=:page",
-  { supervisor: takeLeading },
+  "/organizations/:id/operations?page=:page",
+  { supervisor: cacheTimer() },
   paginateOps,
 );
 

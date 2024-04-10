@@ -5,12 +5,11 @@ import {
   fetchOperationsByEnvId,
   fetchOperationsByOrgId,
   fetchOperationsByServiceId,
-  selectActivityForTableSearch,
+  selectActivityByIdsForTable,
 } from "@app/deploy";
 import { useCache, useSelector } from "@app/react";
 import { DeployActivityRow, HalEmbedded } from "@app/types";
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { PaginateProps } from "./use-paginate";
 
 export function usePaginatedOpsByOrgId(orgId: string) {
@@ -54,14 +53,10 @@ function usePaginatedOperations(
   page: number,
   setPage: (n: number) => void,
 ): PaginateProps<DeployActivityRow> & { isLoading: boolean } {
-  const [params] = useSearchParams();
-  const search = params.get("search") || "";
-
   const cache = useCache<HalEmbedded<{ operations: string[] }>>(action);
   const opIds = cache.data?._embedded.operations || [];
   const operations = useSelector((s) =>
-    selectActivityForTableSearch(s, {
-      search,
+    selectActivityByIdsForTable(s, {
       ids: opIds,
     }),
   );

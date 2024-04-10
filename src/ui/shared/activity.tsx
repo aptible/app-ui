@@ -30,7 +30,7 @@ import {
 import { capitalize } from "@app/string-utils";
 import type { DeployActivityRow, ResourceType } from "@app/types";
 import { useMemo } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   PaginateProps,
   usePaginatedOpsByAppId,
@@ -42,8 +42,6 @@ import {
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
 import { Group } from "./group";
-import { InputSearch } from "./input";
-import { LoadingSpinner } from "./loading";
 import { OpStatus } from "./operation-status";
 import {
   DescBar,
@@ -229,11 +227,6 @@ function ActivityTable({
   showTitle?: boolean;
   isLoading?: boolean;
 }) {
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) =>
-    setParams({ search: ev.currentTarget.value }, { replace: true });
-
   return (
     <Group>
       <Group size="sm">
@@ -252,22 +245,12 @@ function ActivityTable({
             </DescBar>
           )}
 
-          <Group variant="horizontal" size="sm">
-            <InputSearch
-              placeholder="Search..."
-              search={search}
-              onChange={onChange}
-            />
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <LoadingSpinner />
-              </div>
-            ) : null}
-          </Group>
-
           <Group variant="horizontal" size="lg" className="items-center mt-1">
             <DescBar>{paginated.totalItems} Operations</DescBar>
-            <PaginateBar {...paginated} />
+            <PaginateBar
+              {...paginated}
+              isLoading={isLoading || paginated.isLoading}
+            />
           </Group>
         </FilterBar>
       </Group>
@@ -304,6 +287,7 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   });
   const loader = useLoader(pollOrgOperations);
   const paginated = usePaginatedOpsByOrgId(orgId);
+  console.log(paginated.data);
 
   return (
     <ActivityTable

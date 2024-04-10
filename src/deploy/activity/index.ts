@@ -83,81 +83,15 @@ const selectActivityForTable = createSelector(
       ),
 );
 
-/* export type ResourceLookup = Pick<
-  DeployOperation,
-  "resourceType" | "resourceId"
->;
-function findResourceMatch(
-  op: DeployOperation,
-  resources: ResourceLookup[],
-): boolean {
-  return Boolean(
-    resources.find(
-      (resource) =>
-        op.resourceId === resource.resourceId &&
-        op.resourceType === resource.resourceType,
-    ),
-  );
-} */
-
 const denyOpTypes: OperationType[] = ["poll"];
 
 export const selectActivityByIdsForTable = createSelector(
   selectActivityForTable,
   (_: WebState, p: { ids: string[] }) => p.ids,
   (ops, opIds) => {
-    return ops.filter((op) => opIds.includes(op.id));
-  },
-);
-
-export const selectActivityForTableSearch = createSelector(
-  selectActivityByIdsForTable,
-  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (ops, search): DeployActivityRow[] => {
-    if (search === "") {
-      return ops.filter((op) => !denyOpTypes.includes(op.type));
-    }
-
-    const filtered = ops.filter((op) => {
-      const opType = op.type.toLocaleLowerCase();
-      if (denyOpTypes.includes(op.type)) {
-        return false;
-      }
-
-      const status = op.status.toLocaleLowerCase();
-      const user = op.userName.toLocaleLowerCase();
-      const email = op.userEmail.toLocaleLowerCase();
-      const envHandle = op.envHandle.toLocaleLowerCase();
-      const resource = op.resourceType.toLocaleLowerCase();
-      const resourceHandle = op.resourceHandle.toLocaleLowerCase();
-      const id = op.id.toLocaleLowerCase();
-
-      const envMatch =
-        search !== "" && envHandle !== "" && envHandle.includes(search);
-      const userEmailMatch = search !== "" && email.includes(search);
-      const userMatch = search !== "" && user.includes(search);
-      const opTypeMatch = search !== "" && opType.includes(search);
-      const opStatusMatch = search !== "" && status.includes(search);
-      const resourceMatch = search !== "" && resource.includes(search);
-      const idMatch = search !== "" && id.includes(search);
-      const resourceHandleMatch =
-        search !== "" &&
-        resourceHandle !== "" &&
-        resourceHandle.includes(search);
-      const searchMatch =
-        idMatch ||
-        envMatch ||
-        userEmailMatch ||
-        opTypeMatch ||
-        opStatusMatch ||
-        userMatch ||
-        resourceMatch ||
-        resourceHandleMatch;
-
-      return searchMatch;
-    });
-
-    return filtered;
+    return ops.filter(
+      (op) => opIds.includes(op.id) && !denyOpTypes.includes(op.type),
+    );
   },
 );
 
