@@ -120,6 +120,7 @@ export function getDockerImageName(deployment: Deployment): string {
   return deployment.dockerImage || "Dockerfile Build";
 }
 
+export const fetchDeployments = api.get("/deployments");
 export const fetchDeploymentById = api.get<{ id: string }>("/deployments/:id");
 export const fetchDeploymentsByAppId = api.get<{ id: string }>(
   "/apps/:id/deployments",
