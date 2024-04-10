@@ -20,6 +20,7 @@ import { rest } from "msw";
 
 describe("Create Database flow", () => {
   it("should successfully provision a database within an environment", async () => {
+    let counter = 0;
     server.use(
       ...stacksWithResources({
         accounts: [testAccount],
@@ -35,9 +36,11 @@ describe("Create Database flow", () => {
       rest.get(
         `${testEnv.apiUrl}/accounts/:envId/operations`,
         (_, res, ctx) => {
+          counter += 1;
+          const operations = counter === 1 ? [] : [testDatabaseOp];
           return res(
             ctx.json({
-              _embedded: { operations: [] },
+              _embedded: { operations },
             }),
           );
         },
