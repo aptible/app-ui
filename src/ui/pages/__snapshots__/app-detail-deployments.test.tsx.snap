@@ -227,7 +227,7 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                         target="_blank"
                       >
                         <svg
-                          class="inline h-5 mb-0 mr-1"
+                          class="inline mr-1"
                           fill="none"
                           height="16"
                           stroke="#595E63"
@@ -388,7 +388,7 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                         target="_blank"
                       >
                         <svg
-                          class="inline h-5 mb-0 mr-1"
+                          class="inline mr-1"
                           fill="none"
                           height="16"
                           stroke="#595E63"
