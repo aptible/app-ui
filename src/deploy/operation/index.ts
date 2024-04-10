@@ -409,12 +409,6 @@ export const fetchAllEnvOps = thunks.create<EnvIdProps>(
   combinePages(fetchEnvOperations, { max: 2 }),
 );
 
-export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
-export const pollEnvOperations = api.get<EnvIdProps>(
-  ["/accounts/:envId/operations", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelEnvOperationsPoll}`) },
-);
-
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
 export const pollOrgOperations = api.get<{ orgId: string }>(
   "/organizations/:orgId/operations",
@@ -456,10 +450,37 @@ export const fetchOperationsByEnvId = api.get<
   paginateOps,
 );
 
+export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
+export const pollEnvOperations = api.get<
+  EnvIdProps,
+  HalEmbedded<{ operations: DeployOperationResponse[] }>
+>(
+  ["/accounts/:envId/operations?page=1", "poll"],
+  { supervisor: poll(10 * 1000, `${cancelEnvOperationsPoll}`) },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByEnvId({ page: 1, id: ctx.payload.envId });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
+);
+
 export const fetchOperationsByAppId = api.get<
   { id: string } & PaginateProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >("/apps/:id/operations?page=:page", { supervisor: cacheTimer() }, paginateOps);
+
+export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
+export const pollAppOperations = api.get<{ id: string }>(
+  ["/apps/:id/operations", "poll"],
+  {
+    supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`),
+  },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByAppId({ page: 1, id: ctx.payload.id });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
+);
 
 export const fetchOperationsByDatabaseId = api.get<
   { id: string } & PaginateProps,
@@ -468,6 +489,17 @@ export const fetchOperationsByDatabaseId = api.get<
   "/databases/:id/operations?page=:page",
   { supervisor: cacheTimer() },
   paginateOps,
+);
+
+export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
+export const pollDatabaseOperations = api.get<{ id: string }>(
+  ["/databases/:id/operations", "poll"],
+  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByDatabaseId({ page: 1, id: ctx.payload.id });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
 );
 
 export const fetchOperationsByServiceId = api.get<
@@ -479,6 +511,17 @@ export const fetchOperationsByServiceId = api.get<
   paginateOps,
 );
 
+export const cancelServicesOpsPoll = createAction("cancel-services-ops-poll");
+export const pollServiceOperations = api.get<{ id: string }>(
+  ["/services/:id/operations", "poll"],
+  { supervisor: poll(10 * 1000, `${cancelServicesOpsPoll}`) },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByServiceId({ page: 1, id: ctx.payload.id });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
+);
+
 export const fetchOperationsByEndpointId = api.get<
   { id: string } & PaginateProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
@@ -488,17 +531,14 @@ export const fetchOperationsByEndpointId = api.get<
   paginateOps,
 );
 
-export const cancelServicesOpsPoll = createAction("cancel-services-ops-poll");
-export const pollServiceOperations = api.get<{ id: string }>(
-  ["/services/:id/operations", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelServicesOpsPoll}`) },
-);
-
-export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
-export const pollAppOperations = api.get<{ id: string }>(
-  ["/apps/:id/operations", "poll"],
-  {
-    supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`),
+export const cancelEndpointOpsPoll = createAction("cancel-enp-ops-poll");
+export const pollEndpointOperations = api.get<{ id: string }>(
+  ["/vhosts/:id/operations", "poll"],
+  { supervisor: poll(10 * 1000, `${cancelEndpointOpsPoll}`) },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByEndpointId({ page: 1, id: ctx.payload.id });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
@@ -528,12 +568,6 @@ export const pollAppAndServiceOperations = thunks.create<{ id: string }>(
   },
 );
 
-export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
-export const pollDatabaseOperations = api.get<{ id: string }>(
-  ["/databases/:id/operations", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
-);
-
 export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
   "db-service-op-poll",
   { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
@@ -552,13 +586,6 @@ export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
     yield* next();
     yield* schema.update(schema.loaders.success({ id: ctx.key }));
   },
-);
-
-export const cancelEndpointOpsPoll = createAction("cancel-enp-ops-poll");
-export const pollEndpointOperations = api.get<{ id: string }>(
-  ["/vhosts/:id/operations", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelEndpointOpsPoll}`) },
-  api.cache(),
 );
 
 export const fetchOperationLogs = api.get<{ id: string } & Retryable>(
