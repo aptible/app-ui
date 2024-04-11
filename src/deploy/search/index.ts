@@ -156,9 +156,9 @@ export const selectAppsForTable = createSelector(
         const env = findEnvById(envs, { id: app.environmentId });
         const appOps = findOperationsByAppId(ops, app.id);
         const lastOperation = appOps?.[0] || schema.operations.empty;
-        const currentDeployment = deployments.find(
-          (d) => d.id === app.currentDeploymentId,
-        );
+        const currentDeployment =
+          deployments.find((d) => d.id === app.currentDeploymentId) ||
+          schema.deployments.empty;
         const appServices = services.filter((s) => s.appId === app.id);
         const cost = appServices.reduce((acc, service) => {
           const mm = calcServiceMetrics(service);
@@ -171,10 +171,10 @@ export const selectAppsForTable = createSelector(
           ...metrics,
           envHandle: env.handle,
           lastOperation,
-          gitRef: currentDeployment?.gitRef || "",
-          gitCommitSha: currentDeployment?.gitCommitSha || "",
-          dockerImageName: currentDeployment?.dockerImage || "",
-          lastDeployed: currentDeployment?.createdAt || "",
+          gitRef: currentDeployment.gitRef,
+          gitCommitSha: currentDeployment.gitCommitSha,
+          dockerImageName: currentDeployment.dockerImage,
+          lastDeployed: currentDeployment.createdAt,
           cost,
           totalServices: appServices.length,
         };
