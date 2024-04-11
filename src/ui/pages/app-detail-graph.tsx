@@ -5,7 +5,7 @@ import {
   selectDepGraphDatabases,
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
-import { appDetailUrl, databaseDetailUrl } from "@app/routes";
+import { appDetailUrl, databaseDetailUrl, resourceGraphUrl } from "@app/routes";
 import cytoscape from "cytoscape";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -13,9 +13,11 @@ import { Link } from "react-router-dom";
 import {
   Banner,
   Box,
+  ButtonLink,
   CytoscapeGraph,
   GraphFitButton,
   Group,
+  IconExternalLink,
   PermissionGate,
   graphPadding,
 } from "../shared";
@@ -133,6 +135,9 @@ export const AppDetailGraphPage = () => {
           )}
 
           <Group className="flex-col-reverse absolute right-4 bottom-4">
+            <ButtonLink to={resourceGraphUrl()}>
+              <IconExternalLink variant="sm" />
+            </ButtonLink>
             <GraphFitButton cy={cy} />
           </Group>
         </CytoscapeGraph>
