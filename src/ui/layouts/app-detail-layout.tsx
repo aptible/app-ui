@@ -21,6 +21,7 @@ import {
   appConfigUrl,
   appDetailDeploymentsUrl,
   appDetailDepsUrl,
+  appDetailGraphUrl,
   appDetailUrl,
   appEndpointsUrl,
   appServicesUrl,
@@ -184,6 +185,7 @@ function AppPageHeader() {
   }
 
   tabs.push(
+    { name: "Graph", href: appDetailGraphUrl(id) },
     { name: "CI/CD", href: appCiCdUrl(id) },
     { name: "Settings", href: appSettingsUrl(id) },
   );

@@ -128,6 +128,8 @@ export const appEndpointCreateUrl = (id: string) =>
   `${appDetailUrl(id)}/endpoints/create`;
 export const APP_SETTINGS_PATH = `${APP_DETAIL_PATH}/settings`;
 export const appSettingsUrl = (id: string) => `${appDetailUrl(id)}/settings`;
+export const APP_DETAIL_GRAPH_PATH = `${APP_DETAIL_PATH}/graph`;
+export const appDetailGraphUrl = (id: string) => `${appDetailUrl(id)}/graph`;
 export const APP_CICD_PATH = `${APP_DETAIL_PATH}/ci-cd`;
 export const appCiCdUrl = (id: string) => `${appDetailUrl(id)}/ci-cd`;
 export const APP_CICD_GITHUB_PATH = `${APP_DETAIL_PATH}/ci-cd/github`;

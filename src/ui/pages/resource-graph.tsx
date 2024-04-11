@@ -8,17 +8,17 @@ import {
   Button,
   ButtonIcon,
   CytoscapeGraph,
+  GraphFitButton,
+  GraphFocusButton,
   Group,
   IconBox,
   IconCylinder,
   IconEyeClosed,
-  IconFit,
   IconGlobe,
   IconProps,
   IconRefresh,
-  IconTarget,
-  Input,
   InputSearch,
+  graphPadding,
   iconToDataUri,
 } from "../shared";
 
@@ -124,8 +124,6 @@ const appIconUri = iconToDataUri(<IconBox {...iconProps} />);
 const databaseIconUri = iconToDataUri(<IconCylinder {...iconProps} />);
 const externalIconUri = iconToDataUri(<IconGlobe {...iconProps} />);
 
-const graphPadding = 50;
-
 export function ResourceGraphPage() {
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState("");
@@ -223,7 +221,7 @@ export function ResourceGraphPage() {
         name: "cose-bilkent",
         animate: "end",
         nodeDimensionsIncludeLabels: true,
-        padding: graphPadding
+        padding: graphPadding,
       } as any),
       cise: cy.layout({
         name: "cise",
@@ -254,7 +252,7 @@ export function ResourceGraphPage() {
       });
     });
 
-    cy.on("unselect", (e) => {
+    cy.on("unselect", () => {
       setSelectedGraphNode(undefined);
     });
   }, [cy]);
@@ -267,49 +265,43 @@ export function ResourceGraphPage() {
     setSelectedId(selectedGraphNode?.id() || "");
   }, [selectedGraphNode]);
 
-  const onCenter = () => {
-    const selectedNode = cy?.nodes(":selected")[0];
-
-    cy?.animate({
-      center: {
-        eles: selectedNode as any,
-      },
-      zoom: 1.5,
-    });
-  };
-
   return (
-
     <CytoscapeGraph className="grow" onClient={setCy}>
       <div
         className="flex flex-col absolute top-4 left-4"
         onFocus={() => setSearchFocused(true)}
-        // Ignore blurring to children
-        onBlur={(e) => e.currentTarget.contains(e.relatedTarget) || setSearchFocused(false)}
+        onBlur={(e) => {
+          // Ignore blur when focus moves to a child
+          if (!e.currentTarget.contains(e.relatedTarget)) {
+            setSearchFocused(false);
+          }
+        }}
       >
         <InputSearch
           search={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <div
-          className={`max-h-10vh overflow-y-auto ${
-            searchFocused ? "" : "hidden"
-          }`}
-        >
-          {filteredNodes.map((node) => (
-            <Button
-              key={node.id}
-              variant="white"
-              size="lg"
-              className="w-full"
-              onClick={() => {
-                cy?.nodes(':selected')?.unselect();
-                cy?.getElementById(node.id)?.select();
-              }}
-            >
-              {node.resourceType}: {node.handle}
-            </Button>
-          ))}
+        <div className="relative">
+          <div
+            className={`absolute w-full max-h-96 overflow-y-auto ${
+              searchFocused ? "" : "hidden"
+            }`}
+          >
+            {filteredNodes.map((node) => (
+              <Button
+                key={node.id}
+                variant="white"
+                size="lg"
+                className="w-full"
+                onClick={() => {
+                  cy?.nodes(":selected")?.unselect();
+                  cy?.getElementById(node.id)?.select();
+                }}
+              >
+                {node.resourceType}: {node.handle}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -338,13 +330,8 @@ export function ResourceGraphPage() {
           variant="white"
           onClick={() => cy?.nodes(":parent")?.toggleClass("invisible-parent")}
         />
-        <ButtonIcon
-          icon={<IconFit variant="sm" />}
-          onClick={() => cy?.animate({ fit: { padding: graphPadding } as any })}
-        />
-        {selectedGraphNode == null ? null : (
-          <ButtonIcon icon={<IconTarget variant="sm" />} onClick={onCenter} />
-        )}
+        <GraphFitButton cy={cy} />
+        {selectedGraphNode == null ? null : <GraphFocusButton cy={cy} />}
       </Group>
     </CytoscapeGraph>
   );

@@ -148,6 +148,7 @@ import {
   VerifyEmailRequired,
 } from "@app/ui";
 import { DeploymentDetailLayout } from "@app/ui/layouts/deployment-detail-layout";
+import { AppDetailGraphPage } from "@app/ui/pages/app-detail-graph";
 import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
@@ -375,6 +376,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.APP_DETAIL_DEPLOYMENTS_PATH,
                 element: <AppDetailDeploymentsPage />,
+              },
+              {
+                path: routes.APP_DETAIL_GRAPH_PATH,
+                element: <AppDetailGraphPage />,
               },
             ],
           },

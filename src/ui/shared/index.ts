@@ -69,4 +69,4 @@ export * from "./deployments-table";
 export * from "./source";
 export * from "./git";
 export * from "./docker";
-export * from "./cytoscape-graph";
+export * from "./cytoscape";

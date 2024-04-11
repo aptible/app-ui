@@ -4,11 +4,13 @@ import coseBilkent from "cytoscape-cose-bilkent";
 import klay from "cytoscape-klay";
 import { useEffect, useRef } from "react";
 import colors from "tailwindcss/colors";
-import { IconBox, IconCylinder, IconGlobe, IconProps, iconToDataUri } from ".";
+import { IconBox, IconCylinder, IconGlobe, IconProps, iconToDataUri } from "..";
 
 cytoscape.use(coseBilkent);
 cytoscape.use(cise);
 cytoscape.use(klay);
+
+export const graphPadding = 50;
 
 const iconProps: IconProps = {
   color: "#FDF8F0", // off-white

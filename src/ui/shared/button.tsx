@@ -18,7 +18,7 @@ import { Tooltip, TooltipProps } from "./tooltip";
 
 export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 type Shape = "button" | "pill";
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   layout?: "block" | "auto";
   variant?: "primary" | "secondary" | "white" | "delete" | "success";
   size?: Size;
@@ -42,11 +42,11 @@ export const buttonShapeStyle = (size: Size, shape: Shape): string => {
   }
 };
 
-export const ButtonIcon = ({
-  children,
-  icon,
-  ...props
-}: ButtonProps & { icon: JSX.Element }) => {
+export interface ButtonIconProps extends ButtonProps {
+  icon: JSX.Element;
+}
+
+export const ButtonIcon = ({ children, icon, ...props }: ButtonIconProps) => {
   return (
     <Button {...props}>
       {icon}
