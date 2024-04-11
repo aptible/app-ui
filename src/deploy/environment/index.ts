@@ -187,11 +187,6 @@ export const fetchEnvironments = api.get(
   },
 );
 
-export const fetchEnvironmentOperations = api.get<{ id: string }>(
-  "/accounts/:id/operations",
-  api.cache(),
-);
-
 export const deprovisionEnvironment = api.delete<{ id: string }>(
   ["/accounts/:id"],
   function* (ctx, next) {

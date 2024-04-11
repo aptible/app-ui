@@ -48,10 +48,6 @@ export function PaginateBar<T>(
     "totalPages" | "page" | "prev" | "next" | "isLoading"
   >,
 ) {
-  if (paginate.totalPages === 1) {
-    return null;
-  }
-
   return (
     <Group
       variant="horizontal"

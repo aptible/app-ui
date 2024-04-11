@@ -5,11 +5,7 @@ import {
   environmentIntegrationsUrl,
 } from "@app/routes";
 import { WebState } from "@app/schema";
-import type {
-  DeployActivityRow,
-  DeployOperation,
-  OperationType,
-} from "@app/types";
+import type { DeployActivityRow, OperationType } from "@app/types";
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
 import { findEndpointById, getEndpointUrl, selectEndpoints } from "../endpoint";
@@ -87,100 +83,15 @@ const selectActivityForTable = createSelector(
       ),
 );
 
-export type ResourceLookup = Pick<
-  DeployOperation,
-  "resourceType" | "resourceId"
->;
-function findResourceMatch(
-  op: DeployOperation,
-  resources: ResourceLookup[],
-): boolean {
-  return Boolean(
-    resources.find(
-      (resource) =>
-        op.resourceId === resource.resourceId &&
-        op.resourceType === resource.resourceType,
-    ),
-  );
-}
-
 const denyOpTypes: OperationType[] = ["poll"];
-const staticArr: ResourceLookup[] = [];
-export const selectActivityForTableSearch = createSelector(
+
+export const selectActivityByIdsForTable = createSelector(
   selectActivityForTable,
-  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
-  (_: WebState, props: { envId?: string }) => props.envId || "",
-  (
-    _: WebState,
-    props: {
-      resources?: ResourceLookup[];
-    },
-  ) => props.resources || staticArr,
-  (ops, search, envId, resources): DeployActivityRow[] => {
-    if (search === "" && envId === "" && resources.length === 0) {
-      return ops.filter((op) => !denyOpTypes.includes(op.type));
-    }
-
-    const filtered = ops.filter((op) => {
-      const opType = op.type.toLocaleLowerCase();
-      if (denyOpTypes.includes(op.type)) {
-        return false;
-      }
-
-      const status = op.status.toLocaleLowerCase();
-      const user = op.userName.toLocaleLowerCase();
-      const email = op.userEmail.toLocaleLowerCase();
-      const envHandle = op.envHandle.toLocaleLowerCase();
-      const resource = op.resourceType.toLocaleLowerCase();
-      const resourceHandle = op.resourceHandle.toLocaleLowerCase();
-      const id = op.id.toLocaleLowerCase();
-
-      const envMatch =
-        search !== "" && envHandle !== "" && envHandle.includes(search);
-      const userEmailMatch = search !== "" && email.includes(search);
-      const userMatch = search !== "" && user.includes(search);
-      const opTypeMatch = search !== "" && opType.includes(search);
-      const opStatusMatch = search !== "" && status.includes(search);
-      const resourceMatch = search !== "" && resource.includes(search);
-      const idMatch = search !== "" && id.includes(search);
-      const resourceHandleMatch =
-        search !== "" &&
-        resourceHandle !== "" &&
-        resourceHandle.includes(search);
-      const searchMatch =
-        idMatch ||
-        envMatch ||
-        userEmailMatch ||
-        opTypeMatch ||
-        opStatusMatch ||
-        userMatch ||
-        resourceMatch ||
-        resourceHandleMatch;
-
-      const resourceIdMatch =
-        resources.length !== 0 && findResourceMatch(op, resources);
-      const envIdMatch = envId !== "" && op.environmentId === envId;
-
-      if (resources.length !== 0) {
-        if (search !== "") {
-          return resourceIdMatch && searchMatch;
-        }
-
-        return resourceIdMatch;
-      }
-
-      if (envId !== "") {
-        if (search !== "") {
-          return envIdMatch && searchMatch;
-        }
-
-        return envIdMatch;
-      }
-
-      return searchMatch;
-    });
-
-    return filtered;
+  (_: WebState, p: { ids: string[] }) => p.ids,
+  (ops, opIds) => {
+    return ops.filter(
+      (op) => opIds.includes(op.id) && !denyOpTypes.includes(op.type),
+    );
   },
 );
 

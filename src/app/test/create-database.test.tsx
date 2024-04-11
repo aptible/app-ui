@@ -20,6 +20,7 @@ import { rest } from "msw";
 
 describe("Create Database flow", () => {
   it("should successfully provision a database within an environment", async () => {
+    let counter = 0;
     server.use(
       ...stacksWithResources({
         accounts: [testAccount],
@@ -35,9 +36,11 @@ describe("Create Database flow", () => {
       rest.get(
         `${testEnv.apiUrl}/accounts/:envId/operations`,
         (_, res, ctx) => {
+          counter += 1;
+          const operations = counter === 1 ? [] : [testDatabaseOp];
           return res(
             ctx.json({
-              _embedded: { operations: [] },
+              _embedded: { operations },
             }),
           );
         },
@@ -159,6 +162,7 @@ describe("Create Database flow", () => {
         },
       });
 
+      let counter = 0;
       server.use(
         ...stacksWithResources({
           accounts: [testAccount, testDestroyAccount],
@@ -168,15 +172,19 @@ describe("Create Database flow", () => {
         rest.post(
           `${testEnv.apiUrl}/databases/:id/operations`,
           async (_, res, ctx) => {
-            return res(ctx.json(testDatabaseOp));
+            return res(
+              ctx.json({ _embedded: { operations: [testDatabaseOp] } }),
+            );
           },
         ),
         rest.get(
           `${testEnv.apiUrl}/accounts/:envId/operations`,
           (_, res, ctx) => {
+            counter += 1;
+            const operations = counter === 1 ? [] : [testDatabaseOp];
             return res(
               ctx.json({
-                _embedded: { operations: [] },
+                _embedded: { operations },
               }),
             );
           },
@@ -215,6 +223,7 @@ describe("Create Database flow", () => {
       // if these two checks fail then that means that an existing database was
       // re-provisioned in a different environment
       await screen.findByText(/Operations show real-time/);
+      await screen.findByText(/example-postgres/);
       expect(screen.queryByText(/example-postgres/)).toBeInTheDocument();
     });
   });

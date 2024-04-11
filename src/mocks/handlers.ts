@@ -388,7 +388,7 @@ const apiHandlers = [
   rest.post(
     `${testEnv.apiUrl}/databases/:id/operations`,
     async (_, res, ctx) => {
-      return res(ctx.json(testDatabaseOp));
+      return res(ctx.json({ _embedded: { operations: [testDatabaseOp] } }));
     },
   ),
   rest.get(`${testEnv.apiUrl}/apps/:id/operations`, (_, res, ctx) => {

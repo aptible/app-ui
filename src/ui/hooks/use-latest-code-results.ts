@@ -1,6 +1,6 @@
 import { findLatestDate } from "@app/date";
 import {
-  fetchAppOperations,
+  fetchOperationsByAppId,
   hasDeployOperation,
   selectLatestDeployOpWithCodeScan,
   selectLatestSuccessScanOp,
@@ -21,7 +21,7 @@ function findValidOp(opA: DeployOperation, opB: DeployOperation) {
 }
 
 export const useLatestCodeResults = (appId: string) => {
-  const appOps = useQuery(fetchAppOperations({ id: appId }));
+  const appOps = useQuery(fetchOperationsByAppId({ id: appId, page: 1 }));
   const scanOp = useSelector((s) => selectLatestSuccessScanOp(s, { appId }));
   const deployOp = useSelector((s) =>
     selectLatestDeployOpWithCodeScan(s, { appId }),

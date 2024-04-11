@@ -3,19 +3,22 @@ import {
   Retryable,
   api,
   cacheShortTimer,
+  cacheTimer,
   combinePages,
   thunks,
 } from "@app/api";
 import {
+  Next,
+  Operation,
   call,
   createAction,
+  createSelector,
   delay,
   mdw,
   poll,
   select,
   takeLeading,
 } from "@app/fx";
-import { Operation, createSelector } from "@app/fx";
 import {
   defaultEntity,
   extractIdFromLink,
@@ -30,12 +33,15 @@ import { WebState, defaultDeployOperation, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
   DeployActivityRow,
+  DeployApiCtx,
   DeployOperation,
+  HalEmbedded,
   LinkResponse,
   OperationStatus,
   OperationType,
   ResourceType,
 } from "@app/types";
+import { ServiceScaleProps, scaleAttrs, selectServiceById } from "../service";
 
 export interface DeployOperationResponse {
   id: number;
@@ -298,6 +304,44 @@ export const selectNonFailedScaleOps = createSelector(
   (ops) => ops.filter((op) => op.type === "scale" && op.status !== "failed"),
 );
 
+export const selectPreviousServiceScale = createSelector(
+  selectServiceById,
+  selectNonFailedScaleOps,
+  (service, ops) => {
+    // If the values aren't found among the operations use the following default values
+    const pastOps = ops.slice(1).concat(
+      defaultDeployOperation({
+        containerCount: 1,
+        containerSize: 1024,
+        instanceProfile: service.instanceClass,
+      }),
+    );
+
+    const prev: DeployOperation = { ...pastOps[0] };
+
+    scaleAttrs.forEach((attr) => {
+      (prev as any)[attr] = findOperationValue(pastOps, attr);
+    });
+
+    return prev;
+  },
+);
+
+export const selectServiceScale = createSelector(
+  selectNonFailedScaleOps,
+  selectPreviousServiceScale,
+  (ops, prevOp) => {
+    const lastOps = ops.slice(0, 1).concat(prevOp);
+    const current: DeployOperation = { ...lastOps[0] };
+
+    scaleAttrs.forEach((attr) => {
+      (current as any)[attr] = findOperationValue(lastOps, attr);
+    });
+
+    return current;
+  },
+);
+
 export const selectLatestScanOp = createSelector(
   selectOperationsByAppId,
   (ops) => ops.find((op) => op.type === "scan_code") || schema.operations.empty,
@@ -359,21 +403,146 @@ export const fetchAllEnvOps = thunks.create<EnvIdProps>(
   combinePages(fetchEnvOperations, { max: 2 }),
 );
 
-export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
-export const pollEnvOperations = api.get<EnvIdProps>(
-  ["/accounts/:envId/operations", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelEnvOperationsPoll}`) },
-);
+function* paginateOps(
+  ctx: DeployApiCtx<
+    any,
+    HalEmbedded<{ operations: DeployOperationResponse[] }>
+  >,
+  next: Next,
+) {
+  yield* next();
 
-export const fetchOrgOperations = api.get<{ orgId: string }>(
-  "/organizations/:orgId/operations?per_page=250",
-  { supervisor: takeLeading },
-);
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const ids = ctx.json.value._embedded.operations.map(
+    (entity) => `${entity.id}`,
+  );
+  const paginatedData = { ...ctx.json.value, _embedded: { operations: ids } };
+  yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
+}
 
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
 export const pollOrgOperations = api.get<{ orgId: string }>(
   "/organizations/:orgId/operations",
   { supervisor: poll(10 * 1000, `${cancelOrgOperationsPoll}`) },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByOrgId({ page: 1, id: ctx.payload.orgId });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
+);
+
+export const fetchOperationsByOrgId = api.get<{ id: string } & PaginateProps>(
+  "/organizations/:id/operations?page=:page",
+  { supervisor: cacheTimer() },
+  paginateOps,
+);
+
+export const fetchOperationsByEnvId = api.get<
+  { id: string } & PaginateProps,
+  HalEmbedded<{ operations: DeployOperationResponse[] }>
+>(
+  "/accounts/:id/operations?page=:page",
+  { supervisor: cacheTimer() },
+  paginateOps,
+);
+
+export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
+export const pollEnvOperations = api.get<
+  EnvIdProps,
+  HalEmbedded<{ operations: DeployOperationResponse[] }>
+>(
+  ["/accounts/:envId/operations?page=1", "poll"],
+  { supervisor: poll(10 * 1000, `${cancelEnvOperationsPoll}`) },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByEnvId({ page: 1, id: ctx.payload.envId });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
+);
+
+export const fetchOperationsByAppId = api.get<
+  { id: string } & PaginateProps,
+  HalEmbedded<{ operations: DeployOperationResponse[] }>
+>(
+  "/apps/:id/operations?page=:page&with_services=true",
+  { supervisor: cacheTimer() },
+  paginateOps,
+);
+
+export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
+export const pollAppOperations = api.get<{ id: string }>(
+  ["/apps/:id/operations?with_services=true", "poll"],
+  {
+    supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`),
+  },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByAppId({ page: 1, id: ctx.payload.id });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
+);
+
+export const fetchOperationsByDatabaseId = api.get<
+  { id: string } & PaginateProps,
+  HalEmbedded<{ operations: DeployOperationResponse[] }>
+>(
+  "/databases/:id/operations?page=:page&with_services=true",
+  { supervisor: cacheTimer() },
+  paginateOps,
+);
+
+export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
+export const pollDatabaseOperations = api.get<{ id: string }>(
+  ["/databases/:id/operations?with_services=true", "poll"],
+  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByDatabaseId({ page: 1, id: ctx.payload.id });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
+);
+
+export const fetchOperationsByServiceId = api.get<
+  { id: string } & PaginateProps,
+  HalEmbedded<{ operations: DeployOperationResponse[] }>
+>(
+  "/services/:id/operations?page=:page",
+  { supervisor: cacheTimer() },
+  paginateOps,
+);
+
+export const cancelServicesOpsPoll = createAction("cancel-services-ops-poll");
+export const pollServiceOperations = api.get<{ id: string }>(
+  ["/services/:id/operations", "poll"],
+  { supervisor: poll(10 * 1000, `${cancelServicesOpsPoll}`) },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByServiceId({ page: 1, id: ctx.payload.id });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
+);
+
+export const fetchOperationsByEndpointId = api.get<
+  { id: string } & PaginateProps,
+  HalEmbedded<{ operations: DeployOperationResponse[] }>
+>(
+  "/vhosts/:id/operations?page=:page",
+  { supervisor: cacheTimer() },
+  paginateOps,
+);
+
+export const cancelEndpointOpsPoll = createAction("cancel-enp-ops-poll");
+export const pollEndpointOperations = api.get<{ id: string }>(
+  ["/vhosts/:id/operations", "poll"],
+  { supervisor: poll(10 * 1000, `${cancelEndpointOpsPoll}`) },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByEndpointId({ page: 1, id: ctx.payload.id });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
 );
 
 export const fetchOperationLogs = api.get<{ id: string } & Retryable>(
@@ -419,6 +588,32 @@ export const pollOperationById = api.get<
   DeployOperationResponse
 >(["/operations/:id", "poll"], {
   supervisor: poll(3 * 1000, `${cancelOpByIdPoll}`),
+});
+
+export const scaleService = api.post<
+  ServiceScaleProps,
+  DeployOperationResponse
+>(["/services/:id/operations", "scale"], function* (ctx, next) {
+  const { id, containerCount, containerProfile, containerSize } = ctx.payload;
+  const body = {
+    type: "scale",
+    id,
+    container_count: containerCount,
+    instance_profile: containerProfile,
+    container_size: containerSize,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const opId = ctx.json.value.id;
+  ctx.loader = {
+    message: `Scale service operation queued (operation ID: ${opId})`,
+    meta: { opId: `${opId}` },
+  };
 });
 
 type WaitResult = DeployOperation | undefined;
