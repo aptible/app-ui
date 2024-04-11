@@ -15,7 +15,6 @@ import {
   createSelector,
   delay,
   mdw,
-  parallel,
   poll,
   select,
   takeLeading,
@@ -42,12 +41,7 @@ import type {
   OperationType,
   ResourceType,
 } from "@app/types";
-import {
-  ServiceScaleProps,
-  scaleAttrs,
-  selectServiceById,
-  selectServicesByAppId,
-} from "../service";
+import { ServiceScaleProps, scaleAttrs, selectServiceById } from "../service";
 
 export interface DeployOperationResponse {
   id: number;
@@ -409,12 +403,6 @@ export const fetchAllEnvOps = thunks.create<EnvIdProps>(
   combinePages(fetchEnvOperations, { max: 2 }),
 );
 
-export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
-export const pollOrgOperations = api.get<{ orgId: string }>(
-  "/organizations/:orgId/operations",
-  { supervisor: poll(10 * 1000, `${cancelOrgOperationsPoll}`) },
-);
-
 function* paginateOps(
   ctx: DeployApiCtx<
     any,
@@ -434,6 +422,17 @@ function* paginateOps(
   const paginatedData = { ...ctx.json.value, _embedded: { operations: ids } };
   yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
 }
+
+export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
+export const pollOrgOperations = api.get<{ orgId: string }>(
+  "/organizations/:orgId/operations",
+  { supervisor: poll(10 * 1000, `${cancelOrgOperationsPoll}`) },
+  function* (ctx, next) {
+    yield* next();
+    const action = fetchOperationsByOrgId({ page: 1, id: ctx.payload.orgId });
+    yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
+  },
+);
 
 export const fetchOperationsByOrgId = api.get<{ id: string } & PaginateProps>(
   "/organizations/:id/operations?page=:page",
@@ -467,11 +466,15 @@ export const pollEnvOperations = api.get<
 export const fetchOperationsByAppId = api.get<
   { id: string } & PaginateProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
->("/apps/:id/operations?page=:page", { supervisor: cacheTimer() }, paginateOps);
+>(
+  "/apps/:id/operations?page=:page&with_services=true",
+  { supervisor: cacheTimer() },
+  paginateOps,
+);
 
 export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
 export const pollAppOperations = api.get<{ id: string }>(
-  ["/apps/:id/operations", "poll"],
+  ["/apps/:id/operations?with_services=true", "poll"],
   {
     supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`),
   },
@@ -486,14 +489,14 @@ export const fetchOperationsByDatabaseId = api.get<
   { id: string } & PaginateProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
-  "/databases/:id/operations?page=:page",
+  "/databases/:id/operations?page=:page&with_services=true",
   { supervisor: cacheTimer() },
   paginateOps,
 );
 
 export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
 export const pollDatabaseOperations = api.get<{ id: string }>(
-  ["/databases/:id/operations", "poll"],
+  ["/databases/:id/operations?with_services=true", "poll"],
   { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
   function* (ctx, next) {
     yield* next();
@@ -539,52 +542,6 @@ export const pollEndpointOperations = api.get<{ id: string }>(
     yield* next();
     const action = fetchOperationsByEndpointId({ page: 1, id: ctx.payload.id });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
-  },
-);
-
-export const pollAppAndServiceOperations = thunks.create<{ id: string }>(
-  "app-service-op-poll",
-  { supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`) },
-  function* (ctx, next) {
-    yield* schema.update(schema.loaders.start({ id: ctx.key }));
-
-    const services = yield* select((s: WebState) =>
-      selectServicesByAppId(s, {
-        appId: ctx.payload.id,
-      }),
-    );
-    const serviceOps = services.map(
-      (service) => () =>
-        fetchOperationsByServiceId.run({ id: service.id, page: 1 }),
-    );
-    const group = yield* parallel([
-      () => fetchOperationsByAppId.run({ id: ctx.payload.id, page: 1 }),
-      ...serviceOps,
-    ]);
-    yield* group;
-
-    yield* next();
-    yield* schema.update(schema.loaders.success({ id: ctx.key }));
-  },
-);
-
-export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
-  "db-service-op-poll",
-  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
-  function* (ctx, next) {
-    yield* schema.update(schema.loaders.start({ id: ctx.key }));
-    const dbb = yield* select((s: WebState) =>
-      schema.databases.selectById(s, ctx.payload),
-    );
-
-    const group = yield* parallel([
-      () => fetchOperationsByDatabaseId.run({ id: ctx.payload.id, page: 1 }),
-      () => fetchOperationsByServiceId.run({ id: dbb.serviceId, page: 1 }),
-    ]);
-    yield* group;
-
-    yield* next();
-    yield* schema.update(schema.loaders.success({ id: ctx.key }));
   },
 );
 

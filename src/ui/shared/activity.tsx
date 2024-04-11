@@ -10,8 +10,8 @@ import {
   fetchEnvironmentById,
   fetchServicesByAppId,
   getResourceUrl,
-  pollAppAndServiceOperations,
-  pollDatabaseAndServiceOperations,
+  pollAppOperations,
+  pollDatabaseOperations,
   pollEndpointOperations,
   pollEnvOperations,
   pollOrgOperations,
@@ -232,7 +232,7 @@ function ActivityTable({
       <Group size="sm">
         <TitleBar
           visible={showTitle}
-          description="Operations show real-time changes to resources, such as Apps and Databases."
+          description="This global Activity page show real-time changes to resources within the last 2 weeks."
         >
           Activity
         </TitleBar>
@@ -287,7 +287,6 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
   });
   const loader = useLoader(pollOrgOperations);
   const paginated = usePaginatedOpsByOrgId(orgId);
-  console.log(paginated.data);
 
   return (
     <ActivityTable
@@ -320,7 +319,7 @@ export function ActivityByEnv({ envId }: { envId: string }) {
 
 export function ActivityByApp({ appId }: { appId: string }) {
   const app = useSelector((s) => selectAppById(s, { id: appId }));
-  const action = pollAppAndServiceOperations({ id: app.id });
+  const action = pollAppOperations({ id: app.id });
   useQuery(fetchEnvironmentById({ id: app.environmentId }));
   useQuery(fetchApp({ id: appId }));
   useQuery(fetchServicesByAppId({ id: appId }));
@@ -344,7 +343,7 @@ export function ActivityByApp({ appId }: { appId: string }) {
 }
 
 export function ActivityByDatabase({ dbId }: { dbId: string }) {
-  const action = pollDatabaseAndServiceOperations({ id: dbId });
+  const action = pollDatabaseOperations({ id: dbId });
   const db = useSelector((s) => selectDatabaseById(s, { id: dbId }));
   useQuery(fetchEnvironmentById({ id: db.environmentId }));
   useQuery(fetchDatabase({ id: dbId }));
@@ -355,7 +354,7 @@ export function ActivityByDatabase({ dbId }: { dbId: string }) {
     action: poller,
     cancel,
   });
-  const loader = useLoader(action);
+  const loader = useLoader(poller);
   const paginated = usePaginatedOpsByDatabaseId(dbId);
 
   return (
