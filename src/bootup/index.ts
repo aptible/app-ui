@@ -13,6 +13,7 @@ import {
   fetchServices,
   fetchStacks,
 } from "@app/deploy";
+import { fetchDeployments } from "@app/deployment";
 import { call, parallel, select, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
@@ -81,6 +82,7 @@ function* onFetchResourceData() {
     fetchOperationsByOrgId.run({ id: org.id, page: 1 }),
     fetchSystemStatus.run(),
     fetchSources.run(),
+    fetchDeployments.run(),
   ]);
   yield* group;
 }
