@@ -10,6 +10,7 @@ import type {
   DeployAppConfigEnv,
   DeployOperation,
   DeployServiceResponse,
+  Deployment,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
@@ -110,6 +111,7 @@ export const findAppById = schema.apps.findById;
 
 export interface DeployAppRow extends DeployApp {
   envHandle: string;
+  currentDeployment: Deployment;
   gitRef: string;
   gitCommitSha: string;
   dockerImageName: string;
