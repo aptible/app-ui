@@ -13,7 +13,7 @@ cytoscape.use(klay);
 export const graphPadding = 50;
 
 const iconProps: IconProps = {
-  color: "#FDF8F0", // off-white
+  color: "#FFF",
 };
 
 const appIconUri = iconToDataUri(<IconBox {...iconProps} />);
