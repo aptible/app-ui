@@ -6,18 +6,6 @@ import { WebState, schema } from "@app/schema";
 import { DeployLogDrain, LinkResponse, ProvisionableStatus } from "@app/types";
 import { DeployOperationResponse } from "../operation";
 
-export type LogDrainType =
-  | "logdna"
-  | "papertrail"
-  | "tail"
-  | "elasticsearch_database"
-  | "sumologic"
-  | "https_post"
-  | "datadog"
-  | "syslog_tls_tcp"
-  | "insightops";
-// there are two legacy types we DO NOT allow creating: elasticsearch / https
-
 export interface CreateLogDrainBase {
   envId: string;
   handle: string;
@@ -99,6 +87,7 @@ export interface DeployLogDrainResponse {
   };
   _links: {
     account: LinkResponse;
+    database: LinkResponse;
   };
 }
 
@@ -120,6 +109,7 @@ export const deserializeLogDrain = (payload: any): DeployLogDrain => {
     drainEphemeralSessions: payload.drain_ephemeral_sessions,
     drainProxies: payload.drain_proxies,
     environmentId: extractIdFromLink(links.account),
+    databaseId: extractIdFromLink(links.database),
     backendChannel: payload._embedded.backend.channel,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
@@ -155,6 +145,7 @@ export const defaultLogDrainResponse = (
     },
     _links: {
       account: defaultHalHref(),
+      database: defaultHalHref(),
     },
     ...md,
   };

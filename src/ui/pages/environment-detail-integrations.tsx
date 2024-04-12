@@ -5,7 +5,7 @@ import {
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
   restartLogDrain,
-  restartMetricDrain,
+  selectDatabaseById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
 } from "@app/deploy";
@@ -19,15 +19,19 @@ import {
 import {
   createLogDrainUrl,
   createMetricDrainUrl,
+  databaseDetailUrl,
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { DeployLogDrain, DeployMetricDrain } from "@app/types";
+import { DeployLogDrain, DeployMetricDrain, LogDrainType } from "@app/types";
 import { useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
 import { usePaginate } from "../hooks";
 import {
   ButtonDestroy,
   ButtonOps,
+  Code,
+  CopyTextButton,
   DescBar,
   EmptyTr,
   FilterBar,
@@ -41,6 +45,7 @@ import {
   Table,
   Td,
   Th,
+  Tooltip,
   Tr,
   tokens,
 } from "../shared";
@@ -73,9 +78,7 @@ const LogDrainPrimaryCell = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   return (
     <Td className="flex-1">
       <div className="flex">
-        <p className="leading-4">
-          <DrainStatusPill drain={logDrain} />
-        </p>
+        <DrainStatusPill drain={logDrain} />
       </div>
     </Td>
   );
@@ -166,16 +169,18 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   return (
     <Td className="flex justify-end gap-2 mr-4">
       <Group variant="horizontal" size="sm">
-        <ButtonOps
-          size="sm"
-          envId={logDrain.environmentId}
-          className="semibold"
-          onClick={submitRestart}
-          isLoading={restartLoader.isLoading}
-          disabled={logDrain.backendChannel === "log_forwarder"}
-        >
-          Restart
-        </ButtonOps>
+        {logDrain.drainType === "tail" ? (
+          <ButtonOps
+            size="sm"
+            envId={logDrain.environmentId}
+            className="semibold"
+            onClick={submitRestart}
+            isLoading={restartLoader.isLoading}
+            disabled={logDrain.backendChannel === "log_forwarder"}
+          >
+            Restart
+          </ButtonOps>
+        ) : null}
 
         <ButtonDestroy
           size="sm"
@@ -191,6 +196,85 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
       </Group>
     </Td>
   );
+};
+
+/*
+{{#if logDrain.isSyslogBased}}
+  {{logDrain.drainHost}}:{{logDrain.drainPort}}
+  {{#if logDrain.loggingToken}}
+    - token: {{logDrain.loggingToken}}
+  {{/if}}
+{{/if}}
+*/
+const isHttps: LogDrainType[] = [
+  "https_post",
+  "logdna",
+  "sumologic",
+  "datadog",
+];
+const LogDrainDestinationCell = ({
+  logDrain,
+}: { logDrain: DeployLogDrain }) => {
+  const database = useSelector((s) =>
+    selectDatabaseById(s, { id: logDrain.databaseId }),
+  );
+  if (logDrain.drainType === "tail") {
+    return (
+      <Tooltip
+        text="This log drain was automatically provisioned to support `aptible logs` in this environment. Access these logs via the Aptible CLI."
+        autoSizeWidth
+      >
+        <Code>Destination</Code>
+      </Tooltip>
+    );
+  }
+
+  if (logDrain.drainType === "elasticsearch_database") {
+    return (
+      <>
+        <Link to={databaseDetailUrl(database.id)}>{database.handle}</Link>
+        {logDrain.loggingToken ? (
+          <>
+            <Tooltip autoSizeWidth text={logDrain.loggingToken}>
+              Pipeline
+            </Tooltip>
+            <CopyTextButton text={logDrain.loggingToken} />
+          </>
+        ) : null}
+      </>
+    );
+  }
+
+  if (isHttps.includes(logDrain.drainType)) {
+    return (
+      <>
+        <Tooltip autoSizeWidth text={logDrain.url}>
+          <Code>URL</Code>
+        </Tooltip>
+        <CopyTextButton text={logDrain.url} />
+      </>
+    );
+  }
+
+  if (logDrain.drainType === "syslog_tls_tcp") {
+    return (
+      <>
+        <Code>
+          {logDrain.drainHost}:{logDrain.drainPort}
+        </Code>
+        {logDrain.loggingToken ? (
+          <>
+            <Tooltip autoSizeWidth text={logDrain.loggingToken}>
+              Token
+            </Tooltip>
+            <CopyTextButton text={logDrain.loggingToken} />
+          </>
+        ) : null}
+      </>
+    );
+  }
+
+  return null;
 };
 
 const LogDrainTable = ({ envId }: { envId: string }) => {
@@ -213,17 +297,24 @@ const LogDrainTable = ({ envId }: { envId: string }) => {
         <THead>
           <Th>Status</Th>
           <Th>Handle</Th>
+          <Th variant="center">Destination</Th>
           <Th>Sources</Th>
           <Th>Last Updated</Th>
           <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={6} /> : null}
           {paginated.data.map((drain) => (
             <Tr key={drain.id}>
               <LogDrainPrimaryCell logDrain={drain} />
               <LogDrainHandleCell logDrain={drain} />
+              <Td
+                variant="center"
+                className="flex justify-center items-center h-full"
+              >
+                <LogDrainDestinationCell logDrain={drain} />
+              </Td>
               <LogDrainSourcesCell logDrain={drain} />
               <LogDrainLastUpdatedCell logDrain={drain} />
               <LogDrainActions logDrain={drain} />
@@ -241,9 +332,7 @@ const MetricDrainPrimaryCell = ({
   return (
     <Td className="flex-1">
       <div className="flex">
-        <p className="leading-4">
-          <DrainStatusPill drain={metricDrain} />
-        </p>
+        <DrainStatusPill drain={metricDrain} />
       </div>
     </Td>
   );
@@ -263,6 +352,19 @@ const MetricDrainHandleCell = ({
           </span>
         </p>
       </div>
+    </Td>
+  );
+};
+
+const MetricDrainDatabaseCell = ({
+  metricDrain,
+}: { metricDrain: DeployMetricDrain }) => {
+  const database = useSelector((s) =>
+    selectDatabaseById(s, { id: metricDrain.databaseId }),
+  );
+  return (
+    <Td className="flex-1">
+      <Link to={databaseDetailUrl(database.id)}>{database.handle}</Link>
     </Td>
   );
 };
@@ -289,15 +391,6 @@ const MetricDrainActions = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const restartAction = restartMetricDrain({ id: metricDrain.id });
-  const restartLoader = useLoader(restartAction);
-  const submitRestart = () => {
-    dispatch(restartAction);
-  };
-  useLoaderSuccess(restartLoader, () => {
-    navigate(operationDetailUrl(restartLoader.meta.opId));
-  });
-
   const deprovisionAction = deprovisionMetricDrain({ id: metricDrain.id });
   const deprovisionLoader = useLoader(deprovisionAction);
   const submitDeprovision = () => {
@@ -310,16 +403,6 @@ const MetricDrainActions = ({
   return (
     <Td className="flex justify-end gap-2 mr-4">
       <Group variant="horizontal" size="sm">
-        <ButtonOps
-          size="sm"
-          envId={metricDrain.environmentId}
-          className="semibold"
-          onClick={submitRestart}
-          isLoading={restartLoader.isLoading}
-        >
-          Restart
-        </ButtonOps>
-
         <ButtonDestroy
           size="sm"
           envId={metricDrain.environmentId}
@@ -358,16 +441,18 @@ const MetricDrainTable = ({ envId }: { envId: string }) => {
         <THead>
           <Th>Status</Th>
           <Th>Handle</Th>
+          <Th>Database</Th>
           <Th>Last Updated</Th>
           <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={4} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
           {paginated.data.map((drain) => (
             <Tr key={drain.id}>
               <MetricDrainPrimaryCell metricDrain={drain} />
               <MetricDrainHandleCell metricDrain={drain} />
+              <MetricDrainDatabaseCell metricDrain={drain} />
               <MetricDrainLastUpdatedCell metricDrain={drain} />
               <MetricDrainActions metricDrain={drain} />
             </Tr>
