@@ -34,6 +34,7 @@ export interface DeployMetricDrainResponse {
   aggregator_allocation: string[];
   _links: {
     account: LinkResponse;
+    database: LinkResponse;
   };
 }
 
@@ -59,6 +60,7 @@ export const defaultMetricDrainResponse = (
     updated_at: now,
     _links: {
       account: defaultHalHref(),
+      database: defaultHalHref(),
       ...md._links,
     },
     ...md,
@@ -83,6 +85,7 @@ export const deserializeMetricDrain = (
     aggregatorAllocation: payload.aggregator_allocation,
     drainConfiguration: payload.drain_configuration,
     environmentId: extractIdFromLink(links.account),
+    databaseId: extractIdFromLink(links.database),
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     status: payload.status,
