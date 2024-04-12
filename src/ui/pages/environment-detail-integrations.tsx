@@ -198,14 +198,6 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   );
 };
 
-/*
-{{#if logDrain.isSyslogBased}}
-  {{logDrain.drainHost}}:{{logDrain.drainPort}}
-  {{#if logDrain.loggingToken}}
-    - token: {{logDrain.loggingToken}}
-  {{/if}}
-{{/if}}
-*/
 const isHttps: LogDrainType[] = [
   "https_post",
   "logdna",
