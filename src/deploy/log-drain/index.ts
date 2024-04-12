@@ -3,7 +3,12 @@ import { call } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
-import { DeployLogDrain, LinkResponse, ProvisionableStatus } from "@app/types";
+import {
+  DeployLogDrain,
+  LinkResponse,
+  LogDrainType,
+  ProvisionableStatus,
+} from "@app/types";
 import { DeployOperationResponse } from "../operation";
 
 export interface CreateLogDrainBase {
@@ -170,6 +175,15 @@ export const selectLogDrainsByEnvId = createSelector(
   },
 );
 export const hasDeployLogDrain = (a: DeployLogDrain) => a.id !== "";
+export const isLogDrainHttps = (drain: DeployLogDrain): boolean => {
+  const isHttps: LogDrainType[] = [
+    "https_post",
+    "logdna",
+    "sumologic",
+    "datadog",
+  ];
+  return isHttps.includes(drain.drainType);
+};
 
 export const fetchLogDrains = api.get(
   "/log_drains?per_page=5000",

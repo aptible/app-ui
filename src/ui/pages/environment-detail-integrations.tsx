@@ -4,6 +4,7 @@ import {
   deprovisionMetricDrain,
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
+  isLogDrainHttps,
   restartLogDrain,
   selectDatabaseById,
   selectLogDrainsByEnvId,
@@ -23,7 +24,7 @@ import {
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { DeployLogDrain, DeployMetricDrain, LogDrainType } from "@app/types";
+import { DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { usePaginate } from "../hooks";
@@ -198,12 +199,6 @@ const LogDrainActions = ({ logDrain }: { logDrain: DeployLogDrain }) => {
   );
 };
 
-const isHttps: LogDrainType[] = [
-  "https_post",
-  "logdna",
-  "sumologic",
-  "datadog",
-];
 const LogDrainDestinationCell = ({
   logDrain,
 }: { logDrain: DeployLogDrain }) => {
@@ -237,7 +232,7 @@ const LogDrainDestinationCell = ({
     );
   }
 
-  if (isHttps.includes(logDrain.drainType)) {
+  if (isLogDrainHttps(logDrain)) {
     return (
       <>
         <Tooltip text={logDrain.url}>
