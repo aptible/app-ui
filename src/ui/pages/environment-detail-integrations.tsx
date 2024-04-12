@@ -221,8 +221,10 @@ const LogDrainDestinationCell = ({
   if (logDrain.drainType === "tail") {
     return (
       <Tooltip
-        text="This log drain was automatically provisioned to support `aptible logs` in this environment. Access these logs via the Aptible CLI."
+        relative={false}
         autoSizeWidth
+        className="absolute"
+        text="This log drain was automatically provisioned to support `aptible logs` in this environment. Access these logs via the Aptible CLI."
       >
         <Code>Destination</Code>
       </Tooltip>
@@ -235,9 +237,7 @@ const LogDrainDestinationCell = ({
         <Link to={databaseDetailUrl(database.id)}>{database.handle}</Link>
         {logDrain.loggingToken ? (
           <>
-            <Tooltip autoSizeWidth text={logDrain.loggingToken}>
-              Pipeline
-            </Tooltip>
+            <Tooltip text={logDrain.loggingToken}>Pipeline</Tooltip>
             <CopyTextButton text={logDrain.loggingToken} />
           </>
         ) : null}
@@ -248,7 +248,7 @@ const LogDrainDestinationCell = ({
   if (isHttps.includes(logDrain.drainType)) {
     return (
       <>
-        <Tooltip autoSizeWidth text={logDrain.url}>
+        <Tooltip text={logDrain.url}>
           <Code>URL</Code>
         </Tooltip>
         <CopyTextButton text={logDrain.url} />
@@ -258,19 +258,17 @@ const LogDrainDestinationCell = ({
 
   if (logDrain.drainType === "syslog_tls_tcp") {
     return (
-      <>
+      <Group variant="horizontal" size="sm" className="items-center">
         <Code>
           {logDrain.drainHost}:{logDrain.drainPort}
         </Code>
         {logDrain.loggingToken ? (
           <>
-            <Tooltip autoSizeWidth text={logDrain.loggingToken}>
-              Token
-            </Tooltip>
+            <Tooltip text={logDrain.loggingToken}>Token</Tooltip>
             <CopyTextButton text={logDrain.loggingToken} />
           </>
         ) : null}
-      </>
+      </Group>
     );
   }
 

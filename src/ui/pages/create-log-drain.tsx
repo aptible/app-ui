@@ -1,6 +1,5 @@
 import {
   CreateLogDrainProps,
-  LogDrainType,
   provisionLogDrain,
   selectEnvironmentById,
 } from "@app/deploy";
@@ -11,6 +10,7 @@ import {
   useSelector,
 } from "@app/react";
 import { operationDetailUrl } from "@app/routes";
+import { LogDrainType } from "@app/types";
 import { handleValidator, portValidator } from "@app/validator";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";

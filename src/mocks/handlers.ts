@@ -832,6 +832,9 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/deployments/:id`, async (_, res, ctx) => {
     return res(ctx.json(testDeploymentGit));
   }),
+  rest.get(`${testEnv.apiUrl}/deployments/`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { deployments: [] } }));
+  }),
   rest.get(`${testEnv.apiUrl}/sources`, async (_, res, ctx) => {
     return res(ctx.json({ _embedded: { sources: [] } }));
   }),
