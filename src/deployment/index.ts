@@ -14,7 +14,7 @@ export interface DeploymentResponse {
   git_commit_sha: string | null;
   git_commit_url: string | null;
   git_commit_message: string | null;
-  git_commit_date: string | null;
+  git_commit_timestamp: string | null;
   created_at: string;
   updated_at: string;
   _links: {
@@ -41,7 +41,7 @@ export const defaultDeploymentResponse = (
     git_commit_sha: "",
     git_commit_url: "",
     git_commit_message: "",
-    git_commit_date: "",
+    git_commit_timestamp: "",
     created_at: now,
     updated_at: now,
     _links: {
@@ -72,7 +72,7 @@ export const deserializeDeployment = (
     gitCommitSha: payload.git_commit_sha || "",
     gitCommitUrl: payload.git_commit_url || "",
     gitCommitMessage: payload.git_commit_message || "",
-    gitCommitDate: payload.git_commit_date,
+    gitCommitTimestamp: payload.git_commit_timestamp,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     appId: extractIdFromLink(links.app),
@@ -120,7 +120,7 @@ export function getDockerImageName(deployment: Deployment): string {
   return deployment.dockerImage || "Dockerfile Build";
 }
 
-export const fetchDeployments = api.get("/deployments");
+export const fetchDeployments = api.get("/deployments?per_page=5000");
 export const fetchDeploymentById = api.get<{ id: string }>("/deployments/:id");
 export const fetchDeploymentsByAppId = api.get<{ id: string }>(
   "/apps/:id/deployments",
