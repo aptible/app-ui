@@ -184,6 +184,10 @@ export const isLogDrainHttps = (drain: DeployLogDrain): boolean => {
   ];
   return isHttps.includes(drain.drainType);
 };
+export const isLogDrainSyslog = (drain: DeployLogDrain): boolean => {
+  const isHttps: LogDrainType[] = ["syslog_tls_tcp", "papertrail"];
+  return isHttps.includes(drain.drainType);
+};
 
 export const fetchLogDrains = api.get(
   "/log_drains?per_page=5000",

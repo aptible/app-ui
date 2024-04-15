@@ -5,6 +5,7 @@ import {
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
   isLogDrainHttps,
+  isLogDrainSyslog,
   restartLogDrain,
   selectDatabaseById,
   selectLogDrainsByEnvId,
@@ -210,7 +211,7 @@ const LogDrainDestinationCell = ({
       <Tooltip
         relative={false}
         autoSizeWidth
-        className="absolute"
+        className="absolute mt-4"
         text="This log drain was automatically provisioned to support `aptible logs` in this environment. Access these logs via the Aptible CLI."
       >
         <Code>Destination</Code>
@@ -243,7 +244,7 @@ const LogDrainDestinationCell = ({
     );
   }
 
-  if (logDrain.drainType === "syslog_tls_tcp") {
+  if (isLogDrainSyslog(logDrain)) {
     return (
       <Group variant="horizontal" size="sm" className="items-center">
         <Code>
