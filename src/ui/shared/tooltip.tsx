@@ -1,7 +1,7 @@
 import cn from "classnames";
 
 export interface TooltipProps {
-  text: string;
+  text: string | React.ReactNode;
   children: React.ReactNode;
   autoSizeWidth?: boolean;
   fluid?: boolean;
@@ -9,6 +9,7 @@ export interface TooltipProps {
   className?: string;
   relative?: boolean;
   variant?: "top" | "left" | "bottom" | "right";
+  theme?: "light" | "dark";
 }
 
 export const Tooltip = ({
@@ -20,6 +21,7 @@ export const Tooltip = ({
   className = "",
   relative = true,
   variant = "top",
+  theme = "dark",
 }: TooltipProps) => {
   return (
     <div className={`tooltip ${relative ? "relative" : ""} ${className}`}>
@@ -33,7 +35,7 @@ export const Tooltip = ({
           "absolute",
           "rounded-md",
           "px-3 py-2",
-          "bg-black text-white",
+          theme === "dark" ? "bg-black text-white" : "bg-white text-black",
           autoSizeWidth ? "w-96" : "",
           fluid ? "w-[60vw] md:w-max" : "",
         ])}
