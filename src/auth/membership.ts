@@ -129,21 +129,39 @@ export const updateUserMemberships = thunks.create<{
       }
     }
 
-    const group = yield* parallel<AuthApiCtx>([...addReqs, ...rmReqs]);
-    const results = yield* group;
-
-    yield* next();
-
-    const errors = results
+    // we need to add memberships before we can remove memberships
+    // because if we remove memberships before we finish adding them
+    // then the user would be removed from the organization -- which is bad.
+    const addGroup = yield* parallel<AuthApiCtx>(addReqs);
+    const addResults = yield* addGroup;
+    const addErrors = addResults
       .map((res) => {
         if (!res.ok) return res.error.message;
         if (!res.value.json.ok) return res.value.json.error.message;
         return "";
       })
       .filter(Boolean);
-
-    if (errors.length > 0) {
-      throw new Error(errors.join(","));
+    if (addErrors.length > 0) {
+      throw new Error(addErrors.join(","));
     }
+
+    const rmGroup = yield* parallel<AuthApiCtx>(rmReqs);
+    const rmResults = yield* rmGroup;
+    const rmErrors = rmResults
+      .map((res) => {
+        if (!res.ok) return res.error.message;
+        if (!res.value.json.ok) return res.value.json.error.message;
+        return "";
+      })
+      .filter(Boolean);
+    if (rmErrors.length > 0) {
+      throw new Error(rmErrors.join(","));
+    }
+
+    yield* next();
+
+    ctx.loader = {
+      message: "Successfully updated user roles!",
+    };
   },
 ]);

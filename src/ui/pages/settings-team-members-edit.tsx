@@ -40,10 +40,11 @@ export function TeamMembersEditPage() {
   const user = useSelector((s) => selectUserById(s, { id }));
   const roles = useSelector((s) => selectRolesEditable(s, { orgId: org.id }));
   const { rolesLoader, userRoles } = useFetchUserRoles(user.id);
+  const curRoleIds = [...userRoles].sort().join(",");
 
   useEffect(() => {
     setSelected(userRoles);
-  }, [rolesLoader.status]);
+  }, [curRoleIds]);
 
   const [selected, setSelected] = useState(userRoles);
   const hasOnlyOneRole = selected.length === 1;
@@ -73,15 +74,19 @@ export function TeamMembersEditPage() {
     (roleId) => selected.includes(roleId) === false,
   );
   const add = selected.filter((roleId) => userRoles.includes(roleId) === false);
-  const action = updateUserMemberships({ userId: user.id, add, remove });
-  const loader = useLoader(action);
+  const canUpdateMemberships = add.length > 0 || remove.length > 0;
+  const loader = useLoader(updateUserMemberships);
+  useLoaderSuccess(loader, () => {
+    rolesLoader.trigger();
+  });
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(action);
+    dispatch(updateUserMemberships({ userId: user.id, add, remove }));
   };
-  const rmLoader = useLoader(removeUserFromOrg);
+  const rmAction = removeUserFromOrg({ orgId: org.id, userId: user.id });
+  const rmLoader = useLoader(rmAction);
   const onRemoveFromOrg = () => {
-    dispatch(removeUserFromOrg({ orgId: org.id, userId: user.id }));
+    dispatch(rmAction);
   };
   const isAccountOwner = useSelector((s) =>
     selectIsAccountOwner(s, { orgId: org.id }),
@@ -131,7 +136,11 @@ export function TeamMembersEditPage() {
               })}
 
             <div>
-              <Button type="submit" isLoading={loader.isLoading}>
+              <Button
+                type="submit"
+                isLoading={loader.isLoading}
+                disabled={!canUpdateMemberships}
+              >
                 Save
               </Button>
             </div>
