@@ -133,6 +133,9 @@ export const appCiCdUrl = (id: string) => `${appDetailUrl(id)}/ci-cd`;
 export const APP_CICD_GITHUB_PATH = `${APP_DETAIL_PATH}/ci-cd/github`;
 export const appCiCdGithubUrl = (id: string) =>
   `${appDetailUrl(id)}/ci-cd/github`;
+export const APP_CICD_TERRAFORM_PATH = `${APP_DETAIL_PATH}/ci-cd/terraform`;
+export const appCiCdTerraformUrl = (id: string) =>
+  `${appDetailUrl(id)}/ci-cd/terraform`;
 export const APP_DETAIL_DEPS_PATH = `${APP_DETAIL_PATH}/deps`;
 export const appDetailDepsUrl = (id: string) => `/apps/${id}/deps`;
 export const APP_DETAIL_DEPLOYMENTS_PATH = "/apps/:id/deployments";

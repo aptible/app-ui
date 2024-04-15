@@ -14,8 +14,9 @@ import {
   AppDeployWithGitAddKeyPage,
   AppDeployWithGitPage,
   AppDeployWithGithubPage,
-  AppDetailCiCdGuidePage,
+  AppDetailCiCdGithubPage,
   AppDetailCiCdPage,
+  AppDetailCiCdTerraformPage,
   AppDetailConfigPage,
   AppDetailDeploymentsPage,
   AppDetailDepsPage,
@@ -346,7 +347,11 @@ export const appRoutes: RouteObject[] = [
               },
               {
                 path: routes.APP_CICD_GITHUB_PATH,
-                element: <AppDetailCiCdGuidePage />,
+                element: <AppDetailCiCdGithubPage />,
+              },
+              {
+                path: routes.APP_CICD_TERRAFORM_PATH,
+                element: <AppDetailCiCdTerraformPage />,
               },
               {
                 path: routes.APP_DETAIL_DEPS_PATH,
