@@ -49,6 +49,7 @@ import {
   IconEllipsis,
   IconEndpoint,
   IconExternalLink,
+  IconExternalResource,
   IconEyeClosed,
   IconEyeOpen,
   IconFit,
@@ -675,6 +676,7 @@ const Icons = () => (
         ["IconEyeClosed", <IconEyeClosed />],
         ["IconTarget", <IconTarget />],
         ["IconCommit", <IconCommit />],
+        ["IconExternalResource", <IconExternalResource />],
       ].map(([title, icon]) => (
         <div key={title as string}>
           <div className="inline-block -mb-1">{icon}</div>{" "}
