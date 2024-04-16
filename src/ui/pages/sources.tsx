@@ -52,31 +52,31 @@ function SourceListRow({ source }: { source: DeploySourceRow }) {
         </Link>
       </Td>
       <Td>
-        {(liveCommits.length && (
-          <div className="flex flex-row gap-1 items-center">
-            {liveCommits.map((liveCommit) => (
-              <Tooltip
-                key={liveCommit.sha}
-                fluid
-                theme="light"
-                className="py-1"
-                text={
-                  <GitRef
-                    gitRef={liveCommit.ref}
-                    commitSha={liveCommit.sha}
-                    commitUrl={liveCommit.url}
-                  />
-                }
-              >
-                <Link
-                  to="#"
-                  className="block bg-gray-300 h-[16px] w-[6px] hover:bg-indigo rounded-md"
+        {liveCommits.length === 0 ? <em>No commit information</em> : null}
+
+        <Group variant="horizontal" size="xs" className="items-center">
+          {liveCommits.map((liveCommit) => (
+            <Tooltip
+              key={liveCommit.sha}
+              fluid
+              theme="light"
+              className="py-1"
+              text={
+                <GitRef
+                  gitRef={liveCommit.ref}
+                  commitSha={liveCommit.sha}
+                  commitUrl={liveCommit.url}
                 />
-              </Tooltip>
-            ))}
-            {extraLiveCommits ? <p>+{extraLiveCommits}</p> : null}
-          </div>
-        )) || <em>No commit information</em>}
+              }
+            >
+              <Link
+                to="#"
+                className="block bg-gray-300 h-[16px] w-[6px] hover:bg-indigo rounded-md"
+              />
+            </Tooltip>
+          ))}
+          {extraLiveCommits ? <p>+{extraLiveCommits}</p> : null}
+        </Group>
       </Td>
       <Td variant="center" className="center items-center justify-center">
         <div className="text-center">{source.apps.length}</div>

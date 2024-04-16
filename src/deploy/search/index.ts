@@ -1,4 +1,4 @@
-import { selectDeploymentsAsList } from "@app/deployment";
+import { selectDeployments } from "@app/deployment";
 import { WebState, schema } from "@app/schema";
 import { selectSourcesAsList } from "@app/source";
 import { DeployServiceRow, DeploySource, Deployment } from "@app/types";
@@ -150,17 +150,16 @@ export const selectAppsForTable = createSelector(
   selectEnvironments,
   selectOperationsAsList,
   selectServicesAsList,
-  selectDeploymentsAsList,
+  selectDeployments,
   (apps, envs, ops, services, deployments) =>
     apps
       .map((app): DeployAppRow => {
         const env = findEnvById(envs, { id: app.environmentId });
         const appOps = findOperationsByAppId(ops, app.id);
         const lastOperation = appOps?.[0] || schema.operations.empty;
-        const currentDeployment =
-          deployments.find(
-            (d) => d.id.toString() === app.currentDeploymentId.toString(),
-          ) || schema.deployments.empty;
+        const currentDeployment = schema.deployments.findById(deployments, {
+          id: app.currentDeploymentId,
+        });
         const appServices = services.filter((s) => s.appId === app.id);
         const cost = appServices.reduce((acc, service) => {
           const mm = calcServiceMetrics(service);
@@ -375,19 +374,19 @@ export const selectAppsForTableSearchBySourceId = createSelector(
   },
 );
 
-export type GitCommit = {
+export interface GitCommit {
   sha: string;
   ref: string;
   message: string;
   date: string | null;
   url: string;
-};
+}
 
-export type DeploySourceRow = DeploySource & {
+export interface DeploySourceRow extends DeploySource {
   apps: DeployAppRow[];
   deployments: Deployment[];
   liveCommits: GitCommit[];
-};
+}
 
 export const selectSourcesForTable = createSelector(
   selectSourcesAsList,
@@ -395,7 +394,7 @@ export const selectSourcesForTable = createSelector(
   (sources, apps) =>
     sources.map<DeploySourceRow>((source) => {
       const sourceApps = apps.filter(
-        (app) => app.currentSourceId.toString() === source.id.toString(),
+        (app) => app.currentSourceId === source.id,
       );
       const sourceDeployments = sourceApps.map((app) => app.currentDeployment);
       const distinctCommits = sourceDeployments.reduce<
@@ -403,7 +402,7 @@ export const selectSourcesForTable = createSelector(
       >((commits, deployment) => {
         const sha = deployment.gitCommitSha;
 
-        if (!sha || !!commits[sha]) {
+        if (!sha || Object.hasOwn(commits, sha)) {
           return commits;
         }
 

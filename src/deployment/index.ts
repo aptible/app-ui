@@ -5,7 +5,7 @@ import { WebState, schema } from "@app/schema";
 import { Deployment, LinkResponse, OperationStatus } from "@app/types";
 
 export interface DeploymentResponse {
-  id: string;
+  id: number;
   status: string;
   docker_image: string | null;
   docker_repository_url: string | null;
@@ -32,7 +32,7 @@ export const defaultDeploymentResponse = (
 ): DeploymentResponse => {
   const now = new Date().toISOString();
   return {
-    id: "",
+    id: -1,
     status: "",
     docker_image: "",
     docker_repository_url: "",
@@ -84,6 +84,7 @@ export const deserializeDeployment = (
 };
 
 export const selectDeploymentById = schema.deployments.selectById;
+export const selectDeployments = schema.deployments.selectTable;
 export const selectDeploymentsAsList = createSelector(
   schema.deployments.selectTableAsList,
   (deployments) =>

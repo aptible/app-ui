@@ -672,7 +672,7 @@ export const testSaml = defaultSamlConfigurationResponse({
 const deployDate = new Date("2023-12-17T00:00:00Z").toISOString();
 
 export const testDeploymentGit = defaultDeploymentResponse({
-  id: "3",
+  id: 3,
   docker_image: "",
   git_repository_url: "https://github.com/aptible/app-ui",
   git_ref: "v3",
@@ -694,7 +694,7 @@ export const testDeploymentGit = defaultDeploymentResponse({
 });
 
 export const testDeploymentDocker = defaultDeploymentResponse({
-  id: "2",
+  id: 2,
   docker_image: "quay.io/aptible/cloud-ui:v200",
   docker_repository_url: "https://quay.io/repositories/aptible/cloud-ui",
   git_repository_url: "https://github.com/aptible/app-ui",
@@ -717,7 +717,7 @@ export const testDeploymentDocker = defaultDeploymentResponse({
 });
 
 export const testDeploymentEmpty = defaultDeploymentResponse({
-  id: "1",
+  id: 1,
   docker_image: "",
   git_repository_url: "",
   git_ref: "",
