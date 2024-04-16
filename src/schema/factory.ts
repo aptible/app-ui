@@ -817,7 +817,7 @@ export const defaultDeployment = (a: Partial<Deployment> = {}): Deployment => {
     gitCommitSha: "",
     gitCommitUrl: "",
     gitCommitMessage: "",
-    gitCommitDate: "",
+    gitCommitTimestamp: "",
     createdAt: now,
     updatedAt: now,
     appId: "",

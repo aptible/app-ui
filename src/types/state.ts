@@ -75,7 +75,7 @@ export interface Deployment {
   gitCommitSha: string;
   gitCommitUrl: string;
   gitCommitMessage: string;
-  gitCommitDate: string | null;
+  gitCommitTimestamp: string | null;
   createdAt: string;
   updatedAt: string;
   operationId: string;

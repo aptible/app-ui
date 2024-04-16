@@ -207,18 +207,16 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   colspan="1"
                 >
                   <div
-                    class="inline-block"
+                    class="inline-block whitespace-nowrap undefined"
                   >
                     <code
                       class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
                     >
                       v3
                     </code>
-                     
-                    @
-                     
+                     @ 
                     <code
-                      class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                      class="whitespace-nowrap bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
                     >
                       <a
                         class=" "
@@ -368,18 +366,16 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   colspan="1"
                 >
                   <div
-                    class="inline-block"
+                    class="inline-block whitespace-nowrap undefined"
                   >
                     <code
                       class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
                     >
                       v3
                     </code>
-                     
-                    @
-                     
+                     @ 
                     <code
-                      class=" bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
+                      class="whitespace-nowrap bg-gray-200 font-mono text-black pt-0.5 pb-1 px-1.5 rounded-md text-[0.9rem]"
                     >
                       <a
                         class=" "
