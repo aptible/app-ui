@@ -65,6 +65,7 @@ function SourceListRow({ source }: { source: DeploySourceRow }) {
               fluid
               theme="light"
               className="py-1"
+              variant="top"
               text={
                 <GitRef
                   gitRef={liveCommit.ref}
