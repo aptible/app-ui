@@ -16,6 +16,8 @@ import { prettyGitSha } from "@app/string-utils";
 import { DeployApp, Deployment } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { Group } from "@app/ui/shared/group";
+import { IconInfo } from "@app/ui/shared/icons";
+import { Tooltip } from "@app/ui/shared/tooltip";
 import { Link } from "react-router-dom";
 import { ButtonLink } from "./button";
 import { Code } from "./code";
@@ -119,14 +121,26 @@ function DeploymentRow({
         <OpStatus status={deployment.status} />
       </Td>
       <Td>
-        {(source.id && (
+        {!source.id && (
+          <div className="flex items-center gap-1">
+            <em>Not Provided</em>
+            <Tooltip
+              text={
+                "Source information for this deployment is not available. See the Sources documentation for instructions on connecting your apps to your source repositories."
+              }
+            >
+              <IconInfo className="opacity-50 hover:opacity-100" variant="sm" />
+            </Tooltip>
+          </div>
+        )}
+        {source.id && (
           <Link
             to={sourceDetailUrl(deployment.sourceId)}
             className={tokens.type["table link"]}
           >
             {source.displayName}
           </Link>
-        )) || <em>Not Provided</em>}
+        )}
       </Td>
       <Td>
         <GitRef
