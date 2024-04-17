@@ -62,6 +62,9 @@ export const selectRoleById = schema.roles.selectById;
 export const ignoreComplianceRoles = (r: Role) =>
   r.type !== "compliance_user" && r.type !== "compliance_owner";
 
+export const getIsOwnerRole = (r: Role) =>
+  r.type === "owner" || r.type === "platform_owner";
+
 export const selectRolesByOrgId = createSelector(
   schema.roles.selectTableAsList,
   (_: WebState, p: { orgId: string }) => p.orgId,
@@ -70,39 +73,12 @@ export const selectRolesByOrgId = createSelector(
       .filter((r) => r.organizationId === orgId)
       .filter(ignoreComplianceRoles)
       .sort((a, b) => {
+        if (a.type === "owner" || a.type === "platform_owner") return -1;
+        if (b.type === "owner" || b.type === "platform_owner") return 1;
         const dateA = new Date(a.createdAt).getTime();
         const dateB = new Date(b.createdAt).getTime();
         return dateB - dateA;
       });
-  },
-);
-
-export const selectRolesByOrgIdWithSearch = createSelector(
-  schema.roles.selectTableAsList,
-  (_: WebState, p: { orgId: string }) => p.orgId,
-  (_: WebState, p: { search: string }) => p.search.toLocaleLowerCase(),
-  (roles, orgId, search) => {
-    if (!search || search === "") {
-      return roles
-        .filter((r) => r.organizationId === orgId)
-        .sort((a, b) => {
-          const dateA = new Date(a.createdAt).getTime();
-          const dateB = new Date(b.createdAt).getTime();
-          return dateB - dateA;
-        });
-    } else {
-      return roles
-        .filter(
-          (r) =>
-            r.organizationId === orgId &&
-            r.name.toLowerCase().includes(search.toLowerCase()),
-        )
-        .sort((a, b) => {
-          const dateA = new Date(a.createdAt).getTime();
-          const dateB = new Date(b.createdAt).getTime();
-          return dateB - dateA;
-        });
-    }
   },
 );
 
