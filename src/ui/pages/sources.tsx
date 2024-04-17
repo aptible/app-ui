@@ -54,7 +54,11 @@ function SourceListRow({ source }: { source: DeploySourceRow }) {
       <Td>
         {liveCommits.length === 0 ? <em>No commit information</em> : null}
 
-        <Group variant="horizontal" size="xs" className="items-center">
+        <Group
+          variant="horizontal"
+          size="xs"
+          className="items-center min-w-[150px]"
+        >
           {liveCommits.map((liveCommit) => (
             <Tooltip
               key={liveCommit.sha}
