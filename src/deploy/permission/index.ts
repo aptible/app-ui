@@ -108,7 +108,25 @@ export const selectIsUserAnyOwner = createSelector(
   },
 );
 
-export const selectPermsByAccount = createSelector(
+export const selectEnvToPermsByRoleId = createSelector(
+  schema.environments.selectTableAsList,
+  selectPermissionsAsList,
+  (_: WebState, p: { roleId: string }) => p.roleId,
+  (envs, perms, roleId) => {
+    const mapper: { [key: string]: Permission[] } = {};
+    for (const env of envs) {
+      const envPerms = perms.filter(
+        (perm) => perm.environmentId === env.id && perm.roleId === roleId,
+      );
+      if (envPerms.length > 0) {
+        mapper[env.id] = envPerms;
+      }
+    }
+    return mapper;
+  },
+);
+
+export const selectPermsByEnvId = createSelector(
   selectPermissionsAsList,
   (_: WebState, p: { envId: string }) => p.envId,
   (perms, envId) => {
@@ -116,43 +134,10 @@ export const selectPermsByAccount = createSelector(
   },
 );
 
-export const selectFormattedPermissionsByRoleAndAccount = createSelector(
-  selectPermissionsAsList,
-  (_: WebState, p: { envs: any }) => p.envs,
-  (perms, envs) => {
-    const allEnvsObj = envs.reduce((acc: any, env: any) => {
-      const retObj: { [key: string]: any } = { ...acc };
-      if (!retObj[env.id]) retObj[env.id] = env;
-      return retObj;
-    }, {});
-
-    const permsByRoleId = perms.reduce<{
-      [key: string]: { [key: string]: any };
-    }>((acc, perm) => {
-      const retObj: { [key: string]: any } = { ...acc };
-      if (!retObj[perm.roleId]) retObj[perm.roleId] = {};
-      if (!retObj[perm.roleId][perm.environmentId]) {
-        retObj[perm.roleId][perm.environmentId] = [
-          { ...perm, handle: allEnvsObj[perm.environmentId].handle },
-        ];
-      } else if (retObj[perm.roleId][perm.environmentId]) {
-        retObj[perm.roleId][perm.environmentId] = [
-          ...retObj[perm.roleId][perm.environmentId],
-          perm,
-        ];
-      }
-
-      return retObj;
-    }, {});
-
-    return permsByRoleId;
-  },
-);
-
-export const selectPermsByAccountAndRole = createSelector(
-  selectPermsByAccount,
-  (_: WebState, p: { roleId: any }) => p.roleId,
-  (perms, roleId) => perms.filter((p) => p.roleId === roleId),
+export const selectPermsByEnvAndRoleId = createSelector(
+  selectPermsByEnvId,
+  (_: WebState, p: { roleId: string }) => p.roleId,
+  (perms, roleId) => perms.filter((perm) => perm.roleId === roleId),
 );
 
 /*
@@ -161,7 +146,7 @@ export const selectPermsByAccountAndRole = createSelector(
  * provided to this function.
  */
 export const selectUserHasPerms = createSelector(
-  selectPermsByAccount,
+  selectPermsByEnvId,
   selectCurrentUserRoles,
   (_: WebState, p: { scope: PermissionScope }) => p.scope,
   (perms, userRoles, scope) => {

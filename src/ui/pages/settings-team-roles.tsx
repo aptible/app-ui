@@ -1,8 +1,8 @@
 import { fetchMembershipsByOrgId, selectUsersByRoleId } from "@app/auth";
 import { prettyDate } from "@app/date";
 import {
+  selectEnvToPermsByRoleId,
   selectEnvironmentsByOrgAsList,
-  selectFormattedPermissionsByRoleAndAccount,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
@@ -10,7 +10,7 @@ import { createRoleForOrg, selectRolesByOrgIdWithSearch } from "@app/roles";
 import { roleDetailEnvironmentsUrl, roleDetailUrl } from "@app/routes";
 import { Role } from "@app/types";
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   BannerMessages,
   Box,
@@ -19,7 +19,6 @@ import {
   FormGroup,
   Group,
   Input,
-  InputSearch,
   Pill,
   TBody,
   THead,
@@ -66,20 +65,11 @@ const CreateRole = ({ orgId }: { orgId: string }) => {
 };
 
 export const TeamRolesPage = () => {
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
-  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value }, { replace: true });
-  };
   const orgId = useSelector(selectOrganizationSelectedId);
   const roles = useSelector((s) =>
-    selectRolesByOrgIdWithSearch(s, { orgId, search }),
+    selectRolesByOrgIdWithSearch(s, { orgId, search: "" }),
   );
   const allEnvs = useSelector(selectEnvironmentsByOrgAsList);
-
-  const perms = useSelector((s) =>
-    selectFormattedPermissionsByRoleAndAccount(s, { envs: allEnvs }),
-  );
 
   useQuery(fetchMembershipsByOrgId({ orgId }));
 
@@ -92,12 +82,6 @@ export const TeamRolesPage = () => {
       <Box>
         <CreateRole orgId={orgId} />
       </Box>
-
-      <InputSearch
-        placeholder="Search roles..."
-        search={search}
-        onChange={onChange}
-      />
 
       <div className="text-gray-500">{`${roles.length} Roles`}</div>
       <Table>
@@ -114,7 +98,6 @@ export const TeamRolesPage = () => {
               <RoleTableRow
                 key={role.id}
                 role={role}
-                perms={perms}
                 numEnvs={allEnvs.length}
               />
             );
@@ -127,14 +110,14 @@ export const TeamRolesPage = () => {
 
 export const RoleTableRow = ({
   role,
-  perms,
   numEnvs,
-}: { role: Role; perms: any; numEnvs: number }) => {
+}: { role: Role; numEnvs: number }) => {
   const users = useSelector((s) => selectUsersByRoleId(s, { roleId: role.id }));
   const userNames = users.map((u) => u.name).join(", ");
-  const numbOfEnvsWithPerms = perms[role.id]
-    ? Object.keys(perms[role.id]).length
-    : 0;
+  const envToPerms = useSelector((s) =>
+    selectEnvToPermsByRoleId(s, { roleId: role.id }),
+  );
+  const numPerms = Object.keys(envToPerms).length;
 
   let defaultPill = false;
   if (
@@ -173,7 +156,7 @@ export const RoleTableRow = ({
             "All Environments"
           ) : (
             <Link to={roleDetailEnvironmentsUrl(role.id)}>
-              {`${numbOfEnvsWithPerms} / ${numEnvs} Environments`}
+              {`${numPerms} / ${numEnvs} Environments`}
             </Link>
           )}
         </div>

@@ -3,7 +3,7 @@ import {
   isPhiAllowed,
   selectCanUserManageRole,
   selectEnvironmentsByOrgAsList,
-  selectPermsByAccountAndRole,
+  selectPermsByEnvAndRoleId,
   updatePerm,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
@@ -70,7 +70,7 @@ function RoleEnvEditor({
   );
   const updateLoader = useLoader(updatePerm);
   const perms = useSelector((s) =>
-    selectPermsByAccountAndRole(s, { envId: env.id, roleId }),
+    selectPermsByEnvAndRoleId(s, { envId: env.id, roleId }),
   );
   const permSet: Record<PermissionScope, Permission> = {
     admin: defaultPermission({ scope: "admin" }),
