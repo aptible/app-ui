@@ -140,6 +140,7 @@ import {
   TeamMembersPage,
   TeamPage,
   TeamPendingInvitesPage,
+  TeamRolesCreatePage,
   TeamRolesPage,
   TeamSsoPage,
   VerifyEmailPage,
@@ -808,6 +809,27 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.TEAM_ROLES_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <AppSidebarLayout />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
+    children: [
+      {
+        index: true,
+        element: <TeamRolesPage />,
+      },
+      {
+        path: routes.TEAM_ROLES_CREATE_PATH,
+        element: <TeamRolesCreatePage />,
+      },
+    ],
+  },
+
+  {
     path: routes.TEAM_PATH,
     element: (
       <AuthRequired>
@@ -835,10 +857,6 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.TEAM_INVITE_PATH,
         element: <TeamInvitePage />,
-      },
-      {
-        path: routes.TEAM_ROLES_PATH,
-        element: <TeamRolesPage />,
       },
 
       {

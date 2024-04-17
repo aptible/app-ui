@@ -49,6 +49,8 @@ export const TEAM_PENDING_INVITES_PATH = "/settings/team/pending-invites";
 export const teamPendingInvitesUrl = () => TEAM_PENDING_INVITES_PATH;
 export const TEAM_ROLES_PATH = "/settings/team/roles";
 export const teamRolesUrl = () => TEAM_ROLES_PATH;
+export const TEAM_ROLES_CREATE_PATH = "/settings/team/roles/create";
+export const teamRolesCreateUrl = () => TEAM_ROLES_CREATE_PATH;
 
 export const ROLE_DETAIL_PATH = "/roles/:id";
 export const roleDetailUrl = (id: string) => `/roles/${id}`;

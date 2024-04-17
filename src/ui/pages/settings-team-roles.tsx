@@ -5,64 +5,28 @@ import {
   selectEnvironmentsByOrgAsList,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
-import { createRoleForOrg, selectRolesByOrgIdWithSearch } from "@app/roles";
-import { roleDetailEnvironmentsUrl, roleDetailUrl } from "@app/routes";
+import { useQuery, useSelector } from "@app/react";
+import { selectRolesByOrgIdWithSearch } from "@app/roles";
+import {
+  roleDetailEnvironmentsUrl,
+  roleDetailUrl,
+  settingsUrl,
+  teamRolesUrl,
+} from "@app/routes";
 import { Role } from "@app/types";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  BannerMessages,
-  Box,
+  Breadcrumbs,
   ButtonLink,
-  ButtonOrgOwner,
-  FormGroup,
   Group,
-  Input,
   Pill,
   TBody,
   THead,
   Table,
   Td,
-  TitleBar,
   Tr,
   tokens,
 } from "../shared";
-
-const CreateRole = ({ orgId }: { orgId: string }) => {
-  const dispatch = useDispatch();
-  const [name, setName] = useState("");
-  const trimmedName = name.trim();
-  const loader = useLoader(createRoleForOrg);
-  const onCreateRole = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    dispatch(createRoleForOrg({ orgId, name: trimmedName }));
-  };
-  return (
-    <Group>
-      <BannerMessages {...loader} />
-
-      <form onSubmit={onCreateRole}>
-        <FormGroup label="New Role" htmlFor="role-name">
-          <div className="flex gap-2">
-            <Input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.currentTarget.value)}
-              placeholder="Enter role name"
-              name="role-name"
-              id="role-name"
-              className="flex-1"
-            />
-            <ButtonOrgOwner type="submit" disabled={trimmedName === ""}>
-              Save Role
-            </ButtonOrgOwner>
-          </div>
-        </FormGroup>
-      </form>
-    </Group>
-  );
-};
 
 export const TeamRolesPage = () => {
   const orgId = useSelector(selectOrganizationSelectedId);
@@ -75,13 +39,18 @@ export const TeamRolesPage = () => {
 
   return (
     <Group>
-      <TitleBar description="Roles define the level of access users have within your team">
-        Roles
-      </TitleBar>
-
-      <Box>
-        <CreateRole orgId={orgId} />
-      </Box>
+      <Breadcrumbs
+        crumbs={[
+          {
+            name: "Settings",
+            to: settingsUrl(),
+          },
+          {
+            name: "Roles",
+            to: teamRolesUrl(),
+          },
+        ]}
+      />
 
       <div className="text-gray-500">{`${roles.length} Roles`}</div>
       <Table>
