@@ -147,10 +147,10 @@ export const IconCheck = (props: IconProps) => {
 export const IconCheckCircle = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="Check">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <polyline
-        xmlns="http://www.w3.org/2000/svg"
-        points="22 4 12 14.01 9 11.01"
+      <path
+        d="M8.17316 13L11.1667 15.8268L15.2612 8.5M22 12C22 13.3132 21.7413 14.6136 21.2388 15.8268C20.7362 17.0401 19.9996 18.1425 19.0711 19.0711C18.1425 19.9997 17.0401 20.7362 15.8268 21.2388C14.6136 21.7413 13.3132 22 12 22C10.6868 22 9.38642 21.7413 8.17316 21.2388C6.95991 20.7362 5.85751 19.9997 4.92893 19.0711C4.00034 18.1425 3.26375 17.0401 2.7612 15.8268C2.25865 14.6136 2 13.3132 2 12C2 9.34784 3.05356 6.8043 4.92893 4.92893C6.80429 3.05357 9.34783 2 12 2C14.6522 2 17.1957 3.05357 19.0711 4.92893C20.9464 6.8043 22 9.34784 22 12Z"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       />
     </IconStrokeBase>
   );
@@ -648,23 +648,11 @@ export const IconCommit = (props: IconProps) => {
 export const IconExternalResource = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="External Resource">
-      <path
-        d="M4 7L20 7L20 3L4 3L4 7Z"
-        stroke-width="1.5"
-        stroke-linejoin="round"
-      />
-      <path
-        d="M8 14L16 14L16 10L8 10L8 14Z"
-        stroke-width="1.5"
-        stroke-linejoin="round"
-      />
-      <path
-        d="M10 21L14 21L14 17L10 17L10 21Z"
-        stroke-width="1.5"
-        stroke-linejoin="round"
-      />
-      <path d="M12 10L12 7" stroke-width="1.5" stroke-linejoin="round" />
-      <path d="M12 17L12 14" stroke-width="1.5" stroke-linejoin="round" />
+      <path d="M4 7L20 7L20 3L4 3L4 7Z" stroke-linejoin="round" />
+      <path d="M8 14L16 14L16 10L8 10L8 14Z" stroke-linejoin="round" />
+      <path d="M10 21L14 21L14 17L10 17L10 21Z" stroke-linejoin="round" />
+      <path d="M12 10L12 7" stroke-linejoin="round" />
+      <path d="M12 17L12 14" stroke-linejoin="round" />
     </IconStrokeBase>
   );
 };
