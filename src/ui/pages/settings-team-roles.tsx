@@ -1,13 +1,14 @@
+import { fetchMembershipsByOrgId, selectUsersByRoleId } from "@app/auth";
 import { prettyDate } from "@app/date";
 import {
   selectEnvironmentsByOrgAsList,
   selectFormattedPermissionsByRoleAndAccount,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { useCache, useDispatch, useLoader, useSelector } from "@app/react";
+import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { createRoleForOrg, selectRolesByOrgIdWithSearch } from "@app/roles";
-import { fetchUsersForRole, fetchUsersForRolesByOrgId } from "@app/roles";
 import { roleDetailEnvironmentsUrl, roleDetailUrl } from "@app/routes";
+import { Role } from "@app/types";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
@@ -80,7 +81,7 @@ export const TeamRolesPage = () => {
     selectFormattedPermissionsByRoleAndAccount(s, { envs: allEnvs }),
   );
 
-  const members = useCache(fetchUsersForRolesByOrgId({ orgId: orgId }))?.data?._embedded || [];
+  useQuery(fetchMembershipsByOrgId({ orgId }));
 
   return (
     <Group>
@@ -111,11 +112,10 @@ export const TeamRolesPage = () => {
           {roles.map((role) => {
             return (
               <RoleTableRow
+                key={role.id}
                 role={role}
                 perms={perms}
-                envs={allEnvs}
-                key={role.id}
-                members={members}
+                numEnvs={allEnvs.length}
               />
             );
           })}
@@ -128,9 +128,10 @@ export const TeamRolesPage = () => {
 export const RoleTableRow = ({
   role,
   perms,
-  envs,
-  members
-}: { role: any; perms: any; envs: any, members: any }) => {
+  numEnvs,
+}: { role: Role; perms: any; numEnvs: number }) => {
+  const users = useSelector((s) => selectUsersByRoleId(s, { roleId: role.id }));
+  const userNames = users.map((u) => u.name).join(", ");
   const numbOfEnvsWithPerms = perms[role.id]
     ? Object.keys(perms[role.id]).length
     : 0;
@@ -162,7 +163,7 @@ export const RoleTableRow = ({
         )}
       </Td>
       <Td className="align-baseline">
-        <RoleMembershipRow role={role} members={members}/>
+        <div>{users.length > 0 ? userNames : "No users"}</div>
       </Td>
       <Td className="min-w-[45ch] align-baseline">
         <div>
@@ -172,7 +173,7 @@ export const RoleTableRow = ({
             "All Environments"
           ) : (
             <Link to={roleDetailEnvironmentsUrl(role.id)}>
-              {`${numbOfEnvsWithPerms} / ${envs.length} Environments`}
+              {`${numbOfEnvsWithPerms} / ${numEnvs} Environments`}
             </Link>
           )}
         </div>
@@ -184,12 +185,4 @@ export const RoleTableRow = ({
       </Td>
     </Tr>
   );
-};
-
-export const RoleMembershipRow = ({ role, members }: { role: any, members: any }) => {
-  const memberList = members[role.id]?.memberships || []
-  const userNames = memberList.map((obj) => obj?._embedded?.user?.name).join(", ");
-  return <div>
-    {memberList?.length ? userNames : "No users"}
-  </div>;
 };

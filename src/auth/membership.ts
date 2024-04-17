@@ -1,9 +1,10 @@
 import { authApi, thunkLoader, thunks } from "@app/api";
 import { selectEnv } from "@app/config";
-import { call, createSelector, parallel, select } from "@app/fx";
+import { call, createSelector, parallel, select, takeLeading } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
 import { AuthApiCtx, HalEmbedded, LinkResponse, Membership } from "@app/types";
+import { selectUsers } from "@app/users";
 
 export interface MembershipResponse {
   id: string;
@@ -60,6 +61,15 @@ export const selectMembershipsByRoleId = createSelector(
   (memberships, roleId) => memberships.filter((m) => m.roleId === roleId),
 );
 
+export const selectUsersByRoleId = createSelector(
+  selectMembershipsByRoleId,
+  selectUsers,
+  (memberships, users) =>
+    memberships
+      .map((member) => schema.users.findById(users, { id: member.userId }))
+      .filter((u) => u.id !== ""),
+);
+
 export const createMembership = authApi.post<
   { id: string; userUrl: string },
   MembershipResponse
@@ -89,6 +99,33 @@ export const fetchMembershipsByRole = authApi.get<
   { roleId: string },
   HalEmbedded<{ memberships: MembershipResponse[] }>
 >("/roles/:roleId/memberships");
+
+export const fetchMembershipsByOrgId = authApi.get<
+  { orgId: string },
+  HalEmbedded<{ [key: string]: { memberships: MembershipResponse[] } }>
+>(
+  "/organizations/:orgId/roles/memberships",
+  { supervisor: takeLeading },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    const memberships = Object.values(ctx.json.value._embedded).reduce(
+      (acc, obj) => {
+        const ships = obj.memberships.map(deserializeMembership);
+        for (const membership of ships) {
+          acc[membership.id] = membership;
+        }
+        return acc;
+      },
+      {} as typeof schema.memberships.initialState,
+    );
+
+    yield* schema.update(schema.memberships.add(memberships));
+  },
+);
 
 export const updateUserMemberships = thunks.create<{
   userId: string;

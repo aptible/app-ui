@@ -108,7 +108,6 @@ export const selectIsUserAnyOwner = createSelector(
   },
 );
 
-
 export const selectPermsByAccount = createSelector(
   selectPermissionsAsList,
   (_: WebState, p: { envId: string }) => p.envId,

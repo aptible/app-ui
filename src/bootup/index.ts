@@ -1,5 +1,9 @@
 import { ThunkCtx, thunks } from "@app/api";
-import { fetchCurrentToken, fetchOrganizations } from "@app/auth";
+import {
+  fetchCurrentToken,
+  fetchMembershipsByOrgId,
+  fetchOrganizations,
+} from "@app/auth";
 import { fetchBillingDetail } from "@app/billing";
 import {
   fetchApps,
@@ -83,6 +87,7 @@ function* onFetchResourceData() {
     fetchSystemStatus.run(),
     fetchSources.run(),
     fetchDeployments.run(),
+    fetchMembershipsByOrgId.run({ orgId: org.id }),
   ]);
   yield* group;
 }
