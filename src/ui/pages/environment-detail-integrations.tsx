@@ -208,11 +208,7 @@ const LogDrainDestinationCell = ({
   );
   if (logDrain.drainType === "tail") {
     return (
-      <Tooltip
-        autoSizeWidth
-        className="absolute mt-4"
-        text="This log drain was automatically provisioned to support `aptible logs` in this environment. Access these logs via the Aptible CLI."
-      >
+      <Tooltip text="This log drain was automatically provisioned to support `aptible logs` in this environment. Access these logs via the Aptible CLI.">
         <Code>Destination</Code>
       </Tooltip>
     );

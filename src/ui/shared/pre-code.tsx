@@ -37,8 +37,7 @@ export const PreText = ({
       </pre>
       {allowCopy ? (
         <CopyTextButton
-          variant="left"
-          relative={false}
+          placement="left"
           text={text}
           className="absolute right-2 top-4"
         />
@@ -73,8 +72,7 @@ export const PreBox = ({
       </pre>
       {allowCopy ? (
         <CopyTextButton
-          variant="left"
-          relative={false}
+          placement="left"
           text={segments.map((t) => t.text).join("")}
           className="absolute right-2 top-4"
         />
@@ -112,8 +110,7 @@ export const PreCode = ({
       </code>
       {allowCopy ? (
         <CopyTextButton
-          variant="left"
-          relative={false}
+          placement="left"
           text={segments.map((t) => t.text).join(" ")}
           className="absolute right-2 top-4"
         />

@@ -1,4 +1,5 @@
 import {
+  Placement,
   autoPlacement,
   autoUpdate,
   offset,
@@ -15,25 +16,21 @@ import { useState } from "react";
 export interface TooltipProps {
   text: string | React.ReactNode;
   children: React.ReactNode;
-  autoSizeWidth?: boolean;
   fluid?: boolean;
-  rightAnchored?: boolean;
   className?: string;
-  variant?: "auto" | "top" | "left" | "bottom" | "right";
+  placement?: Placement;
   theme?: "light" | "dark";
 }
 
 export const Tooltip = ({
-  autoSizeWidth = false,
   fluid,
   children,
   text,
   className = "",
-  variant = "auto",
+  placement,
   theme = "dark",
 }: TooltipProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const placement = variant === "auto" ? undefined : variant;
 
   const { refs, floatingStyles, context } = useFloating({
     placement: placement,
@@ -45,7 +42,6 @@ export const Tooltip = ({
     ],
     whileElementsMounted: autoUpdate,
   });
-
 
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useHover(context, { move: false }),
@@ -76,8 +72,7 @@ export const Tooltip = ({
               "rounded-md",
               "px-3 py-2",
               theme === "dark" ? "bg-black text-white" : "bg-white text-black",
-              autoSizeWidth ? "w-96" : "",
-              fluid ? "w-[60vw] md:w-max" : "",
+              fluid ? "w-[60vw] md:w-max" : "w-96",
             ])}
           >
             {text}

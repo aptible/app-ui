@@ -64,8 +64,7 @@ function SourceListRow({ source }: { source: DeploySourceRow }) {
               key={liveCommit.sha}
               fluid
               theme="light"
-              className="py-1"
-              variant="top"
+              placement="top"
               text={
                 <GitRef
                   gitRef={liveCommit.ref}

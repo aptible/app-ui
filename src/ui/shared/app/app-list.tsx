@@ -310,7 +310,7 @@ export const AppListByEnvironment = ({
               <ButtonCreate
                 envId={envId}
                 onClick={onCreate}
-                tooltipProps={{ variant: "left", autoSizeWidth: true }}
+                tooltipProps={{ placement: "left" }}
               >
                 <IconPlusCircle variant="sm" />{" "}
                 <div className="ml-2">New App</div>

@@ -51,7 +51,7 @@ function ScopeToggle({
         checked={checked}
         disabled={disabled || isLoading}
       />
-      <Tooltip text={description} autoSizeWidth variant="left">
+      <Tooltip text={description} placement="left">
         <IconInfo variant="sm" className="opacity-50 hover:opacity-100" />
       </Tooltip>
     </Group>
