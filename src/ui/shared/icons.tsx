@@ -648,11 +648,11 @@ export const IconCommit = (props: IconProps) => {
 export const IconExternalResource = (props: IconProps) => {
   return (
     <IconStrokeBase {...props} title="External Resource">
-      <path d="M4 7L20 7L20 3L4 3L4 7Z" stroke-linejoin="round" />
-      <path d="M8 14L16 14L16 10L8 10L8 14Z" stroke-linejoin="round" />
-      <path d="M10 21L14 21L14 17L10 17L10 21Z" stroke-linejoin="round" />
-      <path d="M12 10L12 7" stroke-linejoin="round" />
-      <path d="M12 17L12 14" stroke-linejoin="round" />
+      <path d="M4 7L20 7L20 3L4 3L4 7Z" strokeLinejoin="round" />
+      <path d="M8 14L16 14L16 10L8 10L8 14Z" strokeLinejoin="round" />
+      <path d="M10 21L14 21L14 17L10 17L10 21Z" strokeLinejoin="round" />
+      <path d="M12 10L12 7" strokeLinejoin="round" />
+      <path d="M12 17L12 14" strokeLinejoin="round" />
     </IconStrokeBase>
   );
 };

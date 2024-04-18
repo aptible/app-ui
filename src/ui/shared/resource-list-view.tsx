@@ -16,7 +16,7 @@ export const TitleBar = ({
   return (
     <Group variant="horizontal" size="sm" className="items-center">
       <h2 className={tokens.type.h2}>{children}</h2>
-      <Tooltip fluid text={description} variant="bottom">
+      <Tooltip fluid text={description} placement="bottom">
         <IconInfo className="opacity-50 hover:opacity-100" variant="sm" />
       </Tooltip>
     </Group>

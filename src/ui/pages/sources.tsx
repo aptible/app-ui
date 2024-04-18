@@ -19,6 +19,7 @@ import {
   GitRef,
   Group,
   IconChevronDown,
+  IconInfo,
   InputSearch,
   LoadingBar,
   PaginateBar,
@@ -64,7 +65,7 @@ function SourceListRow({ source }: { source: DeploySourceRow }) {
               key={liveCommit.sha}
               fluid
               theme="light"
-              className="py-1"
+              placement="top"
               text={
                 <GitRef
                   gitRef={liveCommit.ref}
@@ -190,7 +191,19 @@ export function SourcesPage() {
               className="cursor-pointer hover:text-black group"
               onClick={() => onSort("liveCommits")}
             >
-              Live Commits <SortIcon />
+              Live Commits
+              <div className="inline-block mx-2">
+                <Tooltip
+                  placement="top"
+                  text="The number of unique commits from this source currently running in your infrastructure."
+                >
+                  <IconInfo
+                    variant="sm"
+                    className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
+                  />
+                </Tooltip>
+              </div>
+              <SortIcon />
             </Th>
             <Th
               variant="center"

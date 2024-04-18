@@ -150,7 +150,7 @@ export const EnvironmentCertificatesPage = () => {
               className="w-fit"
               envId={id}
               onClick={createCert}
-              tooltipProps={{ variant: "left", autoSizeWidth: true }}
+              tooltipProps={{ placement: "left" }}
             >
               <IconPlusCircle variant="sm" className="mr-1" /> New Certificate
             </ButtonSensitive>

@@ -10,7 +10,7 @@ exports[`App Detail Deployments page > should render deployments with proper fal
     >
       <div>
         <div
-          class="tooltip relative "
+          class=""
         >
           <div
             class="cursor-pointer"
@@ -22,11 +22,6 @@ exports[`App Detail Deployments page > should render deployments with proper fal
             >
               Deployment Monitor
             </button>
-          </div>
-          <div
-            class="tooltip-top z-50 left-0 top-0 shadow absolute rounded-md px-3 py-2 bg-black text-white"
-          >
-            You do not have "Deploy" permissions for this environment (id:19)
           </div>
         </div>
       </div>
@@ -124,9 +119,54 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  <em>
-                    Not Provided
-                  </em>
+                  <div
+                    class="flex items-center gap-1"
+                  >
+                    <em>
+                      Not Provided
+                    </em>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="cursor-pointer"
+                      >
+                        <svg
+                          class="opacity-50 hover:opacity-100"
+                          fill="none"
+                          height="16"
+                          stroke="#111920"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="16"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <title>
+                            Info
+                          </title>
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                          />
+                          <line
+                            x1="12"
+                            x2="12"
+                            y1="16"
+                            y2="12"
+                          />
+                          <line
+                            x1="12"
+                            x2="12.01"
+                            y1="8"
+                            y2="8"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
@@ -198,9 +238,54 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  <em>
-                    Not Provided
-                  </em>
+                  <div
+                    class="flex items-center gap-1"
+                  >
+                    <em>
+                      Not Provided
+                    </em>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="cursor-pointer"
+                      >
+                        <svg
+                          class="opacity-50 hover:opacity-100"
+                          fill="none"
+                          height="16"
+                          stroke="#111920"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="16"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <title>
+                            Info
+                          </title>
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                          />
+                          <line
+                            x1="12"
+                            x2="12"
+                            y1="16"
+                            y2="12"
+                          />
+                          <line
+                            x1="12"
+                            x2="12.01"
+                            y1="8"
+                            y2="8"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
@@ -271,7 +356,7 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                     class="inline-block"
                   >
                     <div
-                      class="tooltip relative "
+                      class=""
                     >
                       <div
                         class="cursor-pointer"
@@ -281,11 +366,6 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                         >
                           fix(backup): pass page to fetch request (#754)
                         </p>
-                      </div>
-                      <div
-                        class="tooltip-top z-50 left-0 top-0 shadow absolute rounded-md px-3 py-2 bg-black text-white w-[60vw] md:w-max"
-                      >
-                        fix(backup): pass page to fetch request (#754)
                       </div>
                     </div>
                   </div>
@@ -357,9 +437,54 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
                   colspan="1"
                 >
-                  <em>
-                    Not Provided
-                  </em>
+                  <div
+                    class="flex items-center gap-1"
+                  >
+                    <em>
+                      Not Provided
+                    </em>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="cursor-pointer"
+                      >
+                        <svg
+                          class="opacity-50 hover:opacity-100"
+                          fill="none"
+                          height="16"
+                          stroke="#111920"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="16"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <title>
+                            Info
+                          </title>
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                          />
+                          <line
+                            x1="12"
+                            x2="12"
+                            y1="16"
+                            y2="12"
+                          />
+                          <line
+                            x1="12"
+                            x2="12.01"
+                            y1="8"
+                            y2="8"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </td>
                 <td
                   class="text-sm text-gray-500 pl-4 py-3 break-words text-left"
@@ -430,7 +555,7 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                     class="inline-block"
                   >
                     <div
-                      class="tooltip relative "
+                      class=""
                     >
                       <div
                         class="cursor-pointer"
@@ -440,11 +565,6 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                         >
                           fix(backup): pass page to fetch request (#754)
                         </p>
-                      </div>
-                      <div
-                        class="tooltip-top z-50 left-0 top-0 shadow absolute rounded-md px-3 py-2 bg-black text-white w-[60vw] md:w-max"
-                      >
-                        fix(backup): pass page to fetch request (#754)
                       </div>
                     </div>
                   </div>

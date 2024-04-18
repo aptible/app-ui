@@ -76,7 +76,7 @@ export const TeamMembersPage = () => {
                 />
                 <ButtonAnyOwner
                   onClick={onInvite}
-                  tooltipProps={{ variant: "left", autoSizeWidth: true }}
+                  tooltipProps={{ placement: "left" }}
                 >
                   <IconPlusCircle variant="sm" className="mr-2" />
                   Invite User

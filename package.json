@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@biomejs/biome": "^1.2.2",
+    "@floating-ui/react": "^0.26.12",
     "@github/webauthn-json": "^2.1.1",
     "@remix-run/web-fetch": "^4.4.1",
     "@sentry/react": "^7.73.0",
