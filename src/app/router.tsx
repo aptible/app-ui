@@ -822,10 +822,6 @@ export const appRoutes: RouteObject[] = [
         index: true,
         element: <TeamRolesPage />,
       },
-      {
-        path: routes.TEAM_ROLES_CREATE_PATH,
-        element: <TeamRolesCreatePage />,
-      },
     ],
   },
 
@@ -880,6 +876,11 @@ export const appRoutes: RouteObject[] = [
             <TeamContactsPage />
           </AccountOwnerRequired>
         ),
+      },
+
+      {
+        path: routes.TEAM_ROLES_CREATE_PATH,
+        element: <TeamRolesCreatePage />,
       },
     ],
   },

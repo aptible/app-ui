@@ -1,6 +1,8 @@
 import { fetchMembershipsByOrgId, selectUsersByRoleId } from "@app/auth";
 import { prettyDate } from "@app/date";
 import {
+  scopeDesc,
+  scopeTitle,
   selectEnvToPermsByRoleId,
   selectEnvironmentById,
   selectEnvironmentsByOrgAsList,
@@ -27,6 +29,7 @@ import {
   Group,
   IconCheckCircle,
   IconDownload,
+  IconInfo,
   IconPlusCircle,
   IconX,
   Label,
@@ -36,6 +39,8 @@ import {
   THead,
   Table,
   Td,
+  Th,
+  Tooltip,
   Tr,
   tokens,
 } from "../shared";
@@ -83,19 +88,31 @@ export const TeamRolesPage = () => {
   const [roleFilter, setRoleFilter] = useState(FILTER_ALL);
   const [userFilter, setUserFilter] = useState(FILTER_ALL);
   const [envFilter, setEnvFilter] = useState(FILTER_NO_ACCESS);
-  const filters: RoleFilters = {
+  const [filters, setFilters] = useState<RoleFilters>({
     roleId: roleFilter,
     userId: userFilter,
     envId: envFilter,
-  };
+  });
   const filteredRoles = roles.filter((role) => {
     if (isAll(filters.roleId)) return true;
     return role.id === filters.roleId;
   });
+  const onFilter = () => {
+    setFilters({
+      roleId: roleFilter,
+      userId: userFilter,
+      envId: envFilter,
+    });
+  };
   const onReset = () => {
     setRoleFilter(FILTER_ALL);
     setUserFilter(FILTER_ALL);
     setEnvFilter(FILTER_NO_ACCESS);
+    setFilters({
+      roleId: FILTER_ALL,
+      userId: FILTER_ALL,
+      envId: FILTER_NO_ACCESS,
+    });
   };
 
   useQuery(fetchMembershipsByOrgId({ orgId }));
@@ -116,7 +133,12 @@ export const TeamRolesPage = () => {
       />
 
       <Box>
-        <form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onFilter();
+          }}
+        >
           <Group>
             <Group variant="horizontal">
               <div className="flex-1">
@@ -160,7 +182,7 @@ export const TeamRolesPage = () => {
               className="items-center justify-between"
             >
               <Group variant="horizontal" size="sm">
-                <Button>Save Filters</Button>
+                <Button type="submit">Save Filters</Button>
                 <Button variant="white" onClick={onReset}>
                   Reset
                 </Button>
@@ -211,6 +233,16 @@ const filterEnv = (
   return { [envId]: envToPerms[envId] || [] };
 };
 
+const RoleColHeader = ({ scope }: { scope: PermissionScope }) => {
+  return (
+    <Th className="w-[100px] text-center">
+      <Tooltip text={scopeDesc[scope]} variant="left">
+        {scopeTitle[scope]}{" "}
+      </Tooltip>
+    </Th>
+  );
+};
+
 function RoleTable({
   role,
   totalEnvs,
@@ -228,7 +260,12 @@ function RoleTable({
   );
   const filtered = filterEnv(filters.envId, envToPerms);
   const envIds = Object.keys(filtered);
-  const numEnvs = envIds.length;
+  const numEnvs = envIds.reduce((acc, envId) => {
+    if (filtered[envId].length > 0) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
 
   const userDoesNotHaveRole =
     users.findIndex((u) => u.id === filters.userId) === -1;
@@ -281,29 +318,15 @@ function RoleTable({
         ) : (
           <Table className="flex-1">
             <THead>
-              <Td>{displayRoleEnvsHeader(role.type, totalEnvs, numEnvs)}</Td>
-              <Td className="w-[100px] text-center">Environment Admin</Td>
-              <Td className="w-[100px] text-center" variant="center">
-                Full Visibility
-              </Td>
-              <Td className="w-[100px] text-center" variant="center">
-                Basic Visibility
-              </Td>
-              <Td className="w-[100px] text-center" variant="center">
-                Deployment
-              </Td>
-              <Td className="w-[100px] text-center" variant="center">
-                Destruction
-              </Td>
-              <Td className="w-[100px] text-center" variant="center">
-                Ops
-              </Td>
-              <Td className="w-[100px] text-center" variant="center">
-                Sensitive Access
-              </Td>
-              <Td className="w-[100px] text-center" variant="center">
-                Tunnel
-              </Td>
+              <Th>{displayRoleEnvsHeader(role.type, totalEnvs, numEnvs)}</Th>
+              <RoleColHeader scope="admin" />
+              <RoleColHeader scope="read" />
+              <RoleColHeader scope="basic_read" />
+              <RoleColHeader scope="deploy" />
+              <RoleColHeader scope="destroy" />
+              <RoleColHeader scope="observability" />
+              <RoleColHeader scope="sensitive" />
+              <RoleColHeader scope="tunnel" />
             </THead>
 
             <TBody>

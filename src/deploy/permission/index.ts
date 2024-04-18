@@ -296,3 +296,34 @@ export const deletePerm = api.delete<RmPermProps>(
     yield* schema.update(schema.permissions.remove([ctx.payload.id]));
   },
 );
+
+export const scopeTitle: { [key in PermissionScope]: string } = {
+  unknown: "Unknown",
+  admin: "Environment Admin",
+  read: "Full Visibility",
+  basic_read: "Basic Visibility",
+  deploy: "Deployment",
+  destroy: "Destroy",
+  observability: "Ops",
+  sensitive: "Sensitive Access",
+  tunnel: "Tunnel",
+};
+
+export const scopeDesc: { [key in PermissionScope]: string } = {
+  unknown: "Unknown",
+  admin:
+    "Grants Users unrestricted access to the Environment. This includes the ability to see all sensitive values and take any action against any resource in the Environment.",
+  read: "Allows Users to see all information for all of the resources in the Environment including App Configurations. The one exception is Database Credentials which cannot be seen.",
+  basic_read:
+    "Allows Users to see basic information for all of the resources in the Environment. It does not allow them to manage the resources or see any sensitive values such as Database Credentials or Configuration values.",
+  deploy:
+    "Allows Users to create and deploy resources in the Environment. This includes actions such as create, deploy, configure, and restart. It does not grant access to read any sensitive values.",
+  destroy:
+    "Allows Users to destroy every resource in the Environment as well as the Environment itself.",
+  observability:
+    "Allows Users to create and manage Log and Metric Drains in the Environment. It also allows Users to take actions commonly associated with incident response such as restarting and scaling resources.",
+  sensitive:
+    "Allows Users to see and manage sensitive values in the Environment such as configuring Apps, viewing Database Credentials, and managing Certificates.",
+  tunnel:
+    "Allows User to tunnel into Databases in the Environment. This permission does not allow Users to see Database Credentials so Users will need to be provided credentials through another channel.",
+};

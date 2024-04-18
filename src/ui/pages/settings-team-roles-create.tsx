@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
   BannerMessages,
+  Box,
   Breadcrumbs,
   ButtonOrgOwner,
   FormGroup,
@@ -53,24 +54,26 @@ export function TeamRolesCreatePage() {
       />
       <BannerMessages {...loader} />
 
-      <form onSubmit={onCreateRole}>
-        <FormGroup label="New Role" htmlFor="role-name">
-          <div className="flex gap-2">
-            <Input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.currentTarget.value)}
-              placeholder="Enter role name"
-              name="role-name"
-              id="role-name"
-              className="flex-1"
-            />
-            <ButtonOrgOwner type="submit" disabled={trimmedName === ""}>
-              Save Role
-            </ButtonOrgOwner>
-          </div>
-        </FormGroup>
-      </form>
+      <Box>
+        <form onSubmit={onCreateRole}>
+          <FormGroup label="New Role" htmlFor="role-name">
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.currentTarget.value)}
+                placeholder="Enter role name"
+                name="role-name"
+                id="role-name"
+                className="flex-1"
+              />
+              <ButtonOrgOwner type="submit" disabled={trimmedName === ""}>
+                Save Role
+              </ButtonOrgOwner>
+            </div>
+          </FormGroup>
+        </form>
+      </Box>
     </Group>
   );
 }
