@@ -7,7 +7,7 @@ import {
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useQuery, useSelector } from "@app/react";
-import { getIsOwnerRole, selectRolesByOrgId } from "@app/roles";
+import { selectRolesByOrgId } from "@app/roles";
 import {
   roleDetailUrl,
   settingsUrl,
@@ -30,8 +30,8 @@ import {
   IconPlusCircle,
   IconX,
   Label,
-  Pill,
   Select,
+  SelectOption,
   TBody,
   THead,
   Table,
@@ -40,30 +40,63 @@ import {
   tokens,
 } from "../shared";
 
+interface RoleFilters {
+  roleId: string;
+  userId: string;
+  envId: string;
+}
+
+const sortOpts = (a: SelectOption<string>, b: SelectOption<string>) =>
+  a.label.localeCompare(b.label);
+const FILTER_NO_ACCESS = "no-access";
+const isNoAccess = (envId: string) => envId === FILTER_NO_ACCESS;
+const FILTER_ALL = "all";
+const isAll = (id: string) => id === FILTER_ALL;
+
 export const TeamRolesPage = () => {
   const orgId = useSelector(selectOrganizationSelectedId);
   const users = useSelector(selectUsersAsList);
   const usersAsOptions = [
-    { label: "All", value: "" },
-    ...users.map((user) => ({ label: user.name, value: user.id })),
+    { label: "All", value: FILTER_ALL },
+    ...users
+      .map((user) => ({ label: user.name, value: user.id }))
+      .sort(sortOpts),
   ];
   const allEnvs = useSelector(selectEnvironmentsByOrgAsList);
   const envsAsOptions = [
-    { label: "Hide No-Access Environments", value: "no-access" },
-    { label: "All Environments", value: "all" },
-    ...allEnvs.map((env) => ({ label: env.handle, value: env.id })),
+    { label: "Hide No-Access Environments", value: FILTER_NO_ACCESS },
+    { label: "All Environments", value: FILTER_ALL },
+    ...allEnvs
+      .map((env) => ({ label: env.handle, value: env.id }))
+      .sort(sortOpts),
   ];
   const roles = useSelector((s) => selectRolesByOrgId(s, { orgId }));
   const rolesAsOptions = [
-    { label: "All", value: "" },
-    ...roles.map((role) => ({
-      label: role.name,
-      value: role.id,
-    })),
+    { label: "All", value: FILTER_ALL },
+    ...roles
+      .map((role) => ({
+        label: role.name,
+        value: role.id,
+      }))
+      .sort(sortOpts),
   ];
-  const [roleFilter, setRoleFilter] = useState("");
-  const [memberFilter, setMemberFilter] = useState("");
-  const [envFilter, setEnvFilter] = useState("no-access");
+  const [roleFilter, setRoleFilter] = useState(FILTER_ALL);
+  const [userFilter, setUserFilter] = useState(FILTER_ALL);
+  const [envFilter, setEnvFilter] = useState(FILTER_NO_ACCESS);
+  const filters: RoleFilters = {
+    roleId: roleFilter,
+    userId: userFilter,
+    envId: envFilter,
+  };
+  const filteredRoles = roles.filter((role) => {
+    if (isAll(filters.roleId)) return true;
+    return role.id === filters.roleId;
+  });
+  const onReset = () => {
+    setRoleFilter(FILTER_ALL);
+    setUserFilter(FILTER_ALL);
+    setEnvFilter(FILTER_NO_ACCESS);
+  };
 
   useQuery(fetchMembershipsByOrgId({ orgId }));
 
@@ -101,9 +134,9 @@ export const TeamRolesPage = () => {
                 <Label htmlFor="member-selector">Members</Label>
                 <Select
                   id="member-selector"
-                  value={memberFilter}
+                  value={userFilter}
                   options={usersAsOptions}
-                  onSelect={(opt) => setMemberFilter(opt.value)}
+                  onSelect={(opt) => setUserFilter(opt.value)}
                   className="w-full"
                 />
               </div>
@@ -128,7 +161,9 @@ export const TeamRolesPage = () => {
             >
               <Group variant="horizontal" size="sm">
                 <Button>Save Filters</Button>
-                <Button variant="white">Reset</Button>
+                <Button variant="white" onClick={onReset}>
+                  Reset
+                </Button>
               </Group>
 
               <Group variant="horizontal" size="sm">
@@ -144,59 +179,75 @@ export const TeamRolesPage = () => {
         </form>
       </Box>
 
-      <div className="text-gray-500">{`${roles.length} Roles`}</div>
+      <div className="text-gray-500">{`${filteredRoles.length} Roles`}</div>
 
-      {roles.map((role) => {
-        return <RoleTable role={role} totalEnvs={allEnvs.length} />;
+      {filteredRoles.map((role) => {
+        return (
+          <RoleTable role={role} totalEnvs={allEnvs.length} filters={filters} />
+        );
       })}
     </Group>
   );
 };
 
-function displayRoleEnvsHeader(
-  roleType: RoleType,
-  numEnvs: number,
-  numPerms: number,
-) {
-  if (roleType === "owner") {
-    return "All Environments and Billing";
+const filterEnv = (
+  envId: RoleFilters["envId"],
+  envToPerms: { [key: string]: Permission[] },
+): { [key: string]: Permission[] } => {
+  if (isAll(envId)) {
+    return envToPerms;
   }
 
-  if (roleType === "platform_owner") {
-    return "All Environments";
+  if (isNoAccess(envId)) {
+    const filtered: { [key: string]: Permission[] } = {};
+    Object.keys(envToPerms).forEach((envId) => {
+      if (envToPerms[envId].length > 0) {
+        filtered[envId] = envToPerms[envId];
+      }
+    });
+    return filtered;
   }
 
-  return `${numPerms} / ${numEnvs} Environments`;
-}
+  return { [envId]: envToPerms[envId] || [] };
+};
 
-function PermCheck({ checked }: { checked: boolean }) {
-  if (checked) {
-    return <IconCheckCircle className="inline-block" color="#00633F" />;
-  }
-  return <IconX className="inline-block" color="#AD1A1A" />;
-}
-
-function RoleTable({ role, totalEnvs }: { role: Role; totalEnvs: number }) {
+function RoleTable({
+  role,
+  totalEnvs,
+  filters,
+}: { role: Role; totalEnvs: number; filters: RoleFilters }) {
   const users = useSelector((s) => selectUsersByRoleId(s, { roleId: role.id }));
+  const filteredUsers = users.filter((u) => {
+    if (isAll(filters.userId)) {
+      return true;
+    }
+    return u.id === filters.userId;
+  });
   const envToPerms = useSelector((s) =>
     selectEnvToPermsByRoleId(s, { roleId: role.id }),
   );
-  const envIds = Object.keys(envToPerms);
+  const filtered = filterEnv(filters.envId, envToPerms);
+  const envIds = Object.keys(filtered);
   const numEnvs = envIds.length;
-  const isOwnerRole = getIsOwnerRole(role);
 
-  // The Deploy Owners has total permission over all of your Deploy platform resources.
+  const userDoesNotHaveRole =
+    users.findIndex((u) => u.id === filters.userId) === -1;
+  if (!isAll(filters.userId) && userDoesNotHaveRole) {
+    return null;
+  }
 
   return (
     <Group>
       <Group variant="horizontal">
-        <Group className="w-[225px]">
+        <Group size="sm" className="w-[225px]">
           <RolePill role={role} />
 
-          {users.length === 0 ? <div>No users</div> : null}
+          {filteredUsers.length === 0 ? <div>No users</div> : null}
           <div>
-            {users.map((user) => (
-              <div key={user.id}>{user.name}</div>
+            {filteredUsers.map((user) => (
+              <div key={user.id} className="text-sm">
+                {user.name}
+              </div>
             ))}
           </div>
 
@@ -205,33 +256,60 @@ function RoleTable({ role, totalEnvs }: { role: Role; totalEnvs: number }) {
             size="sm"
             className="inline-block w-fit"
           >
-            Edit
+            Edit Role
           </ButtonLink>
         </Group>
 
-        {isOwnerRole ? (
-          <Box className="flex-1">
-            The Account Owners role has total permission over your Aptible
-            account.
+        {role.type === "owner" ? (
+          <Box className="flex-1 flex justify-center items-center flex-col">
+            <IconCheckCircle className="mb-2" color="#00633F" />
+            <h3 className={tokens.type.h3}>Full Access and Billing Access</h3>
+            <div>
+              The Account Owners role has total permission over your Aptible
+              account and manage billing.
+            </div>
+          </Box>
+        ) : role.type === "platform_owner" ? (
+          <Box className="flex-1 flex justify-center items-center flex-col">
+            <IconCheckCircle className="mb-2" color="#00633F" />
+            <h3 className={tokens.type.h3}>Full Access</h3>
+            <div>
+              The Deploy Owners role total permission over all of your Deploy
+              platform resources.
+            </div>
           </Box>
         ) : (
           <Table className="flex-1">
             <THead>
               <Td>{displayRoleEnvsHeader(role.type, totalEnvs, numEnvs)}</Td>
-              <Td>Environment Admin</Td>
-              <Td variant="center">Full Visibility</Td>
-              <Td variant="center">Basic Visibility</Td>
-              <Td variant="center">Deployment</Td>
-              <Td variant="center">Destruction</Td>
-              <Td variant="center">Ops</Td>
-              <Td variant="center">Sensitive Access</Td>
-              <Td variant="center">Tunnel</Td>
+              <Td className="w-[100px] text-center">Environment Admin</Td>
+              <Td className="w-[100px] text-center" variant="center">
+                Full Visibility
+              </Td>
+              <Td className="w-[100px] text-center" variant="center">
+                Basic Visibility
+              </Td>
+              <Td className="w-[100px] text-center" variant="center">
+                Deployment
+              </Td>
+              <Td className="w-[100px] text-center" variant="center">
+                Destruction
+              </Td>
+              <Td className="w-[100px] text-center" variant="center">
+                Ops
+              </Td>
+              <Td className="w-[100px] text-center" variant="center">
+                Sensitive Access
+              </Td>
+              <Td className="w-[100px] text-center" variant="center">
+                Tunnel
+              </Td>
             </THead>
 
             <TBody>
               {envIds.map((id) => {
                 return (
-                  <RoleEnvRow key={id} envId={id} envPerms={envToPerms[id]} />
+                  <RoleEnvRow key={id} envId={id} envPerms={filtered[id]} />
                 );
               })}
             </TBody>
@@ -297,6 +375,29 @@ function RoleEnvRow({
   );
 }
 
+function displayRoleEnvsHeader(
+  roleType: RoleType,
+  numEnvs: number,
+  numPerms: number,
+) {
+  if (roleType === "owner") {
+    return "All Environments and Billing";
+  }
+
+  if (roleType === "platform_owner") {
+    return "All Environments";
+  }
+
+  return `${numPerms} / ${numEnvs} Environments`;
+}
+
+function PermCheck({ checked }: { checked: boolean }) {
+  if (checked) {
+    return <IconCheckCircle className="inline-block" color="#00633F" />;
+  }
+  return <IconX className="inline-block" color="#AD1A1A" />;
+}
+
 function RolePill({ role }: { role: Role }) {
   let defaultPill = false;
   if (
@@ -310,22 +411,16 @@ function RolePill({ role }: { role: Role }) {
   return (
     <div>
       <Link
-        className={`${tokens.type["table link"]}`}
+        className={`${tokens.type["table link"]} text-md font-semibold`}
         to={roleDetailUrl(role.id)}
       >
-        <span className="text-base font-semibold">{role.name}</span>
+        {role.name}
       </Link>
 
       {defaultPill ? null : (
         <div className="text-gray-500 text-sm">
           Created: {prettyDate(role.createdAt)}
         </div>
-      )}
-
-      {defaultPill ? (
-        <Pill variant="progress">Default</Pill>
-      ) : (
-        <Pill>Custom</Pill>
       )}
     </div>
   );

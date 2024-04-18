@@ -73,8 +73,18 @@ export const selectRolesByOrgId = createSelector(
       .filter((r) => r.organizationId === orgId)
       .filter(ignoreComplianceRoles)
       .sort((a, b) => {
-        if (a.type === "owner" || a.type === "platform_owner") return -1;
-        if (b.type === "owner" || b.type === "platform_owner") return 1;
+        if (a.type === "owner" && b.type === "platform_owner") {
+          return -1;
+        }
+        if (a.type === "platform_owner" && b.type === "owner") {
+          return 1;
+        }
+        if (a.type === "owner" || a.type === "platform_owner") {
+          return -1;
+        }
+        if (b.type === "owner" || b.type === "platform_owner") {
+          return 1;
+        }
         const dateA = new Date(a.createdAt).getTime();
         const dateB = new Date(b.createdAt).getTime();
         return dateB - dateA;
