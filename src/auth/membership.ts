@@ -75,6 +75,7 @@ export const selectRoleToUsersMap = createSelector(
     const mapper: { [key: string]: User[] } = {};
     for (const role of roles) {
       mapper[role.id] = memberships
+        .filter((member) => member.roleId === role.id)
         .map((member) => schema.users.findById(users, { id: member.userId }))
         .filter((u) => u.id !== "");
     }

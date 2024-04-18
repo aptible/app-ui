@@ -108,18 +108,33 @@ export const selectIsUserAnyOwner = createSelector(
   },
 );
 
-export const selectEnvToPerms = createSelector(
+/**
+ * Nested map: Role -> Env -> Permissions scoped by role and env
+ * {
+ *  [roleId]: {
+ *    [envId]: Permission[];
+ *  };
+ * }
+ */
+export const selectRoleToEnvToPermsMap = createSelector(
+  schema.roles.selectTableAsList,
   schema.environments.selectTableAsList,
   selectPermissionsAsList,
-  (envs, perms) => {
-    const mapper: { [key: string]: Permission[] } = {};
-    for (const env of envs) {
-      const envPerms = perms.filter((perm) => perm.environmentId === env.id);
-      if (envPerms.length > 0) {
-        mapper[env.id] = envPerms;
-      } else {
-        mapper[env.id] = [];
+  (roles, envs, perms) => {
+    const mapper: { [key: string]: { [key: string]: Permission[] } } = {};
+    for (const role of roles) {
+      const envToPermMap: { [key: string]: Permission[] } = {};
+      for (const env of envs) {
+        const envPerms = perms.filter(
+          (perm) => perm.roleId === role.id && perm.environmentId === env.id,
+        );
+        if (envPerms.length > 0) {
+          envToPermMap[env.id] = envPerms;
+        } else {
+          envToPermMap[env.id] = [];
+        }
       }
+      mapper[role.id] = envToPermMap;
     }
     return mapper;
   },

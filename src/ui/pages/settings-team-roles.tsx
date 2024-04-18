@@ -1,12 +1,11 @@
-import { fetchMembershipsByOrgId, selectRoleToUsersMap, selectUsersByRoleId } from "@app/auth";
+import { fetchMembershipsByOrgId, selectRoleToUsersMap } from "@app/auth";
 import { prettyDate } from "@app/date";
 import {
   scopeDesc,
   scopeTitle,
-  selectEnvToPerms,
-  selectEnvToPermsByRoleId,
   selectEnvironmentById,
   selectEnvironmentsByOrgAsList,
+  selectRoleToEnvToPermsMap,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useQuery, useSelector } from "@app/react";
@@ -17,7 +16,7 @@ import {
   teamRolesCreateUrl,
   teamRolesUrl,
 } from "@app/routes";
-import { Permission, PermissionScope, Role, RoleType } from "@app/types";
+import { Permission, PermissionScope, Role, RoleType, User } from "@app/types";
 import { selectUsersAsList } from "@app/users";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -60,7 +59,7 @@ const isAll = (id: string) => id === FILTER_ALL;
 export const TeamRolesPage = () => {
   const orgId = useSelector(selectOrganizationSelectedId);
   const roleToUserMap = useSelector(selectRoleToUsersMap);
-  const envToPermsMap = useSelector(selectEnvToPerms);
+  const roleToEnvToPermsMap = useSelector(selectRoleToEnvToPermsMap);
   const users = useSelector(selectUsersAsList);
   const usersAsOptions = [
     { label: "All", value: FILTER_ALL },
@@ -116,8 +115,39 @@ export const TeamRolesPage = () => {
     });
   };
   const onCsv = (): string => {
-    const csv = "";
+    const scopePrint =
+      (roleType: RoleType, perms: Permission[]) => (scope: PermissionScope) => {
+        if (roleType === "owner" || roleType === "platform_owner") {
+          return "Yes";
+        }
+        return perms.find((perm) => perm.scope === scope) ? "Yes" : "No";
+      };
+    let csv =
+      "role,users,environment,admin,read,basic_read,deploy,destroy,ops,sensitive,tunnel\n";
+
     for (const role of filteredRoles) {
+      const users = roleToUserMap[role.id];
+      const envsToPerms = roleToEnvToPermsMap[role.id];
+      const envIds = Object.keys(envsToPerms);
+      for (const envId of envIds) {
+        const perms = envsToPerms[envId];
+        const printer = scopePrint(role.type, perms);
+        const cells: string[] = [
+          role.name,
+          users.map((u) => u.name).join(" "),
+          envId,
+          printer("admin"),
+          printer("read"),
+          printer("basic_read"),
+          printer("deploy"),
+          printer("destroy"),
+          printer("observability"),
+          printer("sensitive"),
+          printer("tunnel"),
+        ];
+        csv += cells.join(",");
+        csv += "\n";
+      }
     }
     return csv;
   };
@@ -210,7 +240,13 @@ export const TeamRolesPage = () => {
 
       {filteredRoles.map((role) => {
         return (
-          <RoleTable role={role} totalEnvs={allEnvs.length} filters={filters} />
+          <RoleTable
+            role={role}
+            totalEnvs={allEnvs.length}
+            filters={filters}
+            users={roleToUserMap[role.id]}
+            envToPerms={roleToEnvToPermsMap[role.id]}
+          />
         );
       })}
     </Group>
@@ -241,9 +277,7 @@ const filterEnv = (
 const RoleColHeader = ({ scope }: { scope: PermissionScope }) => {
   return (
     <Th className="w-[100px] text-center">
-      <Tooltip text={scopeDesc[scope]} variant="left">
-        {scopeTitle[scope]}{" "}
-      </Tooltip>
+      <Tooltip text={scopeDesc[scope]}>{scopeTitle[scope]} </Tooltip>
     </Th>
   );
 };
@@ -252,11 +286,15 @@ function RoleTable({
   role,
   totalEnvs,
   filters,
-}: { role: Role; totalEnvs: number; filters: RoleFilters }) {
-  const envToPerms = useSelector((s) =>
-    selectEnvToPermsByRoleId(s, { roleId: role.id }),
-  );
-
+  envToPerms,
+  users,
+}: {
+  role: Role;
+  totalEnvs: number;
+  filters: RoleFilters;
+  users: User[];
+  envToPerms: { [key: string]: Permission[] };
+}) {
   const filteredUsers = users.filter((u) => {
     if (isAll(filters.userId)) {
       return true;
