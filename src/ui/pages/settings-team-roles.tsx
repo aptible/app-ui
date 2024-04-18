@@ -202,7 +202,7 @@ function RoleTable({ role, totalEnvs }: { role: Role; totalEnvs: number }) {
           <ButtonLink
             to={roleDetailUrl(role.id)}
             size="sm"
-            className="inline-block"
+            className="inline-block w-fit"
           >
             Edit
           </ButtonLink>
