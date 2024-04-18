@@ -3,7 +3,13 @@ import { selectEnv } from "@app/config";
 import { call, createSelector, parallel, select, takeLeading } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
-import { AuthApiCtx, HalEmbedded, LinkResponse, Membership } from "@app/types";
+import {
+  AuthApiCtx,
+  HalEmbedded,
+  LinkResponse,
+  Membership,
+  User,
+} from "@app/types";
 import { selectUsers } from "@app/users";
 
 export interface MembershipResponse {
@@ -61,13 +67,19 @@ export const selectMembershipsByRoleId = createSelector(
   (memberships, roleId) => memberships.filter((m) => m.roleId === roleId),
 );
 
-export const selectUsersByRoleId = createSelector(
-  selectMembershipsByRoleId,
+export const selectRoleToUsersMap = createSelector(
+  schema.roles.selectTableAsList,
+  schema.memberships.selectTableAsList,
   selectUsers,
-  (memberships, users) =>
-    memberships
-      .map((member) => schema.users.findById(users, { id: member.userId }))
-      .filter((u) => u.id !== ""),
+  (roles, memberships, users) => {
+    const mapper: { [key: string]: User[] } = {};
+    for (const role of roles) {
+      mapper[role.id] = memberships
+        .map((member) => schema.users.findById(users, { id: member.userId }))
+        .filter((u) => u.id !== "");
+    }
+    return mapper;
+  },
 );
 
 export const createMembership = authApi.post<

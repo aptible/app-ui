@@ -108,16 +108,13 @@ export const selectIsUserAnyOwner = createSelector(
   },
 );
 
-export const selectEnvToPermsByRoleId = createSelector(
+export const selectEnvToPerms = createSelector(
   schema.environments.selectTableAsList,
   selectPermissionsAsList,
-  (_: WebState, p: { roleId: string }) => p.roleId,
-  (envs, perms, roleId) => {
+  (envs, perms) => {
     const mapper: { [key: string]: Permission[] } = {};
     for (const env of envs) {
-      const envPerms = perms.filter(
-        (perm) => perm.environmentId === env.id && perm.roleId === roleId,
-      );
+      const envPerms = perms.filter((perm) => perm.environmentId === env.id);
       if (envPerms.length > 0) {
         mapper[env.id] = envPerms;
       } else {

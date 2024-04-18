@@ -1,8 +1,9 @@
-import { fetchMembershipsByOrgId, selectUsersByRoleId } from "@app/auth";
+import { fetchMembershipsByOrgId, selectRoleToUsersMap, selectUsersByRoleId } from "@app/auth";
 import { prettyDate } from "@app/date";
 import {
   scopeDesc,
   scopeTitle,
+  selectEnvToPerms,
   selectEnvToPermsByRoleId,
   selectEnvironmentById,
   selectEnvironmentsByOrgAsList,
@@ -24,12 +25,10 @@ import {
   Box,
   Breadcrumbs,
   Button,
-  ButtonIcon,
   ButtonLink,
+  CsvButton,
   Group,
   IconCheckCircle,
-  IconDownload,
-  IconInfo,
   IconPlusCircle,
   IconX,
   Label,
@@ -60,6 +59,8 @@ const isAll = (id: string) => id === FILTER_ALL;
 
 export const TeamRolesPage = () => {
   const orgId = useSelector(selectOrganizationSelectedId);
+  const roleToUserMap = useSelector(selectRoleToUsersMap);
+  const envToPermsMap = useSelector(selectEnvToPerms);
   const users = useSelector(selectUsersAsList);
   const usersAsOptions = [
     { label: "All", value: FILTER_ALL },
@@ -113,6 +114,12 @@ export const TeamRolesPage = () => {
       userId: FILTER_ALL,
       envId: FILTER_NO_ACCESS,
     });
+  };
+  const onCsv = (): string => {
+    const csv = "";
+    for (const role of filteredRoles) {
+    }
+    return csv;
   };
 
   useQuery(fetchMembershipsByOrgId({ orgId }));
@@ -189,9 +196,7 @@ export const TeamRolesPage = () => {
               </Group>
 
               <Group variant="horizontal" size="sm">
-                <ButtonIcon icon={<IconDownload variant="sm" />}>
-                  CSV
-                </ButtonIcon>
+                <CsvButton csv={onCsv} title={`aptible-roles-${orgId}`} />
                 <ButtonLink to={teamRolesCreateUrl()}>
                   <IconPlusCircle variant="sm" className="mr-2" /> New Role
                 </ButtonLink>
@@ -248,16 +253,16 @@ function RoleTable({
   totalEnvs,
   filters,
 }: { role: Role; totalEnvs: number; filters: RoleFilters }) {
-  const users = useSelector((s) => selectUsersByRoleId(s, { roleId: role.id }));
+  const envToPerms = useSelector((s) =>
+    selectEnvToPermsByRoleId(s, { roleId: role.id }),
+  );
+
   const filteredUsers = users.filter((u) => {
     if (isAll(filters.userId)) {
       return true;
     }
     return u.id === filters.userId;
   });
-  const envToPerms = useSelector((s) =>
-    selectEnvToPermsByRoleId(s, { roleId: role.id }),
-  );
   const filtered = filterEnv(filters.envId, envToPerms);
   const envIds = Object.keys(filtered);
   const numEnvs = envIds.reduce((acc, envId) => {
@@ -266,7 +271,6 @@ function RoleTable({
     }
     return acc;
   }, 0);
-
   const userDoesNotHaveRole =
     users.findIndex((u) => u.id === filters.userId) === -1;
   if (!isAll(filters.userId) && userDoesNotHaveRole) {
