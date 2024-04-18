@@ -2,6 +2,7 @@ import { fetchMembershipsByOrgId, selectUsersByRoleId } from "@app/auth";
 import { prettyDate } from "@app/date";
 import {
   selectEnvToPermsByRoleId,
+  selectEnvironmentById,
   selectEnvironmentsByOrgAsList,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
@@ -13,7 +14,7 @@ import {
   teamRolesCreateUrl,
   teamRolesUrl,
 } from "@app/routes";
-import { PermissionScope, Role, RoleType } from "@app/types";
+import { Permission, PermissionScope, Role, RoleType } from "@app/types";
 import { selectUsersAsList } from "@app/users";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -180,8 +181,8 @@ function RoleTable({ role, totalEnvs }: { role: Role; totalEnvs: number }) {
   const envToPerms = useSelector((s) =>
     selectEnvToPermsByRoleId(s, { roleId: role.id }),
   );
-  const envKeys = Object.keys(envToPerms);
-  const numEnvs = envKeys.length;
+  const envIds = Object.keys(envToPerms);
+  const numEnvs = envIds.length;
   const isOwnerRole = getIsOwnerRole(role);
 
   // The Deploy Owners has total permission over all of your Deploy platform resources.
@@ -189,7 +190,7 @@ function RoleTable({ role, totalEnvs }: { role: Role; totalEnvs: number }) {
   return (
     <Group>
       <Group variant="horizontal">
-        <Group className="w-[250px]">
+        <Group className="w-[225px]">
           <RolePill role={role} />
 
           {users.length === 0 ? <div>No users</div> : null}
@@ -214,7 +215,7 @@ function RoleTable({ role, totalEnvs }: { role: Role; totalEnvs: number }) {
             account.
           </Box>
         ) : (
-          <Table>
+          <Table className="flex-1">
             <THead>
               <Td>{displayRoleEnvsHeader(role.type, totalEnvs, numEnvs)}</Td>
               <Td>Environment Admin</Td>
@@ -228,52 +229,9 @@ function RoleTable({ role, totalEnvs }: { role: Role; totalEnvs: number }) {
             </THead>
 
             <TBody>
-              {envKeys.map((key) => {
-                const perms = envToPerms[key].reduce(
-                  (acc, perm) => {
-                    acc[perm.scope] = true;
-                    return acc;
-                  },
-                  {
-                    admin: false,
-                    read: false,
-                    basic_read: false,
-                    deploy: false,
-                    destroy: false,
-                    observability: false,
-                    sensitive: false,
-                    tunnel: false,
-                    unknown: false,
-                  } as Record<PermissionScope, boolean>,
-                );
+              {envIds.map((id) => {
                 return (
-                  <Tr key={key}>
-                    <Td>{key}</Td>
-                    <Td variant="center">
-                      <PermCheck checked={perms.admin} />
-                    </Td>
-                    <Td variant="center">
-                      <PermCheck checked={perms.read} />
-                    </Td>
-                    <Td variant="center">
-                      <PermCheck checked={perms.basic_read} />
-                    </Td>
-                    <Td variant="center">
-                      <PermCheck checked={perms.deploy} />
-                    </Td>
-                    <Td variant="center">
-                      <PermCheck checked={perms.destroy} />
-                    </Td>
-                    <Td variant="center">
-                      <PermCheck checked={perms.observability} />
-                    </Td>
-                    <Td variant="center">
-                      <PermCheck checked={perms.sensitive} />
-                    </Td>
-                    <Td variant="center">
-                      <PermCheck checked={perms.tunnel} />
-                    </Td>
-                  </Tr>
+                  <RoleEnvRow key={id} envId={id} envPerms={envToPerms[id]} />
                 );
               })}
             </TBody>
@@ -283,6 +241,59 @@ function RoleTable({ role, totalEnvs }: { role: Role; totalEnvs: number }) {
 
       <hr />
     </Group>
+  );
+}
+
+function RoleEnvRow({
+  envId,
+  envPerms,
+}: { envId: string; envPerms: Permission[] }) {
+  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
+  const perms = envPerms.reduce(
+    (acc, perm) => {
+      acc[perm.scope] = true;
+      return acc;
+    },
+    {
+      admin: false,
+      read: false,
+      basic_read: false,
+      deploy: false,
+      destroy: false,
+      observability: false,
+      sensitive: false,
+      tunnel: false,
+      unknown: false,
+    } as Record<PermissionScope, boolean>,
+  );
+  return (
+    <Tr>
+      <Td>{env.handle}</Td>
+      <Td variant="center">
+        <PermCheck checked={perms.admin} />
+      </Td>
+      <Td variant="center">
+        <PermCheck checked={perms.read} />
+      </Td>
+      <Td variant="center">
+        <PermCheck checked={perms.basic_read} />
+      </Td>
+      <Td variant="center">
+        <PermCheck checked={perms.deploy} />
+      </Td>
+      <Td variant="center">
+        <PermCheck checked={perms.destroy} />
+      </Td>
+      <Td variant="center">
+        <PermCheck checked={perms.observability} />
+      </Td>
+      <Td variant="center">
+        <PermCheck checked={perms.sensitive} />
+      </Td>
+      <Td variant="center">
+        <PermCheck checked={perms.tunnel} />
+      </Td>
+    </Tr>
   );
 }
 

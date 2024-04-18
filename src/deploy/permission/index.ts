@@ -120,6 +120,8 @@ export const selectEnvToPermsByRoleId = createSelector(
       );
       if (envPerms.length > 0) {
         mapper[env.id] = envPerms;
+      } else {
+        mapper[env.id] = [];
       }
     }
     return mapper;
