@@ -13,6 +13,8 @@ import { useQuery } from "starfx/react";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
+  ActionBar,
+  ButtonAnyOwner,
   DescBar,
   EmptyTr,
   FilterBar,
@@ -20,6 +22,7 @@ import {
   Group,
   IconChevronDown,
   IconInfo,
+  IconPlusCircle,
   InputSearch,
   LoadingBar,
   PaginateBar,
@@ -173,7 +176,17 @@ export function SourcesPage() {
                 search={search}
                 onChange={onChange}
               />
+              <ActionBar>
+                <ButtonAnyOwner
+                  onClick={() => navigate(sourcesSetupUrl())}
+                  tooltipProps={{ placement: "left" }}
+                >
+                  <IconPlusCircle variant="sm" className="mr-2" />
+                  New Source
+                </ButtonAnyOwner>
+              </ActionBar>
             </div>
+
             <Group variant="horizontal" size="sm" className="items-center">
               <LoadingBar isLoading={isLoading} />
             </Group>
