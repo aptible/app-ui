@@ -125,14 +125,9 @@ export const selectRoleToEnvToPermsMap = createSelector(
     for (const role of roles) {
       const envToPermMap: { [key: string]: Permission[] } = {};
       for (const env of envs) {
-        const envPerms = perms.filter(
+        envToPermMap[env.id] = perms.filter(
           (perm) => perm.roleId === role.id && perm.environmentId === env.id,
         );
-        if (envPerms.length > 0) {
-          envToPermMap[env.id] = envPerms;
-        } else {
-          envToPermMap[env.id] = [];
-        }
       }
       mapper[role.id] = envToPermMap;
     }
