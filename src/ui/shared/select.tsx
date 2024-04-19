@@ -4,6 +4,8 @@ import { Children, cloneElement } from "react";
 export interface SelectOption<V = string> {
   label: string;
   value: V;
+  disabled?: boolean;
+  key?: string;
 }
 
 export interface SelectProps<V = string> {
@@ -56,7 +58,11 @@ export function Select<V = string>({
     >
       {options.map((option) => {
         return (
-          <option key={option.value} value={option.value}>
+          <option
+            key={option.key || option.value}
+            value={option.value}
+            disabled={option.disabled}
+          >
             {option.label}
           </option>
         );
