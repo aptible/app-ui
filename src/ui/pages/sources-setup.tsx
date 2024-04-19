@@ -1,5 +1,5 @@
-import { selectAppsAsList } from "@app/deploy";
-import { useSelector } from "@app/react";
+import { fetchApps, selectAppsAsList } from "@app/deploy";
+import { useQuery, useSelector } from "@app/react";
 import { appCiCdUrl } from "@app/routes";
 import { AppSidebarLayout } from "@app/ui";
 import {
@@ -17,10 +17,21 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export function SourcesSetupPage() {
+  const { isLoading } = useQuery(fetchApps());
   const apps = useSelector(selectAppsAsList);
   const options: SelectOption[] = [
-    { label: "Select an app", value: "" },
-    ...(apps || []).map((a) => ({ label: a.handle, value: a.id })),
+    {
+      label: isLoading ? "Please wait..." : "Select an app",
+      value: "",
+      disabled: isLoading,
+    },
+    ...(apps || [])
+      .map((a) => ({
+        label: a.handle,
+        value: a.id,
+        disabled: !!a.currentSourceId,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
   ];
   const [selectedAppId, setSelectedAppId] = useState<string>("");
   const onAppSelect = (option: SelectOption) => setSelectedAppId(option.value);
@@ -71,6 +82,7 @@ export function SourcesSetupPage() {
             htmlFor="Choose App to configure Source"
           >
             <Select
+              disabled={isLoading}
               onSelect={onAppSelect}
               value={selectedAppId || undefined}
               options={options}
