@@ -14,7 +14,7 @@ import {
   tokens,
 } from "@app/ui/shared";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function SourcesSetupPage() {
   const { isLoading } = useQuery(fetchApps());
@@ -35,6 +35,7 @@ export function SourcesSetupPage() {
   ];
   const [selectedAppId, setSelectedAppId] = useState<string>("");
   const onAppSelect = (option: SelectOption) => setSelectedAppId(option.value);
+  const navigate = useNavigate();
 
   return (
     <AppSidebarLayout>
@@ -88,11 +89,14 @@ export function SourcesSetupPage() {
               options={options}
             />
           </FormGroup>
-          <Link to={selectedAppId ? appCiCdUrl(selectedAppId) : "#"}>
-            <Button className="w-fit" type="button" disabled={!selectedAppId}>
-              Continue to CI/CD Setup
-            </Button>
-          </Link>
+          <Button
+            className="w-fit"
+            type="button"
+            disabled={!selectedAppId}
+            onClick={() => navigate(appCiCdUrl(selectedAppId))}
+          >
+            Continue to CI/CD Setup
+          </Button>
         </Group>
       </Box>
     </AppSidebarLayout>
