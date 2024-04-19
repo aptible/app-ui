@@ -5,10 +5,10 @@ import {
 } from "@app/deploy";
 import { fetchDeployments } from "@app/deployment";
 import { useSelector } from "@app/react";
-import { sourceDetailUrl } from "@app/routes";
+import { sourceDetailUrl, sourcesSetupUrl } from "@app/routes";
 import { fetchSources } from "@app/source";
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
@@ -151,6 +151,12 @@ export function SourcesPage() {
     }),
   );
   const paginated = usePaginate(sources);
+
+  // If there are no sources to display, redirect the user to the setup page.
+  const navigate = useNavigate();
+  if (!isLoading && sources.length === 0) {
+    navigate(sourcesSetupUrl());
+  }
 
   return (
     <AppSidebarLayout>
