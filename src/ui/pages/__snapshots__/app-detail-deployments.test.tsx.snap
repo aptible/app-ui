@@ -203,7 +203,7 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   colspan="1"
                 >
                   <a
-                    class="w-15 flex items-center justify-center px-3 py-2 text-sm leading-4 font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md hover:no-underline cursor-pointer"
+                    class="flex items-center justify-center px-3 py-2 text-sm leading-4 font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md hover:no-underline cursor-pointer w-15"
                     href="/deployments/1"
                   >
                     View
@@ -402,7 +402,7 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   colspan="1"
                 >
                   <a
-                    class="w-15 flex items-center justify-center px-3 py-2 text-sm leading-4 font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md hover:no-underline cursor-pointer"
+                    class="flex items-center justify-center px-3 py-2 text-sm leading-4 font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md hover:no-underline cursor-pointer w-15"
                     href="/deployments/2"
                   >
                     View
@@ -588,7 +588,7 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   colspan="1"
                 >
                   <a
-                    class="w-15 flex items-center justify-center px-3 py-2 text-sm leading-4 font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md hover:no-underline cursor-pointer"
+                    class="flex items-center justify-center px-3 py-2 text-sm leading-4 font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md hover:no-underline cursor-pointer w-15"
                     href="/deployments/3"
                   >
                     View
