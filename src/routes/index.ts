@@ -394,6 +394,8 @@ export const supportUrl = () => SUPPORT_URL;
 
 export const SOURCES_PATH = "/sources";
 export const sourcesUrl = () => SOURCES_PATH;
+export const SOURCES_SETUP_PATH = "/sources/setup";
+export const sourcesSetupUrl = () => SOURCES_SETUP_PATH;
 export const SOURCE_DETAIL_PATH = "/sources/:id";
 export const sourceDetailUrl = (id: string) => `/sources/${id}`;
 export const SOURCE_DETAIL_APPS_PATH = "/sources/:id/apps";

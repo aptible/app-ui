@@ -148,6 +148,7 @@ import {
 import { DeploymentDetailLayout } from "@app/ui/layouts/deployment-detail-layout";
 import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
+import { SourcesSetupPage } from "@app/ui/pages/sources-setup";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
 
@@ -278,6 +279,10 @@ export const appRoutes: RouteObject[] = [
           {
             index: true,
             element: <SourcesPage />,
+          },
+          {
+            path: routes.SOURCES_SETUP_PATH,
+            element: <SourcesSetupPage />,
           },
           {
             path: routes.SOURCE_DETAIL_PATH,

@@ -106,7 +106,7 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
 export const hasDeployApp = (a: DeployApp) => a.id !== "";
 export const selectAppById = schema.apps.selectById;
 export const selectApps = schema.apps.selectTable;
-const selectAppsAsList = schema.apps.selectTableAsList;
+export const selectAppsAsList = schema.apps.selectTableAsList;
 export const findAppById = schema.apps.findById;
 
 export interface DeployAppRow extends DeployApp {
