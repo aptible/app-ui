@@ -57,7 +57,15 @@ export const GitCommitMessage = ({ message }: { message: string }) => {
   const firstLine = message.trim().split("\n")[0];
   return (
     <div className="inline-block">
-      <Tooltip text={message} fluid>
+      <Tooltip
+        text={
+          <pre className="overflow-hidden max-w-[150ch] text-ellipsis">
+            {message}
+          </pre>
+        }
+        fluid
+        placement="top"
+      >
         <p className="leading-8 text-ellipsis whitespace-nowrap max-w-[30ch] overflow-hidden inline-block">
           {firstLine}
           {message.length > firstLine.length ? " ..." : ""}
