@@ -4,10 +4,11 @@ import {
   scopeDesc,
   scopeTitle,
   selectEnvironmentById,
+  selectEnvironments,
   selectEnvironmentsByOrgAsList,
   selectRoleToEnvToPermsMap,
 } from "@app/deploy";
-import { selectOrganizationSelectedId } from "@app/organizations";
+import { selectOrganizationSelected } from "@app/organizations";
 import { useQuery, useSelector } from "@app/react";
 import { getIsOwnerRole, selectRolesByOrgId } from "@app/roles";
 import {
@@ -57,7 +58,8 @@ const FILTER_ALL = "all";
 const isAll = (id: string) => id === FILTER_ALL;
 
 export const TeamRolesPage = () => {
-  const orgId = useSelector(selectOrganizationSelectedId);
+  const org = useSelector(selectOrganizationSelected);
+  const envs = useSelector(selectEnvironments);
   const roleToUserMap = useSelector(selectRoleToUsersMap);
   const roleToEnvToPermsMap = useSelector(selectRoleToEnvToPermsMap);
   const users = useSelector(selectUsersAsList);
@@ -75,7 +77,7 @@ export const TeamRolesPage = () => {
       .map((env) => ({ label: env.handle, value: env.id }))
       .sort(sortOpts),
   ];
-  const roles = useSelector((s) => selectRolesByOrgId(s, { orgId }));
+  const roles = useSelector((s) => selectRolesByOrgId(s, { orgId: org.id }));
   const rolesAsOptions = [
     { label: "All", value: FILTER_ALL },
     ...roles
@@ -127,36 +129,65 @@ export const TeamRolesPage = () => {
         return perms.find((perm) => perm.scope === scope) ? "Yes" : "No";
       };
     let csv =
-      "role,users,environment,admin,read,basic_read,deploy,destroy,ops,sensitive,tunnel\n";
+      "organization,role,users,environment,environment_admin,full_visibility,basic_visibility,deployment,destroy,ops,sensitive_access,tunnel\n";
 
     for (const role of filteredRoles) {
-      const users = roleToUserMap[role.id];
-      const envsToPerms = roleToEnvToPermsMap[role.id];
-      const envIds = Object.keys(envsToPerms);
-      for (const envId of envIds) {
-        const perms = envsToPerms[envId];
-        const printer = scopePrint(role.type, perms);
+      const roleUsers = roleToUserMap[role.id].filter(
+        filterUsers(filters.userId),
+      );
+      const envToPerms = filterEnv(filters.envId, roleToEnvToPermsMap[role.id]);
+      const envIds = Object.keys(envToPerms);
+      const userDoesNotHaveRole =
+        roleUsers.findIndex((u) => u.id === filters.userId) === -1;
+
+      if (!isAll(filters.userId) && userDoesNotHaveRole) {
+        continue;
+      }
+
+      if (getIsOwnerRole(role)) {
         const cells: string[] = [
+          org.name,
           role.name,
-          users.map((u) => u.name).join(" "),
-          envId,
-          printer("admin"),
-          printer("read"),
-          printer("basic_read"),
-          printer("deploy"),
-          printer("destroy"),
-          printer("observability"),
-          printer("sensitive"),
-          printer("tunnel"),
+          `\"${roleUsers.map((u) => u.name).join(",")}\"`,
+          "All Environments",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Yes",
+          "Yes",
         ];
         csv += cells.join(",");
         csv += "\n";
+      } else {
+        for (const envId of envIds) {
+          const perms = envToPerms[envId];
+          const printer = scopePrint(role.type, perms);
+          const cells: string[] = [
+            org.name,
+            role.name,
+            `\"${roleUsers.map((u) => u.name).join(",")}\"`,
+            envs[envId].handle,
+            printer("admin"),
+            printer("read"),
+            printer("basic_read"),
+            printer("deploy"),
+            printer("destroy"),
+            printer("observability"),
+            printer("sensitive"),
+            printer("tunnel"),
+          ];
+          csv += cells.join(",");
+          csv += "\n";
+        }
       }
     }
     return csv;
   };
 
-  useQuery(fetchMembershipsByOrgId({ orgId }));
+  useQuery(fetchMembershipsByOrgId({ orgId: org.id }));
 
   return (
     <Group>
@@ -230,7 +261,7 @@ export const TeamRolesPage = () => {
               </Group>
 
               <Group variant="horizontal" size="sm">
-                <CsvButton csv={onCsv} title={`aptible-roles-${orgId}`} />
+                <CsvButton csv={onCsv} title={`aptible-roles-${org.name}`} />
                 <ButtonLink to={teamRolesCreateUrl()}>
                   <IconPlusCircle variant="sm" className="mr-2" /> New Role
                 </ButtonLink>
@@ -286,27 +317,6 @@ export const TeamRolesPage = () => {
   );
 };
 
-const filterEnv = (
-  envId: RoleFilters["envId"],
-  envToPerms: { [key: string]: Permission[] },
-): { [key: string]: Permission[] } => {
-  if (isAll(envId)) {
-    return envToPerms;
-  }
-
-  if (isNoAccess(envId)) {
-    const filtered: { [key: string]: Permission[] } = {};
-    Object.keys(envToPerms).forEach((envId) => {
-      if (envToPerms[envId].length > 0) {
-        filtered[envId] = envToPerms[envId];
-      }
-    });
-    return filtered;
-  }
-
-  return { [envId]: envToPerms[envId] || [] };
-};
-
 function OwnerCard({
   roleId,
   title,
@@ -321,10 +331,7 @@ function OwnerCard({
   filters: RoleFilters;
 }) {
   const filteredUsers = users
-    .filter((u) => {
-      if (isAll(filters.userId)) return true;
-      return u.id === filters.userId;
-    })
+    .filter(filterUsers(filters.userId))
     .map((u) => u.name);
 
   if (filteredUsers.length === 0) {
@@ -347,14 +354,6 @@ function OwnerCard({
   );
 }
 
-const RoleColHeader = ({ scope }: { scope: PermissionScope }) => {
-  return (
-    <Th className="w-[100px] text-center">
-      <Tooltip text={scopeDesc[scope]}>{scopeTitle[scope]} </Tooltip>
-    </Th>
-  );
-};
-
 function RoleTable({
   role,
   totalEnvs,
@@ -368,12 +367,7 @@ function RoleTable({
   users: User[];
   envToPerms: { [key: string]: Permission[] };
 }) {
-  const filteredUsers = users.filter((u) => {
-    if (isAll(filters.userId)) {
-      return true;
-    }
-    return u.id === filters.userId;
-  });
+  const filteredUsers = users.filter(filterUsers(filters.userId));
   const filtered = filterEnv(filters.envId, envToPerms);
   const envIds = Object.keys(filtered);
   const numEnvs = envIds.reduce((acc, envId) => {
@@ -438,6 +432,14 @@ function RoleTable({
   );
 }
 
+function RoleColHeader({ scope }: { scope: PermissionScope }) {
+  return (
+    <Th className="w-[100px] text-center">
+      <Tooltip text={scopeDesc[scope]}>{scopeTitle[scope]} </Tooltip>
+    </Th>
+  );
+}
+
 function RoleEnvRow({
   envId,
   envPerms,
@@ -489,6 +491,34 @@ function RoleEnvRow({
       </Td>
     </Tr>
   );
+}
+
+function filterEnv(
+  envId: RoleFilters["envId"],
+  envToPerms: { [key: string]: Permission[] },
+): { [key: string]: Permission[] } {
+  if (isAll(envId)) {
+    return envToPerms;
+  }
+
+  if (isNoAccess(envId)) {
+    const filtered: { [key: string]: Permission[] } = {};
+    Object.keys(envToPerms).forEach((envId) => {
+      if (envToPerms[envId].length > 0) {
+        filtered[envId] = envToPerms[envId];
+      }
+    });
+    return filtered;
+  }
+
+  return { [envId]: envToPerms[envId] || [] };
+}
+
+function filterUsers(filteredUserId: string) {
+  return (u: User) => {
+    if (isAll(filteredUserId)) return true;
+    return u.id === filteredUserId;
+  };
 }
 
 function displayRoleEnvsHeader(
