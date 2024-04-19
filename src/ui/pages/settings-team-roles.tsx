@@ -9,7 +9,7 @@ import {
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useQuery, useSelector } from "@app/react";
-import { selectRolesByOrgId } from "@app/roles";
+import { getIsOwnerRole, selectRolesByOrgId } from "@app/roles";
 import {
   roleDetailUrl,
   settingsUrl,
@@ -69,7 +69,7 @@ export const TeamRolesPage = () => {
   ];
   const allEnvs = useSelector(selectEnvironmentsByOrgAsList);
   const envsAsOptions = [
-    { label: "Hide No-Access Environments", value: FILTER_NO_ACCESS },
+    { label: "Hide Environments without Permissions", value: FILTER_NO_ACCESS },
     { label: "All Environments", value: FILTER_ALL },
     ...allEnvs
       .map((env) => ({ label: env.handle, value: env.id }))
@@ -97,6 +97,10 @@ export const TeamRolesPage = () => {
     if (isAll(filters.roleId)) return true;
     return role.id === filters.roleId;
   });
+  const ownerRole = filteredRoles.find((role) => role.type === "owner");
+  const deployRole = filteredRoles.find(
+    (role) => role.type === "platform_owner",
+  );
   const onFilter = () => {
     setFilters({
       roleId: roleFilter,
@@ -238,17 +242,46 @@ export const TeamRolesPage = () => {
 
       <div className="text-gray-500">{`${filteredRoles.length} Roles`}</div>
 
-      {filteredRoles.map((role) => {
-        return (
-          <RoleTable
-            role={role}
-            totalEnvs={allEnvs.length}
-            filters={filters}
-            users={roleToUserMap[role.id]}
-            envToPerms={roleToEnvToPermsMap[role.id]}
-          />
-        );
-      })}
+      {ownerRole || deployRole ? (
+        <Group variant="horizontal">
+          {ownerRole ? (
+            <OwnerCard
+              title="Account Owner"
+              desc="The Account Owners role has total permission over your Aptible account and manage billing."
+              users={roleToUserMap[ownerRole.id]}
+              roleId={ownerRole.id}
+              filters={filters}
+            />
+          ) : null}
+
+          {deployRole ? (
+            <OwnerCard
+              title="Deploy Owner"
+              desc="The Deploy Owners role total permission over all of your Deploy platform resources."
+              users={roleToUserMap[deployRole.id]}
+              roleId={deployRole.id}
+              filters={filters}
+            />
+          ) : null}
+        </Group>
+      ) : null}
+
+      <hr />
+
+      {filteredRoles
+        .filter((role) => !getIsOwnerRole(role))
+        .map((role) => {
+          return (
+            <RoleTable
+              key={role.id}
+              role={role}
+              totalEnvs={allEnvs.length}
+              filters={filters}
+              users={roleToUserMap[role.id]}
+              envToPerms={roleToEnvToPermsMap[role.id]}
+            />
+          );
+        })}
     </Group>
   );
 };
@@ -273,6 +306,46 @@ const filterEnv = (
 
   return { [envId]: envToPerms[envId] || [] };
 };
+
+function OwnerCard({
+  roleId,
+  title,
+  desc,
+  users,
+  filters,
+}: {
+  roleId: string;
+  title: string;
+  desc: string;
+  users: User[];
+  filters: RoleFilters;
+}) {
+  const filteredUsers = users
+    .filter((u) => {
+      if (isAll(filters.userId)) return true;
+      return u.id === filters.userId;
+    })
+    .map((u) => u.name);
+
+  if (filteredUsers.length === 0) {
+    return null;
+  }
+
+  return (
+    <Box bg="gray-50" className="flex-1 flex flex-col gap-2">
+      <h3 className={tokens.type.h3}>{title}</h3>
+      <p className="text-black-500">{desc}</p>
+      <p>{filteredUsers.join(", ")}</p>
+      <ButtonLink
+        to={roleDetailUrl(roleId)}
+        size="sm"
+        className="inline-block w-fit"
+      >
+        Edit Role
+      </ButtonLink>
+    </Box>
+  );
+}
 
 const RoleColHeader = ({ scope }: { scope: PermissionScope }) => {
   return (
@@ -339,47 +412,25 @@ function RoleTable({
           </ButtonLink>
         </Group>
 
-        {role.type === "owner" ? (
-          <Box className="flex-1 flex justify-center items-center flex-col">
-            <IconCheckCircle className="mb-2" color="#00633F" />
-            <h3 className={tokens.type.h3}>Full Access and Billing Access</h3>
-            <div>
-              The Account Owners role has total permission over your Aptible
-              account and manage billing.
-            </div>
-          </Box>
-        ) : role.type === "platform_owner" ? (
-          <Box className="flex-1 flex justify-center items-center flex-col">
-            <IconCheckCircle className="mb-2" color="#00633F" />
-            <h3 className={tokens.type.h3}>Full Access</h3>
-            <div>
-              The Deploy Owners role total permission over all of your Deploy
-              platform resources.
-            </div>
-          </Box>
-        ) : (
-          <Table className="flex-1">
-            <THead>
-              <Th>{displayRoleEnvsHeader(role.type, totalEnvs, numEnvs)}</Th>
-              <RoleColHeader scope="admin" />
-              <RoleColHeader scope="read" />
-              <RoleColHeader scope="basic_read" />
-              <RoleColHeader scope="deploy" />
-              <RoleColHeader scope="destroy" />
-              <RoleColHeader scope="observability" />
-              <RoleColHeader scope="sensitive" />
-              <RoleColHeader scope="tunnel" />
-            </THead>
+        <Table className="flex-1">
+          <THead>
+            <Th>{displayRoleEnvsHeader(role.type, totalEnvs, numEnvs)}</Th>
+            <RoleColHeader scope="admin" />
+            <RoleColHeader scope="read" />
+            <RoleColHeader scope="basic_read" />
+            <RoleColHeader scope="deploy" />
+            <RoleColHeader scope="destroy" />
+            <RoleColHeader scope="observability" />
+            <RoleColHeader scope="sensitive" />
+            <RoleColHeader scope="tunnel" />
+          </THead>
 
-            <TBody>
-              {envIds.map((id) => {
-                return (
-                  <RoleEnvRow key={id} envId={id} envPerms={filtered[id]} />
-                );
-              })}
-            </TBody>
-          </Table>
-        )}
+          <TBody>
+            {envIds.map((id) => {
+              return <RoleEnvRow key={id} envId={id} envPerms={filtered[id]} />;
+            })}
+          </TBody>
+        </Table>
       </Group>
 
       <hr />
