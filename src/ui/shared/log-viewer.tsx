@@ -75,7 +75,7 @@ export const LogViewer = ({ op }: { op: DeployOperation }) => {
     return <div className={wrapper}>Fetching logs...</div>;
   }
 
-  if (!data) {
+  if (!data || typeof data !== "string") {
     return <div className={wrapper}>No data found</div>;
   }
 
