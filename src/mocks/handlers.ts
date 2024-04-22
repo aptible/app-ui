@@ -250,6 +250,12 @@ const authHandlers = [
       );
     },
   ),
+  rest.get(
+    `${testEnv.authUrl}/organizations/:id/roles/memberships`,
+    async (_, res, ctx) => {
+      return res(ctx.json({ _embedded: {} }));
+    },
+  ),
 ];
 
 export const verifiedUserHandlers = (
