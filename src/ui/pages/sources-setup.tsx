@@ -25,7 +25,7 @@ export function SourcesSetupPage() {
       value: "",
       disabled: isLoading,
     },
-    ...(apps || [])
+    ...apps
       .map((a) => ({
         label: a.handle,
         value: a.id,
