@@ -15,6 +15,7 @@ import { AppSidebarLayout } from "../layouts";
 import {
   ActionBar,
   ButtonAnyOwner,
+  CopyText,
   DescBar,
   EmptyTr,
   FilterBar,
@@ -54,6 +55,9 @@ function SourceListRow({ source }: { source: DeploySourceRow }) {
             {source.displayName}
           </p>
         </Link>
+      </Td>
+      <Td>
+        <CopyText text={source.url}>{source.url}</CopyText>
       </Td>
       <Td>
         {liveCommits.length === 0 ? <em>No commit information</em> : null}
@@ -206,6 +210,7 @@ export function SourcesPage() {
             >
               Name <SortIcon />
             </Th>
+            <Th>Source URL</Th>
             <Th
               className="cursor-pointer hover:text-black group"
               onClick={() => onSort("liveCommits")}
