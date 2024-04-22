@@ -5,14 +5,17 @@ import {
 } from "@app/deploy";
 import { fetchDeployments } from "@app/deployment";
 import { useSelector } from "@app/react";
-import { sourceDetailUrl } from "@app/routes";
+import { sourceDetailUrl, sourcesSetupUrl } from "@app/routes";
 import { fetchSources } from "@app/source";
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
+  ActionBar,
+  ButtonAnyOwner,
+  CopyText,
   DescBar,
   EmptyTr,
   FilterBar,
@@ -20,6 +23,7 @@ import {
   Group,
   IconChevronDown,
   IconInfo,
+  IconPlusCircle,
   InputSearch,
   LoadingBar,
   PaginateBar,
@@ -51,6 +55,9 @@ function SourceListRow({ source }: { source: DeploySourceRow }) {
             {source.displayName}
           </p>
         </Link>
+      </Td>
+      <Td>
+        <CopyText text={source.url}>{source.url}</CopyText>
       </Td>
       <Td>
         {liveCommits.length === 0 ? <em>No commit information</em> : null}
@@ -152,6 +159,12 @@ export function SourcesPage() {
   );
   const paginated = usePaginate(sources);
 
+  // If there are no sources to display, redirect the user to the setup page.
+  const navigate = useNavigate();
+  if (!isLoading && sources.length === 0) {
+    navigate(sourcesSetupUrl());
+  }
+
   return (
     <AppSidebarLayout>
       <Group>
@@ -167,7 +180,17 @@ export function SourcesPage() {
                 search={search}
                 onChange={onChange}
               />
+              <ActionBar>
+                <ButtonAnyOwner
+                  onClick={() => navigate(sourcesSetupUrl())}
+                  tooltipProps={{ placement: "left" }}
+                >
+                  <IconPlusCircle variant="sm" className="mr-2" />
+                  New Source
+                </ButtonAnyOwner>
+              </ActionBar>
             </div>
+
             <Group variant="horizontal" size="sm" className="items-center">
               <LoadingBar isLoading={isLoading} />
             </Group>
@@ -187,6 +210,7 @@ export function SourcesPage() {
             >
               Name <SortIcon />
             </Th>
+            <Th>Source URL</Th>
             <Th
               className="cursor-pointer hover:text-black group"
               onClick={() => onSort("liveCommits")}
