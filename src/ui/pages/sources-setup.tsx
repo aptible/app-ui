@@ -60,22 +60,27 @@ export function SourcesSetupPage() {
         <Group className="mb-4">
           <h3 className={tokens.type.h3}>How to Setup a Source</h3>
 
-          <h4 className="font-semibold">
-            Step 1. View an app’s CI/CD tab and follow the setup instructions.
-          </h4>
-          <p>
-            Aptible automatically creates a source and links all releases to
-            that source when you use the Aptible GitHub Action (v4 or greater).
-          </p>
+          <div>
+            <h4 className="font-semibold">
+              Step 1. View an app’s CI/CD tab and follow the setup instructions.
+            </h4>
+            <p>
+              Aptible automatically creates a source and links all releases to
+              that source when you use the Aptible GitHub Action (v4 or
+              greater).
+            </p>
+          </div>
 
-          <h4 className="font-semibold">
-            Step 2. Commit your changes and wait for the release to finish.
-          </h4>
-          <p>
-            That’s it! Now you can view all apps, release history, release logs,
-            and release ENV variables (if you have permissions) tied to this
-            source.
-          </p>
+          <div>
+            <h4 className="font-semibold">
+              Step 2. Commit your changes and wait for the release to finish.
+            </h4>
+            <p>
+              That’s it! Now you can view all apps, release history, release
+              logs, and release ENV variables (if you have permissions) tied to
+              this source.
+            </p>
+          </div>
         </Group>
         <Group>
           <FormGroup
