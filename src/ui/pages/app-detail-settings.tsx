@@ -10,6 +10,7 @@ import {
   selectMetricDrainsByEnvId,
   updateApp,
 } from "@app/deploy";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -30,6 +31,7 @@ import {
   ButtonCreate,
   ButtonDestroy,
   ButtonOps,
+  EnvPerms,
   ExternalLink,
   FormGroup,
   Group,
@@ -224,6 +226,7 @@ export const AppSettingsPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchApp({ id }));
   const app = useSelector((s) => selectAppById(s, { id }));
+  const orgId = useSelector(selectOrganizationSelectedId);
 
   return (
     <BoxGroup>
@@ -235,6 +238,8 @@ export const AppSettingsPage = () => {
           <AppRestart app={app} />
         </Group>
       </Box>
+
+      <EnvPerms envId={app.environmentId} orgId={orgId} />
 
       <Box>
         <AppDeprovision app={app} />

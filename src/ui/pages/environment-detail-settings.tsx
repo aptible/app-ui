@@ -10,6 +10,7 @@ import {
   selectMetricDrainsByEnvId,
   updateEnvironmentName,
 } from "@app/deploy";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -30,6 +31,7 @@ import {
   ButtonDestroy,
   CheckBox,
   Code,
+  EnvPerms,
   FormGroup,
   IconAlertTriangle,
   IconTrash,
@@ -222,6 +224,7 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
 
 export const EnvironmentSettingsPage = () => {
   const { id = "" } = useParams();
+  const orgId = useSelector(selectOrganizationSelectedId);
 
   return (
     <div className="flex flex-col gap-4">
@@ -230,6 +233,7 @@ export const EnvironmentSettingsPage = () => {
         <EnvChangeName envId={id} />
       </Box>
 
+      <EnvPerms envId={id} orgId={orgId} />
       <EnvDestroy envId={id} />
     </div>
   );

@@ -1,8 +1,6 @@
 import { fetchMembershipsByOrgId, selectRoleToUsersMap } from "@app/auth";
 import { prettyDate } from "@app/date";
 import {
-  scopeDesc,
-  scopeTitle,
   selectEnvironmentById,
   selectEnvironments,
   selectEnvironmentsByOrgAsList,
@@ -28,10 +26,10 @@ import {
   ButtonLink,
   CsvButton,
   Group,
-  IconCheckCircle,
   IconPlusCircle,
-  IconX,
   Label,
+  PermCheck,
+  RoleColHeader,
   Select,
   SelectOption,
   TBody,
@@ -39,7 +37,6 @@ import {
   Table,
   Td,
   Th,
-  Tooltip,
   Tr,
   tokens,
 } from "../shared";
@@ -432,14 +429,6 @@ function RoleTable({
   );
 }
 
-function RoleColHeader({ scope }: { scope: PermissionScope }) {
-  return (
-    <Th className="w-[100px] text-center">
-      <Tooltip text={scopeDesc[scope]}>{scopeTitle[scope]} </Tooltip>
-    </Th>
-  );
-}
-
 function RoleEnvRow({
   envId,
   envPerms,
@@ -535,13 +524,6 @@ function displayRoleEnvsHeader(
   }
 
   return `${numPerms} / ${numEnvs} Environments`;
-}
-
-function PermCheck({ checked }: { checked: boolean }) {
-  if (checked) {
-    return <IconCheckCircle className="inline-block" color="#00633F" />;
-  }
-  return <IconX className="inline-block" color="#AD1A1A" />;
 }
 
 function RolePill({ role }: { role: Role }) {
