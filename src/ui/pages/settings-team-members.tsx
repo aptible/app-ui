@@ -55,7 +55,12 @@ function MemberRow({
         {roles.map((r, idx) => {
           return (
             <Fragment key={r.id}>
-              <Link to={roleDetailUrl(r.id)}>{r.name}</Link>
+              <Link
+                to={roleDetailUrl(r.id)}
+                className={tokens.type["table link"]}
+              >
+                {r.name}
+              </Link>
               {idx === roles.length - 1 ? null : <span>, </span>}
             </Fragment>
           );
