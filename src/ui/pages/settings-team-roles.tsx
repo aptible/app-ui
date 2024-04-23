@@ -386,7 +386,9 @@ function RoleTable({
         <Group size="sm" className="w-[225px]">
           <RolePill role={role} />
 
-          {filteredUsers.length === 0 ? <div>No users</div> : null}
+          {filteredUsers.length === 0 ? (
+            <div className="text-sm">No users</div>
+          ) : null}
           <div>
             {filteredUsers.map((user) => (
               <div key={user.id} className="text-sm">
