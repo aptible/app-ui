@@ -11,6 +11,7 @@ import {
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useDispatch, useLoader, useSelector } from "@app/react";
 import { useQuery } from "@app/react";
+import { getIsOwnerRole, selectRoleById } from "@app/roles";
 import { environmentDetailUrl } from "@app/routes";
 import { defaultPermission } from "@app/schema";
 import { DeployEnvironment, Permission, PermissionScope } from "@app/types";
@@ -234,6 +235,12 @@ export function RoleDetailEnvironmentsPage() {
     })
     .sort((a, b) => a.handle.localeCompare(b.handle));
   const updateLoader = useLoader(updatePerm);
+  const role = useSelector((s) => selectRoleById(s, { id }));
+
+  const isOwnerRole = getIsOwnerRole(role);
+  if (isOwnerRole) {
+    return <RoleDetailLayout>Cannot edit {role.type} role</RoleDetailLayout>;
+  }
 
   return (
     <RoleDetailLayout>

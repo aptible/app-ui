@@ -1,9 +1,9 @@
 import { fetchMembershipsByOrgId, selectRoleToUsersMap } from "@app/auth";
 import { selectPermsByEnvId } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
-import { getIsOwnerRole, selectRolesByOrgId } from "@app/roles";
+import { fetchRoles, getIsOwnerRole, selectRolesByOrgId } from "@app/roles";
 import { roleDetailUrl } from "@app/routes";
-import { PermissionScope, Role, User } from "@app/types";
+import { Permission, PermissionScope, Role, User } from "@app/types";
 import { Link } from "react-router-dom";
 import { Code } from "../code";
 import { PermCheck, RoleColHeader } from "../role";
@@ -15,6 +15,8 @@ export function EnvPerms({ envId, orgId }: { envId: string; orgId: string }) {
   const roles = useSelector((s) => selectRolesByOrgId(s, { orgId }));
   const roleToUserMap = useSelector(selectRoleToUsersMap);
   useQuery(fetchMembershipsByOrgId({ orgId }));
+  useQuery(fetchRoles({ orgId }));
+  const envPerms = useSelector((s) => selectPermsByEnvId(s, { envId }));
 
   return (
     <div>
@@ -37,7 +39,7 @@ export function EnvPerms({ envId, orgId }: { envId: string; orgId: string }) {
             <EnvPermsRow
               key={role.id}
               role={role}
-              envId={envId}
+              envPerms={envPerms}
               users={roleToUserMap[role.id]}
             />
           ))}
@@ -48,11 +50,10 @@ export function EnvPerms({ envId, orgId }: { envId: string; orgId: string }) {
 }
 
 function EnvPermsRow({
-  envId,
+  envPerms,
   role,
   users,
-}: { envId: string; role: Role; users: User[] }) {
-  const envPerms = useSelector((s) => selectPermsByEnvId(s, { envId }));
+}: { envPerms: Permission[]; role: Role; users: User[] }) {
   const filtered = envPerms.filter((p) => p.roleId === role.id);
   const isOwnerRole = getIsOwnerRole(role);
   const perms = filtered.reduce(

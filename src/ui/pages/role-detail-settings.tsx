@@ -2,7 +2,12 @@ import { fetchMembershipsByRole } from "@app/auth";
 import { selectCanUserManageRole } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
-import { deleteRole, selectRoleById, updateRoleName } from "@app/roles";
+import {
+  deleteRole,
+  getIsOwnerRole,
+  selectRoleById,
+  updateRoleName,
+} from "@app/roles";
 import { teamRolesUrl } from "@app/routes";
 import { Role } from "@app/types";
 import { selectCurrentUserId } from "@app/users";
@@ -137,6 +142,11 @@ export function RoleDetailSettingsPage() {
   const canManage = useSelector((s) =>
     selectCanUserManageRole(s, { roleId: id, userId, orgId }),
   );
+
+  const isOwnerRole = getIsOwnerRole(role);
+  if (isOwnerRole) {
+    return <RoleDetailLayout>Cannot edit {role.type} role</RoleDetailLayout>;
+  }
 
   return (
     <RoleDetailLayout>
