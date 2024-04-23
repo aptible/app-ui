@@ -25,6 +25,7 @@ import {
   Button,
   ButtonLink,
   CsvButton,
+  EmptyTr,
   Group,
   IconPlusCircle,
   Label,
@@ -417,6 +418,9 @@ function RoleTable({
           </THead>
 
           <TBody>
+            {envIds.length === 0 ? (
+              <EmptyTr colSpan={9}>No permissions set</EmptyTr>
+            ) : null}
             {envIds.map((id) => {
               return <RoleEnvRow key={id} envId={id} envPerms={filtered[id]} />;
             })}
