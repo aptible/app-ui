@@ -15,6 +15,7 @@ import {
   selectServiceById,
   updateDatabase,
 } from "@app/deploy";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -42,6 +43,7 @@ import {
   ButtonLinkDocs,
   ButtonOps,
   CheckBox,
+  EnvPerms,
   ExternalLink,
   FormGroup,
   Group,
@@ -370,6 +372,7 @@ export const DatabaseSettingsPage = () => {
   const { id = "" } = useParams();
   useQuery(fetchDatabase({ id }));
   const database = useSelector((s) => selectDatabaseById(s, { id }));
+  const orgId = useSelector(selectOrganizationSelectedId);
 
   return (
     <BoxGroup>
@@ -382,6 +385,8 @@ export const DatabaseSettingsPage = () => {
         <hr className="mt-6" />
         <DatabaseRestart database={database} />
       </Box>
+
+      <EnvPerms envId={database.environmentId} orgId={orgId} />
 
       <Box>
         <DatabaseRestartRecreate database={database} />

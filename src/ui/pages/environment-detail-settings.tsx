@@ -1,4 +1,3 @@
-import { fetchMembershipsByOrgId, selectRoleToUsersMap } from "@app/auth";
 import {
   deprovisionEnvironment,
   fetchBackupsByEnvironmentId,
@@ -9,7 +8,6 @@ import {
   selectEnvironmentById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
-  selectPermsByEnvId,
   updateEnvironmentName,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
@@ -20,13 +18,10 @@ import {
   useQuery,
   useSelector,
 } from "@app/react";
-import { getIsOwnerRole, selectRolesByOrgId } from "@app/roles";
-import { environmentsUrl, roleDetailUrl } from "@app/routes";
-import { PermissionScope, Role, User } from "@app/types";
+import { environmentsUrl } from "@app/routes";
 import { handleValidator } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { Link } from "react-router-dom";
 import { useValidator } from "../hooks";
 import {
   Banner,
@@ -36,20 +31,11 @@ import {
   ButtonDestroy,
   CheckBox,
   Code,
+  EnvPerms,
   FormGroup,
   IconAlertTriangle,
   IconTrash,
   Input,
-  PermCheck,
-  RoleColHeader,
-  TBody,
-  THead,
-  Table,
-  Td,
-  Th,
-  Tooltip,
-  Tr,
-  tokens,
 } from "../shared";
 
 const validators = {
@@ -235,107 +221,6 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
     </Box>
   );
 };
-
-function EnvPermsRow({
-  envId,
-  role,
-  users,
-}: { envId: string; role: Role; users: User[] }) {
-  const envPerms = useSelector((s) => selectPermsByEnvId(s, { envId }));
-  const filtered = envPerms.filter((p) => p.roleId === role.id);
-  const isOwnerRole = getIsOwnerRole(role);
-  const perms = filtered.reduce(
-    (acc, perm) => {
-      acc[perm.scope] = true;
-      return acc;
-    },
-    {
-      admin: isOwnerRole,
-      read: isOwnerRole,
-      basic_read: isOwnerRole,
-      deploy: isOwnerRole,
-      destroy: isOwnerRole,
-      observability: isOwnerRole,
-      sensitive: isOwnerRole,
-      tunnel: isOwnerRole,
-      unknown: isOwnerRole,
-    } as Record<PermissionScope, boolean>,
-  );
-  return (
-    <Tr>
-      <Td>
-        <Link to={roleDetailUrl(role.id)} className={tokens.type["table link"]}>
-          {role.name}
-        </Link>
-      </Td>
-      <Td variant="center">
-        <Tooltip text={users.map((u) => u.name).join(", ")}>
-          <Code>{users.length}</Code>
-        </Tooltip>
-      </Td>
-      <Td variant="center">
-        <PermCheck checked={perms.admin} />
-      </Td>
-      <Td variant="center">
-        <PermCheck checked={perms.read} />
-      </Td>
-      <Td variant="center">
-        <PermCheck checked={perms.basic_read} />
-      </Td>
-      <Td variant="center">
-        <PermCheck checked={perms.deploy} />
-      </Td>
-      <Td variant="center">
-        <PermCheck checked={perms.destroy} />
-      </Td>
-      <Td variant="center">
-        <PermCheck checked={perms.observability} />
-      </Td>
-      <Td variant="center">
-        <PermCheck checked={perms.sensitive} />
-      </Td>
-      <Td variant="center">
-        <PermCheck checked={perms.tunnel} />
-      </Td>
-    </Tr>
-  );
-}
-
-function EnvPerms({ envId, orgId }: { envId: string; orgId: string }) {
-  const roles = useSelector((s) => selectRolesByOrgId(s, { orgId }));
-  const roleToUserMap = useSelector(selectRoleToUsersMap);
-  useQuery(fetchMembershipsByOrgId({ orgId }));
-
-  return (
-    <div>
-      <h3 className="text-lg text-gray-500 mb-4">Permissions</h3>
-      <Table>
-        <THead>
-          <Th>Role</Th>
-          <Th>Members</Th>
-          <RoleColHeader scope="admin" />
-          <RoleColHeader scope="read" />
-          <RoleColHeader scope="basic_read" />
-          <RoleColHeader scope="deploy" />
-          <RoleColHeader scope="destroy" />
-          <RoleColHeader scope="observability" />
-          <RoleColHeader scope="sensitive" />
-          <RoleColHeader scope="tunnel" />
-        </THead>
-        <TBody>
-          {roles.map((role) => (
-            <EnvPermsRow
-              key={role.id}
-              role={role}
-              envId={envId}
-              users={roleToUserMap[role.id]}
-            />
-          ))}
-        </TBody>
-      </Table>
-    </div>
-  );
-}
 
 export const EnvironmentSettingsPage = () => {
   const { id = "" } = useParams();
