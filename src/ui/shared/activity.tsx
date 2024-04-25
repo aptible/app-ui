@@ -28,7 +28,11 @@ import {
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import type { DeployActivityRow, ResourceType } from "@app/types";
+import type {
+  DeployActivityRow,
+  DeployOperation,
+  ResourceType,
+} from "@app/types";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -42,6 +46,7 @@ import {
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
 import { Group } from "./group";
+import { IconInfo } from "./icons";
 import { OpStatus } from "./operation-status";
 import {
   DescBar,
@@ -52,6 +57,7 @@ import {
 import { EnvStackCell } from "./resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "./table";
 import { tokens } from "./tokens";
+import { Tooltip } from "./tooltip";
 
 interface OpCellProps {
   op: DeployActivityRow;
@@ -88,15 +94,28 @@ const getImageForResourceType = (resourceType: ResourceType) => {
   );
 };
 
+export const AppConfigureTooltip = ({ op }: { op: DeployOperation }) => {
+  if (op.type !== "configure") return null;
+  const text = Object.keys(op.env).join(", ");
+  return (
+    <Tooltip text={text}>
+      <IconInfo variant="sm" />
+    </Tooltip>
+  );
+};
+
 const OpTypeCell = ({ op }: OpCellProps) => {
   return (
     <Td className="flex-1">
-      <Link
-        to={operationDetailUrl(op.id)}
-        className={tokens.type["table link"]}
-      >
-        {capitalize(op.type)}
-      </Link>
+      <Group variant="horizontal" className="items-center" size="xs">
+        <Link
+          to={operationDetailUrl(op.id)}
+          className={tokens.type["table link"]}
+        >
+          {capitalize(op.type)}
+        </Link>
+        <AppConfigureTooltip op={op} />
+      </Group>
       <div>ID: {op.id}</div>
     </Td>
   );
