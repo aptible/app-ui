@@ -28,9 +28,14 @@ import {
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import type { DeployActivityRow, ResourceType } from "@app/types";
+import type {
+  DeployActivityRow,
+  DeployOperation,
+  ResourceType,
+} from "@app/types";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
+import { IconInfo, Tooltip } from ".";
 import {
   PaginateProps,
   usePaginatedOpsByAppId,
@@ -88,15 +93,28 @@ const getImageForResourceType = (resourceType: ResourceType) => {
   );
 };
 
+const AppConfigureTooltip = ({ op }: { op: DeployOperation }) => {
+  if (op.type !== "configure") return null;
+  const text = Object.keys(op.env).join(", ");
+  return (
+    <Tooltip text={text}>
+      <IconInfo variant="sm" />
+    </Tooltip>
+  );
+};
+
 const OpTypeCell = ({ op }: OpCellProps) => {
   return (
     <Td className="flex-1">
-      <Link
-        to={operationDetailUrl(op.id)}
-        className={tokens.type["table link"]}
-      >
-        {capitalize(op.type)}
-      </Link>
+      <Group variant="horizontal" className="items-center" size="xs">
+        <Link
+          to={operationDetailUrl(op.id)}
+          className={tokens.type["table link"]}
+        >
+          {capitalize(op.type)}
+        </Link>
+        <AppConfigureTooltip op={op} />
+      </Group>
       <div>ID: {op.id}</div>
     </Td>
   );
