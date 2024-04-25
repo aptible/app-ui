@@ -1,0 +1,16 @@
+FROM node:18.16-slim
+
+RUN corepack enable
+RUN corepack prepare yarn@stable --activate
+
+ADD package.json /app/
+ADD yarn.lock /app/
+WORKDIR /app
+
+COPY . /app
+
+RUN yarn install
+
+EXPOSE 4200
+
+CMD ["yarn", "start"]

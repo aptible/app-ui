@@ -8,7 +8,7 @@
   "type": "module",
   "packageManager": "yarn@3.6.3",
   "scripts": {
-    "start": "vite",
+    "start": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "serve": "vite preview",
     "fmt": "biome check . --apply-unsafe --verbose",
