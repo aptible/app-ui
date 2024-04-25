@@ -25,6 +25,7 @@ import {
   Button,
   ButtonLink,
   CsvButton,
+  EmptyTr,
   Group,
   IconPlusCircle,
   Label,
@@ -385,7 +386,9 @@ function RoleTable({
         <Group size="sm" className="w-[225px]">
           <RolePill role={role} />
 
-          {filteredUsers.length === 0 ? <div>No users</div> : null}
+          {filteredUsers.length === 0 ? (
+            <div className="text-sm">No users</div>
+          ) : null}
           <div>
             {filteredUsers.map((user) => (
               <div key={user.id} className="text-sm">
@@ -417,6 +420,9 @@ function RoleTable({
           </THead>
 
           <TBody>
+            {envIds.length === 0 ? (
+              <EmptyTr colSpan={9}>No permissions set</EmptyTr>
+            ) : null}
             {envIds.map((id) => {
               return <RoleEnvRow key={id} envId={id} envPerms={filtered[id]} />;
             })}
