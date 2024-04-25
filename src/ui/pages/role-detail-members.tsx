@@ -258,7 +258,7 @@ export function RoleDetailMembersPage() {
           <THead>
             <Th>Name</Th>
             <Th>Email</Th>
-            <Th variant="center">MFA Status</Th>
+            <Th variant="center">2FA Status</Th>
             <Th variant="center">Added Date</Th>
             <Th>Role Admin</Th>
             <Th variant="right">Actions</Th>

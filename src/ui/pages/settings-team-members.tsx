@@ -148,7 +148,7 @@ export const TeamMembersPage = () => {
           <Th>Name</Th>
           <Th>Roles</Th>
           <Th variant="center">Verified</Th>
-          <Th variant="center">MFA Status</Th>
+          <Th variant="center">2FA Status</Th>
           <Th variant="right">Actions</Th>
         </THead>
 
