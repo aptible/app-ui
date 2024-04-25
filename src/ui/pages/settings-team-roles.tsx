@@ -18,7 +18,7 @@ import {
 import { Permission, PermissionScope, Role, RoleType, User } from "@app/types";
 import { selectUsersAsList } from "@app/users";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Box,
   Breadcrumbs,
@@ -56,6 +56,7 @@ const FILTER_ALL = "all";
 const isAll = (id: string) => id === FILTER_ALL;
 
 export const TeamRolesPage = () => {
+  const [params, setParams] = useSearchParams();
   const org = useSelector(selectOrganizationSelected);
   const envs = useSelector(selectEnvironments);
   const roleToUserMap = useSelector(selectRoleToUsersMap);
@@ -85,14 +86,17 @@ export const TeamRolesPage = () => {
       }))
       .sort(sortOpts),
   ];
-  const [roleFilter, setRoleFilter] = useState(FILTER_ALL);
-  const [userFilter, setUserFilter] = useState(FILTER_ALL);
-  const [envFilter, setEnvFilter] = useState(FILTER_NO_ACCESS);
-  const [filters, setFilters] = useState<RoleFilters>({
-    roleId: roleFilter,
-    userId: userFilter,
-    envId: envFilter,
-  });
+  const roleId = params.get("role_id") || FILTER_ALL;
+  const userId = params.get("user_id") || FILTER_ALL;
+  const envId = params.get("environment_id") || FILTER_NO_ACCESS;
+  const filters = {
+    roleId,
+    userId,
+    envId,
+  };
+  const [roleFilter, setRoleFilter] = useState(roleId);
+  const [userFilter, setUserFilter] = useState(userId);
+  const [envFilter, setEnvFilter] = useState(envId);
   const filteredRoles = roles.filter((role) => {
     if (isAll(filters.roleId)) return true;
     return role.id === filters.roleId;
@@ -102,21 +106,17 @@ export const TeamRolesPage = () => {
     (role) => role.type === "platform_owner",
   );
   const onFilter = () => {
-    setFilters({
-      roleId: roleFilter,
-      userId: userFilter,
-      envId: envFilter,
+    setParams({
+      role_id: roleFilter,
+      user_id: userFilter,
+      environment_id: envFilter,
     });
   };
   const onReset = () => {
     setRoleFilter(FILTER_ALL);
     setUserFilter(FILTER_ALL);
     setEnvFilter(FILTER_NO_ACCESS);
-    setFilters({
-      roleId: FILTER_ALL,
-      userId: FILTER_ALL,
-      envId: FILTER_NO_ACCESS,
-    });
+    setParams({});
   };
   const onCsv = (): string => {
     const scopePrint =
