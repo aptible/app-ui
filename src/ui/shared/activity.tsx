@@ -35,7 +35,6 @@ import type {
 } from "@app/types";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { IconInfo, Tooltip } from ".";
 import {
   PaginateProps,
   usePaginatedOpsByAppId,
@@ -47,6 +46,7 @@ import {
 import { usePoller } from "../hooks/use-poller";
 import { Button } from "./button";
 import { Group } from "./group";
+import { IconInfo } from "./icons";
 import { OpStatus } from "./operation-status";
 import {
   DescBar,
@@ -57,6 +57,7 @@ import {
 import { EnvStackCell } from "./resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "./table";
 import { tokens } from "./tokens";
+import { Tooltip } from "./tooltip";
 
 interface OpCellProps {
   op: DeployActivityRow;
@@ -93,7 +94,7 @@ const getImageForResourceType = (resourceType: ResourceType) => {
   );
 };
 
-const AppConfigureTooltip = ({ op }: { op: DeployOperation }) => {
+export const AppConfigureTooltip = ({ op }: { op: DeployOperation }) => {
   if (op.type !== "configure") return null;
   const text = Object.keys(op.env).join(", ");
   return (
