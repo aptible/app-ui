@@ -80,10 +80,13 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
   const action = deprovisionDatabase({ dbId: database.id });
   const loader = useLoader(action);
-  const onSubmit = () => {
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     dispatch(action);
-    navigate(environmentActivityUrl(environment.id));
   };
+  useLoaderSuccess(loader, () => {
+    navigate(environmentActivityUrl(environment.id));
+  });
   const isDisabled = database.handle !== deleteConfirm || dependents.length > 0;
 
   return (
@@ -95,20 +98,20 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
 
       <Group>
         {dependents.length > 0 ? (
-          <>
+          <Banner>
             <p>
-              These other databases depend on {database.handle}, you must delete
-              them first:
+              These other databases depend on <strong>{database.handle}</strong>
+              , you must delete them first:
             </p>
 
-            <p>
+            <ul className="list-disc list-inside">
               {dependents.map((dep) => (
-                <div key={dep.id}>
+                <li key={dep.id}>
                   <Link to={databaseDetailUrl(dep.id)}>{dep.handle}</Link>
-                </div>
+                </li>
               ))}
-            </p>
-          </>
+            </ul>
+          </Banner>
         ) : null}
         <p>
           This will permanently deprovision <strong>{database.handle}</strong>{" "}
