@@ -161,7 +161,7 @@ export function SourcesPage() {
 
   // If there are no sources to display, redirect the user to the setup page.
   const navigate = useNavigate();
-  if (!isLoading && sources.length === 0) {
+  if (!isLoading && search === "" && sources.length === 0) {
     navigate(sourcesSetupUrl());
   }
 
