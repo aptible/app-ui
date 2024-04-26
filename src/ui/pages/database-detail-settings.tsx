@@ -116,6 +116,8 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
           the <strong>{database.handle}</strong> below to continue.
         </p>
 
+        <BannerMessages {...loader} />
+
         <Group variant="horizontal" size="sm" className="items-center">
           <Input
             className="flex-1"

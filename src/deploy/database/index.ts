@@ -508,7 +508,9 @@ export const deprovisionDatabase = thunks.create<{
     ),
   );
 
-  if (!deprovisionCtx.json.ok) return;
+  if (!deprovisionCtx.json.ok) {
+    return;
+  }
   const data = deprovisionCtx.json.value;
   yield* call(() => waitForOperation({ id: `${data.id}` }));
   yield* next();
