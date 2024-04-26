@@ -474,7 +474,6 @@ export const createDatabaseOperation = api.post<
 
 export const fetchDatabaseDependents = api.get<{ id: string }>(
   "/databases/:id/dependents",
-  api.cache(),
 );
 
 export const selectDatabaseDependents = createSelector(
