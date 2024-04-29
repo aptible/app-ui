@@ -1,13 +1,17 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { defaultDatabaseResponse } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
 import {
+  createId,
   server,
   stacksWithResources,
+  testAccount,
   testApp,
   testDatabaseId,
   testDatabaseOp,
+  testDatabasePostgres,
   testDatabaseServiceId,
   testDestroyAccount,
   testDisk,
@@ -17,8 +21,108 @@ import {
 } from "@app/mocks";
 import { databaseSettingsUrl } from "@app/routes";
 import { setupAppIntegrationTest, waitForBootup } from "@app/test";
+import { rest } from "msw";
 
 describe("DatabaseSettingsPage", () => {
+  describe("when the user wants to deprovision a database", () => {
+    it("should let the user deprovision", async () => {
+      server.use(
+        ...stacksWithResources({
+          accounts: [testAccount],
+          databases: [testDatabasePostgres],
+        }),
+        ...verifiedUserHandlers(),
+      );
+
+      const { store, App } = setupAppIntegrationTest({
+        initEntries: [databaseSettingsUrl(`${testDatabasePostgres.id}`)],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      const inp = await screen.findByRole("textbox", {
+        name: /delete-confirm/,
+      });
+      await act(() => userEvent.type(inp, "test-app-1-postgres"));
+
+      const btn = await screen.findByRole("button", {
+        name: /Deprovision Database/,
+      });
+      // toBeEnabled() does not work here for some reason
+      expect(btn.getAttribute("disabled")).toBeFalsy();
+    });
+
+    describe("when there is an associated replica", () => {
+      it("should not let the user deprovision", async () => {
+        const testDatabasePostgresReplica = defaultDatabaseResponse({
+          id: createId(),
+          handle: "postgres-replica",
+          type: "postgres",
+          connection_url: "postgres://some:val@wow.com:5432",
+          _embedded: {
+            disk: testDisk,
+            last_operation: testDatabaseOp,
+          },
+          _links: {
+            account: defaultHalHref(
+              `${testEnv.apiUrl}/accounts/${testAccount.id}`,
+            ),
+            initialize_from: defaultHalHref(
+              `${testEnv.apiUrl}/database/${testDatabasePostgres.id}`,
+            ),
+            database_image: defaultHalHref(
+              `${testEnv.apiUrl}/database_images/${testPostgresDatabaseImage.id}`,
+            ),
+            service: defaultHalHref(
+              `${testEnv.apiUrl}/services/${testDatabaseServiceId}`,
+            ),
+            disk: defaultHalHref(`${testEnv.apiUrl}/disks/${testDisk.id}`),
+          },
+        });
+
+        server.use(
+          ...stacksWithResources({
+            accounts: [testAccount],
+            databases: [testDatabasePostgres],
+          }),
+          ...verifiedUserHandlers(),
+          rest.get(
+            `${testEnv.apiUrl}/databases/:id/dependents`,
+            async (_, res, ctx) => {
+              return res(
+                ctx.json({
+                  _embedded: { databases: [testDatabasePostgresReplica] },
+                }),
+              );
+            },
+          ),
+        );
+
+        const { store, App } = setupAppIntegrationTest({
+          initEntries: [databaseSettingsUrl(`${testDatabasePostgres.id}`)],
+        });
+
+        await waitForBootup(store);
+
+        render(<App />);
+
+        await screen.findByText(/These other databases depend on/);
+
+        const inp = await screen.findByRole("textbox", {
+          name: /delete-confirm/,
+        });
+        await act(() => userEvent.type(inp, "test-app-1-postgres"));
+
+        const btn = await screen.findByRole("button", {
+          name: /Deprovision Database/,
+        });
+        expect(btn).toBeDisabled();
+      });
+    });
+  });
+
   describe("when the user acks the warning about downtime", () => {
     it("should allow a restart with backup and restore", async () => {
       // This is similar to the testDatabasePostgres in @app/mocks except it's in
@@ -78,7 +182,7 @@ describe("DatabaseSettingsPage", () => {
       });
       expect(checkbox).not.toBeChecked();
 
-      await fireEvent.click(checkbox);
+      fireEvent.click(checkbox);
 
       expect(checkbox).toBeChecked();
       expect(button).toBeEnabled();
