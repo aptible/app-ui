@@ -844,6 +844,16 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/sources`, async (_, res, ctx) => {
     return res(ctx.json({ _embedded: { sources: [] } }));
   }),
+  rest.get(
+    `${testEnv.apiUrl}/databases/:id/dependents`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json({
+          _embedded: { databases: [] },
+        }),
+      );
+    },
+  ),
 ];
 
 const billingHandlers = [

@@ -1,4 +1,4 @@
-import { ThunkCtx, api, cacheMinTimer, thunks } from "@app/api";
+import { ThunkCtx, api, cacheMinTimer, thunkLoader, thunks } from "@app/api";
 import { FetchJson, Payload, call, parallel, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -474,7 +474,6 @@ export const createDatabaseOperation = api.post<
 
 export const fetchDatabaseDependents = api.get<{ id: string }>(
   "/databases/:id/dependents",
-  api.cache(),
 );
 
 export const selectDatabaseDependents = createSelector(
@@ -496,24 +495,29 @@ export const databaseEntities = {
 
 export const deprovisionDatabase = thunks.create<{
   dbId: string;
-}>("deprovision-database", function* (ctx, next) {
-  const { dbId } = ctx.payload;
-  yield* select((s: WebState) => selectDatabaseById(s, { id: dbId }));
+}>("deprovision-database", [
+  thunkLoader,
+  function* (ctx, next) {
+    const { dbId } = ctx.payload;
+    yield* select((s: WebState) => selectDatabaseById(s, { id: dbId }));
 
-  const deprovisionCtx = yield* call(() =>
-    createDatabaseOperation.run(
-      createDatabaseOperation({
-        type: "deprovision",
-        dbId,
-      }),
-    ),
-  );
+    const deprovisionCtx = yield* call(() =>
+      createDatabaseOperation.run(
+        createDatabaseOperation({
+          type: "deprovision",
+          dbId,
+        }),
+      ),
+    );
 
-  if (!deprovisionCtx.json.ok) return;
-  const data = deprovisionCtx.json.value;
-  yield* call(() => waitForOperation({ id: `${data.id}` }));
-  yield* next();
-});
+    if (!deprovisionCtx.json.ok) {
+      throw new Error(deprovisionCtx.json.error.message);
+    }
+    const data = deprovisionCtx.json.value;
+    yield* call(() => waitForOperation({ id: `${data.id}` }));
+    yield* next();
+  },
+]);
 
 interface UpdateDatabase {
   id: string;

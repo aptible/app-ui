@@ -2,6 +2,7 @@ import {
   DEFAULT_INSTANCE_CLASS,
   deprovisionDatabase,
   fetchDatabase,
+  fetchDatabaseDependents,
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
   getContainerProfileFromType,
@@ -9,6 +10,7 @@ import {
   restartRecreateDatabase,
   selectContainerProfilesForStack,
   selectDatabaseById,
+  selectDatabaseDependents,
   selectEnvironmentById,
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
@@ -23,7 +25,11 @@ import {
   useQuery,
   useSelector,
 } from "@app/react";
-import { databaseActivityUrl, environmentActivityUrl } from "@app/routes";
+import {
+  databaseActivityUrl,
+  databaseDetailUrl,
+  environmentActivityUrl,
+} from "@app/routes";
 import {
   DeployDatabase,
   DeployLogDrain,
@@ -32,6 +38,7 @@ import {
 } from "@app/types";
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { Link } from "react-router-dom";
 import {
   Banner,
   BannerMessages,
@@ -66,14 +73,21 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  useQuery(fetchDatabaseDependents({ id: database.id }));
+  const dependents = useSelector((s) =>
+    selectDatabaseDependents(s, { id: database.id }),
+  );
   const [deleteConfirm, setDeleteConfirm] = useState<string>("");
   const action = deprovisionDatabase({ dbId: database.id });
   const loader = useLoader(action);
-  const onSubmit = () => {
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     dispatch(action);
-    navigate(environmentActivityUrl(environment.id));
   };
-  const isDisabled = database.handle !== deleteConfirm;
+  useLoaderSuccess(loader, () => {
+    navigate(environmentActivityUrl(environment.id));
+  });
+  const isDisabled = database.handle !== deleteConfirm || dependents.length > 0;
 
   return (
     <form onSubmit={onSubmit}>
@@ -83,11 +97,29 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
       </h1>
 
       <Group>
+        {dependents.length > 0 ? (
+          <Banner>
+            <p>
+              These other databases depend on <strong>{database.handle}</strong>
+              , you must delete them first:
+            </p>
+
+            <ul className="list-disc list-inside">
+              {dependents.map((dep) => (
+                <li key={dep.id}>
+                  <Link to={databaseDetailUrl(dep.id)}>{dep.handle}</Link>
+                </li>
+              ))}
+            </ul>
+          </Banner>
+        ) : null}
         <p>
           This will permanently deprovision <strong>{database.handle}</strong>{" "}
           database. This action cannot be undone. If you want to proceed, type
           the <strong>{database.handle}</strong> below to continue.
         </p>
+
+        <BannerMessages {...loader} />
 
         <Group variant="horizontal" size="sm" className="items-center">
           <Input
