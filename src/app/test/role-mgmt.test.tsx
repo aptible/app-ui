@@ -43,9 +43,9 @@ describe("Role Settings", () => {
 
     render(<App />);
 
-    await screen.findByText(/Deploy User/);
-    await screen.findByText(/Deploy Owner/);
-    expect(screen.queryByText(/Deploy User/)).toBeInTheDocument();
+    await screen.findAllByText(/Deploy User/);
+    await screen.findAllByText(/Deploy Owner/);
+    expect(screen.queryAllByText(/Deploy User/)[0]).toBeInTheDocument();
   });
 
   describe("As an Organization owner", () => {
@@ -60,6 +60,9 @@ describe("Role Settings", () => {
 
       render(<App />);
 
+      const link = await screen.findByRole("link", { name: /New Role/ });
+      fireEvent.click(link);
+
       await screen.findByRole("textbox", { name: /role-name/ });
 
       const input = await screen.findByRole("textbox", {
@@ -71,7 +74,9 @@ describe("Role Settings", () => {
       expect(btn).not.toBeDisabled();
       fireEvent.click(btn);
 
-      await screen.findByText("my-role");
+      await screen.findByText(/Save Filters/);
+
+      await screen.findAllByText("my-role");
     });
   });
 
@@ -86,6 +91,9 @@ describe("Role Settings", () => {
       await waitForBootup(store);
 
       render(<App />);
+
+      const link = await screen.findByRole("link", { name: /New Role/ });
+      fireEvent.click(link);
 
       await screen.findByRole("textbox", { name: /role-name/ });
 
@@ -110,6 +118,9 @@ describe("Role Settings", () => {
       await waitForBootup(store);
 
       render(<App />);
+
+      const link = await screen.findByRole("link", { name: /New Role/ });
+      fireEvent.click(link);
 
       await screen.findByRole("textbox", { name: /role-name/ });
 
@@ -315,7 +326,7 @@ describe("Role Detail - Environments", () => {
     const checkDeploy = await screen.findByLabelText(/Deploy/);
     const checkBasic = await screen.findByLabelText(/Basic Visibility/);
     const checkAdmin = await screen.findByLabelText(/Environment Admin/);
-    const checkDestroy = await screen.findByLabelText(/Destruction/);
+    const checkDestroy = await screen.findByLabelText(/Destroy/);
 
     expect(checkDeploy).toBeChecked();
     expect(checkBasic).toBeChecked();
@@ -476,8 +487,9 @@ describe("Role Detail - Settings", () => {
         name: /Delete Role/,
       });
       fireEvent.click(btn);
-      await screen.findByRole("heading", { name: /Roles/ });
-      expect(screen.queryByRole("heading", { name: /Roles/ }));
+
+      await screen.findByRole("link", { name: /Roles/ });
+      expect(screen.queryByRole("link", { name: /Roles/ }));
     });
   });
 
@@ -569,8 +581,8 @@ describe("Role Detail - Settings", () => {
       });
       fireEvent.click(btn);
 
-      await screen.findByRole("heading", { name: /Roles/ });
-      expect(screen.queryByRole("heading", { name: /Roles/ }));
+      await screen.findByRole("link", { name: /Roles/ });
+      expect(screen.queryByRole("link", { name: /Roles/ }));
     });
   });
 

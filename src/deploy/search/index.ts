@@ -1,5 +1,7 @@
+import { selectDeployments } from "@app/deployment";
 import { WebState, schema } from "@app/schema";
-import { DeployServiceRow } from "@app/types";
+import { selectSourcesAsList } from "@app/source";
+import { DeployServiceRow, DeploySource, Deployment } from "@app/types";
 import { createSelector } from "starfx";
 import {
   DeployAppRow,
@@ -148,15 +150,16 @@ export const selectAppsForTable = createSelector(
   selectEnvironments,
   selectOperationsAsList,
   selectServicesAsList,
-  (apps, envs, ops, services) =>
+  selectDeployments,
+  (apps, envs, ops, services, deployments) =>
     apps
       .map((app): DeployAppRow => {
         const env = findEnvById(envs, { id: app.environmentId });
         const appOps = findOperationsByAppId(ops, app.id);
-        let lastOperation = schema.operations.empty;
-        if (appOps.length > 0) {
-          lastOperation = appOps[0];
-        }
+        const lastOperation = appOps?.[0] || schema.operations.empty;
+        const currentDeployment = schema.deployments.findById(deployments, {
+          id: app.currentDeploymentId,
+        });
         const appServices = services.filter((s) => s.appId === app.id);
         const cost = appServices.reduce((acc, service) => {
           const mm = calcServiceMetrics(service);
@@ -169,6 +172,11 @@ export const selectAppsForTable = createSelector(
           ...metrics,
           envHandle: env.handle,
           lastOperation,
+          currentDeployment,
+          gitRef: currentDeployment.gitRef,
+          gitCommitSha: currentDeployment.gitCommitSha,
+          dockerImageName: currentDeployment.dockerImage,
+          lastDeployed: currentDeployment.createdAt,
           cost,
           totalServices: appServices.length,
         };
@@ -177,6 +185,9 @@ export const selectAppsForTable = createSelector(
 );
 
 const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
+  const gitRef = app.gitRef.toLocaleLowerCase();
+  const gitCommitSha = app.gitCommitSha.toLocaleLowerCase();
+  const dockerImageName = app.dockerImageName.toLocaleLowerCase();
   const handle = app.handle.toLocaleLowerCase();
   const envHandle = app.envHandle.toLocaleLowerCase();
 
@@ -189,6 +200,9 @@ const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
     lastOpStatus = app.lastOperation.status.toLocaleLowerCase();
   }
 
+  const gitRefMatch = gitRef.includes(search);
+  const gitCommitShaMatch = gitCommitSha.includes(search);
+  const dockerImageNameMatch = dockerImageName.includes(search);
   const handleMatch = handle.includes(search);
   const envMatch = envHandle.includes(search);
   const userMatch = lastOpUser !== "" && lastOpUser.includes(search);
@@ -197,7 +211,15 @@ const computeSearchMatch = (app: DeployAppRow, search: string): boolean => {
   const idMatch = search === app.id;
 
   return (
-    handleMatch || envMatch || opMatch || opStatusMatch || userMatch || idMatch
+    gitRefMatch ||
+    gitCommitShaMatch ||
+    dockerImageNameMatch ||
+    handleMatch ||
+    envMatch ||
+    opMatch ||
+    opStatusMatch ||
+    userMatch ||
+    idMatch
   );
 };
 
@@ -219,6 +241,24 @@ const createAppSortFn = (
         return a.handle.localeCompare(b.handle);
       } else {
         return b.handle.localeCompare(a.handle);
+      }
+    }
+
+    if (sortBy === "gitRef") {
+      const aRefOrSha = [a.gitRef, a.gitCommitSha].join("@");
+      const bRefOrSha = [b.gitRef, b.gitCommitSha].join("@");
+      if (sortDir === "asc") {
+        return aRefOrSha.localeCompare(bRefOrSha);
+      } else {
+        return bRefOrSha.localeCompare(aRefOrSha);
+      }
+    }
+
+    if (sortBy === "dockerImageName") {
+      if (sortDir === "asc") {
+        return a.dockerImageName.localeCompare(b.dockerImageName);
+      } else {
+        return b.dockerImageName.localeCompare(a.dockerImageName);
       }
     }
 
@@ -306,12 +346,16 @@ export const selectAppsForTableSearchBySourceId = createSelector(
   selectAppsForTable,
   (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
   (_: WebState, props: { sourceId: string }) => props.sourceId,
-  (apps, search, sourceId): DeployAppRow[] => {
+  (_: WebState, p: { sortBy: keyof DeployAppRow }) => p.sortBy,
+  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (apps, search, sourceId, sortBy, sortDir): DeployAppRow[] => {
+    const sortFn = createAppSortFn(sortBy, sortDir);
+
     if (search === "" && sourceId === "") {
-      return apps;
+      return [...apps].sort(sortFn);
     }
 
-    return apps.filter((app) => {
+    const results = apps.filter((app) => {
       const searchMatch = computeSearchMatch(app, search);
       const sourceIdMatch = sourceId !== "" && app.currentSourceId === sourceId;
 
@@ -325,6 +369,104 @@ export const selectAppsForTableSearchBySourceId = createSelector(
 
       return searchMatch;
     });
+
+    return results.sort(sortFn);
+  },
+);
+
+export interface GitCommit {
+  sha: string;
+  ref: string;
+  message: string;
+  date: string | null;
+  url: string;
+}
+
+export interface DeploySourceRow extends DeploySource {
+  apps: DeployAppRow[];
+  deployments: Deployment[];
+  liveCommits: GitCommit[];
+}
+
+export const selectSourcesForTable = createSelector(
+  selectSourcesAsList,
+  selectAppsForTable,
+  (sources, apps) =>
+    sources.map<DeploySourceRow>((source) => {
+      const sourceApps = apps.filter(
+        (app) => app.currentSourceId === source.id,
+      );
+      const sourceDeployments = sourceApps.map((app) => app.currentDeployment);
+      const distinctCommits = sourceDeployments.reduce<
+        Record<string, GitCommit>
+      >((commits, deployment) => {
+        const sha = deployment.gitCommitSha;
+
+        if (!sha || Object.hasOwn(commits, sha)) {
+          return commits;
+        }
+
+        commits[sha] = {
+          sha,
+          ref: deployment.gitRef,
+          message: deployment.gitCommitMessage,
+          date: deployment.gitCommitTimestamp,
+          url: deployment.gitCommitUrl,
+        };
+
+        return commits;
+      }, {});
+      const liveCommits = Object.values(distinctCommits).sort((a, b) => {
+        if (!a.date || !b.date) {
+          return 0;
+        }
+
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
+
+      return {
+        ...source,
+        apps: sourceApps,
+        deployments: sourceDeployments,
+        liveCommits,
+      };
+    }),
+);
+
+export const selectSourcesForTableSearch = createSelector(
+  selectSourcesForTable,
+  (_: WebState, props: { search: string }) => props.search.toLocaleLowerCase(),
+  (_: WebState, p: { sortBy: keyof DeploySourceRow }) => p.sortBy,
+  (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
+  (sources, search, sortBy, sortDir) => {
+    const sortFn = (a: DeploySourceRow, b: DeploySourceRow) => {
+      const left = (sortDir === "asc" ? a : b)[sortBy];
+      const right = (sortDir === "asc" ? b : a)[sortBy];
+
+      if (sortBy === "liveCommits") {
+        return left.length - right.length;
+      }
+
+      if (sortBy === "apps") {
+        return left.length - right.length;
+      }
+
+      if (sortBy === "displayName") {
+        return (<string>left).localeCompare(<string>right);
+      }
+
+      return 0;
+    };
+
+    if (search === "") {
+      return [...sources].sort(sortFn);
+    }
+
+    const results = sources.filter((source) => {
+      return source.displayName.includes(search);
+    });
+
+    return results.sort(sortFn);
   },
 );
 

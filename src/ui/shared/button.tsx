@@ -111,9 +111,10 @@ export const ButtonLink = ({
     tokens.buttons.styles[variant],
     buttonShapeStyle(size, shape),
     "hover:no-underline cursor-pointer",
+    className,
   );
   return (
-    <Link {...props} className={`${className} ${classes}`}>
+    <Link {...props} className={classes}>
       {isLoading ? "Loading..." : children}
     </Link>
   );

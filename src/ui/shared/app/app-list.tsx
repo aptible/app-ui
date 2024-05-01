@@ -310,7 +310,7 @@ export const AppListByEnvironment = ({
               <ButtonCreate
                 envId={envId}
                 onClick={onCreate}
-                tooltipProps={{ variant: "left", autoSizeWidth: true }}
+                tooltipProps={{ placement: "left" }}
               >
                 <IconPlusCircle variant="sm" />{" "}
                 <div className="ml-2">New App</div>
@@ -473,13 +473,45 @@ export const AppListBySource = ({
 }) => {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
+  const defaultSortBy =
+    (params.get("sortBy") as keyof DeployAppRow) || "handle";
+  const defaultSortDir = (params.get("asc") as "asc" | "desc") || "asc";
+  const [sortBy, setSortBy] = useState<typeof defaultSortBy>(defaultSortBy);
+  const [sortDir, setSortDir] = useState<typeof defaultSortDir>(defaultSortDir);
+
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ search: ev.currentTarget.value }, { replace: true });
+    setParams(
+      (prev) => {
+        prev.set("search", ev.currentTarget.value);
+        return prev;
+      },
+      { replace: true },
+    );
   };
+  const onSort = (key: keyof DeployAppRow) => {
+    if (key === sortBy) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(key);
+      setSortDir("desc");
+    }
+
+    setParams(
+      (prev) => {
+        prev.set("sortBy", sortBy);
+        prev.set("sortDir", sortDir);
+        return prev;
+      },
+      { replace: true },
+    );
+  };
+
   const apps = useSelector((s) =>
     selectAppsForTableSearchBySourceId(s, {
       sourceId,
       search,
+      sortBy,
+      sortDir,
     }),
   );
   const paginated = usePaginate(apps);
@@ -505,12 +537,32 @@ export const AppListBySource = ({
 
       <Table>
         <THead>
-          <Th>Handle</Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("handle")}
+          >
+            Handle <SortIcon />
+          </Th>
           <Th>ID</Th>
-          <Th>Git Ref</Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("gitRef")}
+          >
+            Git Ref <SortIcon />
+          </Th>
           <Th>Commit Message</Th>
-          <Th>Docker Image</Th>
-          <Th>Last Deployed</Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("dockerImageName")}
+          >
+            Docker Image <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("lastDeployed")}
+          >
+            Last Deployed <SortIcon />
+          </Th>
           <Th variant="right">Actions</Th>
         </THead>
 

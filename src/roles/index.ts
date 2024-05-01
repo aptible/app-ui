@@ -10,7 +10,7 @@ import {
   RoleType,
   excludesFalse,
 } from "@app/types";
-import { UserResponse } from "@app/users";
+import { UserResponse, selectUsersAsList } from "@app/users";
 
 export interface RoleResponse {
   id: string;
@@ -62,6 +62,9 @@ export const selectRoleById = schema.roles.selectById;
 export const ignoreComplianceRoles = (r: Role) =>
   r.type !== "compliance_user" && r.type !== "compliance_owner";
 
+export const getIsOwnerRole = (r: Role) =>
+  r.type === "owner" || r.type === "platform_owner";
+
 export const selectRolesByOrgId = createSelector(
   schema.roles.selectTableAsList,
   (_: WebState, p: { orgId: string }) => p.orgId,
@@ -70,10 +73,41 @@ export const selectRolesByOrgId = createSelector(
       .filter((r) => r.organizationId === orgId)
       .filter(ignoreComplianceRoles)
       .sort((a, b) => {
+        if (a.type === "owner" && b.type === "platform_owner") {
+          return -1;
+        }
+        if (a.type === "platform_owner" && b.type === "owner") {
+          return 1;
+        }
+        if (a.type === "owner" || a.type === "platform_owner") {
+          return -1;
+        }
+        if (b.type === "owner" || b.type === "platform_owner") {
+          return 1;
+        }
         const dateA = new Date(a.createdAt).getTime();
         const dateB = new Date(b.createdAt).getTime();
         return dateB - dateA;
       });
+  },
+);
+
+export const selectUserIdToRoleIdsMap = createSelector(
+  selectUsersAsList,
+  schema.memberships.selectTableAsList,
+  selectRolesByOrgId,
+  (users, memberships, roles) => {
+    const mapper: { [key: string]: Role[] } = {};
+    for (const user of users) {
+      const userRoles = roles.filter((role) => {
+        const hasMembership = memberships.some(
+          (m) => m.roleId === role.id && m.userId === user.id,
+        );
+        return hasMembership;
+      });
+      mapper[user.id] = userRoles;
+    }
+    return mapper;
   },
 );
 

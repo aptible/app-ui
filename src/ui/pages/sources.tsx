@@ -1,17 +1,30 @@
-import { selectAppsCountBySource } from "@app/deploy";
+import {
+  DeploySourceRow,
+  fetchApps,
+  selectSourcesForTableSearch,
+} from "@app/deploy";
+import { fetchDeployments } from "@app/deployment";
 import { useSelector } from "@app/react";
-import { sourceDetailUrl } from "@app/routes";
-import { fetchSources, selectSourcesAsList } from "@app/source";
-import { DeploySource } from "@app/types";
-import { Link } from "react-router-dom";
+import { sourceDetailUrl, sourcesSetupUrl } from "@app/routes";
+import { fetchSources } from "@app/source";
+import { useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
 import {
+  ActionBar,
+  ButtonAnyOwner,
+  CopyText,
   DescBar,
   EmptyTr,
   FilterBar,
+  GitRef,
   Group,
+  IconChevronDown,
+  IconInfo,
+  IconPlusCircle,
+  InputSearch,
   LoadingBar,
   PaginateBar,
   SourceLogo,
@@ -21,14 +34,14 @@ import {
   Td,
   Th,
   TitleBar,
+  Tooltip,
   Tr,
   tokens,
 } from "../shared";
 
-function SourceListRow({ source }: { source: DeploySource }) {
-  const appCount = useSelector((s) =>
-    selectAppsCountBySource(s, { sourceId: source.id }),
-  );
+function SourceListRow({ source }: { source: DeploySourceRow }) {
+  const liveCommits = source.liveCommits.slice(0, 7);
+  const extraLiveCommits = source.liveCommits.length - liveCommits.length;
 
   return (
     <Tr key={source.id}>
@@ -43,33 +56,147 @@ function SourceListRow({ source }: { source: DeploySource }) {
           </p>
         </Link>
       </Td>
+      <Td>
+        <CopyText text={source.url}>{source.url}</CopyText>
+      </Td>
+      <Td>
+        {liveCommits.length === 0 ? <em>No commit information</em> : null}
+
+        <Group
+          variant="horizontal"
+          size="xs"
+          className="items-center min-w-[150px]"
+        >
+          {liveCommits.map((liveCommit) => (
+            <Tooltip
+              key={liveCommit.sha}
+              fluid
+              theme="light"
+              placement="top"
+              text={
+                <GitRef
+                  gitRef={liveCommit.ref}
+                  commitSha={liveCommit.sha}
+                  commitUrl={liveCommit.url}
+                />
+              }
+            >
+              <Link
+                to="#"
+                className="block bg-gray-300 h-[16px] w-[6px] hover:bg-indigo rounded-md"
+              />
+            </Tooltip>
+          ))}
+          {extraLiveCommits ? <p>+{extraLiveCommits}</p> : null}
+        </Group>
+      </Td>
       <Td variant="center" className="center items-center justify-center">
-        <div className="text-center">{appCount}</div>
+        <div className="text-center">{source.apps.length}</div>
       </Td>
     </Tr>
   );
 }
 
+const SortIcon = () => (
+  <div className="inline-block">
+    <IconChevronDown
+      variant="sm"
+      className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
+    />
+  </div>
+);
+
 export function SourcesPage() {
-  const { isLoading } = useQuery(fetchSources());
-  const sources = useSelector(selectSourcesAsList);
+  const { isLoading: appsLoading } = useQuery(fetchApps());
+  const { isLoading: deploymentsLoading } = useQuery(fetchDeployments());
+  const { isLoading: sourcesLoading } = useQuery(fetchSources());
+  const isLoading = appsLoading || deploymentsLoading || sourcesLoading;
+
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const defaultSortBy =
+    (params.get("sortBy") as keyof DeploySourceRow) || "handle";
+  const defaultSortDir = (params.get("asc") as "asc" | "desc") || "asc";
+  const [sortBy, setSortBy] = useState<typeof defaultSortBy>(defaultSortBy);
+  const [sortDir, setSortDir] = useState<typeof defaultSortDir>(defaultSortDir);
+
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams(
+      (prev) => {
+        prev.set("search", ev.currentTarget.value);
+        return prev;
+      },
+      { replace: true },
+    );
+  };
+  const onSort = (key: keyof DeploySourceRow) => {
+    const newSortBy = key;
+    const newSortDir = sortDir === "asc" ? "desc" : "asc";
+
+    if (newSortBy === sortBy) {
+      setSortDir(newSortDir);
+    } else {
+      setSortBy(newSortBy);
+      setSortDir(defaultSortDir);
+    }
+
+    setParams(
+      (prev) => {
+        prev.set("sortBy", newSortBy);
+        prev.set("sortDir", newSortDir);
+        return prev;
+      },
+      { replace: true },
+    );
+  };
+
+  const sources = useSelector((s) =>
+    selectSourcesForTableSearch(s, {
+      search,
+      sortBy,
+      sortDir,
+    }),
+  );
   const paginated = usePaginate(sources);
+
+  // If there are no sources to display, redirect the user to the setup page.
+  const navigate = useNavigate();
+  if (!isLoading && search === "" && sources.length === 0) {
+    navigate(sourcesSetupUrl());
+  }
 
   return (
     <AppSidebarLayout>
       <Group>
         <Group size="sm">
-          <TitleBar description="Sources are where your App deployments originate from">
+          <TitleBar description="Sources connect apps with code repositories to show you what's deployed where.">
             Sources
           </TitleBar>
 
           <FilterBar>
+            <div className="flex justify-between">
+              <InputSearch
+                placeholder="Search..."
+                search={search}
+                onChange={onChange}
+              />
+              <ActionBar>
+                <ButtonAnyOwner
+                  onClick={() => navigate(sourcesSetupUrl())}
+                  tooltipProps={{ placement: "left" }}
+                >
+                  <IconPlusCircle variant="sm" className="mr-2" />
+                  New Source
+                </ButtonAnyOwner>
+              </ActionBar>
+            </div>
+
             <Group variant="horizontal" size="sm" className="items-center">
               <LoadingBar isLoading={isLoading} />
             </Group>
 
             <Group variant="horizontal" size="lg" className="items-center mt-1">
-              <DescBar>{paginated.totalItems} Sources</DescBar>
+              <DescBar>{paginated.totalItems} Apps</DescBar>
               <PaginateBar {...paginated} />
             </Group>
           </FilterBar>
@@ -77,8 +204,38 @@ export function SourcesPage() {
 
         <Table>
           <THead>
-            <Th>Name</Th>
-            <Th variant="center">Apps</Th>
+            <Th
+              className="cursor-pointer hover:text-black group"
+              onClick={() => onSort("displayName")}
+            >
+              Name <SortIcon />
+            </Th>
+            <Th>Source URL</Th>
+            <Th
+              className="cursor-pointer hover:text-black group"
+              onClick={() => onSort("liveCommits")}
+            >
+              Live Commits
+              <div className="inline-block mx-2">
+                <Tooltip
+                  placement="top"
+                  text="The number of unique commits from this source currently running in your infrastructure."
+                >
+                  <IconInfo
+                    variant="sm"
+                    className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
+                  />
+                </Tooltip>
+              </div>
+              <SortIcon />
+            </Th>
+            <Th
+              variant="center"
+              className="cursor-pointer hover:text-black group"
+              onClick={() => onSort("apps")}
+            >
+              Apps <SortIcon />
+            </Th>
           </THead>
 
           <TBody>

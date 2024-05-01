@@ -246,7 +246,7 @@ export interface DeployOperation extends Timestamps {
   instanceProfile: string;
   userEmail: string;
   userName: string;
-  env: any;
+  env: { [key: string]: string | null };
   note: string;
 }
 
@@ -313,10 +313,22 @@ export interface ContainerProfile {
   maximumContainerCount: number;
 }
 
+// there are two legacy types we DO NOT allow creating: elasticsearch / https
+export type LogDrainType =
+  | "logdna"
+  | "papertrail"
+  | "tail"
+  | "elasticsearch_database"
+  | "sumologic"
+  | "https_post"
+  | "datadog"
+  | "syslog_tls_tcp"
+  | "insightops";
+
 export interface DeployLogDrain extends Provisionable, Timestamps {
   id: string;
   handle: string;
-  drainType: string;
+  drainType: LogDrainType;
   drainHost: string;
   drainPort: string;
   drainUsername: string;
@@ -328,6 +340,7 @@ export interface DeployLogDrain extends Provisionable, Timestamps {
   drainEphemeralSessions: boolean;
   drainProxies: boolean;
   environmentId: string;
+  databaseId: string;
   backendChannel: string;
 }
 
@@ -344,6 +357,7 @@ export interface DeployMetricDrain extends Provisionable, Timestamps {
   aggregatorAllocation: string[];
   drainConfiguration: any;
   environmentId: string;
+  databaseId: string;
 }
 
 export interface DeployCertificate extends Timestamps {

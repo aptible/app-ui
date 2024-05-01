@@ -29,7 +29,7 @@ describe("App Detail Deployments page", () => {
       </TestProvider>,
     );
 
-    await screen.findAllByRole("link", { name: "a947a95" });
+    await screen.findAllByRole("link", { name: /a947a95/ });
     expect(container).toMatchSnapshot();
   });
 });

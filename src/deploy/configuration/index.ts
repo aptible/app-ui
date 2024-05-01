@@ -16,7 +16,7 @@ import { selectDatabasesAsList } from "../database";
 
 export interface DeployConfigurationResponse {
   id: number;
-  env: { [key: string]: string | null };
+  env: { [key: string]: string | null } | null;
   _links: {
     resource: LinkResponse;
   };
@@ -42,7 +42,7 @@ export const deserializeAppConfig = (
 ): DeployAppConfig => {
   return {
     id: `${resp.id}`,
-    env: resp.env,
+    env: resp.env || {},
     appId: extractIdFromLink(resp._links.resource),
   };
 };

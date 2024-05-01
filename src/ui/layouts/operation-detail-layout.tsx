@@ -16,11 +16,13 @@ import { capitalize } from "@app/string-utils";
 import type { DeployOperation } from "@app/types";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
+  AppConfigureTooltip,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  Group,
   OpStatus,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
@@ -47,7 +49,12 @@ export function OpHeader({
       />
 
       <DetailInfoGrid>
-        <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
+        <DetailInfoItem title="Type">
+          <Group variant="horizontal" size="xs" className="items-center">
+            {capitalize(op.type)}
+            <AppConfigureTooltip op={op} />
+          </Group>
+        </DetailInfoItem>
         <DetailInfoItem title="Created">
           {prettyDateTime(op.createdAt)}
         </DetailInfoItem>

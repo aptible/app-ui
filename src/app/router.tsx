@@ -142,6 +142,7 @@ import {
   TeamMembersPage,
   TeamPage,
   TeamPendingInvitesPage,
+  TeamRolesCreatePage,
   TeamRolesPage,
   TeamSsoPage,
   VerifyEmailPage,
@@ -151,6 +152,7 @@ import { DeploymentDetailLayout } from "@app/ui/layouts/deployment-detail-layout
 import { AppDetailGraphPage } from "@app/ui/pages/app-detail-graph";
 import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
+import { SourcesSetupPage } from "@app/ui/pages/sources-setup";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
 
@@ -281,6 +283,10 @@ export const appRoutes: RouteObject[] = [
           {
             index: true,
             element: <SourcesPage />,
+          },
+          {
+            path: routes.SOURCES_SETUP_PATH,
+            element: <SourcesSetupPage />,
           },
           {
             path: routes.SOURCE_DETAIL_PATH,
@@ -833,6 +839,23 @@ export const appRoutes: RouteObject[] = [
   },
 
   {
+    path: routes.TEAM_ROLES_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <AppSidebarLayout />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
+    children: [
+      {
+        index: true,
+        element: <TeamRolesPage />,
+      },
+    ],
+  },
+
+  {
     path: routes.TEAM_PATH,
     element: (
       <AuthRequired>
@@ -861,10 +884,6 @@ export const appRoutes: RouteObject[] = [
         path: routes.TEAM_INVITE_PATH,
         element: <TeamInvitePage />,
       },
-      {
-        path: routes.TEAM_ROLES_PATH,
-        element: <TeamRolesPage />,
-      },
 
       {
         path: routes.TEAM_PENDING_INVITES_PATH,
@@ -887,6 +906,11 @@ export const appRoutes: RouteObject[] = [
             <TeamContactsPage />
           </AccountOwnerRequired>
         ),
+      },
+
+      {
+        path: routes.TEAM_ROLES_CREATE_PATH,
+        element: <TeamRolesCreatePage />,
       },
     ],
   },

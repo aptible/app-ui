@@ -1,8 +1,15 @@
 import cn from "classnames";
 
-export const Table = ({ children }: { children: React.ReactNode }) => {
+export const Table = ({
+  children,
+  className = "",
+}: { children: React.ReactNode; className?: string }) => {
+  const cls = cn(
+    "overflow-x-scroll w-full shadow ring-1 ring-black ring-opacity-5 rounded-lg",
+    className,
+  );
   return (
-    <div className="overflow-x-scroll w-full shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+    <div className={cls}>
       <div className="min-w-[600px]">
         <table className="table-auto w-full divide-y divide-gray-300">
           {children}

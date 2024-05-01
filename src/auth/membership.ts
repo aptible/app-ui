@@ -1,9 +1,16 @@
 import { authApi, thunkLoader, thunks } from "@app/api";
 import { selectEnv } from "@app/config";
-import { call, createSelector, parallel, select } from "@app/fx";
+import { call, createSelector, parallel, select, takeLeading } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
-import { AuthApiCtx, HalEmbedded, LinkResponse, Membership } from "@app/types";
+import {
+  AuthApiCtx,
+  HalEmbedded,
+  LinkResponse,
+  Membership,
+  User,
+} from "@app/types";
+import { selectUsers } from "@app/users";
 
 export interface MembershipResponse {
   id: string;
@@ -60,6 +67,22 @@ export const selectMembershipsByRoleId = createSelector(
   (memberships, roleId) => memberships.filter((m) => m.roleId === roleId),
 );
 
+export const selectRoleToUsersMap = createSelector(
+  schema.roles.selectTableAsList,
+  schema.memberships.selectTableAsList,
+  selectUsers,
+  (roles, memberships, users) => {
+    const mapper: { [key: string]: User[] } = {};
+    for (const role of roles) {
+      mapper[role.id] = memberships
+        .filter((member) => member.roleId === role.id)
+        .map((member) => schema.users.findById(users, { id: member.userId }))
+        .filter((u) => u.id !== "");
+    }
+    return mapper;
+  },
+);
+
 export const createMembership = authApi.post<
   { id: string; userUrl: string },
   MembershipResponse
@@ -89,6 +112,33 @@ export const fetchMembershipsByRole = authApi.get<
   { roleId: string },
   HalEmbedded<{ memberships: MembershipResponse[] }>
 >("/roles/:roleId/memberships");
+
+export const fetchMembershipsByOrgId = authApi.get<
+  { orgId: string },
+  HalEmbedded<{ [key: string]: { memberships: MembershipResponse[] } }>
+>(
+  "/organizations/:orgId/roles/memberships",
+  { supervisor: takeLeading },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    const memberships = Object.values(ctx.json.value._embedded).reduce(
+      (acc, obj) => {
+        const ships = obj.memberships.map(deserializeMembership);
+        for (const membership of ships) {
+          acc[membership.id] = membership;
+        }
+        return acc;
+      },
+      {} as typeof schema.memberships.initialState,
+    );
+
+    yield* schema.update(schema.memberships.add(memberships));
+  },
+);
 
 export const updateUserMemberships = thunks.create<{
   userId: string;
@@ -129,21 +179,39 @@ export const updateUserMemberships = thunks.create<{
       }
     }
 
-    const group = yield* parallel<AuthApiCtx>([...addReqs, ...rmReqs]);
-    const results = yield* group;
-
-    yield* next();
-
-    const errors = results
+    // we need to add memberships before we can remove memberships
+    // because if we remove memberships before we finish adding them
+    // then the user would be removed from the organization -- which is bad.
+    const addGroup = yield* parallel<AuthApiCtx>(addReqs);
+    const addResults = yield* addGroup;
+    const addErrors = addResults
       .map((res) => {
         if (!res.ok) return res.error.message;
         if (!res.value.json.ok) return res.value.json.error.message;
         return "";
       })
       .filter(Boolean);
-
-    if (errors.length > 0) {
-      throw new Error(errors.join(","));
+    if (addErrors.length > 0) {
+      throw new Error(addErrors.join(","));
     }
+
+    const rmGroup = yield* parallel<AuthApiCtx>(rmReqs);
+    const rmResults = yield* rmGroup;
+    const rmErrors = rmResults
+      .map((res) => {
+        if (!res.ok) return res.error.message;
+        if (!res.value.json.ok) return res.value.json.error.message;
+        return "";
+      })
+      .filter(Boolean);
+    if (rmErrors.length > 0) {
+      throw new Error(rmErrors.join(","));
+    }
+
+    yield* next();
+
+    ctx.loader = {
+      message: "Successfully updated user roles!",
+    };
   },
 ]);

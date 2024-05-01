@@ -187,11 +187,6 @@ export const fetchEnvironments = api.get(
   },
 );
 
-export const fetchEnvironmentOperations = api.get<{ id: string }>(
-  "/accounts/:id/operations",
-  api.cache(),
-);
-
 export const deprovisionEnvironment = api.delete<{ id: string }>(
   ["/accounts/:id"],
   function* (ctx, next) {
@@ -208,6 +203,10 @@ export const updateEnvironmentName = api.patch<{ id: string; handle: string }>(
     };
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
 
     ctx.loader = {
       message: "Saved changes successfully!",

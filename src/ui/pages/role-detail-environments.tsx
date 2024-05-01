@@ -1,14 +1,17 @@
 import { fetchMembershipsByRole } from "@app/auth";
 import {
   isPhiAllowed,
+  scopeDesc,
+  scopeTitle,
   selectCanUserManageRole,
   selectEnvironmentsByOrgAsList,
-  selectPermsByAccountAndRole,
+  selectPermsByEnvAndRoleId,
   updatePerm,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useDispatch, useLoader, useSelector } from "@app/react";
 import { useQuery } from "@app/react";
+import { getIsOwnerRole, selectRoleById } from "@app/roles";
 import { environmentDetailUrl } from "@app/routes";
 import { defaultPermission } from "@app/schema";
 import { DeployEnvironment, Permission, PermissionScope } from "@app/types";
@@ -51,7 +54,7 @@ function ScopeToggle({
         checked={checked}
         disabled={disabled || isLoading}
       />
-      <Tooltip text={description} autoSizeWidth variant="left">
+      <Tooltip text={description} placement="left">
         <IconInfo variant="sm" className="opacity-50 hover:opacity-100" />
       </Tooltip>
     </Group>
@@ -70,7 +73,7 @@ function RoleEnvEditor({
   );
   const updateLoader = useLoader(updatePerm);
   const perms = useSelector((s) =>
-    selectPermsByAccountAndRole(s, { envId: env.id, roleId }),
+    selectPermsByEnvAndRoleId(s, { envId: env.id, roleId }),
   );
   const permSet: Record<PermissionScope, Permission> = {
     admin: defaultPermission({ scope: "admin" }),
@@ -150,57 +153,57 @@ function RoleEnvEditor({
 
           <Group size="sm">
             <ScopeToggle
-              scope="Environment Admin"
-              description="Grants Users unrestricted access to the Environment. This includes the ability to see all sensitive values and take any action against any resource in the Environment."
+              scope={scopeTitle.admin}
+              description={scopeDesc.admin}
               onToggle={onToggle(permSet.admin)}
               isLoading={updateLoader.isLoading}
               {...calcToggle(permSet.admin)}
             />
             <ScopeToggle
-              scope="Full Visibility"
-              description="Allows Users to see all information for all of the resources in the Environment including App Configurations. The one exception is Database Credentials which cannot be seen."
+              scope={scopeTitle.read}
+              description={scopeDesc.read}
               onToggle={onToggle(permSet.read)}
               isLoading={updateLoader.isLoading}
               {...calcToggle(permSet.read)}
             />
             <ScopeToggle
-              scope="Basic Visibility"
-              description="Allows Users to see basic information for all of the resources in the Environment. It does not allow them to manage the resources or see any sensitive values such as Database Credentials or Configuration values."
+              scope={scopeTitle.basic_read}
+              description={scopeDesc.basic_read}
               onToggle={onToggle(permSet.basic_read)}
               isLoading={updateLoader.isLoading}
               {...calcToggle(permSet.basic_read)}
             />
             <ScopeToggle
-              scope="Deployment"
-              description="Allows Users to create and deploy resources in the Environment. This includes actions such as create, deploy, configure, and restart. It does not grant access to read any sensitive values."
+              scope={scopeTitle.deploy}
+              description={scopeDesc.deploy}
               onToggle={onToggle(permSet.deploy)}
               isLoading={updateLoader.isLoading}
               {...calcToggle(permSet.deploy)}
             />
             <ScopeToggle
-              scope="Destruction"
-              description="Allows Users to destroy every resource in the Environment as well as the Environment itself."
+              scope={scopeTitle.destroy}
+              description={scopeDesc.destroy}
               onToggle={onToggle(permSet.destroy)}
               isLoading={updateLoader.isLoading}
               {...calcToggle(permSet.destroy)}
             />
             <ScopeToggle
-              scope="Ops"
-              description="Allows Users to create and manage Log and Metric Drains in the Environment. It also allows Users to take actions commonly associated with incident response such as restarting and scaling resources."
+              scope={scopeTitle.observability}
+              description={scopeDesc.observability}
               onToggle={onToggle(permSet.observability)}
               isLoading={updateLoader.isLoading}
               {...calcToggle(permSet.observability)}
             />
             <ScopeToggle
-              scope="Sensitive Access"
-              description="Allows Users to see and manage sensitive values in the Environment such as configuring Apps, viewing Database Credentials, and managing Certificates."
+              scope={scopeTitle.sensitive}
+              description={scopeDesc.sensitive}
               onToggle={onToggle(permSet.sensitive)}
               isLoading={updateLoader.isLoading}
               {...calcToggle(permSet.sensitive)}
             />
             <ScopeToggle
-              scope="Tunnel"
-              description="Allows User to tunnel into Databases in the Environment. This permission does not allow Users to see Database Credentials so Users will need to be provided credentials through another channel."
+              scope={scopeTitle.tunnel}
+              description={scopeDesc.tunnel}
               onToggle={onToggle(permSet.tunnel)}
               isLoading={updateLoader.isLoading}
               {...calcToggle(permSet.tunnel)}
@@ -232,6 +235,12 @@ export function RoleDetailEnvironmentsPage() {
     })
     .sort((a, b) => a.handle.localeCompare(b.handle));
   const updateLoader = useLoader(updatePerm);
+  const role = useSelector((s) => selectRoleById(s, { id }));
+
+  const isOwnerRole = getIsOwnerRole(role);
+  if (isOwnerRole) {
+    return <RoleDetailLayout>Cannot edit {role.type} role</RoleDetailLayout>;
+  }
 
   return (
     <RoleDetailLayout>

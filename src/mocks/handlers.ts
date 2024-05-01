@@ -250,6 +250,12 @@ const authHandlers = [
       );
     },
   ),
+  rest.get(
+    `${testEnv.authUrl}/organizations/:id/roles/memberships`,
+    async (_, res, ctx) => {
+      return res(ctx.json({ _embedded: {} }));
+    },
+  ),
 ];
 
 export const verifiedUserHandlers = (
@@ -388,7 +394,7 @@ const apiHandlers = [
   rest.post(
     `${testEnv.apiUrl}/databases/:id/operations`,
     async (_, res, ctx) => {
-      return res(ctx.json(testDatabaseOp));
+      return res(ctx.json({ _embedded: { operations: [testDatabaseOp] } }));
     },
   ),
   rest.get(`${testEnv.apiUrl}/apps/:id/operations`, (_, res, ctx) => {
@@ -832,9 +838,22 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/deployments/:id`, async (_, res, ctx) => {
     return res(ctx.json(testDeploymentGit));
   }),
+  rest.get(`${testEnv.apiUrl}/deployments`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { deployments: [] } }));
+  }),
   rest.get(`${testEnv.apiUrl}/sources`, async (_, res, ctx) => {
     return res(ctx.json({ _embedded: { sources: [] } }));
   }),
+  rest.get(
+    `${testEnv.apiUrl}/databases/:id/dependents`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json({
+          _embedded: { databases: [] },
+        }),
+      );
+    },
+  ),
 ];
 
 const billingHandlers = [

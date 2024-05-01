@@ -1,5 +1,9 @@
 import { ThunkCtx, thunks } from "@app/api";
-import { fetchCurrentToken, fetchOrganizations } from "@app/auth";
+import {
+  fetchCurrentToken,
+  fetchMembershipsByOrgId,
+  fetchOrganizations,
+} from "@app/auth";
 import { fetchBillingDetail } from "@app/billing";
 import {
   fetchApps,
@@ -9,10 +13,11 @@ import {
   fetchEnvironments,
   fetchLogDrains,
   fetchMetricDrains,
-  fetchOrgOperations,
+  fetchOperationsByOrgId,
   fetchServices,
   fetchStacks,
 } from "@app/deploy";
+import { fetchDeployments } from "@app/deployment";
 import { call, parallel, select, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
@@ -78,9 +83,11 @@ function* onFetchResourceData() {
     fetchMetricDrains.run(),
     fetchServices.run(),
     fetchEndpoints.run(),
-    fetchOrgOperations.run({ orgId: org.id }),
+    fetchOperationsByOrgId.run({ id: org.id, page: 1 }),
     fetchSystemStatus.run(),
     fetchSources.run(),
+    fetchDeployments.run(),
+    fetchMembershipsByOrgId.run({ orgId: org.id }),
   ]);
   yield* group;
 }

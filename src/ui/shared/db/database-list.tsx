@@ -398,7 +398,7 @@ export const DatabaseListByDatabases = ({
             <DatabaseContainerSizeCell database={db} />
             <DatabaseCostCell database={db} />
             <Td>
-              <Tooltip variant="left" text={db.why.value} fluid>
+              <Tooltip placement="left" text={db.why.value} fluid>
                 <Code>{db.why.key}</Code>
               </Tooltip>
             </Td>

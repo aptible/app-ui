@@ -1,7 +1,7 @@
-import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
-import { createAction, createSelector, parallel, poll, select } from "@app/fx";
+import { api, cacheMinTimer, cacheShortTimer } from "@app/api";
+import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, defaultDeployOperation, schema } from "@app/schema";
+import { WebState, schema } from "@app/schema";
 import {
   ContainerProfileData,
   DeployOperation,
@@ -12,17 +12,7 @@ import {
 } from "@app/types";
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
-import {
-  cancelDatabaseOpsPoll,
-  fetchDatabaseOperations,
-  selectDatabaseById,
-} from "../database";
 import { selectEnvironmentsByOrgAsList } from "../environment";
-import {
-  DeployOperationResponse,
-  findOperationValue,
-  selectNonFailedScaleOps,
-} from "../operation";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
 
@@ -238,49 +228,11 @@ export const selectAppToServicesMap = createSelector(
   },
 );
 
-const scaleAttrs: (keyof DeployOperation)[] = [
+export const scaleAttrs: (keyof DeployOperation)[] = [
   "containerCount",
   "containerSize",
   "instanceProfile",
 ];
-
-export const selectPreviousServiceScale = createSelector(
-  selectServiceById,
-  selectNonFailedScaleOps,
-  (service, ops) => {
-    // If the values aren't found among the operations use the following default values
-    const pastOps = ops.slice(1).concat(
-      defaultDeployOperation({
-        containerCount: 1,
-        containerSize: 1024,
-        instanceProfile: service.instanceClass,
-      }),
-    );
-
-    const prev: DeployOperation = { ...pastOps[0] };
-
-    scaleAttrs.forEach((attr) => {
-      (prev as any)[attr] = findOperationValue(pastOps, attr);
-    });
-
-    return prev;
-  },
-);
-
-export const selectServiceScale = createSelector(
-  selectNonFailedScaleOps,
-  selectPreviousServiceScale,
-  (ops, prevOp) => {
-    const lastOps = ops.slice(0, 1).concat(prevOp);
-    const current: DeployOperation = { ...lastOps[0] };
-
-    scaleAttrs.forEach((attr) => {
-      (current as any)[attr] = findOperationValue(lastOps, attr);
-    });
-
-    return current;
-  },
-);
 
 export const fetchService = api.get<{ id: string }>("/services/:id");
 
@@ -306,15 +258,6 @@ export const fetchServicesByAppId = api.get<{ id: string }>(
   { supervisor: cacheShortTimer() },
 );
 
-export const fetchServiceOperations = api.get<{ id: string }>(
-  "/services/:id/operations",
-);
-export const cancelServicesOpsPoll = createAction("cancel-services-ops-poll");
-export const pollServiceOperations = api.get<{ id: string }>(
-  ["/services/:id/operations", "poll"],
-  { supervisor: poll(10 * 1000, `${cancelServicesOpsPoll}`) },
-);
-
 export const serviceEntities = {
   service: defaultEntity({
     id: "service",
@@ -330,57 +273,8 @@ export interface ServiceScaleProps {
   containerProfile?: InstanceClass;
 }
 
-export const scaleService = api.post<
-  ServiceScaleProps,
-  DeployOperationResponse
->(["/services/:id/operations", "scale"], function* (ctx, next) {
-  const { id, containerCount, containerProfile, containerSize } = ctx.payload;
-  const body = {
-    type: "scale",
-    id,
-    container_count: containerCount,
-    instance_profile: containerProfile,
-    container_size: containerSize,
-  };
-  ctx.request = ctx.req({ body: JSON.stringify(body) });
-  yield* next();
-
-  if (!ctx.json.ok) {
-    return;
-  }
-
-  const opId = ctx.json.value.id;
-  ctx.loader = {
-    message: `Scale service operation queued (operation ID: ${opId})`,
-    meta: { opId: `${opId}` },
-  };
-});
-
 export const selectServicesByAppId = createSelector(
   selectServicesAsList,
   (_: WebState, p: { appId: string }) => p.appId,
   (services, appId) => services.filter((s) => s.appId === appId),
-);
-
-export const pollDatabaseAndServiceOperations = thunks.create<{ id: string }>(
-  "db-service-op-poll",
-  { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
-  function* (ctx, next) {
-    yield* schema.update(schema.loaders.start({ id: ctx.key }));
-    const dbb = yield* select((s: WebState) =>
-      selectDatabaseById(s, ctx.payload),
-    );
-
-    const group = yield* parallel([
-      () => fetchDatabaseOperations.run(fetchDatabaseOperations(ctx.payload)),
-      () =>
-        fetchServiceOperations.run(
-          fetchServiceOperations({ id: dbb.serviceId }),
-        ),
-    ]);
-    yield* group;
-
-    yield* next();
-    yield* schema.update(schema.loaders.success({ id: ctx.key }));
-  },
 );

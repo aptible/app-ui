@@ -1,5 +1,5 @@
 import { api, cacheMinTimer, thunks } from "@app/api";
-import { call, createAction, parallel, poll, select } from "@app/fx";
+import { call, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
@@ -10,6 +10,7 @@ import type {
   DeployAppConfigEnv,
   DeployOperation,
   DeployServiceResponse,
+  Deployment,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
@@ -21,11 +22,7 @@ import {
 } from "../environment";
 import { DeployImageResponse } from "../image";
 import { DeployOperationResponse, waitForOperation } from "../operation";
-import {
-  fetchServiceOperations,
-  selectServiceById,
-  selectServicesByAppId,
-} from "../service";
+import { selectServiceById } from "../service";
 import { findStackById, selectStacks } from "../stack";
 
 export * from "./utils";
@@ -109,12 +106,17 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
 export const hasDeployApp = (a: DeployApp) => a.id !== "";
 export const selectAppById = schema.apps.selectById;
 export const selectApps = schema.apps.selectTable;
-const selectAppsAsList = schema.apps.selectTableAsList;
+export const selectAppsAsList = schema.apps.selectTableAsList;
 export const findAppById = schema.apps.findById;
 
 export interface DeployAppRow extends DeployApp {
   envHandle: string;
+  currentDeployment: Deployment;
+  gitRef: string;
+  gitCommitSha: string;
+  dockerImageName: string;
   lastOperation: DeployOperation;
+  lastDeployed: string;
   cost: number;
   totalCPU: number;
   totalMemoryLimit: number;
@@ -241,16 +243,6 @@ interface AppIdProp {
 }
 
 export const fetchApp = api.get<AppIdProp>("/apps/:id");
-
-export const fetchAppOperations = api.get<AppIdProp>("/apps/:id/operations");
-
-export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
-export const pollAppOperations = api.get<AppIdProp>(
-  ["/apps/:id/operations", "poll"],
-  {
-    supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`),
-  },
-);
 
 interface CreateAppProps {
   name: string;
@@ -417,29 +409,3 @@ export const updateApp = api.put<UpdateApp>("/apps/:id", function* (ctx, next) {
     message: "Saved changes successfully!",
   };
 });
-
-export const pollAppAndServiceOperations = thunks.create<{ id: string }>(
-  "app-service-op-poll",
-  { supervisor: poll(10 * 1000, `${cancelAppOpsPoll}`) },
-  function* (ctx, next) {
-    yield* schema.update(schema.loaders.start({ id: ctx.key }));
-
-    const services = yield* select((s: WebState) =>
-      selectServicesByAppId(s, {
-        appId: ctx.payload.id,
-      }),
-    );
-    const serviceOps = services.map(
-      (service) => () =>
-        fetchServiceOperations.run(fetchServiceOperations({ id: service.id })),
-    );
-    const group = yield* parallel([
-      () => fetchAppOperations.run(fetchAppOperations(ctx.payload)),
-      ...serviceOps,
-    ]);
-    yield* group;
-
-    yield* next();
-    yield* schema.update(schema.loaders.success({ id: ctx.key }));
-  },
-);

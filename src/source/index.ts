@@ -4,7 +4,7 @@ import { schema } from "@app/schema";
 import { DeploySource } from "@app/types";
 
 interface DeploySourceResponse {
-  id: string;
+  id: number;
   display_name: string;
   url: string;
   created_at: string;
@@ -17,7 +17,7 @@ export const defaultDeploySourceResponse = (
 ): DeploySourceResponse => {
   const now = new Date().toISOString();
   return {
-    id: "",
+    id: -1,
     display_name: "",
     url: "",
     created_at: now,
@@ -29,7 +29,7 @@ export const defaultDeploySourceResponse = (
 
 const deserializeDeploySource = (r: DeploySourceResponse): DeploySource => {
   return {
-    id: r.id,
+    id: `${r.id}`,
     displayName: r.display_name || "Unknown",
     url: r.url,
     createdAt: r.created_at,

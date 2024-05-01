@@ -28,6 +28,7 @@ export {
   createPersistor,
   persistStoreMdw,
   StoreContext,
+  clearTimers,
 } from "starfx";
 export type { Callable, StoreUpdater, FxStore } from "starfx";
 import { defaultLoaderItem, sleep } from "starfx";

@@ -5,7 +5,7 @@ import { WebState, schema } from "@app/schema";
 import { Deployment, LinkResponse, OperationStatus } from "@app/types";
 
 export interface DeploymentResponse {
-  id: string;
+  id: number;
   status: string;
   docker_image: string | null;
   docker_repository_url: string | null;
@@ -14,7 +14,7 @@ export interface DeploymentResponse {
   git_commit_sha: string | null;
   git_commit_url: string | null;
   git_commit_message: string | null;
-  git_commit_date: string | null;
+  git_commit_timestamp: string | null;
   created_at: string;
   updated_at: string;
   _links: {
@@ -32,7 +32,7 @@ export const defaultDeploymentResponse = (
 ): DeploymentResponse => {
   const now = new Date().toISOString();
   return {
-    id: "",
+    id: -1,
     status: "",
     docker_image: "",
     docker_repository_url: "",
@@ -41,7 +41,7 @@ export const defaultDeploymentResponse = (
     git_commit_sha: "",
     git_commit_url: "",
     git_commit_message: "",
-    git_commit_date: "",
+    git_commit_timestamp: "",
     created_at: now,
     updated_at: now,
     _links: {
@@ -72,7 +72,7 @@ export const deserializeDeployment = (
     gitCommitSha: payload.git_commit_sha || "",
     gitCommitUrl: payload.git_commit_url || "",
     gitCommitMessage: payload.git_commit_message || "",
-    gitCommitDate: payload.git_commit_date,
+    gitCommitTimestamp: payload.git_commit_timestamp,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     appId: extractIdFromLink(links.app),
@@ -84,7 +84,8 @@ export const deserializeDeployment = (
 };
 
 export const selectDeploymentById = schema.deployments.selectById;
-const selectDeploymentsAsList = createSelector(
+export const selectDeployments = schema.deployments.selectTable;
+export const selectDeploymentsAsList = createSelector(
   schema.deployments.selectTableAsList,
   (deployments) =>
     deployments.sort((a, b) => {
@@ -120,6 +121,7 @@ export function getDockerImageName(deployment: Deployment): string {
   return deployment.dockerImage || "Dockerfile Build";
 }
 
+export const fetchDeployments = api.get("/deployments?per_page=5000");
 export const fetchDeploymentById = api.get<{ id: string }>("/deployments/:id");
 export const fetchDeploymentsByAppId = api.get<{ id: string }>(
   "/apps/:id/deployments",

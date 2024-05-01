@@ -69,4 +69,5 @@ export * from "./deployments-table";
 export * from "./source";
 export * from "./git";
 export * from "./docker";
+export * from "./role";
 export * from "./cytoscape";

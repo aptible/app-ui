@@ -357,7 +357,7 @@ export const defaultDeployLogDrain = (
   return {
     id: "",
     handle: "",
-    drainType: "",
+    drainType: "tail",
     drainHost: "",
     drainPort: "",
     drainUsername: "",
@@ -369,6 +369,7 @@ export const defaultDeployLogDrain = (
     drainEphemeralSessions: false,
     drainDatabases: false,
     environmentId: "",
+    databaseId: "",
     backendChannel: "",
     createdAt: now,
     updatedAt: now,
@@ -394,6 +395,7 @@ export const defaultDeployMetricDrain = (
     aggregatorAllocation: [],
     drainConfiguration: {},
     environmentId: "",
+    databaseId: "",
     createdAt: now,
     updatedAt: now,
     status: "pending",
@@ -432,7 +434,7 @@ export const defaultDeployOperation = (
     instanceProfile: "",
     userName: "unknown",
     userEmail: "",
-    env: "",
+    env: {},
     note: "",
     ...op,
   };
@@ -603,13 +605,14 @@ export const defaultBackupRp = (
   bk: Partial<DeployBackupRetentionPolicy> = {},
 ): DeployBackupRetentionPolicy => {
   const now = new Date().toISOString();
+  // based on https://github.com/aptible/deploy-api/blob/b537960533f3cb6fb8f57f339de3a46207e70f4b/app/models/backup_retention_policy.rb#L8
   return {
     id: "",
-    daily: 0,
-    monthly: 0,
+    daily: 90,
+    monthly: 72,
     yearly: 0,
-    makeCopy: false,
-    keepFinal: false,
+    makeCopy: true,
+    keepFinal: true,
     environmentId: "",
     createdAt: now,
     ...bk,
@@ -815,7 +818,7 @@ export const defaultDeployment = (a: Partial<Deployment> = {}): Deployment => {
     gitCommitSha: "",
     gitCommitUrl: "",
     gitCommitMessage: "",
-    gitCommitDate: "",
+    gitCommitTimestamp: "",
     createdAt: now,
     updatedAt: now,
     appId: "",

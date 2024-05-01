@@ -197,7 +197,7 @@ export const ContainerMetricsChart = ({
             ) : null}
             {helpText ? (
               <div className="right-5 top-2.5">
-                <AptibleTooltip text={helpText} autoSizeWidth rightAnchored>
+                <AptibleTooltip text={helpText}>
                   <IconInfo className="h-5 mt-0.5 opacity-50 hover:opacity-100 cursor-pointer" />
                 </AptibleTooltip>
               </div>
