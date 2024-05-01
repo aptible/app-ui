@@ -379,7 +379,7 @@ export const updateEnvWithDbUrls = thunks.create<{
     return;
   }
 
-  const env = configCtx.json.value.env;
+  const env = configCtx.json.value.env || {};
   const dbs = yield* select((s: WebState) =>
     selectDatabasesByEnvId(s, { envId }),
   );

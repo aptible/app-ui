@@ -246,7 +246,7 @@ export interface DeployOperation extends Timestamps {
   instanceProfile: string;
   userEmail: string;
   userName: string;
-  env: any;
+  env: { [key: string]: string | null };
   note: string;
 }
 

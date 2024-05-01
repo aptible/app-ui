@@ -434,7 +434,7 @@ export const defaultDeployOperation = (
     instanceProfile: "",
     userName: "unknown",
     userEmail: "",
-    env: "",
+    env: {},
     note: "",
     ...op,
   };
