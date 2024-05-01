@@ -204,6 +204,10 @@ export const updateEnvironmentName = api.patch<{ id: string; handle: string }>(
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield* next();
 
+    if (!ctx.json.ok) {
+      return;
+    }
+
     ctx.loader = {
       message: "Saved changes successfully!",
     };
