@@ -1,10 +1,9 @@
 services:
-  app:
+  app-ui:
+    network_mode: host
     build:
       context: .
       dockerfile: ./Dockerfile.dev
-    ports:
-      - "4200:4200"
     volumes:
       - .:/app
       - node_modules:/app/node_modules
