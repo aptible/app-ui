@@ -13,7 +13,6 @@ import {
 } from "@app/deploy";
 import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { findLoaderComposite } from "@app/loaders";
-import { selectHasBetaFeatures } from "@app/organizations";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appActivityUrl,
@@ -44,7 +43,6 @@ import {
   DockerImage,
   GitCommitMessage,
   GitRef,
-  SourceName,
   TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
@@ -56,8 +54,6 @@ export function AppHeader({
   const lastDeployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
-
-  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
 
   useQuery(fetchDeploymentById({ id: app.currentDeploymentId }));
   const deployment = useSelector((s) =>
@@ -100,11 +96,7 @@ export function AppHeader({
         </DetailInfoItem>
 
         <DetailInfoItem title="Source">
-          {hasBetaFeatures && source.id ? (
-            <Link to={sourceDetailUrl(source.id)}>{source.displayName}</Link>
-          ) : (
-            <SourceName app={app} deployment={deployment} />
-          )}
+          <Link to={sourceDetailUrl(source.id)}>{source.displayName}</Link>
         </DetailInfoItem>
         <DetailInfoItem title="Commit Message">
           <div className="max-h-[21px]">
@@ -165,15 +157,11 @@ function AppPageHeader() {
   const hasConfigAccess = useSelector((s) =>
     selectUserHasPerms(s, { envId: app.environmentId, scope: "read" }),
   );
-  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
 
   const tabs: TabItem[] = [{ name: "Services", href: appServicesUrl(id) }];
 
-  if (hasBetaFeatures) {
-    tabs.push({ name: "Deployments", href: appDetailDeploymentsUrl(id) });
-  }
-
   tabs.push(
+    { name: "Deployments", href: appDetailDeploymentsUrl(id) },
     { name: "Endpoints", href: appEndpointsUrl(id) },
     { name: "Activity", href: appActivityUrl(id) },
     { name: "Configuration", href: appConfigUrl(id) },

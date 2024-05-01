@@ -8,7 +8,6 @@ import {
   selectOperationById,
 } from "@app/deploy";
 import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
-import { selectHasBetaFeatures } from "@app/organizations";
 import { useQuery, useSelector } from "@app/react";
 import {
   appDetailDeploymentsUrl,
@@ -31,7 +30,6 @@ import {
   GitCommitMessage,
   GitRef,
   OpStatus,
-  SourceName,
   TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
@@ -48,7 +46,6 @@ export function DeploymentHeader({
   const source = useSelector((s) =>
     selectSourceById(s, { id: deployment.sourceId }),
   );
-  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
 
   return (
     <DetailHeader>
@@ -66,11 +63,7 @@ export function DeploymentHeader({
       <DetailInfoGrid>
         <DetailInfoItem title="Type">{capitalize(op.type)}</DetailInfoItem>
         <DetailInfoItem title="Source">
-          {hasBetaFeatures && source.id ? (
-            <Link to={sourceDetailUrl(source.id)}>{source.displayName}</Link>
-          ) : (
-            <SourceName app={app} deployment={deployment} />
-          )}
+          <Link to={sourceDetailUrl(source.id)}>{source.displayName}</Link>
         </DetailInfoItem>
 
         <DetailInfoItem title="App">
