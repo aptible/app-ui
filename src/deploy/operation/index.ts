@@ -66,7 +66,7 @@ export interface DeployOperationResponse {
   instance_profile: string;
   user_email: string;
   user_name: string;
-  env: string;
+  env: { [key: string]: string | null } | null;
   note: string;
   _links: {
     account: LinkResponse;
@@ -108,7 +108,7 @@ export const defaultOperationResponse = (
     instance_profile: "",
     user_name: "",
     user_email: "",
-    env: "",
+    env: {},
     note: "",
     _links: {
       account: { href: "" },
@@ -171,7 +171,7 @@ export const deserializeDeployOperation = (
     instanceProfile: payload.instance_profile,
     userEmail: payload.user_email,
     userName: payload.user_name,
-    env: payload.env,
+    env: payload.env || {},
     note: payload.note,
   };
 };
