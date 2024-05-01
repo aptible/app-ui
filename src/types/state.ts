@@ -8,6 +8,7 @@ export interface Config {
   billingUrl: string;
   apiUrl: string;
   metricTunnelUrl: string;
+  portalUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
   stripePublishableKey: string;

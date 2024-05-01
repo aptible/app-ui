@@ -6,6 +6,7 @@ ARG VITE_BILLING_URL=https://goldenboy.aptible.com
 ARG VITE_API_URL=https://api.aptible.com
 ARG VITE_LEGACY_DASHBOARD_URL=https://dashboard.aptible.com
 ARG VITE_METRIC_TUNNEL_URL=https://metrictunnel.aptible.com
+ARG VITE_PORTAL_URL=https://portal.aptible.com
 ARG VITE_ORIGIN=app
 ARG VITE_TUNA_ENABLED=false
 ARG NODE_ENV=production
