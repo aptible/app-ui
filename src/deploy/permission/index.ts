@@ -7,7 +7,7 @@ import {
   selectCurrentUserRolesByOrgId,
   selectRolesByOrgId,
 } from "@app/roles";
-import { WebState, schema } from "@app/schema";
+import { WebState, defaultPermission, schema } from "@app/schema";
 import { LinkResponse, Permission, PermissionScope } from "@app/types";
 
 export interface PermissionResponse {
@@ -43,6 +43,7 @@ export const deserializePermission = (
     scope: permission.scope,
     environmentId: extractIdFromLink(permission._links.account),
     roleId: extractIdFromLink(permission._links.role),
+    inheritedFrom: "",
   };
 };
 
@@ -232,7 +233,7 @@ interface RmPermProps {
   id: string;
 }
 
-type UpdatePermProps =
+export type UpdatePermProps =
   | { type: "add"; payload: AddPermProps }
   | { type: "rm"; payload: RmPermProps };
 
@@ -333,4 +334,52 @@ export const scopeDesc: { [key in PermissionScope]: string } = {
     "Allows Users to see and manage sensitive values in the Environment such as configuring Apps, viewing Database Credentials, and managing Certificates.",
   tunnel:
     "Allows User to tunnel into Databases in the Environment. This permission does not allow Users to see Database Credentials so Users will need to be provided credentials through another channel.",
+};
+
+export const hasExplicitPerm = (p: Permission): boolean => {
+  return p.id !== "";
+};
+
+export const hasInheritedPerm = (p: Permission): boolean => {
+  return !hasExplicitPerm(p) && p.inheritedFrom !== "";
+};
+
+export const hasPerm = (p: Permission): boolean => {
+  return hasExplicitPerm(p) || hasInheritedPerm(p);
+};
+
+export const deriveEnvPermInheritance = (envPerms: Permission[]) => {
+  const perms: Record<PermissionScope, Permission> = {
+    admin: defaultPermission({ scope: "admin" }),
+    read: defaultPermission({ scope: "read" }),
+    basic_read: defaultPermission({ scope: "basic_read" }),
+    deploy: defaultPermission({ scope: "deploy" }),
+    destroy: defaultPermission({ scope: "destroy" }),
+    observability: defaultPermission({ scope: "observability" }),
+    sensitive: defaultPermission({ scope: "sensitive" }),
+    tunnel: defaultPermission({ scope: "tunnel" }),
+    unknown: defaultPermission(),
+  };
+  envPerms.forEach((p) => {
+    perms[p.scope] = { ...p };
+  });
+
+  // if any permission exists so long as it isn't basic_read,
+  // basic_read is marked as inherited
+  if (envPerms.length > 0 && !hasExplicitPerm(perms.basic_read)) {
+    perms.basic_read.inheritedFrom = envPerms[0].id;
+  }
+
+  // if we have admin permission then all the other perms are inherited
+  if (hasExplicitPerm(perms.admin)) {
+    perms.read.inheritedFrom = perms.admin.id;
+    perms.basic_read.inheritedFrom = perms.admin.id;
+    perms.deploy.inheritedFrom = perms.admin.id;
+    perms.destroy.inheritedFrom = perms.admin.id;
+    perms.observability.inheritedFrom = perms.admin.id;
+    perms.sensitive.inheritedFrom = perms.admin.id;
+    perms.tunnel.inheritedFrom = perms.admin.id;
+  }
+
+  return perms;
 };

@@ -498,6 +498,7 @@ export const defaultPermission = (r: Partial<Permission> = {}): Permission => {
     scope: "unknown",
     environmentId: "",
     roleId: "",
+    inheritedFrom: "",
     ...r,
   };
 };

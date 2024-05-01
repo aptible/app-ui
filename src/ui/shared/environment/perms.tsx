@@ -1,9 +1,9 @@
 import { fetchMembershipsByOrgId, selectRoleToUsersMap } from "@app/auth";
-import { selectPermsByEnvId } from "@app/deploy";
+import { deriveEnvPermInheritance, selectPermsByEnvId } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { fetchRoles, getIsOwnerRole, selectRolesByOrgId } from "@app/roles";
 import { roleDetailUrl } from "@app/routes";
-import { Permission, PermissionScope, Role, User } from "@app/types";
+import { Permission, Role, User } from "@app/types";
 import { Link } from "react-router-dom";
 import { Code } from "../code";
 import { PermCheck, RoleColHeader } from "../role";
@@ -56,23 +56,7 @@ function EnvPermsRow({
 }: { envPerms: Permission[]; role: Role; users: User[] }) {
   const filtered = envPerms.filter((p) => p.roleId === role.id);
   const isOwnerRole = getIsOwnerRole(role);
-  const perms = filtered.reduce(
-    (acc, perm) => {
-      acc[perm.scope] = true;
-      return acc;
-    },
-    {
-      admin: isOwnerRole,
-      read: isOwnerRole,
-      basic_read: isOwnerRole,
-      deploy: isOwnerRole,
-      destroy: isOwnerRole,
-      observability: isOwnerRole,
-      sensitive: isOwnerRole,
-      tunnel: isOwnerRole,
-      unknown: isOwnerRole,
-    } as Record<PermissionScope, boolean>,
-  );
+  const perms = deriveEnvPermInheritance(filtered);
   return (
     <Tr>
       <Td>
@@ -90,28 +74,28 @@ function EnvPermsRow({
         )}
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.admin} />
+        <PermCheck perm={perms.admin} isOwnerRole={isOwnerRole} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.read} />
+        <PermCheck perm={perms.read} isOwnerRole={isOwnerRole} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.basic_read} />
+        <PermCheck perm={perms.basic_read} isOwnerRole={isOwnerRole} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.deploy} />
+        <PermCheck perm={perms.deploy} isOwnerRole={isOwnerRole} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.destroy} />
+        <PermCheck perm={perms.destroy} isOwnerRole={isOwnerRole} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.observability} />
+        <PermCheck perm={perms.observability} isOwnerRole={isOwnerRole} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.sensitive} />
+        <PermCheck perm={perms.sensitive} isOwnerRole={isOwnerRole} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.tunnel} />
+        <PermCheck perm={perms.tunnel} isOwnerRole={isOwnerRole} />
       </Td>
     </Tr>
   );

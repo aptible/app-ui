@@ -1,7 +1,9 @@
 import { fetchMembershipsByRole } from "@app/auth";
 import {
+  deriveEnvPermInheritance,
+  hasExplicitPerm,
+  hasInheritedPerm,
   isPhiAllowed,
-  scopeDesc,
   scopeTitle,
   selectCanUserManageRole,
   selectEnvironmentsByOrgAsList,
@@ -13,58 +15,73 @@ import { useDispatch, useLoader, useSelector } from "@app/react";
 import { useQuery } from "@app/react";
 import { getIsOwnerRole, selectRoleById } from "@app/roles";
 import { environmentDetailUrl } from "@app/routes";
-import { defaultPermission } from "@app/schema";
-import { DeployEnvironment, Permission, PermissionScope } from "@app/types";
+import { DeployEnvironment, Permission } from "@app/types";
 import { selectCurrentUserId } from "@app/users";
+import { useState } from "react";
 import { useParams } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 import { RoleDetailLayout } from "../layouts";
 import {
   BannerMessagesBasic,
-  Box,
-  CheckBox,
+  Button,
+  ButtonCanManageRole,
+  EmptyTr,
   Group,
-  IconInfo,
+  Input,
   InputSearch,
+  PermCheck,
   Pill,
-  Tooltip,
-  tokens,
+  RoleColHeader,
+  TBody,
+  THead,
+  Table,
+  Td,
+  Th,
+  Tr,
 } from "../shared";
 
 function ScopeToggle({
-  scope,
   checked,
   disabled,
-  description,
   onToggle,
   isLoading,
+  label,
 }: {
-  scope: string;
   checked: boolean;
   disabled: boolean;
-  description: string;
   onToggle: (c: boolean) => void;
   isLoading: boolean;
+  label: string;
 }) {
   return (
-    <Group variant="horizontal" size="sm" className="items-center">
-      <CheckBox
-        label={scope}
+    <label>
+      <div className="text-xs mb-2 h-[30px] flex justify-center items-end">
+        {label}
+      </div>
+      <Input
+        type="checkbox"
+        className="rounded-lg w-6 h-6"
         onChange={(ev) => onToggle(ev.currentTarget.checked)}
         checked={checked}
         disabled={disabled || isLoading}
       />
-      <Tooltip text={description} placement="left">
-        <IconInfo variant="sm" className="opacity-50 hover:opacity-100" />
-      </Tooltip>
-    </Group>
+    </label>
   );
 }
 
-function RoleEnvEditor({
-  env,
+function EnvEditorRow({
   roleId,
-}: { env: DeployEnvironment; roleId: string }) {
+  env,
+  editing = false,
+  onEdit = () => {},
+  disabled = false,
+}: {
+  roleId: string;
+  env: DeployEnvironment;
+  editing?: boolean;
+  onEdit?: (id: string) => void;
+  disabled?: boolean;
+}) {
   const dispatch = useDispatch();
   const userId = useSelector(selectCurrentUserId);
   const orgId = useSelector(selectOrganizationSelectedId);
@@ -72,23 +89,23 @@ function RoleEnvEditor({
     selectCanUserManageRole(s, { roleId, userId, orgId }),
   );
   const updateLoader = useLoader(updatePerm);
-  const perms = useSelector((s) =>
+  const envPerms = useSelector((s) =>
     selectPermsByEnvAndRoleId(s, { envId: env.id, roleId }),
   );
-  const permSet: Record<PermissionScope, Permission> = {
-    admin: defaultPermission({ scope: "admin" }),
-    read: defaultPermission({ scope: "read" }),
-    basic_read: defaultPermission({ scope: "basic_read" }),
-    deploy: defaultPermission({ scope: "deploy" }),
-    destroy: defaultPermission({ scope: "destroy" }),
-    observability: defaultPermission({ scope: "observability" }),
-    sensitive: defaultPermission({ scope: "sensitive" }),
-    tunnel: defaultPermission({ scope: "tunnel" }),
-    unknown: defaultPermission(),
+  const perms = deriveEnvPermInheritance(envPerms);
+  const calcToggle = (
+    perm: Permission,
+  ): { checked: boolean; disabled: boolean } => {
+    if (hasExplicitPerm(perm)) {
+      return { checked: true, disabled: !canManage };
+    }
+
+    if (hasInheritedPerm(perm)) {
+      return { checked: true, disabled: true };
+    }
+
+    return { checked: false, disabled: !canManage };
   };
-  perms.forEach((p) => {
-    permSet[p.scope] = p;
-  });
   const onToggle = (perm: Permission) => {
     return (checked: boolean) => {
       if (checked) {
@@ -108,110 +125,181 @@ function RoleEnvEditor({
     };
   };
 
-  const calcToggle = (
-    perm: Permission,
-  ): { checked: boolean; disabled: boolean } => {
-    const derived = { checked: true, disabled: true };
-    // admin => everything is checked
-    if (permSet.admin.id !== "" && perm.scope !== "admin") {
-      return derived;
-    }
-
-    // if there's only `basic_read` perm then it can be disabled
-    if (
-      perms.length === 1 &&
-      perms[0].scope === "basic_read" &&
-      perm.scope === "basic_read"
-    ) {
-      return { checked: true, disabled: false };
-    }
-
-    // anything check? => basic_read is checked
-    if (perms.length > 0 && perm.scope === "basic_read") {
-      return derived;
-    }
-
-    return { checked: perm.id !== "", disabled: !canManage };
-  };
-
   return (
-    <Box>
-      <Group variant="horizontal">
-        <Group size="sm" className="w-[300px]">
-          <h3 className={tokens.type.h3}>
-            <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
-          </h3>
-          <Group size="sm">
-            <Pill>{isPhiAllowed(env) ? "PHI Allowed" : "PHI Not Allowed"}</Pill>
-            <div>{env.totalAppCount} Apps</div>
-            <div>{env.totalDatabaseCount} Databases</div>
-          </Group>
+    <Tr>
+      <Td className="min-w-[130px]">
+        <div>
+          <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
+        </div>
+        <Group size="xs">
+          <div>{env.totalAppCount} Apps</div>
+          <div>{env.totalDatabaseCount} Databases</div>
         </Group>
+      </Td>
+      <Td variant="center" className="min-w-[130px]">
+        {isPhiAllowed(env) ? (
+          <Pill variant="success">Allowed</Pill>
+        ) : (
+          <Pill variant="error">Not Allowed</Pill>
+        )}
+      </Td>
+      <Td variant="center">
+        {editing ? (
+          <ScopeToggle
+            label={scopeTitle.admin}
+            onToggle={onToggle(perms.admin)}
+            isLoading={updateLoader.isLoading}
+            {...calcToggle(perms.admin)}
+          />
+        ) : (
+          <PermCheck perm={perms.admin} />
+        )}
+      </Td>
+      <Td variant="center">
+        {editing ? (
+          <ScopeToggle
+            label={scopeTitle.read}
+            onToggle={onToggle(perms.read)}
+            isLoading={updateLoader.isLoading}
+            {...calcToggle(perms.read)}
+          />
+        ) : (
+          <PermCheck perm={perms.read} />
+        )}
+      </Td>
+      <Td variant="center">
+        {editing ? (
+          <ScopeToggle
+            label={scopeTitle.basic_read}
+            onToggle={onToggle(perms.basic_read)}
+            isLoading={updateLoader.isLoading}
+            {...calcToggle(perms.basic_read)}
+          />
+        ) : (
+          <PermCheck perm={perms.basic_read} />
+        )}
+      </Td>
+      <Td variant="center">
+        {editing ? (
+          <ScopeToggle
+            label={scopeTitle.deploy}
+            onToggle={onToggle(perms.deploy)}
+            isLoading={updateLoader.isLoading}
+            {...calcToggle(perms.deploy)}
+          />
+        ) : (
+          <PermCheck perm={perms.deploy} />
+        )}
+      </Td>
+      <Td variant="center">
+        {editing ? (
+          <ScopeToggle
+            label={scopeTitle.destroy}
+            onToggle={onToggle(perms.destroy)}
+            isLoading={updateLoader.isLoading}
+            {...calcToggle(perms.destroy)}
+          />
+        ) : (
+          <PermCheck perm={perms.destroy} />
+        )}
+      </Td>
+      <Td variant="center">
+        {editing ? (
+          <ScopeToggle
+            label={scopeTitle.observability}
+            onToggle={onToggle(perms.observability)}
+            isLoading={updateLoader.isLoading}
+            {...calcToggle(perms.observability)}
+          />
+        ) : (
+          <PermCheck perm={perms.observability} />
+        )}
+      </Td>
+      <Td variant="center">
+        {editing ? (
+          <ScopeToggle
+            label={scopeTitle.sensitive}
+            onToggle={onToggle(perms.sensitive)}
+            isLoading={updateLoader.isLoading}
+            {...calcToggle(perms.sensitive)}
+          />
+        ) : (
+          <PermCheck perm={perms.sensitive} />
+        )}
+      </Td>
+      <Td variant="center">
+        {editing ? (
+          <ScopeToggle
+            label={scopeTitle.tunnel}
+            onToggle={onToggle(perms.tunnel)}
+            isLoading={updateLoader.isLoading}
+            {...calcToggle(perms.tunnel)}
+          />
+        ) : (
+          <PermCheck perm={perms.tunnel} />
+        )}
+      </Td>
+      <Td>
+        {editing ? (
+          <Button variant="white" size="sm" onClick={() => onEdit("")}>
+            Done
+          </Button>
+        ) : (
+          <ButtonCanManageRole
+            userId={userId}
+            roleId={roleId}
+            orgId={orgId}
+            size="sm"
+            onClick={() => onEdit(env.id)}
+            disabled={disabled}
+          >
+            Edit
+          </ButtonCanManageRole>
+        )}
+      </Td>
+    </Tr>
+  );
+}
 
-        <Group size="sm" className="flex-1">
-          <h3 className={tokens.type.h3}>Permissions</h3>
+function EnvironmentTableEditor({
+  roleId,
+  envs,
+}: { roleId: string; envs: DeployEnvironment[] }) {
+  const [editingEnvId, setEditingEnvId] = useState("");
+  return (
+    <Table className="flex-1">
+      <THead>
+        <Th>Environment</Th>
+        <Th>PHI</Th>
+        <RoleColHeader scope="admin" />
+        <RoleColHeader scope="read" />
+        <RoleColHeader scope="basic_read" />
+        <RoleColHeader scope="deploy" />
+        <RoleColHeader scope="destroy" />
+        <RoleColHeader scope="observability" />
+        <RoleColHeader scope="sensitive" />
+        <RoleColHeader scope="tunnel" />
+        <Th variant="right">Actions</Th>
+      </THead>
 
-          <Group size="sm">
-            <ScopeToggle
-              scope={scopeTitle.admin}
-              description={scopeDesc.admin}
-              onToggle={onToggle(permSet.admin)}
-              isLoading={updateLoader.isLoading}
-              {...calcToggle(permSet.admin)}
+      <TBody>
+        {envs.length === 0 ? (
+          <EmptyTr colSpan={10}>No environments exist</EmptyTr>
+        ) : null}
+        {envs.map((env) => {
+          return (
+            <EnvEditorRow
+              key={env.id}
+              roleId={roleId}
+              env={env}
+              disabled={editingEnvId !== ""}
+              editing={editingEnvId === env.id}
+              onEdit={setEditingEnvId}
             />
-            <ScopeToggle
-              scope={scopeTitle.read}
-              description={scopeDesc.read}
-              onToggle={onToggle(permSet.read)}
-              isLoading={updateLoader.isLoading}
-              {...calcToggle(permSet.read)}
-            />
-            <ScopeToggle
-              scope={scopeTitle.basic_read}
-              description={scopeDesc.basic_read}
-              onToggle={onToggle(permSet.basic_read)}
-              isLoading={updateLoader.isLoading}
-              {...calcToggle(permSet.basic_read)}
-            />
-            <ScopeToggle
-              scope={scopeTitle.deploy}
-              description={scopeDesc.deploy}
-              onToggle={onToggle(permSet.deploy)}
-              isLoading={updateLoader.isLoading}
-              {...calcToggle(permSet.deploy)}
-            />
-            <ScopeToggle
-              scope={scopeTitle.destroy}
-              description={scopeDesc.destroy}
-              onToggle={onToggle(permSet.destroy)}
-              isLoading={updateLoader.isLoading}
-              {...calcToggle(permSet.destroy)}
-            />
-            <ScopeToggle
-              scope={scopeTitle.observability}
-              description={scopeDesc.observability}
-              onToggle={onToggle(permSet.observability)}
-              isLoading={updateLoader.isLoading}
-              {...calcToggle(permSet.observability)}
-            />
-            <ScopeToggle
-              scope={scopeTitle.sensitive}
-              description={scopeDesc.sensitive}
-              onToggle={onToggle(permSet.sensitive)}
-              isLoading={updateLoader.isLoading}
-              {...calcToggle(permSet.sensitive)}
-            />
-            <ScopeToggle
-              scope={scopeTitle.tunnel}
-              description={scopeDesc.tunnel}
-              onToggle={onToggle(permSet.tunnel)}
-              isLoading={updateLoader.isLoading}
-              {...calcToggle(permSet.tunnel)}
-            />
-          </Group>
-        </Group>
-      </Group>
-    </Box>
+          );
+        })}
+      </TBody>
+    </Table>
   );
 }
 
@@ -257,12 +345,7 @@ export function RoleDetailEnvironmentsPage() {
           />
           <BannerMessagesBasic {...updateLoader} />
         </Group>
-        <Group>
-          {envs.length === 0 ? <div>No environments exist.</div> : null}
-          {envs.map((env) => {
-            return <RoleEnvEditor key={env.id} env={env} roleId={id} />;
-          })}
-        </Group>
+        <EnvironmentTableEditor roleId={id} envs={envs} />
       </Group>
     </RoleDetailLayout>
   );

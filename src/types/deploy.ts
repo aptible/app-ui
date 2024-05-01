@@ -442,6 +442,7 @@ export interface Permission {
   environmentId: string;
   roleId: string;
   scope: PermissionScope;
+  inheritedFrom: string;
 }
 
 export interface DeployRelease extends Timestamps {
