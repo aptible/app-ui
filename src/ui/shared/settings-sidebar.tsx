@@ -8,6 +8,7 @@ import {
   settingsProfileUrl,
   sshSettingsUrl,
   teamContactsUrl,
+  teamGithubIntegrationUrl,
   teamMembersUrl,
   teamPendingInvitesUrl,
   teamRolesUrl,
@@ -72,6 +73,10 @@ export function SettingsSidebar() {
 
         <NavLink className={navLink} to={teamRolesUrl()}>
           Roles
+        </NavLink>
+
+        <NavLink className={navLink} to={teamGithubIntegrationUrl()}>
+          GitHub Integration
         </NavLink>
 
         {isAccountOwner ? (
