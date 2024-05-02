@@ -2,7 +2,7 @@ import {
   fetchApp,
   fetchConfiguration,
   selectAppById,
-  selectDepGraphDatabases,
+  selectDependencies,
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { appDetailUrl, databaseDetailUrl, resourceGraphUrl } from "@app/routes";
@@ -14,6 +14,7 @@ import {
   Banner,
   Box,
   ButtonLink,
+  Code,
   CytoscapeGraph,
   GraphFitButton,
   Group,
@@ -27,13 +28,13 @@ export const AppDetailGraphPage = () => {
   useQuery(fetchApp({ id }));
   const app = useSelector((s) => selectAppById(s, { id }));
   useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
-  const dbs = useSelector((s) => selectDepGraphDatabases(s, { id: app.id }));
+  const depNodes = useSelector((s) => selectDependencies(s, { id: app.id }));
   const [cy, setCy] = useState<cytoscape.Core>();
   const [selected, setSelected] = useState<cytoscape.NodeSingular>();
 
   const appNode: cytoscape.NodeDefinition = {
     data: {
-      id: `${app.environmentId}-${app.id}`,
+      id: `app-${app.id}`,
       resourceType: "app",
       resourceId: app.id,
       label: app.handle,
@@ -42,22 +43,26 @@ export const AppDetailGraphPage = () => {
     classes: ["app", "healthy"],
   };
 
-  const dbNodes: cytoscape.NodeDefinition[] = dbs.map((db) => ({
+  const graphNodes: cytoscape.NodeDefinition[] = depNodes.map((dep) => ({
     data: {
-      id: `${db.environmentId}-${db.id}`,
-      resourceType: "database",
-      resourceId: db.id,
-      label: db.handle,
-      url: databaseDetailUrl(db.id),
-      reason: db.why.key,
+      id: `${dep.type}-${dep.refId}`,
+      resourceType: dep.type,
+      resourceId: dep.refId,
+      label: dep.name,
+      url:
+        dep.type === "app"
+          ? appDetailUrl(dep.refId)
+          : databaseDetailUrl(dep.refId),
+      reason: dep.why,
     },
-    classes: ["database", "healthy"],
+    classes: [dep.type, "healthy"],
   }));
 
-  const edges: cytoscape.EdgeDefinition[] = dbNodes.map((dbNode) => ({
+  const edges: cytoscape.EdgeDefinition[] = graphNodes.map((depNode) => ({
     data: {
       source: appNode.data.id || "",
-      target: dbNode.data.id || "",
+      target: depNode.data.id || "",
+      label: depNode.data.reason,
     },
   }));
 
@@ -95,7 +100,7 @@ export const AppDetailGraphPage = () => {
     cy.remove("*");
 
     cy.add(appNode);
-    cy.add(dbNodes);
+    cy.add(graphNodes);
     cy.add(edges);
 
     // Layout has to be created after nodes are added
@@ -105,13 +110,13 @@ export const AppDetailGraphPage = () => {
       nodeDimensionsIncludeLabels: true,
       padding: graphPadding,
     } as any).run();
-  }, [cy, app, dbs]);
+  }, [cy, app, depNodes]);
 
   return (
     <PermissionGate scope="read" envId={app.environmentId}>
       <Group className="grow">
         <Banner variant="info">
-          BETA - Dependencies are database connections derived from
+          BETA - Dependencies are connections derived from the App's
           configuration data (environment variables).
         </Banner>
         <CytoscapeGraph className="grow" onClient={setCy}>
@@ -126,7 +131,7 @@ export const AppDetailGraphPage = () => {
                 </div>
                 {selected.data("reason") ? (
                   <div>
-                    <b>Reason:</b> {selected.data("reason")}
+                    <b>Reason:</b> <Code>{selected.data("reason")}</Code>
                   </div>
                 ) : null}
                 <Link to={selected.data("url")}>Details</Link>

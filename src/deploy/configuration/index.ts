@@ -2,17 +2,21 @@ import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
-import { TextVal, escapeRegExp } from "@app/string-utils";
+import { TextVal } from "@app/string-utils";
 import {
   DeployApp,
   DeployAppConfig,
   DeployAppConfigEnv,
   DeployDatabase,
+  DeployService,
   LinkResponse,
 } from "@app/types";
+import { DeployEndpoint } from "@app/types";
 import { parse } from "dotenv";
-import { selectAppById, selectStackByAppId } from "../app";
-import { selectDatabasesAsList } from "../database";
+import { IdProp } from "starfx";
+import { findServiceById, selectEndpointsAsList, selectServices } from "..";
+import { findAppById, selectAppById, selectApps } from "../app";
+import { findDatabaseById, selectDatabases } from "../database";
 
 export interface DeployConfigurationResponse {
   id: number;
@@ -96,63 +100,129 @@ export const selectAppConfigByAppId = createSelector(
     schema.appConfigs.findById(configs, { id: app.currentConfigurationId }),
 );
 
-export interface DepNode {
-  type: "db";
-  key: string;
-  value: string;
+export interface DependencyNode {
+  type: string;
+  why: string;
   refId: string;
+  name: string;
 }
 
-function createDepGraph(
-  env: DeployAppConfigEnv,
-  aptibleDbRe: RegExp,
-): DepNode[] {
-  const deps: DepNode[] = [];
-  Object.keys(env).forEach((key) => {
-    const value = env[key];
-    if (typeof value !== "string") return;
-    const match = aptibleDbRe.exec(value);
-    if (match && match.length > 1) {
-      deps.push({ key, value, refId: match[1], type: "db" });
-    }
-  });
-  return deps;
+export interface AppDependency extends DependencyNode {
+  type: "app";
+  resource: DeployApp;
 }
 
-export interface DepGraphDb extends DeployDatabase {
-  why: DepNode;
+export interface DatabaseDependency extends DependencyNode {
+  type: "database";
+  resource: DeployDatabase;
 }
 
-export const selectDepGraphDatabases = createSelector(
-  selectStackByAppId,
-  selectAppConfigByAppId,
-  selectDatabasesAsList,
-  (stack, config, dbs) => {
-    const graphDbs: Record<string, DepGraphDb> = {};
-    const domain = escapeRegExp(stack.internalDomain);
-    const dbRe = new RegExp(`(\\d+)\\.${domain}\\:`);
-    const graph = createDepGraph(config.env, dbRe);
+export type Dependency = AppDependency | DatabaseDependency;
 
-    for (let i = 0; i < graph.length; i += 1) {
-      const node = graph[i];
-      const found = dbs.find((db) => {
-        if (node.type !== "db") {
-          return false;
-        }
-        return node.refId === db.id;
-      });
-      if (found) {
-        graphDbs[found.id] = { ...found, why: node };
+function findDeps(
+  config: DeployAppConfig,
+  apps: Record<IdProp, DeployApp>,
+  dbs: Record<IdProp, DeployDatabase>,
+  services: Record<IdProp, DeployService>,
+  endpoints: DeployEndpoint[],
+): Dependency[] {
+  const deps: Dependency[] = [];
+
+  Object.entries(config.env).forEach(([key, value]) => {
+    if (value == null) return;
+
+    const domainMatch = /([a-zA-Z0-6_-]{1,64}\.)+[a-zA-Z]{1,16}/.exec(value);
+    if (domainMatch == null) return;
+    const domain = domainMatch[0];
+
+    const dbMatch = /db-[a-zA-Z0-6_-]+-([0-9]+)\./.exec(domain);
+    if (dbMatch && dbMatch.length > 1) {
+      const db = findDatabaseById(dbs, { id: dbMatch[1] });
+
+      if (db) {
+        deps.push({
+          why: key,
+          refId: dbMatch[1],
+          name: db.handle,
+          type: "database",
+          resource: db,
+        });
+        return;
       }
     }
 
-    return Object.values(graphDbs);
+    const endpoint = endpoints.find(
+      (e) => domain === e.virtualDomain || domain === e.externalHost,
+    );
+    if (endpoint == null) return;
+    const service = findServiceById(services, { id: endpoint.serviceId });
+
+    if (service.appId != null) {
+      const app = findAppById(apps, { id: service.appId });
+
+      deps.push({
+        why: key,
+        refId: app.id,
+        name: app.handle,
+        type: "app",
+        resource: app,
+      });
+    } else if (service.databaseId != null) {
+      const db = findDatabaseById(dbs, { id: service.databaseId });
+
+      deps.push({
+        why: key,
+        refId: db.id,
+        name: db.handle,
+        type: "database",
+        resource: db,
+      });
+    }
+  });
+
+  return deps;
+}
+
+// export interface DepGraphDb extends DeployDatabase {
+//   why: DepNode;
+// }
+
+export const selectDependencies = createSelector(
+  selectAppConfigByAppId,
+  selectApps,
+  selectDatabases,
+  selectServices,
+  selectEndpointsAsList,
+  findDeps,
+);
+
+export const selectDependenciesByType = createSelector(
+  selectDependencies,
+  (deps) => {
+    const depGroups: { app: AppDependency[]; database: DatabaseDependency[] } =
+      {
+        app: [],
+        database: [],
+      };
+
+    deps.forEach((dep) => {
+      switch (dep.type) {
+        case "app":
+          depGroups.app.push(dep);
+          break;
+        case "database":
+          depGroups.database.push(dep);
+          break;
+      }
+    });
+
+    return depGroups;
   },
 );
 
-export interface DepGraphApp extends DeployApp {
-  why: DepNode;
-}
+// export interface DepGraphApp extends DeployApp {
+//   why: DepNode;
+// }
 
 export const fetchConfiguration = api.get<
   { id: string },

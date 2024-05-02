@@ -2,7 +2,7 @@ import {
   fetchApp,
   fetchConfiguration,
   selectAppById,
-  selectDepGraphDatabases,
+  selectDependenciesByType,
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { useParams } from "react-router";
@@ -19,17 +19,19 @@ export const AppDetailDepsPage = () => {
   useQuery(fetchApp({ id }));
   const app = useSelector((s) => selectAppById(s, { id }));
   useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
-  const dbs = useSelector((s) => selectDepGraphDatabases(s, { id: app.id }));
+  const depGroups = useSelector((s) =>
+    selectDependenciesByType(s, { id: app.id }),
+  );
 
   return (
     <PermissionGate scope="read" envId={app.environmentId}>
       <Group>
         <Banner variant="info">
-          BETA - Dependencies are database connections derived from
+          BETA - Dependencies are connections derived from the App's
           configuration data (environment variables).
         </Banner>
         <h3 className={tokens.type.h3}>Databases</h3>
-        <DatabaseListByDatabases databases={dbs} />
+        <DatabaseListByDatabases databases={depGroups.database} />
       </Group>
     </PermissionGate>
   );

@@ -35,6 +35,8 @@ const defaultStyle: cytoscape.Stylesheet[] = [
   {
     selector: "edge",
     style: {
+      label: "data(label)",
+      "font-size": 8,
       width: 3,
       "line-color": "#999",
       "line-opacity": 0.4,
@@ -42,6 +44,11 @@ const defaultStyle: cytoscape.Stylesheet[] = [
       "target-arrow-shape": "triangle",
       "curve-style": "bezier",
     },
+  },
+
+  {
+    selector: "edge:hover",
+    style: {},
   },
 
   {
@@ -92,7 +99,7 @@ const defaultStyle: cytoscape.Stylesheet[] = [
   },
 
   {
-    selector: ".database",
+    selector: ".database,.db",
     style: {
       "background-image": databaseIconUri,
     },

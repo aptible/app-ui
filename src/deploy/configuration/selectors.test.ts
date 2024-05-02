@@ -8,7 +8,7 @@ import {
   defaultDeployEnvironment,
   defaultDeployStack,
 } from "@app/schema";
-import { selectDepGraphDatabases } from "./index";
+import { selectDependencies } from "./index";
 
 describe("selectDepGraphDatabases", () => {
   describe("aptible.in", () => {
@@ -57,7 +57,7 @@ describe("selectDepGraphDatabases", () => {
         databases: { [db1.id]: db1, [db2.id]: db2, [db3.id]: db3 },
       };
 
-      const actual = selectDepGraphDatabases(state, { id: "app-id" }).map(
+      const actual = selectDependencies(state, { id: "app-id" }).map(
         (db) => db.id,
       );
       expect(actual).toEqual(["1234", "5555"]);
@@ -110,7 +110,7 @@ describe("selectDepGraphDatabases", () => {
         databases: { [db1.id]: db1, [db2.id]: db2, [db3.id]: db3 },
       };
 
-      const actual = selectDepGraphDatabases(state, { id: "app-id" }).map(
+      const actual = selectDependencies(state, { id: "app-id" }).map(
         (db) => db.id,
       );
       expect(actual).toEqual(["1234", "5555"]);
@@ -163,7 +163,7 @@ describe("selectDepGraphDatabases", () => {
         databases: { [db1.id]: db1, [db2.id]: db2, [db3.id]: db3 },
       };
 
-      const actual = selectDepGraphDatabases(state, { id: "app-id" }).map(
+      const actual = selectDependencies(state, { id: "app-id" }).map(
         (db) => db.id,
       );
       expect(actual).toEqual(["1234", "5555"]);
