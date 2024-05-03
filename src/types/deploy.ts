@@ -479,7 +479,6 @@ export interface DeployVpcPeer extends Timestamps {
 }
 
 export interface DeployVpnTunnel extends Timestamps {
-  tunnelAttributes: DeployVpnTunnelAttributes;
   id: string;
   createdAt: string;
   handle: string;
@@ -496,8 +495,15 @@ export interface DeployVpnTunnel extends Timestamps {
   peerNetworks: string[];
   stackId: string;
   updatedAt: string;
-  state: string;
+  state: DeployVpnTunnelState;
+  tunnelAttributes: DeployVpnTunnelAttributes;
 }
+
+export type DeployVpnTunnelState = 
+| "up"
+| "down" 
+| "partial"
+| "unknown";
 
 export interface DeployVpnTunnelAttributes {
   connections : {[key: string] : DeployVpnTunnelConnection};
@@ -509,7 +515,7 @@ export interface DeployVpnTunnelConnection {
   name: string;
   localAddress: string;
   remoteAddress: string;
-  state: "up" | "down" | "partial";
+  state: DeployVpnTunnelState;
 }
 
 export interface DeployVpnTunnelRoutedConnection {

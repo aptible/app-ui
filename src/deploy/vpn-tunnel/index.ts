@@ -20,7 +20,7 @@ export interface DeployVpnTunnelResponse {
   peer_gateway: string;
   peer_networks: string[];
   state: string;
-  tunnel_attributes: DeployVpnTunnelAttributes;
+  tunnel_attributes: {[key: string]: any};
   created_at: string;
   updated_at: string;
   _links: {
@@ -48,7 +48,7 @@ export const defaultVpnTunnelResponse = (
     peer_gateway: "",
     peer_networks: [],
     state: "unknown",
-    tunnel_attributes: {} as DeployVpnTunnelAttributes,
+    tunnel_attributes: {connections: {}, routedConnections: {}, securityAssociations: {}},
     created_at: now,
     updated_at: now,
     _links: { stack: { href: "" } },
@@ -77,7 +77,7 @@ export const deserializeDeployVpnTunnel = (
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     stackId: extractIdFromLink(payload._links.stack),
-    state: payload.state,
+    state: payload.state as DeployVpnTunnelState,
     tunnelAttributes: camelizeKeys(payload.tunnel_attributes),
   };
 };
