@@ -1,6 +1,9 @@
 import { selectEnv } from "@app/config";
 import { selectIsAccountOwner } from "@app/deploy";
-import { selectOrganizationSelectedId } from "@app/organizations";
+import {
+  selectHasBetaFeatures,
+  selectOrganizationSelectedId,
+} from "@app/organizations";
 import { useSelector } from "@app/react";
 import {
   plansUrl,
@@ -30,6 +33,7 @@ export function SettingsSidebar() {
   const url = (slug: string) => `${env.legacyDashboardUrl}${slug}`;
   const orgId = useSelector(selectOrganizationSelectedId);
   const isAccountOwner = useSelector((s) => selectIsAccountOwner(s, { orgId }));
+  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
@@ -75,9 +79,22 @@ export function SettingsSidebar() {
           Roles
         </NavLink>
 
-        <NavLink className={navLink} to={teamGithubIntegrationUrl()}>
-          GitHub Integration
-        </NavLink>
+        {hasBetaFeatures && (
+          <>
+            {isAccountOwner ? (
+              <NavLink className={navLink} to={teamGithubIntegrationUrl()}>
+                GitHub Integration
+              </NavLink>
+            ) : (
+              <span className={navLink({ isActive: false })}>
+                GitHub Integration
+                <Tooltip text="Must be account owner" fluid>
+                  <IconLock variant="sm" className="ml-1 opacity-60" />
+                </Tooltip>
+              </span>
+            )}
+          </>
+        )}
 
         {isAccountOwner ? (
           <NavLink className={navLink} to={teamSsoUrl()}>
