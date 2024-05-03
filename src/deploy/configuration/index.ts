@@ -2,6 +2,7 @@ import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
+import { testSecret } from "@app/secrets";
 import { TextVal } from "@app/string-utils";
 import {
   DeployApp,
@@ -119,7 +120,11 @@ export interface DatabaseDependency extends DependencyNode {
 
 export type Dependency = AppDependency | DatabaseDependency;
 
-function findDeps(
+// Find App and Database dependencies by scanning the configuration for
+// known domains used by Databases and Endpoints. Remember to exercise caution
+// when using secret values (e.g. DNS resolution will send data to a remote
+// server).
+function findDependencies(
   config: DeployAppConfig,
   apps: Record<IdProp, DeployApp>,
   dbs: Record<IdProp, DeployDatabase>,
@@ -131,18 +136,24 @@ function findDeps(
   Object.entries(config.env).forEach(([key, value]) => {
     if (value == null) return;
 
-    const domainMatch = /([a-zA-Z0-6_-]{1,64}\.)+[a-zA-Z]{1,16}/.exec(value);
+    // Ignore values that do not appear to contain a domain
+    const domainMatch = /([a-zA-Z0-9_-]{1,64}\.)+[a-zA-Z]{1,16}/.exec(value);
     if (domainMatch == null) return;
     const domain = domainMatch[0];
 
-    const dbMatch = /db-[a-zA-Z0-6_-]+-([0-9]+)\./.exec(domain);
+    // If the domain looks like a secret, don't bother checking it
+    if (testSecret(`${key}=${domain}`)) return;
+
+    // If it looks like one of our database domains (db-<stack>-<id>.), extract
+    // the ID and look for the database
+    const dbMatch = /db-[a-zA-Z0-9_-]+-([0-9]+)\./.exec(domain);
     if (dbMatch && dbMatch.length > 1) {
       const db = findDatabaseById(dbs, { id: dbMatch[1] });
 
       if (db) {
         deps.push({
           why: key,
-          refId: dbMatch[1],
+          refId: db.id,
           name: db.handle,
           type: "database",
           resource: db,
@@ -151,13 +162,17 @@ function findDeps(
       }
     }
 
+    // There was no matching database, so look for a matching vhost.
+    // They could be using a custom domain that matches the endpoint's
+    // virtualDomain or they could be using the externalHost that we create.
     const endpoint = endpoints.find(
       (e) => domain === e.virtualDomain || domain === e.externalHost,
     );
     if (endpoint == null) return;
     const service = findServiceById(services, { id: endpoint.serviceId });
 
-    if (service.appId != null) {
+    // The matching endpoint could belong to an App or Database service
+    if (service.appId) {
       const app = findAppById(apps, { id: service.appId });
 
       deps.push({
@@ -167,7 +182,7 @@ function findDeps(
         type: "app",
         resource: app,
       });
-    } else if (service.databaseId != null) {
+    } else if (service.databaseId) {
       const db = findDatabaseById(dbs, { id: service.databaseId });
 
       deps.push({
@@ -193,7 +208,7 @@ export const selectDependencies = createSelector(
   selectDatabases,
   selectServices,
   selectEndpointsAsList,
-  findDeps,
+  findDependencies,
 );
 
 export const selectDependenciesByType = createSelector(
