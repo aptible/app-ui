@@ -2,7 +2,8 @@ import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
-import { DeployVpnTunnel, LinkResponse } from "@app/types";
+import { snakeToCamelCase } from "@app/string-utils";
+import { DeployVpnTunnel, DeployVpnTunnelState, LinkResponse } from "@app/types";
 
 export interface DeployVpnTunnelResponse {
   id: number;
@@ -18,6 +19,8 @@ export interface DeployVpnTunnelResponse {
   our_networks: string[];
   peer_gateway: string;
   peer_networks: string[];
+  state: string;
+  tunnel_attributes: DeployVpnTunnelAttributes;
   created_at: string;
   updated_at: string;
   _links: {
@@ -44,6 +47,8 @@ export const defaultVpnTunnelResponse = (
     our_networks: [],
     peer_gateway: "",
     peer_networks: [],
+    state: "unknown",
+    tunnel_attributes: {} as DeployVpnTunnelAttributes,
     created_at: now,
     updated_at: now,
     _links: { stack: { href: "" } },
@@ -72,7 +77,22 @@ export const deserializeDeployVpnTunnel = (
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
     stackId: extractIdFromLink(payload._links.stack),
+    state: payload.state,
+    tunnelAttributes: camelizeKeys(payload.tunnel_attributes),
   };
+};
+
+const camelizeKeys: any = (obj: any) => {
+  if (obj != null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => ({
+        ...result, 
+        [snakeToCamelCase(key)]: camelizeKeys(obj[key]),
+      }),
+      {},
+    );
+  }
+  return obj;
 };
 
 export const selectVpnTunnelById = schema.vpnTunnels.selectById;

@@ -54,6 +54,8 @@ export const StackDetailVpnTunnelsPage = () => {
             {vpnTunnel.handle}
           </h1>
 
+          <p className="flex text-gray-500 text-base my-4">Status: {vpnTunnel.state}</p>
+
           <p className="flex text-gray-500 text-base my-4">Gateways</p>
 
           <Table>
@@ -143,6 +145,26 @@ export const StackDetailVpnTunnelsPage = () => {
                 <Tr key={peerNetwork}>
                   <Td>{peerNetwork?.[0] || "N/A"}</Td>
                   <Td>{peerNetwork?.[1] || "N/A"}</Td>
+                </Tr>
+              ))}
+            </TBody>
+          </Table>
+
+          <p className="flex text-gray-500 text-base my-4">Connection Status</p>
+
+          <Table>
+            <THead>
+              <Th>Deploy Network</Th>
+              <Th>Peer Network</Th>
+              <Th>Status</Th>
+            </THead>
+
+            <TBody>
+              {Object.values(vpnTunnel.tunnelAttributes.connections).map((connection) => (
+                <Tr key={connection.name}>
+                  <Td>{connection.localAddress}</Td>
+                  <Td>{connection.remoteAddress}</Td>
+                  <Td>{connection.state}</Td>
                 </Tr>
               ))}
             </TBody>
