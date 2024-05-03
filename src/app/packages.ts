@@ -1,4 +1,11 @@
-import { api, authApi, billingApi, metricTunnelApi, thunks } from "@app/api";
+import {
+  api,
+  authApi,
+  billingApi,
+  metricTunnelApi,
+  portalApi,
+  thunks,
+} from "@app/api";
 import * as auth from "@app/auth";
 import * as billing from "@app/billing";
 import * as bootup from "@app/bootup";
@@ -58,6 +65,7 @@ const initialSagas: { [key: string]: Callable<any> } = {
   api: api.bootup,
   authApi: authApi.bootup,
   metricTunnelApi: metricTunnelApi.bootup,
+  portalApi: portalApi.bootup,
   thunks: thunks.bootup,
   billingApi: billingApi.bootup,
 };
