@@ -30,6 +30,7 @@ import {
   DeployVpcPeer,
   DeployVpnTunnel,
   Deployment,
+  GithubIntegration,
   Invitation,
   Membership,
   ModalType,
@@ -839,6 +840,25 @@ export const defaultDeploySource = (
     id: "",
     displayName: "Unknown",
     url: "",
+    createdAt: now,
+    updatedAt: now,
+    ...s,
+  };
+};
+
+export const defaultGithubIntegration = (
+  s: Partial<GithubIntegration> = {},
+): GithubIntegration => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    organizationId: "",
+    installationId: "",
+    accountName: "",
+    avatarUrl: "",
+    installed: true,
+    active: true,
+    installationUrl: "",
     createdAt: now,
     updatedAt: now,
     ...s,

@@ -85,3 +85,16 @@ export interface Deployment {
   imageId: string;
   sourceId: string;
 }
+
+export interface GithubIntegration {
+  id: string;
+  organizationId: string;
+  installationId: string;
+  accountName: string;
+  avatarUrl: string;
+  installationUrl: string;
+  installed: boolean;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
