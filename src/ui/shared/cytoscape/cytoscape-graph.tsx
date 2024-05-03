@@ -36,7 +36,7 @@ const defaultStyle: cytoscape.Stylesheet[] = [
     selector: "edge",
     style: {
       label: "data(label)",
-      "font-size": 8,
+      "font-size": 6,
       width: 3,
       "line-color": "#999",
       "line-opacity": 0.4,
