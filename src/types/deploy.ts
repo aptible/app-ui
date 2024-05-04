@@ -499,16 +499,12 @@ export interface DeployVpnTunnel extends Timestamps {
   tunnelAttributes: DeployVpnTunnelAttributes;
 }
 
-export type DeployVpnTunnelState = 
-| "up"
-| "down" 
-| "partial"
-| "unknown";
+export type DeployVpnTunnelState = "up" | "down" | "partial" | "unknown";
 
 export interface DeployVpnTunnelAttributes {
-  connections : {[key: string] : DeployVpnTunnelConnection};
-  routedConnections: {[key: string] : DeployVpnTunnelRoutedConnection};
-  securityAssociations: {[key: string] : DeployVpnTunnelSecurityAssociation};
+  connections: { [key: string]: DeployVpnTunnelConnection };
+  routedConnections: { [key: string]: DeployVpnTunnelRoutedConnection };
+  securityAssociations: { [key: string]: DeployVpnTunnelSecurityAssociation };
 }
 
 export interface DeployVpnTunnelConnection {

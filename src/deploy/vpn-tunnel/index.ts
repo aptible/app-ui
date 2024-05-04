@@ -3,7 +3,11 @@ import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
 import { snakeToCamelCase } from "@app/string-utils";
-import { DeployVpnTunnel, DeployVpnTunnelState, LinkResponse } from "@app/types";
+import {
+  DeployVpnTunnel,
+  DeployVpnTunnelState,
+  LinkResponse,
+} from "@app/types";
 
 export interface DeployVpnTunnelResponse {
   id: number;
@@ -20,7 +24,7 @@ export interface DeployVpnTunnelResponse {
   peer_gateway: string;
   peer_networks: string[];
   state: string;
-  tunnel_attributes: {[key: string]: any};
+  tunnel_attributes: { [key: string]: any };
   created_at: string;
   updated_at: string;
   _links: {
@@ -48,7 +52,11 @@ export const defaultVpnTunnelResponse = (
     peer_gateway: "",
     peer_networks: [],
     state: "unknown",
-    tunnel_attributes: {connections: {}, routedConnections: {}, securityAssociations: {}},
+    tunnel_attributes: {
+      connections: {},
+      routedConnections: {},
+      securityAssociations: {},
+    },
     created_at: now,
     updated_at: now,
     _links: { stack: { href: "" } },
@@ -86,7 +94,7 @@ const camelizeKeys: any = (obj: any) => {
   if (obj != null && obj.constructor === Object) {
     return Object.keys(obj).reduce(
       (result, key) => ({
-        ...result, 
+        ...result,
         [snakeToCamelCase(key)]: camelizeKeys(obj[key]),
       }),
       {},
