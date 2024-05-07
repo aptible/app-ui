@@ -2,7 +2,7 @@ import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
-import { snakeToCamelCase } from "@app/string-utils";
+import { camelizeKeys } from "@app/string-utils";
 import {
   DeployVpnTunnel,
   DeployVpnTunnelState,
@@ -88,19 +88,6 @@ export const deserializeDeployVpnTunnel = (
     state: payload.state as DeployVpnTunnelState,
     tunnelAttributes: camelizeKeys(payload.tunnel_attributes),
   };
-};
-
-const camelizeKeys: any = (obj: any) => {
-  if (obj != null && obj.constructor === Object) {
-    return Object.keys(obj).reduce(
-      (result, key) => ({
-        ...result,
-        [snakeToCamelCase(key)]: camelizeKeys(obj[key]),
-      }),
-      {},
-    );
-  }
-  return obj;
 };
 
 export const selectVpnTunnelById = schema.vpnTunnels.selectById;
