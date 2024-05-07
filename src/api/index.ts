@@ -339,7 +339,6 @@ portalApi.use(mdw.api({ schema }));
 portalApi.use(aborter);
 portalApi.use(portalApi.routes());
 portalApi.use(requestPortal);
-portalApi.use(aborter);
 portalApi.use(tokenMdw);
 portalApi.use(mdw.fetch());
 
