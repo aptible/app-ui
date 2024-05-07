@@ -1,6 +1,7 @@
-import { cacheMinTimer, portalApi } from "@app/api";
+import { portalApi } from "@app/api";
 import { schema } from "@app/schema";
 import { GithubIntegration } from "@app/types";
+import { takeLeading } from "starfx";
 
 export const fetchGithubIntegrations = portalApi.get<
   never,
@@ -8,7 +9,7 @@ export const fetchGithubIntegrations = portalApi.get<
 >(
   "/github_integrations",
   {
-    supervisor: cacheMinTimer(),
+    supervisor: takeLeading,
   },
   function* (ctx, next) {
     yield* next();
@@ -34,7 +35,7 @@ export const fetchGithubIntegrations = portalApi.get<
 
 export const createGithubIntegration = portalApi.post<{
   installationId: string;
-}>("/github_integrations", function* (ctx, next) {
+}>("/github_integrations", { supervisor: takeLeading }, function* (ctx, next) {
   ctx.request = ctx.req({
     body: JSON.stringify({
       installation_id: ctx.payload.installationId,
