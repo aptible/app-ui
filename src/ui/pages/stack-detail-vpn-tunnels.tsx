@@ -50,13 +50,13 @@ export const StackDetailVpnTunnelsPage = () => {
 
       {vpnTunnels.map((vpnTunnel) => (
         <Box key={vpnTunnel.id} className="mt-4">
-          <h1 className={classNames(tokens.type.h4, "block")}>
+          <h1 className={classNames(tokens.type.h4, "flex justify-between block")}>
             {vpnTunnel.handle}
+            <p className="text-gray-500 text-sm mt-1">
+              Status: {vpnTunnel.state}
+            </p>
           </h1>
 
-          <p className="flex text-gray-500 text-base my-4">
-            Status: {vpnTunnel.state}
-          </p>
 
           <p className="flex text-gray-500 text-base my-4">Gateways</p>
 
