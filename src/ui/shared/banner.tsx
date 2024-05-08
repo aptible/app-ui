@@ -66,15 +66,25 @@ export const Banner = ({
 export const BannerMessagesBasic = ({
   isSuccess,
   isError,
+  isLoading,
   message,
   className,
 }: {
   isSuccess: boolean;
   isError: boolean;
+  isLoading: boolean;
   message: string;
   className?: string;
 }) => {
   if (!message) return null;
+
+  if (isLoading) {
+    return (
+      <div className={`flex items-center text-indigo ${className}`}>
+        {message}
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (

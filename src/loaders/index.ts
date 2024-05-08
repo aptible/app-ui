@@ -1,3 +1,4 @@
+import { thunks } from "@app/api";
 import { schema } from "@app/schema";
 import {
   LoaderState,
@@ -5,6 +6,14 @@ import {
   createSelector,
   defaultLoader,
 } from "starfx";
+
+export const resetLoaderByIds = thunks.create<{ ids: string[] }>(
+  "reset-loader-by-ids",
+  function* (ctx, next) {
+    yield* next();
+    yield* schema.update(schema.loaders.resetByIds(ctx.payload.ids));
+  },
+);
 
 export const selectIsAnyLoading = createSelector(
   schema.loaders.selectTableAsList,

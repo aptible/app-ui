@@ -1,6 +1,7 @@
 import { fetchMembershipsByRole } from "@app/auth";
 import {
   deriveEnvPermInheritance,
+  getUpdatePermId,
   hasExplicitPerm,
   hasInheritedPerm,
   isPhiAllowed,
@@ -10,14 +11,16 @@ import {
   selectPermsByEnvAndRoleId,
   updatePerm,
 } from "@app/deploy";
+import { resetLoaderByIds } from "@app/loaders";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { useDispatch, useLoader, useSelector } from "@app/react";
+import { useDispatch, useSelector } from "@app/react";
 import { useQuery } from "@app/react";
 import { getIsOwnerRole, selectRoleById } from "@app/roles";
 import { environmentDetailUrl } from "@app/routes";
+import { schema } from "@app/schema";
 import { DeployEnvironment, Permission } from "@app/types";
 import { selectCurrentUserId } from "@app/users";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 import { RoleDetailLayout } from "../layouts";
@@ -88,7 +91,9 @@ function EnvEditorRow({
   const canManage = useSelector((s) =>
     selectCanUserManageRole(s, { roleId, userId, orgId }),
   );
-  const updateLoader = useLoader(updatePerm);
+  const updateLoader = useSelector((s) =>
+    schema.loaders.selectById(s, { id: getUpdatePermId(roleId) }),
+  );
   const envPerms = useSelector((s) =>
     selectPermsByEnvAndRoleId(s, { envId: env.id, roleId }),
   );
@@ -120,7 +125,7 @@ function EnvEditorRow({
           }),
         );
       } else {
-        dispatch(updatePerm({ type: "rm", payload: { id: perm.id } }));
+        dispatch(updatePerm({ type: "rm", payload: { id: perm.id, roleId } }));
       }
     };
   };
@@ -305,6 +310,7 @@ function EnvironmentTableEditor({
 
 export function RoleDetailEnvironmentsPage() {
   const { id = "" } = useParams();
+  const dispatch = useDispatch();
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -322,8 +328,15 @@ export function RoleDetailEnvironmentsPage() {
       return handleMatch || idMatch;
     })
     .sort((a, b) => a.handle.localeCompare(b.handle));
-  const updateLoader = useLoader(updatePerm);
+  const loaderId = getUpdatePermId(id);
+  const updateLoader = useSelector((s) =>
+    schema.loaders.selectById(s, { id: loaderId }),
+  );
   const role = useSelector((s) => selectRoleById(s, { id }));
+
+  useEffect(() => {
+    dispatch(resetLoaderByIds({ ids: [loaderId] }));
+  }, []);
 
   const isOwnerRole = getIsOwnerRole(role);
   if (isOwnerRole) {
@@ -343,7 +356,14 @@ export function RoleDetailEnvironmentsPage() {
             search={search}
             onChange={onChange}
           />
-          <BannerMessagesBasic {...updateLoader} />
+          <BannerMessagesBasic
+            {...updateLoader}
+            message={
+              updateLoader.isLoading
+                ? "Updating permissions ..."
+                : updateLoader.message
+            }
+          />
         </Group>
         <EnvironmentTableEditor roleId={id} envs={envs} />
       </Group>

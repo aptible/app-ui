@@ -230,6 +230,7 @@ interface AddPermProps {
 }
 
 interface RmPermProps {
+  roleId: string;
   id: string;
 }
 
@@ -237,11 +238,13 @@ export type UpdatePermProps =
   | { type: "add"; payload: AddPermProps }
   | { type: "rm"; payload: RmPermProps };
 
+export const getUpdatePermId = (envId: string) => `update-perms-${envId}`;
+
 export const updatePerm = thunks.create<UpdatePermProps>(
   "update-perms",
   function* (ctx, next) {
     const { type, payload } = ctx.payload;
-    const id = ctx.name;
+    const id = getUpdatePermId(payload.roleId);
     yield* schema.update(schema.loaders.start({ id }));
 
     if (type === "add") {

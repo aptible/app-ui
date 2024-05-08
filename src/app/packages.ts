@@ -8,6 +8,7 @@ import * as deployments from "@app/deployment";
 import * as feedback from "@app/feedback";
 import * as hal from "@app/hal";
 import * as invitations from "@app/invitations";
+import * as loaders from "@app/loaders";
 import * as metrics from "@app/metric-tunnel";
 import * as mfa from "@app/mfa";
 import * as nav from "@app/nav";
@@ -45,6 +46,7 @@ const corePackages: any[] = [
   billing,
   deployments,
   source,
+  loaders,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {
