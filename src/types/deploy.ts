@@ -496,6 +496,7 @@ export interface DeployVpnTunnel extends Timestamps {
   stackId: string;
   updatedAt: string;
   state: DeployVpnTunnelState;
+  auto: string;
   tunnelAttributes: DeployVpnTunnelAttributes;
 }
 

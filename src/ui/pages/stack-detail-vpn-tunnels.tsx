@@ -10,11 +10,13 @@ import {
   Box,
   Button,
   ButtonLinkDocs,
+  IconInfo,
   TBody,
   THead,
   Table,
   Td,
   Th,
+  Tooltip,
   Tr,
   tokens,
 } from "../shared";
@@ -54,9 +56,21 @@ export const StackDetailVpnTunnelsPage = () => {
             className={classNames(tokens.type.h4, "flex justify-between block")}
           >
             {vpnTunnel.handle}
-            <p className="text-gray-500 text-sm mt-1">
-              Status: {vpnTunnel.state}
-            </p>
+            {vpnTunnel.auto === "route" ? (
+              <Tooltip text="This tunnel is set to `routing` mode. In this mode, connections come up and down depending on traffic. Please check individual connections below.">
+                <IconInfo
+                  className="inline-block mb-1 mr-1 opacity-50 hover:opacity-100"
+                  variant="sm"
+                />
+                <span className="text-base mt-1 text-gray-500">
+                  Status: {vpnTunnel.state}
+                </span>
+              </Tooltip>
+            ) : (
+              <span className="text-base mt-1 text-gray-500">
+                Status: {vpnTunnel.state}
+              </span>
+            )}
           </h1>
 
           <p className="flex text-gray-500 text-base my-4">Gateways</p>
