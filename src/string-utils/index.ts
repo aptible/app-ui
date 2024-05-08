@@ -48,19 +48,6 @@ export const camelToSnakeCase = (str: string) =>
 export const snakeToCamelCase = (str: string) =>
   str.replace(/_(\w)/g, (_substr, letter) => letter.toUpperCase());
 
-export const camelizeKeys: any = (obj: any) => {
-  if (obj != null && obj.constructor === Object) {
-    return Object.keys(obj).reduce(
-      (result, key) => ({
-        ...result,
-        [snakeToCamelCase(key)]: camelizeKeys(obj[key]),
-      }),
-      {},
-    );
-  }
-  return obj;
-};
-
 export interface TextVal<
   M extends { [key: string]: unknown } = {
     [key: string]: unknown;

@@ -163,11 +163,11 @@ export const StackDetailVpnTunnelsPage = () => {
             </THead>
 
             <TBody>
-              {Object.values(vpnTunnel.tunnelAttributes.connections).map(
+              {Object.values(vpnTunnel.tunnelAttributes.connections || {}).map(
                 (connection) => (
                   <Tr key={connection.name}>
-                    <Td>{connection.localAddress}</Td>
-                    <Td>{connection.remoteAddress}</Td>
+                    <Td>{connection.local_address}</Td>
+                    <Td>{connection.remote_address}</Td>
                     <Td>{connection.state}</Td>
                   </Tr>
                 ),

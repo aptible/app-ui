@@ -577,8 +577,8 @@ export const defaultDeployVpnTunnel = (
     state: "unknown",
     tunnelAttributes: {
       connections: {},
-      routedConnections: {},
-      securityAssociations: {},
+      routed_connections: {},
+      security_associations: {},
     },
     createdAt: now,
     updatedAt: now,

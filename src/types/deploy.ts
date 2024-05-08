@@ -502,32 +502,32 @@ export interface DeployVpnTunnel extends Timestamps {
 export type DeployVpnTunnelState = "up" | "down" | "partial" | "unknown";
 
 export interface DeployVpnTunnelAttributes {
-  connections: { [key: string]: DeployVpnTunnelConnection };
-  routedConnections: { [key: string]: DeployVpnTunnelRoutedConnection };
-  securityAssociations: { [key: string]: DeployVpnTunnelSecurityAssociation };
-}
-
-export interface DeployVpnTunnelConnection {
-  name: string;
-  localAddress: string;
-  remoteAddress: string;
-  state: DeployVpnTunnelState;
-}
-
-export interface DeployVpnTunnelRoutedConnection {
-  name: string;
-  localAddress: string;
-  remoteAddress: string;
-  reqId: string;
-}
-
-export interface DeployVpnTunnelSecurityAssociation {
-  id: string;
-  local: string;
-  remote: string;
-  status: string;
-  statusTime: string;
-  linkedRoutes: string[];
+  connections: {
+    [key: string]: {
+      name: string;
+      local_address: string;
+      remote_address: string;
+      state: string;
+    };
+  } | null;
+  routed_connections: {
+    [key: string]: {
+      name: string;
+      local_address: string;
+      remote_address: string;
+      req_id: string;
+    };
+  } | null;
+  security_associations: {
+    [key: string]: {
+      id: string;
+      local: string;
+      remote: string;
+      status: string;
+      status_time: string;
+      linked_routes: string[];
+    };
+  } | null;
 }
 
 export interface DeployBackup {

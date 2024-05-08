@@ -2,9 +2,9 @@ import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
-import { camelizeKeys } from "@app/string-utils";
 import {
   DeployVpnTunnel,
+  DeployVpnTunnelAttributes,
   DeployVpnTunnelState,
   LinkResponse,
 } from "@app/types";
@@ -24,7 +24,7 @@ export interface DeployVpnTunnelResponse {
   peer_gateway: string;
   peer_networks: string[];
   state: string;
-  tunnel_attributes: { [key: string]: any };
+  tunnel_attributes?: DeployVpnTunnelAttributes;
   created_at: string;
   updated_at: string;
   _links: {
@@ -54,8 +54,8 @@ export const defaultVpnTunnelResponse = (
     state: "unknown",
     tunnel_attributes: {
       connections: {},
-      routedConnections: {},
-      securityAssociations: {},
+      routed_connections: {},
+      security_associations: {},
     },
     created_at: now,
     updated_at: now,
@@ -65,7 +65,20 @@ export const defaultVpnTunnelResponse = (
   };
 };
 
-export const deserializeDeployVpnTunnel = (
+const deserializeVpnTunnelAttributes = (
+  tun: DeployVpnTunnelResponse["tunnel_attributes"],
+): DeployVpnTunnelAttributes => {
+  if (!tun) {
+    return {
+      connections: {},
+      routed_connections: {},
+      security_associations: {},
+    };
+  }
+  return tun;
+};
+
+const deserializeDeployVpnTunnel = (
   payload: DeployVpnTunnelResponse,
 ): DeployVpnTunnel => {
   return {
@@ -86,7 +99,7 @@ export const deserializeDeployVpnTunnel = (
     updatedAt: payload.updated_at,
     stackId: extractIdFromLink(payload._links.stack),
     state: payload.state as DeployVpnTunnelState,
-    tunnelAttributes: camelizeKeys(payload.tunnel_attributes),
+    tunnelAttributes: deserializeVpnTunnelAttributes(payload.tunnel_attributes),
   };
 };
 
