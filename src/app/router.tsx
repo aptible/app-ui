@@ -903,7 +903,7 @@ export const appRoutes: RouteObject[] = [
     path: routes.ROLE_DETAIL_PATH,
     element: (
       <AuthRequired>
-        <SettingsLayout />
+        <AppSidebarLayout />
       </AuthRequired>
     ),
     children: [

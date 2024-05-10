@@ -1,6 +1,7 @@
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
   color?: string;
   variant?: "base" | "sm" | "lg";
+  title?: string;
 }
 
 const IconStrokeBase = ({
@@ -146,7 +147,7 @@ export const IconCheck = (props: IconProps) => {
 
 export const IconCheckCircle = (props: IconProps) => {
   return (
-    <IconStrokeBase {...props} title="Check">
+    <IconStrokeBase title="Check" {...props}>
       <path
         d="M8.17316 13L11.1667 15.8268L15.2612 8.5M22 12C22 13.3132 21.7413 14.6136 21.2388 15.8268C20.7362 17.0401 19.9996 18.1425 19.0711 19.0711C18.1425 19.9997 17.0401 20.7362 15.8268 21.2388C14.6136 21.7413 13.3132 22 12 22C10.6868 22 9.38642 21.7413 8.17316 21.2388C6.95991 20.7362 5.85751 19.9997 4.92893 19.0711C4.00034 18.1425 3.26375 17.0401 2.7612 15.8268C2.25865 14.6136 2 13.3132 2 12C2 9.34784 3.05356 6.8043 4.92893 4.92893C6.80429 3.05357 9.34783 2 12 2C14.6522 2 17.1957 3.05357 19.0711 4.92893C20.9464 6.8043 22 9.34784 22 12Z"
         strokeLinecap="round"
@@ -158,7 +159,7 @@ export const IconCheckCircle = (props: IconProps) => {
 
 export const IconPlusCircle = (props: IconProps) => {
   return (
-    <IconStrokeBase {...props} title="New">
+    <IconStrokeBase title="New" {...props}>
       <circle cx="12" cy="12" r="10" />
       <line x1="12" y1="8" x2="12" y2="16" />
       <line x1="8" y1="12" x2="16" y2="12" />
@@ -168,7 +169,7 @@ export const IconPlusCircle = (props: IconProps) => {
 
 export const IconX = (props: IconProps) => {
   return (
-    <IconStrokeBase {...props} title="Remove">
+    <IconStrokeBase title="Remove" {...props}>
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
     </IconStrokeBase>
@@ -177,7 +178,7 @@ export const IconX = (props: IconProps) => {
 
 export const IconXCircle = (props: IconProps) => {
   return (
-    <IconStrokeBase {...props} title="Remove">
+    <IconStrokeBase title="Remove" {...props}>
       <circle cx="12" cy="12" r="10" />
       <line x1="15" y1="9" x2="9" y2="15" />
       <line x1="9" y1="9" x2="15" y2="15" />

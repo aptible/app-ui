@@ -323,15 +323,10 @@ describe("Role Detail - Environments", () => {
 
     await screen.findByText(`${testAccount.handle}`);
 
-    const checkDeploy = await screen.findByLabelText(/Deploy/);
-    const checkBasic = await screen.findByLabelText(/Basic Visibility/);
-    const checkAdmin = await screen.findByLabelText(/Environment Admin/);
-    const checkDestroy = await screen.findByLabelText(/Destroy/);
-
-    expect(checkDeploy).toBeChecked();
-    expect(checkBasic).toBeChecked();
-    expect(checkAdmin).not.toBeChecked();
-    expect(checkDestroy).not.toBeChecked();
+    expect(screen.queryByTitle(/Deployment Check/)).toBeInTheDocument();
+    expect(screen.queryByTitle(/Basic Visibility Check/)).toBeInTheDocument();
+    expect(screen.queryByTitle(/Environment Admin Denied/)).toBeInTheDocument();
+    expect(screen.queryByTitle(/Destroy Denied/)).toBeInTheDocument();
   });
 
   describe("As an Organization owner", () => {
@@ -350,6 +345,11 @@ describe("Role Detail - Environments", () => {
       render(<App />);
 
       await screen.findByText(`${testAccount.handle}`);
+
+      const btns = await screen.findAllByRole("button", { name: /Edit/ });
+      const btn = btns[0];
+      expect(btn).toBeEnabled();
+      fireEvent.click(btn);
 
       const checkAdmin = await screen.findByLabelText(/Environment Admin/);
       expect(checkAdmin).not.toBeChecked();
@@ -390,6 +390,11 @@ describe("Role Detail - Environments", () => {
 
       await screen.findByText(`${testAccount.handle}`);
 
+      const btns = await screen.findAllByRole("button", { name: /Edit/ });
+      const btn = btns[0];
+      expect(btn).toBeEnabled();
+      fireEvent.click(btn);
+
       const checkAdmin = await screen.findByLabelText(/Environment Admin/);
       expect(checkAdmin).not.toBeChecked();
       fireEvent.click(checkAdmin);
@@ -401,7 +406,7 @@ describe("Role Detail - Environments", () => {
   });
 
   describe("As a non-admin Org user", () => {
-    it("should *not* let me change roles", async () => {
+    it("should *not* let me change permissions", async () => {
       server.use(
         ...verifiedUserHandlers({ role: testRole }),
         ...stacksWithResources({ accounts: [testAccount] }),
@@ -417,9 +422,9 @@ describe("Role Detail - Environments", () => {
 
       await screen.findByText(`${testAccount.handle}`);
 
-      const checkAdmin = await screen.findByLabelText(/Environment Admin/);
-      expect(checkAdmin).not.toBeChecked();
-      expect(checkAdmin).toBeDisabled();
+      const btns = await screen.findAllByRole("button", { name: /Edit/ });
+      const btn = btns[0];
+      expect(btn).toBeDisabled();
     });
   });
 });

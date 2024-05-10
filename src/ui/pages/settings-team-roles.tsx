@@ -1,6 +1,7 @@
 import { fetchMembershipsByOrgId, selectRoleToUsersMap } from "@app/auth";
 import { prettyDate } from "@app/date";
 import {
+  deriveEnvPermInheritance,
   selectEnvironmentById,
   selectEnvironments,
   selectEnvironmentsByOrgAsList,
@@ -440,49 +441,33 @@ function RoleEnvRow({
   envPerms,
 }: { envId: string; envPerms: Permission[] }) {
   const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
-  const perms = envPerms.reduce(
-    (acc, perm) => {
-      acc[perm.scope] = true;
-      return acc;
-    },
-    {
-      admin: false,
-      read: false,
-      basic_read: false,
-      deploy: false,
-      destroy: false,
-      observability: false,
-      sensitive: false,
-      tunnel: false,
-      unknown: false,
-    } as Record<PermissionScope, boolean>,
-  );
+  const perms = deriveEnvPermInheritance(envPerms);
   return (
     <Tr>
       <Td>{env.handle}</Td>
       <Td variant="center">
-        <PermCheck checked={perms.admin} />
+        <PermCheck perm={perms.admin} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.read} />
+        <PermCheck perm={perms.read} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.basic_read} />
+        <PermCheck perm={perms.basic_read} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.deploy} />
+        <PermCheck perm={perms.deploy} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.destroy} />
+        <PermCheck perm={perms.destroy} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.observability} />
+        <PermCheck perm={perms.observability} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.sensitive} />
+        <PermCheck perm={perms.sensitive} />
       </Td>
       <Td variant="center">
-        <PermCheck checked={perms.tunnel} />
+        <PermCheck perm={perms.tunnel} />
       </Td>
     </Tr>
   );
