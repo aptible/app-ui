@@ -289,7 +289,7 @@ export const fetchContainersByServiceId = thunks.create<{ serviceId: string }>(
     }
     const releases = yield* select((s: WebState) =>
       selectReleasesByServiceAfterDate(s, {
-        serviceId,
+        id: serviceId,
         date: dateFromToday(-7).toISOString(),
       }),
     );
@@ -327,7 +327,7 @@ export const fetchMetricByServiceId = thunks.create<{
   // we do not have to refetch this if the component state changes as this is fairly expensive
   const releases = yield* select((s: WebState) =>
     selectReleasesByServiceAfterDate(s, {
-      serviceId,
+      id: serviceId,
       date: dateFromToday(-7).toISOString(),
     }),
   );

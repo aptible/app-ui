@@ -54,7 +54,7 @@ describe("selectReleasesByServiceAfterDate", () => {
       const actual = selectReleasesByServiceAfterDate(
         { ...state, releases } as any,
         {
-          serviceId: testServiceRails.id.toString(),
+          id: testServiceRails.id.toString(),
           date,
         },
       );
@@ -65,7 +65,7 @@ describe("selectReleasesByServiceAfterDate", () => {
       const actual = selectReleasesByServiceAfterDate(
         { ...state, releases } as any,
         {
-          serviceId: testServiceRails.id.toString(),
+          id: testServiceRails.id.toString(),
           date,
         },
       );
@@ -76,7 +76,7 @@ describe("selectReleasesByServiceAfterDate", () => {
       const actual = selectReleasesByServiceAfterDate(
         { ...state, releases } as any,
         {
-          serviceId: testServiceRails.id.toString(),
+          id: testServiceRails.id.toString(),
           date,
         },
       );
@@ -87,7 +87,7 @@ describe("selectReleasesByServiceAfterDate", () => {
       const actual = selectReleasesByServiceAfterDate(
         { ...state, releases } as any,
         {
-          serviceId: testServiceRails.id.toString(),
+          id: testServiceRails.id.toString(),
           date,
         },
       );

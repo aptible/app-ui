@@ -3,6 +3,7 @@ import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { WebState, schema } from "@app/schema";
 import { DeployRelease, LinkResponse } from "@app/types";
+import { selectServiceById } from "../service";
 
 export interface DeployReleaseResponse {
   id: number;
@@ -69,24 +70,22 @@ export const selectReleasesByService = createSelector(
 
 export const selectReleasesByServiceAfterDate = createSelector(
   selectReleaseAsList,
+  selectServiceById,
   (_: WebState, p: { date: string }) => p.date,
-  (_: WebState, p: { serviceId: string }) => p.serviceId,
-  (releases, date, serviceId) => {
-    const filteredReleases = releases
-      .filter((release) => release.serviceId === serviceId)
-      .sort((a, b) => {
-        // sort the releases, so we can get all of them + 1 in reverse and break early
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      });
+  (_: WebState, p: { id: string }) => p.id,
+  (releases, service, date, serviceId) => {
+    const filteredReleases = releases.filter(
+      (release) => release.serviceId === serviceId,
+    );
     const result: DeployRelease[] = [];
     for (const release of filteredReleases) {
-      if (release.createdAt > date) {
+      // we always want the current release to be included
+      if (release.id === service.currentReleaseId) {
+        result.push(release);
+      } else if (release.createdAt > date) {
         result.push(release);
       } else if (release.createdAt <= date) {
         result.push(release);
-        break;
       }
     }
     // sort forwards to retain consistency

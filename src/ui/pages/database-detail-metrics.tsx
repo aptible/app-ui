@@ -61,7 +61,7 @@ export function DatabaseMetricsPage() {
   // we do not have to refetch this if the component state changes as this is fairly expensive
   const releases = useSelector((s) =>
     selectReleasesByServiceAfterDate(s, {
-      serviceId,
+      id: serviceId,
       date: dateFromToday(-7).toISOString(),
     }),
   );
