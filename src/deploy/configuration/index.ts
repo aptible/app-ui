@@ -15,9 +15,10 @@ import {
 import { DeployEndpoint } from "@app/types";
 import { parse } from "dotenv";
 import { IdProp } from "starfx";
-import { findServiceById, selectEndpointsAsList, selectServices } from "..";
 import { findAppById, selectAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
+import { selectEndpointsAsList } from "../endpoint";
+import { findServiceById, selectServices } from "../service";
 
 export interface DeployConfigurationResponse {
   id: number;
@@ -132,6 +133,9 @@ function findDependencies(
   endpoints: DeployEndpoint[],
 ): Dependency[] {
   const deps: Dependency[] = [];
+
+  console.log("HELP!")
+  console.log(config)
 
   Object.entries(config.env).forEach(([key, value]) => {
     if (value == null) return;

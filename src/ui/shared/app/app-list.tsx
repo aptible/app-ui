@@ -31,6 +31,7 @@ import { usePaginate } from "@app/ui/hooks";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonCreate, ButtonLink } from "../button";
+import { Code } from "../code";
 import { DockerImage } from "../docker";
 import { GitCommitMessage, GitRef } from "../git";
 import { Group } from "../group";
@@ -48,7 +49,7 @@ import {
 import { EnvStackCell } from "../resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
-import { Code, Tooltip } from "..";
+import { Tooltip } from "../tooltip";
 
 interface AppCellProps {
   app: DeployApp;
