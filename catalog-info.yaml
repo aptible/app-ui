@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: app-ui
   description: Aptible's PaaS automates the work of provisioning, managing, and scaling infrastructure, so you can focus on what matters
+  annotations:
+    github.com/project-slug: aptible/app-ui
   tags:
     - typescript
   links:
@@ -13,5 +15,5 @@ metadata:
 spec:
   type: website
   lifecycle: production
-  owner: aptibl
+  owner: engineers
   system: public-websites
