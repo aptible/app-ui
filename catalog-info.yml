@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: app-ui
+  description: Aptible's PaaS automates the work of provisioning, managing, and scaling infrastructure, so you can focus on what matters
+  tags:
+    - typescript
+  links:
+    - url: https://app.aptible.com
+      title: Aptible App
+      icon: dashboard
+      type: admin-dashboard
+spec:
+  type: website
+  lifecycle: production
+  owner: aptibl
+  system: public-websites
