@@ -370,7 +370,7 @@ export const DatabaseListByEnvironment = ({
   );
 };
 
-export const DatabaseListByDatabases = ({
+export const DatabaseDependencyList = ({
   databases,
 }: {
   databases: DatabaseDependency[];

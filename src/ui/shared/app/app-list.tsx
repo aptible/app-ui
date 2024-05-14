@@ -1,5 +1,6 @@
 import { prettyDateTime } from "@app/date";
 import {
+  AppDependency,
   DeployAppRow,
   calcMetrics,
   calcServiceMetrics,
@@ -47,6 +48,7 @@ import {
 import { EnvStackCell } from "../resource-table";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
+import { Code, Tooltip } from "..";
 
 interface AppCellProps {
   app: DeployApp;
@@ -574,5 +576,46 @@ export const AppListBySource = ({
         </TBody>
       </Table>
     </Group>
+  );
+};
+
+export const AppDependencyList = ({
+  apps,
+}: {
+  apps: AppDependency[];
+}) => {
+  return (
+    <Table>
+      <THead>
+        <Th>Handle</Th>
+        <Th>ID</Th>
+        <Th>Environment</Th>
+        <Th>Container Size</Th>
+        <Th>Est. Monthly Cost</Th>
+        <Th>Reason</Th>
+      </THead>
+
+      <TBody>
+        {apps.length === 0 ? <EmptyTr colSpan={5} /> : null}
+        {apps.map((dep) => {
+          const app = dep.resource;
+
+          return (
+            <Tr key={app.id}>
+              <AppPrimaryCell app={app} />
+              <AppIdCell app={app} />
+              <EnvStackCell environmentId={app.environmentId} />
+              <AppServicesCell app={app} />
+              <AppCostCell app={app} />
+              <Td>
+                <Tooltip placement="left" text={dep.why} fluid>
+                  <Code>{dep.why}</Code>
+                </Tooltip>
+              </Td>
+            </Tr>
+          );
+        })}
+      </TBody>
+    </Table>
   );
 };

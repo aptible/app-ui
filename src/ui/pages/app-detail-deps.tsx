@@ -7,8 +7,9 @@ import {
 import { useQuery, useSelector } from "@app/react";
 import { useParams } from "react-router";
 import {
+  AppDependencyList,
   Banner,
-  DatabaseListByDatabases,
+  DatabaseDependencyList,
   Group,
   PermissionGate,
   tokens,
@@ -31,7 +32,9 @@ export const AppDetailDepsPage = () => {
           configuration data (environment variables).
         </Banner>
         <h3 className={tokens.type.h3}>Databases</h3>
-        <DatabaseListByDatabases databases={depGroups.database} />
+        <DatabaseDependencyList databases={depGroups.database} />
+        <h3 className={tokens.type.h3}>Apps</h3>
+        <AppDependencyList apps={depGroups.app} />
       </Group>
     </PermissionGate>
   );
