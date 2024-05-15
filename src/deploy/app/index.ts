@@ -2,7 +2,6 @@ import { api, cacheMinTimer, thunks } from "@app/api";
 import { call, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { selectOrganizationSelectedId } from "@app/organizations";
 import { WebState, schema } from "@app/schema";
 import { findSourceById, selectSources } from "@app/source";
 import type {
@@ -139,7 +138,6 @@ export const selectFirstAppByEnvId = createSelector(
 export const selectAppsByOrgAsList = createSelector(
   selectAppsAsList,
   selectEnvironmentsByOrg,
-  selectOrganizationSelectedId,
   (apps, envs) => {
     return apps.filter((app) => {
       const env = findEnvById(envs, { id: app.environmentId });

@@ -72,7 +72,7 @@ export const defaultDeployApp = (a: Partial<DeployApp> = {}): DeployApp => {
     createdAt: now,
     updatedAt: now,
     deploymentMethod: "",
-    status: "pending",
+    status: "unknown",
     environmentId: "",
     currentConfigurationId: "",
     currentDeploymentId: "",
