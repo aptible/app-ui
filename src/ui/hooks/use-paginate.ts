@@ -28,15 +28,18 @@ const usePaginateFilters = (rowsPerPage = ITEMS_PER_PAGE) => {
     if (newPage === 0) {
       return;
     }
-    setParams({ page: newPage.toString() }, { replace: true });
+    params.set("page", newPage.toString());
+    setParams(params, { replace: true });
   };
 
   const resetPageParam = () => {
-    setParams({ page: "1" }, { replace: true });
+    params.set("page", "1");
+    setParams(params, { replace: true });
   };
 
   const setItemsPerPage = (items: number) => {
-    setParams({ rows: items.toString() }, { replace: true });
+    params.set("rows", items.toString());
+    setParams(params, { replace: true });
   };
 
   return {
