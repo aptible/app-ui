@@ -17,3 +17,7 @@ spec:
   lifecycle: production
   owner: engineers
   system: public-websites
+  consumesApis:
+    - deploy-api
+    - auth-api
+    - billing-api
