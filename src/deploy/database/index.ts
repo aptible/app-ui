@@ -536,6 +536,10 @@ export const updateDatabase = api.put<UpdateDatabase>(
     ctx.request = ctx.req({ body: JSON.stringify(body) });
     yield* next();
 
+    if (!ctx.json.ok) {
+      return;
+    }
+
     ctx.loader = {
       message: "Saved changes successfully!",
     };
