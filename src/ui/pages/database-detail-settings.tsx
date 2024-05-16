@@ -116,7 +116,7 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
         <p>
           This will permanently deprovision <strong>{database.handle}</strong>{" "}
           database. This action cannot be undone. If you want to proceed, type
-          the <strong>{database.handle}</strong> below to continue.
+          <strong>{database.handle}</strong> below to continue.
         </p>
 
         <BannerMessages {...loader} />
