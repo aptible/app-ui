@@ -134,9 +134,6 @@ function findDependencies(
 ): Dependency[] {
   const deps: Dependency[] = [];
 
-  console.log("HELP!")
-  console.log(config)
-
   Object.entries(config.env).forEach(([key, value]) => {
     if (value == null) return;
 

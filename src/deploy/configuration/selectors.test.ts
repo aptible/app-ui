@@ -60,7 +60,6 @@ describe("selectDependencies", () => {
         endpoints: {},
       };
 
-      console.log("HELP PLEASE!")
       const actual = selectDependencies(state, { id: "app-id" }).map(
         (dep) => dep.refId,
       );
