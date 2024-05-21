@@ -575,6 +575,13 @@ export const defaultDeployVpnTunnel = (
     peerGateway: "",
     peerNetworks: [],
     perfectForwardSecrecy: "",
+    state: "unknown",
+    auto: "",
+    tunnelAttributes: {
+      connections: {},
+      routed_connections: {},
+      security_associations: {},
+    },
     createdAt: now,
     updatedAt: now,
     stackId: "",

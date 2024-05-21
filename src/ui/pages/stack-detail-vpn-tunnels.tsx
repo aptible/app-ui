@@ -10,11 +10,13 @@ import {
   Box,
   Button,
   ButtonLinkDocs,
+  IconInfo,
   TBody,
   THead,
   Table,
   Td,
   Th,
+  Tooltip,
   Tr,
   tokens,
 } from "../shared";
@@ -50,8 +52,25 @@ export const StackDetailVpnTunnelsPage = () => {
 
       {vpnTunnels.map((vpnTunnel) => (
         <Box key={vpnTunnel.id} className="mt-4">
-          <h1 className={classNames(tokens.type.h4, "block")}>
+          <h1
+            className={classNames(tokens.type.h4, "flex justify-between block")}
+          >
             {vpnTunnel.handle}
+            {vpnTunnel.auto === "route" ? (
+              <Tooltip text="This tunnel is set to `routing` mode. In this mode, connections come up and down depending on traffic. Please check individual connections below.">
+                <IconInfo
+                  className="inline-block mb-1 mr-1 opacity-50 hover:opacity-100"
+                  variant="sm"
+                />
+                <span className="text-base mt-1 text-gray-500">
+                  Status: {vpnTunnel.state}
+                </span>
+              </Tooltip>
+            ) : (
+              <span className="text-base mt-1 text-gray-500">
+                Status: {vpnTunnel.state}
+              </span>
+            )}
           </h1>
 
           <p className="flex text-gray-500 text-base my-4">Gateways</p>
@@ -145,6 +164,28 @@ export const StackDetailVpnTunnelsPage = () => {
                   <Td>{peerNetwork?.[1] || "N/A"}</Td>
                 </Tr>
               ))}
+            </TBody>
+          </Table>
+
+          <p className="flex text-gray-500 text-base my-4">Connection Status</p>
+
+          <Table>
+            <THead>
+              <Th>Deploy Network</Th>
+              <Th>Peer Network</Th>
+              <Th>Status</Th>
+            </THead>
+
+            <TBody>
+              {Object.values(vpnTunnel.tunnelAttributes.connections || {}).map(
+                (connection) => (
+                  <Tr key={connection.name}>
+                    <Td>{connection.local_address}</Td>
+                    <Td>{connection.remote_address}</Td>
+                    <Td>{connection.state}</Td>
+                  </Tr>
+                ),
+              )}
             </TBody>
           </Table>
         </Box>
