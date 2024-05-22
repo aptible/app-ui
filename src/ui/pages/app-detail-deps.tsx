@@ -29,9 +29,9 @@ export const AppDetailDepsPage = () => {
       <Group>
         <Banner variant="info">
           BETA - Dependencies are connections derived from the App's
-          configuration data (environment variables) and comparing them
-          to Database URLs and Endpoint hostnames (from their custom
-          domain or certificate).
+          configuration data (environment variables) and comparing them to
+          Database URLs and Endpoint hostnames (from their custom domain or
+          certificate).
         </Banner>
         <h3 className={tokens.type.h3}>Databases</h3>
         <DatabaseDependencyList databases={depGroups.database} />
