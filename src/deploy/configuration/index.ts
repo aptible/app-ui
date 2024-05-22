@@ -199,10 +199,6 @@ function findDependencies(
   return deps;
 }
 
-// export interface DepGraphDb extends DeployDatabase {
-//   why: DepNode;
-// }
-
 export const selectDependencies = createSelector(
   selectAppConfigByAppId,
   selectApps,
@@ -235,10 +231,6 @@ export const selectDependenciesByType = createSelector(
     return depGroups;
   },
 );
-
-// export interface DepGraphApp extends DeployApp {
-//   why: DepNode;
-// }
 
 export const fetchConfiguration = api.get<
   { id: string },
