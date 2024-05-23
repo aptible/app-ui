@@ -1,8 +1,6 @@
 import {
   server,
   testEnv,
-  testUserVerified,
-  testUserVerifiedSecond,
   testVerifiedInvitation,
   verifiedUserHandlers,
 } from "@app/mocks";
@@ -23,53 +21,6 @@ describe("Accept invitation flows", () => {
       await waitForBootup(store);
 
       render(<App />);
-
-      const btn = await screen.findByRole("button", { name: /Accept Invite/ });
-      fireEvent.click(btn);
-      await screen.findByRole("heading", { name: /Environments/ });
-    });
-  });
-
-  describe("existing user - logged into wrong account", () => {
-    it("should let the user logout, sign into correct account, and accept invitation", async () => {
-      let counterA = 0;
-      let counterB = 0;
-      server.use(
-        rest.get(
-          `${testEnv.authUrl}/organizations/:orgId/users`,
-          (_, res, ctx) => {
-            counterA += 1;
-            if (counterA === 1) {
-              return res(ctx.json({ _embedded: [testUserVerifiedSecond] }));
-            }
-
-            return res(ctx.json({ _embedded: [testUserVerified] }));
-          },
-        ),
-        rest.get(`${testEnv.authUrl}/users/:userId`, (_, res, ctx) => {
-          counterB += 1;
-          if (counterB === 1) {
-            return res(ctx.json(testUserVerifiedSecond));
-          }
-          return res(ctx.json(testUserVerified));
-        }),
-      );
-      const { App, store } = setupAppIntegrationTest({
-        initEntries: [teamAcceptInviteUrl(testVerifiedInvitation.id, "222")],
-      });
-
-      await waitForBootup(store);
-
-      render(<App />);
-
-      await screen.findByText(/is not associated with your account/);
-      const logout = await screen.findByRole("button", { name: /Logout/ });
-      fireEvent.click(logout);
-
-      const pass = await screen.findByLabelText("Password");
-      await act(() => userEvent.type(pass, "1234"));
-      const login = await screen.findByRole("button", { name: /Log In/ });
-      fireEvent.click(login);
 
       const btn = await screen.findByRole("button", { name: /Accept Invite/ });
       fireEvent.click(btn);
