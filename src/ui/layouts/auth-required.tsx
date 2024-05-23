@@ -1,10 +1,17 @@
 import { selectBillingDetail, selectHasPaymentMethod } from "@app/billing";
 import { FETCH_REQUIRED_DATA } from "@app/bootup";
 import { createLog } from "@app/debug";
-import { useDispatch, useSelector } from "@app/react";
+import { fetchEnvironments, selectEnvironmentsAsList } from "@app/deploy";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useSelector,
+} from "@app/react";
 import { setRedirectPath } from "@app/redirect-path";
 import {
   homeUrl,
+  hostingUrl,
   loginUrl,
   logoutUrl,
   plansUrl,
@@ -15,7 +22,7 @@ import { schema } from "@app/schema";
 import { selectAccessToken } from "@app/token";
 import { selectCurrentUser, selectIsUserVerified } from "@app/users";
 import { useEffect } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Loading } from "../shared";
 
 const log = createLog("auth-required");
@@ -26,6 +33,21 @@ const denyList = [
   homeUrl(),
   verifyEmailRequestUrl(),
 ];
+
+export const NewUserToOnboarding = ({
+  children,
+}: { children?: React.ReactNode }) => {
+  const navigate = useNavigate();
+  const loader = useLoader(fetchEnvironments);
+  const envs = useSelector(selectEnvironmentsAsList);
+  useLoaderSuccess(loader, () => {
+    if (envs.length === 0) {
+      navigate(hostingUrl());
+    }
+  });
+
+  return children ? children : <Outlet />;
+};
 
 export const VerifyEmailRequired = ({
   children,

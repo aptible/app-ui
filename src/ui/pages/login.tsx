@@ -11,7 +11,7 @@ import {
   useLoaderSuccess,
   useSelector,
 } from "@app/react";
-import { selectRedirectPath } from "@app/redirect-path";
+import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import { forgotPassUrl, homeUrl, signupUrl, ssoUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
 import { emailValidator, existValidtor } from "@app/validator";
@@ -80,7 +80,8 @@ export const LoginPage = () => {
   };
 
   useLoaderSuccess(loader, () => {
-    navigate(homeUrl());
+    navigate(redirectPath || homeUrl());
+    dispatch(resetRedirectPath());
   });
 
   const otpError = isOtpError(meta.error);

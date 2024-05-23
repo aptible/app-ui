@@ -93,6 +93,7 @@ import {
   ImpersonatePage,
   LoginPage,
   LogoutPage,
+  NewUserToOnboarding,
   NotFoundPage,
   OpDetailLayout,
   OpDetailPage,
@@ -518,7 +519,11 @@ export const appRoutes: RouteObject[] = [
         children: [
           {
             index: true,
-            element: <EnvironmentsPage />,
+            element: (
+              <NewUserToOnboarding>
+                <EnvironmentsPage />
+              </NewUserToOnboarding>
+            ),
           },
 
           {

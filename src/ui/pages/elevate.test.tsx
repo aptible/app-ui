@@ -29,8 +29,8 @@ describe("Elevate page", () => {
     fireEvent.click(btn);
 
     await screen.findByRole("heading", {
-      level: 1,
-      name: "Choose an Option",
+      level: 2,
+      name: "Environments",
     });
   });
 
@@ -123,8 +123,8 @@ describe("Elevate page", () => {
       fireEvent.click(fbtn);
 
       await screen.findByRole("heading", {
-        level: 1,
-        name: "Choose an Option",
+        level: 2,
+        name: "Environments",
       });
     });
   });
