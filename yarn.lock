@@ -845,9 +845,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/web-fetch@npm:^4.4.1":
-  version: 4.4.1
-  resolution: "@remix-run/web-fetch@npm:4.4.1"
+"@remix-run/web-fetch@npm:^4.4.2":
+  version: 4.4.2
+  resolution: "@remix-run/web-fetch@npm:4.4.2"
   dependencies:
     "@remix-run/web-blob": ^3.1.0
     "@remix-run/web-file": ^3.1.0
@@ -857,7 +857,7 @@ __metadata:
     abort-controller: ^3.0.0
     data-uri-to-buffer: ^3.0.1
     mrmime: ^1.0.0
-  checksum: cb0dfea27fa2e2c50d86aa8c4641a8916f090286f19c1d0f9363d63bfe0cc2703e91a547f7ba4d8a67145759a4c51de2a56eda35efbd3d1c4ac35a4f8f35d55d
+  checksum: 21e3a693b9a9976bddfa4fb119786ce839284df5ea4072d1c01cf6ca36ccc74491583963b33b63c733fdf3215b852d5c36034f770038dfdd8f6f2fd56709ce2a
   languageName: node
   linkType: hard
 
@@ -1899,12 +1899,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "chart.js@npm:4.4.0"
+"chart.js@npm:^4.4.3":
+  version: 4.4.3
+  resolution: "chart.js@npm:4.4.3"
   dependencies:
     "@kurkle/color": ^0.3.0
-  checksum: 5ee2d99b78608025525b5790af17178fdaa5adc3294e082deba2718029b0496109ba124f1b08dd1e4c8a04d6e842be7f384f2cfe9a11df8d1c6fe884acece52b
+  checksum: 94c8d174b0d3414d50f145d4faa00bd12417bc48b18f96ac6c56f6225ec23cdc085038dddf45f77e472c5034d97e44cc23fbe35beb70d906addddd632a8c2ada
   languageName: node
   linkType: hard
 
@@ -2015,7 +2015,7 @@ __metadata:
     "@biomejs/biome": ^1.2.2
     "@floating-ui/react": ^0.26.16
     "@github/webauthn-json": ^2.1.1
-    "@remix-run/web-fetch": ^4.4.1
+    "@remix-run/web-fetch": ^4.4.2
     "@sentry/react": ^7.73.0
     "@stripe/react-stripe-js": ^2.3.1
     "@stripe/stripe-js": ^2.1.7
@@ -2031,7 +2031,7 @@ __metadata:
     "@types/react-dom": ^18.3.0
     "@vitejs/plugin-react": ^4.3.0
     autoprefixer: ^10.4.19
-    chart.js: ^4.4.0
+    chart.js: ^4.4.3
     chartjs-adapter-luxon: ^1.3.1
     classnames: ^2.5.1
     debug: ^4.3.4
