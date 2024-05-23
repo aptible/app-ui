@@ -82,9 +82,7 @@ export const selectReleasesByServiceAfterDate = createSelector(
       // we always want the current release to be included
       if (release.id === service.currentReleaseId) {
         result.push(release);
-      } else if (release.createdAt > date) {
-        result.push(release);
-      } else if (release.createdAt <= date) {
+      } else if (new Date(release.createdAt) >= new Date(date)) {
         result.push(release);
       }
     }
