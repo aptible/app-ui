@@ -8,13 +8,14 @@ import {
   defaultDeployEnvironment,
   defaultDeployStack,
 } from "@app/schema";
-import { selectDepGraphDatabases } from "./index";
+import { selectDependencies } from "./index";
 
-describe("selectDepGraphDatabases", () => {
+// TODO: Test finding apps and databases through endpoints
+describe("selectDependencies", () => {
   describe("aptible.in", () => {
     const domain = "aptible.in";
 
-    it("should find aptible databasesin app configuration", () => {
+    it("should find aptible databases in app configuration", () => {
       const stack = defaultDeployStack({
         id: "stack-id",
         internalDomain: domain,
@@ -55,10 +56,12 @@ describe("selectDepGraphDatabases", () => {
         apps: { [app.id]: app },
         appConfigs: { [appConfig.id]: appConfig },
         databases: { [db1.id]: db1, [db2.id]: db2, [db3.id]: db3 },
+        services: {},
+        endpoints: {},
       };
 
-      const actual = selectDepGraphDatabases(state, { id: "app-id" }).map(
-        (db) => db.id,
+      const actual = selectDependencies(state, { id: "app-id" }).map(
+        (dep) => dep.refId,
       );
       expect(actual).toEqual(["1234", "5555"]);
     });
@@ -108,10 +111,12 @@ describe("selectDepGraphDatabases", () => {
         apps: { [app.id]: app },
         appConfigs: { [appConfig.id]: appConfig },
         databases: { [db1.id]: db1, [db2.id]: db2, [db3.id]: db3 },
+        services: {},
+        endpoints: {},
       };
 
-      const actual = selectDepGraphDatabases(state, { id: "app-id" }).map(
-        (db) => db.id,
+      const actual = selectDependencies(state, { id: "app-id" }).map(
+        (dep) => dep.refId,
       );
       expect(actual).toEqual(["1234", "5555"]);
     });
@@ -161,10 +166,12 @@ describe("selectDepGraphDatabases", () => {
         apps: { [app.id]: app },
         appConfigs: { [appConfig.id]: appConfig },
         databases: { [db1.id]: db1, [db2.id]: db2, [db3.id]: db3 },
+        services: {},
+        endpoints: {},
       };
 
-      const actual = selectDepGraphDatabases(state, { id: "app-id" }).map(
-        (db) => db.id,
+      const actual = selectDependencies(state, { id: "app-id" }).map(
+        (dep) => dep.refId,
       );
       expect(actual).toEqual(["1234", "5555"]);
     });

@@ -2,17 +2,23 @@ import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
-import { TextVal, escapeRegExp } from "@app/string-utils";
+import { testSecret } from "@app/secrets";
+import { TextVal } from "@app/string-utils";
 import {
   DeployApp,
   DeployAppConfig,
   DeployAppConfigEnv,
   DeployDatabase,
+  DeployService,
   LinkResponse,
 } from "@app/types";
+import { DeployEndpoint } from "@app/types";
 import { parse } from "dotenv";
-import { selectAppById, selectStackByAppId } from "../app";
-import { selectDatabasesAsList } from "../database";
+import { IdProp } from "starfx";
+import { findAppById, selectAppById, selectApps } from "../app";
+import { findDatabaseById, selectDatabases } from "../database";
+import { selectEndpointsAsList } from "../endpoint";
+import { findServiceById, selectServices } from "../service";
 
 export interface DeployConfigurationResponse {
   id: number;
@@ -96,63 +102,135 @@ export const selectAppConfigByAppId = createSelector(
     schema.appConfigs.findById(configs, { id: app.currentConfigurationId }),
 );
 
-export interface DepNode {
-  type: "db";
-  key: string;
-  value: string;
+export interface DependencyNode {
+  type: string;
+  why: string;
   refId: string;
+  name: string;
 }
 
-function createDepGraph(
-  env: DeployAppConfigEnv,
-  aptibleDbRe: RegExp,
-): DepNode[] {
-  const deps: DepNode[] = [];
-  Object.keys(env).forEach((key) => {
-    const value = env[key];
-    if (typeof value !== "string") return;
-    const match = aptibleDbRe.exec(value);
-    if (match && match.length > 1) {
-      deps.push({ key, value, refId: match[1], type: "db" });
-    }
-  });
-  return deps;
+export interface AppDependency extends DependencyNode {
+  type: "app";
+  resource: DeployApp;
 }
 
-export interface DepGraphDb extends DeployDatabase {
-  why: DepNode;
+export interface DatabaseDependency extends DependencyNode {
+  type: "database";
+  resource: DeployDatabase;
 }
 
-export const selectDepGraphDatabases = createSelector(
-  selectStackByAppId,
-  selectAppConfigByAppId,
-  selectDatabasesAsList,
-  (stack, config, dbs) => {
-    const graphDbs: Record<string, DepGraphDb> = {};
-    const domain = escapeRegExp(stack.internalDomain);
-    const dbRe = new RegExp(`(\\d+)\\.${domain}\\:`);
-    const graph = createDepGraph(config.env, dbRe);
+export type Dependency = AppDependency | DatabaseDependency;
 
-    for (let i = 0; i < graph.length; i += 1) {
-      const node = graph[i];
-      const found = dbs.find((db) => {
-        if (node.type !== "db") {
-          return false;
-        }
-        return node.refId === db.id;
-      });
-      if (found) {
-        graphDbs[found.id] = { ...found, why: node };
+// Find App and Database dependencies by scanning the configuration for
+// known domains used by Databases and Endpoints. Remember to exercise caution
+// when using secret values (e.g. DNS resolution will send data to a remote
+// server).
+function findDependencies(
+  config: DeployAppConfig,
+  apps: Record<IdProp, DeployApp>,
+  dbs: Record<IdProp, DeployDatabase>,
+  services: Record<IdProp, DeployService>,
+  endpoints: DeployEndpoint[],
+): Dependency[] {
+  const deps: Dependency[] = [];
+
+  Object.entries(config.env).forEach(([key, value]) => {
+    if (value == null) return;
+
+    // Ignore values that do not appear to contain a domain
+    const domainMatch = /([a-zA-Z0-9_-]{1,64}\.)+[a-zA-Z]{1,16}/.exec(value);
+    if (domainMatch == null) return;
+    const domain = domainMatch[0];
+
+    // If the domain looks like a secret, don't bother checking it
+    if (testSecret(`${key}=${domain}`)) return;
+
+    // If it looks like one of our database domains (db-<stack>-<id>.), extract
+    // the ID and look for the database
+    const dbMatch = /db-[a-zA-Z0-9_-]+-([0-9]+)\./.exec(domain);
+    if (dbMatch && dbMatch.length > 1) {
+      const db = findDatabaseById(dbs, { id: dbMatch[1] });
+
+      if (db) {
+        deps.push({
+          why: key,
+          refId: db.id,
+          name: db.handle,
+          type: "database",
+          resource: db,
+        });
+        return;
       }
     }
 
-    return Object.values(graphDbs);
-  },
+    // There was no matching database, so look for a matching vhost.
+    // They could be using a custom domain that matches the endpoint's
+    // virtualDomain or they could be using the externalHost that we create.
+    const endpoint = endpoints.find(
+      (e) => domain === e.virtualDomain || domain === e.externalHost,
+    );
+    if (endpoint == null) return;
+    const service = findServiceById(services, { id: endpoint.serviceId });
+
+    // The matching endpoint could belong to an App or Database service
+    if (service.appId) {
+      const app = findAppById(apps, { id: service.appId });
+
+      deps.push({
+        why: key,
+        refId: app.id,
+        name: app.handle,
+        type: "app",
+        resource: app,
+      });
+    } else if (service.databaseId) {
+      const db = findDatabaseById(dbs, { id: service.databaseId });
+
+      deps.push({
+        why: key,
+        refId: db.id,
+        name: db.handle,
+        type: "database",
+        resource: db,
+      });
+    }
+  });
+
+  return deps;
+}
+
+export const selectDependencies = createSelector(
+  selectAppConfigByAppId,
+  selectApps,
+  selectDatabases,
+  selectServices,
+  selectEndpointsAsList,
+  findDependencies,
 );
 
-export interface DepGraphApp extends DeployApp {
-  why: DepNode;
-}
+export const selectDependenciesByType = createSelector(
+  selectDependencies,
+  (deps) => {
+    const depGroups: { app: AppDependency[]; database: DatabaseDependency[] } =
+      {
+        app: [],
+        database: [],
+      };
+
+    deps.forEach((dep) => {
+      switch (dep.type) {
+        case "app":
+          depGroups.app.push(dep);
+          break;
+        case "database":
+          depGroups.database.push(dep);
+          break;
+      }
+    });
+
+    return depGroups;
+  },
+);
 
 export const fetchConfiguration = api.get<
   { id: string },

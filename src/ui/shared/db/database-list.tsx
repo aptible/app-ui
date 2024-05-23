@@ -1,6 +1,6 @@
 import { prettyDateTime } from "@app/date";
 import {
-  DepGraphDb,
+  DatabaseDependency,
   DeployDatabaseRow,
   calcMetrics,
   fetchDatabaseImages,
@@ -370,10 +370,10 @@ export const DatabaseListByEnvironment = ({
   );
 };
 
-export const DatabaseListByDatabases = ({
+export const DatabaseDependencyList = ({
   databases,
 }: {
-  databases: DepGraphDb[];
+  databases: DatabaseDependency[];
 }) => {
   return (
     <Table>
@@ -389,21 +389,25 @@ export const DatabaseListByDatabases = ({
 
       <TBody>
         {databases.length === 0 ? <EmptyTr colSpan={6} /> : null}
-        {databases.map((db) => (
-          <Tr key={db.id}>
-            <DatabasePrimaryCell database={db} />
-            <DatabaseIdCell database={db} />
-            <EnvStackCell environmentId={db.environmentId} />
-            <DatabaseDiskSizeCell database={db} />
-            <DatabaseContainerSizeCell database={db} />
-            <DatabaseCostCell database={db} />
-            <Td>
-              <Tooltip placement="left" text={db.why.value} fluid>
-                <Code>{db.why.key}</Code>
-              </Tooltip>
-            </Td>
-          </Tr>
-        ))}
+        {databases.map((dep) => {
+          const db = dep.resource;
+
+          return (
+            <Tr key={db.id}>
+              <DatabasePrimaryCell database={db} />
+              <DatabaseIdCell database={db} />
+              <EnvStackCell environmentId={db.environmentId} />
+              <DatabaseDiskSizeCell database={db} />
+              <DatabaseContainerSizeCell database={db} />
+              <DatabaseCostCell database={db} />
+              <Td>
+                <Tooltip placement="left" text={dep.why} fluid>
+                  <Code>{dep.why}</Code>
+                </Tooltip>
+              </Td>
+            </Tr>
+          );
+        })}
       </TBody>
     </Table>
   );
