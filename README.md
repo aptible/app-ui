@@ -39,6 +39,7 @@ VITE_API_URL="https://api.aptible.com"
 VITE_BILLING_URL="https://goldenboy.aptible.com"
 VITE_LEGACY_DASHBOARD_URL="https://dashboard.aptible.com"
 VITE_METRIC_TUNNEL_URL="https://metrictunnel-nextgen.aptible.com"
+VITE_PORTAL_URL="https://portal.aptible.com"
 ```
 
 Staging APIs:
@@ -51,6 +52,7 @@ VITE_API_URL="https://api-sbx-main.aptible-sandbox.com"
 VITE_BILLING_URL="https://goldenboy-sbx-main.aptible-sandbox.com"
 VITE_LEGACY_DASHBOARD_URL="https://dashboard-sbx-main.aptible-sandbox.com"
 VITE_METRIC_TUNNEL_URL="https://metrictunnel-sbx-main.aptible-sandbox.com"
+VITE_PORTAL_URL="https://portal-sbx-main.aptible-sandbox.com"
 ```
 
 **4. Run Start Commands**

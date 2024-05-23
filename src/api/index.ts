@@ -31,6 +31,7 @@ import type {
   DeployApiCtx,
   HalEmbedded,
   MetricTunnelCtx,
+  PortalCtx,
 } from "@app/types";
 import * as Sentry from "@sentry/react";
 
@@ -41,7 +42,7 @@ export interface ThunkCtx<P = any, D = any>
   json: D | null;
 }
 
-type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel";
+type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel" | "portal";
 
 const log = createLog("fx");
 
@@ -110,6 +111,10 @@ function* getApiBaseUrl(endpoint: EndpointUrl) {
 
   if (endpoint === "metrictunnel") {
     return env.metricTunnelUrl;
+  }
+
+  if (endpoint === "portal") {
+    return env.portalUrl;
   }
 
   return env.apiUrl;
@@ -222,6 +227,20 @@ function* requestMetricTunnel(ctx: ApiCtx, next: Next) {
   yield* next();
 }
 
+function* requestPortal(ctx: ApiCtx, next: Next) {
+  const url = yield* call(() => getUrl(ctx, "portal" as const));
+  ctx.request = ctx.req({
+    url,
+    // https://github.com/github/fetch#sending-cookies
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  yield* next();
+}
+
 function* expiredToken(ctx: ApiCtx, next: Next) {
   yield* next();
   if (!ctx.response) return;
@@ -309,6 +328,19 @@ metricTunnelApi.use(requestMetricTunnel);
 metricTunnelApi.use(aborter);
 metricTunnelApi.use(tokenMdw);
 metricTunnelApi.use(mdw.fetch());
+
+export const portalApi = createApi<PortalCtx>(
+  createThunks({ supervisor: takeEvery }),
+);
+portalApi.use(debugMdw);
+portalApi.use(sentryErrorHandler);
+portalApi.use(expiredToken);
+portalApi.use(mdw.api({ schema }));
+portalApi.use(aborter);
+portalApi.use(portalApi.routes());
+portalApi.use(requestPortal);
+portalApi.use(tokenMdw);
+portalApi.use(mdw.fetch());
 
 export interface PaginateProps {
   page: number;

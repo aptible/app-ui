@@ -50,6 +50,7 @@ export const testEnv = defaultConfig({
   billingUrl: "https://billing.aptible-test.com",
   legacyDashboardUrl: "https://dashboard.aptible-test.com",
   metricTunnelUrl: "https://metrictunnel.aptible-test.com",
+  portalUrl: "https://portal.aptible-test.com",
 });
 
 export const testUserId = createId();

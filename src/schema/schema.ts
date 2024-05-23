@@ -81,5 +81,8 @@ export const [schema, initialState] = createSchema({
   }),
   deployments: slice.table({ empty: factory.defaultDeployment() }),
   sources: slice.table({ empty: factory.defaultDeploySource() }),
+  githubIntegrations: slice.table({
+    empty: factory.defaultGithubIntegration(),
+  }),
 });
 export type WebState = typeof initialState;

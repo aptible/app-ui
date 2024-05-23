@@ -30,6 +30,7 @@ import {
   DeployVpcPeer,
   DeployVpnTunnel,
   Deployment,
+  GithubIntegration,
   Invitation,
   Membership,
   ModalType,
@@ -51,6 +52,7 @@ export const defaultConfig = (e: Partial<Config> = {}): Config => {
     billingUrl: import.meta.env.VITE_BILLING_URL || "",
     apiUrl: import.meta.env.VITE_API_URL || "",
     metricTunnelUrl: import.meta.env.VITE_METRIC_TUNNEL_URL || "",
+    portalUrl: import.meta.env.VITE_PORTAL_URL || "",
     sentryDsn: import.meta.env.VITE_SENTRY_DSN || "",
     origin: (import.meta.env.VITE_ORIGIN as any) || "app",
     legacyDashboardUrl:
@@ -846,6 +848,25 @@ export const defaultDeploySource = (
     id: "",
     displayName: "Unknown",
     url: "",
+    createdAt: now,
+    updatedAt: now,
+    ...s,
+  };
+};
+
+export const defaultGithubIntegration = (
+  s: Partial<GithubIntegration> = {},
+): GithubIntegration => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    organizationId: "",
+    installationId: "",
+    accountName: "",
+    avatarUrl: "",
+    installed: true,
+    active: true,
+    installationUrl: "",
     createdAt: now,
     updatedAt: now,
     ...s,

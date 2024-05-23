@@ -148,6 +148,7 @@ import {
 } from "@app/ui";
 import { DeploymentDetailLayout } from "@app/ui/layouts/deployment-detail-layout";
 import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
+import { GithubIntegrationPage } from "@app/ui/pages/github-integration";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { SourcesSetupPage } from "@app/ui/pages/sources-setup";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
@@ -826,6 +827,23 @@ export const appRoutes: RouteObject[] = [
       {
         index: true,
         element: <TeamRolesPage />,
+      },
+    ],
+  },
+
+  {
+    path: routes.TEAM_GITHUB_INTEGRATION_PATH,
+    element: (
+      <AuthRequired>
+        <VerifyEmailRequired>
+          <AppSidebarLayout />
+        </VerifyEmailRequired>
+      </AuthRequired>
+    ),
+    children: [
+      {
+        index: true,
+        element: <GithubIntegrationPage />,
       },
     ],
   },

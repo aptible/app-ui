@@ -8,6 +8,7 @@ export interface Config {
   billingUrl: string;
   apiUrl: string;
   metricTunnelUrl: string;
+  portalUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
   stripePublishableKey: string;
@@ -83,4 +84,17 @@ export interface Deployment {
   configurationId: string;
   imageId: string;
   sourceId: string;
+}
+
+export interface GithubIntegration {
+  id: string;
+  organizationId: string;
+  installationId: string;
+  accountName: string;
+  avatarUrl: string;
+  installationUrl: string;
+  installed: boolean;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
