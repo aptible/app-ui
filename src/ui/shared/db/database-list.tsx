@@ -393,7 +393,7 @@ export const DatabaseDependencyList = ({
           const db = dep.resource;
 
           return (
-            <Tr key={db.id}>
+            <Tr key={dep.why}>
               <DatabasePrimaryCell database={db} />
               <DatabaseIdCell database={db} />
               <EnvStackCell environmentId={db.environmentId} />

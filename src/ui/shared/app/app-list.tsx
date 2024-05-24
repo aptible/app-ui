@@ -602,7 +602,7 @@ export const AppDependencyList = ({
           const app = dep.resource;
 
           return (
-            <Tr key={app.id}>
+            <Tr key={dep.why}>
               <AppPrimaryCell app={app} />
               <AppIdCell app={app} />
               <EnvStackCell environmentId={app.environmentId} />
