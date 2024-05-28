@@ -1,7 +1,7 @@
 import { api, cacheTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import type { DeployServiceDefinition, LinkResponse } from "@app/types";
 
 export interface DeployServiceDefinitionResponse {

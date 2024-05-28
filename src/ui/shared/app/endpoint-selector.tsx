@@ -1,6 +1,6 @@
 import { selectServicesByAppId, serviceCommandText } from "@app/deploy";
 import { useSelector } from "@app/react";
-import { DeployApp, DeployService } from "@app/types";
+import type { DeployApp, DeployService } from "@app/types";
 
 import { Radio, RadioGroup } from "../select";
 

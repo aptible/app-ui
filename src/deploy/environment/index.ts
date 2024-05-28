@@ -3,15 +3,15 @@ import { createSelector } from "@app/fx";
 import { select, takeLatest } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import {
-  DeployEnvironment,
-  DeployEnvironmentStats,
-  LinkResponse,
-  OnboardingStatus,
+  type DeployEnvironment,
+  type DeployEnvironmentStats,
+  type LinkResponse,
+  type OnboardingStatus,
   excludesFalse,
 } from "@app/types";
-import { PermissionResponse } from "../permission";
+import type { PermissionResponse } from "../permission";
 import {
   findStackById,
   hasDeployStack,
@@ -237,48 +237,42 @@ const createEnvSortFn = (
     if (sortBy === "handle") {
       if (sortDir === "asc") {
         return a.handle.localeCompare(b.handle);
-      } else {
-        return b.handle.localeCompare(a.handle);
       }
+      return b.handle.localeCompare(a.handle);
     }
 
     if (sortBy === "stackName") {
       if (sortDir === "asc") {
         return a.stackName.localeCompare(b.stackName);
-      } else {
-        return b.stackName.localeCompare(a.stackName);
       }
+      return b.stackName.localeCompare(a.stackName);
     }
 
     if (sortBy === "id") {
       if (sortDir === "asc") {
         return a.id.localeCompare(b.id, undefined, { numeric: true });
-      } else {
-        return b.id.localeCompare(a.id, undefined, { numeric: true });
       }
+      return b.id.localeCompare(a.id, undefined, { numeric: true });
     }
 
     if (sortBy === "totalAppCount") {
       if (sortDir === "asc") {
         return a.totalAppCount - b.totalAppCount;
-      } else {
-        return b.totalAppCount - a.totalAppCount;
       }
+      return b.totalAppCount - a.totalAppCount;
     }
 
     if (sortBy === "totalDatabaseCount") {
       if (sortDir === "asc") {
         return a.totalDatabaseCount - b.totalDatabaseCount;
-      } else {
-        return b.totalDatabaseCount - a.totalDatabaseCount;
       }
+      return b.totalDatabaseCount - a.totalDatabaseCount;
     }
 
     if (sortDir === "asc") {
       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    } else {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   };
 };
 

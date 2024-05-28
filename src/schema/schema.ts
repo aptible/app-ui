@@ -1,14 +1,14 @@
 import {
-  BillingDetail,
-  ContainerMetrics,
-  EmbeddedMap,
-  Feedback,
-  ModalState,
+  type BillingDetail,
+  type ContainerMetrics,
+  type EmbeddedMap,
+  type Feedback,
+  type ModalState,
   ModalType,
-  Nav,
-  ResourceStats,
-  Role,
-  U2fDevice,
+  type Nav,
+  type ResourceStats,
+  type Role,
+  type U2fDevice,
 } from "@app/types";
 import { createSchema, slice } from "starfx";
 import * as factory from "./factory";

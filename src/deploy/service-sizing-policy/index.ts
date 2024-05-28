@@ -2,7 +2,7 @@ import { api, cacheShortTimer, thunks } from "@app/api";
 import { call, createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
-import { DeployServiceSizingPolicy, LinkResponse } from "@app/types";
+import type { DeployServiceSizingPolicy, LinkResponse } from "@app/types";
 import { selectServiceById } from "../service";
 
 export interface DeployServiceSizingPolicyResponse {

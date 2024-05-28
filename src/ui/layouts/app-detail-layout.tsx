@@ -43,7 +43,7 @@ import {
   DockerImage,
   GitCommitMessage,
   GitRef,
-  TabItem,
+  type TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 

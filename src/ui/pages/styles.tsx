@@ -86,7 +86,7 @@ import {
   RadioGroup,
   Secret,
   Select,
-  SelectOption,
+  type SelectOption,
   TBody,
   THead,
   Table,

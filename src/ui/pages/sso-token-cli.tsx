@@ -14,7 +14,7 @@ import {
   Group,
   PreCode,
   Select,
-  SelectOption,
+  type SelectOption,
   listToInvertedTextColor,
   tokens,
 } from "../shared";

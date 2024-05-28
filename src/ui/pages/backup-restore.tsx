@@ -1,6 +1,6 @@
 import { fileDateTime, prettyDateTime } from "@app/date";
 import {
-  RestoreBackupProps,
+  type RestoreBackupProps,
   fetchBackup,
   fetchDatabase,
   restoreBackup,
@@ -17,7 +17,7 @@ import {
 } from "@app/react";
 import { databaseBackupsUrl, environmentActivityUrl } from "@app/routes";
 import { handleValidator } from "@app/validator";
-import { FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { useValidator } from "../hooks";
@@ -29,7 +29,7 @@ import {
   DatabaseNameInput,
   EnvironmentSelect,
   FormGroup,
-  SelectOption,
+  type SelectOption,
   tokens,
 } from "../shared";
 

@@ -20,7 +20,7 @@ import {
   PreCode,
   ProgressProject,
   Select,
-  SelectOption,
+  type SelectOption,
   listToInvertedTextColor,
   tokens,
 } from "../shared";

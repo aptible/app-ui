@@ -1,6 +1,6 @@
-import { StackType, getStackType } from "@app/deploy";
+import { type StackType, getStackType } from "@app/deploy";
 import { stackDetailEnvsUrl } from "@app/routes";
-import { DeployStack } from "@app/types";
+import type { DeployStack } from "@app/types";
 import { Link } from "react-router-dom";
 import { tokens } from "./tokens";
 

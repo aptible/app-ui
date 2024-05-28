@@ -6,7 +6,7 @@ import {
 import { useQuery, useSelector } from "@app/react";
 import { EmptyResources, ErrorResources } from "./load-resources";
 import { Loading } from "./loading";
-import { Select, SelectOption, SelectProps } from "./select";
+import { Select, type SelectOption, type SelectProps } from "./select";
 
 export const EnvironmentSelect = ({
   onSelect,

@@ -1,7 +1,7 @@
 import { updateOrganization } from "@app/auth";
 import { selectOrganizationSelected } from "@app/organizations";
 import { useDispatch, useLoader, useSelector } from "@app/react";
-import { Organization } from "@app/types";
+import type { Organization } from "@app/types";
 import { emailValidator, existValidtor } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useValidator } from "../hooks";

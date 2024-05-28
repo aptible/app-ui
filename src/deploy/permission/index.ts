@@ -7,8 +7,8 @@ import {
   selectCurrentUserRolesByOrgId,
   selectRolesByOrgId,
 } from "@app/roles";
-import { WebState, defaultPermission, schema } from "@app/schema";
-import { LinkResponse, Permission, PermissionScope } from "@app/types";
+import { type WebState, defaultPermission, schema } from "@app/schema";
+import type { LinkResponse, Permission, PermissionScope } from "@app/types";
 
 export interface PermissionResponse {
   id: string;

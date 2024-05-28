@@ -1,8 +1,8 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
-import {
+import { type WebState, schema } from "@app/schema";
+import type {
   DeployVpnTunnel,
   DeployVpnTunnelAttributes,
   DeployVpnTunnelState,

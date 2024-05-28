@@ -2,8 +2,8 @@ import { authApi, thunkLoader, thunks } from "@app/api";
 import { selectEnv } from "@app/config";
 import { call, createSelector, parallel, select, takeLeading } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
-import {
+import { type WebState, schema } from "@app/schema";
+import type {
   AuthApiCtx,
   HalEmbedded,
   LinkResponse,

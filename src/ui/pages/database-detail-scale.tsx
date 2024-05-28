@@ -21,7 +21,7 @@ import {
   useSelector,
 } from "@app/react";
 import { databaseActivityUrl } from "@app/routes";
-import { InstanceClass } from "@app/types";
+import type { InstanceClass } from "@app/types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
@@ -33,7 +33,7 @@ import {
   Input,
   Label,
   Select,
-  SelectOption,
+  type SelectOption,
 } from "../shared";
 
 const validators = {
@@ -201,7 +201,7 @@ export const DatabaseScalePage = () => {
               min="10"
               onChange={(e) =>
                 setDiskValue(
-                  Math.min(16384, parseInt(e.currentTarget.value, 10)),
+                  Math.min(16384, Number.parseInt(e.currentTarget.value, 10)),
                 )
               }
               data-testid="disk-size"
@@ -217,7 +217,7 @@ export const DatabaseScalePage = () => {
             <Select
               id="memory-container"
               value={`${containerSize}`}
-              onSelect={(opt) => setContainerSize(parseInt(opt.value))}
+              onSelect={(opt) => setContainerSize(Number.parseInt(opt.value))}
               options={containerSizeOptions}
             />
           </FormGroup>

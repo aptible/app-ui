@@ -11,7 +11,7 @@ import {
 } from "@app/react";
 import { endpointsUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { DeployEndpoint, ProvisionableStatus } from "@app/types";
+import type { DeployEndpoint, ProvisionableStatus } from "@app/types";
 import cn from "classnames";
 import { useState } from "react";
 import { useNavigate } from "react-router";

@@ -8,8 +8,8 @@ import {
   selectStacksByOrgAsList,
 } from "@app/deploy";
 import { createSelector, select } from "@app/fx";
-import { WebState, schema } from "@app/schema";
-import {
+import { type WebState, schema } from "@app/schema";
+import type {
   AbstractResourceItem,
   DeployApp,
   DeployDatabase,

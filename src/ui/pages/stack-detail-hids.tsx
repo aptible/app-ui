@@ -1,6 +1,6 @@
 import { fileDate, prettyDate } from "@app/date";
 import {
-  HidsReport,
+  type HidsReport,
   fetchStackManagedHids,
   getStackType,
   hasDeployStack,
@@ -8,7 +8,7 @@ import {
 } from "@app/deploy";
 import { useCache, useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
-import { DeployStack } from "@app/types";
+import type { DeployStack } from "@app/types";
 import { useState } from "react";
 import { useParams } from "react-router";
 import {

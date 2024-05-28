@@ -3,9 +3,9 @@ import {
   selectActivityReportsByIds,
 } from "@app/deploy";
 import { useCache, useSelector } from "@app/react";
-import { DeployActivityReport, HalEmbedded } from "@app/types";
+import type { DeployActivityReport, HalEmbedded } from "@app/types";
 import { useState } from "react";
-import { PaginateProps } from "./use-paginate";
+import type { PaginateProps } from "./use-paginate";
 
 export function usePaginatedActivityReportsByEnvId(envId: string) {
   const [page, setPage] = useState(1);

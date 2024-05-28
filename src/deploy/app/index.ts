@@ -2,7 +2,7 @@ import { api, cacheMinTimer, thunks } from "@app/api";
 import { call, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { findSourceById, selectSources } from "@app/source";
 import type {
   DeployApp,
@@ -19,8 +19,8 @@ import {
   selectEnvironments,
   selectEnvironmentsByOrg,
 } from "../environment";
-import { DeployImageResponse } from "../image";
-import { DeployOperationResponse, waitForOperation } from "../operation";
+import type { DeployImageResponse } from "../image";
+import { type DeployOperationResponse, waitForOperation } from "../operation";
 import { selectServiceById } from "../service";
 import { findStackById, selectStacks } from "../stack";
 

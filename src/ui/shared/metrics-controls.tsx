@@ -1,4 +1,4 @@
-import { MetricHorizons } from "@app/types";
+import type { MetricHorizons } from "@app/types";
 import { Button } from "./button";
 import { IconHamburger, IconMetrics } from "./icons";
 

@@ -31,7 +31,7 @@ import {
   IconChevronDown,
   IconChevronRight,
   PreCode,
-  TabItem,
+  type TabItem,
   listToInvertedTextColor,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";

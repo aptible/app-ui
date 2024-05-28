@@ -38,7 +38,7 @@ import {
   appEndpointsUrl,
 } from "@app/routes";
 import { schema } from "@app/schema";
-import {
+import type {
   DeployApp,
   DeployDatabase,
   DeployEndpoint,

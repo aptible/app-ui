@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IconCopy } from "./icons";
-import { Tooltip, TooltipProps } from "./tooltip";
+import { Tooltip, type TooltipProps } from "./tooltip";
 
 const copy = async (text: string) => {
   if (typeof navigator === "undefined") return;

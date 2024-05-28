@@ -3,7 +3,7 @@ import {
   selectDatabasesByEnvIdAndType,
 } from "@app/deploy";
 import { useSelector } from "@app/react";
-import { Select, SelectOption } from "../select";
+import { Select, type SelectOption } from "../select";
 
 export const DbSelector = ({
   envId,

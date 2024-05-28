@@ -6,10 +6,10 @@ import {
   databaseDetailUrl,
   operationDetailUrl,
 } from "@app/routes";
-import { DeployBackup } from "@app/types";
-import { PaginateProps } from "@app/ui/hooks";
+import type { DeployBackup } from "@app/types";
+import type { PaginateProps } from "@app/ui/hooks";
 import cn from "classnames";
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BannerMessages } from "../banner";
 import { ButtonCreate, ButtonDestroy } from "../button";

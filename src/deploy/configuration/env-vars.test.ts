@@ -1,5 +1,5 @@
-import { TextVal } from "@app/string-utils";
-import { DeployAppConfigEnv } from "@app/types";
+import type { TextVal } from "@app/string-utils";
+import type { DeployAppConfigEnv } from "@app/types";
 import {
   configEnvListToEnv,
   configEnvToStr,

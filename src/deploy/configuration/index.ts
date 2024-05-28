@@ -3,8 +3,8 @@ import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
 import { testSecret } from "@app/secrets";
-import { TextVal } from "@app/string-utils";
-import {
+import type { TextVal } from "@app/string-utils";
+import type {
   DeployApp,
   DeployAppConfig,
   DeployAppConfigEnv,
@@ -12,9 +12,9 @@ import {
   DeployService,
   LinkResponse,
 } from "@app/types";
-import { DeployEndpoint } from "@app/types";
+import type { DeployEndpoint } from "@app/types";
 import { parse } from "dotenv";
-import { IdProp } from "starfx";
+import type { IdProp } from "starfx";
 import { findAppById, selectAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
 import { selectEndpointsAsList } from "../endpoint";

@@ -5,7 +5,7 @@ import {
   selectLatestDeployOp,
 } from "@app/deploy";
 import { useLoader, useSelector } from "@app/react";
-import { DeployApp } from "@app/types";
+import type { DeployApp } from "@app/types";
 import { useSearchParams } from "react-router-dom";
 import {
   Button,
@@ -58,7 +58,8 @@ export const DeploymentsPage = () => {
           <Loading text="Loading ..." />
         </div>
       );
-    } else if (apps.length === 0) {
+    }
+    if (apps.length === 0) {
       return <div className="mt-4">No deployments found</div>;
     }
 

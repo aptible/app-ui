@@ -1,7 +1,7 @@
 import { prettyDate } from "@app/date";
 import { downloadActivityReports } from "@app/deploy";
 import { useDispatch } from "@app/react";
-import { DeployActivityReport } from "@app/types";
+import type { DeployActivityReport } from "@app/types";
 import { useParams } from "react-router";
 import { usePaginatedActivityReportsByEnvId } from "../hooks";
 import {

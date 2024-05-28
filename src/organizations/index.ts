@@ -2,7 +2,11 @@ import { selectEnv } from "@app/config";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
-import { LinkResponse, Organization, excludesFalse } from "@app/types";
+import {
+  type LinkResponse,
+  type Organization,
+  excludesFalse,
+} from "@app/types";
 
 export interface OrganizationResponse {
   address: string | null;

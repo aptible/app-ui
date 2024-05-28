@@ -36,8 +36,8 @@ export function ipValidator(ips: string[]) {
 export function portValidator(port = "") {
   if (!port) return;
   const msg = "Port must be a number between 1 and 65535";
-  const portNum = parseInt(port, 10);
-  if (isNaN(portNum)) return msg;
+  const portNum = Number.parseInt(port, 10);
+  if (Number.isNaN(portNum)) return msg;
   if (portNum <= 0) return msg;
   if (portNum >= 65535) return msg;
 }

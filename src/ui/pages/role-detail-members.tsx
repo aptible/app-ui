@@ -17,14 +17,14 @@ import {
 } from "@app/react";
 import { selectRoleById } from "@app/roles";
 import { teamPendingInvitesUrl } from "@app/routes";
-import { Membership } from "@app/types";
+import type { Membership } from "@app/types";
 import {
   selectCurrentUserId,
   selectUserById,
   selectUsersAsList,
 } from "@app/users";
 import { emailValidator, existValidtor } from "@app/validator";
-import { ChangeEvent, useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { usePaginate, useUserIdsForRole } from "../hooks";
 import { useValidator } from "../hooks";
@@ -43,7 +43,7 @@ import {
   Input,
   PaginateBar,
   Select,
-  SelectOption,
+  type SelectOption,
   TBody,
   THead,
   Table,

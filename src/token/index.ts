@@ -1,8 +1,8 @@
 import { createSelector } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
-import { WebState, schema } from "@app/schema";
-import { LinkResponse, Token } from "@app/types";
-import { JwtToken, defaultJWTToken, parseJwt } from "./jwt-parser";
+import { type WebState, schema } from "@app/schema";
+import type { LinkResponse, Token } from "@app/types";
+import { type JwtToken, defaultJWTToken, parseJwt } from "./jwt-parser";
 
 export * from "./jwt-parser";
 

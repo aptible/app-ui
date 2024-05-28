@@ -39,7 +39,7 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
-  TabItem,
+  type TabItem,
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { AppSidebarLayout } from "./app-sidebar-layout";

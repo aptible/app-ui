@@ -1,23 +1,32 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.0.0/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "organizeImports": {
     "enabled": true
   },
   "formatter": {
     "enabled": true,
-    "ignore": ["dist", "public/aptible.js"],
+    "include": ["src/**/*"],
+    "ignore": ["*.snap"],
     "indentStyle": "space"
   },
   "linter": {
     "enabled": true,
-    "ignore": ["dist", "public/aptible.js"],
+    "include": ["src/**/*"],
+    "ignore": ["*.snap"],
     "rules": {
       "recommended": true,
       "suspicious": {
         "noExplicitAny": "off"
       },
       "correctness": {
-        "useYield": "off"
+        "useYield": "off",
+        "useExhaustiveDependencies": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
+      },
+      "performance": {
+        "noAccumulatingSpread": "off"
       }
     }
   }

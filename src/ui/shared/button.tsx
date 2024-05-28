@@ -7,14 +7,14 @@ import {
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useSelector } from "@app/react";
 import { capitalize } from "@app/string-utils";
-import { PermissionScope } from "@app/types";
+import type { PermissionScope } from "@app/types";
 import cn from "classnames";
-import { ButtonHTMLAttributes, FC, useState } from "react";
-import { Link, LinkProps } from "react-router-dom";
+import { type ButtonHTMLAttributes, type FC, useState } from "react";
+import { Link, type LinkProps } from "react-router-dom";
 import { Group } from "./group";
 import { IconExternalLink } from "./icons";
 import { tokens } from "./tokens";
-import { Tooltip, TooltipProps } from "./tooltip";
+import { Tooltip, type TooltipProps } from "./tooltip";
 
 export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 type Shape = "button" | "pill";

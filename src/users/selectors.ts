@@ -1,5 +1,5 @@
 import { createSelector } from "@app/fx";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { selectToken } from "@app/token";
 
 export const selectUsers = schema.users.selectTable;

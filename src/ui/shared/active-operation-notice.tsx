@@ -2,10 +2,10 @@ import { prettyDateTime } from "@app/date";
 import { selectLatestOpByResourceId } from "@app/deploy";
 import { useSelector } from "@app/react";
 import { operationDetailUrl } from "@app/routes";
-import { WebState } from "@app/schema";
-import { StatusVariant } from "@app/status-variant";
+import type { WebState } from "@app/schema";
+import type { StatusVariant } from "@app/status-variant";
 import { capitalize } from "@app/string-utils";
-import { OperationStatus, OperationType, ResourceType } from "@app/types";
+import type { OperationStatus, OperationType, ResourceType } from "@app/types";
 import { Link } from "react-router-dom";
 import { Banner } from "./banner";
 
@@ -20,9 +20,11 @@ const operationStatusToBannerStatus = (
 ): StatusVariant => {
   if (operationStatus === "succeeded") {
     return "success";
-  } else if (operationStatus === "failed") {
+  }
+  if (operationStatus === "failed") {
     return "error";
-  } else if (operationStatus === "running" || operationStatus === "queued") {
+  }
+  if (operationStatus === "running" || operationStatus === "queued") {
     return "progress";
   }
   return "default";

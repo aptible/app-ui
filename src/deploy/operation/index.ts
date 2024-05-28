@@ -1,6 +1,6 @@
 import {
-  PaginateProps,
-  Retryable,
+  type PaginateProps,
+  type Retryable,
   api,
   cacheShortTimer,
   cacheTimer,
@@ -8,8 +8,8 @@ import {
   thunks,
 } from "@app/api";
 import {
-  Next,
-  Operation,
+  type Next,
+  type Operation,
   call,
   createAction,
   createSelector,
@@ -29,7 +29,7 @@ import {
   databaseDetailUrl,
   endpointDetailUrl,
 } from "@app/routes";
-import { WebState, defaultDeployOperation, schema } from "@app/schema";
+import { type WebState, defaultDeployOperation, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
   DeployActivityRow,
@@ -41,7 +41,11 @@ import type {
   OperationType,
   ResourceType,
 } from "@app/types";
-import { ServiceScaleProps, scaleAttrs, selectServiceById } from "../service";
+import {
+  type ServiceScaleProps,
+  scaleAttrs,
+  selectServiceById,
+} from "../service";
 
 export interface DeployOperationResponse {
   id: number;

@@ -1,8 +1,8 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
-import { DeployDatabaseCredential, LinkResponse } from "@app/types";
+import { type WebState, schema } from "@app/schema";
+import type { DeployDatabaseCredential, LinkResponse } from "@app/types";
 
 interface DatabaseCredentialResponse {
   _type: "database_credential";

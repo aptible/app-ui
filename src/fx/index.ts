@@ -49,7 +49,7 @@ export function createAction(actionType: string) {
   return fn;
 }
 
-import { Action } from "@app/types";
+import type { Action } from "@app/types";
 import type {
   ActionWithPayload,
   AnyState,

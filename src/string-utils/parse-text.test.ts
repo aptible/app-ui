@@ -1,6 +1,6 @@
 // @vitest-environment: node
 
-import { TextVal, parseText } from ".";
+import { type TextVal, parseText } from ".";
 
 function defaultTextVal(key: string, value: string): TextVal {
   return {

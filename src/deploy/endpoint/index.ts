@@ -3,7 +3,7 @@ import { selectEnv } from "@app/config";
 import { call, createAction, poll, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import type {
   AcmeConfiguration,
   AcmeStatus,
@@ -20,7 +20,7 @@ import {
   selectDatabasesByOrgAsList,
 } from "../database";
 import { selectEnvironmentsByOrgAsList } from "../environment";
-import { DeployOperationResponse } from "../operation";
+import type { DeployOperationResponse } from "../operation";
 import {
   findServiceById,
   selectAppToServicesMap,

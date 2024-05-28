@@ -12,8 +12,8 @@ import {
 import { defaultOrgResponse } from "@app/organizations";
 import { HOME_PATH, IMPERSONATE_PATH, impersonateUrl } from "@app/routes";
 import { setupIntegrationTest, waitForBootup } from "@app/test";
-import { TokenSuccessResponse, defaultTokenResponse } from "@app/token";
-import { UserResponse, defaultUserResponse } from "@app/users";
+import { type TokenSuccessResponse, defaultTokenResponse } from "@app/token";
+import { type UserResponse, defaultUserResponse } from "@app/users";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";

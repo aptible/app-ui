@@ -16,7 +16,7 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
-  TabItem,
+  type TabItem,
 } from "../shared";
 
 export function RoleHeader({ role }: { role: Role }) {

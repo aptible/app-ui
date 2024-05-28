@@ -1,5 +1,5 @@
 import {
-  Placement,
+  type Placement,
   autoPlacement,
   autoUpdate,
   offset,

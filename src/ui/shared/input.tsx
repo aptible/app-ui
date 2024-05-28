@@ -1,6 +1,6 @@
 import cn from "classnames";
 import { forwardRef } from "react";
-import { InputHTMLAttributes } from "react";
+import type { InputHTMLAttributes } from "react";
 import { IconSearch } from "./icons";
 import { tokens } from "./tokens";
 

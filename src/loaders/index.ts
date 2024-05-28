@@ -1,8 +1,8 @@
 import { thunks } from "@app/api";
 import { schema } from "@app/schema";
 import {
-  LoaderState,
-  LoadingStatus,
+  type LoaderState,
+  type LoadingStatus,
   createSelector,
   defaultLoader,
 } from "starfx";

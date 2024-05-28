@@ -1,4 +1,4 @@
-import { HalEmbedded, LinkResponse } from "./hal";
+import type { HalEmbedded, LinkResponse } from "./hal";
 
 export interface Invitation {
   id: string;

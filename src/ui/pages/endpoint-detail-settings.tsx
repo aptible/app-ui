@@ -1,5 +1,5 @@
 import {
-  EndpointUpdateProps,
+  type EndpointUpdateProps,
   fetchImageById,
   getContainerPort,
   isRequiresCert,

@@ -1,5 +1,5 @@
 import { createReadableStatus } from "@app/deploy";
-import { DeployOperation, OperationStatus } from "@app/types";
+import type { DeployOperation, OperationStatus } from "@app/types";
 
 export const resolveOperationStatuses = (
   stats: { status: OperationStatus; updatedAt: string }[],

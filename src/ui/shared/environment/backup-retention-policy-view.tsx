@@ -1,5 +1,5 @@
 import {
-  UpdateBackupRp,
+  type UpdateBackupRp,
   fetchBackupRp,
   selectLatestBackupRpByEnvId,
   updateBackupRp,
@@ -23,7 +23,7 @@ const validators = {
     const txt = "Number of daily backups";
     const value = data.daily;
 
-    if (isNaN(value)) {
+    if (Number.isNaN(value)) {
       return `${txt} must be a number`;
     }
     if (value <= 0) {
@@ -37,7 +37,7 @@ const validators = {
     const txt = "Number of monthly backups";
     const value = data.monthly;
 
-    if (isNaN(value)) {
+    if (Number.isNaN(value)) {
       return `${txt} must be a number`;
     }
     if (value < 0) {
@@ -51,7 +51,7 @@ const validators = {
     const txt = "Number of yearly backups";
     const value = data.yearly;
 
-    if (isNaN(value)) {
+    if (Number.isNaN(value)) {
       return `${txt} must be a number`;
     }
     if (value < 0) {
@@ -179,7 +179,9 @@ export const BackupRpEditor = ({
                 id="daily"
                 type="number"
                 value={daily}
-                onChange={(e) => setDaily(parseInt(e.currentTarget.value))}
+                onChange={(e) =>
+                  setDaily(Number.parseInt(e.currentTarget.value))
+                }
               />
             </FormGroup>
 
@@ -194,7 +196,7 @@ export const BackupRpEditor = ({
                 type="number"
                 value={monthly}
                 onChange={(e) => {
-                  setMonthly(parseInt(e.currentTarget.value));
+                  setMonthly(Number.parseInt(e.currentTarget.value));
                 }}
               />
             </FormGroup>
@@ -210,7 +212,7 @@ export const BackupRpEditor = ({
                 type="number"
                 value={yearly}
                 onChange={(e) => {
-                  setYearly(parseInt(e.currentTarget.value));
+                  setYearly(Number.parseInt(e.currentTarget.value));
                 }}
               />
             </FormGroup>

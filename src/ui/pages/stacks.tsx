@@ -8,7 +8,7 @@ import {
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { createStackUrl } from "@app/routes";
-import { DeployStack } from "@app/types";
+import type { DeployStack } from "@app/types";
 import { useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";

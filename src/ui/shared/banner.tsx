@@ -1,6 +1,6 @@
 import { useSelector } from "@app/react";
 import { homeUrl } from "@app/routes";
-import { StatusVariant, variantToClassName } from "@app/status-variant";
+import { type StatusVariant, variantToClassName } from "@app/status-variant";
 import { selectIsUserAuthenticated } from "@app/token";
 import classNames from "classnames";
 import { Link } from "react-router-dom";

@@ -1,5 +1,5 @@
-import { LinkResponse } from "./hal";
-import { Timestamps } from "./helpers";
+import type { LinkResponse } from "./hal";
+import type { Timestamps } from "./helpers";
 
 export type ProvisionableStatus =
   | "pending"

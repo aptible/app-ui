@@ -147,22 +147,20 @@ export const parseText = <
           value += char;
           foundQuote = false;
           continue;
-        } else {
-          // we found a double-quote so record it so we can detect
-          // the closing quote
-          foundQuote = true;
         }
+        // we found a double-quote so record it so we can detect
+        // the closing quote
+        foundQuote = true;
       } else if (char === "'") {
         // closing single-quote
         if (foundSingleQuote) {
           value += char;
           foundSingleQuote = false;
           continue;
-        } else {
-          // we found a single-quote so record it so we can detect
-          // the closing quote
-          foundSingleQuote = true;
         }
+        // we found a single-quote so record it so we can detect
+        // the closing quote
+        foundSingleQuote = true;
       }
     } else {
       // we found an equal char so that marks the end of the key string

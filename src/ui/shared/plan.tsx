@@ -1,7 +1,7 @@
 import { selectPlansForView } from "@app/deploy";
 import { useSelector } from "@app/react";
 import { capitalize } from "@app/string-utils";
-import { DeployActivePlan, DeployPlan, PlanName } from "@app/types";
+import type { DeployActivePlan, DeployPlan, PlanName } from "@app/types";
 import { Button, ButtonLinkExternal } from "./button";
 import { IconCheckCircle } from "./icons";
 import { tokens } from "./tokens";

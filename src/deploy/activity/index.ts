@@ -4,7 +4,7 @@ import {
   databaseDetailUrl,
   environmentIntegrationsUrl,
 } from "@app/routes";
-import { WebState } from "@app/schema";
+import type { WebState } from "@app/schema";
 import type { DeployActivityRow, OperationType } from "@app/types";
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";

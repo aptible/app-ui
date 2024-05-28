@@ -7,7 +7,7 @@ import {
 import { selectOrigin } from "@app/config";
 import { call, select } from "@app/fx";
 import { selectOrganizationById } from "@app/organizations";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { deserializeUser } from "./serializers";
 import type { CreateUserForm, UserResponse } from "./types";
 

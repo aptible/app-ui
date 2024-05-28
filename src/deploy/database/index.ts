@@ -1,9 +1,15 @@
-import { ThunkCtx, api, cacheMinTimer, thunkLoader, thunks } from "@app/api";
-import { FetchJson, Payload, call, parallel, select } from "@app/fx";
+import {
+  type ThunkCtx,
+  api,
+  cacheMinTimer,
+  thunkLoader,
+  thunks,
+} from "@app/api";
+import { type FetchJson, type Payload, call, parallel, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
   DeployApiCtx,
@@ -21,7 +27,7 @@ import {
   selectEnvironmentsByOrg,
 } from "../environment";
 import {
-  DeployOperationResponse,
+  type DeployOperationResponse,
   selectOperationsByDatabaseId,
   waitForOperation,
 } from "../operation";
@@ -295,7 +301,10 @@ export const provisionDatabaseList = thunks.create<{
   yield* schema.update(schema.loaders.start({ id }));
   const group = yield* parallel(
     dbs.map((db) => {
-      return () => provisionDatabase.run(provisionDatabase(mapCreatorToProvision(envId, db)));
+      return () =>
+        provisionDatabase.run(
+          provisionDatabase(mapCreatorToProvision(envId, db)),
+        );
     }),
   );
   const results = yield* group;

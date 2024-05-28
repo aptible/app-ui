@@ -28,7 +28,7 @@ import * as source from "@app/source";
 import * as theme from "@app/theme";
 import * as token from "@app/token";
 import * as users from "@app/users";
-import { Callable } from "starfx";
+import type { Callable } from "starfx";
 
 const corePackages: any[] = [
   config,

@@ -17,8 +17,8 @@ import {
   appServiceScalePathUrl,
   appServiceUrl,
 } from "@app/routes";
-import { DeployService, DeployServiceRow, DeployStack } from "@app/types";
-import { PaginateProps, usePaginate } from "@app/ui/hooks";
+import type { DeployService, DeployServiceRow, DeployStack } from "@app/types";
+import { type PaginateProps, usePaginate } from "@app/ui/hooks";
 import { Link } from "react-router-dom";
 import { ButtonLink } from "../button";
 import { Code } from "../code";

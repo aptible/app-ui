@@ -4,9 +4,9 @@ import {
   selectBackupsByIds,
 } from "@app/deploy";
 import { useCache, useSelector } from "@app/react";
-import { DeployBackup, HalEmbedded } from "@app/types";
+import type { DeployBackup, HalEmbedded } from "@app/types";
 import { useState } from "react";
-import { PaginateProps } from "./use-paginate";
+import type { PaginateProps } from "./use-paginate";
 
 export function usePaginatedBackupsByDatabaseId(dbId: string) {
   const [page, setPage] = useState(1);

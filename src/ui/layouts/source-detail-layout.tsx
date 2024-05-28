@@ -6,7 +6,7 @@ import {
   sourcesUrl,
 } from "@app/routes";
 import { fetchSourceById, selectSourceById } from "@app/source";
-import { DeploySource } from "@app/types";
+import type { DeploySource } from "@app/types";
 import { Outlet, useParams } from "react-router";
 import {
   CopyText,
@@ -17,7 +17,7 @@ import {
   DetailTitleBar,
   OptionalExternalLink,
   SourceLogo,
-  TabItem,
+  type TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 

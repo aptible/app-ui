@@ -1,10 +1,10 @@
 import { type WebState, schema } from "@app/schema";
 import { useEffect, useRef } from "react";
-import { LoaderState, ThunkAction } from "starfx";
+import type { LoaderState, ThunkAction } from "starfx";
 import {
   type TypedUseSelectorHook,
-  useDispatch,
   useSelector as useBaseSelector,
+  useDispatch,
 } from "starfx/react";
 export const useSelector: TypedUseSelectorHook<WebState> = useBaseSelector;
 

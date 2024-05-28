@@ -1,8 +1,8 @@
 import { bootup } from "@app/bootup";
 import { createLog } from "@app/debug";
 import {
-  Callable,
-  Operation,
+  type Callable,
+  type Operation,
   PERSIST_LOADER_ID,
   configureStore,
   createBatchMdw,
@@ -13,9 +13,9 @@ import {
   take,
 } from "@app/fx";
 import {
-  WebState,
-  initialState as schemaInitialState,
+  type WebState,
   schema,
+  initialState as schemaInitialState,
 } from "@app/schema";
 import { rootEntities, tasks } from "./packages";
 

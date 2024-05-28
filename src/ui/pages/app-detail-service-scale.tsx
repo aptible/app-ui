@@ -1,7 +1,7 @@
 import { prettyDateTime } from "@app/date";
 import {
   DEFAULT_INSTANCE_CLASS,
-  ServiceSizingPolicyEditProps,
+  type ServiceSizingPolicyEditProps,
   cancelServicesOpsPoll,
   containerSizesByProfile,
   fetchApp,
@@ -30,8 +30,8 @@ import {
 } from "@app/react";
 import { appActivityUrl } from "@app/routes";
 import { schema } from "@app/schema";
-import { DeployOperation, InstanceClass } from "@app/types";
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import type { DeployOperation, InstanceClass } from "@app/types";
+import { type SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { usePoller, useValidator } from "../hooks";
 import {
@@ -52,7 +52,7 @@ import {
   Input,
   Label,
   Select,
-  SelectOption,
+  type SelectOption,
 } from "../shared";
 
 const validators = {
@@ -194,7 +194,9 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "percentile",
-                          Number(parseFloat(e.currentTarget.value).toFixed(1)),
+                          Number(
+                            Number.parseFloat(e.currentTarget.value).toFixed(1),
+                          ),
                         )
                       }
                     />
@@ -216,7 +218,7 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "minimumMemory",
-                          parseInt(e.currentTarget.value, 10),
+                          Number.parseInt(e.currentTarget.value, 10),
                         )
                       }
                     />
@@ -238,7 +240,7 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "maximumMemory",
-                          parseInt(e.currentTarget.value, 10),
+                          Number.parseInt(e.currentTarget.value, 10),
                         )
                       }
                     />
@@ -261,7 +263,9 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "memScaleUpThreshold",
-                          Number(parseFloat(e.currentTarget.value).toFixed(2)),
+                          Number(
+                            Number.parseFloat(e.currentTarget.value).toFixed(2),
+                          ),
                         )
                       }
                     />
@@ -284,7 +288,9 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "memScaleDownThreshold",
-                          Number(parseFloat(e.currentTarget.value).toFixed(2)),
+                          Number(
+                            Number.parseFloat(e.currentTarget.value).toFixed(2),
+                          ),
                         )
                       }
                     />
@@ -309,7 +315,9 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "memCpuRatioRThreshold",
-                          Number(parseFloat(e.currentTarget.value).toFixed(1)),
+                          Number(
+                            Number.parseFloat(e.currentTarget.value).toFixed(1),
+                          ),
                         )
                       }
                     />
@@ -332,7 +340,9 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "memCpuRatioCThreshold",
-                          Number(parseFloat(e.currentTarget.value).toFixed(2)),
+                          Number(
+                            Number.parseFloat(e.currentTarget.value).toFixed(2),
+                          ),
                         )
                       }
                     />
@@ -355,7 +365,7 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "metricLookbackSeconds",
-                          parseInt(e.currentTarget.value, 10),
+                          Number.parseInt(e.currentTarget.value, 10),
                         )
                       }
                     />
@@ -377,7 +387,7 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "postScaleUpCooldownSeconds",
-                          parseInt(e.currentTarget.value, 10),
+                          Number.parseInt(e.currentTarget.value, 10),
                         )
                       }
                     />
@@ -399,7 +409,7 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "postScaleDownCooldownSeconds",
-                          parseInt(e.currentTarget.value, 10),
+                          Number.parseInt(e.currentTarget.value, 10),
                         )
                       }
                     />
@@ -421,7 +431,7 @@ const VerticalAutoscalingSection = ({
                       onChange={(e) =>
                         updatePolicy(
                           "postReleaseCooldownSeconds",
-                          parseInt(e.currentTarget.value, 10),
+                          Number.parseInt(e.currentTarget.value, 10),
                         )
                       }
                     />
@@ -668,7 +678,9 @@ export const AppDetailServiceScalePage = () => {
                 max="32"
                 placeholder="0 (Min), 32 (Max)"
                 onChange={(e) =>
-                  setContainerCount(parseInt(e.currentTarget.value || "0", 10))
+                  setContainerCount(
+                    Number.parseInt(e.currentTarget.value || "0", 10),
+                  )
                 }
               />
             </FormGroup>
@@ -681,7 +693,7 @@ export const AppDetailServiceScalePage = () => {
               <Select
                 id="memory-container"
                 value={containerSize.toString()}
-                onSelect={(opt) => setContainerSize(parseInt(opt.value))}
+                onSelect={(opt) => setContainerSize(Number.parseInt(opt.value))}
                 options={memoryContainerOptions}
               />
             </FormGroup>

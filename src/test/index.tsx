@@ -2,12 +2,16 @@ import { appRoutes } from "@app/app";
 import { setupTestStore } from "@app/app";
 import { bootup } from "@app/bootup";
 import { hasDeployEnvironment } from "@app/deploy";
-import { FxStore } from "@app/fx";
+import type { FxStore } from "@app/fx";
 import { testEnv } from "@app/mocks";
 import { Provider } from "@app/react";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { waitFor } from "@testing-library/react";
-import { RouteObject, RouterProvider, createMemoryRouter } from "react-router";
+import {
+  type RouteObject,
+  RouterProvider,
+  createMemoryRouter,
+} from "react-router";
 
 /**
  * This function helps simulate booting the entire app as if it were

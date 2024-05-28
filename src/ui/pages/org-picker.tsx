@@ -6,7 +6,7 @@ import {
 } from "@app/organizations";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import { loginUrl, ssoUrl } from "@app/routes";
-import { Organization } from "@app/types";
+import type { Organization } from "@app/types";
 import { selectCurrentUserId, updateUserOrg } from "@app/users";
 import { useNavigate } from "react-router";
 import { AppSidebarLayout } from "../layouts";

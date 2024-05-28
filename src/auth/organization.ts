@@ -1,12 +1,12 @@
 import { authApi, cacheTimer } from "@app/api";
 import { call, select } from "@app/fx";
 import {
-  OrganizationResponse,
+  type OrganizationResponse,
   selectOrganizationSelectedId,
 } from "@app/organizations";
 import { schema } from "@app/schema";
 import { selectToken } from "@app/token";
-import { HalEmbedded, Organization } from "@app/types";
+import type { HalEmbedded, Organization } from "@app/types";
 import { exchangeToken } from "./token";
 
 export const fetchOrganizations = authApi.get<

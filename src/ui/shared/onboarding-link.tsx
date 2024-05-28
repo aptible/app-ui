@@ -5,7 +5,7 @@ import {
 } from "@app/deploy";
 import { useSelector } from "@app/react";
 import { appDeployResumeUrl } from "@app/routes";
-import { DeployApp } from "@app/types";
+import type { DeployApp } from "@app/types";
 import { Link } from "react-router-dom";
 import { IconArrowRight } from "./icons";
 

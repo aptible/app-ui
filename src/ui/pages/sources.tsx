@@ -1,5 +1,5 @@
 import {
-  DeploySourceRow,
+  type DeploySourceRow,
   fetchApps,
   selectSourcesForTableSearch,
 } from "@app/deploy";

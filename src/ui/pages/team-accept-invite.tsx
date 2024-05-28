@@ -4,7 +4,7 @@ import { fetchInvitation, selectInvitationById } from "@app/invitations";
 import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { setRedirectPath } from "@app/redirect-path";
 import { homeUrl, loginUrl, teamAcceptInviteUrl } from "@app/routes";
-import { Invitation } from "@app/types";
+import type { Invitation } from "@app/types";
 import { selectCurrentUser } from "@app/users";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";

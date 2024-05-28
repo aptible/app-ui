@@ -1,12 +1,12 @@
 import { api, cacheMinTimer, cacheShortTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import {
-  ContainerProfileData,
-  DeployOperation,
+  type ContainerProfileData,
+  type DeployOperation,
   type DeployService,
-  DeployServiceResponse,
+  type DeployServiceResponse,
   type InstanceClass,
   excludesFalse,
 } from "@app/types";

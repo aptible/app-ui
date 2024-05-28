@@ -15,7 +15,7 @@ import {
   selectMetricsLoaded,
 } from "@app/metric-tunnel";
 import { useQuery, useSelector } from "@app/react";
-import { MetricHorizons } from "@app/types";
+import type { MetricHorizons } from "@app/types";
 import { useState } from "react";
 import { useParams } from "react-router";
 import {
@@ -24,7 +24,7 @@ import {
   LoadResources,
   Loading,
   LoadingSpinner,
-  MetricTabTypes,
+  type MetricTabTypes,
   MetricsHorizonControls,
   MetricsViewControls,
 } from "../shared";

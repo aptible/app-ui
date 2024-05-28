@@ -1,7 +1,7 @@
 // @vitest-environment: node
 
 import {
-  WebState,
+  type WebState,
   defaultDeployApp,
   defaultDeployAppConfig,
   defaultDeployDatabase,

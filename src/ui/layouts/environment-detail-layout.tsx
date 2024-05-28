@@ -10,7 +10,7 @@ import {
 } from "@app/deploy";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import { environmentDetailUrl, stackDetailEnvsUrl } from "@app/routes";
-import {
+import type {
   DeployEndpoint,
   DeployEnvironment,
   DeployEnvironmentStats,
@@ -28,7 +28,7 @@ import {
   DetailPageHeaderView,
   DetailTitleBar,
   EndpointUrl,
-  TabItem,
+  type TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 

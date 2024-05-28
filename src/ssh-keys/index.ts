@@ -1,5 +1,5 @@
 import { authApi } from "@app/api";
-import { HalEmbedded } from "@app/types";
+import type { HalEmbedded } from "@app/types";
 
 export interface SshKeyResponse {
   id: string;

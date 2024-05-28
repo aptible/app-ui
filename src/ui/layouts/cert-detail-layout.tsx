@@ -26,7 +26,7 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
-  TabItem,
+  type TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 

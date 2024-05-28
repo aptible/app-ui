@@ -1,16 +1,16 @@
 import { authApi } from "@app/api";
 import { revokeTokensMdw } from "@app/auth";
-import { Next, select, takeLeading } from "@app/fx";
+import { type Next, select, takeLeading } from "@app/fx";
 import { defaultEntity } from "@app/hal";
 import { schema } from "@app/schema";
-import {
+import type {
   AuthApiCtx,
   HalEmbedded,
   LinkResponse,
   Otp,
   U2fDevice,
 } from "@app/types";
-import { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
+import type { PublicKeyCredentialCreationOptionsJSON } from "node_modules/@github/webauthn-json/dist/types/basic/json";
 
 interface U2fDeviceResponse {
   id: string;

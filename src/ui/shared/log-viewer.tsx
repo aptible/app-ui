@@ -1,7 +1,7 @@
 import { fetchOperationLogs } from "@app/deploy";
 import { useApi, useSelector } from "@app/react";
 import { schema } from "@app/schema";
-import { DeployOperation } from "@app/types";
+import type { DeployOperation } from "@app/types";
 import { useEffect } from "react";
 
 export const LogLine = ({ text }: { text: string }) => {

@@ -1,7 +1,7 @@
 import { authApi } from "@app/api";
 import { takeLeading } from "@app/fx";
 import { schema } from "@app/schema";
-import { AuthApiCtx, HalEmbedded } from "@app/types";
+import type { AuthApiCtx, HalEmbedded } from "@app/types";
 
 interface VerifyEmail {
   userId: string;

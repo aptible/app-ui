@@ -1,5 +1,5 @@
 import {
-  TrialResponse,
+  type TrialResponse,
   fetchStripeSources,
   fetchTrials,
   selectBillingDetail,

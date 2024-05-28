@@ -27,7 +27,7 @@ import {
   Group,
   Input,
   Select,
-  SelectOption,
+  type SelectOption,
   tokens,
 } from "../shared";
 

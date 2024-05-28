@@ -1,4 +1,4 @@
-import { ThunkCtx, thunks } from "@app/api";
+import { type ThunkCtx, thunks } from "@app/api";
 import {
   fetchCurrentToken,
   fetchMembershipsByOrgId,

@@ -1,6 +1,6 @@
 import { selectMetricDataAsFlatTableByContainer } from "@app/metric-tunnel";
 import { useSelector } from "@app/react";
-import { DeployContainer, MetricHorizons } from "@app/types";
+import type { DeployContainer, MetricHorizons } from "@app/types";
 import { TBody, THead, Table, Td, Th, Tr } from "./table";
 
 export const ContainerMetricsDataTable = ({

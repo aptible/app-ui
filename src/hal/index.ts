@@ -1,5 +1,5 @@
-import { Next, Operation, StoreUpdater, select } from "@app/fx";
-import { WebState, schema } from "@app/schema";
+import { type Next, type Operation, type StoreUpdater, select } from "@app/fx";
+import { type WebState, schema } from "@app/schema";
 import type {
   DeployApiCtx,
   EmbeddedMap,

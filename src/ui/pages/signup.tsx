@@ -13,7 +13,7 @@ import {
   verifyEmailRequestUrl,
 } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
-import { CreateUserForm } from "@app/users";
+import type { CreateUserForm } from "@app/users";
 import {
   emailValidator,
   existValidtor,

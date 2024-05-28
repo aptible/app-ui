@@ -2,14 +2,14 @@ import { api, cacheMinTimer, cacheTimer, thunks } from "@app/api";
 import { call } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
-import {
+import { type WebState, schema } from "@app/schema";
+import type {
   DeployLogDrain,
   LinkResponse,
   LogDrainType,
   ProvisionableStatus,
 } from "@app/types";
-import { DeployOperationResponse } from "../operation";
+import type { DeployOperationResponse } from "../operation";
 
 export interface CreateLogDrainBase {
   envId: string;

@@ -1,5 +1,5 @@
 import {
-  DeployEnvironmentRow,
+  type DeployEnvironmentRow,
   fetchEnvironments,
   selectAppsByEnvId,
   selectDatabasesByEnvId,

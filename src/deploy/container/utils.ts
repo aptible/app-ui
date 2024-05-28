@@ -1,4 +1,4 @@
-import { ContainerProfileData, InstanceClass } from "@app/types";
+import type { ContainerProfileData, InstanceClass } from "@app/types";
 
 export const GB = 1024;
 export const CONTAINER_PROFILES: {

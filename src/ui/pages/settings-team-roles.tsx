@@ -16,7 +16,13 @@ import {
   teamRolesCreateUrl,
   teamRolesUrl,
 } from "@app/routes";
-import { Permission, PermissionScope, Role, RoleType, User } from "@app/types";
+import type {
+  Permission,
+  PermissionScope,
+  Role,
+  RoleType,
+  User,
+} from "@app/types";
 import { selectUsersAsList } from "@app/users";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -33,7 +39,7 @@ import {
   PermCheck,
   RoleColHeader,
   Select,
-  SelectOption,
+  type SelectOption,
   TBody,
   THead,
   Table,

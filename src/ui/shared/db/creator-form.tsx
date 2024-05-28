@@ -1,16 +1,16 @@
-import { Reducer, useEffect, useState } from "react";
+import { type Reducer, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { DbCreatorProps } from "@app/deploy";
+import type { DbCreatorProps } from "@app/deploy";
 import { idCreator } from "@app/id";
-import { DeployDatabaseImage } from "@app/types";
+import type { DeployDatabaseImage } from "@app/types";
 import { handleValidator } from "@app/validator";
 
 import { Button } from "../button";
-import { FeedbackVariant, FormGroup } from "../form-group";
+import { type FeedbackVariant, FormGroup } from "../form-group";
 import { IconPlusCircle } from "../icons";
 import { Input } from "../input";
-import { Select, SelectOption } from "../select";
+import { Select, type SelectOption } from "../select";
 import { tokens } from "../tokens";
 
 export type DbCreatorReducer = Reducer<

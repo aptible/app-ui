@@ -1,4 +1,4 @@
-import { ExchangeToken, exchangeToken } from "@app/auth";
+import { type ExchangeToken, exchangeToken } from "@app/auth";
 import { selectOrganizationSelected } from "@app/organizations";
 import { useDispatch, useLoader, useSelector } from "@app/react";
 import { homeUrl } from "@app/routes";

@@ -1,6 +1,6 @@
 import { authApi } from "@app/api";
 import { defaultHalHref } from "@app/hal";
-import { HalEmbedded, LinkResponse } from "@app/types";
+import type { HalEmbedded, LinkResponse } from "@app/types";
 
 export interface SamlConfigurationResponse {
   id: string;
