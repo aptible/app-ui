@@ -8,9 +8,9 @@ import { useEffect, useRef, useState } from "react";
 export interface HelpTextAccordionProps {
   title: string;
   children: React.ReactNode;
-  onChange?: (open: boolean) => void | null;
-  onOpen?: () => void | null;
-  onClose?: () => void | null;
+  onChange?: (open: boolean) => void;
+  onOpen?: () => void;
+  onClose?: () => void;
 }
 
 export const HelpTextAccordion = ({

@@ -192,7 +192,7 @@ export const modifyServiceSizingPolicy =
     function* (ctx, next) {
       yield* schema.update(schema.loaders.start({ id: ctx.name }));
       const nextPolicy = ctx.payload;
-      let updateCtx;
+      let updateCtx: any;
       if (nextPolicy.id) {
         updateCtx = yield* call(() =>
           updateServiceSizingPolicyByServiceId.run(nextPolicy),

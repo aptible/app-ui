@@ -28,54 +28,8 @@ import {
   CheckBox,
   FormGroup,
   Group,
-  IconAlertTriangle,
-  IconArrowLeft,
-  IconArrowRight,
-  IconBox,
-  IconCertificate,
-  IconCheck,
-  IconCheckCircle,
-  IconChevronDown,
-  IconChevronRight,
-  IconChevronUp,
-  IconCloud,
-  IconCommit,
-  IconCopy,
-  IconCreditCard,
-  IconCylinder,
-  IconDiff,
-  IconDownload,
-  IconEdit,
-  IconEllipsis,
-  IconEndpoint,
-  IconExternalLink,
-  IconExternalResource,
-  IconEyeClosed,
-  IconEyeOpen,
-  IconFit,
   IconGitBranch,
-  IconGithub,
-  IconGlobe,
-  IconHamburger,
-  IconHeart,
-  IconHome,
-  IconInfo,
-  IconKey,
-  IconLayers,
-  IconLock,
-  IconLogout,
-  IconMap,
   IconPlusCircle,
-  IconRefresh,
-  IconSearch,
-  IconService,
-  IconSettings,
-  IconShield,
-  IconTarget,
-  IconThumbsUp,
-  IconTrash,
-  IconX,
-  IconXCircle,
   Input,
   InputSearch,
   KeyValueGroup,
@@ -622,73 +576,6 @@ const Navigation = () => (
   </div>
 );
 
-const Icons = () => (
-  <div className="pt-8 space-y-4">
-    <h1 id="icons" className={tokens.type.h1}>
-      Icons
-    </h1>
-    <div className="mt-4 space-y-4">
-      {[
-        ["IconArrowRight", <IconArrowRight />],
-        ["IconArrowLeft", <IconArrowLeft />],
-        ["IconEdit", <IconEdit />],
-        ["IconChevronUp", <IconChevronUp />],
-        ["IconChevronRight", <IconChevronRight />],
-        ["IconChevronDown", <IconChevronDown />],
-        ["IconCylinder", <IconCylinder />],
-        ["IconTrash", <IconTrash />],
-        ["IconBox", <IconBox />],
-        ["IconEndpoint", <IconEndpoint />],
-        ["IconService", <IconService />],
-        ["IconSettings", <IconSettings />],
-        ["IconSearch", <IconSearch />],
-        ["IconShield", <IconShield />],
-        ["IconCheck", <IconCheck />],
-        ["IconCheckCircle", <IconCheckCircle />],
-        ["IconPlusCircle", <IconPlusCircle />],
-        ["IconX", <IconX />],
-        ["IconXCircle", <IconXCircle />],
-        ["IconAlertTriangle", <IconAlertTriangle />],
-        ["IconLayers", <IconLayers />],
-        ["IconLogout", <IconLogout />],
-        ["IconGitBranch", <IconGitBranch />],
-        ["IconInfo", <IconInfo />],
-        ["IconCreditCard", <IconCreditCard />],
-        ["IconGlobe", <IconGlobe />],
-        ["IconEllipsis", <IconEllipsis />],
-        ["IconExternalLink", <IconExternalLink />],
-        ["IconCopy", <IconCopy />],
-        ["IconDownload", <IconDownload />],
-        ["IconThumbsUp", <IconThumbsUp />],
-        ["IconRefresh", <IconRefresh />],
-        ["IconHeart", <IconHeart />],
-        ["IconCloud", <IconCloud />],
-        ["IconHamburger", <IconHamburger />],
-        ["IconCertificate", <IconCertificate />],
-        ["IconKey", <IconKey />],
-        ["IconLock", <IconLock />],
-        ["IconGithub", <IconGithub />],
-        ["IconDiff", <IconDiff />],
-        ["IconMap", <IconMap />],
-        ["IconHome", <IconHome />],
-        ["IconFit", <IconFit />],
-        ["IconEyeOpen", <IconEyeOpen />],
-        ["IconEyeClosed", <IconEyeClosed />],
-        ["IconTarget", <IconTarget />],
-        ["IconCommit", <IconCommit />],
-        ["IconExternalResource", <IconExternalResource />],
-      ].map(([title, icon]) => (
-        <div key={title as string}>
-          <div className="inline-block -mb-1">{icon}</div>{" "}
-          <span>
-            <pre className="inline">{title}</pre>
-          </span>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
 const Info = () => (
   <div className="pt-8 space-y-4">
     <h1 id="tooltips" className={tokens.type.h1}>
@@ -835,7 +722,6 @@ export const StylesPage = () => (
       <Logs />
       <Pills />
       <Navigation />
-      <Icons />
       <Info />
       <DetailBoxes />
       <Secrets />

@@ -47,7 +47,7 @@ const selectActivityForTable = createSelector(
               : db.handle;
         } else if (op.resourceType === "service") {
           const service = findServiceById(services, { id: op.resourceId });
-          let url;
+          let url = "";
           if (service.appId !== "") {
             // TODO - temporary until we have a service detail page
             url = appDetailUrl(service.appId);
