@@ -47,7 +47,7 @@ export function Select<V = string>({
       className={finClassName}
       value={value}
       defaultValue={defaultValue}
-      placeholder={placeholder}
+      aria-placeholder={placeholder}
       onChange={(e) => {
         const value = e.currentTarget.value;
         const option = options.find((o) => o.value === value);
