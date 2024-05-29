@@ -24,7 +24,7 @@
     "@github/webauthn-json": "^2.1.1",
     "@remix-run/web-fetch": "^4.4.2",
     "@sentry/react": "^7.73.0",
-    "@stripe/react-stripe-js": "^2.3.1",
+    "@stripe/react-stripe-js": "^2.7.1",
     "@stripe/stripe-js": "^2.1.7",
     "@tailwindcss/forms": "^0.5.7",
     "@testing-library/dom": "^10.1.0",
