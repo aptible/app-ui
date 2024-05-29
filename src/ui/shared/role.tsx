@@ -6,7 +6,7 @@ import {
 } from "@app/deploy";
 import { useSelector } from "@app/react";
 import { schema } from "@app/schema";
-import { Permission, PermissionScope } from "@app/types";
+import type { Permission, PermissionScope } from "@app/types";
 import { IconCheckCircle, IconX } from "./icons";
 import { Th } from "./table";
 import { Tooltip } from "./tooltip";

@@ -1,5 +1,5 @@
 import {
-  DeployCodeScanResponse,
+  type DeployCodeScanResponse,
   fetchApp,
   fetchConfiguration,
   hasDeployOperation,

@@ -1,16 +1,16 @@
 import { authApi } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { titleCase } from "@app/string-utils";
 import {
-  HalEmbedded,
-  LinkResponse,
-  Role,
-  RoleType,
+  type HalEmbedded,
+  type LinkResponse,
+  type Role,
+  type RoleType,
   excludesFalse,
 } from "@app/types";
-import { UserResponse, selectUsersAsList } from "@app/users";
+import { type UserResponse, selectUsersAsList } from "@app/users";
 
 export interface RoleResponse {
   id: string;

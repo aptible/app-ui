@@ -1,8 +1,13 @@
-import { PaginateProps, api, cacheMinTimer, cacheShortTimer } from "@app/api";
+import {
+  type PaginateProps,
+  api,
+  cacheMinTimer,
+  cacheShortTimer,
+} from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
   ContainerProfileData,

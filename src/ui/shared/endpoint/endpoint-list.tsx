@@ -1,5 +1,5 @@
 import {
-  DeployEndpointRow,
+  type DeployEndpointRow,
   fetchCertificateById,
   fetchEndpoints,
   getEndpointText,
@@ -24,7 +24,7 @@ import {
   endpointDetailSetupUrl,
   endpointDetailUrl,
 } from "@app/routes";
-import { DeployEndpoint } from "@app/types";
+import type { DeployEndpoint } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";

@@ -1,8 +1,8 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
-import { DeployVpcPeer, LinkResponse } from "@app/types";
+import { type WebState, schema } from "@app/schema";
+import type { DeployVpcPeer, LinkResponse } from "@app/types";
 
 export interface DeployVpcPeerResponse {
   id: number;

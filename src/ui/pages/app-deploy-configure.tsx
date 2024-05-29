@@ -1,5 +1,5 @@
 import {
-  DbCreatorProps,
+  type DbCreatorProps,
   configEnvListToEnv,
   configEnvToStr,
   fetchApp,
@@ -13,14 +13,14 @@ import {
   selectDatabasesByEnvId,
   selectServiceDefinitionsByAppId,
 } from "@app/deploy";
-import { DeployCodeScanResponse } from "@app/deploy";
+import type { DeployCodeScanResponse } from "@app/deploy";
 import { idCreator } from "@app/id";
 import { DB_ENV_TEMPLATE_KEY, deployProject } from "@app/projects";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import { appDeployGetStartedUrl, appDeployStatusUrl } from "@app/routes";
 import { schema } from "@app/schema";
 import { parseText } from "@app/string-utils";
-import { Reducer, useEffect, useReducer, useState } from "react";
+import { type Reducer, useEffect, useReducer, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -36,11 +36,11 @@ import {
   Button,
   DatabaseCreatorForm,
   DatabaseEnvVarInput,
-  DbCreatorReducer,
-  DbFormProps,
+  type DbCreatorReducer,
+  type DbFormProps,
   DbSelector,
-  DbSelectorAction,
-  DbValidatorError,
+  type DbSelectorAction,
+  type DbValidatorError,
   EnvEditorFormInput,
   ExternalLink,
   FormGroup,
@@ -51,7 +51,7 @@ import {
   Loading,
   PreBox,
   ProgressProject,
-  SelectOption,
+  type SelectOption,
   dbSelectorReducer,
   tokens,
   validateDbName,

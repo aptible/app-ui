@@ -1,5 +1,5 @@
-import { DeploySource } from "@app/types";
-import { ComponentProps } from "react";
+import type { DeploySource } from "@app/types";
+import type { ComponentProps } from "react";
 
 export const SourceLogo = (
   props: ComponentProps<"img"> & { source: DeploySource },

@@ -5,7 +5,7 @@ import {
   selectDatabaseById,
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
-import { DeployDatabaseCredential } from "@app/types";
+import type { DeployDatabaseCredential } from "@app/types";
 import { Box } from "../box";
 import { IconAlertTriangle } from "../icons";
 import { Secret } from "../secret";

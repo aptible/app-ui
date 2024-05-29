@@ -1,16 +1,16 @@
 import { authApi, thunks } from "@app/api";
 import { selectEnv } from "@app/config";
-import { Next, put, select } from "@app/fx";
+import { type Next, put, select } from "@app/fx";
 import { resetStore } from "@app/reset-store";
 import { schema } from "@app/schema";
 import {
-  TokenSuccessResponse,
+  type TokenSuccessResponse,
   deserializeToken,
   selectToken,
 } from "@app/token";
 import { tunaEvent, tunaIdentify } from "@app/tuna";
-import { AuthApiCtx, Token } from "@app/types";
-import { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
+import type { AuthApiCtx, Token } from "@app/types";
+import type { PublicKeyCredentialWithAssertionJSON } from "@github/webauthn-json";
 
 const setToken = thunks.create<Token>("set-token", function* (ctx, next) {
   yield* schema.update(schema.token.set(ctx.payload));

@@ -19,7 +19,7 @@ import {
   useSelector,
 } from "@app/react";
 import { appActivityUrl, environmentActivityUrl } from "@app/routes";
-import { DeployApp, DeployLogDrain, DeployMetricDrain } from "@app/types";
+import type { DeployApp, DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import {

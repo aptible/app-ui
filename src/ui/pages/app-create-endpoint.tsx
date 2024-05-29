@@ -1,6 +1,6 @@
 import {
-  CreateEndpointProps,
-  EndpointManagedType,
+  type CreateEndpointProps,
+  type EndpointManagedType,
   fetchApp,
   fetchEnvironmentById,
   fetchImageById,
@@ -38,7 +38,7 @@ import {
   Radio,
   RadioGroup,
   Select,
-  SelectOption,
+  type SelectOption,
   TextArea,
 } from "../shared";
 

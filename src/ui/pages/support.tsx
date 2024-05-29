@@ -7,7 +7,8 @@ import {
 import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { tunaEvent } from "@app/tuna";
 import { selectCurrentUser } from "@app/users";
-import React, { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppSidebarLayout } from "../layouts";
 import {
   Banner,

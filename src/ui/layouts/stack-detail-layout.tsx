@@ -14,7 +14,7 @@ import {
   stacksUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import { DeployStack } from "@app/types";
+import type { DeployStack } from "@app/types";
 import { useEffect } from "react";
 import { Outlet, useParams } from "react-router";
 import {
@@ -25,7 +25,7 @@ import {
   DetailPageHeaderView,
   DetailTitleBar,
   IconInfo,
-  TabItem,
+  type TabItem,
   Tooltip,
   getStackImg,
 } from "../shared";

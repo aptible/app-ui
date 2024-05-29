@@ -5,7 +5,7 @@ import {
   useLoaderSuccess,
   useSelector,
 } from "@app/react";
-import { SshKeyResponse, fetchSSHKeys, rmSSHKey } from "@app/ssh-keys";
+import { type SshKeyResponse, fetchSSHKeys, rmSSHKey } from "@app/ssh-keys";
 import { selectCurrentUser } from "@app/users";
 import {
   AddSSHKeyForm,

@@ -3,12 +3,12 @@ import {
   defaultSamlConfigurationResponse,
 } from "@app/auth";
 import {
-  DeployAppResponse,
-  DeployDatabaseResponse,
-  DeployEndpointResponse,
-  DeployEnvironmentResponse,
-  DeployMetricDrainResponse,
-  DeployStackResponse,
+  type DeployAppResponse,
+  type DeployDatabaseResponse,
+  type DeployEndpointResponse,
+  type DeployEnvironmentResponse,
+  type DeployMetricDrainResponse,
+  type DeployStackResponse,
   defaultCertificateResponse,
   defaultDatabaseResponse,
   defaultLogDrainResponse,
@@ -17,10 +17,10 @@ import {
   defaultPermissionResponse,
 } from "@app/deploy";
 import { defaultHalHref } from "@app/hal";
-import { RoleResponse, defaultRoleResponse } from "@app/roles";
+import { type RoleResponse, defaultRoleResponse } from "@app/roles";
 import { STATUSPAGE_URL } from "@app/system-status";
-import { DeployServiceResponse } from "@app/types";
-import { UserResponse } from "@app/users";
+import type { DeployServiceResponse } from "@app/types";
+import type { UserResponse } from "@app/users";
 import { rest } from "msw";
 import {
   createId,
@@ -417,7 +417,7 @@ const apiHandlers = [
       return res(
         ctx.json(
           defaultOperationResponse({
-            id: parseInt(req.params.id as string),
+            id: Number.parseInt(req.params.id as string),
             status: "succeeded",
             _links: {
               resource: { href: `${testEnv.apiUrl}/apps/${req.params.id}` },

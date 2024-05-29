@@ -36,7 +36,7 @@ import type {
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
-  PaginateProps,
+  type PaginateProps,
   usePaginatedOpsByAppId,
   usePaginatedOpsByDatabaseId,
   usePaginatedOpsByEndpointId,

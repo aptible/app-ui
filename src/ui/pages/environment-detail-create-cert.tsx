@@ -1,4 +1,4 @@
-import { CreateCertProps, createCertificate } from "@app/deploy";
+import { type CreateCertProps, createCertificate } from "@app/deploy";
 import { useDispatch, useLoader, useLoaderSuccess } from "@app/react";
 import { environmentCertificatesUrl } from "@app/routes";
 import { useState } from "react";

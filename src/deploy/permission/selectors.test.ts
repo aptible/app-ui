@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { createId } from "@app/mocks";
-import { WebState, defaultPermission, defaultRole } from "@app/schema";
-import { DeepPartial, PermissionScope } from "@app/types";
+import { type WebState, defaultPermission, defaultRole } from "@app/schema";
+import type { DeepPartial, PermissionScope } from "@app/types";
 import { selectUserHasPerms } from "./index";
 
 describe("selectUserHasPerms", () => {

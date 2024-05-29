@@ -1,8 +1,8 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
-import { Deployment, LinkResponse, OperationStatus } from "@app/types";
+import { type WebState, schema } from "@app/schema";
+import type { Deployment, LinkResponse, OperationStatus } from "@app/types";
 
 export interface DeploymentResponse {
   id: number;

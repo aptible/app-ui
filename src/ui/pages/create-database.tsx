@@ -1,5 +1,5 @@
 import {
-  DbCreatorProps,
+  type DbCreatorProps,
   fetchDatabaseImages,
   provisionDatabaseList,
   selectDatabaseImagesVisible,
@@ -24,8 +24,8 @@ import {
   Button,
   ButtonCreate,
   DatabaseCreatorForm,
-  DbCreatorReducer,
-  DbValidatorError,
+  type DbCreatorReducer,
+  type DbValidatorError,
   dbSelectorReducer,
   validateDbName,
 } from "../shared";

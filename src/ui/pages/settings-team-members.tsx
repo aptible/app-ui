@@ -156,6 +156,7 @@ export const TeamMembersPage = () => {
           {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
           {paginated.data.map((user) => (
             <MemberRow
+              key={user.id}
               user={user}
               roles={userIdToRoleMap[user.id]}
               canEdit={isOwner}

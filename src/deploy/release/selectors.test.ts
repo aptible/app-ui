@@ -1,11 +1,11 @@
 import { createId, testServiceRails } from "@app/mocks";
 import {
-  WebState,
+  type WebState,
   defaultDeployRelease,
   defaultDeployService,
   initialState,
 } from "@app/schema";
-import { DeployService } from "@app/types";
+import type { DeployService } from "@app/types";
 import { selectReleasesByServiceAfterDate } from "./index";
 
 const createdAtByHours = ({ hours }: { hours: number }) => {

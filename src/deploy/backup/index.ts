@@ -1,12 +1,12 @@
-import { PaginateProps, api } from "@app/api";
+import { type PaginateProps, api } from "@app/api";
 import { poll } from "@app/fx";
 import { createAction, createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { dateDescSort } from "@app/sort";
-import { DeployBackup, HalEmbedded, LinkResponse } from "@app/types";
+import type { DeployBackup, HalEmbedded, LinkResponse } from "@app/types";
 import { selectDatabases } from "../database";
-import { DeployOperationResponse } from "../operation";
+import type { DeployOperationResponse } from "../operation";
 
 export interface BackupResponse {
   id: number;

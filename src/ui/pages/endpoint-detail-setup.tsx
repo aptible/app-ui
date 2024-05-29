@@ -2,7 +2,7 @@ import { checkDns, renewEndpoint, selectEndpointById } from "@app/deploy";
 import { useDispatch, useSelector } from "@app/react";
 import { useLoader, useLoaderSuccess, useQuery } from "@app/react";
 import { endpointDetailActivityUrl } from "@app/routes";
-import { AcmeChallenge } from "@app/types";
+import type { AcmeChallenge } from "@app/types";
 import { useNavigate, useParams } from "react-router";
 import {
   Box,

@@ -14,11 +14,11 @@ import {
   timer,
 } from "@app/fx";
 import type {
+  ThunkCtx as BaseThunkCtx,
   CreateActionWithPayload,
   LoaderCtx,
   Next,
   Result,
-  ThunkCtx as BaseThunkCtx,
 } from "@app/fx";
 import { halEntityParser } from "@app/hal";
 import { schema } from "@app/schema";

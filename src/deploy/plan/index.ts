@@ -4,7 +4,7 @@ import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { defaultPlan, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
-import {
+import type {
   DeployActivePlan,
   DeployPlan,
   LinkResponse,

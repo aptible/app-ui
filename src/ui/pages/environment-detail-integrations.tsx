@@ -25,7 +25,7 @@ import {
   operationDetailUrl,
 } from "@app/routes";
 import { capitalize } from "@app/string-utils";
-import { DeployLogDrain, DeployMetricDrain } from "@app/types";
+import type { DeployLogDrain, DeployMetricDrain } from "@app/types";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { usePaginate } from "../hooks";
@@ -41,7 +41,7 @@ import {
   IconPlusCircle,
   PaginateBar,
   Pill,
-  PillVariant,
+  type PillVariant,
   TBody,
   THead,
   Table,

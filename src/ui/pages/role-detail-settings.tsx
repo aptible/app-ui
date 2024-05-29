@@ -9,7 +9,7 @@ import {
   updateRoleName,
 } from "@app/roles";
 import { teamRolesUrl } from "@app/routes";
-import { Role } from "@app/types";
+import type { Role } from "@app/types";
 import { selectCurrentUserId } from "@app/users";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";

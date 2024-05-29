@@ -1,5 +1,5 @@
-import { StatusVariant } from "@app/status-variant";
-import { ComponentProps } from "react";
+import type { StatusVariant } from "@app/status-variant";
+import type { ComponentProps } from "react";
 
 const variantToLinks = (variant: StatusVariant): string => {
   switch (variant) {

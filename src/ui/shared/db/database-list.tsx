@@ -1,7 +1,7 @@
 import { prettyDateTime } from "@app/date";
 import {
-  DatabaseDependency,
-  DeployDatabaseRow,
+  type DatabaseDependency,
+  type DeployDatabaseRow,
   calcMetrics,
   fetchDatabaseImages,
   fetchDatabases,

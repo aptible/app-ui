@@ -1,5 +1,5 @@
 import {
-  CreateLogDrainProps,
+  type CreateLogDrainProps,
   provisionLogDrain,
   selectEnvironmentById,
 } from "@app/deploy";
@@ -10,7 +10,7 @@ import {
   useSelector,
 } from "@app/react";
 import { operationDetailUrl } from "@app/routes";
-import { LogDrainType } from "@app/types";
+import type { LogDrainType } from "@app/types";
 import { handleValidator, portValidator } from "@app/validator";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -30,7 +30,7 @@ import {
   Input,
   Label,
   Select,
-  SelectOption,
+  type SelectOption,
 } from "../shared";
 
 const DrainTypeNotice = ({
@@ -61,9 +61,8 @@ const DrainTypeNotice = ({
   if (drainType === "elasticsearch_database") {
     if (allowPhi) {
       return <Banner variant="info">{envHandle} is safe for PHI</Banner>;
-    } else {
-      return <Banner variant="warning">{envHandle} is not safe for PHI</Banner>;
     }
+    return <Banner variant="warning">{envHandle} is not safe for PHI</Banner>;
   }
 
   return null;

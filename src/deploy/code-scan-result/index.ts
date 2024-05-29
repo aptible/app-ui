@@ -1,5 +1,5 @@
 import { api } from "@app/api";
-import { LinkResponse } from "@app/types";
+import type { LinkResponse } from "@app/types";
 
 export interface DeployCodeScanResponse {
   id: number;

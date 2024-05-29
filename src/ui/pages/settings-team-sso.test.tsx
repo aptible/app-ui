@@ -345,9 +345,8 @@ describe("TeamSsoPage", () => {
             return res(
               ctx.json({ _embedded: { saml_configurations: [testSaml] } }),
             );
-          } else {
-            return res(ctx.json({ _embedded: { saml_configurations: [] } }));
           }
+          return res(ctx.json({ _embedded: { saml_configurations: [] } }));
         }),
       );
 
@@ -385,22 +384,19 @@ describe("TeamSsoPage", () => {
             return res(
               ctx.json({ _embedded: { saml_configurations: [testSaml] } }),
             );
-          } else {
-            const saml = defaultSamlConfigurationResponse({
-              id: testSaml.id,
-              entity_id: "updated-entity-id",
-              sign_in_url: "http://updated.url",
-              name_format: "updated-name-format",
-              _links: {
-                organization: defaultHalHref(
-                  `${testEnv.authUrl}/organizations/${testOrg.id}`,
-                ),
-              },
-            });
-            return res(
-              ctx.json({ _embedded: { saml_configurations: [saml] } }),
-            );
           }
+          const saml = defaultSamlConfigurationResponse({
+            id: testSaml.id,
+            entity_id: "updated-entity-id",
+            sign_in_url: "http://updated.url",
+            name_format: "updated-name-format",
+            _links: {
+              organization: defaultHalHref(
+                `${testEnv.authUrl}/organizations/${testOrg.id}`,
+              ),
+            },
+          });
+          return res(ctx.json({ _embedded: { saml_configurations: [saml] } }));
         }),
       );
 
@@ -443,22 +439,19 @@ describe("TeamSsoPage", () => {
             return res(
               ctx.json({ _embedded: { saml_configurations: [testSaml] } }),
             );
-          } else {
-            const saml = defaultSamlConfigurationResponse({
-              id: testSaml.id,
-              entity_id: "updated-entity-id",
-              sign_in_url: "http://updated.url",
-              name_format: "updated-name-format",
-              _links: {
-                organization: defaultHalHref(
-                  `${testEnv.authUrl}/organizations/${testOrg.id}`,
-                ),
-              },
-            });
-            return res(
-              ctx.json({ _embedded: { saml_configurations: [saml] } }),
-            );
           }
+          const saml = defaultSamlConfigurationResponse({
+            id: testSaml.id,
+            entity_id: "updated-entity-id",
+            sign_in_url: "http://updated.url",
+            name_format: "updated-name-format",
+            _links: {
+              organization: defaultHalHref(
+                `${testEnv.authUrl}/organizations/${testOrg.id}`,
+              ),
+            },
+          });
+          return res(ctx.json({ _embedded: { saml_configurations: [saml] } }));
         }),
       );
 

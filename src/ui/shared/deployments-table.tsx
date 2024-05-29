@@ -13,7 +13,7 @@ import {
 } from "@app/routes";
 import { fetchDeploymentsBySourceId, selectSourceById } from "@app/source";
 import { prettyGitSha } from "@app/string-utils";
-import { DeployApp, Deployment } from "@app/types";
+import type { DeployApp, Deployment } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { Group } from "@app/ui/shared/group";
 import { IconInfo } from "@app/ui/shared/icons";

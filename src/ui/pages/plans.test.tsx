@@ -10,10 +10,10 @@ import {
 import { setupIntegrationTest, waitForBootup } from "@app/test";
 import { fireEvent, render, screen } from "@testing-library/react";
 import {
-  ResponseComposition,
-  RestContext,
-  RestHandler,
-  RestRequest,
+  type ResponseComposition,
+  type RestContext,
+  type RestHandler,
+  type RestRequest,
   rest,
 } from "msw";
 import { PlansPage } from "./plans";

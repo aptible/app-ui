@@ -7,7 +7,7 @@ import {
 } from "@app/deploy";
 import { selectDeploymentById } from "@app/deployment";
 import { useQuery, useSelector } from "@app/react";
-import { Deployment } from "@app/types";
+import type { Deployment } from "@app/types";
 import { useState } from "react";
 import { useParams } from "react-router";
 import { Box, ButtonFullVisibility, Group, PreBox, tokens } from "../shared";

@@ -9,7 +9,7 @@ import {
   FormGroup,
   Group,
   Select,
-  SelectOption,
+  type SelectOption,
   TitleBar,
   tokens,
 } from "@app/ui/shared";

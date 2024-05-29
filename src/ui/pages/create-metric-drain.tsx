@@ -1,6 +1,6 @@
 import {
-  CreateMetricDrainProps,
-  MetricDrainType,
+  type CreateMetricDrainProps,
+  type MetricDrainType,
   fetchDatabasesByEnvId,
   provisionMetricDrain,
   selectEnvironmentById,
@@ -30,7 +30,7 @@ import {
   Radio,
   RadioGroup,
   Select,
-  SelectOption,
+  type SelectOption,
 } from "../shared";
 
 const options: SelectOption<MetricDrainType>[] = [

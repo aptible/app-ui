@@ -1,7 +1,7 @@
 import { thunks } from "@app/api";
 import { createLog } from "@app/debug";
 import {
-  DbCreatorProps,
+  type DbCreatorProps,
   configEnvListToEnv,
   createAppOperation,
   createDeployApp,
@@ -21,10 +21,10 @@ import {
   updateDeployEnvironmentStatus,
   waitForOperation,
 } from "@app/deploy";
-import { Operation, call, parallel, put, select } from "@app/fx";
-import { WebState, schema } from "@app/schema";
-import { TextVal } from "@app/string-utils";
-import { DeployApp } from "@app/types";
+import { type Operation, call, parallel, put, select } from "@app/fx";
+import { type WebState, schema } from "@app/schema";
+import type { TextVal } from "@app/string-utils";
+import type { DeployApp } from "@app/types";
 
 interface CreateProjectProps {
   name: string;
@@ -217,7 +217,10 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
 
     const groupDb = yield* parallel(
       dbs.map((db) => {
-        return () => provisionDatabase.run(provisionDatabase(mapCreatorToProvision(envId, db)));
+        return () =>
+          provisionDatabase.run(
+            provisionDatabase(mapCreatorToProvision(envId, db)),
+          );
       }),
     );
     const results = yield* groupDb;

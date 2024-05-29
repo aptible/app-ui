@@ -1,6 +1,6 @@
 import { fetchServices, selectServicesForTableSearch } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
-import { DeployServiceRow } from "@app/types";
+import type { DeployServiceRow } from "@app/types";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks";

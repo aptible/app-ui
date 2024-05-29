@@ -1,4 +1,4 @@
-import { Action } from "@app/fx";
+import type { Action } from "@app/fx";
 import { useDispatch } from "@app/react";
 import { useEffect } from "react";
 import { useVisibility } from "./use-visibility";

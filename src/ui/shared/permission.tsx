@@ -1,6 +1,6 @@
 import { selectUserHasPerms } from "@app/deploy";
 import { useSelector } from "@app/react";
-import { PermissionScope } from "@app/types";
+import type { PermissionScope } from "@app/types";
 
 export const PermissionGate = ({
   envId,

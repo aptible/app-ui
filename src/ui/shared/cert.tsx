@@ -1,4 +1,4 @@
-import { DeployCertificate } from "@app/types";
+import type { DeployCertificate } from "@app/types";
 
 import { prettyDate } from "@app/date";
 import { Pill } from "./pill";

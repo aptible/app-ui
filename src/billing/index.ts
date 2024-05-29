@@ -4,7 +4,7 @@ import { call, mdw, parallel, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
 import { schema } from "@app/schema";
-import { BillingDetail, HalEmbedded, LinkResponse } from "@app/types";
+import type { BillingDetail, HalEmbedded, LinkResponse } from "@app/types";
 import { loadStripe } from "@stripe/stripe-js/pure";
 
 export interface StripeSourceResponse {

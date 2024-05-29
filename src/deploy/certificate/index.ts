@@ -1,10 +1,10 @@
-import { PaginateProps, api, combinePages, thunks } from "@app/api";
+import { type PaginateProps, api, combinePages, thunks } from "@app/api";
 import { prettyDateTime } from "@app/date";
 import { poll, takeLeading } from "@app/fx";
 import { createAction, createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
-import { DeployCertificate, LinkResponse } from "@app/types";
+import { type WebState, schema } from "@app/schema";
+import type { DeployCertificate, LinkResponse } from "@app/types";
 
 interface DeployCertificateResponse {
   id: number;

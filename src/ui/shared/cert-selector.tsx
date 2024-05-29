@@ -4,7 +4,7 @@ import {
   selectCertificatesByEnvId,
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
-import { Select, SelectOption } from "./select";
+import { Select, type SelectOption } from "./select";
 
 export const CertSelector = ({
   envId,

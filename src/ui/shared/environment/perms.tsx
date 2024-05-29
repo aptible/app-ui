@@ -3,7 +3,7 @@ import { deriveEnvPermInheritance, selectPermsByEnvId } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { fetchRoles, getIsOwnerRole, selectRolesByOrgId } from "@app/roles";
 import { roleDetailUrl } from "@app/routes";
-import { Permission, Role, User } from "@app/types";
+import type { Permission, Role, User } from "@app/types";
 import { Link } from "react-router-dom";
 import { Code } from "../code";
 import { PermCheck, RoleColHeader } from "../role";

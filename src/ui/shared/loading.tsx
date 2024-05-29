@@ -1,4 +1,4 @@
-import { IconProps } from "./icons";
+import type { IconProps } from "./icons";
 
 export interface LoadingSpinnerProps extends IconProps {
   show?: boolean;

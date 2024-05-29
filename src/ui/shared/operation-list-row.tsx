@@ -1,8 +1,8 @@
 import { prettyDateTime, timeBetween } from "@app/date";
-import { DeployOperationResponse } from "@app/deploy";
+import type { DeployOperationResponse } from "@app/deploy";
 import { capitalize } from "@app/string-utils";
-import { OperationStatus } from "@app/types";
-import { SyntheticEvent } from "react";
+import type { OperationStatus } from "@app/types";
+import type { SyntheticEvent } from "react";
 import { ButtonIcon } from "./button";
 import {
   IconCheckCircle,
@@ -24,7 +24,8 @@ export const IconForOperation = ({
 }) => {
   if (operationStatus === "succeeded") {
     return <IconCheckCircle color="#00633F" />;
-  } else if (operationStatus === "queued" || operationStatus === "running") {
+  }
+  if (operationStatus === "queued" || operationStatus === "running") {
     return <IconInfo color="#4361FF" />;
   }
   return <IconX color="#AD1A1A" />;

@@ -18,7 +18,7 @@ import { useQuery } from "@app/react";
 import { getIsOwnerRole, selectRoleById } from "@app/roles";
 import { environmentDetailUrl } from "@app/routes";
 import { schema } from "@app/schema";
-import { DeployEnvironment, Permission } from "@app/types";
+import type { DeployEnvironment, Permission } from "@app/types";
 import { selectCurrentUserId } from "@app/users";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";

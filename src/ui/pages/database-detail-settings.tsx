@@ -30,13 +30,13 @@ import {
   databaseDetailUrl,
   environmentActivityUrl,
 } from "@app/routes";
-import {
+import type {
   DeployDatabase,
   DeployLogDrain,
   DeployMetricDrain,
   InstanceClass,
 } from "@app/types";
-import { FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import {
@@ -60,7 +60,7 @@ import {
   Input,
   Label,
   Select,
-  SelectOption,
+  type SelectOption,
 } from "../shared";
 
 interface DbProps {

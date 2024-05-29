@@ -1,5 +1,5 @@
 import { configStrToEnvList } from "@app/deploy";
-import { TextVal, ValidatorError } from "@app/string-utils";
+import type { TextVal, ValidatorError } from "@app/string-utils";
 import { useState } from "react";
 
 export const validateEnvs = (items: TextVal[]): ValidatorError[] => {

@@ -4,7 +4,7 @@ import { isBefore } from "@app/date";
 import { select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { selectToken } from "@app/token";
 import type {
   HalEmbedded,

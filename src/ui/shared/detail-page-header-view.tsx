@@ -1,12 +1,12 @@
-import { ReactNode } from "react";
-import { ActionList, ActionListView } from "./action-list-view";
+import type { ReactNode } from "react";
+import { type ActionList, ActionListView } from "./action-list-view";
 import { Box } from "./box";
-import { Breadcrumbs, Crumb } from "./breadcrumbs";
+import { Breadcrumbs, type Crumb } from "./breadcrumbs";
 import { ButtonLinkDocs } from "./button";
 import { Group } from "./group";
 import { IconAlertTriangle } from "./icons";
 import { LoadingSpinner } from "./loading";
-import { TabItem, Tabs } from "./tabs";
+import { type TabItem, Tabs } from "./tabs";
 
 interface HeaderProps {
   breadcrumbs?: Crumb[];

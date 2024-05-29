@@ -1,4 +1,4 @@
-import { Timestamps } from "./helpers";
+import type { Timestamps } from "./helpers";
 
 export interface User {
   id: string;

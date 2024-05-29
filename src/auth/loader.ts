@@ -1,4 +1,4 @@
-import { AuthErrorType, AuthLoaderMeta } from "@app/types";
+import type { AuthErrorType, AuthLoaderMeta } from "@app/types";
 
 export const AUTH_LOADER_ID = "auth";
 

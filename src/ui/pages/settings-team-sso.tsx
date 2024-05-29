@@ -1,7 +1,7 @@
 import {
-  CreateSamlConfiguration,
-  SamlConfigurationResponse,
-  UpdateSamlConfiguration,
+  type CreateSamlConfiguration,
+  type SamlConfigurationResponse,
+  type UpdateSamlConfiguration,
   addAllowlistMembership,
   createSamlConfiguration,
   deleteAllowlistMembership,
@@ -27,7 +27,7 @@ import {
 } from "@app/react";
 import { selectRolesByOrgId } from "@app/roles";
 import { ssoUrl } from "@app/routes";
-import { Organization } from "@app/types";
+import type { Organization } from "@app/types";
 import { selectUsersAsList } from "@app/users";
 import { existValidtor } from "@app/validator";
 import { useState } from "react";
@@ -45,7 +45,7 @@ import {
   Input,
   Loading,
   Select,
-  SelectOption,
+  type SelectOption,
   TBody,
   THead,
   Table,

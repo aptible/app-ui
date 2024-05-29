@@ -1,7 +1,7 @@
 import { selectFeedback, setFeedback } from "@app/feedback";
 import { useDispatch, useSelector } from "@app/react";
 import { tunaEvent } from "@app/tuna";
-import { SyntheticEvent, useState } from "react";
+import { type SyntheticEvent, useState } from "react";
 import { Button, ButtonIcon } from "./button";
 import { IconCheck, IconThumbsUp } from "./icons";
 import { tokens } from "./tokens";

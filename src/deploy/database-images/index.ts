@@ -2,7 +2,7 @@ import { api, cacheTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity } from "@app/hal";
 import { schema } from "@app/schema";
-import { DeployDatabaseImage } from "@app/types";
+import type { DeployDatabaseImage } from "@app/types";
 
 export interface DeployDatabaseImageResponse {
   id: number;

@@ -3,7 +3,7 @@ import { selectIsAccountOwner, selectUserHasPerms } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useLoader, useSelector } from "@app/react";
 import { homeUrl } from "@app/routes";
-import { PermissionScope } from "@app/types";
+import type { PermissionScope } from "@app/types";
 import { useEffect } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { Loading } from "../shared";

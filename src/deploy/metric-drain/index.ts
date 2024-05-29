@@ -2,13 +2,13 @@ import { api, cacheTimer, thunks } from "@app/api";
 import { createSelector } from "@app/fx";
 import { call } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
-import {
+import { type WebState, schema } from "@app/schema";
+import type {
   DeployMetricDrain,
   LinkResponse,
   ProvisionableStatus,
 } from "@app/types";
-import { DeployOperationResponse } from "../operation";
+import type { DeployOperationResponse } from "../operation";
 
 export type MetricDrainType =
   | "influxdb"

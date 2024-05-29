@@ -152,7 +152,7 @@ import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpo
 import { GithubIntegrationPage } from "@app/ui/pages/github-integration";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { SourcesSetupPage } from "@app/ui/pages/sources-setup";
-import { RouteObject, createBrowserRouter } from "react-router-dom";
+import { type RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
 
 const trackingPatch = (appRoute: RouteObject) => ({

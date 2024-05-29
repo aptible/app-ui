@@ -1,5 +1,5 @@
 import {
-  CreateDbEndpointProps,
+  type CreateDbEndpointProps,
   fetchDatabase,
   fetchService,
   parseIpStr,

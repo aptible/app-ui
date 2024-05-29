@@ -1,6 +1,9 @@
-import { ChartToCreate, selectMetricDataByChart } from "@app/metric-tunnel";
+import {
+  type ChartToCreate,
+  selectMetricDataByChart,
+} from "@app/metric-tunnel";
 import { useSelector } from "@app/react";
-import { DeployContainer, MetricHorizons } from "@app/types";
+import type { DeployContainer, MetricHorizons } from "@app/types";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -10,7 +13,7 @@ import {
   LinearScale,
   PointElement,
   TimeScale,
-  TimeUnit,
+  type TimeUnit,
   Title,
   Tooltip,
 } from "chart.js";

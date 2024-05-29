@@ -8,7 +8,7 @@ import {
   ErrorBoundary as SentryErrorBoundary,
   captureException,
 } from "@sentry/react";
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 import { useRouteError } from "react-router";
 import { Button, IconAlertTriangle } from "../shared";
 import { HeroBgLayout } from "./hero-bg-layout";

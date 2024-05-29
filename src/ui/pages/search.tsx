@@ -7,12 +7,12 @@ import {
 } from "@app/deploy";
 import { useSelector } from "@app/react";
 import {
-  AppItem,
-  DbItem,
-  EndpointItem,
-  EnvItem,
-  ResourceItem,
-  StackItem,
+  type AppItem,
+  type DbItem,
+  type EndpointItem,
+  type EnvItem,
+  type ResourceItem,
+  type StackItem,
   getResourceStatId,
   selectResourcesByLastAccessed,
   selectResourcesByMostVisited,

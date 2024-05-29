@@ -1,7 +1,7 @@
 import { configEnvListToEnv, createAppOperation } from "@app/deploy";
 import { useDispatch, useLoader, useLoaderSuccess } from "@app/react";
 import { appActivityUrl } from "@app/routes";
-import { DeployApp, DeployAppConfigEnv } from "@app/types";
+import type { DeployApp, DeployAppConfigEnv } from "@app/types";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useEnvEditor } from "../hooks";

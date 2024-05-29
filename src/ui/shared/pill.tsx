@@ -1,5 +1,5 @@
 import { prettyDate } from "@app/date";
-import { OperationStatus } from "@app/types";
+import type { OperationStatus } from "@app/types";
 import cn from "classnames";
 import { IconCheck, IconInfo, IconSettings, IconX } from "./icons";
 

@@ -2,9 +2,9 @@ import { thunks } from "@app/api";
 import { createLog } from "@app/debug";
 import { call } from "@app/fx";
 import { schema } from "@app/schema";
-import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
+import type { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 import { AUTH_LOADER_ID, defaultAuthLoaderMeta } from "./loader";
-import { CreateTokenPayload, createToken, elevateToken } from "./token";
+import { type CreateTokenPayload, createToken, elevateToken } from "./token";
 import { webauthnGet } from "./webauthn";
 
 const log = createLog("login");

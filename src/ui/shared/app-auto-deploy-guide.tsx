@@ -1,6 +1,6 @@
 import { selectAppConfigById, selectEnvironmentById } from "@app/deploy";
 import { useSelector } from "@app/react";
-import { DeployApp } from "@app/types";
+import type { DeployApp } from "@app/types";
 import { useState } from "react";
 import { Code } from "./code";
 import { ExternalLink } from "./external-link";

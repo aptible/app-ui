@@ -2,8 +2,8 @@ import { api } from "@app/api";
 import { secondsFromNow } from "@app/date";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { WebState, schema } from "@app/schema";
-import { DeployContainer, HalEmbedded, LinkResponse } from "@app/types";
+import { type WebState, schema } from "@app/schema";
+import type { DeployContainer, HalEmbedded, LinkResponse } from "@app/types";
 export * from "./utils";
 
 export interface DeployContainerResponse {

@@ -1,5 +1,5 @@
 import {
-  CreateTokenPayload,
+  type CreateTokenPayload,
   defaultAuthLoaderMeta,
   isOtpError,
   login,

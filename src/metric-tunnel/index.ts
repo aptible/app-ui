@@ -9,8 +9,8 @@ import {
 } from "@app/deploy";
 import { call, delay, parallel, select, takeLeading } from "@app/fx";
 import { createSelector } from "@app/fx";
-import { WebState, schema } from "@app/schema";
-import { ContainerMetrics, MetricHorizons } from "@app/types";
+import { type WebState, schema } from "@app/schema";
+import type { ContainerMetrics, MetricHorizons } from "@app/types";
 
 export const metricHorizonAsSeconds = (metricHorizon: MetricHorizons) =>
   ({

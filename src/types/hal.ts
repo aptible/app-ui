@@ -1,4 +1,4 @@
-import { AnyState, IdProp } from "starfx";
+import type { AnyState, IdProp } from "starfx";
 import type { MapEntity } from "./helpers";
 
 export interface LinkResponse {

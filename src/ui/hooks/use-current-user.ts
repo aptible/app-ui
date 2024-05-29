@@ -2,7 +2,7 @@ import type { LoadingState } from "@app/fx";
 import { useDispatch, useLoader, useSelector } from "@app/react";
 import { useEffect, useMemo } from "react";
 
-import { User } from "@app/types";
+import type { User } from "@app/types";
 import { fetchUser, selectCurrentUser, selectCurrentUserId } from "@app/users";
 
 export function useCurrentUser(): [User, LoadingState] {

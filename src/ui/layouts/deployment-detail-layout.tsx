@@ -30,7 +30,7 @@ import {
   GitCommitMessage,
   GitRef,
   OpStatus,
-  TabItem,
+  type TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 

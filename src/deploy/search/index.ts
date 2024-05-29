@@ -1,16 +1,19 @@
 import { selectDeployments } from "@app/deployment";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { selectSourcesAsList } from "@app/source";
-import { DeployServiceRow, DeploySource, Deployment } from "@app/types";
+import type { DeployServiceRow, DeploySource, Deployment } from "@app/types";
 import { createSelector } from "starfx";
 import {
-  DeployAppRow,
+  type DeployAppRow,
   findAppById,
   hourlyAndMonthlyCostsForContainers,
   selectApps,
   selectAppsByOrgAsList,
 } from "../app";
-import { DeployDatabaseRow, selectDatabasesByOrgAsList } from "../database";
+import {
+  type DeployDatabaseRow,
+  selectDatabasesByOrgAsList,
+} from "../database";
 import { findDiskById, selectDisks } from "../disk";
 import {
   findEnvById,
@@ -75,32 +78,28 @@ const createServiceSortFn = (
     if (sortBy === "cost") {
       if (sortDir === "asc") {
         return a.cost - b.cost;
-      } else {
-        return b.cost - a.cost;
       }
+      return b.cost - a.cost;
     }
 
     if (sortBy === "resourceHandle") {
       if (sortDir === "asc") {
         return a.resourceHandle.localeCompare(b.resourceHandle);
-      } else {
-        return b.resourceHandle.localeCompare(a.resourceHandle);
       }
+      return b.resourceHandle.localeCompare(a.resourceHandle);
     }
 
     if (sortBy === "id") {
       if (sortDir === "asc") {
         return a.id.localeCompare(b.id, undefined, { numeric: true });
-      } else {
-        return b.id.localeCompare(a.id, undefined, { numeric: true });
       }
+      return b.id.localeCompare(a.id, undefined, { numeric: true });
     }
 
     if (sortDir === "asc") {
       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    } else {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   };
 };
 
@@ -231,17 +230,15 @@ const createAppSortFn = (
     if (sortBy === "cost") {
       if (sortDir === "asc") {
         return a.cost - b.cost;
-      } else {
-        return b.cost - a.cost;
       }
+      return b.cost - a.cost;
     }
 
     if (sortBy === "handle") {
       if (sortDir === "asc") {
         return a.handle.localeCompare(b.handle);
-      } else {
-        return b.handle.localeCompare(a.handle);
       }
+      return b.handle.localeCompare(a.handle);
     }
 
     if (sortBy === "gitRef") {
@@ -249,48 +246,42 @@ const createAppSortFn = (
       const bRefOrSha = [b.gitRef, b.gitCommitSha].join("@");
       if (sortDir === "asc") {
         return aRefOrSha.localeCompare(bRefOrSha);
-      } else {
-        return bRefOrSha.localeCompare(aRefOrSha);
       }
+      return bRefOrSha.localeCompare(aRefOrSha);
     }
 
     if (sortBy === "dockerImageName") {
       if (sortDir === "asc") {
         return a.dockerImageName.localeCompare(b.dockerImageName);
-      } else {
-        return b.dockerImageName.localeCompare(a.dockerImageName);
       }
+      return b.dockerImageName.localeCompare(a.dockerImageName);
     }
 
     if (sortBy === "id") {
       if (sortDir === "asc") {
         return a.id.localeCompare(b.id, undefined, { numeric: true });
-      } else {
-        return b.id.localeCompare(a.id, undefined, { numeric: true });
       }
+      return b.id.localeCompare(a.id, undefined, { numeric: true });
     }
 
     if (sortBy === "totalServices") {
       if (sortDir === "asc") {
         return a.totalServices - b.totalServices;
-      } else {
-        return b.totalServices - a.totalServices;
       }
+      return b.totalServices - a.totalServices;
     }
 
     if (sortBy === "envHandle") {
       if (sortDir === "asc") {
         return a.envHandle.localeCompare(b.envHandle);
-      } else {
-        return b.envHandle.localeCompare(a.envHandle);
       }
+      return b.envHandle.localeCompare(a.envHandle);
     }
 
     if (sortDir === "asc") {
       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    } else {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   };
 };
 
@@ -517,56 +508,49 @@ const createDatabaseSortFn = (
     if (sortBy === "cost") {
       if (sortDir === "asc") {
         return a.cost - b.cost;
-      } else {
-        return b.cost - a.cost;
       }
+      return b.cost - a.cost;
     }
 
     if (sortBy === "handle") {
       if (sortDir === "asc") {
         return a.handle.localeCompare(b.handle);
-      } else {
-        return b.handle.localeCompare(a.handle);
       }
+      return b.handle.localeCompare(a.handle);
     }
 
     if (sortBy === "id") {
       if (sortDir === "asc") {
         return a.id.localeCompare(b.id, undefined, { numeric: true });
-      } else {
-        return b.id.localeCompare(a.id, undefined, { numeric: true });
       }
+      return b.id.localeCompare(a.id, undefined, { numeric: true });
     }
 
     if (sortBy === "diskSize") {
       if (sortDir === "asc") {
         return a.diskSize - b.diskSize;
-      } else {
-        return b.diskSize - a.diskSize;
       }
+      return b.diskSize - a.diskSize;
     }
 
     if (sortBy === "containerSize") {
       if (sortDir === "asc") {
         return a.containerSize - b.containerSize;
-      } else {
-        return b.containerSize - a.containerSize;
       }
+      return b.containerSize - a.containerSize;
     }
 
     if (sortBy === "envHandle") {
       if (sortDir === "asc") {
         return a.envHandle.localeCompare(b.envHandle);
-      } else {
-        return b.envHandle.localeCompare(a.envHandle);
       }
+      return b.envHandle.localeCompare(a.envHandle);
     }
 
     if (sortDir === "asc") {
       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    } else {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   };
 };
 

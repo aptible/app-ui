@@ -65,7 +65,6 @@ export const AddSSHKeyForm = ({
       </div>
 
       <div className="mt-2">
-        <h4 className={tokens.type.h4} />
         <form onSubmit={addKey}>
           <Group size="sm">
             <FormGroup

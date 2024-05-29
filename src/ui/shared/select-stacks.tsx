@@ -3,7 +3,7 @@ import { selectOrganizationSelected } from "@app/organizations";
 import { useQuery, useSelector } from "@app/react";
 import { EmptyResources, ErrorResources } from "./load-resources";
 import { Loading } from "./loading";
-import { Select, SelectProps } from "./select";
+import { Select, type SelectProps } from "./select";
 
 export const StackSelect = (props: Omit<SelectProps, "options">) => {
   const { isInitialLoading, isError, message } = useQuery(fetchStacks());

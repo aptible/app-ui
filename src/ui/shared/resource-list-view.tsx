@@ -1,4 +1,4 @@
-import { PaginateProps } from "../hooks";
+import type { PaginateProps } from "../hooks";
 import { ButtonIcon } from "./button";
 import { Group } from "./group";
 import { IconArrowLeft, IconArrowRight, IconInfo } from "./icons";

@@ -8,7 +8,7 @@ import {
 import { fetchCodeScanResult } from "@app/deploy";
 import { useCache, useQuery } from "@app/react";
 import { useSelector } from "@app/react";
-import { DeployOperation } from "@app/types";
+import type { DeployOperation } from "@app/types";
 
 function findValidOp(opA: DeployOperation, opB: DeployOperation) {
   if (!hasDeployOperation(opA)) {

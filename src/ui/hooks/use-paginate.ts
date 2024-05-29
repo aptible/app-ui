@@ -20,8 +20,8 @@ const usePaginateFilters = (rowsPerPage = ITEMS_PER_PAGE) => {
   const [params, setParams] = useSearchParams();
   const pageParam = params.get("page");
   const rowsParam = params.get("rows");
-  const page = pageParam ? parseInt(pageParam, 10) : 1;
-  const itemsPerPage = rowsParam ? parseInt(rowsParam, 10) : rowsPerPage;
+  const page = pageParam ? Number.parseInt(pageParam, 10) : 1;
+  const itemsPerPage = rowsParam ? Number.parseInt(rowsParam, 10) : rowsPerPage;
 
   // Keep any params that are already there
   const setPage = (newPage: number) => {

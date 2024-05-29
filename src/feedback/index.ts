@@ -1,6 +1,6 @@
 import { thunks } from "@app/api";
-import { WebState, schema } from "@app/schema";
-import { Feedback } from "@app/types";
+import { type WebState, schema } from "@app/schema";
+import type { Feedback } from "@app/types";
 
 export const selectFeedback = schema.feedback.select;
 export const selectPreDeploySurveyAnswered = (state: WebState) =>

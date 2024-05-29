@@ -1,6 +1,6 @@
 import { portalApi } from "@app/api";
 import { schema } from "@app/schema";
-import { GithubIntegration } from "@app/types";
+import type { GithubIntegration } from "@app/types";
 import { takeLeading } from "starfx";
 
 export const fetchGithubIntegrations = portalApi.get<

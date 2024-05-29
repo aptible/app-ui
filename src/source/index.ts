@@ -1,7 +1,7 @@
 import { api } from "@app/api";
 import { defaultEntity } from "@app/hal";
 import { schema } from "@app/schema";
-import { DeploySource } from "@app/types";
+import type { DeploySource } from "@app/types";
 
 interface DeploySourceResponse {
   id: number;

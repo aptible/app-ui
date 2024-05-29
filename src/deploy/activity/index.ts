@@ -4,7 +4,7 @@ import {
   databaseDetailUrl,
   environmentIntegrationsUrl,
 } from "@app/routes";
-import { WebState } from "@app/schema";
+import type { WebState } from "@app/schema";
 import type { DeployActivityRow, OperationType } from "@app/types";
 import { findAppById, selectApps } from "../app";
 import { findDatabaseById, selectDatabases } from "../database";
@@ -47,7 +47,7 @@ const selectActivityForTable = createSelector(
               : db.handle;
         } else if (op.resourceType === "service") {
           const service = findServiceById(services, { id: op.resourceId });
-          let url;
+          let url = "";
           if (service.appId !== "") {
             // TODO - temporary until we have a service detail page
             url = appDetailUrl(service.appId);

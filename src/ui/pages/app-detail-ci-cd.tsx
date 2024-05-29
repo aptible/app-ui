@@ -7,7 +7,7 @@ import {
   Box,
   ButtonLinkDocs,
   Group,
-  TabItem,
+  type TabItem,
   Tabs,
   tokens,
 } from "../shared";

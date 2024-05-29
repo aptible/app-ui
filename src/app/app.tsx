@@ -1,6 +1,6 @@
-import { FxStore } from "@app/fx";
+import type { FxStore } from "@app/fx";
 import { PersistGate, Provider } from "@app/react";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { CookieNotice, ModalPortal, StandaloneErrorBoundary } from "@app/ui";
 import { LoadingSpinner } from "@app/ui/shared";
 import { StrictMode } from "react";

@@ -1,9 +1,9 @@
-import { ThunkCtx, thunks } from "@app/api";
+import { type ThunkCtx, thunks } from "@app/api";
 import { call } from "@app/fx";
 import { schema } from "@app/schema";
-import { CredentialRequestOptionsJSON } from "@github/webauthn-json";
+import type { CredentialRequestOptionsJSON } from "@github/webauthn-json";
 import { defaultAuthLoaderMeta } from "./loader";
-import { ElevateToken, elevateToken } from "./token";
+import { type ElevateToken, elevateToken } from "./token";
 import { webauthnGet } from "./webauthn";
 
 export const elevate = thunks.create<ElevateToken>(

@@ -6,7 +6,7 @@ import {
   select,
   take,
 } from "@app/fx";
-import { WebState, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 
 export const resetStore = createAction("RESET_STORE");
 
