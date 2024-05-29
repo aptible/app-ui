@@ -1129,23 +1129,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stripe/react-stripe-js@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "@stripe/react-stripe-js@npm:2.3.1"
+"@stripe/react-stripe-js@npm:^2.7.1":
+  version: 2.7.1
+  resolution: "@stripe/react-stripe-js@npm:2.7.1"
   dependencies:
     prop-types: ^15.7.2
   peerDependencies:
-    "@stripe/stripe-js": ^1.44.1 || ^2.0.0
+    "@stripe/stripe-js": ^1.44.1 || ^2.0.0 || ^3.0.0
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 0b86515c81894420845c7553382e170e266a0dfe3c25167c8572fa24941b4dcc94201abbb23353ea7adfbbd254cdf7643ecbdc4ba33f68f193abd88d3ee62b23
+  checksum: debca966577f209d75e9899345c63479382ae015a2ea81891472c16069328ce02cad977e46b63d508573b4b9aad336d76fcf0ba5c6a9f548e79d949542cafcc6
   languageName: node
   linkType: hard
 
-"@stripe/stripe-js@npm:^2.1.7":
-  version: 2.1.7
-  resolution: "@stripe/stripe-js@npm:2.1.7"
-  checksum: 72da57537e805e04b94a50b4738351994f98657f7972d76808fac92cc4e7affea856919d5acc7c27bb0267a40c44796f4f5ec704b229f3fd67c857ee0b4d98e0
+"@stripe/stripe-js@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@stripe/stripe-js@npm:2.4.0"
+  checksum: 81409e73d46689ae87c24a046ecba20b84a653260d920f6d236127f0dbc9809a14b95435bc3fe14d863167c9e2c7ce9067e27b3bdf916414f90b437af380d007
   languageName: node
   linkType: hard
 
@@ -2059,8 +2059,8 @@ __metadata:
     "@github/webauthn-json": ^2.1.1
     "@remix-run/web-fetch": ^4.4.2
     "@sentry/react": ^8.5.0
-    "@stripe/react-stripe-js": ^2.3.1
-    "@stripe/stripe-js": ^2.1.7
+    "@stripe/react-stripe-js": ^2.7.1
+    "@stripe/stripe-js": ^2.4.0
     "@tailwindcss/forms": ^0.5.7
     "@testing-library/dom": ^10.1.0
     "@testing-library/jest-dom": ^6.4.5
