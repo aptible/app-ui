@@ -66,8 +66,8 @@ export const StandaloneErrorBoundary = ({
 }): ReactElement => {
   return (
     <SentryErrorBoundary
-      fallback={({ error }: { error: Error }) => (
-        <GenericErrorFallback error={error} />
+      fallback={({ error }: { error: unknown }) => (
+        <GenericErrorFallback error={error as Error} />
       )}
     >
       {children}
