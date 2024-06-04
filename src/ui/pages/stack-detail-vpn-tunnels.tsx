@@ -105,6 +105,11 @@ export const StackDetailVpnTunnelsPage = () => {
             <TBody>
               <Tr>
                 <Td>Phase 1</Td>
+                <Td>Algorithm</Td>
+                <Td>{vpnTunnel.phase1Alg}</Td>
+              </Tr>
+              <Tr>
+                <Td>Phase 1</Td>
                 <Td>Lifetime</Td>
                 <Td>{vpnTunnel.phase1Lifetime}</Td>
               </Tr>
