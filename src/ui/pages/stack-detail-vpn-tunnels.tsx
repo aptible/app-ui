@@ -83,11 +83,11 @@ export const StackDetailVpnTunnelsPage = () => {
 
             <TBody>
               <Tr>
-                <Td>Deploy Gateway</Td>
+                <Td>Aptible Gateway</Td>
                 <Td>{vpnTunnel.ourGateway}</Td>
               </Tr>
               <Tr>
-                <Td>Peer Gateway</Td>
+                <Td>Remote Gateway</Td>
                 <Td>{vpnTunnel.peerGateway}</Td>
               </Tr>
             </TBody>
@@ -136,11 +136,11 @@ export const StackDetailVpnTunnelsPage = () => {
             </TBody>
           </Table>
 
-          <p className="flex text-gray-500 text-base my-4">Deploy Networks</p>
+          <p className="flex text-gray-500 text-base my-4">Aptible Networks</p>
 
           <Table>
             <THead>
-              <Th>Network (As visible by peer)</Th>
+              <Th>Network (As seen from Remote)</Th>
               <Th>Network (As routed by Aptible)</Th>
             </THead>
 
@@ -154,12 +154,12 @@ export const StackDetailVpnTunnelsPage = () => {
             </TBody>
           </Table>
 
-          <p className="flex text-gray-500 text-base my-4">Peer Networks</p>
+          <p className="flex text-gray-500 text-base my-4">Remote Networks</p>
 
           <Table>
             <THead>
-              <Th>Network (As visible by Aptible)</Th>
-              <Th>Network (As routed by Aptible)</Th>
+              <Th>Network (As seen from Aptible)</Th>
+              <Th>Network (As routed by Remote)</Th>
             </THead>
 
             <TBody>
@@ -176,8 +176,8 @@ export const StackDetailVpnTunnelsPage = () => {
 
           <Table>
             <THead>
-              <Th>Deploy Network</Th>
-              <Th>Peer Network</Th>
+              <Th>Aptible Network</Th>
+              <Th>Remote Network</Th>
               <Th>Status</Th>
             </THead>
 
