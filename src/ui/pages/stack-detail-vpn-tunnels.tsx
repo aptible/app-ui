@@ -158,8 +158,8 @@ export const StackDetailVpnTunnelsPage = () => {
 
           <Table>
             <THead>
-              <Th>Network (As visible by Aptible)</Th>
-              <Th>Network (As routed by Aptible)</Th>
+              <Th>Network (As seen from Aptible)</Th>
+              <Th>Network (As routed by Remote)</Th>
             </THead>
 
             <TBody>
