@@ -2,13 +2,10 @@ import { selectBillingDetail, selectHasPaymentMethod } from "@app/billing";
 import { FETCH_REQUIRED_DATA } from "@app/bootup";
 import { createLog } from "@app/debug";
 import { fetchEnvironments, selectEnvironmentsAsList } from "@app/deploy";
-import {
-  useDispatch,
-  useLoader,
-  useLoaderSuccess,
-  useSelector,
-} from "@app/react";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { useDispatch, useLoader, useSelector } from "@app/react";
 import { setRedirectPath } from "@app/redirect-path";
+import { fetchUserRoles, selectIsUserOwner } from "@app/roles";
 import {
   homeUrl,
   hostingUrl,
@@ -39,12 +36,18 @@ export const NewUserToOnboarding = ({
 }: { children?: React.ReactNode }) => {
   const navigate = useNavigate();
   const loader = useLoader(fetchEnvironments);
+  const rolesLoader = useLoader(fetchUserRoles);
+  const orgId = useSelector(selectOrganizationSelectedId);
+  const isOwner = useSelector((s) => selectIsUserOwner(s, { orgId }));
   const envs = useSelector(selectEnvironmentsAsList);
-  useLoaderSuccess(loader, () => {
-    if (envs.length === 0) {
+  useEffect(() => {
+    if (rolesLoader.isInitialLoading || loader.isInitialLoading) {
+      return;
+    }
+    if (isOwner && envs.length === 0) {
       navigate(hostingUrl());
     }
-  });
+  }, [rolesLoader.status, loader.status, isOwner, envs.length]);
 
   return children ? children : <Outlet />;
 };
