@@ -2,10 +2,12 @@ import { prettyDateTime } from "@app/date";
 import {
   cancelAppOpsPoll,
   fetchApp,
+  fetchConfiguration,
   fetchImageById,
   fetchServicesByAppId,
   pollAppOperations,
   selectAppById,
+  selectAppConfigById,
   selectEnvironmentById,
   selectImageById,
   selectLatestDeployOp,
@@ -35,6 +37,8 @@ import { Link, Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
+  Code,
+  CopyTextButton,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -51,6 +55,12 @@ export function AppHeader({
   app,
   isLoading,
 }: { app: DeployApp; isLoading: boolean }) {
+  useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
+  const config = useSelector((s) =>
+    selectAppConfigById(s, { id: app.currentConfigurationId }),
+  );
+  const isDockerDeploy = config.env.APTIBLE_DOCKER_IMAGE;
+
   const lastDeployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
@@ -93,6 +103,18 @@ export function AppHeader({
             commitSha={deployment.gitCommitSha}
             commitUrl={deployment.gitCommitUrl}
           />
+        </DetailInfoItem>
+        {isDockerDeploy ? null : (
+          <DetailInfoItem title="Git Remote">
+            <div className="flex gap-2">
+              <Code>{app.gitRepo}</Code>
+              <CopyTextButton text={app.gitRepo} />
+            </div>
+          </DetailInfoItem>
+        )}
+
+        <DetailInfoItem title="Deployment Type">
+          {isDockerDeploy ? "Direct Docker Image" : "Git Push"}
         </DetailInfoItem>
 
         <DetailInfoItem title="Source">
