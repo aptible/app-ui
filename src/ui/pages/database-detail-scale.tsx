@@ -1,16 +1,13 @@
 import {
   DEFAULT_INSTANCE_CLASS,
-  containerSizesByProfile,
   fetchDatabase,
   fetchDiskById,
   fetchService,
   getContainerProfileFromType,
   hourlyAndMonthlyCostsForContainers,
   scaleDatabase,
-  selectContainerProfilesForStack,
   selectDatabaseById,
   selectDiskById,
-  selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
 import {
@@ -29,11 +26,11 @@ import {
   BannerMessages,
   Box,
   Button,
-  FormGroup,
-  Input,
-  Label,
-  Select,
-  type SelectOption,
+  ContainerProfileInput,
+  ContainerSizeInput,
+  CpuShareView,
+  DiskSizeInput,
+  PricingCalc,
 } from "../shared";
 
 const validators = {
@@ -71,12 +68,6 @@ export const DatabaseScalePage = () => {
   const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
   const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
-  );
-  const environment = useSelector((s) =>
-    selectEnvironmentById(s, { id: database.environmentId }),
-  );
-  const containerProfilesForStack = useSelector((s) =>
-    selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
 
   const action = scaleDatabase({
@@ -135,127 +126,37 @@ export const DatabaseScalePage = () => {
       diskValue,
     );
 
-  const handleContainerProfileSelection = (opt: SelectOption) => {
-    const value = opt.value as InstanceClass;
-    const profile = getContainerProfileFromType(value);
-    if (!profile) {
-      return;
-    }
-
-    setContainerProfileType(value);
-    if (containerSize < profile.minimumContainerSize) {
-      setContainerSize(profile.minimumContainerSize);
-    }
-  };
-
-  const profileOptions = Object.keys(containerProfilesForStack).map(
-    (containerProfileType) => {
-      const profile = getContainerProfileFromType(
-        containerProfileType as InstanceClass,
-      );
-      return { label: profile.name, value: containerProfileType };
-    },
-  );
-
-  const containerSizeOptions = containerSizesByProfile(
-    containerProfileType,
-  ).map((containerSizeOption) => {
-    return {
-      label: `${containerSizeOption / 1024} GB`,
-      value: `${containerSizeOption}`,
-    };
-  });
-
   return (
     <Box>
       <form onSubmit={onSubmitForm}>
         <div className="flex flex-col gap-2">
-          <FormGroup
-            splitWidthInputs
-            description="Optimize container performance with a custom profile."
-            label="Container Profile"
-            htmlFor="container-profile"
-          >
-            <Select
-              id="container-profile"
-              ariaLabel="container-profile"
-              disabled={Object.keys(containerProfilesForStack).length <= 1}
-              value={containerProfileType}
-              onSelect={handleContainerProfileSelection}
-              options={profileOptions}
-            />
-          </FormGroup>
-          <FormGroup
-            splitWidthInputs
-            description="Increase max disk space in GBs.  Space can only be increased once a day."
-            label="Disk Size"
-            htmlFor="disk-size"
-            feedbackMessage={errors.diskSize}
-            feedbackVariant={errors.diskSize ? "danger" : "info"}
-          >
-            <Input
-              className="flex w-full"
-              name="disk-size"
-              type="number"
-              value={diskValue}
-              min="10"
-              onChange={(e) =>
-                setDiskValue(
-                  Math.min(16384, Number.parseInt(e.currentTarget.value, 10)),
-                )
-              }
-              data-testid="disk-size"
-              id="disk-size"
-            />
-          </FormGroup>
-          <FormGroup
-            splitWidthInputs
-            description="Specify the memory you wish to allow per container."
-            label="Memory per Container"
-            htmlFor="memory-container"
-          >
-            <Select
-              id="memory-container"
-              value={`${containerSize}`}
-              onSelect={(opt) => setContainerSize(Number.parseInt(opt.value))}
-              options={containerSizeOptions}
-            />
-          </FormGroup>
-          <FormGroup
-            splitWidthInputs
-            description="CPU Share is determined by the selected Memory Limit and Container Profile."
-            label="CPU Share per Container"
-            htmlFor="cpu-share"
-          >
-            <Input
-              className="flex disabled w-full"
-              name="number-containers"
-              type="text"
-              disabled
-              value={requestedContainerProfile.cpuShare * containerSize}
-              data-testid="number-containers"
-              id="number-containers"
-            />
-          </FormGroup>
+          <ContainerProfileInput
+            envId={database.environmentId}
+            containerProfileType={containerProfileType}
+            setContainerProfileType={setContainerProfileType}
+          />
+          <DiskSizeInput
+            diskValue={diskValue}
+            setDiskValue={setDiskValue}
+            error={errors.diskSize}
+          />
+          <ContainerSizeInput
+            containerSize={containerSize}
+            setContainerSize={setContainerSize}
+            containerProfileType={containerProfileType}
+          />
+          <CpuShareView
+            cpuShare={requestedContainerProfile.cpuShare}
+            containerSize={containerSize}
+          />
         </div>
 
-        <div className="mt-2 mb-4 flex justify-between">
-          <div>
-            <Label>Pricing</Label>
-            <p className="text-black-500">
-              1 x {service.containerMemoryLimitMb / 1024} GB container x $
-              {currentPricePerHour} per GB/hour
-            </p>
-            <p className="text-black-500">
-              {disk.size} GB disk x $0.20 per GB/month
-            </p>
-          </div>
-
-          <div>
-            <p className="text-black-500">Estimated Monthly Cost</p>
-            <p className="text-right text-lg text-green-400">${currentPrice}</p>
-          </div>
-        </div>
+        <PricingCalc
+          service={service}
+          disk={disk}
+          pricePerHour={currentPricePerHour}
+          price={currentPrice}
+        />
 
         <hr />
 
