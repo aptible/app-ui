@@ -1,10 +1,7 @@
 import {
-  DEFAULT_INSTANCE_CLASS,
   fetchDatabase,
   fetchDiskById,
   fetchService,
-  getContainerProfileFromType,
-  hourlyAndMonthlyCostsForContainers,
   scaleDatabase,
   selectDatabaseById,
   selectDiskById,
@@ -18,10 +15,12 @@ import {
   useSelector,
 } from "@app/react";
 import { databaseActivityUrl } from "@app/routes";
-import type { InstanceClass } from "@app/types";
-import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { useValidator } from "../hooks";
+import {
+  defaultDatabaseScaler,
+  useDatabaseScaler,
+  useValidator,
+} from "../hooks";
 import {
   BannerMessages,
   Box,
@@ -32,6 +31,10 @@ import {
   DiskSizeInput,
   PricingCalc,
 } from "../shared";
+
+interface DatabaseScaleProps {
+  diskSize: number;
+}
 
 const validators = {
   diskSize: (data: DatabaseScaleProps) => {
@@ -44,10 +47,6 @@ const validators = {
   },
 };
 
-type DatabaseScaleProps = {
-  diskSize: number;
-};
-
 export const DatabaseScalePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -56,10 +55,6 @@ export const DatabaseScalePage = () => {
     DatabaseScaleProps,
     typeof validators
   >(validators);
-  const [containerSize, setContainerSize] = useState(512);
-  const [containerProfileType, setContainerProfileType] =
-    useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
-  const [diskValue, setDiskValue] = useState<number>(10);
 
   useQuery(fetchDatabase({ id }));
   const database = useSelector((s) => selectDatabaseById(s, { id }));
@@ -70,86 +65,55 @@ export const DatabaseScalePage = () => {
     selectServiceById(s, { id: database.serviceId }),
   );
 
+  const {
+    scaler,
+    dispatchScaler,
+    changesExist,
+    currentPricePerHour,
+    currentPrice,
+    estimatedPricePerHour,
+    estimatedPrice,
+    requestedContainerProfile,
+    currentContainerProfile,
+  } = useDatabaseScaler({
+    service,
+    disk,
+  });
+  const hasChanges = changesExist && !serviceLoader.isInitialLoading;
   const action = scaleDatabase({
     id,
-    diskSize: diskValue,
-    containerSize: containerSize,
-    containerProfile: containerProfileType,
+    ...scaler,
   });
 
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validate({ diskSize: diskValue })) return;
+    if (!validate(scaler)) return;
     dispatch(action);
   };
   const loader = useLoader(scaleDatabase);
 
-  useEffect(() => {
-    setContainerSize(service.containerMemoryLimitMb);
-  }, [service.containerMemoryLimitMb]);
-
-  useEffect(() => {
-    setContainerProfileType(service.instanceClass);
-  }, [service.instanceClass]);
-
-  useEffect(() => {
-    setDiskValue(disk.size);
-  }, [disk.size]);
-
   useLoaderSuccess(loader, () => {
     navigate(databaseActivityUrl(database.id));
   });
-
-  const changesExist =
-    (service.containerMemoryLimitMb !== containerSize ||
-      service.instanceClass !== containerProfileType ||
-      disk.size !== diskValue) &&
-    !serviceLoader.isInitialLoading;
-
-  const currentContainerProfile = getContainerProfileFromType(
-    service.instanceClass,
-  );
-  const requestedContainerProfile =
-    getContainerProfileFromType(containerProfileType);
-  const { pricePerHour: currentPricePerHour, pricePerMonth: currentPrice } =
-    hourlyAndMonthlyCostsForContainers(
-      service.containerCount,
-      currentContainerProfile,
-      service.containerMemoryLimitMb,
-      disk.size,
-    );
-  const { pricePerHour: estimatedPricePerHour, pricePerMonth: estimatedPrice } =
-    hourlyAndMonthlyCostsForContainers(
-      1,
-      requestedContainerProfile,
-      containerSize,
-      diskValue,
-    );
 
   return (
     <Box>
       <form onSubmit={onSubmitForm}>
         <div className="flex flex-col gap-2">
           <ContainerProfileInput
+            scaler={scaler}
+            dispatchScaler={dispatchScaler}
             envId={database.environmentId}
-            containerProfileType={containerProfileType}
-            setContainerProfileType={setContainerProfileType}
-            containerSize={containerSize}
-            setContainerSize={setContainerSize}
           />
           <DiskSizeInput
-            diskValue={diskValue}
-            setDiskValue={setDiskValue}
+            scaler={scaler}
+            dispatchScaler={dispatchScaler}
             error={errors.diskSize}
           />
-          <ContainerSizeInput
-            containerSize={containerSize}
-            setContainerSize={setContainerSize}
-            containerProfileType={containerProfileType}
-          />
+          <ContainerSizeInput scaler={scaler} dispatchScaler={dispatchScaler} />
           <CpuShareView
             cpuShare={requestedContainerProfile.cpuShare}
-            containerSize={containerSize}
+            containerSize={scaler.containerSize}
           />
         </div>
 
@@ -162,12 +126,12 @@ export const DatabaseScalePage = () => {
 
         <hr />
 
-        {changesExist ? (
+        {hasChanges ? (
           <div className="text-md font-semibold text-gray-900 mt-4">
             Pending Changes
           </div>
         ) : null}
-        {containerProfileType !== service.instanceClass ? (
+        {scaler.containerProfile !== service.instanceClass ? (
           <div className="my-3">
             <div className="text-md text-gray-900">Container Profile</div>
             <p className="text-black-500">
@@ -176,29 +140,29 @@ export const DatabaseScalePage = () => {
             </p>
           </div>
         ) : null}
-        {diskValue !== disk.size ? (
+        {scaler.diskSize !== disk.size ? (
           <div className="my-3">
             <div className="text-md text-gray-900">Disk Size</div>
             <p className="text-black-500">
-              Changed from {disk.size} GB to {diskValue} GB
+              Changed from {disk.size} GB to {scaler.diskSize} GB
             </p>
           </div>
         ) : null}
-        {containerSize !== service.containerMemoryLimitMb ? (
+        {scaler.containerSize !== service.containerMemoryLimitMb ? (
           <div className="my-3">
             <div className="text-md text-gray-900">Container Size</div>
             <p className="text-black-500">
               Changed from {service.containerMemoryLimitMb / 1024} GB to{" "}
-              {containerSize / 1024} GB
+              {scaler.containerSize / 1024} GB
             </p>
           </div>
         ) : null}
-        {changesExist ? (
+        {hasChanges ? (
           <div className="my-3 flex justify-between">
             <div>
               <div className="text-md text-gray-900">Pricing</div>
               <p className="text-black-500">
-                1 x {containerSize / 1024} GB container x $
+                1 x {scaler.containerSize / 1024} GB container x $
                 {estimatedPricePerHour} per GB/hour
               </p>
             </div>
@@ -216,20 +180,19 @@ export const DatabaseScalePage = () => {
         <div className="flex mt-4">
           <Button
             className="w-40 flex font-semibold"
-            disabled={!changesExist}
+            disabled={!hasChanges}
             type="submit"
           >
             Save Changes
           </Button>
-          {changesExist ? (
+          {hasChanges ? (
             <Button
               className="w-40 ml-2 flex font-semibold"
               onClick={() => {
-                setContainerProfileType(service.instanceClass);
-                setContainerSize(service.containerMemoryLimitMb);
-                if (disk.size > 0) {
-                  setDiskValue(disk.size);
-                }
+                dispatchScaler({
+                  type: "set",
+                  payload: defaultDatabaseScaler(service, disk),
+                });
               }}
               variant="white"
             >

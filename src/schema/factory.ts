@@ -31,6 +31,7 @@ import {
   type DeployVpnTunnel,
   type Deployment,
   type GithubIntegration,
+  type InstanceClass,
   type Invitation,
   type Membership,
   ModalType,
@@ -42,6 +43,8 @@ import {
   type Token,
   type User,
 } from "@app/types";
+
+export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
 
 export const defaultConfig = (e: Partial<Config> = {}): Config => {
   return {
@@ -252,7 +255,7 @@ export const defaultDeployDisk = (d: Partial<DeployDisk> = {}): DeployDisk => {
     attached: true,
     availabilityZone: "",
     baselineIops: 0,
-    provisionedIops: 0,
+    provisionedIops: 3000,
     createdAt: now,
     updatedAt: now,
     currentKmsArn: "",
@@ -263,7 +266,7 @@ export const defaultDeployDisk = (d: Partial<DeployDisk> = {}): DeployDisk => {
     filesystem: "",
     handle: "",
     host: "",
-    size: 0,
+    size: 10,
     keyBytes: 32,
     ...d,
   };
@@ -343,9 +346,9 @@ export const defaultDeployService = (
     processType: "",
     command: "",
     containerCount: 0,
-    containerMemoryLimitMb: 0,
+    containerMemoryLimitMb: 512,
     currentReleaseId: "",
-    instanceClass: "m5",
+    instanceClass: DEFAULT_INSTANCE_CLASS,
     createdAt: now,
     updatedAt: now,
     ...s,
