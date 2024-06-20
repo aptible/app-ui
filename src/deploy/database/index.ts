@@ -229,12 +229,16 @@ export const fetchDatabasesByEnvId = api.get<
   HalEmbedded<{ databases: DeployDatabaseResponse[] }>
 >("/accounts/:envId/databases");
 
-interface CreateDatabaseProps {
+export interface CreateDatabaseProps {
   handle: string;
   type: string;
   envId: string;
   databaseImageId: string;
   enableBackups: boolean;
+  diskSize?: number;
+  iops?: number;
+  containerProfile?: InstanceClass;
+  containerSize?: number;
 }
 /**
  * This will only create a database record, it will not trigger it to actually be provisioned.

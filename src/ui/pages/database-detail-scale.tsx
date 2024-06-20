@@ -15,6 +15,7 @@ import {
   useSelector,
 } from "@app/react";
 import { databaseActivityUrl } from "@app/routes";
+import { diskSizeValidator } from "@app/validator";
 import { useNavigate, useParams } from "react-router";
 import {
   defaultDatabaseScaler,
@@ -37,14 +38,7 @@ interface DatabaseScaleProps {
 }
 
 const validators = {
-  diskSize: (data: DatabaseScaleProps) => {
-    if (data.diskSize < 10) {
-      return "Disk size must be at least 10 GB";
-    }
-    if (data.diskSize > 16384) {
-      return "Disk size cannot exceed 16384 GB";
-    }
-  },
+  diskSize: (data: DatabaseScaleProps) => diskSizeValidator(data.diskSize),
 };
 
 export const DatabaseScalePage = () => {

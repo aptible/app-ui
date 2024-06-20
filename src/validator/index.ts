@@ -127,3 +127,12 @@ export function nameValidator(name: string) {
 export function sanitizeInput(input: any) {
   return input.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
+
+export function diskSizeValidator(diskSize = 0) {
+  if (diskSize < 10) {
+    return "Disk size must be at least 10 GB";
+  }
+  if (diskSize > 16384) {
+    return "Disk size cannot exceed 16384 GB";
+  }
+}

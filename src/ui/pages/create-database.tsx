@@ -1,7 +1,7 @@
 import {
-  type DbCreatorProps,
+  type CreateDatabaseProps,
   fetchDatabaseImages,
-  provisionDatabaseList,
+  provisionDatabase,
   selectDatabaseImagesVisible,
   selectEnvironmentById,
 } from "@app/deploy";
@@ -14,35 +14,33 @@ import {
   useSelector,
 } from "@app/react";
 import { environmentActivityUrl, environmentDatabasesUrl } from "@app/routes";
-import { useEffect, useReducer, useState } from "react";
+import { defaultDeployDisk, defaultDeployService } from "@app/schema";
+import { diskSizeValidator, handleValidator } from "@app/validator";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDatabaseScaler, useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
 import {
-  Banner,
   BannerMessages,
   Box,
   Button,
   ButtonCreate,
-  DatabaseCreatorForm,
-  type DbCreatorReducer,
-  type DbValidatorError,
-  dbSelectorReducer,
-  validateDbName,
+  ContainerProfileInput,
+  ContainerSizeInput,
+  CpuShareView,
+  DatabaseNameInput,
+  DiskSizeInput,
+  FormGroup,
+  IopsInput,
+  PricingCalc,
+  Select,
+  type SelectOption,
 } from "../shared";
 import { EnvSelectorPage } from "./create-env-app";
 
-const validateDbs = (items: DbCreatorProps[]): DbValidatorError[] => {
-  const errors: DbValidatorError[] = [];
-
-  const validate = (item: DbCreatorProps) => {
-    const name = validateDbName(item);
-    if (name) {
-      errors.push(name);
-    }
-  };
-
-  items.forEach(validate);
-  return errors;
+const validators = {
+  handle: (props: CreateDatabaseProps) => handleValidator(props.handle),
+  diskSize: (props: CreateDatabaseProps) => diskSizeValidator(props.diskSize),
 };
 
 export const CreateDatabasePage = () => {
@@ -50,49 +48,63 @@ export const CreateDatabasePage = () => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const envId = params.get("environment_id") || "";
-  const [dbErrors, setDbErrors] = useState<DbValidatorError[]>([]);
-  const [dbCreatorMap, dbCreatorDispatch] = useReducer<DbCreatorReducer>(
-    dbSelectorReducer,
-    {},
-  );
-  const dbCreatorList = Object.values(dbCreatorMap)
-    .sort((a, b) => a.id.localeCompare(b.id))
-    .filter((db) => db.imgId !== "");
-  const isDisabled = dbCreatorList.length === 0;
+  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
+  const [errors, validate] = useValidator<
+    CreateDatabaseProps,
+    typeof validators
+  >(validators);
+
   const imgLoader = useQuery(fetchDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesVisible);
-  const env = useSelector((s) => selectEnvironmentById(s, { id: envId }));
-  const action = provisionDatabaseList({ envId, dbs: dbCreatorList });
+  const imgOptions = [
+    { value: "", label: "Choose a Database" },
+    ...dbImages.map((img) => ({
+      label: img.description,
+      value: img.id,
+    })),
+  ];
+  const [imageId, setImageId] = useState("");
+  const [dbName, setDbName] = useState("");
+  const imgSelected = dbImages.find((i) => i.id === imageId);
+  const selectChange = (option: SelectOption) => {
+    const imgId = option.value;
+    const img = dbImages.find((i) => i.id === imgId);
+    const namePrefix = `${env.handle}-${generateHash(5)}`;
+    const name = `${namePrefix}-${img?.type || ""}`;
+    setImageId(imgId);
+    setDbName(name);
+  };
+
+  const service = defaultDeployService();
+  const disk = defaultDeployDisk();
+  const {
+    scaler,
+    dispatchScaler,
+    estimatedPricePerHour,
+    estimatedPrice,
+    requestedContainerProfile,
+  } = useDatabaseScaler({
+    service,
+    disk,
+  });
+
+  const createProps: CreateDatabaseProps = {
+    envId,
+    type: imgSelected?.type || "",
+    handle: dbName,
+    databaseImageId: imageId,
+    enableBackups: true,
+    ...scaler,
+  };
+  const action = provisionDatabase(createProps);
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!validate(createProps)) dispatch(action);
+  };
   const loader = useLoader(action);
   useLoaderSuccess(loader, () => {
     navigate(environmentActivityUrl(envId));
   });
-
-  // add a db on mount
-  useEffect(() => {
-    const payload: DbCreatorProps = {
-      id: `${0}`,
-      imgId: "",
-      name: env.handle,
-      env: "DATABASE_URL",
-      dbType: "",
-      enableBackups: true,
-    };
-    dbCreatorDispatch({ type: "add", payload });
-  }, [env.handle]);
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const dberr = validateDbs(dbCreatorList);
-    if (dberr.length > 0) {
-      setDbErrors(dberr);
-      return;
-    }
-
-    setDbErrors([]);
-    dispatch(action);
-  };
 
   if (!envId) {
     return (
@@ -112,27 +124,51 @@ export const CreateDatabasePage = () => {
       <Box>
         <form onSubmit={onSubmit}>
           <div className="flex flex-col gap-4">
-            <DatabaseCreatorForm
-              dbImages={dbImages}
-              namePrefix={`${env.handle}-${generateHash(5)}`}
-              dbMap={dbCreatorMap}
-              dbDispatch={dbCreatorDispatch}
-              isLoading={imgLoader.isInitialLoading}
-              showEnv={false}
+            <FormGroup htmlFor="new-db" label="Database Type">
+              <Select
+                id="new-db"
+                ariaLabel="new-db"
+                onSelect={selectChange}
+                value={imageId}
+                options={imgOptions}
+                className="flex-1 mr-2"
+                disabled={imgLoader.isLoading}
+              />
+            </FormGroup>
+            <DatabaseNameInput
+              value={createProps.handle}
+              onChange={(value) => setDbName(value)}
+              feedbackMessage={errors.handle}
+              feedbackVariant={errors.handle ? "danger" : "default"}
+            />
+            <ContainerProfileInput
+              scaler={scaler}
+              dispatchScaler={dispatchScaler}
+              envId={envId}
+            />
+            <DiskSizeInput
+              scaler={scaler}
+              dispatchScaler={dispatchScaler}
+              error={errors.diskSize}
+            />
+            <IopsInput scaler={scaler} dispatchScaler={dispatchScaler} />
+            <ContainerSizeInput
+              scaler={scaler}
+              dispatchScaler={dispatchScaler}
+            />
+            <CpuShareView
+              cpuShare={requestedContainerProfile.cpuShare}
+              containerSize={scaler.containerSize}
+            />
+            <PricingCalc
+              service={service}
+              disk={disk}
+              pricePerHour={estimatedPricePerHour}
+              price={estimatedPrice}
             />
           </div>
 
           <hr className="my-4" />
-
-          <div className="mb-4 flex flex-col gap-2">
-            {dbErrors.map((err) => {
-              return (
-                <Banner key={err.item.id} variant="error">
-                  {err.message} ({err.item.name})
-                </Banner>
-              );
-            })}
-          </div>
 
           <BannerMessages className="mb-4" {...loader} />
 
@@ -141,9 +177,8 @@ export const CreateDatabasePage = () => {
               envId={envId}
               type="submit"
               isLoading={loader.isLoading}
-              disabled={isDisabled}
             >
-              Save Changes
+              Create Database
             </ButtonCreate>
 
             <Button
