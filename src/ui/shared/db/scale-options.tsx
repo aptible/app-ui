@@ -37,7 +37,7 @@ export function PricingCalc({
 
       <div>
         <p className="text-black-500">Estimated Monthly Cost</p>
-        <p className="text-right text-lg text-green-400">${price}</p>
+        <p className="text-right text-lg text-green-400">${price.toFixed(2)}</p>
       </div>
     </div>
   );
@@ -137,6 +137,37 @@ export function DiskSizeInput({
         }}
         data-testid="disk-size"
         id="disk-size"
+      />
+    </FormGroup>
+  );
+}
+
+export function IopsInput({
+  scaler,
+  dispatchScaler,
+}: {
+  scaler: Pick<DbScaleOptions, "iops">;
+  dispatchScaler: (a: DbScaleAction) => void;
+}) {
+  return (
+    <FormGroup
+      splitWidthInputs
+      description="Input/Output Operation Per Second. Maximum ratio is 50:1 between IOPS and Disk Size."
+      label="IOPS"
+      htmlFor="iops"
+    >
+      <Input
+        className="flex w-full"
+        name="iops"
+        type="number"
+        value={scaler.iops}
+        min="0"
+        onChange={(e) => {
+          const payload = Number.parseInt(e.currentTarget.value, 10);
+          dispatchScaler({ type: "iops", payload });
+        }}
+        data-testid="iops"
+        id="iops"
       />
     </FormGroup>
   );
