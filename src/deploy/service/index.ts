@@ -1,7 +1,7 @@
 import { api, cacheMinTimer, cacheShortTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { type WebState, schema } from "@app/schema";
+import { DEFAULT_INSTANCE_CLASS, type WebState, schema } from "@app/schema";
 import {
   type ContainerProfileData,
   type DeployOperation,
@@ -13,8 +13,6 @@ import {
 import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { selectEnvironmentsByOrgAsList } from "../environment";
-
-export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
 
 export const defaultServiceResponse = (
   s: Partial<DeployServiceResponse> = {},

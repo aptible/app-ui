@@ -107,7 +107,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   );
   return (
     <Td>
-      <div className={tokens.type.darker}>${currentPrice.toFixed(2)}</div>
+      <div className={tokens.type.darker}>${currentPrice}</div>
     </Td>
   );
 };
