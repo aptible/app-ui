@@ -134,6 +134,8 @@ export const DatabaseScalePage = () => {
             envId={database.environmentId}
             containerProfileType={containerProfileType}
             setContainerProfileType={setContainerProfileType}
+            containerSize={containerSize}
+            setContainerSize={setContainerSize}
           />
           <DiskSizeInput
             diskValue={diskValue}
