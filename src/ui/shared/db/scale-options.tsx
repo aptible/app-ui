@@ -141,10 +141,14 @@ export function ContainerProfileInput({
   envId,
   containerProfileType,
   setContainerProfileType,
+  containerSize,
+  setContainerSize,
 }: {
   envId: string;
   containerProfileType: InstanceClass;
   setContainerProfileType: (pt: InstanceClass) => void;
+  containerSize: number;
+  setContainerSize: (s: number) => void;
 }) {
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: envId }),
@@ -168,9 +172,9 @@ export function ContainerProfileInput({
     }
 
     setContainerProfileType(value);
-    /* if (containerSize < profile.minimumContainerSize) {
+    if (containerSize < profile.minimumContainerSize) {
       setContainerSize(profile.minimumContainerSize);
-    } */
+    }
   };
   return (
     <FormGroup
