@@ -1,4 +1,3 @@
-import { DEFAULT_INSTANCE_CLASS } from "@app/deploy";
 import {
   defaultDeployApp,
   defaultDeployDatabase,
@@ -611,7 +610,6 @@ const DetailBoxes = () => {
     type: "postgresql",
   });
   const service = defaultDeployService({
-    instanceClass: DEFAULT_INSTANCE_CLASS,
     containerMemoryLimitMb: 4096,
   });
   const stack = defaultDeployStack({

@@ -6,7 +6,7 @@ import {
 } from "@app/deploy";
 import { useSelector } from "@app/react";
 import type { DeployDisk, DeployService, InstanceClass } from "@app/types";
-import type { ValidResult } from "../../hooks";
+import type { DbScaleAction, DbScaleOptions, ValidResult } from "../../hooks";
 import { FormGroup, Label } from "../form-group";
 import { Input } from "../input";
 import { Select, type SelectOption } from "../select";
@@ -68,16 +68,14 @@ export function CpuShareView({
 }
 
 export function ContainerSizeInput({
-  containerSize,
-  setContainerSize,
-  containerProfileType,
+  scaler,
+  dispatchScaler,
 }: {
-  containerSize: number;
-  setContainerSize: (c: number) => void;
-  containerProfileType: InstanceClass;
+  scaler: DbScaleOptions;
+  dispatchScaler: (a: DbScaleAction) => void;
 }) {
   const containerSizeOptions = containerSizesByProfile(
-    containerProfileType,
+    scaler.containerProfile,
   ).map((containerSizeOption) => {
     return {
       label: `${containerSizeOption / 1024} GB`,
@@ -93,8 +91,13 @@ export function ContainerSizeInput({
     >
       <Select
         id="memory-container"
-        value={`${containerSize}`}
-        onSelect={(opt) => setContainerSize(Number.parseInt(opt.value))}
+        value={`${scaler.containerSize}`}
+        onSelect={(opt) =>
+          dispatchScaler({
+            type: "containerSize",
+            payload: Number.parseInt(opt.value),
+          })
+        }
         options={containerSizeOptions}
       />
     </FormGroup>
@@ -102,12 +105,12 @@ export function ContainerSizeInput({
 }
 
 export function DiskSizeInput({
-  diskValue,
-  setDiskValue,
+  scaler,
+  dispatchScaler,
   error,
 }: {
-  diskValue: number;
-  setDiskValue: (dsk: number) => void;
+  scaler: Pick<DbScaleOptions, "diskSize">;
+  dispatchScaler: (a: DbScaleAction) => void;
   error: ValidResult;
 }) {
   return (
@@ -123,13 +126,15 @@ export function DiskSizeInput({
         className="flex w-full"
         name="disk-size"
         type="number"
-        value={diskValue}
+        value={scaler.diskSize}
         min="10"
-        onChange={(e) =>
-          setDiskValue(
-            Math.min(16384, Number.parseInt(e.currentTarget.value, 10)),
-          )
-        }
+        onChange={(e) => {
+          const payload = Math.min(
+            16384,
+            Number.parseInt(e.currentTarget.value, 10),
+          );
+          dispatchScaler({ type: "diskSize", payload });
+        }}
         data-testid="disk-size"
         id="disk-size"
       />
@@ -139,16 +144,12 @@ export function DiskSizeInput({
 
 export function ContainerProfileInput({
   envId,
-  containerProfileType,
-  setContainerProfileType,
-  containerSize,
-  setContainerSize,
+  scaler,
+  dispatchScaler,
 }: {
   envId: string;
-  containerProfileType: InstanceClass;
-  setContainerProfileType: (pt: InstanceClass) => void;
-  containerSize: number;
-  setContainerSize: (s: number) => void;
+  scaler: Pick<DbScaleOptions, "containerProfile">;
+  dispatchScaler: (a: DbScaleAction) => void;
 }) {
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: envId }),
@@ -164,18 +165,13 @@ export function ContainerProfileInput({
       return { label: profile.name, value: containerProfileType };
     },
   );
-  const handleContainerProfileSelection = (opt: SelectOption) => {
-    const value = opt.value as InstanceClass;
-    const profile = getContainerProfileFromType(value);
-    if (!profile) {
-      return;
-    }
-
-    setContainerProfileType(value);
-    if (containerSize < profile.minimumContainerSize) {
-      setContainerSize(profile.minimumContainerSize);
-    }
+  const onSelect = (opt: SelectOption) => {
+    dispatchScaler({
+      type: "containerProfile",
+      payload: opt.value as InstanceClass,
+    });
   };
+
   return (
     <FormGroup
       splitWidthInputs
@@ -187,8 +183,8 @@ export function ContainerProfileInput({
         id="container-profile"
         ariaLabel="container-profile"
         disabled={Object.keys(containerProfilesForStack).length <= 1}
-        value={containerProfileType}
-        onSelect={handleContainerProfileSelection}
+        value={scaler.containerProfile}
+        onSelect={onSelect}
         options={profileOptions}
       />
     </FormGroup>

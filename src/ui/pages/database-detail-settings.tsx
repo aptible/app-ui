@@ -1,5 +1,4 @@
 import {
-  DEFAULT_INSTANCE_CLASS,
   deprovisionDatabase,
   fetchDatabase,
   fetchDatabaseDependents,
@@ -30,6 +29,7 @@ import {
   databaseDetailUrl,
   environmentActivityUrl,
 } from "@app/routes";
+import { DEFAULT_INSTANCE_CLASS } from "@app/schema";
 import type {
   DeployDatabase,
   DeployLogDrain,

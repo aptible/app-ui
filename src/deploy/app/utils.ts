@@ -27,7 +27,7 @@ export const containerSizesByProfile = (profile: InstanceClass): number[] => {
 export const hoursPerMonth = 731;
 export const computedCostsForContainer = (
   containerCount: number,
-  containerProfile: ContainerProfileData,
+  containerProfile: Pick<ContainerProfileData, "costPerContainerHourInCents">,
   containerSizeGB: number,
 ) => {
   const estimatedCostInCents = () => {
@@ -48,7 +48,7 @@ export const computedCostsForContainer = (
 
 export const hourlyAndMonthlyCostsForContainers = (
   containerCount: number,
-  containerProfile: ContainerProfileData,
+  containerProfile: Pick<ContainerProfileData, "costPerContainerHourInCents">,
   containerSize: number,
   diskSize?: number,
 ) => {
