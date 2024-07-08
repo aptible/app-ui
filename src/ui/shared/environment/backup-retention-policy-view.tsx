@@ -7,7 +7,7 @@ import {
 import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { useEffect, useState } from "react";
 import { useValidator } from "../../hooks";
-import { BannerMessages } from "../banner";
+import { Banner, BannerMessages } from "../banner";
 import { Box } from "../box";
 import { Button, ButtonAdmin } from "../button";
 import { FormGroup } from "../form-group";
@@ -122,6 +122,7 @@ export const BackupRpEditor = ({
   const [yearly, setYearly] = useState(backupRp.yearly);
   const [makeCopy, setMakeCopy] = useState(backupRp.makeCopy ? "yes" : "no");
   const [keepFinal, setKeepFinal] = useState(backupRp.keepFinal ? "yes" : "no");
+  const [reduced, setReduced] = useState(false);
   const [errors, validate] = useValidator<UpdateBackupRp, typeof validators>(
     validators,
   );
@@ -154,6 +155,16 @@ export const BackupRpEditor = ({
   useEffect(() => {
     onReset();
   }, [backupRp]);
+
+  useEffect(() => {
+    setReduced(
+      daily < backupRp.daily ||
+        monthly < backupRp.monthly ||
+        yearly < backupRp.yearly ||
+        (makeCopy === "no" && backupRp.makeCopy) ||
+        (keepFinal === "no" && backupRp.keepFinal),
+    );
+  }, [backupRp, daily, monthly, yearly, makeCopy, keepFinal]);
 
   return (
     <Box>
@@ -244,6 +255,16 @@ export const BackupRpEditor = ({
           </div>
 
           <hr className="my-2" />
+
+          {reduced ? (
+            <Banner variant="warning">
+              Warning: Reducing the number of retained backups will cause
+              existing, automated backups that do not fit the new criteria to be
+              deleted. Deleted backups cannot be recovered and the new policy
+              may violate your organization's internal compliance controls.
+              Double check the new configuration before proceeding.
+            </Banner>
+          ) : null}
 
           <div className="flex gap-2">
             <ButtonAdmin
