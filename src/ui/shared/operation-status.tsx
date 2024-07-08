@@ -35,10 +35,10 @@ export const resolveOperationStatuses = (
   }
 
   if (success === statuses.length) {
-    return [
-      "succeeded",
-      statuses.at(-1)?.updatedAt || new Date().toISOString(),
-    ];
+    if (statuses.length === 0) {
+      return ["succeeded", new Date().toISOString()];
+    }
+    return ["succeeded", statuses[statuses.length - 1].updatedAt];
   }
 
   return ["unknown", new Date().toISOString()];
