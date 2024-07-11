@@ -2,12 +2,10 @@ import { prettyDateTime } from "@app/date";
 import {
   cancelAppOpsPoll,
   fetchApp,
-  fetchConfiguration,
   fetchImageById,
   fetchServicesByAppId,
   pollAppOperations,
   selectAppById,
-  selectAppConfigById,
   selectEnvironmentById,
   selectImageById,
   selectLatestDeployOp,
@@ -55,12 +53,6 @@ export function AppHeader({
   app,
   isLoading,
 }: { app: DeployApp; isLoading: boolean }) {
-  useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
-  const config = useSelector((s) =>
-    selectAppConfigById(s, { id: app.currentConfigurationId }),
-  );
-  const isDockerDeploy = config.env.APTIBLE_DOCKER_IMAGE;
-
   const lastDeployOp = useSelector((s) =>
     selectLatestDeployOp(s, { appId: app.id }),
   );
@@ -69,6 +61,7 @@ export function AppHeader({
   const deployment = useSelector((s) =>
     selectDeploymentById(s, { id: app.currentDeploymentId }),
   );
+  const isDockerDeploy = deployment.dockerImage !== "";
 
   useQuery(fetchImageById({ id: app.currentImageId }));
   const image = useSelector((s) =>
