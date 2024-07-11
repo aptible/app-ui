@@ -197,22 +197,30 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
       env[`${db.env}${DB_ENV_TEMPLATE_KEY}`] = getDbEnvTemplateValue(db.name);
     });
 
-    // Trigger configure operation now so we can store the env vars
-    // immediately.
-    const configCtx = yield* call(() =>
-      createAppOperation.run(
-        createAppOperation({
-          type: "configure",
-          appId,
-          env,
-        }),
-      ),
-    );
+    let configureOpId = "";
+    const shouldConfigure = Object.keys(env).length > 0;
+    if (shouldConfigure) {
+      // Trigger configure operation now so we can store the env vars
+      // immediately.
+      const configCtx = yield* call(() =>
+        createAppOperation.run(
+          createAppOperation({
+            type: "configure",
+            appId,
+            env,
+          }),
+        ),
+      );
 
-    if (!configCtx.json.ok) {
-      const data = configCtx.json.error;
-      yield* schema.update(schema.loaders.error({ id, message: data.message }));
-      return;
+      if (!configCtx.json.ok) {
+        const data = configCtx.json.error;
+        yield* schema.update(
+          schema.loaders.error({ id, message: data.message }),
+        );
+        return;
+      }
+      const data = configCtx.json.value;
+      configureOpId = `${data.id}`;
     }
 
     const groupDb = yield* parallel(
@@ -225,10 +233,11 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     );
     const results = yield* groupDb;
 
-    // when creating a standalone app with no databases to provision
-    // we don't want to deploy an app until the config operation completes
-    const data = configCtx.json.value;
-    yield* call(() => waitForOperation({ id: `${data.id}` }));
+    if (shouldConfigure) {
+      // when creating a standalone app with no databases to provision
+      // we don't want to deploy an app until the config operation completes
+      yield* call(() => waitForOperation({ id: configureOpId }));
+    }
 
     // fetch app to get latest configuration id
     yield* call(() => fetchApp.run(fetchApp({ id: appId })));
