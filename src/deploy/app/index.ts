@@ -96,7 +96,7 @@ export const deserializeDeployApp = (payload: DeployAppResponse): DeployApp => {
     status: payload.status,
     environmentId: extractIdFromLink(links.account),
     currentConfigurationId: extractIdFromLink(links.current_configuration),
-    currentDeploymentId: extractIdFromLink(links.current_deployment) || "1",
+    currentDeploymentId: extractIdFromLink(links.current_deployment),
     currentImageId: extractIdFromLink(links.current_image),
     currentSourceId: extractIdFromLink(links.current_source),
   };

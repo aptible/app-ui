@@ -35,6 +35,8 @@ import { Link, Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
   ActiveOperationNotice,
+  Code,
+  CopyTextButton,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -59,6 +61,7 @@ export function AppHeader({
   const deployment = useSelector((s) =>
     selectDeploymentById(s, { id: app.currentDeploymentId }),
   );
+  const isDockerDeploy = deployment.dockerImage !== "";
 
   useQuery(fetchImageById({ id: app.currentImageId }));
   const image = useSelector((s) =>
@@ -93,6 +96,18 @@ export function AppHeader({
             commitSha={deployment.gitCommitSha}
             commitUrl={deployment.gitCommitUrl}
           />
+        </DetailInfoItem>
+        {isDockerDeploy ? null : (
+          <DetailInfoItem title="Git Remote">
+            <div className="flex gap-2">
+              <Code>{app.gitRepo}</Code>
+              <CopyTextButton text={app.gitRepo} />
+            </div>
+          </DetailInfoItem>
+        )}
+
+        <DetailInfoItem title="Deployment Type">
+          {isDockerDeploy ? "Direct Docker Image" : "Git Push"}
         </DetailInfoItem>
 
         <DetailInfoItem title="Source">
