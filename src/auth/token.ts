@@ -167,7 +167,7 @@ export const revokeAllTokens = authApi.post(
       return;
     }
     tunaEvent("revoked-all-tokens");
-    ctx.loader = { message: "Successfully logged out other sessions! You may wish to log out of this session, as well." };
+    ctx.loader = { message: "Successfully logged out of other sessions! You may wish to log out of this session, as well." };
   },
 );
 
@@ -180,5 +180,5 @@ export function* revokeTokensMdw(ctx: AuthApiCtx, next: Next) {
 
   yield* revokeAllTokens.run();
   const msg = ctx.loader?.message || "Success!";
-  ctx.loader = { message: `${msg} All other sessions have been logged out.` };
+  ctx.loader = { message: `${msg} Other sessions have been logged out.` };
 }
