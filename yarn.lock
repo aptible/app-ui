@@ -359,18 +359,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@biomejs/biome@npm:^1.7.3":
-  version: 1.7.3
-  resolution: "@biomejs/biome@npm:1.7.3"
+"@biomejs/biome@npm:^1.8.2":
+  version: 1.8.3
+  resolution: "@biomejs/biome@npm:1.8.3"
   dependencies:
-    "@biomejs/cli-darwin-arm64": 1.7.3
-    "@biomejs/cli-darwin-x64": 1.7.3
-    "@biomejs/cli-linux-arm64": 1.7.3
-    "@biomejs/cli-linux-arm64-musl": 1.7.3
-    "@biomejs/cli-linux-x64": 1.7.3
-    "@biomejs/cli-linux-x64-musl": 1.7.3
-    "@biomejs/cli-win32-arm64": 1.7.3
-    "@biomejs/cli-win32-x64": 1.7.3
+    "@biomejs/cli-darwin-arm64": 1.8.3
+    "@biomejs/cli-darwin-x64": 1.8.3
+    "@biomejs/cli-linux-arm64": 1.8.3
+    "@biomejs/cli-linux-arm64-musl": 1.8.3
+    "@biomejs/cli-linux-x64": 1.8.3
+    "@biomejs/cli-linux-x64-musl": 1.8.3
+    "@biomejs/cli-win32-arm64": 1.8.3
+    "@biomejs/cli-win32-x64": 1.8.3
   dependenciesMeta:
     "@biomejs/cli-darwin-arm64":
       optional: true
@@ -390,62 +390,62 @@ __metadata:
       optional: true
   bin:
     biome: bin/biome
-  checksum: ad6a6585f1d6fcb9c060319c614b4437d715637ecedbe5f4d45f170f0532894654e7cf5c80420da38c8c626d76fef4b6334c7ee85e6c790bd5ad4f7aa49c5182
+  checksum: c5e6379aa640ab1d2b6490abd3820b6998b08d94bb6a3907c39d40c4396efe26996cbf1f03bda6ab86cd83adbb52b5124d81a68dd914c3a03eedc8070d72bce9
   languageName: node
   linkType: hard
 
-"@biomejs/cli-darwin-arm64@npm:1.7.3":
-  version: 1.7.3
-  resolution: "@biomejs/cli-darwin-arm64@npm:1.7.3"
+"@biomejs/cli-darwin-arm64@npm:1.8.3":
+  version: 1.8.3
+  resolution: "@biomejs/cli-darwin-arm64@npm:1.8.3"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-darwin-x64@npm:1.7.3":
-  version: 1.7.3
-  resolution: "@biomejs/cli-darwin-x64@npm:1.7.3"
+"@biomejs/cli-darwin-x64@npm:1.8.3":
+  version: 1.8.3
+  resolution: "@biomejs/cli-darwin-x64@npm:1.8.3"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-arm64-musl@npm:1.7.3":
-  version: 1.7.3
-  resolution: "@biomejs/cli-linux-arm64-musl@npm:1.7.3"
+"@biomejs/cli-linux-arm64-musl@npm:1.8.3":
+  version: 1.8.3
+  resolution: "@biomejs/cli-linux-arm64-musl@npm:1.8.3"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-arm64@npm:1.7.3":
-  version: 1.7.3
-  resolution: "@biomejs/cli-linux-arm64@npm:1.7.3"
+"@biomejs/cli-linux-arm64@npm:1.8.3":
+  version: 1.8.3
+  resolution: "@biomejs/cli-linux-arm64@npm:1.8.3"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-x64-musl@npm:1.7.3":
-  version: 1.7.3
-  resolution: "@biomejs/cli-linux-x64-musl@npm:1.7.3"
+"@biomejs/cli-linux-x64-musl@npm:1.8.3":
+  version: 1.8.3
+  resolution: "@biomejs/cli-linux-x64-musl@npm:1.8.3"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-x64@npm:1.7.3":
-  version: 1.7.3
-  resolution: "@biomejs/cli-linux-x64@npm:1.7.3"
+"@biomejs/cli-linux-x64@npm:1.8.3":
+  version: 1.8.3
+  resolution: "@biomejs/cli-linux-x64@npm:1.8.3"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@biomejs/cli-win32-arm64@npm:1.7.3":
-  version: 1.7.3
-  resolution: "@biomejs/cli-win32-arm64@npm:1.7.3"
+"@biomejs/cli-win32-arm64@npm:1.8.3":
+  version: 1.8.3
+  resolution: "@biomejs/cli-win32-arm64@npm:1.8.3"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-win32-x64@npm:1.7.3":
-  version: 1.7.3
-  resolution: "@biomejs/cli-win32-x64@npm:1.7.3"
+"@biomejs/cli-win32-x64@npm:1.8.3":
+  version: 1.8.3
+  resolution: "@biomejs/cli-win32-x64@npm:1.8.3"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -2054,7 +2054,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cloud-ui@workspace:."
   dependencies:
-    "@biomejs/biome": ^1.7.3
+    "@biomejs/biome": ^1.8.2
     "@floating-ui/react": ^0.26.16
     "@github/webauthn-json": ^2.1.1
     "@remix-run/web-fetch": ^4.4.2
@@ -2710,7 +2710,7 @@ __metadata:
 
 "fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.3#~builtin<compat/fsevents>":
   version: 2.3.3
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=df0bf1"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=18f3a7"
   dependencies:
     node-gyp: latest
   conditions: os=darwin
@@ -4497,7 +4497,7 @@ __metadata:
 
 "resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.2#~builtin<compat/resolve>":
   version: 1.22.8
-  resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
+  resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=07638b"
   dependencies:
     is-core-module: ^2.13.0
     path-parse: ^1.0.7
@@ -5191,17 +5191,17 @@ __metadata:
 
 "typescript@patch:typescript@^5.2.2#~builtin<compat/typescript>":
   version: 5.2.2
-  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"
+  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=701156"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 0f4da2f15e6f1245e49db15801dbee52f2bbfb267e1c39225afdab5afee1a72839cd86000e65ee9d7e4dfaff12239d28beaf5ee431357fcced15fb08583d72ca
+  checksum: 07106822b4305de3f22835cbba949a2b35451cad50888759b6818421290ff95d522b38ef7919e70fb381c5fe9c1c643d7dea22c8b31652a717ddbd57b7f4d554
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@^5.4.5#~builtin<compat/typescript>":
   version: 5.4.5
-  resolution: "typescript@patch:typescript@npm%3A5.4.5#~builtin<compat/typescript>::version=5.4.5&hash=f3b441"
+  resolution: "typescript@patch:typescript@npm%3A5.4.5#~builtin<compat/typescript>::version=5.4.5&hash=701156"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
