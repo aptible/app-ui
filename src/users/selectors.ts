@@ -3,9 +3,13 @@ import { type WebState, schema } from "@app/schema";
 import { selectToken } from "@app/token";
 
 export const selectUsers = schema.users.selectTable;
-export const selectUsersAsList = schema.users.selectTableAsList;
 export const selectUsersByIds = schema.users.selectByIds;
 export const selectUserById = schema.users.selectById;
+
+export const selectUsersAsList = createSelector(
+  schema.users.selectTableAsList,
+  (users) => users.sort((a, b) => a.name.localeCompare(b.name)),
+);
 
 export const selectUsersForSearchTable = createSelector(
   selectUsersAsList,
