@@ -60,10 +60,6 @@ export const SsoTokenCliPage = () => {
             is configured to use a shorter session duration, that will be
             applied to the token instead. The security best practice is to
             select the shortest lifetime that will meet your needs.{" "}
-            <strong>
-              Logging out of your browser session will revoke the token,
-              regardless of the lifetime you select.
-            </strong>
           </div>
 
           <form onSubmit={onSubmit}>
@@ -101,10 +97,6 @@ export const SsoTokenCliReadPage = () => {
               Aptible CLI
             </ExternalLink>{" "}
             with SSO, enter the below command into your terminal.{" "}
-            <strong>
-              Logging out of your browser session will revoke the token,
-              regardless of the lifetime you select.
-            </strong>
           </div>
 
           <Group>
