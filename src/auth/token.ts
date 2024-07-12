@@ -167,7 +167,7 @@ export const revokeAllTokens = authApi.post(
       return;
     }
     tunaEvent("revoked-all-tokens");
-    ctx.loader = { message: "Successfully logged out all other sessions!" };
+    ctx.loader = { message: "Successfully logged out other sessions! You may wish to log out of this session, as well." };
   },
 );
 

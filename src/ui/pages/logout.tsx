@@ -23,7 +23,7 @@ export const LogoutPage = () => {
         <p className="my-6 text-gray-600">
           Click to log out now or visit{" "}
           <Link to={securitySettingsUrl()}>Security Settings</Link> to log out
-          of all active sessions.
+          of other active sessions, first.
         </p>
       </div>
       <Box>

@@ -365,12 +365,12 @@ const LogOut = () => {
 
       <div>
         This action will log out all <strong>other</strong> sessions and cannot
-        be undone.
+        be undone. This session will remain logged in.
       </div>
 
       <div>
         <Button variant="delete" requireConfirm onClick={confirmLogout}>
-          Log out all sessions
+          Log out other sessions
         </Button>
       </div>
     </Group>
@@ -396,7 +396,7 @@ export const SecuritySettingsPage = () => {
       <Section title="Security Keys">
         <SecurityKeys />
       </Section>
-      <Section title="Log out all sessions">
+      <Section title="Log out other sessions">
         <LogOut />
       </Section>
     </BoxGroup>
