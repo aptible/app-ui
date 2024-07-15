@@ -15,7 +15,11 @@ import {
 } from "@app/react";
 import { environmentActivityUrl, environmentDatabasesUrl } from "@app/routes";
 import { defaultDeployDisk, defaultDeployService } from "@app/schema";
-import { diskSizeValidator, handleValidator } from "@app/validator";
+import {
+  diskSizeValidator,
+  existValidtor,
+  handleValidator,
+} from "@app/validator";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDatabaseScaler, useValidator } from "../hooks";
@@ -41,6 +45,8 @@ import { EnvSelectorPage } from "./create-env-app";
 const validators = {
   handle: (props: CreateDatabaseProps) => handleValidator(props.handle),
   diskSize: (props: CreateDatabaseProps) => diskSizeValidator(props.diskSize),
+  databaseImageId: (props: CreateDatabaseProps) =>
+    existValidtor(props.databaseImageId, "must pick database"),
 };
 
 export const CreateDatabasePage = () => {
@@ -99,7 +105,8 @@ export const CreateDatabasePage = () => {
   const action = provisionDatabase(createProps);
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validate(createProps)) dispatch(action);
+    if (!validate(createProps)) return;
+    dispatch(action);
   };
   const loader = useLoader(action);
   useLoaderSuccess(loader, () => {
@@ -177,8 +184,9 @@ export const CreateDatabasePage = () => {
               envId={envId}
               type="submit"
               isLoading={loader.isLoading}
+              disabled={imageId === ""}
             >
-              Create Database
+              Save
             </ButtonCreate>
 
             <Button
