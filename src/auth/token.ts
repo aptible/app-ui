@@ -170,9 +170,9 @@ export const revokeAllTokens = authApi.post(
     ctx.loader = {
       message:
         "Successfully logged out of other sessions! You may wish to log out of this session, as well.",
-     };
-   },
-  );
+    };
+  },
+);
 
 export function* revokeTokensMdw(ctx: AuthApiCtx, next: Next) {
   yield* next();
