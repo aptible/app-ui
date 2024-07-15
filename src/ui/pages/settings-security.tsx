@@ -17,6 +17,7 @@ import {
 } from "@app/react";
 import {
   addSecurityKeyUrl,
+  logoutUrl,
   otpRecoveryCodesUrl,
   otpSetupUrl,
 } from "@app/routes";
@@ -24,6 +25,7 @@ import { schema } from "@app/schema";
 import { selectCurrentUserId, updateEmail } from "@app/users";
 import { emailValidator } from "@app/validator";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useCurrentUser } from "../hooks";
 import {
   Banner,
@@ -361,16 +363,30 @@ const LogOut = () => {
 
   return (
     <Group>
-      <BannerMessages {...loader} />
+      {loader.isSuccess ? (
+        <BannerMessages
+          {...loader}
+          message={
+            <>
+              <span>{loader.message} </span>
+              <Link to={logoutUrl()} className={tokens.type["white link"]}>
+                Logout
+              </Link>
+            </>
+          }
+        />
+      ) : (
+        <BannerMessages {...loader} />
+      )}
 
       <div>
         This action will log out all <strong>other</strong> sessions and cannot
-        be undone.
+        be undone. This session will remain logged in.
       </div>
 
       <div>
         <Button variant="delete" requireConfirm onClick={confirmLogout}>
-          Log out all sessions
+          Log out other sessions
         </Button>
       </div>
     </Group>
@@ -396,7 +412,7 @@ export const SecuritySettingsPage = () => {
       <Section title="Security Keys">
         <SecurityKeys />
       </Section>
-      <Section title="Log out all sessions">
+      <Section title="Log out other sessions">
         <LogOut />
       </Section>
     </BoxGroup>

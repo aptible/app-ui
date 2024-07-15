@@ -117,7 +117,7 @@ export const BannerMessages = ({
   isSuccess: boolean;
   isError: boolean;
   isWarning?: boolean;
-  message: string;
+  message: React.ReactNode;
   className?: string;
 }) => {
   if (!message) return null;
