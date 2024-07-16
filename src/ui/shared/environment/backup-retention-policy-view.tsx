@@ -258,11 +258,11 @@ export const BackupRpEditor = ({
 
           {reduced ? (
             <Banner variant="warning">
-              Warning: Reducing the number of retained backups will cause
-              existing, automated backups that do not fit the new criteria to be
-              deleted. Deleted backups cannot be recovered and the new policy
-              may violate your organization's internal compliance controls.
-              Double check the new configuration before proceeding.
+              Warning: Reducing the number of retained backups, including
+              disabling copies or final backups, will automatically delete
+              existing, automated backups that do not match the new policy. This
+              may result in the permanent loss of backup data and could violate
+              your organization's internal compliance controls.
             </Banner>
           ) : null}
 
