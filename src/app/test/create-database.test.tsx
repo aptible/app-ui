@@ -91,7 +91,7 @@ describe("Create Database flow", () => {
           const data = await req.json();
           expect(data.container_size).toEqual(4096);
           expect(data.disk_size).toEqual(20);
-          expect(data.instance_class).toEqual("r5");
+          expect(data.instance_profile).toEqual("r5");
           return res(ctx.json(testDatabaseOp));
         },
       ),

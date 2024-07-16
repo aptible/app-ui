@@ -478,8 +478,8 @@ export const createDatabaseOperation = api.post<
         return {
           container_size: containerSize,
           disk_size: diskSize,
-          iops: iops,
-          instance_class: containerProfile,
+          provisioned_iops: iops,
+          instance_profile: containerProfile,
           type,
         };
       }
