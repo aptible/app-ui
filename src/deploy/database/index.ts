@@ -9,7 +9,7 @@ import { type FetchJson, type Payload, call, parallel, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
-import { type WebState, schema } from "@app/schema";
+import { DEFAULT_INSTANCE_CLASS, type WebState, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type {
   DeployApiCtx,
@@ -403,8 +403,11 @@ export const provisionDatabase = thunks.create<
     createDatabaseOperation.run(
       createDatabaseOperation({
         dbId,
-        containerSize: 1024,
-        diskSize: 10,
+        iops: ctx.payload.iops || 3000,
+        containerProfile:
+          ctx.payload.containerProfile || DEFAULT_INSTANCE_CLASS,
+        containerSize: ctx.payload.containerSize || 1024,
+        diskSize: ctx.payload.diskSize || 10,
         type: "provision",
         envId: ctx.payload.envId,
       }),
@@ -438,6 +441,8 @@ interface CreateDatabaseOpProps {
   dbId: string;
   containerSize: number;
   diskSize: number;
+  containerProfile?: InstanceClass;
+  iops?: number;
   type: "provision";
   envId: string;
 }
@@ -468,10 +473,13 @@ export const createDatabaseOperation = api.post<
       }
 
       case "provision": {
-        const { containerSize, diskSize, type } = ctx.payload;
+        const { containerSize, diskSize, type, iops, containerProfile } =
+          ctx.payload;
         return {
           container_size: containerSize,
           disk_size: diskSize,
+          iops: iops,
+          instance_class: containerProfile,
           type,
         };
       }

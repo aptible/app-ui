@@ -77,6 +77,81 @@ describe("Create Database flow", () => {
     ).toBeInTheDocument();
   });
 
+  it("should successfully provision a database with scaling options applied", async () => {
+    let counter = 0;
+    server.use(
+      ...stacksWithResources({
+        accounts: [testAccount],
+        databases: [],
+      }),
+      ...verifiedUserHandlers(),
+      rest.post(
+        `${testEnv.apiUrl}/databases/:id/operations`,
+        async (req, res, ctx) => {
+          const data = await req.json();
+          expect(data.container_size).toEqual(4096);
+          expect(data.disk_size).toEqual(20);
+          expect(data.instance_class).toEqual("r5");
+          return res(ctx.json(testDatabaseOp));
+        },
+      ),
+      rest.get(
+        `${testEnv.apiUrl}/accounts/:envId/operations`,
+        (_, res, ctx) => {
+          counter += 1;
+          const operations = counter === 1 ? [] : [testDatabaseOp];
+          return res(
+            ctx.json({
+              _embedded: { operations },
+            }),
+          );
+        },
+      ),
+    );
+
+    const { App, store } = setupAppIntegrationTest({
+      initEntries: [`/create/db?environment_id=${testAccount.id}`],
+    });
+
+    await waitForBootup(store);
+
+    render(<App />);
+
+    await screen.findByText(testAccount.handle);
+    await screen.findByRole("button", { name: /Save/ });
+
+    await screen.findByText(/postgres v14/);
+    const dbSelector = await screen.findByRole("combobox", {
+      name: /new-db/,
+    });
+    await act(() => userEvent.selectOptions(dbSelector, "postgres v14"));
+
+    const profileSelector = await screen.findByRole("combobox", {
+      name: /container-profile/,
+    });
+    await act(() =>
+      userEvent.selectOptions(profileSelector, "Memory Optimized (R)"),
+    );
+
+    const diskSize = await screen.findByLabelText(/Disk Size/);
+    fireEvent.change(diskSize, { target: { value: 20 } });
+
+    const iops = await screen.findByLabelText(/IOPS/);
+    fireEvent.change(iops, { target: { value: 4000 } });
+
+    const saveBtn = await screen.findByRole("button", {
+      name: /Save/,
+    });
+
+    // go to next page
+    fireEvent.click(saveBtn);
+
+    await screen.findByText(/Operations show real-time/);
+    expect(
+      screen.queryByText(/test-account-1-.+-postgres/),
+    ).toBeInTheDocument();
+  });
+
   it("should not try to create a db without an imgId (e.g. user didnt pick a db yet)", async () => {
     server.use(
       ...stacksWithResources({
