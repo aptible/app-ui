@@ -1,6 +1,5 @@
 import { prettyDateTime } from "@app/date";
 import {
-  DEFAULT_INSTANCE_CLASS,
   type ServiceSizingPolicyEditProps,
   cancelServicesOpsPoll,
   containerSizesByProfile,
@@ -29,7 +28,7 @@ import {
   useSelector,
 } from "@app/react";
 import { appActivityUrl } from "@app/routes";
-import { schema } from "@app/schema";
+import { DEFAULT_INSTANCE_CLASS, schema } from "@app/schema";
 import type { DeployOperation, InstanceClass } from "@app/types";
 import { type SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
