@@ -1,5 +1,5 @@
 import { prettyDateTime } from "@app/date";
-import { fetchDatabaseImages, formatDatabaseType } from "@app/deploy";
+import { fetchDatabaseImages } from "@app/deploy";
 import {
   calcMetrics,
   cancelDatabaseOpsPoll,
@@ -83,9 +83,7 @@ export function DatabaseHeader({
         <DetailInfoItem title="Memory Limit">
           {metrics.totalMemoryLimit / 1024} GB
         </DetailInfoItem>
-        <DetailInfoItem title="Type">
-          {formatDatabaseType(database.type, image.version)}
-        </DetailInfoItem>
+        <DetailInfoItem title="Type">{image.description}</DetailInfoItem>
         <DetailInfoItem title="Disk Type">{disk.ebsVolumeType}</DetailInfoItem>
         <DetailInfoItem title="CPU Share">{metrics.totalCPU}</DetailInfoItem>
         <DetailInfoItem title="Disk Size">{disk.size} GB</DetailInfoItem>
