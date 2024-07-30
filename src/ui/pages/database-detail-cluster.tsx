@@ -13,7 +13,6 @@ import {
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { databaseEndpointsUrl } from "@app/routes";
-import { capitalize } from "@app/string-utils";
 import type { DeployDatabase } from "@app/types";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";

@@ -1,5 +1,5 @@
 import { prettyDateTime } from "@app/date";
-import { fetchDatabaseImages, formatDatabaseType } from "@app/deploy";
+import { fetchDatabaseImages } from "@app/deploy";
 import {
   calcMetrics,
   cancelDatabaseOpsPoll,

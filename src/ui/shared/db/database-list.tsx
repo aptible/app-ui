@@ -16,7 +16,6 @@ import {
   selectLatestOpByDatabaseId,
   selectServiceById,
 } from "@app/deploy";
-import { formatDatabaseType } from "@app/deploy";
 import { useQuery } from "@app/react";
 import { useSelector } from "@app/react";
 import {
