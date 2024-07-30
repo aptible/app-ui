@@ -106,25 +106,6 @@ export const signup = thunks.create<CreateUserForm>(
         return;
       }
 
-      const orgId = orgCtx.json.value.id;
-      tunaEvent("nux.signup.created-organization", { name: orgName, orgId });
-
-      const billsCtx = yield* call(
-        createSignupBillingRecords.run({
-          orgId,
-          orgName,
-          contactName: name,
-          contactEmail: email,
-        }),
-      );
-
-      if (billsCtx.json.ok) {
-        tunaEvent("nux.signup.created-billing", { name: orgName, orgId });
-      }
-
-      // ignore billing errors because we could be in development
-      log(billsCtx);
-
       // Send signup data to Hubspot
       submitHubspotForm(name, email, orgName, orgId);
     }
