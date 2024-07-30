@@ -56,10 +56,7 @@ const ClusterDatabaseRow = ({
       </Td>
 
       <Td className="flex-1">
-        <div className="text-gray-900">{capitalize(db.type)}</div>
-        <div className={tokens.type["normal lighter"]}>
-          Version {image.version}
-        </div>
+        <div className="text-gray-900">{image.description}</div>
       </Td>
 
       <Td className="flex-1">

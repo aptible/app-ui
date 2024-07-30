@@ -71,7 +71,7 @@ export const DatabaseItemView = ({
         <p className="flex flex-col">
           <span className={tokens.type["table link"]}>{database.handle}</span>
           <span className={tokens.type["normal lighter"]}>
-            {formatDatabaseType(database.type, image.version)}
+            {image.description}
           </span>
         </p>
       </Link>

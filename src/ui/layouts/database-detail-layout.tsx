@@ -84,7 +84,7 @@ export function DatabaseHeader({
           {metrics.totalMemoryLimit / 1024} GB
         </DetailInfoItem>
         <DetailInfoItem title="Type">
-          {formatDatabaseType(database.type, image.version)}
+          {image.description}
         </DetailInfoItem>
         <DetailInfoItem title="Disk Type">{disk.ebsVolumeType}</DetailInfoItem>
         <DetailInfoItem title="CPU Share">{metrics.totalCPU}</DetailInfoItem>
