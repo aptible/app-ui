@@ -1,5 +1,4 @@
 import { thunks } from "@app/api";
-import { createSignupBillingRecords } from "@app/billing";
 import { createLog } from "@app/debug";
 import { call } from "@app/fx";
 import { submitHubspotForm } from "@app/hubspot";
@@ -105,7 +104,7 @@ export const signup = thunks.create<CreateUserForm>(
         );
         return;
       }
-
+      const orgId = orgCtx.json.value.id;
       // Send signup data to Hubspot
       submitHubspotForm(name, email, orgName, orgId);
     }

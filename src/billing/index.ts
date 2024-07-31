@@ -1,6 +1,6 @@
 import { billingApi, cacheTimer, thunks } from "@app/api";
 import { selectEnv } from "@app/config";
-import { call, mdw, parallel, select } from "@app/fx";
+import { mdw, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultHalHref } from "@app/hal";
 import { schema } from "@app/schema";
@@ -161,97 +161,3 @@ export const updatePaymentMethod = billingApi.patch<{
   });
   yield* next();
 });
-
-const createBillingCycle = billingApi.post<{ orgId: string }>(
-  "/billing_details/:orgId/billing_cycles",
-  function* (ctx, next) {
-    const anniversary = new Date();
-    anniversary.setUTCHours(0);
-    anniversary.setUTCMinutes(0);
-    anniversary.setUTCSeconds(0);
-    anniversary.setUTCMilliseconds(0);
-    const period = "month";
-
-    ctx.request = ctx.req({
-      body: JSON.stringify({
-        anniversary: anniversary.toISOString(),
-        period,
-      }),
-    });
-
-    yield* next();
-  },
-);
-
-const createBillingContact = billingApi.post<{
-  orgId: string;
-  contactName: string;
-  contactEmail: string;
-}>("/billing_details/:orgId/billing_contacts", function* (ctx, next) {
-  const { contactName, contactEmail } = ctx.payload;
-  ctx.request = ctx.req({
-    body: JSON.stringify({
-      name: contactName,
-      email: contactEmail,
-    }),
-  });
-
-  yield* next();
-});
-
-interface CreateBillingRecordProps {
-  orgId: string;
-  orgName: string;
-  contactName: string;
-  contactEmail: string;
-}
-
-export const createSignupBillingRecords =
-  thunks.create<CreateBillingRecordProps>(
-    "create-signup-billing-records",
-    function* (ctx, next) {
-      const dtail = yield* call(() =>
-        createBillingDetail.run(createBillingDetail(ctx.payload)),
-      );
-      if (!dtail.json.ok) {
-        ctx.json = {
-          ok: false,
-          data: dtail.json.error,
-        };
-        return;
-      }
-
-      const group = yield* parallel([
-        () => createBillingCycle.run(createBillingCycle(ctx.payload)),
-        () => createBillingContact.run(createBillingContact(ctx.payload)),
-      ]);
-      const results = yield* group;
-      // check each resp for an error
-      const msg: string[] = [];
-      for (let i = 0; i < results.length; i += 1) {
-        const result = results[i];
-        if (!result.ok) {
-          msg.push(result.error.message);
-          continue;
-        }
-
-        if (!result.value.json.ok) {
-          msg.push(result.value.json.error.message);
-        }
-      }
-
-      if (msg.length > 0) {
-        ctx.json = {
-          ok: false,
-          data: { message: msg.join("\n") },
-        };
-        return;
-      }
-
-      ctx.json = {
-        ok: true,
-        data: {},
-      };
-      yield* next();
-    },
-  );
