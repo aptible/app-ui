@@ -1,4 +1,3 @@
-import { selectDatabaseImageById } from "@app/deploy";
 import { selectDeployments } from "@app/deployment";
 import { useSelector } from "@app/react";
 import { type WebState, schema } from "@app/schema";
@@ -16,6 +15,7 @@ import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
 } from "../database";
+import { selectDatabaseImageById } from "../database-images";
 import { findDiskById, selectDisks } from "../disk";
 import {
   findEnvById,
