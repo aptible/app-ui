@@ -470,9 +470,9 @@ const computeSearchMatchDb = (
   db: DeployDatabaseRow,
   search: string,
 ): boolean => {
-  const image = useSelector((s) =>
+  const imageDesc = useSelector((s) =>
     selectDatabaseImageById(s, { id: db.databaseImageId }),
-  );
+  ).description;
   const handle = db.handle.toLocaleLowerCase();
   const envHandle = db.envHandle.toLocaleLowerCase();
   const dbType = db.type.toLocaleLowerCase();
@@ -492,7 +492,7 @@ const computeSearchMatchDb = (
   const opMatch = lastOpType !== "" && lastOpType.includes(search);
   const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
   const dbTypeMatch = dbType.includes(search);
-  const imgDescMatch = image.includes(search);
+  const imgDescMatch = imageDesc.includes(search);
   const idMatch = search === db.id;
 
   return (
