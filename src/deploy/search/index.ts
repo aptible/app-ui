@@ -1,4 +1,6 @@
 import { selectDeployments } from "@app/deployment";
+import { selectDatabaseImageById } from "@app/deploy";
+import { useSelector } from "@app/react";
 import { type WebState, schema } from "@app/schema";
 import { selectSourcesAsList } from "@app/source";
 import type { DeployServiceRow, DeploySource, Deployment } from "@app/types";
@@ -468,6 +470,9 @@ const computeSearchMatchDb = (
   db: DeployDatabaseRow,
   search: string,
 ): boolean => {
+  const image = useSelector((s) =>
+    selectDatabaseImageById(s, { id: db.databaseImageId }),
+  );
   const handle = db.handle.toLocaleLowerCase();
   const envHandle = db.envHandle.toLocaleLowerCase();
   const dbType = db.type.toLocaleLowerCase();
@@ -487,10 +492,12 @@ const computeSearchMatchDb = (
   const opMatch = lastOpType !== "" && lastOpType.includes(search);
   const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
   const dbTypeMatch = dbType.includes(search);
+  const imgDescMatch = image.includes(search);
   const idMatch = search === db.id;
 
   return (
     handleMatch ||
+    imgDescMatch ||
     dbTypeMatch ||
     envMatch ||
     opMatch ||
