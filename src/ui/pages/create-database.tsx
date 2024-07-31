@@ -86,7 +86,7 @@ export const CreateDatabasePage = () => {
   const {
     scaler,
     dispatchScaler,
-    estimatedPricePerHour,
+    requestedPricePerGBHour,
     estimatedPrice,
     requestedContainerProfile,
   } = useDatabaseScaler({
@@ -170,7 +170,7 @@ export const CreateDatabasePage = () => {
             <PricingCalc
               service={service}
               disk={disk}
-              pricePerHour={estimatedPricePerHour}
+              pricePerGBHour={requestedPricePerGBHour}
               price={estimatedPrice}
             />
           </div>

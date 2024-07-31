@@ -3,12 +3,11 @@ import {
   type DatabaseDependency,
   type DeployDatabaseRow,
   calcMetrics,
+  calculateCost,
   fetchDatabaseImages,
   fetchDatabases,
   fetchEnvironmentById,
   fetchEnvironments,
-  getContainerProfileFromType,
-  hourlyAndMonthlyCostsForContainers,
   selectDatabaseImageById,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
@@ -95,15 +94,10 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
     selectServiceById(s, { id: database.serviceId }),
   );
   const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
-  const currentContainerProfile = getContainerProfileFromType(
-    service.instanceClass,
-  );
-  const { pricePerMonth: currentPrice } = hourlyAndMonthlyCostsForContainers(
-    service.containerCount,
-    currentContainerProfile,
-    service.containerMemoryLimitMb,
-    disk.size,
-  );
+  const { monthlyCost: currentPrice } = calculateCost({
+    services: [service],
+    disks: [disk]
+  })
   return (
     <Td>
       <div className={tokens.type.darker}>${currentPrice.toFixed(2)}</div>

@@ -14,12 +14,12 @@ import { Select, type SelectOption } from "../select";
 export function PricingCalc({
   service,
   disk,
-  pricePerHour,
+  pricePerGBHour,
   price,
 }: {
   service: DeployService;
   disk: DeployDisk;
-  pricePerHour: string;
+  pricePerGBHour: number;
   price: number;
 }) {
   return (
@@ -28,7 +28,7 @@ export function PricingCalc({
         <Label>Pricing</Label>
         <p className="text-black-500">
           1 x {service.containerMemoryLimitMb / 1024} GB container x $
-          {pricePerHour} per GB/hour
+          {pricePerGBHour.toFixed(2)} per GB/hour
         </p>
         <p className="text-black-500">
           {disk.size} GB disk x $0.20 per GB/month

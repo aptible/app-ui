@@ -1,13 +1,13 @@
 import { prettyDateTime } from "@app/date";
 import {
   type ServiceSizingPolicyEditProps,
+  calculateCost,
   cancelServicesOpsPoll,
   containerSizesByProfile,
   fetchApp,
   fetchService,
   fetchServiceSizingPoliciesByServiceId,
   getContainerProfileFromType,
-  hourlyAndMonthlyCostsForContainers,
   modifyServiceSizingPolicy,
   pollServiceOperations,
   scaleService,
@@ -582,18 +582,14 @@ export const AppDetailServiceScalePage = () => {
   );
   const requestedContainerProfile =
     getContainerProfileFromType(containerProfileType);
-  const { pricePerHour: currentPricePerHour, pricePerMonth: currentPrice } =
-    hourlyAndMonthlyCostsForContainers(
-      service.containerCount,
-      currentContainerProfile,
-      service.containerMemoryLimitMb,
-    );
-  const { pricePerHour: estimatedPricePerHour, pricePerMonth: estimatedPrice } =
-    hourlyAndMonthlyCostsForContainers(
-      containerCount,
-      requestedContainerProfile,
-      containerSize,
-    );
+  const currentPrice =
+    calculateCost({
+      services: [service]
+    }).monthlyCost
+  const estimatedPrice =
+    calculateCost({
+      services: [{ containerCount, containerMemoryLimitMb: containerSize, instanceClass: containerProfileType }]
+    }).monthlyCost
 
   const profileOptions = Object.keys(containerProfilesForStack).map(
     (profileType) => {
@@ -720,13 +716,13 @@ export const AppDetailServiceScalePage = () => {
                 {service.containerCount} container
                 {service.containerCount > 1 ? "s" : ""} x{" "}
                 {service.containerMemoryLimitMb / 1024} GB x $
-                {currentPricePerHour} per GB/hour
+                {(currentContainerProfile.costPerContainerGBHourInCents / 100).toFixed(2)} per GB/hour
               </p>
             </div>
             <div>
               <p className="text-black-500">Current Estimated Monthly Cost</p>
               <p className="text-right text-lg text-green-400">
-                ${currentPrice}
+                ${currentPrice.toFixed(2)}
               </p>
             </div>
           </div>
@@ -771,14 +767,14 @@ export const AppDetailServiceScalePage = () => {
                 <p className="text-black-500">
                   {containerCount} container
                   {containerCount > 1 || containerCount === 0 ? "s" : ""} x{" "}
-                  {containerSize / 1024} GB x ${estimatedPricePerHour} per
+                  {containerSize / 1024} GB x ${(requestedContainerProfile.costPerContainerGBHourInCents / 100).toFixed(2)} per
                   GB/hour
                 </p>
               </div>
               <div>
                 <p className="text-black-500">New Estimated Monthly Cost</p>
                 <p className="text-right text-lg text-green-400">
-                  ${estimatedPrice}
+                  ${estimatedPrice.toFixed(2)}
                 </p>
               </div>
             </div>

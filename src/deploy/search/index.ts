@@ -6,7 +6,6 @@ import { createSelector } from "starfx";
 import {
   type DeployAppRow,
   findAppById,
-  hourlyAndMonthlyCostsForContainers,
   selectApps,
   selectAppsByOrgAsList,
 } from "../app";
@@ -36,6 +35,7 @@ import {
   selectServicesByOrgId,
   serviceCommandText,
 } from "../service";
+import { calculateCost } from "../cost";
 
 export const selectServicesForTable = createSelector(
   selectEnvironmentsByOrg,
@@ -60,12 +60,11 @@ export const selectServicesForTable = createSelector(
           resourceHandle = "Unknown";
         }
 
-        const metrics = calcServiceMetrics(service);
         return {
           ...service,
           envHandle: env.handle,
           resourceHandle,
-          cost: (metrics.estimatedCostInDollars * 1024) / 1000,
+          cost: calculateCost({ services: [service] }).monthlyCost
         };
       }),
 );
@@ -160,10 +159,7 @@ export const selectAppsForTable = createSelector(
           id: app.currentDeploymentId,
         });
         const appServices = services.filter((s) => s.appId === app.id);
-        const cost = appServices.reduce((acc, service) => {
-          const mm = calcServiceMetrics(service);
-          return acc + (mm.estimatedCostInDollars * 1024) / 1000;
-        }, 0);
+        const { monthlyCost: cost } = calculateCost({ services: appServices });
         const metrics = calcMetrics(services);
 
         return {
@@ -571,14 +567,10 @@ export const selectDatabasesForTable = createSelector(
         }
         const disk = findDiskById(disks, { id: dbb.diskId });
         const service = findServiceById(services, { id: dbb.serviceId });
-        const currentContainerProfile = getContainerProfileFromType(
-          service.instanceClass,
-        );
-        const { pricePerMonth: cost } = hourlyAndMonthlyCostsForContainers(
-          service.containerCount,
-          currentContainerProfile,
-          service.containerMemoryLimitMb,
-          disk.size,
+        const { monthlyCost: cost } = calculateCost({
+          services: [service],
+          disks: [disk]
+        }
         );
         const metrics = calcMetrics([service]);
         return {

@@ -306,7 +306,7 @@ export interface DeployDatabaseImage extends Timestamps {
 
 export interface ContainerProfile {
   name: string;
-  costPerContainerHourInCents: number;
+  costPerContainerGBHourInCents: number;
   cpuShare: number;
   minimumContainerSize: number;
   maximumContainerSize: number;
@@ -567,7 +567,7 @@ export const containerProfileKeys: InstanceClass[] = [
 ];
 export type ContainerProfileData = {
   name: string;
-  costPerContainerHourInCents: number;
+  costPerContainerGBHourInCents: number;
   cpuShare: number;
   minimumContainerSize: number;
   maximumContainerSize: number;

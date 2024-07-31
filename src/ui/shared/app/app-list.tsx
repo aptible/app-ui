@@ -3,7 +3,7 @@ import {
   type AppDependency,
   type DeployAppRow,
   calcMetrics,
-  calcServiceMetrics,
+  calculateCost,
   fetchApps,
   fetchEnvironmentById,
   fetchEnvironments,
@@ -99,10 +99,7 @@ const AppCostCell = ({ app }: AppCellProps) => {
   const services = useSelector((s) =>
     selectServicesByAppId(s, { appId: app.id }),
   );
-  const cost = services.reduce((acc, service) => {
-    const mm = calcServiceMetrics(service);
-    return acc + (mm.estimatedCostInDollars * 1024) / 1000;
-  }, 0);
+  const cost = calculateCost({ services: services }).monthlyCost
 
   return (
     <Td>

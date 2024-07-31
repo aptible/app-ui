@@ -10,9 +10,9 @@ import {
   type InstanceClass,
   excludesFalse,
 } from "@app/types";
-import { computedCostsForContainer } from "../app/utils";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
 import { selectEnvironmentsByOrgAsList } from "../environment";
+import { calculateCost } from "../cost";
 
 export const defaultServiceResponse = (
   s: Partial<DeployServiceResponse> = {},
@@ -82,7 +82,7 @@ export const getContainerProfileFromType = (
   if (!CONTAINER_PROFILES[containerProfile]) {
     return {
       name: "",
-      costPerContainerHourInCents: 0,
+      costPerContainerGBHourInCents: 0,
       cpuShare: 0,
       minimumContainerSize: 0,
       maximumContainerSize: 0,
@@ -131,19 +131,13 @@ export const calcServiceMetrics = (service: DeployService) => {
 
   const containerSizeGB = service.containerMemoryLimitMb / GB;
   const cpuShare = service.containerMemoryLimitMb / containerProfile.cpuShare;
-  const { estimatedCostInCents, estimatedCostInDollars } =
-    computedCostsForContainer(
-      service.containerCount,
-      containerProfile,
-      containerSizeGB,
-    );
+  const { monthlyCost } = calculateCost({ services: [service] })
 
   return {
     containerProfile,
     containerSizeGB,
     cpuShare,
-    estimatedCostInCents,
-    estimatedCostInDollars,
+    estimatedCostInDollars: monthlyCost,
   };
 };
 
