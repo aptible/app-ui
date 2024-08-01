@@ -1,11 +1,7 @@
 import { selectDeployments } from "@app/deployment";
 import { type WebState, schema } from "@app/schema";
 import { selectSourcesAsList } from "@app/source";
-import type {
-  DeployServiceRow,
-  DeploySource,
-  Deployment,
-} from "@app/types";
+import type { DeployServiceRow, DeploySource, Deployment } from "@app/types";
 import { createSelector } from "starfx";
 import {
   type DeployAppRow,
@@ -18,9 +14,7 @@ import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
 } from "../database";
-import {
-  findDatabaseImageById,
-  selectDatabaseImages } from "../database-images";
+import { findDatabaseImageById, selectDatabaseImages } from "../database-images";
 import { findDiskById, selectDisks } from "../disk";
 import {
   findEnvById,
@@ -617,9 +611,7 @@ export const selectDatabasesForTableSearch = createSelector(
       return [...dbs].sort(sortFn);
     }
 
-    return dbs
-      .filter((db) => computeSearchMatchDb(db, search))
-      .sort(sortFn);
+    return dbs.filter((db) => computeSearchMatchDb(db, search)).sort(sortFn);
   },
 );
 
