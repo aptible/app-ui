@@ -45,6 +45,30 @@ export function useLoader(action: ThunkAction | ActionFn) {
   return useSelector((s: WebState) => schema.loaders.selectById(s, { id }));
 }
 
+export interface CompositeLoaderState {
+  isIdle: boolean;
+  isLoading: boolean;
+  isError: boolean;
+  isSuccess: boolean;
+  isInitialLoading: boolean;
+}
+
+export function useCompositeLoader(
+  action: ThunkAction | ActionFn,
+  ...additionalActions: (ThunkAction | ActionFn)[]
+) {
+  return additionalActions.reduce<CompositeLoaderState>((acc, a) => {
+    const loader = useLoader(a);
+    return {
+      isIdle: acc.isIdle && loader.isIdle,
+      isLoading: acc.isLoading || loader.isLoading,
+      isError: acc.isError || loader.isError,
+      isSuccess: acc.isSuccess && loader.isSuccess,
+      isInitialLoading: acc.isInitialLoading || loader.isInitialLoading,
+    };
+  }, useLoader(action));
+}
+
 export function useApi<P = any, A extends ThunkAction = ThunkAction<P>>(
   action: A,
 ): UseApiAction<A>;

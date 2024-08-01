@@ -1,12 +1,17 @@
 import {
-  type DeployEnvironmentRow,
+  fetchDatabases,
+  fetchEndpoints,
   fetchEnvironments,
+  fetchServices,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
-  selectEnvironmentsForTableSearch,
   selectStackById,
 } from "@app/deploy";
-import { useLoader, useQuery, useSelector } from "@app/react";
+import {
+  type DeployEnvironmentRow,
+  selectEnvironmentsForTableSearch,
+} from "@app/environment-table";
+import { useCompositeLoader, useQuery, useSelector } from "@app/react";
 import {
   createEnvUrl,
   environmentAppsUrl,
@@ -33,10 +38,10 @@ import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
 
 interface EnvironmentCellProps {
-  env: DeployEnvironment;
+  env: DeployEnvironmentRow;
 }
 
-export const EnvironmentItemView = ({ env }: EnvironmentCellProps) => {
+export const EnvironmentItemView = ({ env }: { env: DeployEnvironment }) => {
   return (
     <Link to={environmentAppsUrl(env.id)} className="flex">
       <img
@@ -110,6 +115,20 @@ const EnvironmentStackCell = ({ env }: EnvironmentCellProps) => {
   );
 };
 
+const EnvironmentCostCell = ({ env }: EnvironmentCellProps) => {
+  return (
+    <Td>
+      <div className={tokens.type.darker}>
+        {env.cost.toLocaleString("en", {
+          style: "currency",
+          currency: "USD",
+          minimumFractionDigits: 2,
+        })}
+      </div>
+    </Td>
+  );
+};
+
 const SortIcon = () => (
   <div className="inline-block">
     <IconChevronDown
@@ -124,9 +143,17 @@ export function EnvironmentList({
   showTitle = true,
 }: { stackId?: string; showTitle?: boolean }) {
   useQuery(fetchEnvironments());
+  useQuery(fetchServices());
+  useQuery(fetchDatabases()); // To fetch embedded disks
+  useQuery(fetchEndpoints());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  const { isLoading } = useLoader(fetchEnvironments());
+  const { isLoading } = useCompositeLoader(
+    fetchEnvironments(),
+    fetchServices(),
+    fetchDatabases(),
+    fetchEndpoints(),
+  );
   const [sortBy, setSortBy] = useState<keyof DeployEnvironmentRow>("createdAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,6 +250,12 @@ export function EnvironmentList({
           >
             Databases <SortIcon />
           </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("cost")}
+          >
+            Est. Monthly Cost <SortIcon />
+          </Th>
         </THead>
 
         <TBody>
@@ -234,6 +267,7 @@ export function EnvironmentList({
               <EnvironmentStackCell env={env} />
               <EnvironmentAppsCell env={env} />
               <EnvironmentDatabasesCell env={env} />
+              <EnvironmentCostCell env={env} />
             </Tr>
           ))}
         </TBody>

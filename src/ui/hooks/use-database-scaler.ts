@@ -1,7 +1,4 @@
-import {
-  calculateCost,
-  getContainerProfileFromType,
-} from "@app/deploy";
+import { calculateCost, getContainerProfileFromType } from "@app/deploy";
 import type { DeployDisk, DeployService, InstanceClass } from "@app/types";
 import { useEffect, useReducer } from "react";
 
@@ -86,24 +83,30 @@ export function useDatabaseScaler({
   const requestedContainerProfile = getContainerProfileFromType(
     scaler.containerProfile,
   );
-  const currentPrice =
-    calculateCost({
-      services: [service],
-      disks: [disk]
-    }).monthlyCost
-  const estimatedPrice =
-    calculateCost({
-      services: [{ containerCount: 1, containerMemoryLimitMb: scaler.containerSize, instanceClass: scaler.containerProfile }],
-      disks: [{ size: scaler.diskSize, provisionedIops: scaler.iops }]
-    }).monthlyCost
+  const currentPrice = calculateCost({
+    services: [service],
+    disks: [disk],
+  }).monthlyCost;
+  const estimatedPrice = calculateCost({
+    services: [
+      {
+        containerCount: 1,
+        containerMemoryLimitMb: scaler.containerSize,
+        instanceClass: scaler.containerProfile,
+      },
+    ],
+    disks: [{ size: scaler.diskSize, provisionedIops: scaler.iops }],
+  }).monthlyCost;
 
   return {
     scaler,
     dispatchScaler,
     changesExist,
-    currentPricePerGBHour: currentContainerProfile.costPerContainerGBHourInCents / 100,
+    currentPricePerGBHour:
+      currentContainerProfile.costPerContainerGBHourInCents / 100,
     currentPrice,
-    requestedPricePerGBHour: requestedContainerProfile.costPerContainerGBHourInCents / 100,
+    requestedPricePerGBHour:
+      requestedContainerProfile.costPerContainerGBHourInCents / 100,
     estimatedPrice,
     requestedContainerProfile,
     currentContainerProfile,

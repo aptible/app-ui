@@ -99,7 +99,7 @@ const AppCostCell = ({ app }: AppCellProps) => {
   const services = useSelector((s) =>
     selectServicesByAppId(s, { appId: app.id }),
   );
-  const cost = calculateCost({ services: services }).monthlyCost
+  const cost = calculateCost({ services }).monthlyCost;
 
   return (
     <Td>

@@ -1,11 +1,15 @@
 import {
+  calculateCost,
   fetchApps,
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchOperationsByEnvId,
-  selectEndpointsByEnvironmentId,
+  selectBackupsByEnvId,
+  selectDisksByEnvId,
+  selectEndpointsByEnvironmentId as selectEndpointsByEnvId,
   selectEnvironmentById,
   selectEnvironmentStatsById,
+  selectServicesByEnvId,
   selectStackById,
 } from "@app/deploy";
 import { useDispatch, useQuery, useSelector } from "@app/react";
@@ -38,12 +42,14 @@ export function EnvHeader({
   endpoints,
   stats,
   isLoading,
+  cost,
 }: {
   environment: DeployEnvironment;
   stats: DeployEnvironmentStats;
   stack: DeployStack;
   endpoints: DeployEndpoint[];
   isLoading: boolean;
+  cost: number;
 }) {
   return (
     <DetailHeader>
@@ -82,6 +88,9 @@ export function EnvHeader({
               ))
             : null}
         </DetailInfoItem>
+        <DetailInfoItem title="Est. Monthly Cost">
+          ${cost.toFixed(2)}
+        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -110,9 +119,26 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     selectStackById(s, { id: environment.stackId }),
   );
   const endpoints = useSelector((s) =>
-    selectEndpointsByEnvironmentId(s, { envId: environment.id }),
+    selectEndpointsByEnvId(s, { envId: environment.id }),
   );
   const crumbs = [{ name: stack.name, to: stackDetailEnvsUrl(stack.id) }];
+
+  // Cost
+  const services = useSelector((s) =>
+    selectServicesByEnvId(s, { envId: environment.id }),
+  );
+  const disks = useSelector((s) =>
+    selectDisksByEnvId(s, { envId: environment.id }),
+  );
+  const backups = useSelector((s) =>
+    selectBackupsByEnvId(s, { envId: environment.id }),
+  );
+  const cost = calculateCost({
+    services,
+    disks,
+    endpoints,
+    backups,
+  }).monthlyCost;
 
   const tabs: TabItem[] = [
     { name: "Apps", href: `/environments/${id}/apps` },
@@ -137,6 +163,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
           environment={environment}
           stack={stack}
           stats={stats}
+          cost={cost}
         />
       }
       title={environment.handle}

@@ -96,8 +96,8 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
   const { monthlyCost: currentPrice } = calculateCost({
     services: [service],
-    disks: [disk]
-  })
+    disks: [disk],
+  });
   return (
     <Td>
       <div className={tokens.type.darker}>${currentPrice.toFixed(2)}</div>

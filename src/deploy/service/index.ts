@@ -11,8 +11,8 @@ import {
   excludesFalse,
 } from "@app/types";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
-import { selectEnvironmentsByOrgAsList } from "../environment";
 import { calculateCost } from "../cost";
+import { selectEnvironmentsByOrgAsList } from "../environment";
 
 export const defaultServiceResponse = (
   s: Partial<DeployServiceResponse> = {},
@@ -131,7 +131,7 @@ export const calcServiceMetrics = (service: DeployService) => {
 
   const containerSizeGB = service.containerMemoryLimitMb / GB;
   const cpuShare = service.containerMemoryLimitMb / containerProfile.cpuShare;
-  const { monthlyCost } = calculateCost({ services: [service] })
+  const { monthlyCost } = calculateCost({ services: [service] });
 
   return {
     containerProfile,
@@ -147,6 +147,8 @@ export const selectServices = schema.services.selectTable;
 export const hasDeployService = (a: DeployService) => a.id !== "";
 export const findServiceById = schema.services.findById;
 export const findServicesByIds = schema.services.findByIds;
+export const findServicesByEnvId = (services: DeployService[], envId: string) =>
+  services.filter((s) => s.environmentId === envId);
 
 export const selectServicesAsList = createSelector(
   schema.services.selectTableAsList,
@@ -192,11 +194,9 @@ export const selectServicesByOrgId = createSelector(
 );
 
 export const selectServicesByEnvId = createSelector(
-  selectEnvToServicesMap,
+  selectServicesAsList,
   (_: WebState, p: { envId: string }) => p.envId,
-  (envToServicesMap, envId) => {
-    return envToServicesMap[envId] || new Set<string>();
-  },
+  findServicesByEnvId,
 );
 
 export const selectAppToServicesMap = createSelector(

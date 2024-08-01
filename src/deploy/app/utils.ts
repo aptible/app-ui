@@ -1,4 +1,4 @@
-import type { ContainerProfileData, InstanceClass } from "@app/types";
+import type { InstanceClass } from "@app/types";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
 
 type SizeMap = {

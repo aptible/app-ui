@@ -651,6 +651,7 @@ const DetailBoxes = () => {
         endpoints={[ept]}
         stats={stats}
         isLoading={false}
+        cost={99.99}
       />
       <AppHeader app={app} isLoading={false} />
       <DatabaseHeader database={db} service={service} isLoading={false} />

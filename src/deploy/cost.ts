@@ -1,6 +1,6 @@
-import { CONTAINER_PROFILES } from "@app/deploy";
 import { DEFAULT_INSTANCE_CLASS } from "@app/schema";
 import type { DeployBackup, DeployDisk, DeployService } from "@app/types";
+import { CONTAINER_PROFILES } from "./container";
 
 export const hoursPerMonth = 731;
 

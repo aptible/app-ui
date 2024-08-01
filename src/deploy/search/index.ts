@@ -9,6 +9,7 @@ import {
   selectApps,
   selectAppsByOrgAsList,
 } from "../app";
+import { calculateCost } from "../cost";
 import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
@@ -27,15 +28,12 @@ import {
 } from "../operation";
 import {
   calcMetrics,
-  calcServiceMetrics,
   findServiceById,
-  getContainerProfileFromType,
   selectServices,
   selectServicesAsList,
   selectServicesByOrgId,
   serviceCommandText,
 } from "../service";
-import { calculateCost } from "../cost";
 
 export const selectServicesForTable = createSelector(
   selectEnvironmentsByOrg,
@@ -64,7 +62,7 @@ export const selectServicesForTable = createSelector(
           ...service,
           envHandle: env.handle,
           resourceHandle,
-          cost: calculateCost({ services: [service] }).monthlyCost
+          cost: calculateCost({ services: [service] }).monthlyCost,
         };
       }),
 );
@@ -159,7 +157,7 @@ export const selectAppsForTable = createSelector(
           id: app.currentDeploymentId,
         });
         const appServices = services.filter((s) => s.appId === app.id);
-        const { monthlyCost: cost } = calculateCost({ services: appServices });
+        const cost = calculateCost({ services: appServices }).monthlyCost;
         const metrics = calcMetrics(services);
 
         return {
@@ -569,9 +567,8 @@ export const selectDatabasesForTable = createSelector(
         const service = findServiceById(services, { id: dbb.serviceId });
         const { monthlyCost: cost } = calculateCost({
           services: [service],
-          disks: [disk]
-        }
-        );
+          disks: [disk],
+        });
         const metrics = calcMetrics([service]);
         return {
           ...dbb,

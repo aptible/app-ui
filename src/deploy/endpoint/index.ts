@@ -8,6 +8,7 @@ import type {
   AcmeConfiguration,
   AcmeStatus,
   DeployEndpoint,
+  DeployService,
   EndpointType,
   LinkResponse,
   ProvisionableStatus,
@@ -143,6 +144,15 @@ export const findEndpointById = schema.endpoints.findById;
 export const selectEndpoints = schema.endpoints.selectTable;
 export const selectEndpointsAsList = schema.endpoints.selectTableAsList;
 export const hasDeployEndpoint = (a: DeployEndpoint) => a.id !== "";
+export const findEndpointsByEnvId = (
+  endpoints: DeployEndpoint[],
+  services: Record<"string", DeployService>,
+  envId: string,
+) =>
+  endpoints.filter(
+    (e) =>
+      findServiceById(services, { id: e.serviceId }).environmentId === envId,
+  );
 
 export const selectEndpointsByAppId = createSelector(
   selectEndpointsAsList,

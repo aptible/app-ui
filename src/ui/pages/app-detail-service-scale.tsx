@@ -582,14 +582,18 @@ export const AppDetailServiceScalePage = () => {
   );
   const requestedContainerProfile =
     getContainerProfileFromType(containerProfileType);
-  const currentPrice =
-    calculateCost({
-      services: [service]
-    }).monthlyCost
-  const estimatedPrice =
-    calculateCost({
-      services: [{ containerCount, containerMemoryLimitMb: containerSize, instanceClass: containerProfileType }]
-    }).monthlyCost
+  const currentPrice = calculateCost({
+    services: [service],
+  }).monthlyCost;
+  const estimatedPrice = calculateCost({
+    services: [
+      {
+        containerCount,
+        containerMemoryLimitMb: containerSize,
+        instanceClass: containerProfileType,
+      },
+    ],
+  }).monthlyCost;
 
   const profileOptions = Object.keys(containerProfilesForStack).map(
     (profileType) => {
@@ -716,7 +720,10 @@ export const AppDetailServiceScalePage = () => {
                 {service.containerCount} container
                 {service.containerCount > 1 ? "s" : ""} x{" "}
                 {service.containerMemoryLimitMb / 1024} GB x $
-                {(currentContainerProfile.costPerContainerGBHourInCents / 100).toFixed(2)} per GB/hour
+                {(
+                  currentContainerProfile.costPerContainerGBHourInCents / 100
+                ).toFixed(2)}{" "}
+                per GB/hour
               </p>
             </div>
             <div>
@@ -767,8 +774,12 @@ export const AppDetailServiceScalePage = () => {
                 <p className="text-black-500">
                   {containerCount} container
                   {containerCount > 1 || containerCount === 0 ? "s" : ""} x{" "}
-                  {containerSize / 1024} GB x ${(requestedContainerProfile.costPerContainerGBHourInCents / 100).toFixed(2)} per
-                  GB/hour
+                  {containerSize / 1024} GB x $
+                  {(
+                    requestedContainerProfile.costPerContainerGBHourInCents /
+                    100
+                  ).toFixed(2)}{" "}
+                  per GB/hour
                 </p>
               </div>
               <div>
