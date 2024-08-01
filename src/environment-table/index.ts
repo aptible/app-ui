@@ -1,14 +1,15 @@
 import {
   calculateCost,
+  findBackupsByEnvId,
   findDisksByEnvId,
   findEndpointsByEnvId,
   findServicesByEnvId,
   findStackById,
+  selectBackupsAsList,
   selectDisksAsList,
   selectEndpointsAsList,
   selectEnvironmentsByOrgAsList,
   selectServices,
-  selectServicesAsList,
   selectStacks,
 } from "@app/deploy";
 import { createSelector } from "@app/fx";
@@ -86,24 +87,18 @@ export interface DeployEnvironmentRow extends DeployEnvironment {
 export const selectEnvironmentsForTable = createSelector(
   selectEnvironmentsByOrgAsList,
   selectStacks,
-  selectServicesAsList,
   selectServices,
   selectDisksAsList,
   selectEndpointsAsList,
-  (
-    envs,
-    stacks,
-    services,
-    serviceMap,
-    disks,
-    endpoints,
-  ): DeployEnvironmentRow[] =>
+  selectBackupsAsList,
+  (envs, stacks, services, disks, endpoints, backups): DeployEnvironmentRow[] =>
     envs.map((env) => {
       const stack = findStackById(stacks, { id: env.stackId });
       const cost = calculateCost({
-        services: findServicesByEnvId(services, env.id),
+        services: findServicesByEnvId(Object.values(services), env.id),
         disks: findDisksByEnvId(disks, env.id),
-        endpoints: findEndpointsByEnvId(endpoints, serviceMap, env.id),
+        endpoints: findEndpointsByEnvId(endpoints, services, env.id),
+        backups: findBackupsByEnvId(backups, env.id),
       }).monthlyCost;
       return { ...env, stackName: stack.name, cost };
     }),

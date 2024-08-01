@@ -41,7 +41,7 @@ describe("calculateCost", () => {
       ],
     });
 
-    expect(hourlyCost).toBeCloseTo(0);
+    expect(hourlyCost).toBe(0);
     expect(monthlyCost).toBeCloseTo(
       5 * diskCostPerGBMonth + 1000 * diskIopsCostPerMonth,
     );
@@ -67,20 +67,24 @@ describe("calculateCost", () => {
 
   it("should calculate the cost of VPN tunnels", () => {
     const { hourlyCost, monthlyCost } = calculateCost({
-      vpn_tunnels: [{}, {}, {}, {}],
+      vpnTunnels: [{}, {}, {}, {}],
     });
 
-    expect(hourlyCost).toBeCloseTo(0);
+    expect(hourlyCost).toBe(0);
     expect(monthlyCost).toBeCloseTo(4 * vpnTunnelCostPerMonth);
   });
 
-  it("should calculate the cost of stacks", () => {
+  it("should calculate the cost of dedicated stacks", () => {
     const { hourlyCost, monthlyCost } = calculateCost({
-      stacks: [{}, {}, {}, {}, {}],
+      stacks: [
+        { organizationId: "abc" },
+        { organizationId: "123" },
+        { organizationId: "" },
+      ],
     });
 
-    expect(hourlyCost).toBeCloseTo(0);
-    expect(monthlyCost).toBeCloseTo(5 * stackCostPerMonth);
+    expect(hourlyCost).toBe(0);
+    expect(monthlyCost).toBeCloseTo(2 * stackCostPerMonth);
   });
 
   it("should calculate the cost of everything", () => {
@@ -103,8 +107,12 @@ describe("calculateCost", () => {
       ],
       endpoints: [{}, {}, {}],
       backups: [{ size: 5 }, { size: 10 }],
-      vpn_tunnels: [{}, {}, {}, {}],
-      stacks: [{}, {}, {}, {}, {}],
+      vpnTunnels: [{}, {}, {}, {}],
+      stacks: [
+        { organizationId: "abc" },
+        { organizationId: "123" },
+        { organizationId: "" },
+      ],
     });
 
     let expectedHourly =
@@ -115,7 +123,7 @@ describe("calculateCost", () => {
     let expectedMonthly = hourlyCost * hoursPerMonth;
     expectedMonthly += 5 * diskCostPerGBMonth + 1000 * diskIopsCostPerMonth;
     expectedMonthly += 4 * vpnTunnelCostPerMonth;
-    expectedMonthly += 5 * stackCostPerMonth;
+    expectedMonthly += 2 * stackCostPerMonth;
 
     expect(hourlyCost).toBeCloseTo(expectedHourly, 5);
     expect(monthlyCost).toBeCloseTo(expectedMonthly, 5);

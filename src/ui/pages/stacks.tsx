@@ -4,11 +4,13 @@ import {
   selectAppsCountByStack,
   selectDatabasesCountByStack,
   selectEnvironmentsCountByStack,
-  selectStacksForTableSearch,
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { createStackUrl } from "@app/routes";
-import type { DeployStack } from "@app/types";
+import {
+  type DeployStackRow,
+  selectStacksForTableSearch,
+} from "@app/stack-table";
 import { useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
@@ -41,7 +43,7 @@ export function StacksPage() {
   );
 }
 
-function StackListRow({ stack }: { stack: DeployStack }) {
+function StackListRow({ stack }: { stack: DeployStackRow }) {
   const envCount = useSelector((s) =>
     selectEnvironmentsCountByStack(s, { stackId: stack.id }),
   );
@@ -64,6 +66,7 @@ function StackListRow({ stack }: { stack: DeployStack }) {
       <Td variant="center">{envCount}</Td>
       <Td variant="center">{appCount}</Td>
       <Td variant="center">{dbCount}</Td>
+      <Td>${stack.cost.toFixed(2)}</Td>
     </Tr>
   );
 }
@@ -125,6 +128,7 @@ function StackList() {
           <Th variant="center">Environments</Th>
           <Th variant="center">Apps</Th>
           <Th variant="center">Databases</Th>
+          <Th>Est. Monthly Cost</Th>
         </THead>
 
         <TBody>

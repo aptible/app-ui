@@ -112,6 +112,10 @@ export const selectEnvironments = schema.environments.selectTable;
 export const selectEnvironmentsAsList = schema.environments.selectTableAsList;
 export const findEnvById = schema.environments.findById;
 export const selectEnvironmentStatsById = schema.environmentStats.selectById;
+export const findEnvironmentsByStackId = (
+  envs: DeployEnvironment[],
+  stackId: string,
+) => envs.filter((env) => env.stackId === stackId);
 
 export const selectEnvironmentsByOrg = createSelector(
   selectEnvironmentsAsList,

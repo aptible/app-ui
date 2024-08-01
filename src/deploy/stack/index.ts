@@ -191,33 +191,6 @@ export const getStackType = (stack: DeployStack): StackType => {
 
 export const hasDeployStack = (s: DeployStack) => s.id !== "";
 
-export const selectStacksForTableSearch = createSelector(
-  selectStacksByOrgAsList,
-  (_: WebState, p: { search: string }) => p.search,
-  (stacks, search) => {
-    if (search === "") {
-      return stacks;
-    }
-
-    const searchLower = search.toLocaleLowerCase();
-
-    return stacks
-      .filter((stack) => {
-        const name = stack.name.toLocaleLowerCase();
-        const region = stack.region.toLocaleLowerCase();
-        const type = getStackType(stack);
-
-        const nameMatch = name.includes(searchLower);
-        const regionMatch = region.includes(searchLower);
-        const typeMatch = type.includes(searchLower);
-        const idMatch = searchLower === stack.id;
-
-        return nameMatch || regionMatch || typeMatch || idMatch;
-      })
-      .sort((a, b) => a.name.localeCompare(b.name));
-  },
-);
-
 export const selectContainerProfilesForStack = createSelector(
   selectStackById,
   (stack) => {

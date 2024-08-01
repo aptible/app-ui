@@ -1,5 +1,10 @@
 import { DEFAULT_INSTANCE_CLASS } from "@app/schema";
-import type { DeployBackup, DeployDisk, DeployService } from "@app/types";
+import type {
+  DeployBackup,
+  DeployDisk,
+  DeployService,
+  DeployStack,
+} from "@app/types";
 import { CONTAINER_PROFILES } from "./container";
 
 export const hoursPerMonth = 731;
@@ -19,15 +24,15 @@ export type CalculateCostProps = {
   disks?: Pick<DeployDisk, "size" | "provisionedIops">[];
   endpoints?: any[];
   backups?: Pick<DeployBackup, "size">[];
-  vpn_tunnels?: any[];
-  stacks?: any[];
+  vpnTunnels?: any[];
+  stacks?: Pick<DeployStack, "organizationId">[];
 };
 export const calculateCost = ({
   services = [],
   disks = [],
   endpoints = [],
   backups = [],
-  vpn_tunnels = [],
+  vpnTunnels: vpn_tunnels = [],
   stacks = [],
 }: CalculateCostProps) => {
   // Returns the hourly cost of resources billed by the hour and monthly cost of all resources
@@ -58,7 +63,9 @@ export const calculateCost = ({
   }
 
   monthlyCost += vpn_tunnels.length * vpnTunnelCostPerMonth;
-  monthlyCost += stacks.length * stackCostPerMonth;
+  monthlyCost +=
+    stacks.filter((stack) => stack.organizationId !== "").length *
+    stackCostPerMonth;
 
   return {
     hourlyCost,
