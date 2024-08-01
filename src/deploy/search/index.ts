@@ -1,8 +1,12 @@
 import { selectDeployments } from "@app/deployment";
-import { useSelector } from "@app/react";
 import { type WebState, schema } from "@app/schema";
 import { selectSourcesAsList } from "@app/source";
-import type { DeployServiceRow, DeploySource, Deployment } from "@app/types";
+import type {
+  DeployDatabaseImage,
+  DeployServiceRow,
+  DeploySource,
+  Deployment,
+} from "@app/types";
 import { createSelector } from "starfx";
 import {
   type DeployAppRow,
@@ -15,7 +19,7 @@ import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
 } from "../database";
-import { selectDatabaseImageById } from "../database-images";
+import { selectDatabaseImages } from "../database-images";
 import { findDiskById, selectDisks } from "../disk";
 import {
   findEnvById,
@@ -468,11 +472,12 @@ const selectSearchProp = (_: WebState, props: { search: string }) =>
 
 const computeSearchMatchDb = (
   db: DeployDatabaseRow,
+  dbImages: Record<string, DeployDatabaseImage>,
   search: string,
 ): boolean => {
-  const imageDesc = useSelector((s) =>
-    selectDatabaseImageById(s, { id: db.databaseImageId }),
-  ).description;
+  const imageDesc = (
+    dbImages[db.databaseImageId]?.description || ""
+  ).toLocaleLowerCase();
   const handle = db.handle.toLocaleLowerCase();
   const envHandle = db.envHandle.toLocaleLowerCase();
   const dbType = db.type.toLocaleLowerCase();
@@ -602,30 +607,34 @@ export const selectDatabasesForTable = createSelector(
 
 export const selectDatabasesForTableSearch = createSelector(
   selectDatabasesForTable,
+  selectDatabaseImages,
   selectSearchProp,
   (_: WebState, p: { sortBy: keyof DeployDatabaseRow }) => p.sortBy,
   (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
-  (dbs, search, sortBy, sortDir): DeployDatabaseRow[] => {
+  (dbs, dbImages, search, sortBy, sortDir): DeployDatabaseRow[] => {
     const sortFn = createDatabaseSortFn(sortBy, sortDir);
     if (search === "") {
       return [...dbs].sort(sortFn);
     }
 
-    return dbs.filter((db) => computeSearchMatchDb(db, search)).sort(sortFn);
+    return dbs
+      .filter((db) => computeSearchMatchDb(db, dbImages, search))
+      .sort(sortFn);
   },
 );
 
 export const selectDatabasesForTableSearchByEnvironmentId = createSelector(
   selectDatabasesForTable,
+  selectDatabaseImages,
   selectSearchProp,
   (_: WebState, props: { envId?: string }) => props.envId || "",
-  (dbs, search, envId): DeployDatabaseRow[] => {
+  (dbs, dbImages, search, envId): DeployDatabaseRow[] => {
     if (search === "" && envId === "") {
       return dbs;
     }
 
     return dbs.filter((db) => {
-      const searchMatch = computeSearchMatchDb(db, search);
+      const searchMatch = computeSearchMatchDb(db, dbImages, search);
       const envIdMatch = envId !== "" && db.environmentId === envId;
 
       if (envId !== "") {
