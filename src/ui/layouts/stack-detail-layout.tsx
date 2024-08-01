@@ -1,8 +1,21 @@
 import {
+  calculateCost,
   fetchStack,
+  findBackupsByEnvId,
+  findDisksByEnvId,
+  findEndpointsByEnvId,
+  findServicesByEnvId,
+  findVpnTunnelsByStackId,
+  formatCurrency,
   getStackType,
   getStackTypeTitle,
+  selectBackupsAsList,
+  selectDisksAsList,
+  selectEndpointsAsList,
+  selectEnvironmentsByStackId,
+  selectServices,
   selectStackById,
+  selectVpnTunnelsAsList,
 } from "@app/deploy";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
@@ -34,7 +47,8 @@ import { AppSidebarLayout } from "./app-sidebar-layout";
 export function StackHeader({
   stack,
   isLoading,
-}: { stack: DeployStack; isLoading: boolean }) {
+  cost,
+}: { stack: DeployStack; isLoading: boolean; cost: number }) {
   const stackType = getStackType(stack);
   return (
     <DetailHeader>
@@ -66,6 +80,9 @@ export function StackHeader({
           <CopyText text={stack.outboundIpAddresses.join(", ")} />
         </DetailInfoItem>
         <DetailInfoItem title="Region">{stack.region}</DetailInfoItem>
+        <DetailInfoItem title="Est. Monthly Cost">
+          {formatCurrency(cost)}
+        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -88,6 +105,29 @@ function StackPageHeader() {
     { name: "VPC Peering", href: stackDetailVpcPeeringsUrl(id) },
   ];
 
+  // Cost
+  const envs = useSelector((s) =>
+    selectEnvironmentsByStackId(s, { stackId: stack.id }),
+  );
+  const services = useSelector((s) => selectServices(s));
+  const disks = useSelector((s) => selectDisksAsList(s));
+  const endpoints = useSelector((s) => selectEndpointsAsList(s));
+  const backups = useSelector((s) => selectBackupsAsList(s));
+  const vpnTunnels = useSelector((s) => selectVpnTunnelsAsList(s));
+
+  const cost = calculateCost({
+    services: envs.flatMap((env) =>
+      findServicesByEnvId(Object.values(services), env.id),
+    ),
+    disks: envs.flatMap((env) => findDisksByEnvId(disks, env.id)),
+    endpoints: envs.flatMap((env) =>
+      findEndpointsByEnvId(endpoints, services, env.id),
+    ),
+    backups: envs.flatMap((env) => findBackupsByEnvId(backups, env.id)),
+    vpnTunnels: findVpnTunnelsByStackId(vpnTunnels, stack.id),
+    stacks: [stack],
+  }).monthlyCost;
+
   if (stack.exposeIntrusionDetectionReports) {
     tabs.push({ name: "Managed HIDS", href: stackDetailHidsUrl(id) });
   }
@@ -97,7 +137,9 @@ function StackPageHeader() {
       {...loader}
       breadcrumbs={crumbs}
       title={stack.name}
-      detailsBox={<StackHeader stack={stack} isLoading={loader.isLoading} />}
+      detailsBox={
+        <StackHeader stack={stack} isLoading={loader.isLoading} cost={cost} />
+      }
       tabs={tabs}
       lastBreadcrumbTo={stackDetailUrl(stack.id)}
     />

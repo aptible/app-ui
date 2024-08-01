@@ -644,7 +644,7 @@ const DetailBoxes = () => {
         Detail Boxes
       </h1>
 
-      <StackHeader stack={stack} isLoading={false} />
+      <StackHeader stack={stack} isLoading={false} cost={499} />
       <EnvHeader
         stack={stack}
         environment={env}
