@@ -2,6 +2,7 @@ import {
   fetchDatabase,
   fetchDiskById,
   fetchService,
+  formatCurrency,
   scaleDatabase,
   selectDatabaseById,
   selectDiskById,
@@ -156,14 +157,14 @@ export const DatabaseScalePage = () => {
             <div>
               <div className="text-md text-gray-900">Pricing</div>
               <p className="text-black-500">
-                1 x {scaler.containerSize / 1024} GB container x $
-                {requestedPricePerGBHour.toFixed(2)} per GB/hour
+                1 x {scaler.containerSize / 1024} GB container x{" "}
+                {formatCurrency(requestedPricePerGBHour)} per GB/hour
               </p>
             </div>
             <div>
               <p className="text-black-500">New Estimated Monthly Cost</p>
               <p className="text-right text-lg text-green-400">
-                ${estimatedPrice.toFixed(2)}
+                {formatCurrency(estimatedPrice)}
               </p>
             </div>
           </div>

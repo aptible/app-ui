@@ -3,6 +3,7 @@ import {
   calcServiceMetrics,
   fetchServiceSizingPoliciesByEnvironmentId,
   fetchServicesByAppId,
+  formatCurrency,
   selectAppById,
   selectAutoscalingEnabledById,
   selectEnvironmentById,
@@ -131,7 +132,7 @@ const CostCell = ({
             </Tooltip>
           </Group>
         ) : (
-          `$${service.cost.toFixed(2)}`
+          `${formatCurrency(service.cost)}`
         )}
       </div>
     </Td>

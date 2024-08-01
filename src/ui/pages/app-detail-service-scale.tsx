@@ -7,6 +7,7 @@ import {
   fetchApp,
   fetchService,
   fetchServiceSizingPoliciesByServiceId,
+  formatCurrency,
   getContainerProfileFromType,
   modifyServiceSizingPolicy,
   pollServiceOperations,
@@ -719,17 +720,17 @@ export const AppDetailServiceScalePage = () => {
               <p className="text-black-500">
                 {service.containerCount} container
                 {service.containerCount > 1 ? "s" : ""} x{" "}
-                {service.containerMemoryLimitMb / 1024} GB x $
-                {(
-                  currentContainerProfile.costPerContainerGBHourInCents / 100
-                ).toFixed(2)}{" "}
+                {service.containerMemoryLimitMb / 1024} GB x{" "}
+                {formatCurrency(
+                  currentContainerProfile.costPerContainerGBHourInCents / 100,
+                )}{" "}
                 per GB/hour
               </p>
             </div>
             <div>
               <p className="text-black-500">Current Estimated Monthly Cost</p>
               <p className="text-right text-lg text-green-400">
-                ${currentPrice.toFixed(2)}
+                {formatCurrency(currentPrice)}
               </p>
             </div>
           </div>
@@ -774,18 +775,18 @@ export const AppDetailServiceScalePage = () => {
                 <p className="text-black-500">
                   {containerCount} container
                   {containerCount > 1 || containerCount === 0 ? "s" : ""} x{" "}
-                  {containerSize / 1024} GB x $
-                  {(
+                  {containerSize / 1024} GB x{" "}
+                  {formatCurrency(
                     requestedContainerProfile.costPerContainerGBHourInCents /
-                    100
-                  ).toFixed(2)}{" "}
+                      100,
+                  )}{" "}
                   per GB/hour
                 </p>
               </div>
               <div>
                 <p className="text-black-500">New Estimated Monthly Cost</p>
                 <p className="text-right text-lg text-green-400">
-                  ${estimatedPrice.toFixed(2)}
+                  {formatCurrency(estimatedPrice)}
                 </p>
               </div>
             </div>

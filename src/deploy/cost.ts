@@ -72,3 +72,10 @@ export const calculateCost = ({
     monthlyCost,
   };
 };
+
+export const formatCurrency = (num: number) =>
+  num.toLocaleString("en", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  });

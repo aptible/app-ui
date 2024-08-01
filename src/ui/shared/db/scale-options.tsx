@@ -1,5 +1,6 @@
 import {
   containerSizesByProfile,
+  formatCurrency,
   getContainerProfileFromType,
   selectContainerProfilesForStack,
   selectEnvironmentById,
@@ -27,8 +28,8 @@ export function PricingCalc({
       <div>
         <Label>Pricing</Label>
         <p className="text-black-500">
-          1 x {service.containerMemoryLimitMb / 1024} GB container x $
-          {pricePerGBHour.toFixed(2)} per GB/hour
+          1 x {service.containerMemoryLimitMb / 1024} GB container x{" "}
+          {formatCurrency(pricePerGBHour)} per GB/hour
         </p>
         <p className="text-black-500">
           {disk.size} GB disk x $0.20 per GB/month
@@ -37,7 +38,9 @@ export function PricingCalc({
 
       <div>
         <p className="text-black-500">Estimated Monthly Cost</p>
-        <p className="text-right text-lg text-green-400">${price.toFixed(2)}</p>
+        <p className="text-right text-lg text-green-400">
+          {formatCurrency(price)}
+        </p>
       </div>
     </div>
   );

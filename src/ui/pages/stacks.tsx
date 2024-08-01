@@ -1,5 +1,6 @@
 import {
   fetchStacks,
+  formatCurrency,
   getStackTypeTitle,
   selectAppsCountByStack,
   selectDatabasesCountByStack,
@@ -66,7 +67,7 @@ function StackListRow({ stack }: { stack: DeployStackRow }) {
       <Td variant="center">{envCount}</Td>
       <Td variant="center">{appCount}</Td>
       <Td variant="center">{dbCount}</Td>
-      <Td>${stack.cost.toFixed(2)}</Td>
+      <Td>{formatCurrency(stack.cost)}</Td>
     </Tr>
   );
 }

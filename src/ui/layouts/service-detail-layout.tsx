@@ -3,6 +3,7 @@ import {
   calcServiceMetrics,
   fetchApp,
   fetchServicesByAppId,
+  formatCurrency,
   selectAppById,
   selectEnvironmentById,
   selectServiceById,
@@ -83,7 +84,7 @@ export function ServiceHeader({
           <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
         </DetailInfoItem>
         <DetailInfoItem title="Est. Monthly Cost">
-          ${metrics.estimatedCostInDollars.toFixed(2)}
+          {formatCurrency(metrics.estimatedCostInDollars)}
         </DetailInfoItem>
         <DetailInfoItem title="Container Profile">
           {metrics.containerProfile.name}

@@ -4,6 +4,7 @@ import {
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchOperationsByEnvId,
+  formatCurrency,
   selectBackupsByEnvId,
   selectDisksByEnvId,
   selectEndpointsByEnvironmentId as selectEndpointsByEnvId,
@@ -89,7 +90,7 @@ export function EnvHeader({
             : null}
         </DetailInfoItem>
         <DetailInfoItem title="Est. Monthly Cost">
-          ${cost.toFixed(2)}
+          {formatCurrency(cost)}
         </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>

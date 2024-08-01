@@ -8,6 +8,7 @@ import {
   fetchDatabases,
   fetchEnvironmentById,
   fetchEnvironments,
+  formatCurrency,
   selectDatabaseImageById,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
@@ -100,7 +101,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   });
   return (
     <Td>
-      <div className={tokens.type.darker}>${currentPrice.toFixed(2)}</div>
+      <div className={tokens.type.darker}>{formatCurrency(currentPrice)}</div>
     </Td>
   );
 };
