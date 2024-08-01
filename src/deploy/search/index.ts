@@ -2,7 +2,6 @@ import { selectDeployments } from "@app/deployment";
 import { type WebState, schema } from "@app/schema";
 import { selectSourcesAsList } from "@app/source";
 import type {
-  DeployDatabaseImage,
   DeployServiceRow,
   DeploySource,
   Deployment,
@@ -19,7 +18,9 @@ import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
 } from "../database";
-import { selectDatabaseImages } from "../database-images";
+import {
+  findDatabaseImageById,
+  selectDatabaseImages } from "../database-images";
 import { findDiskById, selectDisks } from "../disk";
 import {
   findEnvById,
@@ -472,15 +473,12 @@ const selectSearchProp = (_: WebState, props: { search: string }) =>
 
 const computeSearchMatchDb = (
   db: DeployDatabaseRow,
-  dbImages: Record<string, DeployDatabaseImage>,
   search: string,
 ): boolean => {
-  const imageDesc = (
-    dbImages[db.databaseImageId]?.description || ""
-  ).toLocaleLowerCase();
   const handle = db.handle.toLocaleLowerCase();
   const envHandle = db.envHandle.toLocaleLowerCase();
   const dbType = db.type.toLocaleLowerCase();
+  const dbImage = db.imageDesc.toLocaleLowerCase();
 
   let lastOpUser = "";
   let lastOpType = "";
@@ -497,7 +495,7 @@ const computeSearchMatchDb = (
   const opMatch = lastOpType !== "" && lastOpType.includes(search);
   const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
   const dbTypeMatch = dbType.includes(search);
-  const imgDescMatch = imageDesc.includes(search);
+  const imgDescMatch = dbImage.includes(search);
   const idMatch = search === db.id;
 
   return (
@@ -572,7 +570,8 @@ export const selectDatabasesForTable = createSelector(
   selectOperationsAsList,
   selectDisks,
   selectServices,
-  (dbs, envs, ops, disks, services) =>
+  selectDatabaseImages,
+  (dbs, envs, ops, disks, services, images) =>
     dbs
       .map((dbb): DeployDatabaseRow => {
         const env = findEnvById(envs, { id: dbb.environmentId });
@@ -593,8 +592,10 @@ export const selectDatabasesForTable = createSelector(
           disk.size,
         );
         const metrics = calcMetrics([service]);
+        const img = findDatabaseImageById(images, { id: dbb.databaseImageId });
         return {
           ...dbb,
+          imageDesc: img.description,
           envHandle: env.handle,
           lastOperation,
           diskSize: disk.size,
@@ -607,34 +608,32 @@ export const selectDatabasesForTable = createSelector(
 
 export const selectDatabasesForTableSearch = createSelector(
   selectDatabasesForTable,
-  selectDatabaseImages,
   selectSearchProp,
   (_: WebState, p: { sortBy: keyof DeployDatabaseRow }) => p.sortBy,
   (_: WebState, p: { sortDir: "asc" | "desc" }) => p.sortDir,
-  (dbs, dbImages, search, sortBy, sortDir): DeployDatabaseRow[] => {
+  (dbs, search, sortBy, sortDir): DeployDatabaseRow[] => {
     const sortFn = createDatabaseSortFn(sortBy, sortDir);
     if (search === "") {
       return [...dbs].sort(sortFn);
     }
 
     return dbs
-      .filter((db) => computeSearchMatchDb(db, dbImages, search))
+      .filter((db) => computeSearchMatchDb(db, search))
       .sort(sortFn);
   },
 );
 
 export const selectDatabasesForTableSearchByEnvironmentId = createSelector(
   selectDatabasesForTable,
-  selectDatabaseImages,
   selectSearchProp,
   (_: WebState, props: { envId?: string }) => props.envId || "",
-  (dbs, dbImages, search, envId): DeployDatabaseRow[] => {
+  (dbs, search, envId): DeployDatabaseRow[] => {
     if (search === "" && envId === "") {
       return dbs;
     }
 
     return dbs.filter((db) => {
-      const searchMatch = computeSearchMatchDb(db, dbImages, search);
+      const searchMatch = computeSearchMatchDb(db, search);
       const envIdMatch = envId !== "" && db.environmentId === envId;
 
       if (envId !== "") {
