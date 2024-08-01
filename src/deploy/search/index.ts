@@ -14,7 +14,7 @@ import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
 } from "../database";
-import { 
+import {
   findDatabaseImageById,
   selectDatabaseImages,
 } from "../database-images";
