@@ -11,7 +11,7 @@ import {
   excludesFalse,
 } from "@app/types";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
-import { calculateCost } from "../cost";
+import { estimateMonthlyCost } from "../cost";
 import { selectEnvironmentsByOrgAsList } from "../environment";
 
 export const defaultServiceResponse = (
@@ -131,7 +131,7 @@ export const calcServiceMetrics = (service: DeployService) => {
 
   const containerSizeGB = service.containerMemoryLimitMb / GB;
   const cpuShare = service.containerMemoryLimitMb / containerProfile.cpuShare;
-  const { monthlyCost } = calculateCost({ services: [service] });
+  const monthlyCost = estimateMonthlyCost({ services: [service] });
 
   return {
     containerProfile,

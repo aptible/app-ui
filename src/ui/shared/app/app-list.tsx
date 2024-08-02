@@ -3,11 +3,12 @@ import {
   type AppDependency,
   type DeployAppRow,
   calcMetrics,
-  calculateCost,
+  estimateMonthlyCost,
   fetchApps,
   fetchEnvironmentById,
   fetchEnvironments,
   fetchImageById,
+  formatCurrency,
   selectAppsByCertId,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
@@ -99,17 +100,11 @@ const AppCostCell = ({ app }: AppCellProps) => {
   const services = useSelector((s) =>
     selectServicesByAppId(s, { appId: app.id }),
   );
-  const cost = calculateCost({ services }).monthlyCost;
+  const cost = estimateMonthlyCost({ services });
 
   return (
     <Td>
-      <div className={tokens.type.darker}>
-        {cost.toLocaleString("en", {
-          style: "currency",
-          currency: "USD",
-          minimumFractionDigits: 2,
-        })}
-      </div>
+      <div className={tokens.type.darker}>{formatCurrency(cost)}</div>
     </Td>
   );
 };

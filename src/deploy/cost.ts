@@ -27,7 +27,7 @@ export type CalculateCostProps = {
   vpnTunnels?: any[];
   stacks?: Pick<DeployStack, "organizationId">[];
 };
-export const calculateCost = ({
+export const estimateMonthlyCost = ({
   services = [],
   disks = [],
   endpoints = [],
@@ -35,7 +35,7 @@ export const calculateCost = ({
   vpnTunnels: vpn_tunnels = [],
   stacks = [],
 }: CalculateCostProps) => {
-  // Returns the hourly cost of resources billed by the hour and monthly cost of all resources
+  // Returns the monthly cost of all resources
   // Hourly cost
   let hourlyCost = 0;
 
@@ -67,10 +67,7 @@ export const calculateCost = ({
     stacks.filter((stack) => stack.organizationId !== "").length *
     stackCostPerMonth;
 
-  return {
-    hourlyCost,
-    monthlyCost,
-  };
+  return monthlyCost;
 };
 
 export const formatCurrency = (num: number) =>

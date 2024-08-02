@@ -1,18 +1,18 @@
 import { CONTAINER_PROFILES } from "./container";
 import {
   backupCostPerGBHour,
-  calculateCost,
   diskCostPerGBMonth,
   diskIopsCostPerMonth,
   endpointCostPerHour,
+  estimateMonthlyCost,
   hoursPerMonth,
   stackCostPerMonth,
   vpnTunnelCostPerMonth,
 } from "./cost";
 
-describe("calculateCost", () => {
+describe("estimateMonthlyCost", () => {
   it("should calculate the cost of containers", () => {
-    const { hourlyCost, monthlyCost } = calculateCost({
+    const monthlyCost = estimateMonthlyCost({
       services: [
         {
           containerCount: 2,
@@ -27,55 +27,50 @@ describe("calculateCost", () => {
       ],
     });
 
-    expect(hourlyCost).toBeCloseTo(
-      (5 * CONTAINER_PROFILES.r5.costPerContainerGBHourInCents) / 100,
+    expect(monthlyCost).toBeCloseTo(
+      ((5 * CONTAINER_PROFILES.r5.costPerContainerGBHourInCents) / 100) *
+        hoursPerMonth,
     );
-    expect(monthlyCost).toBeCloseTo(hourlyCost * hoursPerMonth);
   });
 
   it("should calculate the cost of disks", () => {
-    const { hourlyCost, monthlyCost } = calculateCost({
+    const monthlyCost = estimateMonthlyCost({
       disks: [
         { size: 3, provisionedIops: 4000 },
         { size: 2, provisionedIops: 2000 },
       ],
     });
-
-    expect(hourlyCost).toBe(0);
     expect(monthlyCost).toBeCloseTo(
       5 * diskCostPerGBMonth + 1000 * diskIopsCostPerMonth,
     );
   });
 
   it("should calculate the cost of endpoints", () => {
-    const { hourlyCost, monthlyCost } = calculateCost({
+    const monthlyCost = estimateMonthlyCost({
       endpoints: [{}, {}, {}],
     });
 
-    expect(hourlyCost).toBeCloseTo(3 * endpointCostPerHour);
-    expect(monthlyCost).toBeCloseTo(hourlyCost * hoursPerMonth);
+    expect(monthlyCost).toBeCloseTo(3 * endpointCostPerHour * hoursPerMonth);
   });
 
   it("should calculate the cost of backups", () => {
-    const { hourlyCost, monthlyCost } = calculateCost({
+    const monthlyCost = estimateMonthlyCost({
       backups: [{ size: 5 }, { size: 10 }],
     });
 
-    expect(hourlyCost).toBeCloseTo(15 * backupCostPerGBHour);
-    expect(monthlyCost).toBeCloseTo(hourlyCost * hoursPerMonth);
+    expect(monthlyCost).toBeCloseTo(15 * backupCostPerGBHour * hoursPerMonth);
   });
 
   it("should calculate the cost of VPN tunnels", () => {
-    const { hourlyCost, monthlyCost } = calculateCost({
+    const monthlyCost = estimateMonthlyCost({
       vpnTunnels: [{}, {}, {}, {}],
     });
 
-    expect(hourlyCost).toBe(0);
     expect(monthlyCost).toBeCloseTo(4 * vpnTunnelCostPerMonth);
   });
 
   it("should calculate the cost of dedicated stacks", () => {
-    const { hourlyCost, monthlyCost } = calculateCost({
+    const monthlyCost = estimateMonthlyCost({
       stacks: [
         { organizationId: "abc" },
         { organizationId: "123" },
@@ -83,12 +78,11 @@ describe("calculateCost", () => {
       ],
     });
 
-    expect(hourlyCost).toBe(0);
     expect(monthlyCost).toBeCloseTo(2 * stackCostPerMonth);
   });
 
   it("should calculate the cost of everything", () => {
-    const { hourlyCost, monthlyCost } = calculateCost({
+    const monthlyCost = estimateMonthlyCost({
       services: [
         {
           containerCount: 2,
@@ -120,12 +114,11 @@ describe("calculateCost", () => {
     expectedHourly += 3 * endpointCostPerHour;
     expectedHourly += 15 * backupCostPerGBHour;
 
-    let expectedMonthly = hourlyCost * hoursPerMonth;
+    let expectedMonthly = expectedHourly * hoursPerMonth;
     expectedMonthly += 5 * diskCostPerGBMonth + 1000 * diskIopsCostPerMonth;
     expectedMonthly += 4 * vpnTunnelCostPerMonth;
     expectedMonthly += 2 * stackCostPerMonth;
 
-    expect(hourlyCost).toBeCloseTo(expectedHourly, 5);
     expect(monthlyCost).toBeCloseTo(expectedMonthly, 5);
   });
 });

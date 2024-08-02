@@ -1,9 +1,9 @@
 import { prettyDateTime } from "@app/date";
 import {
   type ServiceSizingPolicyEditProps,
-  calculateCost,
   cancelServicesOpsPoll,
   containerSizesByProfile,
+  estimateMonthlyCost,
   fetchApp,
   fetchService,
   fetchServiceSizingPoliciesByServiceId,
@@ -583,10 +583,10 @@ export const AppDetailServiceScalePage = () => {
   );
   const requestedContainerProfile =
     getContainerProfileFromType(containerProfileType);
-  const currentPrice = calculateCost({
+  const currentPrice = estimateMonthlyCost({
     services: [service],
-  }).monthlyCost;
-  const estimatedPrice = calculateCost({
+  });
+  const estimatedPrice = estimateMonthlyCost({
     services: [
       {
         containerCount,
@@ -594,7 +594,7 @@ export const AppDetailServiceScalePage = () => {
         instanceClass: containerProfileType,
       },
     ],
-  }).monthlyCost;
+  });
 
   const profileOptions = Object.keys(containerProfilesForStack).map(
     (profileType) => {

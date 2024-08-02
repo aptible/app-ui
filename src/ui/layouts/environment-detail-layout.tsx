@@ -1,5 +1,5 @@
 import {
-  calculateCost,
+  estimateMonthlyCost,
   fetchApps,
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
@@ -134,12 +134,12 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
   const backups = useSelector((s) =>
     selectBackupsByEnvId(s, { envId: environment.id }),
   );
-  const cost = calculateCost({
+  const cost = estimateMonthlyCost({
     services,
     disks,
     endpoints,
     backups,
-  }).monthlyCost;
+  });
 
   const tabs: TabItem[] = [
     { name: "Apps", href: `/environments/${id}/apps` },

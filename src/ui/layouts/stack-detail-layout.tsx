@@ -1,5 +1,5 @@
 import {
-  calculateCost,
+  estimateMonthlyCost,
   fetchStack,
   findBackupsByEnvId,
   findDisksByEnvId,
@@ -115,7 +115,7 @@ function StackPageHeader() {
   const backups = useSelector((s) => selectBackupsAsList(s));
   const vpnTunnels = useSelector((s) => selectVpnTunnelsAsList(s));
 
-  const cost = calculateCost({
+  const cost = estimateMonthlyCost({
     services: envs.flatMap((env) =>
       findServicesByEnvId(Object.values(services), env.id),
     ),
@@ -126,7 +126,7 @@ function StackPageHeader() {
     backups: envs.flatMap((env) => findBackupsByEnvId(backups, env.id)),
     vpnTunnels: findVpnTunnelsByStackId(vpnTunnels, stack.id),
     stacks: [stack],
-  }).monthlyCost;
+  });
 
   if (stack.exposeIntrusionDetectionReports) {
     tabs.push({ name: "Managed HIDS", href: stackDetailHidsUrl(id) });

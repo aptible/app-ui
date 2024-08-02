@@ -1,5 +1,5 @@
 import {
-  calculateCost,
+  estimateMonthlyCost,
   findBackupsByEnvId,
   findDisksByEnvId,
   findEndpointsByEnvId,
@@ -65,7 +65,7 @@ export const selectStacksForTableSearch = createSelector(
       .map((stack) => {
         const envs = findEnvironmentsByStackId(environments, stack.id);
 
-        const cost = calculateCost({
+        const cost = estimateMonthlyCost({
           services: envs.flatMap((env) =>
             findServicesByEnvId(Object.values(services), env.id),
           ),
@@ -76,7 +76,7 @@ export const selectStacksForTableSearch = createSelector(
           backups: envs.flatMap((env) => findBackupsByEnvId(backups, env.id)),
           vpnTunnels: findVpnTunnelsByStackId(vpnTunnels, stack.id),
           stacks: [stack],
-        }).monthlyCost;
+        });
 
         return { ...stack, cost };
       });

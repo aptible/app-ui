@@ -9,7 +9,7 @@ import {
   selectApps,
   selectAppsByOrgAsList,
 } from "../app";
-import { calculateCost } from "../cost";
+import { estimateMonthlyCost } from "../cost";
 import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
@@ -62,7 +62,7 @@ export const selectServicesForTable = createSelector(
           ...service,
           envHandle: env.handle,
           resourceHandle,
-          cost: calculateCost({ services: [service] }).monthlyCost,
+          cost: estimateMonthlyCost({ services: [service] }),
         };
       }),
 );
@@ -157,7 +157,9 @@ export const selectAppsForTable = createSelector(
           id: app.currentDeploymentId,
         });
         const appServices = services.filter((s) => s.appId === app.id);
-        const cost = calculateCost({ services: appServices }).monthlyCost;
+        const cost = estimateMonthlyCost({
+          services: appServices,
+        });
         const metrics = calcMetrics(services);
 
         return {
@@ -565,7 +567,7 @@ export const selectDatabasesForTable = createSelector(
         }
         const disk = findDiskById(disks, { id: dbb.diskId });
         const service = findServiceById(services, { id: dbb.serviceId });
-        const { monthlyCost: cost } = calculateCost({
+        const cost = estimateMonthlyCost({
           services: [service],
           disks: [disk],
         });

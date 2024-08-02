@@ -3,7 +3,7 @@ import {
   type DatabaseDependency,
   type DeployDatabaseRow,
   calcMetrics,
-  calculateCost,
+  estimateMonthlyCost,
   fetchDatabaseImages,
   fetchDatabases,
   fetchEnvironmentById,
@@ -95,7 +95,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
     selectServiceById(s, { id: database.serviceId }),
   );
   const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
-  const { monthlyCost: currentPrice } = calculateCost({
+  const currentPrice = estimateMonthlyCost({
     services: [service],
     disks: [disk],
   });

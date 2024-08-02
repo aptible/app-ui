@@ -1,4 +1,4 @@
-import { calculateCost, getContainerProfileFromType } from "@app/deploy";
+import { estimateMonthlyCost, getContainerProfileFromType } from "@app/deploy";
 import type { DeployDisk, DeployService, InstanceClass } from "@app/types";
 import { useEffect, useReducer } from "react";
 
@@ -83,11 +83,11 @@ export function useDatabaseScaler({
   const requestedContainerProfile = getContainerProfileFromType(
     scaler.containerProfile,
   );
-  const currentPrice = calculateCost({
+  const currentPrice = estimateMonthlyCost({
     services: [service],
     disks: [disk],
-  }).monthlyCost;
-  const estimatedPrice = calculateCost({
+  });
+  const estimatedPrice = estimateMonthlyCost({
     services: [
       {
         containerCount: 1,
@@ -96,7 +96,7 @@ export function useDatabaseScaler({
       },
     ],
     disks: [{ size: scaler.diskSize, provisionedIops: scaler.iops }],
-  }).monthlyCost;
+  });
 
   return {
     scaler,

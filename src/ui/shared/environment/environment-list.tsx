@@ -3,6 +3,7 @@ import {
   fetchEndpoints,
   fetchEnvironments,
   fetchServices,
+  formatCurrency,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
   selectStackById,
@@ -118,13 +119,7 @@ const EnvironmentStackCell = ({ env }: EnvironmentCellProps) => {
 const EnvironmentCostCell = ({ env }: EnvironmentCellProps) => {
   return (
     <Td>
-      <div className={tokens.type.darker}>
-        {env.cost.toLocaleString("en", {
-          style: "currency",
-          currency: "USD",
-          minimumFractionDigits: 2,
-        })}
-      </div>
+      <div className={tokens.type.darker}>{formatCurrency(env.cost)}</div>
     </Td>
   );
 };
