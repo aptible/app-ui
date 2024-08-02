@@ -14,6 +14,10 @@ import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
 } from "../database";
+import {
+  findDatabaseImageById,
+  selectDatabaseImages,
+} from "../database-images";
 import { findDiskById, selectDisks } from "../disk";
 import {
   findEnvById,
@@ -471,6 +475,7 @@ const computeSearchMatchDb = (
   const handle = db.handle.toLocaleLowerCase();
   const envHandle = db.envHandle.toLocaleLowerCase();
   const dbType = db.type.toLocaleLowerCase();
+  const dbImage = db.imageDesc.toLocaleLowerCase();
 
   let lastOpUser = "";
   let lastOpType = "";
@@ -487,10 +492,12 @@ const computeSearchMatchDb = (
   const opMatch = lastOpType !== "" && lastOpType.includes(search);
   const opStatusMatch = lastOpStatus !== "" && lastOpStatus.includes(search);
   const dbTypeMatch = dbType.includes(search);
+  const imgDescMatch = dbImage.includes(search);
   const idMatch = search === db.id;
 
   return (
     handleMatch ||
+    imgDescMatch ||
     dbTypeMatch ||
     envMatch ||
     opMatch ||
@@ -560,7 +567,8 @@ export const selectDatabasesForTable = createSelector(
   selectOperationsAsList,
   selectDisks,
   selectServices,
-  (dbs, envs, ops, disks, services) =>
+  selectDatabaseImages,
+  (dbs, envs, ops, disks, services, images) =>
     dbs
       .map((dbb): DeployDatabaseRow => {
         const env = findEnvById(envs, { id: dbb.environmentId });
@@ -581,8 +589,10 @@ export const selectDatabasesForTable = createSelector(
           disk.size,
         );
         const metrics = calcMetrics([service]);
+        const img = findDatabaseImageById(images, { id: dbb.databaseImageId });
         return {
           ...dbb,
+          imageDesc: img.description,
           envHandle: env.handle,
           lastOperation,
           diskSize: disk.size,
