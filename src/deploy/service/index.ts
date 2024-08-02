@@ -4,6 +4,7 @@ import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { DEFAULT_INSTANCE_CLASS, type WebState, schema } from "@app/schema";
 import {
   type ContainerProfileData,
+  type DeployEndpoint,
   type DeployOperation,
   type DeployService,
   type DeployServiceResponse,
@@ -119,7 +120,10 @@ export const calcMetrics = (services: DeployService[]) => {
   };
 };
 
-export const calcServiceMetrics = (service: DeployService) => {
+export const calcServiceMetrics = (
+  service: DeployService,
+  endpoints: DeployEndpoint[],
+) => {
   const containerProfile =
     CONTAINER_PROFILES[service.instanceClass || DEFAULT_INSTANCE_CLASS];
 
@@ -131,7 +135,7 @@ export const calcServiceMetrics = (service: DeployService) => {
 
   const containerSizeGB = service.containerMemoryLimitMb / GB;
   const cpuShare = service.containerMemoryLimitMb / containerProfile.cpuShare;
-  const monthlyCost = estimateMonthlyCost({ services: [service] });
+  const monthlyCost = estimateMonthlyCost({ services: [service], endpoints });
 
   return {
     containerProfile,
@@ -147,6 +151,12 @@ export const selectServices = schema.services.selectTable;
 export const hasDeployService = (a: DeployService) => a.id !== "";
 export const findServiceById = schema.services.findById;
 export const findServicesByIds = schema.services.findByIds;
+export const findServicesByAppId = (services: DeployService[], appId: string) =>
+  services.filter((s) => s.appId === appId);
+export const findServicesByDatabaseId = (
+  services: DeployService[],
+  databaseId: string,
+) => services.filter((s) => s.databaseId === databaseId);
 export const findServicesByEnvId = (services: DeployService[], envId: string) =>
   services.filter((s) => s.environmentId === envId);
 

@@ -6,6 +6,7 @@ import {
   formatCurrency,
   selectAppById,
   selectAutoscalingEnabledById,
+  selectEndpointsByServiceId,
   selectEnvironmentById,
   selectServiceRowsByAppId,
   selectStackById,
@@ -93,7 +94,10 @@ const CmdCell = ({
 };
 
 const DetailsCell = ({ service }: { service: DeployService }) => {
-  const metrics = calcServiceMetrics(service);
+  const endpoints = useSelector((s) =>
+    selectEndpointsByServiceId(s, { serviceId: service.id }),
+  );
+  const metrics = calcServiceMetrics(service, endpoints);
   const { totalCPU } = calcMetrics([service]);
   return (
     <Td className={tokens.type.darker}>

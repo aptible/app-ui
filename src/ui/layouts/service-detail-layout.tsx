@@ -5,6 +5,7 @@ import {
   fetchServicesByAppId,
   formatCurrency,
   selectAppById,
+  selectEndpointsByServiceId,
   selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
@@ -20,7 +21,12 @@ import {
   environmentDetailUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import type { DeployApp, DeployEnvironment, DeployService } from "@app/types";
+import type {
+  DeployApp,
+  DeployEndpoint,
+  DeployEnvironment,
+  DeployService,
+} from "@app/types";
 import { useEffect, useState } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
@@ -40,15 +46,17 @@ import { AppSidebarLayout } from "./app-sidebar-layout";
 export function ServiceHeader({
   app,
   service,
+  endpoints,
   env,
   isLoading,
 }: {
   app: DeployApp;
   service: DeployService;
+  endpoints: DeployEndpoint[];
   env: DeployEnvironment;
   isLoading: boolean;
 }) {
-  const metrics = calcServiceMetrics(service);
+  const metrics = calcServiceMetrics(service, endpoints);
   const { totalCPU } = calcMetrics([service]);
   const [isOpen, setOpen] = useState(true);
 
@@ -131,6 +139,9 @@ function ServicePageHeader() {
   const loaderServices = useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s) => selectAppById(s, { id }));
   const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
+  const endpoints = useSelector((s) =>
+    selectEndpointsByServiceId(s, { serviceId }),
+  );
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
@@ -158,6 +169,7 @@ function ServicePageHeader() {
         <ServiceHeader
           app={app}
           service={service}
+          endpoints={endpoints}
           env={environment}
           isLoading={loader.isLoading}
         />
