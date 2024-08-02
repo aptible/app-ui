@@ -57,6 +57,8 @@ export const deserializeDeployDatabaseImage = (
 
 export const hasDeployDatabaseImage = (a: DeployDatabaseImage) => a.id !== "";
 export const selectDatabaseImageById = schema.databaseImages.selectById;
+export const selectDatabaseImages = schema.databaseImages.selectTable;
+export const findDatabaseImageById = schema.databaseImages.findById;
 export const selectDatabaseImagesAsList = createSelector(
   schema.databaseImages.selectTableAsList,
   (imgs) =>
