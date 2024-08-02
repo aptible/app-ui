@@ -124,7 +124,10 @@ const ReportTable = ({ stack }: { stack: DeployStack }) => {
     );
   }
   const lastPage = Math.ceil((data.total_count || 0) / (data.per_page || 0));
-  const reports = data._embedded.intrusion_detection_reports;
+  const reports = [...data._embedded.intrusion_detection_reports].sort(
+    (a, b) =>
+      new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime(),
+  );
 
   return (
     <>
