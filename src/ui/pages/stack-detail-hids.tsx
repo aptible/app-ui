@@ -76,9 +76,9 @@ const ReportView = ({
   const fdate = fileDate(report.created_at);
   return (
     <Tr>
-      <Td>{date}</Td>
       <Td>{prettyDate(report.starts_at)}</Td>
       <Td>{prettyDate(report.ends_at)}</Td>
+      <Td>{date}</Td>
       <Td variant="right">
         <Group variant="horizontal" size="sm">
           <DownloadReport
@@ -147,9 +147,9 @@ const ReportTable = ({ stack }: { stack: DeployStack }) => {
 
       <Table>
         <THead>
-          <Th>Posted Date</Th>
           <Th>From Date</Th>
           <Th>To Date</Th>
+          <Th>Posted Date</Th>
           <Th>Download</Th>
         </THead>
 
