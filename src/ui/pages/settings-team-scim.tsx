@@ -1,18 +1,79 @@
-import { selectRolesEditable } from "@app/deploy";
-import { selectOrganizationSelectedId } from "@app/organizations";
 import {
+    type CreateScimConfiguration,
+    type ScimConfigurationResponse,
+    type UpdateScimConfiguration,
+    createScimConfiguration,
+    deleteScimConfiguration,
+    fetchScimConfigurations,
+    updateScimConfiguration,
+  } from "@app/auth";
+import { selectRolesEditable } from "@app/deploy";
+import {
+  selectOrganizationSelected,
+  selectOrganizationSelectedId,
+} from "@app/organizations";
+import {
+    useCache,
+    useDispatch,
+    useLoader,
+    useLoaderSuccess,
     useQuery,
     useSelector,
 } from "@app/react";
 import { fetchRoles } from "@app/roles";
 import { useState } from "react";
-
+import { useValidator } from "../hooks";
 import {
-    Group, Box, Button, Select, Code, CopyText,
+    Group,
+    Banner,
+    BannerMessages,
+    Box,
+    Button,
+    ExternalLink,
+    FormGroup,
+    Loading,
+    Select,
+    Code,
+    CopyText,
+    tokens
 } from "../shared"
 
-export const TeamsScimPage = () => {
+const validators = {
+    metadata: (
+      data: Pick<CreateScimConfiguration, "defaultRoleId">,
+    ) => {
+      if (!data.defaultRoleId) {
+        return "must select Default Role";
+      }
+    },
+  };
+
+
+function ConfigureScim({ onSuccess }: { onSuccess: () => void }) {
+    const dispatch = useDispatch();
     const orgId = useSelector(selectOrganizationSelectedId);
+    const [defaultRoleId, setDefaultRoleId] = useState("");
+    const [errors, validate] = useValidator<
+      CreateScimConfiguration,
+      typeof validators
+    >(validators);
+    const data = {
+      orgId,
+      defaultRoleId,
+    };
+    const action = createScimConfiguration(data);
+    const loader = useLoader(action);
+
+    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!validate(data)) return;
+      dispatch(action);
+    };
+
+    useLoaderSuccess(loader, () => {
+      onSuccess();
+    });
+
     useQuery(fetchRoles({ orgId }));
     const roles = useSelector((s) => selectRolesEditable(s, { orgId }));
     const options = [
@@ -22,25 +83,25 @@ export const TeamsScimPage = () => {
         }),
     ];
     const [roleId, setRole] = useState("");
-    return <Group>
-        <h2>
-            SCIMITAR!
-        </h2>
 
+    return (
+      <Group>
+        <h2 className={tokens.type.h2}>SCIM</h2>
         <Box>
             <Group>
-                <h2>Scim Provisioning</h2>
+                <Banner>
+                    To configure System for Cross-domain Identity Management (SCIM),
+                    enter the required information below. Terminology and acronyms
+                    vary between providers. For Okta, follow our{" "}
+                    <ExternalLink
+                    variant="default"
+                    href="https://www.aptible.com/docs/"
+                    >
+                    guided walkthrough.
+                    </ExternalLink>
+                </Banner>
                 <div>
-                    This section enables SCIM user provisioning.... TODO: write rest of this
-                    <Button>
-                        Enable
-                    </Button>
-                </div>
-
-                <div>
-
-                    Support SCIM Version
-                    <br />
+                    Supported SCIM Version:
                     <Code>
                         2.0
                     </Code>
@@ -54,30 +115,139 @@ export const TeamsScimPage = () => {
                     </ol>
                 </div>
 
-                <div>
-                    SCIM Connector Base URL <br />
-                    <CopyText text="https://auth.aptible.com/scim_v2"/>
-                </div>
+            <form onSubmit={onSubmit}>
+              <Group>
+
+                <FormGroup
+                  label="Default Aptible Role"
+                  htmlFor=""
+                  feedbackMessage={errors.defaultRoleId}
+                  feedbackVariant={errors.defaultRoleId ? "danger" : "info"}
+                >
+                    <div>
+                        Default Aptible Role <br />
+                        <Select
+                          options={options}
+                          onSelect={(opt) => setDefaultRoleId(opt.value)}
+                          value={defaultRoleId}
+                        />
+                    </div>
+                </FormGroup>
 
                 <div>
-                    Unique Identifier
-                    <CopyText text="email"/>
+                  <Button type="submit" isLoading={loader.isLoading}>
+                    Save
+                  </Button>
                 </div>
-                <div>
-                    Default Aptible Role <br />
-                    <Select
-                        options={options}
-                        onSelect={(opt) => setRole(opt.value)}
-                        value={roleId}
-                    />
-                </div>
-                <div>
-                    SCIM Token <br />
-                    Generate a new token and expire the old one<br />
-
-                    <Button>Generate Token</Button>
-                </div>
-            </Group>
+              </Group>
+            </form>
+          </Group>
         </Box>
-    </Group>
+      </Group>
+    );
 }
+
+function ScimEdit({
+    onSuccess,
+    scim,
+  }: {
+    onSuccess: () => void;
+    scim: ScimConfigurationResponse;
+  }) {
+    const dispatch = useDispatch();
+    const defaultRoleId = useState("");
+    const [errors, validate] = useValidator<
+      UpdateScimConfiguration,
+      typeof validators
+    >(validators);
+    const data = {
+      scimId: scim.id,
+      defaultRoleId: scim.default_role_id
+    };
+    const action = updateScimConfiguration(data);
+    const loader = useLoader(action);
+    const rmLoader = useLoader(deleteScimConfiguration);
+
+    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!validate(data)) return;
+      dispatch(action);
+    };
+
+    const onRemove = () => {
+      dispatch(deleteScimConfiguration({ id: scim.id }));
+    };
+
+    useLoaderSuccess(loader, () => {
+      onSuccess();
+    });
+
+    useLoaderSuccess(rmLoader, () => {
+      onSuccess();
+    });
+
+    return (
+      <Group>
+        <h2 className={tokens.type.h2}>SCIM</h2>
+        <Box>
+          <Group>
+            <h3 className={tokens.type.h3}>Edit SCIM Configuration</h3>
+
+            <form onSubmit={onSubmit}>
+              <Group>
+                <BannerMessages {...loader} />
+
+
+                <div>
+                  <Button
+                    type="submit"
+                    isLoading={loader.isLoading}
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </Group>
+            </form>
+
+            <Group>
+              <BannerMessages {...rmLoader} />
+
+              <div>
+                {org.ssoEnforced ? (
+                  <Banner variant="info">
+                    SSO must not be enforced to be removed
+                  </Banner>
+                ) : (
+                  <Button
+                    variant="delete"
+                    requireConfirm
+                    onClick={onRemove}
+                    isLoading={rmLoader.isLoading}
+                  >
+                    Remove SSO Configuration
+                  </Button>
+                )}
+              </div>
+            </Group>
+          </Group>
+        </Box>
+      </Group>
+    );
+}
+
+export const TeamScimPage = () => {
+  const org = useSelector(selectOrganizationSelected);
+  const saml = useCache(fetchScimConfigurations());
+  if (saml.isLoading) {
+  return <Loading />;
+  }
+  const configs = saml.data?._embedded?.saml_configurations || [];
+  if (configs.length === 0) {
+  return <ConfigureScim onSuccess={() => saml.trigger()} />;
+  }
+  return (
+  <Group>
+      <ScimEdit scim={configs[0]} org={org} onSuccess={() => scim.trigger()} />
+  </Group>
+  );
+};
