@@ -149,9 +149,8 @@ export function IopsInput({
   scaler: Pick<DbScaleOptions, "iops">;
   dispatchScaler: (a: DbScaleAction) => void;
 }) {
-  // https://github.com/aptible/deploy-api/blob/f2e44361bb78b53256ba255876dea81f64f93a13/app/helpers/ebs_volume_helper.rb#L8-L14
   const desc =
-    "Input/Output Operation Per Second.  The maximum ratio of provisioned IOPS to provisioned volume size is 500 IOPS per GiB. The overall maximum provisioned IOPS is 16,000.";
+    "The maximum IOPS is 16,000, but you must meet a minimum ratio of 1 GB disk size per 500 IOPS. For example, to reach 16,000 IOPS, you must have at least a 32 GB or larger disk.";
   return (
     <FormGroup splitWidthInputs description={desc} label="IOPS" htmlFor="iops">
       <Input
