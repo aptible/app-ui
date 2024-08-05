@@ -69,13 +69,13 @@ export function StackHeader({
         </DetailInfoItem>
         <DetailInfoItem title="">
           <Tooltip text="When sharing outbound IP addresses with vendors/partners for whitelisting, make sure to add all the provided IP addresses to the whitelist.">
-            <IconInfo
-              className="inline-block mb-1 mr-1 opacity-50 hover:opacity-100"
-              variant="sm"
-            />
-            <span className="text-base font-semibold text-gray-900">
+            <span className="text-base font-semibold text-gray-900 mr-1">
               Outbound IP Addresses
             </span>
+            <IconInfo
+              className="inline-block mb-1 opacity-50 hover:opacity-100"
+              variant="sm"
+            />
           </Tooltip>
           <CopyText text={stack.outboundIpAddresses.join(", ")} />
         </DetailInfoItem>
