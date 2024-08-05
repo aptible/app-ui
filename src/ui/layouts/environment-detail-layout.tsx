@@ -4,7 +4,6 @@ import {
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchOperationsByEnvId,
-  formatCurrency,
   selectBackupsByEnvId,
   selectDisksByEnvId,
   selectEndpointsByEnvironmentId as selectEndpointsByEnvId,
@@ -35,6 +34,7 @@ import {
   EndpointUrl,
   type TabItem,
 } from "../shared";
+import { CostEstimateTooltip } from "../shared/cost-tooltip";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function EnvHeader({
@@ -90,7 +90,7 @@ export function EnvHeader({
             : null}
         </DetailInfoItem>
         <DetailInfoItem title="Est. Monthly Cost">
-          {formatCurrency(cost)}
+          <CostEstimateTooltip cost={cost} />
         </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>

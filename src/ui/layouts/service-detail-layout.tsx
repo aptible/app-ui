@@ -3,7 +3,6 @@ import {
   calcServiceMetrics,
   fetchApp,
   fetchServicesByAppId,
-  formatCurrency,
   selectAppById,
   selectEndpointsByServiceId,
   selectEnvironmentById,
@@ -41,6 +40,7 @@ import {
   type TabItem,
   listToInvertedTextColor,
 } from "../shared";
+import { CostEstimateTooltip } from "../shared/cost-tooltip";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function ServiceHeader({
@@ -92,7 +92,7 @@ export function ServiceHeader({
           <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
         </DetailInfoItem>
         <DetailInfoItem title="Est. Monthly Cost">
-          {formatCurrency(metrics.estimatedCostInDollars)}
+          <CostEstimateTooltip cost={metrics.estimatedCostInDollars} />
         </DetailInfoItem>
         <DetailInfoItem title="Container Profile">
           {metrics.containerProfile.name}

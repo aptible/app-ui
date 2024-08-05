@@ -1,6 +1,5 @@
 import {
   fetchStacks,
-  formatCurrency,
   getStackTypeTitle,
   selectAppsCountByStack,
   selectDatabasesCountByStack,
@@ -35,6 +34,7 @@ import {
   TitleBar,
   Tr,
 } from "../shared";
+import { CostEstimateTooltip } from "../shared/cost-tooltip";
 
 export function StacksPage() {
   return (
@@ -67,7 +67,9 @@ function StackListRow({ stack }: { stack: DeployStackRow }) {
       <Td variant="center">{envCount}</Td>
       <Td variant="center">{appCount}</Td>
       <Td variant="center">{dbCount}</Td>
-      <Td>{formatCurrency(stack.cost)}</Td>
+      <Td>
+        <CostEstimateTooltip cost={stack.cost} />
+      </Td>
     </Tr>
   );
 }

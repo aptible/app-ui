@@ -3,7 +3,6 @@ import {
   fetchEndpoints,
   fetchEnvironments,
   fetchServices,
-  formatCurrency,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
   selectStackById,
@@ -24,6 +23,7 @@ import { usePaginate } from "@app/ui/hooks";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonAnyOwner } from "../button";
+import { CostEstimateTooltip } from "../cost-tooltip";
 import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -119,7 +119,7 @@ const EnvironmentStackCell = ({ env }: EnvironmentCellProps) => {
 const EnvironmentCostCell = ({ env }: EnvironmentCellProps) => {
   return (
     <Td>
-      <div className={tokens.type.darker}>{formatCurrency(env.cost)}</div>
+      <CostEstimateTooltip className={tokens.type.darker} cost={env.cost} />
     </Td>
   );
 };

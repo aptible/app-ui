@@ -8,7 +8,6 @@ import {
   fetchDatabases,
   fetchEnvironmentById,
   fetchEnvironments,
-  formatCurrency,
   selectDatabaseImageById,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
@@ -32,6 +31,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { usePaginate } from "../../hooks";
 import { Button, ButtonCreate, ButtonLink } from "../button";
 import { Code } from "../code";
+import { CostEstimateTooltip } from "../cost-tooltip";
 import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -101,7 +101,7 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   });
   return (
     <Td>
-      <div className={tokens.type.darker}>{formatCurrency(currentPrice)}</div>
+      <CostEstimateTooltip className={tokens.type.darker} cost={currentPrice} />
     </Td>
   );
 };

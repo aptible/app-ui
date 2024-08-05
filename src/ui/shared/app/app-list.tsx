@@ -8,7 +8,6 @@ import {
   fetchEnvironmentById,
   fetchEnvironments,
   fetchImageById,
-  formatCurrency,
   selectAppsByCertId,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
@@ -33,6 +32,7 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonCreate, ButtonLink } from "../button";
 import { Code } from "../code";
+import { CostEstimateTooltip } from "../cost-tooltip";
 import { DockerImage } from "../docker";
 import { GitCommitMessage, GitRef } from "../git";
 import { Group } from "../group";
@@ -104,7 +104,7 @@ const AppCostCell = ({ app }: AppCellProps) => {
 
   return (
     <Td>
-      <div className={tokens.type.darker}>{formatCurrency(cost)}</div>
+      <CostEstimateTooltip className={tokens.type.darker} cost={cost} />
     </Td>
   );
 };

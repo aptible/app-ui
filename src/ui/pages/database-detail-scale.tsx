@@ -33,6 +33,7 @@ import {
   DiskSizeInput,
   PricingCalc,
 } from "../shared";
+import { CostEstimateTooltip } from "../shared/cost-tooltip";
 
 interface DatabaseScaleProps {
   diskSize: number;
@@ -164,7 +165,7 @@ export const DatabaseScalePage = () => {
             <div>
               <p className="text-black-500">New Estimated Monthly Cost</p>
               <p className="text-right text-lg text-green-400">
-                {formatCurrency(estimatedPrice)}
+                <CostEstimateTooltip cost={estimatedPrice} />
               </p>
             </div>
           </div>

@@ -3,7 +3,6 @@ import {
   calcServiceMetrics,
   fetchServiceSizingPoliciesByEnvironmentId,
   fetchServicesByAppId,
-  formatCurrency,
   selectAppById,
   selectAutoscalingEnabledById,
   selectEndpointsByServiceId,
@@ -25,6 +24,7 @@ import { Link } from "react-router-dom";
 import { ButtonLink } from "../button";
 import { Code } from "../code";
 import { CopyTextButton } from "../copy";
+import { CostEstimateTooltip } from "../cost-tooltip";
 import { Group } from "../group";
 import { IconChevronDown, IconInfo } from "../icons";
 import { Pill } from "../pill";
@@ -136,7 +136,7 @@ const CostCell = ({
             </Tooltip>
           </Group>
         ) : (
-          `${formatCurrency(service.cost)}`
+          <CostEstimateTooltip cost={service.cost} />
         )}
       </div>
     </Td>

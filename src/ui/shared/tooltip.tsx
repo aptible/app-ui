@@ -51,14 +51,14 @@ export const Tooltip = ({
   ]);
 
   return (
-    <div className={className}>
-      <div
+    <span className={className}>
+      <span
         ref={refs.setReference}
         {...getReferenceProps()}
         className="cursor-pointer"
       >
         {children}
-      </div>
+      </span>
       {isOpen && (
         <div
           ref={refs.setFloating}
@@ -71,6 +71,7 @@ export const Tooltip = ({
               "shadow",
               "rounded-md",
               "px-3 py-2",
+              "break-normal",
               theme === "dark" ? "bg-black text-white" : "bg-white text-black",
               fluid ? "w-[60vw] md:w-max" : "w-96",
             ])}
@@ -79,6 +80,6 @@ export const Tooltip = ({
           </div>
         </div>
       )}
-    </div>
+    </span>
   );
 };

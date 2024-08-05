@@ -6,7 +6,6 @@ import {
   findEndpointsByEnvId,
   findServicesByEnvId,
   findVpnTunnelsByStackId,
-  formatCurrency,
   getStackType,
   getStackTypeTitle,
   selectBackupsAsList,
@@ -42,6 +41,7 @@ import {
   Tooltip,
   getStackImg,
 } from "../shared";
+import { CostEstimateTooltip } from "../shared/cost-tooltip";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function StackHeader({
@@ -81,7 +81,7 @@ export function StackHeader({
         </DetailInfoItem>
         <DetailInfoItem title="Region">{stack.region}</DetailInfoItem>
         <DetailInfoItem title="Est. Monthly Cost">
-          {formatCurrency(cost)}
+          <CostEstimateTooltip cost={cost} />
         </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>

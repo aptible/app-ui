@@ -8,6 +8,7 @@ import {
 import { useSelector } from "@app/react";
 import type { DeployDisk, DeployService, InstanceClass } from "@app/types";
 import type { DbScaleAction, DbScaleOptions, ValidResult } from "../../hooks";
+import { CostEstimateTooltip } from "../cost-tooltip";
 import { FormGroup, Label } from "../form-group";
 import { Input } from "../input";
 import { Select, type SelectOption } from "../select";
@@ -39,7 +40,7 @@ export function PricingCalc({
       <div>
         <p className="text-black-500">Estimated Monthly Cost</p>
         <p className="text-right text-lg text-green-400">
-          {formatCurrency(price)}
+          <CostEstimateTooltip cost={price} />
         </p>
       </div>
     </div>
