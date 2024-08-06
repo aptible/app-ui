@@ -326,6 +326,7 @@ export const defaultDeployDatabaseImage = (
     visible: true,
     createdAt: now,
     updatedAt: now,
+    eolAt: "",
     ...db,
   };
 };

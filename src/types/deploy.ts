@@ -302,6 +302,7 @@ export interface DeployDatabaseImage extends Timestamps {
   type: string;
   version: string;
   visible: boolean;
+  eolAt: string;
 }
 
 export interface ContainerProfile {

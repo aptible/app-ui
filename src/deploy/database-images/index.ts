@@ -15,6 +15,7 @@ export interface DeployDatabaseImageResponse {
   visible: boolean;
   created_at: string;
   updated_at: string;
+  eol_at: string;
   _type: "database_image";
 }
 
@@ -33,6 +34,7 @@ export const defaultDatabaseImageResponse = (
     visible: true,
     created_at: now,
     updated_at: now,
+    eol_at: "",
     _type: "database_image",
     ...i,
   };
@@ -52,6 +54,7 @@ export const deserializeDeployDatabaseImage = (
     visible: payload.visible,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
+    eolAt: payload.eol_at
   };
 };
 

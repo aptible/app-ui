@@ -43,6 +43,7 @@ import {
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
 import { AppSidebarLayout } from "./app-sidebar-layout";
+import { DatabaseEolNotice } from "../shared/db/database-eol-notice";
 
 export function DatabaseHeader({
   database,
@@ -148,6 +149,7 @@ function DatabasePageHeader() {
   return (
     <>
       <DatabaseOperationNotice id={id} />
+      <DatabaseEolNotice database={database} />
       <DetailPageHeaderView
         {...loader}
         breadcrumbs={crumbs}
