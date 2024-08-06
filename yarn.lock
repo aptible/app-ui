@@ -2189,9 +2189,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cloud-ui@workspace:.":
+"app-ui@workspace:.":
   version: 0.0.0-use.local
-  resolution: "cloud-ui@workspace:."
+  resolution: "app-ui@workspace:."
   dependencies:
     "@biomejs/biome": ^1.8.3
     "@floating-ui/react": ^0.26.21
