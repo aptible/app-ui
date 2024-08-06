@@ -24,7 +24,7 @@ import { Link } from "react-router-dom";
 import { ButtonLink } from "../button";
 import { Code } from "../code";
 import { CopyTextButton } from "../copy";
-import { CostEstimateTooltip } from "../cost-tooltip";
+import { CostEstimateTooltip } from "../cost-estimate-tooltip";
 import { Group } from "../group";
 import { IconChevronDown, IconInfo } from "../icons";
 import { Pill } from "../pill";

@@ -10,7 +10,7 @@ import {
 } from "@app/react";
 import { fetchRoles } from "@app/roles";
 import { teamMembersUrl, teamPendingInvitesUrl } from "@app/routes";
-import { emailValidator, existValidtor } from "@app/validator";
+import { emailValidator, existValidator } from "@app/validator";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useValidator } from "../hooks";
@@ -32,7 +32,7 @@ interface FormData {
 
 const validators = {
   email: (data: FormData) => emailValidator(data.email),
-  role: (data: FormData) => existValidtor(data.roleId, "role"),
+  role: (data: FormData) => existValidator(data.roleId, "role"),
 };
 
 export function TeamInvitePage() {

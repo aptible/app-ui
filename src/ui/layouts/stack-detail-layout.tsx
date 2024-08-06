@@ -31,6 +31,7 @@ import { useEffect } from "react";
 import { Outlet, useParams } from "react-router";
 import {
   CopyText,
+  CostEstimateTooltip,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -41,7 +42,6 @@ import {
   Tooltip,
   getStackImg,
 } from "../shared";
-import { CostEstimateTooltip } from "../shared/cost-tooltip";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function StackHeader({

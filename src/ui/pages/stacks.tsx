@@ -17,6 +17,7 @@ import { AppSidebarLayout } from "../layouts";
 import {
   ActionBar,
   ButtonLink,
+  CostEstimateTooltip,
   DescBar,
   EmptyTr,
   FilterBar,
@@ -34,7 +35,6 @@ import {
   TitleBar,
   Tr,
 } from "../shared";
-import { CostEstimateTooltip } from "../shared/cost-tooltip";
 
 export function StacksPage() {
   return (

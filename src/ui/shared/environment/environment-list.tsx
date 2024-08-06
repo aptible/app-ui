@@ -23,7 +23,7 @@ import { usePaginate } from "@app/ui/hooks";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonAnyOwner } from "../button";
-import { CostEstimateTooltip } from "../cost-tooltip";
+import { CostEstimateTooltip } from "../cost-estimate-tooltip";
 import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";

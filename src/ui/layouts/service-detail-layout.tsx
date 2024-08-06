@@ -2,6 +2,7 @@ import {
   calcMetrics,
   calcServiceMetrics,
   fetchApp,
+  fetchEndpointsByServiceId,
   fetchServicesByAppId,
   selectAppById,
   selectEndpointsByServiceId,
@@ -29,6 +30,7 @@ import type {
 import { useEffect, useState } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
+  CostEstimateTooltip,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -40,7 +42,6 @@ import {
   type TabItem,
   listToInvertedTextColor,
 } from "../shared";
-import { CostEstimateTooltip } from "../shared/cost-tooltip";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function ServiceHeader({
@@ -56,6 +57,9 @@ export function ServiceHeader({
   env: DeployEnvironment;
   isLoading: boolean;
 }) {
+  // Query additional data that subpages need
+  useQuery(fetchEndpointsByServiceId({ id: service.id }));
+
   const metrics = calcServiceMetrics(service, endpoints);
   const { totalCPU } = calcMetrics([service]);
   const [isOpen, setOpen] = useState(true);

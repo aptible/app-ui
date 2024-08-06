@@ -17,7 +17,7 @@ import { environmentActivityUrl, environmentDatabasesUrl } from "@app/routes";
 import { defaultDeployDisk, defaultDeployService } from "@app/schema";
 import {
   diskSizeValidator,
-  existValidtor,
+  existValidator,
   handleValidator,
 } from "@app/validator";
 import { useState } from "react";
@@ -36,9 +36,9 @@ import {
   DiskSizeInput,
   FormGroup,
   IopsInput,
-  PricingCalc,
   Select,
   type SelectOption,
+  ServicePricingCalc,
 } from "../shared";
 import { EnvSelectorPage } from "./create-env-app";
 
@@ -46,7 +46,7 @@ const validators = {
   handle: (props: CreateDatabaseProps) => handleValidator(props.handle),
   diskSize: (props: CreateDatabaseProps) => diskSizeValidator(props.diskSize),
   databaseImageId: (props: CreateDatabaseProps) =>
-    existValidtor(props.databaseImageId, "must pick database"),
+    existValidator(props.databaseImageId, "must pick database"),
 };
 
 export const CreateDatabasePage = () => {
@@ -83,16 +83,11 @@ export const CreateDatabasePage = () => {
 
   const service = defaultDeployService();
   const disk = defaultDeployDisk();
-  const {
-    scaler,
-    dispatchScaler,
-    requestedPricePerGBHour,
-    estimatedPrice,
-    requestedContainerProfile,
-  } = useDatabaseScaler({
-    service,
-    disk,
-  });
+  const { scaler, dispatchScaler, requestedContainerProfile } =
+    useDatabaseScaler({
+      service,
+      disk,
+    });
 
   const createProps: CreateDatabaseProps = {
     envId,
@@ -167,11 +162,13 @@ export const CreateDatabasePage = () => {
               cpuShare={requestedContainerProfile.cpuShare}
               containerSize={scaler.containerSize}
             />
-            <PricingCalc
-              service={service}
-              disk={disk}
-              pricePerGBHour={requestedPricePerGBHour}
-              price={estimatedPrice}
+            <ServicePricingCalc
+              service={{
+                containerCount: 1,
+                containerMemoryLimitMb: scaler.containerSize,
+                instanceClass: scaler.containerProfile,
+              }}
+              disk={{ size: scaler.diskSize, provisionedIops: scaler.iops }}
             />
           </div>
 

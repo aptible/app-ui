@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 import { IconInfo } from "./icons";
 import { Tooltip, type TooltipProps } from "./tooltip";
 
-export interface CostTooltipProps
+export interface CostEstimateTooltipProps
   extends ComponentProps<"div">,
     Omit<TooltipProps, "text" | "children"> {
   cost: number;
@@ -12,9 +12,9 @@ export interface CostTooltipProps
 
 export const CostEstimateTooltip = ({
   cost,
-  text = "This is an estimate of how much it would cost to run the current resources for a month. It does not reflect any scaling, either manual or automated, that may occur.",
+  text = "This is an estimate of the cost of running the current resources for one month. Please note: it does not represent your actual usage for the month.",
   ...tooltipProps
-}: CostTooltipProps) => (
+}: CostEstimateTooltipProps) => (
   <Tooltip text={text} {...tooltipProps}>
     <span className="mr-1">{formatCurrency(cost)}</span>
     <IconInfo

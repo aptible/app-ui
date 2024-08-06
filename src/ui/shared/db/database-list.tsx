@@ -31,7 +31,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { usePaginate } from "../../hooks";
 import { Button, ButtonCreate, ButtonLink } from "../button";
 import { Code } from "../code";
-import { CostEstimateTooltip } from "../cost-tooltip";
+import { CostEstimateTooltip } from "../cost-estimate-tooltip";
 import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";

@@ -72,6 +72,8 @@ export const Tooltip = ({
               "rounded-md",
               "px-3 py-2",
               "break-normal",
+              "text-sm",
+              "text-left",
               theme === "dark" ? "bg-black text-white" : "bg-white text-black",
               fluid ? "w-[60vw] md:w-max" : "w-96",
             ])}

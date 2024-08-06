@@ -1,6 +1,6 @@
 import { CONTAINER_PROFILES } from "./container";
 import {
-  backupCostPerGBHour,
+  backupCostPerGBMonth,
   diskCostPerGBMonth,
   diskIopsCostPerMonth,
   endpointCostPerHour,
@@ -58,7 +58,7 @@ describe("estimateMonthlyCost", () => {
       backups: [{ size: 5 }, { size: 10 }],
     });
 
-    expect(monthlyCost).toBeCloseTo(15 * backupCostPerGBHour * hoursPerMonth);
+    expect(monthlyCost).toBeCloseTo(15 * backupCostPerGBMonth);
   });
 
   it("should calculate the cost of VPN tunnels", () => {
@@ -112,10 +112,10 @@ describe("estimateMonthlyCost", () => {
     let expectedHourly =
       (5 * CONTAINER_PROFILES.r5.costPerContainerGBHourInCents) / 100;
     expectedHourly += 3 * endpointCostPerHour;
-    expectedHourly += 15 * backupCostPerGBHour;
 
     let expectedMonthly = expectedHourly * hoursPerMonth;
     expectedMonthly += 5 * diskCostPerGBMonth + 1000 * diskIopsCostPerMonth;
+    expectedMonthly += 15 * backupCostPerGBMonth;
     expectedMonthly += 4 * vpnTunnelCostPerMonth;
     expectedMonthly += 2 * stackCostPerMonth;
 

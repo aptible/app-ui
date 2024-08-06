@@ -23,7 +23,7 @@ import {
   selectUserById,
   selectUsersAsList,
 } from "@app/users";
-import { emailValidator, existValidtor } from "@app/validator";
+import { emailValidator, existValidator } from "@app/validator";
 import { type ChangeEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { usePaginate, useUserIdsForRole } from "../hooks";
@@ -147,7 +147,7 @@ export function RoleDetailMembersPage() {
 
   const validators = {
     email: (data: FormData) => emailValidator(data.email),
-    role: (data: FormData) => existValidtor(data.roleId, "role"),
+    role: (data: FormData) => existValidator(data.roleId, "role"),
   };
 
   const [email, setEmail] = useState("");

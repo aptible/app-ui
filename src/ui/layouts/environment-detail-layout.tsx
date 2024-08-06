@@ -26,6 +26,7 @@ import { findLoaderComposite } from "@app/loaders";
 import { setResourceStats } from "@app/search";
 import { useEffect, useMemo } from "react";
 import {
+  CostEstimateTooltip,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -34,7 +35,6 @@ import {
   EndpointUrl,
   type TabItem,
 } from "../shared";
-import { CostEstimateTooltip } from "../shared/cost-tooltip";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function EnvHeader({
