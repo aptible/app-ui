@@ -32,9 +32,9 @@ export const defaultDatabaseImageResponse = (
     type: "",
     version: "",
     visible: true,
+    eol_at: "",
     created_at: now,
     updated_at: now,
-    eol_at: "",
     _type: "database_image",
     ...i,
   };
@@ -49,12 +49,12 @@ export const deserializeDeployDatabaseImage = (
     description: payload.description,
     discoverable: payload.discoverable,
     dockerRepo: payload.docker_repo,
+    eolAt: payload.eol_at,
     type: payload.type,
     version: payload.version,
     visible: payload.visible,
     createdAt: payload.created_at,
-    updatedAt: payload.updated_at,
-    eolAt: payload.eol_at
+    updatedAt: payload.updated_at
   };
 };
 

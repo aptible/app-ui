@@ -299,10 +299,10 @@ export interface DeployDatabaseImage extends Timestamps {
   description: string;
   discoverable: boolean;
   dockerRepo: string;
+  eolAt: string;
   type: string;
   version: string;
   visible: boolean;
-  eolAt: string;
 }
 
 export interface ContainerProfile {

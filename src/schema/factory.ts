@@ -321,12 +321,12 @@ export const defaultDeployDatabaseImage = (
     description: "",
     discoverable: false,
     dockerRepo: "",
+    eolAt: "",
     type: "",
     version: "",
     visible: true,
     createdAt: now,
     updatedAt: now,
-    eolAt: "",
     ...db,
   };
 };

@@ -24,18 +24,20 @@ export const DatabaseEolNotice = ({
     return null;
   }
 
-  const monthsForDep = 3
+  const daysForDep = 90
   const depDate = new Date(image.eolAt)
-  depDate.setMonth(depDate.getMonth() + monthsForDep)
-  
-  if (depDate.getTime() > Date.now()) {
+  const curDate = new Date()
+  depDate.setDate(depDate.getDate() + daysForDep)
+
+  if (depDate < curDate) {
     return (
       <BannerWrapper>
         <Banner variant="info">
           <p>
-            <b>The {image.description} is deprecated and no longer maintained.</b>
-            We recommend upgrading to a <span> </span>
+            <b>Active maintenance for the {image.description} database version will end on {prettyDateTime(depDate.toUTCString())}.</b>
+            We recommend upgrading to a
             <Link
+              className="text-white underline"
               to="https://www.aptible.com/docs/core-concepts/managed-databases/supported-databases/overview"
             >
               newer version for continued support.
@@ -46,15 +48,14 @@ export const DatabaseEolNotice = ({
     );
   }
 
-  if (depDate.getTime() < Date.now()) {
+  if (depDate < curDate) {
     return (
       <BannerWrapper>
         <Banner variant="info">
           <p>
-            <b>Active maintenance for the {image.description} database version will end on {prettyDateTime(depDate.toString())}.</b>
-            We recommend upgrading to a
+            <b>The {image.description} is deprecated and no longer maintained.</b>
+            We recommend upgrading to a <span> </span>
             <Link
-              className="text-white underline"
               to="https://www.aptible.com/docs/core-concepts/managed-databases/supported-databases/overview"
             >
               newer version for continued support.
