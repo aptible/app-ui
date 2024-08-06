@@ -1,5 +1,4 @@
-import { prettyDateTime } from "@app/date";
-import { selectDatabaseImageById } from "@app/deploy"
+import { selectDatabaseImageById } from "@app/deploy";
 import { useSelector } from "@app/react";
 import type { DeployDatabase } from "@app/types";
 import { Link } from "react-router-dom";
@@ -14,32 +13,32 @@ const BannerWrapper = ({
 export const DatabaseEolNotice = ({
   database,
 }: {
-  database:DeployDatabase;
+  database: DeployDatabase;
 }) => {
   const image = useSelector((s) =>
     selectDatabaseImageById(s, { id: database.databaseImageId }),
   );
-  
+
   if (!image.eolAt) {
     return null;
   }
 
-  const daysForDep = 90
-  const depDate = new Date(image.eolAt)
-  const curDate = new Date()
-  depDate.setDate(depDate.getDate() + daysForDep)
+  const daysForDep = 90;
+  const depDate = new Date(image.eolAt);
+  const curDate = new Date();
+  depDate.setDate(depDate.getDate() + daysForDep);
 
-  if (depDate < curDate) {
+  if (depDate > curDate) {
     return (
       <BannerWrapper>
         <Banner variant="info">
           <p>
-            <b>Active maintenance for the {image.description} database version will end on {prettyDateTime(depDate.toUTCString())}.</b>
-            We recommend upgrading to a
-            <Link
-              className="text-white underline"
-              to="https://www.aptible.com/docs/core-concepts/managed-databases/supported-databases/overview"
-            >
+            <b>
+              Active maintenance for the {image.description} database version
+              will end on {depDate.toUTCString()}.
+            </b>{" "}
+            We recommend upgrading to a{" "}
+            <Link to="https://www.aptible.com/docs/core-concepts/managed-databases/supported-databases/overview">
               newer version for continued support.
             </Link>
           </p>
@@ -53,11 +52,12 @@ export const DatabaseEolNotice = ({
       <BannerWrapper>
         <Banner variant="info">
           <p>
-            <b>The {image.description} is deprecated and no longer maintained.</b>
-            We recommend upgrading to a <span> </span>
-            <Link
-              to="https://www.aptible.com/docs/core-concepts/managed-databases/supported-databases/overview"
-            >
+            <b>
+              The {image.description} database version is deprecated and no
+              longer maintained.
+            </b>{" "}
+            We recommend upgrading to a{" "}
+            <Link to="https://www.aptible.com/docs/core-concepts/managed-databases/supported-databases/overview">
               newer version for continued support.
             </Link>
           </p>

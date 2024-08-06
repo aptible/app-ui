@@ -54,7 +54,7 @@ export const deserializeDeployDatabaseImage = (
     version: payload.version,
     visible: payload.visible,
     createdAt: payload.created_at,
-    updatedAt: payload.updated_at
+    updatedAt: payload.updated_at,
   };
 };
 

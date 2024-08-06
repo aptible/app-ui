@@ -42,8 +42,8 @@ import {
   type TabItem,
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
-import { AppSidebarLayout } from "./app-sidebar-layout";
 import { DatabaseEolNotice } from "../shared/db/database-eol-notice";
+import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function DatabaseHeader({
   database,
