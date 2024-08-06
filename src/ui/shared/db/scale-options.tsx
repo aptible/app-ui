@@ -149,13 +149,10 @@ export function IopsInput({
   scaler: Pick<DbScaleOptions, "iops">;
   dispatchScaler: (a: DbScaleAction) => void;
 }) {
+  const desc =
+    "The maximum IOPS is 16,000, but you must meet a minimum ratio of 1 GB disk size per 500 IOPS. For example, to reach 16,000 IOPS, you must have at least a 32 GB or larger disk.";
   return (
-    <FormGroup
-      splitWidthInputs
-      description="Input/Output Operation Per Second. Maximum ratio is 50:1 between IOPS and Disk Size."
-      label="IOPS"
-      htmlFor="iops"
-    >
+    <FormGroup splitWidthInputs description={desc} label="IOPS" htmlFor="iops">
       <Input
         className="flex w-full"
         name="iops"
