@@ -1,5 +1,7 @@
 import { authApi } from "@app/api";
 import type { HalEmbedded } from "@app/types";
+import { schema } from "@app/schema";
+import { thunks } from "@app/api";
 
 export interface ScimConfigurationResponse {
   id: string;
@@ -106,6 +108,8 @@ export interface GenerateTokenResponse {
   token: string;
 }
 
+export const selectScimToken = schema.scimToken.select;
+
 export const generateScimToken = authApi.post<GenerateScimToken, GenerateTokenResponse>(
   "/scim_configurations/generate_token",
   function* (ctx, next) {
@@ -122,6 +126,15 @@ export const generateScimToken = authApi.post<GenerateScimToken, GenerateTokenRe
     }
 
     const response: GenerateTokenResponse = ctx.json.value;
-    ctx.loader = { message: "Token generated successfully!", token: response.token };
+    yield* schema.update(schema.scimToken.set(response.token));
+    ctx.loader = { message: "Token generated successfully!" };
+  },
+);
+
+export const resetScimToken = thunks.create(
+  "reset-scim-token",
+  function* (_, next) {
+    yield* schema.update(schema.scimToken.reset());
+    yield* next();
   },
 );

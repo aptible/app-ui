@@ -1,17 +1,16 @@
 import {
   type CreateScimConfiguration,
   type ScimConfigurationResponse,
-  type UpdateScimConfiguration,
-  type GenerateScimToken,
   createScimConfiguration,
   deleteScimConfiguration,
   fetchScimConfigurations,
   updateScimConfiguration,
   generateScimToken,
+  selectScimToken,
+  resetScimToken,
 } from "@app/auth";
 import { selectRolesEditable } from "@app/deploy";
 import {
-  selectOrganizationSelected,
   selectOrganizationSelectedId,
 } from "@app/organizations";
 import {
@@ -42,7 +41,7 @@ import {
 } from "../shared";
 
 const validators = {
-  metadata: (data: Pick<CreateScimConfiguration, "defaultRoleId">) => {
+  roles: (data: Pick<CreateScimConfiguration, "defaultRoleId">) => {
     if (!data.defaultRoleId) {
       return "must select Default Role";
     }
@@ -94,8 +93,8 @@ function ConfigureScim({ onSuccess }: { onSuccess: () => void }) {
               <FormGroup
                 label="Default Aptible Role"
                 htmlFor="default-role"
-                feedbackMessage={errors.defaultRoleId}
-                feedbackVariant={errors.defaultRoleId ? "danger" : "info"}
+                feedbackMessage={errors.roles}
+                feedbackVariant={errors.roles ? "danger" : "info"}
               >
                 <div>
                   Default Aptible Role <br />
@@ -130,10 +129,10 @@ function ScimEdit({
   const dispatch = useDispatch();
   const orgId = useSelector(selectOrganizationSelectedId);
   const userId = useSelector(selectCurrentUserId);
+  const scimToken = useSelector(selectScimToken);
   const [defaultRoleId, setDefaultRoleId] = useState(scim.default_role_id || "");
-  const [token, setToken] = useState<string | null>(null);
   const [showTokenModal, setShowTokenModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const data = {
     scimId: scim.id,
@@ -152,26 +151,16 @@ function ScimEdit({
   const generateTokenLoader = useLoader(generateTokenAction);
 
   const handleGenerateToken = async () => {
-    setIsLoading(true);
     try {
-      dispatch(generateTokenAction);
+      await dispatch(generateTokenAction);
     } catch (error) {
       console.error("Error generating token:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCopyToken = () => {
-    if (token) {
-      navigator.clipboard.writeText(token);
-      alert("Token copied to clipboard!");
     }
   };
 
   const handleCloseModal = () => {
     setShowTokenModal(false);
-    setToken(null);
+    dispatch(resetScimToken());
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -179,7 +168,7 @@ function ScimEdit({
     dispatch(action);
   };
 
-  const onRemove = () => {
+  const onRemove = async () => {
     dispatch(deleteScimConfiguration({ id: scim.id }));
   };
 
@@ -192,12 +181,10 @@ function ScimEdit({
   });
 
   useLoaderSuccess(generateTokenLoader, () => {
-    const token = generateTokenLoader.token;
-    if (token) {
-      setToken(token);
+    if (scimToken) {
       setShowTokenModal(true);
     } else {
-      console.error("Token generation failed, received undefined token");
+      console.error("undefined scimToken");
     }
   });
 
@@ -245,7 +232,7 @@ function ScimEdit({
                 </Button>
               </div>
 
-              {showTokenModal && token && (
+              {showTokenModal && scimToken != "" && (
                 <div className="modal">
                   <div className="modal-content">
                     <h4 className={tokens.type.h4}>Your New SCIM Bearer Token</h4>
@@ -254,7 +241,7 @@ function ScimEdit({
                     </p>
                     <div style={{ wordWrap: 'break-word', wordBreak: 'break-all', overflowWrap: 'break-word' }}
                       className="text-gray-500 text-sm flex flex-row gap-1">
-                      <CopyText text={token} />
+                      <CopyText text={scimToken} />
                     </div>
                     <Button onClick={handleCloseModal}>Hide Token</Button>
                   </div>
@@ -327,7 +314,6 @@ const SharedScimInfo = () => (
 );
 
 export const TeamScimPage = () => {
-  const org = useSelector(selectOrganizationSelected);
   const scim = useCache(fetchScimConfigurations());
 
   if (scim.isLoading) {
