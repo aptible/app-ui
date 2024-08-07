@@ -310,8 +310,8 @@ const SharedScimInfo = () => (
       <h4 className={tokens.type.h4}>Supported Features</h4>
       <ol>
         <ul>
-          <li>Create Users</li>
-          <li>Update Users</li>
+          <li>Create/Update/Delete Users</li>
+          <li>Create/Update/Delete Groups (Aptible Roles)</li>
         </ul>
       </ol>
     </div>
