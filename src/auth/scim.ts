@@ -30,14 +30,13 @@ export const defaultScimConfigurationResponse = (
 };
 
 export type FetchScimConfigurations = HalEmbedded<{
-  saml_configurations: ScimConfigurationResponse[];
+  scim_configurations: ScimConfigurationResponse[];
 }>;
 
 export const fetchScimConfigurations = authApi.get<
   never,
   FetchScimConfigurations
 >("/scim_configurations", authApi.cache());
-
 
 export interface CreateScimConfiguration {
   orgId: string;
@@ -52,6 +51,7 @@ export const createScimConfiguration = authApi.post<CreateScimConfiguration>(
         scim_configuration: {
           organization_id: ctx.payload.orgId,
           default_role_id: ctx.payload.defaultRoleId,
+          unique_identifier: 'email',
         },
       }),
     });
@@ -69,7 +69,6 @@ export interface UpdateScimConfiguration {
   scimId: string;
   orgId: string;
   defaultRoleId: string;
-  tokenId: string;
 }
 
 export const updateScimConfiguration = authApi.patch<UpdateScimConfiguration>(
@@ -80,7 +79,6 @@ export const updateScimConfiguration = authApi.patch<UpdateScimConfiguration>(
         scim_configuration: {
           organization_id: ctx.payload.orgId,
           default_role_id: ctx.payload.defaultRoleId,
-          token_id: ctx.payload.tokenId,
         },
       }),
     });
@@ -99,4 +97,31 @@ export const deleteScimConfiguration = authApi.delete<{ id: string }>(
   "/scim_configurations/:id",
 );
 
+export interface GenerateScimToken {
+  scimConfigurationId: string;
+  userId: string;
+}
 
+export interface GenerateTokenResponse {
+  token: string;
+}
+
+export const generateScimToken = authApi.post<GenerateScimToken, GenerateTokenResponse>(
+  "/scim_configurations/generate_token",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({
+        scim_configuration_id: ctx.payload.scimConfigurationId,
+        user_id: ctx.payload.userId,
+      }),
+    });
+    yield* next();
+
+    if (!ctx.json.ok) {
+      throw new Error('API request failed');
+    }
+
+    const response: GenerateTokenResponse = ctx.json.value;
+    ctx.loader = { message: "Token generated successfully!", token: response.token };
+  },
+);
