@@ -137,18 +137,16 @@ export function EnvironmentList({
   stackId = "",
   showTitle = true,
 }: { stackId?: string; showTitle?: boolean }) {
-  useQuery(fetchEnvironments());
-  useQuery(fetchServices());
-  useQuery(fetchDatabases()); // To fetch embedded disks
-  useQuery(fetchEndpoints());
-  const [params, setParams] = useSearchParams();
-  const search = params.get("search") || "";
-  const { isLoading } = useCompositeLoader(
+  const queries = [
     fetchEnvironments(),
     fetchServices(),
-    fetchDatabases(),
+    fetchDatabases(), // To fetch embedded disks
     fetchEndpoints(),
-  );
+  ];
+  queries.forEach((q) => useQuery(q));
+  const { isLoading } = useCompositeLoader(queries);
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
   const [sortBy, setSortBy] = useState<keyof DeployEnvironmentRow>("createdAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
