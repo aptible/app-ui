@@ -112,11 +112,11 @@ export function SettingsSidebar() {
 
         {isAccountOwner ? (
           <NavLink className={navLink} to={teamScimUrl()}>
-            SCIM
+            Provisioning
           </NavLink>
         ) : (
           <span className={navLink({ isActive: false })}>
-            SCIM
+            Provisioning
             <Tooltip text="Must be account owner" fluid>
               <IconLock variant="sm" className="ml-1 opacity-60" />
             </Tooltip>
