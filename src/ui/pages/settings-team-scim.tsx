@@ -84,7 +84,7 @@ function ConfigureScim({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <Group>
-      <h2 className={tokens.type.h2}>SCIM</h2>
+      <SharedScimTitle />
       <Box>
         <Group>
         <SharedScimInfo />
@@ -199,7 +199,7 @@ function ScimEdit({
 
   return (
     <Group>
-      <h2 className={tokens.type.h2}>SCIM</h2>
+      <SharedScimTitle />
       <Box>
         <Group>
           <h3 className={tokens.type.h3}>Edit SCIM Configuration</h3>
@@ -275,6 +275,10 @@ function ScimEdit({
     </Group>
   );
 }
+
+const SharedScimTitle = () => (
+  <h2 className={tokens.type.h2}>Provisioning (SCIM)</h2>
+);
 
 const SharedScimInfo = () => (
   <>

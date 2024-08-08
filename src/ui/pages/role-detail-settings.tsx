@@ -148,6 +148,25 @@ export function RoleDetailSettingsPage() {
     return <RoleDetailLayout>Cannot edit {role.type} role</RoleDetailLayout>;
   }
 
+  if (role.scimCreated) {
+    return <RoleDetailLayout>
+      <Group className="mt-4">
+      <Box>
+      <h1 className="text-lg text-red-500 font-semibold flex items-center gap-2 mb-4">
+        <IconAlertTriangle color="#AD1A1A" />
+        Role managed via SCIM
+      </h1>
+      <div>
+        <p>
+          This role is managed via SCIM and cannot be edited in Aptible.
+          Please manage the role directly in the source Identity Provider.
+        </p>
+      </div>
+      </Box>
+      </Group>
+    </RoleDetailLayout>;
+  }
+
   return (
     <RoleDetailLayout>
       <Group className="mt-4">

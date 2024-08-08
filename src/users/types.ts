@@ -13,6 +13,7 @@ export interface UserResponse {
   updated_at: string;
   username: string;
   verified: boolean;
+  external_id: string;
   _links: {
     email_verification_challenges: LinkResponse;
     current_otp_configuration: LinkResponse;
