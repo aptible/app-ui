@@ -12,6 +12,7 @@ import {
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
   selectAppsForTableSearchBySourceId,
+  selectEndpointsByAppId,
   selectImageById,
   selectLatestOpByAppId,
   selectServicesByAppId,
@@ -100,7 +101,10 @@ const AppCostCell = ({ app }: AppCellProps) => {
   const services = useSelector((s) =>
     selectServicesByAppId(s, { appId: app.id }),
   );
-  const cost = estimateMonthlyCost({ services });
+  const endpoints = useSelector((s) =>
+    selectEndpointsByAppId(s, { appId: app.id }),
+  );
+  const cost = estimateMonthlyCost({ services, endpoints });
 
   return (
     <Td>
@@ -161,6 +165,7 @@ export const AppListByOrg = () => {
   const apps = useSelector((s) =>
     selectAppsForTableSearch(s, { search, sortBy, sortDir }),
   );
+  console.log(apps.find((a) => a.id === "78167"));
   const paginated = usePaginate(apps);
   const onSort = (key: keyof DeployAppRow) => {
     if (key === sortBy) {

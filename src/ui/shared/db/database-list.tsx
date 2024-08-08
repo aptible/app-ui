@@ -12,6 +12,7 @@ import {
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
   selectDiskById,
+  selectEndpointsByServiceId,
   selectLatestOpByDatabaseId,
   selectServiceById,
 } from "@app/deploy";
@@ -95,9 +96,13 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
     selectServiceById(s, { id: database.serviceId }),
   );
   const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
+  const endpoints = useSelector((s) =>
+    selectEndpointsByServiceId(s, { serviceId: database.serviceId }),
+  );
   const currentPrice = estimateMonthlyCost({
     services: [service],
     disks: [disk],
+    endpoints,
   });
   return (
     <Td>
