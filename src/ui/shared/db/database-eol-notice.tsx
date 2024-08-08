@@ -34,7 +34,7 @@ export const DatabaseEolNotice = ({
           newer version for continued support.
         </ExternalLink>{" "}
         Refer to the{" "}
-        <ExternalLink href="www.aptible.com/changelog/database-end-of-life-policy-updates">
+        <ExternalLink href="https://www.aptible.com/changelog/database-end-of-life-policy-updates">
           changelog
         </ExternalLink>{" "}
         for more details.
