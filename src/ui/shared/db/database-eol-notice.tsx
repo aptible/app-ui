@@ -1,9 +1,9 @@
+import { prettyDate } from "@app/date";
 import { selectDatabaseImageById } from "@app/deploy";
 import { useSelector } from "@app/react";
 import type { DeployDatabase } from "@app/types";
 import { Banner } from "../banner";
 import { ExternalLink } from "../external-link";
-import { prettyDate } from "@app/date";
 
 export const DatabaseEolNotice = ({
   database,
@@ -28,7 +28,7 @@ export const DatabaseEolNotice = ({
   return (
     <Banner variant="info">
       <p>
-        <b>{depDate < curDate ? eolText : depText}</b> We recommend upgrading to
+        <b>{depDate > curDate ? eolText : depText}</b> We recommend upgrading to
         a{" "}
         <ExternalLink href="https://www.aptible.com/docs/core-concepts/managed-databases/supported-databases/overview">
           newer version for continued support.
