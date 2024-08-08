@@ -14,7 +14,7 @@ import {
 import { resetRedirectPath, selectRedirectPath } from "@app/redirect-path";
 import { forgotPassUrl, homeUrl, signupUrl, ssoUrl } from "@app/routes";
 import { selectIsUserAuthenticated } from "@app/token";
-import { emailValidator, existValidtor } from "@app/validator";
+import { emailValidator, existValidator } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -35,7 +35,7 @@ import {
 const validators = {
   email: (props: CreateTokenPayload) => emailValidator(props.username),
   pass: (props: CreateTokenPayload) =>
-    existValidtor(props.password, "Password"),
+    existValidator(props.password, "Password"),
 };
 
 export const LoginPage = () => {

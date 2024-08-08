@@ -15,7 +15,7 @@ import {
   useSelector,
 } from "@app/react";
 import { homeUrl, logoutUrl, plansUrl } from "@app/routes";
-import { existValidtor } from "@app/validator";
+import { existValidator } from "@app/validator";
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -56,10 +56,10 @@ interface FormProps {
 
 const validators = {
   zipcode: (p: FormProps) => {
-    return existValidtor(p.zipcode, "zipcode");
+    return existValidator(p.zipcode, "zipcode");
   },
   name: (p: FormProps) => {
-    return existValidtor(p.nameOnCard, "name on card");
+    return existValidator(p.nameOnCard, "name on card");
   },
 };
 

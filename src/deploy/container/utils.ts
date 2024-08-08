@@ -6,7 +6,7 @@ export const CONTAINER_PROFILES: {
 } = {
   m4: {
     name: "General Purpose (M) - Legacy",
-    costPerContainerHourInCents: 8,
+    costPerContainerGBHourInCents: 8,
     cpuShare: 0.25 / GB,
     minimumContainerSize: GB / 2,
     maximumContainerSize: 240 * GB,
@@ -14,7 +14,7 @@ export const CONTAINER_PROFILES: {
   },
   m5: {
     name: "General Purpose (M)",
-    costPerContainerHourInCents: 8,
+    costPerContainerGBHourInCents: 8,
     cpuShare: 0.25 / GB,
     minimumContainerSize: GB / 2,
     maximumContainerSize: 368 * GB,
@@ -22,7 +22,7 @@ export const CONTAINER_PROFILES: {
   },
   r4: {
     name: "Memory Optimized (R) - Legacy",
-    costPerContainerHourInCents: 5,
+    costPerContainerGBHourInCents: 5,
     cpuShare: 0.125 / GB,
     minimumContainerSize: 4 * GB,
     maximumContainerSize: 472 * GB,
@@ -30,7 +30,7 @@ export const CONTAINER_PROFILES: {
   },
   r5: {
     name: "Memory Optimized (R)",
-    costPerContainerHourInCents: 5,
+    costPerContainerGBHourInCents: 5,
     cpuShare: 0.125 / GB,
     minimumContainerSize: 4 * GB,
     maximumContainerSize: 752 * GB,
@@ -38,7 +38,7 @@ export const CONTAINER_PROFILES: {
   },
   c4: {
     name: "Compute Optimized (C) - Legacy",
-    costPerContainerHourInCents: 10,
+    costPerContainerGBHourInCents: 10,
     cpuShare: 0.5 / GB,
     minimumContainerSize: 2 * GB,
     maximumContainerSize: 58 * GB,
@@ -46,7 +46,7 @@ export const CONTAINER_PROFILES: {
   },
   c5: {
     name: "Compute Optimized (C)",
-    costPerContainerHourInCents: 10,
+    costPerContainerGBHourInCents: 10,
     cpuShare: 0.5 / GB,
     minimumContainerSize: 2 * GB,
     maximumContainerSize: 368 * GB,

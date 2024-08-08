@@ -1,11 +1,15 @@
 import {
+  estimateMonthlyCost,
   fetchApps,
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchOperationsByEnvId,
-  selectEndpointsByEnvironmentId,
+  selectBackupsByEnvId,
+  selectDisksByEnvId,
+  selectEndpointsByEnvironmentId as selectEndpointsByEnvId,
   selectEnvironmentById,
   selectEnvironmentStatsById,
+  selectServicesByEnvId,
   selectStackById,
 } from "@app/deploy";
 import { useDispatch, useQuery, useSelector } from "@app/react";
@@ -22,6 +26,7 @@ import { findLoaderComposite } from "@app/loaders";
 import { setResourceStats } from "@app/search";
 import { useEffect, useMemo } from "react";
 import {
+  CostEstimateTooltip,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -38,12 +43,14 @@ export function EnvHeader({
   endpoints,
   stats,
   isLoading,
+  cost,
 }: {
   environment: DeployEnvironment;
   stats: DeployEnvironmentStats;
   stack: DeployStack;
   endpoints: DeployEndpoint[];
   isLoading: boolean;
+  cost: number;
 }) {
   return (
     <DetailHeader>
@@ -82,6 +89,9 @@ export function EnvHeader({
               ))
             : null}
         </DetailInfoItem>
+        <DetailInfoItem title="Est. Monthly Cost">
+          <CostEstimateTooltip cost={cost} />
+        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -110,9 +120,26 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     selectStackById(s, { id: environment.stackId }),
   );
   const endpoints = useSelector((s) =>
-    selectEndpointsByEnvironmentId(s, { envId: environment.id }),
+    selectEndpointsByEnvId(s, { envId: environment.id }),
   );
   const crumbs = [{ name: stack.name, to: stackDetailEnvsUrl(stack.id) }];
+
+  // Cost
+  const services = useSelector((s) =>
+    selectServicesByEnvId(s, { envId: environment.id }),
+  );
+  const disks = useSelector((s) =>
+    selectDisksByEnvId(s, { envId: environment.id }),
+  );
+  const backups = useSelector((s) =>
+    selectBackupsByEnvId(s, { envId: environment.id }),
+  );
+  const cost = estimateMonthlyCost({
+    services,
+    disks,
+    endpoints,
+    backups,
+  });
 
   const tabs: TabItem[] = [
     { name: "Apps", href: `/environments/${id}/apps` },
@@ -137,6 +164,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
           environment={environment}
           stack={stack}
           stats={stats}
+          cost={cost}
         />
       }
       title={environment.handle}

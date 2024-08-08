@@ -3,8 +3,10 @@ import {
   fetchDiskById,
   fetchService,
   scaleDatabase,
+  selectBackupsByDatabaseId,
   selectDatabaseById,
   selectDiskById,
+  selectEndpointsByServiceId,
   selectServiceById,
 } from "@app/deploy";
 import {
@@ -30,7 +32,7 @@ import {
   ContainerSizeInput,
   CpuShareView,
   DiskSizeInput,
-  PricingCalc,
+  ServicePricingCalc,
 } from "../shared";
 
 interface DatabaseScaleProps {
@@ -58,15 +60,17 @@ export const DatabaseScalePage = () => {
   const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
   );
+  const endpoints = useSelector((s) =>
+    selectEndpointsByServiceId(s, { serviceId: database.serviceId }),
+  );
+  const backups = useSelector((s) =>
+    selectBackupsByDatabaseId(s, { dbId: id }),
+  );
 
   const {
     scaler,
     dispatchScaler,
     changesExist,
-    currentPricePerHour,
-    currentPrice,
-    estimatedPricePerHour,
-    estimatedPrice,
     requestedContainerProfile,
     currentContainerProfile,
   } = useDatabaseScaler({
@@ -111,11 +115,11 @@ export const DatabaseScalePage = () => {
           />
         </div>
 
-        <PricingCalc
+        <ServicePricingCalc
           service={service}
           disk={disk}
-          pricePerHour={currentPricePerHour}
-          price={currentPrice}
+          endpoints={endpoints}
+          backups={backups}
         />
 
         <hr />
@@ -152,21 +156,16 @@ export const DatabaseScalePage = () => {
           </div>
         ) : null}
         {hasChanges ? (
-          <div className="my-3 flex justify-between">
-            <div>
-              <div className="text-md text-gray-900">Pricing</div>
-              <p className="text-black-500">
-                1 x {scaler.containerSize / 1024} GB container x $
-                {estimatedPricePerHour} per GB/hour
-              </p>
-            </div>
-            <div>
-              <p className="text-black-500">New Estimated Monthly Cost</p>
-              <p className="text-right text-lg text-green-400">
-                ${estimatedPrice}
-              </p>
-            </div>
-          </div>
+          <ServicePricingCalc
+            service={{
+              containerCount: service.containerCount,
+              containerMemoryLimitMb: scaler.containerSize,
+              instanceClass: scaler.containerProfile,
+            }}
+            disk={{ size: scaler.diskSize, provisionedIops: scaler.iops }}
+            endpoints={endpoints}
+            backups={backups}
+          />
         ) : null}
 
         <BannerMessages {...loader} />

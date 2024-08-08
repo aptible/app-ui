@@ -106,8 +106,12 @@ const deserializeDeployVpnTunnel = (
   };
 };
 
+export const findVpnTunnelsByStackId = (
+  tunnels: DeployVpnTunnel[],
+  stackId: string,
+) => tunnels.filter((tunnel) => tunnel.stackId === stackId);
 export const selectVpnTunnelById = schema.vpnTunnels.selectById;
-export const selectVpnTunnel = schema.vpnTunnels.selectTable;
+export const selectVpnTunnels = schema.vpnTunnels.selectTable;
 export const selectVpnTunnelsAsList = createSelector(
   schema.vpnTunnels.selectTableAsList,
   (vpnTunnels) =>

@@ -3,16 +3,16 @@ import {
   type DatabaseDependency,
   type DeployDatabaseRow,
   calcMetrics,
+  estimateMonthlyCost,
   fetchDatabaseImages,
   fetchDatabases,
   fetchEnvironmentById,
   fetchEnvironments,
-  getContainerProfileFromType,
-  hourlyAndMonthlyCostsForContainers,
   selectDatabaseImageById,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
   selectDiskById,
+  selectEndpointsByServiceId,
   selectLatestOpByDatabaseId,
   selectServiceById,
 } from "@app/deploy";
@@ -32,6 +32,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { usePaginate } from "../../hooks";
 import { Button, ButtonCreate, ButtonLink } from "../button";
 import { Code } from "../code";
+import { CostEstimateTooltip } from "../cost-estimate-tooltip";
 import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
@@ -95,18 +96,17 @@ const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
     selectServiceById(s, { id: database.serviceId }),
   );
   const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
-  const currentContainerProfile = getContainerProfileFromType(
-    service.instanceClass,
+  const endpoints = useSelector((s) =>
+    selectEndpointsByServiceId(s, { serviceId: database.serviceId }),
   );
-  const { pricePerMonth: currentPrice } = hourlyAndMonthlyCostsForContainers(
-    service.containerCount,
-    currentContainerProfile,
-    service.containerMemoryLimitMb,
-    disk.size,
-  );
+  const currentPrice = estimateMonthlyCost({
+    services: [service],
+    disks: [disk],
+    endpoints,
+  });
   return (
     <Td>
-      <div className={tokens.type.darker}>${currentPrice.toFixed(2)}</div>
+      <CostEstimateTooltip className={tokens.type.darker} cost={currentPrice} />
     </Td>
   );
 };

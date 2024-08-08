@@ -1,4 +1,4 @@
-import type { ContainerProfileData, InstanceClass } from "@app/types";
+import type { InstanceClass } from "@app/types";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
 
 type SizeMap = {
@@ -22,47 +22,4 @@ export const containerSizesByProfile = (profile: InstanceClass): number[] => {
   return profileSizes.filter(
     (size: number) => size >= CONTAINER_PROFILES[profile].minimumContainerSize,
   );
-};
-
-export const hoursPerMonth = 731;
-export const computedCostsForContainer = (
-  containerCount: number,
-  containerProfile: Pick<ContainerProfileData, "costPerContainerHourInCents">,
-  containerSizeGB: number,
-) => {
-  const estimatedCostInCents = () => {
-    const { costPerContainerHourInCents } = containerProfile;
-    return (
-      hoursPerMonth *
-      containerCount *
-      ((containerSizeGB / 1024) * 1000) *
-      costPerContainerHourInCents
-    );
-  };
-  const estimatedCostInDollars = estimatedCostInCents() / 100;
-  return {
-    estimatedCostInCents,
-    estimatedCostInDollars,
-  };
-};
-
-export const hourlyAndMonthlyCostsForContainers = (
-  containerCount: number,
-  containerProfile: Pick<ContainerProfileData, "costPerContainerHourInCents">,
-  containerSize: number,
-  diskSize?: number,
-) => {
-  const pricePerHour = (
-    containerProfile.costPerContainerHourInCents / 100
-  ).toFixed(2);
-  let pricePerMonth =
-    computedCostsForContainer(containerCount, containerProfile, containerSize)
-      .estimatedCostInDollars / 1000;
-  if (diskSize) {
-    pricePerMonth += diskSize * 0.2;
-  }
-  return {
-    pricePerHour,
-    pricePerMonth: pricePerMonth,
-  };
 };

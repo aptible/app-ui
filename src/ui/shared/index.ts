@@ -70,3 +70,5 @@ export * from "./source";
 export * from "./git";
 export * from "./docker";
 export * from "./role";
+export * from "./service-pricing-calc";
+export * from "./cost-estimate-tooltip";

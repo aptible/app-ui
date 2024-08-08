@@ -3,7 +3,7 @@ import {
   type AppDependency,
   type DeployAppRow,
   calcMetrics,
-  calcServiceMetrics,
+  estimateMonthlyCost,
   fetchApps,
   fetchEnvironmentById,
   fetchEnvironments,
@@ -12,6 +12,7 @@ import {
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
   selectAppsForTableSearchBySourceId,
+  selectEndpointsByAppId,
   selectImageById,
   selectLatestOpByAppId,
   selectServicesByAppId,
@@ -32,6 +33,7 @@ import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonCreate, ButtonLink } from "../button";
 import { Code } from "../code";
+import { CostEstimateTooltip } from "../cost-estimate-tooltip";
 import { DockerImage } from "../docker";
 import { GitCommitMessage, GitRef } from "../git";
 import { Group } from "../group";
@@ -99,20 +101,14 @@ const AppCostCell = ({ app }: AppCellProps) => {
   const services = useSelector((s) =>
     selectServicesByAppId(s, { appId: app.id }),
   );
-  const cost = services.reduce((acc, service) => {
-    const mm = calcServiceMetrics(service);
-    return acc + (mm.estimatedCostInDollars * 1024) / 1000;
-  }, 0);
+  const endpoints = useSelector((s) =>
+    selectEndpointsByAppId(s, { appId: app.id }),
+  );
+  const cost = estimateMonthlyCost({ services, endpoints });
 
   return (
     <Td>
-      <div className={tokens.type.darker}>
-        {cost.toLocaleString("en", {
-          style: "currency",
-          currency: "USD",
-          minimumFractionDigits: 2,
-        })}
-      </div>
+      <CostEstimateTooltip className={tokens.type.darker} cost={cost} />
     </Td>
   );
 };
@@ -169,6 +165,7 @@ export const AppListByOrg = () => {
   const apps = useSelector((s) =>
     selectAppsForTableSearch(s, { search, sortBy, sortDir }),
   );
+  console.log(apps.find((a) => a.id === "78167"));
   const paginated = usePaginate(apps);
   const onSort = (key: keyof DeployAppRow) => {
     if (key === sortBy) {

@@ -56,6 +56,8 @@ export const selectBackupById = schema.backups.selectById;
 export const selectBackupsByIds = schema.backups.selectByIds;
 export const selectBackupsAsList = schema.backups.selectTableAsList;
 export const selectBackups = schema.backups.selectTable;
+export const findBackupsByEnvId = (backups: DeployBackup[], envId: string) =>
+  backups.filter((backup) => backup.environmentId === envId);
 
 export const selectBackupsByEnvId = createSelector(
   selectBackupsAsList,

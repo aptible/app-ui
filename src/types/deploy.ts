@@ -266,6 +266,8 @@ export interface DeployDisk extends Timestamps {
   id: string;
   size: number;
   keyBytes: number;
+  environmentId: string;
+  databaseId: string;
 }
 
 export interface DeployDatabase extends Provisionable, Timestamps {
@@ -307,7 +309,7 @@ export interface DeployDatabaseImage extends Timestamps {
 
 export interface ContainerProfile {
   name: string;
-  costPerContainerHourInCents: number;
+  costPerContainerGBHourInCents: number;
   cpuShare: number;
   minimumContainerSize: number;
   maximumContainerSize: number;
@@ -568,7 +570,7 @@ export const containerProfileKeys: InstanceClass[] = [
 ];
 export type ContainerProfileData = {
   name: string;
-  costPerContainerHourInCents: number;
+  costPerContainerGBHourInCents: number;
   cpuShare: number;
   minimumContainerSize: number;
   maximumContainerSize: number;
@@ -639,4 +641,29 @@ export interface DeploySource {
   url: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface DeployDiskResponse {
+  attached: boolean;
+  availability_zone: string;
+  baseline_iops: number;
+  provisioned_iops: number;
+  created_at: string;
+  updated_at: string;
+  current_kms_arn: string;
+  device: string;
+  ebs_volume_id: string;
+  ebs_volume_type: string;
+  instance_id: string;
+  filesystem: string;
+  handle: string;
+  host: string;
+  id: string;
+  size: number;
+  key_bytes: number;
+  _type: "disk";
+  _links: {
+    database: LinkResponse;
+    account: LinkResponse;
+  };
 }

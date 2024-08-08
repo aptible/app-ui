@@ -111,7 +111,7 @@ export function emailValidator(email: string) {
     return "Must provide valid email";
 }
 
-export function existValidtor(val: string, name: string) {
+export function existValidator(val: string, name: string) {
   if (val === "") return `${name} must not be empty`;
 }
 

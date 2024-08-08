@@ -644,13 +644,14 @@ const DetailBoxes = () => {
         Detail Boxes
       </h1>
 
-      <StackHeader stack={stack} isLoading={false} />
+      <StackHeader stack={stack} isLoading={false} cost={499} />
       <EnvHeader
         stack={stack}
         environment={env}
         endpoints={[ept]}
         stats={stats}
         isLoading={false}
+        cost={99.99}
       />
       <AppHeader app={app} isLoading={false} />
       <DatabaseHeader database={db} service={service} isLoading={false} />

@@ -29,7 +29,7 @@ import { selectRolesByOrgId } from "@app/roles";
 import { ssoUrl } from "@app/routes";
 import type { Organization } from "@app/types";
 import { selectUsersAsList } from "@app/users";
-import { existValidtor } from "@app/validator";
+import { existValidator } from "@app/validator";
 import { useState } from "react";
 import { useUserIdsForRole, useValidator } from "../hooks";
 import {
@@ -344,7 +344,7 @@ function useOrgOwnerIds(orgId: string) {
 }
 
 const allowlistValidators = {
-  add: (data: { userId: string }) => existValidtor(data.userId, "user"),
+  add: (data: { userId: string }) => existValidator(data.userId, "user"),
 };
 
 function useAllowlistMembers(orgId: string) {

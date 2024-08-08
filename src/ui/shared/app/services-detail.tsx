@@ -5,6 +5,7 @@ import {
   fetchServicesByAppId,
   selectAppById,
   selectAutoscalingEnabledById,
+  selectEndpointsByServiceId,
   selectEnvironmentById,
   selectServiceRowsByAppId,
   selectStackById,
@@ -23,6 +24,7 @@ import { Link } from "react-router-dom";
 import { ButtonLink } from "../button";
 import { Code } from "../code";
 import { CopyTextButton } from "../copy";
+import { CostEstimateTooltip } from "../cost-estimate-tooltip";
 import { Group } from "../group";
 import { IconChevronDown, IconInfo } from "../icons";
 import { Pill } from "../pill";
@@ -92,7 +94,10 @@ const CmdCell = ({
 };
 
 const DetailsCell = ({ service }: { service: DeployService }) => {
-  const metrics = calcServiceMetrics(service);
+  const endpoints = useSelector((s) =>
+    selectEndpointsByServiceId(s, { serviceId: service.id }),
+  );
+  const metrics = calcServiceMetrics(service, endpoints);
   const { totalCPU } = calcMetrics([service]);
   return (
     <Td className={tokens.type.darker}>
@@ -131,7 +136,7 @@ const CostCell = ({
             </Tooltip>
           </Group>
         ) : (
-          `$${service.cost.toFixed(2)}`
+          <CostEstimateTooltip cost={service.cost} />
         )}
       </div>
     </Td>

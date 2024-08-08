@@ -1,3 +1,4 @@
+import { selectLoaderComposite } from "@app/loaders";
 import { type WebState, schema } from "@app/schema";
 import { useEffect, useRef } from "react";
 import type { LoaderState, ThunkAction } from "starfx";
@@ -40,9 +41,18 @@ interface UseCacheResult<D = any, A extends ThunkAction = ThunkAction>
   data: D | null;
 }
 
+function getActionId(action: ThunkAction | ActionFn) {
+  return typeof action === "function" ? `${action}` : action.payload.key;
+}
+
 export function useLoader(action: ThunkAction | ActionFn) {
-  const id = typeof action === "function" ? `${action}` : action.payload.key;
+  const id = getActionId(action);
   return useSelector((s: WebState) => schema.loaders.selectById(s, { id }));
+}
+
+export function useCompositeLoader(actions: (ThunkAction | ActionFn)[]) {
+  const ids = actions.map((a) => getActionId(a));
+  return useSelector((s) => selectLoaderComposite(s, { ids }));
 }
 
 export function useApi<P = any, A extends ThunkAction = ThunkAction<P>>(

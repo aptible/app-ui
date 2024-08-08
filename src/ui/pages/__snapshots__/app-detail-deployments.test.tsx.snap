@@ -9,10 +9,10 @@ exports[`App Detail Deployments page > should render deployments with proper fal
       class="flex gap-4 flex-col "
     >
       <div>
-        <div
+        <span
           class=""
         >
-          <div
+          <span
             class="cursor-pointer"
           >
             <button
@@ -22,8 +22,8 @@ exports[`App Detail Deployments page > should render deployments with proper fal
             >
               Deployment Monitor
             </button>
-          </div>
-        </div>
+          </span>
+        </span>
       </div>
       <div
         class="overflow-x-scroll w-full shadow ring-1 ring-black ring-opacity-5 rounded-lg"
@@ -125,10 +125,10 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                     <em>
                       Not Provided
                     </em>
-                    <div
+                    <span
                       class=""
                     >
-                      <div
+                      <span
                         class="cursor-pointer"
                       >
                         <svg
@@ -164,8 +164,8 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                             y2="8"
                           />
                         </svg>
-                      </div>
-                    </div>
+                      </span>
+                    </span>
                   </div>
                 </td>
                 <td
@@ -244,10 +244,10 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                     <em>
                       Not Provided
                     </em>
-                    <div
+                    <span
                       class=""
                     >
-                      <div
+                      <span
                         class="cursor-pointer"
                       >
                         <svg
@@ -283,8 +283,8 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                             y2="8"
                           />
                         </svg>
-                      </div>
-                    </div>
+                      </span>
+                    </span>
                   </div>
                 </td>
                 <td
@@ -355,10 +355,10 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   <div
                     class="inline-block"
                   >
-                    <div
+                    <span
                       class=""
                     >
-                      <div
+                      <span
                         class="cursor-pointer"
                       >
                         <p
@@ -366,8 +366,8 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                         >
                           fix(backup): pass page to fetch request (#754)
                         </p>
-                      </div>
-                    </div>
+                      </span>
+                    </span>
                   </div>
                 </td>
                 <td
@@ -443,10 +443,10 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                     <em>
                       Not Provided
                     </em>
-                    <div
+                    <span
                       class=""
                     >
-                      <div
+                      <span
                         class="cursor-pointer"
                       >
                         <svg
@@ -482,8 +482,8 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                             y2="8"
                           />
                         </svg>
-                      </div>
-                    </div>
+                      </span>
+                    </span>
                   </div>
                 </td>
                 <td
@@ -554,10 +554,10 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   <div
                     class="inline-block"
                   >
-                    <div
+                    <span
                       class=""
                     >
-                      <div
+                      <span
                         class="cursor-pointer"
                       >
                         <p
@@ -565,8 +565,8 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                         >
                           fix(backup): pass page to fetch request (#754)
                         </p>
-                      </div>
-                    </div>
+                      </span>
+                    </span>
                   </div>
                 </td>
                 <td

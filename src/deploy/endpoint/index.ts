@@ -8,6 +8,7 @@ import type {
   AcmeConfiguration,
   AcmeStatus,
   DeployEndpoint,
+  DeployService,
   EndpointType,
   LinkResponse,
   ProvisionableStatus,
@@ -26,7 +27,6 @@ import {
   selectAppToServicesMap,
   selectEnvToServicesMap,
   selectServices,
-  selectServicesByAppId,
 } from "../service";
 
 export interface DeployEndpointResponse {
@@ -143,15 +143,41 @@ export const findEndpointById = schema.endpoints.findById;
 export const selectEndpoints = schema.endpoints.selectTable;
 export const selectEndpointsAsList = schema.endpoints.selectTableAsList;
 export const hasDeployEndpoint = (a: DeployEndpoint) => a.id !== "";
+export const findEndpointsByServiceId = (
+  endpoints: DeployEndpoint[],
+  serviceId: string,
+) => endpoints.filter((e) => e.serviceId === serviceId);
+
+export const findEndpointsByEnvId = (
+  endpoints: DeployEndpoint[],
+  services: Record<"string", DeployService>,
+  envId: string,
+) =>
+  endpoints.filter(
+    (e) =>
+      findServiceById(services, { id: e.serviceId }).environmentId === envId,
+  );
+
+export const findEndpointsByAppId = (
+  endpoints: DeployEndpoint[],
+  services: Record<string, DeployService>,
+  appId: string,
+) =>
+  endpoints.filter(
+    (end) => findServiceById(services, { id: end.serviceId }).appId === appId,
+  );
 
 export const selectEndpointsByAppId = createSelector(
   selectEndpointsAsList,
-  selectServicesByAppId,
-  (endpoints, services) => {
-    return endpoints.filter((end) =>
-      services.map((service) => service.id).includes(end.serviceId),
-    );
-  },
+  selectServices,
+  (_: WebState, p: { appId: string }) => p.appId,
+  findEndpointsByAppId,
+);
+
+export const selectEndpointsByServiceId = createSelector(
+  selectEndpointsAsList,
+  (_: WebState, p: { serviceId: string }) => p.serviceId,
+  findEndpointsByServiceId,
 );
 
 export const selectFirstEndpointByAppId = createSelector(
@@ -277,7 +303,7 @@ export const selectEndpointsForTableSearch = createSelector(
   },
 );
 
-export const selectEndpointsByServiceId = createSelector(
+export const selectEndpointsForTableByServiceId = createSelector(
   selectEndpointsForTable,
   (_: WebState, p: { search: string }) => p.search.toLocaleLowerCase(),
   (_: WebState, p: { serviceId: string }) => p.serviceId,

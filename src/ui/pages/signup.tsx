@@ -16,7 +16,7 @@ import { selectIsUserAuthenticated } from "@app/token";
 import type { CreateUserForm } from "@app/users";
 import {
   emailValidator,
-  existValidtor,
+  existValidator,
   nameValidator,
   passValidator,
   sanitizeInput,
@@ -40,13 +40,13 @@ import {
 
 const validators = {
   name: (props: CreateUserForm) =>
-    existValidtor(props.name, "Name") || nameValidator(props.name),
+    existValidator(props.name, "Name") || nameValidator(props.name),
   company: (props: CreateUserForm) => {
     if (props.challengeToken !== "") {
       return;
     }
     return (
-      existValidtor(props.company, "Company") || nameValidator(props.company)
+      existValidator(props.company, "Company") || nameValidator(props.company)
     );
   },
   email: (props: CreateUserForm) => emailValidator(props.email),

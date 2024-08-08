@@ -2,8 +2,10 @@ import {
   calcMetrics,
   calcServiceMetrics,
   fetchApp,
+  fetchEndpointsByServiceId,
   fetchServicesByAppId,
   selectAppById,
+  selectEndpointsByServiceId,
   selectEnvironmentById,
   selectServiceById,
 } from "@app/deploy";
@@ -19,10 +21,16 @@ import {
   environmentDetailUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
-import type { DeployApp, DeployEnvironment, DeployService } from "@app/types";
+import type {
+  DeployApp,
+  DeployEndpoint,
+  DeployEnvironment,
+  DeployService,
+} from "@app/types";
 import { useEffect, useState } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
 import {
+  CostEstimateTooltip,
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
@@ -39,15 +47,20 @@ import { AppSidebarLayout } from "./app-sidebar-layout";
 export function ServiceHeader({
   app,
   service,
+  endpoints,
   env,
   isLoading,
 }: {
   app: DeployApp;
   service: DeployService;
+  endpoints: DeployEndpoint[];
   env: DeployEnvironment;
   isLoading: boolean;
 }) {
-  const metrics = calcServiceMetrics(service);
+  // Query additional data that subpages need
+  useQuery(fetchEndpointsByServiceId({ id: service.id }));
+
+  const metrics = calcServiceMetrics(service, endpoints);
   const { totalCPU } = calcMetrics([service]);
   const [isOpen, setOpen] = useState(true);
 
@@ -83,7 +96,7 @@ export function ServiceHeader({
           <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
         </DetailInfoItem>
         <DetailInfoItem title="Est. Monthly Cost">
-          ${((metrics.estimatedCostInDollars * 1024) / 1000).toFixed(2)}
+          <CostEstimateTooltip cost={metrics.estimatedCostInDollars} />
         </DetailInfoItem>
         <DetailInfoItem title="Container Profile">
           {metrics.containerProfile.name}
@@ -130,6 +143,9 @@ function ServicePageHeader() {
   const loaderServices = useQuery(fetchServicesByAppId({ id: id }));
   const app = useSelector((s) => selectAppById(s, { id }));
   const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
+  const endpoints = useSelector((s) =>
+    selectEndpointsByServiceId(s, { serviceId }),
+  );
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: app.environmentId }),
   );
@@ -157,6 +173,7 @@ function ServicePageHeader() {
         <ServiceHeader
           app={app}
           service={service}
+          endpoints={endpoints}
           env={environment}
           isLoading={loader.isLoading}
         />

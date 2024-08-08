@@ -21,7 +21,7 @@ import {
   useSelector,
 } from "@app/react";
 import { endpointDetailUrl } from "@app/routes";
-import { existValidtor, ipValidator, portValidator } from "@app/validator";
+import { existValidator, ipValidator, portValidator } from "@app/validator";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
@@ -46,7 +46,7 @@ const validators = {
   port: (data: CreateEndpointProps) => portValidator(data.containerPort),
   ipAllowlist: (data: CreateEndpointProps) => ipValidator(data.ipAllowlist),
   service: (data: CreateEndpointProps) =>
-    existValidtor(data.serviceId, "Must select a service"),
+    existValidator(data.serviceId, "Must select a service"),
   domain: (data: CreateEndpointProps) => {
     if (data.type !== "managed") return;
     if (data.domain === "") {

@@ -5,43 +5,11 @@ import {
   selectEnvironmentById,
 } from "@app/deploy";
 import { useSelector } from "@app/react";
-import type { DeployDisk, DeployService, InstanceClass } from "@app/types";
+import type { InstanceClass } from "@app/types";
 import type { DbScaleAction, DbScaleOptions, ValidResult } from "../../hooks";
-import { FormGroup, Label } from "../form-group";
+import { FormGroup } from "../form-group";
 import { Input } from "../input";
 import { Select, type SelectOption } from "../select";
-
-export function PricingCalc({
-  service,
-  disk,
-  pricePerHour,
-  price,
-}: {
-  service: DeployService;
-  disk: DeployDisk;
-  pricePerHour: string;
-  price: number;
-}) {
-  return (
-    <div className="mt-2 mb-4 flex justify-between">
-      <div>
-        <Label>Pricing</Label>
-        <p className="text-black-500">
-          1 x {service.containerMemoryLimitMb / 1024} GB container x $
-          {pricePerHour} per GB/hour
-        </p>
-        <p className="text-black-500">
-          {disk.size} GB disk x $0.20 per GB/month
-        </p>
-      </div>
-
-      <div>
-        <p className="text-black-500">Estimated Monthly Cost</p>
-        <p className="text-right text-lg text-green-400">${price.toFixed(2)}</p>
-      </div>
-    </div>
-  );
-}
 
 export function CpuShareView({
   cpuShare,

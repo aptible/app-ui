@@ -7,12 +7,12 @@ import {
   fetchService,
   fetchServiceSizingPoliciesByServiceId,
   getContainerProfileFromType,
-  hourlyAndMonthlyCostsForContainers,
   modifyServiceSizingPolicy,
   pollServiceOperations,
   scaleService,
   selectAppById,
   selectContainerProfilesForStack,
+  selectEndpointsByServiceId,
   selectEnvironmentById,
   selectPreviousServiceScale,
   selectServiceById,
@@ -42,6 +42,7 @@ import {
   IconRefresh,
   Radio,
   RadioGroup,
+  ServicePricingCalc,
 } from "../shared";
 import {
   BannerMessages,
@@ -49,7 +50,6 @@ import {
   Button,
   FormGroup,
   Input,
-  Label,
   Select,
   type SelectOption,
 } from "../shared";
@@ -540,6 +540,9 @@ export const AppDetailServiceScalePage = () => {
   const containerProfilesForStack = useSelector((s) =>
     selectContainerProfilesForStack(s, { id: environment.stackId }),
   );
+  const endpoints = useSelector((s) =>
+    selectEndpointsByServiceId(s, { serviceId }),
+  );
 
   const action = scaleService({
     id: serviceId,
@@ -582,18 +585,6 @@ export const AppDetailServiceScalePage = () => {
   );
   const requestedContainerProfile =
     getContainerProfileFromType(containerProfileType);
-  const { pricePerHour: currentPricePerHour, pricePerMonth: currentPrice } =
-    hourlyAndMonthlyCostsForContainers(
-      service.containerCount,
-      currentContainerProfile,
-      service.containerMemoryLimitMb,
-    );
-  const { pricePerHour: estimatedPricePerHour, pricePerMonth: estimatedPrice } =
-    hourlyAndMonthlyCostsForContainers(
-      containerCount,
-      requestedContainerProfile,
-      containerSize,
-    );
 
   const profileOptions = Object.keys(containerProfilesForStack).map(
     (profileType) => {
@@ -713,23 +704,7 @@ export const AppDetailServiceScalePage = () => {
             </FormGroup>
           </div>
 
-          <div className="mt-2 mb-4 flex justify-between">
-            <div>
-              <Label>Pricing</Label>
-              <p className="text-black-500">
-                {service.containerCount} container
-                {service.containerCount > 1 ? "s" : ""} x{" "}
-                {service.containerMemoryLimitMb / 1024} GB x $
-                {currentPricePerHour} per GB/hour
-              </p>
-            </div>
-            <div>
-              <p className="text-black-500">Current Estimated Monthly Cost</p>
-              <p className="text-right text-lg text-green-400">
-                ${currentPrice}
-              </p>
-            </div>
-          </div>
+          <ServicePricingCalc service={service} endpoints={endpoints} />
 
           <hr />
 
@@ -765,23 +740,14 @@ export const AppDetailServiceScalePage = () => {
             </div>
           ) : null}
           {changesExist ? (
-            <div className="my-3 flex justify-between">
-              <div>
-                <div className="text-md text-gray-900">Pricing</div>
-                <p className="text-black-500">
-                  {containerCount} container
-                  {containerCount > 1 || containerCount === 0 ? "s" : ""} x{" "}
-                  {containerSize / 1024} GB x ${estimatedPricePerHour} per
-                  GB/hour
-                </p>
-              </div>
-              <div>
-                <p className="text-black-500">New Estimated Monthly Cost</p>
-                <p className="text-right text-lg text-green-400">
-                  ${estimatedPrice}
-                </p>
-              </div>
-            </div>
+            <ServicePricingCalc
+              service={{
+                containerCount,
+                containerMemoryLimitMb: containerSize,
+                instanceClass: containerProfileType,
+              }}
+              endpoints={endpoints}
+            />
           ) : null}
 
           <BannerMessages {...loader} />

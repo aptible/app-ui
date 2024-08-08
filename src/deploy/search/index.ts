@@ -1,15 +1,15 @@
 import { selectDeployments } from "@app/deployment";
+import { createSelector } from "@app/fx";
 import { type WebState, schema } from "@app/schema";
 import { selectSourcesAsList } from "@app/source";
 import type { DeployServiceRow, DeploySource, Deployment } from "@app/types";
-import { createSelector } from "starfx";
 import {
   type DeployAppRow,
   findAppById,
-  hourlyAndMonthlyCostsForContainers,
   selectApps,
   selectAppsByOrgAsList,
 } from "../app";
+import { estimateMonthlyCost } from "../cost";
 import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
@@ -19,6 +19,11 @@ import {
   selectDatabaseImages,
 } from "../database-images";
 import { findDiskById, selectDisks } from "../disk";
+import {
+  findEndpointsByAppId,
+  findEndpointsByServiceId,
+  selectEndpointsAsList,
+} from "../endpoint";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -32,11 +37,9 @@ import {
 } from "../operation";
 import {
   calcMetrics,
-  calcServiceMetrics,
   findServiceById,
-  getContainerProfileFromType,
+  findServicesByAppId,
   selectServices,
-  selectServicesAsList,
   selectServicesByOrgId,
   serviceCommandText,
 } from "../service";
@@ -45,7 +48,8 @@ export const selectServicesForTable = createSelector(
   selectEnvironmentsByOrg,
   selectApps,
   selectServicesByOrgId,
-  (envs, apps, services) =>
+  selectEndpointsAsList,
+  (envs, apps, services, endpoints) =>
     services
       // making sure we have a valid environment associated with it
       .filter((service) => {
@@ -64,12 +68,14 @@ export const selectServicesForTable = createSelector(
           resourceHandle = "Unknown";
         }
 
-        const metrics = calcServiceMetrics(service);
         return {
           ...service,
           envHandle: env.handle,
           resourceHandle,
-          cost: (metrics.estimatedCostInDollars * 1024) / 1000,
+          cost: estimateMonthlyCost({
+            services: [service],
+            endpoints: findEndpointsByServiceId(endpoints, service.id),
+          }),
         };
       }),
 );
@@ -152,9 +158,10 @@ export const selectAppsForTable = createSelector(
   selectAppsByOrgAsList,
   selectEnvironments,
   selectOperationsAsList,
-  selectServicesAsList,
+  selectServices,
+  selectEndpointsAsList,
   selectDeployments,
-  (apps, envs, ops, services, deployments) =>
+  (apps, envs, ops, services, endpoints, deployments) =>
     apps
       .map((app): DeployAppRow => {
         const env = findEnvById(envs, { id: app.environmentId });
@@ -163,12 +170,15 @@ export const selectAppsForTable = createSelector(
         const currentDeployment = schema.deployments.findById(deployments, {
           id: app.currentDeploymentId,
         });
-        const appServices = services.filter((s) => s.appId === app.id);
-        const cost = appServices.reduce((acc, service) => {
-          const mm = calcServiceMetrics(service);
-          return acc + (mm.estimatedCostInDollars * 1024) / 1000;
-        }, 0);
-        const metrics = calcMetrics(services);
+        const appServices = findServicesByAppId(
+          Object.values(services),
+          app.id,
+        );
+        const cost = estimateMonthlyCost({
+          services: appServices,
+          endpoints: findEndpointsByAppId(endpoints, services, app.id),
+        });
+        const metrics = calcMetrics(appServices);
 
         return {
           ...app,
@@ -567,8 +577,9 @@ export const selectDatabasesForTable = createSelector(
   selectOperationsAsList,
   selectDisks,
   selectServices,
+  selectEndpointsAsList,
   selectDatabaseImages,
-  (dbs, envs, ops, disks, services, images) =>
+  (dbs, envs, ops, disks, services, endpoints, images) =>
     dbs
       .map((dbb): DeployDatabaseRow => {
         const env = findEnvById(envs, { id: dbb.environmentId });
@@ -579,15 +590,11 @@ export const selectDatabasesForTable = createSelector(
         }
         const disk = findDiskById(disks, { id: dbb.diskId });
         const service = findServiceById(services, { id: dbb.serviceId });
-        const currentContainerProfile = getContainerProfileFromType(
-          service.instanceClass,
-        );
-        const { pricePerMonth: cost } = hourlyAndMonthlyCostsForContainers(
-          service.containerCount,
-          currentContainerProfile,
-          service.containerMemoryLimitMb,
-          disk.size,
-        );
+        const cost = estimateMonthlyCost({
+          services: [service],
+          disks: [disk],
+          endpoints: findEndpointsByServiceId(endpoints, service.id),
+        });
         const metrics = calcMetrics([service]);
         const img = findDatabaseImageById(images, { id: dbb.databaseImageId });
         return {

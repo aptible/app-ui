@@ -1,5 +1,9 @@
 import { prettyDateTime } from "@app/date";
-import { fetchDatabaseImages } from "@app/deploy";
+import {
+  fetchBackupsByDatabaseId,
+  fetchDatabaseImages,
+  fetchEndpointsByServiceId,
+} from "@app/deploy";
 import {
   calcMetrics,
   cancelDatabaseOpsPoll,
@@ -54,6 +58,10 @@ export function DatabaseHeader({
   service: DeployService;
   isLoading: boolean;
 }) {
+  // Query additional data that subpages need
+  useQuery(fetchEndpointsByServiceId({ id: database.serviceId }));
+  useQuery(fetchBackupsByDatabaseId({ id: database.id, page: 1 }));
+
   const metrics = calcMetrics([service]);
   useQuery(fetchDiskById({ id: database.diskId }));
   const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));

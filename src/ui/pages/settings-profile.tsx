@@ -1,6 +1,6 @@
 import { useDispatch, useLoader, useSelector } from "@app/react";
 import { selectCurrentUser, updateUserName } from "@app/users";
-import { existValidtor, nameValidator, sanitizeInput } from "@app/validator";
+import { existValidator, nameValidator, sanitizeInput } from "@app/validator";
 import { useEffect, useState } from "react";
 import { useValidator } from "../hooks";
 import {
@@ -26,7 +26,7 @@ export function SettingsProfilePage() {
   const action = updateUserName(data);
   const validators = {
     name: (props: UpdateNameForm) =>
-      existValidtor(props.name, "Name") || nameValidator(props.name),
+      existValidator(props.name, "Name") || nameValidator(props.name),
   };
   const [errors, validate] = useValidator<UpdateNameForm, typeof validators>(
     validators,
