@@ -42,6 +42,7 @@ import {
   type TabItem,
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
+import { DatabaseEolNotice } from "../shared/db/database-eol-notice";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function DatabaseHeader({
@@ -148,6 +149,7 @@ function DatabasePageHeader() {
   return (
     <>
       <DatabaseOperationNotice id={id} />
+      <DatabaseEolNotice database={database} />
       <DetailPageHeaderView
         {...loader}
         breadcrumbs={crumbs}
