@@ -1,14 +1,9 @@
+import { prettyDate } from "@app/date";
 import { selectDatabaseImageById } from "@app/deploy";
 import { useSelector } from "@app/react";
 import type { DeployDatabase } from "@app/types";
-import { Link } from "react-router-dom";
 import { Banner } from "../banner";
-
-const BannerWrapper = ({
-  children,
-}: {
-  children?: React.ReactNode;
-}) => <div className="mb-4">{children}</div>;
+import { ExternalLink } from "../external-link";
 
 export const DatabaseEolNotice = ({
   database,
@@ -27,45 +22,23 @@ export const DatabaseEolNotice = ({
   const depDate = new Date(image.eolAt);
   const curDate = new Date();
   depDate.setDate(depDate.getDate() + daysForDep);
+  const eolText = `Active maintenance for the ${image.description} database version will end on ${prettyDate(depDate.toISOString())}.`;
+  const depText = `The ${image.description} database version is deprecated and no longer maintained.`;
 
-  if (depDate > curDate) {
-    return (
-      <BannerWrapper>
-        <Banner variant="info">
-          <p>
-            <b>
-              Active maintenance for the {image.description} database version
-              will end on {depDate.toUTCString()}.
-            </b>{" "}
-            We recommend upgrading to a{" "}
-            <Link to="https://www.aptible.com/docs/core-concepts/managed-databases/supported-databases/overview">
-              newer version for continued support.
-            </Link>
-          </p>
-        </Banner>
-      </BannerWrapper>
-    );
-  }
-
-  if (depDate < curDate) {
-    return (
-      <BannerWrapper>
-        <Banner variant="info">
-          <p>
-            <b>
-              The {image.description} database version is deprecated and no
-              longer maintained.
-            </b>{" "}
-            We recommend upgrading to a{" "}
-            <Link to="https://www.aptible.com/docs/core-concepts/managed-databases/supported-databases/overview">
-              newer version for continued support.
-            </Link>
-          </p>
-        </Banner>
-      </BannerWrapper>
-    );
-  }
-
-  // return null
-  return null;
+  return (
+    <Banner variant="info">
+      <p>
+        <b>{depDate > curDate ? eolText : depText}</b> We recommend upgrading to
+        a{" "}
+        <ExternalLink href="https://www.aptible.com/docs/core-concepts/managed-databases/supported-databases/overview">
+          newer version for continued support.
+        </ExternalLink>{" "}
+        Refer to the{" "}
+        <ExternalLink href="www.aptible.com/changelog/database-end-of-life-policy-updates">
+          changelog
+        </ExternalLink>{" "}
+        for more details.
+      </p>
+    </Banner>
+  );
 };
