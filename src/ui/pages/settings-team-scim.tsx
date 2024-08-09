@@ -239,10 +239,15 @@ function ScimEdit({
                     <p>This token is displayed once only. If you lose access to this token
                       you will need to generate a new token.
                     </p>
-                    <div style={{ wordWrap: 'break-word', wordBreak: 'break-all', overflowWrap: 'break-word' }}
-                      className="text-gray-500 text-sm flex flex-row gap-1">
-                      <CopyText text={scimToken} />
-                    </div>
+                    <CopyText text={scimToken}>
+                      <textarea
+                        id="scim-token"
+                        name="scimToken"
+                        className={tokens.type.textarea}
+                        style={{ width: '100%' }}
+                        value={scimToken}
+                      />
+                    </CopyText>
                     <Button onClick={handleCloseModal}>Hide Token</Button>
                   </div>
                 </div>

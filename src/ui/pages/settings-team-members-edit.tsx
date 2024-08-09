@@ -125,7 +125,7 @@ export function TeamMembersEditPage() {
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((role) => {
                 const userHasRole = selected.includes(role.id);
-                const scimText = (role.scimCreated) ? " (role assignment managed via SCIM)" : "";
+                const scimText = (role.scimCreated) ? " (role managed via SCIM Provisioning)" : "";
                 return (
                   <CheckBox
                     name="roles"
@@ -133,7 +133,7 @@ export function TeamMembersEditPage() {
                     key={role.id}
                     checked={userHasRole}
                     onChange={(e) => onChange(role.id, e.currentTarget.checked)}
-                    disabled={(userHasRole && hasOnlyOneRole) || role.scimCreated}
+                    disabled={(userHasRole && hasOnlyOneRole) || (role.scimCreated && userIsScimManaged)}
                   />
                 );
               })}
