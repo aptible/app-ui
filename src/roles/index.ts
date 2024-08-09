@@ -18,6 +18,7 @@ export interface RoleResponse {
   type: RoleType;
   created_at: string;
   updated_at: string;
+  scim_created: boolean;
   _links: {
     organization: LinkResponse;
   };
@@ -34,6 +35,7 @@ export const defaultRoleResponse = (
     type: "platform_user",
     created_at: now,
     updated_at: now,
+    scim_created: false,
     _links: {
       organization: defaultHalHref(),
     },
@@ -49,6 +51,7 @@ export const deserializeRole = (role: RoleResponse): Role => {
     type: role.type,
     createdAt: role.created_at,
     updatedAt: role.updated_at,
+    scimCreated: role.scim_created,
     organizationId: extractIdFromLink(role._links.organization),
   };
 };

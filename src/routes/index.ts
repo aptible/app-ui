@@ -407,3 +407,5 @@ export const sourceDetailAppsUrl = (id: string) => `/sources/${id}/apps`;
 export const SOURCE_DETAIL_DEPLOYMENTS_PATH = "/sources/:id/deployments";
 export const sourceDetailDeploymentsUrl = (id: string) =>
   `/sources/${id}/deployments`;
+export const TEAM_SCIM_PATH = "/settings/team/scim";
+export const teamScimUrl = () => TEAM_SCIM_PATH;

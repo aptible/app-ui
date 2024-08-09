@@ -49,6 +49,7 @@ import {
   Table,
   Td,
   Th,
+  Tooltip,
   Tr,
 } from "../shared";
 
@@ -57,14 +58,20 @@ function MemberRow({
   onDelete,
   isLoading,
   canManage,
+  roleScimCreated,
 }: {
   membership: Membership;
   onDelete?: (id: string) => void;
   isLoading: boolean;
   canManage: boolean;
+  roleScimCreated: boolean;
 }) {
   const dispatch = useDispatch();
   const user = useSelector((s) => selectUserById(s, { id: membership.userId }));
+  const userIsScimManaged = !!user.externalId && user.externalId.trim() !== '';
+  const disableRemoval = (userIsScimManaged && roleScimCreated) ? true : false;
+  const removeToolTip =  (disableRemoval) ? "cannot remove: user and role are SCIM-managed" : "" ;
+
   const onChange = (ev: ChangeEvent<HTMLInputElement>) => {
     ev.preventDefault();
     dispatch(
@@ -91,16 +98,23 @@ function MemberRow({
       </Td>
       <Td variant="right">
         {onDelete ? (
-          <Button
-            size="sm"
-            className="w-fit justify-self-end inline-flex"
-            requireConfirm
-            variant="delete"
-            onClick={() => onDelete(user.id)}
-            isLoading={isLoading}
+          <Tooltip
+            fluid
+            text={removeToolTip}
           >
-            Remove
-          </Button>
+
+            <Button
+              size="sm"
+              className="w-fit justify-self-end inline-flex"
+              requireConfirm
+              variant="delete"
+              onClick={() => onDelete(user.id)}
+              isLoading={isLoading}
+              disabled={disableRemoval}
+            >
+              Remove
+            </Button>
+          </Tooltip>
         ) : null}
       </Td>
     </Tr>
@@ -277,6 +291,7 @@ export function RoleDetailMembersPage() {
                 isLoading={loader.isLoading}
                 onDelete={canManage ? onDelete : undefined}
                 canManage={canManage}
+                roleScimCreated={role.scimCreated}
               />
             ))}
           </TBody>

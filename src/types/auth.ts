@@ -11,6 +11,7 @@ export interface User {
   verified: boolean;
   currentOtpId: string;
   selectedOrganizationId: string;
+  externalId: string;
 }
 
 export interface Token {
@@ -32,6 +33,7 @@ export interface Role extends Timestamps {
   name: string;
   type: RoleType;
   organizationId: string;
+  scimCreated: boolean;
 }
 
 export interface Organization {

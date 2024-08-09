@@ -8,6 +8,7 @@ export * from "./loader";
 export * from "./webauthn";
 export * from "./organization";
 export * from "./saml";
+export * from "./scim";
 export * from "./pass";
 export * from "./otp";
 export * from "./membership";

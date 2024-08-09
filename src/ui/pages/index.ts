@@ -118,3 +118,4 @@ export * from "./deployment-detail-config";
 export * from "./sources";
 export * from "./source-detail";
 export * from "./settings-team-roles-create";
+export * from "./settings-team-scim";
