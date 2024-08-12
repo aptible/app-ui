@@ -1,4 +1,10 @@
-import { type PaginateProps, api } from "@app/api";
+import {
+  type PaginateProps,
+  api,
+  cacheShortTimer,
+  combinePages,
+  thunks,
+} from "@app/api";
 import { poll } from "@app/fx";
 import { createAction, createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
@@ -93,9 +99,16 @@ export const backupEntities = {
   }),
 };
 
-export const fetchDatabaseBackups = api.get<{ id: string }>(
-  "/databases/:id/backups",
+// As of 2024-08-12 the largest number of backups for any one org is ~27,000
+export const fetchBackupsPage = api.get<PaginateProps>(
+  "/backups?per_page=5000&page=:page",
 );
+export const fetchBackups = thunks.create(
+  "fetch-backups",
+  { supervisor: cacheShortTimer() },
+  combinePages(fetchBackupsPage, { max: 10 }),
+);
+
 export const cancelPollDatabaseBackups = createAction("cancel-poll-db-backups");
 export const pollDatabaseBackups = api.get<{ id: string }>(
   ["/databases/:id/backups", "poll"],
