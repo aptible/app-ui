@@ -107,7 +107,7 @@ export const fetchBackupsPage = api.get<PaginateProps>(
 export const fetchBackups = thunks.create(
   "fetch-backups",
   { supervisor: cacheLongTimer() },
-  combinePages(fetchBackupsPage, { max: 10 }),
+  combinePages(fetchBackupsPage),
 );
 
 export const cancelPollDatabaseBackups = createAction("cancel-poll-db-backups");
