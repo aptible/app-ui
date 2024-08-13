@@ -39,7 +39,6 @@ import {
   FilterBar,
   FormGroup,
   Group,
-  // IconPlusCircle,
   Input,
   PaginateBar,
   Select,
@@ -52,6 +51,42 @@ import {
   Tooltip,
   Tr,
 } from "../shared";
+
+function RemoveButton({
+  removeToolTip,
+  onDelete,
+  userId,
+  isLoading,
+  disableRemoval,
+}: {
+  removeToolTip: string | null;
+  onDelete: (id: string) => void;
+  userId: string;
+  isLoading: boolean;
+  disableRemoval: boolean;
+}) {
+  const button = (
+    <Button
+      size="sm"
+      className="w-fit justify-self-end inline-flex"
+      requireConfirm
+      variant="delete"
+      onClick={() => onDelete(userId)}
+      isLoading={isLoading}
+      disabled={disableRemoval}
+    >
+      Remove
+    </Button>
+  );
+
+  return removeToolTip ? (
+    <Tooltip fluid text={removeToolTip}>
+      {button}
+    </Tooltip>
+  ) : (
+    button
+  );
+}
 
 function MemberRow({
   membership,
@@ -69,8 +104,8 @@ function MemberRow({
   const dispatch = useDispatch();
   const user = useSelector((s) => selectUserById(s, { id: membership.userId }));
   const userIsScimManaged = !!user.externalId && user.externalId.trim() !== '';
-  const disableRemoval = (userIsScimManaged && roleScimCreated) ? true : false;
-  const removeToolTip =  (disableRemoval) ? "cannot remove: user and role are SCIM-managed" : "" ;
+  const disableRemoval = userIsScimManaged && roleScimCreated;
+  const removeToolTip = disableRemoval ? "Cannot remove: user and role are SCIM-managed" : null;
 
   const onChange = (ev: ChangeEvent<HTMLInputElement>) => {
     ev.preventDefault();
@@ -78,7 +113,7 @@ function MemberRow({
       updateMembership({
         id: membership.id,
         privileged: ev.currentTarget.checked,
-      }),
+      })
     );
   };
 
@@ -98,23 +133,13 @@ function MemberRow({
       </Td>
       <Td variant="right">
         {onDelete ? (
-          <Tooltip
-            fluid
-            text={removeToolTip}
-          >
-
-            <Button
-              size="sm"
-              className="w-fit justify-self-end inline-flex"
-              requireConfirm
-              variant="delete"
-              onClick={() => onDelete(user.id)}
-              isLoading={isLoading}
-              disabled={disableRemoval}
-            >
-              Remove
-            </Button>
-          </Tooltip>
+          <RemoveButton
+            removeToolTip={removeToolTip}
+            onDelete={onDelete}
+            userId={user.id}
+            isLoading={isLoading}
+            disableRemoval={disableRemoval}
+          />
         ) : null}
       </Td>
     </Tr>
@@ -130,7 +155,7 @@ export function RoleDetailMembersPage() {
   const role = useSelector((s) => selectRoleById(s, { id }));
   const { trigger, userIds } = useUserIdsForRole(role.id);
   const memberships = useSelector((s) =>
-    selectMembershipsByRoleId(s, { roleId: id }),
+    selectMembershipsByRoleId(s, { roleId: id })
   );
   const paginated = usePaginate(memberships);
 
@@ -151,7 +176,7 @@ export function RoleDetailMembersPage() {
   const userId = useSelector(selectCurrentUserId);
   const orgId = useSelector(selectOrganizationSelectedId);
   const canManage = useSelector((s) =>
-    selectCanUserManageRole(s, { roleId: id, userId, orgId }),
+    selectCanUserManageRole(s, { roleId: id, userId, orgId })
   );
 
   interface FormData {
@@ -170,7 +195,7 @@ export function RoleDetailMembersPage() {
   const inviteLoader = useLoader(action);
 
   const [errors, validate] = useValidator<FormData, typeof validators>(
-    validators,
+    validators
   );
 
   const onInvite = (e: React.FormEvent<HTMLFormElement>) => {
@@ -191,7 +216,7 @@ export function RoleDetailMembersPage() {
   };
   const onAddExistingUser = () => {
     dispatch(
-      updateUserMemberships({ userId: existingUserId, add: [id], remove: [] }),
+      updateUserMemberships({ userId: existingUserId, add: [id], remove: [] })
     );
   };
   const onDelete = (userId: string) => {

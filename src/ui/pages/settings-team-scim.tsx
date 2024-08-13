@@ -239,29 +239,32 @@ function ScimEdit({
                     <p>This token is displayed once only. If you lose access to this token
                       you will need to generate a new token.
                     </p>
-                    <CopyText text={scimToken}>
-                      <textarea
-                        id="scim-token"
-                        name="scimToken"
-                        className={tokens.type.textarea}
-                        style={{ width: '100%' }}
-                        value={scimToken}
-                      />
-                    </CopyText>
+                    <FormGroup description="" htmlFor="token" label="">
+                      <CopyText text={scimToken}>
+                        <textarea
+                          id="scim-token"
+                          name="scimToken"
+                          className={`${tokens.type.textarea} min-w-[400px] mb-4`}
+                          value={scimToken}
+                        />
+                      </CopyText>
+                    </FormGroup>
                     <Button onClick={handleCloseModal}>Hide Token</Button>
                   </div>
                 </div>
               )}
+
+            </Group>
+
+            <div className="py-8"><hr/></div>
+            <Group variant="horizontal">
 
               <div>
                 <Button type="submit" isLoading={loader.isLoading}>
                   Save Changes
                 </Button>
               </div>
-            </Group>
-          </form>
 
-          <Group>
             <BannerMessages {...rmLoader} />
 
             <div>
@@ -274,7 +277,9 @@ function ScimEdit({
                 Remove SCIM Configuration
               </Button>
             </div>
-          </Group>
+
+            </Group>
+          </form>
         </Group>
       </Box>
     </Group>
