@@ -4,10 +4,14 @@ import {
   type DeployDatabaseRow,
   calcMetrics,
   estimateMonthlyCost,
+  fetchAllBackupsByEnvId,
+  fetchBackups,
   fetchDatabaseImages,
   fetchDatabases,
+  fetchDatabasesByEnvId,
   fetchEnvironmentById,
   fetchEnvironments,
+  fetchServices,
   selectDatabaseImageById,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
@@ -16,7 +20,7 @@ import {
   selectLatestOpByDatabaseId,
   selectServiceById,
 } from "@app/deploy";
-import { useQuery } from "@app/react";
+import { useCompositeLoader, useLoader, useQuery } from "@app/react";
 import { useSelector } from "@app/react";
 import {
   createDbUrl,
@@ -174,9 +178,16 @@ const SortIcon = () => (
 );
 
 export const DatabaseListByOrg = () => {
-  const { isLoading } = useQuery(fetchDatabases());
+  const costQueries = [
+    fetchServices(),
+    fetchDatabases(), // fetches disks
+    fetchBackups(),
+  ];
+  costQueries.forEach((q) => useQuery(q));
   useQuery(fetchEnvironments());
   useQuery(fetchDatabaseImages());
+  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
+  const { isLoading } = useLoader(fetchDatabases());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -266,10 +277,12 @@ export const DatabaseListByOrg = () => {
             Container Size <SortIcon />
           </Th>
           <Th
-            className="cursor-pointer hover:text-black group"
+            className="cursor-pointer hover:text-black group flex space-x-2"
             onClick={() => onSort("cost")}
           >
-            Est. Monthly Cost <SortIcon />
+            <div>Est. Monthly Cost</div>
+            <SortIcon />
+            <LoadingBar isLoading={isCostLoading} />
           </Th>
           <Th variant="right">Actions</Th>
         </THead>
@@ -298,9 +311,15 @@ export const DatabaseListByEnvironment = ({
 }: {
   envId: string;
 }) => {
-  const navigate = useNavigate();
-  useQuery(fetchDatabases());
+  const costQueries = [
+    fetchServices(),
+    fetchDatabasesByEnvId({ envId }), // fetches disks
+    fetchAllBackupsByEnvId({ id: envId, orphaned: false, perPage: 1000 }),
+  ];
+  costQueries.forEach((q) => useQuery(q));
+  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
   useQuery(fetchEnvironmentById({ id: envId }));
+  const navigate = useNavigate();
   const onCreate = () => {
     navigate(environmentCreateDbUrl(envId));
   };
@@ -347,7 +366,10 @@ export const DatabaseListByEnvironment = ({
           <Th>ID</Th>
           <Th>Disk Size</Th>
           <Th>Container Size</Th>
-          <Th>Est. Monthly Cost</Th>
+          <Th className="flex space-x-2">
+            <div>Est. Monthly Cost</div>
+            <LoadingBar isLoading={isCostLoading} />
+          </Th>
           <Th variant="right">Actions</Th>
         </THead>
 

@@ -1,4 +1,5 @@
 import {
+  fetchBackups,
   fetchDatabases,
   fetchEndpoints,
   fetchEnvironments,
@@ -22,6 +23,7 @@ import type { DeployEnvironment } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useLoader } from "starfx/react";
 import { ButtonAnyOwner } from "../button";
 import { CostEstimateTooltip } from "../cost-estimate-tooltip";
 import { Group } from "../group";
@@ -137,14 +139,16 @@ export function EnvironmentList({
   stackId = "",
   showTitle = true,
 }: { stackId?: string; showTitle?: boolean }) {
-  const queries = [
+  const costQueries = [
     fetchEnvironments(),
     fetchServices(),
     fetchDatabases(), // To fetch embedded disks
+    fetchBackups(),
     fetchEndpoints(),
   ];
-  queries.forEach((q) => useQuery(q));
-  const { isLoading } = useCompositeLoader(queries);
+  costQueries.forEach((q) => useQuery(q));
+  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
+  const { isLoading } = useLoader(fetchEnvironments());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const [sortBy, setSortBy] = useState<keyof DeployEnvironmentRow>("createdAt");
@@ -244,10 +248,12 @@ export function EnvironmentList({
             Databases <SortIcon />
           </Th>
           <Th
-            className="cursor-pointer hover:text-black group"
+            className="cursor-pointer hover:text-black group flex space-x-2"
             onClick={() => onSort("cost")}
           >
-            Est. Monthly Cost <SortIcon />
+            <div>Est. Monthly Cost</div>
+            <SortIcon />
+            <LoadingBar isLoading={isCostLoading} />
           </Th>
         </THead>
 
