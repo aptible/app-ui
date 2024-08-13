@@ -7,7 +7,6 @@ import {
 import { fetchBillingDetail } from "@app/billing";
 import {
   fetchApps,
-  fetchBackups,
   fetchDatabaseImages,
   fetchDatabases,
   fetchEndpoints,
@@ -80,7 +79,6 @@ function* onFetchResourceData() {
     fetchApps.run(),
     fetchDatabases.run(),
     fetchDatabaseImages.run(),
-    fetchBackups.run(),
     fetchLogDrains.run(),
     fetchMetricDrains.run(),
     fetchServices.run(),

@@ -1,7 +1,8 @@
 import {
   type PaginateProps,
   api,
-  cacheShortTimer,
+  cacheLongTimer,
+  cacheTimer,
   combinePages,
   thunks,
 } from "@app/api";
@@ -101,11 +102,11 @@ export const backupEntities = {
 
 // As of 2024-08-12 the largest number of backups for any one org is ~27,000
 export const fetchBackupsPage = api.get<PaginateProps>(
-  "/backups?per_page=5000&page=:page",
+  "/backups?per_page=1500&page=:page",
 );
 export const fetchBackups = thunks.create(
   "fetch-backups",
-  { supervisor: cacheShortTimer() },
+  { supervisor: cacheLongTimer() },
   combinePages(fetchBackupsPage, { max: 10 }),
 );
 
@@ -132,16 +133,23 @@ export const fetchBackupsByDatabaseId = api.get<
 
 export const fetchBackup = api.get<{ id: string }>("/backups/:id");
 
+interface FetchByResourceIdProps {
+  id: string;
+  orphaned: boolean;
+  perPage?: number;
+}
 export const fetchBackupsByEnvironmentId = api.get<
-  {
-    id: string;
-    orphaned: boolean;
-  } & PaginateProps,
+  FetchByResourceIdProps & PaginateProps,
   HalEmbedded<{ backups: BackupResponse[] }>
 >("/accounts/:id/backups?page=:page", function* (ctx, next) {
   if (ctx.payload.orphaned) {
     ctx.request = ctx.req({
       url: `${ctx.req().url}&orphaned=true`,
+    });
+  }
+  if (ctx.payload.perPage != null) {
+    ctx.request = ctx.req({
+      url: `${ctx.req().url}&per_page=${ctx.payload.perPage}`,
     });
   }
 
@@ -155,6 +163,13 @@ export const fetchBackupsByEnvironmentId = api.get<
   const paginatedData = { ...ctx.json.value, _embedded: { backups: ids } };
   yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
 });
+
+export const fetchAllBackupsByEnvId = thunks.create<FetchByResourceIdProps>(
+  "fetch-all-backups-by-env-id",
+  { supervisor: cacheTimer() },
+  combinePages(fetchBackupsByEnvironmentId),
+);
+
 export const deleteBackup = api.post<{ id: string }, DeployOperationResponse>(
   ["/backups/:id/operations", "delete"],
   function* (ctx, next) {

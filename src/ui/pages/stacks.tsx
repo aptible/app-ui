@@ -1,11 +1,21 @@
 import {
+  fetchBackups,
+  fetchDatabases,
+  fetchEndpoints,
+  fetchEnvironments,
+  fetchServices,
   fetchStacks,
   getStackTypeTitle,
   selectAppsCountByStack,
   selectDatabasesCountByStack,
   selectEnvironmentsCountByStack,
 } from "@app/deploy";
-import { useQuery, useSelector } from "@app/react";
+import {
+  useCompositeLoader,
+  useLoader,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { createStackUrl } from "@app/routes";
 import {
   type DeployStackRow,
@@ -75,7 +85,17 @@ function StackListRow({ stack }: { stack: DeployStackRow }) {
 }
 
 function StackList() {
-  const { isLoading } = useQuery(fetchStacks());
+  const costQueries = [
+    fetchStacks(),
+    fetchEnvironments(),
+    fetchServices(),
+    fetchDatabases(), // To fetch embedded disks
+    fetchBackups(),
+    fetchEndpoints(),
+  ];
+  costQueries.forEach((q) => useQuery(q));
+  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
+  const { isLoading } = useLoader(fetchStacks());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +151,10 @@ function StackList() {
           <Th variant="center">Environments</Th>
           <Th variant="center">Apps</Th>
           <Th variant="center">Databases</Th>
-          <Th>Est. Monthly Cost</Th>
+          <Th className="flex space-x-2">
+            <div>Est. Monthly Cost</div>
+            <LoadingBar isLoading={isCostLoading} />
+          </Th>
         </THead>
 
         <TBody>

@@ -150,7 +150,7 @@ const ReportTable = ({ stack }: { stack: DeployStack }) => {
           <Th>From Date</Th>
           <Th>To Date</Th>
           <Th>Posted Date</Th>
-          <Th>Download</Th>
+          <Th variant="right">Download</Th>
         </THead>
 
         <TBody>
