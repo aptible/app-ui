@@ -83,10 +83,8 @@ const DatabaseDeprovision = ({ database }: DbProps) => {
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(action);
-  };
-  useLoaderSuccess(loader, () => {
     navigate(environmentActivityUrl(environment.id));
-  });
+  };
   const isDisabled = database.handle !== deleteConfirm || dependents.length > 0;
 
   return (
