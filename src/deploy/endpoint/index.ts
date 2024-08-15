@@ -550,9 +550,8 @@ export const createEndpointOperation = api.post<
   CreateEndpointOpProps,
   DeployOperationResponse
 >("/vhosts/:endpointId/operations", function* (ctx, next) {
-  const { type } = ctx.payload;
   const body = {
-    type,
+    type: ctx.payload.type,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield* next();
@@ -766,15 +765,11 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
 
     let certId = ctx.payload.certId;
     if (!certId && ctx.payload.cert && ctx.payload.privKey) {
-      const certCtx = yield* call(() =>
-        createCertificate.run(
-          createCertificate({
-            envId: ctx.payload.envId,
-            cert: ctx.payload.cert || "",
-            privKey: ctx.payload.privKey || "",
-          }),
-        ),
-      );
+      const certCtx = yield* createCertificate.run({
+        envId: ctx.payload.envId,
+        cert: ctx.payload.cert || "",
+        privKey: ctx.payload.privKey || "",
+      });
       if (!certCtx.json.ok) {
         yield* schema.update(
           schema.loaders.error({ id, message: certCtx.json.error.message }),
@@ -785,16 +780,12 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       certId = `${certCtx.json.value.id}`;
     }
 
-    const patchCtx = yield* call(
-      patchEndpoint.run(
-        patchEndpoint({
-          id: ctx.payload.id,
-          ipAllowlist: ctx.payload.ipAllowlist,
-          containerPort: ctx.payload.containerPort,
-          certId,
-        }),
-      ),
-    );
+    const patchCtx = yield* patchEndpoint.run({
+      id: ctx.payload.id,
+      ipAllowlist: ctx.payload.ipAllowlist,
+      containerPort: ctx.payload.containerPort,
+      certId,
+    });
     if (!patchCtx.json.ok) {
       yield* schema.update(
         schema.loaders.error({
@@ -805,13 +796,11 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       return;
     }
 
-    const opCtx = yield* call(
-      createEndpointOperation.run(
-        createEndpointOperation({
-          endpointId: ctx.payload.id,
-          type: "provision",
-        }),
-      ),
+    const opCtx = yield* createEndpointOperation.run(
+      createEndpointOperation({
+        endpointId: ctx.payload.id,
+        type: "provision",
+      }),
     );
 
     if (!opCtx.json.ok) {

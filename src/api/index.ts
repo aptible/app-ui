@@ -58,6 +58,7 @@ function* sentryErrorHandler(ctx: ApiCtx | ThunkCtx, next: Next) {
   try {
     yield* next();
   } catch (err) {
+    console.error(err);
     if (err instanceof Error) {
       for (const matcher of ignoreErrs) {
         if (matcher.test(err.message)) {
