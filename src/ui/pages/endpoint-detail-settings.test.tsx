@@ -163,9 +163,24 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
   describe("when user changes current cert", () => {
     describe("when user adds new cert", () => {
       it("should replace current cert with a new one", async () => {
+        const certActual = {
+          certificate_body: "",
+          private_key: "",
+          certificate: "",
+        };
         const curCert = defaultCertificateResponse({
           id: createId(),
           common_name: "cur cert",
+          _links: {
+            account: defaultHalHref(
+              `${testEnv.apiUrl}/accounts/${testAccount.id}`,
+            ),
+          },
+        });
+
+        const nextCert = defaultCertificateResponse({
+          id: createId(),
+          common_name: "next cert",
           _links: {
             account: defaultHalHref(
               `${testEnv.apiUrl}/accounts/${testAccount.id}`,
@@ -240,6 +255,32 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
               }),
             );
           }),
+          rest.post(
+            `${testEnv.apiUrl}/accounts/:id/certificates`,
+            async (req, res, ctx) => {
+              const data = await req.json();
+              certActual.certificate_body = data.certificate_body;
+              certActual.private_key = data.private_key;
+              return res(ctx.json(nextCert));
+            },
+          ),
+          rest.patch(`${testEnv.apiUrl}/vhosts/:id`, async (req, res, ctx) => {
+            const data = await req.json();
+            certActual.certificate = data.certificate;
+            return res(
+              ctx.json({
+                ...enp,
+                _links: {
+                  service: defaultHalHref(
+                    `${testEnv.apiUrl}/services/${testServiceRails.id}`,
+                  ),
+                  certificate: defaultHalHref(
+                    `${testEnv.apiUrl}/certificates/${nextCert.id}`,
+                  ),
+                },
+              }),
+            );
+          }),
         );
 
         const { App, store } = setupAppIntegrationTest({
@@ -269,6 +310,12 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
 
         await screen.findByText(
           /Operations show real-time changes to resources/,
+        );
+
+        expect(certActual.certificate_body).toEqual(certStr);
+        expect(certActual.private_key).toEqual(privStr);
+        expect(certActual.certificate).toEqual(
+          `${testEnv.apiUrl}/certificates/${nextCert.id}`,
         );
       });
     });
