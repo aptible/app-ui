@@ -133,7 +133,11 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
         label="Create a New Certificate"
         name="new-cert"
         checked={usingNewCert}
-        onChange={(e) => setUsingNewCert(e.currentTarget.checked)}
+        onChange={(e) => {
+          // must remove certId for `updateEndpoint`
+          setCertId("");
+          setUsingNewCert(e.currentTarget.checked);
+        }}
       />
     </FormGroup>
   );

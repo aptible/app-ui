@@ -171,9 +171,7 @@ export interface CreateCertProps {
 
 export const createCertificate = api.post<
   CreateCertProps,
-  DeployCertificateResponse,
-  // TODO: shouldn't need to provide this
-  { message: string }
+  DeployCertificateResponse
 >("/accounts/:envId/certificates", function* (ctx, next) {
   const body = JSON.stringify({
     certificate_body: ctx.payload.cert,
