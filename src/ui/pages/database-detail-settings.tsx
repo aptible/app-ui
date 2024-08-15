@@ -61,7 +61,6 @@ import {
   Label,
   Select,
   type SelectOption,
-  Tooltip,
 } from "../shared";
 
 interface DbProps {
