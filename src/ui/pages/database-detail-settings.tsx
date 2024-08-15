@@ -61,6 +61,7 @@ import {
   Label,
   Select,
   type SelectOption,
+  Tooltip,
 } from "../shared";
 
 interface DbProps {
@@ -282,7 +283,7 @@ const DatabaseNameChange = ({ database }: DbProps) => {
       value: "true",
     },
     {
-      label: "Disabled: No automatic backups enabled",
+      label: "Disabled: No future automatic backups",
       value: "false",
     },
   ];
@@ -330,7 +331,24 @@ const DatabaseNameChange = ({ database }: DbProps) => {
         ) : null}
       </FormGroup>
 
-      <FormGroup label="Database Backups" htmlFor="input-backup">
+      <FormGroup
+        label="Database Backups"
+        description={
+          <p>
+            When disabled, there will be no new automatic backups taken of this
+            database. This does not automatically delete any existing taken
+            backups.{" "}
+            <a
+              href="https://www.aptible.com/docs/core-concepts/managed-databases/managing-databases/database-backups#excluding-a-database-from-new-automatic-backups"
+              target="_blank"
+              rel="noreferrer"
+            >
+              View docs for how to delete backups.
+            </a>
+          </p>
+        }
+        htmlFor="input-backup"
+      >
         <Select
           ariaLabel="Database Backups"
           id="input-backup"
