@@ -28,7 +28,7 @@
     "@stripe/stripe-js": "^4.1.0",
     "@tailwindcss/forms": "^0.5.7",
     "@testing-library/dom": "^10.3.1",
-    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/debug": "^4.1.12",
