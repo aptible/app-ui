@@ -4,8 +4,8 @@ import {
   type DeployDatabaseRow,
   calcMetrics,
   estimateMonthlyCost,
-  fetchAllBackupsByEnvId,
   fetchBackups,
+  fetchBackupsByEnvId,
   fetchDatabaseImages,
   fetchDatabases,
   fetchDatabasesByEnvId,
@@ -314,7 +314,7 @@ export const DatabaseListByEnvironment = ({
   const costQueries = [
     fetchServices(),
     fetchDatabasesByEnvId({ envId }), // fetches disks
-    fetchAllBackupsByEnvId({ id: envId, orphaned: false, perPage: 1000 }),
+    fetchBackupsByEnvId({ id: envId, orphaned: false, perPage: 1000 }),
   ];
   costQueries.forEach((q) => useQuery(q));
   const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
