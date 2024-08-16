@@ -4,7 +4,6 @@ import {
   type Callable,
   type Operation,
   PERSIST_LOADER_ID,
-  configureStore,
   createBatchMdw,
   createLocalStorageAdapter,
   createPersistor,
@@ -17,6 +16,7 @@ import {
   schema,
   initialState as schemaInitialState,
 } from "@app/schema";
+import { createStore } from "starfx";
 import { rootEntities, tasks } from "./packages";
 
 const log = createLog("fx");
@@ -30,7 +30,7 @@ export function setupStore({
     allowlist: ["theme", "nav", "redirectPath", "feedback", "resourceStats"],
   });
 
-  const store = configureStore<WebState>({
+  const store = createStore<WebState>({
     initialState: {
       ...schemaInitialState,
       entities: rootEntities,
@@ -51,12 +51,13 @@ export function setupStore({
       }
     });
   }
-  tsks.push(...tasks, bootup.run());
+  tsks.push(...tasks);
 
   store.run(function* (): Operation<void> {
     yield* persistor.rehydrate();
     yield* schema.update(schema.loaders.success({ id: PERSIST_LOADER_ID }));
     const group = yield* parallel(tsks);
+    yield* bootup.run();
     yield* group;
   });
 
@@ -66,7 +67,7 @@ export function setupStore({
 // persistor makes things more complicated for our tests so we are deliberately
 // choosing to not include it for testing.
 export function setupTestStore(initialState: Partial<WebState>) {
-  const store = configureStore<WebState>({
+  const store = createStore<WebState>({
     initialState: {
       ...schemaInitialState,
       entities: rootEntities,
