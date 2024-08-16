@@ -524,6 +524,9 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/accounts/:id/vhosts`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { vhosts: [] } }));
   }),
+  rest.get(`${testEnv.apiUrl}/services/:id/vhosts`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { vhosts: [] } }));
+  }),
   rest.get(`${testEnv.apiUrl}/apps/:id/service_definitions`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { service_definitions: [] } }));
   }),
@@ -677,6 +680,12 @@ const apiHandlers = [
     },
   ),
   rest.get(`${testEnv.apiUrl}/accounts/:id/backups`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { backups: [] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/backups`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { backups: [] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/databases/:id/backups`, async (_, res, ctx) => {
     return res(ctx.json({ _embedded: { backups: [] } }));
   }),
   rest.get(`${testEnv.apiUrl}/log_drains`, async (_, res, ctx) => {
