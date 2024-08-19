@@ -1,6 +1,6 @@
 import {
   deprovisionEnvironment,
-  fetchBackupsByEnvironmentId,
+  fetchBackupsByEnvIdPage,
   fetchEnvLogDrains,
   fetchEnvMetricDrains,
   fetchEnvironmentById,
@@ -126,7 +126,12 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
   const navigate = useNavigate();
   useQuery(fetchEnvironmentById({ id: envId }));
   useQuery(
-    fetchBackupsByEnvironmentId({ id: envId, orphaned: false, page: 1 }),
+    fetchBackupsByEnvIdPage({
+      id: envId,
+      orphaned: false,
+      page: 1,
+      perPage: 1,
+    }),
   );
   useQuery(fetchEnvLogDrains({ id: envId }));
   useQuery(fetchEnvMetricDrains({ id: envId }));

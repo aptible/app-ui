@@ -116,7 +116,7 @@ export const pollDatabaseBackups = api.get<{ id: string }>(
   { supervisor: poll(10 * 1000, `${cancelPollDatabaseBackups}`) },
 );
 
-export const fetchBackupsByDatabaseId = api.get<
+export const fetchBackupsByDatabaseIdPage = api.get<
   { id: string } & PaginateProps,
   HalEmbedded<{ backups: BackupResponse[] }>
 >("/databases/:id/backups?page=:page", function* (ctx, next) {
@@ -130,6 +130,11 @@ export const fetchBackupsByDatabaseId = api.get<
   const paginatedData = { ...ctx.json.value, _embedded: { backups: ids } };
   yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
 });
+export const fetchBackupsByDatabaseId = thunks.create<{ id: string }>(
+  "fetch-backups-by-database-id",
+  { supervisor: cacheTimer() },
+  combinePages(fetchBackupsByDatabaseIdPage),
+);
 
 export const fetchBackup = api.get<{ id: string }>("/backups/:id");
 
@@ -138,7 +143,7 @@ interface FetchByResourceIdProps {
   orphaned: boolean;
   perPage?: number;
 }
-export const fetchBackupsByEnvironmentId = api.get<
+export const fetchBackupsByEnvIdPage = api.get<
   FetchByResourceIdProps & PaginateProps,
   HalEmbedded<{ backups: BackupResponse[] }>
 >("/accounts/:id/backups?page=:page", function* (ctx, next) {
@@ -164,10 +169,10 @@ export const fetchBackupsByEnvironmentId = api.get<
   yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
 });
 
-export const fetchAllBackupsByEnvId = thunks.create<FetchByResourceIdProps>(
-  "fetch-all-backups-by-env-id",
+export const fetchBackupsByEnvId = thunks.create<FetchByResourceIdProps>(
+  "fetch-backups-by-env-id",
   { supervisor: cacheTimer() },
-  combinePages(fetchBackupsByEnvironmentId),
+  combinePages(fetchBackupsByEnvIdPage),
 );
 
 export const deleteBackup = api.post<{ id: string }, DeployOperationResponse>(

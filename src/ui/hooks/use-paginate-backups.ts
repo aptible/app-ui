@@ -1,6 +1,6 @@
 import {
-  fetchBackupsByDatabaseId,
-  fetchBackupsByEnvironmentId,
+  fetchBackupsByDatabaseIdPage,
+  fetchBackupsByEnvIdPage,
   selectBackupsByIds,
 } from "@app/deploy";
 import { useCache, useSelector } from "@app/react";
@@ -10,13 +10,13 @@ import type { PaginateProps } from "./use-paginate";
 
 export function usePaginatedBackupsByDatabaseId(dbId: string) {
   const [page, setPage] = useState(1);
-  const action = fetchBackupsByDatabaseId({ page, id: dbId });
+  const action = fetchBackupsByDatabaseIdPage({ page, id: dbId });
   return usePaginatedBackups(action, page, setPage);
 }
 
 export function usePaginatedBackupsByEnvId(envId: string, orphaned: boolean) {
   const [page, setPage] = useState(1);
-  const action = fetchBackupsByEnvironmentId({ id: envId, orphaned, page });
+  const action = fetchBackupsByEnvIdPage({ id: envId, orphaned, page });
   return usePaginatedBackups(action, page, setPage);
 }
 

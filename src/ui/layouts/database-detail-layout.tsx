@@ -60,7 +60,7 @@ export function DatabaseHeader({
 }) {
   // Query additional data that subpages need
   useQuery(fetchEndpointsByServiceId({ id: database.serviceId }));
-  useQuery(fetchBackupsByDatabaseId({ id: database.id, page: 1 }));
+  useQuery(fetchBackupsByDatabaseId({ id: database.id }));
 
   const metrics = calcMetrics([service]);
   useQuery(fetchDiskById({ id: database.diskId }));
