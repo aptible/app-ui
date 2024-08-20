@@ -126,7 +126,7 @@ export const selectVpnTunnelByStackId = createSelector(
 );
 
 export const fetchVpnTunnelsByStackId = api.get<{ id: string }>(
-  "/stacks/:id/vpn_tunnels",
+  "/stacks/:id/vpn_tunnels?per_page=5000",
 );
 
 export const vpnTunnelEntities = {
