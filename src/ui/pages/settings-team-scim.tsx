@@ -99,6 +99,7 @@ function ConfigureScim({ onSuccess }: { onSuccess: () => void }) {
                 <div>
                   Default Aptible Role <br />
                   <Select
+                    id="default-role"
                     options={options}
                     onSelect={(opt) => setDefaultRoleId(opt.value)}
                     value={defaultRoleId}
@@ -216,6 +217,7 @@ function ScimEdit({
               >
                 <div>
                   <Select
+                    id="default-role-edit"
                     options={options}
                     onSelect={(opt) => setDefaultRoleId(opt.value)}
                     value={defaultRoleId}
@@ -239,13 +241,14 @@ function ScimEdit({
                     <p>This token is displayed once only. If you lose access to this token
                       you will need to generate a new token.
                     </p>
-                    <FormGroup description="" htmlFor="token" label="">
+                    <FormGroup description="" htmlFor="scim-token" label="">
                       <CopyText text={scimToken}>
                         <textarea
                           id="scim-token"
                           name="scimToken"
                           className={`${tokens.type.textarea} min-w-[400px] mb-4`}
                           value={scimToken}
+                          readOnly={true}
                         />
                       </CopyText>
                     </FormGroup>

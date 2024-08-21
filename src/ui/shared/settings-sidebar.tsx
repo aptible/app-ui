@@ -2,6 +2,7 @@ import { selectEnv } from "@app/config";
 import { selectIsAccountOwner } from "@app/deploy";
 import {
   selectHasBetaFeatures,
+  selectHasScimFeature,
   selectOrganizationSelectedId,
 } from "@app/organizations";
 import { useSelector } from "@app/react";
@@ -35,6 +36,7 @@ export function SettingsSidebar() {
   const orgId = useSelector(selectOrganizationSelectedId);
   const isAccountOwner = useSelector((s) => selectIsAccountOwner(s, { orgId }));
   const hasBetaFeatures = useSelector(selectHasBetaFeatures);
+  const hasScimFeature = useSelector(selectHasScimFeature);
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
@@ -110,17 +112,21 @@ export function SettingsSidebar() {
           </span>
         )}
 
-        {isAccountOwner ? (
-          <NavLink className={navLink} to={teamScimUrl()}>
-            Provisioning
-          </NavLink>
-        ) : (
-          <span className={navLink({ isActive: false })}>
-            Provisioning
-            <Tooltip text="Must be account owner" fluid>
-              <IconLock variant="sm" className="ml-1 opacity-60" />
-            </Tooltip>
-          </span>
+        {hasScimFeature && (
+          <>
+            {isAccountOwner ? (
+              <NavLink className={navLink} to={teamScimUrl()}>
+                Provisioning
+              </NavLink>
+            ) : (
+              <span className={navLink({ isActive: false })}>
+                Provisioning
+                <Tooltip text="Must be account owner" fluid>
+                  <IconLock variant="sm" className="ml-1 opacity-60" />
+                </Tooltip>
+              </span>
+            )}
+          </>
         )}
 
         {isAccountOwner ? (

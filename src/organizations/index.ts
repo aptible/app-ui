@@ -108,7 +108,30 @@ export const selectHasBetaFeatures = createSelector(
     if (config.isDev) {
       return true;
     }
-    return ["df0ee681-9e02-4c28-8916-3b215d539b08"].includes(orgId);
+
+    // Array of organization IDs that have access to beta features
+    const betaFeatureOrgIds = [
+      "df0ee681-9e02-4c28-8916-3b215d539b08",
+    ];
+
+    return betaFeatureOrgIds.includes(orgId);
+  },
+);
+
+export const selectHasScimFeature = createSelector(
+  selectOrganizationSelectedId,
+  selectEnv,
+  (orgId, config) => {
+    if (config.isDev) {
+      return true;
+    }
+
+    // Array of organization IDs that have access to scim feature
+    const scimFeatureOrgIds = [
+      "df0ee681-9e02-4c28-8916-3b215d539b08",
+    ];
+
+    return scimFeatureOrgIds.includes(orgId);
   },
 );
 
