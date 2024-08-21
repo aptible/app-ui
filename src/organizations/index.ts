@@ -110,9 +110,7 @@ export const selectHasBetaFeatures = createSelector(
     }
 
     // Array of organization IDs that have access to beta features
-    const betaFeatureOrgIds = [
-      "df0ee681-9e02-4c28-8916-3b215d539b08",
-    ];
+    const betaFeatureOrgIds = ["df0ee681-9e02-4c28-8916-3b215d539b08"];
 
     return betaFeatureOrgIds.includes(orgId);
   },
@@ -127,9 +125,7 @@ export const selectHasScimFeature = createSelector(
     }
 
     // Array of organization IDs that have access to scim feature
-    const scimFeatureOrgIds = [
-      "df0ee681-9e02-4c28-8916-3b215d539b08",
-    ];
+    const scimFeatureOrgIds = ["df0ee681-9e02-4c28-8916-3b215d539b08"];
 
     return scimFeatureOrgIds.includes(orgId);
   },

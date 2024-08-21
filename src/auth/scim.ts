@@ -1,7 +1,7 @@
 import { authApi } from "@app/api";
-import type { HalEmbedded } from "@app/types";
-import { schema } from "@app/schema";
 import { thunks } from "@app/api";
+import { schema } from "@app/schema";
+import type { HalEmbedded } from "@app/types";
 
 export interface ScimConfigurationResponse {
   id: string;
@@ -53,7 +53,7 @@ export const createScimConfiguration = authApi.post<CreateScimConfiguration>(
         scim_configuration: {
           organization_id: ctx.payload.orgId,
           default_role_id: ctx.payload.defaultRoleId,
-          unique_identifier: 'email',
+          unique_identifier: "email",
         },
       }),
     });
@@ -94,7 +94,6 @@ export const updateScimConfiguration = authApi.patch<UpdateScimConfiguration>(
   },
 );
 
-
 export const deleteScimConfiguration = authApi.delete<{ id: string }>(
   "/scim_configurations/:id",
 );
@@ -110,26 +109,26 @@ export interface GenerateTokenResponse {
 
 export const selectScimToken = schema.scimToken.select;
 
-export const generateScimToken = authApi.post<GenerateScimToken, GenerateTokenResponse>(
-  "/scim_configurations/generate_token",
-  function* (ctx, next) {
-    ctx.request = ctx.req({
-      body: JSON.stringify({
-        scim_configuration_id: ctx.payload.scimConfigurationId,
-        user_id: ctx.payload.userId,
-      }),
-    });
-    yield* next();
+export const generateScimToken = authApi.post<
+  GenerateScimToken,
+  GenerateTokenResponse
+>("/scim_configurations/generate_token", function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify({
+      scim_configuration_id: ctx.payload.scimConfigurationId,
+      user_id: ctx.payload.userId,
+    }),
+  });
+  yield* next();
 
-    if (!ctx.json.ok) {
-      throw new Error('API request failed');
-    }
+  if (!ctx.json.ok) {
+    throw new Error("API request failed");
+  }
 
-    const response: GenerateTokenResponse = ctx.json.value;
-    yield* schema.update(schema.scimToken.set(response.token));
-    ctx.loader = { message: "Token generated successfully!" };
-  },
-);
+  const response: GenerateTokenResponse = ctx.json.value;
+  yield* schema.update(schema.scimToken.set(response.token));
+  ctx.loader = { message: "Token generated successfully!" };
+});
 
 export const resetScimToken = thunks.create(
   "reset-scim-token",

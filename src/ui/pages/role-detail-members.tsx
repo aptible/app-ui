@@ -103,9 +103,11 @@ function MemberRow({
 }) {
   const dispatch = useDispatch();
   const user = useSelector((s) => selectUserById(s, { id: membership.userId }));
-  const userIsScimManaged = !!user.externalId && user.externalId.trim() !== '';
+  const userIsScimManaged = !!user.externalId && user.externalId.trim() !== "";
   const disableRemoval = userIsScimManaged && roleScimCreated;
-  const removeToolTip = disableRemoval ? "Cannot remove: user and role are SCIM-managed" : null;
+  const removeToolTip = disableRemoval
+    ? "Cannot remove: user and role are SCIM-managed"
+    : null;
 
   const onChange = (ev: ChangeEvent<HTMLInputElement>) => {
     ev.preventDefault();
@@ -113,7 +115,7 @@ function MemberRow({
       updateMembership({
         id: membership.id,
         privileged: ev.currentTarget.checked,
-      })
+      }),
     );
   };
 
@@ -155,7 +157,7 @@ export function RoleDetailMembersPage() {
   const role = useSelector((s) => selectRoleById(s, { id }));
   const { trigger, userIds } = useUserIdsForRole(role.id);
   const memberships = useSelector((s) =>
-    selectMembershipsByRoleId(s, { roleId: id })
+    selectMembershipsByRoleId(s, { roleId: id }),
   );
   const paginated = usePaginate(memberships);
 
@@ -176,7 +178,7 @@ export function RoleDetailMembersPage() {
   const userId = useSelector(selectCurrentUserId);
   const orgId = useSelector(selectOrganizationSelectedId);
   const canManage = useSelector((s) =>
-    selectCanUserManageRole(s, { roleId: id, userId, orgId })
+    selectCanUserManageRole(s, { roleId: id, userId, orgId }),
   );
 
   interface FormData {
@@ -195,7 +197,7 @@ export function RoleDetailMembersPage() {
   const inviteLoader = useLoader(action);
 
   const [errors, validate] = useValidator<FormData, typeof validators>(
-    validators
+    validators,
   );
 
   const onInvite = (e: React.FormEvent<HTMLFormElement>) => {
@@ -216,7 +218,7 @@ export function RoleDetailMembersPage() {
   };
   const onAddExistingUser = () => {
     dispatch(
-      updateUserMemberships({ userId: existingUserId, add: [id], remove: [] })
+      updateUserMemberships({ userId: existingUserId, add: [id], remove: [] }),
     );
   };
   const onDelete = (userId: string) => {

@@ -4,15 +4,13 @@ import {
   createScimConfiguration,
   deleteScimConfiguration,
   fetchScimConfigurations,
-  updateScimConfiguration,
   generateScimToken,
-  selectScimToken,
   resetScimToken,
+  selectScimToken,
+  updateScimConfiguration,
 } from "@app/auth";
 import { selectRolesEditable } from "@app/deploy";
-import {
-  selectOrganizationSelectedId,
-} from "@app/organizations";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   useCache,
   useDispatch,
@@ -22,21 +20,21 @@ import {
   useSelector,
 } from "@app/react";
 import { fetchRoles } from "@app/roles";
+import { selectCurrentUserId } from "@app/users";
 import { useState } from "react";
 import { useValidator } from "../hooks";
-import { selectCurrentUserId } from "@app/users";
 import {
-  Group,
   Banner,
   BannerMessages,
   Box,
   Button,
-  ExternalLink,
-  FormGroup,
-  Loading,
-  Select,
   Code,
   CopyText,
+  ExternalLink,
+  FormGroup,
+  Group,
+  Loading,
+  Select,
   tokens,
 } from "../shared";
 
@@ -87,7 +85,7 @@ function ConfigureScim({ onSuccess }: { onSuccess: () => void }) {
       <SharedScimTitle />
       <Box>
         <Group>
-        <SharedScimInfo />
+          <SharedScimInfo />
           <form onSubmit={onSubmit}>
             <Group>
               <FormGroup
@@ -131,7 +129,9 @@ function ScimEdit({
   const orgId = useSelector(selectOrganizationSelectedId);
   const userId = useSelector(selectCurrentUserId);
   const scimToken = useSelector(selectScimToken);
-  const [defaultRoleId, setDefaultRoleId] = useState(scim.default_role_id || "");
+  const [defaultRoleId, setDefaultRoleId] = useState(
+    scim.default_role_id || "",
+  );
   const [showTokenModal, setShowTokenModal] = useState(false);
   const [isLoading] = useState(false);
 
@@ -226,20 +226,20 @@ function ScimEdit({
               </FormGroup>
 
               <div>
-                <Button
-                  onClick={handleGenerateToken}
-                  isLoading={isLoading}
-                >
+                <Button onClick={handleGenerateToken} isLoading={isLoading}>
                   Generate New Token
                 </Button>
               </div>
 
-              {showTokenModal && scimToken != "" && (
+              {showTokenModal && scimToken !== "" && (
                 <div className="modal">
                   <div className="modal-content">
-                    <h4 className={tokens.type.h4}>Your New SCIM Bearer Token</h4>
-                    <p>This token is displayed once only. If you lose access to this token
-                      you will need to generate a new token.
+                    <h4 className={tokens.type.h4}>
+                      Your New SCIM Bearer Token
+                    </h4>
+                    <p>
+                      This token is displayed once only. If you lose access to
+                      this token you will need to generate a new token.
                     </p>
                     <FormGroup description="" htmlFor="scim-token" label="">
                       <CopyText text={scimToken}>
@@ -256,31 +256,30 @@ function ScimEdit({
                   </div>
                 </div>
               )}
-
             </Group>
 
-            <div className="py-8"><hr/></div>
+            <div className="py-8">
+              <hr />
+            </div>
             <Group variant="horizontal">
-
               <div>
                 <Button type="submit" isLoading={loader.isLoading}>
                   Save Changes
                 </Button>
               </div>
 
-            <BannerMessages {...rmLoader} />
+              <BannerMessages {...rmLoader} />
 
-            <div>
-              <Button
-                variant="delete"
-                requireConfirm
-                onClick={onRemove}
-                isLoading={rmLoader.isLoading}
-              >
-                Remove SCIM Configuration
-              </Button>
-            </div>
-
+              <div>
+                <Button
+                  variant="delete"
+                  requireConfirm
+                  onClick={onRemove}
+                  isLoading={rmLoader.isLoading}
+                >
+                  Remove SCIM Configuration
+                </Button>
+              </div>
             </Group>
           </form>
         </Group>
@@ -296,13 +295,10 @@ const SharedScimTitle = () => (
 const SharedScimInfo = () => (
   <>
     <Banner>
-      To configure System for Cross-domain Identity Management (SCIM),
-      enter the required information below. Terminology and acronyms vary
-      between providers. For Okta, follow our{" "}
-      <ExternalLink
-        variant="default"
-        href="https://www.aptible.com/docs/"
-      >
+      To configure System for Cross-domain Identity Management (SCIM), enter the
+      required information below. Terminology and acronyms vary between
+      providers. For Okta, follow our{" "}
+      <ExternalLink variant="default" href="https://www.aptible.com/docs/">
         guided walkthrough.
       </ExternalLink>
     </Banner>
@@ -321,11 +317,11 @@ const SharedScimInfo = () => (
     </div>
     <div>
       <h4 className={tokens.type.h4}>SCIM Connector Base URL</h4>
-      <CopyText text="https://auth.aptible.com/scim_v2"/>
+      <CopyText text="https://auth.aptible.com/scim_v2" />
     </div>
     <div>
       <h4 className={tokens.type.h4}>Unique Identifier</h4>
-      <CopyText text="email"/>
+      <CopyText text="email" />
     </div>
   </>
 );

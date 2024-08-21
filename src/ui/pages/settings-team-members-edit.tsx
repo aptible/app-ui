@@ -91,8 +91,9 @@ export function TeamMembersEditPage() {
   const isAccountOwner = useSelector((s) =>
     selectIsAccountOwner(s, { orgId: org.id }),
   );
-  const userIsScimManaged = !!user.externalId && user.externalId.trim() !== '';
-  const canRemoveUser = isAccountOwner && user.id !== currentUser.id && !userIsScimManaged;
+  const userIsScimManaged = !!user.externalId && user.externalId.trim() !== "";
+  const canRemoveUser =
+    isAccountOwner && user.id !== currentUser.id && !userIsScimManaged;
 
   useLoaderSuccess(rmLoader, () => {
     navigate(teamMembersUrl());
@@ -125,7 +126,9 @@ export function TeamMembersEditPage() {
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((role) => {
                 const userHasRole = selected.includes(role.id);
-                const scimText = (role.scimCreated) ? " (role managed via SCIM Provisioning)" : "";
+                const scimText = role.scimCreated
+                  ? " (role managed via SCIM Provisioning)"
+                  : "";
                 return (
                   <CheckBox
                     name="roles"
@@ -133,7 +136,10 @@ export function TeamMembersEditPage() {
                     key={role.id}
                     checked={userHasRole}
                     onChange={(e) => onChange(role.id, e.currentTarget.checked)}
-                    disabled={(userHasRole && hasOnlyOneRole) || (role.scimCreated && userIsScimManaged)}
+                    disabled={
+                      (userHasRole && hasOnlyOneRole) ||
+                      (role.scimCreated && userIsScimManaged)
+                    }
                   />
                 );
               })}
@@ -211,23 +217,18 @@ export function TeamMembersEditPage() {
               Remove {user.name} from {org.name}
             </h3>
             <p>
-              This user is managed via SCIM Provisioning.
-              Please manage this user directly via the connected IDP.
+              This user is managed via SCIM Provisioning. Please manage this
+              user directly via the connected IDP.
             </p>
 
             <div>
-              <Button
-                variant="delete"
-                requireConfirm
-                disabled={true}
-              >
+              <Button variant="delete" requireConfirm disabled={true}>
                 Remove from {org.name}
               </Button>
             </div>
           </Group>
         </Box>
       ) : null}
-
     </Group>
   );
 }

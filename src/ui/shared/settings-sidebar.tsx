@@ -16,8 +16,8 @@ import {
   teamMembersUrl,
   teamPendingInvitesUrl,
   teamRolesUrl,
-  teamSsoUrl,
   teamScimUrl,
+  teamSsoUrl,
 } from "@app/routes";
 import cn from "classnames";
 import { NavLink } from "react-router-dom";
