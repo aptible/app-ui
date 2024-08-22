@@ -35,6 +35,7 @@ import {
 import { setResourceStats } from "@app/search";
 import type { DeployDatabase, DeployService } from "@app/types";
 import { useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { Outlet, useParams } from "react-router-dom";
 import { usePoller } from "../hooks";
 import {
@@ -51,10 +52,12 @@ import { AppSidebarLayout } from "./app-sidebar-layout";
 
 export function DatabaseHeader({
   database,
+  databasePrimary,
   service,
   isLoading,
 }: {
   database: DeployDatabase;
+  databasePrimary: DeployDatabase;
   service: DeployService;
   isLoading: boolean;
 }) {
@@ -105,6 +108,13 @@ export function DatabaseHeader({
         <DetailInfoItem title="Created">
           {prettyDateTime(database.createdAt)}
         </DetailInfoItem>
+        {databasePrimary?.id && (
+          <DetailInfoItem title="Replicates">
+            <Link to={databaseDetailUrl(databasePrimary.id)} className="flex">
+              {databasePrimary.handle}
+            </Link>
+          </DetailInfoItem>
+        )}
       </DetailInfoGrid>
     </DetailHeader>
   );
@@ -129,6 +139,9 @@ function DatabasePageHeader() {
   }, []);
 
   const database = useSelector((s) => selectDatabaseById(s, { id }));
+  const databasePrimary = useSelector((s) =>
+    selectDatabaseById(s, { id: database.initializeFrom }),
+  );
   const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
   );
@@ -165,6 +178,7 @@ function DatabasePageHeader() {
         detailsBox={
           <DatabaseHeader
             database={database}
+            databasePrimary={databasePrimary}
             service={service}
             isLoading={loader.isLoading}
           />
