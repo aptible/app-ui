@@ -9,11 +9,11 @@ exports[`App Detail Deployments page > should render deployments with proper fal
       class="flex gap-4 flex-col "
     >
       <div>
-        <span
+        <div
           class=""
         >
-          <span
-            class="cursor-pointer"
+          <div
+            class="cursor-pointer w-fit"
           >
             <button
               class="w-fit flex items-center justify-center px-4 py-2 text-base font-medium border border-transparent shadow-sm font-bold text-black bg-gradient-to-r from-yellow-400 to-yellow-500 hover:no-underline hover:from-yellow hover:to-yellow focus:from-orange-400 focus:to-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:from-orange-200 disabled:to-orange-200 disabled:text-black-300 disabled:cursor-not-allowed rounded-md opacity-50"
@@ -22,8 +22,8 @@ exports[`App Detail Deployments page > should render deployments with proper fal
             >
               Deployment Monitor
             </button>
-          </span>
-        </span>
+          </div>
+        </div>
       </div>
       <div
         class="overflow-x-scroll w-full shadow ring-1 ring-black ring-opacity-5 rounded-lg"
@@ -125,11 +125,11 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                     <em>
                       Not Provided
                     </em>
-                    <span
+                    <div
                       class=""
                     >
-                      <span
-                        class="cursor-pointer"
+                      <div
+                        class="cursor-pointer w-fit"
                       >
                         <svg
                           class="opacity-50 hover:opacity-100"
@@ -164,8 +164,8 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                             y2="8"
                           />
                         </svg>
-                      </span>
-                    </span>
+                      </div>
+                    </div>
                   </div>
                 </td>
                 <td
@@ -244,11 +244,11 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                     <em>
                       Not Provided
                     </em>
-                    <span
+                    <div
                       class=""
                     >
-                      <span
-                        class="cursor-pointer"
+                      <div
+                        class="cursor-pointer w-fit"
                       >
                         <svg
                           class="opacity-50 hover:opacity-100"
@@ -283,8 +283,8 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                             y2="8"
                           />
                         </svg>
-                      </span>
-                    </span>
+                      </div>
+                    </div>
                   </div>
                 </td>
                 <td
@@ -355,19 +355,19 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   <div
                     class="inline-block"
                   >
-                    <span
+                    <div
                       class=""
                     >
-                      <span
-                        class="cursor-pointer"
+                      <div
+                        class="cursor-pointer w-fit"
                       >
                         <p
                           class="leading-8 text-ellipsis whitespace-nowrap max-w-[30ch] overflow-hidden inline-block"
                         >
                           fix(backup): pass page to fetch request (#754)
                         </p>
-                      </span>
-                    </span>
+                      </div>
+                    </div>
                   </div>
                 </td>
                 <td
@@ -443,11 +443,11 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                     <em>
                       Not Provided
                     </em>
-                    <span
+                    <div
                       class=""
                     >
-                      <span
-                        class="cursor-pointer"
+                      <div
+                        class="cursor-pointer w-fit"
                       >
                         <svg
                           class="opacity-50 hover:opacity-100"
@@ -482,8 +482,8 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                             y2="8"
                           />
                         </svg>
-                      </span>
-                    </span>
+                      </div>
+                    </div>
                   </div>
                 </td>
                 <td
@@ -554,19 +554,19 @@ exports[`App Detail Deployments page > should render deployments with proper fal
                   <div
                     class="inline-block"
                   >
-                    <span
+                    <div
                       class=""
                     >
-                      <span
-                        class="cursor-pointer"
+                      <div
+                        class="cursor-pointer w-fit"
                       >
                         <p
                           class="leading-8 text-ellipsis whitespace-nowrap max-w-[30ch] overflow-hidden inline-block"
                         >
                           fix(backup): pass page to fetch request (#754)
                         </p>
-                      </span>
-                    </span>
+                      </div>
+                    </div>
                   </div>
                 </td>
                 <td
