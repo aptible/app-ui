@@ -1,12 +1,13 @@
 import { formatCurrency } from "@app/deploy";
 import type { ComponentProps } from "react";
 import { IconInfo } from "./icons";
+import { LoadingSpinner } from "./loading";
 import { Tooltip, type TooltipProps } from "./tooltip";
 
 export interface CostEstimateTooltipProps
   extends ComponentProps<"div">,
     Omit<TooltipProps, "text" | "children"> {
-  cost: number;
+  cost: number | null;
   text?: string;
 }
 
@@ -16,10 +17,12 @@ export const CostEstimateTooltip = ({
   ...tooltipProps
 }: CostEstimateTooltipProps) => (
   <Tooltip text={text} {...tooltipProps}>
-    <span className="mr-1">{formatCurrency(cost)}</span>
-    <IconInfo
-      className="inline-block mb-1 opacity-50 hover:opacity-100"
-      variant="sm"
-    />
+    <span className="flex space-x-1 items-center w-fit">
+      {cost == null ? <LoadingSpinner /> : <span>{formatCurrency(cost)}</span>}
+      <IconInfo
+        className="inline-block opacity-50 hover:opacity-100"
+        variant="sm"
+      />
+    </span>
   </Tooltip>
 );

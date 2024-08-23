@@ -5,9 +5,12 @@ import {
   calcMetrics,
   estimateMonthlyCost,
   fetchApps,
+  fetchEndpoints,
+  fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchEnvironments,
   fetchImageById,
+  fetchServices,
   selectAppsByCertId,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
@@ -18,7 +21,7 @@ import {
   selectServicesByAppId,
 } from "@app/deploy";
 import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
-import { useQuery, useSelector } from "@app/react";
+import { useCompositeLoader, useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
   deployUrl,
@@ -97,7 +100,10 @@ const AppServicesCell = ({ app }: AppCellProps) => {
   );
 };
 
-const AppCostCell = ({ app }: AppCellProps) => {
+const AppCostCell = ({
+  app,
+  costLoading,
+}: AppCellProps & { costLoading: boolean }) => {
   const services = useSelector((s) =>
     selectServicesByAppId(s, { appId: app.id }),
   );
@@ -108,7 +114,10 @@ const AppCostCell = ({ app }: AppCellProps) => {
 
   return (
     <Td>
-      <CostEstimateTooltip className={tokens.type.darker} cost={cost} />
+      <CostEstimateTooltip
+        className={tokens.type.darker}
+        cost={costLoading ? null : cost}
+      />
     </Td>
   );
 };
@@ -175,6 +184,11 @@ export const AppListByOrg = () => {
       setSortDir("desc");
     }
   };
+
+  // Cost
+  const costQueries = [fetchServices(), fetchEndpoints()];
+  costQueries.forEach((q) => useQuery(q));
+  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
 
   return (
     <Group>
@@ -250,7 +264,7 @@ export const AppListByOrg = () => {
               <AppIdCell app={app} />
               <EnvStackCell environmentId={app.environmentId} />
               <AppServicesCell app={app} />
-              <AppCostCell app={app} />
+              <AppCostCell app={app} costLoading={isCostLoading} />
             </Tr>
           ))}
         </TBody>
@@ -293,7 +307,13 @@ export const AppListByEnvironment = ({
 
   const onCreate = () => {
     navigate(environmentCreateAppUrl(envId));
-  };
+  }; // Cost
+  const costQueries = [
+    fetchServices(),
+    fetchEndpointsByEnvironmentId({ id: envId }),
+  ];
+  costQueries.forEach((q) => useQuery(q));
+  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
 
   return (
     <Group>
@@ -360,7 +380,7 @@ export const AppListByEnvironment = ({
               <AppPrimaryCell app={app} />
               <AppIdCell app={app} />
               <AppServicesCell app={app} />
-              <AppCostCell app={app} />
+              <AppCostCell app={app} costLoading={isCostLoading} />
             </Tr>
           ))}
         </TBody>
@@ -383,6 +403,11 @@ export const AppListByCertificate = ({
     }),
   );
   const paginated = usePaginate(apps);
+
+  // Cost
+  const costQueries = [fetchServices(), fetchEndpoints()];
+  costQueries.forEach((q) => useQuery(q));
+  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
 
   return (
     <Group>
@@ -410,7 +435,7 @@ export const AppListByCertificate = ({
               <AppIdCell app={app} />
               <EnvStackCell environmentId={app.environmentId} />
               <AppServicesCell app={app} />
-              <AppCostCell app={app} />
+              <AppCostCell app={app} costLoading={isCostLoading} />
             </Tr>
           ))}
         </TBody>
@@ -582,6 +607,11 @@ export const AppDependencyList = ({
 }: {
   apps: AppDependency[];
 }) => {
+  // Cost
+  const costQueries = [fetchServices(), fetchEndpoints()];
+  costQueries.forEach((q) => useQuery(q));
+  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
+
   return (
     <Table>
       <THead>
@@ -604,7 +634,7 @@ export const AppDependencyList = ({
               <AppIdCell app={app} />
               <EnvStackCell environmentId={app.environmentId} />
               <AppServicesCell app={app} />
-              <AppCostCell app={app} />
+              <AppCostCell app={app} costLoading={isCostLoading} />
               <Td>
                 <Tooltip placement="left" text={dep.why} fluid>
                   <Code>{dep.why}</Code>

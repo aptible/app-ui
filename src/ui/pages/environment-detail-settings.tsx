@@ -128,7 +128,6 @@ const EnvDestroy = ({ envId }: { envId: string }) => {
   useQuery(
     fetchBackupsByEnvIdPage({
       id: envId,
-      orphaned: false,
       page: 1,
       perPage: 1,
     }),

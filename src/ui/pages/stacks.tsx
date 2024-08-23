@@ -54,7 +54,10 @@ export function StacksPage() {
   );
 }
 
-function StackListRow({ stack }: { stack: DeployStackRow }) {
+function StackListRow({
+  stack,
+  costLoading,
+}: { stack: DeployStackRow; costLoading: boolean }) {
   const envCount = useSelector((s) =>
     selectEnvironmentsCountByStack(s, { stackId: stack.id }),
   );
@@ -78,7 +81,7 @@ function StackListRow({ stack }: { stack: DeployStackRow }) {
       <Td variant="center">{appCount}</Td>
       <Td variant="center">{dbCount}</Td>
       <Td>
-        <CostEstimateTooltip cost={stack.cost} />
+        <CostEstimateTooltip cost={costLoading ? null : stack.cost} />
       </Td>
     </Tr>
   );
@@ -153,14 +156,17 @@ function StackList() {
           <Th variant="center">Databases</Th>
           <Th className="flex space-x-2">
             <div>Est. Monthly Cost</div>
-            <LoadingBar isLoading={isCostLoading} />
           </Th>
         </THead>
 
         <TBody>
           {paginated.data.length === 0 ? <EmptyTr colSpan={8} /> : null}
           {paginated.data.map((stack) => (
-            <StackListRow stack={stack} key={stack.id} />
+            <StackListRow
+              key={stack.id}
+              stack={stack}
+              costLoading={isCostLoading}
+            />
           ))}
         </TBody>
       </Table>

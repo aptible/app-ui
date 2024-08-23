@@ -9,6 +9,7 @@ import {
   selectApps,
   selectAppsByOrgAsList,
 } from "../app";
+import { findBackupsByDatabaseId, selectBackupsAsList } from "../backup";
 import { estimateMonthlyCost } from "../cost";
 import {
   type DeployDatabaseRow,
@@ -578,8 +579,9 @@ export const selectDatabasesForTable = createSelector(
   selectDisks,
   selectServices,
   selectEndpointsAsList,
+  selectBackupsAsList,
   selectDatabaseImages,
-  (dbs, envs, ops, disks, services, endpoints, images) =>
+  (dbs, envs, ops, disks, services, endpoints, backups, images) =>
     dbs
       .map((dbb): DeployDatabaseRow => {
         const env = findEnvById(envs, { id: dbb.environmentId });
@@ -594,6 +596,7 @@ export const selectDatabasesForTable = createSelector(
           services: [service],
           disks: [disk],
           endpoints: findEndpointsByServiceId(endpoints, service.id),
+          backups: findBackupsByDatabaseId(backups, dbb.id),
         });
         const metrics = calcMetrics([service]);
         const img = findDatabaseImageById(images, { id: dbb.databaseImageId });

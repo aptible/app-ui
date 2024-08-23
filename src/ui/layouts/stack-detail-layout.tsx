@@ -1,6 +1,11 @@
 import {
   estimateMonthlyCost,
+  fetchBackups,
+  fetchDatabases,
+  fetchEndpoints,
+  fetchServices,
   fetchStack,
+  fetchVpnTunnelsByStackId,
   findBackupsByEnvId,
   findDisksByEnvId,
   findEndpointsByEnvId,
@@ -16,7 +21,12 @@ import {
   selectStackById,
   selectVpnTunnelsAsList,
 } from "@app/deploy";
-import { useDispatch, useQuery, useSelector } from "@app/react";
+import {
+  useCompositeLoader,
+  useDispatch,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import {
   stackDetailEnvsUrl,
   stackDetailHidsUrl,
@@ -48,7 +58,7 @@ export function StackHeader({
   stack,
   isLoading,
   cost,
-}: { stack: DeployStack; isLoading: boolean; cost: number }) {
+}: { stack: DeployStack; isLoading: boolean; cost: number | null }) {
   const stackType = getStackType(stack);
   return (
     <DetailHeader>
@@ -106,6 +116,16 @@ function StackPageHeader() {
   ];
 
   // Cost
+  const costQueries = [
+    fetchServices(),
+    fetchEndpoints(),
+    fetchDatabases(), // For disks
+    fetchBackups(),
+    fetchVpnTunnelsByStackId({ id }),
+  ];
+  costQueries.forEach((q) => useQuery(q));
+  const { isInitialLoading: isCostLoading } = useCompositeLoader(costQueries);
+
   const envs = useSelector((s) =>
     selectEnvironmentsByStackId(s, { stackId: stack.id }),
   );
@@ -138,7 +158,11 @@ function StackPageHeader() {
       breadcrumbs={crumbs}
       title={stack.name}
       detailsBox={
-        <StackHeader stack={stack} isLoading={loader.isLoading} cost={cost} />
+        <StackHeader
+          stack={stack}
+          isLoading={loader.isLoading}
+          cost={isCostLoading ? null : cost}
+        />
       }
       tabs={tabs}
       lastBreadcrumbTo={stackDetailUrl(stack.id)}

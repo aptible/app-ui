@@ -14,9 +14,12 @@ export function usePaginatedBackupsByDatabaseId(dbId: string) {
   return usePaginatedBackups(action, page, setPage);
 }
 
-export function usePaginatedBackupsByEnvId(envId: string, orphaned: boolean) {
+export function usePaginatedBackupsByEnvId(
+  envId: string,
+  onlyOrphaned: boolean,
+) {
   const [page, setPage] = useState(1);
-  const action = fetchBackupsByEnvIdPage({ id: envId, orphaned, page });
+  const action = fetchBackupsByEnvIdPage({ id: envId, onlyOrphaned, page });
   return usePaginatedBackups(action, page, setPage);
 }
 

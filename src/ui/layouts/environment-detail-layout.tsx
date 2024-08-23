@@ -1,9 +1,12 @@
 import {
   estimateMonthlyCost,
   fetchApps,
+  fetchBackupsByEnvId,
+  fetchDatabasesByEnvId,
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchOperationsByEnvId,
+  fetchServices,
   selectBackupsByEnvId,
   selectDisksByEnvId,
   selectEndpointsByEnvironmentId as selectEndpointsByEnvId,
@@ -12,7 +15,12 @@ import {
   selectServicesByEnvId,
   selectStackById,
 } from "@app/deploy";
-import { useDispatch, useQuery, useSelector } from "@app/react";
+import {
+  useCompositeLoader,
+  useDispatch,
+  useQuery,
+  useSelector,
+} from "@app/react";
 import { environmentDetailUrl, stackDetailEnvsUrl } from "@app/routes";
 import type {
   DeployEndpoint,
@@ -50,7 +58,7 @@ export function EnvHeader({
   stack: DeployStack;
   endpoints: DeployEndpoint[];
   isLoading: boolean;
-  cost: number;
+  cost: number | null;
 }) {
   return (
     <DetailHeader>
@@ -103,14 +111,24 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     dispatch(setResourceStats({ id, type: "environment" }));
   }, []);
 
+  const endpointQuery = fetchEndpointsByEnvironmentId({ id });
   const loaderEnv = useQuery(fetchEnvironmentById({ id }));
   const loaderApps = useQuery(fetchApps());
-  const loaderEndpoints = useQuery(fetchEndpointsByEnvironmentId({ id }));
+  const loaderEndpoints = useQuery(endpointQuery);
   useQuery(fetchOperationsByEnvId({ id, page: 1 }));
   const loader = useMemo(
     () => findLoaderComposite([loaderEnv, loaderApps, loaderEndpoints]),
     [loaderEnv, loaderApps, loaderEndpoints],
   );
+
+  const costQueries = [
+    fetchServices(),
+    endpointQuery,
+    fetchDatabasesByEnvId({ envId: id }), // For disks
+    fetchBackupsByEnvId({ id }),
+  ];
+  costQueries.forEach((q) => useQuery(q));
+  const { isInitialLoading: isCostLoading } = useCompositeLoader(costQueries);
 
   const environment = useSelector((s) => selectEnvironmentById(s, { id }));
   const stats = useSelector((s) =>
@@ -164,7 +182,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
           environment={environment}
           stack={stack}
           stats={stats}
-          cost={cost}
+          cost={isCostLoading ? null : cost}
         />
       }
       title={environment.handle}
