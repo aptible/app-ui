@@ -108,7 +108,7 @@ export function DatabaseHeader({
         <DetailInfoItem title="Created">
           {prettyDateTime(database.createdAt)}
         </DetailInfoItem>
-        {databasePrimary?.id && (
+        {databasePrimary.id && (
           <DetailInfoItem title="Replicates">
             <Link to={databaseDetailUrl(databasePrimary.id)} className="flex">
               {databasePrimary.handle}
