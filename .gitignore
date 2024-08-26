@@ -3,9 +3,9 @@
 .DS_Store
 .envrc
 .env
+.env.*
 node_modules
 dist
-.env.local
 tmp
 
 .pnp.*

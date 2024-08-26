@@ -609,6 +609,10 @@ const DetailBoxes = () => {
     id: "222",
     type: "postgresql",
   });
+  const dbPrimary = defaultDeployDatabase({
+    id: "223",
+    type: "postgresql",
+  });
   const service = defaultDeployService({
     containerMemoryLimitMb: 4096,
   });
@@ -654,7 +658,12 @@ const DetailBoxes = () => {
         cost={99.99}
       />
       <AppHeader app={app} isLoading={false} />
-      <DatabaseHeader database={db} service={service} isLoading={false} />
+      <DatabaseHeader
+        database={db}
+        databasePrimary={dbPrimary}
+        service={service}
+        isLoading={false}
+      />
       <OpHeader op={op} resourceHandle={app.handle} isLoading={false} />
     </div>
   );
