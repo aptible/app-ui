@@ -101,8 +101,7 @@ const DatabaseIdCell = ({ database }: DatabaseCellProps) => {
 const DatabaseCostCell = ({
   database,
   costLoading,
-  fetchBackups = false,
-}: DatabaseCellProps & { costLoading: boolean; fetchBackups?: boolean }) => {
+}: DatabaseCellProps & { costLoading: boolean }) => {
   const loading =
     costLoading ||
     useQuery(fetchBackupsByDatabaseId({ id: database.id })).isLoading;
@@ -314,11 +313,7 @@ export const DatabaseListByOrg = () => {
               <EnvStackCell environmentId={db.environmentId} />
               <DatabaseDiskSizeCell database={db} />
               <DatabaseContainerSizeCell database={db} />
-              <DatabaseCostCell
-                database={db}
-                costLoading={isCostLoading}
-                fetchBackups={true}
-              />
+              <DatabaseCostCell database={db} costLoading={isCostLoading} />
               <DatabaseActionsCell database={db} />
             </Tr>
           ))}
@@ -451,11 +446,7 @@ export const DatabaseDependencyList = ({
               <EnvStackCell environmentId={db.environmentId} />
               <DatabaseDiskSizeCell database={db} />
               <DatabaseContainerSizeCell database={db} />
-              <DatabaseCostCell
-                database={db}
-                costLoading={isCostLoading}
-                fetchBackups={true}
-              />
+              <DatabaseCostCell database={db} costLoading={isCostLoading} />
               <Td>
                 <Tooltip placement="left" text={dep.why} fluid>
                   <Code>{dep.why}</Code>
