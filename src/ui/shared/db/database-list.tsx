@@ -102,9 +102,8 @@ const DatabaseCostCell = ({
   database,
   costLoading,
 }: DatabaseCellProps & { costLoading: boolean }) => {
-  const loading =
-    costLoading ||
-    useQuery(fetchBackupsByDatabaseId({ id: database.id })).isLoading;
+  const backupsQuery = useQuery(fetchBackupsByDatabaseId({ id: database.id }));
+  const loading = costLoading || backupsQuery.isLoading;
 
   const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
