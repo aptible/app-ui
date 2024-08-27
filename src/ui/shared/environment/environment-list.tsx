@@ -1,5 +1,5 @@
 import {
-  fetchBackupsByEnvId,
+  fetchBackups,
   fetchDatabases,
   fetchEndpoints,
   fetchEnvironments,
@@ -19,6 +19,7 @@ import {
   environmentDatabasesUrl,
   stackDetailEnvsUrl,
 } from "@app/routes";
+import { schema } from "@app/schema";
 import type { DeployEnvironment } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
 import { useState } from "react";
@@ -122,8 +123,7 @@ const EnvironmentCostCell = ({
   env,
   costLoading,
 }: EnvironmentCellProps & { costLoading: boolean }) => {
-  const { isLoading } = useQuery(fetchBackupsByEnvId({ id: env.id }));
-  const loading = costLoading || isLoading;
+  const loading = costLoading;
 
   return (
     <Td>
@@ -155,6 +155,9 @@ export function EnvironmentList({
     fetchDatabases(), // To fetch embedded disks
     // Backups are fetched per-environment by the cost cell
   ];
+  const backupLoader = useSelector((s) =>
+    schema.loadersPersist.selectById(s, { id: fetchBackups().payload.key }),
+  );
   costQueries.forEach((q) => useQuery(q));
   const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
   const { isLoading } = useLoader(fetchEnvironments());
@@ -274,7 +277,10 @@ export function EnvironmentList({
               <EnvironmentStackCell env={env} />
               <EnvironmentAppsCell env={env} />
               <EnvironmentDatabasesCell env={env} />
-              <EnvironmentCostCell env={env} costLoading={isCostLoading} />
+              <EnvironmentCostCell
+                env={env}
+                costLoading={isCostLoading || backupLoader.isInitialLoading}
+              />
             </Tr>
           ))}
         </TBody>

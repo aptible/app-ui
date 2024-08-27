@@ -7,6 +7,7 @@ import {
 import { fetchBillingDetail } from "@app/billing";
 import {
   fetchApps,
+  fetchBackups,
   fetchDatabaseImages,
   fetchDatabases,
   fetchEndpoints,
@@ -18,7 +19,7 @@ import {
   fetchStacks,
 } from "@app/deploy";
 import { fetchDeployments } from "@app/deployment";
-import { call, parallel, select, takeEvery } from "@app/fx";
+import { call, parallel, put, select, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchCurrentUserRoles, fetchRoles } from "@app/roles";
@@ -89,6 +90,9 @@ function* onFetchResourceData() {
     fetchDeployments.run(),
     fetchMembershipsByOrgId.run({ orgId: org.id }),
   ]);
+  // we dont need to wait for this to complete before finishing this
+  // Operation
+  yield* put(fetchBackups());
   yield* group;
 }
 

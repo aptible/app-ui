@@ -16,6 +16,7 @@ import * as factory from "./factory";
 export const [schema, initialState] = createSchema({
   cache: slice.table(),
   loaders: slice.loaders<any>(),
+  loadersPersist: slice.loaders<any>(),
   env: slice.obj(factory.defaultConfig()),
   feedback: slice.obj<Feedback>({
     preDeploySurveyAnswered: false,
