@@ -51,14 +51,14 @@ export const Tooltip = ({
   ]);
 
   return (
-    <span className={className}>
-      <span
+    <div className={className}>
+      <div
         ref={refs.setReference}
         {...getReferenceProps()}
-        className="cursor-pointer"
+        className="cursor-pointer w-fit"
       >
         {children}
-      </span>
+      </div>
       {isOpen && (
         <div
           ref={refs.setFloating}
@@ -82,6 +82,6 @@ export const Tooltip = ({
           </div>
         </div>
       )}
-    </span>
+    </div>
   );
 };

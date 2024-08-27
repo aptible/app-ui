@@ -1,5 +1,5 @@
 import {
-  fetchBackups,
+  fetchBackupsByEnvId,
   fetchDatabases,
   fetchEndpoints,
   fetchEnvironments,
@@ -118,10 +118,19 @@ const EnvironmentStackCell = ({ env }: EnvironmentCellProps) => {
   );
 };
 
-const EnvironmentCostCell = ({ env }: EnvironmentCellProps) => {
+const EnvironmentCostCell = ({
+  env,
+  costLoading,
+}: EnvironmentCellProps & { costLoading: boolean }) => {
+  const { isLoading } = useQuery(fetchBackupsByEnvId({ id: env.id }));
+  const loading = costLoading || isLoading;
+
   return (
     <Td>
-      <CostEstimateTooltip className={tokens.type.darker} cost={env.cost} />
+      <CostEstimateTooltip
+        className={tokens.type.darker}
+        cost={loading ? null : env.cost}
+      />
     </Td>
   );
 };
@@ -142,9 +151,9 @@ export function EnvironmentList({
   const costQueries = [
     fetchEnvironments(),
     fetchServices(),
-    fetchDatabases(), // To fetch embedded disks
-    fetchBackups(),
     fetchEndpoints(),
+    fetchDatabases(), // To fetch embedded disks
+    // Backups are fetched per-environment by the cost cell
   ];
   costQueries.forEach((q) => useQuery(q));
   const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
@@ -253,7 +262,6 @@ export function EnvironmentList({
           >
             <div>Est. Monthly Cost</div>
             <SortIcon />
-            <LoadingBar isLoading={isCostLoading} />
           </Th>
         </THead>
 
@@ -266,7 +274,7 @@ export function EnvironmentList({
               <EnvironmentStackCell env={env} />
               <EnvironmentAppsCell env={env} />
               <EnvironmentDatabasesCell env={env} />
-              <EnvironmentCostCell env={env} />
+              <EnvironmentCostCell env={env} costLoading={isCostLoading} />
             </Tr>
           ))}
         </TBody>

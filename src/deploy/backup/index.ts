@@ -65,6 +65,10 @@ export const selectBackupsAsList = schema.backups.selectTableAsList;
 export const selectBackups = schema.backups.selectTable;
 export const findBackupsByEnvId = (backups: DeployBackup[], envId: string) =>
   backups.filter((backup) => backup.environmentId === envId);
+export const findBackupsByDatabaseId = (
+  backups: DeployBackup[],
+  dbId: string,
+) => backups.filter((backup) => backup.databaseId === dbId);
 
 export const selectBackupsByEnvId = createSelector(
   selectBackupsAsList,
@@ -88,8 +92,7 @@ export const selectOrphanedBackupsByEnvId = createSelector(
 export const selectBackupsByDatabaseId = createSelector(
   selectBackupsAsList,
   (_: WebState, p: { dbId: string }) => p.dbId,
-  (backups, envId) =>
-    backups.filter((bk) => bk.databaseId === envId).sort(dateDescSort),
+  findBackupsByDatabaseId,
 );
 
 export const backupEntities = {
@@ -140,14 +143,14 @@ export const fetchBackup = api.get<{ id: string }>("/backups/:id");
 
 interface FetchByResourceIdProps {
   id: string;
-  orphaned: boolean;
+  onlyOrphaned?: boolean;
   perPage?: number;
 }
 export const fetchBackupsByEnvIdPage = api.get<
   FetchByResourceIdProps & PaginateProps,
   HalEmbedded<{ backups: BackupResponse[] }>
 >("/accounts/:id/backups?page=:page", function* (ctx, next) {
-  if (ctx.payload.orphaned) {
+  if (ctx.payload.onlyOrphaned === true) {
     ctx.request = ctx.req({
       url: `${ctx.req().url}&orphaned=true`,
     });
