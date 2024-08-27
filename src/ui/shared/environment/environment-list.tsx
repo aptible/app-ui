@@ -188,7 +188,7 @@ export function EnvironmentList({
       <Group size="sm">
         <TitleBar
           visible={showTitle}
-          description="Environments are how you separate resources like staging and production."
+          description="Environments in Stacks group resources and share networks with others on the same Stack."
         >
           Environments
         </TitleBar>
