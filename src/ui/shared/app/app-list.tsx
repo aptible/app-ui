@@ -174,7 +174,6 @@ export const AppListByOrg = () => {
   const apps = useSelector((s) =>
     selectAppsForTableSearch(s, { search, sortBy, sortDir }),
   );
-  console.log(apps.find((a) => a.id === "78167"));
   const paginated = usePaginate(apps);
   const onSort = (key: keyof DeployAppRow) => {
     if (key === sortBy) {
