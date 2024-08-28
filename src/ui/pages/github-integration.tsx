@@ -76,7 +76,7 @@ export const GithubIntegrationPage = () => {
         />
 
         <FilterBar>
-          <div className="flex justify-end">
+          <div className="flex mt-2">
             <ActionBar>
               <ButtonLink to={installUrl}>
                 <IconGithub variant="sm" className="mr-2" />
@@ -95,7 +95,7 @@ export const GithubIntegrationPage = () => {
         <THead>
           <Th>Account</Th>
           <Th>Status</Th>
-          <Th variant="center">Actions</Th>
+          <Th variant="right">Actions</Th>
         </THead>
         <TBody>
           {isInstalling && (
@@ -138,7 +138,7 @@ export const GithubIntegrationPage = () => {
                   <Pill variant="error">Not Installed</Pill>
                 )}
               </Td>
-              <Td className="w-48">
+              <Td className="w-48 justify-end">
                 <div className="flex flex-row gap-1 mx-4">
                   <ButtonLink
                     to={gh.installationUrl}
