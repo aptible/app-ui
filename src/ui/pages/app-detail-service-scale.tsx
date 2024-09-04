@@ -121,7 +121,8 @@ const AutoscalingSection = ({
   useEffect(() => {
     setNextPolicy(existingPolicy);
   }, [existingPolicy.id]);
-  const [autoscalingType, setAutoscalingType] = useState<AutoscalingTypeInp>("disabled");
+  const [autoscalingType, setAutoscalingType] =
+    useState<AutoscalingTypeInp>("disabled");
   useEffect(() => {
     if (existingPolicy.scalingEnabled)
       setAutoscalingType(existingPolicy.autoscaling);
@@ -151,7 +152,9 @@ const AutoscalingSection = ({
     key: K,
     value: ServiceSizingPolicyEditProps[K],
   ) => {
-    setNextPolicy((lastPolicy) => { return { ...lastPolicy, [key]: value } });
+    setNextPolicy((lastPolicy) => {
+      return { ...lastPolicy, [key]: value };
+    });
   };
   const resetAdvancedSettings = () => {
     setNextPolicy({
@@ -176,12 +179,10 @@ const AutoscalingSection = ({
   ];
 
   if (stack.verticalAutoscaling) {
-    options.push(
-    {
+    options.push({
       label: "Enabled: Vertical Autoscaling",
       value: "vertical",
-    },
-    )
+    });
   }
 
   const autoscalingDescriptions = {
@@ -242,20 +243,24 @@ const AutoscalingSection = ({
             ) : null}
           </div>
           <div>
-          {autoscalingType !== "disabled" ?
-            <div className="pb-4 flex justify-between items-center">
-              <div className="flex flex-1">
-                <div
-                  className="font-semibold flex items-center cursor-pointer"
-                  onClick={() => setOpen(!advancedIsOpen)}
-                  onKeyUp={() => setOpen(!advancedIsOpen)}
-                >
-                  {advancedIsOpen ? <IconChevronDown /> : <IconChevronRight />}
-                  <p>{advancedIsOpen ? "Hide" : "Show"} Advanced Settings</p>
+            {autoscalingType !== "disabled" ? (
+              <div className="pb-4 flex justify-between items-center">
+                <div className="flex flex-1">
+                  <div
+                    className="font-semibold flex items-center cursor-pointer"
+                    onClick={() => setOpen(!advancedIsOpen)}
+                    onKeyUp={() => setOpen(!advancedIsOpen)}
+                  >
+                    {advancedIsOpen ? (
+                      <IconChevronDown />
+                    ) : (
+                      <IconChevronRight />
+                    )}
+                    <p>{advancedIsOpen ? "Hide" : "Show"} Advanced Settings</p>
+                  </div>
                 </div>
               </div>
-            </div> : null
-            }
+            ) : null}
             {advancedIsOpen ? (
               <div className="pb-4">
                 <div className="flex flex-col gap-2">
