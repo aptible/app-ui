@@ -675,6 +675,7 @@ export const defaultServiceSizingPolicy = (
   return {
     id: "",
     environmentId: "",
+    autoscaling: "vertical",
     scalingEnabled: false,
     defaultPolicy: false,
     metricLookbackSeconds: 300,
@@ -688,6 +689,10 @@ export const defaultServiceSizingPolicy = (
     memScaleDownThreshold: 0.75,
     minimumMemory: 2048,
     maximumMemory: null,
+    minContainers: 2,
+    maxContainers: 4,
+    minCpuThreshold: 0.1,
+    maxCpuThreshold: 0.9,
     createdAt: now,
     updatedAt: now,
     ...m,
