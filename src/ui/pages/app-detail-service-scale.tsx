@@ -157,7 +157,7 @@ const PolicySummary = ({
   return (
     <div>
       <h3 className={`${tokens.type.h3} capitalize`}>
-        {title} Settings{titleAddition}
+        {`${title} Settings${titleAddition}`}
       </h3>
       <KeyValueGroup data={data} variant="horizontal-inline" />
       {policy.autoscaling === "horizontal" &&
@@ -941,9 +941,7 @@ export const AppDetailServiceScalePage = () => {
       <Box>
         <form onSubmit={onSubmitForm}>
           <div className="flex flex-col gap-2">
-            {stack.verticalAutoscaling ? (
-              <h1 className="text-lg text-gray-500 mb-4">Manual Scale</h1>
-            ) : null}
+            <h1 className="text-lg text-gray-500 mb-4">Manual Scale</h1>
             <FormGroup
               splitWidthInputs
               description="Optimize container performance with a custom profile."
