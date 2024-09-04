@@ -32,6 +32,7 @@ import { DEFAULT_INSTANCE_CLASS, schema } from "@app/schema";
 import type {
   AutoscalingTypes,
   DeployOperation,
+  DeployServiceSizingPolicy,
   InstanceClass,
 } from "@app/types";
 import { type SyntheticEvent, useEffect, useMemo, useState } from "react";
@@ -44,7 +45,9 @@ import {
   IconChevronDown,
   IconChevronRight,
   IconRefresh,
+  KeyValueGroup,
   ServicePricingCalc,
+  tokens,
 } from "../shared";
 import {
   BannerMessages,
@@ -187,9 +190,9 @@ const AutoscalingSection = ({
 
   const autoscalingDescriptions = {
     horizontal:
-      "Automatically scale your services by regularly reviewing recent CPU utilization and scaling to the optimal container count",
+      "Automatically scale your services by regularly reviewing recent CPU utilization and scale to the optimal container count.",
     vertical:
-      "Automatically scale your services by regularly reviewing recent CPU and RAM utilization and scaling to the optimal configuration.",
+      "Automatically scale your services by regularly reviewing recent CPU and RAM utilization and scale to the optimal configuration.",
   };
 
   const setAutoscaling = (opt: SelectOption<AutoscalingTypeInp>) => {
@@ -204,6 +207,64 @@ const AutoscalingSection = ({
     updatePolicy("scalingEnabled", true);
     updatePolicy("autoscaling", opt.value as AutoscalingTypes);
     setAutoscalingType(opt.value as AutoscalingTypes);
+
+    if (opt.value === "horizontal") setOpen(true);
+  };
+
+  const policySummary = (policy: DeployServiceSizingPolicy, title: string) => {
+    const data = [];
+    if (policy.scalingEnabled) {
+      switch (policy.autoscaling) {
+        case "horizontal":
+          data.push(
+            {
+              key: "Minimum Containers",
+              value: policy.minContainers?.toString() || "",
+            },
+            {
+              key: "Maximum Containers",
+              value: policy.maxContainers?.toString() || "",
+            },
+            {
+              key: "Scale Down CPU Threshold",
+              value: policy.minCpuThreshold?.toString() || "",
+            },
+            {
+              key: "Scale Up CPU Threshold",
+              value: policy.maxCpuThreshold?.toString() || "",
+            },
+          );
+          break;
+        case "vertical":
+          data.push(
+            { key: "Minimum Memory", value: policy.minimumMemory.toString() },
+            {
+              key: "Maximum Memory",
+              value: policy.maximumMemory?.toString() || "Not set",
+            },
+          );
+          break;
+      }
+    }
+
+    let titleAddition = "";
+    if (policy.scalingEnabled)
+      titleAddition = `${policy.autoscaling} autoscaling`;
+
+    return (
+      <div>
+        <h3 className={`${tokens.type.h3} capitalize`}>
+          {title} Settings - {titleAddition}
+        </h3>
+        <KeyValueGroup data={data} variant="horizontal-inline" />
+        {policy.autoscaling === "horizontal" &&
+        (policy.minContainers ?? 0) < 2 ? (
+          <Banner className="mt-2" variant="warning">
+            Warning: High-availability requires at least 2 containers
+          </Banner>
+        ) : null}
+      </div>
+    );
   };
 
   return (
@@ -215,15 +276,10 @@ const AutoscalingSection = ({
             <ButtonLinkDocs href="https://aptible.notion.site/Vertical-Autoscaler-d33817b4e1584e2e8a8a86edc507756a" />
           </div>
           <BannerMessages {...modifyLoader} />
-          <div className="flex gap-2">
+          <div className="flex gap-4">
             <FormGroup
               label="Autoscaling"
               htmlFor="autoscaling"
-              feedbackMessage={
-                nextPolicy.scalingEnabled
-                  ? autoscalingDescriptions[nextPolicy.autoscaling]
-                  : ""
-              }
               className="w-1/2"
             >
               <Select
@@ -233,14 +289,17 @@ const AutoscalingSection = ({
                 onSelect={setAutoscaling}
                 value={autoscalingType}
               />
+              <p className="mt-2 text-gray-500">
+                {nextPolicy.scalingEnabled
+                  ? autoscalingDescriptions[nextPolicy.autoscaling]
+                  : ""}
+              </p>
             </FormGroup>
-            {existingPolicy.scalingEnabled ? (
-              <div className="w-1/2 pb-4">
-                <br />
-                <p className="font-semibold">Current Settings:</p>
-                <p>TODO: THIS IS WHERE YOU SHOULD SHOW CURRENT SETTINGS</p>
+            <div className="w-1/2 pb-4">
+              <div className="pb-4">
+                {policySummary(existingPolicy, "Current")}
               </div>
-            ) : null}
+            </div>
           </div>
           <div>
             {autoscalingType !== "disabled" ? (
@@ -265,7 +324,7 @@ const AutoscalingSection = ({
               <div className="pb-4">
                 <div className="flex flex-col gap-2">
                   {nextPolicy.autoscaling === "vertical" ? (
-                    <div>
+                    <div className="flex flex-col gap-2">
                       <h2 className="text-md text-gray-500">
                         RAM & CPU Threshold Settings
                       </h2>
@@ -452,7 +511,7 @@ const AutoscalingSection = ({
                       </FormGroup>
                     </div>
                   ) : (
-                    <div>
+                    <div className="flex flex-col gap-2">
                       <h2 className="text-md text-gray-500">
                         Container & CPU Threshold Settings
                       </h2>
@@ -462,7 +521,7 @@ const AutoscalingSection = ({
                         feedbackMessage={
                           errors.minContainers ||
                           ((nextPolicy.minContainers ?? 0) < 2
-                            ? "Alert: High-availability requires at least 2 containers"
+                            ? "Warning: High-availability requires at least 2 containers"
                             : "")
                         }
                         feedbackVariant={
