@@ -146,16 +146,18 @@ const PolicySummary = ({
         );
         break;
     }
+  } else {
+    data.push({ key: "Enabled", value: "false" });
   }
 
   let titleAddition = "";
   if (policy.scalingEnabled)
-    titleAddition = `${policy.autoscaling} autoscaling`;
+    titleAddition = ` - ${policy.autoscaling} autoscaling`;
 
   return (
     <div>
       <h3 className={`${tokens.type.h3} capitalize`}>
-        {title} Settings - {titleAddition}
+        {title} Settings{titleAddition}
       </h3>
       <KeyValueGroup data={data} variant="horizontal-inline" />
       {policy.autoscaling === "horizontal" &&

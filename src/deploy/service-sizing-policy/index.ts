@@ -1,5 +1,5 @@
 import { api, cacheShortTimer, thunks } from "@app/api";
-import { call, createSelector } from "@app/fx";
+import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
 import type {
@@ -221,26 +221,24 @@ export const modifyServiceSizingPolicy =
     function* (ctx, next) {
       yield* schema.update(schema.loaders.start({ id: ctx.name }));
       const nextPolicy = ctx.payload;
-      let updateCtx: any;
-      if (nextPolicy.id) {
-        updateCtx = yield* call(() =>
-          updateServiceSizingPolicyByServiceId.run(nextPolicy),
-        );
-      } else {
-        updateCtx = yield* call(() =>
-          createServiceSizingPolicyByServiceId.run(nextPolicy),
-        );
-      }
+      const updateCtx = nextPolicy.id
+        ? yield* updateServiceSizingPolicyByServiceId.run(nextPolicy)
+        : yield* createServiceSizingPolicyByServiceId.run(nextPolicy);
 
       yield* next();
 
       if (updateCtx.json.ok) {
-        yield* schema.update(
+        yield* schema.update([
+          schema.services.patch({
+            [nextPolicy.serviceId]: {
+              serviceSizingPolicyId: `${updateCtx.json.value.id}`,
+            },
+          }),
           schema.loaders.success({
             id: ctx.name,
             message: "Policy changes saved",
           }),
-        );
+        ]);
       } else {
         const data = updateCtx.json.error as Error;
         yield* schema.update(
