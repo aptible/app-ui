@@ -164,18 +164,23 @@ const AutoscalingSection = ({
 
   const options: SelectOption[] = [
     {
-      label: "Enabled: Vertical Autoscaling",
-      value: "vertical",
+      label: "Disabled: No autoscaling",
+      value: "disabled",
     },
     {
       label: "Enabled: Horizontal Autoscaling",
       value: "horizontal",
     },
-    {
-      label: "Disabled: No autoscaling",
-      value: "disabled",
-    },
   ];
+
+  if (stack.verticalAutoscaling) {
+    options.push(
+    {
+      label: "Enabled: Vertical Autoscaling",
+      value: "vertical",
+    },
+    )
+  }
 
   const autoscalingDescriptions = {
     horizontal:
@@ -202,10 +207,6 @@ const AutoscalingSection = ({
     updatePolicy("autoscaling", opt.value as AutoscalingTypes);
     setAutoscalingType(opt.value as AutoscalingTypes);
   };
-
-  if (!stack.verticalAutoscaling) {
-    return null;
-  }
 
   return (
     <Box>
@@ -244,6 +245,7 @@ const AutoscalingSection = ({
             ) : null}
           </div>
           <div>
+          {autoscalingType !== "disabled" ?
             <div className="pb-4 flex justify-between items-center">
               <div className="flex flex-1">
                 <div
@@ -255,7 +257,8 @@ const AutoscalingSection = ({
                   <p>{advancedIsOpen ? "Hide" : "Show"} Advanced Settings</p>
                 </div>
               </div>
-            </div>
+            </div> : null
+            }
             {advancedIsOpen ? (
               <div className="pb-4">
                 <div className="flex flex-col gap-2">
