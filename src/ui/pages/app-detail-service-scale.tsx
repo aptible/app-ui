@@ -199,7 +199,6 @@ const AutoscalingSection = ({
     return existingPolicy !== nextPolicy;
   };
   const changesExist = getChangesExist();
-  console.log(existingPolicy);
 
   const modifyLoader = useLoader(modifyServiceSizingPolicy);
   const stack = useSelector((s) => selectStackById(s, { id: stackId }));

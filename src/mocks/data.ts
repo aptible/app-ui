@@ -605,6 +605,7 @@ export const testAutoscalingAccount = defaultEnvResponse({
 });
 
 const testAutoscalingAppId = createId();
+const testAutoscalingPolicyHASID = createId();
 export const testAutoscalingService = defaultServiceResponse({
   id: createId(),
   handle: createText("web"),
@@ -617,6 +618,25 @@ export const testAutoscalingService = defaultServiceResponse({
     app: defaultHalHref(`${testEnv.apiUrl}/apps/${testAutoscalingAppId}`),
     account: defaultHalHref(
       `${testEnv.apiUrl}/accounts/${testAutoscalingAccount.id}`,
+    ),
+  },
+});
+
+export const testAutoscalingServiceHAS = defaultServiceResponse({
+  id: createId(),
+  handle: createText("web"),
+  command: "rails s",
+  container_count: 1,
+  container_memory_limit_mb: 512,
+  instance_class: "m5",
+  _links: {
+    current_release: defaultHalHref(),
+    app: defaultHalHref(`${testEnv.apiUrl}/apps/${testAutoscalingAppId}`),
+    account: defaultHalHref(
+      `${testEnv.apiUrl}/accounts/${testAutoscalingAccount.id}`,
+    ),
+    service_sizing_policy: defaultHalHref(
+      `${testEnv.apiUrl}/service_sizing_policies/${testAutoscalingPolicyHASID}`,
     ),
   },
 });
@@ -637,7 +657,7 @@ export const testAutoscalingApp = defaultAppResponse({
     current_image: null,
     last_operation: null,
     last_deploy_operation: null,
-    services: [testAutoscalingService],
+    services: [testAutoscalingService, testAutoscalingServiceHAS],
   },
 });
 
@@ -646,7 +666,7 @@ export const testAutoscalingPolicy = defaultServiceSizingPolicyResponse({
 });
 
 export const testAutoscalingPolicyHAS = defaultServiceSizingPolicyResponse({
-  id: createId(),
+  id: testAutoscalingPolicyHASID,
   scaling_enabled: true,
   autoscaling: "horizontal",
   min_containers: 1,

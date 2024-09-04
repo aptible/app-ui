@@ -14,6 +14,7 @@ import {
   testAutoscalingPolicy,
   testAutoscalingPolicyHAS,
   testAutoscalingService,
+  testAutoscalingServiceHAS,
   testAutoscalingStack,
   testEnv,
   testServiceRails,
@@ -302,7 +303,7 @@ describe("AppDetailServiceScalePage", () => {
             initEntries: [
               appServiceScalePathUrl(
                 `${testAutoscalingApp.id}`,
-                `${testAutoscalingService.id}`,
+                `${testAutoscalingServiceHAS.id}`,
               ),
             ],
           });
@@ -313,28 +314,22 @@ describe("AppDetailServiceScalePage", () => {
 
           await waitForData(store, (state) => {
             return hasDeployService(
-              selectServiceById(state, { id: `${testAutoscalingService.id}` }),
+              selectServiceById(state, {
+                id: `${testAutoscalingServiceHAS.id}`,
+              }),
             );
           });
 
           const autoscaleSelect = await screen.findByRole("combobox", {
             name: "Autoscaling Setting",
           });
-          screen.debug(autoscaleSelect);
           expect(autoscaleSelect).toHaveValue("horizontal");
 
           const title = await screen.findByText(/Current Settings/);
           const parent = title.closest("div");
-          const expectedContent = `
-          Minimum Containers:
-               2
-          Maximum Containers:
-              4
-          Scale Down CPU Threshold:
-              0.1
-          Scale Up CPU Threshold:
-              0.9
-          `;
+          const expectedContent =
+            "Current Settings - horizontal autoscalingMinimum Containers: 1Maximum Containers: 5Scale Down CPU Threshold: 0.2\
+Scale Up CPU Threshold: 0.8AlertWarning: High-availability requires at least 2 containers";
           expect(parent).toHaveTextContent(expectedContent);
         });
       });
