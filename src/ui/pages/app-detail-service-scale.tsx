@@ -106,6 +106,8 @@ type AppScaleProps = {
   containerCount: number;
 };
 
+type AutoscalingTypeInp = "horizontal" | "vertical" | "disabled";
+
 const AutoscalingSection = ({
   serviceId,
   stackId,
@@ -119,10 +121,10 @@ const AutoscalingSection = ({
   useEffect(() => {
     setNextPolicy(existingPolicy);
   }, [existingPolicy.id]);
-  const [autoscalingType, setAutoscalingType] = useState("disabled");
+  const [autoscalingType, setAutoscalingType] = useState<AutoscalingTypeInp>("disabled");
   useEffect(() => {
     if (existingPolicy.scalingEnabled)
-      setAutoscalingType(existingPolicy.autoscaling as string);
+      setAutoscalingType(existingPolicy.autoscaling);
     else setAutoscalingType("disabled");
   }, [existingPolicy.autoscaling, existingPolicy.scalingEnabled]);
   const getChangesExist = () => {
@@ -149,7 +151,7 @@ const AutoscalingSection = ({
     key: K,
     value: ServiceSizingPolicyEditProps[K],
   ) => {
-    setNextPolicy({ ...nextPolicy, [key]: value });
+    setNextPolicy((lastPolicy) => { return { ...lastPolicy, [key]: value } });
   };
   const resetAdvancedSettings = () => {
     setNextPolicy({
@@ -189,21 +191,16 @@ const AutoscalingSection = ({
       "Automatically scale your services by regularly reviewing recent CPU and RAM utilization and scaling to the optimal configuration.",
   };
 
-  const setAutoscaling = (opt: SelectOption) => {
+  const setAutoscaling = (opt: SelectOption<AutoscalingTypeInp>) => {
     setOpen(false);
 
     if (opt.value === "disabled") {
-      console.log("disabling");
-      // nextPolicy.scalingEnabled = false;
       updatePolicy("scalingEnabled", false);
       setAutoscalingType("disabled");
       return;
     }
-    console.log("enabling");
 
-    // nextPolicy.scalingEnabled = true;
     updatePolicy("scalingEnabled", true);
-    // nextPolicy.autoscaling = opt.value as AutoscalingTypes;
     updatePolicy("autoscaling", opt.value as AutoscalingTypes);
     setAutoscalingType(opt.value as AutoscalingTypes);
   };
@@ -473,7 +470,7 @@ const AutoscalingSection = ({
                           id="min-containers"
                           name="min-containers"
                           type="number"
-                          value={nextPolicy.minContainers || ""}
+                          value={nextPolicy.minContainers || "2"}
                           min="0"
                           max="9999"
                           defaultValue="2"
@@ -498,7 +495,7 @@ const AutoscalingSection = ({
                           id="max-containers"
                           name="max-containers"
                           type="number"
-                          value={nextPolicy.maxContainers || ""}
+                          value={nextPolicy.maxContainers || "4"}
                           min="0"
                           max="9999"
                           defaultValue="4"
@@ -522,7 +519,7 @@ const AutoscalingSection = ({
                           name="cpu-scale-down"
                           type="number"
                           step="0.01"
-                          value={nextPolicy.minCpuThreshold || ""}
+                          value={nextPolicy.minCpuThreshold || "0.1"}
                           min="0"
                           max="1"
                           defaultValue="0.1"
@@ -550,7 +547,7 @@ const AutoscalingSection = ({
                           name="cpu-scale-up"
                           type="number"
                           step="0.01"
-                          value={nextPolicy.maxCpuThreshold || ""}
+                          value={nextPolicy.maxCpuThreshold || "0.9"}
                           min="0"
                           max="1"
                           defaultValue="0.9"
