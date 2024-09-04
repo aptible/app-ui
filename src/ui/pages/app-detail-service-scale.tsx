@@ -109,6 +109,65 @@ type AppScaleProps = {
   containerCount: number;
 };
 
+const PolicySummary = ({
+  policy,
+  title,
+}: { policy: DeployServiceSizingPolicy; title: string }) => {
+  const data = [];
+  if (policy.scalingEnabled) {
+    switch (policy.autoscaling) {
+      case "horizontal":
+        data.push(
+          {
+            key: "Minimum Containers",
+            value: policy.minContainers?.toString() || "",
+          },
+          {
+            key: "Maximum Containers",
+            value: policy.maxContainers?.toString() || "",
+          },
+          {
+            key: "Scale Down CPU Threshold",
+            value: policy.minCpuThreshold?.toString() || "",
+          },
+          {
+            key: "Scale Up CPU Threshold",
+            value: policy.maxCpuThreshold?.toString() || "",
+          },
+        );
+        break;
+      case "vertical":
+        data.push(
+          { key: "Minimum Memory", value: policy.minimumMemory.toString() },
+          {
+            key: "Maximum Memory",
+            value: policy.maximumMemory?.toString() || "Not set",
+          },
+        );
+        break;
+    }
+  }
+
+  let titleAddition = "";
+  if (policy.scalingEnabled)
+    titleAddition = `${policy.autoscaling} autoscaling`;
+
+  return (
+    <div>
+      <h3 className={`${tokens.type.h3} capitalize`}>
+        {title} Settings - {titleAddition}
+      </h3>
+      <KeyValueGroup data={data} variant="horizontal-inline" />
+      {policy.autoscaling === "horizontal" &&
+      (policy.minContainers ?? 0) < 2 ? (
+        <Banner className="mt-2" variant="warning">
+          Warning: High-availability requires at least 2 containers
+        </Banner>
+      ) : null}
+    </div>
+  );
+};
+
 type AutoscalingTypeInp = "horizontal" | "vertical" | "disabled";
 
 const AutoscalingSection = ({
@@ -211,62 +270,6 @@ const AutoscalingSection = ({
     if (opt.value === "horizontal") setOpen(true);
   };
 
-  const policySummary = (policy: DeployServiceSizingPolicy, title: string) => {
-    const data = [];
-    if (policy.scalingEnabled) {
-      switch (policy.autoscaling) {
-        case "horizontal":
-          data.push(
-            {
-              key: "Minimum Containers",
-              value: policy.minContainers?.toString() || "",
-            },
-            {
-              key: "Maximum Containers",
-              value: policy.maxContainers?.toString() || "",
-            },
-            {
-              key: "Scale Down CPU Threshold",
-              value: policy.minCpuThreshold?.toString() || "",
-            },
-            {
-              key: "Scale Up CPU Threshold",
-              value: policy.maxCpuThreshold?.toString() || "",
-            },
-          );
-          break;
-        case "vertical":
-          data.push(
-            { key: "Minimum Memory", value: policy.minimumMemory.toString() },
-            {
-              key: "Maximum Memory",
-              value: policy.maximumMemory?.toString() || "Not set",
-            },
-          );
-          break;
-      }
-    }
-
-    let titleAddition = "";
-    if (policy.scalingEnabled)
-      titleAddition = `${policy.autoscaling} autoscaling`;
-
-    return (
-      <div>
-        <h3 className={`${tokens.type.h3} capitalize`}>
-          {title} Settings - {titleAddition}
-        </h3>
-        <KeyValueGroup data={data} variant="horizontal-inline" />
-        {policy.autoscaling === "horizontal" &&
-        (policy.minContainers ?? 0) < 2 ? (
-          <Banner className="mt-2" variant="warning">
-            Warning: High-availability requires at least 2 containers
-          </Banner>
-        ) : null}
-      </div>
-    );
-  };
-
   return (
     <Box>
       <form onSubmit={onSubmitForm}>
@@ -296,9 +299,7 @@ const AutoscalingSection = ({
               </p>
             </FormGroup>
             <div className="w-1/2 pb-4">
-              <div className="pb-4">
-                {policySummary(existingPolicy, "Current")}
-              </div>
+              <PolicySummary policy={existingPolicy} title="Current" />
             </div>
           </div>
           <div>
