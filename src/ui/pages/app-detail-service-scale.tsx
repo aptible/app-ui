@@ -160,7 +160,8 @@ const PolicySummary = ({
         {`${title} Settings${titleAddition}`}
       </h3>
       <KeyValueGroup data={data} variant="horizontal-inline" />
-      {policy.autoscaling === "horizontal" &&
+      {policy.scalingEnabled &&
+      policy.autoscaling === "horizontal" &&
       (policy.minContainers ?? 0) < 2 ? (
         <Banner className="mt-2" variant="warning">
           Warning: High-availability requires at least 2 containers
