@@ -645,6 +645,17 @@ export const testAutoscalingPolicy = defaultServiceSizingPolicyResponse({
   id: createId(),
 });
 
+export const testAutoscalingPolicyHAS = defaultServiceSizingPolicyResponse({
+  id: createId(),
+  scaling_enabled: true,
+  autoscaling: "horizontal",
+  min_containers: 1,
+  max_containers: 5,
+  min_cpu_threshold: 0.2,
+  max_cpu_threshold: 0.8,
+  percentile: 95,
+});
+
 export const testVerifiedInvitation = defaultInvitationResponse({
   id: `${createId()}`,
   email: testUserVerified.email,
