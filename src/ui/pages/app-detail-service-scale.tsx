@@ -473,7 +473,6 @@ const AutoscalingSection = ({
                           value={nextPolicy.minContainers || "2"}
                           min="0"
                           max="9999"
-                          defaultValue="2"
                           placeholder=""
                           onChange={(e) =>
                             updatePolicy(
@@ -498,7 +497,6 @@ const AutoscalingSection = ({
                           value={nextPolicy.maxContainers || "4"}
                           min="0"
                           max="9999"
-                          defaultValue="4"
                           placeholder=""
                           onChange={(e) =>
                             updatePolicy(
@@ -522,7 +520,6 @@ const AutoscalingSection = ({
                           value={nextPolicy.minCpuThreshold || "0.1"}
                           min="0"
                           max="1"
-                          defaultValue="0.1"
                           placeholder="0 (Min), 1 (Max)"
                           onChange={(e) =>
                             updatePolicy(
@@ -550,7 +547,6 @@ const AutoscalingSection = ({
                           value={nextPolicy.maxCpuThreshold || "0.9"}
                           min="0"
                           max="1"
-                          defaultValue="0.9"
                           placeholder="0 (Min), 1 (Max)"
                           onChange={(e) =>
                             updatePolicy(
