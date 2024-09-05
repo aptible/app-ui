@@ -4,6 +4,7 @@ import {
   selectHasBetaFeatures,
   selectHasScimFeature,
   selectOrganizationSelectedId,
+  selectHasManyOrgs,
 } from "@app/organizations";
 import { useSelector } from "@app/react";
 import {
@@ -34,6 +35,7 @@ export function SettingsSidebar() {
   const env = useSelector(selectEnv);
   const url = (slug: string) => `${env.legacyDashboardUrl}${slug}`;
   const orgId = useSelector(selectOrganizationSelectedId);
+  const hasManyOrgs = useSelector(selectHasManyOrgs);
   const isAccountOwner = useSelector((s) => selectIsAccountOwner(s, { orgId }));
   const hasBetaFeatures = useSelector(selectHasBetaFeatures);
   const hasScimFeature = useSelector(selectHasScimFeature);
@@ -114,14 +116,14 @@ export function SettingsSidebar() {
 
         {hasScimFeature && (
           <>
-            {isAccountOwner ? (
+            {isAccountOwner && !hasManyOrgs ?  (
               <NavLink className={navLink} to={teamScimUrl()}>
                 Provisioning
               </NavLink>
             ) : (
               <span className={navLink({ isActive: false })}>
                 Provisioning
-                <Tooltip text="Must be account owner" fluid>
+                <Tooltip text="Must be account owner with a single assigned organization" fluid>
                   <IconLock variant="sm" className="ml-1 opacity-60" />
                 </Tooltip>
               </span>

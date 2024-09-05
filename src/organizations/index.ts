@@ -80,6 +80,10 @@ export const selectOrganizationsAsList = createSelector(
 );
 export const selectOrganizationSelectedId = schema.organizationSelected.select;
 export const hasOrganization = (o: Organization): boolean => !!o.id;
+export const selectHasManyOrgs = createSelector(
+  selectOrganizationsAsList,
+  (organizations) => organizations.length > 1
+);
 
 export const selectOrganizationSelected = createSelector(
   selectOrganizationsAsList,
@@ -125,7 +129,9 @@ export const selectHasScimFeature = createSelector(
     }
 
     // Array of organization IDs that have access to scim feature
-    const scimFeatureOrgIds = ["df0ee681-9e02-4c28-8916-3b215d539b08"];
+    const scimFeatureOrgIds = ["df0ee681-9e02-4c28-8916-3b215d539b08",
+      "c5136d3b-5315-45ec-8e0e-4aa21efc9615"
+    ];
 
     return scimFeatureOrgIds.includes(orgId);
   },
