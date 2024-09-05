@@ -2,9 +2,9 @@ import { selectEnv } from "@app/config";
 import { selectIsAccountOwner } from "@app/deploy";
 import {
   selectHasBetaFeatures,
+  selectHasManyOrgs,
   selectHasScimFeature,
   selectOrganizationSelectedId,
-  selectHasManyOrgs,
 } from "@app/organizations";
 import { useSelector } from "@app/react";
 import {
@@ -116,14 +116,17 @@ export function SettingsSidebar() {
 
         {hasScimFeature && (
           <>
-            {isAccountOwner && !hasManyOrgs ?  (
+            {isAccountOwner && !hasManyOrgs ? (
               <NavLink className={navLink} to={teamScimUrl()}>
                 Provisioning
               </NavLink>
             ) : (
               <span className={navLink({ isActive: false })}>
                 Provisioning
-                <Tooltip text="Must be account owner with a single assigned organization" fluid>
+                <Tooltip
+                  text="Must be account owner with a single assigned organization"
+                  fluid
+                >
                   <IconLock variant="sm" className="ml-1 opacity-60" />
                 </Tooltip>
               </span>

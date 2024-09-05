@@ -217,17 +217,23 @@ export function RoleDetailMembersPage() {
     setExistingUserId(opt.value);
   };
   const selectedUser = useSelector((s) =>
-    selectUserById(s, { id: existingUserId })
+    selectUserById(s, { id: existingUserId }),
   );
-  const userIsScimManaged = !!(selectedUser?.externalId && selectedUser.externalId.trim() !== "");
+  const userIsScimManaged = !!(
+    selectedUser?.externalId && selectedUser.externalId.trim() !== ""
+  );
   const disableAddUser = userIsScimManaged && role.scimCreated;
   const addUserToolTip = disableAddUser
-  ? "Cannot add user: user and role are SCIM-managed"
-  : "Add user to role";
+    ? "Cannot add user: user and role are SCIM-managed"
+    : "Add user to role";
   const onAddExistingUser = () => {
     if (!disableAddUser) {
       dispatch(
-        updateUserMemberships({ userId: existingUserId, add: [id], remove: [] })
+        updateUserMemberships({
+          userId: existingUserId,
+          add: [id],
+          remove: [],
+        }),
       );
     }
   };
