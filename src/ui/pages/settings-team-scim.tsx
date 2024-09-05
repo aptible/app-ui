@@ -46,7 +46,7 @@ const validators = {
   },
 };
 
-function ConfigureScim({ onSuccess }: { onSuccess: () => void }) {
+function ScimCreate({ onSuccess }: { onSuccess: () => void }) {
   const dispatch = useDispatch();
   const orgId = useSelector(selectOrganizationSelectedId);
   const [defaultRoleId, setDefaultRoleId] = useState("");
@@ -169,7 +169,7 @@ function ScimEdit({
     dispatch(action);
   };
 
-  const onRemove = async () => {
+  const onRemove = () => {
     dispatch(deleteScimConfiguration({ id: scim.id }));
   };
 
@@ -347,5 +347,5 @@ export const TeamScimPage = () => {
   }
 
   // If no configuration exists, show the configuration form
-  return <ConfigureScim onSuccess={() => scim.trigger()} />;
+  return <ScimCreate onSuccess={() => scim.trigger()} />;
 };
