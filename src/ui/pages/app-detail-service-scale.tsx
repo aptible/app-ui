@@ -30,7 +30,6 @@ import {
 import { appActivityUrl } from "@app/routes";
 import { DEFAULT_INSTANCE_CLASS, schema } from "@app/schema";
 import type {
-  AutoscalingTypes,
   DeployOperation,
   DeployServiceSizingPolicy,
   InstanceClass,
@@ -153,15 +152,16 @@ const PolicySummary = ({
     titleAddition = ` - ${policy.autoscaling} autoscaling`;
   else titleAddition = " - Autoscaling Disabled";
 
+  const isHAS = policy.scalingEnabled && policy.autoscaling === "horizontal";
+  const minContainers = policy.minContainers ?? 0;
+
   return (
     <div>
       <h4 className={`${tokens.type.h4} capitalize`}>
         {`${title} Settings${titleAddition}`}
       </h4>
       <KeyValueGroup data={data} variant="horizontal-inline" />
-      {policy.scalingEnabled &&
-      policy.autoscaling === "horizontal" &&
-      (policy.minContainers ?? 0) < 2 ? (
+      {isHAS && minContainers < 2 ? (
         <Banner className="mt-2" variant="warning">
           Warning: High-availability requires at least 2 containers
         </Banner>
@@ -266,8 +266,8 @@ const AutoscalingSection = ({
     }
 
     updatePolicy("scalingEnabled", true);
-    updatePolicy("autoscaling", opt.value as AutoscalingTypes);
-    setAutoscalingType(opt.value as AutoscalingTypes);
+    updatePolicy("autoscaling", opt.value);
+    setAutoscalingType(opt.value);
 
     if (opt.value === "horizontal") setOpen(true);
   };
