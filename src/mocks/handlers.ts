@@ -1,6 +1,7 @@
 import {
   defaultMembershipResponse,
   defaultSamlConfigurationResponse,
+  defaultScimConfigurationResponse,
 } from "@app/auth";
 import {
   type DeployAppResponse,
@@ -180,6 +181,9 @@ const authHandlers = [
   rest.get(`${testEnv.authUrl}/saml_configurations`, (_, res, ctx) => {
     return res(ctx.json({ _embedded: { saml_configurations: [] } }));
   }),
+  rest.get(`${testEnv.authUrl}/scim_configurations`, (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { scim_configurations: [] } }));
+  }),
   rest.get(
     `${testEnv.authUrl}/organizations/:id/whitelist_memberships`,
     (_, res, ctx) => {
@@ -234,6 +238,36 @@ const authHandlers = [
                 `${testEnv.authUrl}/organizations/${orgId}`,
               ),
             },
+          }),
+        ),
+      );
+    },
+  ),
+  rest.delete(
+    `${testEnv.authUrl}/scim_configurations/:id`,
+    async (_, res, ctx) => {
+      return res(ctx.status(204));
+    },
+  ),
+  rest.patch(
+    `${testEnv.authUrl}/scim_configurations/:id`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json(
+          defaultScimConfigurationResponse({
+            id: `${createId()}`,
+          }),
+        ),
+      );
+    },
+  ),
+  rest.post(
+    `${testEnv.authUrl}/organizations/:id/scim_configurations`,
+    async (req, res, ctx) => {
+      return res(
+        ctx.json(
+          defaultScimConfigurationResponse({
+            id: `${createId()}`,
           }),
         ),
       );
