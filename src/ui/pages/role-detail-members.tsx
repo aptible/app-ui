@@ -216,10 +216,20 @@ export function RoleDetailMembersPage() {
   const onSelect = (opt: SelectOption) => {
     setExistingUserId(opt.value);
   };
+  const selectedUser = useSelector((s) =>
+    selectUserById(s, { id: existingUserId })
+  );
+  const userIsScimManaged = !!(selectedUser?.externalId && selectedUser.externalId.trim() !== "");
+  const disableAddUser = userIsScimManaged && role.scimCreated;
+  const addUserToolTip = disableAddUser
+  ? "Cannot add user: user and role are SCIM-managed"
+  : "Add user to role";
   const onAddExistingUser = () => {
-    dispatch(
-      updateUserMemberships({ userId: existingUserId, add: [id], remove: [] }),
-    );
+    if (!disableAddUser) {
+      dispatch(
+        updateUserMemberships({ userId: existingUserId, add: [id], remove: [] })
+      );
+    }
   };
   const onDelete = (userId: string) => {
     dispatch(updateUserMemberships({ userId, add: [], remove: [id] }));
@@ -245,13 +255,15 @@ export function RoleDetailMembersPage() {
                       onSelect={onSelect}
                       value={existingUserId}
                     />
-                    <Button
-                      onClick={onAddExistingUser}
-                      isLoading={loader.isLoading}
-                      disabled={userOpts.length === 1}
-                    >
-                      Add User
-                    </Button>
+                    <Tooltip fluid text={addUserToolTip}>
+                      <Button
+                        onClick={onAddExistingUser}
+                        isLoading={loader.isLoading}
+                        disabled={disableAddUser || userOpts.length === 1}
+                      >
+                        Add User
+                      </Button>
+                    </Tooltip>
                   </Group>
 
                   <form onSubmit={onInvite}>
