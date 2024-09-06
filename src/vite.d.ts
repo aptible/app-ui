@@ -19,4 +19,6 @@ interface ImportMetaEnv {
   VITE_ORIGIN: string;
   VITE_TUNA_ENABLED: string;
   VITE_STRIPE_PUBLISHABLE_KEY: string;
+  VITE_FEATURE_BETA_ORG_IDS: string;
+  VITE_FEATURE_SCIM_ORG_IDS: string;
 }
