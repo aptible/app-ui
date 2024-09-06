@@ -278,7 +278,7 @@ const AutoscalingSection = ({
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-start">
             <h1 className="text-lg text-gray-500">Autoscale</h1>
-            <ButtonLinkDocs href="https://aptible.notion.site/Vertical-Autoscaler-d33817b4e1584e2e8a8a86edc507756a" />
+            <ButtonLinkDocs href="https://www.aptible.com/docs/core-concepts/scaling/app-scaling#autoscaling" />
           </div>
           <BannerMessages {...modifyLoader} />
           <div className="flex gap-4">
