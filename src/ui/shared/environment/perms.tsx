@@ -68,7 +68,7 @@ function EnvPermsRow({
         {users.length === 0 ? (
           <Code>0</Code>
         ) : (
-          <Tooltip text={users.map((u) => u.name).join(", ")}>
+          <Tooltip className="flex justify-evenly" text={users.map((u) => u.name).join(", ")}>
             <Code>{users.length}</Code>
           </Tooltip>
         )}
