@@ -14,7 +14,7 @@ import { Tooltip } from "./tooltip";
 export function RoleColHeader({ scope }: { scope: PermissionScope }) {
   return (
     <Th className="w-[100px] text-center">
-      <Tooltip text={scopeDesc[scope]}>{scopeTitle[scope]} </Tooltip>
+      <Tooltip className="flex justify-evenly" text={scopeDesc[scope]}>{scopeTitle[scope]} </Tooltip>
     </Th>
   );
 }
@@ -30,7 +30,7 @@ export function PermCheck({
   // override mechanism since owner roles has all perms enabled
   if (isOwnerRole) {
     return (
-      <Tooltip fluid text="Inherited from Owner Role permissions">
+      <Tooltip className="flex justify-evenly" fluid text="Inherited from Owner Role permissions">
         <IconCheckCircle
           className="inline-block"
           color="#4361FF"
@@ -53,6 +53,7 @@ export function PermCheck({
   if (hasInheritedPerm(perm)) {
     return (
       <Tooltip
+        className="flex justify-evenly"
         fluid
         text={`Inherited from "${scopeTitle[inheritedPerm.scope]}" permission`}
       >
