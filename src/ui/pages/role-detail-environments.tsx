@@ -246,8 +246,8 @@ function EnvEditorRow({
       </Td>
       <Td>
         {editing ? (
-          <Button variant="white" size="sm" onClick={() => onEdit("")}>
-            Done
+          <Button size="sm" onClick={() => onEdit("")}>
+            Save
           </Button>
         ) : (
           <ButtonCanManageRole
