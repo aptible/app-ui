@@ -101,6 +101,7 @@ function ScimCreate({ onSuccess }: { onSuccess: () => void }) {
                     options={options}
                     onSelect={(opt) => setDefaultRoleId(opt.value)}
                     value={defaultRoleId}
+                    ariaLabel="default-role"
                   />
                 </div>
               </FormGroup>
@@ -221,6 +222,7 @@ function ScimEdit({
                     options={options}
                     onSelect={(opt) => setDefaultRoleId(opt.value)}
                     value={defaultRoleId}
+                    ariaLabel="default-role-edit"
                   />
                 </div>
               </FormGroup>
