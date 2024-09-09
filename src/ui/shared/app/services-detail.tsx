@@ -174,6 +174,9 @@ const AppServiceByAppRow = ({
 }) => {
   const app = useSelector((s) => selectAppById(s, { id: service.appId }));
 
+  const autoscalingEnabled =
+    stack.verticalAutoscaling || stack.horizontalAutoscaling;
+
   return (
     <Tr>
       <NameCell service={service} />
@@ -183,9 +186,9 @@ const AppServiceByAppRow = ({
       <CostCell
         service={service}
         costLoading={costLoading}
-        evaluateAutoscaling={stack.verticalAutoscaling}
+        evaluateAutoscaling={autoscalingEnabled}
       />
-      {stack.verticalAutoscaling ? <AutoscaleCell service={service} /> : null}
+      {autoscalingEnabled ? <AutoscaleCell service={service} /> : null}
 
       <Td variant="right">
         <Group size="sm" variant="horizontal">
@@ -354,6 +357,9 @@ export function AppServicesByApp({
   costQueries.forEach((q) => useQuery(q));
   const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
 
+  const autoscalingEnabled =
+    stack.verticalAutoscaling || stack.horizontalAutoscaling;
+
   return (
     <Group>
       <Group size="sm">
@@ -371,13 +377,13 @@ export function AppServicesByApp({
           <Th>Command</Th>
           <Th>Details</Th>
           <Th>Est. Monthly Cost</Th>
-          {stack.verticalAutoscaling ? <Th>Autoscaling</Th> : null}
+          {autoscalingEnabled ? <Th>Autoscaling</Th> : null}
           <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
           {paginated.data.length === 0 ? (
-            <EmptyTr colSpan={stack.verticalAutoscaling ? 6 : 5} />
+            <EmptyTr colSpan={autoscalingEnabled ? 6 : 5} />
           ) : null}
           {paginated.data.map((service) => (
             <AppServiceByAppRow

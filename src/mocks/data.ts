@@ -576,6 +576,7 @@ export const testAutoscalingStack = defaultStackResponse({
   id: createId(),
   name: createText("stack"),
   vertical_autoscaling: true,
+  horizontal_autoscaling: true,
   region: "us-east-1",
 });
 

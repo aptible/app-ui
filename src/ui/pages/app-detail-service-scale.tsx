@@ -203,6 +203,10 @@ const AutoscalingSection = ({
   const modifyLoader = useLoader(modifyServiceSizingPolicy);
   const stack = useSelector((s) => selectStackById(s, { id: stackId }));
 
+  if (!stack.verticalAutoscaling && !stack.horizontalAutoscaling) {
+    return null;
+  }
+
   const [errors, validate] = useValidator<
     ServiceSizingPolicyEditProps,
     typeof policyValidators
@@ -236,11 +240,14 @@ const AutoscalingSection = ({
       label: "Disabled: No autoscaling",
       value: "disabled",
     },
-    {
+  ];
+
+  if (stack.horizontalAutoscaling) {
+    options.push({
       label: "Enabled: Horizontal Autoscaling",
       value: "horizontal",
-    },
-  ];
+    });
+  }
 
   if (stack.verticalAutoscaling) {
     options.push({

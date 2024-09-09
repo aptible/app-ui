@@ -72,10 +72,7 @@ describe("AppDetailServiceScalePage", () => {
     await screen.findByText(
       /Optimize container performance with a custom profile./,
     );
-    // get the second button
-    const btn = (
-      await screen.findAllByRole("button", { name: /Save Changes/ })
-    )[1];
+    const btn = await screen.findByRole("button", { name: /Save Changes/ });
     expect(btn).toBeDisabled();
 
     // ensure VAS is diasabled
@@ -84,11 +81,11 @@ describe("AppDetailServiceScalePage", () => {
     });
     expect(vasOption).toBeNull();
 
-    // ensure HAS is enabled
+    // ensure HAS is disabled
     const hasOption = screen.queryByRole("option", {
       name: "Enabled: Horizontal Autoscaling",
     });
-    expect(hasOption).toBeInTheDocument();
+    expect(hasOption).toBeNull();
 
     const containerCount = await screen.findByLabelText(/Number of Containers/);
     await act(async () => await userEvent.clear(containerCount));

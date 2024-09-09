@@ -240,6 +240,7 @@ export const defaultDeployStack = (
     allowTInstanceProfile: false,
     allowGranularContainerSizes: false,
     verticalAutoscaling: false,
+    horizontalAutoscaling: false,
     internalDomain: "aptible.in",
     defaultDomain: "on-aptible.com",
     selfHosted: false,
