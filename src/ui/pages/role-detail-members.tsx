@@ -20,6 +20,7 @@ import { teamPendingInvitesUrl } from "@app/routes";
 import type { Membership } from "@app/types";
 import {
   selectCurrentUserId,
+  selectIsUserScimManaged,
   selectUserById,
   selectUsersAsList,
 } from "@app/users";
@@ -103,7 +104,9 @@ function MemberRow({
 }) {
   const dispatch = useDispatch();
   const user = useSelector((s) => selectUserById(s, { id: membership.userId }));
-  const userIsScimManaged = !!user.externalId && user.externalId.trim() !== "";
+  const userIsScimManaged = useSelector((s) =>
+    selectIsUserScimManaged(s, { id: membership.userId }),
+  );
   const disableRemoval = userIsScimManaged && roleScimCreated;
   const removeToolTip = disableRemoval
     ? "Cannot remove: user and role are SCIM-managed"

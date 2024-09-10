@@ -117,7 +117,7 @@ export const selectHasBetaFeatures = createSelector(
     const betaFeatureOrgIds = config.betaFeatureOrgIds
       .split(",")
       .map((id) => id.trim())
-      .filter((id) => id);
+      .filter(Boolean);
 
     return betaFeatureOrgIds.includes(orgId);
   },
@@ -135,7 +135,7 @@ export const selectHasScimFeature = createSelector(
     const scimFeatureOrgIds = config.scimFeatureOrgIds
       .split(",")
       .map((id) => id.trim())
-      .filter((id) => id);
+      .filter(Boolean);
 
     return scimFeatureOrgIds.includes(orgId);
   },

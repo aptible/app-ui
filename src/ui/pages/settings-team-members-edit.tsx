@@ -12,7 +12,11 @@ import {
 } from "@app/react";
 import { fetchUserRoles } from "@app/roles";
 import { teamMembersUrl } from "@app/routes";
-import { selectCurrentUser, selectUserById } from "@app/users";
+import {
+  selectCurrentUser,
+  selectIsUserScimManaged,
+  selectUserById,
+} from "@app/users";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
@@ -91,7 +95,9 @@ export function TeamMembersEditPage() {
   const isAccountOwner = useSelector((s) =>
     selectIsAccountOwner(s, { orgId: org.id }),
   );
-  const userIsScimManaged = !!user.externalId && user.externalId.trim() !== "";
+  const userIsScimManaged = useSelector((s) =>
+    selectIsUserScimManaged(s, { id: user.id }),
+  );
   const canRemoveUser =
     isAccountOwner && user.id !== currentUser.id && !userIsScimManaged;
 

@@ -122,10 +122,10 @@ export const generateScimToken = authApi.post<
   yield* next();
 
   if (!ctx.json.ok) {
-    throw new Error("API request failed");
+    return ctx.json;
   }
 
-  const response: GenerateTokenResponse = ctx.json.value;
+  const response = ctx.json.value;
   yield* schema.update(schema.scimToken.set(response.token));
   ctx.loader = { message: "Token generated successfully!" };
 });

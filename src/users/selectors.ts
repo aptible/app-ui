@@ -64,3 +64,9 @@ export const selectIsUserVerified = createSelector(
   selectCurrentUser,
   (user) => user.verified,
 );
+
+export const selectIsUserScimManaged = createSelector(
+  (state: any, props: { id: string }) =>
+    selectUserById(state, { id: props.id }),
+  (user) => !!user?.externalId && user.externalId.trim() !== "",
+);

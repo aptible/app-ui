@@ -6,6 +6,26 @@ import { rest } from "msw";
 import { TeamScimPage } from "./settings-team-scim";
 
 describe("Team SCIM Page", () => {
+  describe("when scim configuration does not exist for org", () => {
+    it("should show not show owners the edit option", async () => {
+      const { TestProvider, store } = setupIntegrationTest({
+        path: TEAM_SCIM_PATH,
+        initEntries: [teamScimUrl()],
+      });
+
+      await waitForBootup(store);
+
+      render(
+        <TestProvider>
+          <TeamScimPage />
+        </TestProvider>,
+      );
+
+      expect(
+        screen.queryByText(/Edit SCIM Configuration/),
+      ).not.toBeInTheDocument();
+    });
+  });
   describe("when scim configuration exists for org", () => {
     it("should show org owners the edit option", async () => {
       let counter = 0;
