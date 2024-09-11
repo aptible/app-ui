@@ -1,13 +1,18 @@
 import { api, cacheShortTimer, thunks } from "@app/api";
-import { call, createSelector } from "@app/fx";
+import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
-import type { DeployServiceSizingPolicy, LinkResponse } from "@app/types";
+import type {
+  AutoscalingTypes,
+  DeployServiceSizingPolicy,
+  LinkResponse,
+} from "@app/types";
 import { selectServiceById } from "../service";
 
 export interface DeployServiceSizingPolicyResponse {
   id: number | undefined;
   scaling_enabled: boolean;
+  autoscaling: AutoscalingTypes;
   default_policy: boolean;
   metric_lookback_seconds: number;
   percentile: number;
@@ -20,6 +25,10 @@ export interface DeployServiceSizingPolicyResponse {
   mem_scale_down_threshold: number;
   minimum_memory: number;
   maximum_memory: number | null;
+  min_containers: number | null;
+  max_containers: number | null;
+  min_cpu_threshold: number | null;
+  max_cpu_threshold: number | null;
   created_at: string;
   updated_at: string;
   _links: {
@@ -35,6 +44,7 @@ export const defaultServiceSizingPolicyResponse = (
   return {
     id: undefined,
     scaling_enabled: false,
+    autoscaling: "vertical",
     default_policy: false,
     metric_lookback_seconds: 300,
     percentile: 99,
@@ -47,6 +57,10 @@ export const defaultServiceSizingPolicyResponse = (
     mem_scale_down_threshold: 0.75,
     minimum_memory: 2048,
     maximum_memory: null,
+    min_containers: 2,
+    max_containers: 4,
+    min_cpu_threshold: 0.1,
+    max_cpu_threshold: 0.9,
     created_at: now,
     updated_at: now,
     _type: "service_sizing_policy",
@@ -65,6 +79,7 @@ export const deserializeDeployServiceSizingPolicy = (
     id: `${payload.id}`,
     environmentId,
     scalingEnabled: payload.scaling_enabled,
+    autoscaling: payload.autoscaling,
     defaultPolicy: payload.default_policy,
     metricLookbackSeconds: payload.metric_lookback_seconds,
     percentile: payload.percentile,
@@ -77,6 +92,10 @@ export const deserializeDeployServiceSizingPolicy = (
     memScaleDownThreshold: payload.mem_scale_down_threshold,
     minimumMemory: payload.minimum_memory,
     maximumMemory: payload.maximum_memory,
+    minContainers: payload.min_containers,
+    maxContainers: payload.max_containers,
+    minCpuThreshold: payload.min_cpu_threshold,
+    maxCpuThreshold: payload.max_cpu_threshold,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
   };
@@ -120,6 +139,7 @@ export const fetchServiceSizingPoliciesByServiceId = api.get<{
 
 export interface ServiceSizingPolicyEditProps {
   scalingEnabled: boolean;
+  autoscaling: AutoscalingTypes;
   metricLookbackSeconds: number;
   percentile: number;
   postScaleUpCooldownSeconds: number;
@@ -131,12 +151,17 @@ export interface ServiceSizingPolicyEditProps {
   memScaleDownThreshold: number;
   minimumMemory: number;
   maximumMemory: number | null;
+  minContainers: number | null;
+  maxContainers: number | null;
+  minCpuThreshold: number | null;
+  maxCpuThreshold: number | null;
 }
 
 const serializeServiceSizingPolicyEditProps = (
   payload: ServiceSizingPolicyEditProps,
 ) => ({
   scaling_enabled: payload.scalingEnabled,
+  autoscaling: payload.autoscaling,
   metric_lookback_seconds: payload.metricLookbackSeconds,
   percentile: payload.percentile,
   post_scale_up_cooldown_seconds: payload.postScaleUpCooldownSeconds,
@@ -148,6 +173,10 @@ const serializeServiceSizingPolicyEditProps = (
   mem_scale_down_threshold: payload.memScaleDownThreshold,
   minimum_memory: payload.minimumMemory,
   maximum_memory: payload.maximumMemory || null, // 0 => null
+  min_containers: payload.minContainers,
+  max_containers: payload.maxContainers,
+  min_cpu_threshold: payload.minCpuThreshold,
+  max_cpu_threshold: payload.maxCpuThreshold,
 });
 
 export interface ModifyServiceSizingPolicyProps
@@ -192,26 +221,24 @@ export const modifyServiceSizingPolicy =
     function* (ctx, next) {
       yield* schema.update(schema.loaders.start({ id: ctx.name }));
       const nextPolicy = ctx.payload;
-      let updateCtx: any;
-      if (nextPolicy.id) {
-        updateCtx = yield* call(() =>
-          updateServiceSizingPolicyByServiceId.run(nextPolicy),
-        );
-      } else {
-        updateCtx = yield* call(() =>
-          createServiceSizingPolicyByServiceId.run(nextPolicy),
-        );
-      }
+      const updateCtx = nextPolicy.id
+        ? yield* updateServiceSizingPolicyByServiceId.run(nextPolicy)
+        : yield* createServiceSizingPolicyByServiceId.run(nextPolicy);
 
       yield* next();
 
       if (updateCtx.json.ok) {
-        yield* schema.update(
+        yield* schema.update([
+          schema.services.patch({
+            [nextPolicy.serviceId]: {
+              serviceSizingPolicyId: `${updateCtx.json.value.id}`,
+            },
+          }),
           schema.loaders.success({
             id: ctx.name,
             message: "Policy changes saved",
           }),
-        );
+        ]);
       } else {
         const data = updateCtx.json.error as Error;
         yield* schema.update(

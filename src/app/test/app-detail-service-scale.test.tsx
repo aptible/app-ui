@@ -1,4 +1,9 @@
-import { hasDeployApp, selectAppById } from "@app/deploy";
+import {
+  hasDeployApp,
+  hasDeployService,
+  selectAppById,
+  selectServiceById,
+} from "@app/deploy";
 import {
   server,
   stacksWithResources,
@@ -7,7 +12,9 @@ import {
   testAutoscalingAccount,
   testAutoscalingApp,
   testAutoscalingPolicy,
+  testAutoscalingPolicyHAS,
   testAutoscalingService,
+  testAutoscalingServiceHAS,
   testAutoscalingStack,
   testEnv,
   testServiceRails,
@@ -67,6 +74,18 @@ describe("AppDetailServiceScalePage", () => {
     );
     const btn = await screen.findByRole("button", { name: /Save Changes/ });
     expect(btn).toBeDisabled();
+
+    // ensure VAS is diasabled
+    const vasOption = screen.queryByRole("option", {
+      name: "Enabled: Vertical Autoscaling",
+    });
+    expect(vasOption).toBeNull();
+
+    // ensure HAS is disabled
+    const hasOption = screen.queryByRole("option", {
+      name: "Enabled: Horizontal Autoscaling",
+    });
+    expect(hasOption).toBeNull();
 
     const containerCount = await screen.findByLabelText(/Number of Containers/);
     await act(async () => await userEvent.clear(containerCount));
@@ -150,8 +169,170 @@ describe("AppDetailServiceScalePage", () => {
     });
 
     describe("when autoscaling is enabled", () => {
+      it("should validate some HAS inputs", async () => {
+        server.use(
+          ...verifiedUserHandlers(),
+          ...stacksWithResources({
+            stacks: [testAutoscalingStack],
+            accounts: [testAutoscalingAccount],
+            apps: [testAutoscalingApp],
+          }),
+          rest.get(`${testEnv.apiUrl}/operations/:id/logs`, (_, res, ctx) => {
+            return res(ctx.text("/mock"));
+          }),
+          rest.get(`${testEnv.apiUrl}/mock`, (_, res, ctx) => {
+            return res(ctx.text("complete"));
+          }),
+
+          rest.post(
+            `${testEnv.apiUrl}/services/:id/service_sizing_policies`,
+            async (_, res, ctx) => {
+              return res(ctx.json(testAutoscalingPolicy));
+            },
+          ),
+        );
+        const { App, store } = setupAppIntegrationTest({
+          initEntries: [
+            appServiceScalePathUrl(
+              `${testAutoscalingApp.id}`,
+              `${testAutoscalingService.id}`,
+            ),
+          ],
+        });
+
+        await waitForBootup(store);
+
+        render(<App />);
+
+        await waitForData(store, (state) => {
+          return hasDeployApp(
+            selectAppById(state, { id: `${testAutoscalingApp.id}` }),
+          );
+        });
+
+        await screen.findByRole("heading", { level: 1, name: "Autoscale" });
+
+        const btns = screen.getAllByRole("button", {
+          name: /Save Changes/,
+        });
+        const autoscaleBtn = btns[0];
+        expect(autoscaleBtn).toBeDisabled();
+
+        const autoscaleSelect = await screen.findByRole("combobox", {
+          name: "Autoscaling Setting",
+        });
+        expect(autoscaleSelect).toHaveValue("disabled");
+
+        fireEvent.change(autoscaleSelect, {
+          target: { value: "horizontal" },
+        });
+        expect(autoscaleSelect).toHaveValue("horizontal");
+
+        const minContainersInput = await screen.findByLabelText(
+          "Minimum Container Count",
+        );
+        const maxContainersInput = await screen.findByLabelText(
+          "Maximum Container Count",
+        );
+        const scaleDownInput = await screen.findByLabelText(
+          "Scale Down Threshold (CPU Usage)",
+        );
+        const scaleUpInput = await screen.findByLabelText(
+          "Scale Up Threshold (CPU Usage)",
+        );
+
+        // Check initial values
+        expect(minContainersInput).toHaveValue(2);
+        expect(maxContainersInput).toHaveValue(4);
+        expect(scaleDownInput).toHaveValue(0.1);
+        expect(scaleUpInput).toHaveValue(0.9);
+
+        // Change the value to 1 should show a warning
+        fireEvent.change(minContainersInput, { target: { value: 1 } });
+        expect(minContainersInput).toHaveValue(1);
+        await screen.findByText(
+          "Warning: High-availability requires at least 2 containers",
+        );
+
+        // Max containers under min containers should be a validation failure
+        fireEvent.change(minContainersInput, { target: { value: 5 } });
+
+        expect(autoscaleBtn).toBeEnabled();
+        fireEvent.click(autoscaleBtn);
+
+        expect(autoscaleBtn).toBeEnabled();
+        await screen.findByText(
+          "Minimum containers must be less than maximum containers",
+        );
+        await screen.findByText(
+          "Maximum containers must be above minimum containers",
+        );
+
+        expect(
+          screen.queryByText(/Policy changes saved/),
+        ).not.toBeInTheDocument();
+      });
+
+      describe("with an existing scaling policy on a service", () => {
+        it("should show the current settings summary", async () => {
+          server.use(
+            ...verifiedUserHandlers(),
+            ...stacksWithResources({
+              stacks: [testAutoscalingStack],
+              accounts: [testAutoscalingAccount],
+              apps: [testAutoscalingApp],
+            }),
+            rest.get(`${testEnv.apiUrl}/operations/:id/logs`, (_, res, ctx) => {
+              return res(ctx.text("/mock"));
+            }),
+            rest.get(`${testEnv.apiUrl}/mock`, (_, res, ctx) => {
+              return res(ctx.text("complete"));
+            }),
+
+            rest.get(
+              `${testEnv.apiUrl}/services/:id/service_sizing_policies`,
+              async (_, res, ctx) => {
+                return res(ctx.json(testAutoscalingPolicyHAS));
+              },
+            ),
+          );
+          const { App, store } = setupAppIntegrationTest({
+            initEntries: [
+              appServiceScalePathUrl(
+                `${testAutoscalingApp.id}`,
+                `${testAutoscalingServiceHAS.id}`,
+              ),
+            ],
+          });
+
+          await waitForBootup(store);
+
+          render(<App />);
+
+          await waitForData(store, (state) => {
+            return hasDeployService(
+              selectServiceById(state, {
+                id: `${testAutoscalingServiceHAS.id}`,
+              }),
+            );
+          });
+
+          const autoscaleSelect = await screen.findByRole("combobox", {
+            name: "Autoscaling Setting",
+          });
+          expect(autoscaleSelect).toHaveValue("horizontal");
+
+          const title = await screen.findByText(/Current Settings/);
+          const parent = title.closest("div");
+          const expectedContent =
+            "Current Settings - horizontal autoscalingMinimum Containers: 1Maximum Containers: 5Scale Down CPU Threshold: 0.2\
+Scale Up CPU Threshold: 0.8AlertWarning: High-availability requires at least 2 containers";
+          expect(parent).toHaveTextContent(expectedContent);
+        });
+      });
+
       describe("no existing scaling policy on a service", () => {
-        it("should allow enabling autoscaling", async () => {
+        it("should allow enabling horizontal autoscaling", async () => {
           server.use(
             ...verifiedUserHandlers(),
             ...stacksWithResources({
@@ -192,9 +373,7 @@ describe("AppDetailServiceScalePage", () => {
             );
           });
 
-          await screen.findByText(
-            /Automatically scale your services by regularly reviewing recent CPU and RAM/,
-          );
+          await screen.findByRole("heading", { level: 1, name: "Autoscale" });
 
           const btns = screen.getAllByRole("button", {
             name: /Save Changes/,
@@ -202,15 +381,15 @@ describe("AppDetailServiceScalePage", () => {
           const autoscaleBtn = btns[0];
           expect(autoscaleBtn).toBeDisabled();
 
-          const cmdDisabledRadio = await screen.findByRole("radio", {
-            name: /Disabled/,
+          const autoscaleSelect = await screen.findByRole("combobox", {
+            name: "Autoscaling Setting",
           });
-          expect(cmdDisabledRadio).toBeChecked();
+          expect(autoscaleSelect).toHaveValue("disabled");
 
-          const cmdEnabledRadio = await screen.findByRole("radio", {
-            name: /Enabled/,
+          fireEvent.change(autoscaleSelect, {
+            target: { value: "horizontal" },
           });
-          fireEvent.click(cmdEnabledRadio);
+          expect(autoscaleSelect).toHaveValue("horizontal");
 
           expect(autoscaleBtn).toBeEnabled();
           fireEvent.click(autoscaleBtn);
@@ -219,6 +398,73 @@ describe("AppDetailServiceScalePage", () => {
 
           await screen.findByText(/Policy changes saved/);
         });
+      });
+
+      it("should allow enabling vertical autoscaling", async () => {
+        server.use(
+          ...verifiedUserHandlers(),
+          ...stacksWithResources({
+            stacks: [testAutoscalingStack],
+            accounts: [testAutoscalingAccount],
+            apps: [testAutoscalingApp],
+          }),
+          rest.get(`${testEnv.apiUrl}/operations/:id/logs`, (_, res, ctx) => {
+            return res(ctx.text("/mock"));
+          }),
+          rest.get(`${testEnv.apiUrl}/mock`, (_, res, ctx) => {
+            return res(ctx.text("complete"));
+          }),
+
+          rest.post(
+            `${testEnv.apiUrl}/services/:id/service_sizing_policies`,
+            async (_, res, ctx) => {
+              return res(ctx.json(testAutoscalingPolicy));
+            },
+          ),
+        );
+        const { App, store } = setupAppIntegrationTest({
+          initEntries: [
+            appServiceScalePathUrl(
+              `${testAutoscalingApp.id}`,
+              `${testAutoscalingService.id}`,
+            ),
+          ],
+        });
+
+        await waitForBootup(store);
+
+        render(<App />);
+
+        await waitForData(store, (state) => {
+          return hasDeployApp(
+            selectAppById(state, { id: `${testAutoscalingApp.id}` }),
+          );
+        });
+
+        await screen.findByRole("heading", { level: 1, name: "Autoscale" });
+
+        const btns = screen.getAllByRole("button", {
+          name: /Save Changes/,
+        });
+        const autoscaleBtn = btns[0];
+        expect(autoscaleBtn).toBeDisabled();
+
+        const autoscaleSelect = await screen.findByRole("combobox", {
+          name: "Autoscaling Setting",
+        });
+        expect(autoscaleSelect).toHaveValue("disabled");
+
+        fireEvent.change(autoscaleSelect, {
+          target: { value: "vertical" },
+        });
+        expect(autoscaleSelect).toHaveValue("vertical");
+
+        expect(autoscaleBtn).toBeEnabled();
+        fireEvent.click(autoscaleBtn);
+
+        expect(autoscaleBtn).toBeDisabled();
+
+        await screen.findByText(/Policy changes saved/);
       });
     });
   });

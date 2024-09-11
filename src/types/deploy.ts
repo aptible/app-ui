@@ -147,6 +147,7 @@ export interface DeployStack extends Timestamps {
   allowRInstanceProfile: boolean;
   allowGranularContainerSizes: boolean;
   verticalAutoscaling: boolean;
+  horizontalAutoscaling: boolean;
   organizationId: string;
   internalDomain: string;
   defaultDomain: string;
@@ -617,9 +618,12 @@ export interface DeployAppConfig {
   appId: string;
 }
 
+export type AutoscalingTypes = "vertical" | "horizontal";
+
 export interface DeployServiceSizingPolicy extends Timestamps {
   id: string;
   environmentId: string;
+  autoscaling: AutoscalingTypes;
   scalingEnabled: boolean;
   defaultPolicy: boolean;
   metricLookbackSeconds: number;
@@ -633,6 +637,10 @@ export interface DeployServiceSizingPolicy extends Timestamps {
   memScaleDownThreshold: number;
   minimumMemory: number;
   maximumMemory: number | null;
+  minContainers: number | null;
+  maxContainers: number | null;
+  minCpuThreshold: number | null;
+  maxCpuThreshold: number | null;
 }
 
 export interface DeploySource {
