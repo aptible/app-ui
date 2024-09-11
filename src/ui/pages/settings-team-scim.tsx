@@ -134,7 +134,6 @@ function ScimEdit({
     scim.default_role_id || "",
   );
   const [showTokenModal, setShowTokenModal] = useState(false);
-  const [isLoading] = useState(false);
 
   const data = {
     scimId: scim.id,
