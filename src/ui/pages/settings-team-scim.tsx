@@ -228,7 +228,10 @@ function ScimEdit({
               </FormGroup>
 
               <div>
-                <Button onClick={handleGenerateToken} isLoading={generateTokenLoader.isLoading}>
+                <Button
+                  onClick={handleGenerateToken}
+                  isLoading={generateTokenLoader.isLoading}
+                >
                   Generate New Token
                 </Button>
               </div>
