@@ -27,6 +27,7 @@ export const [schema, initialState] = createSchema({
   invitations: slice.table({ empty: factory.defaultInvitation() }),
   entities: slice.table<EmbeddedMap>(),
   redirectPath: slice.str(),
+  scimToken: slice.str(),
   organizationSelected: slice.str(),
   organizations: slice.table({ empty: factory.defaultOrganization() }),
   u2fDevices: slice.table<U2fDevice>(),

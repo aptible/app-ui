@@ -2,6 +2,8 @@ import { selectEnv } from "@app/config";
 import { selectIsAccountOwner } from "@app/deploy";
 import {
   selectHasBetaFeatures,
+  selectHasManyOrgs,
+  selectHasScimFeature,
   selectOrganizationSelectedId,
 } from "@app/organizations";
 import { useSelector } from "@app/react";
@@ -15,6 +17,7 @@ import {
   teamMembersUrl,
   teamPendingInvitesUrl,
   teamRolesUrl,
+  teamScimUrl,
   teamSsoUrl,
 } from "@app/routes";
 import cn from "classnames";
@@ -32,8 +35,10 @@ export function SettingsSidebar() {
   const env = useSelector(selectEnv);
   const url = (slug: string) => `${env.legacyDashboardUrl}${slug}`;
   const orgId = useSelector(selectOrganizationSelectedId);
+  const hasManyOrgs = useSelector(selectHasManyOrgs);
   const isAccountOwner = useSelector((s) => selectIsAccountOwner(s, { orgId }));
   const hasBetaFeatures = useSelector(selectHasBetaFeatures);
+  const hasScimFeature = useSelector(selectHasScimFeature);
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
@@ -108,6 +113,26 @@ export function SettingsSidebar() {
             </Tooltip>
           </span>
         )}
+
+        {hasScimFeature ? (
+          <>
+            {isAccountOwner && !hasManyOrgs ? (
+              <NavLink className={navLink} to={teamScimUrl()}>
+                Provisioning
+              </NavLink>
+            ) : (
+              <span className={navLink({ isActive: false })}>
+                Provisioning
+                <Tooltip
+                  text="Must be account owner with a single assigned organization"
+                  fluid
+                >
+                  <IconLock variant="sm" className="ml-1 opacity-60" />
+                </Tooltip>
+              </span>
+            )}
+          </>
+        ) : null}
 
         {isAccountOwner ? (
           <NavLink className={navLink} to={teamContactsUrl()}>

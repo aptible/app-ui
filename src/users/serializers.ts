@@ -12,6 +12,7 @@ export function deserializeUser(u: UserResponse): User {
     superuser: u.superuser,
     username: u.username,
     verified: u.verified,
+    externalId: u.external_id,
     selectedOrganizationId: extractIdFromLink(u._links.selected_organization),
     currentOtpId: extractIdFromLink(u._links.current_otp_configuration),
   };
@@ -34,6 +35,7 @@ export function defaultUserResponse(
     updated_at: now,
     public_key_fingerprint: null,
     ssh_public_key: null,
+    external_id: "",
     _links: {
       self: defaultHalHref(),
       roles: defaultHalHref(),

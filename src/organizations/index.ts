@@ -80,6 +80,10 @@ export const selectOrganizationsAsList = createSelector(
 );
 export const selectOrganizationSelectedId = schema.organizationSelected.select;
 export const hasOrganization = (o: Organization): boolean => !!o.id;
+export const selectHasManyOrgs = createSelector(
+  selectOrganizationsAsList,
+  (organizations) => organizations.length > 1,
+);
 
 export const selectOrganizationSelected = createSelector(
   selectOrganizationsAsList,
@@ -108,7 +112,32 @@ export const selectHasBetaFeatures = createSelector(
     if (config.isDev) {
       return true;
     }
-    return ["df0ee681-9e02-4c28-8916-3b215d539b08"].includes(orgId);
+
+    // Array of organization IDs that have access to beta features
+    const betaFeatureOrgIds = config.betaFeatureOrgIds
+      .split(",")
+      .map((id) => id.trim())
+      .filter(Boolean);
+
+    return betaFeatureOrgIds.includes(orgId);
+  },
+);
+
+export const selectHasScimFeature = createSelector(
+  selectOrganizationSelectedId,
+  selectEnv,
+  (orgId, config) => {
+    if (config.isDev) {
+      return true;
+    }
+
+    // Array of organization IDs that have access to scim feature
+    const scimFeatureOrgIds = config.scimFeatureOrgIds
+      .split(",")
+      .map((id) => id.trim())
+      .filter(Boolean);
+
+    return scimFeatureOrgIds.includes(orgId);
   },
 );
 

@@ -20,6 +20,7 @@ import { teamPendingInvitesUrl } from "@app/routes";
 import type { Membership } from "@app/types";
 import {
   selectCurrentUserId,
+  selectIsUserScimManaged,
   selectUserById,
   selectUsersAsList,
 } from "@app/users";
@@ -39,7 +40,6 @@ import {
   FilterBar,
   FormGroup,
   Group,
-  // IconPlusCircle,
   Input,
   PaginateBar,
   Select,
@@ -49,22 +49,69 @@ import {
   Table,
   Td,
   Th,
+  Tooltip,
   Tr,
 } from "../shared";
+
+function RemoveButton({
+  removeToolTip,
+  onDelete,
+  userId,
+  isLoading,
+  disableRemoval,
+}: {
+  removeToolTip: string | null;
+  onDelete: (id: string) => void;
+  userId: string;
+  isLoading: boolean;
+  disableRemoval: boolean;
+}) {
+  const button = (
+    <Button
+      size="sm"
+      className="w-fit justify-self-end inline-flex"
+      requireConfirm
+      variant="delete"
+      onClick={() => onDelete(userId)}
+      isLoading={isLoading}
+      disabled={disableRemoval}
+    >
+      Remove
+    </Button>
+  );
+
+  return removeToolTip ? (
+    <Tooltip fluid text={removeToolTip}>
+      {button}
+    </Tooltip>
+  ) : (
+    button
+  );
+}
 
 function MemberRow({
   membership,
   onDelete,
   isLoading,
   canManage,
+  roleScimCreated,
 }: {
   membership: Membership;
   onDelete?: (id: string) => void;
   isLoading: boolean;
   canManage: boolean;
+  roleScimCreated: boolean;
 }) {
   const dispatch = useDispatch();
   const user = useSelector((s) => selectUserById(s, { id: membership.userId }));
+  const userIsScimManaged = useSelector((s) =>
+    selectIsUserScimManaged(s, { id: membership.userId }),
+  );
+  const disableRemoval = userIsScimManaged && roleScimCreated;
+  const removeToolTip = disableRemoval
+    ? "Cannot remove: user and role are SCIM-managed"
+    : null;
+
   const onChange = (ev: ChangeEvent<HTMLInputElement>) => {
     ev.preventDefault();
     dispatch(
@@ -91,16 +138,13 @@ function MemberRow({
       </Td>
       <Td variant="right">
         {onDelete ? (
-          <Button
-            size="sm"
-            className="w-fit justify-self-end inline-flex"
-            requireConfirm
-            variant="delete"
-            onClick={() => onDelete(user.id)}
+          <RemoveButton
+            removeToolTip={removeToolTip}
+            onDelete={onDelete}
+            userId={user.id}
             isLoading={isLoading}
-          >
-            Remove
-          </Button>
+            disableRemoval={disableRemoval}
+          />
         ) : null}
       </Td>
     </Tr>
@@ -175,10 +219,26 @@ export function RoleDetailMembersPage() {
   const onSelect = (opt: SelectOption) => {
     setExistingUserId(opt.value);
   };
+  const selectedUser = useSelector((s) =>
+    selectUserById(s, { id: existingUserId }),
+  );
+  const userIsScimManaged = !!(
+    selectedUser?.externalId && selectedUser.externalId.trim() !== ""
+  );
+  const disableAddUser = userIsScimManaged && role.scimCreated;
+  const addUserToolTip = disableAddUser
+    ? "Cannot add user: user and role are SCIM-managed"
+    : "Add user to role";
   const onAddExistingUser = () => {
-    dispatch(
-      updateUserMemberships({ userId: existingUserId, add: [id], remove: [] }),
-    );
+    if (!disableAddUser) {
+      dispatch(
+        updateUserMemberships({
+          userId: existingUserId,
+          add: [id],
+          remove: [],
+        }),
+      );
+    }
   };
   const onDelete = (userId: string) => {
     dispatch(updateUserMemberships({ userId, add: [], remove: [id] }));
@@ -204,13 +264,15 @@ export function RoleDetailMembersPage() {
                       onSelect={onSelect}
                       value={existingUserId}
                     />
-                    <Button
-                      onClick={onAddExistingUser}
-                      isLoading={loader.isLoading}
-                      disabled={userOpts.length === 1}
-                    >
-                      Add User
-                    </Button>
+                    <Tooltip fluid text={addUserToolTip}>
+                      <Button
+                        onClick={onAddExistingUser}
+                        isLoading={loader.isLoading}
+                        disabled={disableAddUser || userOpts.length === 1}
+                      >
+                        Add User
+                      </Button>
+                    </Tooltip>
                   </Group>
 
                   <form onSubmit={onInvite}>
@@ -277,6 +339,7 @@ export function RoleDetailMembersPage() {
                 isLoading={loader.isLoading}
                 onDelete={canManage ? onDelete : undefined}
                 canManage={canManage}
+                roleScimCreated={role.scimCreated}
               />
             ))}
           </TBody>

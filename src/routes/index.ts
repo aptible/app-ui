@@ -45,6 +45,8 @@ export const TEAM_CONTACTS_PATH = "/settings/team/contacts";
 export const teamContactsUrl = () => TEAM_CONTACTS_PATH;
 export const TEAM_SSO_PATH = "/settings/team/sso";
 export const teamSsoUrl = () => TEAM_SSO_PATH;
+export const TEAM_SCIM_PATH = "/settings/team/scim";
+export const teamScimUrl = () => TEAM_SCIM_PATH;
 export const TEAM_PENDING_INVITES_PATH = "/settings/team/pending-invites";
 export const teamPendingInvitesUrl = () => TEAM_PENDING_INVITES_PATH;
 export const TEAM_ROLES_PATH = "/settings/team/roles";

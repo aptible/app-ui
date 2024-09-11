@@ -13,6 +13,8 @@ export interface Config {
   legacyDashboardUrl: string;
   stripePublishableKey: string;
   origin: "app";
+  betaFeatureOrgIds: string;
+  scimFeatureOrgIds: string;
 }
 
 export interface Feedback {

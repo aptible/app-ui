@@ -58,6 +58,12 @@ export const defaultConfig = (e: Partial<Config> = {}): Config => {
     portalUrl: import.meta.env.VITE_PORTAL_URL || "",
     sentryDsn: import.meta.env.VITE_SENTRY_DSN || "",
     origin: (import.meta.env.VITE_ORIGIN as any) || "app",
+    betaFeatureOrgIds:
+      import.meta.env.VITE_FEATURE_BETA_ORG_IDS ||
+      "df0ee681-9e02-4c28-8916-3b215d539b08",
+    scimFeatureOrgIds:
+      import.meta.env.VITE_FEATURE_SCIM_ORG_IDS ||
+      "df0ee681-9e02-4c28-8916-3b215d539b08",
     legacyDashboardUrl:
       import.meta.env.VITE_LEGACY_DASHBOARD_URL ||
       "https://dashboard.aptible.com",
@@ -761,6 +767,7 @@ export const defaultUser = (u: Partial<User> = {}): User => {
     username: "",
     verified: false,
     currentOtpId: "",
+    externalId: "",
     selectedOrganizationId: "",
     ...u,
   };
@@ -803,6 +810,7 @@ export const defaultRole = (r: Partial<Role> = {}): Role => {
     organizationId: "",
     name: "",
     type: "platform_user",
+    scimCreated: false,
     createdAt: now,
     updatedAt: now,
     ...r,

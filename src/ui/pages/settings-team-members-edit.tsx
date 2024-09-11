@@ -12,7 +12,11 @@ import {
 } from "@app/react";
 import { fetchUserRoles } from "@app/roles";
 import { teamMembersUrl } from "@app/routes";
-import { selectCurrentUser, selectUserById } from "@app/users";
+import {
+  selectCurrentUser,
+  selectIsUserScimManaged,
+  selectUserById,
+} from "@app/users";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
@@ -91,7 +95,12 @@ export function TeamMembersEditPage() {
   const isAccountOwner = useSelector((s) =>
     selectIsAccountOwner(s, { orgId: org.id }),
   );
-  const canRemoveUser = isAccountOwner && user.id !== currentUser.id;
+  const userIsScimManaged = useSelector((s) =>
+    selectIsUserScimManaged(s, { id: user.id }),
+  );
+  const canRemoveUser =
+    isAccountOwner && user.id !== currentUser.id && !userIsScimManaged;
+
   useLoaderSuccess(rmLoader, () => {
     navigate(teamMembersUrl());
   });
@@ -123,14 +132,20 @@ export function TeamMembersEditPage() {
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((role) => {
                 const userHasRole = selected.includes(role.id);
+                const scimText = role.scimCreated
+                  ? " (role managed via SCIM Provisioning)"
+                  : "";
                 return (
                   <CheckBox
                     name="roles"
-                    label={role.name}
+                    label={role.name + scimText}
                     key={role.id}
                     checked={userHasRole}
                     onChange={(e) => onChange(role.id, e.currentTarget.checked)}
-                    disabled={userHasRole && hasOnlyOneRole}
+                    disabled={
+                      (userHasRole && hasOnlyOneRole) ||
+                      (role.scimCreated && userIsScimManaged)
+                    }
                   />
                 );
               })}
@@ -192,6 +207,28 @@ export function TeamMembersEditPage() {
                 requireConfirm
                 isLoading={rmLoader.isLoading}
               >
+                Remove from {org.name}
+              </Button>
+            </div>
+          </Group>
+        </Box>
+      ) : null}
+
+      {userIsScimManaged ? (
+        <Box>
+          <Group>
+            <BannerMessages {...rmLoader} />
+
+            <h3 className={tokens.type.h3}>
+              Remove {user.name} from {org.name}
+            </h3>
+            <p>
+              This user is managed via SCIM Provisioning. Please manage this
+              user directly via the connected IDP.
+            </p>
+
+            <div>
+              <Button variant="delete" requireConfirm disabled={true}>
                 Remove from {org.name}
               </Button>
             </div>

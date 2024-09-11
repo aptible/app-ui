@@ -1,6 +1,7 @@
 import {
   defaultMembershipResponse,
   defaultSamlConfigurationResponse,
+  defaultScimConfigurationResponse,
 } from "@app/auth";
 import { defaultBillingDetailResponse } from "@app/billing";
 import {
@@ -668,6 +669,14 @@ export const testSaml = defaultSamlConfigurationResponse({
       `${testEnv.authUrl}/organizations/${testOrg.id}`,
     ),
   },
+});
+
+export const testScim = defaultScimConfigurationResponse({
+  id: `${createId()}`,
+  organization_id: `${testEnv.authUrl}/organizations/${testOrg.id}`,
+  default_role_id: "",
+  token_id: "",
+  unique_identifier: "email",
 });
 
 const deployDate = new Date("2023-12-17T00:00:00Z").toISOString();
