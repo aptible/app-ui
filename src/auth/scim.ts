@@ -122,7 +122,7 @@ export const generateScimToken = authApi.post<
   yield* next();
 
   if (!ctx.json.ok) {
-    return ctx.json;
+    return;
   }
 
   const response = ctx.json.value;

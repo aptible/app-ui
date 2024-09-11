@@ -228,12 +228,12 @@ function ScimEdit({
               </FormGroup>
 
               <div>
-                <Button onClick={handleGenerateToken} isLoading={isLoading}>
+                <Button onClick={handleGenerateToken} isLoading={generateTokenLoader.isLoading}>
                   Generate New Token
                 </Button>
               </div>
 
-              {showTokenModal && scimToken !== "" && (
+              {showTokenModal && scimToken !== "" ? (
                 <div className="modal">
                   <div className="modal-content">
                     <h4 className={tokens.type.h4}>
@@ -257,7 +257,7 @@ function ScimEdit({
                     <Button onClick={handleCloseModal}>Hide Token</Button>
                   </div>
                 </div>
-              )}
+              ) : null}
             </Group>
 
             <div className="py-8">
@@ -299,10 +299,14 @@ const SharedScimInfo = () => (
     <Banner>
       To configure System for Cross-domain Identity Management (SCIM), enter the
       required information below. Terminology and acronyms vary between
-      providers. For Okta, follow our{" "}
-      <ExternalLink variant="default" href="https://www.aptible.com/docs/">
-        guided walkthrough.
+      providers. Please see our{" "}
+      <ExternalLink
+        variant="default"
+        href="https://www.aptible.com/docs/core-concepts/security-compliance/authentication/scim"
+      >
+        documentation
       </ExternalLink>
+      &nbsp;for more information and guided walkthroughs.
     </Banner>
     <div>
       <h4 className={tokens.type.h4}>Supported SCIM Version</h4>

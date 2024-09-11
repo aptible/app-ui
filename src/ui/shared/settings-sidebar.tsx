@@ -114,7 +114,7 @@ export function SettingsSidebar() {
           </span>
         )}
 
-        {hasScimFeature && (
+        {hasScimFeature ? (
           <>
             {isAccountOwner && !hasManyOrgs ? (
               <NavLink className={navLink} to={teamScimUrl()}>
@@ -132,7 +132,7 @@ export function SettingsSidebar() {
               </span>
             )}
           </>
-        )}
+        ) : null}
 
         {isAccountOwner ? (
           <NavLink className={navLink} to={teamContactsUrl()}>
