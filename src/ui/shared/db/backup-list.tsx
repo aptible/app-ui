@@ -28,10 +28,10 @@ const BackupTypePill = ({
     "px-2 flex justify-between items-center w-fit",
   );
   let type = "";
-  if (final) {
-    type = "Final";
-  } else if (manual) {
+  if (manual) {
     type = "Manual";
+  } else if (final) {
+    type = "Final";
   } else {
     type = "Auto";
   }
