@@ -24,6 +24,7 @@ export * from "./team-accept-invite";
 export * from "./stack-detail";
 export * from "./app-detail-service-metrics";
 export * from "./app-detail-service-scale";
+export * from "./app-detail-service-settings";
 export * from "./deploy";
 export * from "./environment-detail";
 export * from "./environment-detail-activity-reports";

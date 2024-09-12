@@ -1,4 +1,4 @@
-import { api, cacheMinTimer, cacheShortTimer } from "@app/api";
+import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { DEFAULT_INSTANCE_CLASS, type WebState, schema } from "@app/schema";
@@ -29,6 +29,8 @@ export const defaultServiceResponse = (
     container_count: 0,
     container_memory_limit_mb: 0,
     instance_class: DEFAULT_INSTANCE_CLASS,
+    force_zero_downtime: false,
+    naive_health_check: false,
     created_at: now,
     updated_at: now,
     _type: "service",
@@ -68,6 +70,8 @@ export const deserializeDeployService = (
     containerMemoryLimitMb: payload.container_memory_limit_mb || 512,
     currentReleaseId: extractIdFromLink(links.current_release),
     instanceClass: payload.instance_class || DEFAULT_INSTANCE_CLASS,
+    forceZeroDowntime: payload.force_zero_downtime,
+    naiveHealthCheck: payload.naive_health_check,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
   };
@@ -144,6 +148,60 @@ export const calcServiceMetrics = (
     estimatedCostInDollars: monthlyCost,
   };
 };
+
+export interface ServiceEditProps {
+  forceZeroDowntime: boolean;
+  naiveHealthCheck: boolean;
+}
+
+const serializeServiceEditProps = (payload: ServiceEditProps) => ({
+  force_zero_downtime: payload.forceZeroDowntime,
+  naive_health_check: payload.naiveHealthCheck,
+});
+
+export interface ModifyServiceProps extends ServiceEditProps {
+  id: string;
+}
+
+export const updateServiceById = api.put<
+  ModifyServiceProps,
+  DeployServiceResponse
+>(["/services/:id"], function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify(serializeServiceEditProps(ctx.payload)),
+  });
+  yield* next();
+});
+
+export const modifyService = thunks.create<ModifyServiceProps>(
+  "modify-service",
+  function* (ctx, next) {
+    yield* schema.update(schema.loaders.start({ id: ctx.name }));
+    const nextService = ctx.payload;
+    const updateCtx = yield* updateServiceById.run(nextService);
+
+    yield* next();
+
+    if (updateCtx.json.ok) {
+      yield* schema.update([
+        schema.services.patch({
+          [nextService.id]: {
+            serviceSizingPolicyId: `${updateCtx.json.value.id}`,
+          },
+        }),
+        schema.loaders.success({
+          id: ctx.name,
+          message: "Service changes saved",
+        }),
+      ]);
+    } else {
+      const data = updateCtx.json.error as Error;
+      yield* schema.update(
+        schema.loaders.error({ id: ctx.name, message: data.message }),
+      );
+    }
+  },
+);
 
 export const selectServiceById = schema.services.selectById;
 export const selectServicesByIds = schema.services.selectByIds;

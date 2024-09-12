@@ -125,6 +125,9 @@ export const appServicePathMetricsUrl = (appId: string, serviceId: string) =>
 export const APP_SERVICE_SCALE_PATH = `${APP_DETAIL_PATH}/services/:serviceId/scale`;
 export const appServiceScalePathUrl = (appId: string, serviceId: string) =>
   `${appDetailUrl(appId)}/services/${serviceId}/scale`;
+export const APP_SERVICE_SETTINGS_PATH = `${APP_DETAIL_PATH}/services/:serviceId/settings`;
+export const appServiceSettingsPathUrl = (appId: string, serviceId: string) =>
+  `${appDetailUrl(appId)}/services/${serviceId}/settings`;
 export const APP_ACTIVITY_PATH = `${APP_DETAIL_PATH}/activity`;
 export const appActivityUrl = (id: string) => `${appDetailUrl(id)}/activity`;
 export const APP_ENDPOINTS_PATH = `${APP_DETAIL_PATH}/endpoints`;

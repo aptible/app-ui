@@ -25,6 +25,7 @@ import {
   AppDetailServiceMetricsPage,
   AppDetailServicePage,
   AppDetailServiceScalePage,
+  AppDetailServiceSettingsPage,
   AppDetailServicesPage,
   AppSettingsPage,
   AppSidebarLayout,
@@ -268,6 +269,10 @@ export const appRoutes: RouteObject[] = [
           {
             path: routes.APP_SERVICE_SCALE_PATH,
             element: <AppDetailServiceScalePage />,
+          },
+          {
+            path: routes.APP_SERVICE_SETTINGS_PATH,
+            element: <AppDetailServiceSettingsPage />,
           },
         ],
       },

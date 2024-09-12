@@ -15,6 +15,7 @@ import {
   appDetailUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
+  appServiceSettingsPathUrl,
   appServiceUrl,
   appServicesUrl,
   environmentAppsUrl,
@@ -64,6 +65,23 @@ export function ServiceHeader({
   const { totalCPU } = calcMetrics([service]);
   const [isOpen, setOpen] = useState(true);
 
+  const getDeploymentStrategy = () => {
+    if (endpoints.length > 0) {
+      return "Zero Downtime";
+    }
+    const strategies = [];
+    if (service.forceZeroDowntime) {
+      strategies.push("Zero Downtime");
+    } else {
+      strategies.push("Zero Overlap");
+    }
+    if (service.naiveHealthCheck) {
+      strategies.push("Simple Healthcheck");
+    }
+    return strategies.join(", ");
+  };
+  const deploymentStrategy = getDeploymentStrategy();
+
   return (
     <DetailHeader>
       <DetailTitleBar
@@ -100,6 +118,9 @@ export function ServiceHeader({
         </DetailInfoItem>
         <DetailInfoItem title="Container Profile">
           {metrics.containerProfile.name}
+        </DetailInfoItem>
+        <DetailInfoItem title="Deployment Strategy">
+          {deploymentStrategy}
         </DetailInfoItem>
       </DetailInfoGrid>
       {service.command ? (
@@ -162,6 +183,7 @@ function ServicePageHeader() {
   const tabs: TabItem[] = [
     { name: "Metrics", href: appServicePathMetricsUrl(id, serviceId) },
     { name: "Scale", href: appServiceScalePathUrl(id, serviceId) },
+    { name: "Settings", href: appServiceSettingsPathUrl(id, serviceId) },
   ];
 
   return (

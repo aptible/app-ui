@@ -53,6 +53,8 @@ export interface DeployService extends Timestamps {
   containerMemoryLimitMb: number;
   currentReleaseId: string;
   instanceClass: InstanceClass;
+  forceZeroDowntime: boolean;
+  naiveHealthCheck: boolean;
 }
 
 export interface AcmeChallenge {
@@ -598,6 +600,8 @@ export interface DeployServiceResponse {
   container_count: number | null;
   container_memory_limit_mb: number | null;
   instance_class: InstanceClass;
+  force_zero_downtime: boolean;
+  naive_health_check: boolean;
   _links: {
     current_release: LinkResponse;
     app?: LinkResponse;

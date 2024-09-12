@@ -359,6 +359,8 @@ export const defaultDeployService = (
     containerMemoryLimitMb: 512,
     currentReleaseId: "",
     instanceClass: DEFAULT_INSTANCE_CLASS,
+    forceZeroDowntime: false,
+    naiveHealthCheck: false,
     createdAt: now,
     updatedAt: now,
     ...s,
