@@ -65,13 +65,13 @@ export const AppDetailServiceSettingsPage = () => {
                 Service settings are managed through the following Endpoints:
                 {endpoints.map((endpoint, index) => {
                   return (
-                    <>
+                    <span key={index}>
                       {index === 0 && " "}
-                      <Link key={index} to={endpointDetailUrl(endpoint.id)}>
+                      <Link to={endpointDetailUrl(endpoint.id)}>
                         {getEndpointUrl(endpoint)}
                       </Link>
                       {index < endpoints.length - 1 && ", "}
-                    </>
+                    </span>
                   );
                 })}
               </Banner>
