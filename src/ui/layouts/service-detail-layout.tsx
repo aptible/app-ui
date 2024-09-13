@@ -67,13 +67,21 @@ export function ServiceHeader({
 
   const getDeploymentStrategy = () => {
     if (endpoints.length > 0) {
-      return "Zero Downtime";
+      if (
+        endpoints.find(
+          (e) => e.type === "http" || e.type === "http_proxy_protocol",
+        )
+      ) {
+        return "Zero-Downtime";
+      }
+      return "Minimal-Downtime";
     }
+
     const strategies = [];
     if (service.forceZeroDowntime) {
-      strategies.push("Zero Downtime");
+      strategies.push("Zero-Downtime");
     } else {
-      strategies.push("Zero Overlap");
+      strategies.push("Zero-Overlap");
     }
     if (service.naiveHealthCheck) {
       strategies.push("Simple Healthcheck");
@@ -120,7 +128,9 @@ export function ServiceHeader({
           {metrics.containerProfile.name}
         </DetailInfoItem>
         <DetailInfoItem title="Deployment Strategy">
-          {deploymentStrategy}
+          <Link to={appServiceSettingsPathUrl(app.id, service.id)}>
+            {deploymentStrategy}
+          </Link>
         </DetailInfoItem>
       </DetailInfoGrid>
       {service.command ? (

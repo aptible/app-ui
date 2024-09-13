@@ -16,8 +16,8 @@ import {
   BannerMessages,
   Box,
   Button,
+  ButtonLinkDocs,
   CheckBox,
-  ExternalLink,
   Tooltip,
 } from "../shared";
 
@@ -52,38 +52,31 @@ export const AppDetailServiceSettingsPage = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      {endpoints.length > 0 ? (
-        <Banner>
-          Service settings are managed through the following Endpoints:
-          {endpoints.map((endpoint, index) => {
-            return (
+      <Box>
+        <form onSubmit={onSubmitForm}>
+          <BannerMessages {...modifyLoader} />
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between items-start">
+              <h1 className="text-lg text-gray-500 mb-4">Service Settings</h1>
+              <ButtonLinkDocs href="https://www.aptible.com/docs/core-concepts/apps/deploying-apps/releases/overview" />
+            </div>
+            {endpoints.length > 0 ? (
+              <Banner>
+                Service settings are managed through the following Endpoints:
+                {endpoints.map((endpoint, index) => {
+                  return (
+                    <>
+                      {index === 0 && " "}
+                      <Link key={index} to={endpointDetailUrl(endpoint.id)}>
+                        {getEndpointUrl(endpoint)}
+                      </Link>
+                      {index < endpoints.length - 1 && ", "}
+                    </>
+                  );
+                })}
+              </Banner>
+            ) : (
               <>
-                {index === 0 && " "}
-                <Link key={index} to={endpointDetailUrl(endpoint.id)}>
-                  {getEndpointUrl(endpoint)}
-                </Link>
-                {index < endpoints.length - 1 && ", "}
-              </>
-            );
-          })}
-        </Banner>
-      ) : (
-        <>
-          <Banner>
-            Enable zero-downtime deployments and manage healthchecks for
-            services -{" "}
-            <ExternalLink
-              variant="default"
-              href="https://www.aptible.com/docs/TODOTODOTODOTODOTODO"
-            >
-              Learn More
-            </ExternalLink>
-          </Banner>
-          <Box>
-            <form onSubmit={onSubmitForm}>
-              <BannerMessages {...modifyLoader} />
-              <div className="flex flex-col gap-2">
-                <h1 className="text-lg text-gray-500 mb-4">Service Settings</h1>
                 <h2 className="text-md font-semibold">Deployment Strategy</h2>
                 <CheckBox
                   name="zero-downtime"
@@ -111,7 +104,7 @@ export const AppDetailServiceSettingsPage = () => {
                     />
                   </Tooltip>
                 </div>
-                <div className="flex">
+                <div className="flex mt-4">
                   <Button
                     name="autoscaling"
                     className="w-40 flex font-semibold"
@@ -131,11 +124,11 @@ export const AppDetailServiceSettingsPage = () => {
                     </Button>
                   ) : null}
                 </div>
-              </div>
-            </form>
-          </Box>
-        </>
-      )}
+              </>
+            )}
+          </div>
+        </form>
+      </Box>
     </div>
   );
 };
