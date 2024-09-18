@@ -45,6 +45,33 @@ import {
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
 
+const getDeploymentStrategy = (
+  service: DeployService,
+  endpoints: DeployEndpoint[],
+) => {
+  if (endpoints.length > 0) {
+    if (
+      endpoints.find(
+        (e) => e.type === "http" || e.type === "http_proxy_protocol",
+      )
+    ) {
+      return "Zero-Downtime";
+    }
+    return "Minimal-Downtime";
+  }
+
+  const strategies = [];
+  if (service.forceZeroDowntime) {
+    strategies.push("Zero-Downtime");
+  } else {
+    strategies.push("Zero-Overlap");
+  }
+  if (service.naiveHealthCheck) {
+    strategies.push("Simple Healthcheck");
+  }
+  return strategies.join(", ");
+};
+
 export function ServiceHeader({
   app,
   service,
@@ -64,31 +91,7 @@ export function ServiceHeader({
   const metrics = calcServiceMetrics(service, endpoints);
   const { totalCPU } = calcMetrics([service]);
   const [isOpen, setOpen] = useState(true);
-
-  const getDeploymentStrategy = () => {
-    if (endpoints.length > 0) {
-      if (
-        endpoints.find(
-          (e) => e.type === "http" || e.type === "http_proxy_protocol",
-        )
-      ) {
-        return "Zero-Downtime";
-      }
-      return "Minimal-Downtime";
-    }
-
-    const strategies = [];
-    if (service.forceZeroDowntime) {
-      strategies.push("Zero-Downtime");
-    } else {
-      strategies.push("Zero-Overlap");
-    }
-    if (service.naiveHealthCheck) {
-      strategies.push("Simple Healthcheck");
-    }
-    return strategies.join(", ");
-  };
-  const deploymentStrategy = getDeploymentStrategy();
+  const deploymentStrategy = getDeploymentStrategy(service, endpoints);
 
   return (
     <DetailHeader>

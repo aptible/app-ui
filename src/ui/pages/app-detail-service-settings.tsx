@@ -2,9 +2,9 @@ import {
   fetchApp,
   fetchService,
   getEndpointUrl,
-  modifyService,
   selectEndpointsByServiceId,
   selectServiceById,
+  updateServiceById,
 } from "@app/deploy";
 import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { endpointDetailUrl } from "@app/routes";
@@ -36,19 +36,15 @@ export const AppDetailServiceSettingsPage = () => {
     setNextService(service);
   }, [service.id]);
 
+  const action = updateServiceById({ ...nextService });
+  const modifyLoader = useLoader(action);
+  const cancelChanges = () => setNextService(service);
+  const changesExist = service !== nextService;
+
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(modifyService({ ...nextService }));
+    dispatch(action);
   };
-
-  const getChangesExist = () => {
-    return service !== nextService;
-  };
-  const changesExist = getChangesExist();
-
-  const modifyLoader = useLoader(modifyService);
-
-  const cancelChanges = () => setNextService(service);
 
   return (
     <div className="flex flex-col gap-4">

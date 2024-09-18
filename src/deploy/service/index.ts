@@ -1,4 +1,4 @@
-import { api, cacheMinTimer, cacheShortTimer, thunks } from "@app/api";
+import { api, cacheMinTimer, cacheShortTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { DEFAULT_INSTANCE_CLASS, type WebState, schema } from "@app/schema";
@@ -166,42 +166,12 @@ export interface ModifyServiceProps extends ServiceEditProps {
 export const updateServiceById = api.put<
   ModifyServiceProps,
   DeployServiceResponse
->(["/services/:id"], function* (ctx, next) {
+>("/services/:id", function* (ctx, next) {
   ctx.request = ctx.req({
     body: JSON.stringify(serializeServiceEditProps(ctx.payload)),
   });
   yield* next();
 });
-
-export const modifyService = thunks.create<ModifyServiceProps>(
-  "modify-service",
-  function* (ctx, next) {
-    yield* schema.update(schema.loaders.start({ id: ctx.name }));
-    const nextService = ctx.payload;
-    const updateCtx = yield* updateServiceById.run(nextService);
-
-    yield* next();
-
-    if (updateCtx.json.ok) {
-      yield* schema.update([
-        schema.services.patch({
-          [nextService.id]: {
-            serviceSizingPolicyId: `${updateCtx.json.value.id}`,
-          },
-        }),
-        schema.loaders.success({
-          id: ctx.name,
-          message: "Service changes saved",
-        }),
-      ]);
-    } else {
-      const data = updateCtx.json.error as Error;
-      yield* schema.update(
-        schema.loaders.error({ id: ctx.name, message: data.message }),
-      );
-    }
-  },
-);
 
 export const selectServiceById = schema.services.selectById;
 export const selectServicesByIds = schema.services.selectByIds;
