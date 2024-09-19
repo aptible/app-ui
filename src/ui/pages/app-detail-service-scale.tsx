@@ -1072,6 +1072,7 @@ export const AppDetailServiceScalePage = () => {
               className="w-40 flex font-semibold"
               type="submit"
               disabled={!changesExist}
+              isLoading={loader.isLoading}
             >
               Save Changes
             </Button>
