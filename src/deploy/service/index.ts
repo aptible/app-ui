@@ -29,6 +29,8 @@ export const defaultServiceResponse = (
     container_count: 0,
     container_memory_limit_mb: 0,
     instance_class: DEFAULT_INSTANCE_CLASS,
+    force_zero_downtime: false,
+    naive_health_check: false,
     created_at: now,
     updated_at: now,
     _type: "service",
@@ -68,6 +70,8 @@ export const deserializeDeployService = (
     containerMemoryLimitMb: payload.container_memory_limit_mb || 512,
     currentReleaseId: extractIdFromLink(links.current_release),
     instanceClass: payload.instance_class || DEFAULT_INSTANCE_CLASS,
+    forceZeroDowntime: payload.force_zero_downtime,
+    naiveHealthCheck: payload.naive_health_check,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
   };
@@ -144,6 +148,30 @@ export const calcServiceMetrics = (
     estimatedCostInDollars: monthlyCost,
   };
 };
+
+export interface ServiceEditProps {
+  forceZeroDowntime: boolean;
+  naiveHealthCheck: boolean;
+}
+
+const serializeServiceEditProps = (payload: ServiceEditProps) => ({
+  force_zero_downtime: payload.forceZeroDowntime,
+  naive_health_check: payload.naiveHealthCheck,
+});
+
+export interface ModifyServiceProps extends ServiceEditProps {
+  id: string;
+}
+
+export const updateServiceById = api.put<
+  ModifyServiceProps,
+  DeployServiceResponse
+>("/services/:id", function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify(serializeServiceEditProps(ctx.payload)),
+  });
+  yield* next();
+});
 
 export const selectServiceById = schema.services.selectById;
 export const selectServicesByIds = schema.services.selectByIds;
