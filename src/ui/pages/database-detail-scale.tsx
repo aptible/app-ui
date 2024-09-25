@@ -175,6 +175,7 @@ export const DatabaseScalePage = () => {
             className="w-40 flex font-semibold"
             disabled={!hasChanges}
             type="submit"
+            isLoading={loader.isLoading}
           >
             Save Changes
           </Button>
