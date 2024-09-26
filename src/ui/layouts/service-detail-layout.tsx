@@ -51,8 +51,8 @@ const getDeploymentStrategy = (
 ) => {
   if (endpoints.length > 0) {
     if (
-      endpoints.find(
-        (e) => e.type === "http" || e.type === "http_proxy_protocol",
+      endpoints.some((e) =>
+        ["http", "http_proxy_protocol", "grpc"].includes(e.type),
       )
     ) {
       return "Zero-Downtime";
