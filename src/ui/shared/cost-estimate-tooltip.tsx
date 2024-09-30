@@ -13,7 +13,7 @@ export interface CostEstimateTooltipProps
 
 export const CostEstimateTooltip = ({
   cost,
-  text = "This is an estimate of the cost of running the current resources for one month. Please note: it does not represent your actual usage for the month.",
+  text = "This is an estimate of the cost of running the current resources for one month. Please note: it does not represent your actual usage for the month and does not reflect contract discounts or allocations.",
   ...tooltipProps
 }: CostEstimateTooltipProps) => (
   <Tooltip text={text} {...tooltipProps}>
