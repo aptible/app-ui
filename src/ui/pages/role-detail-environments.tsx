@@ -244,10 +244,11 @@ function EnvEditorRow({
           <PermCheck perm={perms.tunnel} />
         )}
       </Td>
-      <Td>
+      <Td variant="right">
+        <div className="max-h-full">
         {editing ? (
-          <Button size="sm" onClick={() => onEdit("")}>
-            Save
+          <Button size="sm" variant="white" onClick={() => onEdit("")}>
+            Done
           </Button>
         ) : (
           <ButtonCanManageRole
@@ -261,6 +262,7 @@ function EnvEditorRow({
             Edit
           </ButtonCanManageRole>
         )}
+        </div>
       </Td>
     </Tr>
   );
