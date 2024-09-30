@@ -245,24 +245,28 @@ function EnvEditorRow({
         )}
       </Td>
       <Td variant="right">
-        <div className="mt-4">
-          {editing ? (
-            <Button size="sm" variant="white" onClick={() => onEdit("")}>
-              Close
-            </Button>
-          ) : (
-            <ButtonCanManageRole
-              userId={userId}
-              roleId={roleId}
-              orgId={orgId}
-              size="sm"
-              onClick={() => onEdit(env.id)}
-              disabled={disabled}
-            >
-              Edit
-            </ButtonCanManageRole>
-          )}
-        </div>
+        {editing ? (
+          <Button
+            className="mt-4"
+            size="sm"
+            variant="white"
+            onClick={() => onEdit("")}
+          >
+            Close
+          </Button>
+        ) : (
+          <ButtonCanManageRole
+            className="mt-4"
+            userId={userId}
+            roleId={roleId}
+            orgId={orgId}
+            size="sm"
+            onClick={() => onEdit(env.id)}
+            disabled={disabled}
+          >
+            Edit
+          </ButtonCanManageRole>
+        )}
       </Td>
     </Tr>
   );
