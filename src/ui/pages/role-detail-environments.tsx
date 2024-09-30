@@ -247,7 +247,7 @@ function EnvEditorRow({
       <Td variant="right">
         <div className="max-h-full">
         {editing ? (
-          <Button size="sm" variant="white" onClick={() => onEdit("")}>
+          <Button size="sm" onClick={() => onEdit("")}>
             Done
           </Button>
         ) : (
