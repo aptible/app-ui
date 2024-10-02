@@ -77,7 +77,10 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
       key: "Copy backups to another region",
       value: backupRp.makeCopy ? "Yes" : "No",
     },
-    { key: "Keep final backups", value: backupRp.keepFinal ? "Yes" : "No" },
+    {
+      key: "Keep final backup for deprovisioned databases",
+      value: backupRp.keepFinal ? "Yes" : "No",
+    },
   ];
 
   if (!editing) {
@@ -85,7 +88,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
       <Box>
         <Group>
           <h3 className={tokens.type.h3}>Backup Retention Policy</h3>
-          <div className="w-[260px]">
+          <div className="w-[370px]">
             <KeyValueGroup data={data} />
           </div>
 
@@ -266,7 +269,10 @@ export const BackupRpEditor = ({
               </p>
             </FormGroup>
 
-            <FormGroup label="Keep final backup" htmlFor="keep-final">
+            <FormGroup
+              label="Keep final backup for deprovisioned databases"
+              htmlFor="keep-final"
+            >
               <RadioGroup
                 name="keep-final"
                 selected={keepFinal}

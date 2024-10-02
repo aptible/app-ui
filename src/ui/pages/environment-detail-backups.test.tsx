@@ -39,7 +39,7 @@ describe("EnvironmentBackupsPage", () => {
     await screen.findByText(/Monthly backups retained/);
     await screen.findByText(/Yearly backups retained/);
     await screen.findByText(/Copy backups to another region/);
-    await screen.findByText(/Keep final backups/);
+    await screen.findByText(/Keep final backup for deprovisioned databases/);
   });
 
   it("should successfully edit backup retention policy values", async () => {
