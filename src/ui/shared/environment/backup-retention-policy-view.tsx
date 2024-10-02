@@ -103,7 +103,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
                     className="opacity-50 hover:opacity-100 mr-1 inline-block"
                     variant="sm"
                   />
-                  Daily Recommendations
+                  Show Daily Recommendations
                 </Tooltip>
               </p>
               <p className="text-black-500">
@@ -115,7 +115,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
                     className="opacity-50 hover:opacity-100 mr-1 inline-block"
                     variant="sm"
                   />
-                  Monthly Recommendations
+                  Show Monthly Recommendations
                 </Tooltip>
               </p>
               <p className="text-black-500">
@@ -127,7 +127,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
                     className="opacity-50 hover:opacity-100 mr-1 inline-block"
                     variant="sm"
                   />
-                  Yearly Recommendations
+                  Show Yearly Recommendations
                 </Tooltip>
               </p>
               <p className="text-black-500">
@@ -139,7 +139,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
                     className="opacity-50 hover:opacity-100 mr-1 inline-block"
                     variant="sm"
                   />
-                  Copy Backups Recommendations
+                  Show Copy Backups Recommendations
                 </Tooltip>
               </p>
               <p className="text-black-500">
@@ -151,7 +151,7 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
                     className="opacity-50 hover:opacity-100 mr-1 inline-block"
                     variant="sm"
                   />
-                  Final Backup Recommendations
+                  Show Final Backup Recommendations
                 </Tooltip>
               </p>
             </div>
