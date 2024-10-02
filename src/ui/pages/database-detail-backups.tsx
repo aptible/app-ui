@@ -9,6 +9,7 @@ import { databaseActivityUrl, environmentBackupsUrl } from "@app/routes";
 import { useNavigate, useParams } from "react-router";
 import { usePaginatedBackupsByDatabaseId } from "../hooks";
 import {
+  Banner,
   BannerMessages,
   ButtonLink,
   ButtonOps,
@@ -37,6 +38,20 @@ export const DatabaseBackupsPage = () => {
 
   return (
     <Group>
+      <Banner variant="info">
+        <p className="">
+          <strong>Deleting Copies of Backups: </strong>Removing an original
+          backup deletes all its copies, but deleting a copy does not affect the
+          original —{" "}
+          <a
+            href=" https://www.aptible.com/docs/core-concepts/managed-databases/managing-databases/database-backups"
+            target="_blank"
+            rel="noreferrer"
+          >
+            view documentation.
+          </a>
+        </p>
+      </Banner>
       <div className="flex gap-4 items-center">
         <ButtonOps
           envId={db.environmentId}
