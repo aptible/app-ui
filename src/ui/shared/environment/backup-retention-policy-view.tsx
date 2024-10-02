@@ -194,6 +194,7 @@ export const BackupRpEditor = ({
                   setDaily(Number.parseInt(e.currentTarget.value))
                 }
               />
+              <p className="text-sm mt-1 text-black">Number of daily backups (taken every 24 hours) retained</p>
             </FormGroup>
 
             <FormGroup
@@ -210,6 +211,7 @@ export const BackupRpEditor = ({
                   setMonthly(Number.parseInt(e.currentTarget.value));
                 }}
               />
+              <p className="text-sm mt-1 text-black">Number of monthly backups (last backup of each month) retained</p>
             </FormGroup>
 
             <FormGroup
@@ -226,6 +228,7 @@ export const BackupRpEditor = ({
                   setYearly(Number.parseInt(e.currentTarget.value));
                 }}
               />
+              <p className="text-sm mt-1 text-black">Number of yearly backups (last backup of each year) retained</p>
             </FormGroup>
 
             <FormGroup
@@ -240,6 +243,7 @@ export const BackupRpEditor = ({
                 <Radio value="yes">Yes</Radio>
                 <Radio value="no">No</Radio>
               </RadioGroup>
+              <p className="text-sm mt-1 text-black">When enabled, Aptible will copy all the backups within that Environment to another region</p>
             </FormGroup>
 
             <FormGroup label="Keep final backup" htmlFor="keep-final">
@@ -251,6 +255,7 @@ export const BackupRpEditor = ({
                 <Radio value="yes">Yes</Radio>
                 <Radio value="no">No</Radio>
               </RadioGroup>
+              <p className="text-sm mt-1 text-black">When enabled, Aptible will retain the last backup of a Database after you deprovision it</p>
             </FormGroup>
           </div>
 
