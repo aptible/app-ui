@@ -242,8 +242,10 @@ export const BackupRpEditor = ({
 
         <div>
           <p>
-            Any changes made will impact <strong>all database backups</strong>{" "}
-            inside this Environment.
+            <strong>
+              Any changes made will impact all database backups inside this
+              Environment.
+            </strong>
           </p>
           <p>
             Recommendations for production environments: Daily: 14-30, Monthly:

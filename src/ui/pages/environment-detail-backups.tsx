@@ -18,6 +18,7 @@ export const EnvironmentBackupsPage = () => {
   return (
     <Group>
       <BackupRpView envId={id} />
+      <h3 className={tokens.type.h3}>Backups of Deprovisioned Databases</h3>
       <Banner variant="info">
         <p>
           <strong>
@@ -41,7 +42,6 @@ export const EnvironmentBackupsPage = () => {
           </a>
         </p>
       </Banner>
-      <h3 className={tokens.type.h3}>Backups of Deprovisioned Databases</h3>
       <DatabaseBackupsList paginated={paginated} showDatabase showFinal />
     </Group>
   );
