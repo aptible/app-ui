@@ -14,13 +14,25 @@ export const EnvironmentBackupsPage = () => {
       <BackupRpView envId={id} />
 
       <Banner variant="info">
-        <p><strong>Backups of Deprovisioned Databases</strong></p>
-        <p>Both Final and Manual backups from deleted databases are shown below. Final backups follow the backup retention policy, while Manual backups are retained indefinitely by default. To manage backups for an active database, visit the Backups tab on the database itself.</p>
-      </Banner>
-
-      <Banner variant="warning">
-        <p><strong>Deleting Copies of Backups </strong></p>
-        <p>Removing an original backup deletes all its copies, but deleting a copy does not affect the original. See the documentation for more information.</p>
+        <p>
+          <strong>Backups of Deprovisioned Databases:</strong> Both Final and
+          Manual backups from deleted databases are shown below. Final backups
+          follow the backup retention policy, while Manual backups are retained
+          indefinitely by default. To manage backups for an active database,
+          visit the Backups tab on the database itself.
+        </p>
+        <p className="">
+          <strong>Deleting Copies of Backups: </strong>Removing an original
+          backup deletes all its copies, but deleting a copy does not affect the
+          original —{" "}
+          <a
+            href=" https://www.aptible.com/docs/core-concepts/managed-databases/managing-databases/database-backups"
+            target="_blank"
+            rel="noreferrer"
+          >
+            view documentation.
+          </a>
+        </p>
       </Banner>
 
       <DatabaseBackupsList paginated={paginated} showDatabase showFinal />
