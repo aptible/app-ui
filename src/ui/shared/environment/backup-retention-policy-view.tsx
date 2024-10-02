@@ -88,10 +88,22 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
       <Box>
         <Group>
           <h3 className={tokens.type.h3}>Backup Retention Policy</h3>
+          <Banner variant="info">
+            <p>
+              <strong>Recommendations for production environments:</strong>{" "}
+              Daily: 14-30, Monthly: 12, Yearly: 5, Copy backups: Yes (depending
+              on DR needs), Keep final backups: Yes
+            </p>
+            <p>
+              <strong>Recommendations for non-production environments:</strong>{" "}
+              Daily: 1-14, Monthly: 0, Yearly: 0, Copy backups: No, Keep final
+              backups: No
+            </p>
+          </Banner>
+
           <div className="w-[370px]">
             <KeyValueGroup data={data} />
           </div>
-
           <div>
             <ButtonAdmin
               envId={envId}
