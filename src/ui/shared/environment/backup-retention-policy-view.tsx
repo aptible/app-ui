@@ -174,8 +174,19 @@ export const BackupRpEditor = ({
         <BannerMessages {...loader} />
 
         <div>
-          Any changes made will impact <strong>all database backups</strong>{" "}
-          inside this Environment.
+          <p>
+            Any changes made will impact <strong>all database backups</strong>{" "}
+            inside this Environment.
+          </p>
+          <p>
+            Recommendations for production environments: Daily: 14-30, Monthly:
+            12, Yearly: 5, Copy backups: Yes (depending on DR needs), Keep final
+            backups: Yes
+          </p>
+          <p>
+            Recommendations for non-production environments: Daily: 1-14,
+            Monthly: 0, Yearly: 0, Copy backups: No, Keep final backups: No
+          </p>
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-2">
@@ -194,7 +205,9 @@ export const BackupRpEditor = ({
                   setDaily(Number.parseInt(e.currentTarget.value))
                 }
               />
-              <p className="text-sm mt-1 text-black">Number of daily backups (taken every 24 hours) retained</p>
+              <p className="text-sm mt-1 text-black">
+                Number of daily backups (taken every 24 hours) retained
+              </p>
             </FormGroup>
 
             <FormGroup
@@ -211,7 +224,9 @@ export const BackupRpEditor = ({
                   setMonthly(Number.parseInt(e.currentTarget.value));
                 }}
               />
-              <p className="text-sm mt-1 text-black">Number of monthly backups (last backup of each month) retained</p>
+              <p className="text-sm mt-1 text-black">
+                Number of monthly backups (last backup of each month) retained
+              </p>
             </FormGroup>
 
             <FormGroup
@@ -228,7 +243,9 @@ export const BackupRpEditor = ({
                   setYearly(Number.parseInt(e.currentTarget.value));
                 }}
               />
-              <p className="text-sm mt-1 text-black">Number of yearly backups (last backup of each year) retained</p>
+              <p className="text-sm mt-1 text-black">
+                Number of yearly backups (last backup of each year) retained
+              </p>
             </FormGroup>
 
             <FormGroup
@@ -243,7 +260,10 @@ export const BackupRpEditor = ({
                 <Radio value="yes">Yes</Radio>
                 <Radio value="no">No</Radio>
               </RadioGroup>
-              <p className="text-sm mt-1 text-black">When enabled, Aptible will copy all the backups within that Environment to another region</p>
+              <p className="text-sm mt-1 text-black">
+                When enabled, Aptible will copy all the backups within that
+                Environment to another region
+              </p>
             </FormGroup>
 
             <FormGroup label="Keep final backup" htmlFor="keep-final">
@@ -255,7 +275,10 @@ export const BackupRpEditor = ({
                 <Radio value="yes">Yes</Radio>
                 <Radio value="no">No</Radio>
               </RadioGroup>
-              <p className="text-sm mt-1 text-black">When enabled, Aptible will retain the last backup of a Database after you deprovision it</p>
+              <p className="text-sm mt-1 text-black">
+                When enabled, Aptible will retain the last backup of a Database
+                after you deprovision it
+              </p>
             </FormGroup>
           </div>
 
