@@ -12,11 +12,12 @@ import { Box } from "../box";
 import { Button, ButtonAdmin } from "../button";
 import { FormGroup } from "../form-group";
 import { Group } from "../group";
-import { IconEdit } from "../icons";
+import { IconEdit, IconInfo } from "../icons";
 import { Input } from "../input";
 import { KeyValueGroup } from "../key-value";
 import { Radio, RadioGroup } from "../select";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
 const validators = {
   daily: (data: UpdateBackupRp) => {
@@ -88,22 +89,73 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
       <Box>
         <Group>
           <h3 className={tokens.type.h3}>Backup Retention Policy</h3>
-          <Banner variant="info">
-            <p>
-              <strong>Recommendations for production environments:</strong>{" "}
-              Daily: 14-30, Monthly: 12, Yearly: 5, Copy backups: Yes (depending
-              on DR needs), Keep final backups: Yes
-            </p>
-            <p>
-              <strong>Recommendations for non-production environments:</strong>{" "}
-              Daily: 1-14, Monthly: 0, Yearly: 0, Copy backups: No, Keep final
-              backups: No
-            </p>
-          </Banner>
-
-          <div className="w-[370px]">
-            <KeyValueGroup data={data} />
-          </div>
+          <Group variant="horizontal">
+            <div className="w-[370px]">
+              <KeyValueGroup data={data} />
+            </div>
+            <div>
+              <p className="text-black-500">
+                <Tooltip
+                  fluid
+                  text="Production environments: 14-30 Daily, Non-Production environments: 1-14 Daily"
+                >
+                  <IconInfo
+                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                    variant="sm"
+                  />
+                  Daily Recommendations
+                </Tooltip>
+              </p>
+              <p className="text-black-500">
+                <Tooltip
+                  fluid
+                  text="Production environments: 12 Monthly, Non-Production environments: 0 Monthly"
+                >
+                  <IconInfo
+                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                    variant="sm"
+                  />
+                  Monthly Recommendations
+                </Tooltip>
+              </p>
+              <p className="text-black-500">
+                <Tooltip
+                  fluid
+                  text="Production environments: 5 Yearly, Non-Production environments: 0 Yearly"
+                >
+                  <IconInfo
+                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                    variant="sm"
+                  />
+                  Yearly Recommendations
+                </Tooltip>
+              </p>
+              <p className="text-black-500">
+                <Tooltip
+                  fluid
+                  text="Production environments: Yes, Non-Production environments: No"
+                >
+                  <IconInfo
+                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                    variant="sm"
+                  />
+                  Copy Backups Recommendations
+                </Tooltip>
+              </p>
+              <p className="text-black-500">
+                <Tooltip
+                  fluid
+                  text="Production environments: Yes, Non-Production environments: No"
+                >
+                  <IconInfo
+                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                    variant="sm"
+                  />
+                  Final Backup Recommendations
+                </Tooltip>
+              </p>
+            </div>
+          </Group>
           <div>
             <ButtonAdmin
               envId={envId}
