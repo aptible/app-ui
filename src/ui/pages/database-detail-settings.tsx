@@ -14,6 +14,7 @@ import {
   selectLogDrainsByEnvId,
   selectMetricDrainsByEnvId,
   selectServiceById,
+  unlinkDatabase,
   updateDatabase,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
@@ -387,6 +388,69 @@ const DatabaseNameChange = ({ database }: DbProps) => {
   );
 };
 
+const DatabaseUnlinkFromSource = ({ database }: DbProps) => {
+  const dispatch = useDispatch();
+  const [unlinkConfirm, setUnlinkConfirm] = useState<string>("");
+  const action = unlinkDatabase({ id: database.id });
+  const loader = useLoader(action);
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(action);
+  };
+  const isDisabled = database.handle !== unlinkConfirm;
+
+  return (
+    <div>
+      {database.initializeFrom && (
+        <form onSubmit={onSubmit} className="flex flex-col gap-4 mt-4">
+          <FormGroup
+            label="Unlink Replica from Source"
+            description={
+              <p>
+                If <strong>{database.handle}</strong> has been promoted to a
+                primary database, you may wish to unlink this database as a
+                replica so that the legacy primary database can be
+                deprovisioned. This action cannot be undone. Please confirm that
+                you have promoted <strong>{database.handle}</strong> to a
+                primary and no longer wish for it to be classified as a replica
+                before continuing. Type <strong>{database.handle}</strong> to
+                continue.{" "}
+              </p>
+            }
+            htmlFor="unlink replica"
+          />
+
+          <Group variant="horizontal" size="sm" className="items-center">
+            <Input
+              className="flex-1"
+              name="unlink-confirm"
+              type="text"
+              value={unlinkConfirm}
+              onChange={(e) => setUnlinkConfirm(e.currentTarget.value)}
+              id="unlink-confirm"
+            />
+            <ButtonDestroy
+              envId={database.environmentId}
+              variant="delete"
+              disabled={isDisabled}
+              isLoading={loader.isLoading}
+              className="w-70"
+              type="submit"
+            >
+              {/* <IconTrash color="#FFF" className="mr-2" /> */}
+              Unlink Replica from Source
+            </ButtonDestroy>
+          </Group>
+        </form>
+      )}
+      {loader.meta.success && <BannerMessages {...loader} />}
+      {(database.initializeFrom || loader.meta.success) && (
+        <hr className="mt-6" />
+      )}
+    </div>
+  );
+};
+
 const DatabaseRestart = ({ database }: DbProps) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -430,6 +494,7 @@ export const DatabaseSettingsPage = () => {
         </div>
         <DatabaseNameChange database={database} />
         <hr className="mt-6" />
+        <DatabaseUnlinkFromSource database={database} />
         <DatabaseRestart database={database} />
       </Box>
 
