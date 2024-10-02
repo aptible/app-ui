@@ -203,10 +203,6 @@ const AutoscalingSection = ({
   const modifyLoader = useLoader(modifyServiceSizingPolicy);
   const stack = useSelector((s) => selectStackById(s, { id: stackId }));
 
-  if (!stack.verticalAutoscaling && !stack.horizontalAutoscaling) {
-    return null;
-  }
-
   const [errors, validate] = useValidator<
     ServiceSizingPolicyEditProps,
     typeof policyValidators
@@ -278,6 +274,10 @@ const AutoscalingSection = ({
 
     if (opt.value === "horizontal") setOpen(true);
   };
+
+  if (!stack.verticalAutoscaling && !stack.horizontalAutoscaling) {
+    return null;
+  }
 
   return (
     <Box>
