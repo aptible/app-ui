@@ -14,10 +14,13 @@ export const EnvironmentBackupsPage = () => {
       <BackupRpView envId={id} />
 
       <Banner variant="info">
-        <b>Only backups retained from deleted databases are shown below.</b> To
-        manage backups for a database, see the Backups tab on the database
-        itself. Removing an original backup deletes its copies. Deleting a copy
-        does not delete the original backup.
+        <p><strong>Backups of Deprovisioned Databases</strong></p>
+        <p>Both Final and Manual backups from deleted databases are shown below. Final backups follow the backup retention policy, while Manual backups are retained indefinitely by default. To manage backups for an active database, visit the Backups tab on the database itself.</p>
+      </Banner>
+
+      <Banner variant="warning">
+        <p><strong>Deleting Copies of Backups </strong></p>
+        <p>Removing an original backup deletes all its copies, but deleting a copy does not affect the original. See the documentation for more information.</p>
       </Banner>
 
       <DatabaseBackupsList paginated={paginated} showDatabase showFinal />
