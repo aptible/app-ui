@@ -439,10 +439,8 @@ const DatabaseUnlinkFromSource = ({ database }: DbProps) => {
           </Group>
         </form>
       )}
-      {loader.meta.success && <BannerMessages {...loader} />}
-      {(database.initializeFrom || loader.meta.success) && (
-        <hr className="mt-6" />
-      )}
+      {<BannerMessages {...loader} />}
+      {(database.initializeFrom || loader.isSuccess) && <hr className="mt-6" />}
     </div>
   );
 };

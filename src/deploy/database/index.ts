@@ -555,7 +555,6 @@ export const unlinkDatabase = api.post<UnlinkDatabase>(
 
     ctx.loader = {
       message: "Replica unlinked from source successfully!",
-      meta: { success: true },
     };
   },
 );
