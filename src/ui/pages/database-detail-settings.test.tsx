@@ -239,7 +239,7 @@ describe("DatabaseSettingsPage", () => {
 
       // Check for unlink text
       const unlinkText = await screen.findByText(
-        /has been promoted to a primary database, you may wish to unlink this database as a replica so that the legacy primary database can be deprovisioned. This action cannot be undone. Please confirm that you have promoted/,
+        /Warning: You are about to unlink a replica from its primary. Note that this does not stop replication. To proceed, type/,
       );
       expect(unlinkText).toBeInTheDocument();
 
@@ -278,7 +278,7 @@ describe("DatabaseSettingsPage", () => {
       // Check that the promotion text is not displayed
       expect(
         screen.queryByText(
-          /has been promoted to a primary database, you may wish to unlink this database as a replica so that the legacy primary database can be deprovisioned./,
+          /Warning: You are about to unlink a replica from its primary. Note that this does not stop replication. To proceed, type/,
         ),
       ).not.toBeInTheDocument();
 

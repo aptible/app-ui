@@ -407,14 +407,10 @@ const DatabaseUnlinkFromSource = ({ database }: DbProps) => {
             label="Unlink Replica from Source"
             description={
               <p>
-                If <strong>{database.handle}</strong> has been promoted to a
-                primary database, you may wish to unlink this database as a
-                replica so that the legacy primary database can be
-                deprovisioned. This action cannot be undone. Please confirm that
-                you have promoted <strong>{database.handle}</strong> to a
-                primary and no longer wish for it to be classified as a replica
-                before continuing. Type <strong>{database.handle}</strong> to
-                continue.{" "}
+                Warning: You are about to unlink a replica from its primary.
+                Note that this does not stop replication. To proceed, type{" "}
+                <strong>{database.handle}</strong> below to confirm these
+                changes. This action cannot be undone or reversed.{" "}
               </p>
             }
             htmlFor="unlink replica"
