@@ -541,6 +541,24 @@ export const deprovisionDatabase = thunks.create<{
   },
 ]);
 
+interface UnlinkDatabase {
+  id: string;
+}
+
+export const unlinkDatabase = api.post<UnlinkDatabase>(
+  "/databases/:id/unlink",
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = {
+      message: "Replica unlinked from source successfully!",
+    };
+  },
+);
+
 interface UpdateDatabase {
   id: string;
   handle: string;

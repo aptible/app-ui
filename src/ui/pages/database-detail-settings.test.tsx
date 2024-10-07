@@ -188,4 +188,106 @@ describe("DatabaseSettingsPage", () => {
       expect(button).toBeEnabled();
     });
   });
+
+  describe("when the database is a replica", () => {
+    it("should let the user unlink the replica", async () => {
+      const testDatabasePostgresReplica = defaultDatabaseResponse({
+        id: createId(),
+        handle: "postgres-replica",
+        type: "postgres",
+        connection_url: "postgres://some:val@wow.com:5432",
+        _embedded: {
+          disk: testDisk,
+          last_operation: testDatabaseOp,
+        },
+        _links: {
+          account: defaultHalHref(
+            `${testEnv.apiUrl}/accounts/${testDestroyAccount.id}`,
+          ),
+          initialize_from: defaultHalHref(
+            `${testEnv.apiUrl}/databases/${testDatabasePostgres.id}`,
+          ),
+          database_image: defaultHalHref(
+            `${testEnv.apiUrl}/database_images/${testPostgresDatabaseImage.id}`,
+          ),
+          service: defaultHalHref(
+            `${testEnv.apiUrl}/services/${testDatabaseServiceId}`,
+          ),
+          disk: defaultHalHref(`${testEnv.apiUrl}/disks/${testDisk.id}`),
+        },
+      });
+
+      server.use(
+        ...stacksWithResources({
+          accounts: [testDestroyAccount],
+          databases: [testDatabasePostgresReplica],
+        }),
+        ...verifiedUserHandlers(),
+      );
+
+      const { store, App } = setupAppIntegrationTest({
+        initEntries: [databaseSettingsUrl(`${testDatabasePostgresReplica.id}`)],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      expect(
+        screen.queryByText(/You do not have "Destroy" permissions/),
+      ).not.toBeInTheDocument();
+
+      // Check for unlink text
+      const unlinkText = await screen.findByText(
+        /Warning: You are about to unlink a replica from its primary. Note that this does not stop replication. To proceed, type/,
+      );
+      expect(unlinkText).toBeInTheDocument();
+
+      const inp = await screen.findByRole("textbox", {
+        name: /unlink-confirm/,
+      });
+      await act(() => userEvent.type(inp, "postgres-replica"));
+
+      // Check for button with correct text
+      const unlinkButton = await screen.findByRole("button", {
+        name: /Unlink Replica from Source/,
+      });
+      expect(unlinkButton).toBeInTheDocument();
+      expect(unlinkButton.getAttribute("disabled")).toBeFalsy();
+    });
+  });
+
+  describe("when the database is not a replica", () => {
+    it("should not display the option to unlink", async () => {
+      server.use(
+        ...stacksWithResources({
+          accounts: [testAccount],
+          databases: [testDatabasePostgres],
+        }),
+        ...verifiedUserHandlers(),
+      );
+
+      const { store, App } = setupAppIntegrationTest({
+        initEntries: [databaseSettingsUrl(`${testDatabasePostgres.id}`)],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+
+      // Check that the promotion text is not displayed
+      expect(
+        screen.queryByText(
+          /Warning: You are about to unlink a replica from its primary. Note that this does not stop replication. To proceed, type/,
+        ),
+      ).not.toBeInTheDocument();
+
+      // Check that the button is not displayed
+      expect(
+        screen.queryByRole("button", {
+          name: /Unlink Replica from Source/,
+        }),
+      ).not.toBeInTheDocument();
+    });
+  });
 });
