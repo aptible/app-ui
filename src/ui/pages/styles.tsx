@@ -28,7 +28,6 @@ import {
   FormGroup,
   Group,
   IconAutoscale,
-  IconGitBranch,
   IconPlusCircle,
   IconScaleCheck,
   IconScaleDown,
