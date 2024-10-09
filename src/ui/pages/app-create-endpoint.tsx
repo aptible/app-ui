@@ -21,6 +21,7 @@ import {
   useSelector,
 } from "@app/react";
 import { endpointDetailUrl } from "@app/routes";
+import type { EndpointType } from "@app/types";
 import { existValidator, ipValidator, portValidator } from "@app/validator";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -42,7 +43,6 @@ import {
   type SelectOption,
   TextArea,
 } from "../shared";
-import { EndpointType } from "@app/types";
 
 const validators = {
   port: (data: CreateEndpointProps) => portValidator(data.containerPort),
@@ -297,14 +297,12 @@ export const AppCreateEndpointPage = () => {
     </FormGroup>
   );
 
-  const getProtocolName = (trafficType : EndpointType) => {
-    switch(trafficType) {
+  const getProtocolName = (trafficType: EndpointType) => {
+    switch (trafficType) {
       case "grpc":
         return "gRPC";
-        break;
       case "http_proxy_protocol":
         return "HTTP";
-        break;
       default:
         return "HTTP";
     }
@@ -351,13 +349,14 @@ export const AppCreateEndpointPage = () => {
         <ButtonLinkDocs href="https://www.aptible.com/docs/core-concepts/apps/connecting-to-apps/app-endpoints/overview" />
       </div>
       <div className="mt-2 mb-4 text-black-900">
-        This Endpoint will accept {getProtocolName(trType) === "HTTP" ? "HTTP and HTTPS" : getProtocolName(trType)} traffic and route it to your
-        app over {getProtocolName(trType)}.
+        This Endpoint will accept{" "}
+        {getProtocolName(trType) === "HTTP"
+          ? "HTTP and HTTPS"
+          : getProtocolName(trType)}{" "}
+        traffic and route it to your app over {getProtocolName(trType)}.
       </div>
       <Form onSubmit={onSubmit}>
-        <FormGroup
-          label="Traffic Type"
-          htmlFor="traffic-type">
+        <FormGroup label="Traffic Type" htmlFor="traffic-type">
           <RadioGroup
             name="traffic-type"
             selected={trType}
@@ -365,7 +364,7 @@ export const AppCreateEndpointPage = () => {
           >
             <Radio value="http_proxy_protocol">HTTP</Radio>
             <Radio value="grpc">gRPC</Radio>
-          </RadioGroup> 
+          </RadioGroup>
         </FormGroup>
         <FormGroup
           label="Service"
@@ -396,8 +395,8 @@ export const AppCreateEndpointPage = () => {
           />
           <div className="text-base text-black-500 pt-2">
             Choose any port number between 1 and 65535. Your app must be
-            listening for {getProtocolName(trType)} traffic on this port, and it must be exposed by
-            your Docker image.
+            listening for {getProtocolName(trType)} traffic on this port, and it
+            must be exposed by your Docker image.
           </div>
         </FormGroup>
 

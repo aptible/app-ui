@@ -687,6 +687,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
   );
   const action = provisionEndpoint({
     type: "default",
+    trafficType: "http_proxy_protocol",
     serviceId: curServiceId,
     internal: false,
     ipAllowlist: [],
