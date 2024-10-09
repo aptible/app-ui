@@ -450,6 +450,7 @@ export const endpointEntities = {
 export type EndpointManagedType = "default" | "managed" | "custom";
 
 interface CreateEndpointBase {
+  trafficType: EndpointType;
   type: EndpointManagedType;
   envId: string;
   serviceId: string;
@@ -487,8 +488,8 @@ export const createEndpoint = api.post<
 >("/services/:serviceId/vhosts", function* (ctx, next) {
   const env = yield* select(selectEnv);
   const data: Record<string, any> = {
-    platform: "alb",
-    type: "http_proxy_protocol",
+    platform: ctx.payload.trafficType === "grpc" ? "elb" : "alb",
+    type: ctx.payload.trafficType,
     acme: ctx.payload.type === "managed",
     default: ctx.payload.type === "default",
     internal: ctx.payload.internal,

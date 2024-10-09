@@ -29,6 +29,7 @@ import {
   BannerMessages,
   Box,
   ButtonCreate,
+  ButtonLinkDocs,
   CertSelector,
   CheckBox,
   CreateAppEndpointSelector,
@@ -41,6 +42,7 @@ import {
   type SelectOption,
   TextArea,
 } from "../shared";
+import { EndpointType } from "@app/types";
 
 const validators = {
   port: (data: CreateEndpointProps) => portValidator(data.containerPort),
@@ -50,19 +52,19 @@ const validators = {
   domain: (data: CreateEndpointProps) => {
     if (data.type !== "managed") return;
     if (data.domain === "") {
-      return "A domain is required for managed HTTPS";
+      return "A domain is required for managed certificate";
     }
   },
   cert: (data: CreateEndpointProps) => {
     if (data.type !== "custom") return;
     if (data.certId === "" && data.cert === "") {
-      return "A certificate is required for custom HTTPS";
+      return "A certificate is required for custom certificate";
     }
   },
   privKey: (data: CreateEndpointProps) => {
     if (data.type !== "custom") return;
     if (data.certId === "" && data.privKey === "") {
-      return "A private key is required for custom HTTPS";
+      return "A private key is required for custom certificate";
     }
   },
 };
@@ -86,6 +88,7 @@ export const AppCreateEndpointPage = () => {
 
   const [serviceId, setServiceId] = useState("");
   const [port, setPort] = useState("");
+  const [trType, setTrType] = useState<EndpointType>("http_proxy_protocol");
   const [enpType, setEnpType] = useState<EndpointManagedType>("default");
   const [enpPlacement, setEnpPlacement] = useState("external");
   const [ipAllowlist, setIpAllowlist] = useState("");
@@ -103,6 +106,7 @@ export const AppCreateEndpointPage = () => {
   const createData = (): CreateEndpointProps => {
     const def = {
       serviceId,
+      trafficType: trType,
       internal: enpPlacement === "internal",
       ipAllowlist: parseIpStr(ipAllowlist),
       containerPort: port,
@@ -161,7 +165,7 @@ export const AppCreateEndpointPage = () => {
       label: `Use app-${app.id}.${stack.defaultDomain} default endpoint`,
       value: "default",
     },
-    { label: "Use a custom domain with Managed HTTPS", value: "managed" },
+    { label: "Use a custom domain with Managed certificate", value: "managed" },
     { label: "Use a custom domain with a custom certificate", value: "custom" },
   ];
 
@@ -186,7 +190,7 @@ export const AppCreateEndpointPage = () => {
     <FormGroup
       label="Transitional Certificate"
       htmlFor="trans-cert"
-      description="Managed HTTPS provisions a certificate for you, but this process takes a little while. During this time, your application will be unavailable. If you need to avoid downtime, you can provide a transitional certificate, which will let Aptible provision your Managed HTTPS certificate in the background, while your app is running."
+      description="Managed certificate provisions a certificate for you, but this process takes a little while. During this time, your application will be unavailable. If you need to avoid downtime, you can provide a transitional certificate, which will let Aptible provision your Managed certificate in the background, while your app is running."
     >
       <CheckBox
         label="Use a transitional certificate (recommended if your application is already live)"
@@ -293,6 +297,19 @@ export const AppCreateEndpointPage = () => {
     </FormGroup>
   );
 
+  const getProtocolName = (trafficType : EndpointType) => {
+    switch(trafficType) {
+      case "grpc":
+        return "gRPC";
+        break;
+      case "http_proxy_protocol":
+        return "HTTP";
+        break;
+      default:
+        return "HTTP";
+    }
+  };
+
   const form = () => {
     if (enpType === "managed") {
       return (
@@ -329,12 +346,27 @@ export const AppCreateEndpointPage = () => {
 
   return (
     <Box>
-      <h1 className="text-lg text-black font-semibold">Create Endpoint</h1>
+      <div className="flex justify-between items-start">
+        <h1 className="text-lg text-black font-semibold">Create Endpoint</h1>
+        <ButtonLinkDocs href="https://www.aptible.com/docs/core-concepts/apps/connecting-to-apps/app-endpoints/overview" />
+      </div>
       <div className="mt-2 mb-4 text-black-900">
-        This Endpoint will accept HTTP and HTTPS traffic and route it to your
-        app over HTTP.
+        This Endpoint will accept {getProtocolName(trType) === "HTTP" ? "HTTP and HTTPS" : getProtocolName(trType)} traffic and route it to your
+        app over {getProtocolName(trType)}.
       </div>
       <Form onSubmit={onSubmit}>
+        <FormGroup
+          label="Traffic Type"
+          htmlFor="traffic-type">
+          <RadioGroup
+            name="traffic-type"
+            selected={trType}
+            onSelect={setTrType}
+          >
+            <Radio value="http_proxy_protocol">HTTP</Radio>
+            <Radio value="grpc">gRPC</Radio>
+          </RadioGroup> 
+        </FormGroup>
         <FormGroup
           label="Service"
           htmlFor="service"
@@ -351,7 +383,7 @@ export const AppCreateEndpointPage = () => {
         <FormGroup
           label="Custom Container Port"
           htmlFor="port"
-          description={`Aptible will deliver HTTP traffic to your app on port (${portText}).`}
+          description={`Aptible will deliver ${getProtocolName(trType)} traffic to your app on port (${portText}).`}
           feedbackMessage={errors.port}
           feedbackVariant={errors.port ? "danger" : "info"}
         >
@@ -364,7 +396,7 @@ export const AppCreateEndpointPage = () => {
           />
           <div className="text-base text-black-500 pt-2">
             Choose any port number between 1 and 65535. Your app must be
-            listening for HTTP traffic on this port, and it must be exposed by
+            listening for {getProtocolName(trType)} traffic on this port, and it must be exposed by
             your Docker image.
           </div>
         </FormGroup>
