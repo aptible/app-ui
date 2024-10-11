@@ -77,7 +77,7 @@ const validators = {
   },
   state: (p: FormProps) => {
     const readable = "State / province / district";
-    if ((p.country === "US" || p.country === "CA") && p.state === "") {
+    if ((p.country === "US" || p.country === "CA") && p.state === "NA") {
       return `${readable} is required`;
     }
   },
@@ -105,7 +105,7 @@ const CreditCardForm = () => {
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
   const [city, setCity] = useState("");
-  const [usState, setUsState] = useState("");
+  const [usState, setUsState] = useState("NA");
   const [country, setCountry] = useState("US");
 
   const [error, setError] = useState("");

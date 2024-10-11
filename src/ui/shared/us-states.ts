@@ -3,7 +3,7 @@ import type { SelectOption } from "./select";
 export const usStates: SelectOption[] = [
   {
     label: "N/A",
-    value: "",
+    value: "NA",
   },
   {
     label: "Alabama",
