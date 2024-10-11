@@ -282,6 +282,8 @@ const CreditCardForm = () => {
             feedbackMessage={errors.state}
           >
             <Select
+              id="us-state"
+              ariaLabel="us-state"
               value={usState}
               options={usStates}
               onSelect={(opt) => setUsState(opt.value)}
@@ -312,6 +314,8 @@ const CreditCardForm = () => {
           feedbackMessage={errors.country}
         >
           <Select
+            id="country"
+            ariaLabel="country"
             value={country}
             options={countries}
             onSelect={(opt) => setCountry(opt.value)}

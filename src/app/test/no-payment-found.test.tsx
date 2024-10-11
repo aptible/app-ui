@@ -198,6 +198,19 @@ describe("Payment page takeover", () => {
       const name = await screen.findByRole("textbox", { name: /name-on-card/ });
       await act(() => userEvent.type(name, "bobby lee"));
 
+      const address1 = await screen.findByRole("textbox", {
+        name: /street-address-1/,
+      });
+      await act(() => userEvent.type(address1, "1308 foxtrot st"));
+
+      const city = await screen.findByRole("textbox", { name: /city/ });
+      await act(() => userEvent.type(city, "flag city"));
+
+      const stateSelector = await screen.findByRole("combobox", {
+        name: /state/,
+      });
+      userEvent.selectOptions(stateSelector, "Ohio");
+
       const btn = await screen.findByRole("button", { name: /Save Payment/ });
       expect(btn).toBeEnabled();
 
