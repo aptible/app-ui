@@ -75,6 +75,7 @@ export type EndpointType =
   | "http_proxy_protocol"
   | "tcp"
   | "tls"
+  | "grpc"
   | "unknown";
 
 export interface DeployEndpoint extends Provisionable, Timestamps {
