@@ -76,6 +76,12 @@ export async function getStripe(stripePublishableKey: string) {
 interface StripeSourceProps {
   id: string;
   stripeTokenId: string;
+  address1: string;
+  address2: string;
+  city: string;
+  zipcode: string;
+  state: string;
+  country: string;
 }
 
 export const addCreditCard = thunks.create<StripeSourceProps>(
@@ -88,9 +94,15 @@ export const addCreditCard = thunks.create<StripeSourceProps>(
       if (!ssCtx.json.ok) {
         throw ssCtx.json.error;
       }
-      const updatePaymentCtx = yield* updatePaymentMethod.run({
+      const updatePaymentCtx = yield* updateBillingDetail.run({
         id: ctx.payload.id,
         paymentMethodUrl: `${config.billingUrl}/stripe_sources/${ssCtx.json.value.id}`,
+        address1: ctx.payload.address1,
+        address2: ctx.payload.address2,
+        city: ctx.payload.city,
+        state: ctx.payload.state,
+        country: ctx.payload.country,
+        zipcode: ctx.payload.zipcode,
       });
       if (!updatePaymentCtx.json.ok) {
         throw updatePaymentCtx.json.error;
@@ -150,14 +162,35 @@ export const createBillingDetail = billingApi.post<{
   yield* next();
 });
 
-export const updatePaymentMethod = billingApi.patch<{
+interface UpdateBillingDetailProps {
   id: string;
   paymentMethodUrl: string;
-}>("/billing_details/:id", function* (ctx, next) {
-  ctx.request = ctx.req({
-    body: JSON.stringify({
-      payment_method: ctx.payload.paymentMethodUrl,
-    }),
-  });
-  yield* next();
-});
+  address1: string;
+  address2: string;
+  city: string;
+  zipcode: string;
+  state: string;
+  country: string;
+}
+
+export const updateBillingDetail = billingApi.patch<UpdateBillingDetailProps>(
+  "/billing_details/:id",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({
+        payment_method: ctx.payload.paymentMethodUrl,
+        organization_details_json: {
+          billing_address: {
+            street_one: ctx.payload.address1,
+            street_two: ctx.payload.address2,
+            city: ctx.payload.city,
+            state: ctx.payload.state,
+            post_code: ctx.payload.zipcode,
+            country: ctx.payload.country,
+          },
+        },
+      }),
+    });
+    yield* next();
+  },
+);

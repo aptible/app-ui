@@ -39,6 +39,9 @@ import {
   Input,
   Label,
   OrgPicker,
+  Select,
+  countries,
+  usStates,
 } from "../shared";
 
 const StripeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -52,6 +55,11 @@ const StripeProvider = ({ children }: { children: React.ReactNode }) => {
 interface FormProps {
   zipcode: string;
   nameOnCard: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  country: string;
 }
 
 const validators = {
@@ -60,6 +68,29 @@ const validators = {
   },
   name: (p: FormProps) => {
     return existValidator(p.nameOnCard, "name on card");
+  },
+  address1: (p: FormProps) => {
+    return existValidator(p.address1, "street address");
+  },
+  city: (p: FormProps) => {
+    return existValidator(p.city, "city");
+  },
+  state: (p: FormProps) => {
+    const readable = "State / province / district";
+    if ((p.country === "US" || p.country === "CA") && p.state === "") {
+      return `${readable} is required`;
+    }
+  },
+  country: (p: FormProps) => {
+    // https://github.com/aptible/deploy-ui/blob/7c738cfb80f8ffd3a7d70b27770e5181c552964c/app/organization/admin/billing/billing-address/route.js#L40
+    if (
+      p.country === "US" &&
+      p.zipcode &&
+      !/^[0-9]{5}(?:-[0-9]{4})?$/.test(p.zipcode)
+    ) {
+      return "Invalid Zip Code";
+    }
+    return existValidator(p.country, "country");
   },
 };
 
@@ -71,13 +102,27 @@ const CreditCardForm = () => {
   const dispatch = useDispatch();
   const [nameOnCard, setNameOnCard] = useState("");
   const [zipcode, setZipcode] = useState("");
+  const [address1, setAddress1] = useState("");
+  const [address2, setAddress2] = useState("");
+  const [city, setCity] = useState("");
+  const [usState, setUsState] = useState("");
+  const [country, setCountry] = useState("US");
+
   const [error, setError] = useState("");
   const loader = useLoader(addCreditCard);
   const [loading, setLoading] = useState(false);
   const [errors, validate] = useValidator<FormProps, typeof validators>(
     validators,
   );
-  const data = { zipcode, nameOnCard };
+  const data: FormProps = {
+    zipcode,
+    nameOnCard,
+    address1,
+    address2,
+    city,
+    state: usState,
+    country,
+  };
 
   useLoaderSuccess(loader, () => {
     navigate(homeUrl());
@@ -111,7 +156,7 @@ const CreditCardForm = () => {
     }
 
     const stripeTokenId = token.token?.id || "";
-    dispatch(addCreditCard({ id: billingDetail.id, stripeTokenId }));
+    dispatch(addCreditCard({ id: billingDetail.id, stripeTokenId, ...data }));
     return stripeTokenId;
   }
 
@@ -183,17 +228,93 @@ const CreditCardForm = () => {
         </FormGroup>
 
         <FormGroup
-          label="Zipcode"
-          htmlFor="zipcode"
-          className="flex-1"
-          feedbackVariant={errors.zipcode ? "danger" : "info"}
-          feedbackMessage={errors.zipcode}
+          label="Street and number, P.O. box, c/o."
+          htmlFor="street-address-1"
+          feedbackVariant={errors.address1 ? "danger" : "info"}
+          feedbackMessage={errors.address1}
         >
           <Input
-            name="zipcode"
-            value={zipcode}
-            onChange={(e) => setZipcode(e.target.value)}
+            id="street-address-1"
+            name="street-address-1"
+            type="text"
+            autoComplete="address-line1"
             required
+            value={address1}
+            onChange={(e) => setAddress1(e.target.value)}
+          />
+        </FormGroup>
+
+        <FormGroup
+          label="Suite, unit, building, floor, etc."
+          htmlFor="street-address-2"
+        >
+          <Input
+            id="street-address-2"
+            name="street-address-2"
+            type="text"
+            autoComplete="address-line2"
+            value={address2}
+            onChange={(e) => setAddress2(e.target.value)}
+          />
+        </FormGroup>
+
+        <FormGroup
+          label="City"
+          htmlFor="city"
+          feedbackVariant={errors.city ? "danger" : "info"}
+          feedbackMessage={errors.city}
+        >
+          <Input
+            id="city"
+            name="city"
+            type="text"
+            required
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+          />
+        </FormGroup>
+
+        <Group variant="horizontal">
+          <FormGroup
+            label="State"
+            htmlFor="us-state"
+            feedbackVariant={errors.state ? "danger" : "info"}
+            feedbackMessage={errors.state}
+          >
+            <Select
+              value={usState}
+              options={usStates}
+              onSelect={(opt) => setUsState(opt.value)}
+            />
+          </FormGroup>
+
+          <FormGroup
+            label="Zipcode"
+            htmlFor="zipcode"
+            className="flex-1"
+            feedbackVariant={errors.zipcode ? "danger" : "info"}
+            feedbackMessage={errors.zipcode}
+          >
+            <Input
+              name="zipcode"
+              value={zipcode}
+              autoComplete="postal-code"
+              onChange={(e) => setZipcode(e.target.value)}
+              required
+            />
+          </FormGroup>
+        </Group>
+
+        <FormGroup
+          label="Country"
+          htmlFor="country"
+          feedbackVariant={errors.country ? "danger" : "info"}
+          feedbackMessage={errors.country}
+        >
+          <Select
+            value={country}
+            options={countries}
+            onSelect={(opt) => setCountry(opt.value)}
           />
         </FormGroup>
 
