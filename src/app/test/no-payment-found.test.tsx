@@ -207,9 +207,9 @@ describe("Payment page takeover", () => {
       await act(() => userEvent.type(city, "flag city"));
 
       const stateSelector = await screen.findByRole("combobox", {
-        name: /state/,
+        name: /us-state/,
       });
-      userEvent.selectOptions(stateSelector, "Ohio");
+      await userEvent.selectOptions(stateSelector, "Ohio");
 
       const btn = await screen.findByRole("button", { name: /Save Payment/ });
       expect(btn).toBeEnabled();

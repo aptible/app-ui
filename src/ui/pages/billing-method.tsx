@@ -76,7 +76,7 @@ const validators = {
     return existValidator(p.city, "city");
   },
   state: (p: FormProps) => {
-    const readable = "State / province / district";
+    const readable = "state / province / district";
     if ((p.country === "US" || p.country === "CA") && p.state === "NA") {
       return `${readable} is required`;
     }
@@ -88,7 +88,7 @@ const validators = {
       p.zipcode &&
       !/^[0-9]{5}(?:-[0-9]{4})?$/.test(p.zipcode)
     ) {
-      return "Invalid Zip Code";
+      return "invalid zip code";
     }
     return existValidator(p.country, "country");
   },
@@ -238,7 +238,6 @@ const CreditCardForm = () => {
             name="street-address-1"
             type="text"
             autoComplete="address-line1"
-            required
             value={address1}
             onChange={(e) => setAddress1(e.target.value)}
           />
@@ -268,7 +267,6 @@ const CreditCardForm = () => {
             id="city"
             name="city"
             type="text"
-            required
             value={city}
             onChange={(e) => setCity(e.target.value)}
           />
@@ -302,7 +300,6 @@ const CreditCardForm = () => {
               value={zipcode}
               autoComplete="postal-code"
               onChange={(e) => setZipcode(e.target.value)}
-              required
             />
           </FormGroup>
         </Group>
