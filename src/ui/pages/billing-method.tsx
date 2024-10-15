@@ -15,6 +15,7 @@ import {
   useSelector,
 } from "@app/react";
 import { homeUrl, logoutUrl, plansUrl } from "@app/routes";
+import { capitalize } from "@app/string-utils";
 import { existValidator } from "@app/validator";
 import {
   CardCvcElement,
@@ -402,7 +403,7 @@ export const BillingMethodPage = () => {
 
             <Banner variant="info" className="w-full">
               <div className="flex items-center gap-2">
-                Current plan: {plan.name}{" "}
+                Current plan: {capitalize(plan.name)}{" "}
                 <Link to={plansUrl()} className="flex items-center gap-1">
                   Change plan <IconArrowRight variant="sm" color="#4361FF" />
                 </Link>
