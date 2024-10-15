@@ -87,9 +87,12 @@ export const CreateStackPage = () => {
   );
   // must have a non-starter active plan or,
   // an empty active plan (empty active plan means legacy enterprise)
-  const canRequestStack = ["growth", "scale", "enterprise"].includes(
-    selectedPlan.name,
-  );
+  const canRequestStack = [
+    "growth",
+    "scale",
+    "production",
+    "enterprise",
+  ].includes(selectedPlan.name);
 
   const [stackName, setStackName] = useState("");
   const [region, setRegion] = useState("none");
@@ -193,7 +196,7 @@ export const CreateStackPage = () => {
             {selectedPlan.id === "" || canRequestStack ? null : (
               <Banner variant="info">
                 Dedicated stacks are only available for{" "}
-                <strong>Growth, Scale, and Enterprise</strong> plans &mdash;{" "}
+                <strong>Production and Enterprise</strong> plans &mdash;{" "}
                 <Link to={plansUrl()}>Upgrade your plan for access.</Link>
               </Banner>
             )}

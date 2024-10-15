@@ -198,8 +198,10 @@ export const selectPlansForView = createSelector(
     const init: Record<PlanName, DeployPlan> = {
       none: defaultPlan({ name: "none" }),
       starter: defaultPlan({ name: "starter" }),
+      development: defaultPlan({ name: "development" }),
       growth: defaultPlan({ name: "growth" }),
       scale: defaultPlan({ name: "scale" }),
+      production: defaultPlan({ name: "production" }),
       enterprise: defaultPlan({ name: "enterprise" }),
     };
     return plans.reduce((acc, plan) => {

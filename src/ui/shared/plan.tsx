@@ -9,11 +9,17 @@ import { tokens } from "./tokens";
 const descriptionTextForPlan = (planName: PlanName): string =>
   ({
     none: "",
-    starter: "Deploy your app and get to market fast",
+    // Legacy
+    starter: "Get started in a limited trial environment",
     growth: "Gain user traction and deliver more functionality",
     scale: "Run mission-critical apps at scale without worry",
+
+    // Current
+    development: "Develop your prototype with a seamless path to production",
+    production:
+      "Go to production in your own private network with everything you need to meet compliance requirements",
     enterprise:
-      "Meet any requirement across performance, reliability, and security",
+      "Leverage Aptible at scale with enterprise features and support for additional compliance frameworks",
   })[planName];
 
 const Section = ({
@@ -79,20 +85,14 @@ const PlanButton = ({
 
 const PlanCostBlock = ({
   price,
-  max,
 }: {
   price: string;
-  max: string;
 }) => {
   return (
     <div className="flex justify-between mb-2">
       <div>
         <p>Starts at</p>
         <h3 className={tokens.type.h4}>{price}</h3>
-      </div>
-      <div>
-        <p>Approx. Max Invoice</p>
-        <h3 className={tokens.type.h4}>{max}</h3>
       </div>
     </div>
   );
@@ -123,7 +123,7 @@ const BulletListForPlan = ({
   if (plan.name === "starter") {
     return (
       <>
-        <PlanCostBlock price="0" max="$220.56" />
+        <PlanCostBlock price="$0/month" />
 
         <Section>
           <SectionItem className="font-semibold">Includes</SectionItem>
@@ -159,7 +159,7 @@ const BulletListForPlan = ({
   if (plan.name === "growth") {
     return (
       <>
-        <PlanCostBlock price="$185" max="$1,256.56" />
+        <PlanCostBlock price="$185/month" />
 
         <Section>
           <SectionItem className="font-semibold">Includes</SectionItem>
@@ -198,7 +198,7 @@ const BulletListForPlan = ({
   if (plan.name === "scale") {
     return (
       <>
-        <PlanCostBlock price="$599" max="$3,698.80" />
+        <PlanCostBlock price="$599/month" />
 
         <Section>
           <SectionItem className="font-semibold">Includes</SectionItem>
@@ -226,8 +226,39 @@ const BulletListForPlan = ({
             Up to 3 concurrent SSH Sessions for temporary container access
           </IconLi>
           <IconLi>Support: Choose from Standard or Premium</IconLi>
-          <IconLi>Dedicated Stacks (Isolated Tenancy) Available</IconLi>
+          <IconLi>Dedicated Stacks (Isolated Tenancy) available</IconLi>
           <IconLi>Available HIPAA BAA</IconLi>
+        </ul>
+      </>
+    );
+  }
+
+  if (plan.name === "development") {
+    return (
+      <>
+        <PlanCostBlock price="$0/month" />
+
+        <ul>
+          <IconLi>
+            No limits on available Compute, Database Storage, or Endpoints
+          </IconLi>
+          <IconLi>Standard Support</IconLi>
+        </ul>
+      </>
+    );
+  }
+
+  if (plan.name === "production") {
+    return (
+      <>
+        <PlanCostBlock price="$499/month" />
+
+        <ul>
+          <IconLi>Deploy in 15+ regions</IconLi>
+          <IconLi>Custom Domains for Apps</IconLi>
+          <IconLi>Dedicated Stacks (isolated tenancy) available</IconLi>
+          <IconLi>Available HIPAA BAA</IconLi>
+          <IconLi>Support: Choose from Standard or Premium</IconLi>
         </ul>
       </>
     );
@@ -235,42 +266,17 @@ const BulletListForPlan = ({
 
   return (
     <>
-      <PlanCostBlock price="Custom" max="Custom" />
-
-      <Section>
-        <SectionItem className="font-semibold">Includes</SectionItem>
-        <SectionItem className="font-semibold">Available</SectionItem>
-      </Section>
-
-      <Section title="Compute">
-        <SectionItem>Custom</SectionItem>
-        <SectionItem>Unlimited</SectionItem>
-      </Section>
-
-      <Section title="DB Storage">
-        <SectionItem>Custom</SectionItem>
-        <SectionItem>Unlimited</SectionItem>
-      </Section>
-
-      <Section title="Endpoints">
-        <SectionItem>Custom</SectionItem>
-        <SectionItem>Unlimited</SectionItem>
-      </Section>
+      <PlanCostBlock price="Custom Pricing" />
 
       <ul>
-        <IconLi>
-          No limits on available Compute, Database Storage, or Endpoints
-        </IconLi>
-        <IconLi>Deploy in 15+ Regions</IconLi>
         <IconLi>99.95% Uptime SLA</IconLi>
+        <IconLi>Advanced networking features like IPsec VPNs</IconLi>
+        <IconLi>Option to self-host in your AWS</IconLi>
         <IconLi>
-          Advanced Networking Features such as IPsec VPNs and VPC Peering
+          Available HITRUST inheritance and security & compliance consulting
         </IconLi>
         <IconLi>
-          Available HITRUST Inheritance and Security & Compliance Dashboard
-        </IconLi>
-        <IconLi>
-          Support: Choose from Standard, Premium, Enterprise (24/7 Support)
+          Support: Choose from Standard, Premium, Enterprise (24/7 response)
         </IconLi>
         <IconLi>
           Custom pricing and payment options with annual commitments and
@@ -349,53 +355,45 @@ export const Plans = ({
   paymentRequired: boolean;
 }) => {
   const plans = useSelector(selectPlansForView);
+  const publishedPlans = [
+    plans.development,
+    plans.production,
+    plans.enterprise,
+  ];
+
+  // Only show other plans (starter, growth, scale) if they are selected
+  let plansToShow: DeployPlan[] = publishedPlans;
+  if (selected === "starter") {
+    plansToShow = [plans.starter].concat(publishedPlans);
+  } else if (selected === "growth") {
+    plansToShow = [plans.growth].concat(publishedPlans);
+  } else if (selected === "scale") {
+    plansToShow = [plans.scale].concat(publishedPlans);
+  }
+
+  // Show 3 column layout if only 3 plans to show, otherwise 4 (when there should be 4 to show)
+  let col = "lg:grid-cols-3";
+  if (plansToShow.length > 3) {
+    col = "lg:grid-cols-4";
+  }
 
   return (
-    <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 lg:mx-0 mx-10">
-      <PlanCard
-        plan={plans.starter}
-        available={activePlan.availablePlans.includes(plans.starter.name)}
-        selected={plans.starter.name === selected}
-        onSelectPlan={() =>
-          onSelectPlan({ planId: plans.starter.id, name: plans.starter.name })
-        }
-      />
-
-      <PlanCard
-        plan={plans.growth}
-        available={
-          !paymentRequired &&
-          activePlan.availablePlans.includes(plans.growth.name)
-        }
-        selected={plans.growth.name === selected}
-        onSelectPlan={() =>
-          onSelectPlan({ planId: plans.growth.id, name: plans.growth.name })
-        }
-      />
-
-      <PlanCard
-        plan={plans.scale}
-        available={
-          !paymentRequired &&
-          activePlan.availablePlans.includes(plans.scale.name)
-        }
-        selected={plans.scale.name === selected}
-        onSelectPlan={() =>
-          onSelectPlan({ planId: plans.scale.id, name: plans.scale.name })
-        }
-      />
-
-      <PlanCard
-        plan={plans.enterprise}
-        available={activePlan.availablePlans.includes(plans.enterprise.name)}
-        selected={plans.enterprise.name === selected}
-        onSelectPlan={() =>
-          onSelectPlan({
-            planId: plans.enterprise.id,
-            name: plans.enterprise.name,
-          })
-        }
-      />
+    <div
+      className={`grid ${col} md:grid-cols-2 grid-cols-1 gap-4 lg:mx-0 mx-10`}
+    >
+      {plansToShow.map((plan, index) => (
+        <PlanCard
+          key={plan.name}
+          plan={plan}
+          available={
+            !paymentRequired && activePlan.availablePlans.includes(plan.name)
+          }
+          selected={plan.name === selected}
+          onSelectPlan={() =>
+            onSelectPlan({ planId: plan.id, name: plan.name })
+          }
+        />
+      ))}
     </div>
   );
 };

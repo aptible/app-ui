@@ -71,7 +71,7 @@ describe("Payment page takeover", () => {
                   {
                     ...testPlan,
                     id: fixedIdForTests,
-                    name: "growth",
+                    name: "production",
                   },
                   testEnterprisePlan,
                 ],
@@ -90,13 +90,13 @@ describe("Payment page takeover", () => {
       render(<App />);
 
       await screen.findByText(/Choose a Plan/);
-      await screen.findByText(/Growth/);
+      await screen.findByText(/Development/);
       const el = await screen.findAllByRole("button", {
         name: /Select Plan/,
       });
 
       fireEvent.click(el[0]);
-      await screen.findByText(/Successfully updated plan to Growth/);
+      await screen.findByText(/Successfully updated plan to Development/);
     });
   });
 
@@ -162,7 +162,7 @@ describe("Payment page takeover", () => {
                   {
                     ...testPlan,
                     id: fixedIdForTests,
-                    name: "growth",
+                    name: "production",
                   },
                   testEnterprisePlan,
                 ],
