@@ -502,7 +502,7 @@ export const testEnterprisePlan = defaultPlanResponse({
 
 export const testActivePlan = defaultActivePlanResponse({
   id: createId(),
-  available_plans: ["growth", "scale"],
+  available_plans: ["development", "production"],
   organization_id: testOrg.id,
   _links: {
     organization: defaultHalHref(

@@ -488,7 +488,7 @@ export const defaultActivePlan = (
   return {
     id: "",
     automatedBackupLimitPerDb: 0,
-    availablePlans: ["starter", "growth", "scale"],
+    availablePlans: ["starter", "development", "growth", "scale", "production"],
     complianceDashboardAccess: false,
     containerMemoryLimit: 0,
     costCents: 0,

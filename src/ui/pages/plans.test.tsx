@@ -62,7 +62,7 @@ const setupActionablePlanResponses = (extra: RestHandler[] = []) => {
               {
                 ...testPlan,
                 id: fixedIdForTests,
-                name: "growth",
+                name: "development",
               },
               testEnterprisePlan,
             ],
@@ -100,7 +100,7 @@ describe("Plans page", () => {
     );
     setupActionablePlanResponses();
     await screen.findByText("Choose a Plan");
-    await screen.findByText("Growth");
+    await screen.findByText("Development");
 
     const errText = screen.queryByText(
       "Unable to load plan data to allow for selection.",
@@ -112,7 +112,7 @@ describe("Plans page", () => {
     });
 
     fireEvent.click(el[0]);
-    await screen.findByText(/Successfully updated plan to Growth/);
+    await screen.findByText(/Successfully updated plan to Development/);
   });
 
   it("the plans page is visible, renders with plans found, but errors when user selects", async () => {
@@ -127,7 +127,7 @@ describe("Plans page", () => {
     );
 
     await screen.findByText("Choose a Plan");
-    await screen.findByText("Growth");
+    await screen.findByText("Development");
 
     const el = await screen.findAllByRole("button", {
       name: /Select Plan/,
