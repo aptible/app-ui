@@ -71,7 +71,7 @@ describe("Payment page takeover", () => {
                   {
                     ...testPlan,
                     id: fixedIdForTests,
-                    name: "production",
+                    name: "development",
                   },
                   testEnterprisePlan,
                 ],
@@ -162,7 +162,7 @@ describe("Payment page takeover", () => {
                   {
                     ...testPlan,
                     id: fixedIdForTests,
-                    name: "production",
+                    name: "development",
                   },
                   testEnterprisePlan,
                 ],
