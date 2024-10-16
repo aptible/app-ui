@@ -1,5 +1,5 @@
-import { selectPlansForView } from "@app/deploy";
-import { useSelector } from "@app/react";
+import { selectPlansForView, updateActivePlan } from "@app/deploy";
+import { useLoader, useSelector } from "@app/react";
 import { capitalize } from "@app/string-utils";
 import type { DeployActivePlan, DeployPlan, PlanName } from "@app/types";
 import { Button, ButtonLinkExternal } from "./button";
@@ -52,6 +52,7 @@ const PlanButton = ({
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   selected: boolean;
 }) => {
+  const loader = useLoader(updateActivePlan);
   if (contactUs) {
     return (
       <ButtonLinkExternal href="https://aptible.com/contact" className="w-full">
@@ -77,7 +78,7 @@ const PlanButton = ({
   }
 
   return (
-    <Button className="w-full" onClick={onClick}>
+    <Button className="w-full" onClick={onClick} isLoading={loader.isLoading}>
       Select Plan
     </Button>
   );
@@ -381,7 +382,7 @@ export const Plans = ({
     <div
       className={`grid ${col} md:grid-cols-2 grid-cols-1 gap-4 lg:mx-0 mx-10`}
     >
-      {plansToShow.map((plan, index) => (
+      {plansToShow.map((plan) => (
         <PlanCard
           key={plan.name}
           plan={plan}
