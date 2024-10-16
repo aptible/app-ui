@@ -55,13 +55,25 @@ export const AddSSHKeyForm = ({
             { text: "~/.ssh/*.pub", className: "text-white" },
           ]}
         />
-        <p className="text-gray-600 mt-2">
-          If you want to generate a new SSH key or want to learn how Aptible
-          uses your key,{" "}
+      </div>
+
+      <div className="my-4">
+          If you don’t already have an SSH Public Key, generate a new SSH key
+          using this command
+        </h4>
+        <p className="text-gray-600 mb-2">
+          Need help generating a new key?{" "}
           <a href="https://www.aptible.com/docs/public-key-authentication">
-            view our docs
+            View our docs
           </a>
         </p>
+        <PreCode
+          allowCopy
+          segments={[
+            { text: "ssh-keygen -t ed25519 -C", className: "text-lime" },
+            { text: "your_email@example.com", className: "text-white" },
+          ]}
+        />
       </div>
 
       <div className="mt-2">
