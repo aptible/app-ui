@@ -46,7 +46,7 @@ const CnameItem = ({ from, to }: { from: string; to: string }) => {
             </Tooltip>
           )}
         </div>
-        <Button onClick={onCheck} size="xs" isLoading={loader.isLoading}>
+        <Button onClick={onCheck} isLoading={loader.isLoading}>
           Check
         </Button>
       </div>
