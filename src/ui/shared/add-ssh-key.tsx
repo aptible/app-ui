@@ -58,6 +58,7 @@ export const AddSSHKeyForm = ({
       </div>
 
       <div className="my-4">
+        <h4 className={tokens.type.h4}>
           If you don’t already have an SSH Public Key, generate a new SSH key
           using this command
         </h4>
