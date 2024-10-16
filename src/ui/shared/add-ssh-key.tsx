@@ -72,7 +72,7 @@ export const AddSSHKeyForm = ({
           allowCopy
           segments={[
             { text: "ssh-keygen -t ed25519 -C", className: "text-lime" },
-            { text: "your_email@example.com", className: "text-white" },
+            { text: '"your_email@example.com"', className: "text-white" },
           ]}
         />
       </div>
