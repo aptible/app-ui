@@ -748,7 +748,7 @@ const Modals = () => {
           </p>
         </div>
         <hr />
-        <Button className="w-full font-semibold" size="lg">
+        <Button className="w-full font-semibold text-md">
           Got it!
         </Button>
       </Box>
