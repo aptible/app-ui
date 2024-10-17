@@ -12,11 +12,12 @@ import { Box } from "../box";
 import { Button, ButtonAdmin } from "../button";
 import { FormGroup } from "../form-group";
 import { Group } from "../group";
-import { IconEdit } from "../icons";
+import { IconEdit, IconInfo } from "../icons";
 import { Input } from "../input";
 import { KeyValueGroup } from "../key-value";
 import { Radio, RadioGroup } from "../select";
 import { tokens } from "../tokens";
+import { Tooltip } from "../tooltip";
 
 const validators = {
   daily: (data: UpdateBackupRp) => {
@@ -77,7 +78,10 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
       key: "Copy backups to another region",
       value: backupRp.makeCopy ? "Yes" : "No",
     },
-    { key: "Keep final backups", value: backupRp.keepFinal ? "Yes" : "No" },
+    {
+      key: "Keep final backup for deprovisioned databases",
+      value: backupRp.keepFinal ? "Yes" : "No",
+    },
   ];
 
   if (!editing) {
@@ -85,10 +89,73 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
       <Box>
         <Group>
           <h3 className={tokens.type.h3}>Backup Retention Policy</h3>
-          <div className="w-[260px]">
-            <KeyValueGroup data={data} />
-          </div>
-
+          <Group variant="horizontal">
+            <div className="w-[370px]">
+              <KeyValueGroup data={data} />
+            </div>
+            <div>
+              <p className="text-black-500">
+                <Tooltip
+                  fluid
+                  text="Production environments: 14-30 Daily, Non-Production environments: 1-14 Daily"
+                >
+                  <IconInfo
+                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                    variant="sm"
+                  />
+                  Show Daily Recommendations
+                </Tooltip>
+              </p>
+              <p className="text-black-500">
+                <Tooltip
+                  fluid
+                  text="Production environments: 12 Monthly, Non-Production environments: 0 Monthly"
+                >
+                  <IconInfo
+                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                    variant="sm"
+                  />
+                  Show Monthly Recommendations
+                </Tooltip>
+              </p>
+              <p className="text-black-500">
+                <Tooltip
+                  fluid
+                  text="Production environments: 5 Yearly, Non-Production environments: 0 Yearly"
+                >
+                  <IconInfo
+                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                    variant="sm"
+                  />
+                  Show Yearly Recommendations
+                </Tooltip>
+              </p>
+              <p className="text-black-500">
+                <Tooltip
+                  fluid
+                  text="Production environments: Yes, Non-Production environments: No"
+                >
+                  <IconInfo
+                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                    variant="sm"
+                  />
+                  Show Copy Backups Recommendations
+                </Tooltip>
+              </p>
+              <p className="text-black-500">
+                <Tooltip
+                  fluid
+                  text="Production environments: Yes, Non-Production environments: No"
+                >
+                  <IconInfo
+                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                    variant="sm"
+                  />
+                  Show Final Backup Recommendations
+                </Tooltip>
+              </p>
+            </div>
+          </Group>
           <div>
             <ButtonAdmin
               envId={envId}
@@ -174,8 +241,21 @@ export const BackupRpEditor = ({
         <BannerMessages {...loader} />
 
         <div>
-          Any changes made will impact <strong>all database backups</strong>{" "}
-          inside this Environment.
+          <p>
+            <strong>
+              Any changes made will impact all database backups inside this
+              Environment.
+            </strong>
+          </p>
+          <p>
+            Recommendations for production environments: Daily: 14-30, Monthly:
+            12, Yearly: 5, Copy backups: Yes (depending on DR needs), Keep final
+            backups: Yes
+          </p>
+          <p>
+            Recommendations for non-production environments: Daily: 1-14,
+            Monthly: 0, Yearly: 0, Copy backups: No, Keep final backups: No
+          </p>
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-2">
@@ -194,6 +274,9 @@ export const BackupRpEditor = ({
                   setDaily(Number.parseInt(e.currentTarget.value))
                 }
               />
+              <p className="text-sm mt-1 text-black">
+                Number of daily backups (taken every 24 hours) retained
+              </p>
             </FormGroup>
 
             <FormGroup
@@ -210,6 +293,9 @@ export const BackupRpEditor = ({
                   setMonthly(Number.parseInt(e.currentTarget.value));
                 }}
               />
+              <p className="text-sm mt-1 text-black">
+                Number of monthly backups (last backup of each month) retained
+              </p>
             </FormGroup>
 
             <FormGroup
@@ -226,6 +312,9 @@ export const BackupRpEditor = ({
                   setYearly(Number.parseInt(e.currentTarget.value));
                 }}
               />
+              <p className="text-sm mt-1 text-black">
+                Number of yearly backups (last backup of each year) retained
+              </p>
             </FormGroup>
 
             <FormGroup
@@ -240,9 +329,16 @@ export const BackupRpEditor = ({
                 <Radio value="yes">Yes</Radio>
                 <Radio value="no">No</Radio>
               </RadioGroup>
+              <p className="text-sm mt-1 text-black">
+                When enabled, Aptible will copy all the backups within that
+                Environment to another region
+              </p>
             </FormGroup>
 
-            <FormGroup label="Keep final backup" htmlFor="keep-final">
+            <FormGroup
+              label="Keep final backup for deprovisioned databases"
+              htmlFor="keep-final"
+            >
               <RadioGroup
                 name="keep-final"
                 selected={keepFinal}
@@ -251,6 +347,10 @@ export const BackupRpEditor = ({
                 <Radio value="yes">Yes</Radio>
                 <Radio value="no">No</Radio>
               </RadioGroup>
+              <p className="text-sm mt-1 text-black">
+                When enabled, Aptible will retain the last backup of a Database
+                after you deprovision it
+              </p>
             </FormGroup>
           </div>
 

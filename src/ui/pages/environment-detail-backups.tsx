@@ -2,7 +2,13 @@ import { fetchDatabasesByEnvId } from "@app/deploy";
 import { useQuery } from "@app/react";
 import { useParams } from "react-router";
 import { usePaginatedBackupsByEnvId } from "../hooks";
-import { BackupRpView, Banner, DatabaseBackupsList, Group } from "../shared";
+import {
+  BackupRpView,
+  Banner,
+  DatabaseBackupsList,
+  Group,
+  tokens,
+} from "../shared";
 
 export const EnvironmentBackupsPage = () => {
   const { id = "" } = useParams();
@@ -12,14 +18,30 @@ export const EnvironmentBackupsPage = () => {
   return (
     <Group>
       <BackupRpView envId={id} />
-
+      <h3 className={tokens.type.h3}>Backups of Deprovisioned Databases</h3>
       <Banner variant="info">
-        <b>Only backups retained from deleted databases are shown below.</b> To
-        manage backups for a database, see the Backups tab on the database
-        itself. Removing an original backup deletes its copies. Deleting a copy
-        does not delete the original backup.
+        <p>
+          <strong>
+            Both Final and Manual backups from deleted databases are shown
+            below.
+          </strong>{" "}
+          Final backups follow the backup retention policy, while Manual backups
+          are retained indefinitely by default. To manage backups for an active
+          database, visit the Backups tab on the database itself.
+        </p>
+        <p>
+          <strong>Deleting Copies of Backups: </strong>Removing an original
+          backup deletes all its copies, but deleting a copy does not affect the
+          original —{" "}
+          <a
+            href=" https://www.aptible.com/docs/core-concepts/managed-databases/managing-databases/database-backups"
+            target="_blank"
+            rel="noreferrer"
+          >
+            view documentation.
+          </a>
+        </p>
       </Banner>
-
       <DatabaseBackupsList paginated={paginated} showDatabase showFinal />
     </Group>
   );
