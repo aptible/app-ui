@@ -25,6 +25,7 @@ import {
   ButtonIcon,
   ButtonLink,
   CheckBox,
+  ExternalLink,
   FormGroup,
   Group,
   IconGitBranch,
@@ -92,6 +93,7 @@ const StylesNavigation = () => (
       { name: "Detail Boxes", to: "#detail-boxes" },
       { name: "Secrets", to: "#secrets" },
       { name: "Boxes", to: "#boxes" },
+      { name: "Modals", to: "#modals" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
         <div className="flex items-center">
@@ -717,6 +719,43 @@ const NegativeSpace = () => {
   );
 };
 
+const Modals = () => {
+  return (
+    <Group>
+      <div className="pt-8">
+        <h1 id="modals" className={tokens.type.h1}>
+          Modals
+        </h1>
+      </div>
+      <Box className="w-full flex flex-col gap-6 max-w-[700px] self-center">
+        <h2 className={tokens.type.h2}>New Default Backup Retention Policy</h2>
+        <hr />
+        <div className="text-md">
+          <p>
+            We've changed the default backup retention policy for newly created
+            environments to:
+          </p>
+          <p>• 30 Daily Backups</p>
+          <p>• 12 Monthly Backups</p>
+          <p>• 6 Yearly Backups</p>
+          <p>• Cross-region copy: Disabled</p>
+          <p>• Keep final backup: Enabled</p>
+          <p>
+            For more information,{" "}
+            <ExternalLink href="https://www.aptible.com/changelog/new-default-backup-retention-policy">
+              read the changelog.
+            </ExternalLink>
+          </p>
+        </div>
+        <hr />
+        <Button className="w-full font-semibold" size="lg">
+          Got it!
+        </Button>
+      </Box>
+    </Group>
+  );
+};
+
 export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
@@ -734,6 +773,7 @@ export const StylesPage = () => (
       <DetailBoxes />
       <Secrets />
       <NegativeSpace />
+      <Modals />
     </StylesWrapper>
   </div>
 );
