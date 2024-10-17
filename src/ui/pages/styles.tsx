@@ -748,9 +748,7 @@ const Modals = () => {
           </p>
         </div>
         <hr />
-        <Button className="w-full font-semibold text-md">
-          Got it!
-        </Button>
+        <Button className="w-full font-semibold text-md">Got it!</Button>
       </Box>
     </Group>
   );
