@@ -657,3 +657,83 @@ export const IconExternalResource = (props: IconProps) => {
     </IconStrokeBase>
   );
 };
+
+export const IconScaleDown = (props: IconProps) => {
+  return (
+    <IconStrokeBase
+      {...props}
+      title="Scale Down"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+    >
+      <path
+        d="M12.6663 9.33333L7.99967 14M7.99967 14L3.33301 9.33333M7.99967 14V2"
+        stroke="#4361FF"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </IconStrokeBase>
+  );
+};
+
+export const IconScaleUp = (props: IconProps) => {
+  return (
+    <IconStrokeBase
+      {...props}
+      title="Scale Up"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+    >
+      <path
+        d="M3.33301 6.66667L7.99967 2M7.99967 2L12.6663 6.66667M7.99967 2V14"
+        stroke="#AD1A1A"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </IconStrokeBase>
+  );
+};
+
+export const IconAutoscale = (props: IconProps) => {
+  return (
+    <IconStrokeBase
+      {...props}
+      title="Autoscale"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+    >
+      <path
+        d="M10.25 9.58824L8 5L5.75 9.58824M10.25 9.58824L11 11M10.25 9.58824H5.75M5.75 9.58824L5 11M3.5 14H12.5C12.8978 14 13.2794 13.842 13.5607 13.5607C13.842 13.2794 14 12.8978 14 12.5V3.5C14 3.10218 13.842 2.72064 13.5607 2.43934C13.2794 2.15804 12.8978 2 12.5 2H3.5C3.10218 2 2.72064 2.15804 2.43934 2.43934C2.15804 2.72064 2 3.10218 2 3.5V12.5C2 12.8978 2.15804 13.2794 2.43934 13.5607C2.72064 13.842 3.10218 14 3.5 14Z"
+        stroke="#111920"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </IconStrokeBase>
+  );
+};
+
+export const IconScaleCheck = (props: IconProps) => {
+  return (
+    <IconStrokeBase
+      {...props}
+      title="Scale Check"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+    >
+      <path
+        d="M3 8.5L7 12.5L13 3.5"
+        stroke="#111920"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </IconStrokeBase>
+  );
+};
