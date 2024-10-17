@@ -15,7 +15,6 @@ import {
   BannerMessages,
   Box,
   Button,
-  ExternalLink,
   FormGroup,
   Group,
   Input,
@@ -23,7 +22,6 @@ import {
   RadioGroup,
   TextArea,
   TitleBar,
-  tokens,
 } from "../shared";
 
 interface SupportForm {
@@ -436,32 +434,6 @@ export const SupportPage = () => {
           </form>
         </Box>
       </div>
-
-      <Box className="w-full flex flex-col gap-5 max-w-[700px] self-center">
-        <h2 className={tokens.type.h2}>New Default Backup Retention Policy</h2>
-        <hr />
-        <div className="text-md">
-          <p>
-            We've changed the default backup retention policy for newly created
-            environments to:
-          </p>
-          <p>• 30 Daily Backups</p>
-          <p>• 12 Monthly Backups</p>
-          <p>• 6 Yearly Backups</p>
-          <p>• Cross-region copy: Disabled</p>
-          <p>• Keep final backup: Enabled</p>
-          <p>
-            For more information,{" "}
-            <ExternalLink href="https://www.aptible.com/changelog/new-default-backup-retention-policy">
-              read the changelog.
-            </ExternalLink>
-          </p>
-        </div>
-        <hr />
-        <Button className="w-full font-semibold" size="lg">
-          Got it!
-        </Button>
-      </Box>
     </AppSidebarLayout>
   );
 };
