@@ -740,7 +740,7 @@ const Modals = () => {
           <p>• 6 Yearly Backups</p>
           <p>• Cross-region copy: Disabled</p>
           <p>• Keep final backup: Enabled</p>
-          <p>
+          <p className="mt-4">
             For more information,{" "}
             <ExternalLink href="https://www.aptible.com/changelog/new-default-backup-retention-policy">
               read the changelog.
