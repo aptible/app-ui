@@ -240,12 +240,17 @@ describe("AppDetailServiceScalePage", () => {
         const scaleUpInput = await screen.findByLabelText(
           "Scale Up Threshold (CPU Usage)",
         );
+        const scaleUpStepInput = await screen.findByLabelText("Scale Up Steps");
+        const scaleDownStepInput =
+          await screen.findByLabelText("Scale Down Steps");
 
         // Check initial values
         expect(minContainersInput).toHaveValue(2);
         expect(maxContainersInput).toHaveValue(4);
         expect(scaleDownInput).toHaveValue(0.1);
         expect(scaleUpInput).toHaveValue(0.9);
+        expect(scaleDownStepInput).toHaveValue(1);
+        expect(scaleUpStepInput).toHaveValue(1);
 
         // Change the value to 1 should show a warning
         fireEvent.change(minContainersInput, { target: { value: 1 } });

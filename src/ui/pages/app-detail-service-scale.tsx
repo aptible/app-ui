@@ -134,6 +134,16 @@ const PolicySummary = ({
             value: policy.maxCpuThreshold?.toString() || "",
           },
         );
+        if (policy.scaleUpStep > 1)
+          data.push({
+            key: "Scale Up Steps",
+            value: policy.scaleUpStep.toString(),
+          });
+        if (policy.scaleDownStep > 1)
+          data.push({
+            key: "Scale Down Steps",
+            value: policy.scaleDownStep.toString(),
+          });
         break;
       case "vertical":
         data.push(
@@ -527,7 +537,7 @@ const AutoscalingSection = ({
                       </h2>
                       <FormGroup
                         splitWidthInputs
-                        description="Containers are scaled one at a time sequentially"
+                        description="Containers are scaled based on scale up steps, sequentially"
                         feedbackMessage={
                           errors.minContainers ||
                           ((nextPolicy.minContainers ?? 0) < 2
@@ -558,7 +568,7 @@ const AutoscalingSection = ({
                       </FormGroup>
                       <FormGroup
                         splitWidthInputs
-                        description="Containers are scaled one at a time sequentially"
+                        description="Containers are scaled based on scale up steps, sequentially"
                         feedbackMessage={errors.maxContainers}
                         feedbackVariant="danger"
                         label="Maximum Container Count"
@@ -575,6 +585,50 @@ const AutoscalingSection = ({
                           onChange={(e) =>
                             updatePolicy(
                               "maxContainers",
+                              Number.parseInt(e.currentTarget.value, 10),
+                            )
+                          }
+                        />
+                      </FormGroup>
+                      <FormGroup
+                        splitWidthInputs
+                        description="How many containers to increase by on an autoscale event"
+                        label="Scale Up Steps"
+                        htmlFor="scale-up-step"
+                      >
+                        <Input
+                          id="scale-up-step"
+                          name="scale-up-step"
+                          type="number"
+                          value={nextPolicy.scaleUpStep || "1"}
+                          min="1"
+                          max="9999"
+                          placeholder=""
+                          onChange={(e) =>
+                            updatePolicy(
+                              "scaleUpStep",
+                              Number.parseInt(e.currentTarget.value, 10),
+                            )
+                          }
+                        />
+                      </FormGroup>
+                      <FormGroup
+                        splitWidthInputs
+                        description="How many containers to decrease by on an autoscale event"
+                        label="Scale Down Steps"
+                        htmlFor="scale-down-step"
+                      >
+                        <Input
+                          id="scale-down-step"
+                          name="scale-down-step"
+                          type="number"
+                          value={nextPolicy.scaleDownStep || "1"}
+                          min="1"
+                          max="9999"
+                          placeholder=""
+                          onChange={(e) =>
+                            updatePolicy(
+                              "scaleDownStep",
                               Number.parseInt(e.currentTarget.value, 10),
                             )
                           }
