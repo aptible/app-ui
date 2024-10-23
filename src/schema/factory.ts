@@ -702,6 +702,8 @@ export const defaultServiceSizingPolicy = (
     maxContainers: 4,
     minCpuThreshold: 0.1,
     maxCpuThreshold: 0.9,
+    scaleUpStep: 1,
+    scaleDownStep: 1,
     createdAt: now,
     updatedAt: now,
     ...m,

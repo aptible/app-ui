@@ -653,6 +653,8 @@ export interface DeployServiceSizingPolicy extends Timestamps {
   maxContainers: number | null;
   minCpuThreshold: number | null;
   maxCpuThreshold: number | null;
+  scaleUpStep: number;
+  scaleDownStep: number;
 }
 
 export interface DeploySource {

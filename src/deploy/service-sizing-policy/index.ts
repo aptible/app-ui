@@ -29,6 +29,8 @@ export interface DeployServiceSizingPolicyResponse {
   max_containers: number | null;
   min_cpu_threshold: number | null;
   max_cpu_threshold: number | null;
+  scale_up_step: number;
+  scale_down_step: number;
   created_at: string;
   updated_at: string;
   _links: {
@@ -61,6 +63,8 @@ export const defaultServiceSizingPolicyResponse = (
     max_containers: 4,
     min_cpu_threshold: 0.1,
     max_cpu_threshold: 0.9,
+    scale_up_step: 1,
+    scale_down_step: 1,
     created_at: now,
     updated_at: now,
     _type: "service_sizing_policy",
@@ -94,6 +98,8 @@ export const deserializeDeployServiceSizingPolicy = (
     maximumMemory: payload.maximum_memory,
     minContainers: payload.min_containers,
     maxContainers: payload.max_containers,
+    scaleUpStep: payload.scale_up_step,
+    scaleDownStep: payload.scale_down_step,
     minCpuThreshold: payload.min_cpu_threshold,
     maxCpuThreshold: payload.max_cpu_threshold,
     createdAt: payload.created_at,
@@ -155,6 +161,8 @@ export interface ServiceSizingPolicyEditProps {
   maxContainers: number | null;
   minCpuThreshold: number | null;
   maxCpuThreshold: number | null;
+  scaleUpStep: number;
+  scaleDownStep: number;
 }
 
 const serializeServiceSizingPolicyEditProps = (
@@ -177,6 +185,8 @@ const serializeServiceSizingPolicyEditProps = (
   max_containers: payload.maxContainers,
   min_cpu_threshold: payload.minCpuThreshold,
   max_cpu_threshold: payload.maxCpuThreshold,
+  scale_up_step: payload.scaleUpStep,
+  scale_down_step: payload.scaleDownStep,
 });
 
 export interface ModifyServiceSizingPolicyProps
