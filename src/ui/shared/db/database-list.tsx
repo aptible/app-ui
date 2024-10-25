@@ -53,6 +53,7 @@ import {
   TitleBar,
 } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
+import { ScaleRecsView } from "../scale-recs";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
 import { Tooltip } from "../tooltip";
@@ -96,6 +97,17 @@ const DatabasePrimaryCell = ({ database }: DatabaseCellProps) => {
 
 const DatabaseIdCell = ({ database }: DatabaseCellProps) => {
   return <Td className="flex-1">{database.id}</Td>;
+};
+
+const DatabaseScaleRecsCell = ({ database }: { database: DeployDatabase }) => {
+  const service = useSelector((s) =>
+    selectServiceById(s, { id: database.serviceId }),
+  );
+  return (
+    <Td>
+      <ScaleRecsView service={service} />
+    </Td>
+  );
 };
 
 const DatabaseCostCell = ({
@@ -300,11 +312,18 @@ export const DatabaseListByOrg = () => {
             <div>Est. Monthly Cost</div>
             <SortIcon />
           </Th>
+          <Th
+            className="cursor-pointer hover:text-black"
+            onClick={() => onSort("savings")}
+          >
+            <div>Scaling Recs</div>
+            <SortIcon />
+          </Th>
           <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={8} /> : null}
           {paginated.data.map((db) => (
             <Tr key={db.id}>
               <DatabasePrimaryCell database={db} />
@@ -313,6 +332,7 @@ export const DatabaseListByOrg = () => {
               <DatabaseDiskSizeCell database={db} />
               <DatabaseContainerSizeCell database={db} />
               <DatabaseCostCell database={db} costLoading={isCostLoading} />
+              <DatabaseScaleRecsCell database={db} />
               <DatabaseActionsCell database={db} />
             </Tr>
           ))}
@@ -386,11 +406,12 @@ export const DatabaseListByEnvironment = ({
           <Th className="flex space-x-2">
             <div>Est. Monthly Cost</div>
           </Th>
+          <Th>Scaling Recs</Th>
           <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={6} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
           {paginated.data.map((db) => (
             <Tr key={db.id}>
               <DatabasePrimaryCell database={db} />
@@ -398,6 +419,7 @@ export const DatabaseListByEnvironment = ({
               <DatabaseDiskSizeCell database={db} />
               <DatabaseContainerSizeCell database={db} />
               <DatabaseCostCell database={db} costLoading={isCostLoading} />
+              <DatabaseScaleRecsCell database={db} />
               <DatabaseActionsCell database={db} />
             </Tr>
           ))}

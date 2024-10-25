@@ -14,6 +14,7 @@ import { endpointEntities } from "./endpoint";
 import { environmentEntities } from "./environment";
 import { imageEntities } from "./image";
 import { logDrainEntities } from "./log-drain";
+import { manualScaleRecommendationEntities } from "./manual_scale_recommendation";
 import { metricDrainEntities } from "./metric-drain";
 import { opEntities } from "./operation";
 import { permissionEntities } from "./permission";
@@ -53,4 +54,5 @@ export const entities = {
   ...imageEntities,
   ...diskEntities,
   ...serviceSizingPolicyEntities,
+  ...manualScaleRecommendationEntities,
 };

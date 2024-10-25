@@ -170,7 +170,7 @@ describe("DatabaseScalePage", () => {
             /Changed from General Purpose \(M\) to Compute Optimized \(C\)/,
           ),
         ).toBeInTheDocument();
-        expect(screen.getByText(/Container Size/)).toBeInTheDocument();
+        expect(screen.getByText("Container Size")).toBeInTheDocument();
         expect(
           screen.getByText(/Changed from 0.5 GB to 2 GB/),
         ).toBeInTheDocument();

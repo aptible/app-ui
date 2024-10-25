@@ -65,6 +65,7 @@ export interface DeployServiceRow extends DeployService {
   envHandle: string;
   resourceHandle: string;
   cost: number;
+  savings: number;
   url?: string;
 }
 
@@ -99,4 +100,17 @@ export interface GithubIntegration {
   active: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ManualScaleRecommendation {
+  id: string;
+  serviceId: string;
+  cpuUsage: number;
+  ramUsage: number;
+  ramTarget: number;
+  recommendedInstanceClass: string;
+  recommendedContainerMemoryLimitMb: number;
+  costSavings: number;
+  createdAt: string;
+  metricPercentile: number;
 }
