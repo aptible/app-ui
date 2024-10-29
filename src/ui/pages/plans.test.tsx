@@ -137,7 +137,6 @@ describe("Plans page", () => {
     });
 
     fireEvent.click(el[0]);
-
     const confirm = await screen.findByRole("button", { name: /Confirm/ });
     fireEvent.click(confirm);
 
