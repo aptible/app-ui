@@ -1031,7 +1031,9 @@ export const AppDetailServiceScalePage = () => {
               <Input
                 id="number-containers"
                 name="number-containers"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={containerCount}
                 min="0"
                 max="32"
