@@ -112,6 +112,9 @@ describe("Plans page", () => {
     });
 
     fireEvent.click(el[0]);
+    const confirm = await screen.findByRole("button", { name: /Confirm/ });
+    fireEvent.click(confirm);
+
     await screen.findByText(/Successfully updated plan to Development/);
   });
 
@@ -134,6 +137,10 @@ describe("Plans page", () => {
     });
 
     fireEvent.click(el[0]);
+
+    const confirm = await screen.findByRole("button", { name: /Confirm/ });
+    fireEvent.click(confirm);
+
     await screen.findByText(/mock error message/);
   });
 
