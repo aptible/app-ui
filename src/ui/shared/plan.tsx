@@ -78,7 +78,12 @@ const PlanButton = ({
   }
 
   return (
-    <Button className="w-full" onClick={onClick} isLoading={loader.isLoading}>
+    <Button
+      className="w-full"
+      onClick={onClick}
+      isLoading={loader.isLoading}
+      requireConfirm
+    >
       Select Plan
     </Button>
   );
