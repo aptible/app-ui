@@ -1,4 +1,9 @@
-import { addCreditCard, getStripe, selectBillingDetail } from "@app/billing";
+import {
+  addCreditCard,
+  fetchBillingDetail,
+  getStripe,
+  selectBillingDetail,
+} from "@app/billing";
 import { selectEnv } from "@app/config";
 import {
   fetchActivePlans,
@@ -334,6 +339,7 @@ const CreditCardForm = () => {
 
 export const BillingMethodPage = () => {
   const org = useSelector(selectOrganizationSelected);
+  useQuery(fetchBillingDetail({ id: org.id }));
   useQuery(fetchActivePlans({ orgId: org.id }));
   useQuery(fetchPlans());
   const activePlan = useSelector(selectFirstActivePlan);

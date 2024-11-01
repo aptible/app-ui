@@ -53,6 +53,7 @@ export interface ContainerMetrics {
 export interface BillingDetail {
   id: string;
   paymentMethodUrl: string;
+  organizationDetailsJson: { [key: string]: any };
 }
 
 export interface DeployActivityRow extends DeployOperation {
