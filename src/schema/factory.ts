@@ -789,6 +789,7 @@ export const defaultBillingDetail = (
   return {
     id: "",
     paymentMethodUrl: "",
+    organizationDetailsJson: {},
     ...bt,
   };
 };

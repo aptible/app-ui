@@ -27,6 +27,7 @@ export const defaultBillingDetailResponse = (
 ): BillingDetailResponse => {
   return {
     id: "",
+    organization_details_json: {},
     _links: { payment_method: defaultHalHref() },
     ...bt,
   };
@@ -34,6 +35,7 @@ export const defaultBillingDetailResponse = (
 
 interface BillingDetailResponse {
   id: string;
+  organization_details_json: { [key: string]: any } | null;
   _links: {
     payment_method: LinkResponse;
   };
@@ -42,6 +44,7 @@ interface BillingDetailResponse {
 const deserializeBillingDetail = (bt: BillingDetailResponse): BillingDetail => {
   return {
     id: bt.id,
+    organizationDetailsJson: bt.organization_details_json || {},
     paymentMethodUrl: bt._links.payment_method
       ? bt._links.payment_method.href
       : "",
@@ -176,10 +179,12 @@ interface UpdateBillingDetailProps {
 export const updateBillingDetail = billingApi.patch<UpdateBillingDetailProps>(
   "/billing_details/:id",
   function* (ctx, next) {
+    const bd = yield* select(selectBillingDetail);
     ctx.request = ctx.req({
       body: JSON.stringify({
         payment_method: ctx.payload.paymentMethodUrl,
         organization_details_json: {
+          ...bd.organizationDetailsJson,
           billing_address: {
             street_one: ctx.payload.address1,
             street_two: ctx.payload.address2,
