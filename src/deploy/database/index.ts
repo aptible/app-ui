@@ -136,6 +136,7 @@ export interface DeployDatabaseRow extends DeployDatabase {
   diskSize: number;
   containerSize: number;
   imageDesc: string;
+  savings: number;
 }
 
 export const hasDeployDatabase = (a: DeployDatabase) => a.id !== "";

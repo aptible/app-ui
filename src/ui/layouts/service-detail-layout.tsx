@@ -40,6 +40,7 @@ import {
   IconChevronDown,
   IconChevronRight,
   PreCode,
+  ScaleRecsView,
   type TabItem,
   listToInvertedTextColor,
 } from "../shared";
@@ -134,6 +135,9 @@ export function ServiceHeader({
           <Link to={appServiceSettingsPathUrl(app.id, service.id)}>
             {deploymentStrategy}
           </Link>
+        </DetailInfoItem>
+        <DetailInfoItem title="Scaling Recommendations">
+          <ScaleRecsView service={service} />
         </DetailInfoItem>
       </DetailInfoGrid>
       {service.command ? (

@@ -1,4 +1,4 @@
-import { api, cacheShortTimer, thunks } from "@app/api";
+import { api, cacheShortTimer, cacheTimer, thunks } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { schema } from "@app/schema";
@@ -132,6 +132,13 @@ export const selectAutoscalingEnabledById = createSelector(
 export const selectAutoscalingEnabledByServiceId = createSelector(
   selectServiceSizingPolicyByServiceId,
   (policy) => policy.scalingEnabled,
+);
+
+export const fetchServiceSizingPolicies = api.get(
+  "/service_sizing_policies?per_page=5000",
+  {
+    supervisor: cacheTimer(),
+  },
 );
 
 export const fetchServiceSizingPoliciesByEnvironmentId = api.get<{

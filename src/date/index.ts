@@ -1,7 +1,7 @@
 // https://moment.github.io/luxon/#/formatting?id=table-of-tokens
 import { DateTime } from "luxon";
 
-const isoToDate = (dateStr = "") => {
+export const isoToDate = (dateStr = "") => {
   return DateTime.fromISO(dateStr, { zone: "utc" });
 };
 

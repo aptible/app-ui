@@ -14,6 +14,7 @@ import {
   selectContainerProfilesForStack,
   selectEndpointsByServiceId,
   selectEnvironmentById,
+  selectManualScaleRecommendationByServiceId,
   selectPreviousServiceScale,
   selectServiceById,
   selectServiceScale,
@@ -45,6 +46,7 @@ import {
   IconChevronRight,
   IconRefresh,
   KeyValueGroup,
+  ManualScaleReason,
   ServicePricingCalc,
   tokens,
 } from "../shared";
@@ -914,6 +916,9 @@ export const AppDetailServiceScalePage = () => {
   const endpoints = useSelector((s) =>
     selectEndpointsByServiceId(s, { serviceId }),
   );
+  const rec = useSelector((s) =>
+    selectManualScaleRecommendationByServiceId(s, { serviceId: serviceId }),
+  );
 
   const action = scaleService({
     id: serviceId,
@@ -999,10 +1004,25 @@ export const AppDetailServiceScalePage = () => {
     <div className="flex flex-col gap-4">
       <LastScaleBanner serviceId={serviceId} />
       <AutoscalingSection serviceId={serviceId} stackId={stack.id} />
+
       <Box>
         <form onSubmit={onSubmitForm}>
           <div className="flex flex-col gap-2">
             <h1 className="text-lg text-gray-500 mb-4">Manual Scale</h1>
+
+            <ManualScaleReason serviceId={serviceId}>
+              <Button
+                onClick={() => {
+                  setContainerProfileType(
+                    `${rec.recommendedInstanceClass}5` as InstanceClass,
+                  );
+                  setContainerSize(rec.recommendedContainerMemoryLimitMb);
+                }}
+              >
+                Autofill Changes
+              </Button>
+            </ManualScaleReason>
+
             <FormGroup
               splitWidthInputs
               description="Optimize container performance with a custom profile."

@@ -85,5 +85,8 @@ export const [schema, initialState] = createSchema({
   githubIntegrations: slice.table({
     empty: factory.defaultGithubIntegration(),
   }),
+  manualScaleRecommendations: slice.table({
+    empty: factory.defaultManualScaleRecommendation(),
+  }),
 });
 export type WebState = typeof initialState;

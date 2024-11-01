@@ -33,6 +33,7 @@ import {
   type GithubIntegration,
   type InstanceClass,
   type Invitation,
+  type ManualScaleRecommendation,
   type Membership,
   ModalType,
   type Organization,
@@ -891,6 +892,25 @@ export const defaultGithubIntegration = (
     installationUrl: "",
     createdAt: now,
     updatedAt: now,
+    ...s,
+  };
+};
+
+export const defaultManualScaleRecommendation = (
+  s: Partial<ManualScaleRecommendation> = {},
+): ManualScaleRecommendation => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    serviceId: "",
+    cpuUsage: 0,
+    ramUsage: 0,
+    ramTarget: 0,
+    costSavings: 0,
+    recommendedInstanceClass: "",
+    recommendedContainerMemoryLimitMb: 0,
+    metricPercentile: 0,
+    createdAt: now,
     ...s,
   };
 };

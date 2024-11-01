@@ -27,8 +27,11 @@ import {
   CheckBox,
   FormGroup,
   Group,
-  IconGitBranch,
+  IconAutoscale,
   IconPlusCircle,
+  IconScaleCheck,
+  IconScaleDown,
+  IconScaleUp,
   Input,
   InputSearch,
   KeyValueGroup,
@@ -147,7 +150,11 @@ const Tables = () => (
 
       <TBody>
         <Tr>
-          <Td>Row 1 Value 1</Td>
+          <Td>
+            <Pill icon={<IconAutoscale variant="sm" />} key="test">
+              <span className="text-black">Autoscaling</span>
+            </Pill>
+          </Td>
           <Td>Row 1 Value 2</Td>
           <Td>Row 1 Value 3</Td>
           <Td>Row 1 Value 4</Td>
@@ -159,7 +166,11 @@ const Tables = () => (
           <Td>Row 1 Value 10</Td>
         </Tr>
         <Tr>
-          <Td>Row 2 Value 1</Td>
+          <Td>
+            <Pill icon={<IconScaleCheck variant="sm" />} key="test">
+              <span className="text-black">Right Sized</span>
+            </Pill>
+          </Td>
           <Td>Row 2 Value 2</Td>
           <Td>Row 2 Value 3</Td>
           <Td>Row 2 Value 4</Td>
@@ -171,7 +182,16 @@ const Tables = () => (
           <Td>Row 2 Value 10</Td>
         </Tr>
         <Tr>
-          <Td>Row 3 Value 1</Td>
+          <Td>
+            <Pill
+              variant="error"
+              icon={<IconScaleUp variant="sm" />}
+              key="test"
+            >
+              Scale Up
+            </Pill>
+            <span>View Metrics</span>
+          </Td>
           <Td>Row 3 Value 2</Td>
           <Td>Row 3 Value 3</Td>
           <Td>Row 3 Value 4</Td>
@@ -183,7 +203,16 @@ const Tables = () => (
           <Td>Row 3 Value 10</Td>
         </Tr>
         <Tr>
-          <Td>Row 4 Value 1</Td>
+          <Td>
+            <Pill
+              variant="progress"
+              icon={<IconScaleDown variant="sm" />}
+              key="test"
+            >
+              Scale Down
+            </Pill>
+            <span>Save up to $10.42</span>
+          </Td>
           <Td>Row 4 Value 2</Td>
           <Td>Row 4 Value 3</Td>
           <Td>Row 4 Value 4</Td>
@@ -518,18 +547,31 @@ const Pills = () => (
     <div className="mt-4">
       <h3 className={tokens.type.h3}>Customizable pill with icon</h3>
       <div className="mt-4">
-        <Pill icon={<IconGitBranch variant="sm" />} key="test">
-          Basic Icon With Pill
+        <Pill icon={<IconAutoscale variant="sm" />} key="test">
+          <span className="text-black">Autoscaling</span>
         </Pill>
       </div>
       <div className="mt-4">
-        <Pill variant="error">Error Pill</Pill>
+        <Pill icon={<IconScaleCheck variant="sm" />} key="test">
+          <span className="text-black">Right Sized</span>
+        </Pill>
+      </div>
+      <div className="mt-4">
+        <Pill variant="error" icon={<IconScaleUp variant="sm" />} key="test">
+          Scale Up
+        </Pill>
+      </div>
+      <div className="mt-4">
+        <Pill
+          variant="progress"
+          icon={<IconScaleDown variant="sm" />}
+          key="test"
+        >
+          Scale Down
+        </Pill>
       </div>
       <div className="mt-4">
         <Pill variant="pending">Pending Pill</Pill>
-      </div>
-      <div className="mt-4">
-        <Pill variant="progress">Progress Pill</Pill>
       </div>
       <div className="mt-4">
         <Pill variant="success">Success Pill</Pill>

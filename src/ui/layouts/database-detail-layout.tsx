@@ -44,6 +44,7 @@ import {
   DetailInfoItem,
   DetailPageHeaderView,
   DetailTitleBar,
+  ScaleRecsView,
   type TabItem,
 } from "../shared";
 import { ActiveOperationNotice } from "../shared/active-operation-notice";
@@ -115,6 +116,9 @@ export function DatabaseHeader({
             </Link>
           </DetailInfoItem>
         )}
+        <DetailInfoItem title="Scaling Recommendations">
+          <ScaleRecsView service={service} />
+        </DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );

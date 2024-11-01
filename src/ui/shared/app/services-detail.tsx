@@ -28,9 +28,9 @@ import { CopyTextButton } from "../copy";
 import { CostEstimateTooltip } from "../cost-estimate-tooltip";
 import { Group } from "../group";
 import { IconChevronDown, IconInfo } from "../icons";
-import { Pill } from "../pill";
 import { DescBar, FilterBar, PaginateBar } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
+import { ScaleRecsView } from "../scale-recs";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
 import { Tooltip } from "../tooltip";
@@ -149,16 +149,10 @@ const CostCell = ({
   );
 };
 
-const AutoscaleCell = ({ service }: { service: DeployServiceRow }) => {
-  const enabled = useSelector((s) =>
-    selectAutoscalingEnabledById(s, { id: service.serviceSizingPolicyId }),
-  );
-  const variant = enabled ? "success" : "default";
-  const text = enabled ? "Enabled" : "Disabled";
-
+const ScaleRecsCell = ({ service }: { service: DeployServiceRow }) => {
   return (
     <Td>
-      <Pill variant={variant}>{text}</Pill>
+      <ScaleRecsView service={service} />
     </Td>
   );
 };
@@ -188,7 +182,7 @@ const AppServiceByAppRow = ({
         costLoading={costLoading}
         evaluateAutoscaling={autoscalingEnabled}
       />
-      {autoscalingEnabled ? <AutoscaleCell service={service} /> : null}
+      <ScaleRecsCell service={service} />
 
       <Td variant="right">
         <Group size="sm" variant="horizontal">
@@ -245,6 +239,7 @@ const AppServiceByOrgRow = ({
         <CmdCell service={service} />
         <DetailsCell service={service} />
         <CostCell service={service} costLoading={costLoading} />
+        <ScaleRecsCell service={service} />
 
         <Td variant="right">
           <div className="h-[40px] flex items-center">
@@ -313,6 +308,18 @@ export function AppServicesByOrg({
             />
           </div>
         </Th>
+        <Th
+          className="cursor-pointer hover:text-black group"
+          onClick={() => onSort("savings")}
+        >
+          Scale Recs{" "}
+          <div className="inline-block">
+            <IconChevronDown
+              variant="sm"
+              className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
+            />
+          </div>
+        </Th>
         <Th variant="right">Actions</Th>
       </THead>
 
@@ -357,9 +364,6 @@ export function AppServicesByApp({
   costQueries.forEach((q) => useQuery(q));
   const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
 
-  const autoscalingEnabled =
-    stack.verticalAutoscaling || stack.horizontalAutoscaling;
-
   return (
     <Group>
       <Group size="sm">
@@ -377,14 +381,12 @@ export function AppServicesByApp({
           <Th>Command</Th>
           <Th>Details</Th>
           <Th>Est. Monthly Cost</Th>
-          {autoscalingEnabled ? <Th>Autoscaling</Th> : null}
+          <Th>Scale Recs</Th>
           <Th variant="right">Actions</Th>
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? (
-            <EmptyTr colSpan={autoscalingEnabled ? 6 : 5} />
-          ) : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={6} /> : null}
           {paginated.data.map((service) => (
             <AppServiceByAppRow
               key={service.id}

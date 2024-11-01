@@ -50,7 +50,8 @@ export const selectServicesForTable = createSelector(
   selectApps,
   selectServicesByOrgId,
   selectEndpointsAsList,
-  (envs, apps, services, endpoints) =>
+  schema.manualScaleRecommendations.selectTableAsList,
+  (envs, apps, services, endpoints, recs) =>
     services
       // making sure we have a valid environment associated with it
       .filter((service) => {
@@ -68,11 +69,13 @@ export const selectServicesForTable = createSelector(
         } else {
           resourceHandle = "Unknown";
         }
+        const rec = recs.find((r) => r.serviceId === service.id);
 
         return {
           ...service,
           envHandle: env.handle,
           resourceHandle,
+          savings: rec?.costSavings || 0,
           cost: estimateMonthlyCost({
             services: [service],
             endpoints: findEndpointsByServiceId(endpoints, service.id),
@@ -91,6 +94,13 @@ const createServiceSortFn = (
         return a.cost - b.cost;
       }
       return b.cost - a.cost;
+    }
+
+    if (sortBy === "savings") {
+      if (sortDir === "asc") {
+        return a.savings - b.savings;
+      }
+      return b.savings - a.savings;
     }
 
     if (sortBy === "resourceHandle") {
@@ -530,6 +540,13 @@ const createDatabaseSortFn = (
       return b.cost - a.cost;
     }
 
+    if (sortBy === "savings") {
+      if (sortDir === "asc") {
+        return a.savings - b.savings;
+      }
+      return b.savings - a.savings;
+    }
+
     if (sortBy === "handle") {
       if (sortDir === "asc") {
         return a.handle.localeCompare(b.handle);
@@ -581,7 +598,8 @@ export const selectDatabasesForTable = createSelector(
   selectEndpointsAsList,
   selectBackupsAsList,
   selectDatabaseImages,
-  (dbs, envs, ops, disks, services, endpoints, backups, images) =>
+  schema.manualScaleRecommendations.selectTableAsList,
+  (dbs, envs, ops, disks, services, endpoints, backups, images, recs) =>
     dbs
       .map((dbb): DeployDatabaseRow => {
         const env = findEnvById(envs, { id: dbb.environmentId });
@@ -600,6 +618,7 @@ export const selectDatabasesForTable = createSelector(
         });
         const metrics = calcMetrics([service]);
         const img = findDatabaseImageById(images, { id: dbb.databaseImageId });
+        const rec = recs.find((s) => s.serviceId === dbb.serviceId);
         return {
           ...dbb,
           imageDesc: img.description,
@@ -608,6 +627,7 @@ export const selectDatabasesForTable = createSelector(
           diskSize: disk.size,
           cost,
           containerSize: metrics.totalMemoryLimit / 1024,
+          savings: rec?.costSavings || 0,
         };
       })
       .sort((a, b) => a.handle.localeCompare(b.handle)),
