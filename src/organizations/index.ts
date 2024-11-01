@@ -123,24 +123,6 @@ export const selectHasBetaFeatures = createSelector(
   },
 );
 
-export const selectHasScimFeature = createSelector(
-  selectOrganizationSelectedId,
-  selectEnv,
-  (orgId, config) => {
-    if (config.isDev) {
-      return true;
-    }
-
-    // Array of organization IDs that have access to scim feature
-    const scimFeatureOrgIds = config.scimFeatureOrgIds
-      .split(",")
-      .map((id) => id.trim())
-      .filter(Boolean);
-
-    return scimFeatureOrgIds.includes(orgId);
-  },
-);
-
 function deserializeOrganization(o: OrganizationResponse): Organization {
   return {
     id: o.id,

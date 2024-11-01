@@ -14,7 +14,6 @@ export interface Config {
   stripePublishableKey: string;
   origin: "app";
   betaFeatureOrgIds: string;
-  scimFeatureOrgIds: string;
 }
 
 export interface Feedback {

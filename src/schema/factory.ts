@@ -61,9 +61,6 @@ export const defaultConfig = (e: Partial<Config> = {}): Config => {
     betaFeatureOrgIds:
       import.meta.env.VITE_FEATURE_BETA_ORG_IDS ||
       "df0ee681-9e02-4c28-8916-3b215d539b08",
-    scimFeatureOrgIds:
-      import.meta.env.VITE_FEATURE_SCIM_ORG_IDS ||
-      "df0ee681-9e02-4c28-8916-3b215d539b08",
     legacyDashboardUrl:
       import.meta.env.VITE_LEGACY_DASHBOARD_URL ||
       "https://dashboard.aptible.com",

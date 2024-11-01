@@ -3,7 +3,6 @@ import { selectIsAccountOwner } from "@app/deploy";
 import {
   selectHasBetaFeatures,
   selectHasManyOrgs,
-  selectHasScimFeature,
   selectOrganizationSelectedId,
 } from "@app/organizations";
 import { useSelector } from "@app/react";
@@ -38,7 +37,6 @@ export function SettingsSidebar() {
   const hasManyOrgs = useSelector(selectHasManyOrgs);
   const isAccountOwner = useSelector((s) => selectIsAccountOwner(s, { orgId }));
   const hasBetaFeatures = useSelector(selectHasBetaFeatures);
-  const hasScimFeature = useSelector(selectHasScimFeature);
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
@@ -114,25 +112,21 @@ export function SettingsSidebar() {
           </span>
         )}
 
-        {hasScimFeature ? (
-          <>
-            {isAccountOwner && !hasManyOrgs ? (
-              <NavLink className={navLink} to={teamScimUrl()}>
-                Provisioning
-              </NavLink>
-            ) : (
-              <span className={navLink({ isActive: false })}>
-                Provisioning
-                <Tooltip
-                  text="Must be account owner with a single assigned organization"
-                  fluid
-                >
-                  <IconLock variant="sm" className="ml-1 opacity-60" />
-                </Tooltip>
-              </span>
-            )}
-          </>
-        ) : null}
+        {isAccountOwner && !hasManyOrgs ? (
+          <NavLink className={navLink} to={teamScimUrl()}>
+            Provisioning
+          </NavLink>
+        ) : (
+          <span className={navLink({ isActive: false })}>
+            Provisioning
+            <Tooltip
+              text="Must be account owner with a single assigned organization"
+              fluid
+            >
+              <IconLock variant="sm" className="ml-1 opacity-60" />
+            </Tooltip>
+          </span>
+        )}
 
         {isAccountOwner ? (
           <NavLink className={navLink} to={teamContactsUrl()}>
