@@ -20,6 +20,7 @@ import {
 import { databaseActivityUrl } from "@app/routes";
 import type { InstanceClass } from "@app/types";
 import { diskSizeValidator } from "@app/validator";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
   defaultDatabaseScaler,
@@ -76,6 +77,7 @@ export const DatabaseScalePage = () => {
     }),
   );
 
+  const [takingRec, setTakingRec] = useState(false);
   const {
     scaler,
     dispatchScaler,
@@ -89,6 +91,7 @@ export const DatabaseScalePage = () => {
   const hasChanges = changesExist && !serviceLoader.isInitialLoading;
   const action = scaleDatabase({
     id,
+    recId: takingRec ? rec.id : "",
     ...scaler,
   });
 
@@ -122,6 +125,7 @@ export const DatabaseScalePage = () => {
                     type: "containerSize",
                     payload: rec.recommendedContainerMemoryLimitMb,
                   });
+                  setTakingRec(true);
                 }}
               >
                 Autofill Changes
@@ -220,6 +224,7 @@ export const DatabaseScalePage = () => {
                     type: "set",
                     payload: defaultDatabaseScaler(service, disk),
                   });
+                  setTakingRec(false);
                 }}
                 variant="white"
               >
