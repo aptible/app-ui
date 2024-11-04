@@ -859,8 +859,9 @@ const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
   const prev = useSelector((s) =>
     selectPreviousServiceScale(s, { id: serviceId }),
   );
-  const neverScaled = current.status === "unknown";
-  const currentComplete = current.status === "succeeded";
+  const noScaleFound = current.status === "unknown";
+  const currentComplete =
+    current.status === "succeeded" || current.status === "failed";
   const action = pollServiceOperations({ id: serviceId });
   const loader = useLoader(action);
 
@@ -868,23 +869,30 @@ const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
   const cancel = useMemo(() => cancelServicesOpsPoll(), []);
   usePoller({ action: poller, cancel });
 
+  let tail = getScaleText(current);
+  if (prev.id !== "") {
+    tail = `from ${getScaleText(prev)} to ${tail}`;
+  }
+
   if (loader.isInitialLoading) {
     return null;
   }
 
+  if (noScaleFound) {
+    return null;
+  }
+
+  if (!currentComplete) {
+    return (
+      <Banner variant="progress">
+        <strong>Scale in Progress</strong> {getScaleText(current)}
+      </Banner>
+    );
+  }
+
   return (
-    <Banner variant={currentComplete || neverScaled ? "info" : "progress"}>
-      {neverScaled ? (
-        "Never Scaled"
-      ) : (
-        <>
-          <strong>
-            {currentComplete ? "Last Scale" : "Scale in Progress"}:
-          </strong>{" "}
-          {prettyDateTime(current.createdAt)} from {getScaleText(prev)} to{" "}
-          {getScaleText(current)}
-        </>
-      )}
+    <Banner variant="info">
+      <strong>Last Scale</strong> {prettyDateTime(current.createdAt)} {tail}
     </Banner>
   );
 };
