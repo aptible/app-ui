@@ -301,6 +301,7 @@ export interface ServiceScaleProps {
   containerCount?: number;
   containerSize?: number;
   containerProfile?: InstanceClass;
+  recId?: string;
 }
 
 export const selectServicesByAppId = createSelector(

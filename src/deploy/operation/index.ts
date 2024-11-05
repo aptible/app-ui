@@ -31,6 +31,7 @@ import {
 } from "@app/routes";
 import { type WebState, defaultDeployOperation, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
+import { tunaEvent } from "@app/tuna";
 import type {
   DeployActivityRow,
   DeployApiCtx,
@@ -598,7 +599,14 @@ export const scaleService = api.post<
   ServiceScaleProps,
   DeployOperationResponse
 >(["/services/:id/operations", "scale"], function* (ctx, next) {
-  const { id, containerCount, containerProfile, containerSize } = ctx.payload;
+  const {
+    id,
+    containerCount,
+    containerProfile,
+    containerSize,
+    recId = "",
+  } = ctx.payload;
+  const service = yield* select((s: WebState) => selectServiceById(s, { id }));
   const body = {
     type: "scale",
     id,
@@ -611,6 +619,26 @@ export const scaleService = api.post<
 
   if (!ctx.json.ok) {
     return;
+  }
+
+  if (recId !== "") {
+    const rec = yield* select((s: WebState) =>
+      schema.manualScaleRecommendations.selectById(s, { id: recId }),
+    );
+    tunaEvent(
+      "scale-service-with-recommendation",
+      JSON.stringify({
+        serviceId: id,
+        opId: ctx.json.value.id,
+        costSavings: rec.costSavings,
+        curContainerProfile: service.instanceClass,
+        curContainersize: service.containerMemoryLimitMb,
+        recContainerProfile: rec.recommendedInstanceClass,
+        recContainerSize: rec.recommendedContainerMemoryLimitMb,
+        appliedContainerProfile: containerProfile,
+        appliedContainerSize: containerSize,
+      }),
+    );
   }
 
   const opId = ctx.json.value.id;

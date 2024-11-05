@@ -11,6 +11,7 @@ import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { DEFAULT_INSTANCE_CLASS, type WebState, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
+import { tunaEvent } from "@app/tuna";
 import type {
   DeployApiCtx,
   DeployDatabase,
@@ -31,6 +32,7 @@ import {
   selectOperationsByDatabaseId,
   waitForOperation,
 } from "../operation";
+import { selectServiceById } from "../service";
 
 export interface DeployDatabaseResponse {
   id: number;
@@ -592,6 +594,7 @@ export interface DatabaseScaleProps {
   diskSize?: number;
   containerSize?: number;
   containerProfile?: InstanceClass;
+  recId?: string;
 }
 
 export const restartDatabase = api.post<
@@ -647,7 +650,17 @@ export const scaleDatabase = api.post<
   DatabaseScaleProps,
   DeployOperationResponse
 >(["/databases/:id/operations", "scale"], function* (ctx, next) {
-  const { id, diskSize, containerProfile, containerSize } = ctx.payload;
+  const {
+    id,
+    diskSize,
+    containerProfile,
+    containerSize,
+    recId = "",
+  } = ctx.payload;
+  const db = yield* select((s: WebState) => selectDatabaseById(s, { id }));
+  const service = yield* select((s: WebState) =>
+    selectServiceById(s, { id: db.serviceId }),
+  );
   const body = {
     type: "restart",
     id,
@@ -663,6 +676,28 @@ export const scaleDatabase = api.post<
   }
 
   const opId = ctx.json.value.id;
+
+  if (recId !== "") {
+    const rec = yield* select((s: WebState) =>
+      schema.manualScaleRecommendations.selectById(s, { id: recId }),
+    );
+    tunaEvent(
+      "scale-service-with-recommendation",
+      JSON.stringify({
+        databaseId: id,
+        serviceId: service.id,
+        opId: ctx.json.value.id,
+        costSavings: rec.costSavings,
+        curContainerProfile: service.instanceClass,
+        curContainersize: service.containerMemoryLimitMb,
+        recContainerProfile: rec.recommendedInstanceClass,
+        recContainerSize: rec.recommendedContainerMemoryLimitMb,
+        appliedContainerProfile: containerProfile,
+        appliedContainerSize: containerSize,
+      }),
+    );
+  }
+
   ctx.loader = {
     message: `Restart (and scale) database operation queued (operation ID: ${opId})`,
     meta: { opId: `${opId}` },

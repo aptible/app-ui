@@ -901,6 +901,7 @@ export const AppDetailServiceScalePage = () => {
   const [containerProfileType, setContainerProfileType] =
     useState<InstanceClass>(DEFAULT_INSTANCE_CLASS);
   const [containerSize, setContainerSize] = useState<number>(512);
+  const [takingRec, setTakingRec] = useState(false);
   const app = useSelector((s) => selectAppById(s, { id }));
   useQuery(fetchService({ id: serviceId }));
   const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
@@ -925,6 +926,7 @@ export const AppDetailServiceScalePage = () => {
     containerCount,
     containerSize,
     containerProfile: containerProfileType,
+    recId: takingRec ? rec.id : "",
   });
   const onSubmitForm = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -994,10 +996,11 @@ export const AppDetailServiceScalePage = () => {
     setContainerProfileType(instClass);
   };
 
-  const setContainerScalingValues = () => {
+  const cancelScale = () => {
     setContainerProfileType(service.instanceClass);
     setContainerSize(service.containerMemoryLimitMb);
     setContainerCount(service.containerCount);
+    setTakingRec(false);
   };
 
   return (
@@ -1017,6 +1020,7 @@ export const AppDetailServiceScalePage = () => {
                     `${rec.recommendedInstanceClass}5` as InstanceClass,
                   );
                   setContainerSize(rec.recommendedContainerMemoryLimitMb);
+                  setTakingRec(true);
                 }}
               >
                 Autofill Changes
@@ -1156,7 +1160,7 @@ export const AppDetailServiceScalePage = () => {
             {changesExist ? (
               <Button
                 className="w-40 ml-2 flex font-semibold"
-                onClick={setContainerScalingValues}
+                onClick={cancelScale}
                 variant="white"
               >
                 Cancel

@@ -13,12 +13,13 @@ import {
   databaseMetricsUrl,
   databaseScaleUrl,
 } from "@app/routes";
+import { tunaEvent } from "@app/tuna";
 import type {
   DeployService,
   InstanceClass,
   ManualScaleRecommendation,
 } from "@app/types";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Banner } from "./banner";
 import { Group } from "./group";
 import {
@@ -115,12 +116,15 @@ export const ManualScaleRecView = ({ serviceId }: { serviceId: string }) => {
   );
   const { isValid } = isManualScaleRecValid(service, rec);
   const savings = rec.costSavings;
+  const navigate = useNavigate();
+  const noSavings = savings === 0;
+  const savingsThreadhold = savings > 0 && savings < 150;
 
   if (rec.id === "") {
     return null;
   }
 
-  if (savings === 0 || !isValid) {
+  if (!isValid || noSavings || savingsThreadhold) {
     return (
       <Pill icon={<IconScaleCheck variant="sm" />}>
         <span className="text-black">Right Sized</span>
@@ -132,23 +136,32 @@ export const ManualScaleRecView = ({ serviceId }: { serviceId: string }) => {
     : databaseScaleUrl(service.databaseId);
 
   const scaleDir = savings < 0 ? "up" : "down";
+
+  const onScale = () => {
+    navigate(url);
+    tunaEvent(
+      `scale-service-click-${scaleDir}`,
+      JSON.stringify({ serviceId, direction: scaleDir }),
+    );
+  };
+
   if (scaleDir === "up") {
     return (
-      <Link to={url}>
+      <div onClick={onScale} onKeyUp={onScale} className="cursor-pointer">
         <Pill variant="error" icon={<IconScaleUp variant="sm" />}>
           Scale Up
         </Pill>
-      </Link>
+      </div>
     );
   }
 
   return (
     <>
-      <Link to={url}>
+      <div onClick={onScale} onKeyUp={onScale} className="cursor-pointer">
         <Pill variant="progress" icon={<IconScaleDown variant="sm" />}>
           Scale Down
         </Pill>
-      </Link>
+      </div>
       <div>Save up to ${savings.toFixed(2)}</div>
     </>
   );
