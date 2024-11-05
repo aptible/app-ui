@@ -860,14 +860,24 @@ const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
   const cancel = useMemo(() => cancelServicesOpsPoll(), []);
   usePoller({ action: poller, cancel });
 
-  let tail = <span className="font-bold">{getScaleTextFromOp(current)}</span>;
+  const scaleTextCur = getScaleTextFromOp(current);
+  let tail = <span className="font-bold">{scaleTextCur}</span>;
   if (prev.id !== "") {
-    tail = (
-      <>
-        from <span>{getScaleTextFromOp(prev)}</span> to{" "}
-        <span className="font-bold">{getScaleTextFromOp(current)}</span>
-      </>
-    );
+    const scaleTextPrev = getScaleTextFromOp(prev);
+    if (scaleTextPrev !== "") {
+      tail = (
+        <>
+          from <span>{scaleTextPrev}</span>{" "}
+          {scaleTextCur !== "" ? (
+            <>
+              to <span className="font-bold">{scaleTextCur}</span>
+            </>
+          ) : (
+            ""
+          )}
+        </>
+      );
+    }
   }
 
   if (loader.isInitialLoading) {
