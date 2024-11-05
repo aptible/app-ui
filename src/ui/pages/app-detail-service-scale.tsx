@@ -7,6 +7,7 @@ import {
   fetchService,
   fetchServiceSizingPoliciesByServiceId,
   getContainerProfileFromType,
+  getScaleTextFromOp,
   modifyServiceSizingPolicy,
   pollServiceOperations,
   scaleService,
@@ -30,11 +31,7 @@ import {
 } from "@app/react";
 import { appActivityUrl } from "@app/routes";
 import { DEFAULT_INSTANCE_CLASS, schema } from "@app/schema";
-import type {
-  DeployOperation,
-  DeployServiceSizingPolicy,
-  InstanceClass,
-} from "@app/types";
+import type { DeployServiceSizingPolicy, InstanceClass } from "@app/types";
 import { type SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { usePoller, useValidator } from "../hooks";
@@ -848,12 +845,6 @@ const AutoscalingSection = ({
   );
 };
 
-const getScaleText = (op: DeployOperation) =>
-  `${op.containerCount} x ${op.containerSize / 1024} GB ${
-    getContainerProfileFromType(op.instanceProfile as InstanceClass).name ||
-    op.instanceProfile
-  } container${op.containerCount === 1 ? "" : "s"}`;
-
 const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
   const current = useSelector((s) => selectServiceScale(s, { id: serviceId }));
   const prev = useSelector((s) =>
@@ -869,9 +860,14 @@ const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
   const cancel = useMemo(() => cancelServicesOpsPoll(), []);
   usePoller({ action: poller, cancel });
 
-  let tail = getScaleText(current);
+  let tail = <span className="font-bold">{getScaleTextFromOp(current)}</span>;
   if (prev.id !== "") {
-    tail = `from ${getScaleText(prev)} to ${tail}`;
+    tail = (
+      <>
+        from <span>{getScaleTextFromOp(prev)}</span> to{" "}
+        <span className="font-bold">{getScaleTextFromOp(current)}</span>
+      </>
+    );
   }
 
   if (loader.isInitialLoading) {
@@ -885,14 +881,16 @@ const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
   if (!currentComplete) {
     return (
       <Banner variant="progress">
-        <strong>Scale in Progress</strong> {getScaleText(current)}
+        <span className="font-bold">Scale in Progress</span>{" "}
+        {getScaleTextFromOp(current)}
       </Banner>
     );
   }
 
   return (
     <Banner variant="info">
-      <strong>Last Scale</strong> {prettyDateTime(current.createdAt)} {tail}
+      <span className="font-bold">Last Scale:</span>{" "}
+      {prettyDateTime(current.createdAt)} {tail}
     </Banner>
   );
 };

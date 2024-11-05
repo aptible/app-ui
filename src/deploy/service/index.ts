@@ -309,3 +309,30 @@ export const selectServicesByAppId = createSelector(
   (_: WebState, p: { appId: string }) => p.appId,
   (services, appId) => services.filter((s) => s.appId === appId),
 );
+
+export const getScaleTextFromOp = (op: DeployOperation): string => {
+  const str: string[] = [];
+
+  if (op.containerCount !== -1) {
+    str.push(
+      `${op.containerCount} container${op.containerCount > 1 ? "s" : ""}`,
+    );
+  }
+
+  if (op.containerSize !== -1) {
+    str.push(`${op.containerSize / 1024} GB RAM`);
+  }
+
+  if (op.diskSize !== -1) {
+    str.push(`${op.diskSize} GB Disk`);
+  }
+
+  if (op.instanceProfile !== "") {
+    const profile =
+      getContainerProfileFromType(op.instanceProfile as InstanceClass).name ||
+      op.instanceProfile;
+    str.push(profile);
+  }
+
+  return str.join(" • ");
+};

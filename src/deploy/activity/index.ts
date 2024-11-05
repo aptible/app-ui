@@ -17,7 +17,11 @@ import {
 import { findLogDrainById, selectLogDrains } from "../log-drain";
 import { findMetricDrainById, selectMetricDrains } from "../metric-drain";
 import { selectOperationById, selectOperationsAsList } from "../operation";
-import { findServiceById, selectServices } from "../service";
+import {
+  findServiceById,
+  getScaleTextFromOp,
+  selectServices,
+} from "../service";
 
 const selectActivityForTable = createSelector(
   selectOperationsAsList,
@@ -27,7 +31,15 @@ const selectActivityForTable = createSelector(
   selectServices,
   selectLogDrains,
   selectMetricDrains,
-  (ops, envs, dbs, apps, services, logDrains, metricDrains) =>
+  (
+    ops,
+    envs,
+    dbs,
+    apps,
+    services,
+    logDrains,
+    metricDrains,
+  ): DeployActivityRow[] =>
     ops
       .filter((op) => {
         const env = findEnvById(envs, { id: op.environmentId });
@@ -36,15 +48,14 @@ const selectActivityForTable = createSelector(
       .map((op): DeployActivityRow => {
         const env = findEnvById(envs, { id: op.environmentId });
         let resourceHandle = "";
+        let resourceDesc = "";
         if (op.resourceType === "app") {
           const app = findAppById(apps, { id: op.resourceId });
           resourceHandle = app.handle;
         } else if (op.resourceType === "database") {
           const db = findDatabaseById(dbs, { id: op.resourceId });
-          resourceHandle =
-            op.diskSize && op.containerSize
-              ? `${db.handle} (${op.diskSize} GB Disk - ${op.containerSize} MB Memory)`
-              : db.handle;
+          resourceHandle = db.handle;
+          resourceDesc = getScaleTextFromOp(op);
         } else if (op.resourceType === "service") {
           const service = findServiceById(services, { id: op.resourceId });
           let url = "";
@@ -54,28 +65,44 @@ const selectActivityForTable = createSelector(
           } else if (service.databaseId !== "") {
             url = databaseDetailUrl(service.databaseId);
           }
-          resourceHandle =
-            op.containerCount && op.containerSize
-              ? `${service.processType} (${op.containerCount} Container(s) - ${op.containerSize} MB Memory)`
-              : service.processType;
-          return { ...op, envHandle: env.handle, resourceHandle, url };
+          resourceHandle = service.processType;
+          resourceDesc = getScaleTextFromOp(op);
+          return {
+            ...op,
+            envHandle: env.handle,
+            resourceHandle,
+            resourceDesc,
+            url,
+          };
         } else if (op.resourceType === "log_drain") {
           const logDrain = findLogDrainById(logDrains, { id: op.resourceId });
           resourceHandle = logDrain.handle;
           const url = environmentIntegrationsUrl(logDrain.environmentId);
-          return { ...op, envHandle: env.handle, resourceHandle, url };
+          return {
+            ...op,
+            envHandle: env.handle,
+            resourceHandle,
+            resourceDesc,
+            url,
+          };
         } else if (op.resourceType === "metric_drain") {
           const metricDrain = findMetricDrainById(metricDrains, {
             id: op.resourceId,
           });
           resourceHandle = metricDrain.handle;
           const url = environmentIntegrationsUrl(metricDrain.environmentId);
-          return { ...op, envHandle: env.handle, resourceHandle, url };
+          return {
+            ...op,
+            envHandle: env.handle,
+            resourceHandle,
+            resourceDesc,
+            url,
+          };
         } else {
           resourceHandle = op.resourceId;
         }
 
-        return { ...op, envHandle: env.handle, resourceHandle };
+        return { ...op, envHandle: env.handle, resourceHandle, resourceDesc };
       })
       .sort(
         (a, b) =>

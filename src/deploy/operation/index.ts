@@ -42,11 +42,7 @@ import type {
   OperationType,
   ResourceType,
 } from "@app/types";
-import {
-  type ServiceScaleProps,
-  scaleAttrs,
-  selectServiceById,
-} from "../service";
+import { type ServiceScaleProps, scaleAttrs } from "../service";
 
 export interface DeployOperationResponse {
   id: number;
@@ -56,9 +52,10 @@ export interface DeployOperationResponse {
   updated_at: string;
   git_ref: string;
   docker_ref: string;
-  container_count: number;
-  container_size: number;
-  disk_size: number;
+  container_count: number | null;
+  container_size: number | null;
+  disk_size: number | null;
+  instance_profile: string | null;
   encrypted_env_json_new: string;
   destination_region: string;
   automated: boolean;
@@ -68,7 +65,6 @@ export interface DeployOperationResponse {
   provisioned_iops: number;
   ebs_volume_type: string;
   encrypted_stack_settings: string;
-  instance_profile: string;
   user_email: string;
   user_name: string;
   env: { [key: string]: string | null } | null;
@@ -161,9 +157,10 @@ export const deserializeDeployOperation = (
     updatedAt: payload.updated_at,
     gitRef: payload.git_ref || "",
     dockerRef: payload.docker_ref,
-    containerCount: payload.container_count,
-    containerSize: payload.container_size,
-    diskSize: payload.disk_size,
+    containerCount: payload.container_count || -1,
+    containerSize: payload.container_size || -1,
+    diskSize: payload.disk_size || -1,
+    instanceProfile: payload.instance_profile || "",
     encryptedEnvJsonNew: payload.encrypted_env_json_new,
     destinationRegion: payload.destination_region,
     cancelled: payload.cancelled,
@@ -173,7 +170,6 @@ export const deserializeDeployOperation = (
     provisionedIops: payload.provisioned_iops,
     ebsVolumeType: payload.ebs_volume_type,
     encryptedStackSettings: payload.encrypted_stack_settings,
-    instanceProfile: payload.instance_profile,
     userEmail: payload.user_email,
     userName: payload.user_name,
     env: payload.env || {},
@@ -310,15 +306,14 @@ export const selectNonFailedScaleOps = createSelector(
 );
 
 export const selectPreviousServiceScale = createSelector(
-  selectServiceById,
   selectNonFailedScaleOps,
-  (service, ops) => {
+  (ops) => {
     // If the values aren't found among the operations use the following default values
     const pastOps = ops.slice(1).concat(
       defaultDeployOperation({
-        containerCount: 1,
-        containerSize: 1024,
-        instanceProfile: service.instanceClass,
+        containerCount: -1,
+        containerSize: -1,
+        instanceProfile: "",
       }),
     );
 

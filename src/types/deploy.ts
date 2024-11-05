@@ -238,6 +238,7 @@ export interface DeployOperation extends Timestamps {
   containerCount: number;
   containerSize: number;
   diskSize: number;
+  instanceProfile: string;
   encryptedEnvJsonNew: string;
   destinationRegion: string;
   cancelled: boolean;
@@ -247,7 +248,6 @@ export interface DeployOperation extends Timestamps {
   provisionedIops: number;
   ebsVolumeType: string;
   encryptedStackSettings: string;
-  instanceProfile: string;
   userEmail: string;
   userName: string;
   env: { [key: string]: string | null };

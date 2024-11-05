@@ -143,6 +143,7 @@ const OpResourceCell = ({ op }: OpCellProps) => {
           ) : (
             <div>{op.resourceHandle}</div>
           )}
+          {op.resourceDesc ? <div>{op.resourceDesc}</div> : null}
           <div>{prettyResourceType(op.resourceType)}</div>
         </div>
       </div>

@@ -58,6 +58,7 @@ export interface BillingDetail {
 export interface DeployActivityRow extends DeployOperation {
   envHandle: string;
   resourceHandle: string;
+  resourceDesc: string;
   url?: string;
 }
 
