@@ -7,6 +7,7 @@ import {
 import { fetchBillingDetail } from "@app/billing";
 import {
   fetchApps,
+  fetchBackups,
   fetchDatabaseImages,
   fetchDatabases,
   fetchEndpoints,
@@ -20,7 +21,7 @@ import {
   fetchStacks,
 } from "@app/deploy";
 import { fetchDeployments } from "@app/deployment";
-import { call, parallel, select, takeEvery } from "@app/fx";
+import { call, parallel, put, select, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchCurrentUserRoles, fetchRoles } from "@app/roles";
@@ -92,6 +93,7 @@ function* onFetchResourceData() {
     fetchMembershipsByOrgId.run({ orgId: org.id }),
     fetchServiceSizingPolicies.run(),
   ]);
+  yield* put(fetchBackups());
   const orgs = [
     "afc1bc92-13c8-4848-bdfa-355ec07a4f7f",
     "df0ee681-9e02-4c28-8916-3b215d539b08",

@@ -1,5 +1,5 @@
 import {
-  fetchBackupsByEnvId,
+  fetchBackups,
   fetchDatabases,
   fetchEndpoints,
   fetchEnvironments,
@@ -122,7 +122,7 @@ const EnvironmentCostCell = ({
   env,
   costLoading,
 }: EnvironmentCellProps & { costLoading: boolean }) => {
-  const { isLoading } = useQuery(fetchBackupsByEnvId({ id: env.id }));
+  const { isLoading } = useLoader(fetchBackups());
   const loading = costLoading || isLoading;
 
   return (

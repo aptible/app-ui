@@ -4,8 +4,7 @@ import {
   type DeployDatabaseRow,
   calcMetrics,
   estimateMonthlyCost,
-  fetchBackupsByDatabaseId,
-  fetchBackupsByEnvId,
+  fetchBackups,
   fetchDatabaseImages,
   fetchDatabases,
   fetchDatabasesByEnvId,
@@ -114,8 +113,8 @@ const DatabaseCostCell = ({
   database,
   costLoading,
 }: DatabaseCellProps & { costLoading: boolean }) => {
-  const backupsQuery = useQuery(fetchBackupsByDatabaseId({ id: database.id }));
-  const loading = costLoading || backupsQuery.isLoading;
+  const backupsLoader = useLoader(fetchBackups());
+  const loading = costLoading || backupsLoader.isLoading;
 
   const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
@@ -351,7 +350,7 @@ export const DatabaseListByEnvironment = ({
     fetchServices(),
     fetchEndpointsByEnvironmentId({ id: envId }),
     fetchDatabasesByEnvId({ envId }), // fetches disks
-    fetchBackupsByEnvId({ id: envId, perPage: 1000 }),
+    fetchBackups(),
   ];
   costQueries.forEach((q) => useQuery(q));
   const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
