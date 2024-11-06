@@ -638,6 +638,9 @@ const apiHandlers = [
       }),
     );
   }),
+  rest.get(`${testEnv.apiUrl}/database_images/:id`, (_, res, ctx) => {
+    return res(ctx.json({}));
+  }),
   rest.post(`${testEnv.apiUrl}/services/:id/vhosts`, async (_, res, ctx) => {
     return res(ctx.json(testEndpoint));
   }),

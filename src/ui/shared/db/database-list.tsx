@@ -6,6 +6,7 @@ import {
   estimateMonthlyCost,
   fetchBackupsByDatabaseId,
   fetchBackupsByEnvId,
+  fetchDatabaseImageById,
   fetchDatabaseImages,
   fetchDatabases,
   fetchDatabasesByEnvId,
@@ -68,6 +69,7 @@ export const DatabaseItemView = ({
   const image = useSelector((s) =>
     selectDatabaseImageById(s, { id: database.databaseImageId }),
   );
+  useQuery(fetchDatabaseImageById({ id: database.databaseImageId }));
   return (
     <div className="flex">
       <Link to={databaseDetailUrl(database.id)} className="flex">
