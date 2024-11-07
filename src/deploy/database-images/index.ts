@@ -1,7 +1,7 @@
 import { api, cacheTimer } from "@app/api";
-import { createSelector } from "@app/fx";
+import { createSelector, select, takeLeading } from "@app/fx";
 import { defaultEntity } from "@app/hal";
-import { schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import type { DeployDatabaseImage } from "@app/types";
 
 export interface DeployDatabaseImageResponse {
@@ -79,6 +79,23 @@ export const selectDatabaseImagesVisible = createSelector(
 export const fetchDatabaseImages = api.get("/database_images?per_page=5000", {
   supervisor: cacheTimer(),
 });
+
+export const fetchDatabaseImageById = api.get<{ id: string }>(
+  "/database_images/:id",
+  { supervisor: takeLeading },
+  function* (ctx, next) {
+    const img = yield* select((s: WebState) =>
+      schema.databaseImages.selectById(s, { id: ctx.payload.id }),
+    );
+    // only fetch individual db images if they don't already exist in our
+    // system.  this should be relatively safe since these image objects
+    // dont update very often
+    if (img.id !== "") {
+      return;
+    }
+    yield* next();
+  },
+);
 
 export const databaseImageEntities = {
   database_image: defaultEntity({

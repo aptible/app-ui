@@ -1,6 +1,7 @@
 import { prettyDateTime } from "@app/date";
 import {
   fetchBackupsByDatabaseId,
+  fetchDatabaseImageById,
   fetchDatabaseImages,
   fetchEndpointsByServiceId,
 } from "@app/deploy";
@@ -155,6 +156,7 @@ function DatabasePageHeader() {
   const loaderDb = useQuery(fetchDatabase({ id }));
   const loaderService = useQuery(fetchService({ id: database.serviceId }));
   const loader = findLoaderComposite([loaderDb, loaderService]);
+  useQuery(fetchDatabaseImageById({ id: database.databaseImageId }));
 
   const crumbs = [
     { name: environment.handle, to: environmentDatabasesUrl(environment.id) },
