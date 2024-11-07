@@ -91,15 +91,8 @@ function* onFetchResourceData() {
     fetchDeployments.run(),
     fetchMembershipsByOrgId.run({ orgId: org.id }),
     fetchServiceSizingPolicies.run(),
+    fetchManualScaleRecommendations.run(),
   ]);
-  const orgs = [
-    "afc1bc92-13c8-4848-bdfa-355ec07a4f7f",
-    "df0ee681-9e02-4c28-8916-3b215d539b08",
-  ];
-  // feature flag temporarily
-  if (orgs.includes(org.id)) {
-    yield* fetchManualScaleRecommendations.run();
-  }
   yield* group;
 }
 
