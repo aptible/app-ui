@@ -119,12 +119,9 @@ export const ManualScaleRecView = ({ serviceId }: { serviceId: string }) => {
   const navigate = useNavigate();
   const noSavings = savings === 0;
   const savingsThreadhold = savings > 0 && savings < 150;
+  const noRec = rec.id === "";
 
-  if (rec.id === "") {
-    return null;
-  }
-
-  if (!isValid || noSavings || savingsThreadhold) {
+  if (noRec || !isValid || noSavings || savingsThreadhold) {
     return (
       <Pill icon={<IconScaleCheck variant="sm" />}>
         <span className="text-black">Right Sized</span>
