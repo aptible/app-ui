@@ -42,7 +42,7 @@ import type {
   OperationType,
   ResourceType,
 } from "@app/types";
-import { type ServiceScaleProps, scaleAttrs } from "../service";
+import { type ServiceScaleProps, selectServiceById } from "../service";
 
 export interface DeployOperationResponse {
   id: number;
@@ -177,16 +177,6 @@ export const deserializeDeployOperation = (
   };
 };
 
-// Search an array of operations for the first that has the specified attribute
-// If none are found, use the value from the defaultDeployOperation
-export const findOperationValue = <K extends keyof DeployOperation>(
-  ops: DeployOperation[],
-  attr: K,
-) => {
-  const op = ops.find((op) => op[attr] != null);
-  return op == null ? defaultDeployOperation()[attr] : op[attr];
-};
-
 export const hasDeployOperation = (a: DeployOperation) => a.id !== "";
 export const selectOperationById = schema.operations.selectById;
 export const selectOperationsAsList = createSelector(
@@ -314,13 +304,17 @@ export const selectPreviousServiceScale = createSelector(
         containerCount: -1,
         containerSize: -1,
         instanceProfile: "",
+        diskSize: -1,
       }),
     );
 
     const prev: DeployOperation = { ...pastOps[0] };
 
-    scaleAttrs.forEach((attr) => {
-      (prev as any)[attr] = findOperationValue(pastOps, attr);
+    ops.forEach((op) => {
+      if (op.containerCount !== -1) prev.containerCount = op.containerCount;
+      if (op.containerSize !== -1) prev.containerSize = op.containerSize;
+      if (op.diskSize !== -1) prev.diskSize = op.diskSize;
+      if (op.instanceProfile !== "") prev.instanceProfile = op.instanceProfile;
     });
 
     return prev;
@@ -334,8 +328,12 @@ export const selectServiceScale = createSelector(
     const lastOps = ops.slice(0, 1).concat(prevOp);
     const current: DeployOperation = { ...lastOps[0] };
 
-    scaleAttrs.forEach((attr) => {
-      (current as any)[attr] = findOperationValue(lastOps, attr);
+    lastOps.forEach((op) => {
+      if (op.containerCount !== -1) current.containerCount = op.containerCount;
+      if (op.containerSize !== -1) current.containerSize = op.containerSize;
+      if (op.diskSize !== -1) current.diskSize = op.diskSize;
+      if (op.instanceProfile !== "")
+        current.instanceProfile = op.instanceProfile;
     });
 
     return current;

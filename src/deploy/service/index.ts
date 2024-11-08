@@ -258,12 +258,6 @@ export const selectAppToServicesMap = createSelector(
   },
 );
 
-export const scaleAttrs: (keyof DeployOperation)[] = [
-  "containerCount",
-  "containerSize",
-  "instanceProfile",
-];
-
 export const fetchService = api.get<{ id: string }>("/services/:id");
 
 export const fetchServices = api.get(
