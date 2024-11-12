@@ -848,7 +848,6 @@ const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
   const { latest, prev } = useSelector((s) =>
     selectScaleDiff(s, { id: serviceId }),
   );
-  console.log({ prev, latest });
   const noScaleFound = latest.status === "unknown";
   const latestComplete =
     latest.status === "succeeded" || latest.status === "failed";

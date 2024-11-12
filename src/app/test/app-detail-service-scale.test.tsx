@@ -110,7 +110,7 @@ describe("AppDetailServiceScalePage", () => {
     fireEvent.click(serviceBtns[1]);
     const scaleBtn = await screen.findAllByRole("link", { name: /Scale/ });
     fireEvent.click(scaleBtn[1]);
-    await screen.findByText(/Last Scale/);
+    await screen.findByLabelText(/Number of Containers/);
     expect(
       screen.queryByText(/Operations show real-time/),
     ).not.toBeInTheDocument();

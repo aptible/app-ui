@@ -820,6 +820,23 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/disks/:id`, async (_, res, ctx) => {
     return res(ctx.json(testDisk));
   }),
+  rest.get(`${testEnv.apiUrl}/service_sizing_policies`, async (_, res, ctx) => {
+    return res(
+      ctx.json({
+        _embedded: { service_sizing_policies: [testAutoscalingPolicy] },
+      }),
+    );
+  }),
+  rest.get(
+    `${testEnv.apiUrl}/manual_service_sizing_recommendations`,
+    async (_, res, ctx) => {
+      return res(
+        ctx.json({
+          _embedded: { manual_service_sizing_recommendations: [] },
+        }),
+      );
+    },
+  ),
   rest.get(
     `${testEnv.apiUrl}/services/:id/service_sizing_policies`,
     async (_, res, ctx) => {
