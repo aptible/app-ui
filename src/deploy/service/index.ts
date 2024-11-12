@@ -317,7 +317,7 @@ export const getScaleTextFromOp = (op: DeployOperation): string => {
     str.push(`${op.containerSize / 1024} GB RAM`);
   }
 
-  if (op.diskSize !== -1) {
+  if (op.diskSize !== 0) {
     str.push(`${op.diskSize} GB Disk`);
   }
 

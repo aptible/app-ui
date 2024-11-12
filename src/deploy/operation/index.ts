@@ -29,7 +29,7 @@ import {
   databaseDetailUrl,
   endpointDetailUrl,
 } from "@app/routes";
-import { type WebState, defaultDeployOperation, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import { tunaEvent } from "@app/tuna";
 import type {
@@ -159,7 +159,7 @@ export const deserializeDeployOperation = (
     dockerRef: payload.docker_ref,
     containerCount: payload.container_count ?? -1,
     containerSize: payload.container_size ?? -1,
-    diskSize: payload.disk_size ?? -1,
+    diskSize: payload.disk_size ?? 0,
     instanceProfile: payload.instance_profile || "",
     encryptedEnvJsonNew: payload.encrypted_env_json_new,
     destinationRegion: payload.destination_region,
@@ -295,48 +295,30 @@ export const selectNonFailedScaleOps = createSelector(
   (ops) => ops.filter((op) => op.type === "scale" && op.status !== "failed"),
 );
 
-export const selectPreviousServiceScale = createSelector(
+export const selectScaleDiff = createSelector(
   selectNonFailedScaleOps,
-  (ops) => {
-    // If the values aren't found among the operations use the following default values
-    const pastOps = ops.slice(1).concat(
-      defaultDeployOperation({
-        containerCount: -1,
-        containerSize: -1,
-        instanceProfile: "",
-        diskSize: -1,
-      }),
-    );
+  (ops): { latest: DeployOperation; prev: DeployOperation } => {
+    if (ops.length < 2) {
+      return { latest: schema.operations.empty, prev: schema.operations.empty };
+    }
 
-    const prev: DeployOperation = { ...pastOps[0] };
+    const [latest, prev] = ops.slice(0, 2);
 
-    ops.forEach((op) => {
-      if (op.containerCount !== -1) prev.containerCount = op.containerCount;
-      if (op.containerSize !== -1) prev.containerSize = op.containerSize;
-      if (op.diskSize !== -1) prev.diskSize = op.diskSize;
-      if (op.instanceProfile !== "") prev.instanceProfile = op.instanceProfile;
-    });
+    // update previous operation based on what we can find in the op history
+    // ops is sorted in descending order based on updated_at so once we have
+    // a real value inside `prev` we dont update the field again
+    for (let i = 1; i < ops.length; i += 1) {
+      const op = ops[i];
+      if (prev.containerCount === -1 && op.containerCount !== -1)
+        prev.containerCount = op.containerCount;
+      if (prev.containerSize === -1 && op.containerSize !== -1)
+        prev.containerSize = op.containerSize;
+      if (prev.diskSize === 0 && op.diskSize !== 0) prev.diskSize = op.diskSize;
+      if (prev.instanceProfile === "" && op.instanceProfile !== "")
+        prev.instanceProfile = op.instanceProfile;
+    }
 
-    return prev;
-  },
-);
-
-export const selectServiceScale = createSelector(
-  selectNonFailedScaleOps,
-  selectPreviousServiceScale,
-  (ops, prevOp) => {
-    const lastOps = ops.slice(0, 1).concat(prevOp);
-    const current: DeployOperation = { ...lastOps[0] };
-
-    lastOps.forEach((op) => {
-      if (op.containerCount !== -1) current.containerCount = op.containerCount;
-      if (op.containerSize !== -1) current.containerSize = op.containerSize;
-      if (op.diskSize !== -1) current.diskSize = op.diskSize;
-      if (op.instanceProfile !== "")
-        current.instanceProfile = op.instanceProfile;
-    });
-
-    return current;
+    return { prev, latest };
   },
 );
 

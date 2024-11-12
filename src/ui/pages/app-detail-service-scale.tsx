@@ -16,9 +16,8 @@ import {
   selectEndpointsByServiceId,
   selectEnvironmentById,
   selectManualScaleRecommendationByServiceId,
-  selectPreviousServiceScale,
+  selectScaleDiff,
   selectServiceById,
-  selectServiceScale,
   selectServiceSizingPolicyByServiceId,
   selectStackById,
 } from "@app/deploy";
@@ -846,13 +845,13 @@ const AutoscalingSection = ({
 };
 
 const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
-  const current = useSelector((s) => selectServiceScale(s, { id: serviceId }));
-  const prev = useSelector((s) =>
-    selectPreviousServiceScale(s, { id: serviceId }),
+  const { latest, prev } = useSelector((s) =>
+    selectScaleDiff(s, { id: serviceId }),
   );
-  const noScaleFound = current.status === "unknown";
-  const currentComplete =
-    current.status === "succeeded" || current.status === "failed";
+  console.log({ prev, latest });
+  const noScaleFound = latest.status === "unknown";
+  const latestComplete =
+    latest.status === "succeeded" || latest.status === "failed";
   const action = pollServiceOperations({ id: serviceId });
   const loader = useLoader(action);
 
@@ -860,7 +859,7 @@ const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
   const cancel = useMemo(() => cancelServicesOpsPoll(), []);
   usePoller({ action: poller, cancel });
 
-  const scaleTextCur = getScaleTextFromOp(current);
+  const scaleTextCur = getScaleTextFromOp(latest);
   let tail = <span className="font-bold">{scaleTextCur}</span>;
   if (prev.id !== "") {
     const scaleTextPrev = getScaleTextFromOp(prev);
@@ -888,11 +887,11 @@ const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
     return null;
   }
 
-  if (!currentComplete) {
+  if (!latestComplete) {
     return (
       <Banner variant="progress">
         <span className="font-bold">Scale in Progress</span>{" "}
-        {getScaleTextFromOp(current)}
+        {getScaleTextFromOp(latest)}
       </Banner>
     );
   }
@@ -900,7 +899,7 @@ const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
   return (
     <Banner variant="info">
       <span className="font-bold">Last Scale:</span>{" "}
-      {prettyDateTime(current.createdAt)} {tail}
+      {prettyDateTime(latest.createdAt)} {tail}
     </Banner>
   );
 };
