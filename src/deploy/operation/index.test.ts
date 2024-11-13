@@ -109,6 +109,8 @@ describe("selectScaleDiff", () => {
     };
     const actual = selectScaleDiff(state as any, { id: serviceId });
     expect(actual.latest.instanceProfile).toEqual("r5");
+    expect(actual.latest.containerCount).toEqual(2);
+    expect(actual.latest.containerSize).toEqual(2048);
     expect(actual.prev.instanceProfile).toEqual("c5");
     expect(actual.prev.containerCount).toEqual(2);
     expect(actual.prev.containerSize).toEqual(2048);

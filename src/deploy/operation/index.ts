@@ -304,18 +304,36 @@ export const selectScaleDiff = createSelector(
 
     const [latest, prev] = ops.slice(0, 2);
 
-    // update previous operation based on what we can find in the op history
+    // update previous and latest operation based on what we can find in the op history
     // ops is sorted in descending order based on updated_at so once we have
     // a real value inside `prev` we dont update the field again
     for (let i = 1; i < ops.length; i += 1) {
       const op = ops[i];
-      if (prev.containerCount === -1 && op.containerCount !== -1)
+      if (prev.containerCount === -1 && op.containerCount !== -1) {
         prev.containerCount = op.containerCount;
-      if (prev.containerSize === -1 && op.containerSize !== -1)
+      }
+      if (prev.containerSize === -1 && op.containerSize !== -1) {
         prev.containerSize = op.containerSize;
-      if (prev.diskSize === 0 && op.diskSize !== 0) prev.diskSize = op.diskSize;
-      if (prev.instanceProfile === "" && op.instanceProfile !== "")
+      }
+      if (prev.diskSize === 0 && op.diskSize !== 0) {
+        prev.diskSize = op.diskSize;
+      }
+      if (prev.instanceProfile === "" && op.instanceProfile !== "") {
         prev.instanceProfile = op.instanceProfile;
+      }
+
+      if (latest.containerCount === -1 && op.containerCount !== -1) {
+        latest.containerCount = op.containerCount;
+      }
+      if (latest.containerSize === -1 && op.containerSize !== -1) {
+        latest.containerSize = op.containerSize;
+      }
+      if (latest.diskSize === 0 && op.diskSize !== 0) {
+        latest.diskSize = op.diskSize;
+      }
+      if (latest.instanceProfile === "" && op.instanceProfile !== "") {
+        latest.instanceProfile = op.instanceProfile;
+      }
     }
 
     return { prev, latest };
