@@ -24,6 +24,7 @@ import {
   extractIdFromLink,
   extractResourceNameFromLink,
 } from "@app/hal";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   appDetailUrl,
   databaseDetailUrl,
@@ -606,6 +607,7 @@ export const scaleService = api.post<
     containerSize,
     recId = "",
   } = ctx.payload;
+  const orgId = yield* select(selectOrganizationSelectedId);
   const service = yield* select((s: WebState) => selectServiceById(s, { id }));
   const body = {
     type: "scale",
@@ -628,6 +630,7 @@ export const scaleService = api.post<
     tunaEvent(
       "scale-service-with-recommendation",
       JSON.stringify({
+        orgId,
         serviceId: id,
         opId: ctx.json.value.id,
         costSavings: rec.costSavings,

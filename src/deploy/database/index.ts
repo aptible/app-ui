@@ -661,6 +661,7 @@ export const scaleDatabase = api.post<
   const service = yield* select((s: WebState) =>
     selectServiceById(s, { id: db.serviceId }),
   );
+  const orgId = yield* select(selectOrganizationSelectedId);
   const body = {
     type: "restart",
     id,
@@ -684,6 +685,7 @@ export const scaleDatabase = api.post<
     tunaEvent(
       "scale-service-with-recommendation",
       JSON.stringify({
+        orgId,
         databaseId: id,
         serviceId: service.id,
         opId: ctx.json.value.id,
