@@ -560,7 +560,8 @@ export const unlinkDatabase = api.post<UnlinkDatabase>(
     }
 
     ctx.loader = {
-      message: "Replica unlinked from source successfully! This action does not stop replication.",
+      message:
+        "Replica unlinked from source successfully! This action does not stop replication.",
     };
   },
 );
