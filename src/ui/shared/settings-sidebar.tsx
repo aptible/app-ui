@@ -21,6 +21,7 @@ import {
 } from "@app/routes";
 import cn from "classnames";
 import { NavLink } from "react-router-dom";
+import { useTrialNotice } from "../hooks/use-trial-notice";
 import { IconExternalLink, IconLock } from "./icons";
 import { tokens } from "./tokens";
 import { Tooltip } from "./tooltip";
@@ -37,6 +38,7 @@ export function SettingsSidebar() {
   const hasManyOrgs = useSelector(selectHasManyOrgs);
   const isAccountOwner = useSelector((s) => selectIsAccountOwner(s, { orgId }));
   const hasBetaFeatures = useSelector(selectHasBetaFeatures);
+  const { hasTrialNoPayment } = useTrialNotice();
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cn(navButton, { [inactive]: !isActive, [active]: isActive });
@@ -112,7 +114,7 @@ export function SettingsSidebar() {
           </span>
         )}
 
-        {isAccountOwner && !hasManyOrgs ? (
+        {isAccountOwner && !hasManyOrgs && !hasTrialNoPayment ? (
           <NavLink className={navLink} to={teamScimUrl()}>
             Provisioning
           </NavLink>
@@ -120,7 +122,11 @@ export function SettingsSidebar() {
           <span className={navLink({ isActive: false })}>
             Provisioning
             <Tooltip
-              text="Must be account owner with a single assigned organization"
+              text={
+                hasTrialNoPayment
+                  ? "Feature not available for trial users"
+                  : "Must be account owner with a single assigned organization"
+              }
               fluid
             >
               <IconLock variant="sm" className="ml-1 opacity-60" />
