@@ -6,7 +6,7 @@ import {
   selectManualScaleRecommendationByServiceId,
   selectServiceById,
 } from "@app/deploy";
-import { selectOrganizationSelectedId } from "@app/organizations";
+import { selectOrganizationSelected } from "@app/organizations";
 import { useSelector } from "@app/react";
 import {
   appServicePathMetricsUrl,
@@ -115,7 +115,7 @@ export const ManualScaleRecView = ({ serviceId }: { serviceId: string }) => {
   const rec = useSelector((s) =>
     selectManualScaleRecommendationByServiceId(s, { serviceId: serviceId }),
   );
-  const orgId = useSelector(selectOrganizationSelectedId);
+  const org = useSelector(selectOrganizationSelected);
   const { isValid } = isManualScaleRecValid(service, rec);
   const savings = rec.costSavings;
   const navigate = useNavigate();
@@ -140,7 +140,12 @@ export const ManualScaleRecView = ({ serviceId }: { serviceId: string }) => {
     navigate(url);
     tunaEvent(
       `scale-service-click-${scaleDir}`,
-      JSON.stringify({ serviceId, direction: scaleDir, orgId }),
+      JSON.stringify({
+        orgId: org.id,
+        orgName: org.name,
+        serviceId,
+        direction: scaleDir,
+      }),
     );
   };
 
