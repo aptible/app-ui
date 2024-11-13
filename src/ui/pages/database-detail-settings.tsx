@@ -407,8 +407,8 @@ const DatabaseUnlinkFromSource = ({ database }: DbProps) => {
             label="Unlink Replica from Source"
             description={
               <p>
-                Warning: You are about to unlink a replica from its primary.
-                Note that this does not stop replication. To proceed, type{" "}
+                <strong>This action does not stop replication.</strong> You are
+                about to unlink a replica from its primary. To proceed, type{" "}
                 <strong>{database.handle}</strong> below to confirm these
                 changes. This action cannot be undone or reversed.{" "}
               </p>

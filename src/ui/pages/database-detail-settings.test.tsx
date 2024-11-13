@@ -239,7 +239,7 @@ describe("DatabaseSettingsPage", () => {
 
       // Check for unlink text
       const unlinkText = await screen.findByText(
-        /Warning: You are about to unlink a replica from its primary. Note that this does not stop replication. To proceed, type/,
+        /You are about to unlink a replica from its primary. To proceed, type/,
       );
       expect(unlinkText).toBeInTheDocument();
 
@@ -278,7 +278,7 @@ describe("DatabaseSettingsPage", () => {
       // Check that the promotion text is not displayed
       expect(
         screen.queryByText(
-          /Warning: You are about to unlink a replica from its primary. Note that this does not stop replication. To proceed, type/,
+          /You are about to unlink a replica from its primary. To proceed, type/,
         ),
       ).not.toBeInTheDocument();
 
