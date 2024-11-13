@@ -75,3 +75,4 @@ export * from "./cost-estimate-tooltip";
 export * from "./us-states";
 export * from "./countries";
 export * from "./scale-recs";
+export * from "./last-scale";
