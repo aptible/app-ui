@@ -8,7 +8,10 @@ import {
 import { type FetchJson, type Payload, call, parallel, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
-import { selectOrganizationSelectedId } from "@app/organizations";
+import {
+  selectOrganizationSelected,
+  selectOrganizationSelectedId,
+} from "@app/organizations";
 import { DEFAULT_INSTANCE_CLASS, type WebState, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import { tunaEvent } from "@app/tuna";
@@ -661,6 +664,7 @@ export const scaleDatabase = api.post<
   const service = yield* select((s: WebState) =>
     selectServiceById(s, { id: db.serviceId }),
   );
+  const org = yield* select(selectOrganizationSelected);
   const body = {
     type: "restart",
     id,
@@ -684,6 +688,8 @@ export const scaleDatabase = api.post<
     tunaEvent(
       "scale-service-with-recommendation",
       JSON.stringify({
+        orgId: org.id,
+        orgName: org.name,
         databaseId: id,
         serviceId: service.id,
         opId: ctx.json.value.id,
