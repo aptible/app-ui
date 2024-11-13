@@ -303,7 +303,8 @@ export const selectScaleDiff = createSelector(
       return { latest: schema.operations.empty, prev: schema.operations.empty };
     }
 
-    const [latest, prev] = ops.slice(0, 2);
+    const latest = { ...ops[0] };
+    const prev = { ...ops[1] };
 
     // update previous and latest operation based on what we can find in the op history
     // ops is sorted in descending order based on updated_at so once we have
