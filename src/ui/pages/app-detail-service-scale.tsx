@@ -1,23 +1,18 @@
-import { prettyDateTime } from "@app/date";
 import {
   type ServiceSizingPolicyEditProps,
-  cancelServicesOpsPoll,
   containerSizesByProfile,
   fetchApp,
   fetchService,
   fetchServiceSizingPoliciesByServiceId,
   getContainerProfileFromType,
   modifyServiceSizingPolicy,
-  pollServiceOperations,
   scaleService,
   selectAppById,
   selectContainerProfilesForStack,
   selectEndpointsByServiceId,
   selectEnvironmentById,
   selectManualScaleRecommendationByServiceId,
-  selectPreviousServiceScale,
   selectServiceById,
-  selectServiceScale,
   selectServiceSizingPolicyByServiceId,
   selectStackById,
 } from "@app/deploy";
@@ -30,14 +25,10 @@ import {
 } from "@app/react";
 import { appActivityUrl } from "@app/routes";
 import { DEFAULT_INSTANCE_CLASS, schema } from "@app/schema";
-import type {
-  DeployOperation,
-  DeployServiceSizingPolicy,
-  InstanceClass,
-} from "@app/types";
-import { type SyntheticEvent, useEffect, useMemo, useState } from "react";
+import type { DeployServiceSizingPolicy, InstanceClass } from "@app/types";
+import { type SyntheticEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { usePoller, useValidator } from "../hooks";
+import { useValidator } from "../hooks";
 import {
   Banner,
   ButtonIcon,
@@ -46,6 +37,7 @@ import {
   IconChevronRight,
   IconRefresh,
   KeyValueGroup,
+  LastScaleBanner,
   ManualScaleReason,
   ServicePricingCalc,
   tokens,
@@ -845,47 +837,6 @@ const AutoscalingSection = ({
         </div>
       </form>
     </Box>
-  );
-};
-
-const getScaleText = (op: DeployOperation) =>
-  `${op.containerCount} x ${op.containerSize / 1024} GB ${
-    getContainerProfileFromType(op.instanceProfile as InstanceClass).name ||
-    op.instanceProfile
-  } container${op.containerCount === 1 ? "" : "s"}`;
-
-const LastScaleBanner = ({ serviceId }: { serviceId: string }) => {
-  const current = useSelector((s) => selectServiceScale(s, { id: serviceId }));
-  const prev = useSelector((s) =>
-    selectPreviousServiceScale(s, { id: serviceId }),
-  );
-  const neverScaled = current.status === "unknown";
-  const currentComplete = current.status === "succeeded";
-  const action = pollServiceOperations({ id: serviceId });
-  const loader = useLoader(action);
-
-  const poller = useMemo(() => action, [serviceId]);
-  const cancel = useMemo(() => cancelServicesOpsPoll(), []);
-  usePoller({ action: poller, cancel });
-
-  if (loader.isInitialLoading) {
-    return null;
-  }
-
-  return (
-    <Banner variant={currentComplete || neverScaled ? "info" : "progress"}>
-      {neverScaled ? (
-        "Never Scaled"
-      ) : (
-        <>
-          <strong>
-            {currentComplete ? "Last Scale" : "Scale in Progress"}:
-          </strong>{" "}
-          {prettyDateTime(current.createdAt)} from {getScaleText(prev)} to{" "}
-          {getScaleText(current)}
-        </>
-      )}
-    </Banner>
   );
 };
 

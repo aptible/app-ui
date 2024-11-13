@@ -36,7 +36,16 @@ export interface DeployApp extends Provisionable, Timestamps {
   currentSourceId: string;
 }
 
-export type InstanceClass = "m4" | "m5" | "r4" | "r5" | "c4" | "c5";
+export type InstanceClass =
+  | "m"
+  | "m4"
+  | "m5"
+  | "r"
+  | "r4"
+  | "r5"
+  | "c"
+  | "c4"
+  | "c5";
 
 export interface DeployService extends Timestamps {
   id: string;
@@ -238,6 +247,7 @@ export interface DeployOperation extends Timestamps {
   containerCount: number;
   containerSize: number;
   diskSize: number;
+  instanceProfile: string;
   encryptedEnvJsonNew: string;
   destinationRegion: string;
   cancelled: boolean;
@@ -247,7 +257,6 @@ export interface DeployOperation extends Timestamps {
   provisionedIops: number;
   ebsVolumeType: string;
   encryptedStackSettings: string;
-  instanceProfile: string;
   userEmail: string;
   userName: string;
   env: { [key: string]: string | null };

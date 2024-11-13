@@ -30,7 +30,7 @@ import {
   databaseDetailUrl,
   endpointDetailUrl,
 } from "@app/routes";
-import { type WebState, defaultDeployOperation, schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import { tunaEvent } from "@app/tuna";
 import type {
@@ -43,11 +43,7 @@ import type {
   OperationType,
   ResourceType,
 } from "@app/types";
-import {
-  type ServiceScaleProps,
-  scaleAttrs,
-  selectServiceById,
-} from "../service";
+import { type ServiceScaleProps, selectServiceById } from "../service";
 
 export interface DeployOperationResponse {
   id: number;
@@ -57,9 +53,10 @@ export interface DeployOperationResponse {
   updated_at: string;
   git_ref: string;
   docker_ref: string;
-  container_count: number;
-  container_size: number;
-  disk_size: number;
+  container_count: number | null;
+  container_size: number | null;
+  disk_size: number | null;
+  instance_profile: string | null;
   encrypted_env_json_new: string;
   destination_region: string;
   automated: boolean;
@@ -69,7 +66,6 @@ export interface DeployOperationResponse {
   provisioned_iops: number;
   ebs_volume_type: string;
   encrypted_stack_settings: string;
-  instance_profile: string;
   user_email: string;
   user_name: string;
   env: { [key: string]: string | null } | null;
@@ -162,9 +158,10 @@ export const deserializeDeployOperation = (
     updatedAt: payload.updated_at,
     gitRef: payload.git_ref || "",
     dockerRef: payload.docker_ref,
-    containerCount: payload.container_count,
-    containerSize: payload.container_size,
-    diskSize: payload.disk_size,
+    containerCount: payload.container_count ?? -1,
+    containerSize: payload.container_size ?? -1,
+    diskSize: payload.disk_size ?? 0,
+    instanceProfile: payload.instance_profile || "",
     encryptedEnvJsonNew: payload.encrypted_env_json_new,
     destinationRegion: payload.destination_region,
     cancelled: payload.cancelled,
@@ -174,22 +171,11 @@ export const deserializeDeployOperation = (
     provisionedIops: payload.provisioned_iops,
     ebsVolumeType: payload.ebs_volume_type,
     encryptedStackSettings: payload.encrypted_stack_settings,
-    instanceProfile: payload.instance_profile,
     userEmail: payload.user_email,
     userName: payload.user_name,
     env: payload.env || {},
     note: payload.note,
   };
-};
-
-// Search an array of operations for the first that has the specified attribute
-// If none are found, use the value from the defaultDeployOperation
-export const findOperationValue = <K extends keyof DeployOperation>(
-  ops: DeployOperation[],
-  attr: K,
-) => {
-  const op = ops.find((op) => op[attr] != null);
-  return op == null ? defaultDeployOperation()[attr] : op[attr];
 };
 
 export const hasDeployOperation = (a: DeployOperation) => a.id !== "";
@@ -310,41 +296,48 @@ export const selectNonFailedScaleOps = createSelector(
   (ops) => ops.filter((op) => op.type === "scale" && op.status !== "failed"),
 );
 
-export const selectPreviousServiceScale = createSelector(
-  selectServiceById,
+export const selectScaleDiff = createSelector(
   selectNonFailedScaleOps,
-  (service, ops) => {
-    // If the values aren't found among the operations use the following default values
-    const pastOps = ops.slice(1).concat(
-      defaultDeployOperation({
-        containerCount: 1,
-        containerSize: 1024,
-        instanceProfile: service.instanceClass,
-      }),
-    );
+  (ops): { latest: DeployOperation; prev: DeployOperation } => {
+    if (ops.length < 2) {
+      return { latest: schema.operations.empty, prev: schema.operations.empty };
+    }
 
-    const prev: DeployOperation = { ...pastOps[0] };
+    const [latest, prev] = ops.slice(0, 2);
 
-    scaleAttrs.forEach((attr) => {
-      (prev as any)[attr] = findOperationValue(pastOps, attr);
-    });
+    // update previous and latest operation based on what we can find in the op history
+    // ops is sorted in descending order based on updated_at so once we have
+    // a real value inside `prev` we dont update the field again
+    for (let i = 1; i < ops.length; i += 1) {
+      const op = ops[i];
+      if (prev.containerCount === -1 && op.containerCount !== -1) {
+        prev.containerCount = op.containerCount;
+      }
+      if (prev.containerSize === -1 && op.containerSize !== -1) {
+        prev.containerSize = op.containerSize;
+      }
+      if (prev.diskSize === 0 && op.diskSize !== 0) {
+        prev.diskSize = op.diskSize;
+      }
+      if (prev.instanceProfile === "" && op.instanceProfile !== "") {
+        prev.instanceProfile = op.instanceProfile;
+      }
 
-    return prev;
-  },
-);
+      if (latest.containerCount === -1 && op.containerCount !== -1) {
+        latest.containerCount = op.containerCount;
+      }
+      if (latest.containerSize === -1 && op.containerSize !== -1) {
+        latest.containerSize = op.containerSize;
+      }
+      if (latest.diskSize === 0 && op.diskSize !== 0) {
+        latest.diskSize = op.diskSize;
+      }
+      if (latest.instanceProfile === "" && op.instanceProfile !== "") {
+        latest.instanceProfile = op.instanceProfile;
+      }
+    }
 
-export const selectServiceScale = createSelector(
-  selectNonFailedScaleOps,
-  selectPreviousServiceScale,
-  (ops, prevOp) => {
-    const lastOps = ops.slice(0, 1).concat(prevOp);
-    const current: DeployOperation = { ...lastOps[0] };
-
-    scaleAttrs.forEach((attr) => {
-      (current as any)[attr] = findOperationValue(lastOps, attr);
-    });
-
-    return current;
+    return { prev, latest };
   },
 );
 
