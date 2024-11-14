@@ -1,7 +1,9 @@
 import { useDispatch, useLoader, useSelector } from "@app/react";
+import { securitySettingsUrl } from "@app/routes";
 import { selectCurrentUser, updateUserName } from "@app/users";
 import { existValidator, nameValidator, sanitizeInput } from "@app/validator";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,
@@ -60,12 +62,21 @@ export function SettingsProfilePage() {
             <div>ID</div>
             <div>Email</div>
             <div>Name</div>
+            <div>Password</div>
+            <div>2FA</div>
+            <div>Security Keys</div>
           </Group>
 
           <Group size="sm">
             <CopyText text={user.id} />
-            <CopyText text={user.email} />
+            <div className="flex items-center gap-2">
+              <CopyText text={user.email} />
+              <Link to={securitySettingsUrl()}>Edit</Link>
+            </div>
             <div>{user.name}</div>
+            <Link to={securitySettingsUrl()}>Edit</Link>
+            <Link to={securitySettingsUrl()}>Edit</Link>
+            <Link to={securitySettingsUrl()}>Edit</Link>
           </Group>
         </Group>
       </Box>
