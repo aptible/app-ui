@@ -58,29 +58,30 @@ export function SettingsProfilePage() {
       <h2 className={tokens.type.h2}>Profile</h2>
       <Box>
         <Group size="sm" variant="horizontal">
-          <Group size="sm" className="w-[100px] font-bold">
+          <Group size="sm" className="w-[180px] font-bold">
+            <div>Name</div>
             <div>ID</div>
             <div>Email</div>
-            <div>Name</div>
             <div>Password</div>
-            <div>2FA</div>
+            <div>2-Factor Authentication</div>
             <div>Security Keys</div>
+            <div>Log out other sessions</div>
           </Group>
 
           <Group size="sm">
+            <div>{user.name}</div>
             <CopyText text={user.id} />
             <div className="flex items-center gap-2">
               <CopyText text={user.email} />
               <Link to={securitySettingsUrl()}>Edit</Link>
             </div>
-            <div>{user.name}</div>
+            <Link to={securitySettingsUrl()}>Edit</Link>
             <Link to={securitySettingsUrl()}>Edit</Link>
             <Link to={securitySettingsUrl()}>Edit</Link>
             <Link to={securitySettingsUrl()}>Edit</Link>
           </Group>
         </Group>
       </Box>
-
       <Box>
         <form onSubmit={onSubmit}>
           <Group>
