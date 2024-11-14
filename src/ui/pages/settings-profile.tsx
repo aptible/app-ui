@@ -1,7 +1,9 @@
 import { useDispatch, useLoader, useSelector } from "@app/react";
+import { securitySettingsUrl } from "@app/routes";
 import { selectCurrentUser, updateUserName } from "@app/users";
 import { existValidator, nameValidator, sanitizeInput } from "@app/validator";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useValidator } from "../hooks";
 import {
   BannerMessages,
@@ -56,20 +58,30 @@ export function SettingsProfilePage() {
       <h2 className={tokens.type.h2}>Profile</h2>
       <Box>
         <Group size="sm" variant="horizontal">
-          <Group size="sm" className="w-[100px] font-bold">
+          <Group size="sm" className="w-[180px] font-bold">
+            <div>Name</div>
             <div>ID</div>
             <div>Email</div>
-            <div>Name</div>
+            <div>Password</div>
+            <div>2-Factor Authentication</div>
+            <div>Security Keys</div>
+            <div>Log out other sessions</div>
           </Group>
 
           <Group size="sm">
-            <CopyText text={user.id} />
-            <CopyText text={user.email} />
             <div>{user.name}</div>
+            <CopyText text={user.id} />
+            <Group variant="horizontal">
+              <CopyText text={user.email} />
+              <Link to={securitySettingsUrl()}>Edit</Link>
+            </Group>
+            <Link to={securitySettingsUrl()}>Edit</Link>
+            <Link to={securitySettingsUrl()}>Edit</Link>
+            <Link to={securitySettingsUrl()}>Edit</Link>
+            <Link to={securitySettingsUrl()}>Edit</Link>
           </Group>
         </Group>
       </Box>
-
       <Box>
         <form onSubmit={onSubmit}>
           <Group>
