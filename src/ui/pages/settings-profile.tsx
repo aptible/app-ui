@@ -71,10 +71,10 @@ export function SettingsProfilePage() {
           <Group size="sm">
             <div>{user.name}</div>
             <CopyText text={user.id} />
-            <div className="flex items-center gap-2">
+            <Group variant="horizontal">
               <CopyText text={user.email} />
               <Link to={securitySettingsUrl()}>Edit</Link>
-            </div>
+            </Group>
             <Link to={securitySettingsUrl()}>Edit</Link>
             <Link to={securitySettingsUrl()}>Edit</Link>
             <Link to={securitySettingsUrl()}>Edit</Link>
