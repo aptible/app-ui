@@ -24,13 +24,11 @@ export const StackDetailSettingsPage = () => {
         <div className="mb-4">
           <p>
             <strong>
-              If you want to deprovision this stack, you must first deprovision
-              its <Link to={stackDetailEnvsUrl(id)}>environments</Link>.
+              To deprovision this stack, first deprovision its <Link to={stackDetailEnvsUrl(id)}>environments</Link>.
             </strong>
           </p>
           <p>
-            Then contact support to permanently delete this stack. This action
-            cannot be undone.
+            Then contact support to permanently delete this stack.
           </p>
         </div>
         <ButtonLink className="w-fit font-semibold" to={supportUrl()}>
