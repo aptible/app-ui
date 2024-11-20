@@ -4,6 +4,7 @@ import {
   resetSupportTicket,
   uploadAttachment,
 } from "@app/deploy/support";
+import { MintlifyWidget } from '@mintlify/widget-react';
 import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { tunaEvent } from "@app/tuna";
 import { selectCurrentUser } from "@app/users";
@@ -434,6 +435,17 @@ export const SupportPage = () => {
           </form>
         </Box>
       </div>
+      <MintlifyWidget
+        connection={{
+          apiKey: 'mint_dsc_3ZnCa1nezSLE7AWvcbMppEYL',
+        }}
+        display={{
+          trigger: {
+            type: 'button',
+            label: 'Get Answers',
+          },
+        }}
+      />
     </AppSidebarLayout>
   );
 };

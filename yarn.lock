@@ -941,6 +941,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mintlify/widget-props@npm:0.0.5":
+  version: 0.0.5
+  resolution: "@mintlify/widget-props@npm:0.0.5"
+  checksum: cf3c7c8b6243c6a01c1f19289764751a5c84ff2686c9d04a0cf74dcffff4934ce6f7b600d1229fa4b9811eabb50844588a23167e598c425d1ce17ec3ca0352a0
+  languageName: node
+  linkType: hard
+
+"@mintlify/widget-react@npm:^0.0.11":
+  version: 0.0.11
+  resolution: "@mintlify/widget-react@npm:0.0.11"
+  dependencies:
+    "@mintlify/widget-props": 0.0.5
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: 4ff0944806f3cc491fd007bf779efb4a352ca17400ead0f161cecbbeb0e58c8ae02b3fdf073fe0df4a48d2be330b2cea0b53df13c148b652eef30853f022c115
+  languageName: node
+  linkType: hard
+
 "@mswjs/cookies@npm:^0.2.2":
   version: 0.2.2
   resolution: "@mswjs/cookies@npm:0.2.2"
@@ -1810,6 +1828,7 @@ __metadata:
     "@biomejs/biome": ^1.8.3
     "@floating-ui/react": ^0.26.22
     "@github/webauthn-json": ^2.1.1
+    "@mintlify/widget-react": ^0.0.11
     "@remix-run/web-fetch": ^4.4.2
     "@sentry/react": ^8.26.0
     "@stripe/react-stripe-js": ^2.8.0
@@ -4479,7 +4498,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.3.1":
+"react-dom@npm:^18.2.0, react-dom@npm:^18.3.1":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -4575,7 +4594,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.3.1":
+"react@npm:^18.2.0, react@npm:^18.3.1":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
