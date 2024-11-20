@@ -28,12 +28,12 @@ import {
   useSelector,
 } from "@app/react";
 import {
+  stackDetailDeprovisionUrl,
   stackDetailEnvsUrl,
   stackDetailHidsUrl,
   stackDetailUrl,
   stackDetailVpcPeeringsUrl,
   stackDetailVpnTunnelsUrl,
-  stackDetailDeprovisionUrl,
   stacksUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
