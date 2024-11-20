@@ -1,10 +1,9 @@
-import { useQuery, useSelector } from "@app/react";
-import classNames from "classnames";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { Box, Button, Group, tokens } from "../shared";
+import { Box, Button, Group } from "../shared";
 
 export const StackDetailDeprovisionPage = () => {
+  const { id = "" } = useParams();
   return (
     <Group size="sm">
       <Box className="mb-4">
