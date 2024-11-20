@@ -19,7 +19,7 @@ export const StackDetailDeprovisionPage = () => {
           <ButtonLinkDocs href="https://www.aptible.com/docs/how-to-guides/platform-guides/create-deprovision-dedicated-stacks" />
         </div>
         <div className="mb-4">
-          <p><strong>If you want to deprovision this Dedicated Stack, you must first deprovision its <Link to={stackDetailEnvsUrl(id)}>Environments</Link>.</strong></p>
+          <p><strong>If you want to deprovision this stack, you must first deprovision its <Link to={stackDetailEnvsUrl(id)}>environments</Link>.</strong></p>
           <p>Then contact support to permanently delete this stack. This action cannot be undone.</p>
         </div>
         <ButtonLink className="w-fit font-semibold" to={supportUrl()}>Contact Support</ButtonLink>
