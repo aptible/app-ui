@@ -374,9 +374,9 @@ export const stackDetailVpcPeeringsUrl = (id: string) =>
   `${stackDetailUrl(id)}/vpc-peering`;
 export const STACK_DETAIL_HIDS_PATH = `${STACK_DETAIL_PATH}/hids`;
 export const stackDetailHidsUrl = (id: string) => `${stackDetailUrl(id)}/hids`;
-export const STACK_DETAIL_DEPROVISION_PATH = `${STACK_DETAIL_PATH}/deprovision`;
-export const stackDetailDeprovisionUrl = (id: string) =>
-  `${stackDetailUrl(id)}/deprovision`;
+export const STACK_DETAIL_SETTINGS_PATH = `${STACK_DETAIL_PATH}/settings`;
+export const stackDetailSettingsUrl = (id: string) =>
+  `${stackDetailUrl(id)}/settings`;
 
 export const SEARCH_PATH = "/search";
 export const searchUrl = () => SEARCH_PATH;

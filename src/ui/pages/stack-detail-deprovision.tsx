@@ -9,7 +9,7 @@ import {
   IconAlertTriangle,
 } from "../shared";
 
-export const StackDetailDeprovisionPage = () => {
+export const StackDetailSettingsPage = () => {
   const { id = "" } = useParams();
   return (
     <Group size="sm">

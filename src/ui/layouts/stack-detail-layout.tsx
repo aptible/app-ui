@@ -28,7 +28,7 @@ import {
   useSelector,
 } from "@app/react";
 import {
-  stackDetailDeprovisionUrl,
+  stackDetailSettingsUrl,
   stackDetailEnvsUrl,
   stackDetailHidsUrl,
   stackDetailUrl,
@@ -154,7 +154,7 @@ function StackPageHeader() {
   }
 
   if (stack.dedicatedOrSelfHostedStack) {
-    tabs.push({ name: "Deprovision", href: stackDetailDeprovisionUrl(id) });
+    tabs.push({ name: "Settings", href: stackDetailSettingsUrl(id) });
   }
 
   return (
