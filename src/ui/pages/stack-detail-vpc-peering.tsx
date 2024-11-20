@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import { usePaginate } from "../hooks";
 import {
   Box,
-  Button,
   ButtonLink,
   ButtonLinkDocs,
   DescBar,

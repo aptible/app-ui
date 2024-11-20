@@ -1,10 +1,8 @@
-import { findEnvironmentsByStackId } from "@app/deploy";
 import { stackDetailEnvsUrl, supportUrl } from "@app/routes";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import {
   Box,
-  Button,
   ButtonLink,
   ButtonLinkDocs,
   Group,

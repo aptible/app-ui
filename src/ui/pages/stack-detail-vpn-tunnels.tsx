@@ -9,7 +9,6 @@ import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import {
   Box,
-  Button,
   ButtonLink,
   ButtonLinkDocs,
   IconInfo,
