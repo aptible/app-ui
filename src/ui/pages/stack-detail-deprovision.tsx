@@ -1,10 +1,15 @@
+import { findEnvironmentsByStackId } from "@app/deploy";
+import { stackDetailEnvsUrl, supportUrl } from "@app/routes";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { supportUrl, stackDetailEnvsUrl } from "@app/routes";
 import {
-  findEnvironmentsByStackId,
-} from "@app/deploy";
-import { Box, Button, ButtonLink, ButtonLinkDocs, Group, IconAlertTriangle } from "../shared";
+  Box,
+  Button,
+  ButtonLink,
+  ButtonLinkDocs,
+  Group,
+  IconAlertTriangle,
+} from "../shared";
 
 export const StackDetailDeprovisionPage = () => {
   const { id = "" } = useParams();
@@ -19,10 +24,20 @@ export const StackDetailDeprovisionPage = () => {
           <ButtonLinkDocs href="https://www.aptible.com/docs/how-to-guides/platform-guides/create-deprovision-dedicated-stacks" />
         </div>
         <div className="mb-4">
-          <p><strong>If you want to deprovision this stack, you must first deprovision its <Link to={stackDetailEnvsUrl(id)}>environments</Link>.</strong></p>
-          <p>Then contact support to permanently delete this stack. This action cannot be undone.</p>
+          <p>
+            <strong>
+              If you want to deprovision this stack, you must first deprovision
+              its <Link to={stackDetailEnvsUrl(id)}>environments</Link>.
+            </strong>
+          </p>
+          <p>
+            Then contact support to permanently delete this stack. This action
+            cannot be undone.
+          </p>
         </div>
-        <ButtonLink className="w-fit font-semibold" to={supportUrl()}>Contact Support</ButtonLink>
+        <ButtonLink className="w-fit font-semibold" to={supportUrl()}>
+          Contact Support
+        </ButtonLink>
       </Box>
     </Group>
   );

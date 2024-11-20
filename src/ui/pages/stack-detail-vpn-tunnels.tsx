@@ -3,12 +3,14 @@ import {
   selectVpnTunnelByStackId,
 } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
+import { supportUrl } from "@app/routes";
 import classNames from "classnames";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import {
   Box,
   Button,
+  ButtonLink,
   ButtonLinkDocs,
   IconInfo,
   TBody,
@@ -42,7 +44,9 @@ export const StackDetailVpnTunnelsPage = () => {
           className="hover:no-underline"
           to="https://www.aptible.com/docs/support"
         >
-          <Button className="font-semibold">Contact Support</Button>
+          <ButtonLink className="w-fit font-semibold" to={supportUrl()}>
+            Contact Support
+          </ButtonLink>
         </Link>
       </Box>
 
