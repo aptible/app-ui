@@ -90,11 +90,9 @@ import {
   ForgotPassVerifyPage,
   GetStartedPage,
   HomePage,
-  HostingPage,
   ImpersonatePage,
   LoginPage,
   LogoutPage,
-  NewUserToOnboarding,
   NotFoundPage,
   OpDetailLayout,
   OpDetailPage,
@@ -525,11 +523,7 @@ export const appRoutes: RouteObject[] = [
         children: [
           {
             index: true,
-            element: (
-              <NewUserToOnboarding>
-                <EnvironmentsPage />
-              </NewUserToOnboarding>
-            ),
+            element: <EnvironmentsPage />,
           },
 
           {
@@ -721,15 +715,6 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.OTP_RESET_VERIFY_PATH,
     element: <OtpResetVerifyPage />,
-  },
-
-  {
-    path: routes.HOSTING_PATH,
-    element: (
-      <AuthRequired>
-        <HostingPage />
-      </AuthRequired>
-    ),
   },
 
   {
