@@ -76,7 +76,7 @@ export * from "./stacks";
 export * from "./stack-detail-environments";
 export * from "./stack-detail-vpn-tunnels";
 export * from "./stack-detail-vpc-peering";
-export * from "./stack-detail-deprovision";
+export * from "./stack-detail-settings";
 export * from "./search";
 export * from "./endpoint-detail";
 export * from "./endpoint-detail-setup";
