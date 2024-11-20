@@ -43,8 +43,8 @@ describe("Verify email page", () => {
       render(<App />);
 
       await screen.findByRole("heading", {
-        level: 1,
-        name: /Choose an Option/,
+        level: 2,
+        name: /Environments/,
       });
     });
   });
