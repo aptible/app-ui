@@ -114,7 +114,6 @@ function StackPageHeader() {
     { name: "Environments", href: stackDetailEnvsUrl(id) },
     { name: "VPN Tunnels", href: stackDetailVpnTunnelsUrl(id) },
     { name: "VPC Peering", href: stackDetailVpcPeeringsUrl(id) },
-    { name: "Deprovision", href: stackDetailDeprovisionUrl(id) },
   ];
 
   // Cost
@@ -152,6 +151,10 @@ function StackPageHeader() {
 
   if (stack.exposeIntrusionDetectionReports) {
     tabs.push({ name: "Managed HIDS", href: stackDetailHidsUrl(id) });
+  }
+
+  if (stack.dedicatedOrSelfHostedStack) {
+    tabs.push({ name: "Deprovision", href: stackDetailDeprovisionUrl(id) });
   }
 
   return (
