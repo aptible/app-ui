@@ -33,6 +33,7 @@ import {
   stackDetailUrl,
   stackDetailVpcPeeringsUrl,
   stackDetailVpnTunnelsUrl,
+  stackDetailDeprovisionUrl,
   stacksUrl,
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
@@ -113,6 +114,7 @@ function StackPageHeader() {
     { name: "Environments", href: stackDetailEnvsUrl(id) },
     { name: "VPN Tunnels", href: stackDetailVpnTunnelsUrl(id) },
     { name: "VPC Peering", href: stackDetailVpcPeeringsUrl(id) },
+    { name: "Deprovision", href: stackDetailDeprovisionUrl(id) },
   ];
 
   // Cost

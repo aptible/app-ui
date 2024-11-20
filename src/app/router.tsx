@@ -126,6 +126,7 @@ import {
   SsoTokenCliReadPage,
   StackDetailEnvironmentsPage,
   StackDetailHidsPage,
+  StackDetailDeprovisionPage,
   StackDetailLayout,
   StackDetailPage,
   StackDetailVpcPeeringPage,
@@ -246,6 +247,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.STACK_DETAIL_HIDS_PATH,
                 element: <StackDetailHidsPage />,
+              },
+              {
+                path: routes.STACK_DETAIL_DEPROVISION_PATH,
+                element: <StackDetailDeprovisionPage />,
               },
             ],
           },
