@@ -125,7 +125,7 @@ export const ManualScaleRecView = ({ serviceId }: { serviceId: string }) => {
 
   if (noRec || !isValid || noSavings || savingsThreadhold) {
     return (
-      <Pill icon={<IconScaleCheck variant="sm" />}>
+      <Pill className="w-max" icon={<IconScaleCheck variant="sm" />}>
         <span className="text-black">Right Sized</span>
       </Pill>
     );
@@ -152,7 +152,7 @@ export const ManualScaleRecView = ({ serviceId }: { serviceId: string }) => {
   if (scaleDir === "up") {
     return (
       <div onClick={onScale} onKeyUp={onScale} className="cursor-pointer">
-        <Pill variant="error" icon={<IconScaleUp variant="sm" />}>
+        <Pill className="w-max" variant="error" icon={<IconScaleUp variant="sm" />}>
           Scale Up
         </Pill>
       </div>
@@ -162,7 +162,7 @@ export const ManualScaleRecView = ({ serviceId }: { serviceId: string }) => {
   return (
     <>
       <div onClick={onScale} onKeyUp={onScale} className="cursor-pointer">
-        <Pill variant="progress" icon={<IconScaleDown variant="sm" />}>
+        <Pill className="w-max" variant="progress" icon={<IconScaleDown variant="sm" />}>
           Scale Down
         </Pill>
       </div>
@@ -178,7 +178,7 @@ export const ScaleRecsView = ({ service }: { service: DeployService }) => {
   return (
     <div>
       {enabled ? (
-        <Pill icon={<IconAutoscale variant="sm" />}>
+        <Pill className="w-max" icon={<IconAutoscale variant="sm" />}>
           <span className="text-black">Autoscaling</span>
         </Pill>
       ) : null}
