@@ -152,7 +152,11 @@ export const ManualScaleRecView = ({ serviceId }: { serviceId: string }) => {
   if (scaleDir === "up") {
     return (
       <div onClick={onScale} onKeyUp={onScale} className="cursor-pointer">
-        <Pill className="w-max" variant="error" icon={<IconScaleUp variant="sm" />}>
+        <Pill
+          className="w-max"
+          variant="error"
+          icon={<IconScaleUp variant="sm" />}
+        >
           Scale Up
         </Pill>
       </div>
@@ -162,7 +166,11 @@ export const ManualScaleRecView = ({ serviceId }: { serviceId: string }) => {
   return (
     <>
       <div onClick={onScale} onKeyUp={onScale} className="cursor-pointer">
-        <Pill className="w-max" variant="progress" icon={<IconScaleDown variant="sm" />}>
+        <Pill
+          className="w-max"
+          variant="progress"
+          icon={<IconScaleDown variant="sm" />}
+        >
           Scale Down
         </Pill>
       </div>
