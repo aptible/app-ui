@@ -475,6 +475,8 @@ export const defaultPlan = (c: Partial<DeployPlan> = {}): DeployPlan => {
     name: "none",
     updatedAt: now,
     vhostLimit: 0,
+    horizontalAutoscaling: false,
+    verticalAutoscaling: false,
     ...c,
   };
 };
@@ -502,6 +504,8 @@ export const defaultActivePlan = (
     organizationId: "",
     updatedAt: now,
     vhostLimit: 0,
+    horizontalAutoscaling: false,
+    verticalAutoscaling: false,
     planId: "",
     ...c,
   };
