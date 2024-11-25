@@ -700,3 +700,9 @@ export interface DeployDiskResponse {
     account: LinkResponse;
   };
 }
+
+export interface DeployCost {
+  id: string;
+  estCost: number;
+  resourceType: string;
+}

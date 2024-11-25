@@ -6,6 +6,7 @@ import { backupRpEntities } from "./backup-retention-policy";
 import { certificateEntities } from "./certificate";
 import { appConfigEntities } from "./configuration";
 import { containerEntities } from "./container";
+import { costEntities } from "./cost";
 import { databaseEntities } from "./database";
 import { credEntities } from "./database-credential";
 import { databaseImageEntities } from "./database-images";
@@ -55,4 +56,5 @@ export const entities = {
   ...diskEntities,
   ...serviceSizingPolicyEntities,
   ...manualScaleRecommendationEntities,
+  ...costEntities,
 };

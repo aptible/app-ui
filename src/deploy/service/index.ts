@@ -12,7 +12,7 @@ import {
   excludesFalse,
 } from "@app/types";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
-import { estimateMonthlyCost } from "../cost";
+import { estimateMonthlyCost } from "../cost-calc";
 import { selectEnvironmentsByOrgAsList } from "../environment";
 
 export const defaultServiceResponse = (

@@ -1,19 +1,11 @@
 import {
-  estimateMonthlyCost,
-  findBackupsByEnvId,
-  findDisksByEnvId,
-  findEndpointsByEnvId,
-  findServicesByEnvId,
+  computeCostId,
   findStackById,
-  selectBackupsAsList,
-  selectDisksAsList,
-  selectEndpointsAsList,
   selectEnvironmentsByOrgAsList,
-  selectServices,
   selectStacks,
 } from "@app/deploy";
 import { createSelector } from "@app/fx";
-import type { WebState } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import type { DeployEnvironment } from "@app/types";
 
 const computeSearchMatch = (
@@ -87,19 +79,14 @@ export interface DeployEnvironmentRow extends DeployEnvironment {
 export const selectEnvironmentsForTable = createSelector(
   selectEnvironmentsByOrgAsList,
   selectStacks,
-  selectServices,
-  selectDisksAsList,
-  selectEndpointsAsList,
-  selectBackupsAsList,
-  (envs, stacks, services, disks, endpoints, backups): DeployEnvironmentRow[] =>
+  schema.costs.selectTable,
+  (envs, stacks, costs): DeployEnvironmentRow[] =>
     envs.map((env) => {
       const stack = findStackById(stacks, { id: env.stackId });
-      const cost = estimateMonthlyCost({
-        services: findServicesByEnvId(Object.values(services), env.id),
-        disks: findDisksByEnvId(disks, env.id),
-        endpoints: findEndpointsByEnvId(endpoints, services, env.id),
-        backups: findBackupsByEnvId(backups, env.id),
+      const costRec = schema.costs.findById(costs, {
+        id: computeCostId("Account", env.id),
       });
+      const cost = costRec.estCost;
       return { ...env, stackName: stack.name, cost };
     }),
 );

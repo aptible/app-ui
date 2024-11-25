@@ -4,17 +4,12 @@ import {
   type DeployDatabaseRow,
   calcMetrics,
   estimateMonthlyCost,
-  fetchBackupsByDatabaseId,
-  fetchBackupsByEnvId,
+  fetchCostsByDatabases,
   fetchDatabaseImageById,
   fetchDatabaseImages,
   fetchDatabases,
-  fetchDatabasesByEnvId,
-  fetchEndpoints,
-  fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchEnvironments,
-  fetchServices,
   selectBackupsByDatabaseId,
   selectDatabaseImageById,
   selectDatabasesForTableSearch,
@@ -24,7 +19,8 @@ import {
   selectLatestOpByDatabaseId,
   selectServiceById,
 } from "@app/deploy";
-import { useCompositeLoader, useLoader, useQuery } from "@app/react";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { useLoader, useQuery } from "@app/react";
 import { useSelector } from "@app/react";
 import {
   createDbUrl,
@@ -112,12 +108,8 @@ const DatabaseScaleRecsCell = ({ database }: { database: DeployDatabase }) => {
   );
 };
 
-const DatabaseCostCell = ({
-  database,
-  costLoading,
-}: DatabaseCellProps & { costLoading: boolean }) => {
-  const backupsQuery = useQuery(fetchBackupsByDatabaseId({ id: database.id }));
-  const loading = costLoading || backupsQuery.isLoading;
+const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
+  const { isLoading } = useLoader(fetchCostsByDatabases);
 
   const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
@@ -139,7 +131,7 @@ const DatabaseCostCell = ({
     <Td>
       <CostEstimateTooltip
         className={tokens.type.darker}
-        cost={loading ? null : currentPrice}
+        cost={isLoading ? null : currentPrice}
       />
     </Td>
   );
@@ -208,16 +200,10 @@ const SortIcon = () => (
 );
 
 export const DatabaseListByOrg = () => {
-  const costQueries = [
-    fetchServices(),
-    fetchEndpoints(),
-    fetchDatabases(), // Fetches disks
-    // Backups fetched in cost cell
-  ];
-  costQueries.forEach((q) => useQuery(q));
   useQuery(fetchEnvironments());
   useQuery(fetchDatabaseImages());
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
+  const orgId = useSelector(selectOrganizationSelectedId);
+  useQuery(fetchCostsByDatabases({ orgId }));
   const { isLoading } = useLoader(fetchDatabases());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -333,7 +319,7 @@ export const DatabaseListByOrg = () => {
               <EnvStackCell environmentId={db.environmentId} />
               <DatabaseDiskSizeCell database={db} />
               <DatabaseContainerSizeCell database={db} />
-              <DatabaseCostCell database={db} costLoading={isCostLoading} />
+              <DatabaseCostCell database={db} />
               <DatabaseScaleRecsCell database={db} />
               <DatabaseActionsCell database={db} />
             </Tr>
@@ -349,14 +335,8 @@ export const DatabaseListByEnvironment = ({
 }: {
   envId: string;
 }) => {
-  const costQueries = [
-    fetchServices(),
-    fetchEndpointsByEnvironmentId({ id: envId }),
-    fetchDatabasesByEnvId({ envId }), // fetches disks
-    fetchBackupsByEnvId({ id: envId, perPage: 1000 }),
-  ];
-  costQueries.forEach((q) => useQuery(q));
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
+  const orgId = useSelector(selectOrganizationSelectedId);
+  useQuery(fetchCostsByDatabases({ orgId }));
   useQuery(fetchEnvironmentById({ id: envId }));
   const navigate = useNavigate();
   const onCreate = () => {
@@ -420,7 +400,7 @@ export const DatabaseListByEnvironment = ({
               <DatabaseIdCell database={db} />
               <DatabaseDiskSizeCell database={db} />
               <DatabaseContainerSizeCell database={db} />
-              <DatabaseCostCell database={db} costLoading={isCostLoading} />
+              <DatabaseCostCell database={db} />
               <DatabaseScaleRecsCell database={db} />
               <DatabaseActionsCell database={db} />
             </Tr>
@@ -436,14 +416,8 @@ export const DatabaseDependencyList = ({
 }: {
   databases: DatabaseDependency[];
 }) => {
-  const costQueries = [
-    fetchServices(),
-    fetchEndpoints(),
-    // Databases provided via props
-    // Backups fetched in cost cell
-  ];
-  costQueries.forEach((q) => useQuery(q));
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
+  const orgId = useSelector(selectOrganizationSelectedId);
+  useQuery(fetchCostsByDatabases({ orgId }));
 
   return (
     <Table>
@@ -469,7 +443,7 @@ export const DatabaseDependencyList = ({
               <EnvStackCell environmentId={db.environmentId} />
               <DatabaseDiskSizeCell database={db} />
               <DatabaseContainerSizeCell database={db} />
-              <DatabaseCostCell database={db} costLoading={isCostLoading} />
+              <DatabaseCostCell database={db} />
               <Td>
                 <Tooltip placement="left" text={dep.why} fluid>
                   <Code>{dep.why}</Code>

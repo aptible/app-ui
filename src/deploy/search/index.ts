@@ -10,7 +10,7 @@ import {
   selectAppsByOrgAsList,
 } from "../app";
 import { findBackupsByDatabaseId, selectBackupsAsList } from "../backup";
-import { estimateMonthlyCost } from "../cost";
+import { estimateMonthlyCost } from "../cost-calc";
 import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,

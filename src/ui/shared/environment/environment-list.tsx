@@ -1,9 +1,6 @@
 import {
-  fetchBackupsByEnvId,
-  fetchDatabases,
-  fetchEndpoints,
+  fetchCostsByEnvironments,
   fetchEnvironments,
-  fetchServices,
   selectAppsByEnvId,
   selectDatabasesByEnvId,
   selectStackById,
@@ -12,7 +9,8 @@ import {
   type DeployEnvironmentRow,
   selectEnvironmentsForTableSearch,
 } from "@app/environment-table";
-import { useCompositeLoader, useQuery, useSelector } from "@app/react";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { useSelector } from "@app/react";
 import {
   createEnvUrl,
   environmentAppsUrl,
@@ -118,18 +116,13 @@ const EnvironmentStackCell = ({ env }: EnvironmentCellProps) => {
   );
 };
 
-const EnvironmentCostCell = ({
-  env,
-  costLoading,
-}: EnvironmentCellProps & { costLoading: boolean }) => {
-  const { isLoading } = useQuery(fetchBackupsByEnvId({ id: env.id }));
-  const loading = costLoading || isLoading;
-
+const EnvironmentCostCell = ({ env }: EnvironmentCellProps) => {
+  const { isLoading } = useLoader(fetchCostsByEnvironments);
   return (
     <Td>
       <CostEstimateTooltip
         className={tokens.type.darker}
-        cost={loading ? null : env.cost}
+        cost={isLoading ? null : env.cost}
       />
     </Td>
   );
@@ -148,16 +141,9 @@ export function EnvironmentList({
   stackId = "",
   showTitle = true,
 }: { stackId?: string; showTitle?: boolean }) {
-  const costQueries = [
-    fetchEnvironments(),
-    fetchServices(),
-    fetchEndpoints(),
-    fetchDatabases(), // To fetch embedded disks
-    // Backups are fetched per-environment by the cost cell
-  ];
-  costQueries.forEach((q) => useQuery(q));
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
   const { isLoading } = useLoader(fetchEnvironments());
+  const orgId = useSelector(selectOrganizationSelectedId);
+  fetchCostsByEnvironments({ orgId });
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const [sortBy, setSortBy] = useState<keyof DeployEnvironmentRow>("createdAt");
@@ -274,7 +260,7 @@ export function EnvironmentList({
               <EnvironmentStackCell env={env} />
               <EnvironmentAppsCell env={env} />
               <EnvironmentDatabasesCell env={env} />
-              <EnvironmentCostCell env={env} costLoading={isCostLoading} />
+              <EnvironmentCostCell env={env} />
             </Tr>
           ))}
         </TBody>

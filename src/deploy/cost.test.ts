@@ -8,7 +8,7 @@ import {
   hoursPerMonth,
   stackCostPerMonth,
   vpnTunnelCostPerMonth,
-} from "./cost";
+} from "./cost-calc";
 
 describe("estimateMonthlyCost", () => {
   it("should calculate the cost of containers", () => {
