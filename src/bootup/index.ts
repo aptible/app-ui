@@ -7,6 +7,11 @@ import {
 import { fetchBillingDetail } from "@app/billing";
 import {
   fetchApps,
+  fetchCostsByApps,
+  fetchCostsByDatabases,
+  fetchCostsByEnvironments,
+  fetchCostsByServices,
+  fetchCostsByStacks,
   fetchDatabaseImages,
   fetchDatabases,
   fetchEndpoints,
@@ -77,6 +82,14 @@ function* onFetchRequiredData() {
   yield* schema.update(schema.loaders.success({ id: FETCH_REQUIRED_DATA }));
 }
 
+function* onFetchCostData(orgId: string) {
+  yield* put(fetchCostsByStacks({ orgId: orgId }));
+  yield* put(fetchCostsByEnvironments({ orgId: orgId }));
+  yield* put(fetchCostsByApps({ orgId: orgId }));
+  yield* put(fetchCostsByDatabases({ orgId: orgId }));
+  yield* put(fetchCostsByServices({ orgId: orgId }));
+}
+
 function* onFetchResourceData() {
   const org = yield* select(selectOrganizationSelected);
   const userId = yield* select(selectCurrentUserId);
@@ -101,6 +114,7 @@ function* onFetchResourceData() {
     fetchServiceSizingPolicies.run(),
     fetchManualScaleRecommendations.run(),
   ]);
+  yield* onFetchCostData(org.id);
   yield* group;
 }
 
