@@ -3,25 +3,22 @@ import {
   type AppDependency,
   type DeployAppRow,
   calcMetrics,
-  estimateMonthlyCost,
+  computeCostId,
   fetchApps,
-  fetchEndpoints,
-  fetchEndpointsByEnvironmentId,
+  fetchCostsByApps,
   fetchEnvironmentById,
   fetchEnvironments,
   fetchImageById,
-  fetchServices,
   selectAppsByCertId,
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
   selectAppsForTableSearchBySourceId,
-  selectEndpointsByAppId,
   selectImageById,
   selectLatestOpByAppId,
   selectServicesByAppId,
 } from "@app/deploy";
 import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
-import { useCompositeLoader, useQuery, useSelector } from "@app/react";
+import { useLoader, useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
   deployUrl,
@@ -29,6 +26,7 @@ import {
   environmentCreateAppUrl,
   operationDetailUrl,
 } from "@app/routes";
+import { schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type { DeployApp } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
@@ -100,23 +98,17 @@ const AppServicesCell = ({ app }: AppCellProps) => {
   );
 };
 
-const AppCostCell = ({
-  app,
-  costLoading,
-}: AppCellProps & { costLoading: boolean }) => {
-  const services = useSelector((s) =>
-    selectServicesByAppId(s, { appId: app.id }),
+const AppCostCell = ({ app }: AppCellProps) => {
+  const { isLoading } = useLoader(fetchCostsByApps);
+  const cost = useSelector((s) =>
+    schema.costs.selectById(s, { id: computeCostId("App", app.id) }),
   );
-  const endpoints = useSelector((s) =>
-    selectEndpointsByAppId(s, { appId: app.id }),
-  );
-  const cost = estimateMonthlyCost({ services, endpoints });
 
   return (
     <Td>
       <CostEstimateTooltip
         className={tokens.type.darker}
-        cost={costLoading ? null : cost}
+        cost={isLoading ? null : cost.estCost}
       />
     </Td>
   );
@@ -183,11 +175,6 @@ export const AppListByOrg = () => {
       setSortDir("desc");
     }
   };
-
-  // Cost
-  const costQueries = [fetchServices(), fetchEndpoints()];
-  costQueries.forEach((q) => useQuery(q));
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
 
   return (
     <Group>
@@ -263,7 +250,7 @@ export const AppListByOrg = () => {
               <AppIdCell app={app} />
               <EnvStackCell environmentId={app.environmentId} />
               <AppServicesCell app={app} />
-              <AppCostCell app={app} costLoading={isCostLoading} />
+              <AppCostCell app={app} />
             </Tr>
           ))}
         </TBody>
@@ -306,13 +293,7 @@ export const AppListByEnvironment = ({
 
   const onCreate = () => {
     navigate(environmentCreateAppUrl(envId));
-  }; // Cost
-  const costQueries = [
-    fetchServices(),
-    fetchEndpointsByEnvironmentId({ id: envId }),
-  ];
-  costQueries.forEach((q) => useQuery(q));
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
+  };
 
   return (
     <Group>
@@ -379,7 +360,7 @@ export const AppListByEnvironment = ({
               <AppPrimaryCell app={app} />
               <AppIdCell app={app} />
               <AppServicesCell app={app} />
-              <AppCostCell app={app} costLoading={isCostLoading} />
+              <AppCostCell app={app} />
             </Tr>
           ))}
         </TBody>
@@ -402,11 +383,6 @@ export const AppListByCertificate = ({
     }),
   );
   const paginated = usePaginate(apps);
-
-  // Cost
-  const costQueries = [fetchServices(), fetchEndpoints()];
-  costQueries.forEach((q) => useQuery(q));
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
 
   return (
     <Group>
@@ -434,7 +410,7 @@ export const AppListByCertificate = ({
               <AppIdCell app={app} />
               <EnvStackCell environmentId={app.environmentId} />
               <AppServicesCell app={app} />
-              <AppCostCell app={app} costLoading={isCostLoading} />
+              <AppCostCell app={app} />
             </Tr>
           ))}
         </TBody>
@@ -606,11 +582,6 @@ export const AppDependencyList = ({
 }: {
   apps: AppDependency[];
 }) => {
-  // Cost
-  const costQueries = [fetchServices(), fetchEndpoints()];
-  costQueries.forEach((q) => useQuery(q));
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
-
   return (
     <Table>
       <THead>
@@ -633,7 +604,7 @@ export const AppDependencyList = ({
               <AppIdCell app={app} />
               <EnvStackCell environmentId={app.environmentId} />
               <AppServicesCell app={app} />
-              <AppCostCell app={app} costLoading={isCostLoading} />
+              <AppCostCell app={app} />
               <Td>
                 <Tooltip placement="left" text={dep.why} fluid>
                   <Code>{dep.why}</Code>

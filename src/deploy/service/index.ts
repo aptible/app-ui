@@ -4,7 +4,6 @@ import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
 import { DEFAULT_INSTANCE_CLASS, type WebState, schema } from "@app/schema";
 import {
   type ContainerProfileData,
-  type DeployEndpoint,
   type DeployOperation,
   type DeployService,
   type DeployServiceResponse,
@@ -12,7 +11,6 @@ import {
   excludesFalse,
 } from "@app/types";
 import { CONTAINER_PROFILES, GB } from "../container/utils";
-import { estimateMonthlyCost } from "../cost";
 import { selectEnvironmentsByOrgAsList } from "../environment";
 
 export const defaultServiceResponse = (
@@ -124,10 +122,7 @@ export const calcMetrics = (services: DeployService[]) => {
   };
 };
 
-export const calcServiceMetrics = (
-  service: DeployService,
-  endpoints: DeployEndpoint[],
-) => {
+export const calcServiceMetrics = (service: DeployService) => {
   const containerProfile =
     CONTAINER_PROFILES[service.instanceClass || DEFAULT_INSTANCE_CLASS];
 
@@ -139,13 +134,11 @@ export const calcServiceMetrics = (
 
   const containerSizeGB = service.containerMemoryLimitMb / GB;
   const cpuShare = service.containerMemoryLimitMb / containerProfile.cpuShare;
-  const monthlyCost = estimateMonthlyCost({ services: [service], endpoints });
 
   return {
     containerProfile,
     containerSizeGB,
     cpuShare,
-    estimatedCostInDollars: monthlyCost,
   };
 };
 

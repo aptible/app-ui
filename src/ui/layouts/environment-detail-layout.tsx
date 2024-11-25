@@ -1,39 +1,29 @@
 import {
+  computeCostId,
   emptyFilterProps,
-  estimateMonthlyCost,
   fetchApps,
-  fetchBackupsByEnvId,
-  fetchDatabasesByEnvId,
+  fetchCostsByEnvironments,
   fetchEndpointsByEnvironmentId,
   fetchEnvironmentById,
   fetchOperationsByEnvId,
-  fetchServices,
-  selectBackupsByEnvId,
-  selectDisksByEnvId,
   selectEndpointsByEnvironmentId as selectEndpointsByEnvId,
   selectEnvironmentById,
   selectEnvironmentStatsById,
-  selectServicesByEnvId,
   selectStackById,
 } from "@app/deploy";
-import {
-  useCompositeLoader,
-  useDispatch,
-  useQuery,
-  useSelector,
-} from "@app/react";
+import { findLoaderComposite } from "@app/loaders";
+import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import { environmentDetailUrl, stackDetailEnvsUrl } from "@app/routes";
+import { schema } from "@app/schema";
+import { setResourceStats } from "@app/search";
 import type {
   DeployEndpoint,
   DeployEnvironment,
   DeployEnvironmentStats,
   DeployStack,
 } from "@app/types";
-import { Outlet, useParams, useSearchParams } from "react-router-dom";
-
-import { findLoaderComposite } from "@app/loaders";
-import { setResourceStats } from "@app/search";
 import { useEffect, useMemo } from "react";
+import { Outlet, useParams, useSearchParams } from "react-router-dom";
 import {
   CostEstimateTooltip,
   DetailHeader,
@@ -121,15 +111,10 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     () => findLoaderComposite([loaderEnv, loaderApps, loaderEndpoints]),
     [loaderEnv, loaderApps, loaderEndpoints],
   );
-
-  const costQueries = [
-    fetchServices(),
-    endpointQuery,
-    fetchDatabasesByEnvId({ envId: id }), // For disks
-    fetchBackupsByEnvId({ id }),
-  ];
-  costQueries.forEach((q) => useQuery(q));
-  const { isInitialLoading: isCostLoading } = useCompositeLoader(costQueries);
+  const cost = useSelector((s) =>
+    schema.costs.selectById(s, { id: computeCostId("Account", id) }),
+  );
+  const { isLoading: isCostLoading } = useLoader(fetchCostsByEnvironments);
 
   const environment = useSelector((s) => selectEnvironmentById(s, { id }));
   const stats = useSelector((s) =>
@@ -142,23 +127,6 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
     selectEndpointsByEnvId(s, { envId: environment.id }),
   );
   const crumbs = [{ name: stack.name, to: stackDetailEnvsUrl(stack.id) }];
-
-  // Cost
-  const services = useSelector((s) =>
-    selectServicesByEnvId(s, { envId: environment.id }),
-  );
-  const disks = useSelector((s) =>
-    selectDisksByEnvId(s, { envId: environment.id }),
-  );
-  const backups = useSelector((s) =>
-    selectBackupsByEnvId(s, { envId: environment.id }),
-  );
-  const cost = estimateMonthlyCost({
-    services,
-    disks,
-    endpoints,
-    backups,
-  });
 
   const tabs: TabItem[] = [
     { name: "Apps", href: `/environments/${id}/apps` },
@@ -183,7 +151,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
           environment={environment}
           stack={stack}
           stats={stats}
-          cost={isCostLoading ? null : cost}
+          cost={isCostLoading ? null : cost.estCost}
         />
       }
       title={environment.handle}

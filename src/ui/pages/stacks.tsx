@@ -1,21 +1,13 @@
 import {
-  fetchBackups,
-  fetchDatabases,
-  fetchEndpoints,
-  fetchEnvironments,
-  fetchServices,
+  fetchCostsByStacks,
   fetchStacks,
   getStackTypeTitle,
   selectAppsCountByStack,
   selectDatabasesCountByStack,
   selectEnvironmentsCountByStack,
 } from "@app/deploy";
-import {
-  useCompositeLoader,
-  useLoader,
-  useQuery,
-  useSelector,
-} from "@app/react";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { useLoader, useQuery, useSelector } from "@app/react";
 import { createStackUrl } from "@app/routes";
 import {
   type DeployStackRow,
@@ -54,10 +46,8 @@ export function StacksPage() {
   );
 }
 
-function StackListRow({
-  stack,
-  costLoading,
-}: { stack: DeployStackRow; costLoading: boolean }) {
+function StackListRow({ stack }: { stack: DeployStackRow }) {
+  const { isLoading } = useLoader(fetchCostsByStacks);
   const envCount = useSelector((s) =>
     selectEnvironmentsCountByStack(s, { stackId: stack.id }),
   );
@@ -81,23 +71,15 @@ function StackListRow({
       <Td variant="center">{appCount}</Td>
       <Td variant="center">{dbCount}</Td>
       <Td>
-        <CostEstimateTooltip cost={costLoading ? null : stack.cost} />
+        <CostEstimateTooltip cost={isLoading ? null : stack.cost} />
       </Td>
     </Tr>
   );
 }
 
 function StackList() {
-  const costQueries = [
-    fetchStacks(),
-    fetchEnvironments(),
-    fetchServices(),
-    fetchDatabases(), // To fetch embedded disks
-    fetchBackups(),
-    fetchEndpoints(),
-  ];
-  costQueries.forEach((q) => useQuery(q));
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
+  const orgId = useSelector(selectOrganizationSelectedId);
+  useQuery(fetchCostsByStacks({ orgId }));
   const { isLoading } = useLoader(fetchStacks());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -162,11 +144,7 @@ function StackList() {
         <TBody>
           {paginated.data.length === 0 ? <EmptyTr colSpan={8} /> : null}
           {paginated.data.map((stack) => (
-            <StackListRow
-              key={stack.id}
-              stack={stack}
-              costLoading={isCostLoading}
-            />
+            <StackListRow key={stack.id} stack={stack} />
           ))}
         </TBody>
       </Table>

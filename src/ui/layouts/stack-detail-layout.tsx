@@ -1,32 +1,12 @@
 import {
-  estimateMonthlyCost,
-  fetchBackups,
-  fetchDatabases,
-  fetchEndpoints,
-  fetchServices,
+  computeCostId,
+  fetchCostsByStacks,
   fetchStack,
-  fetchVpnTunnelsByStackId,
-  findBackupsByEnvId,
-  findDisksByEnvId,
-  findEndpointsByEnvId,
-  findServicesByEnvId,
-  findVpnTunnelsByStackId,
   getStackType,
   getStackTypeTitle,
-  selectBackupsAsList,
-  selectDisksAsList,
-  selectEndpointsAsList,
-  selectEnvironmentsByStackId,
-  selectServices,
   selectStackById,
-  selectVpnTunnelsAsList,
 } from "@app/deploy";
-import {
-  useCompositeLoader,
-  useDispatch,
-  useQuery,
-  useSelector,
-} from "@app/react";
+import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
 import {
   stackDetailEnvsUrl,
   stackDetailHidsUrl,
@@ -35,6 +15,7 @@ import {
   stackDetailVpnTunnelsUrl,
   stacksUrl,
 } from "@app/routes";
+import { schema } from "@app/schema";
 import { setResourceStats } from "@app/search";
 import type { DeployStack } from "@app/types";
 import { useEffect } from "react";
@@ -115,38 +96,10 @@ function StackPageHeader() {
     { name: "VPC Peering", href: stackDetailVpcPeeringsUrl(id) },
   ];
 
-  // Cost
-  const costQueries = [
-    fetchServices(),
-    fetchEndpoints(),
-    fetchDatabases(), // For disks
-    fetchBackups(),
-    fetchVpnTunnelsByStackId({ id }),
-  ];
-  costQueries.forEach((q) => useQuery(q));
-  const { isInitialLoading: isCostLoading } = useCompositeLoader(costQueries);
-
-  const envs = useSelector((s) =>
-    selectEnvironmentsByStackId(s, { stackId: stack.id }),
+  const cost = useSelector((s) =>
+    schema.costs.selectById(s, { id: computeCostId("Stack", id) }),
   );
-  const services = useSelector((s) => selectServices(s));
-  const disks = useSelector((s) => selectDisksAsList(s));
-  const endpoints = useSelector((s) => selectEndpointsAsList(s));
-  const backups = useSelector((s) => selectBackupsAsList(s));
-  const vpnTunnels = useSelector((s) => selectVpnTunnelsAsList(s));
-
-  const cost = estimateMonthlyCost({
-    services: envs.flatMap((env) =>
-      findServicesByEnvId(Object.values(services), env.id),
-    ),
-    disks: envs.flatMap((env) => findDisksByEnvId(disks, env.id)),
-    endpoints: envs.flatMap((env) =>
-      findEndpointsByEnvId(endpoints, services, env.id),
-    ),
-    backups: envs.flatMap((env) => findBackupsByEnvId(backups, env.id)),
-    vpnTunnels: findVpnTunnelsByStackId(vpnTunnels, stack.id),
-    stacks: [stack],
-  });
+  const { isLoading: isCostLoading } = useLoader(fetchCostsByStacks);
 
   if (stack.exposeIntrusionDetectionReports) {
     tabs.push({ name: "Managed HIDS", href: stackDetailHidsUrl(id) });
@@ -161,7 +114,7 @@ function StackPageHeader() {
         <StackHeader
           stack={stack}
           isLoading={loader.isLoading}
-          cost={isCostLoading ? null : cost}
+          cost={isCostLoading ? null : cost.estCost}
         />
       }
       tabs={tabs}

@@ -1,6 +1,7 @@
 import {
   calcMetrics,
   calcServiceMetrics,
+  computeCostId,
   fetchApp,
   fetchEndpointsByServiceId,
   fetchServicesByAppId,
@@ -21,6 +22,7 @@ import {
   environmentAppsUrl,
   environmentDetailUrl,
 } from "@app/routes";
+import { schema } from "@app/schema";
 import { setResourceStats } from "@app/search";
 import type {
   DeployApp,
@@ -89,10 +91,13 @@ export function ServiceHeader({
   // Query additional data that subpages need
   useQuery(fetchEndpointsByServiceId({ id: service.id }));
 
-  const metrics = calcServiceMetrics(service, endpoints);
+  const metrics = calcServiceMetrics(service);
   const { totalCPU } = calcMetrics([service]);
   const [isOpen, setOpen] = useState(true);
   const deploymentStrategy = getDeploymentStrategy(service, endpoints);
+  const cost = useSelector((s) =>
+    schema.costs.selectById(s, { id: computeCostId("Service", service.id) }),
+  );
 
   return (
     <DetailHeader>
@@ -126,7 +131,7 @@ export function ServiceHeader({
           <Link to={environmentDetailUrl(env.id)}>{env.handle}</Link>
         </DetailInfoItem>
         <DetailInfoItem title="Est. Monthly Cost">
-          <CostEstimateTooltip cost={metrics.estimatedCostInDollars} />
+          <CostEstimateTooltip cost={cost.estCost} />
         </DetailInfoItem>
         <DetailInfoItem title="Container Profile">
           {metrics.containerProfile.name}
