@@ -3,6 +3,8 @@ import { defaultEntity } from "@app/hal";
 import { schema } from "@app/schema";
 import type { DeployCost } from "@app/types";
 
+export * from "./calc";
+
 interface CostResponse {
   id: number;
   est_cost: number;
@@ -70,3 +72,10 @@ export const costEntities = {
     save: schema.costs.add,
   }),
 };
+
+export const formatCurrency = (num: number) =>
+  num.toLocaleString("en", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  });

@@ -3,19 +3,17 @@ import {
   type DatabaseDependency,
   type DeployDatabaseRow,
   calcMetrics,
-  estimateMonthlyCost,
+  computeCostId,
   fetchCostsByDatabases,
   fetchDatabaseImageById,
   fetchDatabaseImages,
   fetchDatabases,
   fetchEnvironmentById,
   fetchEnvironments,
-  selectBackupsByDatabaseId,
   selectDatabaseImageById,
   selectDatabasesForTableSearch,
   selectDatabasesForTableSearchByEnvironmentId,
   selectDiskById,
-  selectEndpointsByServiceId,
   selectLatestOpByDatabaseId,
   selectServiceById,
 } from "@app/deploy";
@@ -29,6 +27,7 @@ import {
   environmentCreateDbUrl,
   operationDetailUrl,
 } from "@app/routes";
+import { schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type { DeployDatabase } from "@app/types";
 import { useState } from "react";
@@ -110,28 +109,15 @@ const DatabaseScaleRecsCell = ({ database }: { database: DeployDatabase }) => {
 
 const DatabaseCostCell = ({ database }: DatabaseCellProps) => {
   const { isLoading } = useLoader(fetchCostsByDatabases);
+  const cost = useSelector((s) =>
+    schema.costs.selectById(s, { id: computeCostId("Database", database.id) }),
+  );
 
-  const service = useSelector((s) =>
-    selectServiceById(s, { id: database.serviceId }),
-  );
-  const disk = useSelector((s) => selectDiskById(s, { id: database.diskId }));
-  const endpoints = useSelector((s) =>
-    selectEndpointsByServiceId(s, { serviceId: database.serviceId }),
-  );
-  const backups = useSelector((s) =>
-    selectBackupsByDatabaseId(s, { dbId: database.id }),
-  );
-  const currentPrice = estimateMonthlyCost({
-    services: [service],
-    disks: [disk],
-    endpoints,
-    backups,
-  });
   return (
     <Td>
       <CostEstimateTooltip
         className={tokens.type.darker}
-        cost={isLoading ? null : currentPrice}
+        cost={isLoading ? null : cost.estCost}
       />
     </Td>
   );

@@ -6,10 +6,9 @@ import type {
   DeployStack,
   InstanceClass,
 } from "@app/types";
-import { CONTAINER_PROFILES } from "./container";
+import { CONTAINER_PROFILES } from "../container";
 
-export const hoursPerMonth = 731;
-
+export const hoursPerMonth = 730;
 export const diskCostPerGBMonth = 0.2;
 export const diskIopsCostPerMonth = 0.01;
 export const endpointCostPerHour = 0.05;
@@ -82,10 +81,3 @@ export const estimateMonthlyCost = ({
 
   return monthlyCost;
 };
-
-export const formatCurrency = (num: number) =>
-  num.toLocaleString("en", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  });

@@ -3,7 +3,7 @@ import {
   type AppDependency,
   type DeployAppRow,
   calcMetrics,
-  estimateMonthlyCost,
+  computeCostId,
   fetchApps,
   fetchCostsByApps,
   fetchEnvironmentById,
@@ -13,7 +13,6 @@ import {
   selectAppsForTableSearch,
   selectAppsForTableSearchByEnvironmentId,
   selectAppsForTableSearchBySourceId,
-  selectEndpointsByAppId,
   selectImageById,
   selectLatestOpByAppId,
   selectServicesByAppId,
@@ -27,6 +26,7 @@ import {
   environmentCreateAppUrl,
   operationDetailUrl,
 } from "@app/routes";
+import { schema } from "@app/schema";
 import { capitalize } from "@app/string-utils";
 import type { DeployApp } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
@@ -100,19 +100,15 @@ const AppServicesCell = ({ app }: AppCellProps) => {
 
 const AppCostCell = ({ app }: AppCellProps) => {
   const { isLoading } = useLoader(fetchCostsByApps);
-  const services = useSelector((s) =>
-    selectServicesByAppId(s, { appId: app.id }),
+  const cost = useSelector((s) =>
+    schema.costs.selectById(s, { id: computeCostId("App", app.id) }),
   );
-  const endpoints = useSelector((s) =>
-    selectEndpointsByAppId(s, { appId: app.id }),
-  );
-  const cost = estimateMonthlyCost({ services, endpoints });
 
   return (
     <Td>
       <CostEstimateTooltip
         className={tokens.type.darker}
-        cost={isLoading ? null : cost}
+        cost={isLoading ? null : cost.estCost}
       />
     </Td>
   );

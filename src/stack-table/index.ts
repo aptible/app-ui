@@ -1,22 +1,10 @@
 import {
-  estimateMonthlyCost,
-  findBackupsByEnvId,
-  findDisksByEnvId,
-  findEndpointsByEnvId,
-  findEnvironmentsByStackId,
-  findServicesByEnvId,
-  findVpnTunnelsByStackId,
+  computeCostId,
   getStackType,
-  selectBackupsAsList,
-  selectDisksAsList,
-  selectEndpointsAsList,
-  selectEnvironmentsAsList,
-  selectServices,
   selectStacksByOrgAsList,
-  selectVpnTunnelsAsList,
 } from "@app/deploy";
 import { createSelector } from "@app/fx";
-import type { WebState } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import type { DeployStack } from "@app/types";
 
 export interface DeployStackRow extends DeployStack {
@@ -26,22 +14,8 @@ export interface DeployStackRow extends DeployStack {
 export const selectStacksForTableSearch = createSelector(
   selectStacksByOrgAsList,
   (_: WebState, p: { search: string }) => p.search,
-  selectEnvironmentsAsList,
-  selectServices,
-  selectDisksAsList,
-  selectEndpointsAsList,
-  selectBackupsAsList,
-  selectVpnTunnelsAsList,
-  (
-    stacks,
-    search,
-    environments,
-    services,
-    disks,
-    endpoints,
-    backups,
-    vpnTunnels,
-  ): DeployStackRow[] => {
+  schema.costs.selectTable,
+  (stacks, search, costs): DeployStackRow[] => {
     let results = stacks;
     if (search !== "") {
       const searchLower = search.toLocaleLowerCase();
@@ -63,21 +37,10 @@ export const selectStacksForTableSearch = createSelector(
     return results
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((stack) => {
-        const envs = findEnvironmentsByStackId(environments, stack.id);
-
-        const cost = estimateMonthlyCost({
-          services: envs.flatMap((env) =>
-            findServicesByEnvId(Object.values(services), env.id),
-          ),
-          disks: envs.flatMap((env) => findDisksByEnvId(disks, env.id)),
-          endpoints: envs.flatMap((env) =>
-            findEndpointsByEnvId(endpoints, services, env.id),
-          ),
-          backups: envs.flatMap((env) => findBackupsByEnvId(backups, env.id)),
-          vpnTunnels: findVpnTunnelsByStackId(vpnTunnels, stack.id),
-          stacks: [stack],
+        const costItem = schema.costs.findById(costs, {
+          id: computeCostId("Stack", stack.id),
         });
-
+        const cost = costItem.estCost;
         return { ...stack, cost };
       });
   },
