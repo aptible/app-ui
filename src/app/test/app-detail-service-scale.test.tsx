@@ -10,6 +10,7 @@ import {
   testAccount,
   testApp,
   testAutoscalingAccount,
+  testAutoscalingActivePlan,
   testAutoscalingApp,
   testAutoscalingPolicy,
   testAutoscalingPolicyHAS,
@@ -18,6 +19,7 @@ import {
   testAutoscalingStack,
   testEnv,
   testServiceRails,
+  testStack,
   verifiedUserHandlers,
 } from "@app/mocks";
 import { appServiceScalePathUrl } from "@app/routes";
@@ -165,6 +167,84 @@ describe("AppDetailServiceScalePage", () => {
         expect(
           screen.getByText(/Changed from 0.5 GB to 2 GB/),
         ).toBeInTheDocument();
+      });
+    });
+
+    describe("with a plan that supports autoscaling", () => {
+      it("should show autoscaling options", async () => {
+        server.use(
+          ...verifiedUserHandlers(),
+          ...stacksWithResources({
+            stacks: [testStack],
+            accounts: [testAutoscalingAccount],
+            apps: [testAutoscalingApp],
+          }),
+          rest.get(`${testEnv.apiUrl}/operations/:id/logs`, (_, res, ctx) => {
+            return res(ctx.text("/mock"));
+          }),
+          rest.get(`${testEnv.apiUrl}/mock`, (_, res, ctx) => {
+            return res(ctx.text("complete"));
+          }),
+          rest.get(`${testEnv.apiUrl}/active_plans`, async (_, res, ctx) => {
+            return res(
+              ctx.json({
+                _embedded: { active_plans: [testAutoscalingActivePlan] },
+              }),
+            );
+          }),
+
+          rest.post(
+            `${testEnv.apiUrl}/services/:id/service_sizing_policies`,
+            async (_, res, ctx) => {
+              return res(ctx.json(testAutoscalingPolicy));
+            },
+          ),
+        );
+        const { App, store } = setupAppIntegrationTest({
+          initEntries: [
+            appServiceScalePathUrl(
+              `${testAutoscalingApp.id}`,
+              `${testAutoscalingService.id}`,
+            ),
+          ],
+        });
+
+        await waitForBootup(store);
+
+        render(<App />);
+
+        await waitForData(store, (state) => {
+          return hasDeployApp(
+            selectAppById(state, { id: `${testAutoscalingApp.id}` }),
+          );
+        });
+
+        await screen.findByRole("heading", { level: 1, name: "Autoscale" });
+
+        const btns = screen.getAllByRole("button", {
+          name: /Save Changes/,
+        });
+        const autoscaleBtn = btns[0];
+        expect(autoscaleBtn).toBeDisabled();
+
+        const autoscaleSelect = await screen.findByRole("combobox", {
+          name: "Autoscaling Setting",
+        });
+        expect(autoscaleSelect).toHaveValue("disabled");
+
+        fireEvent.change(autoscaleSelect, {
+          target: { value: "vertical" },
+        });
+        expect(autoscaleSelect).toHaveValue("vertical");
+
+        expect(autoscaleBtn).toBeEnabled();
+
+        fireEvent.change(autoscaleSelect, {
+          target: { value: "horizontal" },
+        });
+        expect(autoscaleSelect).toHaveValue("horizontal");
+
+        expect(autoscaleBtn).toBeEnabled();
       });
     });
 
