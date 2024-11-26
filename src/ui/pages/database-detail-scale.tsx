@@ -93,6 +93,11 @@ export const DatabaseScalePage = () => {
     id,
     recId: takingRec ? rec.id : "",
     ...scaler,
+    originalValues: {
+      diskSize: disk.size,
+      containerSize: service.containerMemoryLimitMb,
+      containerProfile: service.instanceClass,
+    },
   });
 
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
