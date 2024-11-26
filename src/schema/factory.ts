@@ -777,6 +777,7 @@ export const defaultUser = (u: Partial<User> = {}): User => {
     currentOtpId: "",
     externalId: "",
     selectedOrganizationId: "",
+    createdAt: new Date().toISOString(),
     ...u,
   };
 };

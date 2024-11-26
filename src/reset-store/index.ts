@@ -19,6 +19,7 @@ function* watchResetStore() {
       "entities",
       "signal",
       "env",
+      "notices",
     ];
     yield* store.reset(keep);
     yield* schema.update(schema.loaders.success({ id: PERSIST_LOADER_ID }));
