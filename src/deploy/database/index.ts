@@ -599,6 +599,13 @@ export interface DatabaseScaleProps {
   containerSize?: number;
   containerProfile?: InstanceClass;
   recId?: string;
+  originalValues: DatabaseScaleOriginal;
+}
+
+export interface DatabaseScaleOriginal {
+  diskSize?: number;
+  containerSize?: number;
+  containerProfile?: InstanceClass;
 }
 
 export const restartDatabase = api.post<
@@ -660,6 +667,7 @@ export const scaleDatabase = api.post<
     containerProfile,
     containerSize,
     recId = "",
+    originalValues,
   } = ctx.payload;
   const db = yield* select((s: WebState) => selectDatabaseById(s, { id }));
   const service = yield* select((s: WebState) =>
@@ -669,10 +677,13 @@ export const scaleDatabase = api.post<
   const body = {
     type: "restart",
     id,
-    disk_size: diskSize,
+    disk_size: 0 as number | undefined,
     container_size: containerSize,
     instance_profile: containerProfile,
   };
+  if (originalValues.diskSize !== diskSize) {
+    body.disk_size = diskSize;
+  }
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield* next();
 
