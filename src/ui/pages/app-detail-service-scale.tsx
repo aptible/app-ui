@@ -1,6 +1,7 @@
 import {
   type ServiceSizingPolicyEditProps,
   containerSizesByProfile,
+  fetchActivePlans,
   fetchApp,
   fetchService,
   fetchServiceSizingPoliciesByServiceId,
@@ -11,11 +12,13 @@ import {
   selectContainerProfilesForStack,
   selectEndpointsByServiceId,
   selectEnvironmentById,
+  selectFirstActivePlan,
   selectManualScaleRecommendationByServiceId,
   selectServiceById,
   selectServiceSizingPolicyByServiceId,
   selectStackById,
 } from "@app/deploy";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -206,6 +209,10 @@ const AutoscalingSection = ({
 
   const modifyLoader = useLoader(modifyServiceSizingPolicy);
   const stack = useSelector((s) => selectStackById(s, { id: stackId }));
+  const orgId = useSelector(selectOrganizationSelectedId);
+  const activePlan = useSelector(selectFirstActivePlan);
+
+  useQuery(fetchActivePlans({ orgId }));
 
   const [errors, validate] = useValidator<
     ServiceSizingPolicyEditProps,
@@ -235,6 +242,11 @@ const AutoscalingSection = ({
 
   const [advancedIsOpen, setOpen] = useState(false);
 
+  const horizontalAutoscalingEnabled =
+    stack.horizontalAutoscaling || activePlan.horizontalAutoscaling;
+  const verticalAutoscalingEnabled =
+    stack.verticalAutoscaling || activePlan.verticalAutoscaling;
+
   const options: SelectOption[] = [
     {
       label: "Disabled: No autoscaling",
@@ -242,14 +254,14 @@ const AutoscalingSection = ({
     },
   ];
 
-  if (stack.horizontalAutoscaling) {
+  if (horizontalAutoscalingEnabled) {
     options.push({
       label: "Enabled: Horizontal Autoscaling",
       value: "horizontal",
     });
   }
 
-  if (stack.verticalAutoscaling) {
+  if (verticalAutoscalingEnabled) {
     options.push({
       label: "Enabled: Vertical Autoscaling",
       value: "vertical",
@@ -279,7 +291,7 @@ const AutoscalingSection = ({
     if (opt.value === "horizontal") setOpen(true);
   };
 
-  if (!stack.verticalAutoscaling && !stack.horizontalAutoscaling) {
+  if (!verticalAutoscalingEnabled && !horizontalAutoscalingEnabled) {
     return null;
   }
 

@@ -442,6 +442,8 @@ export interface DeployPlan extends Timestamps {
   name: PlanName;
   updatedAt: string;
   vhostLimit: number;
+  horizontalAutoscaling: boolean;
+  verticalAutoscaling: boolean;
 }
 
 export interface DeployActivePlan extends Omit<DeployPlan, "name"> {

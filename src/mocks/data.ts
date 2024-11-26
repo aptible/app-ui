@@ -512,6 +512,19 @@ export const testActivePlan = defaultActivePlanResponse({
   },
 });
 
+export const testAutoscalingActivePlan = defaultActivePlanResponse({
+  id: createId(),
+  organization_id: testOrg.id,
+  horizontal_autoscaling: true,
+  vertical_autoscaling: true,
+  _links: {
+    organization: defaultHalHref(
+      `${testEnv.authUrl}/organizations/${testOrg.id}`,
+    ),
+    plan: defaultHalHref(`${testEnv.apiUrl}/plans/${testPlan.id}`),
+  },
+});
+
 export const testEnvExpress = defaultEnvResponse({
   id: createId(),
   organization_id: testOrg.id,

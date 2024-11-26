@@ -29,6 +29,8 @@ export interface DeployPlanResponse {
   name: string;
   updated_at: string;
   vhost_limit: number;
+  horizontal_autoscaling: boolean;
+  vertical_autoscaling: boolean;
   _type: "plan";
 }
 
@@ -51,6 +53,8 @@ export interface DeployActivePlanResponse {
   organization_id: string;
   updated_at: string;
   vhost_limit: number;
+  horizontal_autoscaling: boolean;
+  vertical_autoscaling: boolean;
   _links: {
     organization: LinkResponse;
     plan: LinkResponse;
@@ -81,6 +85,8 @@ export const defaultActivePlanResponse = (
     organization_id: "",
     updated_at: now,
     vhost_limit: 0,
+    horizontal_autoscaling: false,
+    vertical_autoscaling: false,
     _links: {
       organization: defaultHalHref(),
       plan: defaultHalHref(),
@@ -112,6 +118,8 @@ export const defaultPlanResponse = (
     name: "starter",
     updated_at: now,
     vhost_limit: 0,
+    horizontal_autoscaling: false,
+    vertical_autoscaling: false,
     _type: "plan",
     ...c,
   };
@@ -136,6 +144,8 @@ export const deserializePlan = (payload: DeployPlanResponse): DeployPlan => {
     name: payload.name as PlanName,
     updatedAt: payload.updated_at,
     vhostLimit: payload.vhost_limit,
+    horizontalAutoscaling: payload.horizontal_autoscaling,
+    verticalAutoscaling: payload.vertical_autoscaling,
   };
 };
 
@@ -164,6 +174,8 @@ export const deserializeActivePlan = (
     planId: extractIdFromLink(links.plan),
     updatedAt: payload.updated_at,
     vhostLimit: payload.vhost_limit,
+    horizontalAutoscaling: payload.horizontal_autoscaling,
+    verticalAutoscaling: payload.vertical_autoscaling,
   };
 };
 
