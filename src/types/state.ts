@@ -11,6 +11,7 @@ export interface Config {
   portalUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
+  mintlifyChatKey: string;
   stripePublishableKey: string;
   origin: "app";
   betaFeatureOrgIds: string;

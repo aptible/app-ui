@@ -18,6 +18,7 @@ interface ImportMetaEnv {
   VITE_SENTRY_DSN: string;
   VITE_ORIGIN: string;
   VITE_TUNA_ENABLED: string;
+  VITE_MINTLIFY_CHAT_KEY: string;
   VITE_STRIPE_PUBLISHABLE_KEY: string;
   VITE_FEATURE_BETA_ORG_IDS: string;
 }

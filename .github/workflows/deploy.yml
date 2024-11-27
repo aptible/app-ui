@@ -34,6 +34,7 @@ jobs:
             VITE_ORIGIN=app
             VITE_METRIC_TUNNEL_URL=https://metrictunnel-nextgen.aptible.com
             VITE_TUNA_ENABLED=true
+            VITE_MINTLIFY_CHAT_KEY=${{ secrets.MINTLIFY_CHAT_KEY }}
             VITE_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}
             VITE_FEATURE_BETA_ORG_IDS=${{ vars.FEATURE_BETA_ORG_IDS }}
   deploy:

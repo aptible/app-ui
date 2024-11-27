@@ -1,13 +1,13 @@
+import { selectEnv } from "@app/config";
 import {
   createSupportTicket,
-  queryAlgoliaApi,
   resetSupportTicket,
   uploadAttachment,
 } from "@app/deploy/support";
-import { MintlifyWidget } from '@mintlify/widget-react';
-import { useDispatch, useLoader, useQuery, useSelector } from "@app/react";
+import { useDispatch, useLoader, useSelector } from "@app/react";
 import { tunaEvent } from "@app/tuna";
 import { selectCurrentUser } from "@app/users";
+import { MintlifyWidget } from "@mintlify/widget-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { AppSidebarLayout } from "../layouts";
@@ -54,7 +54,6 @@ export const SupportPage = () => {
     priority: "normal",
   });
   const isDisabled = formState.subject === "" || formState.description === "";
-  const [subjectTyping, setSubjectTyping] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachmentObject[]>([]);
   const [viewedSuggestion, setViewedSuggestion] = useState(false);
 
@@ -79,11 +78,6 @@ export const SupportPage = () => {
   const loader = useLoader(createSupportTicket);
   const attachmentLoader = useLoader(uploadAttachment);
 
-  // Loader for algolia query
-  const algoliaLoader = useQuery(
-    queryAlgoliaApi({ query: formState.subject, debounce: subjectTyping }),
-  );
-
   // useEffect hook for supplying the user information [email, name] to local state once it loads
   useEffect(() => {
     if (user.email) {
@@ -99,14 +93,6 @@ export const SupportPage = () => {
       }));
     }
   }, [user.email, user.name]);
-
-  // useEffect to allow the algolia api query to fire, once the user is done typing in the subject field, `subjectTyping` will retrun to false and allow the call to be made
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      setSubjectTyping(false);
-    }, 2000);
-    return () => clearTimeout(delayDebounceFn);
-  }, [subjectTyping]);
 
   // fucntion for final submission of form
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
@@ -143,6 +129,8 @@ export const SupportPage = () => {
     }
   };
 
+  const env = useSelector(selectEnv);
+
   useEffect(() => {
     return () => {
       // reset loader when component is unmounted because we have multiple
@@ -153,12 +141,35 @@ export const SupportPage = () => {
 
   return (
     <AppSidebarLayout>
-      <TitleBar description="A real person will respond to tickets submitted through this form.">
-        Submit Support Request
+      <TitleBar description="Get Support from the Aptible team">
+        Support
       </TitleBar>
 
-      <div className="flex flex-row gap-10">
+      <div className="flex flex-col gap-6">
+        <Box className="w-full border-gold !bg-off-white">
+          <div className="text-lg font-semibold text-black mb-2">
+            Get Answers Now: Ask Chatbot
+          </div>
+          <MintlifyWidget
+            connection={{
+              apiKey: env.mintlifyChatKey,
+            }}
+            display={{
+              trigger: {
+                type: "input",
+                label: "Get Answers",
+              },
+              isDarkMode: false,
+              colors: {
+                primary: "#111920",
+              },
+            }}
+          />
+        </Box>
         <Box className="w-full">
+          <div className="text-lg font-semibold text-black mb-2">
+            Submit Support Ticket
+          </div>
           <div className="mb-4">
             Please enter the details of your request. A member of our support
             staff will respond as soon as possible. Be sure to include relevant
@@ -220,51 +231,11 @@ export const SupportPage = () => {
                       ...formState,
                       subject: e.currentTarget.value,
                     });
-                    setSubjectTyping(true);
                   }}
                   data-testid="subject"
                   id="subject"
                 />
               </FormGroup>
-
-              {algoliaLoader?.meta?.hits?.length ? (
-                <div
-                  style={{ backgroundColor: "#FDF8F0" }}
-                  className="rounded-lg"
-                >
-                  <div className="pl-5 pt-3 font-semibold">
-                    Related Articles
-                  </div>
-                  <ul className="pl-5 pt-2 pb-3">
-                    {algoliaLoader.meta.hits.map((hit: any, key: number) => {
-                      return (
-                        <li key={key + 1}>
-                          <div
-                            onClick={() => {
-                              tunaEvent(
-                                "usedSupportSuggestion",
-                                `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
-                              );
-                              setViewedSuggestion(true);
-                            }}
-                            onKeyUp={() => {
-                              tunaEvent(
-                                "usedSupportSuggestion",
-                                `{ "suggestedUrl": "${hit.url}", "email": "${user.email}" }`,
-                              );
-                              setViewedSuggestion(true);
-                            }}
-                          >
-                            <a target="_blank" href={hit.url} rel="noreferrer">
-                              {hit.title}
-                            </a>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ) : null}
 
               <FormGroup description="" htmlFor="message" label="Message">
                 <TextArea
@@ -435,17 +406,6 @@ export const SupportPage = () => {
           </form>
         </Box>
       </div>
-      <MintlifyWidget
-        connection={{
-          apiKey: 'mint_dsc_3ZnCa1nezSLE7AWvcbMppEYL',
-        }}
-        display={{
-          trigger: {
-            type: 'button',
-            label: 'Get Answers',
-          },
-        }}
-      />
     </AppSidebarLayout>
   );
 };
