@@ -4,6 +4,7 @@ import {
   fetchDatabaseImageById,
   fetchDatabaseImages,
   fetchEndpointsByServiceId,
+  fetchRelease,
 } from "@app/deploy";
 import {
   calcMetrics,
@@ -66,6 +67,7 @@ export function DatabaseHeader({
   // Query additional data that subpages need
   useQuery(fetchEndpointsByServiceId({ id: database.serviceId }));
   useQuery(fetchBackupsByDatabaseId({ id: database.id }));
+  useQuery(fetchRelease({ id: service.currentReleaseId }));
 
   const metrics = calcMetrics([service]);
   useQuery(fetchDiskById({ id: database.diskId }));

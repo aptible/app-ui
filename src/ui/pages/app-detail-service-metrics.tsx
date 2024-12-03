@@ -2,6 +2,7 @@ import { dateFromToday } from "@app/date";
 import {
   calcMetrics,
   fetchApp,
+  fetchRelease,
   selectReleasesByServiceAfterDate,
   selectServiceById,
 } from "@app/deploy";
@@ -47,6 +48,7 @@ export function AppDetailServiceMetricsPage() {
     }),
   );
   const service = useSelector((s) => selectServiceById(s, { id: serviceId }));
+  useQuery(fetchRelease({ id: service.currentReleaseId }));
 
   // we always go back exactly one week, though it might be a bit too far for some that way
   // we do not have to refetch this if the component state changes as this is fairly expensive
