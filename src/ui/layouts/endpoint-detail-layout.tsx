@@ -116,6 +116,7 @@ export function EndpointAppHeaderInfo({
         <DetailInfoItem title="Status">
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>
+        <DetailInfoItem title="Using WAF">{txt.token_header}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );

@@ -58,6 +58,7 @@ export interface DeployEndpointResponse {
   status: ProvisionableStatus;
   created_at: string;
   updated_at: string;
+  token_header: string;
   _links: {
     service: LinkResponse;
     certificate: LinkResponse;
@@ -135,6 +136,7 @@ export const deserializeDeployEndpoint = (
     status: payload.status,
     serviceId: extractIdFromLink(payload._links.service),
     certificateId: extractIdFromLink(payload._links.certificate),
+    tokenHeader: payload.token_header,
   };
 };
 
@@ -731,6 +733,7 @@ interface EndpointPatchProps {
   ipAllowlist: string[];
   containerPort: string;
   certId: string;
+  tokenHeader: string;
 }
 
 export interface EndpointUpdateProps extends EndpointPatchProps {
@@ -941,12 +944,21 @@ export const getEndpointUrl = (enp?: DeployEndpoint) => {
   return enp.virtualDomain || enp.externalHost || emptyEndpointName;
 };
 
+export const getTokenHeader = (enp?: DeployEndpoint) => {
+  if (!enp) return;
+  if (enp.tokenHeader) {
+    return "True";
+  }
+  return "False";
+};
+
 export const getEndpointText = (enp: DeployEndpoint) => {
   return {
     url: getEndpointUrl(enp),
     placement: getPlacement(enp),
     ipAllowlist: getIpAllowlistText(enp),
     hostname: getEndpointDisplayHost(enp),
+    token_header: getTokenHeader(enp),
   };
 };
 

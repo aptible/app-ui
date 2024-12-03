@@ -109,6 +109,7 @@ export interface DeployEndpoint extends Provisionable, Timestamps {
   virtualDomain: string;
   serviceId: string;
   certificateId: string;
+  tokenHeader: string;
 }
 
 export type OnboardingStatus =

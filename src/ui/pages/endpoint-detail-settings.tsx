@@ -70,6 +70,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const [certId, setCertId] = useState(enp.certificateId);
   const [cert, setCert] = useState("");
   const [privKey, setPrivKey] = useState("");
+  const [tokenHeader, setTokenHeader] = useState(enp.tokenHeader);
   const [usingNewCert, setUsingNewCert] = useState(false);
 
   useEffect(() => {
@@ -90,12 +91,14 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     envId: service.environmentId,
     cert,
     privKey,
+    tokenHeader,
     requiresCert: isRequiresCert(enp),
   };
   const ipsSame = origAllowlist === ipAllowlist;
   const portSame = enp.containerPort === port;
   const certSame = enp.certificateId === certId;
-  const isDisabled = ipsSame && portSame && certSame && cert === "";
+  const tokenSame = enp.tokenHeader === tokenHeader;
+  const isDisabled = ipsSame && portSame && certSame && cert === "" && tokenSame;
   const curPortText = getContainerPort(enp, exposedPorts);
   const loader = useLoader(updateEndpoint);
   const [errors, validate] = useValidator<
@@ -211,6 +214,21 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     </FormGroup>
   ) : null;
 
+  const tokenEditForm = enp.tokenHeader  ? (
+    <FormGroup
+      label="WAF Token Header"
+      htmlFor="token-header"
+    >
+      <Input
+        type="text"
+        id="token-header"
+        name="token-header"
+        value={tokenHeader}
+        onChange={(e) => setTokenHeader(e.currentTarget.value)}
+        />
+    </FormGroup>
+  ) : null;
+
   return (
     <Box>
       <h1 className="text-lg text-gray-500 mb-4">Endpoint Settings</h1>
@@ -219,6 +237,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
 
         {portForm}
         {certEditForm}
+        {tokenEditForm}
 
         <FormGroup
           label="IP Allowlist"

@@ -67,6 +67,11 @@ const validators = {
       return "A private key is required for custom certificate";
     }
   },
+  tokenHeader: (data: CreateEndpointProps) => {
+    if (data.trafficType === "tcp" || data.trafficType === "tls") {
+      return "A HTTP or GRPC endpoint is required to pass token";
+    }
+  },
 };
 
 export const AppCreateEndpointPage = () => {
@@ -97,6 +102,7 @@ export const AppCreateEndpointPage = () => {
   const [cert, setCert] = useState("");
   const [certId, setCertId] = useState("");
   const [privKey, setPrivKey] = useState("");
+  const [tokenHeader, setTokenHeader] = useState("");
   const portText = getContainerPort(
     { containerPort: port, containerPorts: [] },
     image.exposedPorts,
@@ -110,6 +116,7 @@ export const AppCreateEndpointPage = () => {
       internal: enpPlacement === "internal",
       ipAllowlist: parseIpStr(ipAllowlist),
       containerPort: port,
+      tokenHeader: tokenHeader,
     };
 
     if (enpType === "managed") {
@@ -297,6 +304,24 @@ export const AppCreateEndpointPage = () => {
     </FormGroup>
   );
 
+  const tokenHeaderForm = (
+    <FormGroup
+      label="Token Header"
+      htmlFor="token-header"
+      description="Token Header matching the 'X-Origin-Header' value."
+      feedbackMessage={errors.tokenHeader}
+      feedbackVariant={errors.tokenHeader ? "danger" : "info"}
+    >
+      <Input
+        id="token-header"
+        name="token-header"
+        type="text"
+        value={tokenHeader}
+        onChange={(e) => setTokenHeader(e.currentTarget.value)}
+      />
+    </FormGroup>
+  );
+
   const getProtocolName = (trafficType: EndpointType) => {
     switch (trafficType) {
       case "grpc":
@@ -319,6 +344,7 @@ export const AppCreateEndpointPage = () => {
           {transCert && usingNewCert ? certForm : null}
           {transCert && usingNewCert ? privKeyForm : null}
           {ipAllowlistForm}
+          {tokenHeaderForm}
         </>
       );
     }
@@ -331,6 +357,7 @@ export const AppCreateEndpointPage = () => {
           {usingNewCert ? certForm : null}
           {usingNewCert ? privKeyForm : null}
           {ipAllowlistForm}
+          {tokenHeaderForm}
         </>
       );
     }
@@ -338,6 +365,7 @@ export const AppCreateEndpointPage = () => {
       <>
         {enpPlacementForm}
         {ipAllowlistForm}
+        {tokenHeaderForm}
       </>
     );
   };
