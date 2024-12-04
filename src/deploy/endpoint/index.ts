@@ -3,8 +3,6 @@ import { selectEnv } from "@app/config";
 import { call, createAction, poll, select } from "@app/fx";
 import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref, extractIdFromLink } from "@app/hal";
-import { selectHasTokenHeaderFeature } from "@app/organizations";
-import { useSelector } from "@app/react";
 import { type WebState, schema } from "@app/schema";
 import type {
   AcmeConfiguration,
@@ -95,6 +93,7 @@ export const defaultEndpointResponse = (
     ip_whitelist: [],
     platform: "elb",
     type: "unknown",
+    token_header: "",
     user_domain: "",
     virtual_domain: "",
     security_group_id: "",
@@ -146,7 +145,6 @@ export const selectEndpointById = schema.endpoints.selectById;
 export const findEndpointById = schema.endpoints.findById;
 export const selectEndpoints = schema.endpoints.selectTable;
 export const selectEndpointsAsList = schema.endpoints.selectTableAsList;
-export const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
 export const hasDeployEndpoint = (a: DeployEndpoint) => a.id !== "";
 export const findEndpointsByServiceId = (
   endpoints: DeployEndpoint[],
@@ -956,7 +954,7 @@ export const getEndpointUrl = (enp?: DeployEndpoint) => {
 };
 
 export const getTokenHeader = (enp?: DeployEndpoint) => {
-  if (!enp || !hasTokenHeaderFeature) return;
+  if (!enp) return;
   if (enp.tokenHeader) {
     return "True";
   }
