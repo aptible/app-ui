@@ -88,5 +88,9 @@ export const [schema, initialState] = createSchema({
   manualScaleRecommendations: slice.table({
     empty: factory.defaultManualScaleRecommendation(),
   }),
+  notices: slice.obj<Record<ModalType, string>>({
+    [ModalType.BackupRPNotice]: "",
+    [ModalType.NONE]: "",
+  }),
 });
 export type WebState = typeof initialState;

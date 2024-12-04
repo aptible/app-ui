@@ -4,11 +4,11 @@ import { type ActionList, ActionListView } from "./action-list-view";
 import { tokens } from "./tokens";
 
 type ModalProps = PropsWithChildren<{
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose?: () => void;
 }>;
 
-export function Modal({ children, isOpen }: ModalProps) {
+export function Modal({ children, isOpen = false }: ModalProps) {
   const classes = cn(
     "bg-white",
     "align-middle max-w-lg w-full p-0",
@@ -44,7 +44,7 @@ export function ModalHeading({
   return (
     <div className="m-6 pb-6 mb-0 border-b border-gray-100">
       <div className="flex items-start">
-        {title}
+        <span className="font-bold">{title}</span>
         {onClose && closeButton}
       </div>
       {description}

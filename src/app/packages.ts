@@ -18,6 +18,7 @@ import * as invitations from "@app/invitations";
 import * as loaders from "@app/loaders";
 import * as metrics from "@app/metric-tunnel";
 import * as mfa from "@app/mfa";
+import * as modal from "@app/modal";
 import * as nav from "@app/nav";
 import * as orgs from "@app/organizations";
 import * as redirectPath from "@app/redirect-path";
@@ -54,6 +55,7 @@ const corePackages: any[] = [
   deployments,
   source,
   loaders,
+  modal,
 ];
 
 export const rootEntities = corePackages.reduce((acc, pkg) => {

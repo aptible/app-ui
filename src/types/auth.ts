@@ -12,6 +12,7 @@ export interface User {
   currentOtpId: string;
   selectedOrganizationId: string;
   externalId: string;
+  createdAt: string;
 }
 
 export interface Token {

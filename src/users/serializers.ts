@@ -15,6 +15,7 @@ export function deserializeUser(u: UserResponse): User {
     externalId: u.external_id,
     selectedOrganizationId: extractIdFromLink(u._links.selected_organization),
     currentOtpId: extractIdFromLink(u._links.current_otp_configuration),
+    createdAt: u.created_at,
   };
 }
 
