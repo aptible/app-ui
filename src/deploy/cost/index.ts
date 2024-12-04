@@ -36,7 +36,7 @@ interface OrgIdProp {
   orgId: string;
 }
 
-export const fetchCostsByStacks = api.get<OrgIdProp>("/costs/:orgId/stack", {
+export const fetchCostsByStacks = api.get<OrgIdProp>("/costs/:orgId/stacks", {
   supervisor: cacheLongTimer(),
 });
 
