@@ -460,6 +460,7 @@ interface CreateEndpointBase {
   internal: boolean;
   ipAllowlist: string[];
   containerPort?: string;
+  tokenHeader: string;
 }
 
 interface CreateDefaultEndpoint extends CreateEndpointBase {
@@ -498,6 +499,7 @@ export const createEndpoint = api.post<
     internal: ctx.payload.internal,
     ip_whitelist: ctx.payload.ipAllowlist,
     container_port: ctx.payload.containerPort,
+    token_header: ctx.payload.tokenHeader,
   };
 
   if (ctx.payload.certId) {
@@ -751,6 +753,7 @@ const patchEndpoint = api.patch<EndpointPatchProps>(
     const data: Record<string, any> = {
       ip_whitelist: ctx.payload.ipAllowlist,
       container_port: ctx.payload.containerPort,
+      token_header: ctx.payload.tokenHeader,
     };
     if (ctx.payload.certId) {
       data.certificate = `${env.apiUrl}/certificates/${ctx.payload.certId}`;
