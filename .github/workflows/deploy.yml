@@ -36,6 +36,7 @@ jobs:
             VITE_TUNA_ENABLED=true
             VITE_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}
             VITE_FEATURE_BETA_ORG_IDS=${{ vars.FEATURE_BETA_ORG_IDS }}
+            VITE_TOKEN_HEADER_ORG_IDS=${{ vars.TOKEN_HEADER_ORG_IDS }}
   deploy:
     runs-on: ubuntu-latest
     needs: build

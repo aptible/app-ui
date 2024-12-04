@@ -13,6 +13,7 @@ import {
   selectImageById,
   selectStackById,
 } from "@app/deploy";
+import { selectHasTokenHeaderFeature } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -75,6 +76,7 @@ const validators = {
 };
 
 export const AppCreateEndpointPage = () => {
+  const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id = "" } = useParams();
@@ -344,7 +346,7 @@ export const AppCreateEndpointPage = () => {
           {transCert && usingNewCert ? certForm : null}
           {transCert && usingNewCert ? privKeyForm : null}
           {ipAllowlistForm}
-          {tokenHeaderForm}
+          {hasTokenHeaderFeature ? tokenHeaderForm : null}
         </>
       );
     }
@@ -357,7 +359,7 @@ export const AppCreateEndpointPage = () => {
           {usingNewCert ? certForm : null}
           {usingNewCert ? privKeyForm : null}
           {ipAllowlistForm}
-          {tokenHeaderForm}
+          {hasTokenHeaderFeature ? tokenHeaderForm : null}
         </>
       );
     }
@@ -365,7 +367,7 @@ export const AppCreateEndpointPage = () => {
       <>
         {enpPlacementForm}
         {ipAllowlistForm}
-        {tokenHeaderForm}
+        {hasTokenHeaderFeature ? tokenHeaderForm : null}
       </>
     );
   };

@@ -93,12 +93,14 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     privKey,
     tokenHeader,
     requiresCert: isRequiresCert(enp),
+    enpType: enp.type,
   };
   const ipsSame = origAllowlist === ipAllowlist;
   const portSame = enp.containerPort === port;
   const certSame = enp.certificateId === certId;
   const tokenSame = enp.tokenHeader === tokenHeader;
-  const isDisabled = ipsSame && portSame && certSame && cert === "" && tokenSame;
+  const isDisabled =
+    ipsSame && portSame && certSame && cert === "" && tokenSame;
   const curPortText = getContainerPort(enp, exposedPorts);
   const loader = useLoader(updateEndpoint);
   const [errors, validate] = useValidator<
@@ -214,18 +216,15 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     </FormGroup>
   ) : null;
 
-  const tokenEditForm = enp.tokenHeader  ? (
-    <FormGroup
-      label="WAF Token Header"
-      htmlFor="token-header"
-    >
+  const tokenEditForm = data.enpType ? (
+    <FormGroup label="WAF Token Header" htmlFor="token-header">
       <Input
         type="text"
         id="token-header"
         name="token-header"
         value={tokenHeader}
         onChange={(e) => setTokenHeader(e.currentTarget.value)}
-        />
+      />
     </FormGroup>
   ) : null;
 
