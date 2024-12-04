@@ -790,6 +790,7 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       ipAllowlist: ctx.payload.ipAllowlist,
       containerPort: ctx.payload.containerPort,
       certId,
+      tokenHeader: ctx.payload.tokenHeader,
     });
     if (!patchCtx.json.ok) {
       yield* schema.update(
