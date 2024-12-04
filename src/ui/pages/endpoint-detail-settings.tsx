@@ -217,7 +217,9 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   ) : null;
 
   const tokenEditForm = data.enpType ? (
-    <FormGroup label="WAF Token Header" htmlFor="token-header">
+    <FormGroup label="Header Authentication Value" htmlFor="token-header">
+      description=
+      {`The 'X-Origin-Token' header value. When set, clients will be required to pass a 'X-Origin-Token' header matching this value.`}
       <Input
         type="text"
         id="token-header"

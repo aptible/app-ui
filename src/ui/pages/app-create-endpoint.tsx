@@ -308,9 +308,9 @@ export const AppCreateEndpointPage = () => {
 
   const tokenHeaderForm = (
     <FormGroup
-      label="Token Header"
+      label="Header Authentication Value"
       htmlFor="token-header"
-      description="Token Header matching the 'X-Origin-Header' value."
+      description="When set, only traffic with a 'X-Origin-Token' header matching this value will be allowed."
       feedbackMessage={errors.tokenHeader}
       feedbackVariant={errors.tokenHeader ? "danger" : "info"}
     >

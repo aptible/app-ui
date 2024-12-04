@@ -119,7 +119,9 @@ export function EndpointAppHeaderInfo({
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>
         {hasTokenHeaderFeature ? (
-          <DetailInfoItem title="Using WAF">{txt.token_header}</DetailInfoItem>
+          <DetailInfoItem title="Using Header Auth">
+            {txt.token_header}
+          </DetailInfoItem>
         ) : null}
       </DetailInfoGrid>
     </DetailHeader>
