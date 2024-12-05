@@ -22,7 +22,9 @@ function findValidOp(opA: DeployOperation, opB: DeployOperation) {
 }
 
 export const useLatestCodeResults = (appId: string) => {
-  const appOps = useQuery(fetchOperationsByAppId({ id: appId, page: 1, ...emptyFilterProps }));
+  const appOps = useQuery(
+    fetchOperationsByAppId({ id: appId, page: 1, ...emptyFilterProps }),
+  );
   const scanOp = useSelector((s) => selectLatestSuccessScanOp(s, { appId }));
   const deployOp = useSelector((s) =>
     selectLatestDeployOpWithCodeScan(s, { appId }),

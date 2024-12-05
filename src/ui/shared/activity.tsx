@@ -245,10 +245,12 @@ function ActivityTable({
   paginated,
   showTitle = true,
   isLoading = false,
+  showResourceType = false,
 }: {
   paginated: PaginateProps<DeployActivityRow> & { isLoading: boolean };
   showTitle?: boolean;
   isLoading?: boolean;
+  showResourceType?: boolean;
 }) {
   const FILTER_ALL = "all";
   const [params, setParams] = useSearchParams();
@@ -388,7 +390,7 @@ function ActivityTable({
           <Group>
             <Group variant="horizontal">
               <>
-                {showTitle ? (
+                {showResourceType ? (
                   <div className="flex-1">
                     <Label htmlFor="resource-type-selector">
                       Resource Type
@@ -484,6 +486,7 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
       paginated={paginated}
       isLoading={loader.isLoading}
       showTitle
+      showResourceType
     />
   );
 }
@@ -504,6 +507,7 @@ export function ActivityByEnv({ envId }: { envId: string }) {
       paginated={paginated}
       isLoading={loader.isLoading}
       showTitle={false}
+      showResourceType
     />
   );
 }
