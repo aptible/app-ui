@@ -6,6 +6,7 @@ import {
 } from "@app/auth";
 import { fetchBillingDetail } from "@app/billing";
 import {
+  emptyFilterProps,
   fetchApps,
   fetchDatabaseImages,
   fetchDatabases,
@@ -93,7 +94,7 @@ function* onFetchResourceData() {
     fetchMetricDrains.run(),
     fetchServices.run(),
     fetchEndpoints.run(),
-    fetchOperationsByOrgId.run({ id: org.id, page: 1 }),
+    fetchOperationsByOrgId.run({ id: org.id, page: 1, ...emptyFilterProps }),
     fetchSystemStatus.run(),
     fetchSources.run(),
     fetchDeployments.run(),
