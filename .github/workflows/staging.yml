@@ -35,6 +35,7 @@ jobs:
             VITE_SENTRY_DSN=${{ secrets.STAGING_SENTRY_DSN }}
             VITE_ORIGIN=app
             VITE_TUNA_ENABLED=true
+            VITE_MINTLIFY_CHAT_KEY=${{ secrets.MINTLIFY_CHAT_KEY }}
   deploy:
     runs-on: ubuntu-latest
     needs: build
