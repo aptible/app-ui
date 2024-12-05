@@ -10,6 +10,7 @@ import {
   selectServiceById,
   updateEndpoint,
 } from "@app/deploy";
+import { selectHasTokenHeaderFeature } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -62,8 +63,8 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const image = useSelector((s) =>
     selectImageById(s, { id: app.currentImageId }),
   );
+  const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
   const exposedPorts = image.exposedPorts;
-
   const origAllowlist = enp.ipWhitelist.join("\n");
   const [ipAllowlist, setIpAllowlist] = useState(origAllowlist);
   const [port, setPort] = useState(enp.containerPort);
@@ -216,21 +217,25 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     </FormGroup>
   ) : null;
 
-  const tokenEditForm = data.enpType ? (
-    <FormGroup
-      label="Header Authentication Value"
-      htmlFor="token-header"
-      description={`The 'X-Origin-Token' header value. When set, clients will be required to pass a 'X-Origin-Token' header matching this value.`}
-    >
-      <Input
-        type="text"
-        id="token-header"
-        name="token-header"
-        value={tokenHeader}
-        onChange={(e) => setTokenHeader(e.currentTarget.value)}
-      />
-    </FormGroup>
-  ) : null;
+  const tokenEditForm =
+    (data.enpType === "http" ||
+      data.enpType === "http_proxy_protocol" ||
+      data.enpType === "grpc") &&
+    hasTokenHeaderFeature ? (
+      <FormGroup
+        label="Header Authentication Value"
+        htmlFor="token-header"
+        description={`The 'X-Origin-Token' header value. When set, clients will be required to pass a 'X-Origin-Token' header matching this value.`}
+      >
+        <Input
+          type="text"
+          id="token-header"
+          name="token-header"
+          value={tokenHeader}
+          onChange={(e) => setTokenHeader(e.currentTarget.value)}
+        />
+      </FormGroup>
+    ) : null;
 
   return (
     <Box>

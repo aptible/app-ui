@@ -162,7 +162,7 @@ export const defaultDeployEndpoint = (
     ipWhitelist: [],
     platform: "elb",
     type: "unknown",
-    tokenHeader: "",
+    tokenHeader: undefined,
     createdAt: now,
     updatedAt: now,
     userDomain: "",

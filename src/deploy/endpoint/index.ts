@@ -460,7 +460,7 @@ interface CreateEndpointBase {
   internal: boolean;
   ipAllowlist: string[];
   containerPort?: string;
-  tokenHeader: string;
+  tokenHeader: string | undefined;
 }
 
 interface CreateDefaultEndpoint extends CreateEndpointBase {
@@ -736,7 +736,7 @@ interface EndpointPatchProps {
   ipAllowlist: string[];
   containerPort: string;
   certId: string;
-  tokenHeader: string;
+  tokenHeader: string | undefined;
 }
 
 export interface EndpointUpdateProps extends EndpointPatchProps {
