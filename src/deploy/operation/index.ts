@@ -1,4 +1,5 @@
 import {
+  type FilterOpProps,
   type PaginateProps,
   type Retryable,
   api,
@@ -423,28 +424,40 @@ function* paginateOps(
   yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
 }
 
+export const emptyFilterProps: FilterOpProps = {
+  resourceType: "",
+  operationType: "",
+  operationStatus: "",
+};
+
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
 export const pollOrgOperations = api.get<{ orgId: string }>(
   "/organizations/:orgId/operations",
   { supervisor: poll(10 * 1000, `${cancelOrgOperationsPoll}`) },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByOrgId({ page: 1, id: ctx.payload.orgId });
+    const action = fetchOperationsByOrgId({
+      page: 1,
+      id: ctx.payload.orgId,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
-export const fetchOperationsByOrgId = api.get<{ id: string } & PaginateProps>(
-  "/organizations/:id/operations?page=:page",
+export const fetchOperationsByOrgId = api.get<
+  { id: string } & PaginateProps & FilterOpProps
+>(
+  "/organizations/:id/operations?page=:page&resource_type=:resourceType&type=:operationType&status=:operationStatus",
   { supervisor: cacheTimer() },
   paginateOps,
 );
 
 export const fetchOperationsByEnvId = api.get<
-  { id: string } & PaginateProps,
+  { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
-  "/accounts/:id/operations?page=:page",
+  "/accounts/:id/operations?page=:page&resource_type=:resourceType&type=:operationType&status=:operationStatus",
   { supervisor: cacheTimer() },
   paginateOps,
 );
@@ -458,16 +471,20 @@ export const pollEnvOperations = api.get<
   { supervisor: poll(10 * 1000, `${cancelEnvOperationsPoll}`) },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByEnvId({ page: 1, id: ctx.payload.envId });
+    const action = fetchOperationsByEnvId({
+      page: 1,
+      id: ctx.payload.envId,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
 export const fetchOperationsByAppId = api.get<
-  { id: string } & PaginateProps,
+  { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
-  "/apps/:id/operations?page=:page&with_services=true",
+  "/apps/:id/operations?page=:page&with_services=true&type=:operationType&status=:operationStatus",
   { supervisor: cacheTimer() },
   paginateOps,
 );
@@ -480,16 +497,20 @@ export const pollAppOperations = api.get<{ id: string }>(
   },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByAppId({ page: 1, id: ctx.payload.id });
+    const action = fetchOperationsByAppId({
+      page: 1,
+      id: ctx.payload.id,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
 export const fetchOperationsByDatabaseId = api.get<
-  { id: string } & PaginateProps,
+  { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
-  "/databases/:id/operations?page=:page&with_services=true",
+  "/databases/:id/operations?page=:page&with_services=true&type=:operationType&status=:operationStatus",
   { supervisor: cacheTimer() },
   paginateOps,
 );
@@ -500,16 +521,20 @@ export const pollDatabaseOperations = api.get<{ id: string }>(
   { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByDatabaseId({ page: 1, id: ctx.payload.id });
+    const action = fetchOperationsByDatabaseId({
+      page: 1,
+      id: ctx.payload.id,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
 export const fetchOperationsByServiceId = api.get<
-  { id: string } & PaginateProps,
+  { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
-  "/services/:id/operations?page=:page",
+  "/services/:id/operations?page=:page&type=:operationType&status=:operationStatus",
   { supervisor: cacheTimer() },
   paginateOps,
 );
@@ -520,16 +545,20 @@ export const pollServiceOperations = api.get<{ id: string }>(
   { supervisor: poll(10 * 1000, `${cancelServicesOpsPoll}`) },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByServiceId({ page: 1, id: ctx.payload.id });
+    const action = fetchOperationsByServiceId({
+      page: 1,
+      id: ctx.payload.id,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
 export const fetchOperationsByEndpointId = api.get<
-  { id: string } & PaginateProps,
+  { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
-  "/vhosts/:id/operations?page=:page",
+  "/vhosts/:id/operations?page=:page&type=:operationType&status=:operationStatus",
   { supervisor: cacheTimer() },
   paginateOps,
 );
@@ -540,7 +569,11 @@ export const pollEndpointOperations = api.get<{ id: string }>(
   { supervisor: poll(10 * 1000, `${cancelEndpointOpsPoll}`) },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByEndpointId({ page: 1, id: ctx.payload.id });
+    const action = fetchOperationsByEndpointId({
+      page: 1,
+      id: ctx.payload.id,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
