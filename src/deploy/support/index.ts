@@ -1,5 +1,4 @@
 import { api, thunks } from "@app/api";
-import { call } from "@app/fx";
 import { schema } from "@app/schema";
 
 interface SupportTicketProps {
@@ -51,40 +50,6 @@ export const resetSupportTicket = thunks.create(
     yield* next();
   },
 );
-
-export const queryAlgoliaApi = thunks.create<{
-  query: string;
-  debounce: boolean;
-}>("query-algolia", function* (ctx, next) {
-  const { query, debounce } = ctx.payload;
-
-  if (!query || debounce) {
-    yield* next();
-    return;
-  }
-
-  yield* schema.update(schema.loaders.start({ id: ctx.key }));
-  const resp = yield* call(() =>
-    fetch(
-      "https://6C0QTHJH2V-dsn.algolia.net/1/indexes/docs/query?x-algolia-api-key=b14dbd7f78ae21d0a844c64cecc52cf5&x-algolia-application-id=6C0QTHJH2V",
-      {
-        method: "POST",
-        headers: {
-          "content-type": "application/json;charset=UTF-8",
-        },
-        body: JSON.stringify({
-          query: query,
-          hitsPerPage: 5,
-        }),
-      },
-    ),
-  );
-  const data = yield* call(() => resp.json());
-  yield* schema.update(
-    schema.loaders.success({ id: ctx.key, meta: { hits: data.hits } as any }),
-  );
-  yield* next();
-});
 
 interface AttachmentProps {
   attachment: File;

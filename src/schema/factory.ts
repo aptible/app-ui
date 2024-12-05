@@ -65,6 +65,9 @@ export const defaultConfig = (e: Partial<Config> = {}): Config => {
     legacyDashboardUrl:
       import.meta.env.VITE_LEGACY_DASHBOARD_URL ||
       "https://dashboard.aptible.com",
+    mintlifyChatKey:
+      import.meta.env.VITE_MINTLIFY_CHAT_KEY ||
+      "mint_dsc_XXXXXXXXXXXXXXXXXXXXXXXX",
     stripePublishableKey:
       import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
       "pk_test_eiw5HXHTAgTwyNnV9I5ruCrA",
