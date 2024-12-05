@@ -316,21 +316,21 @@ function ActivityTable({
   const operationStatusesAsOptions = [
     { label: "All", value: FILTER_ALL },
     ...operationStatuses.map((status) => ({
-      label: status,
+      label: capitalize(status),
       value: status,
     })),
   ];
   const operationTypesAsOptions = [
     { label: "All", value: FILTER_ALL },
     ...operationTypes.map((type) => ({
-      label: type,
+      label: capitalize(type),
       value: type,
     })),
   ];
   const resourceTypeAsOptions = [
     { label: "All", value: FILTER_ALL },
     ...resourceTypes.map((type) => ({
-      label: type,
+      label: capitalize(type),
       value: type,
     })),
   ];
