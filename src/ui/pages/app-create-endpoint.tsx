@@ -104,7 +104,9 @@ export const AppCreateEndpointPage = () => {
   const [cert, setCert] = useState("");
   const [certId, setCertId] = useState("");
   const [privKey, setPrivKey] = useState("");
-  const [tokenHeader, setTokenHeader] = useState("");
+  const [tokenHeader, setTokenHeader] = useState(
+    undefined as string | undefined,
+  );
   const portText = getContainerPort(
     { containerPort: port, containerPorts: [] },
     image.exposedPorts,
