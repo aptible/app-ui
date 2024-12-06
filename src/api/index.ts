@@ -348,6 +348,12 @@ export interface PaginateProps {
   page: number;
 }
 
+export interface FilterOpProps {
+  operationType: string;
+  operationStatus: string;
+  resourceType: string;
+}
+
 interface CombinePagesProps {
   max: number;
 }

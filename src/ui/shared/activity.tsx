@@ -33,8 +33,8 @@ import type {
   DeployOperation,
   ResourceType,
 } from "@app/types";
-import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   type PaginateProps,
   usePaginatedOpsByAppId,
@@ -44,7 +44,9 @@ import {
   usePaginatedOpsByOrgId,
 } from "../hooks";
 import { usePoller } from "../hooks/use-poller";
+import { Box } from "./box";
 import { Button } from "./button";
+import { Label } from "./form-group";
 import { Group } from "./group";
 import { IconInfo } from "./icons";
 import { OpStatus } from "./operation-status";
@@ -55,6 +57,7 @@ import {
   TitleBar,
 } from "./resource-list-view";
 import { EnvStackCell } from "./resource-table";
+import { Select } from "./select";
 import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "./table";
 import { tokens } from "./tokens";
 import { Tooltip } from "./tooltip";
@@ -242,11 +245,113 @@ function ActivityTable({
   paginated,
   showTitle = true,
   isLoading = false,
+  showResourceTypeFilter = false,
 }: {
   paginated: PaginateProps<DeployActivityRow> & { isLoading: boolean };
   showTitle?: boolean;
   isLoading?: boolean;
+  showResourceTypeFilter?: boolean;
 }) {
+  const FILTER_ALL = "all";
+  const [params, setParams] = useSearchParams();
+
+  const resourceType = params.get("resource_type") || FILTER_ALL;
+  const operationType = params.get("operation_type") || FILTER_ALL;
+  const operationStatus = params.get("operation_status") || FILTER_ALL;
+
+  const operationStatuses = ["queued", "running", "failed", "succeeded"];
+  const operationTypes = [
+    "audit",
+    "backup",
+    "captain_comeback_restart",
+    "configure",
+    "clone",
+    "copy",
+    "deploy",
+    "deprovision",
+    "drain",
+    "evacuate",
+    "execute",
+    "get",
+    "index",
+    "logs",
+    "modify",
+    "poll",
+    "provision",
+    "ps",
+    "purge",
+    "rebuild",
+    "recover",
+    "recover_recreate",
+    "reload",
+    "renew",
+    "replicate",
+    "replicate_logical",
+    "restart",
+    "restart_recreate",
+    "run_recipe",
+    "scale",
+    "scan",
+    "scan_code",
+    "set",
+    "show",
+    "sync",
+    "tunnel",
+  ];
+  const resourceTypes = [
+    "App",
+    "Backup",
+    "Certificate",
+    "Configuration",
+    "Database",
+    "DatabaseCredential",
+    "EphemeralSession",
+    "Image",
+    "LogDrain",
+    "MetricDrain",
+    "Service",
+    "Vhost",
+  ];
+
+  const operationStatusesAsOptions = [
+    { label: "All", value: FILTER_ALL },
+    ...operationStatuses.map((status) => ({
+      label: capitalize(status),
+      value: status,
+    })),
+  ];
+  const operationTypesAsOptions = [
+    { label: "All", value: FILTER_ALL },
+    ...operationTypes.map((type) => ({
+      label: capitalize(type),
+      value: type,
+    })),
+  ];
+  const resourceTypeAsOptions = [
+    { label: "All", value: FILTER_ALL },
+    ...resourceTypes.map((type) => ({
+      label: capitalize(type),
+      value: type,
+    })),
+  ];
+  const [resourceTypeFilter, setResourceTypeFilter] = useState(resourceType);
+  const [operationTypeFilter, setOperationTypeFilter] = useState(operationType);
+  const [operationStatusFilter, setOperationStatusFilter] =
+    useState(operationStatus);
+  const onFilter = () => {
+    setParams({
+      resource_type: resourceTypeFilter,
+      operation_type: operationTypeFilter,
+      operation_status: operationStatusFilter,
+    });
+  };
+  const onReset = () => {
+    setResourceTypeFilter(FILTER_ALL);
+    setOperationTypeFilter(FILTER_ALL);
+    setOperationStatusFilter(FILTER_ALL);
+    setParams({});
+  };
+
   return (
     <Group>
       <Group size="sm">
@@ -274,6 +379,74 @@ function ActivityTable({
           </Group>
         </FilterBar>
       </Group>
+
+      <Box>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onFilter();
+          }}
+        >
+          <Group>
+            <Group variant="horizontal">
+              <>
+                {showResourceTypeFilter ? (
+                  <div className="flex-1">
+                    <Label htmlFor="resource-type-selector">
+                      Resource Type
+                    </Label>
+                    <Select
+                      id="resource-type-selector"
+                      value={resourceTypeFilter}
+                      options={resourceTypeAsOptions}
+                      onSelect={(opt) => setResourceTypeFilter(opt.value)}
+                      className="w-full"
+                    />
+                  </div>
+                ) : null}
+              </>
+
+              <div className="flex-1">
+                <Label htmlFor="operation-type-selector">Operation Type</Label>
+                <Select
+                  id="operation-type-selector"
+                  value={operationTypeFilter}
+                  options={operationTypesAsOptions}
+                  onSelect={(opt) => setOperationTypeFilter(opt.value)}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="flex-1">
+                <Label htmlFor="operation-status-selector">
+                  Operation Status
+                </Label>
+                <Select
+                  id="operation-status-selector"
+                  options={operationStatusesAsOptions}
+                  value={operationStatusFilter}
+                  onSelect={(opt) => setOperationStatusFilter(opt.value)}
+                  className="w-full"
+                />
+              </div>
+            </Group>
+
+            <hr />
+
+            <Group
+              variant="horizontal"
+              className="items-center justify-between"
+            >
+              <Group variant="horizontal" size="sm">
+                <Button type="submit">Filter</Button>
+                <Button variant="white" onClick={onReset}>
+                  Reset
+                </Button>
+              </Group>
+            </Group>
+          </Group>
+        </form>
+      </Box>
 
       <Table>
         <THead>
@@ -313,6 +486,7 @@ export function ActivityByOrg({ orgId }: { orgId: string }) {
       paginated={paginated}
       isLoading={loader.isLoading}
       showTitle
+      showResourceTypeFilter
     />
   );
 }
@@ -333,6 +507,7 @@ export function ActivityByEnv({ envId }: { envId: string }) {
       paginated={paginated}
       isLoading={loader.isLoading}
       showTitle={false}
+      showResourceTypeFilter
     />
   );
 }

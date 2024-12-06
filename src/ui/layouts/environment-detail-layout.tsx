@@ -1,4 +1,5 @@
 import {
+  emptyFilterProps,
   estimateMonthlyCost,
   fetchApps,
   fetchBackupsByEnvId,
@@ -115,7 +116,7 @@ function EnvironmentPageHeader({ id }: { id: string }): React.ReactElement {
   const loaderEnv = useQuery(fetchEnvironmentById({ id }));
   const loaderApps = useQuery(fetchApps());
   const loaderEndpoints = useQuery(endpointQuery);
-  useQuery(fetchOperationsByEnvId({ id, page: 1 }));
+  useQuery(fetchOperationsByEnvId({ id, page: 1, ...emptyFilterProps }));
   const loader = useMemo(
     () => findLoaderComposite([loaderEnv, loaderApps, loaderEndpoints]),
     [loaderEnv, loaderApps, loaderEndpoints],
