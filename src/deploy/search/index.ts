@@ -9,8 +9,7 @@ import {
   selectApps,
   selectAppsByOrgAsList,
 } from "../app";
-import { findBackupsByDatabaseId, selectBackupsAsList } from "../backup";
-import { estimateMonthlyCost } from "../cost";
+import { computeCostId } from "../cost";
 import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
@@ -20,11 +19,6 @@ import {
   selectDatabaseImages,
 } from "../database-images";
 import { findDiskById, selectDisks } from "../disk";
-import {
-  findEndpointsByAppId,
-  findEndpointsByServiceId,
-  selectEndpointsAsList,
-} from "../endpoint";
 import {
   findEnvById,
   hasDeployEnvironment,
@@ -49,9 +43,9 @@ export const selectServicesForTable = createSelector(
   selectEnvironmentsByOrg,
   selectApps,
   selectServicesByOrgId,
-  selectEndpointsAsList,
   schema.manualScaleRecommendations.selectTableAsList,
-  (envs, apps, services, endpoints, recs) =>
+  schema.costs.selectTable,
+  (envs, apps, services, recs, costs) =>
     services
       // making sure we have a valid environment associated with it
       .filter((service) => {
@@ -70,16 +64,17 @@ export const selectServicesForTable = createSelector(
           resourceHandle = "Unknown";
         }
         const rec = recs.find((r) => r.serviceId === service.id);
+        const costItem = schema.costs.findById(costs, {
+          id: computeCostId("Service", service.id),
+        });
+        const cost = costItem.estCost;
 
         return {
           ...service,
           envHandle: env.handle,
           resourceHandle,
           savings: rec?.costSavings || 0,
-          cost: estimateMonthlyCost({
-            services: [service],
-            endpoints: findEndpointsByServiceId(endpoints, service.id),
-          }),
+          cost,
         };
       }),
 );
@@ -170,9 +165,9 @@ export const selectAppsForTable = createSelector(
   selectEnvironments,
   selectOperationsAsList,
   selectServices,
-  selectEndpointsAsList,
   selectDeployments,
-  (apps, envs, ops, services, endpoints, deployments) =>
+  schema.costs.selectTable,
+  (apps, envs, ops, services, deployments, costs) =>
     apps
       .map((app): DeployAppRow => {
         const env = findEnvById(envs, { id: app.environmentId });
@@ -185,11 +180,11 @@ export const selectAppsForTable = createSelector(
           Object.values(services),
           app.id,
         );
-        const cost = estimateMonthlyCost({
-          services: appServices,
-          endpoints: findEndpointsByAppId(endpoints, services, app.id),
-        });
         const metrics = calcMetrics(appServices);
+        const costItem = schema.costs.findById(costs, {
+          id: computeCostId("App", app.id),
+        });
+        const cost = costItem.estCost;
 
         return {
           ...app,
@@ -595,11 +590,10 @@ export const selectDatabasesForTable = createSelector(
   selectOperationsAsList,
   selectDisks,
   selectServices,
-  selectEndpointsAsList,
-  selectBackupsAsList,
   selectDatabaseImages,
   schema.manualScaleRecommendations.selectTableAsList,
-  (dbs, envs, ops, disks, services, endpoints, backups, images, recs) =>
+  schema.costs.selectTable,
+  (dbs, envs, ops, disks, services, images, recs, costs) =>
     dbs
       .map((dbb): DeployDatabaseRow => {
         const env = findEnvById(envs, { id: dbb.environmentId });
@@ -610,12 +604,10 @@ export const selectDatabasesForTable = createSelector(
         }
         const disk = findDiskById(disks, { id: dbb.diskId });
         const service = findServiceById(services, { id: dbb.serviceId });
-        const cost = estimateMonthlyCost({
-          services: [service],
-          disks: [disk],
-          endpoints: findEndpointsByServiceId(endpoints, service.id),
-          backups: findBackupsByDatabaseId(backups, dbb.id),
+        const costItem = schema.costs.findById(costs, {
+          id: computeCostId("Database", dbb.id),
         });
+        const cost = costItem.estCost;
         const metrics = calcMetrics([service]);
         const img = findDatabaseImageById(images, { id: dbb.databaseImageId });
         const rec = recs.find((s) => s.serviceId === dbb.serviceId);

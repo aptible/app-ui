@@ -1,4 +1,4 @@
-import { CONTAINER_PROFILES } from "./container";
+import { CONTAINER_PROFILES } from "../container";
 import {
   backupCostPerGBMonth,
   diskCostPerGBMonth,
@@ -8,7 +8,7 @@ import {
   hoursPerMonth,
   stackCostPerMonth,
   vpnTunnelCostPerMonth,
-} from "./cost";
+} from "./calc";
 
 describe("estimateMonthlyCost", () => {
   it("should calculate the cost of containers", () => {

@@ -31,5 +31,5 @@ export * from "./container";
 export * from "./support";
 export * from "./entities";
 export * from "./search";
-export * from "./cost";
 export * from "./manual_scale_recommendation";
+export * from "./cost";

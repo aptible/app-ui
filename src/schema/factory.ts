@@ -9,6 +9,7 @@ import {
   type DeployBackupRetentionPolicy,
   type DeployCertificate,
   type DeployContainer,
+  type DeployCost,
   type DeployDatabase,
   type DeployDatabaseCredential,
   type DeployDatabaseImage,
@@ -919,6 +920,15 @@ export const defaultManualScaleRecommendation = (
     recommendedContainerMemoryLimitMb: 0,
     metricPercentile: 0,
     createdAt: now,
+    ...s,
+  };
+};
+
+export const defaultCost = (s: Partial<DeployCost> = {}): DeployCost => {
+  return {
+    id: "",
+    estCost: 0,
+    resourceType: "",
     ...s,
   };
 };

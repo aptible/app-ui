@@ -1,9 +1,5 @@
-import {
-  fetchEndpoints,
-  fetchServices,
-  selectServicesForTableSearch,
-} from "@app/deploy";
-import { useCompositeLoader, useQuery, useSelector } from "@app/react";
+import { fetchServices, selectServicesForTableSearch } from "@app/deploy";
+import { useQuery, useSelector } from "@app/react";
 import type { DeployServiceRow } from "@app/types";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -21,9 +17,6 @@ import {
 } from "../shared";
 
 export function ServicesPage() {
-  const costQueries = [fetchServices(), fetchEndpoints()];
-  costQueries.forEach((q) => useQuery(q));
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
   const { isLoading } = useQuery(fetchServices());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
@@ -65,7 +58,6 @@ export function ServicesPage() {
 
         <AppServicesByOrg
           paginated={paginated}
-          costLoading={isCostLoading}
           onSort={(key) => {
             if (key === sortBy) {
               setSortDir(sortDir === "asc" ? "desc" : "asc");
