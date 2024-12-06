@@ -28,6 +28,7 @@ import {
   useSelector,
 } from "@app/react";
 import {
+  stackDetailSettingsUrl,
   stackDetailEnvsUrl,
   stackDetailHidsUrl,
   stackDetailUrl,
@@ -150,6 +151,10 @@ function StackPageHeader() {
 
   if (stack.exposeIntrusionDetectionReports) {
     tabs.push({ name: "Managed HIDS", href: stackDetailHidsUrl(id) });
+  }
+
+  if (stack.dedicatedOrSelfHostedStack) {
+    tabs.push({ name: "Settings", href: stackDetailSettingsUrl(id) });
   }
 
   return (

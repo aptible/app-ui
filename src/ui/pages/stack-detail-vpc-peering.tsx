@@ -1,5 +1,6 @@
 import { fetchVpcPeersByStackId, selectVpcPeersByStackId } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
+import { supportUrl } from "@app/routes";
 import { capitalize } from "@app/string-utils";
 import type { DeployVpcPeer } from "@app/types";
 import { useParams } from "react-router";
@@ -7,7 +8,7 @@ import { Link } from "react-router-dom";
 import { usePaginate } from "../hooks";
 import {
   Box,
-  Button,
+  ButtonLink,
   ButtonLinkDocs,
   DescBar,
   EmptyTr,
@@ -55,7 +56,9 @@ export const StackDetailVpcPeeringPage = () => {
             className="hover:no-underline"
             to="https://www.aptible.com/docs/support"
           >
-            <Button className="font-semibold">Contact Support</Button>
+            <ButtonLink className="w-fit font-semibold" to={supportUrl()}>
+              Contact Support
+            </ButtonLink>
           </Link>
         </Box>
 
