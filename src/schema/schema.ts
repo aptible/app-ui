@@ -6,6 +6,7 @@ import {
   type ModalState,
   ModalType,
   type Nav,
+  NoticeType,
   type ResourceStats,
   type Role,
   type U2fDevice,
@@ -88,9 +89,9 @@ export const [schema, initialState] = createSchema({
   manualScaleRecommendations: slice.table({
     empty: factory.defaultManualScaleRecommendation(),
   }),
-  notices: slice.obj<Record<ModalType, string>>({
-    [ModalType.BackupRPNotice]: "",
-    [ModalType.NONE]: "",
+  notices: slice.obj<Record<NoticeType, string>>({
+    [NoticeType.BackupRPNotice]: "",
+    [NoticeType.NONE]: "",
   }),
 });
 export type WebState = typeof initialState;

@@ -1,7 +1,14 @@
 import { selectNav } from "@app/nav";
 import { useSelector } from "@app/react";
+import { schema } from "@app/schema";
+import { selectCurrentUser } from "@app/users";
 import { Outlet } from "react-router";
-import { ApplicationSidebar, Footer, Group } from "../shared";
+import {
+  ApplicationSidebar,
+  Footer,
+  Group,
+  NoticeBackupRpBanner,
+} from "../shared";
 
 interface Props {
   children?: React.ReactNode;
@@ -18,6 +25,12 @@ export function AppSidebarLayout({
 }: Props) {
   const { collapsed } = useSelector(selectNav);
   const collapsedOffset = collapsed ? 15.2 : 64;
+  const user = useSelector(selectCurrentUser);
+  const createdAt = new Date(user.createdAt);
+  const notices = useSelector(schema.notices.select);
+  const showNotice =
+    notices["backup-rp-notice"] === "" &&
+    createdAt < new Date(2024, 10 - 1, 17);
 
   return (
     <div className={`flex h-full ${className}`}>
@@ -33,6 +46,7 @@ export function AppSidebarLayout({
       >
         <main className={`h-full flex flex-col ${padding ? "py-4 px-7" : ""}`}>
           <Group>
+            {showNotice ? <NoticeBackupRpBanner /> : null}
             {header ? header : null}
             {children ? children : <Outlet />}
           </Group>
