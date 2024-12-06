@@ -20,22 +20,15 @@ import {
   fetchStacks,
 } from "@app/deploy";
 import { fetchDeployments } from "@app/deployment";
-import { call, parallel, put, select, takeEvery } from "@app/fx";
+import { call, parallel, select, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
-import { openModal } from "@app/modal";
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchCurrentUserRoles, fetchRoles } from "@app/roles";
 import { schema } from "@app/schema";
 import { fetchSources } from "@app/source";
 import { fetchSystemStatus } from "@app/system-status";
 import { selectAccessToken } from "@app/token";
-import { ModalType } from "@app/types";
-import {
-  fetchUser,
-  fetchUsers,
-  selectCurrentUser,
-  selectCurrentUserId,
-} from "@app/users";
+import { fetchUser, fetchUsers, selectCurrentUserId } from "@app/users";
 
 export const FETCH_REQUIRED_DATA = "fetch-required-data";
 
@@ -72,7 +65,6 @@ function* onFetchRequiredData() {
   yield* fetchUser.run({ userId });
   const org = yield* select(selectOrganizationSelected);
   yield* fetchBillingDetail.run({ id: org.billingDetailId });
-  yield* onCheckForNotices();
 
   yield* schema.update(schema.loaders.success({ id: FETCH_REQUIRED_DATA }));
 }
@@ -102,18 +94,6 @@ function* onFetchResourceData() {
     fetchManualScaleRecommendations.run(),
   ]);
   yield* group;
-}
-
-function* onCheckForNotices() {
-  const user = yield* select(selectCurrentUser);
-  const createdAt = new Date(user.createdAt);
-  const notices = yield* select(schema.notices.select);
-  if (
-    notices["backup-rp-notice"] === "" &&
-    createdAt < new Date(2024, 10 - 1, 17)
-  ) {
-    yield* put(openModal({ type: ModalType.BackupRPNotice, props: {} }));
-  }
 }
 
 function* onRefreshData() {

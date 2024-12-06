@@ -1,6 +1,5 @@
 export enum ModalType {
   NONE = "",
-  BackupRPNotice = "backup-rp-notice",
 }
 
 export interface ModalState {
