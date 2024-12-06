@@ -58,7 +58,7 @@ export interface DeployEndpointResponse {
   status: ProvisionableStatus;
   created_at: string;
   updated_at: string;
-  token_header: string;
+  token_header: string | undefined;
   _links: {
     service: LinkResponse;
     certificate: LinkResponse;
@@ -93,7 +93,7 @@ export const defaultEndpointResponse = (
     ip_whitelist: [],
     platform: "elb",
     type: "unknown",
-    token_header: "",
+    token_header: undefined,
     user_domain: "",
     virtual_domain: "",
     security_group_id: "",

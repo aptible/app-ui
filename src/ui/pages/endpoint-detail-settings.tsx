@@ -71,7 +71,9 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const [certId, setCertId] = useState(enp.certificateId);
   const [cert, setCert] = useState("");
   const [privKey, setPrivKey] = useState("");
-  const [tokenHeader, setTokenHeader] = useState(enp.tokenHeader);
+  const [tokenHeader, setTokenHeader] = useState(
+    enp.tokenHeader as string | undefined,
+  );
   const [usingNewCert, setUsingNewCert] = useState(false);
 
   useEffect(() => {
