@@ -26,11 +26,14 @@ export function NoticeBackupRpBanner() {
           default backup retention policy for newly created environments to:
         </p>
         <ul className="list-disc list-inside">
-          <li>30 daily</li>
-          <li>12 monthly</li>
-          <li>6 yearly</li>
-          <li>Cross-Region copy: disabled</li>
-          <li>Keep Final backup: enabled</li>
+          <li>
+            <strong>30</strong> daily backups, <strong>12</strong> monthly
+            backups, <strong>6</strong> yearly backups
+          </li>
+          <li>
+            Cross-region copies: <strong>Disabled</strong>, Keep final backups:{" "}
+            <strong>Enabled</strong>
+          </li>
         </ul>
         <p>
           For more information,{" "}
