@@ -58,6 +58,7 @@ export interface DeployEndpointResponse {
   status: ProvisionableStatus;
   created_at: string;
   updated_at: string;
+  token_header: string | undefined;
   _links: {
     service: LinkResponse;
     certificate: LinkResponse;
@@ -92,6 +93,7 @@ export const defaultEndpointResponse = (
     ip_whitelist: [],
     platform: "elb",
     type: "unknown",
+    token_header: undefined,
     user_domain: "",
     virtual_domain: "",
     security_group_id: "",
@@ -135,6 +137,7 @@ export const deserializeDeployEndpoint = (
     status: payload.status,
     serviceId: extractIdFromLink(payload._links.service),
     certificateId: extractIdFromLink(payload._links.certificate),
+    tokenHeader: payload.token_header,
   };
 };
 
@@ -457,6 +460,7 @@ interface CreateEndpointBase {
   internal: boolean;
   ipAllowlist: string[];
   containerPort?: string;
+  tokenHeader: string | undefined;
 }
 
 interface CreateDefaultEndpoint extends CreateEndpointBase {
@@ -495,6 +499,7 @@ export const createEndpoint = api.post<
     internal: ctx.payload.internal,
     ip_whitelist: ctx.payload.ipAllowlist,
     container_port: ctx.payload.containerPort,
+    token_header: ctx.payload.tokenHeader,
   };
 
   if (ctx.payload.certId) {
@@ -731,6 +736,7 @@ interface EndpointPatchProps {
   ipAllowlist: string[];
   containerPort: string;
   certId: string;
+  tokenHeader: string | undefined;
 }
 
 export interface EndpointUpdateProps extends EndpointPatchProps {
@@ -747,6 +753,7 @@ const patchEndpoint = api.patch<EndpointPatchProps>(
     const data: Record<string, any> = {
       ip_whitelist: ctx.payload.ipAllowlist,
       container_port: ctx.payload.containerPort,
+      token_header: ctx.payload.tokenHeader,
     };
     if (ctx.payload.certId) {
       data.certificate = `${env.apiUrl}/certificates/${ctx.payload.certId}`;
@@ -786,6 +793,7 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       ipAllowlist: ctx.payload.ipAllowlist,
       containerPort: ctx.payload.containerPort,
       certId,
+      tokenHeader: ctx.payload.tokenHeader,
     });
     if (!patchCtx.json.ok) {
       yield* schema.update(
@@ -896,6 +904,14 @@ export const isRequiresCert = (enp: DeployEndpoint) => {
   return (isHttp || isTls) && !enp.default && !enp.acme;
 };
 
+export const canHaveTokenHeader = (enp: DeployEndpoint) => {
+  return (
+    enp.type === "http" ||
+    enp.type === "http_proxy_protocol" ||
+    enp.type === "grpc"
+  );
+};
+
 export const getContainerPort = (
   enp: Pick<DeployEndpoint, "containerPort" | "containerPorts">,
   exposedPorts: number[],
@@ -941,12 +957,21 @@ export const getEndpointUrl = (enp?: DeployEndpoint) => {
   return enp.virtualDomain || enp.externalHost || emptyEndpointName;
 };
 
+export const getTokenHeader = (enp?: DeployEndpoint) => {
+  if (!enp) return;
+  if (enp.tokenHeader) {
+    return "True";
+  }
+  return "False";
+};
+
 export const getEndpointText = (enp: DeployEndpoint) => {
   return {
     url: getEndpointUrl(enp),
     placement: getPlacement(enp),
     ipAllowlist: getIpAllowlistText(enp),
     hostname: getEndpointDisplayHost(enp),
+    token_header: getTokenHeader(enp),
   };
 };
 
