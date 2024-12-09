@@ -274,10 +274,18 @@ export const cacheTimer = () => timer(5 * MINUTES);
 export const cacheMinTimer = () => timer(60 * SECONDS);
 export const cacheShortTimer = () => timer(5 * SECONDS);
 
+function* apiErrorMdw(ctx: ApiCtx, next: Next) {
+  yield* next();
+  if (!ctx.json.ok) {
+    console.error(ctx.json.error, ctx);
+  }
+}
+
 export const api = createApi<DeployApiCtx>(
   createThunks({ supervisor: takeEvery }),
 );
 api.use(debugMdw);
+api.use(apiErrorMdw);
 api.use(sentryErrorHandler);
 api.use(expiredToken);
 api.use(mdw.api({ schema }));
@@ -292,6 +300,7 @@ export const authApi = createApi<AuthApiCtx>(
   createThunks({ supervisor: takeEvery }),
 );
 authApi.use(debugMdw);
+authApi.use(apiErrorMdw);
 authApi.use(sentryErrorHandler);
 authApi.use(expiredToken);
 authApi.use(mdw.api({ schema }));
@@ -307,6 +316,7 @@ export const billingApi = createApi<DeployApiCtx>(
   createThunks({ supervisor: takeEvery }),
 );
 billingApi.use(debugMdw);
+billingApi.use(apiErrorMdw);
 billingApi.use(sentryErrorHandler);
 billingApi.use(expiredToken);
 billingApi.use(mdw.api({ schema }));
@@ -321,6 +331,7 @@ export const metricTunnelApi = createApi<MetricTunnelCtx>(
   createThunks({ supervisor: takeEvery }),
 );
 metricTunnelApi.use(debugMdw);
+metricTunnelApi.use(apiErrorMdw);
 metricTunnelApi.use(sentryErrorHandler);
 metricTunnelApi.use(expiredToken);
 metricTunnelApi.use(mdw.api({ schema }));
@@ -335,6 +346,7 @@ export const portalApi = createApi<PortalCtx>(
   createThunks({ supervisor: takeEvery }),
 );
 portalApi.use(debugMdw);
+portalApi.use(apiErrorMdw);
 portalApi.use(sentryErrorHandler);
 portalApi.use(expiredToken);
 portalApi.use(mdw.api({ schema }));
