@@ -1,4 +1,5 @@
 import {
+  type FilterOpProps,
   type PaginateProps,
   type Retryable,
   api,
@@ -423,30 +424,69 @@ function* paginateOps(
   yield* schema.update(schema.cache.add({ [ctx.key]: paginatedData }));
 }
 
+export const emptyFilterProps: FilterOpProps = {
+  resourceType: "",
+  operationType: "",
+  operationStatus: "",
+};
+
 export const cancelOrgOperationsPoll = createAction("cancel-org-ops-poll");
 export const pollOrgOperations = api.get<{ orgId: string }>(
   "/organizations/:orgId/operations",
   { supervisor: poll(10 * 1000, `${cancelOrgOperationsPoll}`) },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByOrgId({ page: 1, id: ctx.payload.orgId });
+    const action = fetchOperationsByOrgId({
+      page: 1,
+      id: ctx.payload.orgId,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
-export const fetchOperationsByOrgId = api.get<{ id: string } & PaginateProps>(
+function ctxToUrlQuery(payload: FilterOpProps) {
+  const urlParam = new URLSearchParams();
+  if (payload.resourceType) {
+    urlParam.set("resource_type", payload.resourceType);
+  }
+  if (payload.operationType) {
+    urlParam.set("type", payload.operationType);
+  }
+  if (payload.operationStatus) {
+    urlParam.set("status", payload.operationStatus);
+  }
+  const query = urlParam.toString();
+  return query ? `&${query}` : "";
+}
+
+export const fetchOperationsByOrgId = api.get<
+  { id: string } & PaginateProps & FilterOpProps
+>(
   "/organizations/:id/operations?page=:page",
   { supervisor: cacheTimer() },
-  paginateOps,
+  function* (ctx, next) {
+    const urlParam = ctxToUrlQuery(ctx.payload);
+    ctx.request = ctx.req({
+      url: `${ctx.req().url}${urlParam}`,
+    });
+    yield* paginateOps(ctx, next);
+  },
 );
 
 export const fetchOperationsByEnvId = api.get<
-  { id: string } & PaginateProps,
+  { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
   "/accounts/:id/operations?page=:page",
   { supervisor: cacheTimer() },
-  paginateOps,
+  function* (ctx, next) {
+    const urlParam = ctxToUrlQuery(ctx.payload);
+    ctx.request = ctx.req({
+      url: `${ctx.req().url}${urlParam}`,
+    });
+    yield* paginateOps(ctx, next);
+  },
 );
 
 export const cancelEnvOperationsPoll = createAction("cancel-env-ops-poll");
@@ -458,18 +498,28 @@ export const pollEnvOperations = api.get<
   { supervisor: poll(10 * 1000, `${cancelEnvOperationsPoll}`) },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByEnvId({ page: 1, id: ctx.payload.envId });
+    const action = fetchOperationsByEnvId({
+      page: 1,
+      id: ctx.payload.envId,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
 export const fetchOperationsByAppId = api.get<
-  { id: string } & PaginateProps,
+  { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
-  "/apps/:id/operations?page=:page&with_services=true",
+  "/apps/:id/operations?page=:page",
   { supervisor: cacheTimer() },
-  paginateOps,
+  function* (ctx, next) {
+    const urlParam = ctxToUrlQuery(ctx.payload);
+    ctx.request = ctx.req({
+      url: `${ctx.req().url}${urlParam}`,
+    });
+    yield* paginateOps(ctx, next);
+  },
 );
 
 export const cancelAppOpsPoll = createAction("cancel-app-ops-poll");
@@ -480,18 +530,28 @@ export const pollAppOperations = api.get<{ id: string }>(
   },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByAppId({ page: 1, id: ctx.payload.id });
+    const action = fetchOperationsByAppId({
+      page: 1,
+      id: ctx.payload.id,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
 export const fetchOperationsByDatabaseId = api.get<
-  { id: string } & PaginateProps,
+  { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
-  "/databases/:id/operations?page=:page&with_services=true",
+  "/databases/:id/operations?page=:page",
   { supervisor: cacheTimer() },
-  paginateOps,
+  function* (ctx, next) {
+    const urlParam = ctxToUrlQuery(ctx.payload);
+    ctx.request = ctx.req({
+      url: `${ctx.req().url}${urlParam}`,
+    });
+    yield* paginateOps(ctx, next);
+  },
 );
 
 export const cancelDatabaseOpsPoll = createAction("cancel-db-ops-poll");
@@ -500,18 +560,28 @@ export const pollDatabaseOperations = api.get<{ id: string }>(
   { supervisor: poll(10 * 1000, `${cancelDatabaseOpsPoll}`) },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByDatabaseId({ page: 1, id: ctx.payload.id });
+    const action = fetchOperationsByDatabaseId({
+      page: 1,
+      id: ctx.payload.id,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
 export const fetchOperationsByServiceId = api.get<
-  { id: string } & PaginateProps,
+  { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
   "/services/:id/operations?page=:page",
   { supervisor: cacheTimer() },
-  paginateOps,
+  function* (ctx, next) {
+    const urlParam = ctxToUrlQuery(ctx.payload);
+    ctx.request = ctx.req({
+      url: `${ctx.req().url}${urlParam}`,
+    });
+    yield* paginateOps(ctx, next);
+  },
 );
 
 export const cancelServicesOpsPoll = createAction("cancel-services-ops-poll");
@@ -520,18 +590,28 @@ export const pollServiceOperations = api.get<{ id: string }>(
   { supervisor: poll(10 * 1000, `${cancelServicesOpsPoll}`) },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByServiceId({ page: 1, id: ctx.payload.id });
+    const action = fetchOperationsByServiceId({
+      page: 1,
+      id: ctx.payload.id,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
 
 export const fetchOperationsByEndpointId = api.get<
-  { id: string } & PaginateProps,
+  { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
   "/vhosts/:id/operations?page=:page",
   { supervisor: cacheTimer() },
-  paginateOps,
+  function* (ctx, next) {
+    const urlParam = ctxToUrlQuery(ctx.payload);
+    ctx.request = ctx.req({
+      url: `${ctx.req().url}${urlParam}`,
+    });
+    yield* paginateOps(ctx, next);
+  },
 );
 
 export const cancelEndpointOpsPoll = createAction("cancel-enp-ops-poll");
@@ -540,7 +620,11 @@ export const pollEndpointOperations = api.get<{ id: string }>(
   { supervisor: poll(10 * 1000, `${cancelEndpointOpsPoll}`) },
   function* (ctx, next) {
     yield* next();
-    const action = fetchOperationsByEndpointId({ page: 1, id: ctx.payload.id });
+    const action = fetchOperationsByEndpointId({
+      page: 1,
+      id: ctx.payload.id,
+      ...emptyFilterProps,
+    });
     yield* paginateOps({ ...ctx, key: action.payload.key }, function* () {});
   },
 );
