@@ -456,7 +456,8 @@ function ctxToUrlQuery(payload: FilterOpProps) {
   if (payload.operationStatus) {
     urlParam.set("status", payload.operationStatus);
   }
-  return urlParam;
+  const query = urlParam.toString();
+  return query ? `&${query}` : "";
 }
 
 export const fetchOperationsByOrgId = api.get<
@@ -467,7 +468,7 @@ export const fetchOperationsByOrgId = api.get<
   function* (ctx, next) {
     const urlParam = ctxToUrlQuery(ctx.payload);
     ctx.request = ctx.req({
-      url: `${ctx.req().url}&${urlParam.toString()}`,
+      url: `${ctx.req().url}${urlParam}`,
     });
     yield* paginateOps(ctx, next);
   },
@@ -482,7 +483,7 @@ export const fetchOperationsByEnvId = api.get<
   function* (ctx, next) {
     const urlParam = ctxToUrlQuery(ctx.payload);
     ctx.request = ctx.req({
-      url: `${ctx.req().url}&${urlParam.toString()}`,
+      url: `${ctx.req().url}${urlParam}`,
     });
     yield* paginateOps(ctx, next);
   },
@@ -515,7 +516,7 @@ export const fetchOperationsByAppId = api.get<
   function* (ctx, next) {
     const urlParam = ctxToUrlQuery(ctx.payload);
     ctx.request = ctx.req({
-      url: `${ctx.req().url}&${urlParam.toString()}`,
+      url: `${ctx.req().url}${urlParam}`,
     });
     yield* paginateOps(ctx, next);
   },
@@ -547,7 +548,7 @@ export const fetchOperationsByDatabaseId = api.get<
   function* (ctx, next) {
     const urlParam = ctxToUrlQuery(ctx.payload);
     ctx.request = ctx.req({
-      url: `${ctx.req().url}&${urlParam.toString()}`,
+      url: `${ctx.req().url}${urlParam}`,
     });
     yield* paginateOps(ctx, next);
   },
@@ -577,7 +578,7 @@ export const fetchOperationsByServiceId = api.get<
   function* (ctx, next) {
     const urlParam = ctxToUrlQuery(ctx.payload);
     ctx.request = ctx.req({
-      url: `${ctx.req().url}&${urlParam.toString()}`,
+      url: `${ctx.req().url}${urlParam}`,
     });
     yield* paginateOps(ctx, next);
   },
@@ -607,7 +608,7 @@ export const fetchOperationsByEndpointId = api.get<
   function* (ctx, next) {
     const urlParam = ctxToUrlQuery(ctx.payload);
     ctx.request = ctx.req({
-      url: `${ctx.req().url}&${urlParam.toString()}`,
+      url: `${ctx.req().url}${urlParam}`,
     });
     yield* paginateOps(ctx, next);
   },
