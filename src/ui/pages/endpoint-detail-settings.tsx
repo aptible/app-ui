@@ -10,6 +10,7 @@ import {
   selectServiceById,
   updateEndpoint,
 } from "@app/deploy";
+import { selectHasTokenHeaderFeature } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -62,14 +63,17 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const image = useSelector((s) =>
     selectImageById(s, { id: app.currentImageId }),
   );
+  const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
   const exposedPorts = image.exposedPorts;
-
   const origAllowlist = enp.ipWhitelist.join("\n");
   const [ipAllowlist, setIpAllowlist] = useState(origAllowlist);
   const [port, setPort] = useState(enp.containerPort);
   const [certId, setCertId] = useState(enp.certificateId);
   const [cert, setCert] = useState("");
   const [privKey, setPrivKey] = useState("");
+  const [tokenHeader, setTokenHeader] = useState(
+    enp.tokenHeader as string | undefined,
+  );
   const [usingNewCert, setUsingNewCert] = useState(false);
 
   useEffect(() => {
@@ -90,12 +94,16 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     envId: service.environmentId,
     cert,
     privKey,
+    tokenHeader,
     requiresCert: isRequiresCert(enp),
+    enpType: enp.type,
   };
   const ipsSame = origAllowlist === ipAllowlist;
   const portSame = enp.containerPort === port;
   const certSame = enp.certificateId === certId;
-  const isDisabled = ipsSame && portSame && certSame && cert === "";
+  const tokenSame = enp.tokenHeader === tokenHeader;
+  const isDisabled =
+    ipsSame && portSame && certSame && cert === "" && tokenSame;
   const curPortText = getContainerPort(enp, exposedPorts);
   const loader = useLoader(updateEndpoint);
   const [errors, validate] = useValidator<
@@ -211,6 +219,26 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     </FormGroup>
   ) : null;
 
+  const tokenEditForm =
+    (data.enpType === "http" ||
+      data.enpType === "http_proxy_protocol" ||
+      data.enpType === "grpc") &&
+    hasTokenHeaderFeature ? (
+      <FormGroup
+        label="Header Authentication Value"
+        htmlFor="token-header"
+        description={`The 'X-Origin-Token' header value. When set, clients will be required to pass a 'X-Origin-Token' header matching this value.`}
+      >
+        <Input
+          type="text"
+          id="token-header"
+          name="token-header"
+          value={tokenHeader}
+          onChange={(e) => setTokenHeader(e.currentTarget.value)}
+        />
+      </FormGroup>
+    ) : null;
+
   return (
     <Box>
       <h1 className="text-lg text-gray-500 mb-4">Endpoint Settings</h1>
@@ -219,6 +247,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
 
         {portForm}
         {certEditForm}
+        {tokenEditForm}
 
         <FormGroup
           label="IP Allowlist"

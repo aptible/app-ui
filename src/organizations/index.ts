@@ -123,6 +123,23 @@ export const selectHasBetaFeatures = createSelector(
   },
 );
 
+export const selectHasTokenHeaderFeature = createSelector(
+  selectOrganizationSelectedId,
+  selectEnv,
+  (orgId, config) => {
+    if (config.isDev) {
+      return true;
+    }
+
+    // Array of organization IDs that have access to Token Header integration feature
+    const tokenHeaderFeatureOrgIds = config.tokenHeaderOrgIds
+      .split(",")
+      .map((id) => id.trim())
+      .filter(Boolean);
+
+    return tokenHeaderFeatureOrgIds.includes(orgId);
+  },
+);
 function deserializeOrganization(o: OrganizationResponse): Organization {
   return {
     id: o.id,

@@ -15,6 +15,7 @@ import {
   selectImageById,
   selectServiceById,
 } from "@app/deploy";
+import { selectHasTokenHeaderFeature } from "@app/organizations";
 import { useLoader, useQuery } from "@app/react";
 import { useDispatch, useSelector } from "@app/react";
 import {
@@ -71,6 +72,7 @@ export function EndpointAppHeaderInfo({
     selectImageById(s, { id: app.currentImageId }),
   );
   const portTxt = getContainerPort(enp, image.exposedPorts);
+  const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
 
   return (
     <DetailHeader>
@@ -116,6 +118,11 @@ export function EndpointAppHeaderInfo({
         <DetailInfoItem title="Status">
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>
+        {hasTokenHeaderFeature ? (
+          <DetailInfoItem title="Using Header Auth">
+            {txt.token_header}
+          </DetailInfoItem>
+        ) : null}
       </DetailInfoGrid>
     </DetailHeader>
   );
