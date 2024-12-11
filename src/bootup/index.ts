@@ -26,7 +26,7 @@ import {
   fetchStacks,
 } from "@app/deploy";
 import { fetchDeployments } from "@app/deployment";
-import { call, parallel, select, takeEvery } from "@app/fx";
+import { call, parallel, put, select, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchCurrentUserRoles, fetchRoles } from "@app/roles";
