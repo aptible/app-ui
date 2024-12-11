@@ -62,6 +62,9 @@ import {
   DeploymentDetailLogsPage,
   DeploymentDetailPage,
   DeploymentsPage,
+  DiagnosticsCreatePage,
+  DiagnosticsDetailPage,
+  DiagnosticsPage,
   ElevatePage,
   ElevateRequired,
   EndpointDetailActivityPage,
@@ -747,6 +750,21 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.SUPPORT_URL,
     element: <SupportPage />,
+  },
+
+  {
+    path: routes.DIAGNOSTICS_URL,
+    element: <DiagnosticsPage />,
+  },
+
+  {
+    path: routes.DIAGNOSTICS_CREATE_URL,
+    element: <DiagnosticsCreatePage />,
+  },
+
+  {
+    path: routes.DIAGNOSTICS_DETAIL_URL,
+    element: <DiagnosticsDetailPage />,
   },
 
   {
