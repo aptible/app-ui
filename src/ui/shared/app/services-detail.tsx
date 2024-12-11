@@ -1,18 +1,18 @@
 import {
   calcMetrics,
   calcServiceMetrics,
-  fetchEndpointsByAppId,
+  fetchCostsByServices,
   fetchServiceSizingPoliciesByEnvironmentId,
   fetchServicesByAppId,
   selectAppById,
   selectAutoscalingEnabledById,
-  selectEndpointsByServiceId,
   selectEnvironmentById,
   selectServiceRowsByAppId,
   selectStackById,
   serviceCommandText,
 } from "@app/deploy";
-import { useCompositeLoader, useQuery, useSelector } from "@app/react";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import { useLoader, useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
   appServicePathMetricsUrl,
@@ -95,10 +95,7 @@ const CmdCell = ({
 };
 
 const DetailsCell = ({ service }: { service: DeployService }) => {
-  const endpoints = useSelector((s) =>
-    selectEndpointsByServiceId(s, { serviceId: service.id }),
-  );
-  const metrics = calcServiceMetrics(service, endpoints);
+  const metrics = calcServiceMetrics(service);
   const { totalCPU } = calcMetrics([service]);
   return (
     <Td className={tokens.type.darker}>
@@ -114,11 +111,9 @@ const DetailsCell = ({ service }: { service: DeployService }) => {
 
 const CostCell = ({
   service,
-  costLoading,
   evaluateAutoscaling = false,
 }: {
   service: DeployServiceRow;
-  costLoading: boolean;
   evaluateAutoscaling?: boolean;
 }) => {
   const hideCost =
@@ -126,6 +121,8 @@ const CostCell = ({
     useSelector((s) =>
       selectAutoscalingEnabledById(s, { id: service.serviceSizingPolicyId }),
     );
+  const orgId = useSelector(selectOrganizationSelectedId);
+  const { isLoading } = useLoader(fetchCostsByServices({ orgId }));
 
   return (
     <Td>
@@ -142,7 +139,7 @@ const CostCell = ({
             </Tooltip>
           </Group>
         ) : (
-          <CostEstimateTooltip cost={costLoading ? null : service.cost} />
+          <CostEstimateTooltip cost={isLoading ? null : service.cost} />
         )}
       </div>
     </Td>
@@ -160,11 +157,9 @@ const ScaleRecsCell = ({ service }: { service: DeployServiceRow }) => {
 const AppServiceByAppRow = ({
   service,
   stack,
-  costLoading,
 }: {
   service: DeployServiceRow;
   stack: DeployStack;
-  costLoading: boolean;
 }) => {
   const app = useSelector((s) => selectAppById(s, { id: service.appId }));
 
@@ -177,11 +172,7 @@ const AppServiceByAppRow = ({
 
       <CmdCell service={service} size="lg" />
       <DetailsCell service={service} />
-      <CostCell
-        service={service}
-        costLoading={costLoading}
-        evaluateAutoscaling={autoscalingEnabled}
-      />
+      <CostCell service={service} evaluateAutoscaling={autoscalingEnabled} />
       <ScaleRecsCell service={service} />
 
       <Td variant="right">
@@ -210,10 +201,8 @@ const AppServiceByAppRow = ({
 
 const AppServiceByOrgRow = ({
   service,
-  costLoading,
 }: {
   service: DeployServiceRow;
-  costLoading: boolean;
 }) => {
   const app = useSelector((s) => selectAppById(s, { id: service.appId }));
 
@@ -238,7 +227,7 @@ const AppServiceByOrgRow = ({
         <EnvStackCell environmentId={service.environmentId} />
         <CmdCell service={service} />
         <DetailsCell service={service} />
-        <CostCell service={service} costLoading={costLoading} />
+        <CostCell service={service} />
         <ScaleRecsCell service={service} />
 
         <Td variant="right">
@@ -259,11 +248,9 @@ const AppServiceByOrgRow = ({
 
 export function AppServicesByOrg({
   paginated,
-  costLoading,
   onSort,
 }: {
   paginated: PaginateProps<DeployServiceRow>;
-  costLoading: boolean;
   onSort: (sortDir: keyof DeployServiceRow) => void;
 }) {
   return (
@@ -326,11 +313,7 @@ export function AppServicesByOrg({
       <TBody>
         {paginated.data.length === 0 ? <EmptyTr colSpan={7} /> : null}
         {paginated.data.map((service) => (
-          <AppServiceByOrgRow
-            key={service.id}
-            service={service}
-            costLoading={costLoading}
-          />
+          <AppServiceByOrgRow key={service.id} service={service} />
         ))}
       </TBody>
     </Table>
@@ -355,14 +338,6 @@ export function AppServicesByApp({
     fetchServiceSizingPoliciesByEnvironmentId({ id: app.environmentId }),
   );
   const paginated = usePaginate(services);
-
-  // Cost
-  const costQueries = [
-    fetchServicesByAppId({ id: appId }),
-    fetchEndpointsByAppId({ appId }),
-  ];
-  costQueries.forEach((q) => useQuery(q));
-  const { isLoading: isCostLoading } = useCompositeLoader(costQueries);
 
   return (
     <Group>
@@ -392,7 +367,6 @@ export function AppServicesByApp({
               key={service.id}
               service={service}
               stack={stack}
-              costLoading={isCostLoading}
             />
           ))}
         </TBody>

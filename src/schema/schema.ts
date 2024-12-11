@@ -93,5 +93,8 @@ export const [schema, initialState] = createSchema({
     [NoticeType.BackupRPNotice]: "",
     [NoticeType.NONE]: "",
   }),
+  costs: slice.table({
+    empty: factory.defaultCost(),
+  }),
 });
 export type WebState = typeof initialState;

@@ -8,6 +8,11 @@ import { fetchBillingDetail } from "@app/billing";
 import {
   emptyFilterProps,
   fetchApps,
+  fetchCostsByApps,
+  fetchCostsByDatabases,
+  fetchCostsByEnvironments,
+  fetchCostsByServices,
+  fetchCostsByStacks,
   fetchDatabaseImages,
   fetchDatabases,
   fetchEndpoints,
@@ -21,7 +26,7 @@ import {
   fetchStacks,
 } from "@app/deploy";
 import { fetchDeployments } from "@app/deployment";
-import { call, parallel, select, takeEvery } from "@app/fx";
+import { call, parallel, put, select, takeEvery } from "@app/fx";
 import { createAction } from "@app/fx";
 import { selectOrganizationSelected } from "@app/organizations";
 import { fetchCurrentUserRoles, fetchRoles } from "@app/roles";
@@ -70,6 +75,14 @@ function* onFetchRequiredData() {
   yield* schema.update(schema.loaders.success({ id: FETCH_REQUIRED_DATA }));
 }
 
+function* onFetchCostData(orgId: string) {
+  yield* put(fetchCostsByStacks({ orgId: orgId }));
+  yield* put(fetchCostsByEnvironments({ orgId: orgId }));
+  yield* put(fetchCostsByApps({ orgId: orgId }));
+  yield* put(fetchCostsByDatabases({ orgId: orgId }));
+  yield* put(fetchCostsByServices({ orgId: orgId }));
+}
+
 function* onFetchResourceData() {
   const org = yield* select(selectOrganizationSelected);
   const userId = yield* select(selectCurrentUserId);
@@ -94,6 +107,7 @@ function* onFetchResourceData() {
     fetchServiceSizingPolicies.run(),
     fetchManualScaleRecommendations.run(),
   ]);
+  yield* onFetchCostData(org.id);
   yield* group;
 }
 
