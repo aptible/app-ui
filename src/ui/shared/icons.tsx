@@ -737,3 +737,23 @@ export const IconScaleCheck = (props: IconProps) => {
     </IconStrokeBase>
   );
 };
+
+export const IconDiagnostics = (props: IconProps) => {
+  return (
+    <IconStrokeBase
+      {...props}
+      title="Diagnostics"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M16.5 7.5V16.5M12 10.875V16.5M7.5 14.25V16.5M5.25 21H18.75C19.3467 21 19.919 20.7629 20.341 20.341C20.7629 19.919 21 19.3467 21 18.75V5.25C21 4.65326 20.7629 4.08097 20.341 3.65901C19.919 3.23705 19.3467 3 18.75 3H5.25C4.65326 3 4.08097 3.23705 3.65901 3.65901C3.23705 4.08097 3 4.65326 3 5.25V18.75C3 19.3467 3.23705 19.919 3.65901 20.341C4.08097 20.7629 4.65326 21 5.25 21Z"
+        stroke="#111920"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </IconStrokeBase>
+  );
+};
