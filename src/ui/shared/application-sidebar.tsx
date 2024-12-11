@@ -8,6 +8,7 @@ import {
   databaseUrl,
   deployUrl,
   deploymentsUrl,
+  diagnosticsUrl,
   endpointsUrl,
   environmentsUrl,
   searchUrl,
@@ -31,6 +32,7 @@ import {
   IconBox,
   IconCloud,
   IconCylinder,
+  IconDiagnostics,
   IconEndpoint,
   IconGlobe,
   IconHamburger,
@@ -68,6 +70,7 @@ export const ApplicationSidebar = () => {
     { name: "Sources", to: sourcesUrl(), icon: <IconSource /> },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
+    { name: "Diagnostics", to: diagnosticsUrl(), icon: <IconDiagnostics /> },
     {
       name: "Security & Compliance",
       to: securityDashboardUrl(env.legacyDashboardUrl),
