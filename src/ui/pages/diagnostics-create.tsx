@@ -155,14 +155,15 @@ export const DiagnosticsCreatePage = () => {
             </div>
           </FormGroup>
           <FormGroup label="Symptoms" htmlFor="Symptoms" feedbackVariant="info">
+            <Select
+              onSelect={selectOption}
+              value={selectedOption}
+              options={options}
+            />
             <FormGroupFeedback>
               A short description of issues (e.g., "my application is suddenly
               returning a lot of 500 errors")
             </FormGroupFeedback>
-            <TextArea
-              className={`${tokens.type.textarea} mt-2`}
-              defaultValue="Why is the app API error rate over 50%"
-            />
             <div className="mt-4">
               <hr />
               <div className="flex items-center gap-2 mt-4">
