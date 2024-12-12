@@ -3,22 +3,20 @@ import {
   type DiskCostProps,
   type EndpointCostProps,
   type ServiceCostProps,
-  backupCostPerGBMonth,
-  containerProfileCostPerGBHour,
-  diskCostPerGBMonth,
-  diskIopsCostPerMonth,
-  endpointCostPerHour,
   estimateMonthlyCost,
   formatCurrency,
+  profileCostPerGBHour,
 } from "@app/deploy";
+import { useSelector } from "@app/react";
+import { schema } from "@app/schema";
 import { Label } from "./form-group";
 
-export type ServicePricingCalcProps = {
+export interface ServicePricingCalcProps {
   service: ServiceCostProps;
   disk?: DiskCostProps;
   endpoints?: EndpointCostProps[];
   backups?: BackupCostProps[];
-};
+}
 
 export function ServicePricingCalc({
   service,
@@ -26,17 +24,20 @@ export function ServicePricingCalc({
   endpoints = [],
   backups = [],
 }: ServicePricingCalcProps) {
+  const disks = disk == null ? [] : [disk];
+  const rates = useSelector(schema.costRates.select);
   const cost = estimateMonthlyCost({
+    rates,
     services: [service],
-    disks: disk == null ? [] : [disk],
+    disks,
     endpoints,
     backups,
   });
-
-  const costPerGBHour = containerProfileCostPerGBHour(service.instanceClass);
-  const containerCost = estimateMonthlyCost({ services: [service] });
-  const endpointCost = estimateMonthlyCost({ endpoints });
-  const backupCost = estimateMonthlyCost({ backups });
+  const costPerGBHour = profileCostPerGBHour(rates, service.instanceClass);
+  const containerCost = estimateMonthlyCost({ rates, services: [service] });
+  const endpointCost = estimateMonthlyCost({ rates, endpoints });
+  const backupCost = estimateMonthlyCost({ rates, backups });
+  const diskCost = estimateMonthlyCost({ rates, disks });
 
   const backupSize = backups.reduce((acc, backup) => acc + backup.size, 0);
 
@@ -53,14 +54,14 @@ export function ServicePricingCalc({
           {disk == null ? null : (
             <>
               <div>
-                {disk.size} GB disk x {formatCurrency(diskCostPerGBMonth)} per
-                GB/month
+                {disk.size} GB disk x{" "}
+                {formatCurrency(rates.disk_cost_gb_per_month)} per GB/month
                 {disk.provisionedIops > 3000
-                  ? ` + ${disk.provisionedIops - 3000} IOPS x ${formatCurrency(diskIopsCostPerMonth)} per month`
+                  ? ` + ${disk.provisionedIops - 3000} IOPS x ${formatCurrency(rates.disk_iops_cost_per_month)} per month`
                   : ""}
               </div>
               <div>
-                = {formatCurrency(estimateMonthlyCost({ disks: [disk] }))}
+                = {formatCurrency(diskCost)}
                 /month
               </div>
             </>
@@ -69,7 +70,7 @@ export function ServicePricingCalc({
             <>
               <div>
                 {endpoints.length} endpoint{endpoints.length > 1 ? "s" : ""} x{" "}
-                {formatCurrency(endpointCostPerHour)} per hour
+                {formatCurrency(rates.vhost_cost_per_hour)} per hour
               </div>
               <div>= {formatCurrency(endpointCost)}/month</div>
             </>
@@ -77,8 +78,8 @@ export function ServicePricingCalc({
           {backups.length > 0 ? (
             <>
               <div>
-                {backupSize} GB backups x {formatCurrency(backupCostPerGBMonth)}{" "}
-                per GB/month
+                {backupSize} GB backups x{" "}
+                {formatCurrency(rates.backup_cost_gb_per_month)} per GB/month
               </div>
               <div>= {formatCurrency(backupCost)}/month</div>
             </>

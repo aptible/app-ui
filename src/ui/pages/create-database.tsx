@@ -168,7 +168,10 @@ export const CreateDatabasePage = () => {
                 containerMemoryLimitMb: scaler.containerSize,
                 instanceClass: scaler.containerProfile,
               }}
-              disk={{ size: scaler.diskSize, provisionedIops: scaler.iops }}
+              disk={{
+                size: scaler.diskSize,
+                provisionedIops: scaler.iops,
+              }}
             />
           </div>
 

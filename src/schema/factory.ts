@@ -10,6 +10,7 @@ import {
   type DeployCertificate,
   type DeployContainer,
   type DeployCost,
+  type DeployCostRates,
   type DeployDatabase,
   type DeployDatabaseCredential,
   type DeployDatabaseImage,
@@ -52,6 +53,7 @@ export const defaultConfig = (e: Partial<Config> = {}): Config => {
   return {
     isProduction: import.meta.env.PROD,
     isDev: import.meta.env.DEV,
+    isTest: false,
     appUrl: import.meta.env.VITE_APP_URL || "",
     authUrl: import.meta.env.VITE_AUTH_URL || "",
     billingUrl: import.meta.env.VITE_BILLING_URL || "",
@@ -929,6 +931,24 @@ export const defaultCost = (s: Partial<DeployCost> = {}): DeployCost => {
     id: "",
     estCost: 0,
     resourceType: "",
+    ...s,
+  };
+};
+
+export const defaultCostRates = (
+  s: Partial<DeployCostRates> = {},
+): DeployCostRates => {
+  return {
+    hids_cost_per_month: 0.02,
+    vpn_tunnel_cost_per_month: 99.0,
+    stack_cost_per_month: 499.0,
+    backup_cost_gb_per_month: 0.02,
+    disk_cost_gb_per_month: 0.2,
+    disk_iops_cost_per_month: 0.01,
+    vhost_cost_per_hour: 0.06,
+    m_class_gb_per_hour: 0.08,
+    c_class_gb_per_hour: 0.1,
+    r_class_gb_per_hour: 0.05,
     ...s,
   };
 };

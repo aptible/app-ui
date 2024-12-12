@@ -1,4 +1,6 @@
-import { getContainerProfileFromType } from "@app/deploy";
+import { getContainerProfileFromType, profileCostPerGBHour } from "@app/deploy";
+import { useSelector } from "@app/react";
+import { schema } from "@app/schema";
 import type { DeployDisk, DeployService, InstanceClass } from "@app/types";
 import { useEffect, useReducer } from "react";
 
@@ -58,6 +60,7 @@ export function useDatabaseScaler({
   service,
   disk,
 }: { service: DeployService; disk: DeployDisk }) {
+  const rates = useSelector(schema.costRates.select);
   const opts = defaultDatabaseScaler(service, disk);
   const [scaler, dispatchScaler] = useReducer(dbScaleReducer, opts);
 
@@ -84,14 +87,21 @@ export function useDatabaseScaler({
     scaler.containerProfile,
   );
 
+  const currentPricePerGBHour = profileCostPerGBHour(
+    rates,
+    service.instanceClass,
+  );
+  const requestedPricePerGBHour = profileCostPerGBHour(
+    rates,
+    scaler.containerProfile,
+  );
+
   return {
     scaler,
     dispatchScaler,
     changesExist,
-    currentPricePerGBHour:
-      currentContainerProfile.costPerContainerGBHourInCents / 100,
-    requestedPricePerGBHour:
-      requestedContainerProfile.costPerContainerGBHourInCents / 100,
+    currentPricePerGBHour,
+    requestedPricePerGBHour,
     requestedContainerProfile,
     currentContainerProfile,
   };

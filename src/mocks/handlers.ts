@@ -917,6 +917,24 @@ const apiHandlers = [
       );
     },
   ),
+  rest.get(`${testEnv.apiUrl}/costs/:id/stacks`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { costs: [] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/costs/:id/accounts`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { costs: [] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/costs/:id/apps`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { costs: [] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/costs/:id/databases`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { costs: [] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/costs/:id/services`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { costs: [] } }));
+  }),
+  rest.get(`${testEnv.apiUrl}/costs/:id/rates`, async (_, res, ctx) => {
+    return res(ctx.json({}));
+  }),
 ];
 
 const billingHandlers = [

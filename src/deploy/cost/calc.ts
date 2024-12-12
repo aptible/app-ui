@@ -1,20 +1,25 @@
-import { DEFAULT_INSTANCE_CLASS } from "@app/schema";
 import type {
   DeployBackup,
+  DeployCostRates,
   DeployDisk,
   DeployService,
-  DeployStack,
   InstanceClass,
 } from "@app/types";
-import { CONTAINER_PROFILES } from "../container";
 
 export const hoursPerMonth = 730;
-export const diskCostPerGBMonth = 0.2;
-export const diskIopsCostPerMonth = 0.01;
-export const endpointCostPerHour = 0.05;
-export const backupCostPerGBMonth = 0.02;
-export const vpnTunnelCostPerMonth = 99;
-export const stackCostPerMonth = 499;
+
+export const profileCostPerGBHour = (
+  rates: DeployCostRates,
+  instanceClass: InstanceClass,
+) => {
+  let profileRate = rates.m_class_gb_per_hour;
+  if (instanceClass.startsWith("r")) {
+    profileRate = rates.r_class_gb_per_hour;
+  } else if (instanceClass.startsWith("c")) {
+    profileRate = rates.c_class_gb_per_hour;
+  }
+  return profileRate;
+};
 
 export type ServiceCostProps = Pick<
   DeployService,
@@ -23,61 +28,45 @@ export type ServiceCostProps = Pick<
 export type DiskCostProps = Pick<DeployDisk, "size" | "provisionedIops">;
 export type EndpointCostProps = any;
 export type BackupCostProps = Pick<DeployBackup, "size">;
-export type VpnTunnelCostProps = any;
-export type StackCostProps = Pick<DeployStack, "organizationId">;
 
 export type EstimateMonthlyCostProps = {
+  rates: DeployCostRates;
   services?: ServiceCostProps[];
   disks?: DiskCostProps[];
   endpoints?: EndpointCostProps[];
   backups?: BackupCostProps[];
-  vpnTunnels?: VpnTunnelCostProps[];
-  stacks?: StackCostProps[];
 };
 
-export const containerProfileCostPerGBHour = (
-  profile: InstanceClass | undefined | null,
-) =>
-  CONTAINER_PROFILES[profile || DEFAULT_INSTANCE_CLASS]
-    .costPerContainerGBHourInCents / 100;
-
 export const estimateMonthlyCost = ({
+  rates,
   services = [],
   disks = [],
   endpoints = [],
   backups = [],
-  vpnTunnels: vpn_tunnels = [],
-  stacks = [],
 }: EstimateMonthlyCostProps) => {
-  // Returns the monthly cost of all resources
-  // Hourly cost
-  let hourlyCost = 0;
+  let hourlyCost = 0.0;
 
   for (const service of services) {
+    const profileRate = profileCostPerGBHour(rates, service.instanceClass);
+
     hourlyCost +=
       ((service.containerCount * service.containerMemoryLimitMb) / 1024) *
-      containerProfileCostPerGBHour(service.instanceClass);
+      profileRate;
   }
 
-  hourlyCost += endpoints.length * endpointCostPerHour;
+  hourlyCost += endpoints.length * rates.vhost_cost_per_hour;
 
-  // Monthly cost
   let monthlyCost = hourlyCost * hoursPerMonth;
 
   for (const disk of disks) {
-    monthlyCost += disk.size * diskCostPerGBMonth;
+    monthlyCost += disk.size * rates.disk_cost_gb_per_month;
     monthlyCost +=
-      Math.max(disk.provisionedIops - 3000, 0) * diskIopsCostPerMonth;
+      Math.max(disk.provisionedIops - 3000, 0) * rates.disk_iops_cost_per_month;
   }
 
   for (const backup of backups) {
-    monthlyCost += backup.size * backupCostPerGBMonth;
+    monthlyCost += backup.size * rates.backup_cost_gb_per_month;
   }
-
-  monthlyCost += vpn_tunnels.length * vpnTunnelCostPerMonth;
-  monthlyCost +=
-    stacks.filter((stack) => stack.organizationId !== "").length *
-    stackCostPerMonth;
 
   return monthlyCost;
 };

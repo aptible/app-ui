@@ -85,7 +85,6 @@ export const getContainerProfileFromType = (
   if (!CONTAINER_PROFILES[containerProfile]) {
     return {
       name: "",
-      costPerContainerGBHourInCents: 0,
       cpuShare: 0,
       minimumContainerSize: 0,
       maximumContainerSize: 0,

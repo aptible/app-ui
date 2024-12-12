@@ -275,9 +275,10 @@ export const cacheMinTimer = () => timer(60 * SECONDS);
 export const cacheShortTimer = () => timer(5 * SECONDS);
 
 function* apiErrorMdw(ctx: ApiCtx, next: Next) {
+  const config = yield* select(selectEnv);
   yield* next();
-  if (!ctx.json.ok) {
-    console.error(ctx.json.error, ctx);
+  if (!ctx.json.ok && config.isDev && !config.isTest) {
+    console.warn(ctx.json.error, ctx);
   }
 }
 

@@ -75,9 +75,6 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
       fireEvent.click(btn);
 
       await screen.findByText(/Current container port: 5000/);
-      expect(
-        screen.queryByText(/Current container port: 5000/),
-      ).toBeInTheDocument();
       await screen.findByText(/Operations show real-time changes to resources/);
     });
   });

@@ -204,7 +204,10 @@ export const DatabaseScalePage = () => {
                 containerMemoryLimitMb: scaler.containerSize,
                 instanceClass: scaler.containerProfile,
               }}
-              disk={{ size: scaler.diskSize, provisionedIops: scaler.iops }}
+              disk={{
+                size: scaler.diskSize,
+                provisionedIops: scaler.iops,
+              }}
               endpoints={endpoints}
               backups={backups}
             />

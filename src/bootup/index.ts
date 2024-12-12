@@ -8,6 +8,7 @@ import { fetchBillingDetail } from "@app/billing";
 import {
   emptyFilterProps,
   fetchApps,
+  fetchCostRates,
   fetchCostsByApps,
   fetchCostsByDatabases,
   fetchCostsByEnvironments,
@@ -76,11 +77,12 @@ function* onFetchRequiredData() {
 }
 
 function* onFetchCostData(orgId: string) {
-  yield* put(fetchCostsByStacks({ orgId: orgId }));
-  yield* put(fetchCostsByEnvironments({ orgId: orgId }));
-  yield* put(fetchCostsByApps({ orgId: orgId }));
-  yield* put(fetchCostsByDatabases({ orgId: orgId }));
-  yield* put(fetchCostsByServices({ orgId: orgId }));
+  yield* put(fetchCostsByStacks({ orgId }));
+  yield* put(fetchCostsByEnvironments({ orgId }));
+  yield* put(fetchCostsByApps({ orgId }));
+  yield* put(fetchCostsByDatabases({ orgId }));
+  yield* put(fetchCostsByServices({ orgId }));
+  yield* put(fetchCostRates({ orgId }));
 }
 
 function* onFetchResourceData() {

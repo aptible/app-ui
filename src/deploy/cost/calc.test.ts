@@ -1,18 +1,12 @@
-import { CONTAINER_PROFILES } from "../container";
-import {
-  backupCostPerGBMonth,
-  diskCostPerGBMonth,
-  diskIopsCostPerMonth,
-  endpointCostPerHour,
-  estimateMonthlyCost,
-  hoursPerMonth,
-  stackCostPerMonth,
-  vpnTunnelCostPerMonth,
-} from "./calc";
+import { defaultCostRates, defaultDeployEndpoint } from "@app/schema";
+import { estimateMonthlyCost, hoursPerMonth } from "./calc";
 
 describe("estimateMonthlyCost", () => {
+  const rates = defaultCostRates();
+
   it("should calculate the cost of containers", () => {
     const monthlyCost = estimateMonthlyCost({
+      rates,
       services: [
         {
           containerCount: 2,
@@ -28,61 +22,50 @@ describe("estimateMonthlyCost", () => {
     });
 
     expect(monthlyCost).toBeCloseTo(
-      ((5 * CONTAINER_PROFILES.r5.costPerContainerGBHourInCents) / 100) *
-        hoursPerMonth,
+      5 * rates.r_class_gb_per_hour * hoursPerMonth,
     );
   });
 
   it("should calculate the cost of disks", () => {
     const monthlyCost = estimateMonthlyCost({
+      rates,
       disks: [
         { size: 3, provisionedIops: 4000 },
         { size: 2, provisionedIops: 2000 },
       ],
     });
     expect(monthlyCost).toBeCloseTo(
-      5 * diskCostPerGBMonth + 1000 * diskIopsCostPerMonth,
+      5 * rates.disk_cost_gb_per_month + 1000 * rates.disk_iops_cost_per_month,
     );
   });
 
   it("should calculate the cost of endpoints", () => {
     const monthlyCost = estimateMonthlyCost({
-      endpoints: [{}, {}, {}],
+      rates,
+      endpoints: [
+        defaultDeployEndpoint(),
+        defaultDeployEndpoint(),
+        defaultDeployEndpoint(),
+      ],
     });
 
-    expect(monthlyCost).toBeCloseTo(3 * endpointCostPerHour * hoursPerMonth);
+    expect(monthlyCost).toBeCloseTo(
+      3 * rates.vhost_cost_per_hour * hoursPerMonth,
+    );
   });
 
   it("should calculate the cost of backups", () => {
     const monthlyCost = estimateMonthlyCost({
+      rates,
       backups: [{ size: 5 }, { size: 10 }],
     });
 
-    expect(monthlyCost).toBeCloseTo(15 * backupCostPerGBMonth);
-  });
-
-  it("should calculate the cost of VPN tunnels", () => {
-    const monthlyCost = estimateMonthlyCost({
-      vpnTunnels: [{}, {}, {}, {}],
-    });
-
-    expect(monthlyCost).toBeCloseTo(4 * vpnTunnelCostPerMonth);
-  });
-
-  it("should calculate the cost of dedicated stacks", () => {
-    const monthlyCost = estimateMonthlyCost({
-      stacks: [
-        { organizationId: "abc" },
-        { organizationId: "123" },
-        { organizationId: "" },
-      ],
-    });
-
-    expect(monthlyCost).toBeCloseTo(2 * stackCostPerMonth);
+    expect(monthlyCost).toBeCloseTo(15 * rates.backup_cost_gb_per_month);
   });
 
   it("should calculate the cost of everything", () => {
     const monthlyCost = estimateMonthlyCost({
+      rates,
       services: [
         {
           containerCount: 2,
@@ -99,25 +82,21 @@ describe("estimateMonthlyCost", () => {
         { size: 3, provisionedIops: 4000 },
         { size: 2, provisionedIops: 2000 },
       ],
-      endpoints: [{}, {}, {}],
-      backups: [{ size: 5 }, { size: 10 }],
-      vpnTunnels: [{}, {}, {}, {}],
-      stacks: [
-        { organizationId: "abc" },
-        { organizationId: "123" },
-        { organizationId: "" },
+      endpoints: [
+        defaultDeployEndpoint(),
+        defaultDeployEndpoint(),
+        defaultDeployEndpoint(),
       ],
+      backups: [{ size: 5 }, { size: 10 }],
     });
 
-    let expectedHourly =
-      (5 * CONTAINER_PROFILES.r5.costPerContainerGBHourInCents) / 100;
-    expectedHourly += 3 * endpointCostPerHour;
+    let expectedHourly = 5 * rates.r_class_gb_per_hour;
+    expectedHourly += 3 * rates.vhost_cost_per_hour;
 
     let expectedMonthly = expectedHourly * hoursPerMonth;
-    expectedMonthly += 5 * diskCostPerGBMonth + 1000 * diskIopsCostPerMonth;
-    expectedMonthly += 15 * backupCostPerGBMonth;
-    expectedMonthly += 4 * vpnTunnelCostPerMonth;
-    expectedMonthly += 2 * stackCostPerMonth;
+    expectedMonthly +=
+      5 * rates.disk_cost_gb_per_month + 1000 * rates.disk_iops_cost_per_month;
+    expectedMonthly += 15 * rates.backup_cost_gb_per_month;
 
     expect(monthlyCost).toBeCloseTo(expectedMonthly, 5);
   });
