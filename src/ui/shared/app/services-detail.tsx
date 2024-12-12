@@ -343,7 +343,7 @@ export function AppServicesByApp({
   return (
     <Group>
       <ButtonLink className="w-fit" to={diagnosticsCreateUrl()}>
-        <IconPlusCircle variant="sm" className="mr-2" /> New Diagnostics
+        <IconPlusCircle variant="sm" className="mr-2" /> Diagnose Issues
       </ButtonLink>
       <Group size="sm">
         <FilterBar>

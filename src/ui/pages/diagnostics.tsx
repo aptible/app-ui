@@ -33,6 +33,10 @@ import {
 export const DiagnosticsPage = () => {
   return (
     <AppSidebarLayout>
+      <Banner className="mt-2">
+        <strong>New Feature:</strong> Use Aptible AI to diagnose production
+        issues related to increased errors, latency or availability.
+      </Banner>
       <TitleBar description="Generate a dashboard displaying logs, metrics, and recent changes for any app.">
         Diagnostics
       </TitleBar>
@@ -45,7 +49,7 @@ export const DiagnosticsPage = () => {
 
           <ActionBar>
             <ButtonLink to={diagnosticsCreateUrl()}>
-              <IconPlusCircle variant="sm" className="mr-2" /> New Diagnostics
+              <IconPlusCircle variant="sm" className="mr-2" /> Diagnose Issues
             </ButtonLink>
           </ActionBar>
         </div>
