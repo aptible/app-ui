@@ -98,7 +98,7 @@ export const DiagnosticsDetailPage = () => {
                 className="w-[20px] h-[20px] mr-1 align-middle"
                 aria-label="App"
               />
-              <p className="font-semibold pb-1">Chart Label</p>
+              <p className="font-semibold pb-1">CPU Usage</p>
             </Group>
             <Group size="sm" variant="horizontal" className="items-center">
               <Tooltip text="Helpful" placement="bottom" fluid>
@@ -130,7 +130,7 @@ export const DiagnosticsDetailPage = () => {
             </Group>
           </div>
           <div className="p-4">
-            <div className="border border-black-100 rounded-md px-3 p-2 flex items-center">
+            <div className="border border-black-100 rounded-md px-3 p-2 flex items-center mb-4">
               <IconAI className="inline-block mr-2 shrink-0" />
               The CPU usage increased just before the error rate increased.
             </div>
