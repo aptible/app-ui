@@ -18,6 +18,7 @@ import {
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
   appServiceUrl,
+  diagnosticsCreateUrl,
 } from "@app/routes";
 import type { DeployService, DeployServiceRow, DeployStack } from "@app/types";
 import { type PaginateProps, usePaginate } from "@app/ui/hooks";
@@ -27,7 +28,7 @@ import { Code } from "../code";
 import { CopyTextButton } from "../copy";
 import { CostEstimateTooltip } from "../cost-estimate-tooltip";
 import { Group } from "../group";
-import { IconChevronDown, IconInfo } from "../icons";
+import { IconChevronDown, IconInfo, IconPlusCircle } from "../icons";
 import { DescBar, FilterBar, PaginateBar } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { ScaleRecsView } from "../scale-recs";
@@ -341,6 +342,9 @@ export function AppServicesByApp({
 
   return (
     <Group>
+      <ButtonLink className="w-fit" to={diagnosticsCreateUrl()}>
+        <IconPlusCircle variant="sm" className="mr-2" /> New Diagnostics
+      </ButtonLink>
       <Group size="sm">
         <FilterBar>
           <Group variant="horizontal" size="lg" className="items-center">
