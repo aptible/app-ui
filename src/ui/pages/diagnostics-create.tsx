@@ -56,7 +56,7 @@ export const DiagnosticsCreatePage = () => {
 
       <Box>
         <div className="flex justify-between items-start">
-          <h1 className="text-lg text-gray-500 mb-4">Diagnostics Settings</h1>
+          <h1 className="text-lg text-gray-500 mb-4">Choose Impacted App</h1>
           <ButtonLinkDocs href="https://www.aptible.com/docs/managing-databases" />
         </div>
         <form>
@@ -84,9 +84,25 @@ export const DiagnosticsCreatePage = () => {
               options={options}
             />
           </FormGroup>
+          <h1 className="text-lg text-gray-500 mb-4">Describe Issue Details</h1>
           <FormGroup
-            label="Start Time"
-            htmlFor="App"
+            label="Time Range"
+            htmlFor="Time Range"
+            feedbackVariant="info"
+            className="mb-4"
+          >
+            <Select
+              onSelect={selectOption}
+              value={selectedOption}
+              options={options}
+            />
+            <FormGroupFeedback>
+              How long has this issue been occuring?
+            </FormGroupFeedback>
+          </FormGroup>
+          {/*          <FormGroup
+            label="Custom Start Time"
+            htmlFor="Custom Start Time"
             feedbackVariant="info"
             className="mb-4"
           >
@@ -120,8 +136,8 @@ export const DiagnosticsCreatePage = () => {
             </div>
           </FormGroup>
           <FormGroup
-            label="End Time"
-            htmlFor="App"
+            label="Custom End Time"
+            htmlFor="Custom End Time"
             feedbackVariant="info"
             className="mb-4"
           >
@@ -153,7 +169,7 @@ export const DiagnosticsCreatePage = () => {
               />
               <p>UTC</p>
             </div>
-          </FormGroup>
+          </FormGroup>*/}
           <FormGroup label="Symptoms" htmlFor="Symptoms" feedbackVariant="info">
             <Select
               onSelect={selectOption}
@@ -164,6 +180,10 @@ export const DiagnosticsCreatePage = () => {
               A short description of issues (e.g., "my application is suddenly
               returning a lot of 500 errors")
             </FormGroupFeedback>
+            <TextArea
+              className={`${tokens.type.textarea} mt-2`}
+              defaultValue="Why is the app API error rate over 50%"
+            />
             <div className="mt-4">
               <hr />
               <div className="flex items-center gap-2 mt-4">
