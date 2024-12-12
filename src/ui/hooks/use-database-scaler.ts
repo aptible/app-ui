@@ -87,10 +87,14 @@ export function useDatabaseScaler({
     scaler.containerProfile,
   );
 
-  const currentPricePerGBHour =
-    profileCostPerGBHour(rates, service.instanceClass) / 100;
-  const requestedPricePerGBHour =
-    profileCostPerGBHour(rates, scaler.containerProfile) / 100;
+  const currentPricePerGBHour = profileCostPerGBHour(
+    rates,
+    service.instanceClass,
+  );
+  const requestedPricePerGBHour = profileCostPerGBHour(
+    rates,
+    scaler.containerProfile,
+  );
 
   return {
     scaler,

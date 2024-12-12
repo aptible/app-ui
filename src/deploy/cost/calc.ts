@@ -39,7 +39,7 @@ export const estimateMonthlyCost = createSelector(
 
       hourlyCost +=
         ((service.containerCount * service.containerMemoryLimitMb) / 1024) *
-        (profileRate / 100);
+        profileRate;
     }
 
     hourlyCost += endpoints.length * rates.vhost_cost_per_hour;

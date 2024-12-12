@@ -34,7 +34,7 @@ describe("estimateMonthlyCost", () => {
     });
 
     expect(monthlyCost).toBeCloseTo(
-      ((5 * rates.r_class_gb_per_hour) / 100) * hoursPerMonth,
+      ((5 * rates.r_class_gb_per_hour)) * hoursPerMonth,
     );
   });
 
@@ -113,7 +113,7 @@ describe("estimateMonthlyCost", () => {
       ],
     });
 
-    let expectedHourly = (5 * rates.r_class_gb_per_hour) / 100;
+    let expectedHourly = (5 * rates.r_class_gb_per_hour);
     expectedHourly += 3 * rates.vhost_cost_per_hour;
 
     let expectedMonthly = expectedHourly * hoursPerMonth;
