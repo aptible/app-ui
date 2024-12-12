@@ -86,107 +86,35 @@ export const DiagnosticsCreatePage = () => {
             />
           </FormGroup>
           <h1 className="text-lg text-gray-500 pt-2 mb-4">Issue Description</h1>
-          <FormGroup
-            label="Time Range"
-            htmlFor="Time Range"
-            feedbackVariant="info"
-            className="mb-4"
-          >
-            <Select
-              onSelect={selectOption}
-              value={selectedOption}
-              options={options}
-            />
-            <FormGroupFeedback>
-              How long has this issue been occuring?
-            </FormGroupFeedback>
-          </FormGroup>
-          {/*          <FormGroup
-            label="Custom Start Time"
-            htmlFor="Custom Start Time"
-            feedbackVariant="info"
-            className="mb-4"
-          >
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            <FormGroup
+              label="Symptoms"
+              htmlFor="Symptoms"
+              feedbackVariant="info"
+              className="flex-1"
+            >
               <Select
                 onSelect={selectOption}
                 value={selectedOption}
                 options={options}
               />
-              <Input
-                className="h-[37px] w-[45px] pr-0"
-                name="app-handle"
-                type="text"
-                onChange={(e) => setFormInput(e.currentTarget.value)}
-                autoComplete="name"
-                data-testid="input-name"
-                id="input-name"
-                placeholder="HH"
-              />
-              <Input
-                className="h-[37px] w-[48px]  pr-0"
-                name="app-handle"
-                type="text"
-                onChange={(e) => setFormInput(e.currentTarget.value)}
-                autoComplete="name"
-                data-testid="input-name"
-                id="input-name"
-                placeholder="MM"
-              />
-              <p>UTC</p>
-            </div>
-          </FormGroup>
-          <FormGroup
-            label="Custom End Time"
-            htmlFor="Custom End Time"
-            feedbackVariant="info"
-            className="mb-4"
-          >
-            <div className="flex items-center gap-2">
+            </FormGroup>
+            <FormGroup
+              label="Time Range"
+              htmlFor="Time Range"
+              feedbackVariant="info"
+              className="flex-1"
+            >
               <Select
                 onSelect={selectOption}
                 value={selectedOption}
                 options={options}
               />
-              <Input
-                className="h-[37px] w-[45px] pr-0"
-                name="app-handle"
-                type="text"
-                onChange={(e) => setFormInput(e.currentTarget.value)}
-                autoComplete="name"
-                data-testid="input-name"
-                id="input-name"
-                placeholder="HH"
-              />
-              <Input
-                className="h-[37px] w-[48px]  pr-0"
-                name="app-handle"
-                type="text"
-                onChange={(e) => setFormInput(e.currentTarget.value)}
-                autoComplete="name"
-                data-testid="input-name"
-                id="input-name"
-                placeholder="MM"
-              />
-              <p>UTC</p>
-            </div>
-          </FormGroup>*/}
-          <FormGroup label="Symptoms" htmlFor="Symptoms" feedbackVariant="info">
-            <Select
-              onSelect={selectOption}
-              value={selectedOption}
-              options={options}
-            />
-            <FormGroupFeedback>
-              A short description of issues (e.g., "my application is suddenly
-              returning a lot of 500 errors")
-            </FormGroupFeedback>
-            <TextArea
-              className={`${tokens.type.textarea} mt-2`}
-              defaultValue="Why is the app API error rate over 50%"
-            />
-            <div className="mt-4">
-              <hr />
+            </FormGroup>
+          </div>
+          <div className="mt-4">
+            <hr />
+            <div className="flex justify-between items-end gap-2">
               <div className="flex items-center gap-2 mt-4">
                 <ButtonLink
                   to={diagnosticsDetailUrl()}
@@ -202,7 +130,7 @@ export const DiagnosticsCreatePage = () => {
                 </Button>
               </div>
             </div>
-          </FormGroup>
+          </div>
         </form>
       </Box>
     </AppSidebarLayout>
