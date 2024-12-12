@@ -1,8 +1,10 @@
+import { diagnosticsDetailUrl, diagnosticsUrl } from "@app/routes";
 import { AppSidebarLayout } from "../layouts";
 import {
   Banner,
   BannerMessages,
   Box,
+  Breadcrumbs,
   Button,
   FormGroup,
   Group,
@@ -16,7 +18,18 @@ import {
 export const DiagnosticsDetailPage = () => {
   return (
     <AppSidebarLayout>
-      <TitleBar>Why is the app API error rate over 50%</TitleBar>
+      <Breadcrumbs
+        crumbs={[
+          {
+            name: "Diagnostics",
+            to: diagnosticsUrl(),
+          },
+          {
+            name: "Why is the app API error rate over 50%",
+            to: diagnosticsDetailUrl(),
+          },
+        ]}
+      />
 
       <Box>dsfad</Box>
     </AppSidebarLayout>

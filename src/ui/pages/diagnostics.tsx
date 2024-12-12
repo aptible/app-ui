@@ -51,13 +51,16 @@ export const DiagnosticsPage = () => {
         </div>
 
         <Group variant="horizontal" size="lg" className="items-center mt-1">
-          <DescBar>2 Diagnostics</DescBar>
+          <DescBar>1 Diagnostics</DescBar>
         </Group>
       </FilterBar>
 
       <Table>
         <THead>
-          <Th>Header 1</Th>
+          <Th>Topic</Th>
+          <Th>App</Th>
+          <Th>Environment</Th>
+          <Th>Created</Th>
         </THead>
 
         <TBody>
@@ -73,6 +76,28 @@ export const DiagnosticsPage = () => {
                   Why is the app API error rate over 50%
                 </p>
               </Link>
+            </Td>
+            <Td className="flex-1">
+              <Link className="flex">
+                <p className={`${tokens.type["table link"]} leading-8`}>
+                  app-ui
+                </p>
+              </Link>
+            </Td>
+            <Td className="flex-1">
+              <div className="flex">
+                <Link className="flex">
+                  <p className="flex flex-col">
+                    <span className={tokens.type["table link"]}>dashboard</span>
+                    <span className={tokens.type["normal lighter"]}>
+                      Shared Stack (us-east-1)
+                    </span>
+                  </p>
+                </Link>
+              </div>
+            </Td>
+            <Td className="flex-1">
+              <p>2024-11-16 01:11:18 UTC</p>
             </Td>
           </Tr>
         </TBody>
