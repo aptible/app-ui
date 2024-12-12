@@ -1,4 +1,4 @@
-RUNNimport {
+import {
   type FilterOpProps,
   type PaginateProps,
   type Retryable,
