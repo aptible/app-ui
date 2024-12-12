@@ -52,7 +52,7 @@ export const DiagnosticsDetailPage = () => {
             to: "/apps/85039/services",
           },
           {
-            name: "Why is the app API error rate over 50%",
+            name: "2024-12-01 10:11:00 - 10:21:00 UTC",
             to: diagnosticsDetailUrl(),
           },
         ]}

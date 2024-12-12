@@ -61,7 +61,7 @@ export const DiagnosticsPage = () => {
 
       <Table>
         <THead>
-          <Th>Topic</Th>
+          <Th>Symptom</Th>
           <Th>App</Th>
           <Th>Environment</Th>
           <Th>Created</Th>
