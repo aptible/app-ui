@@ -1,20 +1,22 @@
-import { estimateMonthlyCost, formatCurrency } from "@app/deploy";
+import {
+  type BackupCostProps,
+  type DiskCostProps,
+  type EndpointCostProps,
+  type ServiceCostProps,
+  estimateMonthlyCost,
+  formatCurrency,
+  profileCostPerGBHour,
+} from "@app/deploy";
 import { useSelector } from "@app/react";
 import { schema } from "@app/schema";
-import type {
-  DeployBackup,
-  DeployDisk,
-  DeployEndpoint,
-  DeployService,
-} from "@app/types";
 import { Label } from "./form-group";
 
-export type ServicePricingCalcProps = {
-  service: DeployService;
-  disk?: DeployDisk;
-  endpoints?: DeployEndpoint[];
-  backups?: DeployBackup[];
-};
+export interface ServicePricingCalcProps {
+  service: ServiceCostProps;
+  disk?: DiskCostProps;
+  endpoints?: EndpointCostProps[];
+  backups?: BackupCostProps[];
+}
 
 export function ServicePricingCalc({
   service,
@@ -23,30 +25,19 @@ export function ServicePricingCalc({
   backups = [],
 }: ServicePricingCalcProps) {
   const disks = disk == null ? [] : [disk];
-  const cost = useSelector((s) =>
-    estimateMonthlyCost(s, {
-      services: [service],
-      disks,
-      endpoints,
-      backups,
-    }),
-  );
   const rates = useSelector(schema.costRates.select);
-
-  let costPerGBHour = rates.m_class_gb_per_hour;
-  if (service.instanceClass.startsWith("r")) {
-    costPerGBHour = rates.r_class_gb_per_hour;
-  } else if (service.instanceClass.startsWith("c")) {
-    costPerGBHour = rates.c_class_gb_per_hour;
-  }
-  const containerCost = useSelector((s) =>
-    estimateMonthlyCost(s, { services: [service] }),
-  );
-  const endpointCost = useSelector((s) =>
-    estimateMonthlyCost(s, { endpoints }),
-  );
-  const backupCost = useSelector((s) => estimateMonthlyCost(s, { backups }));
-  const diskCost = useSelector((s) => estimateMonthlyCost(s, { disks }));
+  const cost = estimateMonthlyCost({
+    rates,
+    services: [service],
+    disks,
+    endpoints,
+    backups,
+  });
+  const costPerGBHour = profileCostPerGBHour(rates, service.instanceClass);
+  const containerCost = estimateMonthlyCost({ rates, services: [service] });
+  const endpointCost = estimateMonthlyCost({ rates, endpoints });
+  const backupCost = estimateMonthlyCost({ rates, backups });
+  const diskCost = estimateMonthlyCost({ rates, disks });
 
   const backupSize = backups.reduce((acc, backup) => acc + backup.size, 0);
 

@@ -53,6 +53,7 @@ export const defaultConfig = (e: Partial<Config> = {}): Config => {
   return {
     isProduction: import.meta.env.PROD,
     isDev: import.meta.env.DEV,
+    isTest: false,
     appUrl: import.meta.env.VITE_APP_URL || "",
     authUrl: import.meta.env.VITE_AUTH_URL || "",
     billingUrl: import.meta.env.VITE_BILLING_URL || "",

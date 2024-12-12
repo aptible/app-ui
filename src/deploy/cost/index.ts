@@ -89,8 +89,8 @@ export const costEntities = {
   }),
 };
 
-export const formatCurrency = (num: number) =>
-  num.toLocaleString("en", {
+export const formatCurrency = (num?: number) =>
+  (num || 0.0).toLocaleString("en", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,

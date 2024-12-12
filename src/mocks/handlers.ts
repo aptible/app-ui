@@ -935,7 +935,6 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/costs/:id/rates`, async (_, res, ctx) => {
     return res(ctx.json({}));
   }),
-
 ];
 
 const billingHandlers = [

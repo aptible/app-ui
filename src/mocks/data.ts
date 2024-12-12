@@ -45,6 +45,7 @@ export const createText = (mixin: string, id: string | number = "1") => {
 };
 
 export const testEnv = defaultConfig({
+  isTest: true,
   origin: "app",
   authUrl: "https://auth.aptible-test.com",
   apiUrl: "https://api.aptible-test.com",

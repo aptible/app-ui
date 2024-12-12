@@ -18,7 +18,6 @@ import {
   useSelector,
 } from "@app/react";
 import { databaseActivityUrl } from "@app/routes";
-import { defaultDeployDisk, defaultDeployService } from "@app/schema";
 import type { InstanceClass } from "@app/types";
 import { diskSizeValidator } from "@app/validator";
 import { useState } from "react";
@@ -200,16 +199,15 @@ export const DatabaseScalePage = () => {
           ) : null}
           {hasChanges ? (
             <ServicePricingCalc
-              service={defaultDeployService({
-                ...service,
+              service={{
+                containerCount: service.containerCount,
                 containerMemoryLimitMb: scaler.containerSize,
                 instanceClass: scaler.containerProfile,
-              })}
-              disk={defaultDeployDisk({
-                ...disk,
+              }}
+              disk={{
                 size: scaler.diskSize,
                 provisionedIops: scaler.iops,
-              })}
+              }}
               endpoints={endpoints}
               backups={backups}
             />

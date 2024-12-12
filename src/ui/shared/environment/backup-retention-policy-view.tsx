@@ -93,67 +93,57 @@ export const BackupRpView = ({ envId }: { envId: string }) => {
             <div className="w-[370px]">
               <KeyValueGroup data={data} />
             </div>
-            <div>
-              <p className="text-black-500">
-                <Tooltip
-                  fluid
-                  text="Production environments: 14-30 Daily, Non-Production environments: 1-14 Daily"
-                >
-                  <IconInfo
-                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
-                    variant="sm"
-                  />
-                  Show Daily Recommendations
-                </Tooltip>
-              </p>
-              <p className="text-black-500">
-                <Tooltip
-                  fluid
-                  text="Production environments: 12 Monthly, Non-Production environments: 0 Monthly"
-                >
-                  <IconInfo
-                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
-                    variant="sm"
-                  />
-                  Show Monthly Recommendations
-                </Tooltip>
-              </p>
-              <p className="text-black-500">
-                <Tooltip
-                  fluid
-                  text="Production environments: 5 Yearly, Non-Production environments: 0 Yearly"
-                >
-                  <IconInfo
-                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
-                    variant="sm"
-                  />
-                  Show Yearly Recommendations
-                </Tooltip>
-              </p>
-              <p className="text-black-500">
-                <Tooltip
-                  fluid
-                  text="Production environments: Yes, Non-Production environments: No"
-                >
-                  <IconInfo
-                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
-                    variant="sm"
-                  />
-                  Show Copy Backups Recommendations
-                </Tooltip>
-              </p>
-              <p className="text-black-500">
-                <Tooltip
-                  fluid
-                  text="Production environments: Yes, Non-Production environments: No"
-                >
-                  <IconInfo
-                    className="opacity-50 hover:opacity-100 mr-1 inline-block"
-                    variant="sm"
-                  />
-                  Show Final Backup Recommendations
-                </Tooltip>
-              </p>
+            <div className="text-black-500">
+              <Tooltip
+                fluid
+                text="Production environments: 14-30 Daily, Non-Production environments: 1-14 Daily"
+              >
+                <IconInfo
+                  className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                  variant="sm"
+                />
+                Show Daily Recommendations
+              </Tooltip>
+              <Tooltip
+                fluid
+                text="Production environments: 12 Monthly, Non-Production environments: 0 Monthly"
+              >
+                <IconInfo
+                  className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                  variant="sm"
+                />
+                Show Monthly Recommendations
+              </Tooltip>
+              <Tooltip
+                fluid
+                text="Production environments: 5 Yearly, Non-Production environments: 0 Yearly"
+              >
+                <IconInfo
+                  className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                  variant="sm"
+                />
+                Show Yearly Recommendations
+              </Tooltip>
+              <Tooltip
+                fluid
+                text="Production environments: Yes, Non-Production environments: No"
+              >
+                <IconInfo
+                  className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                  variant="sm"
+                />
+                Show Copy Backups Recommendations
+              </Tooltip>
+              <Tooltip
+                fluid
+                text="Production environments: Yes, Non-Production environments: No"
+              >
+                <IconInfo
+                  className="opacity-50 hover:opacity-100 mr-1 inline-block"
+                  variant="sm"
+                />
+                Show Final Backup Recommendations
+              </Tooltip>
             </div>
           </Group>
           <div>

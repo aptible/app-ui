@@ -1,13 +1,10 @@
-import { type WebState, schema } from "@app/schema";
 import type {
   DeployBackup,
   DeployCostRates,
   DeployDisk,
-  DeployEndpoint,
   DeployService,
   InstanceClass,
 } from "@app/types";
-import { createSelector } from "starfx";
 
 export const hoursPerMonth = 730;
 
@@ -24,40 +21,52 @@ export const profileCostPerGBHour = (
   return profileRate;
 };
 
-export const estimateMonthlyCost = createSelector(
-  schema.costRates.select,
-  (_: WebState, { services = [] }: { services?: DeployService[] }) => services,
-  (_: WebState, { disks = [] }: { disks?: DeployDisk[] }) => disks,
-  (_: WebState, { endpoints = [] }: { endpoints?: DeployEndpoint[] }) =>
-    endpoints,
-  (_: WebState, { backups = [] }: { backups?: DeployBackup[] }) => backups,
-  (rates, services, disks, endpoints, backups) => {
-    let hourlyCost = 0.0;
+export type ServiceCostProps = Pick<
+  DeployService,
+  "containerCount" | "containerMemoryLimitMb" | "instanceClass"
+>;
+export type DiskCostProps = Pick<DeployDisk, "size" | "provisionedIops">;
+export type EndpointCostProps = any;
+export type BackupCostProps = Pick<DeployBackup, "size">;
 
-    for (const service of services) {
-      const profileRate = profileCostPerGBHour(rates, service.instanceClass);
+export type EstimateMonthlyCostProps = {
+  rates: DeployCostRates;
+  services?: ServiceCostProps[];
+  disks?: DiskCostProps[];
+  endpoints?: EndpointCostProps[];
+  backups?: BackupCostProps[];
+};
 
-      hourlyCost +=
-        ((service.containerCount * service.containerMemoryLimitMb) / 1024) *
-        profileRate;
-    }
+export const estimateMonthlyCost = ({
+  rates,
+  services = [],
+  disks = [],
+  endpoints = [],
+  backups = [],
+}: EstimateMonthlyCostProps) => {
+  let hourlyCost = 0.0;
 
-    hourlyCost += endpoints.length * rates.vhost_cost_per_hour;
+  for (const service of services) {
+    const profileRate = profileCostPerGBHour(rates, service.instanceClass);
 
-    // Monthly cost
-    let monthlyCost = hourlyCost * hoursPerMonth;
+    hourlyCost +=
+      ((service.containerCount * service.containerMemoryLimitMb) / 1024) *
+      profileRate;
+  }
 
-    for (const disk of disks) {
-      monthlyCost += disk.size * rates.disk_cost_gb_per_month;
-      monthlyCost +=
-        Math.max(disk.provisionedIops - 3000, 0) *
-        rates.disk_iops_cost_per_month;
-    }
+  hourlyCost += endpoints.length * rates.vhost_cost_per_hour;
 
-    for (const backup of backups) {
-      monthlyCost += backup.size * rates.backup_cost_gb_per_month;
-    }
+  let monthlyCost = hourlyCost * hoursPerMonth;
 
-    return monthlyCost;
-  },
-);
+  for (const disk of disks) {
+    monthlyCost += disk.size * rates.disk_cost_gb_per_month;
+    monthlyCost +=
+      Math.max(disk.provisionedIops - 3000, 0) * rates.disk_iops_cost_per_month;
+  }
+
+  for (const backup of backups) {
+    monthlyCost += backup.size * rates.backup_cost_gb_per_month;
+  }
+
+  return monthlyCost;
+};

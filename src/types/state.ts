@@ -3,6 +3,7 @@ import type { DeployOperation, DeployService, OperationStatus } from "./deploy";
 export interface Config {
   isProduction: boolean;
   isDev: boolean;
+  isTest: boolean;
   appUrl: string;
   authUrl: string;
   billingUrl: string;
