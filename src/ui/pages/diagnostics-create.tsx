@@ -55,10 +55,11 @@ export const DiagnosticsCreatePage = () => {
       />
 
       <Box>
-        <div className="flex justify-between items-start">
-          <h1 className="text-lg text-gray-500 mb-4">Choose Impacted App</h1>
-          <ButtonLinkDocs href="https://www.aptible.com/docs/managing-databases" />
-        </div>
+        <Banner className="mb-6">
+          <strong>New Feature:</strong> Use Aptible AI to diagnose production
+          issues related to increased errors, latency or availability.
+        </Banner>
+        <h1 className="text-lg text-gray-500 mb-4">Choose App to Diagnose</h1>
         <form>
           <FormGroup
             label="Environment"
@@ -84,7 +85,7 @@ export const DiagnosticsCreatePage = () => {
               options={options}
             />
           </FormGroup>
-          <h1 className="text-lg text-gray-500 mb-4">Describe Issue Details</h1>
+          <h1 className="text-lg text-gray-500 pt-2 mb-4">Issue Description</h1>
           <FormGroup
             label="Time Range"
             htmlFor="Time Range"
@@ -191,7 +192,7 @@ export const DiagnosticsCreatePage = () => {
                   to={diagnosticsDetailUrl()}
                   className="w-[200px] flex font-semibold"
                 >
-                  Generate Dashboard
+                  Generate Diagnostics
                 </ButtonLink>
                 <Button
                   className="w-fit ml-2 flex font-semibold"
