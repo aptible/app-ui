@@ -18,7 +18,7 @@ import {
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
   appServiceUrl,
-  diagnosticsCreateUrl,
+  diagnosticsDetailUrl,
 } from "@app/routes";
 import type { DeployService, DeployServiceRow, DeployStack } from "@app/types";
 import { type PaginateProps, usePaginate } from "@app/ui/hooks";
@@ -342,7 +342,7 @@ export function AppServicesByApp({
 
   return (
     <Group>
-      <ButtonLink className="w-fit" to={diagnosticsCreateUrl()}>
+      <ButtonLink className="w-fit" to={diagnosticsDetailUrl()}>
         <IconPlusCircle variant="sm" className="mr-2" /> Diagnose Issues
       </ButtonLink>
       <Group size="sm">
