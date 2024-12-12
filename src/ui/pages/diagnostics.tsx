@@ -58,7 +58,7 @@ export const DiagnosticsPage = () => {
       <Table>
         <THead>
           <Th>Topic</Th>
-          <Th>App</Th>
+          <Th>Resource</Th>
           <Th>Environment</Th>
           <Th>Created</Th>
         </THead>
@@ -78,9 +78,12 @@ export const DiagnosticsPage = () => {
               </Link>
             </Td>
             <Td className="flex-1">
-              <Link className="flex">
-                <p className={`${tokens.type["table link"]} leading-8`}>
-                  app-ui
+              <Link to="/databases/138671/metrics" className="flex">
+                <p className="flex flex-col">
+                  <span className={tokens.type["table link"]}>app-ui</span>
+                  <span className={tokens.type["normal lighter"]}>
+                    Database
+                  </span>
                 </p>
               </Link>
             </Td>
