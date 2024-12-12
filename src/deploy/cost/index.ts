@@ -1,7 +1,7 @@
 import { api, cacheLongTimer } from "@app/api";
 import { defaultEntity } from "@app/hal";
 import { schema } from "@app/schema";
-import type { DeployCost } from "@app/types";
+import type { DeployCost, DeployCostRates } from "@app/types";
 
 export * from "./calc";
 
@@ -62,6 +62,22 @@ export const fetchCostsByServices = api.get<OrgIdProp>(
   "/costs/:orgId/services",
   {
     supervisor: cacheLongTimer(),
+  },
+);
+
+export const fetchCostRates = api.get<OrgIdProp, DeployCostRates>(
+  "/costs/:orgId/rates",
+  {
+    supervisor: cacheLongTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* schema.update(schema.costRates.set(ctx.json.value));
   },
 );
 

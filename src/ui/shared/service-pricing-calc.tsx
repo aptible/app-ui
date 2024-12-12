@@ -1,23 +1,19 @@
-import {
-  type BackupCostProps,
-  type DiskCostProps,
-  type EndpointCostProps,
-  type ServiceCostProps,
-  backupCostPerGBMonth,
-  containerProfileCostPerGBHour,
-  diskCostPerGBMonth,
-  diskIopsCostPerMonth,
-  endpointCostPerHour,
-  estimateMonthlyCost,
-  formatCurrency,
-} from "@app/deploy";
+import { estimateMonthlyCost, formatCurrency } from "@app/deploy";
+import { useSelector } from "@app/react";
+import { schema } from "@app/schema";
+import type {
+  DeployBackup,
+  DeployDisk,
+  DeployEndpoint,
+  DeployService,
+} from "@app/types";
 import { Label } from "./form-group";
 
 export type ServicePricingCalcProps = {
-  service: ServiceCostProps;
-  disk?: DiskCostProps;
-  endpoints?: EndpointCostProps[];
-  backups?: BackupCostProps[];
+  service: DeployService;
+  disk?: DeployDisk;
+  endpoints?: DeployEndpoint[];
+  backups?: DeployBackup[];
 };
 
 export function ServicePricingCalc({
@@ -26,17 +22,31 @@ export function ServicePricingCalc({
   endpoints = [],
   backups = [],
 }: ServicePricingCalcProps) {
-  const cost = estimateMonthlyCost({
-    services: [service],
-    disks: disk == null ? [] : [disk],
-    endpoints,
-    backups,
-  });
+  const disks = disk == null ? [] : [disk];
+  const cost = useSelector((s) =>
+    estimateMonthlyCost(s, {
+      services: [service],
+      disks,
+      endpoints,
+      backups,
+    }),
+  );
+  const rates = useSelector(schema.costRates.select);
 
-  const costPerGBHour = containerProfileCostPerGBHour(service.instanceClass);
-  const containerCost = estimateMonthlyCost({ services: [service] });
-  const endpointCost = estimateMonthlyCost({ endpoints });
-  const backupCost = estimateMonthlyCost({ backups });
+  let costPerGBHour = rates.m_class_gb_per_hour;
+  if (service.instanceClass.startsWith("r")) {
+    costPerGBHour = rates.r_class_gb_per_hour;
+  } else if (service.instanceClass.startsWith("c")) {
+    costPerGBHour = rates.c_class_gb_per_hour;
+  }
+  const containerCost = useSelector((s) =>
+    estimateMonthlyCost(s, { services: [service] }),
+  );
+  const endpointCost = useSelector((s) =>
+    estimateMonthlyCost(s, { endpoints }),
+  );
+  const backupCost = useSelector((s) => estimateMonthlyCost(s, { backups }));
+  const diskCost = useSelector((s) => estimateMonthlyCost(s, { disks }));
 
   const backupSize = backups.reduce((acc, backup) => acc + backup.size, 0);
 
@@ -53,14 +63,14 @@ export function ServicePricingCalc({
           {disk == null ? null : (
             <>
               <div>
-                {disk.size} GB disk x {formatCurrency(diskCostPerGBMonth)} per
-                GB/month
+                {disk.size} GB disk x{" "}
+                {formatCurrency(rates.disk_cost_gb_per_month)} per GB/month
                 {disk.provisionedIops > 3000
-                  ? ` + ${disk.provisionedIops - 3000} IOPS x ${formatCurrency(diskIopsCostPerMonth)} per month`
+                  ? ` + ${disk.provisionedIops - 3000} IOPS x ${formatCurrency(rates.disk_iops_cost_per_month)} per month`
                   : ""}
               </div>
               <div>
-                = {formatCurrency(estimateMonthlyCost({ disks: [disk] }))}
+                = {formatCurrency(diskCost)}
                 /month
               </div>
             </>
@@ -69,7 +79,7 @@ export function ServicePricingCalc({
             <>
               <div>
                 {endpoints.length} endpoint{endpoints.length > 1 ? "s" : ""} x{" "}
-                {formatCurrency(endpointCostPerHour)} per hour
+                {formatCurrency(rates.vhost_cost_per_hour)} per hour
               </div>
               <div>= {formatCurrency(endpointCost)}/month</div>
             </>
@@ -77,8 +87,8 @@ export function ServicePricingCalc({
           {backups.length > 0 ? (
             <>
               <div>
-                {backupSize} GB backups x {formatCurrency(backupCostPerGBMonth)}{" "}
-                per GB/month
+                {backupSize} GB backups x{" "}
+                {formatCurrency(rates.backup_cost_gb_per_month)} per GB/month
               </div>
               <div>= {formatCurrency(backupCost)}/month</div>
             </>

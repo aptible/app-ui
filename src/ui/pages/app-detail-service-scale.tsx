@@ -27,7 +27,11 @@ import {
   useSelector,
 } from "@app/react";
 import { appActivityUrl } from "@app/routes";
-import { DEFAULT_INSTANCE_CLASS, schema } from "@app/schema";
+import {
+  DEFAULT_INSTANCE_CLASS,
+  defaultDeployService,
+  schema,
+} from "@app/schema";
 import type { DeployServiceSizingPolicy, InstanceClass } from "@app/types";
 import { type SyntheticEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -1099,11 +1103,12 @@ export const AppDetailServiceScalePage = () => {
           ) : null}
           {changesExist ? (
             <ServicePricingCalc
-              service={{
+              service={defaultDeployService({
+                ...service,
                 containerCount,
                 containerMemoryLimitMb: containerSize,
                 instanceClass: containerProfileType,
-              }}
+              })}
               endpoints={endpoints}
             />
           ) : null}

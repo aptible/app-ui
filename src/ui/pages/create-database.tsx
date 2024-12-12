@@ -163,12 +163,15 @@ export const CreateDatabasePage = () => {
               containerSize={scaler.containerSize}
             />
             <ServicePricingCalc
-              service={{
+              service={defaultDeployService({
                 containerCount: 1,
                 containerMemoryLimitMb: scaler.containerSize,
                 instanceClass: scaler.containerProfile,
-              }}
-              disk={{ size: scaler.diskSize, provisionedIops: scaler.iops }}
+              })}
+              disk={defaultDeployDisk({
+                size: scaler.diskSize,
+                provisionedIops: scaler.iops,
+              })}
             />
           </div>
 

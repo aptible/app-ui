@@ -96,5 +96,6 @@ export const [schema, initialState] = createSchema({
   costs: slice.table({
     empty: factory.defaultCost(),
   }),
+  costRates: slice.obj(factory.defaultCostRates()),
 });
 export type WebState = typeof initialState;

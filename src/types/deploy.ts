@@ -592,7 +592,6 @@ export const containerProfileKeys: InstanceClass[] = [
 ];
 export type ContainerProfileData = {
   name: string;
-  costPerContainerGBHourInCents: number;
   cpuShare: number;
   minimumContainerSize: number;
   maximumContainerSize: number;
@@ -705,4 +704,17 @@ export interface DeployCost {
   id: string;
   estCost: number;
   resourceType: string;
+}
+
+export interface DeployCostRates {
+  hids_cost_per_month: number;
+  vpn_tunnel_cost_per_month: number;
+  stack_cost_per_month: number;
+  backup_cost_gb_per_month: number;
+  disk_cost_gb_per_month: number;
+  disk_iops_cost_per_month: number;
+  vhost_cost_per_hour: number;
+  m_class_gb_per_hour: number;
+  c_class_gb_per_hour: number;
+  r_class_gb_per_hour: number;
 }
