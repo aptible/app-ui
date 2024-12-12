@@ -131,7 +131,7 @@ export const DiagnosticsDetailPage = () => {
           </div>
           <div className="p-4">
             <div className="border border-black-100 rounded-md px-3 p-2 flex items-center">
-              <IconAI className="inline-block mr-2" />
+              <IconAI className="inline-block mr-2 shrink-0" />
               The CPU usage increased just before the error rate increased.
             </div>
           </div>
