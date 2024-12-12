@@ -22,6 +22,7 @@ import {
   RadioGroup,
   TextArea,
   TitleBar,
+  Tooltip,
   tokens,
 } from "../shared";
 
@@ -100,26 +101,32 @@ export const DiagnosticsDetailPage = () => {
               <p className="font-semibold pb-1">Chart Label</p>
             </Group>
             <Group size="sm" variant="horizontal" className="items-center">
-              <ButtonIcon
-                icon={<IconThumbsUp variant="sm" />}
-                size="xs"
-                variant="white"
-                className="!bg-black-50 hover:!bg-black-100 !shadow-none"
-              />
-              <ButtonIcon
-                icon={<IconThumbsUp variant="sm" className="rotate-180" />}
-                size="xs"
-                variant="white"
-                className="!bg-black-50 hover:!bg-black-100 !shadow-none"
-              />
-              <ButtonIcon
-                icon={<IconExternalLink variant="sm" />}
-                size="xs"
-                variant="white"
-                className="!bg-black-50 hover:!bg-black-100 !shadow-none"
-              >
-                View
-              </ButtonIcon>
+              <Tooltip text="Helpful" placement="bottom" fluid>
+                <ButtonIcon
+                  icon={<IconThumbsUp variant="sm" />}
+                  size="xs"
+                  variant="white"
+                  className="!bg-black-50 hover:!bg-black-100 !shadow-none"
+                />
+              </Tooltip>
+              <Tooltip text="Unhelpful" placement="bottom" fluid>
+                <ButtonIcon
+                  icon={<IconThumbsUp variant="sm" className="rotate-180" />}
+                  size="xs"
+                  variant="white"
+                  className="!bg-black-50 hover:!bg-black-100 !shadow-none"
+                />
+              </Tooltip>
+              <Tooltip text="View Source" placement="bottom" fluid>
+                <ButtonIcon
+                  icon={<IconExternalLink variant="sm" />}
+                  size="xs"
+                  variant="white"
+                  className="!bg-black-50 hover:!bg-black-100 !shadow-none"
+                >
+                  View
+                </ButtonIcon>
+              </Tooltip>
             </Group>
           </div>
           <div className="p-4">
