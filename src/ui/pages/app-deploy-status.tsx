@@ -692,6 +692,7 @@ const CreateEndpointForm = ({ app }: { app: DeployApp }) => {
     internal: false,
     ipAllowlist: [],
     envId: app.environmentId,
+    tokenHeader: undefined,
   });
   const loader = useLoader(action);
   const onClick = () => {

@@ -65,6 +65,9 @@ export const defaultConfig = (e: Partial<Config> = {}): Config => {
     betaFeatureOrgIds:
       import.meta.env.VITE_FEATURE_BETA_ORG_IDS ||
       "df0ee681-9e02-4c28-8916-3b215d539b08",
+    tokenHeaderOrgIds:
+      import.meta.env.VITE_TOKEN_HEADER_ORG_IDS ||
+      "df0ee681-9e02-4c28-8916-3b215d539b08",
     legacyDashboardUrl:
       import.meta.env.VITE_LEGACY_DASHBOARD_URL ||
       "https://dashboard.aptible.com",
@@ -165,6 +168,7 @@ export const defaultDeployEndpoint = (
     ipWhitelist: [],
     platform: "elb",
     type: "unknown",
+    tokenHeader: undefined,
     createdAt: now,
     updatedAt: now,
     userDomain: "",

@@ -13,6 +13,7 @@ import {
   selectImageById,
   selectStackById,
 } from "@app/deploy";
+import { selectHasTokenHeaderFeature } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -67,9 +68,15 @@ const validators = {
       return "A private key is required for custom certificate";
     }
   },
+  tokenHeader: (data: CreateEndpointProps) => {
+    if (data.trafficType === "tcp" || data.trafficType === "tls") {
+      return "A HTTP or GRPC endpoint is required to pass token";
+    }
+  },
 };
 
 export const AppCreateEndpointPage = () => {
+  const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id = "" } = useParams();
@@ -97,6 +104,9 @@ export const AppCreateEndpointPage = () => {
   const [cert, setCert] = useState("");
   const [certId, setCertId] = useState("");
   const [privKey, setPrivKey] = useState("");
+  const [tokenHeader, setTokenHeader] = useState(
+    undefined as string | undefined,
+  );
   const portText = getContainerPort(
     { containerPort: port, containerPorts: [] },
     image.exposedPorts,
@@ -110,6 +120,7 @@ export const AppCreateEndpointPage = () => {
       internal: enpPlacement === "internal",
       ipAllowlist: parseIpStr(ipAllowlist),
       containerPort: port,
+      tokenHeader: tokenHeader,
     };
 
     if (enpType === "managed") {
@@ -297,6 +308,24 @@ export const AppCreateEndpointPage = () => {
     </FormGroup>
   );
 
+  const tokenHeaderForm = (
+    <FormGroup
+      label="Header Authentication Value"
+      htmlFor="token-header"
+      description="When set, only traffic with a 'X-Origin-Token' header matching this value will be allowed."
+      feedbackMessage={errors.tokenHeader}
+      feedbackVariant={errors.tokenHeader ? "danger" : "info"}
+    >
+      <Input
+        id="token-header"
+        name="token-header"
+        type="text"
+        value={tokenHeader}
+        onChange={(e) => setTokenHeader(e.currentTarget.value)}
+      />
+    </FormGroup>
+  );
+
   const getProtocolName = (trafficType: EndpointType) => {
     switch (trafficType) {
       case "grpc":
@@ -319,6 +348,7 @@ export const AppCreateEndpointPage = () => {
           {transCert && usingNewCert ? certForm : null}
           {transCert && usingNewCert ? privKeyForm : null}
           {ipAllowlistForm}
+          {hasTokenHeaderFeature ? tokenHeaderForm : null}
         </>
       );
     }
@@ -331,6 +361,7 @@ export const AppCreateEndpointPage = () => {
           {usingNewCert ? certForm : null}
           {usingNewCert ? privKeyForm : null}
           {ipAllowlistForm}
+          {hasTokenHeaderFeature ? tokenHeaderForm : null}
         </>
       );
     }
@@ -338,6 +369,7 @@ export const AppCreateEndpointPage = () => {
       <>
         {enpPlacementForm}
         {ipAllowlistForm}
+        {hasTokenHeaderFeature ? tokenHeaderForm : null}
       </>
     );
   };

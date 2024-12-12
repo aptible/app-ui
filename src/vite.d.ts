@@ -21,4 +21,5 @@ interface ImportMetaEnv {
   VITE_MINTLIFY_CHAT_KEY: string;
   VITE_STRIPE_PUBLISHABLE_KEY: string;
   VITE_FEATURE_BETA_ORG_IDS: string;
+  VITE_TOKEN_HEADER_ORG_IDS: string;
 }
