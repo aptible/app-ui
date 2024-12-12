@@ -58,7 +58,7 @@ export const DiagnosticsPage = () => {
       <Table>
         <THead>
           <Th>Topic</Th>
-          <Th>Resource</Th>
+          <Th>App</Th>
           <Th>Environment</Th>
           <Th>Created</Th>
         </THead>
@@ -78,18 +78,15 @@ export const DiagnosticsPage = () => {
               </Link>
             </Td>
             <Td className="flex-1">
-              <Link to="/databases/138671/metrics" className="flex">
+              <Link to="/apps/85039/services" className="flex">
                 <p className="flex flex-col">
                   <span className={tokens.type["table link"]}>app-ui</span>
-                  <span className={tokens.type["normal lighter"]}>
-                    Database
-                  </span>
                 </p>
               </Link>
             </Td>
             <Td className="flex-1">
               <div className="flex">
-                <Link className="flex">
+                <Link to="/environments/10673/apps" className="flex">
                   <p className="flex flex-col">
                     <span className={tokens.type["table link"]}>dashboard</span>
                     <span className={tokens.type["normal lighter"]}>

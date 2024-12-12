@@ -15,15 +15,12 @@ import {
   selectMetricsLoaded,
 } from "@app/metric-tunnel";
 import { useQuery, useSelector } from "@app/react";
-import { diagnosticsCreateUrl } from "@app/routes";
 import type { MetricHorizons } from "@app/types";
 import { useState } from "react";
 import { useParams } from "react-router";
 import {
-  ButtonLink,
   ContainerMetricsChart,
   ContainerMetricsDataTable,
-  IconPlusCircle,
   LoadResources,
   Loading,
   LoadingSpinner,
@@ -90,9 +87,6 @@ export function DatabaseMetricsPage() {
     <LoadResources query={query} isEmpty={false}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <ButtonLink to={diagnosticsCreateUrl()}>
-            <IconPlusCircle variant="sm" className="mr-2" /> New Diagnostics
-          </ButtonLink>
           <MetricsViewControls
             viewMetricTab={viewTab}
             setViewMetricTab={setViewTab}
