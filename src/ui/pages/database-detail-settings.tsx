@@ -272,8 +272,10 @@ const DatabaseNameChange = ({ database }: DbProps) => {
   useQuery(fetchEnvLogDrains({ id: database.environmentId }));
   useQuery(fetchEnvMetricDrains({ id: database.environmentId }));
 
-  const drains: (DeployLogDrain | DeployMetricDrain)[] =
-    [...logDrains, ...metricDrains] || [];
+  const drains: (DeployLogDrain | DeployMetricDrain)[] = [
+    ...logDrains,
+    ...metricDrains,
+  ];
 
   const options: SelectOption[] = [
     {

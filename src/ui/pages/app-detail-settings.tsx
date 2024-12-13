@@ -146,8 +146,10 @@ const AppNameChange = ({ app }: AppProps) => {
   useQuery(fetchEnvLogDrains({ id: app.environmentId }));
   useQuery(fetchEnvMetricDrains({ id: app.environmentId }));
 
-  const drains: (DeployLogDrain | DeployMetricDrain)[] =
-    [...logDrains, ...metricDrains] || [];
+  const drains: (DeployLogDrain | DeployMetricDrain)[] = [
+    ...logDrains,
+    ...metricDrains,
+  ];
 
   const action = updateApp({ id: app.id, handle });
   const loader = useLoader(action);

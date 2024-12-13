@@ -11,7 +11,7 @@
     "start": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "fmt": "biome check . --write --unsafe --verbose",
+    "fmt": "biome check --write --unsafe .",
     "lint.types": "tsc --noEmit",
     "lint.check": "biome ci .",
     "lint.circular": "dpdm --no-tree --no-warning --exit-code circular:1 ./src/app/init.ts",
