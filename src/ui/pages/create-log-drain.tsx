@@ -302,15 +302,13 @@ export const CreateLogDrainPage = () => {
             <FormGroup
               label="Host"
               description={
-                <>
-                  {drainType === "papertrail" && (
-                    <p>
-                      Host Add a new Log Destination in Papertrail (make sure to
-                      accept TCP + TLS connections and logs from unrecognized
-                      senders), then copy the host from the Log Destination.
-                    </p>
-                  )}
-                </>
+                drainType === "papertrail" ? (
+                  <p>
+                    Host Add a new Log Destination in Papertrail (make sure to
+                    accept TCP + TLS connections and logs from unrecognized
+                    senders), then copy the host from the Log Destination.
+                  </p>
+                ) : undefined
               }
               htmlFor="host"
               feedbackMessage={errors.drainHost}

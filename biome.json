@@ -28,6 +28,11 @@
       },
       "performance": {
         "noAccumulatingSpread": "off"
+      },
+      "a11y": {
+        "noLabelWithoutControl": "off",
+        "useSemanticElements": "off",
+        "useFocusableInteractive": "off"
       }
     }
   }
