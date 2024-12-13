@@ -797,7 +797,7 @@ export const createReadableStatus = (status: OperationStatus): string => {
     case "queued":
       return "QUEUED";
     case "running":
-      return "PENDING";
+      return "RUNNING";
     case "succeeded":
       return "DONE";
     case "failed":
