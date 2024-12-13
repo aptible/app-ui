@@ -13,6 +13,7 @@ import {
   DetailHeader,
   DetailInfoGrid,
   DetailInfoItem,
+  DetailTitleBar,
   FormGroup,
   FormGroupFeedback,
   Group,
@@ -59,16 +60,17 @@ export const DiagnosticsDetailPage = () => {
       />
 
       <DetailHeader>
-        <div className="flex justify-between items-center">
-          <Group size="sm" variant="horizontal" className="items-center">
+        <DetailTitleBar
+          title="Diagnostics Details"
+          icon={
             <img
-              className="w-[32px] h-[32px]"
-              alt="Stack icon"
               src="/resource-types/logo-diagnostics.png"
+              className="w-[32px] h-[32px] mr-3"
+              aria-label="App"
             />
-            <h1 className="text-lg text-gray-500">Diagnostics Details</h1>
-          </Group>
-        </div>
+          }
+          docsUrl="https://docs.aptible.ai/home"
+        />
 
         <form>
           <div className="flex items-center gap-4">

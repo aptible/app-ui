@@ -61,10 +61,10 @@ export const DiagnosticsPage = () => {
 
       <Table>
         <THead>
-          <Th>Symptom</Th>
+          <Th>Issues</Th>
           <Th>App</Th>
           <Th>Environment</Th>
-          <Th>Created</Th>
+          <Th>Time Range</Th>
         </THead>
 
         <TBody>
@@ -101,7 +101,7 @@ export const DiagnosticsPage = () => {
               </div>
             </Td>
             <Td className="flex-1">
-              <p>2024-11-16 01:11:18 UTC</p>
+              <p>2024-12-01 10:11:00 - 10:21:00 UTC</p>
             </Td>
           </Tr>
         </TBody>
