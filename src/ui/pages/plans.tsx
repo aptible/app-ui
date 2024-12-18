@@ -4,6 +4,7 @@ import {
   fetchPlans,
   selectFirstActivePlan,
   selectPlanByActiveId,
+  selectStacksByOrgAsList,
   updateActivePlan,
 } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
@@ -36,6 +37,10 @@ export const PlansPage = () => {
   const { hasTrialNoPayment } = useTrialNotice();
   const hasPaymentMethod = useSelector(selectHasPaymentMethod);
   const paymentRequired = hasTrialNoPayment || !hasPaymentMethod;
+
+  const stacks = useSelector(selectStacksByOrgAsList);
+  const hasDedicatedStack = stacks.filter((s) => s.organizationId).length > 0;
+  const legacy = hasDedicatedStack && !activePlan.planId;
 
   const onSelectPlan = ({ planId, name }: { planId: string; name: string }) => {
     dispatch(
@@ -74,14 +79,24 @@ export const PlansPage = () => {
               before changing your plan.
             </Banner>
           ) : null}
+          {legacy ? (
+            <Banner>
+              You are currently on an older plan with Aptible. Please{" "}
+              <Link to="https://aptible.com/contact">contact us</Link> to update
+              your plan or{" "}
+              <Link to="https://www.aptible.com/pricing">view new plans</Link>.
+            </Banner>
+          ) : null}
         </Group>
 
-        <Plans
-          activePlan={activePlan}
-          selected={selectedPlan.name}
-          onSelectPlan={onSelectPlan}
-          paymentRequired={paymentRequired}
-        />
+        {legacy ? null : (
+          <Plans
+            activePlan={activePlan}
+            selected={selectedPlan.name}
+            onSelectPlan={onSelectPlan}
+            paymentRequired={paymentRequired}
+          />
+        )}
       </Group>
     </HeroBgLayout>
   );
