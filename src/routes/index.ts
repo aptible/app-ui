@@ -401,6 +401,13 @@ export const createLogDrainUrl = (envId = "") =>
 export const SUPPORT_URL = "/support";
 export const supportUrl = () => SUPPORT_URL;
 
+export const DIAGNOSTICS_URL = "/diagnostics";
+export const diagnosticsUrl = () => DIAGNOSTICS_URL;
+export const DIAGNOSTICS_CREATE_URL = "/diagnostics-create";
+export const diagnosticsCreateUrl = () => DIAGNOSTICS_CREATE_URL;
+export const DIAGNOSTICS_DETAIL_URL = "/diagnostics-detail";
+export const diagnosticsDetailUrl = () => DIAGNOSTICS_DETAIL_URL;
+
 export const SOURCES_PATH = "/sources";
 export const sourcesUrl = () => SOURCES_PATH;
 export const SOURCES_SETUP_PATH = "/sources/setup";
