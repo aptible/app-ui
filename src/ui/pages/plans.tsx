@@ -81,9 +81,10 @@ export const PlansPage = () => {
           ) : null}
           {legacy ? (
             <Banner>
-              You are currently on an older plan with Aptible. To learn more or
-              to update your plan, please{" "}
-              <Link to="https://aptible.com/contact">contact us</Link>.
+              You are currently on an older plan with Aptible. Please{" "}
+              <Link to="https://aptible.com/contact">contact us</Link> to update
+              your plan or{" "}
+              <Link to="https://www.aptible.com/pricing">view new plans</Link>.
             </Banner>
           ) : null}
         </Group>
