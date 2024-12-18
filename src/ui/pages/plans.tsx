@@ -39,10 +39,8 @@ export const PlansPage = () => {
   const paymentRequired = hasTrialNoPayment || !hasPaymentMethod;
 
   const stacks = useSelector(selectStacksByOrgAsList);
-  console.log(stacks);
   const hasDedicatedStack = stacks.filter((s) => s.organizationId).length > 0;
   const legacy = hasDedicatedStack && !activePlan.planId;
-  console.log(legacy);
 
   const onSelectPlan = ({ planId, name }: { planId: string; name: string }) => {
     dispatch(
