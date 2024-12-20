@@ -84,22 +84,19 @@ export function SettingsSidebar() {
           Roles
         </NavLink>
 
-        {hasBetaFeatures && (
-          <>
-            {isAccountOwner ? (
-              <NavLink className={navLink} to={teamGithubIntegrationUrl()}>
-                GitHub Integration
-              </NavLink>
-            ) : (
-              <span className={navLink({ isActive: false })}>
-                GitHub Integration
-                <Tooltip text="Must be account owner" fluid>
-                  <IconLock variant="sm" className="ml-1 opacity-60" />
-                </Tooltip>
-              </span>
-            )}
-          </>
-        )}
+        {hasBetaFeatures &&
+          (isAccountOwner ? (
+            <NavLink className={navLink} to={teamGithubIntegrationUrl()}>
+              GitHub Integration
+            </NavLink>
+          ) : (
+            <span className={navLink({ isActive: false })}>
+              GitHub Integration
+              <Tooltip text="Must be account owner" fluid>
+                <IconLock variant="sm" className="ml-1 opacity-60" />
+              </Tooltip>
+            </span>
+          ))}
 
         {isAccountOwner ? (
           <NavLink className={navLink} to={teamSsoUrl()}>

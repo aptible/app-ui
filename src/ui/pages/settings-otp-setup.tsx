@@ -9,7 +9,7 @@ import {
 import { securitySettingsUrl } from "@app/routes";
 import { schema } from "@app/schema";
 import { selectCurrentUserId } from "@app/users";
-import QRCode from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import {
@@ -110,7 +110,7 @@ export const OtpSetupPage = () => {
             <div>
               <div className="my-4">
                 <div className="flex my-10 justify-center align-center max-w-lg">
-                  <QRCode value={otp.uri} />
+                  <QRCodeSVG value={otp.uri} />
                 </div>
                 <div>
                   <b>Your 2FA URL:</b> {otp.uri}

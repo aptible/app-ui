@@ -8,6 +8,7 @@ import {
   defaultDeployService,
   defaultDeployStack,
 } from "@app/schema";
+import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import {
   AppHeader,
@@ -95,6 +96,7 @@ const StylesNavigation = () => (
       { name: "Detail Boxes", to: "#detail-boxes" },
       { name: "Secrets", to: "#secrets" },
       { name: "Boxes", to: "#boxes" },
+      { name: "QR Example", to: "#qrexample" },
     ].map(({ name, to }) => (
       <a className={tokens.type["table link"]} href={to} key={to}>
         <div className="flex items-center">
@@ -759,6 +761,19 @@ const NegativeSpace = () => {
   );
 };
 
+const QRExample = () => {
+  return (
+    <Group>
+      <div className="pt-8">
+        <h1 id="qrexample" className={tokens.type.h1}>
+          QR Example
+        </h1>
+      </div>
+      <QRCodeSVG value="1234567891011121314151617" />
+    </Group>
+  );
+};
+
 export const StylesPage = () => (
   <div className="px-4 py-4">
     <StylesWrapper navigation={<StylesNavigation />}>
@@ -776,6 +791,7 @@ export const StylesPage = () => (
       <DetailBoxes />
       <Secrets />
       <NegativeSpace />
+      <QRExample />
     </StylesWrapper>
   </div>
 );

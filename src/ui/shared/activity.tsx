@@ -371,22 +371,18 @@ function ActivityTable({
         >
           <Group>
             <Group variant="horizontal">
-              <>
-                {showResourceTypeFilter ? (
-                  <div className="flex-1">
-                    <Label htmlFor="resource-type-selector">
-                      Resource Type
-                    </Label>
-                    <Select
-                      id="resource-type-selector"
-                      value={resourceTypeFilter}
-                      options={resourceTypeAsOptions}
-                      onSelect={(opt) => setResourceTypeFilter(opt.value)}
-                      className="w-full"
-                    />
-                  </div>
-                ) : null}
-              </>
+              {showResourceTypeFilter ? (
+                <div className="flex-1">
+                  <Label htmlFor="resource-type-selector">Resource Type</Label>
+                  <Select
+                    id="resource-type-selector"
+                    value={resourceTypeFilter}
+                    options={resourceTypeAsOptions}
+                    onSelect={(opt) => setResourceTypeFilter(opt.value)}
+                    className="w-full"
+                  />
+                </div>
+              ) : null}
 
               <div className="flex-1">
                 <Label htmlFor="operation-type-selector">Operation Type</Label>
