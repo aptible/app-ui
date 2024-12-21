@@ -13,6 +13,7 @@ import {
 } from "@app/deploy";
 import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { findLoaderComposite } from "@app/loaders";
+import { selectHasBetaFeatures } from "@app/organizations";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appActivityUrl,
@@ -30,6 +31,7 @@ import {
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
 import { fetchSourceById, selectSourceById } from "@app/source";
+import { selectIsImpersonated } from "@app/token";
 import type { DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
@@ -49,8 +51,6 @@ import {
   type TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
-import { selectHasBetaFeatures } from "@app/organizations";
-import { selectIsImpersonated } from "@app/token";
 
 export function AppHeader({
   app,
@@ -172,7 +172,8 @@ function AppPageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
-  const hasBetaFeatures = useSelector(selectHasBetaFeatures) || useSelector(selectIsImpersonated);
+  const hasBetaFeatures =
+    useSelector(selectHasBetaFeatures) || useSelector(selectIsImpersonated);
   const hasConfigAccess = useSelector((s) =>
     selectUserHasPerms(s, { envId: app.environmentId, scope: "read" }),
   );

@@ -151,13 +151,13 @@ import {
   VerifyEmailRequired,
 } from "@app/ui";
 import { DeploymentDetailLayout } from "@app/ui/layouts/deployment-detail-layout";
+import { AppDetailDiagnosticsPage } from "@app/ui/pages/app-detail-diagnostics";
 import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
 import { GithubIntegrationPage } from "@app/ui/pages/github-integration";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { SourcesSetupPage } from "@app/ui/pages/sources-setup";
 import { type RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
-import { AppDetailDiagnosticsPage } from "@app/ui/pages/app-detail-diagnostics";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,

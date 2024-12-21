@@ -913,9 +913,7 @@ export const defaultGithubIntegration = (
   };
 };
 
-export const defaultDashboard = (
-  s: Partial<Dashboard> = {},
-): Dashboard => {
+export const defaultDashboard = (s: Partial<Dashboard> = {}): Dashboard => {
   return {
     id: "",
     ...s,

@@ -4,26 +4,16 @@ import { AppSidebarLayout } from "../layouts";
 import {
   ActionBar,
   Banner,
-  BannerMessages,
-  Box,
-  Button,
   ButtonLink,
   DescBar,
   FilterBar,
-  FormGroup,
   Group,
   IconPlusCircle,
-  Input,
   InputSearch,
-  LoadingBar,
-  Pill,
-  Radio,
-  RadioGroup,
   TBody,
   THead,
   Table,
   Td,
-  TextArea,
   Th,
   TitleBar,
   Tr,
@@ -44,7 +34,11 @@ export const DiagnosticsPage = () => {
       <FilterBar>
         <div className="flex justify-between">
           <Group variant="horizontal" size="sm" className="items-center">
-            <InputSearch placeholder="Search..." />
+            <InputSearch
+              placeholder="Search..."
+              search={""}
+              onChange={console.log}
+            />
           </Group>
 
           <ActionBar>
@@ -70,7 +64,7 @@ export const DiagnosticsPage = () => {
         <TBody>
           <Tr>
             <Td className="flex-1">
-              <Link to={diagnosticsDetailUrl()} className="flex">
+              <Link to={diagnosticsDetailUrl("")} className="flex">
                 <img
                   src="/resource-types/logo-diagnostics.png"
                   className="w-[32px] h-[32px] mr-2 align-middle"

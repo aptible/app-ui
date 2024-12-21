@@ -14,11 +14,11 @@ import {
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useLoader, useQuery, useSelector } from "@app/react";
 import {
+  appDetailDiagnosticsUrl,
   appDetailUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
   appServiceUrl,
-  diagnosticsDetailUrl,
 } from "@app/routes";
 import type { DeployService, DeployServiceRow, DeployStack } from "@app/types";
 import { type PaginateProps, usePaginate } from "@app/ui/hooks";
@@ -342,7 +342,7 @@ export function AppServicesByApp({
 
   return (
     <Group>
-      <ButtonLink className="w-fit" to={diagnosticsDetailUrl()}>
+      <ButtonLink className="w-fit" to={appDetailDiagnosticsUrl(appId)}>
         <IconPlusCircle variant="sm" className="mr-2" /> Diagnose Issues
       </ButtonLink>
       <Group size="sm">

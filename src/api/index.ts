@@ -27,12 +27,12 @@ import type {
   Action,
   ApiCtx,
   AppCtx,
+  AptibleAiCtx,
   AuthApiCtx,
   DeployApiCtx,
   HalEmbedded,
   MetricTunnelCtx,
   PortalCtx,
-  AptibleAiCtx,
 } from "@app/types";
 import * as Sentry from "@sentry/react";
 
@@ -43,7 +43,13 @@ export interface ThunkCtx<P = any, D = any>
   json: D | null;
 }
 
-type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel" | "portal" | "aptibleai";
+type EndpointUrl =
+  | "auth"
+  | "api"
+  | "billing"
+  | "metrictunnel"
+  | "portal"
+  | "aptibleai";
 
 const log = createLog("fx");
 
@@ -373,7 +379,6 @@ portalApi.use(portalApi.routes());
 portalApi.use(requestPortal);
 portalApi.use(tokenMdw);
 portalApi.use(mdw.fetch());
-
 
 export const aptibleAiApi = createApi<AptibleAiCtx>(
   createThunks({ supervisor: takeEvery }),

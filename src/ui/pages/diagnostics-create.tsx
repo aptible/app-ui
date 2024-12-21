@@ -4,6 +4,9 @@ import {
   diagnosticsUrl,
 } from "@app/routes";
 import { DateTime } from "luxon";
+import { useEffect, useMemo, useState } from "react";
+import DatePicker from "react-datepicker";
+import { useDispatch, useLoader, useSelector } from "starfx/react";
 import { AppSidebarLayout } from "../layouts";
 import {
   Banner,
@@ -16,13 +19,10 @@ import {
   Tooltip,
 } from "../shared";
 import { AppSelect } from "../shared/select-apps";
-import { useEffect, useMemo, useState } from "react";
-import DatePicker from "react-datepicker";
-import { useDispatch, useLoader, useSelector } from "starfx/react";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { createDashboard } from "@app/aptible-ai";
-import { schema, WebState } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import { useNavigate } from "react-router-dom";
 
 export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
@@ -43,7 +43,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   // invalid.
   const now = useMemo(
     () => DateTime.now().minus({ minutes: DateTime.local().offset }),
-    []
+    [],
   );
 
   const timePresets = [
@@ -60,7 +60,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   const [timePreset, setTimePreset] = useState(timePresets[2].value);
 
   const [startDate, setStartDate] = useState<DateTime>(
-    DateTime.fromISO(timePreset)
+    DateTime.fromISO(timePreset),
   );
   const onSelectStartDate = (date: Date) => {
     const dateTime = DateTime.fromJSDate(date);
@@ -100,7 +100,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
       startDate !== null &&
       endDate !== null &&
       startDate < endDate,
-    [symptoms, appId, startDate, endDate]
+    [symptoms, appId, startDate, endDate],
   );
 
   // Submit the form.
@@ -111,7 +111,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
     end: endDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
   });
   const dashboardData = useSelector((s: WebState) =>
-    schema.cache.selectById(s, { id: submitAction.payload.key })
+    schema.cache.selectById(s, { id: submitAction.payload.key }),
   );
   const { isLoading } = useLoader(submitAction);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
