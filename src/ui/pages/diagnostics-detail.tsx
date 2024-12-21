@@ -1,182 +1,103 @@
-import { diagnosticsDetailUrl, diagnosticsUrl } from "@app/routes";
-import { Link } from "react-router-dom";
+import { diagnosticsCreateUrl, diagnosticsDetailUrl } from "@app/routes";
 import { AppSidebarLayout } from "../layouts";
-import {
-  Banner,
-  BannerMessages,
-  Box,
-  Breadcrumbs,
-  Button,
-  ButtonDestroy,
-  ButtonIcon,
-  ButtonLink,
-  DetailHeader,
-  DetailInfoGrid,
-  DetailInfoItem,
-  DetailTitleBar,
-  FormGroup,
-  FormGroupFeedback,
-  Group,
-  IconAI,
-  IconExternalLink,
-  IconThumbsUp,
-  Input,
-  Radio,
-  RadioGroup,
-  Select,
-  TextArea,
-  TitleBar,
-  Tooltip,
-  tokens,
-} from "../shared";
+import { Breadcrumbs, LoadingSpinner, Loading } from "../shared";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Button } from "../shared/button";
+import { selectAptibleAiUrl } from "@app/config";
+import { useSelector } from "@app/react";
+import { selectAccessToken } from "@app/token";
 
-const selectOption = (option: SelectOption) => {
-  setChoice(option.value);
-};
-const options: SelectOption[] = Array(8)
-  .fill(0)
-  .map((_, idx) => ({
-    label: "Select",
-    value: "Select",
-  }));
-const selectedOption = [].find(
-  (option: SelectOption) => option.value === choice,
-);
+const loadingMessages = [
+  "Consulting the tech support crystal ball...",
+  "Teaching hamsters to debug code...",
+  "Bribing the servers with virtual cookies...",
+  "Performing diagnostic interpretive dance...",
+  "Teaching the AI to be less artificial and more intelligent..."
+];
 
 export const DiagnosticsDetailPage = () => {
+  const { id } = useParams();
+  const aptibleAiUrl = useSelector(selectAptibleAiUrl);
+  const dashboardUrl = `${aptibleAiUrl}/app/dashboards/${id}/`;
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [isDashboardReady, setIsDashboardReady] = useState(false);
+  const accessToken = useSelector(selectAccessToken);
+
+  useEffect(() => {
+    const checkDashboard = async () => {
+      try {
+        // TODO: Figure out how to get a status code from an action, so that we
+        // can swap out this fetch implementation.
+        const response = await fetch(dashboardUrl, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (response.ok) {
+          setIsDashboardReady(true);
+          return true;
+        }
+      } catch (error) {
+        // Ignore errors - we'll try again
+      }
+      return false;
+    };
+
+    let interval: NodeJS.Timeout;
+
+    const initialize = async () => {
+      // Check immediately, in case the dashboard has already been created.
+      const isReady = await checkDashboard();
+
+      // Only set up the interval if the dashboard isn't ready yet.
+      if (!isReady) {
+        interval = setInterval(async () => {
+          setMessageIndex((current) => (current + 1) % loadingMessages.length);
+          const ready = await checkDashboard();
+          if (ready) {
+            clearInterval(interval);
+          }
+        }, 3000);
+      }
+    };
+
+    initialize();
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [id, dashboardUrl, accessToken]);
+
   return (
     <AppSidebarLayout>
       <Breadcrumbs
         crumbs={[
           {
-            name: "app-ui",
-            to: "/apps/85039/services",
+            name: "Diagnostics",
+            to: diagnosticsCreateUrl(),
           },
           {
-            name: "2024-12-01 10:11:00 - 10:21:00 UTC",
-            to: diagnosticsDetailUrl(),
+            name: `${id}`,
+            to: diagnosticsDetailUrl(`${id}`)
           },
         ]}
       />
 
-      <DetailHeader>
-        <DetailTitleBar
-          title="Diagnostics Details"
-          icon={
-            <img
-              src="/resource-types/logo-diagnostics.png"
-              className="w-[32px] h-[32px] mr-3"
-              aria-label="App"
-            />
-          }
-          docsUrl="https://docs.aptible.ai/home"
-        />
-
-        <form>
-          <div className="flex items-center gap-4">
-            <FormGroup
-              label="Symptoms"
-              htmlFor="Symptoms"
-              feedbackVariant="info"
-              className="flex-1"
-            >
-              <Select
-                onSelect={selectOption}
-                value={selectedOption}
-                options={options}
-              />
-            </FormGroup>
-            <FormGroup
-              label="Time Range"
-              htmlFor="Time Range"
-              feedbackVariant="info"
-              className="flex-1"
-            >
-              <Select
-                onSelect={selectOption}
-                value={selectedOption}
-                options={options}
-              />
-            </FormGroup>
-          </div>
-          <div className="mt-4">
-            <hr />
-            <div className="flex justify-between items-end gap-2">
-              <div className="flex items-center gap-2 mt-4">
-                <ButtonLink
-                  to={diagnosticsDetailUrl()}
-                  className="w-[200px] flex font-semibold"
-                >
-                  Generate Diagnostics
-                </ButtonLink>
-                <Button
-                  className="w-fit ml-2 flex font-semibold"
-                  variant="white"
-                >
-                  Cancel
-                </Button>
-              </div>
-              <ButtonDestroy
-                className="semibold"
-                variant="delete"
-                requireConfirm
-              >
-                Delete
-              </ButtonDestroy>
-            </div>
-          </div>
-        </form>
-      </DetailHeader>
-
-      <div className="flex flex-col gap-4">
-        {/*Widget Starts Here*/}
-        <div className="bg-white shadow rounded-lg border border-black-100 relative min-h-[100px] max-h-[460px] overflow-hidden">
-          <div className="flex justify-between items-center gap-2 py-3 px-4 bg-black-50">
-            <Group size="sm" variant="horizontal" className="items-center">
-              <img
-                src="/resource-types/logo-datadog.png"
-                className="w-[20px] h-[20px] mr-1 align-middle"
-                aria-label="App"
-              />
-              <p className="font-semibold pb-1">CPU Usage</p>
-            </Group>
-            <Group size="sm" variant="horizontal" className="items-center">
-              <Tooltip text="Helpful" placement="bottom" fluid>
-                <ButtonIcon
-                  icon={<IconThumbsUp variant="sm" />}
-                  size="xs"
-                  variant="white"
-                  className="!bg-black-50 hover:!bg-black-100 !shadow-none"
-                />
-              </Tooltip>
-              <Tooltip text="Unhelpful" placement="bottom" fluid>
-                <ButtonIcon
-                  icon={<IconThumbsUp variant="sm" className="rotate-180" />}
-                  size="xs"
-                  variant="white"
-                  className="!bg-black-50 hover:!bg-black-100 !shadow-none"
-                />
-              </Tooltip>
-              <Tooltip text="View Source" placement="bottom" fluid>
-                <ButtonIcon
-                  icon={<IconExternalLink variant="sm" />}
-                  size="xs"
-                  variant="white"
-                  className="!bg-black-50 hover:!bg-black-100 !shadow-none"
-                >
-                  View
-                </ButtonIcon>
-              </Tooltip>
-            </Group>
-          </div>
-          <div className="p-4">
-            <div className="border border-black-100 rounded-md px-3 p-2 flex items-center mb-4">
-              <IconAI className="inline-block mr-2 shrink-0" />
-              The CPU usage increased just before the error rate increased.
-            </div>
-          </div>
+      <div className="flex flex-row items-center justify-center flex-1 min-h-[500px]">
+        <div className="scale-150 flex flex-row items-center gap-3">
+          {!isDashboardReady ? (
+            <>
+              <LoadingSpinner />
+              <Loading text={loadingMessages[messageIndex]} />
+            </>
+          ) : (
+            <form action={dashboardUrl} method="post">
+              <input type="hidden" name="_bearer_token" value={accessToken} />
+              <Button type="submit">View Dashboard</Button>
+            </form>
+          )}
         </div>
-        {/*Widget Ends Here*/}
       </div>
     </AppSidebarLayout>
   );
