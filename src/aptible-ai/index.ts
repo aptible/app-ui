@@ -1,6 +1,5 @@
 import { aptibleAiApi } from "@app/api";
-import { Dashboard } from "@app/types";
-
+import type { Dashboard } from "@app/types";
 
 export const createDashboard = aptibleAiApi.post<{
   symptoms: string;
@@ -30,7 +29,6 @@ export const pollDashboard = aptibleAiApi.get<{
   yield* next();
 });
 
-
 export interface DashboardResponse {
   id: number;
 }
@@ -44,9 +42,7 @@ export const defaultDashboardResponse = (
   };
 };
 
-export const deserializeDashboard = (
-  payload: DashboardResponse,
-): Dashboard => {
+export const deserializeDashboard = (payload: DashboardResponse): Dashboard => {
   return {
     id: `${payload.id}`,
   };

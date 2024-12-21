@@ -412,7 +412,9 @@ export const updateApp = api.put<UpdateApp>("/apps/:id", function* (ctx, next) {
   };
 });
 
-export const appToOption = (app: DeployApp): { key: string; label: string; value: string } => {
+export const appToOption = (
+  app: DeployApp,
+): { key: string; label: string; value: string } => {
   return {
     key: app.id,
     label: app.handle,

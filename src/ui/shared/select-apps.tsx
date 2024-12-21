@@ -1,8 +1,4 @@
-import {
-  appToOption,
-  fetchApps,
-  selectAppsByEnvId,
-} from "@app/deploy";
+import { appToOption, fetchApps, selectAppsByEnvId } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { EmptyResources, ErrorResources } from "./load-resources";
 import { Loading } from "./loading";

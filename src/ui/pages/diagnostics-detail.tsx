@@ -1,19 +1,19 @@
-import { diagnosticsCreateUrl, diagnosticsDetailUrl } from "@app/routes";
-import { AppSidebarLayout } from "../layouts";
-import { Breadcrumbs, LoadingSpinner, Loading } from "../shared";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Button } from "../shared/button";
 import { selectAptibleAiUrl } from "@app/config";
 import { useSelector } from "@app/react";
+import { diagnosticsCreateUrl, diagnosticsDetailUrl } from "@app/routes";
 import { selectAccessToken } from "@app/token";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { AppSidebarLayout } from "../layouts";
+import { Breadcrumbs, Loading, LoadingSpinner } from "../shared";
+import { Button } from "../shared/button";
 
 const loadingMessages = [
   "Consulting the tech support crystal ball...",
   "Teaching hamsters to debug code...",
   "Bribing the servers with virtual cookies...",
   "Performing diagnostic interpretive dance...",
-  "Teaching the AI to be less artificial and more intelligent..."
+  "Teaching the AI to be less artificial and more intelligent...",
 ];
 
 export const DiagnosticsDetailPage = () => {
@@ -79,7 +79,7 @@ export const DiagnosticsDetailPage = () => {
           },
           {
             name: `${id}`,
-            to: diagnosticsDetailUrl(`${id}`)
+            to: diagnosticsDetailUrl(`${id}`),
           },
         ]}
       />
