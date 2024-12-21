@@ -587,6 +587,24 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
+        path: routes.DIAGNOSTICS_URL,
+        children: [
+          {
+            index: true,
+            element: <DiagnosticsPage />,
+          },
+          {
+            path: routes.DIAGNOSTICS_CREATE_URL,
+            element: <DiagnosticsCreatePage />,
+          },
+          {
+            path: routes.DIAGNOSTICS_DETAIL_URL,
+            element: <DiagnosticsDetailPage />,
+          },
+        ],
+      },
+
+      {
         path: routes.CREATE_DB_PATH,
         element: <CreateDatabasePage />,
       },
@@ -750,21 +768,6 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.SUPPORT_URL,
     element: <SupportPage />,
-  },
-
-  {
-    path: routes.DIAGNOSTICS_URL,
-    element: <DiagnosticsPage />,
-  },
-
-  {
-    path: routes.DIAGNOSTICS_CREATE_URL,
-    element: <DiagnosticsCreatePage />,
-  },
-
-  {
-    path: routes.DIAGNOSTICS_DETAIL_URL,
-    element: <DiagnosticsDetailPage />,
   },
 
   {

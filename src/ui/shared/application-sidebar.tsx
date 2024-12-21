@@ -8,7 +8,7 @@ import {
   databaseUrl,
   deployUrl,
   deploymentsUrl,
-  diagnosticsUrl,
+  diagnosticsCreateUrl,
   endpointsUrl,
   environmentsUrl,
   searchUrl,
@@ -48,6 +48,7 @@ import { LinkNav } from "./link";
 import { OrgPicker } from "./org-picker";
 import { OrgRequirements } from "./org-requirements";
 import { UserMenu } from "./user-menu";
+import { selectHasBetaFeatures } from "@app/organizations";
 
 export const ApplicationSidebar = () => {
   const env = useSelector(selectEnv);
@@ -60,6 +61,7 @@ export const ApplicationSidebar = () => {
   const hasSystemStatus =
     systemStatus?.description && systemStatus?.indicator !== "none";
   const navigate = useNavigate();
+  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
   const navigation = [
     { name: "Stacks", to: stacksUrl(), icon: <IconLayers /> },
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
@@ -70,7 +72,15 @@ export const ApplicationSidebar = () => {
     { name: "Sources", to: sourcesUrl(), icon: <IconSource /> },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
-    { name: "Diagnostics", to: diagnosticsUrl(), icon: <IconDiagnostics /> },
+    ...(hasBetaFeatures
+      ? [
+          {
+            name: "Diagnostics",
+            to: diagnosticsCreateUrl(),
+            icon: <IconDiagnostics />,
+          },
+        ]
+      : []),
     {
       name: "Security & Compliance",
       to: securityDashboardUrl(env.legacyDashboardUrl),
