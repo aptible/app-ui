@@ -1,5 +1,6 @@
 import { selectEnv } from "@app/config";
 import { selectNav, setCollapsed } from "@app/nav";
+import { selectHasBetaFeatures } from "@app/organizations";
 import { useDispatch, useSelector } from "@app/react";
 import {
   activityUrl,
@@ -20,6 +21,7 @@ import {
 } from "@app/routes";
 import { schema } from "@app/schema";
 import { SYSTEM_STATUS_ID } from "@app/system-status";
+import { selectIsImpersonated } from "@app/token";
 import { useLayoutEffect } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -48,7 +50,6 @@ import { LinkNav } from "./link";
 import { OrgPicker } from "./org-picker";
 import { OrgRequirements } from "./org-requirements";
 import { UserMenu } from "./user-menu";
-import { selectHasBetaFeatures } from "@app/organizations";
 
 export const ApplicationSidebar = () => {
   const env = useSelector(selectEnv);
@@ -61,7 +62,8 @@ export const ApplicationSidebar = () => {
   const hasSystemStatus =
     systemStatus?.description && systemStatus?.indicator !== "none";
   const navigate = useNavigate();
-  const hasBetaFeatures = useSelector(selectHasBetaFeatures);
+  const hasBetaFeatures =
+    useSelector(selectHasBetaFeatures) || useSelector(selectIsImpersonated);
   const navigation = [
     { name: "Stacks", to: stacksUrl(), icon: <IconLayers /> },
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
