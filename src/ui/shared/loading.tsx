@@ -18,7 +18,7 @@ export const Loading = ({
 
 export const LoadingSpinner = () => (
   <svg
-    className="animate-spin h-8 w-8 text-gray-500"
+    className="animate-spin h-[20px] w-[20px] text-gray-500"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
