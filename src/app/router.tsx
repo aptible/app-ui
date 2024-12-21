@@ -157,6 +157,7 @@ import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { SourcesSetupPage } from "@app/ui/pages/sources-setup";
 import { type RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
+import { AppDetailDiagnosticsPage } from "@app/ui/pages/app-detail-diagnostics";
 
 const trackingPatch = (appRoute: RouteObject) => ({
   ...appRoute,
@@ -370,6 +371,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.APP_DETAIL_DEPLOYMENTS_PATH,
                 element: <AppDetailDeploymentsPage />,
+              },
+              {
+                path: routes.APP_DETAIL_DIAGNOSTICS_PATH,
+                element: <AppDetailDiagnosticsPage />,
               },
             ],
           },

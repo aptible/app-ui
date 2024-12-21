@@ -147,6 +147,9 @@ export const appDetailDepsUrl = (id: string) => `/apps/${id}/deps`;
 export const APP_DETAIL_DEPLOYMENTS_PATH = "/apps/:id/deployments";
 export const appDetailDeploymentsUrl = (id: string) =>
   `/apps/${id}/deployments`;
+export const APP_DETAIL_DIAGNOSTICS_PATH = "/apps/:id/diagnostics";
+export const appDetailDiagnosticsUrl = (id: string) =>
+  `/apps/${id}/diagnostics`;
 
 export const DEPLOYMENT_DETAIL_PATH = "/deployments/:id";
 export const deploymentDetailUrl = (id: string) => `/deployments/${id}`;

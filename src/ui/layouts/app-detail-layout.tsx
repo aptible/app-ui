@@ -20,6 +20,7 @@ import {
   appConfigUrl,
   appDetailDeploymentsUrl,
   appDetailDepsUrl,
+  appDetailDiagnosticsUrl,
   appDetailUrl,
   appEndpointsUrl,
   appServicesUrl,
@@ -48,6 +49,8 @@ import {
   type TabItem,
 } from "../shared";
 import { AppSidebarLayout } from "./app-sidebar-layout";
+import { selectHasBetaFeatures } from "@app/organizations";
+import { selectIsImpersonated } from "@app/token";
 
 export function AppHeader({
   app,
@@ -169,6 +172,7 @@ function AppPageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
+  const hasBetaFeatures = useSelector(selectHasBetaFeatures) || useSelector(selectIsImpersonated);
   const hasConfigAccess = useSelector((s) =>
     selectUserHasPerms(s, { envId: app.environmentId, scope: "read" }),
   );
@@ -184,6 +188,10 @@ function AppPageHeader() {
 
   if (hasConfigAccess) {
     tabs.push({ name: "Dependencies", href: appDetailDepsUrl(id) });
+  }
+
+  if (hasBetaFeatures) {
+    tabs.push({ name: "Diagnostics", href: appDetailDiagnosticsUrl(id) });
   }
 
   tabs.push(
