@@ -1,6 +1,7 @@
 import {
   type BillingDetail,
   type Config,
+  type Dashboard,
   type DeployActivePlan,
   type DeployActivityReport,
   type DeployApp,
@@ -908,6 +909,15 @@ export const defaultGithubIntegration = (
     installationUrl: "",
     createdAt: now,
     updatedAt: now,
+    ...s,
+  };
+};
+
+export const defaultDashboard = (
+  s: Partial<Dashboard> = {},
+): Dashboard => {
+  return {
+    id: "",
     ...s,
   };
 };

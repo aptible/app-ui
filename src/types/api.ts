@@ -46,3 +46,4 @@ export type MetricTunnelCtx<P = any, S = any> = ApiCtx<
   { message: string }
 >;
 export type PortalCtx<P = any, S = any> = ApiCtx<P, S, { message: string }>;
+export type AptibleAiCtx<P = any, S = any> = ApiCtx<P, S, { message: string }>;

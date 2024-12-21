@@ -107,6 +107,10 @@ export interface GithubIntegration {
   updatedAt: string;
 }
 
+export interface Dashboard {
+  id: string;
+}
+
 export interface ManualScaleRecommendation {
   id: string;
   serviceId: string;
