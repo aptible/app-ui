@@ -10,6 +10,7 @@ export interface Config {
   apiUrl: string;
   metricTunnelUrl: string;
   portalUrl: string;
+  aptibleAiUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
   mintlifyChatKey: string;
