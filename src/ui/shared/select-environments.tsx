@@ -20,7 +20,7 @@ export const EnvironmentSelect = ({
   const envs = useSelector((s) => selectEnvironmentsByStackId(s, { stackId }));
   const options = [
     { label: "Select an Environment", value: "" },
-    ...envs.map(envToOption),
+    ...envs.map(envToOption).sort((a, b) => a.label.localeCompare(b.label)),
   ];
 
   if (isInitialLoading) {
