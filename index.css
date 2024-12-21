@@ -63,3 +63,23 @@ html, body, #app {
 .hero-bg {
   background-image: url(/background-pattern-v2.png);
 }
+
+.react-datepicker-wrapper {
+  .react-datepicker__input-container {
+    input {
+      border-color: rgb(209 213 219 / var(--tw-border-opacity));
+      border-radius: 0.375rem;
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+
+      &:hover:not(:focus) {
+        border: 1px solid rgb(107 114 128 / var(--tw-border-opacity));
+      }
+
+      &:focus {
+        box-shadow: none;
+        outline: 2px solid rgb(107 114 128 / var(--tw-border-opacity));
+        outline-offset: 0;
+      }
+    }
+  }
+}
