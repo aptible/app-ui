@@ -14,6 +14,7 @@ interface ImportMetaEnv {
   VITE_LEGACY_DASHBOARD_URL: string;
   VITE_METRIC_TUNNEL_URL: string;
   VITE_PORTAL_URL: string;
+  VITE_APTIBLE_AI_URL: string;
   VITE_DEBUG: string;
   VITE_SENTRY_DSN: string;
   VITE_ORIGIN: string;

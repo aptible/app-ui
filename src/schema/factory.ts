@@ -60,6 +60,7 @@ export const defaultConfig = (e: Partial<Config> = {}): Config => {
     apiUrl: import.meta.env.VITE_API_URL || "",
     metricTunnelUrl: import.meta.env.VITE_METRIC_TUNNEL_URL || "",
     portalUrl: import.meta.env.VITE_PORTAL_URL || "",
+    aptibleAiUrl: import.meta.env.VITE_APTIBLE_AI_URL || "",
     sentryDsn: import.meta.env.VITE_SENTRY_DSN || "",
     origin: (import.meta.env.VITE_ORIGIN as any) || "app",
     betaFeatureOrgIds:
