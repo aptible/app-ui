@@ -126,6 +126,10 @@ export const selectAppsByEnvId = createSelector(
   selectAppsAsList,
   (_: WebState, props: { envId: string }) => props.envId,
   (apps, envId) => {
+    if (envId === "") {
+      return apps;
+    }
+
     return apps.filter((app) => app.environmentId === envId);
   },
 );
@@ -407,3 +411,11 @@ export const updateApp = api.put<UpdateApp>("/apps/:id", function* (ctx, next) {
     message: "Saved changes successfully!",
   };
 });
+
+export const appToOption = (app: DeployApp): { key: string; label: string; value: string } => {
+  return {
+    key: app.id,
+    label: app.handle,
+    value: app.id,
+  };
+};
