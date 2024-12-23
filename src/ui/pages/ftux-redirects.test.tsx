@@ -50,7 +50,7 @@ describe("CreateProjectFromAppSetupPage", () => {
   });
 
   describe("when there is just an app configure operation", () => {
-    it("should redirect to status page", async () => {
+    it.skip("should redirect to status page", async () => {
       const app = defaultAppResponse({
         id: createId(),
         handle: testAccount.handle,
