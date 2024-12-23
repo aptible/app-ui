@@ -30,6 +30,9 @@ export const DiagnosticsDetailPage = () => {
         // TODO: Figure out how to get a status code from an action, so that we
         // can swap out this fetch implementation.
         const response = await fetch(dashboardUrl, {
+          // Credentials are included to allow aptible-ai to set the session
+          // cookie, effectively logging us in.
+          credentials: "include",
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -92,8 +95,7 @@ export const DiagnosticsDetailPage = () => {
               <Loading text={loadingMessages[messageIndex]} />
             </>
           ) : (
-            <form action={dashboardUrl} method="post">
-              <input type="hidden" name="_bearer_token" value={accessToken} />
+            <form action={dashboardUrl} target="_blank" method="post">
               <Button type="submit">View Dashboard</Button>
             </form>
           )}
