@@ -130,7 +130,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <h1 className="text-lg text-gray-500 pt-2 mb-4">Issue Description</h1>
+        <h1 className="text-lg text-gray-500 mb-4">Issue Description</h1>
         <FormGroup
           label="Symptoms"
           htmlFor="Symptoms"
@@ -143,20 +143,17 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
             options={symptomOptions}
           />
         </FormGroup>
-        <FormGroup
-          label="Time Range"
-          htmlFor="Time Range"
-          feedbackVariant="info"
-          className="flex-1"
-        >
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <FormGroup label="Time Range" htmlFor="Time Range">
               <Select
                 onSelect={(o) => setTimePreset(o.value)}
                 defaultValue={timePresets[2].value}
                 value={timePreset}
                 options={timePresets}
               />
+            </FormGroup>
+            <FormGroup label="Start Time" htmlFor="Start Date">
               <DatePicker
                 selected={startDate?.toJSDate()}
                 onChange={(date) => onSelectStartDate(date ?? new Date())}
@@ -167,6 +164,8 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
                 filterDate={(date) => date < now.toJSDate()}
                 filterTime={(time) => time < now.toJSDate()}
               />
+            </FormGroup>
+            <FormGroup label="End Time" htmlFor="End Date">
               <DatePicker
                 selected={endDate?.toJSDate()}
                 onChange={(date) => onSelectEndDate(date ?? new Date())}
@@ -177,10 +176,13 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
                 filterDate={(date) => date < now.toJSDate()}
                 filterTime={(time) => time < now.toJSDate()}
               />
-              UTC
+            </FormGroup>
+            <div className="flex gap-1 flex-col">
+              <div className="block">&nbsp;</div>
+              <div className="text-gray-500">UTC</div>
             </div>
           </div>
-        </FormGroup>
+        </div>
         <div className="mt-4">
           <hr />
           <div className="flex justify-between items-end gap-2">
