@@ -1,26 +1,22 @@
-import {
-  envToOption,
-  fetchEnvironments,
-  selectEnvironmentsByStackId,
-} from "@app/deploy";
+import { appToOption, fetchApps, selectAppsByEnvId } from "@app/deploy";
 import { useQuery, useSelector } from "@app/react";
 import { EmptyResources, ErrorResources } from "./load-resources";
 import { Loading } from "./loading";
 import { Select, type SelectOption, type SelectProps } from "./select";
 
-export const EnvironmentSelect = ({
+export const AppSelect = ({
   onSelect,
-  stackId = "",
+  envId = "",
   ...props
 }: {
   onSelect: (s: SelectOption) => void;
-  stackId?: string;
+  envId?: string;
 } & Omit<SelectProps, "options" | "onSelect">) => {
-  const { isInitialLoading, isError, message } = useQuery(fetchEnvironments());
-  const envs = useSelector((s) => selectEnvironmentsByStackId(s, { stackId }));
+  const { isInitialLoading, isError, message } = useQuery(fetchApps());
+  const apps = useSelector((s) => selectAppsByEnvId(s, { envId }));
   const options = [
-    { label: "Select an Environment", value: "" },
-    ...envs.map(envToOption).sort((a, b) => a.label.localeCompare(b.label)),
+    { label: "Select an App", value: "" },
+    ...apps.map(appToOption).sort((a, b) => a.label.localeCompare(b.label)),
   ];
 
   if (isInitialLoading) {

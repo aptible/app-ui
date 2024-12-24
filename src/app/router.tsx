@@ -62,6 +62,9 @@ import {
   DeploymentDetailLogsPage,
   DeploymentDetailPage,
   DeploymentsPage,
+  DiagnosticsCreatePage,
+  DiagnosticsDetailPage,
+  DiagnosticsPage,
   ElevatePage,
   ElevateRequired,
   EndpointDetailActivityPage,
@@ -148,6 +151,7 @@ import {
   VerifyEmailRequired,
 } from "@app/ui";
 import { DeploymentDetailLayout } from "@app/ui/layouts/deployment-detail-layout";
+import { AppDetailDiagnosticsPage } from "@app/ui/pages/app-detail-diagnostics";
 import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
 import { GithubIntegrationPage } from "@app/ui/pages/github-integration";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
@@ -368,6 +372,10 @@ export const appRoutes: RouteObject[] = [
                 path: routes.APP_DETAIL_DEPLOYMENTS_PATH,
                 element: <AppDetailDeploymentsPage />,
               },
+              {
+                path: routes.APP_DETAIL_DIAGNOSTICS_PATH,
+                element: <AppDetailDiagnosticsPage />,
+              },
             ],
           },
         ],
@@ -579,6 +587,24 @@ export const appRoutes: RouteObject[] = [
                 element: <EnvironmentEndpointsPage />,
               },
             ],
+          },
+        ],
+      },
+
+      {
+        path: routes.DIAGNOSTICS_URL,
+        children: [
+          {
+            index: true,
+            element: <DiagnosticsPage />,
+          },
+          {
+            path: routes.DIAGNOSTICS_CREATE_URL,
+            element: <DiagnosticsCreatePage />,
+          },
+          {
+            path: routes.DIAGNOSTICS_DETAIL_URL,
+            element: <DiagnosticsDetailPage />,
           },
         ],
       },

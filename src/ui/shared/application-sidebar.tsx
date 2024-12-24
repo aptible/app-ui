@@ -1,5 +1,6 @@
 import { selectEnv } from "@app/config";
 import { selectNav, setCollapsed } from "@app/nav";
+import { selectHasBetaFeatures } from "@app/organizations";
 import { useDispatch, useSelector } from "@app/react";
 import {
   activityUrl,
@@ -8,6 +9,7 @@ import {
   databaseUrl,
   deployUrl,
   deploymentsUrl,
+  diagnosticsCreateUrl,
   endpointsUrl,
   environmentsUrl,
   searchUrl,
@@ -19,6 +21,7 @@ import {
 } from "@app/routes";
 import { schema } from "@app/schema";
 import { SYSTEM_STATUS_ID } from "@app/system-status";
+import { selectIsImpersonated } from "@app/token";
 import { useLayoutEffect } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
@@ -31,6 +34,7 @@ import {
   IconBox,
   IconCloud,
   IconCylinder,
+  IconDiagnostics,
   IconEndpoint,
   IconGlobe,
   IconHamburger,
@@ -58,6 +62,8 @@ export const ApplicationSidebar = () => {
   const hasSystemStatus =
     systemStatus?.description && systemStatus?.indicator !== "none";
   const navigate = useNavigate();
+  const hasBetaFeatures =
+    useSelector(selectHasBetaFeatures) || useSelector(selectIsImpersonated);
   const navigation = [
     { name: "Stacks", to: stacksUrl(), icon: <IconLayers /> },
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
@@ -68,6 +74,15 @@ export const ApplicationSidebar = () => {
     { name: "Sources", to: sourcesUrl(), icon: <IconSource /> },
     { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
+    ...(hasBetaFeatures
+      ? [
+          {
+            name: "Diagnostics",
+            to: diagnosticsCreateUrl(),
+            icon: <IconDiagnostics />,
+          },
+        ]
+      : []),
     {
       name: "Security & Compliance",
       to: securityDashboardUrl(env.legacyDashboardUrl),

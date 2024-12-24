@@ -10,6 +10,7 @@ export interface Config {
   apiUrl: string;
   metricTunnelUrl: string;
   portalUrl: string;
+  aptibleAiUrl: string;
   sentryDsn: string;
   legacyDashboardUrl: string;
   mintlifyChatKey: string;
@@ -104,6 +105,10 @@ export interface GithubIntegration {
   active: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Dashboard {
+  id: string;
 }
 
 export interface ManualScaleRecommendation {

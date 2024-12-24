@@ -1,5 +1,6 @@
 import {
   api,
+  aptibleAiApi,
   authApi,
   billingApi,
   metricTunnelApi,
@@ -74,6 +75,7 @@ const initialSagas: { [key: string]: Callable<any> } = {
   portalApi: portalApi.bootup,
   thunks: thunks.bootup,
   billingApi: billingApi.bootup,
+  aptibleAiApi: aptibleAiApi.bootup,
 };
 
 export const sagas = corePackages.reduce<{ [key: string]: Callable<any> }>(

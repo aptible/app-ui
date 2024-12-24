@@ -13,6 +13,7 @@ import {
 } from "@app/deploy";
 import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
 import { findLoaderComposite } from "@app/loaders";
+import { selectHasBetaFeatures } from "@app/organizations";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import {
   appActivityUrl,
@@ -20,6 +21,7 @@ import {
   appConfigUrl,
   appDetailDeploymentsUrl,
   appDetailDepsUrl,
+  appDetailDiagnosticsUrl,
   appDetailUrl,
   appEndpointsUrl,
   appServicesUrl,
@@ -29,6 +31,7 @@ import {
 } from "@app/routes";
 import { setResourceStats } from "@app/search";
 import { fetchSourceById, selectSourceById } from "@app/source";
+import { selectIsImpersonated } from "@app/token";
 import type { DeployApp } from "@app/types";
 import { useEffect, useMemo } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
@@ -169,6 +172,8 @@ function AppPageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
+  const hasBetaFeatures =
+    useSelector(selectHasBetaFeatures) || useSelector(selectIsImpersonated);
   const hasConfigAccess = useSelector((s) =>
     selectUserHasPerms(s, { envId: app.environmentId, scope: "read" }),
   );
@@ -184,6 +189,10 @@ function AppPageHeader() {
 
   if (hasConfigAccess) {
     tabs.push({ name: "Dependencies", href: appDetailDepsUrl(id) });
+  }
+
+  if (hasBetaFeatures) {
+    tabs.push({ name: "Diagnostics", href: appDetailDiagnosticsUrl(id) });
   }
 
   tabs.push(

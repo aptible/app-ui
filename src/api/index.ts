@@ -27,6 +27,7 @@ import type {
   Action,
   ApiCtx,
   AppCtx,
+  AptibleAiCtx,
   AuthApiCtx,
   DeployApiCtx,
   HalEmbedded,
@@ -42,7 +43,13 @@ export interface ThunkCtx<P = any, D = any>
   json: D | null;
 }
 
-type EndpointUrl = "auth" | "api" | "billing" | "metrictunnel" | "portal";
+type EndpointUrl =
+  | "auth"
+  | "api"
+  | "billing"
+  | "metrictunnel"
+  | "portal"
+  | "aptibleai";
 
 const log = createLog("fx");
 
@@ -116,6 +123,10 @@ function* getApiBaseUrl(endpoint: EndpointUrl) {
 
   if (endpoint === "portal") {
     return env.portalUrl;
+  }
+
+  if (endpoint === "aptibleai") {
+    return env.aptibleAiUrl;
   }
 
   return env.apiUrl;
@@ -242,6 +253,18 @@ function* requestPortal(ctx: ApiCtx, next: Next) {
   yield* next();
 }
 
+function* requestAptibleAi(ctx: ApiCtx, next: Next) {
+  const url = yield* call(() => getUrl(ctx, "aptibleai" as const));
+  ctx.request = ctx.req({
+    url,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  yield* next();
+}
+
 function* expiredToken(ctx: ApiCtx, next: Next) {
   yield* next();
   if (!ctx.response) return;
@@ -356,6 +379,20 @@ portalApi.use(portalApi.routes());
 portalApi.use(requestPortal);
 portalApi.use(tokenMdw);
 portalApi.use(mdw.fetch());
+
+export const aptibleAiApi = createApi<AptibleAiCtx>(
+  createThunks({ supervisor: takeEvery }),
+);
+aptibleAiApi.use(debugMdw);
+aptibleAiApi.use(apiErrorMdw);
+aptibleAiApi.use(sentryErrorHandler);
+aptibleAiApi.use(expiredToken);
+aptibleAiApi.use(mdw.api({ schema }));
+aptibleAiApi.use(aborter);
+aptibleAiApi.use(aptibleAiApi.routes());
+aptibleAiApi.use(requestAptibleAi);
+aptibleAiApi.use(tokenMdw);
+aptibleAiApi.use(mdw.fetch());
 
 export interface PaginateProps {
   page: number;

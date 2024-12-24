@@ -147,6 +147,9 @@ export const appDetailDepsUrl = (id: string) => `/apps/${id}/deps`;
 export const APP_DETAIL_DEPLOYMENTS_PATH = "/apps/:id/deployments";
 export const appDetailDeploymentsUrl = (id: string) =>
   `/apps/${id}/deployments`;
+export const APP_DETAIL_DIAGNOSTICS_PATH = "/apps/:id/diagnostics";
+export const appDetailDiagnosticsUrl = (id: string) =>
+  `/apps/${id}/diagnostics`;
 
 export const DEPLOYMENT_DETAIL_PATH = "/deployments/:id";
 export const deploymentDetailUrl = (id: string) => `/deployments/${id}`;
@@ -400,6 +403,13 @@ export const createLogDrainUrl = (envId = "") =>
 
 export const SUPPORT_URL = "/support";
 export const supportUrl = () => SUPPORT_URL;
+
+export const DIAGNOSTICS_URL = "/diagnostics";
+export const diagnosticsUrl = () => DIAGNOSTICS_URL;
+export const DIAGNOSTICS_CREATE_URL = "/diagnostics/create";
+export const diagnosticsCreateUrl = () => DIAGNOSTICS_CREATE_URL;
+export const DIAGNOSTICS_DETAIL_URL = "/diagnostics/:id";
+export const diagnosticsDetailUrl = (id: string) => `/diagnostics/${id}`;
 
 export const SOURCES_PATH = "/sources";
 export const sourcesUrl = () => SOURCES_PATH;
