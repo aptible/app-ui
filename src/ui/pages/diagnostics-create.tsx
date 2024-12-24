@@ -130,7 +130,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <h1 className="text-lg text-gray-500 pt-2 mb-4">Issue Description</h1>
+        <h1 className="text-lg text-gray-500 mb-4">Issue Description</h1>
         <FormGroup
           label="Symptoms"
           htmlFor="Symptoms"
