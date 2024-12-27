@@ -99,8 +99,8 @@ export function passValidator(password: string) {
     }
   });
 
-  if (Buffer.byteLength(password, 'utf8') > 100) {
-    errors.push('must be at most 72 bytes');
+  if (Buffer.byteLength(password, "utf8") > 100) {
+    errors.push("must be at most 72 bytes");
   }
 
   return errors.join(", ");

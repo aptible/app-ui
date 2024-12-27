@@ -133,7 +133,9 @@ describe("Accept invitation flows", () => {
       await act(() => userEvent.type(name, "mock name"));
 
       // 73 bytes (too long)
-      await act(() => userEvent.type(pass, "Aptible!1234*••••••••••••••••••••"));
+      await act(() =>
+        userEvent.type(pass, "Aptible!1234*••••••••••••••••••••"),
+      );
 
       const signupBtn = await screen.findByRole("button", {
         name: "Create Account",
