@@ -79,7 +79,7 @@ export function stackNameValidator(stackName = "") {
 
 const COMPLEXITY_RULES: [string, RegExp][] = [
   ["must be at least 10 characters", /^.{0,9}$/],
-  ["must be shorter than 128 characters", /^.{128,}$/],
+  ["must be shorter than 72 characters", /^.{72,}$/],
   ["must contain at least one uppercase letter", /^[^A-Z]+$/],
   ["must contain at least one lowercase letter", /^[^a-z]+$/],
   [
@@ -98,6 +98,10 @@ export function passValidator(password: string) {
       errors.push(message);
     }
   });
+
+  if (Buffer.byteLength(password, 'utf8') > 100) {
+    errors.push('must be at most 72 bytes');
+  }
 
   return errors.join(", ");
 }
