@@ -62,8 +62,8 @@ export const ApplicationSidebar = () => {
   const hasSystemStatus =
     systemStatus?.description && systemStatus?.indicator !== "none";
   const navigate = useNavigate();
-  const hasBetaFeatures =
-    useSelector(selectHasBetaFeatures) || useSelector(selectIsImpersonated);
+  const isImpersonated = useSelector(selectIsImpersonated);
+  const hasBetaFeatures = useSelector(selectHasBetaFeatures) || isImpersonated;
   const navigation = [
     { name: "Stacks", to: stacksUrl(), icon: <IconLayers /> },
     { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },

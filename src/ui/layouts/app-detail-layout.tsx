@@ -172,8 +172,8 @@ function AppPageHeader() {
   const crumbs = [
     { name: environment.handle, to: environmentAppsUrl(environment.id) },
   ];
-  const hasBetaFeatures =
-    useSelector(selectHasBetaFeatures) || useSelector(selectIsImpersonated);
+  const isImpersonated = useSelector(selectIsImpersonated);
+  const hasBetaFeatures = useSelector(selectHasBetaFeatures) || isImpersonated;
   const hasConfigAccess = useSelector((s) =>
     selectUserHasPerms(s, { envId: app.environmentId, scope: "read" }),
   );
