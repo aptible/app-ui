@@ -14,7 +14,6 @@ import {
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useLoader, useQuery, useSelector } from "@app/react";
 import {
-  appDetailDiagnosticsUrl,
   appDetailUrl,
   appServicePathMetricsUrl,
   appServiceScalePathUrl,
@@ -28,7 +27,7 @@ import { Code } from "../code";
 import { CopyTextButton } from "../copy";
 import { CostEstimateTooltip } from "../cost-estimate-tooltip";
 import { Group } from "../group";
-import { IconChevronDown, IconInfo, IconPlusCircle } from "../icons";
+import { IconChevronDown, IconInfo } from "../icons";
 import { DescBar, FilterBar, PaginateBar } from "../resource-list-view";
 import { EnvStackCell } from "../resource-table";
 import { ScaleRecsView } from "../scale-recs";
@@ -342,9 +341,6 @@ export function AppServicesByApp({
 
   return (
     <Group>
-      <ButtonLink className="w-fit" to={appDetailDiagnosticsUrl(appId)}>
-        <IconPlusCircle variant="sm" className="mr-2" /> Diagnose Issues
-      </ButtonLink>
       <Group size="sm">
         <FilterBar>
           <Group variant="horizontal" size="lg" className="items-center">
