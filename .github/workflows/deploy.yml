@@ -30,6 +30,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
+            SENTRY_AUTH_TOKEN=${{ secrets.PROD_SENTRY_AUTH_TOKEN }}
+            SENTRY_ORG=aptible
+            SENTRY_PROJECT=app-ui
             VITE_SENTRY_DSN=${{ secrets.PROD_SENTRY_DSN }}
             VITE_ORIGIN=app
             VITE_METRIC_TUNNEL_URL=https://metrictunnel-nextgen.aptible.com

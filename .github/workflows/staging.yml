@@ -33,6 +33,9 @@ jobs:
             VITE_METRIC_TUNNEL_URL=https://metrictunnel-sbx-main.aptible-sandbox.com
             VITE_PORTAL_URL=https://portal-sbx-main.aptible-sandbox.com
             VITE_APTIBLE_AI_URL=https://aptiblebot.aptible-staging.com
+            SENTRY_AUTH_TOKEN=${{ secrets.STAGING_SENTRY_AUTH_TOKEN }}
+            SENTRY_ORG=aptible
+            SENTRY_PROJECT=app-ui-sbx-main
             VITE_SENTRY_DSN=${{ secrets.STAGING_SENTRY_DSN }}
             VITE_ORIGIN=app
             VITE_TUNA_ENABLED=true
