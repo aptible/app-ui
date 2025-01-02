@@ -116,11 +116,10 @@ const CostCell = ({
   service: DeployServiceRow;
   evaluateAutoscaling?: boolean;
 }) => {
-  const hideCost =
-    evaluateAutoscaling &&
-    useSelector((s) =>
-      selectAutoscalingEnabledById(s, { id: service.serviceSizingPolicyId }),
-    );
+  const autoscalingEnabled = useSelector((s) =>
+    selectAutoscalingEnabledById(s, { id: service.serviceSizingPolicyId }),
+  );
+  const hideCost = evaluateAutoscaling && autoscalingEnabled;
   const orgId = useSelector(selectOrganizationSelectedId);
   const { isLoading } = useLoader(fetchCostsByServices({ orgId }));
 
