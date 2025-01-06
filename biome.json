@@ -21,7 +21,8 @@
       },
       "correctness": {
         "useYield": "off",
-        "useExhaustiveDependencies": "off"
+        "useExhaustiveDependencies": "off",
+        "useHookAtTopLevel": "error"
       },
       "complexity": {
         "noForEach": "off"

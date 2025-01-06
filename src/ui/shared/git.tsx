@@ -20,10 +20,6 @@ export const GitRef = ({
   const ref = gitRef?.trim() || "";
   const url = commitUrl || "";
 
-  if (!sha) {
-    return <em>Not Provided</em>;
-  }
-
   const commitWidget = useMemo(
     () => (
       <Code className="whitespace-nowrap">
@@ -35,6 +31,10 @@ export const GitRef = ({
     ),
     [url, shortSha],
   );
+
+  if (!sha) {
+    return <em>Not Provided</em>;
+  }
 
   return (
     <div className={`inline-block whitespace-nowrap ${className}`}>
