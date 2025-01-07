@@ -137,7 +137,6 @@ describe("Accept invitation flows", () => {
       const signupBtn = await screen.findByRole("button", {
         name: "Create Account",
       });
-
       expect(signupBtn).not.toBeDisabled();
       fireEvent.click(signupBtn);
 
