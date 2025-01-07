@@ -99,8 +99,9 @@ export function passValidator(password: string) {
     }
   });
 
-  if (Buffer.byteLength(password, "utf8") > 100) {
-    errors.push("must be at most 72 bytes");
+  // Assert byte length is <= 72 due to bcrypt limitations
+  if (new TextEncoder().encode(password).length > 72) {
+    errors.push("Too long: Passwords are limited to 72 bytes");
   }
 
   return errors.join(", ");
