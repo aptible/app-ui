@@ -132,11 +132,19 @@ describe("Accept invitation flows", () => {
       const name = await screen.findByRole("textbox", { name: "name" });
       await act(() => userEvent.type(name, "mock name"));
       const pass = await screen.findByLabelText("password");
-      await act(() => userEvent.type(pass, "Aptible!1234"));
+
+      // 73 bytes (too long)
+      await act(() =>
+        userEvent.type(pass, "Aptible!1234*••••••••••••••••••••"),
+      );
 
       const signupBtn = await screen.findByRole("button", {
         name: "Create Account",
       });
+      expect(signupBtn).toBeDisabled();
+
+      await act(() => userEvent.type(pass, "Aptible!1234"));
+
       expect(signupBtn).not.toBeDisabled();
       fireEvent.click(signupBtn);
 
