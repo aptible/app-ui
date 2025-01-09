@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@floating-ui/react": "^0.27.0",
+    "@floating-ui/react": "^0.27.2",
     "@github/webauthn-json": "^2.1.1",
     "@mintlify/widget-react": "^0.0.11",
     "@remix-run/web-fetch": "^4.4.2",
