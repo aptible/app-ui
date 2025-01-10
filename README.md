@@ -86,6 +86,18 @@ Automatically fix issues
 yarn fmt
 ```
 
+Testing a single file (or a regex pattern of files):
+
+```bash
+yarn vitest file-regex
+```
+
+Extend truncated debug output for tests:
+```bash
+export DEBUG_PRINT_LIMIT=1000000
+yarn vitest
+```
+
 ## Sites
 
 - [prod](https://app.aptible.com)
