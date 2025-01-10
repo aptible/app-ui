@@ -132,6 +132,38 @@ describe("Accept invitation flows", () => {
       const name = await screen.findByRole("textbox", { name: "name" });
       await act(() => userEvent.type(name, "mock name"));
       const pass = await screen.findByLabelText("password");
+      await act(() => userEvent.type(pass, "Aptible!1234"));
+
+      const signupBtn = await screen.findByRole("button", {
+        name: "Create Account",
+      });
+      expect(signupBtn).not.toBeDisabled();
+      fireEvent.click(signupBtn);
+
+      const btn = await screen.findByRole("button", { name: /Accept Invite/ });
+      fireEvent.click(btn);
+      await screen.findByRole("heading", { name: /Environments/ });
+    });
+  });
+
+  describe("new user signup - data validation", () => {
+    it("should enforce a maximum password length", async () => {
+      server.use(
+        rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
+          return res(ctx.status(401));
+        }),
+        ...verifiedUserHandlers(),
+      );
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [teamAcceptInviteUrl(testVerifiedInvitation.id, "222")],
+      });
+
+      await waitForBootup(store);
+
+      render(<App />);
+      const name = await screen.findByRole("textbox", { name: "name" });
+      await act(() => userEvent.type(name, "mock name"));
+      const pass = await screen.findByLabelText("password");
 
       // 73 bytes (too long)
       await act(() =>
@@ -141,16 +173,24 @@ describe("Accept invitation flows", () => {
       const signupBtn = await screen.findByRole("button", {
         name: "Create Account",
       });
-      expect(signupBtn).toBeDisabled();
-
-      await act(() => userEvent.type(pass, "Aptible!1234"));
-
-      expect(signupBtn).not.toBeDisabled();
+      expect(signupBtn);
       fireEvent.click(signupBtn);
 
-      const btn = await screen.findByRole("button", { name: /Accept Invite/ });
-      fireEvent.click(btn);
-      await screen.findByRole("heading", { name: /Environments/ });
+      // Await rendering for error message
+      await screen.findByText(/Too long: Passwords are limited to 72 bytes/);
+
+      // Assert the error message is present (somewhat redundant but more explict)
+      expect(
+        screen.queryByText(/Too long: Passwords are limited to 72 bytes/),
+      ).toBeInTheDocument();
+
+      // Clear password and set to an OK password
+      await act(() => userEvent.clear(pass));
+      await act(() => userEvent.type(pass, "Aptible!1234"));
+      fireEvent.click(signupBtn);
+
+      // After clicking, assert we are on the next screen
+      await screen.findByRole("button", { name: /Accept Invite/ });
     });
   });
 });
