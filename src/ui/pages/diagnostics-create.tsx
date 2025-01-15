@@ -6,7 +6,6 @@ import {
 import { DateTime } from "luxon";
 import { useEffect, useMemo, useState } from "react";
 import DatePicker from "react-datepicker";
-import { useDispatch, useLoader, useSelector } from "starfx/react";
 import { AppSidebarLayout } from "../layouts";
 import {
   Banner,
@@ -21,13 +20,9 @@ import {
 import { AppSelect } from "../shared/select-apps";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { createDashboard } from "@app/aptible-ai";
-import { type WebState, schema } from "@app/schema";
 import { useNavigate } from "react-router-dom";
 
 export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
-  const dispatch = useDispatch();
-
   const symptomOptions = [
     { label: "App is slow", value: "App is slow" },
     { label: "App is unavailable", value: "App is unavailable" },
@@ -43,7 +38,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   // invalid.
   const now = useMemo(
     () => DateTime.now().minus({ minutes: DateTime.local().offset }),
-    [],
+    []
   );
 
   const timePresets = [
@@ -60,7 +55,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   const [timePreset, setTimePreset] = useState(timePresets[2].value);
 
   const [startDate, setStartDate] = useState<DateTime>(
-    DateTime.fromISO(timePreset),
+    DateTime.fromISO(timePreset)
   );
   const onSelectStartDate = (date: Date) => {
     const dateTime = DateTime.fromJSDate(date);
@@ -100,32 +95,25 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
       startDate !== null &&
       endDate !== null &&
       startDate < endDate,
-    [symptoms, appId, startDate, endDate],
+    [symptoms, appId, startDate, endDate]
   );
 
   // Submit the form.
-  const submitAction = createDashboard({
-    symptoms: symptoms,
-    appId,
-    start: startDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
-    end: endDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
-  });
-  const dashboardData = useSelector((s: WebState) =>
-    schema.cache.selectById(s, { id: submitAction.payload.key }),
-  );
-  const { isLoading } = useLoader(submitAction);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(submitAction);
+    setIsLoading(true);
+    navigate(
+      diagnosticsDetailUrl(
+        appId,
+        symptoms,
+        startDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
+        endDate.toUTC(0, { keepLocalTime: true }).toJSDate()
+      )
+    );
+    setIsLoading(false);
   };
-
-  // Navigate to the dashboard when it is created.
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (dashboardData?.id) {
-      navigate(diagnosticsDetailUrl(dashboardData.id));
-    }
-  }, [dashboardData]);
 
   return (
     <>

@@ -408,8 +408,8 @@ export const DIAGNOSTICS_URL = "/diagnostics";
 export const diagnosticsUrl = () => DIAGNOSTICS_URL;
 export const DIAGNOSTICS_CREATE_URL = "/diagnostics/create";
 export const diagnosticsCreateUrl = () => DIAGNOSTICS_CREATE_URL;
-export const DIAGNOSTICS_DETAIL_URL = "/diagnostics/:id";
-export const diagnosticsDetailUrl = (id: string) => `/diagnostics/${id}`;
+export const DIAGNOSTICS_DETAIL_URL = "/diagnostics/detail";
+export const diagnosticsDetailUrl = (appId: string, symptoms: string, start: Date, end: Date) => `/diagnostics/detail?app_id=${appId}&symptom_description=${symptoms}&start_time=${start.toISOString()}&end_time=${end.toISOString()}`;
 
 export const SOURCES_PATH = "/sources";
 export const sourcesUrl = () => SOURCES_PATH;
