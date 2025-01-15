@@ -3,10 +3,10 @@ import { useSelector } from "@app/react";
 import { diagnosticsCreateUrl } from "@app/routes";
 import { selectAccessToken } from "@app/token";
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 import { AppSidebarLayout } from "../layouts";
 import { Breadcrumbs, PreText } from "../shared";
-import useWebSocket, { ReadyState } from "react-use-websocket";
 
 type Message = {
   id: string;
@@ -17,13 +17,13 @@ type Message = {
 type Operation = {
   id: number;
   status: string;
-  created_at: Date;
+  created_at: string;
   description: string;
   log_lines: string[];
 };
 
 type Point = {
-  timestamp: Date;
+  timestamp: string;
   value: number;
 };
 
@@ -72,31 +72,27 @@ type Dashboard = {
   messages: Message[];
 };
 
-
 export const DiagnosticsDetailPage = () => {
   // Parse the investigation parameters from the query string.
   const [searchParams, setSearchParams] = useSearchParams();
   const accessToken = useSelector(selectAccessToken);
-  const appId = searchParams.get("app_id");
-  const symptomDescription = searchParams.get("symptom_description");
-  const startTime = searchParams.get("start_time");
-  const endTime = searchParams.get("end_time");
+  const appId = searchParams.get("appId");
+  const symptomDescription = searchParams.get("symptomDescription");
+  const startTime = searchParams.get("startTime");
+  const endTime = searchParams.get("endTime");
 
   // If any of the parameters are missing, display an error message with a link
   // to the diagnostics create page.
   if (!appId || !symptomDescription || !startTime || !endTime) {
-    return (
-      <div>
-        <p>Error: Missing parameters</p>
-        <Link to={diagnosticsCreateUrl()}>Go back to diagnostics page</Link>
-      </div>
-    );
+    throw new Error("Missing parameters");
   }
 
   // Connect to the Aptible AI WebSocket.
   const aptibleAiUrl = useSelector(selectAptibleAiUrl);
   const [socketConnected, setSocketConnected] = useState(true);
-  const { lastJsonMessage: event, readyState } = useWebSocket<Record<string, any>>(
+  const { lastJsonMessage: event, readyState } = useWebSocket<
+    Record<string, any>
+  >(
     `${aptibleAiUrl}/troubleshoot`,
     {
       queryParams: {
@@ -105,9 +101,9 @@ export const DiagnosticsDetailPage = () => {
         symptom_description: symptomDescription,
         start_time: startTime,
         end_time: endTime,
-      }
+      },
     },
-    socketConnected
+    socketConnected,
   );
 
   // If the socket is closed, set the socketConnected state to false (this is
@@ -204,7 +200,11 @@ export const DiagnosticsDetailPage = () => {
       />
 
       <div className="flex flex-row items-center justify-center flex-1 min-h-[500px]">
-        <PreText className="max-w-7xl overflow-x-auto overflow-y-auto" text={JSON.stringify(dashboard, null, 2)} allowCopy />
+        <PreText
+          className="max-w-7xl overflow-x-auto overflow-y-auto"
+          text={JSON.stringify(dashboard, null, 2)}
+          allowCopy
+        />
       </div>
     </AppSidebarLayout>
   );

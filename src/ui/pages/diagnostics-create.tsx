@@ -38,7 +38,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   // invalid.
   const now = useMemo(
     () => DateTime.now().minus({ minutes: DateTime.local().offset }),
-    []
+    [],
   );
 
   const timePresets = [
@@ -55,7 +55,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   const [timePreset, setTimePreset] = useState(timePresets[2].value);
 
   const [startDate, setStartDate] = useState<DateTime>(
-    DateTime.fromISO(timePreset)
+    DateTime.fromISO(timePreset),
   );
   const onSelectStartDate = (date: Date) => {
     const dateTime = DateTime.fromJSDate(date);
@@ -95,7 +95,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
       startDate !== null &&
       endDate !== null &&
       startDate < endDate,
-    [symptoms, appId, startDate, endDate]
+    [symptoms, appId, startDate, endDate],
   );
 
   // Submit the form.
@@ -109,8 +109,8 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
         appId,
         symptoms,
         startDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
-        endDate.toUTC(0, { keepLocalTime: true }).toJSDate()
-      )
+        endDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
+      ),
     );
     setIsLoading(false);
   };
