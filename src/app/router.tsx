@@ -65,6 +65,7 @@ import {
   DiagnosticsCreatePage,
   DiagnosticsDetailPage,
   DiagnosticsPage,
+  DashboardPage,
   ElevatePage,
   ElevateRequired,
   EndpointDetailActivityPage,
@@ -773,6 +774,11 @@ export const appRoutes: RouteObject[] = [
   {
     path: routes.SUPPORT_URL,
     element: <SupportPage />,
+  },
+
+  {
+    path: routes.DASHBOARD_PATH,
+    element: <DashboardPage />,
   },
 
   {

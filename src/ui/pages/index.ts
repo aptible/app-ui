@@ -42,6 +42,7 @@ export * from "./app-detail-ci-cd";
 export * from "./app-detail-deps";
 export * from "./app-detail-deployments";
 export * from "./databases";
+export * from "./dashboard";
 export * from "./database-detail-activity";
 export * from "./database-detail-backups";
 export * from "./database-detail-endpoints";
