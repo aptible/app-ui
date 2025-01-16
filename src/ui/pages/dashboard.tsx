@@ -20,6 +20,8 @@ import {
   TitleBar,
   Tr,
   tokens,
+  IconArrowRight,
+  Button,
 } from "../shared";
 
 export const DashboardPage = () => {
@@ -31,13 +33,13 @@ export const DashboardPage = () => {
       <Group variant="horizontal">
       <Group className="w-full">
         <Box className="flex flex-col !p-0 overflow-hidden">
-          <div className="py-2 px-4 bg-black-50 flex flex-row items-center"><div className="text-md text-gray-500 flex-1">Overview</div><p className="text-gray-500 text-sm font-medium">Last Updated: 5m ago</p></div>
-          <div className="flex flex-row gap-4 py-3 px-10">
-            <div className="flex-1"><div className="text-lg font-semibold">2</div><div>Dedicated Stacks</div></div>
-            <div className="flex-1"><div className="text-lg font-semibold">57</div><div>Environments</div></div>
-            <div className="flex-1"><div className="text-lg font-semibold">86</div><div>Apps</div></div>
-            <div className="flex-1"><div className="text-lg font-semibold">112</div><div>Databases</div></div>
-            <div className="flex-1"><div className="text-lg font-semibold">25</div><div>Members</div></div>
+          <div className="py-2 px-4 bg-black-50 flex flex-row items-center"><div className="text-md text-gray-500 flex-1">Enterprise Plan</div><p className="text-gray-500 text-sm">Last Updated: 5m ago</p></div>
+          <div className="flex flex-row gap-4 py-4 px-8">
+            <div className="flex-1"><div className="text-lg font-semibold">0</div><div>Dedicated Stacks</div></div>
+            <div className="flex-1"><div className="text-lg font-semibold">2</div><div>Environments</div></div>
+            <div className="flex-1"><div className="text-lg font-semibold">2</div><div>Apps</div></div>
+            <div className="flex-1"><div className="text-lg font-semibold">1</div><div>Databases</div></div>
+            <div className="flex-1"><div className="text-lg font-semibold">2</div><div>Members</div></div>
           </div>
         </Box>
         <Box className="flex flex-col !p-0 overflow-hidden">
@@ -51,9 +53,19 @@ export const DashboardPage = () => {
           </div>
           <div className="p-4">test</div>
         </Box>
+        <Box>
+          <div className="flex flex-row items-center gap-4 mb-3"><img src="/resource-types/logo-database.png" className="w-[30px] h-[30px]"></img><div className="text-xl font-semibold text-black">Introduction to Aptible</div></div>
+          <div className="text-md text-black mb-4">Aptible is the No Infrastructure Platform as a Service that startups use to deploy in seconds, scale infinitely, and forget about infrastructure.</div>
+          <Button>Start <IconArrowRight variant="sm" className="ml-1" /></Button>
+        </Box>
         <Box className="flex flex-col !p-0 overflow-hidden">
-          <div className="py-2 px-4 bg-black-50 flex flex-row items-center"><div className="text-md text-gray-500 flex-1">Growth Plan Invoice</div><p className="text-gray-500 text-sm font-medium">Last Updated 5m ago</p></div>
-          <div className="p-4">test</div>
+          <div className="py-2 px-4 bg-black-50 flex flex-row items-center"><div className="text-md text-gray-500 flex-1">Getting Started</div><p className="text-gray-500 text-sm">3 of 4 Completed</p></div>
+          <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-row items-center pb-4 border-b border-black-100"><div className="flex-1 flex items-center text-base text-indigo">Add SSH Keys <IconArrowRight variant="sm" className="ml-1 stroke-indigo" /></div><div className="text-base font-bold text-forest">DONE</div></div>
+            <div className="flex flex-row items-center pb-4 border-b border-black-100"><div className="flex-1 flex items-center text-base text-indigo">Deploy App or Database <IconArrowRight variant="sm" className="ml-1 stroke-indigo" /></div><div className="text-base font-bold text-forest">DONE</div></div>
+            <div className="flex flex-row items-center pb-4 border-b border-black-100"><div className="flex-1 flex items-center text-base text-indigo">Invite Members <IconArrowRight variant="sm" className="ml-1 stroke-indigo" /></div><div className="text-base font-bold text-forest">DONE</div></div>
+            <div className="flex flex-row items-center"><div className="flex-1 flex items-center text-base text-indigo">Add Payment Option <IconArrowRight variant="sm" className="ml-1 stroke-indigo" /></div><div className="text-base font-bold text-gray-500">TODO</div></div>
+          </div>
         </Box>
       </Group>
       <Box className="w-[600px] flex flex-col !p-0 overflow-hidden">
@@ -66,23 +78,23 @@ export const DashboardPage = () => {
           </div>
           {/*Activity Item*/}
           <div className="flex flex-col">
-            <div className="flex flex-row gap-2 py-2 px-4 border-b border-black-100 items-center">
-              <img src="/resource-types/logo-database.png" className="w-[32px] h-[32px]"></img>
-              <div>Database Backup of app-ui<div className="text-black-500 text-sm">5m ago by Mark Corrigan</div></div>
+            <div className="flex flex-row gap-3 py-2 px-4 border-b border-black-100 items-center">
+              <img src="/resource-types/logo-database.png" className="w-[30px] h-[30px]"></img>
+              <div className="break-words">app-ui backup restored<div className="text-sm text-gray-500 break-words">2025-01-16 02:41:40 UTC by Mark Corrigan</div></div>
             </div>
           </div>
           {/*Activity Item*/}
           <div className="flex flex-col">
-            <div className="flex flex-row gap-2 py-2 px-4 border-b border-black-100 items-center">
-              <img src="/resource-types/logo-environment.png" className="w-[32px] h-[32px]"></img>
-              <div>New Environment in dashboard-production<div className="text-black-500 text-sm">5m ago by Mark Corrigan</div></div>
+            <div className="flex flex-row gap-3 py-2 px-4 border-b border-black-100 items-center">
+              <img src="/resource-types/logo-environment.png" className="w-[30px] h-[30px]"></img>
+              <div className="break-words">dashboard-production environment created<div className="text-sm text-gray-500 break-words">2025-01-16 02:41:40 UTC by Mark Corrigan</div></div>
             </div>
           </div>
           {/*Activity Item*/}
           <div className="flex flex-col">
-            <div className="flex flex-row gap-2 py-2 px-4 border-b border-black-100 items-center">
-              <img src="/resource-types/logo-database.png" className="w-[32px] h-[32px]"></img>
-              <div>Database Backup of app-ui<div className="text-black-500 text-sm">5m ago by Mark Corrigan</div></div>
+            <div className="flex flex-row gap-3 py-2 px-4 border-b border-black-100 items-center">
+              <img src="/resource-types/logo-database.png" className="w-[30px] h-[30px]"></img>
+              <div className="break-words">app-ui backup deleted<div className="text-sm text-gray-500 break-words">2025-01-16 02:41:40 UTC by Mark Corrigan</div></div>
             </div>
           </div>
         </Box>
