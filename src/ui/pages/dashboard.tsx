@@ -1,26 +1,11 @@
-import { dashboardUrl } from "@app/routes";
-import { Link } from "react-router-dom";
 import { AppSidebarLayout } from "../layouts";
 
 import {
-  ActionBar,
-  Banner,
   Box,
   Button,
-  ButtonLink,
-  DescBar,
-  FilterBar,
   Group,
   IconArrowRight,
-  IconPlusCircle,
-  InputSearch,
-  TBody,
-  THead,
-  Table,
-  Td,
-  Th,
   TitleBar,
-  Tr,
   tokens,
 } from "../shared";
 
@@ -33,11 +18,11 @@ export const DashboardPage = () => {
       <Group variant="horizontal">
         <Group className="w-full">
           <Box className="flex flex-col !p-0 overflow-hidden">
-            <div className="py-2 px-4 bg-black-50 flex flex-row items-center">
+            <div className="py-3 px-4 bg-black-50 flex flex-row items-center">
               <div className="text-md text-gray-500 flex-1">
                 Enterprise Plan
               </div>
-              <p className="text-gray-500 text-sm">Last Updated: 5m ago</p>
+              <p className="text-gray-500 text-base"></p>
             </div>
             <div className="flex flex-row gap-4 py-4 px-8">
               <div className="flex-1">
@@ -80,11 +65,11 @@ export const DashboardPage = () => {
             </Button>
           </Box>
           <Box className="flex flex-col !p-0 overflow-hidden">
-            <div className="py-2 px-4 bg-black-50 flex flex-row items-center">
+            <div className="py-3 px-4 bg-black-50 flex flex-row items-center">
               <div className="text-md text-gray-500 flex-1">
                 Getting Started
               </div>
-              <p className="text-gray-500 text-sm">3 of 4 Completed</p>
+              <p className="text-gray-500 text-base">3 of 4 Completed</p>
             </div>
             <div className="flex flex-col gap-4 p-4">
               <div className="flex flex-row items-center pb-4 border-b border-black-100">
@@ -119,7 +104,7 @@ export const DashboardPage = () => {
           </Box>
         </Group>
         <Box className="w-[600px] flex flex-col !p-0 overflow-hidden">
-          <div className="py-2 px-4 bg-black-50 flex flex-row items-center">
+          <div className="py-3 px-4 bg-black-50 flex flex-row items-center">
             <div className="text-md text-gray-500 flex-1">Recent Activity</div>
             <div class="flex">
               <button
