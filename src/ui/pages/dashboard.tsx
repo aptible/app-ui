@@ -64,18 +64,16 @@ export const DashboardPage = () => {
           </Box>
           <Box>
             <div className="flex flex-row items-center gap-4 mb-3">
-              <img
-                src="/resource-types/logo-database.png"
-                className="w-[30px] h-[30px]"
-              />
+              <img src="/logo-aptible.png" className="w-[30px] h-[30px]" />
               <div className="text-xl font-semibold text-black">
                 Introduction to Aptible
               </div>
             </div>
             <div className="text-md text-black mb-4">
-              Aptible is the No Infrastructure Platform as a Service that
-              startups use to deploy in seconds, scale infinitely, and forget
-              about infrastructure.
+              A Platform as a Service (PaaS) that gives startups everything
+              developers need to launch and scale apps and databases that are
+              secure, reliable, and compliant — no manual configuration
+              required.
             </div>
             <Button>
               Start <IconArrowRight variant="sm" className="ml-1" />
