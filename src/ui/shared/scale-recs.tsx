@@ -25,11 +25,13 @@ import { Banner } from "./banner";
 import { Group } from "./group";
 import {
   IconAutoscale,
+  IconInfo,
   IconScaleCheck,
   IconScaleDown,
   IconScaleUp,
 } from "./icons";
 import { Pill } from "./pill";
+import { Tooltip } from "./tooltip";
 
 const isManualScaleRecValid = (
   service: DeployService,
@@ -71,7 +73,7 @@ export const ManualScaleReason = ({
     `${rec.recommendedInstanceClass}5` as InstanceClass,
   );
 
-  let msg = "Based on container metrics in the last 14 days, we recommend";
+  let msg = "We recommend";
   if (!isProfileSame) {
     msg += ` modifying your container profile to ${recProfile.name} class`;
   }
@@ -89,11 +91,17 @@ export const ManualScaleReason = ({
           <ManualScaleRecView serviceId={serviceId} />
         </div>
         <div className="flex-1">
+          <Group variant="horizontal" size="sm" className="items-center">
+            <span className="font-bold">Scaling Recommendation</span>
+            <Tooltip
+              text="This recommendation is updated daily based on CPU 95P, RSS MAX in
+            the last 14 days. See docs for more information on how it's
+            calculated."
+            >
+              <IconInfo variant="sm" />
+            </Tooltip>
+          </Group>
           <span>{msg}. </span>
-          <span className="font-bold">
-            We recommend conducting your own container and usage review before
-            scaling.{" "}
-          </span>
           <Link
             to={
               service.appId
@@ -102,7 +110,8 @@ export const ManualScaleReason = ({
             }
           >
             See metrics
-          </Link>
+          </Link>{" "}
+          to review usage before scaling.
         </div>
         <div>{children}</div>
       </Group>

@@ -31,6 +31,7 @@ import {
   BannerMessages,
   Box,
   Button,
+  ButtonLinkDocs,
   ContainerProfileInput,
   ContainerSizeInput,
   CpuShareView,
@@ -135,6 +136,7 @@ export const DatabaseScalePage = () => {
               >
                 Autofill Changes
               </Button>
+              <ButtonLinkDocs href="https://aptible.com/docs/core-concepts/scaling/container-right-sizing-recommendations" />
             </ManualScaleReason>
 
             <ContainerProfileInput
