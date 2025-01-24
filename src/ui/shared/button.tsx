@@ -82,12 +82,7 @@ export const ButtonLinkExternal = ({
 
 export const ButtonLinkDocs = ({ href }: { href: string }) => {
   return (
-    <ButtonLinkExternal
-      href={href}
-      className="ml-5 w-fit"
-      variant="white"
-      size="sm"
-    >
+    <ButtonLinkExternal href={href} className="w-fit" variant="white" size="sm">
       View Docs
       <IconExternalLink variant="sm" className="inline ml-1 h-5 mt-0" />
     </ButtonLinkExternal>
