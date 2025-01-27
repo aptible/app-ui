@@ -387,7 +387,7 @@ export const AppCreateEndpointPage = () => {
           : getProtocolName(trType)}{" "}
         traffic and route it to your app over {getProtocolName(trType)}.{" "}
         {getProtocolName(trType) === "HTTP"
-          ? "To disallow HTTP traffic and route all traffic as HTTPS, additionally set `FORCE_SSL=true` in your App configuration."
+          ? "Additionally, you can set FORCE_SSL=true in your App configuration to route all traffic as HTTPS."
           : ""
         }
       </div>
