@@ -388,8 +388,7 @@ export const AppCreateEndpointPage = () => {
         traffic and route it to your app over {getProtocolName(trType)}.{" "}
         {getProtocolName(trType) === "HTTP"
           ? "Additionally, you can set FORCE_SSL=true in your App configuration to route all traffic as HTTPS."
-          : ""
-        }
+          : ""}
       </div>
       <Form onSubmit={onSubmit}>
         <FormGroup label="Traffic Type" htmlFor="traffic-type">
