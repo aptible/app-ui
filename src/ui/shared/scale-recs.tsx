@@ -40,16 +40,22 @@ const isManualScaleRecValid = (
   if (rec.id === "") {
     return { isValid: false, isProfileSame: true, isSizeSame: true };
   }
-  const isProfileSame = service.instanceClass.startsWith(
+  const isProfileRecSame = service.instanceClass.startsWith(
     rec.recommendedInstanceClass,
   );
-
-  const isSizeSame =
+  const isSizeRecSame =
     service.containerMemoryLimitMb === rec.recommendedContainerMemoryLimitMb;
+
+  // has profile changed since we made rec?
+  const hasProfileChanged = service.instanceClass !== rec.instanceClassAtTime;
+  // has container size changed since we made rec?
+  const hasSizeChanged =
+    service.containerMemoryLimitMb !== rec.containerMemoryLimitMbAtTime;
+
   // we want to expire recommendations that are greater than X days old
   const withinTimelimit = new Date(rec.createdAt) > dateFromToday(2);
-  const isValid = !isProfileSame || !isSizeSame || !withinTimelimit;
-  return { isValid, isProfileSame, isSizeSame };
+  const isValid = !hasProfileChanged || !hasSizeChanged || !withinTimelimit;
+  return { isValid, isProfileRecSame, isSizeRecSame };
 };
 
 export const ManualScaleReason = ({
@@ -60,7 +66,7 @@ export const ManualScaleReason = ({
   const rec = useSelector((s) =>
     selectManualScaleRecommendationByServiceId(s, { serviceId: serviceId }),
   );
-  const { isValid, isProfileSame, isSizeSame } = isManualScaleRecValid(
+  const { isValid, isProfileRecSame, isSizeRecSame } = isManualScaleRecValid(
     service,
     rec,
   );
@@ -74,13 +80,13 @@ export const ManualScaleReason = ({
   );
 
   let msg = "We recommend";
-  if (!isProfileSame) {
+  if (!isProfileRecSame) {
     msg += ` modifying your container profile to ${recProfile.name} class`;
   }
-  if (!isProfileSame && !isSizeSame) {
+  if (!isProfileRecSame && !isSizeRecSame) {
     msg += " and ";
   }
-  if (!isSizeSame) {
+  if (!isSizeRecSame) {
     msg += ` modifying your container size to ${rec.recommendedContainerMemoryLimitMb / GB} GB`;
   }
 

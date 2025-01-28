@@ -933,6 +933,8 @@ export const defaultManualScaleRecommendation = (
     costSavings: 0,
     recommendedInstanceClass: "",
     recommendedContainerMemoryLimitMb: 0,
+    instanceClassAtTime: "",
+    containerMemoryLimitMbAtTime: 0,
     metricPercentile: 0,
     createdAt: now,
     ...s,

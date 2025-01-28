@@ -119,6 +119,8 @@ export interface ManualScaleRecommendation {
   ramTarget: number;
   recommendedInstanceClass: string;
   recommendedContainerMemoryLimitMb: number;
+  instanceClassAtTime: string;
+  containerMemoryLimitMbAtTime: number;
   costSavings: number;
   createdAt: string;
   metricPercentile: number;

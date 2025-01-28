@@ -12,6 +12,8 @@ export interface DeployManualScaleRecommendationResponse {
   ram_target: number;
   recommended_instance_class: string;
   recommended_container_memory_limit_mb: number;
+  instance_class_at_time: string;
+  container_memory_limit_mb_at_time: number;
   cost_savings: number;
   metric_percentile: number;
   created_at: string;
@@ -34,6 +36,8 @@ export const defaultManualScaleRecommendationResponse = (
     ram_target: 0,
     recommended_instance_class: "",
     recommended_container_memory_limit_mb: 0,
+    instance_class_at_time: "",
+    container_memory_limit_mb_at_time: 0,
     cost_savings: 0,
     metric_percentile: 0,
     created_at: now,
@@ -58,6 +62,8 @@ export const deserializeManualScaleRecommendation = (
     recommendedInstanceClass: payload.recommended_instance_class,
     recommendedContainerMemoryLimitMb:
       payload.recommended_container_memory_limit_mb,
+    instanceClassAtTime: payload.instance_class_at_time,
+    containerMemoryLimitMbAtTime: payload.container_memory_limit_mb_at_time,
     costSavings: payload.cost_savings,
     metricPercentile: payload.metric_percentile,
     createdAt: payload.created_at,
