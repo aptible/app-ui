@@ -1282,41 +1282,41 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry-internal/browser-utils@npm:8.45.0":
-  version: 8.45.0
-  resolution: "@sentry-internal/browser-utils@npm:8.45.0"
+"@sentry-internal/browser-utils@npm:8.52.0":
+  version: 8.52.0
+  resolution: "@sentry-internal/browser-utils@npm:8.52.0"
   dependencies:
-    "@sentry/core": 8.45.0
-  checksum: 13d6800be63026e8b31545645ac7675d633c6e02347eb5b9bf5c8001ebfecf16b61f7003494db437a13636d329c264b1dcf43b84ca9d688bd07768d6716e4011
+    "@sentry/core": 8.52.0
+  checksum: 8ec915f3f1f9d2d227d4cf32519700a1dc75a6202e0f3b54cbced15a2870086dd8709e7a0a1f1a4115aa1cd20b97f2fa72248500a4e94c210cc6fc794d81745b
   languageName: node
   linkType: hard
 
-"@sentry-internal/feedback@npm:8.45.0":
-  version: 8.45.0
-  resolution: "@sentry-internal/feedback@npm:8.45.0"
+"@sentry-internal/feedback@npm:8.52.0":
+  version: 8.52.0
+  resolution: "@sentry-internal/feedback@npm:8.52.0"
   dependencies:
-    "@sentry/core": 8.45.0
-  checksum: 1e9927585abf884a311eda692ba8ff82c9cc48cfec46614b86c0e6cdd496733298f148d92f1ddb32ba9690a3299304ef034de47a343531db2bc46f68b872a2ca
+    "@sentry/core": 8.52.0
+  checksum: c07e123a297f6016387801b48ba0ac97208af8eff6b68556635a826c2164edc84fd59c2e393e23367363b14e275ddde6fe84517c4597a8efc8dad33dabd809e5
   languageName: node
   linkType: hard
 
-"@sentry-internal/replay-canvas@npm:8.45.0":
-  version: 8.45.0
-  resolution: "@sentry-internal/replay-canvas@npm:8.45.0"
+"@sentry-internal/replay-canvas@npm:8.52.0":
+  version: 8.52.0
+  resolution: "@sentry-internal/replay-canvas@npm:8.52.0"
   dependencies:
-    "@sentry-internal/replay": 8.45.0
-    "@sentry/core": 8.45.0
-  checksum: aab6bbe98ad10f84d9bb8bf9093cea76d767fd0f40ba5c1224d5c020b2ed1064264343a489a651b45338d8f0310770aa547f152c872c04015e8933f357742539
+    "@sentry-internal/replay": 8.52.0
+    "@sentry/core": 8.52.0
+  checksum: 7b49f010a8caf2a64c1878b414d793e9fa9a3e5a7c02355438167b5aa124435e569aca4abe412e4094508759929df19f6077870f03f76f8f30df132766ded3ad
   languageName: node
   linkType: hard
 
-"@sentry-internal/replay@npm:8.45.0":
-  version: 8.45.0
-  resolution: "@sentry-internal/replay@npm:8.45.0"
+"@sentry-internal/replay@npm:8.52.0":
+  version: 8.52.0
+  resolution: "@sentry-internal/replay@npm:8.52.0"
   dependencies:
-    "@sentry-internal/browser-utils": 8.45.0
-    "@sentry/core": 8.45.0
-  checksum: 409b556bb4d616c8c403575a958662571c6fc962d777bb0903b46aed64750ac381a15590b0cb9b268fac640ffb023c6b71a5748380f7a0e91ff053577e6315a1
+    "@sentry-internal/browser-utils": 8.52.0
+    "@sentry/core": 8.52.0
+  checksum: e74c5ce7299b1c390e96cc568d2a5523ce12d79b1258f297f5a207dbd82ffc2135edb626e77e56c3357b48ecf77967269e8a2b6a6367b68b52681e969692117b
   languageName: node
   linkType: hard
 
@@ -1327,16 +1327,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/browser@npm:8.45.0":
-  version: 8.45.0
-  resolution: "@sentry/browser@npm:8.45.0"
+"@sentry/browser@npm:8.52.0":
+  version: 8.52.0
+  resolution: "@sentry/browser@npm:8.52.0"
   dependencies:
-    "@sentry-internal/browser-utils": 8.45.0
-    "@sentry-internal/feedback": 8.45.0
-    "@sentry-internal/replay": 8.45.0
-    "@sentry-internal/replay-canvas": 8.45.0
-    "@sentry/core": 8.45.0
-  checksum: c9db0f28157589639363b34d115ecc5684524c3db2970fdd0bd006d31a20facc401f25ea9c3a61c962b9637084500a6c08b7f46af3f6c7cb65643f1c26cff61f
+    "@sentry-internal/browser-utils": 8.52.0
+    "@sentry-internal/feedback": 8.52.0
+    "@sentry-internal/replay": 8.52.0
+    "@sentry-internal/replay-canvas": 8.52.0
+    "@sentry/core": 8.52.0
+  checksum: 351b8963f19f4367d21973b59cb5583852052c56dc4e5aaa1a9fcb01be9db3442ba94627d39e0a20142d4e9a0782e46a73fdea76be40c19a14610f2ae4fa8937
   languageName: node
   linkType: hard
 
@@ -1442,23 +1442,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/core@npm:8.45.0":
-  version: 8.45.0
-  resolution: "@sentry/core@npm:8.45.0"
-  checksum: 4e0fef83925bc3fb8c1fe75d18eb5c6eaad44ef6357c65ada0c28fbf987fe7024697a2e93de718e78cc473c1d3dc80885523b00f5dac66523f9e347a89813be4
+"@sentry/core@npm:8.52.0":
+  version: 8.52.0
+  resolution: "@sentry/core@npm:8.52.0"
+  checksum: 7d9dc6131ef6ccda88dc416abd2dacbaac6c800b636dacd6facceb8945d52aa70208e61a36464ca069f986b7b02aab24dc70c74aca5f9bd84a12655ce8938506
   languageName: node
   linkType: hard
 
-"@sentry/react@npm:^8.45.0":
-  version: 8.45.0
-  resolution: "@sentry/react@npm:8.45.0"
+"@sentry/react@npm:^8.48.0":
+  version: 8.52.0
+  resolution: "@sentry/react@npm:8.52.0"
   dependencies:
-    "@sentry/browser": 8.45.0
-    "@sentry/core": 8.45.0
+    "@sentry/browser": 8.52.0
+    "@sentry/core": 8.52.0
     hoist-non-react-statics: ^3.3.2
   peerDependencies:
     react: ^16.14.0 || 17.x || 18.x || 19.x
-  checksum: 0efe86214e549d39ff72e7472c6cab4990a304d45377c3854e1f836cf65e16e78b072ccbe66e913c16269b717ac6288bde3e5be43c3357b3aa06b43c29987e4e
+  checksum: f2fb1a64dac6d8bfa2945dc9389cf56c08989b8f9ba7b241a8085ee744a78881f4390154e442175861804c2a7c982edb97de7e85af031fea7eac70e3dfef1ead
   languageName: node
   linkType: hard
 
@@ -2033,7 +2033,7 @@ __metadata:
     "@github/webauthn-json": ^2.1.1
     "@mintlify/widget-react": ^0.0.11
     "@remix-run/web-fetch": ^4.4.2
-    "@sentry/react": ^8.45.0
+    "@sentry/react": ^8.48.0
     "@sentry/vite-plugin": ^2.22.7
     "@stripe/react-stripe-js": ^3.1.0
     "@stripe/stripe-js": ^5.3.0
@@ -3238,7 +3238,7 @@ __metadata:
 
 "fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.3#~builtin<compat/fsevents>":
   version: 2.3.3
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=df0bf1"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=18f3a7"
   dependencies:
     node-gyp: latest
   conditions: os=darwin
@@ -5030,7 +5030,7 @@ __metadata:
 
 "resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.8#~builtin<compat/resolve>":
   version: 1.22.8
-  resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
+  resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=07638b"
   dependencies:
     is-core-module: ^2.13.0
     path-parse: ^1.0.7
@@ -5809,17 +5809,17 @@ __metadata:
 
 "typescript@patch:typescript@^5.2.2#~builtin<compat/typescript>":
   version: 5.2.2
-  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"
+  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=701156"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 0f4da2f15e6f1245e49db15801dbee52f2bbfb267e1c39225afdab5afee1a72839cd86000e65ee9d7e4dfaff12239d28beaf5ee431357fcced15fb08583d72ca
+  checksum: 07106822b4305de3f22835cbba949a2b35451cad50888759b6818421290ff95d522b38ef7919e70fb381c5fe9c1c643d7dea22c8b31652a717ddbd57b7f4d554
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@^5.7.2#~builtin<compat/typescript>":
   version: 5.7.2
-  resolution: "typescript@patch:typescript@npm%3A5.7.2#~builtin<compat/typescript>::version=5.7.2&hash=f3b441"
+  resolution: "typescript@patch:typescript@npm%3A5.7.2#~builtin<compat/typescript>::version=5.7.2&hash=701156"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
