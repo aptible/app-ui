@@ -788,7 +788,7 @@ export const DiagnosticsDetailPage = () => {
             ...prev.resources[event.resource_id],
             plots: {
               ...prev.resources[event.resource_id].plots,
-              [event.metric_name]: {
+              [event.plot.id]: {
                 id: event.plot.id,
                 title: event.plot.title,
                 description: event.plot.description,
@@ -797,6 +797,23 @@ export const DiagnosticsDetailPage = () => {
                 unit: event.plot.unit,
                 series: event.plot.series,
                 annotations: event.plot.annotations,
+              },
+            },
+          },
+        },
+      }));
+    } else if (event?.type === "PlotAnnotated") {
+      setDashboard((prev) => ({
+        ...prev,
+        resources: {
+          ...prev.resources,
+          [event.resource_id]: {
+            ...prev.resources[event.resource_id],
+            plots: {
+              ...prev.resources[event.resource_id].plots,
+              [event.plot_id]: {
+                ...prev.resources[event.resource_id].plots[event.plot_id],
+                annotations: event.annotations,
               },
             },
           },
