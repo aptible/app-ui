@@ -511,7 +511,7 @@ export const fetchOperationsByAppId = api.get<
   { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
-  "/apps/:id/operations?page=:page",
+  "/apps/:id/operations?page=:page&with_services=true",
   { supervisor: cacheTimer() },
   function* (ctx, next) {
     const urlParam = ctxToUrlQuery(ctx.payload);
@@ -543,7 +543,7 @@ export const fetchOperationsByDatabaseId = api.get<
   { id: string } & PaginateProps & FilterOpProps,
   HalEmbedded<{ operations: DeployOperationResponse[] }>
 >(
-  "/databases/:id/operations?page=:page",
+  "/databases/:id/operations?page=:page&with_services=true",
   { supervisor: cacheTimer() },
   function* (ctx, next) {
     const urlParam = ctxToUrlQuery(ctx.payload);
