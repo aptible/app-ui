@@ -577,10 +577,20 @@ const SynchronizedHoverLineChartWrapper = ({
     const timestampIndex = labels.indexOf(timestamp);
     if (timestampIndex === -1) return;
 
-    const activeElements = datasets.map((dataset, datasetIndex) => ({
-      datasetIndex,
-      index: timestampIndex,
-    }));
+    const activeElements = datasets.reduce<{
+      datasetIndex: number;
+      index: number;
+    }[]>((acc, dataset, datasetIndex) => {
+      if (!dataset.data[timestampIndex]) return acc;
+
+      return [
+        ...acc,
+        {
+          datasetIndex,
+          index: timestampIndex,
+        },
+      ];
+    }, []);
 
     chart.setActiveElements(activeElements);
     chart.tooltip?.setActiveElements(activeElements, { x: 0, y: 0 });
