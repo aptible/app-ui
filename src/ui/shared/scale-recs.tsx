@@ -1,4 +1,3 @@
-import { dateFromToday } from "@app/date";
 import {
   GB,
   getContainerProfileFromType,
@@ -51,10 +50,13 @@ const isManualScaleRecValid = (
   // has container size changed since we made rec?
   const hasSizeChanged =
     service.containerMemoryLimitMb !== rec.containerMemoryLimitMbAtTime;
+  const changeSinceRec = hasProfileChanged || hasSizeChanged;
 
+  const daysAgo = new Date();
+  daysAgo.setDate(daysAgo.getDate() - 2);
   // we want to expire recommendations that are greater than X days old
-  const withinTimelimit = new Date(rec.createdAt) > dateFromToday(2);
-  const isValid = !hasProfileChanged || !hasSizeChanged || !withinTimelimit;
+  const withinTimelimit = new Date(rec.createdAt) > daysAgo;
+  const isValid = !changeSinceRec && withinTimelimit;
   return { isValid, isProfileRecSame, isSizeRecSame };
 };
 
