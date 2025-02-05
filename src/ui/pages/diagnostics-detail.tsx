@@ -511,7 +511,7 @@ const DiagnosticsResource = ({
                     {plot.analysis && (
                       <div className="mt-4">
                         <p className="mt-1 text-gray-500 text-xs">
-                          <strong>Analysis:</strong>
+                          <strong>Analysis: </strong>
                           {plot.analysis}
                         </p>
                       </div>
@@ -823,6 +823,7 @@ export const DiagnosticsDetailPage = () => {
               ...prev.resources[event.resource_id].plots,
               [event.plot_id]: {
                 ...prev.resources[event.resource_id].plots[event.plot_id],
+                analysis: event.analysis,
                 annotations: event.annotations,
               },
             },
