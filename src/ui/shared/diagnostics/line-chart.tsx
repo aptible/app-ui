@@ -1,4 +1,3 @@
-import React, { useContext } from "react";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -12,12 +11,13 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+import React, { useContext, useEffect } from "react";
 import "chartjs-adapter-luxon";
+import type { Annotation } from "@app/aptible-ai";
 import { Line } from "react-chartjs-2";
+import { annotationsPlugin } from "../../../chart/chartjs-plugin-annotations";
 import { verticalLinePlugin } from "../../../chart/chartjs-plugin-vertical-line";
-import { annotationsPlugin } from "../../../chart/chartjs-plugin-annoations";
-import { type Annotation } from "@app/aptible-ai";
-import { type HoverState } from "./hover";
+import type { HoverState } from "./hover";
 
 ChartJS.register(
   CategoryScale,
@@ -30,7 +30,7 @@ ChartJS.register(
   Tooltip,
   Legend,
   verticalLinePlugin,
-  annotationsPlugin
+  annotationsPlugin,
 );
 
 export const DiagnosticsLineChart = ({
@@ -63,14 +63,13 @@ export const DiagnosticsLineChart = ({
   const chartRef = React.useRef<ChartJS<"line">>();
 
   // Truncate sha256 resource names to 8 chars
-  const datasets = originalDatasets.map(dataset => ({
+  const datasets = originalDatasets.map((dataset) => ({
     ...dataset,
-    label: dataset.label.length === 64 ? dataset.label.slice(0, 8) : dataset.label
+    label:
+      dataset.label.length === 64 ? dataset.label.slice(0, 8) : dataset.label,
   }));
 
-  if (!datasets || !title) return null;
-
-  React.useEffect(() => {
+  useEffect(() => {
     const chart = chartRef.current;
     if (!chart) return;
 
@@ -84,10 +83,12 @@ export const DiagnosticsLineChart = ({
     const timestampIndex = labels.indexOf(timestamp);
     if (timestampIndex === -1) return;
 
-    const activeElements = datasets.reduce<{
-      datasetIndex: number;
-      index: number;
-    }[]>((acc, dataset, datasetIndex) => {
+    const activeElements = datasets.reduce<
+      {
+        datasetIndex: number;
+        index: number;
+      }[]
+    >((acc, dataset, datasetIndex) => {
       if (!dataset.data[timestampIndex]) return acc;
 
       return [
@@ -105,14 +106,17 @@ export const DiagnosticsLineChart = ({
   }, [timestamp, labels, datasets]);
 
   const formatYAxisTick = (value: number, unit?: string) => {
-    if (!unit) return value;
+    const unitStr = unit?.trim() ?? "";
 
-    unit = unit.trim();
-    if (unit === '%') return `${value}%`;
-    if (unit.endsWith('B')) return `${value}${unit}`;
+    if (!unitStr) return value;
+
+    if (unitStr === "%") return `${value}%`;
+    if (unitStr.endsWith("B")) return `${value}${unitStr}`;
 
     return value;
   };
+
+  if (!datasets || !title) return null;
 
   return (
     <Line
@@ -129,7 +133,7 @@ export const DiagnosticsLineChart = ({
         plugins: {
           tooltip: {
             enabled: true,
-            mode: 'index',
+            mode: "index",
             intersect: false,
           },
           colors: {
@@ -156,14 +160,14 @@ export const DiagnosticsLineChart = ({
             padding: showLegend
               ? undefined
               : {
-                top: 10,
-                bottom: 30,
-              },
+                  top: 10,
+                  bottom: 30,
+                },
           },
           annotations: annotations,
         },
         interaction: {
-          mode: 'index',
+          mode: "index",
           intersect: false,
         },
         onHover: (event, elements, chart) => {
@@ -213,9 +217,9 @@ export const DiagnosticsLineChart = ({
             },
             title: yAxisLabel
               ? {
-                display: true,
-                text: yAxisLabel,
-              }
+                  display: true,
+                  text: yAxisLabel,
+                }
               : undefined,
             ticks: {
               callback: (value) => formatYAxisTick(value as number, yAxisUnit),

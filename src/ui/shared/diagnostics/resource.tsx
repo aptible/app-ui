@@ -1,9 +1,17 @@
-import React from "react";
-import { IconBox, IconCloud, IconCylinder, IconEndpoint, IconService, IconSource, IconInfo } from "../../shared/icons";
+import type { Resource } from "@app/aptible-ai";
+import type React from "react";
+import {
+  IconBox,
+  IconCloud,
+  IconCylinder,
+  IconEndpoint,
+  IconInfo,
+  IconService,
+  IconSource,
+} from "../../shared/icons";
+import type { HoverState } from "./hover";
 import { DiagnosticsLineChart } from "./line-chart";
 import { OperationsTimeline } from "./operations-timeline";
-import { type HoverState } from "./hover";
-import { type Resource } from "@app/aptible-ai";
 
 const ResourceIcon = ({ type }: { type: Resource["type"] }) => {
   switch (type) {
@@ -27,7 +35,7 @@ export const DiagnosticsResource = ({
   resource,
   startTime,
   endTime,
-  synchronizedHoverContext
+  synchronizedHoverContext,
 }: {
   resourceId: string;
   resource: Resource;
@@ -46,7 +54,9 @@ export const DiagnosticsResource = ({
       {resource.operations && resource.operations.length > 0 && (
         <div className="mt-2">
           <div className="border rounded-lg bg-white shadow-sm animate-fade-in">
-            <h4 className="font-medium text-gray-900 p-3 rounded-t-lg border-b">Operations</h4>
+            <h4 className="font-medium text-gray-900 p-3 rounded-t-lg border-b">
+              Operations
+            </h4>
             <div className="p-6">
               <OperationsTimeline
                 operations={resource.operations}
@@ -66,7 +76,9 @@ export const DiagnosticsResource = ({
             {Object.entries(resource.plots)
               .filter(([_, plot]) =>
                 // Only show plots that have data
-                plot.series.some(series => series.points && series.points.length > 0)
+                plot.series.some(
+                  (series) => series.points && series.points.length > 0,
+                ),
               )
               .map(([plotId, plot]) => (
                 <div
@@ -96,11 +108,14 @@ export const DiagnosticsResource = ({
                         keyId={plot.id}
                         chart={{
                           title: " ",
-                          labels: plot.series[0]?.points.map(point => point.timestamp) || [],
-                          datasets: plot.series.map(series => ({
+                          labels:
+                            plot.series[0]?.points.map(
+                              (point) => point.timestamp,
+                            ) || [],
+                          datasets: plot.series.map((series) => ({
                             label: series.label,
-                            data: series.points.map(point => point.value)
-                          }))
+                            data: series.points.map((point) => point.value),
+                          })),
                         }}
                         xAxisUnit="minute"
                         yAxisLabel={plot.title}

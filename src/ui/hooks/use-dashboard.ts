@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "@app/react";
+import type { Message, Resource } from "@app/aptible-ai";
 import { selectAptibleAiUrl } from "@app/config";
+import { useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
+import { useEffect, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { type Message, type Resource } from "@app/aptible-ai";
 
 type Dashboard = {
   resources: {
@@ -19,7 +19,10 @@ type UseDashboardParams = {
   endTime: string;
 };
 
-const handleDashboardEvent = (dashboard: Dashboard, event: Record<string, any>): Dashboard => {
+const handleDashboardEvent = (
+  dashboard: Dashboard,
+  event: Record<string, any>,
+): Dashboard => {
   switch (event?.type) {
     case "ResourceDiscovered":
       return {
@@ -108,7 +111,12 @@ const handleDashboardEvent = (dashboard: Dashboard, event: Record<string, any>):
   }
 };
 
-export const useDashboard = ({ appId, symptomDescription, startTime, endTime }: UseDashboardParams) => {
+export const useDashboard = ({
+  appId,
+  symptomDescription,
+  startTime,
+  endTime,
+}: UseDashboardParams) => {
   const aptibleAiUrl = useSelector(selectAptibleAiUrl);
   const accessToken = useSelector(selectAccessToken);
   const [socketConnected, setSocketConnected] = useState(true);
@@ -118,7 +126,9 @@ export const useDashboard = ({ appId, symptomDescription, startTime, endTime }: 
   });
   const [hasShownCompletion, setHasShownCompletion] = useState(false);
 
-  const { lastJsonMessage: event, readyState } = useWebSocket<Record<string, any>>(
+  const { lastJsonMessage: event, readyState } = useWebSocket<
+    Record<string, any>
+  >(
     `${aptibleAiUrl}/troubleshoot`,
     {
       queryParams: {
@@ -140,7 +150,9 @@ export const useDashboard = ({ appId, symptomDescription, startTime, endTime }: 
 
   useEffect(() => {
     if (event) {
-      setDashboard(prevDashboard => handleDashboardEvent(prevDashboard, event));
+      setDashboard((prevDashboard) =>
+        handleDashboardEvent(prevDashboard, event),
+      );
     }
   }, [JSON.stringify(event)]);
 
@@ -153,9 +165,9 @@ export const useDashboard = ({ appId, symptomDescription, startTime, endTime }: 
         messages: [
           ...prev.messages,
           {
-            id: 'completion-message',
-            severity: 'info',
-            message: 'Analysis complete.',
+            id: "completion-message",
+            severity: "info",
+            message: "Analysis complete.",
           },
         ],
       }));

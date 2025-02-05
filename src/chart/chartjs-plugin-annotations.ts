@@ -1,9 +1,8 @@
-import { Chart as ChartJS } from "chart.js";
-import { type Annotation } from "@app/aptible-ai";
-
+import type { Annotation } from "@app/aptible-ai";
+import type { Chart as ChartJS } from "chart.js";
 
 // Update ChartJS interface to include annotations
-declare module 'chart.js' {
+declare module "chart.js" {
   interface Chart {
     annotationAreas?: Array<{
       x1: number;
@@ -21,7 +20,7 @@ declare module 'chart.js' {
 
 // ChartJS plugin to draw annotations on a line chart
 export const annotationsPlugin = {
-  id: 'annotations',
+  id: "annotations",
   afterDraw: (chart: ChartJS, args: any, options: any) => {
     const ctx = chart.ctx;
     const annotations = chart.options?.plugins?.annotations || [];
@@ -43,17 +42,17 @@ export const annotationsPlugin = {
 
       // Draw annotation rectangle
       ctx.save();
-      ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+      ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
       ctx.fillRect(pixelX1, pixelY1, pixelX2 - pixelX1, pixelY2 - pixelY1);
 
       // Rectangle border
-      ctx.strokeStyle = 'rgb(200, 0, 0)';
+      ctx.strokeStyle = "rgb(200, 0, 0)";
       ctx.strokeRect(pixelX1, pixelY1, pixelX2 - pixelX1, pixelY2 - pixelY1);
 
       // Annotation label
       ctx.save();
       const padding = 4;
-      ctx.font = '10px monospace';
+      ctx.font = "10px monospace";
       const textMetrics = ctx.measureText(annotation.label);
       const textHeight = 12;
       const radius = 4;
@@ -63,25 +62,25 @@ export const annotationsPlugin = {
       const boxWidth = textMetrics.width + padding * 2;
       const boxHeight = textHeight + padding * 2;
 
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
       ctx.shadowBlur = 4;
       ctx.shadowOffsetX = 2;
       ctx.shadowOffsetY = 2;
 
-      ctx.fillStyle = 'rgba(200, 0, 0, 0.75)';
+      ctx.fillStyle = "rgba(200, 0, 0, 0.75)";
       ctx.beginPath();
       ctx.roundRect(boxX, boxY, boxWidth, boxHeight, radius);
       ctx.fill();
 
-      ctx.shadowColor = 'transparent';
-      ctx.strokeStyle = 'rgb(200, 0, 0)';
+      ctx.shadowColor = "transparent";
+      ctx.strokeStyle = "rgb(200, 0, 0)";
       ctx.lineWidth = 1;
       ctx.stroke();
 
-      ctx.fillStyle = 'white';
-      ctx.textBaseline = 'bottom';
+      ctx.fillStyle = "white";
+      ctx.textBaseline = "bottom";
       ctx.fillText(annotation.label, pixelX1 + padding * 2, pixelY1 - padding);
       ctx.restore();
     });
-  }
+  },
 };

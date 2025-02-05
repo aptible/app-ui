@@ -7,5 +7,5 @@ export type HoverState = {
 
 export const HoverContext = createContext<HoverState>({
   timestamp: null,
-  setTimestamp: () => { },
+  setTimestamp: () => {},
 });

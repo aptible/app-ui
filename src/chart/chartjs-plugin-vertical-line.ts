@@ -1,8 +1,8 @@
-import { Chart as ChartJS } from "chart.js";
+import type { Chart as ChartJS } from "chart.js";
 
 // ChartJS plugin to draw a vertical line on hover
 export const verticalLinePlugin = {
-  id: 'verticalLine',
+  id: "verticalLine",
   beforeDraw: (chart: ChartJS) => {
     if (chart.tooltip?.getActiveElements()?.length) {
       const activePoint = chart.tooltip.getActiveElements()[0];
@@ -16,10 +16,10 @@ export const verticalLinePlugin = {
       ctx.moveTo(x, topY);
       ctx.lineTo(x, bottomY);
       ctx.lineWidth = 1;
-      ctx.strokeStyle = '#94a3b8';
+      ctx.strokeStyle = "#94a3b8";
       ctx.setLineDash([5, 5]);
       ctx.stroke();
       ctx.restore();
     }
-  }
+  },
 };

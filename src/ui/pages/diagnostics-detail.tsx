@@ -1,12 +1,12 @@
 import { diagnosticsCreateUrl } from "@app/routes";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useDashboard } from "../hooks/use-dashboard";
 import { AppSidebarLayout } from "../layouts";
 import { Breadcrumbs } from "../shared";
 import { HoverContext } from "../shared/diagnostics/hover";
 import { DiagnosticsMessages } from "../shared/diagnostics/messages";
 import { DiagnosticsResource } from "../shared/diagnostics/resource";
-import { useDashboard } from "../hooks/use-dashboard";
 
 export const DiagnosticsDetailPage = () => {
   const [searchParams] = useSearchParams();
@@ -45,7 +45,9 @@ export const DiagnosticsDetailPage = () => {
       />
 
       <div className="flex flex-col gap-4 p-4">
-        <HoverContext.Provider value={{ timestamp: hoverTimestamp, setTimestamp: setHoverTimestamp }}>
+        <HoverContext.Provider
+          value={{ timestamp: hoverTimestamp, setTimestamp: setHoverTimestamp }}
+        >
           <DiagnosticsMessages
             messages={dashboard.messages}
             showAllMessages={showAllMessages}
@@ -54,16 +56,18 @@ export const DiagnosticsDetailPage = () => {
 
           <h2 className="text-lg font-semibold mb-2">Resources</h2>
           <div className="space-y-4">
-            {Object.entries(dashboard.resources).map(([resourceId, resource]) => (
-              <DiagnosticsResource
-                key={resourceId}
-                resourceId={resourceId}
-                resource={resource}
-                startTime={startTime!}
-                endTime={endTime!}
-                synchronizedHoverContext={HoverContext}
-              />
-            ))}
+            {Object.entries(dashboard.resources).map(
+              ([resourceId, resource]) => (
+                <DiagnosticsResource
+                  key={resourceId}
+                  resourceId={resourceId}
+                  resource={resource}
+                  startTime={startTime}
+                  endTime={endTime}
+                  synchronizedHoverContext={HoverContext}
+                />
+              ),
+            )}
           </div>
         </HoverContext.Provider>
       </div>
