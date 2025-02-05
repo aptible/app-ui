@@ -53,7 +53,7 @@ export const testEnv = defaultConfig({
   legacyDashboardUrl: "https://dashboard.aptible-test.com",
   metricTunnelUrl: "https://metrictunnel.aptible-test.com",
   portalUrl: "https://portal.aptible-test.com",
-  aptibleAiUrl: "https://aptiblebot.aptible-test.com",
+  aptibleAiUrl: "wss://ai.aptible-test.com",
 });
 
 export const testUserId = createId();
