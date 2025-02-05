@@ -47,3 +47,60 @@ export const deserializeDashboard = (payload: DashboardResponse): Dashboard => {
     id: `${payload.id}`,
   };
 };
+
+export type Message = {
+  id: string;
+  severity: string;
+  message: string;
+};
+
+export type Operation = {
+  id: number;
+  status: string;
+  created_at: string;
+  description: string;
+  log_lines: string[];
+};
+
+export type Point = {
+  timestamp: string;
+  value: number;
+};
+
+export type Series = {
+  label: string;
+  description: string;
+  interpretation: string;
+  annotations: Annotation[];
+  points: Point[];
+};
+
+export type Plot = {
+  id: string;
+  title: string;
+  description: string;
+  interpretation: string;
+  analysis: string;
+  unit: string;
+  series: Series[];
+  annotations: Annotation[];
+};
+
+export type Resource = {
+  id: string;
+  type: string;
+  notes: string;
+  plots: {
+    [key: string]: Plot;
+  };
+  operations: Operation[];
+};
+
+export type Annotation = {
+  label: string;
+  description: string;
+  x_min: number;
+  x_max: number;
+  y_min: number;
+  y_max: number;
+};

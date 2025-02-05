@@ -1,13 +1,6 @@
 import React, { useRef, useContext } from "react";
 import { type HoverState } from "./hover";
-
-type Operation = {
-  id: number;
-  status: string;
-  created_at: string;
-  description: string;
-  log_lines: string[];
-};
+import { type Operation } from "@app/aptible-ai";
 
 export const OperationsTimeline = ({
   operations,

@@ -15,7 +15,8 @@ import {
 import "chartjs-adapter-luxon";
 import { Line } from "react-chartjs-2";
 import { verticalLinePlugin } from "../../../chart/chartjs-plugin-vertical-line";
-import { annotationsPlugin, type Annotation } from "../../../chart/chartjs-plugin-annoations";
+import { annotationsPlugin } from "../../../chart/chartjs-plugin-annoations";
+import { type Annotation } from "@app/aptible-ai";
 import { type HoverState } from "./hover";
 
 ChartJS.register(

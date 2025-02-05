@@ -1,4 +1,5 @@
 import { Chart as ChartJS } from "chart.js";
+import { type Annotation } from "@app/aptible-ai";
 
 
 // Update ChartJS interface to include annotations
@@ -17,15 +18,6 @@ declare module 'chart.js' {
     annotations?: Annotation[];
   }
 }
-
-export type Annotation = {
-  label: string;
-  description: string;
-  x_min: number;
-  x_max: number;
-  y_min: number;
-  y_max: number;
-};
 
 // ChartJS plugin to draw annotations on a line chart
 export const annotationsPlugin = {
