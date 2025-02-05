@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 
+const TEXT_ANIMATION_INTERVAL = 150;
+const ELLIPSIS_INTERVAL = 500;
+
 export const StreamingText = ({ text, showEllipsis = false, animate = true }: { text: string, showEllipsis?: boolean, animate?: boolean }) => {
   const words = text.split(' ');
   const [visibleWords, setVisibleWords] = React.useState<number>(animate ? 0 : words.length);
@@ -17,7 +20,7 @@ export const StreamingText = ({ text, showEllipsis = false, animate = true }: { 
         setIsComplete(true);
         return prev;
       });
-    }, 150);
+    }, TEXT_ANIMATION_INTERVAL);
 
     return () => clearInterval(timer);
   }, [words.length, animate]);
@@ -46,7 +49,7 @@ export const AnimatedEllipsis = () => {
         if (prev === '...') return '';
         return prev + '.';
       });
-    }, 500);
+    }, ELLIPSIS_INTERVAL);
 
     return () => clearInterval(interval);
   }, []);

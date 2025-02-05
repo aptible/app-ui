@@ -16,6 +16,7 @@ import "chartjs-adapter-luxon";
 import { Line } from "react-chartjs-2";
 import { verticalLinePlugin } from "../../../chart/chartjs-plugin-vertical-line";
 import { annotationsPlugin, type Annotation } from "../../../chart/chartjs-plugin-annoations";
+import { type HoverState } from "./hover";
 
 ChartJS.register(
   CategoryScale,
@@ -55,7 +56,7 @@ export const DiagnosticsLineChart = ({
   yAxisLabel?: string;
   yAxisUnit?: string;
   annotations?: Annotation[];
-  synchronizedHoverContext: React.Context<{ timestamp: string | null; setTimestamp: (timestamp: string | null) => void; }>;
+  synchronizedHoverContext: React.Context<HoverState>;
 }) => {
   const { timestamp, setTimestamp } = useContext(synchronizedHoverContext);
   const chartRef = React.useRef<ChartJS<"line">>();
