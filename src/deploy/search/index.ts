@@ -45,7 +45,8 @@ export const selectServicesForTable = createSelector(
   selectServicesByOrgId,
   schema.manualScaleRecommendations.selectTableAsList,
   schema.costs.selectTable,
-  (envs, apps, services, recs, costs) =>
+  schema.serviceSizingPolicies.selectTable,
+  (envs, apps, services, recs, costs, policies) =>
     services
       // making sure we have a valid environment associated with it
       .filter((service) => {
@@ -68,12 +69,22 @@ export const selectServicesForTable = createSelector(
           id: computeCostId("Service", service.id),
         });
         const cost = costItem.estCost;
+        const policy = schema.serviceSizingPolicies.findById(policies, {
+          id: service.serviceSizingPolicyId,
+        });
+        let savings = rec?.costSavings || 0;
+        if (policy.scalingEnabled) {
+          // savings is 0 for both autoscaling and right-sized which
+          // means they would be interleaved during a sort so to fix that we
+          // set autoscaling to something that can be clumped together
+          savings = -0.1;
+        }
 
         return {
           ...service,
           envHandle: env.handle,
           resourceHandle,
-          savings: rec?.costSavings || 0,
+          savings,
           cost,
         };
       }),

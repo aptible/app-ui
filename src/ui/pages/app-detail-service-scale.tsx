@@ -36,6 +36,7 @@ import {
   Banner,
   ButtonIcon,
   ButtonLinkDocs,
+  Group,
   IconChevronDown,
   IconChevronRight,
   IconRefresh,
@@ -977,17 +978,21 @@ export const AppDetailServiceScalePage = () => {
             <h1 className="text-lg text-gray-500 mb-4">Manual Scale</h1>
 
             <ManualScaleReason serviceId={serviceId}>
-              <Button
-                onClick={() => {
-                  setContainerProfileType(
-                    `${rec.recommendedInstanceClass}5` as InstanceClass,
-                  );
-                  setContainerSize(rec.recommendedContainerMemoryLimitMb);
-                  setTakingRec(true);
-                }}
-              >
-                Autofill Changes
-              </Button>
+              <Group size="sm" className="items-center">
+                <Button
+                  onClick={() => {
+                    setContainerProfileType(
+                      `${rec.recommendedInstanceClass}5` as InstanceClass,
+                    );
+                    setContainerSize(rec.recommendedContainerMemoryLimitMb);
+                    setTakingRec(true);
+                  }}
+                  size="sm"
+                >
+                  Autofill Changes
+                </Button>
+                <ButtonLinkDocs href="https://aptible.com/docs/core-concepts/scaling/container-right-sizing-recommendations" />
+              </Group>
             </ManualScaleReason>
 
             <FormGroup

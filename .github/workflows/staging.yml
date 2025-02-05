@@ -32,7 +32,7 @@ jobs:
             VITE_LEGACY_DASHBOARD_URL=https://dashboard-sbx-main.aptible-sandbox.com
             VITE_METRIC_TUNNEL_URL=https://metrictunnel-sbx-main.aptible-sandbox.com
             VITE_PORTAL_URL=https://portal-sbx-main.aptible-sandbox.com
-            VITE_APTIBLE_AI_URL="wss://app-86559.on-aptible.com/"
+            VITE_APTIBLE_AI_URL="wss://app-86559.on-aptible.com"
             SENTRY_AUTH_TOKEN=${{ secrets.STAGING_SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=aptible
             SENTRY_PROJECT=app-ui-sbx-main

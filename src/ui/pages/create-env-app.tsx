@@ -281,7 +281,8 @@ export const EnvSelectorPage = ({
     setEnvId("");
   }, [stackId]);
 
-  const onSubmit = () => {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (onSuccess) {
       onSuccess({ stackId, envId });
     } else {
