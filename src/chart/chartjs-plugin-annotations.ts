@@ -23,7 +23,7 @@ export const annotationsPlugin = {
   id: "annotations",
   afterDraw: (chart: ChartJS, args: any, options: any) => {
     const ctx = chart.ctx;
-    const annotations = chart.options?.plugins?.annotations || [];
+    const annotations = Array.from(chart.options?.plugins?.annotations || []);
 
     annotations.forEach((annotation: any) => {
       // Convert timestamps to numbers for the time scale
