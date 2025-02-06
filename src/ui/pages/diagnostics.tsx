@@ -1,4 +1,4 @@
-import { diagnosticsCreateUrl, diagnosticsDetailUrl } from "@app/routes";
+import { diagnosticsCreateUrl } from "@app/routes";
 import { Link } from "react-router-dom";
 import { AppSidebarLayout } from "../layouts";
 import {
@@ -64,7 +64,7 @@ export const DiagnosticsPage = () => {
         <TBody>
           <Tr>
             <Td className="flex-1">
-              <Link to={diagnosticsDetailUrl("")} className="flex">
+              <Link to="#" className="flex">
                 <img
                   src="/resource-types/logo-diagnostics.png"
                   className="w-[32px] h-[32px] mr-2 align-middle"
