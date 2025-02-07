@@ -118,7 +118,7 @@ export const DiagnosticsResource = ({
                           })),
                         }}
                         xAxisUnit="minute"
-                        yAxisLabel={plot.title}
+                        yAxisLabel={undefined}
                         yAxisUnit={plot.unit}
                         annotations={plot.annotations}
                         synchronizedHoverContext={synchronizedHoverContext}
