@@ -1,5 +1,6 @@
 import type { Resource } from "@app/aptible-ai";
 import type React from "react";
+import { useState } from "react";
 import {
   IconBox,
   IconCloud,
@@ -28,6 +29,43 @@ const ResourceIcon = ({ type }: { type: Resource["type"] }) => {
     default:
       return <IconCloud />;
   }
+};
+
+const AnalysisSection = ({ analysis }: { analysis: string }) => {
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const toggleAnalysis = () => setShowAnalysis((show) => !show);
+  const getAnalysisText = (analysis: string) => {
+    if (!showAnalysis) return `${analysis.slice(0, 75).trim()} [...]`;
+    return analysis;
+  };
+  const analysisText = getAnalysisText(analysis);
+
+  if (!analysis) return null;
+
+  return (
+    <div
+      className="mt-4 bg-orange-100 p-3 rounded-md cursor-pointer"
+      onClick={toggleAnalysis}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleAnalysis();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      <div className="flex items-start gap-2">
+        <IconInfo className="w-4 h-4 mt-1 text-yellow-600 flex-shrink-0" />
+        <div>
+          <p className="text-gray-600">
+            <strong className="mr-1">Analysis:</strong>
+            {analysisText}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export const DiagnosticsResource = ({
@@ -88,20 +126,7 @@ export const DiagnosticsResource = ({
                   <h4 className="font-medium text-gray-900 p-3 rounded-t-lg border-b">
                     {plot.title}
                   </h4>
-                  <div className="p-6">
-                    {plot.interpretation && (
-                      <div className="mt-4 bg-orange-100 p-3 rounded-md">
-                        <div className="flex items-start gap-2">
-                          <IconInfo className="w-4 h-4 mt-1 text-yellow-600 flex-shrink-0" />
-                          <div>
-                            <p className="text-gray-600">
-                              <strong className="mr-1">Interpretation:</strong>
-                              {plot.interpretation}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                  <div className="pb-6 px-6">
                     <div className="mt-2 min-h-[200px]">
                       <DiagnosticsLineChart
                         showLegend={true}
@@ -124,14 +149,7 @@ export const DiagnosticsResource = ({
                         synchronizedHoverContext={synchronizedHoverContext}
                       />
                     </div>
-                    {plot.analysis && (
-                      <div className="mt-4">
-                        <p className="mt-1 text-gray-500 text-xs">
-                          <strong>Analysis: </strong>
-                          {plot.analysis}
-                        </p>
-                      </div>
-                    )}
+                    <AnalysisSection analysis={plot.analysis} />
                   </div>
                 </div>
               ))}
