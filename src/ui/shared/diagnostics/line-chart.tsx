@@ -105,6 +105,19 @@ export const DiagnosticsLineChart = ({
     chart.update();
   }, [timestamp, labels, datasets]);
 
+  // Reset the timestamp when the mouse leaves the chart
+  useEffect(() => {
+    const chart = chartRef.current?.canvas;
+    if (!chart) return;
+
+    const onMouseOut = () => setTimestamp(null);
+    chart.addEventListener("mouseout", onMouseOut);
+
+    return () => {
+      chart.removeEventListener("mouseout", onMouseOut);
+    };
+  }, [setTimestamp]);
+
   const formatYAxisTick = (value: number, unit?: string) => {
     const unitStr = unit?.trim() ?? "";
 
