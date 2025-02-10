@@ -85,12 +85,15 @@ export const DiagnosticsResource = ({
 
   return (
     <div className="border rounded-lg p-4">
-      <h3 className={`font-medium text-xl flex gap-2 items-center justify-between bg-gray-50 p-4 -m-4 ${!isCollapsed ? 'mb-4 border-b' : ''} rounded-t-lg`}>
+      <h3
+        className={`font-medium text-xl flex gap-2 items-center justify-between bg-gray-50 p-4 -m-4 ${!isCollapsed ? "mb-4 border-b" : ""} rounded-t-lg`}
+      >
         <div className="flex gap-2 items-center">
           <ResourceIcon type={resource.type} />
           <span className="font-mono text-lg font-bold">{resourceId}</span>
         </div>
         <button
+          type="button"
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="text-gray-500 hover:text-gray-700 px-2 py-1 rounded text-xs"
           aria-label={isCollapsed ? "Expand" : "Collapse"}
