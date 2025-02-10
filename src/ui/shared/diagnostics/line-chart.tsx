@@ -54,7 +54,7 @@ export const DiagnosticsLineChart = ({
     labels: string[];
     datasets: Array<{
       label: string;
-      data: number[];
+      data: { x: string; y: number }[];
     }>;
   };
   xAxisMin: string;
@@ -68,7 +68,8 @@ export const DiagnosticsLineChart = ({
   synchronizedHoverContext: React.Context<HoverState>;
 }) => {
   const { timestamp, setTimestamp } = useContext(synchronizedHoverContext);
-  const chartRef = React.useRef<ChartJS<"line">>();
+  const chartRef =
+    React.useRef<ChartJS<"line", { x: string; y: number }[], unknown>>();
 
   // Truncate sha256 resource names to 8 chars
   const datasets = originalDatasets.map((dataset) => ({
