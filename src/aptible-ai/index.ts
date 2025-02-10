@@ -84,6 +84,8 @@ export interface Plot {
   unit: string;
   series: Series[];
   annotations: Annotation[];
+  x_axis_range: [string, string];
+  y_axis_range: [number, number];
 }
 
 export interface Resource {

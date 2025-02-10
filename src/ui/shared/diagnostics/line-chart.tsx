@@ -37,7 +37,11 @@ export const DiagnosticsLineChart = ({
   showLegend = true,
   keyId,
   chart: { labels, datasets: originalDatasets, title },
+  xAxisMin,
+  xAxisMax,
   xAxisUnit,
+  yAxisMin,
+  yAxisMax,
   yAxisLabel,
   yAxisUnit,
   annotations = [],
@@ -53,7 +57,11 @@ export const DiagnosticsLineChart = ({
       data: number[];
     }>;
   };
+  xAxisMin: string;
+  xAxisMax: string;
   xAxisUnit: TimeUnit;
+  yAxisMin?: number;
+  yAxisMax?: number;
   yAxisLabel?: string;
   yAxisUnit?: string;
   annotations?: Annotation[];
@@ -195,6 +203,8 @@ export const DiagnosticsLineChart = ({
         },
         scales: {
           x: {
+            min: xAxisMin,
+            max: xAxisMax,
             border: {
               color: "#111920",
             },
@@ -224,7 +234,8 @@ export const DiagnosticsLineChart = ({
             type: "time",
           },
           y: {
-            min: 0,
+            min: yAxisMin ?? 0,
+            max: yAxisMax,
             border: {
               display: false,
             },
