@@ -155,9 +155,14 @@ export const DiagnosticsResource = ({
                                 ) || [],
                               datasets: plot.series.map((series) => ({
                                 label: series.label,
-                                data: series.points.map((point) => point.value),
+                                data: series.points.map((point) => ({
+                                  x: point.timestamp,
+                                  y: point.value,
+                                })),
                               })),
                             }}
+                            xAxisMin={plot.x_axis_range[0]}
+                            xAxisMax={plot.x_axis_range[1]}
                             xAxisUnit="minute"
                             yAxisLabel={undefined}
                             yAxisUnit={plot.unit}

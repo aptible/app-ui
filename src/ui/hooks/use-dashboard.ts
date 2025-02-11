@@ -56,6 +56,8 @@ const handleDashboardEvent = (
                 unit: event.plot.unit,
                 series: event.plot.series,
                 annotations: event.plot.annotations,
+                x_axis_range: event.plot.x_axis_range,
+                y_axis_range: event.plot.y_axis_range,
               },
             },
           },

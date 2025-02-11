@@ -37,7 +37,11 @@ export const DiagnosticsLineChart = ({
   showLegend = true,
   keyId,
   chart: { labels, datasets: originalDatasets, title },
+  xAxisMin,
+  xAxisMax,
   xAxisUnit,
+  yAxisMin,
+  yAxisMax,
   yAxisLabel,
   yAxisUnit,
   annotations = [],
@@ -50,17 +54,22 @@ export const DiagnosticsLineChart = ({
     labels: string[];
     datasets: Array<{
       label: string;
-      data: number[];
+      data: { x: string; y: number }[];
     }>;
   };
+  xAxisMin: string;
+  xAxisMax: string;
   xAxisUnit: TimeUnit;
+  yAxisMin?: number;
+  yAxisMax?: number;
   yAxisLabel?: string;
   yAxisUnit?: string;
   annotations?: Annotation[];
   synchronizedHoverContext: React.Context<HoverState>;
 }) => {
   const { timestamp, setTimestamp } = useContext(synchronizedHoverContext);
-  const chartRef = React.useRef<ChartJS<"line">>();
+  const chartRef =
+    React.useRef<ChartJS<"line", { x: string; y: number }[], unknown>>();
 
   // Truncate sha256 resource names to 8 chars
   const datasets = originalDatasets.map((dataset) => ({
@@ -195,6 +204,8 @@ export const DiagnosticsLineChart = ({
         },
         scales: {
           x: {
+            min: xAxisMin,
+            max: xAxisMax,
             border: {
               color: "#111920",
             },
@@ -224,7 +235,8 @@ export const DiagnosticsLineChart = ({
             type: "time",
           },
           y: {
-            min: 0,
+            min: yAxisMin ?? 0,
+            max: yAxisMax,
             border: {
               display: false,
             },
