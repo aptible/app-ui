@@ -1,8 +1,10 @@
 import { fetchCurrentToken } from "@app/auth";
+import { FETCH_REQUIRED_DATA } from "@app/bootup";
 import { selectIsAccountOwner, selectUserHasPerms } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useLoader, useSelector } from "@app/react";
 import { homeUrl } from "@app/routes";
+import { schema } from "@app/schema";
 import type { PermissionScope } from "@app/types";
 import { useEffect } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
@@ -13,8 +15,11 @@ export const AccountOwnerRequired = ({
 }: { children?: React.ReactNode }) => {
   const orgId = useSelector(selectOrganizationSelectedId);
   const isAccountOwner = useSelector((s) => selectIsAccountOwner(s, { orgId }));
+  const loader = useSelector((s) =>
+    schema.loaders.selectById(s, { id: FETCH_REQUIRED_DATA }),
+  );
 
-  if (!isAccountOwner) {
+  if (!loader.isLoading && !isAccountOwner) {
     return <Navigate to={homeUrl()} />;
   }
 

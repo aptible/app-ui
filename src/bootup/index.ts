@@ -72,6 +72,8 @@ function* onFetchRequiredData() {
   yield* fetchUser.run({ userId });
   const org = yield* select(selectOrganizationSelected);
   yield* fetchBillingDetail.run({ id: org.billingDetailId });
+  yield* fetchRoles.run({ orgId: org.id });
+  yield* fetchCurrentUserRoles.run({ userId: userId });
 
   yield* schema.update(schema.loaders.success({ id: FETCH_REQUIRED_DATA }));
 }
@@ -87,11 +89,8 @@ function* onFetchCostData(orgId: string) {
 
 function* onFetchResourceData() {
   const org = yield* select(selectOrganizationSelected);
-  const userId = yield* select(selectCurrentUserId);
   const group = yield* parallel<ThunkCtx>([
     fetchUsers.run({ orgId: org.id }),
-    fetchRoles.run({ orgId: org.id }),
-    fetchCurrentUserRoles.run({ userId: userId }),
     fetchStacks.run(),
     fetchEnvironments.run(),
     fetchApps.run(),
