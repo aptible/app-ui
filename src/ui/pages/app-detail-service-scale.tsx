@@ -793,7 +793,7 @@ const AutoscalingSection = ({
                   </FormGroup>
                   <FormGroup
                     splitWidthInputs
-                    description="The number of seconds to wait after a general scale to potentially take another action"
+                    description="The number of seconds ignore in metrics after a scale event to allow for service stabilization"
                     label="Post Release Cooldown"
                     htmlFor="release-cooldown"
                   >

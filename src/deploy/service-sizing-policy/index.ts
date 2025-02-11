@@ -52,7 +52,7 @@ export const defaultServiceSizingPolicyResponse = (
     percentile: 99,
     post_scale_up_cooldown_seconds: 60,
     post_scale_down_cooldown_seconds: 300,
-    post_release_cooldown_seconds: 300,
+    post_release_cooldown_seconds: 60,
     mem_cpu_ratio_r_threshold: 4,
     mem_cpu_ratio_c_threshold: 2,
     mem_scale_up_threshold: 0.9,

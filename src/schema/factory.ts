@@ -705,7 +705,7 @@ export const defaultServiceSizingPolicy = (
     percentile: 99,
     postScaleUpCooldownSeconds: 60,
     postScaleDownCooldownSeconds: 300,
-    postReleaseCooldownSeconds: 300,
+    postReleaseCooldownSeconds: 60,
     memCpuRatioRThreshold: 4,
     memCpuRatioCThreshold: 2,
     memScaleUpThreshold: 0.9,
