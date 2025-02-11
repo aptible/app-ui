@@ -6,7 +6,6 @@ import {
   createAppOperation,
   createDeployApp,
   createDeployEnvironment,
-  createServiceDefinition,
   fetchApp,
   fetchConfiguration,
   fetchDatabase,
@@ -146,7 +145,7 @@ export interface CreateProjectSettingsProps {
 export const deployProject = thunks.create<CreateProjectSettingsProps>(
   "project-deploy",
   function* (ctx, next) {
-    const { appId, envId, dbs, envs, cmds, gitRef, curEnvs } = ctx.payload;
+    const { appId, envId, dbs, envs, gitRef, curEnvs } = ctx.payload;
     const id = ctx.name;
     yield* schema.update(schema.loaders.start({ id }));
 
@@ -173,23 +172,6 @@ export const deployProject = thunks.create<CreateProjectSettingsProps>(
     yield* put(
       updateDeployEnvironmentStatus({ id: envId, status: "completed" }),
     );
-
-    // TODO - convert this to a series of updates where possible (currently information is agnostic)
-    // create all the new ones
-    const group = yield* parallel(
-      cmds.map((cmd) => {
-        const processType = cmd.key;
-        return () =>
-          createServiceDefinition.run(
-            createServiceDefinition({
-              appId,
-              processType,
-              command: cmd.value,
-            }),
-          );
-      }),
-    );
-    yield* group;
 
     const env = configEnvListToEnv(envs, curEnvs);
     // we want to also inject the db env vars with placeholders

@@ -184,8 +184,6 @@ describe("AppDeployConfigurePage", () => {
     expect(banner[0].textContent).toMatch(/Your code has a Dockerfile/);
     expect(banner[1].textContent).toMatch(/This UI uses dotenv/);
     expect(banner[2].textContent).toMatch(/Your code has a Procfile/);
-    const btn = await screen.findByRole("button", { name: /Configure/ });
-    expect(btn).toBeDisabled();
   });
 
   it("should filter out new databases without an imgId", async () => {

@@ -6,12 +6,10 @@ import {
   fetchConfiguration,
   fetchDatabaseImages,
   fetchDatabasesByEnvId,
-  fetchServiceDefinitionsByAppId,
   selectAppById,
   selectAppConfigById,
   selectDatabaseImagesVisible,
   selectDatabasesByEnvId,
-  selectServiceDefinitionsByAppId,
 } from "@app/deploy";
 import type { DeployCodeScanResponse } from "@app/deploy";
 import { idCreator } from "@app/id";
@@ -19,7 +17,6 @@ import { DB_ENV_TEMPLATE_KEY, deployProject } from "@app/projects";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import { appDeployGetStartedUrl, appDeployStatusUrl } from "@app/routes";
 import { schema } from "@app/schema";
-import { parseText } from "@app/string-utils";
 import { type Reducer, useEffect, useReducer, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
@@ -81,11 +78,6 @@ export const AppDeployConfigurePage = () => {
   const imgLoader = useQuery(fetchDatabaseImages());
   const dbImages = useSelector(selectDatabaseImagesVisible);
 
-  useQuery(fetchServiceDefinitionsByAppId({ appId }));
-  const serviceDefinitions = useSelector((s) =>
-    selectServiceDefinitionsByAppId(s, { appId }),
-  );
-
   useQuery(fetchConfiguration({ id: app.currentConfigurationId }));
   const appConfig = useSelector((s) =>
     selectAppConfigById(s, { id: app.currentConfigurationId }),
@@ -119,9 +111,6 @@ export const AppDeployConfigurePage = () => {
   }, [queryEnvsStr]);
 
   const [dbErrors, setDbErrors] = useState<DbValidatorError[]>([]);
-  const [cmds, setCmds] = useState("");
-  const cmdList = parseText(cmds, () => ({ id: "", http: false }));
-  const [showServiceCommands, setShowServiceCommands] = useState(false);
   const [dbCreatorMap, dbCreatorDispatch] = useReducer<DbCreatorReducer>(
     dbSelectorReducer,
     {},
@@ -130,21 +119,6 @@ export const AppDeployConfigurePage = () => {
     dbSelectorReducer,
     {},
   );
-
-  useEffect(() => {
-    if (serviceDefinitions.length === 0) {
-      return;
-    }
-
-    // hydrate inputs for consumption on load
-    const cmdsToSet = serviceDefinitions
-      .map((serviceDefinition) => {
-        return `${serviceDefinition.processType}=${serviceDefinition.command}`;
-      })
-      .join("\n");
-
-    setCmds(cmdsToSet);
-  }, [serviceDefinitions]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -189,7 +163,9 @@ export const AppDeployConfigurePage = () => {
         dbs: dbCreatorList,
         envs: envList,
         curEnvs: appConfig.env,
-        cmds: cmdList,
+        // deprecated the ability to create service definitions via api
+        // without PROCFILE file
+        cmds: [],
         gitRef,
       }),
     );
@@ -301,36 +277,6 @@ export const AppDeployConfigurePage = () => {
                 </Banner>
               </div>
             ) : null}
-
-            <FormGroup
-              label="Service and Commands"
-              htmlFor="commands"
-              feedbackVariant="info"
-              description="This is optional if you already have a Dockerfile or Procfile in your code repository.  Each line is a separate service and command in format: NAME=COMMAND (e.g. web=bundle exec rails server)."
-            >
-              {showServiceCommands ? (
-                <textarea
-                  name="commands"
-                  className={tokens.type.textarea}
-                  value={cmds}
-                  onChange={(e) => setCmds(e.currentTarget.value)}
-                  disabled={codeScan.data?.procfile_present}
-                />
-              ) : null}
-            </FormGroup>
-
-            {showServiceCommands ? null : (
-              <div>
-                <Button
-                  onClick={() => setShowServiceCommands(true)}
-                  variant="secondary"
-                  disabled={codeScan.data?.procfile_present}
-                >
-                  <IconPlusCircle color="#fff" className="mr-2" variant="sm" />
-                  Configure
-                </Button>
-              </div>
-            )}
 
             <hr />
 
