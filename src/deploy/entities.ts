@@ -26,6 +26,7 @@ import { serviceSizingPolicyEntities } from "./service-sizing-policy";
 import { stackEntities } from "./stack";
 import { vpcPeerEntities } from "./vpc-peer";
 import { vpnTunnelEntities } from "./vpn-tunnel";
+import { dashboardEntities } from "./dashboard";
 
 export const entities = {
   ...appEntities,
@@ -57,4 +58,5 @@ export const entities = {
   ...serviceSizingPolicyEntities,
   ...manualScaleRecommendationEntities,
   ...costEntities,
+  ...dashboardEntities,
 };

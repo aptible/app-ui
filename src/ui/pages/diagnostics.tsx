@@ -19,8 +19,13 @@ import {
   Tr,
   tokens,
 } from "../shared";
+import { useQuery, useSelector } from "@app/react";
+import { fetchDashboards, selectDashboardsAsList } from "@app/deploy/dashboard";
 
 export const DiagnosticsPage = () => {
+  useQuery(fetchDashboards());
+  const dashboards = useSelector(selectDashboardsAsList);
+
   return (
     <AppSidebarLayout>
       <Banner className="mt-2">
@@ -49,55 +54,44 @@ export const DiagnosticsPage = () => {
         </div>
 
         <Group variant="horizontal" size="lg" className="items-center mt-1">
-          <DescBar>1 Diagnostics</DescBar>
+          <DescBar>{dashboards.length} Diagnostics</DescBar>
         </Group>
       </FilterBar>
 
       <Table>
         <THead>
-          <Th>Issues</Th>
-          <Th>App</Th>
-          <Th>Environment</Th>
+          <Th>Dashboard</Th>
           <Th>Time Range</Th>
         </THead>
 
         <TBody>
-          <Tr>
-            <Td className="flex-1">
-              <Link to="#" className="flex">
-                <img
-                  src="/resource-types/logo-diagnostics.png"
-                  className="w-[32px] h-[32px] mr-2 align-middle"
-                  aria-label="App"
-                />
-                <p className={`${tokens.type["table link"]} leading-8`}>
-                  Why is the app API error rate over 50%
-                </p>
-              </Link>
-            </Td>
-            <Td className="flex-1">
-              <Link to="/apps/85039/services" className="flex">
-                <p className="flex flex-col">
-                  <span className={tokens.type["table link"]}>app-ui</span>
-                </p>
-              </Link>
-            </Td>
-            <Td className="flex-1">
-              <div className="flex">
-                <Link to="/environments/10673/apps" className="flex">
-                  <p className="flex flex-col">
-                    <span className={tokens.type["table link"]}>dashboard</span>
-                    <span className={tokens.type["normal lighter"]}>
-                      Shared Stack (us-east-1)
-                    </span>
-                  </p>
-                </Link>
-              </div>
-            </Td>
-            <Td className="flex-1">
-              <p>2024-12-01 10:11:00 - 10:21:00 UTC</p>
-            </Td>
-          </Tr>
+          {dashboards.length === 0 ? (
+            <tr>
+              <td colSpan={4} className="text-center py-4">
+                No diagnostics found
+              </td>
+            </tr>
+          ) : (
+            dashboards.map((dashboard) => (
+              <Tr key={dashboard.id}>
+                <Td className="flex-1">
+                  <Link to="#" className="flex">
+                    <img
+                      src="/resource-types/logo-diagnostics.png"
+                      className="w-[32px] h-[32px] mr-2 align-middle"
+                      aria-label="App"
+                    />
+                    <p className={`${tokens.type["table link"]} leading-8`}>
+                      {dashboard.name}
+                    </p>
+                  </Link>
+                </Td>
+                <Td className="flex-1">
+                  <p>{new Date(dashboard.createdAt).toLocaleString()} UTC</p>
+                </Td>
+              </Tr>
+            ))
+          )}
         </TBody>
       </Table>
     </AppSidebarLayout>

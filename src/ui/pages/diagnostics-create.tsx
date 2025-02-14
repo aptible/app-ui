@@ -18,11 +18,15 @@ import {
   Tooltip,
 } from "../shared";
 import { AppSelect } from "../shared/select-apps";
-
+import { createDashboard } from "@app/deploy/dashboard";
+import { useDispatch, useLoader, useSelector } from "@app/react";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 
 export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const symptomOptions = [
     { label: "App is slow", value: "App is slow" },
     { label: "App is unavailable", value: "App is unavailable" },
@@ -100,19 +104,38 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
 
   // Submit the form.
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const orgId = useSelector(selectOrganizationSelectedId);
+  const action = createDashboard({
+    name: `Diagnostics - ${symptoms}`,
+    resourceId: appId,
+    resourceType: "app",
+    organizationId: orgId,
+  });
+  const loader = useLoader(action);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    navigate(
-      diagnosticsDetailUrl(
-        appId,
-        symptoms,
-        startDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
-        endDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
-      ),
-    );
-    setIsLoading(false);
+
+    try {
+      const response = await loader;
+      dispatch(action);
+      console.log("Dashboard response:", response);
+
+      // Then navigate to the details page
+      // navigate(
+      //   diagnosticsDetailUrl(
+      //     appId,
+      //     symptoms,
+      //     startDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
+      //     endDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
+      //   ),
+      // );
+    } catch (error) {
+      console.error("Failed to create dashboard:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -186,14 +209,14 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
                   </Button>
                 </Tooltip>
               )) || (
-                <Button
-                  type="submit"
-                  className="w-[200px] flex font-semibold"
-                  isLoading={isLoading}
-                >
-                  Generate Diagnostics
-                </Button>
-              )}
+                  <Button
+                    type="submit"
+                    className="w-[200px] flex font-semibold"
+                    isLoading={isLoading}
+                  >
+                    Generate Diagnostics
+                  </Button>
+                )}
               <Button className="w-fit ml-2 flex font-semibold" variant="white">
                 Cancel
               </Button>

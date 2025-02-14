@@ -1,7 +1,6 @@
 import {
   type BillingDetail,
   type Config,
-  type Dashboard,
   type DeployActivePlan,
   type DeployActivityReport,
   type DeployApp,
@@ -12,6 +11,7 @@ import {
   type DeployContainer,
   type DeployCost,
   type DeployCostRates,
+  type DeployDashboard,
   type DeployDatabase,
   type DeployDatabaseCredential,
   type DeployDatabaseImage,
@@ -913,13 +913,6 @@ export const defaultGithubIntegration = (
   };
 };
 
-export const defaultDashboard = (s: Partial<Dashboard> = {}): Dashboard => {
-  return {
-    id: "",
-    ...s,
-  };
-};
-
 export const defaultManualScaleRecommendation = (
   s: Partial<ManualScaleRecommendation> = {},
 ): ManualScaleRecommendation => {
@@ -964,6 +957,22 @@ export const defaultCostRates = (
     m_class_gb_per_hour: 0.08,
     c_class_gb_per_hour: 0.1,
     r_class_gb_per_hour: 0.05,
+    ...s,
+  };
+};
+
+export const defaultDeployDashboard = (
+  s: Partial<DeployDashboard> = {},
+): DeployDashboard => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    name: "",
+    organizationId: "",
+    resourceId: "",
+    resourceType: "",
+    createdAt: now,
+    updatedAt: now,
     ...s,
   };
 };
