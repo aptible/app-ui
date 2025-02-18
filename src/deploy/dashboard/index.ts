@@ -73,6 +73,16 @@ export const createDashboard = api.post<
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
   yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const dashboardId = ctx.json.value.id;
+  ctx.loader = {
+    message: `Dashboard created (dashboard ID: ${dashboardId})`,
+    meta: { dashboardId: `${dashboardId}` },
+  };
 });
 
 export const selectDashboardsAsList = schema.dashboards.selectTableAsList;

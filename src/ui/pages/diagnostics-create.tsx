@@ -19,9 +19,10 @@ import {
 } from "../shared";
 import { AppSelect } from "../shared/select-apps";
 import { createDashboard } from "@app/deploy/dashboard";
-import { useDispatch, useLoader, useSelector } from "@app/react";
+import { useDispatch, useLoader, useLoaderSuccess, useSelector } from "@app/react";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import "react-datepicker/dist/react-datepicker.css";
+import { selectAppById } from "@app/deploy/app";
 import { useNavigate } from "react-router-dom";
 
 export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
@@ -36,6 +37,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
     },
   ];
   const [symptoms, setSymptom] = useState(symptomOptions[0].value);
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
 
   // We need to memoize the now date because the date picker will re-render the
   // component when the date changes, making the timestamps in the options
@@ -106,37 +108,29 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   const [isLoading, setIsLoading] = useState(false);
   const orgId = useSelector(selectOrganizationSelectedId);
   const action = createDashboard({
-    name: `Diagnostics - ${symptoms}`,
+    name: `${app.handle} (${app.id}): ${symptoms}`,
     resourceId: appId,
     resourceType: "app",
     organizationId: orgId,
   });
-  const loader = useLoader(action);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const response = await loader;
       dispatch(action);
-      console.log("Dashboard response:", response);
-
-      // Then navigate to the details page
-      // navigate(
-      //   diagnosticsDetailUrl(
-      //     appId,
-      //     symptoms,
-      //     startDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
-      //     endDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
-      //   ),
-      // );
     } catch (error) {
       console.error("Failed to create dashboard:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const loader = useLoader(action);
+  useLoaderSuccess(loader, () => {
+    navigate(diagnosticsDetailUrl(loader.meta.dashboardId, appId, symptoms, startDate.toJSDate(), endDate.toJSDate()));
+  });
 
   return (
     <>
