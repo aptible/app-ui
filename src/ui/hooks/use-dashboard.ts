@@ -150,6 +150,9 @@ export const useDashboard = ({
         start_time: startTime,
         end_time: endTime,
       },
+      heartbeat: {
+        timeout: 60000 * 30, // 30 minutes
+      },
     },
     socketConnected,
   );
