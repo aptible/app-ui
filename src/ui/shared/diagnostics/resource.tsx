@@ -81,7 +81,7 @@ export const DiagnosticsResource = ({
   endTime: string;
   synchronizedHoverContext: React.Context<HoverState>;
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
     <div className="border rounded-lg p-4">
