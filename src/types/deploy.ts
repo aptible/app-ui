@@ -726,4 +726,8 @@ export interface DeployDashboard extends Timestamps {
   organizationId: string;
   resourceId: string;
   resourceType: string;
+  symptoms: string;
+  rangeBegin: string;
+  rangeEnd: string;
+  observationTimestamp: string;
 }

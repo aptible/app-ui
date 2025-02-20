@@ -409,22 +409,8 @@ export const diagnosticsUrl = () => DIAGNOSTICS_URL;
 export const DIAGNOSTICS_CREATE_URL = "/diagnostics/create";
 export const diagnosticsCreateUrl = () => DIAGNOSTICS_CREATE_URL;
 export const DIAGNOSTICS_DETAIL_URL = "/diagnostics/:id";
-export const diagnosticsDetailUrl = (
-  id: string,
-  appId?: string,
-  symptoms?: string,
-  start?: Date,
-  end?: Date,
-) => {
-  const params = [];
-  if (appId) params.push(`appId=${appId}`);
-  if (symptoms) params.push(`symptomDescription=${symptoms}`);
-  if (start) params.push(`startTime=${start.toISOString()}`);
-  if (end) params.push(`endTime=${end.toISOString()}`);
-
-  const queryString = params.length > 0 ? `?${params.join('&')}` : '';
-  return `/diagnostics/${id}${queryString}`;
-};
+export const diagnosticsDetailUrl = (id: string) =>
+  `/diagnostics/${id}`;
 
 export const SOURCES_PATH = "/sources";
 export const sourcesUrl = () => SOURCES_PATH;

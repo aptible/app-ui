@@ -108,10 +108,13 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   const [isLoading, setIsLoading] = useState(false);
   const orgId = useSelector(selectOrganizationSelectedId);
   const action = createDashboard({
-    name: `${app.handle} (${app.id}): ${symptoms}`,
+    name: `${app.handle}: ${symptoms}`,
     resourceId: appId,
     resourceType: "app",
     organizationId: orgId,
+    symptoms,
+    rangeBegin: startDate.toISO() ?? '',
+    rangeEnd: endDate.toISO() ?? '',
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -129,7 +132,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
 
   const loader = useLoader(action);
   useLoaderSuccess(loader, () => {
-    navigate(diagnosticsDetailUrl(loader.meta.dashboardId, appId, symptoms, startDate.toJSDate(), endDate.toJSDate()));
+    navigate(diagnosticsDetailUrl(loader.meta.dashboardId));
   });
 
   return (

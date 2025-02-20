@@ -1,6 +1,8 @@
 import type { Message, Resource } from "@app/aptible-ai";
 import { selectAptibleAiUrl } from "@app/config";
-import { useSelector } from "@app/react";
+import { fetchDashboard, selectDashboardById } from "@app/deploy/dashboard";
+import { findLoaderComposite } from "@app/loaders";
+import { useQuery, useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
 import { useEffect, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
@@ -13,10 +15,7 @@ type Dashboard = {
 };
 
 type UseDashboardParams = {
-  appId: string;
-  symptomDescription: string;
-  startTime: string;
-  endTime: string;
+  id: string;
 };
 
 const handleDashboardEvent = (
@@ -113,72 +112,76 @@ const handleDashboardEvent = (
   }
 };
 
-export const useDashboard = ({
-  appId,
-  symptomDescription,
-  startTime,
-  endTime,
-}: UseDashboardParams) => {
-  const aptibleAiUrl = useSelector(selectAptibleAiUrl);
-  const accessToken = useSelector(selectAccessToken);
-  const [socketConnected, setSocketConnected] = useState(true);
-  const [dashboard, setDashboard] = useState<Dashboard>({
-    resources: {},
-    messages: [],
-  });
-  const [hasShownCompletion, setHasShownCompletion] = useState(false);
+export const useDashboard = ({ id }: UseDashboardParams) => {
+  const dashboard = useSelector((s) => selectDashboardById(s, { id }));
+  const loaderDashboard = useQuery(fetchDashboard({ id }));
+  const loader = findLoaderComposite([loaderDashboard]);
+  // load widgets
 
-  const { lastJsonMessage: event, readyState } = useWebSocket<
-    Record<string, any>
-  >(
-    `${aptibleAiUrl}/troubleshoot`,
-    {
-      queryParams: {
-        token: accessToken,
-        resource_id: appId,
-        symptom_description: symptomDescription,
-        start_time: startTime,
-        end_time: endTime,
-      },
-    },
-    socketConnected,
-  );
 
-  useEffect(() => {
-    if (readyState === ReadyState.CLOSED) {
-      setSocketConnected(false);
-    }
-  }, [readyState]);
+  // if no widgets, connect to socket, have socket code convert to widgets etc & save on new
 
-  useEffect(() => {
-    if (event) {
-      setDashboard((prevDashboard) =>
-        handleDashboardEvent(prevDashboard, event),
-      );
-    }
-  }, [JSON.stringify(event)]);
+  // const aptibleAiUrl = useSelector(selectAptibleAiUrl);
+  // const accessToken = useSelector(selectAccessToken);
+  // const [socketConnected, setSocketConnected] = useState(true);
+  // // const [dashboard, setDashboard] = useState<Dashboard>({
+  // //   resources: {},
+  // //   messages: [],
+  // // });
+  // const [hasShownCompletion, setHasShownCompletion] = useState(false);
 
-  // Show a message when the socket closes and the analysis is complete.
-  useEffect(() => {
-    if (readyState === ReadyState.CLOSED && !hasShownCompletion) {
-      setHasShownCompletion(true);
-      setDashboard((prev) => ({
-        ...prev,
-        messages: [
-          ...prev.messages,
-          {
-            id: "completion-message",
-            severity: "info",
-            message: "Analysis complete.",
-          },
-        ],
-      }));
-    }
-  }, [readyState, hasShownCompletion]);
+  // const { lastJsonMessage: event, readyState } = useWebSocket<
+  //   Record<string, any>
+  // >(
+  //   `${aptibleAiUrl}/troubleshoot`,
+  //   {
+  //     queryParams: {
+  //       token: accessToken,
+  //       resource_id: appId,
+  //       symptom_description: symptomDescription,
+  //       start_time: startTime,
+  //       end_time: endTime,
+  //     },
+  //   },
+  //   socketConnected,
+  // );
+
+  // useEffect(() => {
+  //   if (readyState === ReadyState.CLOSED) {
+  //     setSocketConnected(false);
+  //   }
+  // }, [readyState]);
+
+  // useEffect(() => {
+  //   if (event) {
+  //     setDashboard((prevDashboard) =>
+  //       handleDashboardEvent(prevDashboard, event),
+  //     );
+  //   }
+  // }, [JSON.stringify(event)]);
+
+  // // Show a message when the socket closes and the analysis is complete.
+  // useEffect(() => {
+  //   if (readyState === ReadyState.CLOSED && !hasShownCompletion) {
+  //     setHasShownCompletion(true);
+  //     setDashboard((prev) => ({
+  //       ...prev,
+  //       messages: [
+  //         ...prev.messages,
+  //         {
+  //           id: "completion-message",
+  //           severity: "info",
+  //           message: "Analysis complete.",
+  //         },
+  //       ],
+  //     }));
+  //   }
+  // }, [readyState, hasShownCompletion]);
 
   return {
     dashboard,
-    isConnected: readyState === ReadyState.OPEN,
-    isClosed: readyState === ReadyState.CLOSED,
+    isLoading: loader.isLoading,
+    // isConnected: readyState === ReadyState.OPEN,
+    // isClosed: readyState === ReadyState.CLOSED,
   };
 };

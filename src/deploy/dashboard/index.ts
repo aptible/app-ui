@@ -10,6 +10,10 @@ export interface DeployDashboardResponse {
   organization_id: string;
   resource_id: string;
   resource_type: string;
+  symptoms: string;
+  range_begin: string;
+  range_end: string;
+  observation_timestamp: string;
   created_at: string;
   updated_at: string;
   _links: {
@@ -23,6 +27,9 @@ export interface CreateDashboardProps {
   resourceId: string;
   resourceType: string;
   organizationId: string;
+  symptoms: string;
+  rangeBegin: string;
+  rangeEnd: string;
 }
 
 export const defaultDashboardResponse = (
@@ -35,6 +42,10 @@ export const defaultDashboardResponse = (
     organization_id: "",
     resource_id: "",
     resource_type: "",
+    symptoms: "",
+    range_begin: "",
+    range_end: "",
+    observation_timestamp: "",
     created_at: now,
     updated_at: now,
     _type: "dashboard",
@@ -55,20 +66,30 @@ export const deserializeDeployDashboard = (
     organizationId: response.organization_id,
     resourceId: response.resource_id,
     resourceType: response.resource_type,
+    symptoms: response.symptoms,
+    rangeBegin: response.range_begin,
+    rangeEnd: response.range_end,
+    observationTimestamp: response.observation_timestamp,
     createdAt: response.created_at,
     updatedAt: response.updated_at,
   };
 };
 
+export const selectDashboardsAsList = schema.dashboards.selectTableAsList;
+export const selectDashboardById = schema.dashboards.selectById;
+
 export const createDashboard = api.post<
   CreateDashboardProps,
   DeployDashboardResponse
 >("/dashboards", function* (ctx, next) {
-  const { name, resourceId, resourceType, organizationId } = ctx.payload;
+  const { name, resourceId, resourceType, organizationId, symptoms, rangeBegin, rangeEnd } = ctx.payload;
   const body = {
     name,
     resource_id: resourceId,
     resource_type: resourceType,
+    symptoms: symptoms,
+    range_begin: rangeBegin,
+    range_end: rangeEnd,
     organization_id: organizationId,
   };
   ctx.request = ctx.req({ body: JSON.stringify(body) });
@@ -81,12 +102,15 @@ export const createDashboard = api.post<
   const dashboardId = ctx.json.value.id;
   ctx.loader = {
     message: `Dashboard created (dashboard ID: ${dashboardId})`,
-    meta: { dashboardId: `${dashboardId}` },
+    meta: { dashboardId: dashboardId },
   };
 });
 
-export const selectDashboardsAsList = schema.dashboards.selectTableAsList;
 export const fetchDashboards = api.get("/dashboards");
+
+export const fetchDashboard = api.get<{ id: string }, DeployDashboardResponse>(
+  "/dashboards/:id",
+);
 
 export const dashboardEntities = {
   dashboard: defaultEntity({
